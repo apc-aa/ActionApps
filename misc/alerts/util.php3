@@ -35,14 +35,14 @@ function get_howoften_options () {
 
 function AlertsUser ($session) {
     global $db;
-    $db->query ("SELECT * FROM alerts_user WHERE session='$session'");
+    $db->query("SELECT * FROM alerts_user WHERE session='$session'");
     // expires after 600 seconds
     if ($db->next_record()) {
         $GLOBALS["email"] = $db->f("email");
         $GLOBALS["lang"] = $db->f("lang");
         bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$GLOBALS["lang"]."_alerts_lang.inc");
         if ($db->f("sessiontime") > time() - 600) {
-            $db->query ("UPDATE alerts_user SET sessiontime=".time());
+            $db->query("UPDATE alerts_user SET sessiontime=".time());
             return $db->Record;
         }
         else return 0;
@@ -71,19 +71,19 @@ function alerts_subscribe ($email, $lang, $password="", $firstname="", $lastname
     $db = new DB_AA;
     $varset = new CVarset();
 
-    $db->query ("SELECT confirm FROM alerts_user WHERE email='$email'");
+    $db->query("SELECT confirm FROM alerts_user WHERE email='$email'");
     $db->next_record();
     if (strlen ($db->f("confirm")) == 4)
         $confirm = $db->f("confirm");
     else {
         do {        
             $confirm = gensalt(4);
-            $db->query ("SELECT * FROM alerts_user WHERE confirm='$confirm'");
+            $db->query("SELECT * FROM alerts_user WHERE confirm='$confirm'");
         } while ($db->num_rows());
         $varset->add("confirm", "text", $confirm);
     }
 
-    $db->query ("SELECT * FROM alerts_user WHERE email='$email'");
+    $db->query("SELECT * FROM alerts_user WHERE email='$email'");
     if ($db->num_rows() == 0) {   
         $varset->add("email", "quoted", $email);
         $varset->add("password", "quoted", $password ? md5 ($password) : "");
@@ -93,12 +93,12 @@ function alerts_subscribe ($email, $lang, $password="", $firstname="", $lastname
         $varset->add("sessiontime", "number", time());
         
         $SQL = "INSERT INTO alerts_user ".$varset->makeINSERT();
-        if (!$db->query ($SQL)) return _m("ERROR adding user to alerts_user");
+        if (!$db->query($SQL)) return _m("ERROR adding user to alerts_user");
     }    
     else {
         $varset->add("password","text","");
         $SQL = "UPDATE alerts_user SET ".$varset->makeUPDATE()." WHERE email='$email'";
-        if (!$db->query ($SQL)) return _m("ERROR updating user in alerts_user");
+        if (!$db->query($SQL)) return _m("ERROR updating user in alerts_user");
     }        
 
     $subject = _m("Welcome to APC e-mail alerts");   
@@ -111,7 +111,7 @@ function alerts_subscribe ($email, $lang, $password="", $firstname="", $lastname
         ."&nbsp; &nbsp; &nbsp;APC Alerts moderators</p>"
         , array ("<p align=center><a href='$url'>$url</a></p>"));
         
-    $db->query ("select * from alerts_collection where description='$ALERTS_SUBSCRIPTION_COLLECTION'");
+    $db->query("select * from alerts_collection where description='$ALERTS_SUBSCRIPTION_COLLECTION'");
     $db->next_record();   
     $headers = alerts_email_headers ($db->Record, "");
     $to  = email_address ($firstname." ".$lastname, $email);
@@ -174,7 +174,7 @@ function print_add_collection ($user=false)
 function print_js_options_filters ($user=true)
 {
     $db2 = new DB_AA;
-    $db2->query ("SELECT slice.name, DF.description as fdesc, DF.id AS filterid FROM
+    $db2->query("SELECT slice.name, DF.description as fdesc, DF.id AS filterid FROM
     slice INNER JOIN
     view ON slice.id = view.slice_id INNER JOIN
     alerts_digest_filter DF ON DF.vid = view.id
@@ -202,7 +202,7 @@ function print_edit_collections ($SQL, $script, $user=false)
     $howoften_options = get_howoften_options();
 
     $db = new DB_AA;
-    $db->query ($SQL);
+    $db->query($SQL);
     if (!$db->num_rows()) return;
     
     while ($db->next_record()) {
@@ -375,7 +375,7 @@ function copy_user_collection ($userid, $cid)
 {
     global $db;
     $varset = new CVarset();
-    $db->query ("SELECT * FROM alerts_collection WHERE id=".$cid." AND showme=1");
+    $db->query("SELECT * FROM alerts_collection WHERE id=".$cid." AND showme=1");
     if ($db->num_rows() == 1) {
         $db->next_record();
         $varset->set("description",$db->f("description"),"text");        

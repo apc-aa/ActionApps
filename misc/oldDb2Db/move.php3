@@ -351,7 +351,7 @@ do {
     $content4id = PrepareContent4id($odb->Record);
 
     if( $fire ) {
-      $navrat = StoreItem( unpack_id($odb->f('id')), $slice_id, $content4id, $fields, true, false, false );
+      $navrat = StoreItem( unpack_id128($odb->f('id')), $slice_id, $content4id, $fields, true, false, false );
     }                                        # insert, do not invalidatecache, do not feed
     
     echo "<br>Item '". $odb->f('headline') ."' stored";
@@ -447,6 +447,9 @@ else
 
 /*
 $Log$
+Revision 1.4  2003/01/21 07:02:05  mitraearth
+*** empty log message ***
+
 Revision 1.3  2002/06/17 22:09:14  honzam
 removed call-time passed-by-reference variables in function calls; better variable handling if magic_qoutes are not set (no more warning displayed)
 

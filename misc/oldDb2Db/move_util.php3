@@ -172,7 +172,7 @@ function GetOldCategories() {
   huhu( $SQL );
   $odb->query($SQL);
   while ($odb->next_record()){
-    $unpacked=unpack_id($odb->f("id"));  
+    $unpacked=unpack_id128($odb->f("id"));  
     $arr[$unpacked]=$odb->f("name");  
   }
   return $arr;  
@@ -190,6 +190,9 @@ function huhu($txt) {
 
 /*
 $Log$
+Revision 1.2  2003/01/21 07:02:05  mitraearth
+*** empty log message ***
+
 Revision 1.1  2001/12/18 11:29:40  honzam
 database conversion script - working version
 

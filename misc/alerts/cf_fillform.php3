@@ -39,7 +39,7 @@ if (!$uid) return;
 $db = new DB_AA;
 $alerts = "";
 
-$db->query ("SELECT * FROM alerts_user WHERE id=$uid");
+$db->query("SELECT * FROM alerts_user WHERE id=$uid");
 $db->next_record();
 reset ($cf_fields);
 while (list ($fname, $fprop) = each ($cf_fields)) 
@@ -58,17 +58,17 @@ while (list ($field, $value) = each ($alerts))
     echo "setControl ('cf".$cid."', 'alerts[$field]', '".str_replace("'","\\'",$value)."');\n";
 
 if ($cid) {
-    $db->query ("SELECT * FROM alerts_user_collection WHERE userid=$uid AND collectionid=$cid");
+    $db->query("SELECT * FROM alerts_user_collection WHERE userid=$uid AND collectionid=$cid");
     if ($db->next_record()) {
         $alerts["howoften"] = $db->f("howoften");
         $allfilters = $db->f("allfilters");
         
-        $db->query ("SELECT * FROM alerts_user_collection_filter WHERE userid=$uid AND collectionid=$cid");
+        $db->query("SELECT * FROM alerts_user_collection_filter WHERE userid=$uid AND collectionid=$cid");
         while ($db->next_record())
             $filters[$db->f("filterid")] = "1";
             
         // go through the remaining filters
-        $db->query ("SELECT * FROM alerts_collection_filter WHERE collectionid=$cid");
+        $db->query("SELECT * FROM alerts_collection_filter WHERE collectionid=$cid");
         while ($db->next_record()) 
             setdefault ($filters[$db->f("filterid")], $allfilters);
         reset ($filters);

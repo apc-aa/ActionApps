@@ -59,7 +59,7 @@ function bind_mgettext_domain ($filename, $cache = false) {
     
     if (!file_exists ($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
-        exit;
+#        exit;
     }
     else {
         $_m = "";

@@ -96,7 +96,7 @@ function showMenu ($item) {
     
     // signed as
     global $db, $auth;
-    $db->query ("SELECT * FROM alerts_user WHERE id=".$auth->auth["uid"]);
+    $db->query("SELECT * FROM alerts_user WHERE id=".$auth->auth["uid"]);
     $db->next_record();
     echo '<TD valign="top"><TABLE cellspacing="0" width="100%">
         <TR height="25"><TD class="tabtxt">&nbsp;&nbsp;'

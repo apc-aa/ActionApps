@@ -117,7 +117,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             $modules = SelectModule (false);
             $db->query("SELECT owner_module_id FROM alerts_user WHERE id = $userid");
             $db->next_record();
-            $useredit = $modules[unpack_id($db->f("owner_module_id"))] ? true : false;            
+            $useredit = $modules[unpack_id128($db->f("owner_module_id"))] ? true : false;            
         }
 
         return  array (
@@ -198,7 +198,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
          
     if ($viewID == "aucf") {
         global $collectionid;
-        $db->query ("SELECT AF.description, AF.id FROM alerts_collection_filter ACF
+        $db->query("SELECT AF.description, AF.id FROM alerts_collection_filter ACF
             INNER JOIN alerts_filter AF ON AF.id = ACF.filterid
             WHERE collectionid=$collectionid");
         if ($db->num_rows()) {
@@ -240,7 +240,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
 
     if ($viewID == "acf") {
         global $collectionid;
-        $db->query ("SELECT AF.description, AF.id FROM alerts_filter AF");
+        $db->query("SELECT AF.description, AF.id FROM alerts_filter AF");
         if ($db->num_rows()) {
             while ($db->next_record()) 
                 $collection_filters [$db->f("id")] = $db->f("description");
@@ -263,11 +263,11 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         $myslices = GetUsersSlices( $auth->auth["uid"] );    
         while ($db->next_record()) {
             $txt = HTMLSpecialChars ($db->f("fdesc"));
-            if (IsSuperadmin() || strchr ($myslices [unpack_id ($db->f("slice_id"))], PS_FULLTEXT)) {
+            if (IsSuperadmin() || strchr ($myslices [unpack_id128($db->f("slice_id"))], PS_FULLTEXT)) {
                 $new_filters[$db->f("filterid")] = $txt;
                 $txt =            
                     "<a href='".$sess->url("tabledit.php3"
-                    ."?change_id=".unpack_id($db->f("slice_id"))
+                    ."?change_id=".unpack_id128($db->f("slice_id"))
                     ."&change_page=se_view.php3"
                     ."&change_params[view_id]=".$db->f("view_id")
                     ."&change_params[view_type]=".$db->f("view_type"))
@@ -409,7 +409,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                     "source"=>GetUserEmails("alerts access")))),
             "type" => array ("default" => "Alerts", "view" => array ("type"=>"hide")),
             "id" => array (
-                "default" => pack_id (new_id()),                 
+                "default" => pack_id128(new_id()),                 
                 "view" => array("type"=>"text", "unpacked" => true, "readonly" => true)),
             "created_at" => array (
                 "caption" => _m("created at"),
@@ -435,9 +435,9 @@ function GetAlertsTableView ($viewID, $processForm = false) {
        alerts_admin
     */
     if ($viewID == "alerts_admin") {
-        $db->query ("SELECT * FROM alerts_admin");
+        $db->query("SELECT * FROM alerts_admin");
         if ($db->num_rows() == 0)
-            $db->query ("INSERT INTO alerts_admin (mail_confirm, delete_not_confirmed) VALUES (0,0)");
+            $db->query("INSERT INTO alerts_admin (mail_confirm, delete_not_confirmed) VALUES (0,0)");
         return array (
         "table" => "alerts_admin",
         "caption" => _m("Alerts Admin"),
@@ -514,7 +514,7 @@ function FindAlertsFilterPermissions() {
             $restrict_slices[] = q_pack_id($my_slice_id);
     $_filter_permissions = array ();
     if (is_array ($restrict_slices)) {
-        $db->query ("SELECT DISTINCT ADF.id FROM alerts_filter ADF 
+        $db->query("SELECT DISTINCT ADF.id FROM alerts_filter ADF 
                      INNER JOIN view ON view.id = ADF.vid
                      INNER JOIN slice ON slice.id = view.slice_id
                      WHERE slice_id IN ('".join("','",$restrict_slices)."')");
@@ -540,7 +540,7 @@ function FindAlertsUserPermissions () {
             AND expiry_date >= $now"; break;
     }
     
-    $db->query ("SELECT userid 
+    $db->query("SELECT userid 
         FROM alerts_user_collection 
         WHERE collectionid=$collectionid AND $where");
     $retval = array ();
@@ -558,6 +558,6 @@ function te_au_confirm ($val) {
 
 function AlertsModeditAfterInsert ($varset) {
     global $change_id;
-    $change_id = unpack_id ($varset->get ("id"));
+    $change_id = unpack_id128($varset->get ("id"));
 }
 ?>

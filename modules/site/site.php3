@@ -175,27 +175,6 @@ function ModW_ParseSwitch($text, &$state) {
 }
 */
 /* Deprecated uses stringexpand.php3 
-# Substitutes all colons with special AA string and back depending on unalias nesting.
-# Used to mark colons, which is not parameter separators.
-# The same as QuoteColons() in /include/item.php3
-function ModW_QuoteColons($level, $maxlevel, $text) {
-  if( $level > 1 )                  # there is no need to substitute on level 1
-    return str_replace(":", "_AA_CoLoN_", $text);
-
-  #level 0 - return from unalias - change all back to ':'
-  if( ($level == 0) AND ($maxlevel > 1) )  # maxlevel - just for speed optimalization
-    return str_replace("_AA_CoLoN_", ":", $text);
-  return $text;
-}
-*/
-/* Deprecated uses stringexpand.php3 
-# Substitutes special AA 'colon' string back to colon ':' character
-# Used for parameters, where is no need colons are not parameter separators
-function ModW_DeQuoteColons($text) {
-  return str_replace("_AA_CoLoN_", ":", $text);
-}
-*/
-/* Deprecated uses stringexpand.php3 
 # See include/item.php3 for other places that {...} syntax is used, 
 function ModW_unalias_recurent(&$text, &$state, $level, &$maxlevel) {
 
@@ -253,11 +232,13 @@ function ModW_unalias( &$text, &$state ) {
 // id = an item id, unpacked or short
 // short_ids = boolean indicating type of $ids (default is false => unpacked)
 function ModW_id2item($id,$use_short_ids="false") {
+   if (isset($id) && ($id != "-")) {
         $content = GetItemContent($id, $use_short_ids);
-        $slice_id = unpack_id($content[$id]["slice_id........"][0][value]);
+        $slice_id = unpack_id128($content[$id]["slice_id........"][0][value]);
         list($fields,) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields);
         return new item("",$content[$id],$aliases,"","","");
+    }
 }
 
 # Convert a state string into an array, based on the variable names and 

@@ -75,7 +75,7 @@ function cron ($time = 0) {
 	$parts = array ("mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60);
 	if ($debug) { echo "<B>".date("d.m.y H:i",$time)."</B></BR>"; }
 	
-	$db->query ("SELECT * FROM cron");
+	$db->query("SELECT * FROM cron");
 	while ($db->next_record()) {
 		/*  $nearest is the nearest of times on which an item should have run to now (nearest <= now)
             I don't consider last_run when looking for $nearest, but afterwards I run the script only
@@ -167,10 +167,10 @@ function cron ($time = 0) {
                  echo "<b>$url</b> will be run<BR>";
             else echo "<font size=small>$url will be run on ".date( "d.m.y H:i",$nearest_time)." ($nearest_time)</font><BR>";
             //echo "Nearest time: "; print_r ($nearest);
-			$db_update->query ("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
+			$db_update->query("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
         }
 		else if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
-			$db_update->query ("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
+			$db_update->query("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
 			fopen ($url,"r");
 		}
 	}
@@ -180,7 +180,7 @@ function cron ($time = 0) {
 // Use this for debug purposes
 /*
 $db = new DB_AA;
-$db->query ("UPDATE cron SET last_run = NULL");
+$db->query("UPDATE cron SET last_run = NULL");
 $debug = 1;
 
 $time = time(); 

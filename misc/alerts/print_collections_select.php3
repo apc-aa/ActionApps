@@ -33,7 +33,7 @@ if (!$c) return;
 if (!is_array ($c)) $c = array ($c);
 
 $db = new DB_AA;
-$db->query ("
+$db->query("
     SELECT * FROM alerts_collection 
     WHERE id IN (".join(",",$c).")
     ORDER BY description");

@@ -86,7 +86,7 @@ function create_filter_text_from_list ($ho, $slices, $update=true)
             
     reset ($slices);
     while (list ($p_slice_id, $slice) = each ($slices)) {
-        $slice_id = unpack_id ($p_slice_id);
+        $slice_id = unpack_id128($p_slice_id);
         list($fields) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);       
         // set language
@@ -131,7 +131,7 @@ function create_filter_text_from_list ($ho, $slices, $update=true)
                 $varset->addkey ("filterid", "number", $fid);
                 if (!$debug && $update) {
                     $varset->add ("last", "number", $now);
-                    $db->query ($varset->makeINSERTorUPDATE("alerts_filter_howoften"));
+                    $db->query($varset->makeINSERTorUPDATE("alerts_filter_howoften"));
                     $varset->remove ("last");
                 }
                     
@@ -144,10 +144,11 @@ function create_filter_text_from_list ($ho, $slices, $update=true)
                 $items_text = "";
                 if (is_array ($all_ids)) {
                     // find items for the given filter
-                    $item_ids = QueryIDs ($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, $all_ids);
-                    if ($debug) echo "<br>Item IDs count: ".count($item_ids)."<br>";
-                    if( count($item_ids) > 0 ) { 
-                        $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, 
+		    $all_zids = new zids($all_ids,'p');			
+                    $zids = QueryZIDs ($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, $all_zids);
+                    if ($debug) echo "<br>Item IDs count: ".$zids->count()."<br>";
+                    if( $zids->count() > 0 ) { 
+                        $itemview = new itemview( $db, $format, $fields, $aliases, $zids, 
                               0, $view_info["listlen"], shtml_url());                          
                         $items_text = $itemview->get_output ("view");        
                     }
@@ -156,7 +157,7 @@ function create_filter_text_from_list ($ho, $slices, $update=true)
                 if ($debug && $items_text) echo "<hr>Items text:<br><br>$items_text<br><br><hr>";
                 
                 $varset->add ("text", "text", $items_text);
-                $db->query ($varset->makeINSERTorUPDATE ("alerts_filter_howoften"));
+                $db->query($varset->makeINSERTorUPDATE ("alerts_filter_howoften"));
             }
         }
     }
@@ -177,7 +178,7 @@ function send_emails ($ho, $collection_ids = "all", $emails = "all")
             
     if (is_array ($collection_ids))
         $where = " WHERE AC.id IN (".join (",", $collection_ids).")";    
-    $db->query ("SELECT module.slice_url, AC.id AS collectionid, AC.*, email.* FROM alerts_collection AC
+    $db->query("SELECT module.slice_url, AC.id AS collectionid, AC.*, email.* FROM alerts_collection AC
             INNER JOIN email ON AC.emailid_alert = email.id
             INNER JOIN module ON AC.moduleid = module.id
             $where");
@@ -195,7 +196,7 @@ function send_emails ($ho, $collection_ids = "all", $emails = "all")
         }
         else {
             // find users with all filters
-            $db->query ("
+            $db->query("
                 SELECT U.*, UC.allfilters FROM 
                 alerts_user U INNER JOIN 
                 alerts_user_collection UC ON U.id = UC.userid 
@@ -209,7 +210,7 @@ function send_emails ($ho, $collection_ids = "all", $emails = "all")
             }    
 
             // find users with some filters
-            $db->query ("
+            $db->query("
                 SELECT UCF.* FROM 
                 alerts_user U INNER JOIN 
                 alerts_user_collection UC ON U.id = UC.userid INNER JOIN
@@ -223,7 +224,7 @@ function send_emails ($ho, $collection_ids = "all", $emails = "all")
         }
 
         // find filters for this collection
-        $db->query ("SELECT HF.* FROM alerts_collection_filter CF
+        $db->query("SELECT HF.* FROM alerts_collection_filter CF
             INNER JOIN alerts_filter_howoften HF ON CF.filterid = HF.filterid
             WHERE HF.howoften = '$ho' AND CF.collectionid = $cid
             ORDER BY CF.myindex");
@@ -288,18 +289,18 @@ function initialize_filters ()
     $hos = get_howoften_options();   
     reset ($hos);
     while (list ($ho) = each ($hos)) {
-        $db->query ("SELECT F.id FROM alerts_filter F LEFT JOIN
+        $db->query("SELECT F.id FROM alerts_filter F LEFT JOIN
             alerts_filter_howoften FH ON FH.filterid = F.id AND howoften='$ho'
             WHERE last IS NULL");
         while ($db->next_record()) 
-            $db2->query ("INSERT INTO alerts_filter_howoften (filterid, howoften, last)
+            $db2->query("INSERT INTO alerts_filter_howoften (filterid, howoften, last)
                 VALUES (".$db->f("id").", '$ho', ".$init[$ho].")");
 
-        $db->query ("SELECT F.id FROM alerts_filter F INNER JOIN
+        $db->query("SELECT F.id FROM alerts_filter F INNER JOIN
             alerts_filter_howoften FH ON FH.filterid = F.id
             WHERE last=0 AND howoften='$ho'");
         while ($db->next_record()) 
-            $db2->query ("UPDATE alerts_filter_howoften SET last=".$init[$ho]
+            $db2->query("UPDATE alerts_filter_howoften SET last=".$init[$ho]
                 ." WHERE filterid=".$db->f("id")." AND howoften='$ho'");
     }
 }           

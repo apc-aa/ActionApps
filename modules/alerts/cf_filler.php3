@@ -47,13 +47,13 @@ $collid = $alerts["collectionid"];
 
 if ($userid) {
     // is the user ID valid?
-    $db->query ("SELECT * FROM alerts_user WHERE id=$userid");
+    $db->query("SELECT * FROM alerts_user WHERE id=$userid");
     if (!$db->next_record()) { my_die(_m("Wrong user ID")); return; }
 }
 
 else {
     // does such email exist in database?
-    $db->query ("SELECT * FROM alerts_user WHERE email='$alerts[email]'");
+    $db->query("SELECT * FROM alerts_user WHERE email='$alerts[email]'");
     if ($db->next_record())
         $userid = $db->f("id");
     // no email nor user ID given => nothing will be changed in database
@@ -77,13 +77,13 @@ insert_or_update_user ($alerts, $userid != 0);
     
 // change collection settings
 if ($alerts["collectionid"]) {
-    $db->query ("DELETE FROM alerts_user_collection_filter
+    $db->query("DELETE FROM alerts_user_collection_filter
                  WHERE userid=$userid AND collectionid=$collid");
 
     switch ($alerts["choose_filters"]) {
     // filters were chosen by checkboxes
     case "checkbox":
-        $db->query ("SELECT * FROM alerts_collection_filter WHERE collectionid=$collid");
+        $db->query("SELECT * FROM alerts_collection_filter WHERE collectionid=$collid");
         if (!is_array ($alerts["filters"]))
             break;
         $allfilters = true;
@@ -97,7 +97,7 @@ if ($alerts["collectionid"]) {
             reset ($alerts["filters"]);    
             while (list ($filterid, $myindex) = each ($alerts["filters"])) 
                 if ($myindex >= 100)
-                    $db->query ("INSERT INTO alerts_user_collection_filter
+                    $db->query("INSERT INTO alerts_user_collection_filter
                         (userid, collectionid, filterid, myindex)
                         VALUES ($userid, $collid, $filterid, $myindex)");
         }
@@ -116,7 +116,7 @@ if ($alerts["collectionid"]) {
     $info["allfilters"] = $allfilters;
     $info["howoften"] = $alerts["howoften"];
     $info["email"] = $alerts["email"];
-    $db->query ("SELECT * FROM alerts_collection WHERE id=$collid");
+    $db->query("SELECT * FROM alerts_collection WHERE id=$collid");
     $db->next_record();
     
     insert_or_update_user_collection ($info, $db->Record, false, true);

@@ -44,13 +44,13 @@ $collid = $alerts["collectionid"];
 
 if ($userid) {
     // is the user ID valid?
-    $db->query ("SELECT * FROM alerts_user WHERE id=$userid");
+    $db->query("SELECT * FROM alerts_user WHERE id=$userid");
     if (!$db->next_record()) { my_die(_m("Wrong user ID")); return; }
 }
 
 else {
     // does such email exist in database?
-    $db->query ("SELECT * FROM alerts_user WHERE email='$alerts[email]'");
+    $db->query("SELECT * FROM alerts_user WHERE email='$alerts[email]'");
     if ($db->next_record())
         $userid = $db->f("id");
     // no email nor user ID given => nothing will be changed in database
@@ -76,15 +76,15 @@ while (list ($fname, $fprop) = each ($cf_fields))
         $user_varset->add ($fname, "quoted", $alerts[$fname]);
 
 if ($alerts["userid"])
-     $db->query ("UPDATE alerts_user SET ".$user_varset->makeUPDATE()." WHERE id=$userid");
+     $db->query("UPDATE alerts_user SET ".$user_varset->makeUPDATE()." WHERE id=$userid");
 else {
-    $db->query ("INSERT INTO alerts_user ".$user_varset->makeINSERT());
+    $db->query("INSERT INTO alerts_user ".$user_varset->makeINSERT());
     $userid = get_last_insert_id ($db, "alerts_user");
 }
 
 // change collection settings
 if ($alerts["collectionid"]) {
-    $db->query ("SELECT * FROM alerts_user_collection 
+    $db->query("SELECT * FROM alerts_user_collection 
                  WHERE userid=$userid AND collectionid=$collid");
     // is the user already subscribed to this collection?
     $uc_exists = $db->next_record();             
@@ -96,22 +96,22 @@ if ($alerts["collectionid"]) {
         $uc_varset->add ("allfilters", "number", $alerts["choose_filters"] == "no");
         
         if ($uc_exists)
-            $db->query ("UPDATE alerts_user_collection SET ".$uc_varset->makeUPDATE()
+            $db->query("UPDATE alerts_user_collection SET ".$uc_varset->makeUPDATE()
                        ." WHERE userid=$userid AND collectionid=$collid");
         else {
             $uc_varset->add ("userid", "number", $userid);
             $uc_varset->add ("collectionid", "number", $collid);
-            $db->query ("INSERT INTO alerts_user_collection ".$uc_varset->makeINSERT());
+            $db->query("INSERT INTO alerts_user_collection ".$uc_varset->makeINSERT());
         }
     }
     
     if ($uc_exists) 
-        $db->query ("DELETE FROM alerts_user_collection_filter
+        $db->query("DELETE FROM alerts_user_collection_filter
                      WHERE userid=$userid AND collectionid=$collid");
 
     // filters were chosen by checkboxes
     if ($alerts["choose_filters"] == "checkbox") {
-        $db->query ("SELECT * FROM alerts_collection_filter WHERE collectionid=$collid");
+        $db->query("SELECT * FROM alerts_collection_filter WHERE collectionid=$collid");
         while ($db->next_record())
             if ($alerts["filters"][$db->f("filterid")])
                 // add 100 to exclude filters not part of this collection
@@ -119,7 +119,7 @@ if ($alerts["collectionid"]) {
         reset ($alerts["filters"]);    
         while (list ($filterid, $myindex) = each ($alerts["filters"])) 
             if ($myindex >= 100)
-                $db->query ("INSERT INTO alerts_user_collection_filter
+                $db->query("INSERT INTO alerts_user_collection_filter
                     (userid, collectionid, filterid, myindex)
                     VALUES ($userid, $collid, $filterid, $myindex)");
     }        

@@ -41,7 +41,7 @@ if (!$collectionid) { echo _m("Jump to this page from a Collection Edit page"); 
 if ($formlang)
     bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$formlang."_news_lang.inc");
     
-$db->query ("
+$db->query("
     SELECT DF.* FROM alerts_collection_filter CF INNER JOIN
     alerts_digest_filter DF on CF.filterid = DF.id
     WHERE CF.collectionid = $collectionid
@@ -64,7 +64,7 @@ echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
 
 showMenu ($aamenus, "sliceadmin", "");
 
-$db->query ("SELECT * FROM alerts_collection WHERE id=$collectionid");
+$db->query("SELECT * FROM alerts_collection WHERE id=$collectionid");
 if (!$db->next_record()) { echo "Error: collection id $collectionid not found."; exit; }
 
 echo "

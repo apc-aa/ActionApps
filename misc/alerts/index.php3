@@ -33,7 +33,7 @@ require "./lang.php3";
 
 if ($send_passwd && $email) {
     $db = new DB_AA;
-    $db->query ("SELECT * FROM alerts_user WHERE email='$email'");
+    $db->query("SELECT * FROM alerts_user WHERE email='$email'");
     if ($db->num_rows() == 0) $Err[] = _m("This email is not registered with Alerts.");
     else {
         $db->next_record();
@@ -44,14 +44,14 @@ if ($send_passwd && $email) {
 
 else if ($email) {
     $db = new DB_AA;
-    $db->query ("SELECT id, password, confirm FROM alerts_user WHERE email='$email'");
+    $db->query("SELECT id, password, confirm FROM alerts_user WHERE email='$email'");
     if ($db->num_rows() == 0) $Err[] = _m("This email is not registered with Alerts.");
     else {
         $db->next_record();
         if ($db->f("confirm")) $Err[] = _m("You have not yet confirmed your subscription. See confirmation e-mail or use Send confirmation.");
         else if ($db->f("password") == "" || (md5($password) == $db->f("password"))) {
             $alerts_session = new_id ();
-            $db->query ("UPDATE alerts_user 
+            $db->query("UPDATE alerts_user 
                 SET session='$alerts_session', sessiontime=".time()." 
                 WHERE id = ".$db->f("id"));
             go_url (AA_INSTAL_URL."misc/alerts/user_filter.php3?alerts_session=$alerts_session&lang=$lang&ss=$ss");

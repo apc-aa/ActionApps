@@ -49,7 +49,7 @@ function showCollectionAddOns ()
             ._m("First set the Alert Email in the Settings menu.")."</a><br><br>";
         return;
     }
-    $db->query ("SELECT description FROM email WHERE id = $emailid");
+    $db->query("SELECT description FROM email WHERE id = $emailid");
     $db->next_record();
     echo _m("Alert Email for this Collection: ")."<B>".$db->f("description")."<br>&nbsp;&nbsp;--> ";
     $useremails = GetUserEmails();
@@ -92,7 +92,7 @@ function showCollectionAddOns ()
                 array ("conds"=>$db->f("conds"), "last"=>$db->f("last"));
         }
         
-        $db->query ("SELECT id FROM alerts_user WHERE email='$example[email]'");
+        $db->query("SELECT id FROM alerts_user WHERE email='$example[email]'");
         if ($db->next_record())
             $uid = $db->f("id");
         create_filter_text_from_list ($example["howoften"], $slices, false);

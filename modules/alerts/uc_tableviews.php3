@@ -79,7 +79,7 @@ function GetAlertsUCTableView ($viewID, $processForm = false) {
     if ($viewID == "auc") {
         global $auth;
         $uid = $auth->auth["uid"];
-        $db->query ("SELECT AC.id, name, slice_url FROM alerts_collection AC
+        $db->query("SELECT AC.id, name, slice_url FROM alerts_collection AC
                 INNER JOIN module ON AC.moduleid = module.id");
         while ($db->next_record()) 
             $collections[$db->f("id")] = 

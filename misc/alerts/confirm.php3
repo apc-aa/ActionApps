@@ -31,10 +31,10 @@ require "./lang.php3";
 $db = new DB_AA;
 
 if ($id) {
-    $db->query ("SELECT confirm,email FROM alerts_user WHERE confirm='$id'");
+    $db->query("SELECT confirm,email FROM alerts_user WHERE confirm='$id'");
     $db->next_record();
     if ($db->num_rows()) { 
-        $db->query ("UPDATE alerts_user SET confirm = '' WHERE confirm='$id'");
+        $db->query("UPDATE alerts_user SET confirm = '' WHERE confirm='$id'");
         $msg = _m("Congratulations. Your subscription is finished.");        
         go_url ("index.php3?Msg=$msg&lang=$lang&show_email=".$db->f("email"));
     }   

@@ -42,7 +42,7 @@ if (!is_object ($db)) $db = new DB_AA;
 global $go_subscribe_to, $subscribe_to;
 
 if ($go_subscribe_to) {
-    $db->query ("SELECT * FROM alerts_collection AC
+    $db->query("SELECT * FROM alerts_collection AC
         INNER JOIN module ON AC.moduleid = module.id
         WHERE AC.id = ".$subscribe_to);
     if ($db->next_record())
@@ -64,7 +64,7 @@ echo "<TITLE>". _m("Login to Alerts sending") ."</TITLE>
 // ---------------------------------------------------------------------
 // New user? Subscribe to ...
 
-$db->query ("SELECT AC.id, name, slice_url FROM alerts_collection AC
+$db->query("SELECT AC.id, name, slice_url FROM alerts_collection AC
     INNER JOIN module ON AC.moduleid = module.id");
 while ($db->next_record()) 
     $colls[$db->f("id")] = $db->f("name");
@@ -84,7 +84,7 @@ echo '</FORM>';
     echo '</font>';
     
     if ($uid) {
-        $db->query ("SELECT email FROM alerts_user WHERE id=$uid"); 
+        $db->query("SELECT email FROM alerts_user WHERE id=$uid"); 
         if ($db->next_record()) $email = $db->f("email");
     }
     

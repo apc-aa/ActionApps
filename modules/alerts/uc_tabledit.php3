@@ -29,7 +29,7 @@ require $GLOBALS[AA_INC_PATH]."util.php3";
 require "uc_tableviews.php3";
 
 if ($go_to_collection_form) {
-    $db->query ("SELECT slice_url FROM alerts_collection AC
+    $db->query("SELECT slice_url FROM alerts_collection AC
                  INNER JOIN module ON AC.moduleid = module.id
                  WHERE AC.id = $go_to_collection_form");
     $db->next_record();

@@ -69,11 +69,11 @@ class AA_UC_Auth extends Auth {
     /** Uses the single usage key to log the user in. */
     function auth_single_usage_key () {
         global $single_usage_key, $Msg, $db;
-        $db->query ("SELECT id FROM alerts_user WHERE single_usage_access_key='$single_usage_key'");
+        $db->query("SELECT id FROM alerts_user WHERE single_usage_access_key='$single_usage_key'");
         $uid = false;
         if ($db->next_record()) {
             $uid = $db->f("id");
-            $db->query ("UPDATE alerts_user SET single_usage_access_key = NULL WHERE id=$uid");
+            $db->query("UPDATE alerts_user SET single_usage_access_key = NULL WHERE id=$uid");
         }
         else $GLOBALS["Err"][] = _m("This key was already used. It is no more valid.");
         return $uid;
@@ -84,20 +84,20 @@ class AA_UC_Auth extends Auth {
         global $confirm_id, $Msg, $db;
      
         // clicking on confirmation link in email
-        $db->query ("SELECT confirm,email,userid,collectionid FROM alerts_user AU
+        $db->query("SELECT confirm,email,userid,collectionid FROM alerts_user AU
             INNER JOIN alerts_user_collection AUC ON AU.id = AUC.userid
             WHERE confirm='$confirm_id'");
         if ($db->next_record()) {
             $uid = $db->f("userid");
             $cid = $db->f("collectionid");
-            $db->query ("SELECT confirmed_status_code FROM alerts_collection WHERE id=$cid");
+            $db->query("SELECT confirmed_status_code FROM alerts_collection WHERE id=$cid");
             $db->next_record();
             $varset = new CVarset;
             $varset->addkey ("userid", "number", $uid);
             $varset->addkey ("collectionid", "number", $cid);
             $varset->add ("confirm", "text", "");
             $varset->add ("status_code", "number", $db->f("confirmed_status_code"));
-            $db->query ($varset->makeUPDATE ("alerts_user_collection"));
+            $db->query($varset->makeUPDATE ("alerts_user_collection"));
             
             $Msg = _m("Congratulations. Your subscription was confirmed.");        
         }   
@@ -123,7 +123,7 @@ class AA_UC_Auth extends Auth {
             send_single_usage_code();
         else {            
             $db = new DB_AA;
-            $db->query ("SELECT * FROM alerts_user WHERE email = '$email'");
+            $db->query("SELECT * FROM alerts_user WHERE email = '$email'");
             $uid = false;
             if (!$db->next_record()) 
                 $Err[] = _m("This email is not subscribed to any Collection.");

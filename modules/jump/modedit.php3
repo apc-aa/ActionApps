@@ -35,9 +35,9 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 
 // create the $jumps array:
 $db = new DB_AA;
-$db->query ("SELECT * FROM module WHERE type='J'");
+$db->query("SELECT * FROM module WHERE type='J'");
 while ($db->next_record())
-    $jumps[unpack_id($db->f("id"))] = $db->f("name");
+    $jumps[unpack_id128($db->f("id"))] = $db->f("name");
 
 // choose the first module when none is chosen
 if ($edit && !$jump_id && count ($jumps)) {
@@ -60,14 +60,14 @@ if ($update) {
     $varset->add("destination", "quoted", $jump_url);
     $varset->add("dest_slice_id", "unpacked", $dest_id);
 
-    $db->query ("SELECT * FROM module WHERE id='$q_jump_id'");
+    $db->query("SELECT * FROM module WHERE id='$q_jump_id'");
     if ($db->next_record()) {
-        $db->query ("UPDATE jump SET ".$varset->makeUPDATE() ." WHERE slice_id='$q_jump_id'");
-        $db->query ("UPDATE module SET name='$jump_name' WHERE id='$q_jump_id'");
+        $db->query("UPDATE jump SET ".$varset->makeUPDATE() ." WHERE slice_id='$q_jump_id'");
+        $db->query("UPDATE module SET name='$jump_name' WHERE id='$q_jump_id'");
     }
     else {
         $varset->add("slice_id", "unpacked", $jump_id);
-        $db->query ("INSERT INTO jump ".$varset->makeINSERT());
+        $db->query("INSERT INTO jump ".$varset->makeINSERT());
 
         $varset->clear();
         $varset->add("id","unpacked",$jump_id);
@@ -75,7 +75,7 @@ if ($update) {
         $varset->add("type","quoted",'J');
         $varset->add("lang_file","quoted","en_news_lang.php3");
 
-        $db->query ("INSERT INTO module ".$varset->makeINSERT());
+        $db->query("INSERT INTO module ".$varset->makeINSERT());
     }
 }
 
@@ -83,7 +83,7 @@ if (!$jump_id)
     $jump_name = $jump_url = $dest_id = "";
 
 else {
-    $db->query ("SELECT name,destination,dest_slice_id FROM jump INNER JOIN module 
+    $db->query("SELECT name,destination,dest_slice_id FROM jump INNER JOIN module 
             ON jump.slice_id = module.id 
             WHERE jump.slice_id = '".q_pack_id ($jump_id)."'");
     if ($db->next_record()) {

@@ -110,7 +110,7 @@ function get_aamenus ()
         
     global $db, $collectionid;
     
-    $db->query ("SELECT status_code, COUNT(*) AS mycount 
+    $db->query("SELECT status_code, COUNT(*) AS mycount 
         FROM alerts_user_collection 
         WHERE collectionid=$collectionid
         GROUP BY status_code
@@ -118,13 +118,13 @@ function get_aamenus ()
     $now = time();
     while ($db->next_record()) 
         $item_bin_cnt [$db->f("status_code")] = $db->f("mycount");
-    $db->query ("SELECT COUNT(*) AS mycount
+    $db->query("SELECT COUNT(*) AS mycount
         FROM alerts_user_collection
         WHERE collectionid=$collectionid
         AND start_date > $now");
     if ($db->next_record())
         $item_bin_cnt_pend = $db->f("mycount");
-    $db->query ("SELECT COUNT(*) AS mycount
+    $db->query("SELECT COUNT(*) AS mycount
         FROM alerts_user_collection
         WHERE collectionid=$collectionid
         AND start_date <= $now AND expiry_date < $now");

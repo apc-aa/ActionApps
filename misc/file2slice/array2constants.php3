@@ -25,7 +25,7 @@ function myQuery (&$db, $SQL, $fire) {
   if ($debug) 
     return $db->dquery ($SQL);
   else 
-    return $db->query ($SQL);
+    return $db->query($SQL);
 }
 
 // ---------------------- 2 import -------------------------------------------

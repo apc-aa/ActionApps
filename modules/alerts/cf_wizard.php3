@@ -48,7 +48,7 @@ if ($formlang)
 require "cf_common.php3";
     
 // create the Choose Filters code
-$db->query ("
+$db->query("
     SELECT DF.* FROM alerts_collection_filter CF INNER JOIN
     alerts_filter DF on CF.filterid = DF.id
     WHERE CF.collectionid = $collectionid
@@ -62,7 +62,7 @@ $cf_fields["filters"] = array ("code"=>$filters, "label"=>_m("Choose Filters"));
 if (get_howoften_options ($collectionprop["fix_howoften"]))
     unset ($cf_fields["howoften"]);
 
-$db->query ("SELECT AC.id, name, slice_url FROM alerts_collection AC 
+$db->query("SELECT AC.id, name, slice_url FROM alerts_collection AC 
     INNER JOIN module ON AC.moduleid = module.id
     WHERE AC.id=$collectionid");
 if (!$db->next_record()) { echo "Error: collection id $collectionid not found."; exit; }

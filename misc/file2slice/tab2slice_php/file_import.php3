@@ -145,7 +145,7 @@ while (list ($line_num, $line) = each ($import)) {
     reset($prifields);
     while(list(,$pri_field_id) = each($prifields)) {
       $f = $fields[$pri_field_id];
-      $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
+      $varname = 'v'. unpack_id128($pri_field_id);  # "v" prefix - database field var
       $htmlvarname = $varname."html";
       if( !$$varname ) {
         $$varname = GetDefault($f);

@@ -40,7 +40,7 @@ require $GLOBALS[AA_INC_PATH]."searchlib.php3";
 //$debug = 1;
 
 $db = new DB_AA;
-$db->query ("select * from alerts_admin");
+$db->query("select * from alerts_admin");
 if ($db->num_rows() != 1)
 {  echo "There must be exactly 1 row in alerts_admin."; exit; }
 $db->next_record();
@@ -54,7 +54,7 @@ if ($alerts_admin["mail_confirm"])
 
 function send_mail_confirm () {
     global $db, $ss, $alerts_admin;
-    $db->query ("select * from alerts_collection where description='$GLOBALS[ALERTS_SUBSCRIPTION_COLLECTION]'");
+    $db->query("select * from alerts_collection where description='$GLOBALS[ALERTS_SUBSCRIPTION_COLLECTION]'");
     $db->next_record();   
     $headers = alerts_email_headers ($db->Record, "");
     
@@ -85,7 +85,7 @@ function send_mail_confirm () {
         global $LANGUAGE_CHARSETS;
         mail_html_text ($to, $subject, $message, $headers, $LANGUAGE_CHARSETS[get_mgettext_lang()], 0); 
     }
-    $db->query ("update alerts_admin set last_mail_confirm=$now where id=$alerts_admin[id]");    
+    $db->query("update alerts_admin set last_mail_confirm=$now where id=$alerts_admin[id]");    
 }        
 
 function delete_not_confirmed () {
@@ -101,5 +101,5 @@ function delete_not_confirmed () {
         DELETE FROM alerts_user
         WHERE confirm <> ''
         AND sessiontime <= $now");
-    $db->query ("update alerts_admin set last_delete=$now where id=$alerts_admin[id]");    
+    $db->query("update alerts_admin set last_delete=$now where id=$alerts_admin[id]");    
 }

@@ -35,7 +35,7 @@ function set_collectionid () {
     
     if (!$new_module) {
         if (!$slice_id) { echo "Error: no slice ID"; exit; }
-        $db->query ("SELECT * FROM alerts_collection WHERE moduleid='".q_pack_id($slice_id)."'");
+        $db->query("SELECT * FROM alerts_collection WHERE moduleid='".q_pack_id($slice_id)."'");
         if ($db->next_record()) {
             $collectionid = $db->f("id");    
             $collectionprop = $db->Record;
@@ -76,7 +76,7 @@ function new_user_id () {
     global $db;
     do { 
         $new_id = new_numeric_id (32767);
-        $db->query ("SELECT id FROM alerts_user WHERE id = $new_id");        
+        $db->query("SELECT id FROM alerts_user WHERE id = $new_id");        
     } while ($db->next_record());
     return $new_id;
 }
@@ -85,7 +85,7 @@ function new_collection_id() {
     global $db;
     do { 
         $new_id = new_numeric_id (32767);
-        $db->query ("SELECT id FROM alerts_collection WHERE id = $new_id");        
+        $db->query("SELECT id FROM alerts_collection WHERE id = $new_id");        
     } while ($db->next_record());
     return $new_id;
 } 
@@ -102,7 +102,7 @@ function new_user_confirm ()
     global $db;
     do { 
         $retval = gensalt (4);
-        $db->query ("SELECT confirm FROM alerts_user_collection WHERE confirm='".addslashes($retval)."'");         
+        $db->query("SELECT confirm FROM alerts_user_collection WHERE confirm='".addslashes($retval)."'");         
     } while ($db->next_record());
     return $retval;
 }
@@ -132,7 +132,7 @@ function insert_or_update_user ($info, $insert)
         if (isset ($info[$field]))        
             $varset->add ($field, "quoted", $info[$field]);
     $varset->add ("owner_module_id", "unpacked", $slice_id);
-    $db->query ($varset->makeINSERTorUPDATE("alerts_user"));
+    $db->query($varset->makeINSERTorUPDATE("alerts_user"));
     return $userid;
 }
 
@@ -168,10 +168,10 @@ function insert_or_update_user_collection ($info, $collection_record, $confirmed
         $varset->add ("status_code", "number", $collection_record ["notconfirmed_status_code"]);
     }
 
-    $db->query ($varset->makeSELECT ("alerts_user_collection")); 
+    $db->query($varset->makeSELECT ("alerts_user_collection")); 
     if ($db->next_record()) {
         if ($override) 
-            return $db->query ($varset->makeUPDATE ("alerts_user_collection"));
+            return $db->query($varset->makeUPDATE ("alerts_user_collection"));
         else return false;
     }
     else {
@@ -186,7 +186,7 @@ function insert_or_update_user_collection ($info, $collection_record, $confirmed
                 $info["email"], $alias))
                 echo "SOME ERROR WHEN SENDING MAIL TO $info[email].";                
         }        
-        return $db->query ($varset->makeINSERT ("alerts_user_collection"));
+        return $db->query($varset->makeINSERT ("alerts_user_collection"));
     }
 }
 
@@ -251,7 +251,7 @@ function send_single_usage_code () {
         INNER JOIN alerts_user AU ON AU.owner_module_id = AC.moduleid
         WHERE AU.email = '$email'");
     if (!$db->next_record()) {
-        $db->query ("SELECT id FROM email WHERE type='alerts access'");
+        $db->query("SELECT id FROM email WHERE type='alerts access'");
         if (!$db->next_record()) {
             $Err[] = _m("Error: No appropriate email defined. Please contact the web administrator.");
             exit;
@@ -271,10 +271,10 @@ function send_single_usage_code () {
         if (!$key) {
             do { 
                 $key = gensalt (4);
-                $db->query ("SELECT id FROM alerts_user 
+                $db->query("SELECT id FROM alerts_user 
                     WHERE single_usage_access_key='".addslashes($key)."'");         
             } while ($db->next_record());
-            $db->query ("UPDATE alerts_user SET single_usage_access_key='".addslashes($key)."'
+            $db->query("UPDATE alerts_user SET single_usage_access_key='".addslashes($key)."'
                 WHERE id=$uid");
         }
         $aliases["_#ACCESURL"] = AA_INSTAL_URL."akey.php3?id=".$key;

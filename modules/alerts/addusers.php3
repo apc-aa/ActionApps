@@ -32,7 +32,7 @@ require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $MODULES[$g_modules[$slice_id]['type']]['menu'];   
 
-$db->query ("SELECT * FROM alerts_collection WHERE id=$collectionid");
+$db->query("SELECT * FROM alerts_collection WHERE id=$collectionid");
 $db->next_record();
 $collection_record = $db->Record;
 
@@ -129,7 +129,7 @@ function add_email ($email, $firstname, $lastname)
 {
     global $db, $err, $add, $collection_record, $new_user_count, $subscribed_user_count;
 
-    $db->query ("SELECT id, firstname, lastname FROM alerts_user WHERE email='$email'");
+    $db->query("SELECT id, firstname, lastname FROM alerts_user WHERE email='$email'");
     if ($db->next_record()) {
         $userid = $db->f("id");
         if (($firstname || $lastname)

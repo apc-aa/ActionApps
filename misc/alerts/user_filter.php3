@@ -50,7 +50,7 @@ function process_data ()
     $howoften_options = get_howoften_options();
 
     if ($change_user) {
-        $db->query ("UPDATE alerts_user 
+        $db->query("UPDATE alerts_user 
             SET firstname='$chuser[firstname]', lastname='$chuser[lastname]', lang='$chuser[lang]'
             WHERE id=$user[id]");
         $user = AlertsUser ($alerts_session);
@@ -58,7 +58,7 @@ function process_data ()
           
     else if ($change_password) {
         if ($chuser["password"] == $chuser["password2"]) {
-            $db->query ("UPDATE alerts_user 
+            $db->query("UPDATE alerts_user 
                 SET password='".addslashes(md5($chuser["password"]))."'
                 WHERE id=$user[id]");
             $user = AlertsUser ($alerts_session);
@@ -73,9 +73,9 @@ function process_data ()
             while (list ($user_filter_id, $ho) = each ($howoften["f"])) {
                 $where = "WHERE id=$user_filter_id";
                 if ($howoften_options[$ho])
-                    $db->query ("UPDATE alerts_user_filter SET howoften='$ho' $where");
+                    $db->query("UPDATE alerts_user_filter SET howoften='$ho' $where");
                 else if ($ho == 0)
-                    $db->query ("DELETE FROM alerts_user_filter $where");
+                    $db->query("DELETE FROM alerts_user_filter $where");
             }
         }
         
@@ -169,7 +169,7 @@ echo "<table width='540' border='0' cellspacing='0' cellpadding='2' bgcolor=".CO
 //echo "$ac_trstart<td colspan=2><h2>"._m("Subscriptions")."</h2></td>$ac_trend";
 
 // array $digests - filling with info about views of type digest
-$db->query ("
+$db->query("
     SELECT DISTINCT slice.id AS sliceid, slice.name, slice.slice_url, 
         DF.description, DF.id AS filterid, DF.showme
     FROM view INNER JOIN 
@@ -179,14 +179,14 @@ $db->query ("
     ORDER BY slice.name");
       
 while ($db->next_record()) {
-    $slice_id = unpack_id ($db->f("sliceid"));
+    $slice_id = unpack_id128($db->f("sliceid"));
     $digests[$slice_id]["filters"][$db->f("filterid")] 
         = array ("description"=>$db->f("description"), "showme"=>$db->f("showme"));
     $digests[$slice_id]["name"] = $db->f("name");
     $digests[$slice_id]["url"] = $db->f("slice_url");
 }
 
-$db->query ("SELECT * FROM alerts_user_filter WHERE userid=$user[id]");
+$db->query("SELECT * FROM alerts_user_filter WHERE userid=$user[id]");
 while ($db->next_record()) {
     reset ($digests);
     while (list ($vid) = each ($digests)) {

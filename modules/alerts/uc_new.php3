@@ -30,13 +30,13 @@ require "uc_tableviews.php3";
 
 showMenu ("new");
 
-$db->query ("SELECT AC.id, slice_url, name FROM alerts_collection AC
+$db->query("SELECT AC.id, slice_url, name FROM alerts_collection AC
              INNER JOIN module ON AC.moduleid = module.id
              ORDER BY name");
 while ($db->next_record())
     $collections[$db->f("id")] = array ("name"=>$db->f("name"), "url"=>$db->f("slice_url"));
     
-$db->query ("SELECT collectionid FROM alerts_user_collection 
+$db->query("SELECT collectionid FROM alerts_user_collection 
     WHERE userid=".$auth->auth["uid"]);
 while ($db->next_record())
     unset ($collections[$db->f("collectionid")]);    

@@ -35,7 +35,7 @@ if ($go_change_password) {
         if ($change_password)
             $update = "'".md5($change_password)."'";
         else $update = "NULL";
-        $db->query ("UPDATE alerts_user SET password=".$update
+        $db->query("UPDATE alerts_user SET password=".$update
                 ." WHERE id=".$auth->auth["uid"]);
         go_url ($sess->url($AA_INSTAL_PATH."modules/alerts/uc_tabledit.php3?Msg="
             ._m("Password changed successfully.")));

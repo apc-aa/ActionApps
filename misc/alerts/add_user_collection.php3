@@ -53,11 +53,11 @@ function error ($err)
 if (!$email || !$howoften || !$collectionid || !$lang) error (_m("Missing required info"));
     
 $db = new DB_AA;
-$db->query ("SELECT * FROM alerts_user WHERE email='".addslashes($email)."'");
+$db->query("SELECT * FROM alerts_user WHERE email='".addslashes($email)."'");
 if (!$db->num_rows()) {
     $err = alerts_subscribe ($email, $lang, $password, $firstname, $lastname);
     if ($err) error ($err);
-    $db->query ("SELECT * FROM alerts_user WHERE email='".addslashes($email)."'");
+    $db->query("SELECT * FROM alerts_user WHERE email='".addslashes($email)."'");
 }
 $db->next_record();
 $userid = $db->f("id");
@@ -71,19 +71,19 @@ if (!is_array ($collectionid))
  
 reset ($collectionid);
 while (list (,$cid) = each ($collectionid)) {
-    $db->query ("SELECT id, description FROM alerts_collection WHERE id = $cid");
+    $db->query("SELECT id, description FROM alerts_collection WHERE id = $cid");
     if (!$db->num_rows()) error (_m("Wrong collection ID")." $cid");
     $db->next_record();
     $cdesc[] = $db->f ("description");
     
-    $db->query ("SELECT howoften FROM alerts_user_filter 
+    $db->query("SELECT howoften FROM alerts_user_filter 
                  WHERE userid=$userid AND collectionid=$cid");
     if ($db->next_record()) {
         if ($db->f("howoften") != $howoften)
-            $db->query ("UPDATE alerts_user_filter SET howoften = '$howoften'
+            $db->query("UPDATE alerts_user_filter SET howoften = '$howoften'
                          WHERE userid=$userid AND collectionid=$cid");
     }
-    else $db->query ("
+    else $db->query("
         INSERT INTO alerts_user_filter (userid, howoften, collectionid)
         VALUES ($userid, '$howoften', $cid)");
 }

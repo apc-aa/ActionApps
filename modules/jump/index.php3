@@ -30,7 +30,7 @@ require $GLOBALS[AA_INC_PATH] . "view.php3";
 require $GLOBALS[AA_INC_PATH] . "pagecache.php3";
 
 $db = new DB_AA;
-$db->query ("SELECT * FROM jump WHERE slice_id = '".q_pack_id($slice_id)."'");
+$db->query("SELECT * FROM jump WHERE slice_id = '".q_pack_id($slice_id)."'");
 if ($db->next_record()) {
 	$dest = $db->f("destination");
 	if (strchr ($dest,"?")) $dest .= "&"; else $dest .= "?";
