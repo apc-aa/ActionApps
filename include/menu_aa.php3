@@ -55,6 +55,7 @@ $aamenus["aaadmin_submenu"] = array (
     "te_cron" => array ("label"=>_m("Cron"), "cond"=>IsSuperadmin(), "href"=>"admin/tabledit.php3?set_tview=cron"),
     "aafinder" => array ("label"=>_m("AA finder"), "cond"=>IsSuperadmin(), "href"=>"admin/aafinder.php3"),
     "xmgettext" => array("label"=>"xmgettext", "cond"=>IsSuperadmin(), "exact_href"=>"../misc/mgettext/index.php3"),
+    "testrss" => array("label"=>_m("RSS test"), "cond"=>IsSuperadmin(), "href"=>"admin/xmlclient.php3?debugfeed=4"),
 ));
 
 ?>
