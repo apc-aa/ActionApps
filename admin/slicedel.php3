@@ -36,7 +36,7 @@ if(!IsSuperadmin()) {
 }
 
 function PrintSlice($id, $name, $type) {
-  global $sess, $MODULES;
+  global $sess, $MODULES, $AA_INSTAL_PATH;
 
   $name=safe($name); $id=safe($id);
   $url = (($type=='S') ? './slicedel2.php3' : $AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
