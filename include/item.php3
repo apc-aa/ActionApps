@@ -546,9 +546,14 @@ class item {
           return DeHtml( $value, $this->getval($col,'flag') );
       }
       if ($pparagraph) {
-          $paraend      = min(my_stripos($value,"<p>"),my_stripos($value,"</p>"),my_stripos($value,"<br>"),my_stripos($value,"\n"),my_stripos($value,"\r"), $plength);
-          $shorted_text = substr($value, 0, $paraend);
-          if ($paraend==$plength) {      // no <BR>, <P>, ... found
+          foreach ( $PARAGRAPH_ENDS as $end_str ) {
+              $paraend = strpos(strtolower($shorted_text), $end_str, min(strlen($shorted_text),10));  // we do not want to
+              if ( $paraend !== false ) {   // end_str found
+                  $shorted_text = substr($shorted_text, 0, $paraend);
+                  break;
+              }
+          }
+          if ($paraend===false) {      // no <BR>, <P>, ... found
               // try to find dot (first from the end)
               $dot = strrpos( $shorted_text,".");
               if ( $dot > $paraend/3 ) { // take at least one third of text
@@ -859,13 +864,13 @@ function RSS_restrict($txt, $len) {
       case 'username':    // prints user name form its id
         return perm_username( $this->getval($col) );
       case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)
-        if(!$GLOBALS[mlxView]) 
-	  return "MLX no global mlxView set: this shouldnt happen in:".__FILE__.",".__LINE__;
+        if(!$GLOBALS[mlxView])
+      return "MLX no global mlxView set: this shouldnt happen in:".__FILE__.",".__LINE__;
         return $GLOBALS[mlxView]->getCurrentLang();
         break;
-      case 'mlx_dir':    // print the current mlx language html markup dir tag 
-      			 //(the article's 'real' one!)
-	$mlx_dir = $GLOBALS[mlxScriptsTable][$this->getval('lang_code.......')];
+      case 'mlx_dir':    // print the current mlx language html markup dir tag
+                 //(the article's 'real' one!)
+    $mlx_dir = $GLOBALS[mlxScriptsTable][$this->getval('lang_code.......')];
         return ($mlx_dir?" DIR=".$mlx_dir['DIR']." ":"");
         break;
       case 'addform':   // show link to inputform with special design defined in view (id in p[1])
@@ -1084,13 +1089,15 @@ function RSS_restrict($txt, $len) {
 
   /** Link module - print current path (or list of paths to categories specified
    *       in $col (when <categs delimeter> is present)
-   *  @param <start_level>:<format>:<delimeter>:<categs delimeter>:<add url param>:<url_base>
+   *  @param <start_level>:<format>:<delimeter>:<categs delimeter>:<add url param>:<url_base>:<restrict>
    *         <start_level> - display path from level ... (0 is root)
    *         <format>      - category link modification (not used, yet)
    *         <delimeter>   - delimeter character (default is ' &gt; ')
-   *         <categs delimeter>   - delimeter character (default is ' &gt; ')
+   *         <categs delimeter>   - delimeter character (<br> is good there)
    *         <add url param>      - url parameter added to cat=xxx (id=links)
    *         <url_base>    - file to go (like: kormidlo.shtml)
+   *         <restrict>    - display only categories matching <restrict> path
+   *                       - example: restict=1,23, - only categs under 23 shown
    */
   function l_p($col, $param="") {
     global $contentcache;
@@ -1098,7 +1105,7 @@ function RSS_restrict($txt, $len) {
     $translate = $contentcache->get_result( 'GetTable2Array', array(
        "SELECT id, name FROM links_categories WHERE deleted='n'", 'id', true));
 
-    list ($start, $format, $separator, $catseparator, $urlprm, $url_base) = $this->subst_aliases(ParamExplode($param));
+    list ($start, $format, $separator, $catseparator, $urlprm, $url_base, $restrict) = $this->subst_aliases(ParamExplode($param));
     if ( !$separator ) {
         $separator = ' &gt; ';
     }
@@ -1109,23 +1116,24 @@ function RSS_restrict($txt, $len) {
                                     array(0=>array('value'=>$this->parameters['category_id'])); // current category
     $linklast     = $catseparator ? true : false;
 
-
-    if ( is_array($categs2print) ) {
-        foreach ( $categs2print as $v ) {
-            if ($ret ) $ret .= $catseparator;
-            $way = explode(',', GetCategoryPath($v['value']));
-            $start_count = $start;
-            $delimeter = '';
-            if( isset($way) AND is_array($way)) {
-                $last = $linklast ? '' : end($way);
-                foreach ( $way as $catid ) {
-                    if($start_count-- > 0)  continue;
-                    $cat_url = con_url( $url_base, 'cat='.$catid.$urlprm);
-                    $ret .= ( ( $catid == $last ) ?  // do not make link for last category
-                        $delimeter.$translate[$catid]['name'] :
-                        $delimeter."<a href=\"$cat_url\">".$translate[$catid]['name']."</a>" );
-                    $delimeter = $separator;
-                }
+    foreach ( (array)$categs2print as $v ) {
+        $path = GetCategoryPath($v['value']);
+        if ($restrict AND (strpos($path,$restrict)!==0)) {
+            continue;   // category is not on restriced branch
+        }
+        if ($ret ) $ret .= $catseparator;
+        $way = explode(',', $path);
+        $start_count = $start;
+        $delimeter = '';
+        if( isset($way) AND is_array($way)) {
+            $last = $linklast ? '' : end($way);
+            foreach ( $way as $catid ) {
+                if($start_count-- > 0)  continue;
+                $cat_url = con_url( $url_base, 'cat='.$catid.$urlprm);
+                $ret .= ( ( $catid == $last ) ?  // do not make link for last category
+                    $delimeter.$translate[$catid]['name'] :
+                    $delimeter."<a href=\"$cat_url\">".$translate[$catid]['name']."</a>" );
+                $delimeter = $separator;
             }
         }
     }
