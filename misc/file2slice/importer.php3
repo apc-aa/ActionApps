@@ -128,6 +128,14 @@ function Importer_SendErrorPage($txt) {
 
 function Importer ($sliceID, $fileName, $separator, $actions, $postedBy, $fire=false, $timeLimit=120, $statusCode = 1, $publishDate = 0, $expiryDate = 0, $maxRowLength = 50000)
 {
+  global $debug;
+  if ($debug) {
+    huhl("slice_id=",$sliceID,"Filename=",$fileName,"Separator=",$separator);
+    huhl("Actions=",$actions);
+    huhl("postedBy=",$postedBy,"fire=",$fire,"timeLimit=",$timeLimit);
+    huhl("statusCode=",$statusCode,"publishDate=",$publishDate);
+    huhl("expiryDate=",$expiryDate,"maxRowLength=",$maxRowLength);
+  }
   // set in seconds - allows the script to work so long
   set_time_limit($time_limit);
 
@@ -146,6 +154,7 @@ function Importer ($sliceID, $fileName, $separator, $actions, $postedBy, $fire=f
   $buffer = fgets($fd, $maxRowLength);
   $buffer = ereg_replace ("[\n\r]*","",$buffer);
   $sourceFields = split($separator, $buffer);
+  if ($debug) { huhl("Fields=",$sourceFields); }
   $err = "";
   
   global $db, $err, $varset, $itemvarset, $error, $ok;
@@ -154,10 +163,10 @@ function Importer ($sliceID, $fileName, $separator, $actions, $postedBy, $fire=f
   $itemvarset = new Cvarset();
   $db = new DB_AA;
   list($fields,) = GetSliceFields($sliceID);
-
+  if ($debug) { echo "Starting to read<br>"; }
   while (!feof ($fd)) {
     $buffer = fgets($fd, $maxRowLength);
-  //echo $buffer . "<br>";
+    if ($debug) { echo $buffer . "<br>"; }
     // Concatenate multi-line fields as output by for example Excel 
     $splitlinereg = '/(' . $separator . '["][^"' . $separator . ']*[\n\r]*)$/';
     while (preg_match ($splitlinereg,$buffer,$arr) and !feof($fd)) {
