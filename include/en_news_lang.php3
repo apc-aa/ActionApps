@@ -150,7 +150,7 @@ define("L_SEARCH", "Search");
 define("L_DEFAULTS", "Default");
 define("L_SLICE", "Slice");
 define("L_DELETED_SLICE", "No slice found for you");
-define("L_SLICE_URL", "Slice URL");
+define("L_SLICE_URL", "URL of .shtml page (often leave blank)");
 define("L_A_NEWUSER", "New user in permission system");
 define("L_NEWUSER_HDR", "New user");
 define("L_USER_LOGIN", "Login name");
@@ -450,9 +450,14 @@ define("L_PERMIT_OFFLINE_FILL","Allow off-line item filling");
 define("L_SLICE_ADM","Administration Menu");
 // this one is not new. I moved it below L_SLICE_ADM
 define("L_A_SLICE_TIT", L_SLICE_ADM);
+define("L_A_SLICE_ADD_HELP", "To create the new Slice, please choose a template.  The new slice will inherit the template's default fields.  You can also choose a non-template slice to base the new slice on, if it has the fields you want.");
 
 /*
 $Log$
+Revision 1.23  2001/01/13 20:21:27  madebeer
+added help prompt for adding slices.
+clarified what 'slice url' means in slicedit.php3
+
 Revision 1.22  2001/01/13 19:51:01  madebeer
 changed some english titles in en_news_lang.
 Removed extra references to 'slice', and changed Article to Item

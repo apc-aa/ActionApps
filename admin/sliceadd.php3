@@ -63,6 +63,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?php
+
+if( isset( $templates ) AND is_array( $templates ) AND
+    isset( $temp_slices ) AND is_array( $temp_slices )
+    ){
+      echo "<tr><td class=tabtxt colspan=4>" . L_A_SLICE_ADD_HELP . "</TD></TR>";
+    }
+
   if( isset( $templates ) AND is_array( $templates )) {
     echo "<tr><td class=tabtxt colspan=2><b>". L_TEMPLATE ."</b>";
     echo "</td>\n <td><select name=\"template_id\">";	
@@ -100,6 +107,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
 /*
 $Log$
+Revision 1.3  2001/01/13 20:21:27  madebeer
+added help prompt for adding slices.
+clarified what 'slice url' means in slicedit.php3
+
 Revision 1.2  2000/12/21 16:39:34  honzam
 New data structure and many changes due to version 1.5.x
 
