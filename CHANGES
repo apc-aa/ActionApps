@@ -1,4 +1,5 @@
-05/09/03 - added f_y to expand a string or a field
+05/09/03 - better error reporting in input_fnc_fil (mitra)
+05/09/03 - added f_y to expand a string or a field (mitra)
 05/02/03 - FilemanPerms and GetModuleInfo and get_aamenus handle null
             slice_id better (was generating warnings on Add Slice)
 (mitra)  - Fixed overlong for loop in calendar generating warnings

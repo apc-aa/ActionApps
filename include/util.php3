@@ -1327,13 +1327,15 @@ function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
     if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
         if (is_uploaded_file($GLOBALS[$varname]))
             if( !move_uploaded_file($GLOBALS[$varname], "$destdir$filename"))
-                return _m("Can't upload Image");
+                return sprintf(_m("Can't move image  %s to %s"),
+                    $GLOBALS[$varname],"$destdir$filename");
             else if ($perms)
                 chmod ($destdir.$filename, $perms);
     }
     else {   # for php 3.x and php <4.0.3
         if (!copy($GLOBALS[$varname],"$destdir$filename"))
-            return _m("Can't upload Image");
+                return sprintf(_m("Can't copy image  %s to %s"),
+                    $GLOBALS[$varname],"$destdir$filename");
         else if ($perms)
             chmod ($destdir.$filename, $perms);
     }

@@ -276,7 +276,7 @@ function GetDestinationFileName($dirname, $uploaded_name) {
 //    fixed later (mtira)
 function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
 {
-    global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR, $debugupload;
+    global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR, $debugupload, $err;
 #$debugupload=1;
     if ($debugupload) huhl("insert_fnc_fil:field=",$field,"value=",$value,"param=",$param);
     if ($debugupload >= 5) huhl("Globals=",$GLOBALS);
@@ -295,10 +295,10 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
         $file_type=$params[0];
     if ($debugupload) huhl("uploaded type:".$GLOBALS[$filevarname."_type"].", allowed type:".$file_type);
     if (@strstr($GLOBALS[$filevarname."_type"],$file_type)==false && $params[0]!="") {
-        $err = "type of uploaded file not allowed";
+        $err[$field["id"]] = "type of uploaded file not allowed";
         huhe($err);
         if ($debugupload) exit;
-        return $err;
+        return;
     }
     // get filename and replace bad characters
     $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$filevarname."_name"]);
@@ -334,13 +334,17 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
     }
 
     $dest_file = GetDestinationFileName($dirname, $dest_file);
-    if ($debugupload) huhl("Moving $filevarname to $dirname fileman=? $dest_file");
+    if ($debugupload) huhl("Moving $filevarname to $dirname fileman_used = $fileman_used $dest_file");
 
     // copy the file from the temp directory to the upload directory, and test for success
-    $err = aa_move_uploaded_file ($filevarname, $dirname,
+    $e = aa_move_uploaded_file($filevarname, $dirname,
         $fileman_used ? $FILEMAN_MODE_FILE : 0, $dest_file);
-    if ($debugupload) huhl("File moved to $dirname/$dest_file: ",($err ? "err=$err" : "Success"));
-    if ($err) { if ($debugupload) exit; return $err; }
+    if ($debugupload) huhl("File moved to $dirname/$dest_file: ");
+    if ($e) { 
+        $err[$field["id"]] = $e;
+        if ($debugupload) { huhl("Errors = ",$err); exit; }
+        return; 
+    }
 
     // ---------------------------------------------------------------------
     // Create thumbnails (image miniature) into fields identified in this
@@ -350,11 +354,11 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
     // return true for unsupported types IF they are already small enough
     // and also making ResampleImage copy the files if small enough
 
-    if ($err =  ResampleImage("$dirname/$dest_file","$dirname/$dest_file",
+    if ($e =  ResampleImage("$dirname/$dest_file","$dirname/$dest_file",
             $params[1],$params[2])) {
-    	if ($debugupload) huhl("Resample returned err='$err'");
-        if ($debugupload) exit;
-        return $err;
+        $err[$field["id"]] = $e;
+        if ($debugupload) { huhl("Errors on ResampleImage = ",$err); exit; }
+        return; 
     }
     if ($params[3]!="") {
             // get ids of field store thumbnails
@@ -373,10 +377,11 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
                 $dest_file_tmb=substr($dest_file,0,strrpos($dest_file,"."))
                     ."_thumb$num".substr($dest_file,strrpos($dest_file,".")); // xxx_thumb1.jpg
 
-                if ($err = ResampleImage("$dirname/$dest_file","$dirname/$dest_file_tmb",
+                if ($e = ResampleImage("$dirname/$dest_file","$dirname/$dest_file_tmb",
                         $thumb_params[2],$thumb_params[3])) {
-                    if ($debugupload) { huhl("Resample error on $thumb err=$err"); exit; }
-                   return $err;
+                    $err[$field["id"]] = $e;
+                    if ($debugupload) { huhl("Errors on nested ResampleImage = ",$err); exit; }
+                    return; 
                 }
 
             // delete content just for displayed fields
