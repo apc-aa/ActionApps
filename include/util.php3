@@ -183,8 +183,7 @@ function dequote($str) {
 
 # This function appends any number of QUERY_STRING (separated by &) parameters to given URL, using apropriate ? or &.
 function con_url($Url,$Params){
- if (ereg("\?",$Url,$Regs))return $Url."&".$Params;
- else return $Url."?".$Params;
+  return ( strstr($Url, '?') ? $Url."&".$Params : $Url."?".$Params );
 } 
 
 # prints content of a (multidimensional) array
@@ -568,7 +567,7 @@ function GetItemContent($ids, $use_short_ids=false) {
   return $content;
 }  
 
-function GetHeadlineFieldID($sid, $db, $slice_field="headline........") {
+function GetHeadlineFieldID($sid, $db, $slice_field="headline.") {
   # get id of headline field  
   $SQL = "SELECT id FROM field 
            WHERE slice_id = '". q_pack_id( $sid ) ."'
@@ -582,13 +581,13 @@ function GetHeadlineFieldID($sid, $db, $slice_field="headline........") {
 function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $ids="", $type="all") {
   $psid = q_pack_id( $sid );
   $time_now = time();
-  if ($slice_field=="") $slice_field="headline........";
+  if ($slice_field=="") $slice_field="headline.";
 
   if ( $sid ) {
     if ( !($headline_fld = GetHeadlineFieldID($sid, $db,$slice_field)) )
       return false;
   } else {
-    $headline_fld = $slice_field;
+    $headline_fld = 'headline........';
   }  
 
   if( $type == "all" )                          # select all items from slice
@@ -614,7 +613,8 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........", $ids="
              AND status_code='1'
              AND expiry_date > '$time_now'
              AND publish_date <= '$time_now'
-        group by text ORDER BY text";
+        GROUP BY text
+        ORDER BY text";
 
   if( $GLOBALS['debug'] )
     $db->dquery($SQL);

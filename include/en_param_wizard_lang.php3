@@ -66,9 +66,12 @@ define("L_PARAM_WIZARD_INPUT_fld_PAR1_DESC","width of the field in characters (s
 define("L_PARAM_WIZARD_INPUT_fld_PAR1_EXAMPLE","30");
 define("L_PARAM_WIZARD_INPUT_sel_NAME","Select Box");
 define("L_PARAM_WIZARD_INPUT_sel_DESC","A selectbox field with a values list." . L_PARAM_WIZARD_INPUT_USING_CONSTANTS);
-define("L_PARAM_WIZARD_INPUT_sel_PAR0_NAME","Slice field");
+define("L_PARAM_WIZARD_INPUT_sel_PAR0_NAME","slice field");
 define("L_PARAM_WIZARD_INPUT_sel_PAR0_DESC","field will be displayed in select box. if not specified, in select box are displayed headlines. (only for constants input type: slice)");
 define("L_PARAM_WIZARD_INPUT_sel_PAR0_EXAMPLE","category........");
+define("L_PARAM_WIZARD_INPUT_sel_PAR1_NAME","use name");
+define("L_PARAM_WIZARD_INPUT_sel_PAR1_DESC","if set (=1), then the name of selected constant is used, insted of the value. Default is 0");
+define("L_PARAM_WIZARD_INPUT_sel_PAR1_EXAMPLE","0");
 define("L_PARAM_WIZARD_INPUT_pre_NAME","Text Field with Presets");
 define("L_PARAM_WIZARD_INPUT_pre_DESC","Text field with values names list. When you choose a name from the list, the appropriate value is printed in the text field");
 define("L_PARAM_WIZARD_INPUT_pre_PAR0_NAME","max characters");
@@ -77,12 +80,18 @@ define("L_PARAM_WIZARD_INPUT_pre_PAR0_EXAMPLE","254");
 define("L_PARAM_WIZARD_INPUT_pre_PAR1_NAME","width");
 define("L_PARAM_WIZARD_INPUT_pre_PAR1_DESC","width of the text field in characters (size parameter)");
 define("L_PARAM_WIZARD_INPUT_pre_PAR1_EXAMPLE","20");
-define("L_PARAM_WIZARD_INPUT_pre_PAR2_NAME","adding");
-define("L_PARAM_WIZARD_INPUT_pre_PAR2_DESC","adding the selected items to input field comma separated");
-define("L_PARAM_WIZARD_INPUT_pre_PAR2_EXAMPLE","0");
-define("L_PARAM_WIZARD_INPUT_pre_PAR3_NAME","secondfield");
-define("L_PARAM_WIZARD_INPUT_pre_PAR3_DESC","field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)");
-define("L_PARAM_WIZARD_INPUT_pre_PAR3_EXAMPLE","source_href.....");
+define("L_PARAM_WIZARD_INPUT_pre_PAR2_NAME","slice field");
+define("L_PARAM_WIZARD_INPUT_pre_PAR2_DESC","field will be displayed in select box. if not specified, in select box are displayed headlines. (only for constants input type: slice)");
+define("L_PARAM_WIZARD_INPUT_pre_PAR2_EXAMPLE","category........");
+define("L_PARAM_WIZARD_INPUT_pre_PAR3_NAME","use name");
+define("L_PARAM_WIZARD_INPUT_pre_PAR3_DESC","if set (=1), then the name of selected constant is used, insted of the value. Default is 0");
+define("L_PARAM_WIZARD_INPUT_pre_PAR3_EXAMPLE","0");
+define("L_PARAM_WIZARD_INPUT_pre_PAR4_NAME","adding");
+define("L_PARAM_WIZARD_INPUT_pre_PAR4_DESC","adding the selected items to input field comma separated");
+define("L_PARAM_WIZARD_INPUT_pre_PAR4_EXAMPLE","0");
+define("L_PARAM_WIZARD_INPUT_pre_PAR5_NAME","secondfield");
+define("L_PARAM_WIZARD_INPUT_pre_PAR5_DESC","field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)");
+define("L_PARAM_WIZARD_INPUT_pre_PAR5_EXAMPLE","source_href.....");
 
 define("L_PARAM_WIZARD_INPUT_tpr_NAME","Text Area with Presets");
 define("L_PARAM_WIZARD_INPUT_tpr_DESC","Text area with values names list. When you choose a name from the list, the appropriate value is printed in the text area");
@@ -332,5 +341,4 @@ define("L_PARAM_WIZARD_FUNC_F_J_PAR1_EXAMPLE","1");
 define("L_PARAM_WIZARD_FUNC_F_J_PAR2_NAME","case");
 define("L_PARAM_WIZARD_FUNC_F_J_PAR2_DESC","upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change");
 define("L_PARAM_WIZARD_FUNC_F_J_PAR2_EXAMPLE","");
-
 ?>

@@ -1,5 +1,4 @@
 <?php
-
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -110,8 +109,12 @@ $INPUT_TYPES = array ("name"=>L_PARAM_WIZARD_INPUT_NAME,
 	"params"=>array(
 		array("name"=>L_PARAM_WIZARD_INPUT_sel_PAR0_NAME,
 		"desc"=>L_PARAM_WIZARD_INPUT_sel_PAR0_DESC,
-		"type"=>"STR",
-		"example"=>L_PARAM_WIZARD_INPUT_sel_PAR0_EXAMPLE))),
+		"type"=>"STRID",
+		"example"=>L_PARAM_WIZARD_INPUT_sel_PAR0_EXAMPLE),
+		array("name"=>L_PARAM_WIZARD_INPUT_sel_PAR1_NAME,
+		"desc"=>L_PARAM_WIZARD_INPUT_sel_PAR1_DESC,
+		"type"=>"BOOL",
+		"example"=>L_PARAM_WIZARD_INPUT_sel_PAR1_EXAMPLE))),
 "pre"=>array("name"=>L_PARAM_WIZARD_INPUT_pre_NAME,
 	"desc"=>L_PARAM_WIZARD_INPUT_pre_DESC,
 	"params"=>array(
@@ -125,12 +128,20 @@ $INPUT_TYPES = array ("name"=>L_PARAM_WIZARD_INPUT_NAME,
 		"example"=>L_PARAM_WIZARD_INPUT_pre_PAR1_EXAMPLE),
 		array("name"=>L_PARAM_WIZARD_INPUT_pre_PAR2_NAME,
 		"desc"=>L_PARAM_WIZARD_INPUT_pre_PAR2_DESC,
-		"type"=>"BOOL",
+		"type"=>"STRID",
 		"example"=>L_PARAM_WIZARD_INPUT_pre_PAR2_EXAMPLE),
 		array("name"=>L_PARAM_WIZARD_INPUT_pre_PAR3_NAME,
 		"desc"=>L_PARAM_WIZARD_INPUT_pre_PAR3_DESC,
+		"type"=>"BOOL",
+		"example"=>L_PARAM_WIZARD_INPUT_pre_PAR3_EXAMPLE),
+		array("name"=>L_PARAM_WIZARD_INPUT_pre_PAR4_NAME,
+		"desc"=>L_PARAM_WIZARD_INPUT_pre_PAR4_DESC,
+		"type"=>"BOOL",
+		"example"=>L_PARAM_WIZARD_INPUT_pre_PAR4_EXAMPLE),
+		array("name"=>L_PARAM_WIZARD_INPUT_pre_PAR5_NAME,
+		"desc"=>L_PARAM_WIZARD_INPUT_pre_PAR5_DESC,
 		"type"=>"STRID",
-		"example"=>L_PARAM_WIZARD_INPUT_pre_PAR3_EXAMPLE))),
+		"example"=>L_PARAM_WIZARD_INPUT_pre_PAR5_EXAMPLE))),
 "tpr"=>array("name"=>L_PARAM_WIZARD_INPUT_tpr_NAME,
 	"desc"=>L_PARAM_WIZARD_INPUT_tpr_DESC,
 	"params"=>array(
@@ -495,9 +506,8 @@ $FIELD_FUNCTIONS = array ("name"=>L_PARAM_WIZARD_FUNC_NAME,
 	"params"=>array(
 		array("name"=>L_PARAM_WIZARD_FUNC_F_V_PAR0_NAME,
 		"desc"=>L_PARAM_WIZARD_FUNC_F_V_PAR0_DESC,
-		"type"=>"STR",
+		"type"=>"STR", 
 		"example"=>L_PARAM_WIZARD_FUNC_F_V_PAR0_EXAMPLE))),
 "f_w"=>array("name"=>L_PARAM_WIZARD_FUNC_F_W_NAME,
 	"desc"=>L_PARAM_WIZARD_FUNC_F_W_DESC)));
-
 ?>

@@ -145,7 +145,8 @@ function insert_fnc_ids($item_id, $field, $value, $param) {
 function insert_fnc_uid($item_id, $field, $value, $param) {
   global $auth;
   # if not $auth, it is from anonymous posting - 9999999999 is anonymous user
-  $val = (isset($auth) ?  $auth->auth["uid"] : ( (strlen($value['value'])>0) ? $value['value'] : "9999999999"));
+  $val = (isset($auth) ?  $auth->auth["uid"] : ( (strlen($value['value'])>0) ? 
+                                              $value['value'] : "9999999999"));
   insert_fnc_qte($item_id, $field, array("value"=>$val) , $param);
 }
 
@@ -350,7 +351,7 @@ function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
 
 function show_fnc_sel($varname, $field, $value, $param, $html) {
   global $db; 
-   list($constgroup,$slice_field) =explode(':', $param); 
+   list($constgroup,$slice_field, $usevalue) =explode(':', $param); 
   if( substr($param,0,7) == "#sLiCe-" ) { # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
     #add blank selection for not required field
@@ -360,7 +361,7 @@ function show_fnc_sel($varname, $field, $value, $param, $html) {
     $arr = GetConstants($constgroup, $db);
   echo $field[input_before];
   FrmInputSelect($varname, $field['name'], $arr, $value[0]['value'],
-                 $field[required], $field[input_help], $field[input_morehlp] );
+                 $field[required], $field[input_help], $field[input_morehlp], $usevalue );
 }
 
 function show_fnc_freeze_sel($varname, $field, $value, $param, $html) {
@@ -409,7 +410,7 @@ function show_fnc_pre($varname, $field, $value, $param, $html) {
   global $db;
 
   if (!empty($param)) 
-    list($constgroup, $maxlength, $fieldsize,$slice_field) = explode(':', $param);
+    list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield) = explode(':', $param);
 
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
@@ -417,10 +418,33 @@ function show_fnc_pre($varname, $field, $value, $param, $html) {
     $arr = GetConstants($constgroup, $db);
   echo $field[input_before];
   FrmInputPreSelect($varname, $field['name'], $arr, $value[0]['value'], $maxlength, 
-    $fieldsize, $field[required], $field[input_help], $field[input_morehlp] );
+    $fieldsize, $field[required], $field[input_help], $field[input_morehlp], $adding,
+	$secondfield, $usevalue );
 }
 
 function show_fnc_freeze_pre($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field['name'], $value[0]['value']);
+}
+
+function show_fnc_tpr($varname, $field, $value, $param, $html) {
+  global $db;
+
+  if (!empty($param)) 
+    list($constgroup, $rows, $cols) = explode(':', $param);
+  $rows  = ($rows ? $rows : 4);
+  $cols = ($cols ? $cols : 60);
+  
+  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
+   else 
+    $arr = GetConstants($constgroup, $db);
+  echo $field[input_before];
+  FrmTextareaPreSelect($varname, $field['name'], $arr, $value[0]['value'],  
+    $field[required], $field[input_help], $field[input_morehlp], $rows, $cols);
+}
+  
+function show_fnc_freeze_tpr($varname, $field, $value, $param, $html) {
   echo $field[input_before];
   FrmStaticText($field['name'], $value[0]['value']);
 }

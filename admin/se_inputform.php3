@@ -110,10 +110,11 @@ if( $update ) {
       case "rio":
       case "sel": $isf = "$input_show_func_f:$input_show_func_c:$input_show_func";
                   break;
-	  case "hco":
+      case "hco":
       case "pre": 
       case "iso": 
       case "wi2": 
+      case "tpr":
       case "mse": $isf = "$input_show_func_f:$input_show_func_c:$input_show_func";
                   break;
       default: $isf = "$input_show_func_f";
@@ -191,16 +192,17 @@ if( !$update ) {      # load defaults
   $input_show_func_f = substr($fld[input_show_func],0,3);
   switch( $input_show_func_f ) {
     case "txt":
-		case "edt":
+    case "edt":
     case "fld":
     case "dte":
     case "fil": $input_show_func = substr($fld[input_show_func],4);
                 break;
     case "pre":
-	case "sel": list($input_show_func_f,$input_show_func_c,$input_show_func) =explode(':', $fld[input_show_func]);
+    case "sel": 
     case "wi2":
     case "iso":
     case "hco":
+    case "tpr":
     case "mse": $pos = strpos($fld[input_show_func], ":", 4);
                 $input_show_func_c = substr($fld[input_show_func],4,$pos-4);
                 $input_show_func = substr($fld[input_show_func],$pos+1);
@@ -417,4 +419,5 @@ endfor;
 </BODY>
 </HTML>";
 
-page_close()?>
+page_close();
+?>

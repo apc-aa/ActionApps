@@ -91,11 +91,11 @@ $INPUT_DEFAULT_TYPES = array ("txt" => L_INPUT_DEFAULT_TXT,
 			      "variable" =>L_INPUT_DEFAULT_VAR);
   
 $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT, #textarea
-								"edt" => L_INPUT_SHOW_EDT, #rich text edit
+                                "tpr" => L_INPUT_SHOW_TPR, #textarea with preset								
+                                "edt" => L_INPUT_SHOW_EDT, #rich text edit
                                 "fld" => L_INPUT_SHOW_FLD, #textfield
                                 "sel" => L_INPUT_SHOW_SEL, #selectbox
                                 "pre" => L_INPUT_SHOW_PRE, #selectbox with preset
-                                "tpr" => L_INPUT_SHOW_TPR, #textarea with preset								
                                 "rio" => L_INPUT_SHOW_RIO, #radio button
                                 "dte" => L_INPUT_SHOW_DTE, #date
                                 "chb" => L_INPUT_SHOW_CHB, #check box
@@ -106,7 +106,7 @@ $INPUT_SHOW_FUNC_TYPES = array ("txt" => L_INPUT_SHOW_TXT, #textarea
 #                               "isi" => L_INPUT_SHOW_ISI, #
                                 "iso" => L_INPUT_SHOW_ISO, #related items selectbox - outer
                                 "nul" => L_INPUT_SHOW_NUL, #
-								"hco" => L_INPUT_SHOW_HCO); #hierarchy constant
+                                "hco" => L_INPUT_SHOW_HCO); #hierarchy constant
                               
 $INPUT_VALIDATE_TYPES = array ("text" => L_INPUT_VALIDATE_TEXT,
                                "url" => L_INPUT_VALIDATE_URL, 

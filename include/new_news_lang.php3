@@ -115,3 +115,5 @@ define('L_V_D_SPACE','HTML code for space before comment');
 define('L_V_D_SEL_BUTTON','HTML code for "Show selected" button');
 define('L_V_D_ALL_BUTTON','HTML code for "Show all" button');
 define('L_V_D_NEW_BUTTON','HTML code for "Add" button');
+
+define('L_INPUT_SHOW_TPR','Textarea with Presets');
