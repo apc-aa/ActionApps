@@ -273,7 +273,6 @@ function setControl (formName, controlName, newValue) {
 
 /* Function: setControlArray
    Purpose: sets multiple control types in a common way (multiple select box)
-   ToDo: implement multiple check-boxes 
 */
 
 function setControlArray (formName, controlName, newArray) {
@@ -294,6 +293,23 @@ function setControlArray (formName, controlName, newArray) {
                     myControl.options[i].selected = true;
                 }
             }
+        } else {
+            if (myControl[0].type == "checkbox") {
+                for (var j = 0; j < newArray.length; j++) {
+                            for (var i = 0; i < myControl.length; i++) {
+                            if ( (myControl[i].value == newArray[j]) ||
+                            ((myControl[i].value == "") && (myControl[i].text == newArray[j]))) {
+                                            myControl[i].checked = true;
+                            break;
+                        }
+                    }
+                    if (i == myControl.length) {
+                                    opt = new Option(newArray[j],newArray[j],false,false);
+                        myControl[i] = opt;
+                        myControl[i].checked = true;
+                    }
+                }
+            } 
         }
     }
 }
