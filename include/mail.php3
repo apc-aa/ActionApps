@@ -155,26 +155,28 @@ function send_mail_from_table ($mail_id, $to, $aliases="")
     return send_mail_from_table_inner ($mail_id, $to, $item);
 }
 
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
   
-function send_mail_from_table_inner ($mail_id, $to, &$item) {
+function send_mail_from_table_inner ($mail_id, $to, $item, $aliases = null) {
     global $db, $LANGUAGE_CHARSETS;
+    // email has the templates in it
     $db->query("SELECT * FROM email WHERE id = $mail_id");
     if (!$db->next_record()) 
         return false;
     $record = $db->Record;
     reset ($record);       
     
+    /* Old version - Jakub's
     while (list ($key, $value) = each ($record)) 
         $record[$key] = $item->unalias ($value);
-        
-    /* // Mitra's version, not working:
+    */
+    // Mitra's version, - should be working now
     while (list ($key, $value) = each ($record)) {
         $level = 0; $maxlevel = 0;
+
 	    $record[$key] = new_unalias_recurent($value, "", $level, 
-            $maxlevel, null, null, $aliases);
+            $maxlevel, $item, null, $aliases);
     }
-    */    
     
     if (! is_array ($to)) 
         $tos = array ($to);
@@ -200,6 +202,7 @@ function send_mail_from_table_inner ($mail_id, $to, &$item) {
             continue;
             
         if (! $GLOBALS["EMAILS_INTO_TABLE"]) {
+            #huhl("Sending mail $to");
             if ($mail->send (array ($to)))
                 $sent ++;
         }

@@ -105,6 +105,11 @@ function sliceshortcuts($ign) {
   print("</table>\n");
 }
 
+function editsliceinfo($sid) {
+    global $AA_CP_Session;
+    return "<a href=\"slicedit.php3?AA_CP_Session=$AA_CP_Session&change_id=$sid\">Edit slice info</a>";
+}
+
 function editslicefields($sid) {
     global $AA_CP_Session;
     return "<a href=\"se_fields.php3?AA_CP_Session=$AA_CP_Session&change_id=$sid\"> Edit fields </a>";
@@ -196,7 +201,7 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
         if (EReg("^alias3_",$ftk) && (! $ft["alias3"]))  continue;
         if (!$opened && $pr) { print("<li>$pre field: $fn differs</li><ul>\n"); $opened = 1; }
         if($pr) {
-            print("<li>$ftk: $fm[$ftk] -> $ftv</li>\n");
+            print("<li>$ftk: ".qenc($fm[$ftk],true,false,"red")." -&gt; ".qenc($ftv,true,false,"purple") . "</li>\n");
             $fixert .= "&$ftk=" . urlencode($fm[$ftk]);
             $fixerm .= "&$ftk=" . urlencode($ftv);
         }
@@ -218,6 +223,8 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
     //huhl("Adding score for field = $score");
     return $score;
 }
+
+# st=sliceobj target,  sm=sliceob master pr=true if print difference
 function compareSliceTableFields($st,$sm,$pr) {
     global $slicetablefields;
 #    global $scoreUnshown,$AA_CP_Session;
@@ -238,7 +245,7 @@ function compareSliceTableFields($st,$sm,$pr) {
         if( EReg("^[0-9]*$", $ftk))
             continue;
         if ($ftv == $fm[$ftk]) continue; // They match
-        if (!$opened && $pr) { print("<li>slice fields differ<ul>\n"); $opened = 1; }
+        if (!$opened && $pr) { print("<li>slice fields differ (".editsliceinfo($ft)."</a>)<ul>\n"); $opened = 1; }
         if($pr) {
             print("<li>$ftk: " . qenc($fm[$ftk],$hf,$unp,"red")
                 . " -> " . qenc($ftv,$hf,$unp,"purple")

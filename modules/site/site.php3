@@ -72,7 +72,8 @@ trace("=","site.php3","precachecheck");
 #                    (in seconds)
 
 # create keystring from values, which exactly identifies resulting content
-$key_str = $apc_state['state'].$site_id;
+# 25June03 - Mitra - added post2shtml into here, maybe should add all URL?
+$key_str = $apc_state['state'].":".$site_id.":".$post2shtml_id;
 if( is_array($slices4cache) && !$nocache && ($res = $GLOBALS[pagecache]->get($key_str)) ) {
   echo $res;
   if( $debug ) {
@@ -186,6 +187,7 @@ function ModW_id2item($id,$use_short_ids="false") {
 # the regular expression then use $strdef
 # e.g. ModW_str2arr("tpmi",$apc,"--h-",	"^([-p])([-]|[0-9]+)([hbsfcCt])([-]|[0-9]+)";
 function ModW_str2arr($varnames, $str, $strdef, $reg) {
+    global $debug;
 	if (!$str) $str = $strdef;
 	$varout = array();
 	if (!(ereg($reg, $str, $vars)))

@@ -48,7 +48,7 @@ require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
  * @see itemview
  */
 class itemview {
-  var $db;
+  var $db;                  // not used anymore
   var $zids;               // zids to show
   var $from_record;        // from which index begin showing items
   var $num_records;        // number of shown records
@@ -64,10 +64,10 @@ class itemview {
                            // (using "Abstract Data Structure" described also
                            // in {@link http://apc-aa.sourceforge.net/faq/#1337})
 
-  function itemview( $db, $slice_info, $fields, $aliases, $zids, $from, $number,
+  function itemview( $slice_info, $fields, $aliases, $zids, $from, $number,
                      $clean_url, $disc="", $get_content_funct='GetItemContent'){
     #constructor
-    $this->db = $db;
+    //Not used anymore: $this->db = $db;
     $this->slice_info = $slice_info;  # $slice_info is array with this fields:
                                       #      - print_view() function:
                                       #   compact_top, category_sort,
@@ -376,7 +376,6 @@ class itemview {
   function get_output($view_type="") {
     global $debug;
     trace("+","itemview:get_output",$view_type);
-    $db = $this->db;
 
     if ($view_type == "discussion") {
       trace("=","","discussion type ".$this->disc['type']);

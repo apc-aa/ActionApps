@@ -66,14 +66,14 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
   $format['odd_row_format'] = $s;
   $zids = new zids($item_id);
 
-  $itemview = new itemview($db, $format, $fields, $aliases, $zids, 0, 1, '');
+  $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, '');
   $subject = $itemview->get_output_cached("view");
 
   // determine body of message
   $format['odd_row_format'] = $b;
   //$item_ids[] = $item_id;   # Ick, this would have put two ids in! 
 
-  $itemview = new itemview($db, $format, $fields, $aliases, $zids, 0, 1, '');
+  $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, '');
   $body = $itemview->get_output_cached("view");
 
   // select all the users

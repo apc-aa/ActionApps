@@ -310,7 +310,7 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 
 // Expand a set of view parameters, and return the view
 function GetView($view_param) {
-  global $db, $nocache, $debug;
+  global $nocache, $debug;
 
   trace("+","GetView",$view_param);
   #create keystring from values, which exactly identifies resulting content
@@ -336,7 +336,7 @@ function GetView($view_param) {
 
 // Return view result based on parameters, set cache_sid
 function GetViewFromDB($view_param, &$cache_sid) {
-  global $db,$debug;
+  global $debug;
 
   trace("+","GetViewFromDB");
   $vid = $view_param["vid"];
@@ -389,7 +389,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
         list($fields,) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);
 
-        $itemview = new itemview( $db, $format, $fields, $aliases, $zids,
+        $itemview = new itemview($format, $fields, $aliases, $zids,
                                   0, 1, shtml_url(), "");
         $ret=$itemview->get_output_cached("view");
       } else {
@@ -424,7 +424,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       if( $GLOBALS['apc_state'] )
         $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
 
-      $itemview = new itemview( $db, $format,"",$aliases,null,"","",$durl, $disc);
+      $itemview = new itemview($format,"",$aliases,null,"","",$durl, $disc);
       $ret=$itemview->get_output_cached("discussion");
       trace("-");
       return($ret);
@@ -479,7 +479,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"],
                       $view_param["from"], $list_page, $zids->count(), $random);
 
-      $itemview = new itemview( $db, $format, GetConstantFields(), $aliases,
+      $itemview = new itemview( $format, GetConstantFields(), $aliases,
                                 $zids, $list_from, $listlen, shtml_url(),
                                 "", $content_function);
       return $itemview->get_output_cached($itemview_type);
@@ -532,7 +532,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
         list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"],
                   $view_param["from"], $list_page, $zids2->count(), $random);
 
-        $itemview = new itemview( $db, $format, $fields, $aliases, $zids2,
+        $itemview = new itemview( $format, $fields, $aliases, $zids2,
                                   $list_from, $listlen, shtml_url(), "",
                                   ($view_info['type'] == 'urls') ?
                                                'GetItemContentMinimal' : '');

@@ -37,8 +37,6 @@ require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
 //$debug = 1;
 
-if(! is_object( $db )) $db = new DB_AA;
-
 // -------------------------------------------------------------------------------------
 /**  Creates Filter output. Called from send_emails().
 *    Finds and formats items.
@@ -58,8 +56,6 @@ if(! is_object( $db )) $db = new DB_AA;
 
 function create_filter_text ($ho, $collectionid, $update, $item_id)
 {
-    global $db;
-
     // the view.aditional field stores info about grouping by selections
     $SQL = "
     SELECT F.conds, view.slice_id, view.aditional, view.aditional3,
@@ -72,11 +68,11 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
              slice ON slice.id = view.slice_id
         WHERE CH.howoften='$ho'
         AND CH.collectionid='$collectionid'";
-        
+    $db = getDB();    
     if ($item_id) {
         $db->query("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
         if (!$db->next_record())
-            return "";
+            { freeDB($db); return ""; }
         $SQL .= " AND slice.id='".addslashes($db->f("slice_id"))."'";
     }
 
@@ -97,8 +93,7 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
             // Sort variable for the whole view
             $myview["sort"] = $db->f("aditional3");
     }
-    if (! is_array ($slices))
-        return;
+    if (! is_array ($slices)) { freeDB($db);  return; }
         
     // The function needs global $conds and $sort, because it does some
     // wizardry with add_vars().
@@ -182,6 +177,7 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
     }
 
     //print_r ($retval);
+    freeDB($db);
     return $retval;
 }
 
@@ -197,8 +193,9 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
 */
 function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
 {
-    global $db, $db2, $LANGUAGE_CHARSETS;
+    global $LANGUAGEn_CHARSETS;
 
+    $db = getDB();
     if (is_array ($collection_ids))
         $where = " WHERE AC.id IN ('".join ("','", $collection_ids)."')";
     $db->tquery("
@@ -209,11 +206,9 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
             $where");
     while ($db->next_record())
         $colls[$db->f("collectionid")] = $db->Record;
-    if (!is_array ($colls)) return;
+    if (!is_array ($colls)) { freeDB($db); return; }
 
     $readerContent = new ItemContent ();
-    if (!is_object ($db2))
-        $db2 = new DB_AA;
 
     reset ($colls);
     while (list ($cid, $collection) = each ($colls)) {
@@ -233,7 +228,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
         // Find all users who should receive anything
         if (! is_array ($emails)) {
 
-            $db2->query("
+            $db->query("
                 SELECT id FROM item
                 WHERE slice_id = '".addslashes($collection["slice_id"])."'
                   AND status_code = 1
@@ -242,8 +237,9 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
 
             $field_howoften = getAlertsField (FIELDID_HOWOFTEN, $cid);
 
-            while ($db2->next_record()) {
-                $readerContent->setByItemID( unpack_id( $db2->f("id")), true);
+            // loop through items might want to send
+            while ($db->next_record()) {
+                $readerContent->setByItemID( unpack_id( $db->f("id")), true);
                 if( $readerContent->getValue( $field_howoften ) != $ho
                     || ! $readerContent->getValue( FIELDID_MAIL_CONFIRMED ))
                     continue;
@@ -260,7 +256,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                         "au=".$readerContent->getValue(FIELDID_ACCESS_CODE).
                         "&c=".$cid);
 
-                    if (send_mail_from_table ($collection["emailid_alert"],
+                    if (send_mail_from_table($collection["emailid_alert"],
                         $readerContent->getValue(FIELDID_EMAIL), $alias))
                         $email_count ++;
                 }
@@ -277,13 +273,13 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                     "au=ABCDE&c=".$cid);
 
                 $GLOBALS["debug_email"] = 0;
-                if (send_mail_from_table ($collection["emailid_alert"],
+                if (send_mail_from_table($collection["emailid_alert"],
                     $email, $alias))
                     $email_count ++;
             }
         }
     }
-
+    freeDB($db);
     return $email_count;
 }
 
@@ -294,7 +290,6 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
 */    
 function initialize_last ()
 {
-    global $db;
     $now = getdate ();
     
     $init["instant"] = time();
@@ -305,7 +300,8 @@ function initialize_last ()
     // one month ago
     $init["monthly"] = mktime ($now[hours], $now[minutes], $now[seconds], $now[mon]-1);
 
-    $db2 = new DB_AA;
+    $db = getDB();
+    $db2 = getDB();
  
     $hos = get_howoften_options();   
     reset ($hos);
@@ -327,6 +323,8 @@ function initialize_last ()
             $db2->query("UPDATE alerts_collection_howoften SET last=".$init[$ho]
                 ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
     }
+    freeDB($db);
+    freeDB($db2);
 }           
 
 // -------------------------------------------------------------------------------------
@@ -360,8 +358,7 @@ function get_view_settings_cached ($vid) {
 */
 function get_filter_output_cached ($vid, $filter_settings, $zids) {
     global $cached_view_settings,
-           $cached_filter_outputs,
-           $db;
+           $cached_filter_outputs;
 
     //echo "zids"; print_r ($zids);
     if ($zids->count() == 0)
@@ -375,7 +372,7 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
         // $set["info"]["aditional2"] stores item URL
         $item_url = $set["info"]["aditional2"];
         if (! $item_url) $item_url = "You didn't set the item URL in the view $vid settings!";
-        $itemview = new itemview( $db, $set["format"], $set["fields"],
+        $itemview = new itemview($set["format"], $set["fields"],
             $set["aliases"], $zids, 0, 9999, $item_url);
         $items_text = $itemview->get_output ("view");
     //echo "<h1>items $items_text</h1>"; print_r ($set["format"]); exit;

@@ -343,7 +343,7 @@ if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
     $sess->register('r_state');
 }
 
-$manager = new manager($db, $manager_settings);
+$manager = new manager($manager_settings);
 
 if( $r_state['manager'] )        // do not set state for the first time calling
     $manager->setFromState($r_state['manager']);

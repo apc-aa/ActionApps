@@ -275,7 +275,7 @@ if( $sh_itm OR $x ) {
     $sh_itm = LogItem($x,"short_id");
 
   if (!isset ($hideFulltext)) {
-      $itemview = new itemview( $db, $slice_info, $fields, $aliases, new zids($sh_itm,"l"),
+      $itemview = new itemview($slice_info, $fields, $aliases, new zids($sh_itm,"l"),
                         0,1, $sess->MyUrl($slice_id, $encap));
       $itemview->print_item();
   }
@@ -301,7 +301,7 @@ if( $sh_itm OR $x ) {
       $format = GetDiscussionFormat($view_info);
       $format['id'] = $p_slice_id;                  // set slice_id because of caching
 
-      $itemview = new itemview( $db, $format, "", $aliases, null,"", "", $sess->MyUrl($slice_id, $encap), $disc);
+      $itemview = new itemview($format, "", $aliases, null,"", "", $sess->MyUrl($slice_id, $encap), $disc);
       $itemview->print_discussion();
     }
   }
@@ -314,7 +314,7 @@ if( $items AND is_array($items) ) {   # shows all $items[] as fulltext one after
   while(list($k) = each( $items ))
     $ids[] = substr($k,1);    #delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
   $zids = new zids($ids,"l");
-  $itemview = new itemview( $db, $slice_info, $fields, $aliases, $zids, 0,$zids->count(), $sess->MyUrl($slice_id, $encap));
+  $itemview = new itemview($slice_info, $fields, $aliases, $zids, 0,$zids->count(), $sess->MyUrl($slice_id, $encap));
   $itemview->print_itemlist();
   ExitPage();
 }
@@ -492,7 +492,7 @@ if( !$srch AND !$encap AND !$easy_query ) {
 if( $zids->count() > 0 ) {
   $scr->countPages( $zids->count() );
 
-  $itemview = new itemview( $db, $slice_info, $fields, $aliases, $zids,
+  $itemview = new itemview($slice_info, $fields, $aliases, $zids,
               $scr->metapage * ($scr->current - 1),
               ($group_n ? -$group_n : $scr->metapage),  # negative number used for displaying n-th group
               $sess->MyUrl($slice_id, $encap) );

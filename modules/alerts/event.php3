@@ -34,7 +34,7 @@ require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/alerts_sending.php3";
 *   "items" appearing in a Reader Management Slice.
 */
 function AlertsSendWelcome( $item_id, $slice_id, &$itemContent ) {
-    $mydb = new DB_AA;
+    $mydb = getDB();
 
     $mydb->query ("SELECT alerts_collection.id, slice_url, emailid_welcome
         FROM alerts_collection INNER JOIN module
@@ -42,8 +42,9 @@ function AlertsSendWelcome( $item_id, $slice_id, &$itemContent ) {
         WHERE alerts_collection.slice_id='".q_pack_id($slice_id)."'");
 
     // One Reader Management Slice may belong to several Alerts Collections
-    while ($mydb->next_record()) {
-
+    // Don't send mail if already confirmed - for example imported addresses
+    if (! $itemContent->getValue("switch..........")) {
+      while ($mydb->next_record()) {
         $alias["_#COLLFORM"] = alerts_con_url ($mydb->f("slice_url"), 
             "aw=".$itemContent->getValue(FIELDID_ACCESS_CODE));
         $alias["_#HOWOFTEN"] = $itemContent->getValue(
@@ -51,10 +52,12 @@ function AlertsSendWelcome( $item_id, $slice_id, &$itemContent ) {
         $alias["_#CONFIRM_"] = $itemContent->getValue(FIELDID_MAIL_CONFIRMED);
             
         if ($mydb->f("emailid_welcome")) {            
-            send_mail_from_table ($mydb->f("emailid_welcome"), 
+            send_mail_from_table($mydb->f("emailid_welcome"), 
                 $itemContent->getValue(FIELDID_EMAIL), $alias);
         }
+      }
     }
+    freeDB($mydb);
 }            
 
 /** Sends instant Alert when a new item appears in any slice which is 
@@ -83,7 +86,8 @@ function AlertsSendInstantAlert( $item_id, $slice_id ) {
             $collection_ids[] = $db->f("collectionid");
         if (is_array ($collection_ids)) {
             initialize_last();
-            send_emails ("instant", $collection_ids, "", true, $item_id);
+            set_time_limit(600); // This can take a while
+            send_emails("instant", $collection_ids, "", true, $item_id);
             // We must reset moved2active so that the item is not re-sent on update.
             $db->query ("UPDATE item SET moved2active = 0 WHERE id='"
                 .q_pack_id($item_id)."'");

@@ -45,15 +45,28 @@ function processDataArray($data, $actions)
   	  case "store":
         if( $data[$arr["from"]] )
           $retval[$fid][][value] = addslashes($data[$arr["from"]]);
+        elseif ($arr["default"])  {
+             $deffnc = "default_fnc_" . ($arr["deffnc"] ? $arr["deffnc"] : "qte");
+            if (!is_callable($deffnc)) 
+                print("Can't call default function $deffnc");
+             $retval[$fid][][value] = $deffnc($arr["default"]);
+        }
    		break;
+      case "random":
+        $retval[$fid][][value] = default_fnc_rnd($arr["param"]);
+        break;
   	  case "storetrans":
         if( $data[$arr["from"]] ) 
           $retval[$fid][][value] = addslashes($arr["trans"][$data[$arr["from"]]]);
    		break;
   	  case "bool":
-	    if ($data[$arr["from"]] == 1) 
-          $retval[$fid][][value] = 1;
-   		break;
+	    if ($data[$arr["from"]]) {
+    	    if ($data[$arr["from"]] == 1) 
+              $retval[$fid][][value] = 1;
+        } elseif  ($arr["default"]) {
+            $retval[$fid][][value] = $arr["default"];
+        }
+   	    break;
   	  case "web":
         $value = $data[$arr["from"]];
         if( $value ) {

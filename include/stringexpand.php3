@@ -365,7 +365,6 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         return QuoteColons($level, $maxlevel,
             new_unalias_recurent($als[$out],"",$level+1,
                 $maxlevel,$item,$itemview,$aliases));
-        return QuoteColons($level, $maxlevel, $als[$out]);
     }
     elseif (isset($aliases[$out])) {   # look for an alias (this is used by mail)
         return QuoteColons($level, $maxlevel, $aliases[$out]);
@@ -377,7 +376,8 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
      // Put the braces back around the text and quote them if we can't match
     else {
         // Don't warn if { followed by non alphabetic, e.g. in Javascript
-        if ($errcheck && ereg("^[a-zA-Z_0-9]",$out)) {
+        // Fix javascript to avoid this warning, typically add space after {
+        if ($errcheck && ereg("^[a-zA-Z_]",$out)) {
             huhl("Couldn't expand: \"{$out}\"");
             #trace("p");
         }

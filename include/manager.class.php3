@@ -74,7 +74,7 @@ class manager extends storable_class {
      *
      * @param array $settings - main manager settings
      */
-    function manager($db, $settings) {
+    function manager($settings) {
 
         if ( $settings['actions'] ) {      // define actions, if we have to
             $this->actions = $settings['actions'];
@@ -121,8 +121,7 @@ class manager extends storable_class {
         if ( !$format_strings )
             $format_strings = $settings['itemview']['format'];
 
-        $this->itemview = new itemview($db,
-                                       $format_strings,
+        $this->itemview = new itemview( $format_strings,
                                        $settings['itemview']['fields'],
                                        $settings['itemview']['aliases'],
                                        false,   // no item ids yet

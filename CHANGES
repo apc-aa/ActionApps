@@ -1,3 +1,10 @@
+07/05/03 - added defaults and default functions to importer.php3 
+(mitra)  - don't send welcome inviting confirmation if already confirmed
+         - removed $db paramater from "new itemview"
+         - added link to editsliceinfo and colors in summarize
+         - used newer unaliasing in mail.php3
+         - removed $db paramater from new manager
+         - removed warnings on unable to expand {0,4}
 06/30/03 - fixed image resize functions
 (honzam) - fixed user profile setting where warning is no longer displayed
 06/26/03 - added Links module into sql_update.php3 and updated config.php3
