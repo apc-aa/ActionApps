@@ -297,7 +297,7 @@ if( $sh_itm OR $x ) {
       $format = GetDiscussionFormat($view_info);
       $format['id'] = $p_slice_id;                  // set slice_id because of caching
   
-      $itemview = new itemview( $db, $format, "", $aliases, "","", "", $sess->MyUrl($slice_id, $encap), $disc);
+      $itemview = new itemview( $db, $format, "", $aliases, null,"", "", $sess->MyUrl($slice_id, $encap), $disc);
       $itemview->print_discussion();
     }
   }  

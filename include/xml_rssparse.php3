@@ -273,7 +273,7 @@ function aa_rss_parse($xml_data) {
             xml_error_string(xml_get_error_code($xml_parser)),
             xml_get_current_line_number($xml_parser));
 			print("\nXML_RSSPARSE:ERR:$err");
-	return $err;
+return $err;
   }
   xml_parser_free($xml_parser);
   return $aa_rss;

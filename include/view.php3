@@ -366,7 +366,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       if( $GLOBALS['apc_state'] )                
         $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
 
-      $itemview = new itemview( $db, $format,"",$aliases,"","","",$durl, $disc);
+      $itemview = new itemview( $db, $format,"",$aliases,null,"","",$durl, $disc);
       return $itemview->get_output_cached("discussion");
     
     

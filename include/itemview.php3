@@ -87,29 +87,32 @@ class itemview{
     if( substr($this->from_record, 0, 6) == 'random' ) # don't cache random item
       return $this->get_output($view_type);
     
+if (isset($this->zids)) 
     $keystr = serialize($this->slice_info).
               $view_type.
               $this->from_record.
               $this->num_records.
               $this->clean_url.
-              $this->zids->id(0);
+              ((isset($this->zids)) ? $this->zids->id(0) : "");
     $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  # negative used for displaying n-th group of items only
                                         $this->from_record+$this->num_records );
     for( $i=$this->from_record; $i<$number_of_ids; $i++)
-      $keystr .= $this->zids->id($i);
-    $keystr .=serialize($this->disc);
-    $keystr .=serialize($this->aliases);
+        if (isset($this->zids)) 
+            $keystr .= $this->zids->id($i);
+        $keystr .=serialize($this->disc);
+        $keystr .=serialize($this->aliases);
      
-    if( !$GLOBALS['nocache'] && ($res = $cache->get($keystr)) ) {
-      return $res;
-    }
+        if( !$GLOBALS['nocache'] && ($res = $cache->get($keystr)) ) {
+            return $res;
+        }
 
 
-    #cache new value 
-    $res = $this->get_output($view_type);
+        #cache new value 
+        $res = $this->get_output($view_type);
 
-    $cache->store($keystr, $res, "slice_id=".unpack_id128($this->slice_info["id"]));
-    return $res;
+        $cache->store($keystr, $res, 
+            "slice_id=".unpack_id128($this->slice_info["id"]));
+        return $res;
   }  
               
   function get_disc_buttons($empty) {
