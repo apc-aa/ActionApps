@@ -162,21 +162,21 @@ function EnableClick(cond,what) {
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   FrmTextarea("compact_top", L_COMPACT_TOP, $compact_top, 4, 50, false,
-               L_TOP_HLP, "", DOCUMENTATION_URL, 1);
+               L_TOP_HLP, DOCUMENTATION_URL, 1);
   FrmTextarea("odd_row_format", L_ODD_ROW_FORMAT, $odd_row_format, 6, 50, false,
-               L_FORMAT_HLP, "", DOCUMENTATION_URL, 1); 
+               L_FORMAT_HLP, DOCUMENTATION_URL, 1); 
   FrmInputChBox("even_odd_differ", L_EVEN_ODD_DIFFER, $even_odd_differ, true, "OnClick=\"EnableClick('document.f.even_odd_differ','document.f.even_row_format')\"");
   FrmTextarea("even_row_format", L_EVEN_ROW_FORMAT, $even_row_format, 6, 50, false,
-               L_EVEN_ROW_HLP, "", DOCUMENTATION_URL, 1); 
+               L_EVEN_ROW_HLP, DOCUMENTATION_URL, 1); 
   FrmTextarea("compact_bottom", L_COMPACT_BOTTOM, $compact_bottom, 4, 50, false,
-               L_BOTTOM_HLP, "", DOCUMENTATION_URL, 1); 
+               L_BOTTOM_HLP, DOCUMENTATION_URL, 1); 
   FrmInputChBox("category_sort", L_CATEGORY_SORT, $category_sort, true, "OnClick=\"EnableClick('document.f.category_sort','document.f.category_format')\"");
   FrmTextarea("category_top", L_CATEGORY_TOP, $category_top, 4, 50, false,
-               L_TOP_HLP, "", DOCUMENTATION_URL, 1);
+               L_TOP_HLP, DOCUMENTATION_URL, 1);
   FrmTextarea("category_format", L_CATEGORY_FORMAT, $category_format, 6, 50, false,
-               L_FORMAT_HLP, "", DOCUMENTATION_URL, 1); 
+               L_FORMAT_HLP, DOCUMENTATION_URL, 1); 
   FrmTextarea("category_bottom", L_CATEGORY_BOTTOM, $category_bottom, 4, 50, false,
-               L_BOTTOM_HLP, "", DOCUMENTATION_URL, 1); 
+               L_BOTTOM_HLP, DOCUMENTATION_URL, 1); 
   FrmInputText("compact_remove", L_COMPACT_REMOVE, $compact_remove, 254, 50, false,
                L_REMOVE_HLP, DOCUMENTATION_URL);
 ?>
@@ -193,6 +193,9 @@ function EnableClick(cond,what) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.12  2001/03/30 11:52:53  honzam
+reverse displaying HTML/Plain text bug and others smalll bugs fixed
+
 Revision 1.11  2001/03/20 15:27:03  honzam
 Changes due to "slice delete" feature
 

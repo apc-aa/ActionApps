@@ -169,7 +169,9 @@ if( !$update ) {      # load defaults
   $input_default_f = substr($fld[input_default],0,3);
   $input_default = substr($fld[input_default],4);
   $input_show_func_f = substr($fld[input_show_func],0,3);
-  if( ($input_show_func_f=="txt") OR ($input_show_func_f=="dte") )
+  if( ($input_show_func_f=="txt") 
+       OR ($input_show_func_f=="dte") 
+       OR ($input_show_func_f=="fil"))
     $input_show_func = substr($fld[input_show_func],4);
    else 
     $input_show_func_c = substr($fld[input_show_func],4);
@@ -216,9 +218,9 @@ echo "
     <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
      <tr>
       <td class=tabtxt><b>". L_FIELD ."</b></td>
-      <td class=tabtxt>".  htmlspecialchars($fld[name]) ."</td>
+      <td class=tabtxt>".  safe($fld[name]) ."</td>
       <td class=tabtxt><b>". L_ID ."</b></td>
-      <td class=tabtxt>". $fld[id] ."</td>
+      <td class=tabtxt>". safe($fld[id]) ."</td>
      </tr>
      <tr><td colspan=4><hr></td></tr>
      <tr>
@@ -233,7 +235,7 @@ echo "
       </div> 
             <div class=tabhlp>". L_INPUT_SHOW_FUNC_C_HLP ."</div>
             <div class=tabtxt><b>". L_PARAMETERS ."</b>
-              <input type=\"Text\" name=\"input_show_func\" size=25 maxlength=240 value=\"$input_show_func\">
+              <input type=\"Text\" name=\"input_show_func\" size=25 maxlength=240 value=\"". safe($input_show_func) ."\">
             </div> 
             <div class=tabhlp>". L_INPUT_SHOW_FUNC_HLP ."</div>
       </td>
@@ -245,7 +247,7 @@ echo "
         FrmSelectEasy("input_default_f", $INPUT_DEFAULT_TYPES, $input_default_f);
       echo "<div class=tabhlp>". L_INPUT_DEFAULT_F_HLP ."</div>
             <div class=tabtxt><b>". L_PARAMETERS ."</b>
-              <input type=\"Text\" name=\"input_default\" size=25 value=\"$input_default\">
+              <input type=\"Text\" name=\"input_default\" size=25 value=\"". safe($input_default) ."\">
             </div> 
             <div class=tabhlp>". L_INPUT_DEFAULT_HLP ."</div>
       </td>
@@ -273,19 +275,19 @@ echo "
      </tr>  
      <tr>
       <td class=tabtxt><b>". L_INPUT_HELP ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"input_help\" size=50 maxlength=254 value=\"$input_help\">
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"input_help\" size=50 maxlength=254 value=\"". safe($input_help). "\">
       <div class=tabhlp>". L_INPUT_HELP_HLP ."</div>
       </td>
      </tr>  
      <tr>
       <td class=tabtxt><b>". L_INPUT_MOREHLP ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"input_morehlp\" size=50 maxlength=254 value=\"$input_morehlp\">
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"input_morehlp\" size=50 maxlength=254 value=\"". safe($input_morehlp) ."\">
       <div class=tabhlp>". L_INPUT_MOREHLP_HLP ."</div>
       </td>
      </tr>
      <tr>
       <td class=tabtxt><b>". L_INPUT_BEFORE ."</b></td>
-      <td class=tabtxt colspan=3><textarea name=\"input_before\" rows=4 cols=50 wrap=virtual>$input_before</textarea>
+      <td class=tabtxt colspan=3><textarea name=\"input_before\" rows=4 cols=50 wrap=virtual>". safe($input_before) ."</textarea>
       <div class=tabhlp>". L_INPUT_BEFORE_HLP ."</div>
       </td>
      </tr>
@@ -308,7 +310,7 @@ echo "
     <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
      <tr>
       <td class=tabtxt><b>". L_ALIAS1 ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias1\" size=20 maxlength=10 value=\"$alias1\">
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias1\" size=20 maxlength=10 value=\"". safe($alias1) ."\">
       <div class=tabhlp>". L_ALIAS_HLP ."</div>
       </td>
      </tr>  
@@ -318,14 +320,14 @@ echo "
         FrmSelectEasy("alias1_func_f", $ALIAS_FUNC_TYPES, $alias1_func_f);
       echo "<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
             <div class=tabtxt><b>". L_PARAMETERS ."</b>
-              <input type=\"Text\" name=\"alias1_func\" size=25 maxlength=250 value=\"$alias1_func\">
+              <input type=\"Text\" name=\"alias1_func\" size=25 maxlength=250 value=\"". safe($alias1_func) ."\">
             </div> 
             <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
       </td>
      </tr>  
      <tr>
       <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias1_help\" size=50 maxlength=254 value=\"$alias1_help\">
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias1_help\" size=50 maxlength=254 value=\"". safe($alias1_help) ."\">
       <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
       </td>
      </tr>
@@ -333,7 +335,7 @@ echo "
   
      <tr>
       <td class=tabtxt><b>". L_ALIAS2 ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias2\" size=20 maxlength=10 value=\"$alias2\">
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias2\" size=20 maxlength=10 value=\"". safe($alias2) ."\">
       <div class=tabhlp>". L_ALIAS_HLP ."</div>
       </td>
      </tr>  
@@ -343,14 +345,14 @@ echo "
         FrmSelectEasy("alias2_func_f", $ALIAS_FUNC_TYPES, $alias2_func_f);
       echo "<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
             <div class=tabtxt><b>". L_PARAMETERS ."</b>
-              <input type=\"Text\" name=\"alias2_func\" size=25 maxlength=250 value=\"$alias2_func\">
+              <input type=\"Text\" name=\"alias2_func\" size=25 maxlength=250 value=\"". safe($alias2_func) ."\">
             </div> 
             <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
       </td>
      </tr>  
      <tr>
       <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias2_help\" size=50 maxlength=254 value=\"$alias2_help\">
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias2_help\" size=50 maxlength=254 value=\"". safe($alias2_help) ."\">
       <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
       </td>
      </tr>
@@ -358,7 +360,7 @@ echo "
 
      <tr>
       <td class=tabtxt><b>". L_ALIAS3 ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias3\" size=20 maxlength=10 value=\"$alias3\">
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias3\" size=20 maxlength=10 value=\"". safe($alias3) ."\">
       <div class=tabhlp>". L_ALIAS_HLP ."</div>
       </td>
      </tr>  
@@ -368,14 +370,14 @@ echo "
         FrmSelectEasy("alias3_func_f", $ALIAS_FUNC_TYPES, $alias3_func_f);
       echo "<div class=tabhlp>". L_ALIAS_FUNC_F_HLP ."</div>
             <div class=tabtxt><b>". L_PARAMETERS ."</b>
-              <input type=\"Text\" name=\"alias3_func\" size=25 maxlength=250 value=\"$alias3_func\">
+              <input type=\"Text\" name=\"alias3_func\" size=25 maxlength=250 value=\"". safe($alias3_func) ."\">
             </div> 
             <div class=tabhlp>". L_ALIAS_FUNC_HLP ."</div>
       </td>
      </tr>  
      <tr>
       <td class=tabtxt><b>". L_ALIAS_HELP ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias3_help\" size=50 maxlength=254 value=\"$alias3_help\">
+      <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias3_help\" size=50 maxlength=254 value=\"". safe($alias3_help) ."\">
       <div class=tabhlp>". L_ALIAS_HELP_HLP ."</div>
       </td>
      </tr>
@@ -397,6 +399,9 @@ echo "
 
 /*
 $Log$
+Revision 1.7  2001/03/30 11:52:53  honzam
+reverse displaying HTML/Plain text bug and others smalll bugs fixed
+
 Revision 1.6  2001/03/20 15:27:03  honzam
 Changes due to "slice delete" feature
 
@@ -429,5 +434,5 @@ also added Id and Log keywords to all .php3 and .inc files
 *.php3 makes use of new variables in config.inc
 
 */
-   
+
 page_close()?>

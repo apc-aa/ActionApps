@@ -199,12 +199,12 @@ echo $Msg;
 <center>
 <form enctype="multipart/form-data" method=post action="<?php echo $sess->url( ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF) ?>">
 
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center" class="inputtab">
+<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center" class="inputtab">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_ITEM_HDR?></b>
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" class="inputtab2">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" class="inputtab2">
 <?php
 
 if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
@@ -258,6 +258,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.20  2001/03/30 11:52:53  honzam
+reverse displaying HTML/Plain text bug and others smalll bugs fixed
+
 Revision 1.19  2001/03/20 16:01:13  honzam
 HTML / Plain text selection implemented
 Standardized content management for items - filler, itemedit, offline, feeding

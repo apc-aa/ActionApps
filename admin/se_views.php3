@@ -39,9 +39,10 @@ function PrintView($id, $name, $type) {
   global $sess;
 
   $name=safe($name); $id=safe($id);     
+  
   echo "<tr class=tabtxt><td>$id</td>
           <td>$name</td>
-          <td>". (($type=='list') ? L_COMPACT : L_FULLTEXT) ."</td>
+          <td>". $VIEW_TYPES[$type] ."</td>
           <td><a href=\"". con_url($sess->url($PHP_SELF),"view_id=$id"). "\">".
             L_EDIT . "</a></td></tr>";
 }
@@ -326,6 +327,9 @@ echo "</BODY></HTML>";
 page_close();
 /*
 $Log$
+Revision 1.4  2001/03/30 11:52:53  honzam
+reverse displaying HTML/Plain text bug and others smalll bugs fixed
+
 Revision 1.3  2001/03/20 15:27:03  honzam
 Changes due to "slice delete" feature
 

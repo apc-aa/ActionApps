@@ -124,11 +124,11 @@ function Defaults() {
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   FrmTextarea("admin_format_top", L_ADMIN_FORMAT_TOP, $admin_format_top, 4, 60,
-              false, L_TOP_HLP, "", DOCUMENTATION_URL, 1); 
+              false, L_TOP_HLP, DOCUMENTATION_URL, 1); 
   FrmTextarea("admin_format", L_ADMIN_FORMAT, $admin_format, 8, 60, true,
-                     L_FORMAT_HLP, "", DOCUMENTATION_URL, 1);
+                     L_FORMAT_HLP, DOCUMENTATION_URL, 1);
   FrmTextarea("admin_format_bottom", L_ADMIN_FORMAT_BOTTOM, $admin_format_bottom,
-              4, 60, false, L_BOTTOM_HLP, "", DOCUMENTATION_URL, 1);
+              4, 60, false, L_BOTTOM_HLP, DOCUMENTATION_URL, 1);
   FrmInputText("admin_remove", L_ADMIN_REMOVE, $admin_remove, 254, 50, false,
                L_REMOVE_HLP, DOCUMENTATION_URL);
 ?>
@@ -144,6 +144,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.8  2001/03/30 11:52:53  honzam
+reverse displaying HTML/Plain text bug and others smalll bugs fixed
+
 Revision 1.7  2001/03/20 15:27:03  honzam
 Changes due to "slice delete" feature
 
