@@ -394,6 +394,11 @@ class item {
     return $ret;
   }
 
+  /** sets for defined field it's new value  */
+  function set_field_value($field, $value) {
+      $this->columns[$field][0]['value'] = $value;
+  }
+
   # --------------- functions called for alias substitution -------------------
 
   # null function
@@ -507,7 +512,7 @@ class item {
       $paraend = min ($this->mystripos ($pfield,"<p>"),$this->mystripos($pfield,"</p>"),$this->mystripos($pfield,"<br>"), $plength);
     }
     else $paraend = $plength;
-    return htmlspecialchars( substr($pfield, 0, $paraend) );
+    return strip_tags( substr($pfield, 0, $paraend) );
   }
 
   # prints link to fulltext (hedline url)
@@ -638,7 +643,7 @@ class item {
   function f_r($col, $param="") {
     static $title, $link, $description;
 
-    $p_slice_id = $this->getval('slice_id........');
+    $p_slice_id = addslashes($this->getval('slice_id........'));
     $slice_id = unpack_id( $p_slice_id );
 
     if (! $title) {
@@ -646,19 +651,20 @@ class item {
 
       // RSS chanel (= slice) info
       $SQL= "SELECT * FROM slice WHERE id='$p_slice_id'";
+
       $db = getDB(); $db->query($SQL);
       if (!$db->next_record()){ echo "Can't get slice info"; exit;  }
 
-      $title           = $this->RSS_restrict( $db->f(name), 100);
-      $link            = $this->RSS_restrict( $db->f(slice_url), 500);
-      $name            = $db->f(name);
-      $owner           = $db->f(owner);
+      $title           = $this->RSS_restrict( $db->f('name'), 100);
+      $link            = $this->RSS_restrict( $db->f('slice_url'), 500);
+      $name            = $db->f('name');
+      $q_owner         = addslashes($db->f('owner'));
       //$language        = RSS_restrict( strtolower($db->f(lang_file)), 2);
 
-      $SQL = "SELECT name, email FROM slice_owner WHERE id='$owner'";
+      $SQL = "SELECT name, email FROM slice_owner WHERE id='$q_owner'";
       $db->query($SQL);
       if (!$db->next_record()) {
-        echo "Can't get slice info"; exit;
+        echo "Can't get slice owner info"; exit;
       }
       $description     = $this->RSS_restrict( $db->f(name).": $name", 500);
       freeDB($db);
@@ -896,20 +902,27 @@ class item {
     return $pbegin.$this->getahref( $linktype.$this->getval($col), $txt, $padd, $flg, $phide);
   }
 
-  # substring with case conversion
-
+  /** substring with case conversion
+   * @param $start  - position, where to start the substring
+   * @param $n      - number of characters (<=0 means all charasters to the end)
+   * @param $case   - convert to upper/lower/first
+   * @param $addstr - string to be added at the end of SHORTED string
+   *                  (probably something like [...])
+   */
   function f_j($col, $param="") {
     $p = ParamExplode($param);
-    list ($start, $n, $case) = $this->subst_aliases($p);
+    list ($start, $n, $case, $addstr) = $this->subst_aliases($p);
 
     $text = $this->getval($col);
     if ($n <= 0) $n = strlen ($text);
-    $text = substr($text,$start,$n);
+    $ret = substr($text,$start,$n);
 
-    if ($case == "upper")		$text = strtoupper ($text);
-    else if ($case == "lower")	$text = strtolower ($text);
-    else if ($case == "first")  $text = ucwords (strtolower ($text));
-    return $text;
+    if ($case == "upper")		$ret = strtoupper ($ret);
+    elseif ($case == "lower")	$ret = strtolower ($ret);
+    elseif ($case == "first")   $ret = ucwords (strtolower ($ret));
+
+    if( $addstr AND (strlen($ret) <> strlen($text)))  $ret .= $addstr;
+    return $ret;
   }
 
   # live checkbox -- updates database immediately on clicking without reloading the page
@@ -992,11 +1005,19 @@ class item {
     return Links_IsGlobalCategory($this->getval($col)) ? '1' : '0';
   }
 
-  /** Link module - print path
+  /** Link module (category) function - prints category priority, if category
+   *  is general one */
+  function l_o($col, $param="") {
+    return Links_GlobalCatPriority($this->getval($col));
+  }
+
+  /** Link module - print current paht (or list of paths to categories specified
+   *       in $col (when <categs delimeter> is present)
    *  @param <start_level>:<format>:<delimeter>
    *         <start_level> - display path from level ... (0 is root)
    *         <format>      - category link modification (not used, yet)
    *         <delimeter>   - delimeter character (default is ' &gt; ')
+   *         <categs delimeter>   - delimeter character (default is ' &gt; ')
    */
   function l_p($col, $param="") {
     global $contentcache;
@@ -1004,24 +1025,34 @@ class item {
     $translate = $contentcache->get_result( 'GetTable2Array', array(
        "SELECT id, name FROM links_categories WHERE deleted='n'", 'id', true));
 
-    list ($start, $format, $separator) = $this->subst_aliases(ParamExplode($param));
+    list ($start, $format, $separator, $catseparator) = $this->subst_aliases(ParamExplode($param));
     if ( !$separator ) {
         $separator = ' &gt; ';
     }
     $url_base = $this->getbaseurl();
 
-    $way = explode(',', GetCategoryPath($this->parameters['category_id']));
+    $categs2print = $catseparator ? $this->getmultipleval($col) :
+                                    array(0=>array('value'=>$this->parameters['category_id'])); // current category
+    $linklast     = $catseparator ? true : false;
 
-    if( isset($way) AND is_array($way)) {
-      $last=end($way);
-      foreach ( $way as $catid ) {
-        if($start-- > 0)  continue;
-        $cat_url = con_url( $url_base, 'cat='.$catid );
-        $ret .= ( ( $catid == $last ) ?  // do not make link for last category
-          $delimeter.$translate[$catid]['name'] :
-          $delimeter."<a href=\"$cat_url\">".$translate[$catid]['name']."</a>" );
-        $delimeter = $separator;
-      }
+    if ( is_array($categs2print) ) {
+        foreach ( $categs2print as $v ) {
+            if ($ret ) $ret .= $catseparator;
+            $way = explode(',', GetCategoryPath($v['value']));
+            $start_count = $start;
+            $delimeter = '';
+            if( isset($way) AND is_array($way)) {
+                $last = $linklast ? '' : end($way);
+                foreach ( $way as $catid ) {
+                    if($start_count-- > 0)  continue;
+                    $cat_url = con_url( $url_base, 'cat='.$catid );
+                    $ret .= ( ( $catid == $last ) ?  // do not make link for last category
+                        $delimeter.$translate[$catid]['name'] :
+                        $delimeter."<a href=\"$cat_url\">".$translate[$catid]['name']."</a>" );
+                    $delimeter = $separator;
+                }
+            }
+        }
     }
     return $ret;
   }
