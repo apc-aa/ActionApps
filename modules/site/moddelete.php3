@@ -21,9 +21,9 @@ http://www.apc.org/
 # expected $del - unpacked id of module to delete
 
 $directory_depth = "../";
-require "../../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH] . "msgpage.php3";
-require $GLOBALS[AA_INC_PATH] . "modutils.php3";
+require_once "../../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "msgpage.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "modutils.php3";
 
 
 if($cancel)

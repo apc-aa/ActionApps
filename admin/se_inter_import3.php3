@@ -26,14 +26,14 @@ http://www.apc.org/
 # $aa          - string holding serialized array from aa_rss parser
 # $remote_node_node
 
-require "../include/init_page.php3";
+require_once "../include/init_page.php3";
 
 if(!IfSlPerm(PS_FEEDING)) {
   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."csn_util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."csn_util.php3";
 
 $aa_rss = unserialize(stripslashes($aa));
 

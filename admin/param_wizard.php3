@@ -38,8 +38,8 @@ http://www.apc.org/
 	See se_inputform and the JavaScript callParamWizard function for an example how to call the wizard.
 */	
 
-require "../include/init_page.php3";
-require $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
 bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".get_mgettext_lang()."_param_wizard_lang.php3");
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

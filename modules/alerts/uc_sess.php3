@@ -23,7 +23,7 @@ if (!defined ("AA_UC_SESS_INCLUDED"))
     define ("AA_UC_SESS_INCLUDED", 1);
 else return;
 
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
 
 class AA_UC_Session extends Session {
   var $classname = "AA_UC_Session";

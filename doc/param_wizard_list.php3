@@ -26,10 +26,10 @@ http://www.apc.org/
     Shows all the help to all the list items (i.e. all alias functions, all field types)
 */	
 
-require "../include/util.php3";
-require "../include/mgettext.php3";
+require_once "../include/util.php3";
+require_once "../include/mgettext.php3";
 bind_mgettext_domain ("../include/lang/".get_mgettext_lang()."_param_wizard_lang.php3");
-require "../include/constants_param_wizard.php3";
+require_once "../include/constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>"._m("Param Wizard Summary")."</TITLE>";

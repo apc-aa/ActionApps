@@ -28,10 +28,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!defined("MGETTEXT_INCLUDED")) 
-      define("MGETTEXT_INCLUDED",1);
-else return;
-
 /** Returns current language (two-letter acronym, e.g. "es", "cz"). */
 function get_mgettext_lang () {
     global $mgettext_lang;

@@ -27,12 +27,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
-require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -112,7 +112,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo "<TITLE>"._m("Admin - Anonymous Form Wizard")."</TITLE>
 </HEAD>";
 
-require $GLOBALS[AA_INC_PATH]."menu.php3";
+require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
 showMenu ($aamenus, "sliceadmin", "anonym_wizard");  
 
 echo "<H1>"._m("Admin - Anonymous Form Wizard")."</B></H1>";

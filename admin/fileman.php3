@@ -38,13 +38,13 @@ http://www.apc.org/
     AA admins may go to the upper level. 
 */
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."date.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."fileman.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."date.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."fileman.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 // FilemanPerms() is defined in perm_core.php3, it sets $fileman_dir
 if (!FilemanPerms($auth, $slice_id)) 
@@ -70,7 +70,7 @@ if ($cmd == 'edit' || $cmd == 'createfile') {
     $fe_path = $basedir;
     $fe_script = $sess->url("fileman.php3");
     $fe_wwwpath = FILEMAN_BASE_URL;
-    require $GLOBALS[AA_INC_PATH]."filedit.php3";
+    require_once $GLOBALS["AA_INC_PATH"]."filedit.php3";
     page_close ();
     exit;
 }
@@ -80,7 +80,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m("File Manager");?></TITLE>
 </HEAD>
 <?php
-require $GLOBALS[AA_INC_PATH]."menu.php3"; 
+require_once $GLOBALS["AA_INC_PATH"]."menu.php3"; 
 showMenu ($aamenus, "sliceadmin","fileman");
 
 echo "<H1><B>" . _m("File Manager");

@@ -19,12 +19,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."notify.php3";
-require $GLOBALS[AA_INC_PATH]."imagefunc.php3";
-require $GLOBALS[AA_INC_PATH]."javascript.php3";
-require $GLOBALS[AA_INC_PATH]."date.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
+require_once $GLOBALS["AA_INC_PATH"]."imagefunc.php3";
+require_once $GLOBALS["AA_INC_PATH"]."javascript.php3";
+require_once $GLOBALS["AA_INC_PATH"]."date.php3";
  
 # ----------------------- functions for default item values -------------------
 function default_fnc_now($param) {

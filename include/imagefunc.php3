@@ -1,6 +1,6 @@
 <?php
 /**
- * Image manipulation functions - all functions require GD Library
+ * Image manipulation functions - all functions require_once GD Library
  *
  * Should be included to other scripts
  *
@@ -26,13 +26,9 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-if (!defined("INCLUDE_IMAGEFUNC_INCLUDED"))
-     define ("INCLUDE_IMAGEFUNC_INCLUDED",1);
-else return;
-
 
 ####################################
-# all functions require GD Library #
+# all functions require_once GD Library #
 ####################################
 
 #function check if GD lib is installed

@@ -43,7 +43,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// this allows to require this script any number of times - it will be read only once
+// this allows to require_once this script any number of times - it will be read only once
 if (!defined ("INIT_PAGE_INCLUDED"))
 	define ("INIT_PAGE_INCLUDED",1);
 else return;
@@ -75,8 +75,8 @@ if($encap == "false")    // used in itemedit for anonymous form
                          // if the get_magic_quotes_gpc()==false (see above)
 
 // modules other than slices are in deeper directory -> $directory_depth
-require "$directory_depth../include/config.php3";
-require $GLOBALS["AA_INC_PATH"]."mgettext.php3";  
+require_once "$directory_depth../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";  
 
 // should be set in config.php3
 if (!$AA_INSTAL_PATH) {
@@ -91,8 +91,8 @@ if (!$AA_BASE_PATH)
 if($free)            
     $nobody = true;
 
-require $GLOBALS[AA_INC_PATH] . "locauth.php3";
-require $GLOBALS[AA_INC_PATH] . "scroller.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "locauth.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "scroller.php3";
 
 // save before getting the session stored variables
 if ($change_id)
@@ -125,7 +125,7 @@ if( $pass_sliceid )
 if( $no_slice_id )
     unset($slice_id);
 
-require $GLOBALS[AA_INC_PATH] . "util.php3"; // must be after language include because of lang constants in util.php3
+require_once $GLOBALS["AA_INC_PATH"] . "util.php3"; // must be after language include because of lang constants in util.php3
 
 /* It is not a good idea to store $slice_id, it made some damage in AA
    installations already. But for historical reasons before somebody ensures

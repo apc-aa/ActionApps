@@ -27,8 +27,8 @@ else return;
 * Form utility functions
 */
 
-require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
-require $GLOBALS[AA_INC_PATH]."javascript.php3";
+require_once $GLOBALS["AA_INC_PATH"]."constedit_util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."javascript.php3";
 
 /**
 * if $condition, shows star

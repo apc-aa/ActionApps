@@ -32,17 +32,17 @@ http://www.apc.org/
 #             $old_rssfeed_name
 #             $sel_rssfeed_name
 
-require "../include/init_page.php3";
+require_once "../include/init_page.php3";
 
 if(!IfSlPerm(PS_FEEDING)) {
   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
 
-require $GLOBALS[AA_INC_PATH]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 
 $err["Init"]="";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 $qp_slice_id=q_pack_id($slice_id);
 
  if ($mode == "edit") {
@@ -149,7 +149,7 @@ function Cancel() {
 <BODY>
 <?php
   $useOnLoad = true;
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin","rssfeeds");
 
   echo "<H1><B>" . _m("Remote RSS Feed administration") . "</B></H1>";

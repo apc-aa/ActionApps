@@ -13,5 +13,5 @@
     $directory_depth = "../";
     $no_slice_id = true;
     
-    require "tabledit.php3";
+    require_once "tabledit.php3";
 ?>

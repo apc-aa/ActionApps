@@ -31,10 +31,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require "../../include/config.php3";
-require "./xmgettext.php3";
-require "./translate.php3";
-require "./createlogs.php3";
+require_once "../../include/config.php3";
+require_once "./xmgettext.php3";
+require_once "./translate.php3";
+require_once "./createlogs.php3";
 
 // list of all languages. Useful if you want e.g. update only one language file.
 $lang_list = array ("cz"=>1,"sk"=>1,"es"=>1,"en"=>1,"ro" => 1,"ja"=>1,"de"=>1);

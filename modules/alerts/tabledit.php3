@@ -30,21 +30,21 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require "../../include/config.php3";
-require $GLOBALS[AA_INC_PATH]."constants.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
-require $GLOBALS[AA_INC_PATH]."tabledit.php3";
-require $GLOBALS[AA_INC_PATH]."tv_common.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require "tableviews.php3";
+require_once "../../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once "tableviews.php3";
 
 if ($cmd["modedit"]["update"]) 
     ProcessFormData ("GetAlertsTableView", $val, $cmd);
 
 $directory_depth = "../";
-require "$directory_depth../include/init_page.php3";
+require_once "$directory_depth../include/init_page.php3";
 if (!$new_module)
-    require $MODULES[$g_modules[$slice_id]['type']]['menu'];   
+    require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   
 
 // ----------------------------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ $err = $tabledit->view ();
 if ($err) echo "<b>$err</b>";
 
 if (!$err && $tview == "acf") {
-    require "design.php3";
+    require_once "design.php3";
     ShowCollectionAddOns();
 }
 

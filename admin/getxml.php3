@@ -67,11 +67,11 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v); 
 }
 
-require "../include/config.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."csn_util.php3";
+require_once "../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."csn_util.php3";
 
 //-------------------------- Constants -----------------------------------------
 

@@ -27,22 +27,22 @@ http://www.apc.org/
        $set_tview -- required, name of the table view
 */
 
-require "$directory_depth../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."tabledit.php3";
-require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+require_once $directory_depth."../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
+require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
     
 // ----------------------------------------------------------------------------------------
 
 $sess->register("tview");
 if ($set_tview) $tview = $set_tview;
 
-require $GLOBALS[AA_INC_PATH]."tv_common.php3";
-require $GLOBALS[AA_INC_PATH]."tv_misc.php3";
-require $GLOBALS[AA_INC_PATH]."tv_slice.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tv_misc.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tv_slice.php3";
 
 if (substr ($tview,0,1) == "a") {
     $func = "GetTableView";
-    require $GLOBALS["AA_INC_PATH"]."tableviews.php3";
+    require_once $GLOBALS["AA_INC_PATH"]."tableviews.php3";
 }
 
 else    

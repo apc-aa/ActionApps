@@ -22,13 +22,13 @@ http://www.apc.org/
 #             $slice_id
 # optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
 
-require "../include/init_page.php3";
+require_once "../include/init_page.php3";
 
 if(!IfSlPerm(PS_FEEDING)) {
   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 
 $p_slice_id = q_pack_id($slice_id);
 switch ($mode) {
@@ -93,7 +93,7 @@ function Cancel() {
 <BODY>
 <?php
   $useOnLoad = true;
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "n_export");
 
   echo "<H1><B>" . _m("Inter node export settings") . "</B></H1>";

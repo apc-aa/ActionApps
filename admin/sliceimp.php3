@@ -28,13 +28,13 @@ http://www.apc.org/
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
-require $GLOBALS[AA_INC_PATH]."notify.php3";
-require $GLOBALS[AA_INC_PATH]."mgettext.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
+require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 
 
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
@@ -238,7 +238,7 @@ $slice_def_bck = $slice_def = stripslashes($slice_def);
 $imported_count = 0;
 
 // insert xml parser
-require "./sliceimp_xml.php3";
+require_once "./sliceimp_xml.php3";
 
 # import via exported file
 if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
@@ -306,7 +306,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 
 <?php 
-  require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+  require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin","sliceimp");
 ?>
 <?php echo $pom ?>

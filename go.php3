@@ -61,11 +61,11 @@ if (!get_magic_quotes_gpc()) {
 }
 
 /** APC-AA configuration file */
-require "./include/config.php3";
+require_once "./include/config.php3";
 /** Set of useful functions used on most pages */
-require $GLOBALS[AA_INC_PATH]. "util.php3";
+require_once $GLOBALS["AA_INC_PATH"]. "util.php3";
 /** Main include file for using session management function on a page */
-require $GLOBALS[AA_INC_PATH]. "locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]. "locsess.php3";
 
 if( !$sh_itm )
   exit;
@@ -112,6 +112,9 @@ go_url(con_url($url,"sh_itm=$item"));
 
 /*
 $Log$
+Revision 1.6  2003/02/05 14:50:43  jakubadamek
+changing require to require_once, deleting the "if (defined) return" constructs and changing GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"]
+
 Revision 1.5  2003/01/21 06:58:30  mitraearth
 cron.php3
 

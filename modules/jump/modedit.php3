@@ -28,10 +28,10 @@ http://www.apc.org/
 
 $directory_depth = "../";
 $require_default_lang = true;      // do not use module specific language file
-require "../../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
+require_once "../../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 
 // create the $jumps array:
 $db = new DB_AA;
@@ -48,7 +48,7 @@ if ($edit && !$jump_id && count ($jumps)) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "</head><body>";
 
-require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
 showMenu ($aamenus, "aaadmin","jumpedit");
 
 if ($update) {

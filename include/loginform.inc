@@ -1,5 +1,5 @@
 <?php
-require $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 HTMLPageBegin();  ?>
   <title>Login form</title>
  </head>

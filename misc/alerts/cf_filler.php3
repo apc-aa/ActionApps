@@ -28,12 +28,12 @@ http://www.apc.org/
                etc.
 */
 
-require "../../include/config.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
-require "cf_common.php3";
+require_once "../../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3"; 
+require_once "cf_common.php3";
 
 if (!$alerts["run_filler"]) return;
 

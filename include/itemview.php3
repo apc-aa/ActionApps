@@ -27,7 +27,7 @@ if (!defined ("ITEMVIEW_INCLUDED"))
      define ("ITEMVIEW_INCLUDED",1);
 else return;
 
-require $GLOBALS[AA_INC_PATH]."stringexpand.php3";
+require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
 
 class itemview{
   var $db;

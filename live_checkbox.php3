@@ -40,9 +40,9 @@ exit;
 }
          
 $directory_depth = "include/";           
-require "include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
+require_once "include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
 
 $image_path = $AA_BASE_PATH."images/";
 

@@ -18,16 +18,13 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-if (!defined("ITEM_INCLUDED"))
-     define ("ITEM_INCLUDED",1);
-else return;
 
-if( file_exists( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" ) ) {
-  include( $GLOBALS[AA_INC_PATH]."usr_aliasfnc.php3" );
+if( file_exists( $GLOBALS["AA_INC_PATH"]."usr_aliasfnc.php3" ) ) {
+  include( $GLOBALS["AA_INC_PATH"]."usr_aliasfnc.php3" );
 }
 
-require $GLOBALS[AA_INC_PATH]."math.php3";
-require $GLOBALS[AA_INC_PATH]."stringexpand.php3";
+require_once $GLOBALS["AA_INC_PATH"]."math.php3";
+require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
 
 function txt2html($txt) {          // converts plain text to html
   return nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",htmlspecialchars($txt)));

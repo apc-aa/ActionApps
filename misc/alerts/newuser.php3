@@ -29,7 +29,7 @@ http://www.apc.org/
        $lang - set language
 */
         
-require "./lang.php3";
+require_once "./lang.php3";
 
 $err = alerts_subscribe ($email, $lang, $password, $firstname, $lastname);
 if ($err) echo $err;

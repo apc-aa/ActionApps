@@ -29,7 +29,7 @@ http://www.apc.org/
        $show_email - email to be shown but not processed (used by confirm.php3)
 */
 
-require "./lang.php3";
+require_once "./lang.php3";
 
 if ($send_passwd && $email) {
     $db = new DB_AA;

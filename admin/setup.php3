@@ -44,13 +44,13 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v); 
 }
 
-require ("../include/config.php3");
-require ("$GLOBALS[AA_INC_PATH]" . "locsessi.php3");
-require ("$GLOBALS[AA_INC_PATH]" . "perm_core.php3");
-require ("$GLOBALS[AA_INC_PATH]" . "perm_" . PERM_LIB . ".php3");
-require ("$GLOBALS[AA_INC_PATH]" . "util.php3");
-require ("$GLOBALS[AA_INC_PATH]" . "formutil.php3");
-require ("$GLOBALS[AA_INC_PATH]" . "mgettext.php3");
+require_once ("../include/config.php3");
+require_once ($GLOBALS["AA_INC_PATH"] . "locsessi.php3");
+require_once ($GLOBALS["AA_INC_PATH"] . "perm_core.php3");
+require_once ($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
+require_once ($GLOBALS["AA_INC_PATH"] . "util.php3");
+require_once ($GLOBALS["AA_INC_PATH"] . "formutil.php3");
+require_once ($GLOBALS["AA_INC_PATH"] . "mgettext.php3");
 bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".DEFAULT_LANG_INCLUDE);
 
 function HtmlStart() {

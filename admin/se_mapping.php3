@@ -24,15 +24,15 @@ http://www.apc.org/
 # optionaly $from_slice_id for selected imported slice
 # optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
 
-require "../include/init_page.php3";
+require_once "../include/init_page.php3";
 
 if(!IfSlPerm(PS_FEEDING)) {
   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
 
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."csn_util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."csn_util.php3";
 
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -169,7 +169,7 @@ function Submit() {
 <BODY>
 <?php
   $useOnLoad = true;
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin","mapping");
 
   echo "<H1><B>" . _m("Admin - Content Pooling - Fields' Mapping") . "</B></H1>";

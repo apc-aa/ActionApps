@@ -25,12 +25,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 $directory_depth = "../";
-require "$directory_depth../include/init_page.php3";
-require $MODULES[$g_modules[$slice_id]['type']]['menu'];   
-require $GLOBALS["AA_INC_PATH"]."util.php3";
-require $GLOBALS["AA_INC_PATH"]."varset.php3";
-require $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require "./synchro2.php3";
+require_once "$directory_depth../include/init_page.php3";
+require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once "./synchro2.php3";
 
 // -------------------------------------------------------------------
 // HTML code

@@ -44,10 +44,10 @@ http://www.apc.org/
 // I) Standard initialization and sanity checks
 ////////////////////////////////////////////////////////////////////
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-#require $GLOBALS[AA_INC_PATH]."util.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+#require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 
 // sanity checks
 
@@ -214,7 +214,7 @@ while ($row = mysql_fetch_array ($result)){
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 HtmlPageBegin();
 echo '<TITLE> '. _m("Email Notifications of Events"). '</TITLE></HEAD>';
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin","notify");
   
   echo "<H1><B>" . _m("Email Notifications of Events") . "</B></H1>";

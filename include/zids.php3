@@ -53,11 +53,7 @@ http://www.apc.org/
 # qqq_packedids p l   e.g. "A!D\\ss\'qwertyuio"
 # shortids      s     e.g. 1234
 
-if (!defined("AA_IDS_INCLUDED"))
-     define ("AA_IDS_INCLUDED",1);
-else return;
-
-require_once $GLOBALS[AA_INC_PATH]."util.php3";  // quote
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";  // quote
 
 class zids {
         var $a; # Array of ids of type specified in $t

@@ -28,14 +28,14 @@ if( $template['W'] )
   $no_slice_id = true;       # message for init_page.php3
 
 $directory_depth = "../";
-require "../../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."en_site_lang.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."date.php3";
-require $GLOBALS[AA_INC_PATH]."modutils.php3";
-require "./util.php3";
+require_once "../../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."en_site_lang.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."date.php3";
+require_once $GLOBALS["AA_INC_PATH"]."modutils.php3";
+require_once "./util.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -173,7 +173,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m("Site Admin");?></TITLE>
 </HEAD>
 <?php
-  require "./menu.php3";
+  require_once "./menu.php3";
   showMenu ($aamenus, "modadmin", "main");
 
   echo "<H1><B>" . ( $template['W'] ? _m("Add Site") : _m("Edit Site")) . "</B></H1>";

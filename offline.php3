@@ -50,15 +50,15 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v); 
 }
 
-require "./include/config.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
-require $GLOBALS[AA_INC_PATH]."notify.php3";
-require $GLOBALS[AA_INC_PATH]."xmlparse.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
+require_once "./include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
+require_once $GLOBALS["AA_INC_PATH"]."xmlparse.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 
 function SendErrorPage($txt) {
   HTMLPageBegin();

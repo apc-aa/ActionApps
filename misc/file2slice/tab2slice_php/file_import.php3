@@ -57,16 +57,16 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v); 
 }
 
-require "../../include/config.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
-require $GLOBALS[AA_INC_PATH]."notify.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."date.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
+require_once "../../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."date.php3";
+require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 
 function SendErrorPage($txt) {
   if( $GLOBALS["err_url"] )
@@ -88,15 +88,9 @@ function SendOkPage($txt) {
   exit;
 }  
 
-  # init used objects
-$db = new DB_AA;
-$err["Init"] = "";          // error array (Init - just for initializing variable
-$varset = new Cvarset();
-$itemvarset = new Cvarset();
-
 //****************************************************************************
 
-// read the sclice configuration
+// read the slice configuration
 require("./slices_conf.php3");
 $import = file($file_import);
 
@@ -131,61 +125,18 @@ while (list ($line_num, $line) = each ($import)) {
     if( !$slice_info )
       SendErrorPage(L_NO_SUCH_SLICE);
     
-    if( $slice_info["permit_anonymous_post"] < 1 )
-      SendErrorPage(L_ANONYMOUS_POST_ADMITED);
-     else
-      $bin2fill = $slice_info["permit_anonymous_post"]; 
-    
-      # get slice fields and its priorities in inputform
-    list($fields,$prifields) = GetSliceFields($slice_id);   
-    
-    if( !(isset($prifields) AND is_array($prifields)) )
-      SendErrorPage(L_NO_FIELDS);
-      
-    # get defaults 
-    reset($prifields);
-    while(list(,$pri_field_id) = each($prifields)) {
-      $f = $fields[$pri_field_id];
-      $varname = 'v'. unpack_id128($pri_field_id);  # "v" prefix - database field var
-      $htmlvarname = $varname."html";
-      if( !$$varname ) {
-        $$varname = GetDefault($f);
-        $$htmlvarname = GetDefaultHTML($f);
-      }    
-      if( $f[input_validate]=='date') {            # get date from special variables
-        $datectrl_name = new datectrl($varname);
-        if( !$datectrl_name->update())             # updates datectrl
-          # if not set - load from defaults
-          $datectrl_name->setdate_int($$varname);
-        $$varname = $datectrl_name->get_date();    # write to var
-      }  
-      
-        # validate input data
-      if( !$notvalidate )
-      {
-        if( $f[input_show] AND !$f[feed] ) {
-          switch( $f[input_validate] ) {
-            case 'text': 
-            case 'url':  
-            case 'email':  
-            case 'number':  
-            case 'id':  
-              ValidateInput($varname, $f[name], $$varname, $err,
-                            $f[required] ? 1 : 0, $f[input_validate]);
-              break;
-            case 'date':  
-              $datectrl_name->ValidateDate($f[name], $err);
-              break;
-            case 'bool':  
-              $$varname = ($$varname ? 1 : 0);
-              break;
-          }
-        }
-      }   
-    }
+    $bin2fill = $slice_info["permit_anonymous_post"]; 
+    if( $bin2fill < 1 )
+        SendErrorPage(L_ANONYMOUS_POST_ADMITED);
+
+    $id = new_id();
+    ValidateContent4Id (&$err, $slice_id, "insert", 0, ! $notvalidate);
     
     if( count($err)>1 )
       SendErrorPage( $err );
+    
+    if( !(isset($prifields) AND is_array($prifields)) )
+      SendErrorPage(L_NO_FIELDS);
     
       # prepare content4id array before call StoreItem function
     $content4id = GetContentFromForm( $fields, $prifields );
@@ -193,10 +144,8 @@ while (list ($line_num, $line) = each ($import)) {
       # put an item to the right bin
     $content4id["status_code....."][0][value] = ($bin2fill==1 ? 1 : 2);
     
-    // p_arr_m( $content4id );
-    
-      # update database
-    $added_to_db = StoreItem( new_id(), $slice_id, $content4id, $fields, true, 
+    # update database
+    $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, true, 
                               true, true );     # insert, invalidatecache, feed
     
     if( count($err) > 1)

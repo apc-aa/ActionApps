@@ -42,11 +42,11 @@ http://www.apc.org/
 */
 
 /** APC-AA configuration file */
-require "./include/config.php3";
+require_once "./include/config.php3";
 /** Main include file for using session management function on page */
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
 /** Defines class for inserting and updating database fields */
-require $GLOBALS[AA_INC_PATH]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 
 
 /** 

@@ -67,15 +67,15 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v); 
 }
 
-require "./include/config.php3";
-require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";
-require $GLOBALS[AA_INC_PATH]."view.php3";
-require $GLOBALS[AA_INC_PATH]."discussion.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."searchlib.php3";
-require $GLOBALS[AA_INC_PATH]."locsessi.php3";    # DB_AA object definition
+require_once "./include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."view.php3";
+require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";    # DB_AA object definition
 
 add_vars();
 

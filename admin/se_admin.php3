@@ -22,12 +22,12 @@ http://www.apc.org/
 # se_admin.php3 - assigns html format for administation item view (index.php3)
 # optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";     // GetAliasesFromField funct def 
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";     // GetAliasesFromField funct def 
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -107,7 +107,7 @@ function Defaults() {
 </HEAD>
 
 <?php
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "config");
 
   echo "<H1><B>" . _m("Admin - design Item Manager view") . "</B></H1>";

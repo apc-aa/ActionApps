@@ -27,7 +27,7 @@ http://www.apc.org/
        $multiple = 1 -- prints a multiple select box
 */
        
-require "./lang.php3";
+require_once "./lang.php3";
 
 if (!$c) return;
 if (!is_array ($c)) $c = array ($c);

@@ -21,11 +21,11 @@ http://www.apc.org/
 
 // (c) Econnect, Jakub Adamek, January 2003
 
-require "uc_init_page.php3";
-require $GLOBALS[AA_INC_PATH]."constants.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
+require_once "uc_init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 
-require $GLOBALS["AA_INC_PATH"].get_mgettext_lang()."_news_lang.php3";
+require_once $GLOBALS["AA_INC_PATH"].get_mgettext_lang()."_news_lang.php3";
 
 $menu["user"] = array (
     "label" => _m("User Info"),

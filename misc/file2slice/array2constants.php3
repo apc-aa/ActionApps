@@ -3,17 +3,17 @@
 	 by the array - next in this file ($constants2import).
 */
 	
-require "../../include/config.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
-require $GLOBALS[AA_INC_PATH]."notify.php3";
-require $GLOBALS[AA_INC_PATH]."discussion.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."date.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
+require_once "../../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
+require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."date.php3";
+require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
 
 function myQuery (&$db, $SQL, $fire) {
   global $debug;

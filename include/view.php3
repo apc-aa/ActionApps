@@ -19,11 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!defined("VIEW_INCLUDED"))
-     define ("VIEW_INCLUDED",1);
-else return;
-
-require $GLOBALS[AA_INC_PATH] . "itemview.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "itemview.php3";
 
 # ----------------------------------------------------------------------------
 #                         view functions

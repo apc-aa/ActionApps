@@ -34,9 +34,9 @@ http://www.apc.org/
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require "./sliceexp_text.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once "./sliceexp_text.php3";
 
 // Make sure you have permissions to do this
 if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
@@ -137,7 +137,7 @@ if (isset($b_export_to_file))
 <BODY>
 
 <?php
-  require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+  require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin","sliceexp");
 ?>
 

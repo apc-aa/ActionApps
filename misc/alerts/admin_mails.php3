@@ -31,11 +31,11 @@ http://www.apc.org/
 */
 
 
-require "./lang.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";
-require $GLOBALS[AA_INC_PATH]."view.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."searchlib.php3";
+require_once "./lang.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."view.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
 
 //$debug = 1;
 
@@ -68,7 +68,7 @@ function send_mail_confirm () {
             ." OR sessiontime = 0)");
     echo ($db->num_rows() + 0)." mails sent<br>";
     while ($db->next_record()) {
-        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$db->f("lang")."_alerts_lang.php3");
+        bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$db->f("lang")."_alerts_lang.php3");
         $to  = email_address ($db->f("firstname")." ".$db->f("lastname"), $db->f("email"));    
         $subject = _m ("Please confirm your subscription");
         $url = AA_INSTAL_URL."misc/alerts/confirm.php3?id=".$db->f("confirm")."&lang=".$db->f("lang")."&ss=$ss";

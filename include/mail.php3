@@ -25,8 +25,8 @@ if (!defined ("aa_mail_included"))
      define ("aa_mail_included", 1);
 else return;
 
-#require $GLOBALS["AA_INC_PATH"]."item.php3";
-require $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
+#require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 #                    M A I L   handling utility functions 

@@ -32,10 +32,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require "../../include/config.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
-require "cf_common.php3";
+require_once "../../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3"; 
+require_once "cf_common.php3";
 
 if (!isset ($uid)) $uid = $alerts["userid"];
 if (!isset ($cid)) $cid = $alerts["collectionid"];

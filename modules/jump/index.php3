@@ -24,10 +24,10 @@ http://www.apc.org/
 # used in init_page.php3 script to include config.php3 from the right directory
 $directory_depth = '../';
 
-require "../../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH] . "varset.php3";
-require $GLOBALS[AA_INC_PATH] . "view.php3";
-require $GLOBALS[AA_INC_PATH] . "pagecache.php3";
+require_once "../../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "varset.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "view.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "pagecache.php3";
 
 $db = new DB_AA;
 $db->query("SELECT * FROM jump WHERE slice_id = '".q_pack_id($slice_id)."'");

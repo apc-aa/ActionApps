@@ -121,18 +121,18 @@ $lang_file = "en_news_lang.php3";
 $template_id = "96f50946e092fd45ed90af3de572bd4e";  # EN template
 $template = 0;
 
-require "../../include/config.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
-require $GLOBALS[AA_INC_PATH]."notify.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."date.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
-require $GLOBALS[AA_INC_PATH]."mgettext.php3";
-require "./move_util.php3";
+require_once "../../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."date.php3";
+require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once "./move_util.php3";
 
 class OLD_DB_AA extends DB_Sql {
   var $Host     = OLD_DB_HOST;
@@ -447,6 +447,9 @@ else
 
 /*
 $Log$
+Revision 1.6  2003/02/05 14:56:15  jakubadamek
+changing require to require_once, deleting the "if (defined) return" constructs and changing GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"]
+
 Revision 1.5  2003/01/27 13:51:04  jakubadamek
 fixed language constants
 

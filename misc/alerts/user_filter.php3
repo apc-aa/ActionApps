@@ -27,8 +27,8 @@ http://www.apc.org/
        $ss - URL for stylesheet, default: standard AA control panel stylesheet
 */
 
-require "./lang.php3";
-require $GLOBALS[AA_INC_PATH]."/formutil.php3";
+require_once "./lang.php3";
+require_once $GLOBALS["AA_INC_PATH"]."/formutil.php3";
 
 $show_filters = false;
       
@@ -37,7 +37,7 @@ $db = new DB_AA;
 $user = AlertsUser ($alerts_session);
 if ($signout) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&lang=$lang&ss=$ss");
 if (!$user) go_url (AA_INSTAL_URL."misc/alerts?show_email=$email&Msg="._m("Your session has expired. Please login again."));
-else bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$user["lang"]."_alerts_lang.php3");
+else bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$user["lang"]."_alerts_lang.php3");
 
 /* ----------------------------------------------------------------------------------------
                           PROCESS FORM DATA -- UPDATE DATABASE

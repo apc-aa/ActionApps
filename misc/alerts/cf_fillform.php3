@@ -26,11 +26,11 @@ http://www.apc.org/
         $cid or $alerts[collectionid] .. collection ID (if you want to refill collection info)
 */
 
-require "../../include/config.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
-require "cf_common.php3";
+require_once "../../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3"; 
+require_once "cf_common.php3";
 
 if (!isset ($uid)) $uid = $alerts["userid"];
 if (!isset ($cid)) $cid = $alerts["collectionid"];

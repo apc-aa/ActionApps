@@ -23,8 +23,8 @@ if (!is_array($_PHPLIB)) {
   $_PHPLIB["libdir"] = "";
 }
 
-require $GLOBALS["AA_INC_PATH"]."util.php3";
-require $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
   require($_PHPLIB["libdir"] . "db_mysql.inc");  
@@ -56,7 +56,7 @@ class AA_UC_Auth extends Auth {
                                                   # to cookies username, then the 
                                                   # cookies username is used - error
         
-        require ($GLOBALS["AA_BASE_PATH"] . "modules/alerts/uc_index.php3");
+        require_once ($GLOBALS["AA_BASE_PATH"] . "modules/alerts/uc_index.php3");
     }
     
     function auth_preauth() {

@@ -22,7 +22,7 @@ http://www.apc.org/
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tableview.html
 
-require $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
 function ShowEmailAliases () {    
     $ali[] = array (

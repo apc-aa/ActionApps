@@ -30,16 +30,16 @@ http://www.apc.org/
 */
 
 $directory_depth = "../";
-require "../../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."menu.php3";
-require "cf_common.php3";
+require_once "../../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+require_once "cf_common.php3";
 
 if (!is_object ($db)) $db = new DB_AA;
 
 if (!$collectionid) { echo _m("Jump to this page from a Collection Edit page"); exit; }
 if ($formlang)
-    bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$formlang."_news_lang.php3");
+    bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$formlang."_news_lang.php3");
     
 $db->query("
     SELECT DF.* FROM alerts_collection_filter CF INNER JOIN

@@ -23,8 +23,8 @@ if (!defined ("AA_ALERTS_UTIL_INCLUDED"))
      define  ("AA_ALERTS_UTIL_INCLUDED", 1);
 else return;
 
-require $GLOBALS["AA_INC_PATH"]."mail.php3";
-require $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 
 if (!is_object ($db))   
     $db=new DB_AA;

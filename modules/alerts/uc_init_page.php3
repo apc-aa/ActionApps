@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// this allows to require this script any number of times - it will be read only once
+// this allows to require_once this script any number of times - it will be read only once
 if (!defined ("INIT_PAGE_INCLUDED"))
 	define ("INIT_PAGE_INCLUDED",1);
 else return;
@@ -51,7 +51,7 @@ if($encap == "false")    # used in itemedit for anonymous form
                          # if the get_magic_quotes_gpc()==false (see above)
 
 # modules other than slices are in deeper directory -> $directory_depth
-require "$directory_depth../../include/config.php3";
+require_once "$directory_depth../../include/config.php3";
 
 # should be set in config.php3 - used for relative path to image directory
 if (!$AA_INSTAL_PATH) {
@@ -64,9 +64,9 @@ if (!$AA_BASE_PATH) {
   $AA_BASE_PATH = substr($AA_INC_PATH, 0, -8);
 }
 
-require $GLOBALS[AA_BASE_PATH] . "modules/alerts/uc_auth.php3";
-require $GLOBALS[AA_INC_PATH] . "scroller.php3";
-require $GLOBALS[AA_BASE_PATH] . "modules/alerts/util.php3";
+require_once $GLOBALS[AA_BASE_PATH] . "modules/alerts/uc_auth.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "scroller.php3";
+require_once $GLOBALS[AA_BASE_PATH] . "modules/alerts/util.php3";
 
 page_open(array("sess" => "AA_UC_Session", "auth" => "AA_UC_Auth"));
 

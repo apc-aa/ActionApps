@@ -19,10 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!defined("AA_LOCAUTH_INCLUDED"))
-     define ("AA_LOCAUTH_INCLUDED", 1);
-else return;
-
 if (!is_array($_PHPLIB)) {
   $_PHPLIB["libdir"] = "";
 }
@@ -43,16 +39,16 @@ if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
 
 /* Required, contains your local session management extension */
 if($encap) {
-  require($GLOBALS[AA_INC_PATH] . "extsessi.php3");   // if encapsulated (itemedit.php3) we can't send more Header
+  require($GLOBALS["AA_INC_PATH"] . "extsessi.php3");   // if encapsulated (itemedit.php3) we can't send more Header
  } else {
-  require($GLOBALS[AA_INC_PATH] . "extsess.php3");     
+  require($GLOBALS["AA_INC_PATH"] . "extsess.php3");     
 }  
 
 /* Required, contains your local authentication extension. */
 if($nobody) {  // used in itemedit.php3 for anonymoous news posting
-  require($GLOBALS[AA_INC_PATH] . "extauthnobody.php3");     
+  require($GLOBALS["AA_INC_PATH"] . "extauthnobody.php3");     
  } else { 
-  require($GLOBALS[AA_INC_PATH] . "extauth.php3");     
+  require($GLOBALS["AA_INC_PATH"] . "extauth.php3");     
 }  
 
 /* Required, contains the page management functions. */

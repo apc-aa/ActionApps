@@ -1,8 +1,8 @@
 <?php
-require "../include/config.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require "../include/constedit_util.php3";
+require_once "../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once "../include/constedit_util.php3";
 
 if (!$group_id) {
 	echo

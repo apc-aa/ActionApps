@@ -29,7 +29,7 @@ http://www.apc.org/
 
 // (c) Econnect, Jakub Adamek, December 2002
 
-require "alerts_sending.php3";
+require_once "alerts_sending.php3";
 
 // ----------------------------------------------------------------------------
 

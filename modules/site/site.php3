@@ -27,12 +27,12 @@ function getmicrotime(){
 $timestart = getmicrotime();
 
 # APC AA site Module main administration page
-require "../../include/config.php3";
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3"; 
-require $GLOBALS[AA_INC_PATH]."pagecache.php3"; 
-require $GLOBALS[AA_INC_PATH]."stringexpand.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3"; # So site_ can create an item
+require_once "../../include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3"; 
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3"; 
+require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3"; # So site_ can create an item
 
 function IsInDomain( $domain ) {
   global $HTTP_HOST;
@@ -59,7 +59,7 @@ if( substr($site_info['state_file'],0,4) == 'http' ) {
   echo "TODO";
 } else {
   # in the following file we should define apc_state variable
-  require "./sites/site_".$site_info['state_file'];   
+  require_once "./sites/site_".$site_info['state_file'];   
 }
 
 # look into cache if the page is not cached
@@ -84,13 +84,13 @@ if( is_array($slices4cache) && !$nocache && ($res = $sitecache->get($key_str)) )
   exit;
 } 
 
-require "./util.php3";                      # module specific utils
-require "./sitetree.php3";                  # module specific utils
-require $GLOBALS[AA_INC_PATH]."searchlib.php3"; 
-require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
-require $GLOBALS[AA_INC_PATH]."view.php3";
-require $GLOBALS[AA_INC_PATH]."discussion.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3"; 
+require_once "./util.php3";                      # module specific utils
+require_once "./sitetree.php3";                  # module specific utils
+require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3"; 
+require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
+require_once $GLOBALS["AA_INC_PATH"]."view.php3";
+require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3"; 
   
 $res = ModW_GetSite( $apc_state, $site_id, $site_info );
 echo $res;

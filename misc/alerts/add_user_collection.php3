@@ -32,7 +32,7 @@ http://www.apc.org/
        $err_url 
 */
        
-require "./lang.php3";
+require_once "./lang.php3";
 
 function error ($err)
 {

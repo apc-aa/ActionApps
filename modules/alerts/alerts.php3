@@ -29,12 +29,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require "./lang.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";
-require $GLOBALS[AA_INC_PATH]."view.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."searchlib.php3";
-require $GLOBALS[AA_INC_PATH]."alerts_sending.php3";
+require_once "./lang.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."view.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
+require_once $GLOBALS["AA_INC_PATH"]."alerts_sending.php3";
 
 //$debug = 1;
 

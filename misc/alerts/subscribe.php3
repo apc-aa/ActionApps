@@ -27,7 +27,7 @@ http://www.apc.org/
        $ss - set style sheet
 */
        
-require "./lang.php3";
+require_once "./lang.php3";
 
 if ($email) {
     alerts_subscribe ($email, $lang, $password, $firstname, $lastname);

@@ -19,10 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!defined("AA_CONSTANTS_INCLUDED"))
-    define("AA_CONSTANTS_INCLUDED",1);
-else return;
-
 #
 # Used constants. Do not edit if you are not developer.
 #

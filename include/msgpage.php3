@@ -27,11 +27,11 @@ if (!defined ("AA_MSGPAGE_INCLUDED"))
     define("AA_MSGPAGE_INCLUDED","1");
 else return;
 
-require $GLOBALS[AA_INC_PATH]."constants.php3";
+require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
 if( isset($g_modules[$slice_id])) {
-  require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+  require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
 } else {
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
 }
 
 
@@ -43,7 +43,7 @@ function MsgPageMenu ($url, $msg, $mode, $menu="") {
   global $sess, $auth, $slice_id, $aamenus;
 
   if( !isset($sess) ) {
-    require $GLOBALS[AA_INC_PATH] . "locauth.php3";
+    require_once $GLOBALS["AA_INC_PATH"] . "locauth.php3";
     page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
   }
     

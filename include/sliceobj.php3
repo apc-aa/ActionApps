@@ -32,14 +32,9 @@ http://www.apc.org/
 # A design goal is to use lazy-evaluation wherever possible, i.e. to only 
 # go to the database when something is needed.
 
-if (!defined("AA_SLICE_INCLUDED"))
-     define ("AA_SLICE_INCLUDED",1);
-else return;
-
-
 require_once "../include/config.php3";
-require_once $GLOBALS[AA_INC_PATH]."locsess.php3";
-require_once $GLOBALS[AA_INC_PATH]."zids.php3"; // Pack and unpack ids
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."zids.php3"; // Pack and unpack ids
 
 class slice {
     var $name;  # The name of the slice

@@ -8,5 +8,5 @@
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
 */
     $directory_depth = "../";
-    require "../../admin/slicedel2.php3";
+    require_once "../../admin/slicedel2.php3";
 ?>

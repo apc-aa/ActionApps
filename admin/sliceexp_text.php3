@@ -32,8 +32,8 @@ http://www.apc.org/
 	slice array, in the form of a third-level associative array. 
 */
 
-require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
-require $GLOBALS[AA_INC_PATH] . "sliceobj.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "sliceobj.php3";
 
 function getRecord (&$array, &$record) 
 {

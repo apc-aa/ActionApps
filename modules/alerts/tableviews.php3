@@ -24,9 +24,9 @@ http://www.apc.org/
 
 // Settings for Alerts-related table views 
 
-require "util.php3";
-require $GLOBALS["AA_INC_PATH"]."tv_email.php3";
-require $GLOBALS["AA_INC_PATH"]."perm_core.php3";
+require_once "util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tv_email.php3";
+require_once $GLOBALS["AA_INC_PATH"]."perm_core.php3";
 
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
 function GetAlertsTableView ($viewID, $processForm = false) {        

@@ -30,18 +30,18 @@ $encap = ( ($encap=="false") ? false : true );
 if( $edit OR $add )         # parameter for init_page - we edited new item so 
   $unset_r_hidden = true;   # clear stored content
 
-require "../include/init_page.php3";     # This pays attention to $change_id
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
-require $GLOBALS[AA_INC_PATH]."notify.php3";
+require_once "../include/init_page.php3";     # This pays attention to $change_id
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
 
 // needed for field JavaScript to work 
 
-if( file_exists( $GLOBALS[AA_INC_PATH]."usr_validate.php3" ) ) {
-  include( $GLOBALS[AA_INC_PATH]."usr_validate.php3" );
+if( file_exists( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" ) ) {
+  include( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" );
 }
 
 if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED 

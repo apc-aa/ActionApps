@@ -22,7 +22,7 @@ http://www.apc.org/
 # Cross-Server Networking - xml_aa_rss fetch function
 #
 
-require $GLOBALS[AA_INC_PATH]."logs.php3";
+require_once $GLOBALS["AA_INC_PATH"]."logs.php3";
 
 // fetch xml data from $url through http. This function is used by the rss aa module client as well as
 // by the administrative interface

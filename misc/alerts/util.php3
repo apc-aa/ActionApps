@@ -40,7 +40,7 @@ function AlertsUser ($session) {
     if ($db->next_record()) {
         $GLOBALS["email"] = $db->f("email");
         $GLOBALS["lang"] = $db->f("lang");
-        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$GLOBALS["lang"]."_alerts_lang.php3");
+        bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$GLOBALS["lang"]."_alerts_lang.php3");
         if ($db->f("sessiontime") > time() - 600) {
             $db->query("UPDATE alerts_user SET sessiontime=".time());
             return $db->Record;

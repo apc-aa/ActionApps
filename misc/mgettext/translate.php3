@@ -27,7 +27,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require "../../include/mgettext.php3";
+require_once "../../include/mgettext.php3";
 
 /**  Translates files using L_ language constants to _m() function calls.
 *	

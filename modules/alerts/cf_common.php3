@@ -27,9 +27,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require "util.php3";
-require "../../include/util.php3";
-require "../../include/formutil.php3";
+require_once "util.php3";
+require_once "../../include/util.php3";
+require_once "../../include/formutil.php3";
 
 add_post2shtml_vars ();
 

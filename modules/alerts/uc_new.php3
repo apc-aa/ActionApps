@@ -21,12 +21,12 @@ http://www.apc.org/
 
 // (c) Econnect, Jakub Adamek, December 2002
 
-require "uc_menu.php3";
-require $GLOBALS[AA_INC_PATH]."constants.php3";
-require $GLOBALS[AA_INC_PATH]."tabledit.php3";
-require $GLOBALS[AA_INC_PATH]."tv_common.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require "uc_tableviews.php3";
+require_once "uc_menu.php3";
+require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once "uc_tableviews.php3";
 
 showMenu ("new");
 

@@ -21,12 +21,12 @@ http://www.apc.org/
 
 # expected $slice_id for edit slice, nothing for adding slice
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."constants_param_wizard.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 function EditConstantURL() {
   global $fld, $sess;
@@ -240,7 +240,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </script>
 </HEAD>
 <?php 
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin");
   
   echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";

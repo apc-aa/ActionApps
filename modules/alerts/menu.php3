@@ -33,14 +33,10 @@ http://www.apc.org/
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
-if (!defined("ALERTS_MENU_INCLUDED"))
-      define("ALERTS_MENU_INCLUDED",1);
-else return;
-
-require $GLOBALS[AA_INC_PATH]."menu_util.php3";
-require $GLOBALS[AA_INC_PATH]."perm_core.php3";
-require $GLOBALS[AA_INC_PATH]."mgettext.php3";
-require "util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."menu_util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."perm_core.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once "util.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
@@ -93,7 +89,7 @@ function get_aamenus ()
         "submenu"=>"aaadmin_submenu");
 		              
     // left menu for aaadmin is common to all modules, so it is shared
-    require $GLOBALS[AA_INC_PATH]."menu_aa.php3";
+    require_once $GLOBALS["AA_INC_PATH"]."menu_aa.php3";
         
     $aamenus["admin_submenu"] = array (
         "bottom_td"=>200,

@@ -25,11 +25,11 @@ http://www.apc.org/
 #             category - edit categories for this slice (no group_id nor categ required)
 #             as_new - if we want to create new category group based on an existing (id of "template" group)
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."constedit_util.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."constedit_util.php3";
 
 $where_used = true;
 
@@ -278,7 +278,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m("Admin - Constants Setting");?></TITLE>
 </HEAD>
 <?php 
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin", $categ ? "category" : "");
     
   echo "<H1><B>" . _m("Admin - Constants Setting") . "</B></H1>";
@@ -291,7 +291,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
   // load the HIERARCHICAL EDITOR
   if ($hierarch) {
-	  require $GLOBALS[AA_INC_PATH]."constedit.php3";
+	  require_once $GLOBALS["AA_INC_PATH"]."constedit.php3";
   }
 ?>
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">

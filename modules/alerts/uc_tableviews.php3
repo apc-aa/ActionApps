@@ -24,7 +24,7 @@ http://www.apc.org/
 
 // Settings for Alerts-related table views 
 
-require "util.php3";
+require_once "util.php3";
 
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
 function GetAlertsUCTableView ($viewID, $processForm = false) {        

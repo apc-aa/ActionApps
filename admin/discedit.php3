@@ -25,13 +25,13 @@ http://www.apc.org/
 #           $d_id
 #           $h
 
-require "../include/init_page.php3";
+require_once "../include/init_page.php3";
 
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."discussion.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 // get a headline of the item
 function getHeadline($content4id) {

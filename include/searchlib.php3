@@ -23,8 +23,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require $GLOBALS[AA_INC_PATH]."sql_parser.php3";
-require $GLOBALS[AA_INC_PATH]."zids.php3";
+require_once $GLOBALS["AA_INC_PATH"]."sql_parser.php3";
+require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
 
 function GetWhereExp( $field, $operator, $querystring ) {
 

@@ -25,11 +25,11 @@ http://www.apc.org/
 */
 
 
-require "./lang.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";
-require $GLOBALS[AA_INC_PATH]."view.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."searchlib.php3";
+require_once "./lang.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."view.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
 
 //$debug = 1;
 
@@ -70,7 +70,7 @@ function create_filter_text ($ho)
         list($fields) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);       
         // set language
-        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$slice["lang"]."_alerts_lang.php3");
+        bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$slice["lang"]."_alerts_lang.php3");
         
         reset ($slice["views"]);
         while (list ($vid, $view) = each ($slice["views"])) {                      
@@ -177,7 +177,7 @@ function send_emails ($ho)
         
     $db->query("SELECT * FROM alerts_user WHERE confirm=''");
     while ($db->next_record()) {
-        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$db->f("lang")."_alerts_lang.php3");
+        bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$db->f("lang")."_alerts_lang.php3");
         $howoften_digest = array (
             "daily"=>_m("AA Alerts - daily digest of "),
             "weekly"=>_m("AA Alerts - weekly digest of "),

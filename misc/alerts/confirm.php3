@@ -26,7 +26,7 @@ http://www.apc.org/
        $ss - set style sheet URL
 */
 
-require "./lang.php3";
+require_once "./lang.php3";
 
 $db = new DB_AA;
 

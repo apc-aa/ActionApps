@@ -110,20 +110,20 @@ if (!get_magic_quotes_gpc()) {
 
 $encap = ( ($encap=="false") ? false : true );
 
-require "./include/config.php3";
-require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";
-require $GLOBALS[AA_INC_PATH]."view.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."searchlib.php3";
-require $GLOBALS[AA_INC_PATH]."discussion.php3";
-require $GLOBALS[AA_INC_PATH]."mgettext.php3";
+require_once "./include/config.php3";
+require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."view.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
+require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 // function definitions:
-require $GLOBALS[AA_INC_PATH]."slice.php3";
+require_once $GLOBALS["AA_INC_PATH"]."slice.php3";
 
-if ($encap){require $GLOBALS[AA_INC_PATH]."locsessi.php3";}
-else {require $GLOBALS[AA_INC_PATH]."locsess.php3";}
+if ($encap){require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";}
+else {require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";}
 
 page_open(array("sess" => "AA_SL_Session"));
 
@@ -181,7 +181,7 @@ if (!$slice_id && is_array($slices)) {
 
 $p_slice_id= q_pack_id($slice_id);
 
-require $GLOBALS[AA_INC_PATH]."javascript.php3";
+require_once $GLOBALS["AA_INC_PATH"]."javascript.php3";
 
 $db = new DB_AA; 		 // open BD	
 $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
@@ -193,7 +193,7 @@ list($fields) = GetSliceFields($slice_id);
   # get slice info
 $slice_info = GetSliceInfo($slice_id);
 if ($slice_info AND ($slice_info[deleted]<1)) {
-//  include $GLOBALS[AA_INC_PATH] . $slice_info[lang_file];  // language constants (used in searchform...)
+//  include $GLOBALS["AA_INC_PATH"] . $slice_info[lang_file];  // language constants (used in searchform...)
 }
 else {
   echo _m("Invalid slice number or slice was deleted") . " (ID: $slice_id)";

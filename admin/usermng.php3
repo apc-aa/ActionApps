@@ -22,9 +22,9 @@ http://www.apc.org/
 # expected $slice_id for edit slice
 # optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update successful)
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 if( $usr_edit AND $selected_user AND ($selected_user>0) )
   go_url(	$sess->url(self_base() . "um_uedit.php3"));
@@ -56,13 +56,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
   $xx = ($slice_id!="");
   $show = Array("u_new"=>$xx, "u_edit"=>$xx, "g_new"=>$xx, "g_edit"=>$xx);
-  require $GLOBALS[AA_INC_PATH]."um_inc.php3";   //show navigation column depending on $show variable
+  require_once $GLOBALS["AA_INC_PATH"]."um_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>"._m("Users")."</B></H1>";
   echo $Msg;
 
-  include $GLOBALS[AA_INC_PATH]."um_usrch.php3";
-  include $GLOBALS[AA_INC_PATH]."um_usrch.php3";
+  include $GLOBALS["AA_INC_PATH"]."um_usrch.php3";
+  include $GLOBALS["AA_INC_PATH"]."um_usrch.php3";
 
 HtmlPageEnd(); 
 page_close()?>

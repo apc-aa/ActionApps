@@ -26,16 +26,16 @@ http://www.apc.org/
 
 $save_hidden = true;   # do not delete r_hidden session variable in init_page!
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH] . "varset.php3";
-require $GLOBALS[AA_INC_PATH] . "view.php3";
-require $GLOBALS[AA_INC_PATH] . "pagecache.php3";
-require $GLOBALS[AA_INC_PATH] . "item.php3";
-require $GLOBALS[AA_INC_PATH] . "feeding.php3";
-require $GLOBALS[AA_INC_PATH] . "itemfunc.php3";
-require $GLOBALS[AA_INC_PATH] . "notify.php3";
-require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
-require $GLOBALS[AA_INC_PATH] . "formutil.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "varset.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "view.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "item.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "feeding.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "itemfunc.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "notify.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
 
 $sess->register(r_sid);
 if( $sid )

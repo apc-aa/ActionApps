@@ -71,22 +71,22 @@ if (!get_magic_quotes_gpc()) {
 }
 
 /** APC-AA configuration file */
-require "include/config.php3";
+require_once "include/config.php3";
 /** Main include file for using session management function on a page */
-require $GLOBALS[AA_INC_PATH]."locsess.php3";
+require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
 /** Set of useful functions used on most pages */
-require $GLOBALS[AA_INC_PATH]."util.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 /** Defines class for inserting and updating database fields */
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
 /** utility for notifying people of events by email */
-require $GLOBALS[AA_INC_PATH]."notify.php3";
+require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
 /** defines PageCache class used for caching informations into database */
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 /** date helper functions */
-require $GLOBALS[AA_INC_PATH]."date.php3";
-require $GLOBALS[AA_INC_PATH]."feeding.php3";
+require_once $GLOBALS["AA_INC_PATH"]."date.php3";
+require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
     
 /**
  * Outputs a notification page when an error occurs.
@@ -115,7 +115,7 @@ function SendErrorPage($txt) {
         // allows fillform to use this data 
         $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = $GLOBALS["content4id"];            
         $GLOBALS["shtml_page"] = $GLOBALS["err_url"];
-        require "post2shtml.php3";
+        require_once "post2shtml.php3";
         exit;
     }
 }  
@@ -135,7 +135,7 @@ function SendOkPage() {
         // allows fillform to use this data 
         $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = $GLOBALS["content4id"];            
         $GLOBALS["shtml_page"] = $GLOBALS["err_url"];
-        require "post2shtml.php3";
+        require_once "post2shtml.php3";
         exit;
     }
 }  
@@ -219,7 +219,7 @@ else if (!is_array ($err)) {
 
 if ($embedded) {
     $called_from_filler = 1;
-    require "fillform.php3";
+    require_once "fillform.php3";
     fillFormWithContent ($content4id);
 }
 

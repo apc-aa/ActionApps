@@ -75,27 +75,27 @@ if (!isset ($form)) $form = "f";
 $encap = ( ($encap=="false") ? false : true );
 
 /** APC-AA configuration file */
-require "include/config.php3";
+require_once "include/config.php3";
 /** Defines simplified class for page scroller */
-require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
+require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
 /** Set of useful functions used on most pages */
-require $GLOBALS[AA_INC_PATH]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
-require $GLOBALS[AA_INC_PATH]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";
 /** parses view settings, gets view data and other functions */
-require $GLOBALS[AA_INC_PATH]."view.php3";
+require_once $GLOBALS["AA_INC_PATH"]."view.php3";
 /** defines PageCache class used for caching informations into database */
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 /** functions for searching and filtering items */
-require $GLOBALS[AA_INC_PATH]."searchlib.php3";
+require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
 /** discussion utility functions */
-require $GLOBALS[AA_INC_PATH]."discussion.php3";
+require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
 /** Defines class for inserting and updating database fields */
-require $GLOBALS[AA_INC_PATH]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 /** Main include file for using session management function on an encapsulated (.shtml) page */
-if ($encap) require $GLOBALS[AA_INC_PATH]."locsessi.php3";
+if ($encap) require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";
 /** Main include file for using session management function on a page */
-else require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
+else require_once $GLOBALS["AA_INC_PATH"]."locsess.php3"; 
 
 page_open(array("sess" => "AA_SL_Session"));
 

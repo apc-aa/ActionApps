@@ -19,10 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!defined("AA_UM_UTIL_INCLUDED"))
-     define ("AA_UM_UTIL_INCLUDED",1);
-else return;
-
 # Prints html tag <select ..
 function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
   if( $substract=="" )                 // $substract list of values not shovn in <select> even if in $arr

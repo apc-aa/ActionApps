@@ -19,11 +19,11 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-//require "lang.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";
-require $GLOBALS[AA_INC_PATH]."view.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."searchlib.php3";
+//require_once "lang.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS["AA_INC_PATH"]."view.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
 
 //$debug = 1;
 
@@ -69,7 +69,7 @@ function create_filter_text_from_list ($ho, $slices, $update=true)
         list($fields) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);       
         // set language
-        bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$slice["lang"]."_alerts_lang.php3");
+        bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$slice["lang"]."_alerts_lang.php3");
         
         reset ($slice["views"]);
         while (list ($vid, $view) = each ($slice["views"])) {                      
@@ -199,7 +199,7 @@ function send_emails ($ho, $collection_ids = "all", $emails = "all")
         "weekly"=>_m("AA Alerts - weekly digest of "),
         "monthly"=>_m("AA Alerts - monthly digest of "));        
                   
-    //bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/cz_alerts_lang.inc");
+    //bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/cz_alerts_lang.inc");
     if (!is_array ($colls)) return;
     reset ($colls);
     while (list ($cid, $collection) = each ($colls)) {

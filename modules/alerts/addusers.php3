@@ -27,10 +27,10 @@ http://www.apc.org/
 */
 
 $directory_depth = "../";
-require "../../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $MODULES[$g_modules[$slice_id]['type']]['menu'];   
+require_once "../../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   
 
 $db->query("SELECT * FROM alerts_collection WHERE id=$collectionid");
 $db->next_record();

@@ -23,12 +23,12 @@ http://www.apc.org/
 # used in initpage.php3 script to include config.php3 from the right directory
 $directory_depth = '../';
 
-require "../../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH] . "varset.php3";
-require $GLOBALS[AA_INC_PATH] . "formutil.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3"; 
-require "./util.php3";   # module specific utils
-require "./sitetree.php3";   # module specific utils
+require_once "../../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "varset.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3"; 
+require_once "./util.php3";   # module specific utils
+require_once "./sitetree.php3";   # module specific utils
 
 # ----------------- function definition end -----------------------------------
 
@@ -133,7 +133,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </head> <?php
 
 # module specific navigation bar
-require "./menu.php3";
+require_once "./menu.php3";
 showMenu ($aamenus, "codemanager");
 
 echo '<br>

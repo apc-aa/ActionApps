@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// this allows to require this script any number of times - it will be read only once
+// this allows to require_once this script any number of times - it will be read only once
 if (!defined ("VARSET_INCLUDED"))
 	define ("VARSET_INCLUDED",1);
 else return;

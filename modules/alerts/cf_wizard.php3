@@ -28,9 +28,9 @@ http://www.apc.org/
 */
 
 $directory_depth = "../";
-require "../../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $MODULES[$g_modules[$slice_id]['type']]['menu'];   
+require_once "../../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". _m("Collection Form Wizard") ."</TITLE>
@@ -42,10 +42,10 @@ showMenu ($aamenus, "admin", "formwizard");
 
 if (!is_object ($db)) $db = new DB_AA;
 if ($formlang) 
-    bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".$formlang."_alerts_lang.php3");
+    bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$formlang."_alerts_lang.php3");
 
 // after bind_mgettext_domain!
-require "cf_common.php3";
+require_once "cf_common.php3";
     
 // create the Choose Filters code
 $db->query("

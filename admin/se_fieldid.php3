@@ -31,11 +31,11 @@ http://www.apc.org/
    SQL commands. You may use the :old_id: and :new_id: strings which will be replaced by the old / new ids.
 */
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 set_time_limit(600);
 
@@ -233,7 +233,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 </HEAD>
 <?php 
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "field_ids");  
   
   echo "<H1><B>" . _m("Admin - change Field IDs") . "</B></H1>";

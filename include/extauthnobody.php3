@@ -22,12 +22,12 @@ http://www.apc.org/
 */
 
 
-require($GLOBALS[AA_INC_PATH] . "perm_core.php3"); // allways included!
+require($GLOBALS["AA_INC_PATH"] . "perm_core.php3"); // allways included!
 
 // choice of the permission system library
 // PERM_LIB is defined in config.php3
 
-require($GLOBALS[AA_INC_PATH] . "perm_" . PERM_LIB . ".php3");
+require($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
 
 // Required, contains your local session management extension
 
@@ -50,7 +50,7 @@ class AA_CP_Auth extends Auth {
     global $sess;
     global $_PHPLIB;
     global $username, $password, $anonymous_user;
-    require ($GLOBALS[AA_INC_PATH] . "loginform.html");
+    require_once ($GLOBALS["AA_INC_PATH"] . "loginform.html");
   }
   
   function auth_validatelogin() {

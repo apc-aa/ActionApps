@@ -24,9 +24,9 @@ http://www.apc.org/
 # used in init_page.php3 script to include config.php3 from the right directory
 $directory_depth = '../';
 
-require "../../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH] . "varset.php3";
-require $GLOBALS[AA_INC_PATH] . "formutil.php3";
+require_once "../../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "varset.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
 
 # id of the editted module
 $module_id = $slice_id;               # id in long form (32-digit hexadecimal
@@ -52,8 +52,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <title><?php echo _m("Editor window - item manager") ?></title>
 </head> <?php
 
-require "navbar.php3"; # module specific navigation bar
-require "util.php3";   # module specific utils
+require_once "navbar.php3"; # module specific navigation bar
+require_once "util.php3";   # module specific utils
 
 
 # fill code for the main admin page layout
@@ -68,6 +68,9 @@ exit;
 
 /*
 $Log$
+Revision 1.3  2003/02/05 14:57:01  jakubadamek
+changing require to require_once, deleting the "if (defined) return" constructs and changing GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"]
+
 Revision 1.2  2003/01/17 10:38:34  jakubadamek
 BIG CHANGES due to moving AA to use mini-gettext
 

@@ -23,13 +23,9 @@ http://www.apc.org/
 # Miscellaneous utility functions 
 #
 
-if (!defined("AA_UTIL_INCLUDED"))
-     define ("AA_UTIL_INCLUDED",1);
-else return;
-
-require $GLOBALS[AA_INC_PATH]."constants.php3";
-require $GLOBALS[AA_INC_PATH]."mgettext.php3";
-require $GLOBALS[AA_INC_PATH]."zids.php3";
+require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
+require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
 
 function get_aa_url ($href) {
     global $AA_INSTAL_PATH, $sess;
@@ -55,7 +51,7 @@ function my_in_array ($needle, $array) {
 /** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
 function debuglog ($text) 
 {
-	$f = fopen ($GLOBALS[AA_INC_PATH]."logs.txt","a");
+	$f = fopen ($GLOBALS["AA_INC_PATH"]."logs.txt","a");
     if ($f) {
     	fwrite ($f, date( "h:i:s j-m-y ")  . $text . "\n");
 	    fclose ($f);

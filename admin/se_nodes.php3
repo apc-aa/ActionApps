@@ -29,14 +29,14 @@ http://www.apc.org/
 #             $old_node_name
 #             $sel_node_name
 
-require "../include/init_page.php3";
+require_once "../include/init_page.php3";
 
 if( !isSuperadmin() ) {
   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to manage nodes"));
   exit;
 }
 $err["Init"]="";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 
  if ($mode == "edit") {
     $db->query("SELECT * FROM nodes WHERE name='$sel_node_name'");
@@ -136,7 +136,7 @@ function Cancel() {
 <BODY>
 <?php
   $useOnLoad = true;
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin","nodes");
 
   echo "<H1><B>" . _m("Remote node administration") . "</B></H1>";

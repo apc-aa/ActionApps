@@ -19,12 +19,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require($GLOBALS[AA_INC_PATH] . "perm_core.php3"); // allways included!
+require($GLOBALS["AA_INC_PATH"] . "perm_core.php3"); // allways included!
 
 // choice of the permission system library
 // PERM_LIB is defined in config.php3
 
-require($GLOBALS[AA_INC_PATH] . "perm_" . PERM_LIB . ".php3");
+require($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
 
 // Required, contains your local session management extension
 
@@ -49,7 +49,7 @@ class AA_CP_Auth extends Auth {
                                               # to cookies username, then the 
                                               # cookies username is used - error
     
-    require ($GLOBALS[AA_INC_PATH] . "loginform.inc");
+    require_once ($GLOBALS["AA_INC_PATH"] . "loginform.inc");
   }
 
   function auth_validatelogin() {

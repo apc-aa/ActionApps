@@ -22,10 +22,10 @@ http://www.apc.org/
 # expected $slice_id for edit slice, nothing for adding slice
 
 $require_default_lang = true;      // do not use module specific language file
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -62,7 +62,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 $useOnLoad = ($new_compact ? true : false);
 
-require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
 showMenu ($aamenus, "aaadmin","slicedel");
 
 echo "<H1><B>" . _m("Admin - Delete Slice") . "</B></H1>";

@@ -19,8 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require $GLOBALS[AA_INC_PATH]."se_users.php3";
-require $GLOBALS[AA_INC_PATH]."slicewiz.php3";
+require_once $GLOBALS["AA_INC_PATH"]."se_users.php3";
+require_once $GLOBALS["AA_INC_PATH"]."slicewiz.php3";
 
 if($slice_id) {  // edit slice
   if(!IfSlPerm(PS_EDIT)) {
@@ -40,7 +40,7 @@ $superadmin = IsSuperadmin();
 
 // Add new editor / administrator from Wizard page
 if ($user_firstname || $user_surname) {
-    require $GLOBALS[AA_INC_PATH]."um_uedit.php3";
+    require_once $GLOBALS["AA_INC_PATH"]."um_uedit.php3";
 }
 
 if( $add || $update ) {

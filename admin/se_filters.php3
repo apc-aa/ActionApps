@@ -24,10 +24,10 @@ http://www.apc.org/
 # optionaly $import_id for selected imported slice
 # optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Filters update successful)
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."csn_util.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."csn_util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -226,7 +226,7 @@ function UpdateFilters(slice_id, import_id) {
 </HEAD>
 <?php
   $useOnLoad = true;
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin", "filters");
   
   echo "<H1><B>" . _m("Admin - Content Pooling - Filters") . "</B></H1>";

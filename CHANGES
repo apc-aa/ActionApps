@@ -1,10 +1,14 @@
+02/05/03 - changed almost all files by changing require to require_once, 
+           deleting the "if (defined) return" constructs and changing
+           GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"] (jakub)
 02/04/03 - sql_update.php3: Changed the Alerts tables, added the Email table
 02/04/03 - big changes in init_page. The script was a mess. With mgettext
            and some other changes it is much tidier and perhaps readable.
            (jakub)
 02/04/03 - enhanced and fixed fillorm.php3 and filler.php3 in order
            to allow easy creation of anonymous forms. This involved
-           changes in itemedit.php3 and itemfunc.php3 (jakub)
+           changes in itemedit.php3 and itemfunc.php3, now it shares most of
+           the code with them. (jakub)
 02/04/03 - added the Anonymous Form Wizard (jakub)
 02/04/03 - slightly changed the "Language" field in Slice Settings (jakub)
 02/04/03 - fixed Slice Deleting (was in a bad state, deleted almost nothing) (jakub)

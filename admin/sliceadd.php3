@@ -23,7 +23,7 @@ http://www.apc.org/
 $no_slice_id = true;  
 $require_default_lang = true;
 
-require "../include/init_page.php3";
+require_once "../include/init_page.php3";
 
 // the parts used by the slice wizard are in the included file
 
@@ -45,7 +45,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <center>
 <form method=post action="<?php echo $sess->url("slicedit.php3") ?>">
 <?php
-    require $GLOBALS[AA_INC_PATH]."sliceadd.php3";
+    require_once $GLOBALS["AA_INC_PATH"]."sliceadd.php3";
 ?>
 
 </table>

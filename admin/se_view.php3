@@ -22,13 +22,13 @@ http://www.apc.org/
 # expected $view_type for both - new and edit
 # expected $view_id for editing specified view or $new
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";     // GetAliasesFromField funct def 
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
-require $GLOBALS[AA_INC_PATH]."discussion.php3";  // GetDiscussionAliases funct def
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";     // GetAliasesFromField funct def 
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";  // GetDiscussionAliases funct def
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 function show_digest_filters ()
 {
@@ -257,7 +257,7 @@ echo "<TITLE>". _m("Admin - design View") ."</TITLE>
     </HEAD>";
 
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
-require $GLOBALS[AA_INC_PATH]."menu.php3";
+require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
 showMenu ($aamenus, "sliceadmin","");
 
 echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";

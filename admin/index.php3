@@ -19,17 +19,17 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH] . "varset.php3";
-require $GLOBALS[AA_INC_PATH] . "view.php3";
-require $GLOBALS[AA_INC_PATH] . "pagecache.php3";
-require $GLOBALS[AA_INC_PATH] . "item.php3";
-require $GLOBALS[AA_INC_PATH] . "feeding.php3";
-require $GLOBALS[AA_INC_PATH] . "itemfunc.php3";
-require $GLOBALS[AA_INC_PATH] . "notify.php3";
-require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
-require $GLOBALS[AA_INC_PATH] . "formutil.php3";
-require $GLOBALS[AA_INC_PATH]."msgpage.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "varset.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "view.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "pagecache.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "item.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "feeding.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "itemfunc.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "notify.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
+require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
 $now = now();
 
@@ -421,7 +421,7 @@ function ChangeImgSrc (imageName, newsrc) {
 
 </head> <?php
 
-require $GLOBALS[AA_INC_PATH]."menu.php3";
+require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
 showMenu ($aamenus, "itemmanager", $r_bin_state, $navbar != "0", $leftbar != "0");
 
   # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL

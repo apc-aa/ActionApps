@@ -21,13 +21,13 @@ http://www.apc.org/
 # expected $slice_id for edit slice, no_slice_id=1 for adding slice
 
 // set template id (changes language file => must be here):
-require "../include/slicedit2.php3";
+require_once "../include/slicedit2.php3";
   
-require "../include/init_page.php3";
-require $GLOBALS[AA_INC_PATH]."formutil.php3";
-require $GLOBALS[AA_INC_PATH]."date.php3";
-require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."pagecache.php3";
+require_once "../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS["AA_INC_PATH"]."date.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -45,7 +45,7 @@ while (list ($type,$module) = each ($MODULES)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $superadmin = IsSuperadmin();
 
-require $GLOBALS[AA_INC_PATH]."slicedit.php3";
+require_once $GLOBALS["AA_INC_PATH"]."slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
   # set variables from database - allways
@@ -87,7 +87,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m("Slice Administration");?></TITLE>
 </HEAD>
 <?php
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin","main");
 
   echo "<H1><B>" . ( $slice_id=="" ? _m("Add Slice") : _m("Admin - Slice settings")) . "</B></H1>";
