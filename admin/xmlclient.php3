@@ -77,10 +77,10 @@ $default_rss_map = array (
 	// Can change the names without affecting anything
 		"author.........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/creator","from_field_name"=>"DC:creator"),
 		"abstract........" => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"),
-		"publish_date...." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DATE(DC/date)","from_field_name"=>"DC:date"),
-		"source.........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/source","from_field_name"=>"DC:source"),
+		"publish_date...." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DATE(DC/date)|NOW","from_field_name"=>"DC:date"),
+		"source.........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/source|CHANNEL/title","from_field_name"=>"DC:source"),
 		"lang_code......." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/language","from_field_name"=>"DC:language"),
-		"source_href....." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/relation","from_field_name"=>"DC:relation"),
+		"source_href....." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/relation|CHANNEL/link","from_field_name"=>"DC:relation"),
 		"place..........." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/coverage","from_field_name"=>"DC:coverage"),
 		"headline........" => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"DC/title|ITEM/title","from_field_name"=>"DC:title"),
 		"full_text......." => array("feedmap_flag"=>FEEDMAP_FLAG_EXTMAP,"value"=>"CONTENT","from_field_name"=>"Content"),
@@ -98,7 +98,7 @@ function GetCategoryIdFromValue($cat_group, $value) {
     return;
 
   $SQL = "SELECT id FROM constant WHERE group_id='$group_id' AND value='".addslashes($value)."'";
-  if ($debugfeed >= 9) print("\n<br>$SQL");
+  if ($debugfeed >= 8) print("\n<br>$SQL");
   $db->query($SQL);
   if ($db->next_record()) {
     return unpack_id($db->f(id));
@@ -121,13 +121,13 @@ function updateCategories($feed_id, &$l_categs, &$ext_categs,&$cat_refs, &$categ
         $SQL = "UPDATE ef_categories SET category_name='".$category[name]."',
                                              category='".$category[value]."'
                                          WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
-		if ($debugfeed >= 9) print("\n<br>$SQL");
+		if ($debugfeed >= 8) print("\n<br>$SQL");
 		$db->query($SQL);
       } else {
         $l_cat_id = MapDefaultCategory($l_categs,$category[value], $category[catparent]);
         $SQL = "INSERT INTO ef_categories VALUES ('".$category[value]."','".$category[name]."',
                   '".q_pack_id($category[id])."','".$feed_id."','".q_pack_id($l_cat_id)."','0')";
-		if ($debugfeed >= 9) print("\n<br>$SQL");
+		if ($debugfeed >= 8) print("\n<br>$SQL");
         $db->query($SQL);
       }
     }
@@ -139,7 +139,7 @@ function updateCategories($feed_id, &$l_categs, &$ext_categs,&$cat_refs, &$categ
       if (isset($cat_refs[$r_cat_id]))
         continue;
 	  $SQL = "DELETE FROM ef_categories WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
-	  if ($debugfeed >= 9) print("\n<br>$SQL");
+	  if ($debugfeed >= 8) print("\n<br>$SQL");
       $db->query($SQL);
     }
   }
@@ -165,13 +165,13 @@ function updateFieldsMapping($feed_id, &$l_slice_fields, $l_slice_id,
                     WHERE from_slice_id='$p_r_slice_id'
                       AND to_slice_id='$p_l_slice_id'
                       AND from_field_id='$r_field_id'";
-		if ($debugfeed >= 9) print("\n<br>$SQL");
+		if ($debugfeed >= 8) print("\n<br>$SQL");
        	$db->query($SQL);
 	  }
     } else {
       $SQL = "INSERT INTO feedmap VALUES('$p_r_slice_id','$r_field_id','$p_l_slice_id','$r_field_id',
                    '".FEEDMAP_FLAG_EXTMAP ."','','".quote($fields[$r_field_id][name])."')";
-	  if ($debugfeed >= 9) print("\n<br>$SQL");
+	  if ($debugfeed >= 8) print("\n<br>$SQL");
       $db->query($SQL); 
     }
   }
@@ -184,7 +184,7 @@ function updateFieldsMapping($feed_id, &$l_slice_fields, $l_slice_id,
 		$SQL = "DELETE FROM feedmap WHERE from_slice_id='$p_r_slice_id'
                                       AND to_slice_id='$p_l_slice_id'
                                       AND from_field_id='$r_field_id'";
-		if ($debugfeed >= 9) print("\n<br>$SQL");
+		if ($debugfeed >= 8) print("\n<br>$SQL");
       	$db->query($SQL);
     }
   }
@@ -202,18 +202,22 @@ function contentvalue ($item) {
 				return array("value"=>$item[content][$cont_flag], "flag"=>$flag);
 }
 
-function map1field($value,$item) {
+function map1field($value,$item,$channel) {
 	global $debugfeed;
-		  if ($debugfeed >= 9) print("\n<br>xmlclient:map1field:$value");
+		  if ($debugfeed >= 8) print("\n<br>xmlclient:map1field:$value");
 		  if (ereg("(.*)\|(.*)",$value,$vals)) {  // Process alternatives, first if non-blank else second
-		 	$try1 = map1field($vals[1],$item);
+		 	$try1 = map1field($vals[1],$item,$channel);
 			if ($try1[0][value]) { return $try1; }
-			return map1field($vals[2],$item);
+			return map1field($vals[2],$item,$channel);
 		  } elseif (ereg("^DATE\((.*)\)$",$value,$vals)) { // Postprocess to turn into unix
-		  	$try1 = map1field($vals[1],$item);
-			if (isset($try1) && is_array($try1))
+		  	$try1 = map1field($vals[1],$item,$channel);
+			if (isset($try1) && is_array($try1) && $try1[0][value])
 				$try1[0][value] =  iso8601_to_unixstamp($try1[0][value]);
 	  		return $try1;
+		  } elseif ($value == "NOW") {
+		  	return array (0 => array ( value => time(), flag => 0, format => 1 )); 
+		  } elseif (ereg("CHANNEL/(.*)",$value,$vals)) {
+		  	return array ( 0 => array ( value => $channel[$vals[1]], flag => 0, format => 1 ));		  
 		  } elseif (ereg("ITEM/(.*)",$value,$vals)) {
 		    //TODO - could extend this to understand format of imported field, will be needed for 
 			// example if dc:description can be html
@@ -230,21 +234,42 @@ function map1field($value,$item) {
 		  }
 }
 
+// Figure out if item alreaady imported into this slice
+// Id's are unpacked
+function itemIsDuplicate($item_id,$slice_id) {
+	global $debugfeed, $db;
+	  // Only store items that have an id which is not already contained in the items table for this slice
+//    $SQL="SELECT id FROM item WHERE id='".q_pack_id($item_id)."' AND slice_id='".q_pack_id($slice_id)."'" ;  
+// oops - that doesn't work, the item_id is a key.
+    $SQL="SELECT id FROM item WHERE id='".q_pack_id($item_id)."'" ;  
+    $db->query($SQL); 
+    if ($db->next_record()) {                                 
+		return true;
+    }
+	return false;
+}
+
 // stores items to the table item
 function updateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_slice_fields, &$ext_categs, &$l_categs) {
   global $db, $varset, $itemvarset, $default_rss_map, $debugfeed;
-  if ($debugfeed >= 9) print("\n<br>updateItems");
+  if ($debugfeed >= 8) print("\n<br>updateItems");
+
+	if (!($channel = $aa_rss[channels][$r_slice_id])) {
+      while (list (,$channel) = each($aa_rss[channels])) {
+	  	if ($channel) { break; }
+      }
+	}
+	
   while (list($item_id,) = each($aa_rss[items])) {
-    $db->query("SELECT id FROM item WHERE id='".q_pack_id($item_id)."'");    // Only store items that have an id which i
-    if ($db->next_record()) {                                   // not already contained in the items table
+  	if (itemIsDuplicate($item_id,$l_slice_id)) {
 		if ($debugfeed >= 4) print("\n<br>skipping duplicate: ".$aa_rss[items][$item_id][title]);
-      continue;
-    }
+		continue;
+	}
     $varset=new Cvarset;
     $itemvarset = new CVarset;
 
     $item = $aa_rss[items][$item_id];
-	
+
 	// A series of steps to make field specific edits
     // set fulltext field back from the content field, where it was put by APC for RSS compatability
      if ($fulltext_field_id = GetBaseFieldId($aa_rss[fields],"full_text")) {
@@ -290,7 +315,7 @@ function updateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_sl
           break;
 
         case FEEDMAP_FLAG_EXTMAP:
-			$values = map1field($v[value],$item);
+			$values = map1field($v[value],$item,$channel);
           	if (isset($values) && is_array($values)) {
 			  	// quote all values
             	while (list($k,$v2) = each($values))
@@ -301,14 +326,14 @@ function updateItems($feed_id, &$feed, &$aa_rss, $l_slice_id, $r_slice_id, $l_sl
       } //switch
     } //while each($map)
 	if ($debugfeed >= 3) print("\n<br>      " . $content4id['headline........'][0][value]);
-	if ($debugfeed >= 9) { print("\n<br>updateItems:content4id="); print_r($content4id); }
+	if ($debugfeed >= 8) { print("\n<br>updateItems:content4id="); print_r($content4id); }
 
    StoreItem( $item_id, $l_slice_id, $content4id, $l_slice_fields, true, true, false );
                                                     # insert, invalidatecache, not feed
     // set the item to be recevied from remote node (todo - set via content4id)
 	$SQL = "UPDATE item SET externally_fed='".quote($feed[name])."' WHERE id='".q_pack_id($item_id)."'";
 	
-	if ($debugfeed >= 9) print("\n<br>$SQL");
+	if ($debugfeed >= 8) print("\n<br>$SQL");
     $db->query($SQL);
     } // while $aa_rss[items]
 
@@ -333,11 +358,11 @@ function onefeed($feed_id,$feed) {
   }
 
   if ($feed[feed_type] == FEEDTYPE_APC) {
-	if ($debugfeed >= 1) print("\n<br>APC Feed: $feed[name] : $feed[remote_slice_name]");
+	if ($debugfeed >= 1) print("\n<br>APC Feed: $feed_id: $feed[name] : $feed[remote_slice_name]");
 	$xml_data = xml_fetch( $feed[server_url], ORG_NAME, $feed[password],
             $feed[user_id], $r_slice_id, $feed[newest_item], implode(" ",$cat_ids));
   } else {   // not FEEDTYPE_APC
-	if ($debugfeed >= 1) print("\n<br>RSS Feed: $feed[name]");
+	if ($debugfeed >= 1) print("\n<br>RSS Feed: $feed_id: $feed[name]");
     $xml_data = http_fetch($feed[server_url]);
   }
   if (!$xml_data) {
@@ -357,7 +382,7 @@ function onefeed($feed_id,$feed) {
     continue;
   }
 
-  if ($debugfeed >= 9) { print("\n<br>onefeed: aa_rss="); print_r($aa_rss); }
+  if ($debugfeed >= 8) { print("\n<br>onefeed: aa_rss="); print_r($aa_rss); }
 
   $l_categs = GetGroupConstants( $l_slice_id );        // get all categories belong to slice
   if ($feed[feed_type] == FEEDTYPE_APC) {
@@ -373,12 +398,12 @@ function onefeed($feed_id,$feed) {
   
   // update items
   if (isset($aa_rss[items])) {
-    if ($debugfeed >= 9) print("\n<br>onefeed: there are some items to update");
+    if ($debugfeed >= 8) print("\n<br>onefeed: there are some items to update");
     updateItems($feed_id, $feed, $aa_rss, $l_slice_id, $r_slice_id, $l_slice_fields, $ext_categs, $l_categs,$feed_type);
 	if ($feed[feed_type] == FEEDTYPE_APC) {
 	    //update the newest item
 		$SQL = "UPDATE external_feeds SET newest_item='".$aa_rss[channels][$r_slice_id][timestamp]."' WHERE feed_id='$feed_id'";
-	    if ($debugfeed >= 9) print("\n<br>$SQL");
+	    if ($debugfeed >= 8) print("\n<br>$SQL");
     	$db->query($SQL);
 	}
   }
@@ -393,7 +418,7 @@ function apcfeeds() {
 	// select all incoming feeds from table external_feeds
 	$SQL="SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name 
             FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name";
-	if ($debugfeed >= 9) print("\n<br>$SQL");
+	if ($debugfeed >= 8) print("\n<br>$SQL");
 	$db->query($SQL);
 	
 	$feeds="";
@@ -402,7 +427,7 @@ function apcfeeds() {
    		$feeds[$fi] = $db->Record;
    		$feeds[$fi][field_type] = FEEDTYPE_APC;
 	}
-	if ($debugfeed >= 9) { print("\n<br>feeds="); print_r($feeds); }
+	if ($debugfeed >= 8) { print("\n<br>feeds="); print_r($feeds); }
 	return $feeds;
 }
 
@@ -410,7 +435,7 @@ function rssfeeds() {
 	global $db, $debugfeed;
 	
 	$SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds";
-	if ($debugfeed >= 9) print("\n<br>$SQL");
+	if ($debugfeed >= 8) print("\n<br>$SQL");
 	$db->query($SQL);
 
 	$rssfeeds="";
@@ -424,7 +449,7 @@ function rssfeeds() {
 	return $rssfeeds;
 }
 
-if ($debugfeed >= 9) print("\n<br>XMLCLIENT STARTING");
+if ($debugfeed >= 8) print("\n<br>XMLCLIENT STARTING");
 
 $db = new DB_AA;
 
