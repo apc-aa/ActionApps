@@ -508,9 +508,9 @@ function PrintJavaScript_Validate () {
     if ($_javascript_validate_printed) return;
     else $_javascript_validate_printed = 1;
     
-    echo "
-    <script language=javascript>
-    <!--"
+    echo '
+    <script language="JavaScript" type="text/javascript">
+    <!--'
         . get_javascript_field_validation ()."
         
         function validate_number (txtfield, minval, maxval, required) {

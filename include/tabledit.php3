@@ -288,8 +288,11 @@ class tabledit {
                         $err = $this->ShowChildren($record);
                 }
             }
-            if ($this->type == "browse" && !$this->show_new)
-                $this->showBrowseFooter ($formname, $all_keys, $record_count, $scroll); 
+            if ($this->type == "browse") {
+                if (!$this->show_new)
+                    $this->showBrowseFooter ($formname, $all_keys, $record_count, $scroll); 
+                echo "</FORM>";
+            }
             echo "</TABLE>";
         }
         else if ($this->type == "browse") {
@@ -379,7 +382,7 @@ class tabledit {
         echo "<TD>";
         $this->ShowButtons (false, "", "", $formname, 0, "down", $all_keys, $record_count);
         // scroller
-        echo "\n</TD></TR></TABLE></TD></TR></FORM>";
+        echo "\n</TD></TR></TABLE></TD></TR>";
     }
     
     // -----------------------------------------------------------------------------------
@@ -575,25 +578,32 @@ class tabledit {
 			}        
 
             if ($cview["href_view"])
-                $href_view = "<a href='".$this->getAction($cview["href_view"])
+                $href = "<a href='".$this->getAction($cview["href_view"])
                     ."&cmd[".$cview["href_view"]."][edit]"
                     ."[".str_replace("\"","\\\"",$val)."]=1'>";
+            else if ($cview["href"])
+                $href = "<a href='".$cview["href"]."'>";
 
-            if ($visible && $cview["href_view"] && $cview["readonly"]) 
-                echo $href_view;
+            if ($visible && $href && $cview["readonly"]) 
+                echo $href;
                     
             if ($visible)
                 echo $td;        
             
             $name = str_replace ("\"", "\\\"", "val[$key][$alias]");
+            
+            // show ****** for undefined values in select box
+            if ($cview["type"] == "select" && ! isset ($cview["source"][$val]) && !$new_record)
+                $cview["source"][$val] = "*******";
+            
             // in tabledit_column.php3
             ColumnFunctions ($cview, $val, "show", $name);
         
             if ($visible) {
-                if ($cview["href_view"]) {
+                if ($href) {
                     if ($cview["readonly"]) 
                         echo "</a>\n";
-                    else echo $href_view.
+                    else echo $href.
                         '<img border="0" src="'.$this->imagepath.'edit_big.gif" alt="'._m("edit").'">
                         </a>'."\n";
                 }

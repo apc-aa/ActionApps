@@ -29,8 +29,6 @@ function GetEmailTableView ($viewID, $processForm = false)
     global $auth, $slice_id, $db;
     global $attrs_edit, $attrs_browse, $format, $langs;
 
-
-
     if ($viewID == "email_edit") {
         global $LANGUAGE_CHARSETS, $LANGUAGE_NAMES;
         reset ($LANGUAGE_CHARSETS);
