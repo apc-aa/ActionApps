@@ -59,6 +59,10 @@ $INSERT_TYPES["items"]["fil"] =
 array ("name" => _m("File = uploaded file"),
        "desc" => _m("Stores the uploaded file and a link to it, parameters only apply if type is image/something."),
        "params"=>array(
+        array("name"=>_m("Mime types accepted"),
+              "desc"=>_m("Only files of matching mime types will be accepted"),
+              "type"=>"STR",
+              "example"=>"image/*"),
         array("name"=>_m("Maximum image width"),
               "type"=>"INT",
               "example"=>400),
