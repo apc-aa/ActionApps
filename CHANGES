@@ -1,3 +1,4 @@
+06/26/03 - added Links module into sql_update.php3 and updated config.php3
 06/19/03 - fixed wrong called md5() function for password protected record
 (honzam)   instead of crypt()
          - fixed status_code setting to value defined in Defaults
