@@ -31,6 +31,27 @@ if (!defined("LINKS_CATTREE_INCLUDED"))
      define ("LINKS_CATTREE_INCLUDED",1);
 else return;
 
+/** Category assignments - stores which category is subcategory of another */
+class catassignment {
+    var $from;
+    var $to;
+    var $base;
+    var $state;
+
+    /** just constructor - variable assignments */
+    function  catassignment($from, $to, $base, $state) {
+        $this->from = $from;
+        $this->to = $to;
+        $this->base = $base;
+        $this->state = $state;
+    }
+
+    function  getFrom() { return $this->from; }
+    function  getTo()   { return $this->to; }
+    function  getBase() { return $this->base; }
+    function  getState(){ return $this->state; }
+}
+
 /**
  * cattree class - handles tree of categories
  */
@@ -41,10 +62,8 @@ class cattree {
   var $path_delimeter; // string to show between categories in path
 
   var $catnames;       // asociative array with names of columns and values of current row
-  var $fromList;
-  var $toList;
-  var $baseList;
-  var $stateList;
+  var $assignments;    // category assignments - stores which category is subcategory of another
+
 
   var $STATES_CODING = array('highlight'=>'!', 'visible'=>'-', 'hidden'=>'x');
 
@@ -56,13 +75,32 @@ class cattree {
     $this->path_delimeter = $path_delimeter;
   }
 
+  /** Compare function for sorting categories in subcategory
+   *  The sort oder is by name, but general categories goes as last and in its
+   *  own order
+   *  @param object $a,$b - instances of catassignment class
+   */
+  function cmp_assignments( $a, $b ) {
+      $aname = $this->catnames[$a->getTo()];
+      $bname = $this->catnames[$b->getTo()];
+      $apri  = (integer) Links_GlobalCatPriority($aname);
+      $bpri  = (integer) Links_GlobalCatPriority($bname);
+
+      if ( $apri == $bpri ) {
+          return strcmp($aname, $bname);
+      }
+      return (( $apri < $bpri ) ? -1 : 1);
+  }
+
+  /** Sort categories assignments by name - general categories goes at the end*/
+  function sort_categories() {
+      usort($this->assignments, array($this, "cmp_assignments"));
+  }
+
   function update() {
       $db = $this->db;
       unset( $this->catnames );
-      unset( $this->fromList );
-      unset( $this->toList );
-      unset( $this->baseList );
-      unset( $this->stateList );
+      unset( $this->assignments );
 
       # lookup - all categories names
       $SQL= " SELECT id, name FROM links_categories WHERE deleted='n'";
@@ -71,33 +109,39 @@ class cattree {
           $this->catnames[$db->f('id')] = htmlspecialchars($db->f('name'));
 
       # lookup - category tree
-      $SQL= " SELECT category_id, what_id, base, state FROM links_cat_cat
-               ORDER BY priority";
+      $SQL= " SELECT category_id, what_id, base, state
+                FROM links_cat_cat, links_categories
+               WHERE links_cat_cat.what_id = links_categories.id
+               ORDER BY name";
+
       $db->query($SQL);
       while ($db->next_record()) {
-          $this->fromList[] = $db->f('category_id');
-          $this->toList[] = $db->f('what_id');
-          $this->baseList[] = ($db->f('base')=='n' ? '@' : ' ');
-          $this->stateList[] = $this->STATES_CODING[$db->f('state')];
+          $this->assignments[] = new catassignment (
+                                        $db->f('category_id'),
+                                        $db->f('what_id'),
+                                        $db->f('base')=='n' ? '@' : ' ',
+                                        $this->STATES_CODING[$db->f('state')]);
       }
+      $this->sort_categories();
   }
-  
+
   /** Not filled yet? ==> Fill it from database  */
   function updateIfNeeded() {
       if ( !isset($this->catnames) OR !is_array($this->catnames) )
           $this->update();
-  }     
+  }
 
 
-  /** Search category $parenid, if there exist subcategory of name $name 
+  /** Search category $parenid, if there exist subcategory of name $name
    *  @returns id of found category or false
    */
   function subcatExist($parentid, $name) {
       $this->updateIfNeeded();
-      if ( isset($this->fromList) AND is_array($this->fromList) ) {
-          foreach( $this->fromList as $i => $cid ) {
-              if ( ($parentid == $cid) AND ($this->catnames[$this->toList[$i]]==$name) )
-                  return $this->toList[$i];
+      if ( isset($this->assignments) AND is_array($this->assignments) ) {
+          foreach( $this->assignments as $assig ) {
+              if ( ($parentid == $assig->getFrom()) AND
+                   ($this->catnames[$assig->getTo()]==$name) )
+                  return $assig->getTo();
           }
       }
       return false;
@@ -107,7 +151,7 @@ class cattree {
   function getName($cid) {
       $this->updateIfNeeded();
       return $this->catnames[$cid];
-  }     
+  }
 
   /**
    * Prints javascript which defines necessary javascript variables for category
@@ -124,12 +168,22 @@ class cattree {
       if( $treeStart == -1 )
         $treeStart = $this->treeStart;
 
+      // generate strings for javascript
+      if ( isset($this->assignments) AND is_array($this->assignments) ) {
+          foreach( $this->assignments as $assig ) {
+              $fromString .= $delim . $assig->getFrom();
+              $toString   .= $delim . $assig->getTo();
+              $baseString .= $delim . "'" . $assig->getBase() . "'";
+              $delim = ',';
+          }
+      }
+
       echo '<SCRIPT Language="JavaScript"><!--
 
   // data ----------------------------------------------
-  s=new Array('. join(',', $this->fromList) .')
-  t=new Array('. join(',', $this->toList) .')
-  b=new Array(\''. join("','",  $this->baseList) .'\')
+  s=new Array('. $fromString .')
+  t=new Array('. $toString .')
+  b=new Array('. $baseString .')
 
   var assignno = s.length    // number of category assignments
   var level = 0              // current depth of tree path
@@ -241,13 +295,14 @@ class cattree {
       if ( !$width )  $width=250;
       if ( !$rows )   $rows=8;
       $ret = "<select name=\"$name\" size=\"$rows\" $onWhat style=\"width:${width}px\">";
-      reset( $this->fromList );
-      while( list($i, $cat) = each( $this->fromList ) ) {
-          if( $cat == $cat2show ) {        // start position
-              $ret .= '<option value="'. $this->toList[$i] .'">';
-              $ret .= ($withState ? '('. $this->stateList[$i]. ') ' : '');
-              $ret .= $this->catnames[$this->toList[$i]]. $this->baseList[$i];
-              $ret .= '</option>';
+      if ( isset($this->assignments) AND is_array($this->assignments) ) {
+          foreach( $this->assignments as $assig ) {
+              if( $assig->getFrom() == $cat2show ) {        // start position
+                  $ret .= '<option value="'. $assig->getTo() .'">';
+                  $ret .= ($withState ? '('. $assig->getState(). ') ' : '');
+                  $ret .= $this->catnames[$assig->getTo()]. $assig->getBase();
+                  $ret .= '</option>';
+              }
           }
       }
       $ret .=  '</select>';
@@ -261,20 +316,18 @@ class cattree {
    * @param string $function - called function
    */
   function walkTree($start_id, $function, $level=0) {
-      if( !isset($this->fromList) OR !is_array($this->fromList) )
+      if( !isset($this->assignments) OR !is_array($this->assignments) )
         return false;
 
-      $arr = $this->fromList; // do a copy (we must else reset resets the only copy)
-      reset( $arr );
-      while ( list( $k,$from) = each( $arr ) ) {
-          if ( $from == $start_id ) {
-              $function( $this->toList[$k], $this->catnames[$this->toList[$k]],
-                         $this->baseList[$k], $this->stateList[$k],
-                         $this->fromList[$k], $level);
+      foreach( $this->assignments as $assig ) {
+          if ( $assig->getFrom() == $start_id ) {
+              $function( $assig->getTo(), $this->catnames[$assig->getTo()],
+                         $assig->getBase(), $assig->getState(),
+                         $assig->getFrom(), $level);
 
               // not crossreferenced and never ending cycles protection
-              if( ($this->baseList[$k] != '@') AND ($level <= 100) )
-                  $this->walkTree($this->toList[$k], $function, $level+1);
+              if( ($assig->getBase() != '@') AND ($level <= 100) )
+                  $this->walkTree($assig->getTo(), $function, $level+1);
           }
       }
   }

@@ -492,17 +492,46 @@ function Links_Assign2Category($lid, $categs, $proposal=false) {
     }
 }
 
+/** Fills $LINK_TYPE_CONSTANTS_ARR by general categories (if not filled, yet) */
+function  Links_LoadGlobalCategories() {
+    global $LINK_TYPE_CONSTANTS, $LINK_TYPE_CONSTANTS_ARR;
+    if ( !$LINK_TYPE_CONSTANTS )
+        return false;
+    if ( !$LINK_TYPE_CONSTANTS_ARR ) {  // array is cached (=stored to globals)
+        $LINK_TYPE_CONSTANTS_ARR = GetConstants($LINK_TYPE_CONSTANTS, 'pri', 'pri');
+        // General categories names could be stored not only in 'Value' of
+        // constants, but also in 'Description'. The general categories in
+        // 'Description' field are the categs are not shown in selectbox
+        $tmp = GetConstants($LINK_TYPE_CONSTANTS, 'pri', 'pri', 'description');
+        if ( is_array($tmp) ) {
+            foreach ( $tmp as $k => $pri ) {
+                if ( trim($k) != "" ) {
+                    $LINK_TYPE_CONSTANTS_ARR[$k] = $pri;
+                }
+            }
+        }
+    }
+    return true;
+}
+
 /**
  *  Returns $type, if the category type belongs to 'General categories'
  *  @param string $type      - category type
  */
 function Links_IsGlobalCategory($type) {
-    global $LINK_TYPE_CONSTANTS, $LINK_TYPE_CONSTANTS_ARR;
-    if ( !$LINK_TYPE_CONSTANTS )
+    global $LINK_TYPE_CONSTANTS_ARR;
+    if ( !Links_LoadGlobalCategories() OR !$LINK_TYPE_CONSTANTS_ARR[$type] ) {
         return false;
-    if ( !$LINK_TYPE_CONSTANTS_ARR )   // array is cached (=stored to globals)
-        $LINK_TYPE_CONSTANTS_ARR = GetConstants($LINK_TYPE_CONSTANTS);
-    return $LINK_TYPE_CONSTANTS_ARR[$type] ? $type : false;
+    }
+    return $type;
 }
 
+/** Returns priority of general category (for sorting) */
+function  Links_GlobalCatPriority($type) {
+    global $LINK_TYPE_CONSTANTS_ARR;
+    if ( !Links_LoadGlobalCategories() OR !$LINK_TYPE_CONSTANTS_ARR[$type] ) {
+        return 0;
+    }
+    return $LINK_TYPE_CONSTANTS_ARR[$type];
+}
 ?>
