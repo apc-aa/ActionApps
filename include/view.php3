@@ -538,6 +538,11 @@ function GetViewFromDB($view_param, &$cache_sid) {
     case 'rss':
     case 'urls':
     case 'script':  # parameters: conds, param_conds, als
+      switch( $view_info['type'] ) {
+      case 'rss':
+        header("Content-type: text/xml");
+      }
+
       if (! $conds )         # conds could be defined via cmd[]=d command
         $conds = GetViewConds($view_info, $param_conds);
       // merge $conds with $calendar_conds
