@@ -522,7 +522,7 @@ function RSS_restrict($txt, $len) {
       if( substr( $fid, 0, 4 ) == "this" )   # special alias _#this
         $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
       else
-        $param = str_replace( "_#$fid", $this->f_h($col, "-"), $param );
+        $param = str_replace( "_#$fid", $this->f_h($fid, "-"), $param );
       $part = substr( $part, 6 );
     }  
     
@@ -644,6 +644,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.33  2002/01/10 13:57:49  honzam
+fixed bug in parameter to f_v alias function
+
 Revision 1.32  2002/01/04 12:16:05  honzam
 updated sime aliases
 
