@@ -824,7 +824,7 @@ function printInMatrix_Frm($txt, $records, $needed, $hlp, $morehlp,
 */
 function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
           $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false, $movebuttons=false) {
-  $name=safe($name); $size=safe($size); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
+  $name=safe($name); $size = ($size ? safe($size) : 5); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
@@ -872,7 +872,7 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $size=5,
 }
 
 function FrmRelated($name, $txt, $arr, $size, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="", $movebuttons=false) {
-  FrmInputMultiSelect($name, $txt, $arr, "", $size=5, $sid, $needed, $hlp, $morehlp, MAX_RELATED_COUNT, $mode, $design, $movebuttons);
+  FrmInputMultiSelect($name, $txt, $arr, "", $size, $sid, $needed, $hlp, $morehlp, MAX_RELATED_COUNT, $mode, $design, $movebuttons);
 }
 
 /**
