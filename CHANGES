@@ -1,3 +1,6 @@
+01/24/01 - bug fix in slicedit.php3, mistyped URL sliceEdit.php3 (Jakub)
+01/24/01 - changed design of se_fields.php3 (Jakub)
+01/24/01 - added H2 to admin.css (Jakub)
 01/24/01 - fixed bug in code for non 128 bit ids
          - parameterised RelatedItemsWindow, using table in itemfunc (later
             will allow redefining that table)
