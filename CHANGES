@@ -10,6 +10,7 @@
          - removed old, unused functions in searchlib
          - it is impossible to use "AA Core slice" as template, now
          - fixed problem of not showing roles for slices in user management
+         - fixed bug with call nonmember function in itemfunct.php3
          - constants in selectbox is shown even if they have the same value (space added)
          - added new paramewter for Selectbox input field - "show all" which displays
            all items including expited ones for slice
