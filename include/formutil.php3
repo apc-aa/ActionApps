@@ -89,6 +89,7 @@ class inputform {
     var $show_preview_button;
     var $cancel_url;
     var $messages;
+    var $result_mode;
 
     var $template;        // if you want to display alternate form design,
                           // template holds view_id of such template
@@ -193,6 +194,7 @@ class inputform {
         foreach($prifields as $pri_field_id) {
             $f = $fields[$pri_field_id];
             $varname = 'v'. unpack_id($pri_field_id);
+            $htmlvarname = $varname."html";
 
             if ( (is_array($show)  AND !$show [$f['id']]) OR
                  (!is_array($show) AND (!$f["input_show"] OR
@@ -567,7 +569,7 @@ class aainputfield {
         if ( $plus=='plus' ) $this->echoo("\n<tr align=left>");
         $this->echoo("\n <td class=\"tabtxt\" ".
                       (($colspan==1) ? '': "colspan=\"$colspan\"").
-                      '><b>'. safe($name) .'</b>');
+                      '><b>'. $name .'</b>');
         $this->needed();
         $this->echoo("</td>\n");
         if ( $plus=='plus' ) $this->echoo(' <td>');
@@ -584,7 +586,7 @@ class aainputfield {
                 $convertor .= $delim . strtoupper(str_replace( '.', '', $format ));
                 $delim = '/';
             }
-            $convertor = "<a href=\"javascript:CallConvertor('$AA_INSTAL_PATH', '$name')\">$convertor "._m('import') ."</a>";
+            $convertor = "<a href=\"javascript:CallConvertor('".self_server().$AA_INSTAL_PATH."', '".$this->varname."')\">$convertor "._m('import') ."</a>";
         }
         return $convertor;
     }
@@ -762,15 +764,7 @@ class aainputfield {
             $this->echoo("</tr>\n<tr align=left>");
         }
         $this->echoo("<td colspan=\"$colspan\">");
-/*        if ( $showrich_href ) {
-           $this->echoo('
-                <script language="javascript" type="text/javascript">
-                function load_rich_edit ()
-                { window.location.href = window.location.href+"&showrich=1"; }
-                </script>
-                <a href="javascript:load_rich_edit();">'._m("Show this field as a rich text editor (use only after having installed the necessary components!)").'</a><br>');
-        }*/
-        $this->html_radio('convertors');
+        $this->html_radio($showhtmlarea ? false : 'convertors');
         $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" cols=\"$cols\"".getTriggers("textarea",$name).">$val</textarea>\n";
         if ($showhtmlarea) {
             $tarea .= '
@@ -930,7 +924,7 @@ class aainputfield {
                 if ($selected != '') $selectedused = true;
                 if ( ($restrict == 'selected')   AND !$selected ) continue;  // do not print this option
                 if ( ($restrict == 'unselected') AND $selected  ) continue;  // do not print this option
-                $ret .= "<option value='". htmlspecialchars($k) ."' $selected>".htmlspecialchars($v)."</option>";
+                $ret .= "<option value=\"". htmlspecialchars($k) ."\" $selected>".htmlspecialchars($v)."</option>";
             }
         }
         if( $add_empty ) {
@@ -947,7 +941,8 @@ class aainputfield {
     */
     function inputMultiSelect($size=6, $relation=false, $minrows=0, $mode='AMB', $design=false, $movebuttons=true, $frombins=3, $conds="", $condsrw="") {
         list($name,$val,$add) = $this->prepareVars('multi');
-        $size = get_if($size, 6);
+        $size                 = get_if($size, 6);
+        $frombins             = get_if($frombins, AA_BIN_ACTIVE | AA_BIN_PENDING );  // =3
         if (!$relation) $this->fill_const_arr();
 
         $this->field_name('plus');
@@ -1763,7 +1758,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
           echo '&nbsp;<input type="'.  ($properties['type'] ? $properties['type'] : 'hidden') .
                           '" name="'.  $name .
                           '" value="'. $properties['value'] . ($properties['accesskey'] ? "  (".$accesskey_pref."+".$properties['accesskey'].")  " : "").
-                          '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'"' : ""). $properties['add'] . '>&nbsp;';
+                          '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>&nbsp;';
           if ($properties['help'] != '') {
               echo FrmMoreHelp($properties['help']);
               echo "&nbsp;&nbsp;";

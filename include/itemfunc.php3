@@ -456,7 +456,7 @@ function insert_fnc_($item_id, $field, $value, $param, $additional='') {
 }
 
 # ----------------------- show functions --------------------------------------
-// moved to formutil into aainputfield class (inputform.class.php3)
+// moved to formutil into aainputfield class (formutil.php3)
 # -----------------------------------------------------------------------------
 
 function IsEditable($fieldcontent, $field, &$profile) {
@@ -478,7 +478,6 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
       $profile = new aaprofile($auth->auth["uid"], $slice_id);  // current user settings
   }
 
-  // print_r($fields); exit;
   reset($prifields);
   while(list(,$pri_field_id) = each($prifields)) {
     $f = $fields[$pri_field_id];
@@ -602,7 +601,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     while(list($fid,$cont) = each($content4id)) {
         if ($debugsi >= 5) huhl("StoreItem:fid=",$fid);
         $f = $fields[$fid];
-        //print_r($f);
+
         // input insert function
         $fnc = ParseFnc($f["input_insert_func"]);
         // input insert function parameters of field
@@ -626,7 +625,6 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     if ($debugsi >= 5) huhl("StoreItem: fil");
                     if ($debugsi >= 5) { $GLOBALS[debug] = 1; $GLOBALS[debugupload] = 1; }
                     //Note $thumbnails is undefined the first time in this loop
-                    //print_r($arr_stop);
                     if (is_array($thumbnails)){
                         reset($thumbnails);
                         while(list(,$v_stop) = each($thumbnails))
@@ -826,25 +824,13 @@ global $slice_id, $sess;
 
       // before submit the form we need to select all selections in some
       // listboxes (2window, relation) in order the rows are sent for processing
-      function BeforeSubmit() {';
-        if ( richEditShowable() && $show_func_used['edt']) $retval .= '
-          SaveRichEdits();';
-        $retval .= '
+      function BeforeSubmit() {
           for(var i = 0; i < listboxes.length; i++)
               SelectAllInBox( listboxes[i] );
           return proove_fields ();
       }
       ';
-/*
-      if ($show_func_used['edt']) $retval .= '
-      var richedits = Array();
 
-      function SaveRichEdits () {
-        for (var i = 0; i < richedits.length; i++)
-          document.inputform[richedits[i]].value = get_text("edt"+richedits[i]);
-      }
-      ';
-*/
       if ($show_func_used['iso']) $retval .= '
 
       var relatedwindow;  // window for related stories
@@ -931,7 +917,7 @@ global $slice_id, $sess;
       // @param string aa_instal_path - relative path to AA on server (like"/apc-aa/")
       // @param string textarea_id    - textarea fomr id (like "v66756c6c5f746578742e2e2e2e2e2e31")
       function CallConvertor(aa_instal_path, textarea_id) {
-        page = aa_instal_path + "misc/msconvert/index.php?inputid=" + textarea_id;
+        page = aa_instal_path + "misc/msconvert/index.php3?inputid=" + textarea_id;
         conv = window.open(page,"convwindow","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
         conv.focus();
       }
@@ -955,7 +941,7 @@ global $slice_id, $sess;
     // showHTMLAreaLink(name) - displays "edit in htmarea" link
     // generateArea(name, tableop, spell, rows, cols) - create HTMLArea from textarea
     // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
-    if ($show_func_used['txt'] || $show_func_used['rte']) {
+    if ($show_func_used['txt'] || $show_func_used['edt']) {
         $retval .= '
                 <script type="text/javascript" src="'.get_aa_url("misc/htmlarea/htmlarea.js", false).'"></script>
                 <script type="text/javascript" src="'.get_aa_url("misc/htmlarea/dialog.js", false).'"></script>
