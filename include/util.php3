@@ -1143,8 +1143,8 @@ function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
     if( !is_dir( $destdir )) 
         return L_DIR_NOT_EXISTS;
 
-    if( file_exists("$destdir$dest_file") )
-        return L_FILE_NAME_EXISTS . $destdir . $filename;
+    if( file_exists("$destdir$filename") )
+        return L_FILE_NAME_EXISTS . " $destdir$filename";
 
     # copy the file from the temp directory to the upload directory, and test for success    
 
@@ -1152,13 +1152,13 @@ function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
     list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
     if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
         if (is_uploaded_file($GLOBALS[$varname])) 
-            if( !move_uploaded_file($GLOBALS[$varname], "$destdir$dest_file")) 
+            if( !move_uploaded_file($GLOBALS[$varname], "$destdir$filename")) 
                 return L_CANT_UPLOAD;
             else if ($perms)
                 chmod ($destdir.$filename, $perms);
     } 
     else {   # for php 3.x and php <4.0.3
-        if (!copy($GLOBALS[$varname],"$destdir$dest_file")) 
+        if (!copy($GLOBALS[$varname],"$destdir$filename")) 
             return L_CANT_UPLOAD;
         else if ($perms)
             chmod ($destdir.$filename, $perms);
