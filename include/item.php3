@@ -133,11 +133,13 @@ function GetConstantAliases( $additional="" ) {
 #explodes $param by ":". The "#:" means true ":" - dont separate
 function ParamExplode($param) {
   $a = str_replace ("#:", "__-__.", $param);    # dummy string
-  $b = str_replace (":", "##Sx",$a);            # Separation string is ##Sx
-  $c = str_replace ("__-__.", ":", $b);         # change "#:" to ":"
-  return explode( "##Sx", $c );
+  $b = str_replace ("://", "__-__2", $a);       # replace all <http>:// too
+  $c = str_replace (":", "##Sx",$b);            # Separation string is ##Sx
+  $d = str_replace ("__-__.", ":", $c);         # change "#:" to ":"
+  $e = str_replace ("__-__2", "://", $d);         # change back "://"
+  return explode( "##Sx", $e );
 }  
- 
+
 # helper function for f_e
 # this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
 # added by setu@gwtech.org 2002-0211
@@ -145,17 +147,14 @@ function ParamExplode($param) {
 // make_return_url
 # global function to get return_url
 # this funciton may replaced by extension of $sess as a method $sess->return_url().
-function sess_return_url($url)
-{
-	global $sess;
-	global $return_url;
+function sess_return_url($url) {
+  global $sess;
+  global $return_url;
 
-	if (!$return_url)
-		// return for standard APC-AA behavier
-		return $sess->url($url);
-	else
-		// decode and return $return_url
-		return urldecode($return_url);
+  if (!$return_url)   # return for standard APC-AA behavier
+    return $sess->url($url);
+  else                # decode and return $return_url
+    return urldecode($return_url);
 }
 
  
@@ -165,27 +164,22 @@ function sess_return_url($url)
 //
 // make_return_url
 //function make_return_url($prifix="&return_url=")
-function make_return_url($prifix)
-{
-        // prifix will be "&return_url=" or "?return_url=",
-        // if null, it uses "&return_url="
-        if (!$prifix) $prifix = "&return_url=";
+function make_return_url($prifix) {
+  // prifix will be "&return_url=" or "?return_url=",
+  // if null, it uses "&return_url="
+  if (!$prifix) $prifix = "&return_url=";
  
-//        global $PHP_SELF;
-        global $return_url;
- 
-        if ($return_url)
-        {
-                return $prifix . urlencode($return_url);
-        }
-        else
-        {
-                // code changed to keep program works with original APC-AA behavior
-                // this got problem, when we used this in "ItemManager design"
-                // return $PHP_SELF; -- this was original code by ram.
-                // chage by setu@gwtech.org.
-                return "";
-        }
+  // global $PHP_SELF;
+  global $return_url;
+  if ($return_url)
+    return $prifix . urlencode($return_url);
+   else {
+    // code changed to keep program works with original APC-AA behavior
+    // this got problem, when we used this in "ItemManager design"
+    // return $PHP_SELF; -- this was original code by ram.
+    // chage by setu@gwtech.org.
+    return "";
+  }
 }
 
 class item {    
@@ -218,7 +212,8 @@ class item {
   }
 
   function getval($column, $what='value') {
-    return $this->columns[$column][0][$what];
+    return ( is_array($this->columns[$column]) ? 
+                                    $this->columns[$column][0][$what] : false);
   }  
   
   # get item url - take in mind: item_id, external links and redirection
@@ -249,9 +244,12 @@ class item {
 
   # get link from url and text
   function getahref($url, $txt, $add="", $html=false) { 
-    if( $url AND $txt )
-      return '<a href="'. $url ."\" $add>". 
-                          DeHtml($txt, $html).'</a>';
+    if( $url AND $txt ) {
+      # repair url if user omits to write http://
+      if( substr($url,4)=='www.' )
+        $url = 'http://'.$url;
+      return '<a href="'. $url ."\" $add>". DeHtml($txt, $html).'</a>';
+    }                      
     return DeHtml($txt,$html); 
   }
 
@@ -270,35 +268,115 @@ class item {
     return $this->$fce($ali_arr['param'], $function['param']);
   }  
 
-  function subst_alias( $text ) {
-    if( is_array( $this->columns[$text] ) )
-      return $this->getval($text);
+  function parseSwitch($text) {
+    $variable = strtok($text,")");
+    $twos = ParamExplode( strtok("") );
+    $i=0;
+    while( $i < count($twos) ) {
+      $val = trim($twos[$i]);
+      if( !$val OR ereg($val, $variable) )
+        return $twos[$i+1];
+      $i+=2;
+    }
+    return "";
+  }
 
-    # replace fields
-    $piece = explode( "{", $text);
-    reset( $piece );
-    $text = current($piece);      # initial sequence
-    while( $vparam = next($piece) ) {
-      $endparam = strpos($vparam,"}");
-      if( is_array($this->columns[$fld=substr($vparam,0,$endparam)]) )
-        $text .= $this->getval($fld) . substr($vparam,$endparam+1);
-      elseif( $endparam == 16 )   # this is field, but not set - remove {xxx}
-        $text .= substr($vparam,$endparam+1);
-      else
-        $text .= "\{$vparam";
-    }     
-
-    # replace aliases
-    $piece = explode( "_#", $text);
-    reset( $piece );
-    $text = current($piece);  #initial sequence
-    while( $vparam = next($piece) ) {
-
-        #search for alias definition (fce,param,hlp)
-      $text .= $this->get_alias_subst( "_#".($als_name=substr($vparam,0,8)));
-      $text .= substr($vparam,8);
+  function remove_strings( $text, $remove_arr ) {
+    if( is_array($remove_arr) ) {
+      reset($remove_arr);
+      while( current($remove_arr) ) {
+        $text = str_replace(current($remove_arr), "", $text); 
+        next($remove_arr);
+      }
     }
     return $text;
+  }      
+
+  # the function substitutes all _#... aliases and then aplies "remove strings"
+  # it searches for removal just in parts where all aliases are expanded 
+  # to empty string
+  function substitute_alias_and_remove( $text, $remove_arr ) {
+    $piece = explode( "_#", $text );
+    reset( $piece );
+    $out = current($piece);   # initial sequence
+    while( $vparam = next($piece) ) {
+          #search for alias definition (fce,param,hlp)
+      $substitution = $this->get_alias_subst( "_#".(substr($vparam,0,8)));
+      if( $substitution != "" ) {   # alias produced some output, so we can remove 
+                              # strings in previous section and we can start new
+                              # section
+        $clear_output .= $this->remove_strings($out,$remove_arr).$substitution;
+        $out = substr($vparam,8);         # start with clear string
+      } else
+        $out .= substr($vparam,8);
+    }
+    return $clear_output . $this->remove_strings($out,$remove_arr);
+  }  
+
+  
+  function unalias( $text, $remove="", $level=0 ) {
+    $parts_start[0] = 0;      # three variables used to identify the parts
+    $parts_end   = array();   # of output string, where we have to aply 
+    $parts_count = 0;         # "remove strings"
+    
+    $pos = strcspn( $text, "{}" );
+    while( $text[$pos] == '{' ) {
+      $out .= substr( $text,0,$pos );           # initial sequence
+      $text = substr( $text,$pos+1 );           # remove processed text
+                                                # from $text is removed {...} on return
+        # $remove is not needed in deeper levels - we use remove strings just on base level (0)
+      $substitution = $this->unalias( &$text, "", $level+1 ); 
+      if( $substitution != "" ) {   # brackets produced some output, so we have 
+                              # to mark the previous section as removestringable
+        $parts_end[$parts_count++] = strlen($out);
+        $parts_start[$parts_count] = strlen($out)+strlen($substitution);
+      }  
+      $out .= $substitution;
+      $pos = strcspn( $text, "{}" );            # process next bracket (in text: "...{..}..{.}..")
+    }
+    $out .= substr( $text,0,$pos );           # end sequence
+    $text = substr( $text,$pos+1 );           # remove processed text
+    
+    # now we know, there is no bracket in $out - we can substitute
+
+    # bracket could look like:
+    #   {alias:[<field id>]:<f_* function>[:parameters]} - return result of f_*
+    #   {<field_id>}                                     - return content of field
+    #   {any text}                                       - return "any text"
+    # all parameters could contain aliases (like "{any _#HEADLINE text}"),
+    # which is processed first (see above)
+    
+    if( ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):(.*)$", $out, $parts) ) {
+      # call function (called by function reference (pointer))
+      # like f_d("start_date......", "m-d")
+      $fce = $parts[2];
+      return $this->$fce($parts[1], $parts[3]);
+    } 
+    if( substr($out, 0, 7) == "switch(" )
+      # replace switches
+      return $this->parseSwitch( substr($out,7) );
+    elseif( substr($out, 0, 1) == "#" )
+      # remove comments
+      return "";
+    elseif( IsField($out) )
+      return $this->getval($out);
+    else {
+      # replace aliases
+      $remove_arr = explode( "##", $remove );
+      for( $i=0; $i < $parts_count; $i++ ) {
+        $txt = substr($out,$parts_start[$i],$parts_end[$i]-$parts_start[$i]);
+        $bracket = substr($out,$parts_end[$i],$parts_start[$i+1]-$parts_end[$i]);
+        $clear_output .= $this->substitute_alias_and_remove( $txt, $remove_arr ). 
+                         $this->substitute_alias_and_remove( $bracket, "" );
+      }                   
+      $txt = substr($out,$parts_start[$i]);         # remaining string
+      $clear_output .= $this->substitute_alias_and_remove( $txt, $remove_arr );
+      return ( ($level==0) ? $clear_output : '{'.$clear_output.'}');
+    }
+  }
+
+  function subst_alias( $text ) {
+    return $this->unalias( $text );
   }  
   
   function subst_aliases( $var ) {
@@ -377,15 +455,26 @@ class item {
     }
     return htmlspecialchars($this->getval($col));
   }
-
+  
+  function mystripos ($haystack, $needle) {
+    $sub = stristr ($haystack, $needle);
+    if ($sub) 
+      return strlen ($haystack) - strlen ($sub);
+    else return strlen ($haystack);
+  }
+          
   # prints abstract or grabed fulltext text field
   # param: length:field_id
   #    length - number of characters taken from field_id (like "80:full_text.......")
   function f_a($col, $param="") {
-    list( $plength, $pfield ) = $this->subst_aliases( ParamExplode($param) );
+    list( $plength, $pfield, $pparagraph ) = $this->subst_aliases( ParamExplode($param) );
     if ($this->getval($col))
       return DeHtml( $this->getval($col), $this->getval($col,'flag') );
-    return htmlspecialchars( substr($pfield, 0, $plength) );
+    if ($pparagraph) {
+      $paraend = min ($this->mystripos ($pfield,"<p>"),$this->mystripos($pfield,"</p>"),$this->mystripos($pfield,"<br>"), $plength);
+    }
+    else $paraend = $plength;
+    return htmlspecialchars( substr($pfield, 0, $paraend) );
   }
 
   # prints link to fulltext (hedline url)
@@ -483,7 +572,7 @@ class item {
                      c2.item_id     = '$fqsqlid'";
       } else {	
       	$p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
-      	$SQL = "SELECT c2.text AS text 
+        $SQL = "SELECT c2.text AS text 
                 FROM item LEFT JOIN content c1 ON item.id = c1.item_id 
                           LEFT JOIN content c2 ON item.id = c2.item_id
                 WHERE slice_id  = '$p_blurbSliceId' AND
@@ -570,7 +659,6 @@ class item {
                            $padditional,$this->getval($col,'flag'));
   }
 
-
   # _#ITEMEDIT used on admin page index.php3 for itemedit url
   # param: 0
   function f_e($col, $param="") { 
@@ -579,10 +667,7 @@ class item {
  
     // code to keep compatibility with older version
     // which was working without $AA_INSTALL_EDIT_PATH
-    if ($AA_INSTAL_EDIT_PATH)
-      $admin_path = $AA_INSTAL_EDIT_PATH . "admin/";
-    else
-      $admin_path = "";
+    $admin_path = ($AA_INSTAL_EDIT_PATH ? $AA_INSTAL_EDIT_PATH . "admin/" : "");
  
     switch( $param ) {
       case "disc":
@@ -590,14 +675,14 @@ class item {
       return con_url($sess->url("discedit.php3"),
           "item_id=".unpack_id( $this->getval('id..............')));
       case "itemcount":
-        return $GLOBALS['QueryIDsCount'];
-      default:
+      	return $GLOBALS['QueryIDsCount'];
+      default:  
         return con_url($sess->url($admin_path."itemedit.php3"),
                    "encap=false&edit=1&id=".
                    unpack_id( $this->getval('id..............') ).
              		   make_return_url("&return_url=") );	// it return "" if return_url is not defined.
     }
-  }
+  }                 
 
   # prints "begin".$col."end" if $col="condition", else prints "none"
   # if no cond_col specified - $col is used
@@ -647,20 +732,21 @@ class item {
     # substitute aliases by real item content
     $part = $param;
 
-/*
-Code Added by Ram Prasad on 25-Feb-2002
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Function:
-~~~~~~~~~
-This creates an alias for Slice ID ( like _#this), called _#slice and can be used in f_v 
-*/      
-// Begin Ram's Code
+    /*
+    Code Added by Ram Prasad on 25-Feb-2002
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Function:
+    ~~~~~~~~~
+    This creates an alias for Slice ID ( like _#this), called _#slice and can be used in f_v 
+    */      
+    // Begin Ram's Code
     global $slice_id;
     $param = str_replace("_#slice",$slice_id,$param);
-// End Ram's Code
+    // End Ram's Code
 
     while( $part = strstr( $part, "_#" )) {  # aliases for field content
-      $fid = substr( $part, 2, 16 );         # looks like _#headline.......
+      $fid = substr( $part, 2, 16 );         # looks like _#headline........
+      
       if( substr( $fid, 0, 4 ) == "this" )   # special alias _#this
         $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
       elseif( $fid == 'unpacked_id.....' )
@@ -680,7 +766,7 @@ This creates an alias for Slice ID ( like _#this), called _#slice and can be use
   # linktype: mailto/href (default is mailto)
   function f_m($col, $param="") { 
     $p = ParamExplode($param);
-    list ($pbegin, $pfield, $pelse, $ptype) = $this->subst_aliases($p);
+    list ($pbegin, $pfield, $pelse, $ptype, $padd) = $this->subst_aliases($p);
 
     if( !$this->getval($col) ) {
       	return $pelse ? $pbegin.$pelse : "";
@@ -693,8 +779,24 @@ This creates an alias for Slice ID ( like _#this), called _#slice and can be use
       $txt = ( $p[1] ? $pfield : $this->getval($col));
       $flg = ( $p[1] ? FLAG_HTML : $this->getval($col,'flag'));
     }  
-    $linktype =  ($ptype ? "" : "mailto:");
-    return $pbegin.$this->getahref( $linktype.$this->getval($col), $txt, "", $flg);
+    $linktype =  (($ptype && ($ptype!='mailto')) ? "" : "mailto:");
+    return $pbegin.$this->getahref( $linktype.$this->getval($col), $txt, $padd, $flg);
+  }
+
+  # substring with case conversion
+  
+  function f_j($col, $param="") { 
+    $p = ParamExplode($param);
+    list ($start, $n, $case) = $this->subst_aliases($p);
+
+	$text = $this->getval($col);
+	if ($n <= 0) $n = strlen ($text);
+	$text = substr($text,$start,$n);
+	
+	if ($case == "upper")		$text = strtoupper ($text);
+	else if ($case == "lower")	$text = strtolower ($text);
+	else if ($case == "first")  $text = ucwords (strtolower ($text));
+	return $text;
   }
 
   # transformation function - transforms strings to another strings
@@ -732,273 +834,6 @@ This creates an alias for Slice ID ( like _#this), called _#slice and can be use
     $out = $this->unalias($out, $remove);
     return $out;
   }  
-
-  function unalias($out, $remove_string="") {
-    $piece = explode("_#",$out);
-    if( !is_array($piece))
-      $piece = array($out);
-      
-    unset($out);
-    reset($piece);
-    if( substr(current($piece),0,2) != "_#" ) {   // skip to first alias
-      $out = current($piece);
-      next($piece);
-    }
-    while(current($piece)) {
-        #search for alias definition (fce,param,hlp)
-      $ali_arr = $this->aliases["_#".($als_name=substr(current($piece),0,8))];
-
-        #is this realy alias?
-      if( is_array($ali_arr)) {
-          # get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
-        $function = ParseFnc($ali_arr[fce]);
-        $fce = $function[fnc];
-
-          # call function (called by function reference (pointer))
-          # like f_d("start_date......", "mm-dd")
-        $contents[$als_name] = $this->$fce($ali_arr[param], $function[param]);
-
-        if( $contents[$als_name] != "")   # remove empty aliases
-          $out .= "_##".current($piece);  # one cross more to not replace 
-        else                           # strings with "_#", which is not aliases
-          $out .= substr(current($piece),8);
-      }
-      else
-        $out .= "_#".current($piece);
-      next($piece);
-    }    
-    
-//huh("ooo$remove_string");
-    
-    $remove = explode("##", $remove_string); // huhw("nove<BR>$out");
-    if( is_array($remove) ) {
-      reset($remove);
-      while( current($remove) ) {
-        $out = str_replace(current($remove), "", $out); 
-//huhw(current($remove).":..$out..");
-        next($remove);
-      }
-    }    
-   
-// remove ()
-    $piece = explode("_##",$out);
-//p_arr($piece,"2. explode");
-
-    unset($out);
-    reset($piece);
-    if( substr(current($piece),0,3) != "_##" ) {   // skip to first alias
-      $out = current($piece);
-      next($piece);
-    }
-    while(current($piece)) {
-      $out .= $contents[substr(current($piece),0,8)];
-      $out .= substr(current($piece),8);
-      next($piece);
-    }    
-
-    return $out;
-  }
 };
 
-/*
-$Log$
-Revision 1.39  2002/04/04 06:55:56  mitraearth
-Fix to bug in f_q to allow blank blurb_slice and undefined BLURB_SLICE_ID
-
-Revision 1.38  2002/04/04 01:00:59  mitraearth
-Extended f_q so that if field is specified as id.............. then it
-will do a different SQL lookup and return the field as expected. Note that
-you do not need to specify a slice-id as the id is unique. This allows
-a paramater of for example "::id..............:full_text......." to print
-the full_text field of a related item.
-
-Revision 1.37  2002/03/14 11:20:45  mitraearth
-[[ User Validation for add item / edit item (itemedit.php3). ]]
-
-(by Setu)
- - new selection "User" at admin->field->edit(any field)->validation.
- - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
- - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
- - It can validate the value and return new value for the field.
-
- - Related files:
-   - admin/itemedit.php3
-   - include/constants.php3
-   - include/en_news_lang.php3
-     - "L_INPUT_VALIDATE_USER" for User Validation.
-
-* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
-
-[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
-(by Ram)
- - if the field is blank, it can load default value from URL query strings.
- - new selection "Variable" in admin->field->edit(any field)->Default:
- - "parameter" is the name of variable in URL query strings
-   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
-
- - Related files:
-   - include/constant.php3
-   - include/en_news_lang.php3
-     - "L_INPUT_DEFAULT_VAR" for Default by variable.
-   - include/itemfunc.php3
-     - new function "default_fnc_variable()" for "Default by variable"
-
-
-[[ admin/index.php3 ]]
-(by Setu)
- - more switches to allow admin/index.php3 to be called from another program (with return_url).
-   - sort_filter=1
-   - action_selected=1
-     - "feed selected" is not supported.
-     - "view selected" is not supported.
- - scroller now works with return_url.
-   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
-     - scr_st3_Mv
-     - scr_st3_Go
- - more changes to work with &return_url.
-
- - related files:
-   - admin/index.php3
-   - include/item.php3
-     - new function make_return_url()
-     - new function sess_return_url()
-
-* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
-
-[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
-(by Setu)
- - it supports "&return_url=...." to jump to another web page after  submission.
- - related files:
-   - admin/slicedit.php3
-
-Revision 1.36  2002/03/06 12:45:48  honzam
-Aliases can be used inside of alias functions
-
-Revision 1.35  2002/02/12 09:53:44  mitraearth
-_#ITEMEDIT alias can return a path for "itemedit.php3"
-If $AA_INSTAL_EDIT_PATH is defined in include/config.php3,
-it will return value : $AA_INSTAL_EDIT_PATH."admin/edititem.php3" with the query string.
-If it is not defined, it returns the same value as the older version.
-it returns "edititem.php3" with the query string.
-
-Revision 1.34  2002/02/05 21:48:05  honzam
-new transformation alias function f_x, fixed blurb f_q alias function
-
-Revision 1.33  2002/01/10 13:57:49  honzam
-fixed bug in parameter to f_v alias function
-
-Revision 1.32  2002/01/04 12:16:05  honzam
-updated sime aliases
-
-Revision 1.31  2001/12/18 12:15:59  honzam
-new alias for displaying matched items count (_#ID_COUNT)
-
-Revision 1.30  2001/12/12 18:40:48  honzam
-Better handling newlines in f_h, bugfix in f_b alias function
-
-Revision 1.29  2001/11/26 11:07:30  honzam
-No session add option for itemlink in alias
-
-Revision 1.28  2001/10/24 18:44:10  honzam
-new parameter wizard for function aliases and input type parameters
-
-Revision 1.27  2001/10/24 16:46:24  honzam
-fixed bug with fourth parameter to f_c
-
-Revision 1.26  2001/10/17 21:53:46  honzam
-fixed bug in url passed aliases
-
-Revision 1.25  2001/10/08 16:42:52  honzam
-f_m alias function now works with normal links too
-
-Revision 1.24  2001/09/27 15:59:33  honzam
-New discussion support, New constant view, Aliases for view and mail
-
-Revision 1.23  2001/09/12 06:19:00  madebeer
-Added ability to generate RSS views.
-Added f_q to item.php3, to grab 'blurbs' from another slice using aliases
-
-Revision 1.22  2001/07/09 17:46:40  honzam
-user alias function - better parameters parsing
-
-Revision 1.21  2001/07/09 09:28:44  honzam
-New supported User defined alias functions in include/usr_aliasfnc.php3 file
-
-Revision 1.20  2001/06/21 14:15:44  honzam
-feeding improved - field value redefine possibility in se_mapping.php3
-
-Revision 1.19  2001/06/15 21:17:40  honzam
-fixed bug in manual feeding, fulltext f_b alias function improved
-
-Revision 1.18  2001/06/15 20:05:16  honzam
-little search imrovements and bugfixes
-
-Revision 1.17  2001/06/15 15:27:58  honzam
-improved f_h alias function for displaying multiple values
-
-Revision 1.16  2001/06/14 13:03:12  honzam
-better time handling in inputform and view
-
-Revision 1.15  2001/06/13 11:31:28  honzam
-added negation in condition alias function f_c (and fixed bug of reverse meaning of condition)
-
-Revision 1.14  2001/06/03 16:00:49  honzam
-multiple categories (multiple values at all) for item now works
-
-Revision 1.13  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.12  2001/05/10 10:01:43  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.11  2001/04/17 21:32:08  honzam
-New conditional alias. Fixed bug of not displayed top/bottom HTML code in fulltext and category
-
-Revision 1.10  2001/03/20 16:10:37  honzam
-Standardized content management for items - filler, itemedit, offline, feeding
-Better feeding support
-
-Revision 1.9  2001/02/20 13:25:16  honzam
-Better search functions, bugfix on show on alias, constant definitions ...
-
-Revision 1.6  2000/12/23 19:56:50  honzam
-Multiple fulltext item view on one page, bugfixes from merge v1.2.3 to v1.5.2
-
-Revision 1.5  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.4  2000/10/10 18:28:00  honzam
-Support for Web.net's extended item table
-
-Revision 1.3  2000/08/17 15:17:55  honzam
-new possibility to redirect item displaying (for database changes see CHANGES)
-
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
-
-Revision 1.1.1.1  2000/06/21 18:40:40  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:24  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.15  2000/06/12 19:58:36  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.14  2000/06/09 15:14:11  honzama
-New configurable admin interface
-
-Revision 1.13  2000/05/30 09:11:39  honzama
-MySQL permissions upadted and completed.
-
-Revision 1.12  2000/04/24 16:50:34  honzama
-New usermanagement interface.
-
-Revision 1.11  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>
