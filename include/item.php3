@@ -192,11 +192,11 @@ class item {
   }    
 
   # get link from url and text
-  function getahref($url, $txt, $add="") { 
+  function getahref($url, $txt, $add="", $html=false) { 
     if( $url AND $txt )
       return '<a href="'. $url ."\" $add>". 
-                          htmlspecialchars($txt).'</a>';
-    return htmlspecialchars($txt); 
+                          DeHtml($txt, $html).'</a>';
+    return DeHtml($txt,$html); 
   }
 
   # --------------- functions called for alias substitution -------------------
@@ -304,10 +304,12 @@ class item {
     # last parameter - condition field
     $url = $this->getitemurl($link_only, $url_field, $redirect, $condition, $no_sess);
 
-    if ( $this->columns[$txt] ) 
-  		$txt = $this->columns[$txt][0][value];
+    if ( $this->columns[$txt] ) {
+  		$txt = $this->columns[$txt][0]['value'];
+      $flg = $this->columns[$txt][0]['flag'];
+    }  
                
-    return $this->getahref($url,$txt,$addition);
+    return $this->getahref($url,$txt,$addition,$flg);
   }    
 
   # prints 'blurb' (piece of text) based from another slice, 
@@ -452,7 +454,7 @@ function RSS_restrict($txt, $len) {
   function f_l($col, $param="") { 
     $p = ParamExplode($param);
     return $this->getahref($this->columns[$p[0]][0][value], 
-                           $this->columns[$col][0][value],$p[1]);
+                           $this->columns[$col][0][value],$p[1],$this->columns[$col][0]['flag']);
   }
 
   # _#ITEMEDIT used on admin page index.php3 for itemedit url
@@ -482,7 +484,8 @@ function RSS_restrict($txt, $len) {
     $cond = ( $p[4] ? $p[4] : $col );
     if( $this->columns[$cond][0][value] != $p[0] )
       $negate = !$negate;
-    return  ($negate ? $p[3] : $p[1]. DeHtml($this->columns[$col][0][value], $this->columns[$col][0][flag]) .$p[2]); 
+    $none = $this->columns[$p[3]] ? $this->columns[$p[3]][0]['value'] : $p[3];
+    return  ($negate ? $none : $p[1]. DeHtml($this->columns[$col][0][value], $this->columns[$col][0][flag]) .$p[2]); 
   }
   
   # calls user defined function in file /include/usr_aliasfnc.php3
@@ -537,13 +540,16 @@ function RSS_restrict($txt, $len) {
       $txt = ($this->columns[$p[2]] ? $this->columns[$p[2]][0][value] : $p[2]);
       return ( $txt ? $p[0].$txt : "" );
     }  
-    if( $this->columns[$p[1]] )
-      $txt = ($this->columns[$p[1]][0][value] ? 
-             $this->columns[$p[1]][0][value] : $this->columns[$col][0][value]);
-     else 
+    if( $this->columns[$p[1]] ) {
+      $column = ($this->columns[$p[1]][0][value] ? $p[1] : $col);
+      $txt = $this->columns[$column][0]['value'];
+      $flg = $this->columns[$column][0]['flag'];
+    } else {
       $txt = ( $p[1] ? $p[1] : $this->columns[$col][0][value]);
+      $flg = ( $p[1] ? FLAG_HTML : $this->columns[$col][0]['flag']);
+    }  
     $linktype =  ($p[3] ? "" : "mailto:");
-    return $p[0].$this->getahref( $linktype.$this->columns[$col][0][value], $txt);
+    return $p[0].$this->getahref( $linktype.$this->columns[$col][0][value], $txt, "", $flg);
   }
 
   // returns number of IDs (set in the QueryIDs function)
@@ -638,6 +644,9 @@ function RSS_restrict($txt, $len) {
 
 /*
 $Log$
+Revision 1.32  2002/01/04 12:16:05  honzam
+updated sime aliases
+
 Revision 1.31  2001/12/18 12:15:59  honzam
 new alias for displaying matched items count (_#ID_COUNT)
 
