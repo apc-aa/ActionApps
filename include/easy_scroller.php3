@@ -123,37 +123,105 @@ class easy_scroller {
 		while(list($k, $v) = each($arr)) {
       if($i++) echo " | ";	
 			if($v) 
-				echo "<a href=\"". $url. "scrl=1&". $v. "\">$k</a>";
+				echo "<a href=\"". $url. "scrl=1&". $v. "\" class=\"scroller\">$k</a>";
 			else 
-				echo $k;
+				echo "<span class=\"scroller\">$k</span>";
 		}
  	}
 }  
-/*
-$Log$
-Revision 1.2  2000/08/03 12:28:20  honzam
-SCROLLER_LENGTH constant bug fixed - the length is accepted now
 
-Revision 1.1.1.1  2000/06/21 18:40:28  madebeer
-reimport tree , 2nd try - code works, tricky to install
 
-Revision 1.1.1.1  2000/06/12 21:50:15  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
+class view_scroller {
+	var $classname = "view_scroller";
+	var $persistent_slots = Array("current", "id", "itmcnt", "metapage", "urldefault");
+	var $current = 1;		# current page
+	var $id;				    # scroller id
+  var $itmcnt;        # total item count
+	var $metapage = 10;	# "metapage" size
+	var $urldefault;		# cache self url
+	
+	# constructor
+	# $id identifies scroller on a web page
+	# $pgcnt is the number of pages to scroll
+	function view_scroller($id="", $url="", $metapage=10, $itmcnt=0, $curr=0) {
+		$this->id = $id;
+		$this->metapage = $metapage;
+		$this->urldefault = $url;
+		$this->itmcnt = $itmcnt;
+    $this->current = floor( $curr/$this->metapage ) + 1;
+	}
 
-Revision 1.6  2000/06/12 19:58:34  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
+	# return part of a query string for move to absolute position $page
+	function Absolute($page) {
+		return urlencode("scr_" . $this->id . "_Go") . "=" . urlencode($page);
+	}
+	
+	function pageCount() {
+    return floor(($this->itmcnt - 1) / max(1,$this->metapage)) + 1;
+  }  
+  
+  # keep current page within bounds
+	function checkBounds() {	
+		if($this->current < 1) $this->current = 1;
+    $pages = $this->pageCount();
+		if($this->current > $pages) $this->current = $pages;
+	}
+	
+	# adjust number of pages depends on item count and metapage
+	function countPages($itmcnt) {
+    $this->itmcnt = $itmcnt;
+		$this->checkBounds();
+  }
+		
+	# return navigation bar as a hash
+	# labels as keys, query string fragments a values
+	function navarray() {
+    $this->CheckBounds();
+		if(!$this->itmcnt) 
+      return array();
+    $pgcnt = $this->pageCount();
+		$mp = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
+		$from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
+		$to = min(($mp + 1) * SCROLLER_LENGTH + 1, $pgcnt);
+		if($this->current > 1)
+			$arr[L_PREV] = $this->Absolute($this->current-1);
+		if($from > 1) $arr["1"] = $this->Absolute(1);
+		if($from > 2) $arr[".. "] = "";
+		for($i = $from; $i <= $to; $i++) {
+			$arr[(string)$i] = ($i == $this->current ? "" : 
+				$this->Absolute($i));
+		}	
+		if($to < $pgcnt - 1) $arr[" .."] = "";
+		if($to < $pgcnt) 
+			$arr[(string) $pgcnt] = $this->Absolute($pgcnt);
+		if($this->current < $pgcnt)
+			$arr[L_NEXT] = $this->Absolute($this->current+1);
+		return $arr;
+	}
 
-Revision 1.5  2000/05/30 09:11:39  honzama
-MySQL permissions upadted and completed.
+	# convert array provided by navarray into HTML code
+	# commands are added to $url
+	function get($begin='', $end='', $add='class="scroller"', $nopage='') {
+    $url = con_url($this->urldefault,"scrl=".$this->id);
 
-Revision 1.4  2000/04/24 16:50:34  honzama
-New usermanagement interface.
+    if( $GLOBALS['apc_state'] )                
+      $url .= '&apc='.$GLOBALS['apc_state']['state'];
 
-Revision 1.3  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
+		$i = 0;
+		$arr = $this->navarray();
+    
+    if( count($arr) <= 1 )
+      return $nopage;
+    
+		while(list($k, $v) = each($arr)) {
+      if($i++) 
+        $out .= " | ";	
+  		$out .= ( $v ? "<a href=\"$url&$v\" $add>$k</a>" : $k);
+		}
+    
+    return $begin.$out.$end;
+ 	}
+}  
 
-*/
+
 ?>
