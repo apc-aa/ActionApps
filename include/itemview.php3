@@ -387,7 +387,6 @@ if (isset($this->zids))
     if( substr($this->from_record, 0, 6) != 'random') {
       $foo_zids = $this->zids->slice((integer)$this->from_record,
          ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
-
     } else { // Selecting random record
       list( $random, $rweight ) = explode( ":", $this->from_record);
       if( !$rweight || !is_array($this->fields[$rweight]) ) {  
@@ -404,7 +403,7 @@ if (isset($this->zids))
         $foo_zids = $this->zids;
       }
     }
-
+    
     // fill Abstract Data Structure by the right function 
     // (GetItemContent / GetItemContent_Short / GetLinkContent)
     $function2call = $this->get_content_funct;
@@ -417,6 +416,7 @@ if (isset($this->zids))
     
     # process the random selection (based on weight)
     if( $rweight && is_array($this->fields[$rweight]) ) {
+      $this->zids->clear('l');   // remove id and prepare for long ids
       #get sum of all weight
       reset( $content );
       while( list(,$v) = each($content) ) {
@@ -429,7 +429,7 @@ if (isset($this->zids))
         while( list($k,$v) = each($content) ) {
           $ws += $v[$rweight][0]['value'];
           if( $ws >= $winner ) {
-            $this->zids->a[$i] = $k;
+            $this->zids->add($k);
             break;
           }  
         }
