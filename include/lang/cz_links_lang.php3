@@ -45,6 +45,24 @@ $_m["Page is already in database, but it is not displayed in any category, now"]
   = "Odkaz je v katalogu již zaøazen, nemá však pøiøazenu žádnou kategorii (nachází se ve schránce <em>Nezaøazené odkazy</em>).";
 # End of unused messages
 
+$_m["unfilled"]
+  = "prázdná hodnota";
+
+$_m["Accept"]
+  = "Pøijmout";
+
+$_m["Submit"]
+  = "Poslat";
+
+$_m["Cancel"]
+  = "Storno";
+
+$_m["No links"]
+  = "Bez odkazù";
+
+$_m["Disalow storing of the links to this category?"]
+  = "Tato kategorie nesmí obsahovat odkazy?";
+
 # modules/links/linkedit.php3, row 33
 # modules/links/constants.php3, row 99
 $_m["Change"]
@@ -690,7 +708,7 @@ $_m["Organization e-mail"]
 
 # modules/links/constants.php3, row 77
 $_m["Folder"]
-  = "";
+  = "Stav";
 
 # modules/links/constants.php3, row 78
 $_m["Last validation date"]

@@ -38,7 +38,7 @@ function MoveCategoryTo(catid, totxt, toval)
 {
   var tmp="";
   var delim="";
-  for( var j=1; j<=level; j++) {
+  for( var j=select_depth-1; j<=level; j++) {
     tmp += delim + a[downcat[j]];
     delim = " > ";
   }
@@ -229,15 +229,15 @@ function ChangeSelectedCat( catid, sbx, pathid, cat_id_fld) {
     if( pathid ) {
         tmp='';
         // create path to the currently selected category
-        for( var j=1; j<=level; j++) {
+        for( var j=0; j<=level; j++) {
             curcat = downcat[j];
-            tmp += (j==1 ? '': path_delimeter) + '<a href="javascript:GoToCategoryID(' +curcat+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[curcat] + '</a>';  // path_delimeter - global javascript variable
+            tmp += (j==0 ? '': path_delimeter) + '<a href="javascript:GoToCategoryID(' +curcat+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[curcat] + '</a>';  // path_delimeter - global javascript variable
         }
         // if the catid is not currently selected category, we have to add
         // specified category (probably highlighted in selectbox for dblclicking
         // tree traveling)
         if( (catid != curcat) && (cattxt != '..') ) {
-            tmp += (j==1 ? '': path_delimeter) + '<a href="javascript:GoToCategoryID(' +catid+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[catid] + '</a>';  // path_delimeter - global javascript variable
+            tmp += (j==0 ? '': path_delimeter) + '<a href="javascript:GoToCategoryID(' +catid+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[catid] + '</a>';  // path_delimeter - global javascript variable
         }
 //        tmp += eval(from).options[i].text
         SetContent(pathid,tmp);
@@ -246,6 +246,11 @@ function ChangeSelectedCat( catid, sbx, pathid, cat_id_fld) {
         eval(cat_id_fld).value = catid;
     }
 }
+
+function isGeneral(cid) {
+    return general.charAt(cid)=='1';
+}
+
 // Changes tree listbox (all categories) depending on given category
 function ChangeCategory(catid, sbx, pathid, cat_id_fld) {
     var pos=0
@@ -271,7 +276,11 @@ function ChangeCategory(catid, sbx, pathid, cat_id_fld) {
 
         for( var i=0; i<assignno; i++ ) {
             if( s[i] == catid ) {
-                sbx.options[pos++] = new Option(a[t[i]] + b[i], t[i])
+                sbx.options[pos] = new Option(a[t[i]] + b[i], t[i])
+                if( isGeneral(t[i]) ) {
+                    sbx.options[pos].className = 'general';
+                }
+                pos++;
             }
         }
     }
@@ -318,19 +327,24 @@ function ChangeStateCateg(listbox) {
 // function replaces html code of a an HTML element (identified by id)
 // by another code
 function SetContent(id,txt) {
-  if (document.all)                     // IE 4+
-    eval(id).innerHTML=txt;
-  else if (document.layers){            // NS 4
+  if (document.all) {                    // IE 4+
+    el = document.all[id];
+	if ( el != null ) {
+      el.innerHTML=txt;
+	}
+  } else if (document.layers) {            // NS 4
     eval('document.ids.'+id).document.write(txt);
     eval('document.ids.'+id).document.close();
   }else if (document.getElementById){   // NS 6 (new DOM)
     rng = document.createRange();
     el = document.getElementById(id);
-    rng.setStartBefore(el);
-    htmlFrag = rng.createContextualFragment(txt);
-    while (el.hasChildNodes())
-      el.removeChild(el.lastChild);
-    el.appendChild(htmlFrag);
+    if ( el != null ) {  // in case the element do not exist => do nothing
+      rng.setStartBefore(el);
+      htmlFrag = rng.createContextualFragment(txt);
+      while (el.hasChildNodes())
+        el.removeChild(el.lastChild);
+      el.appendChild(htmlFrag);
+    }
   }
 }
 
@@ -365,5 +379,12 @@ function LinkVote(link1, link2, changetag) {
   img2 = getElementByName(""+link2+"");
   img2.src = aa_img_null;
   img2.width = 1; */
+}
+
+
+function AcceptChange(field_name,hidden_field_name) {
+  var field         = "document.f."+field_name;
+  var hidden_field  = "document.f."+hidden_field_name;
+  eval(field).value =  eval(hidden_field).value;
 }
 

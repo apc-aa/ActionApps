@@ -218,7 +218,7 @@ function Inputform_url($add, $iid, $sid, $ret_url, $vid='') {
     global $profile;
     $param = get_if($add, "edit=1").
              ($vid ? "&vid=$vid" : "").
-             "&encap=false&id=$iid".
+             "&encap=false&id=$iid&change_id=$sid".
              (isset($sess) ? "" : "&change_id=$sid").
              ((isset($profile) AND $profile->getProperty('input_view')) ?
                   '&vid='.$profile->getProperty('input_view') : '').
@@ -827,14 +827,24 @@ function RSS_restrict($txt, $len) {
             get_aa_url('modules/links/linkedit.php3?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :
             get_aa_url('modules/links/linkedit.php3?lid='. $this->getval('id')) );
       case "link_go_categ":
-        $cat_names       = $this->getvalues('cat_name');
-        $cat_ids         = $this->getvalues('cat_id');
-        $cat_highlight   = $this->getvalues('cat_state');
+        $cat_names            = $this->getvalues('cat_name');
+        $cat_ids              = $this->getvalues('cat_id');
+        $cat_highlight        = $this->getvalues('cat_state');
+        $cat_proposal         = $this->getvalues('cat_proposal');
+        $cat_proposal_delete  = $this->getvalues('cat_proposal_delete');
         if( !is_array($cat_names) )
           return "";
         while ( list($k, $cat) = each($cat_names) ) {
-          $print_cname =  ( ($cat_highlight[$k]['value']=='highlight') ?
-                            '<b>'.$cat['value'].'</b>' : $cat['value'] );
+          $print_cname = $cat['value'];
+          if ( $cat_highlight[$k]['value']=='highlight' ) {
+              $print_cname = "<b>$print_cname</b>";    // mark highlighted categories
+          }
+          if ( $cat_proposal[$k]['value']=='y' ) {
+              $print_cname = "$print_cname (+)";       // mark proposals
+          }
+          if ( $cat_proposal_delete[$k]['value']=='y' ) {
+              $print_cname = "$print_cname (-)";       // mark proposals for deletion
+          }
           $ret .= $delim. '<a href="javascript:SwitchToCat('. $cat_ids[$k]['value']. ")\">$print_cname</a>";
          //          $ret .= $delim. '<a href="'.  get_aa_url('modules/links/index.php3?GoCateg='. $cat_ids[$k]['value']). '">'.$cat['value'].'</a>';
           $delim = ', ';

@@ -46,6 +46,28 @@ function get_help_url($href, $anchor) {
     return $href."#".$anchor;
 }
 
+// Expand return_url, possibly adding a session to it
+function expand_return_url($session=true) {
+    global $return_url, $sess;
+    return ($session AND is_object($sess)) ? $sess->url($return_url) : $return_url;
+}
+
+// This function goes to either $return_url if set, or to $url
+// if $usejs is set, then it will use inline Javascript, its not clear why this is done
+//    sometimes (item.php3) but not others.
+// if $session is set, then any session variable will be added, to the return_url case to allow for quicker 2nd access
+//    session is always added to the other case
+// if $add_param are set, then they are added to the cases EXCEPT return_url
+function go_return_or_url($url, $usejs, $session, $add_param="") {
+    global $return_url,$sess;
+    if ($return_url) {
+        go_url(expand_return_url($session), $add_param, $usejs);
+    } elseif ($url) {
+        go_url($sess->url($url), $add_param);
+    }
+    // Note if no $url or $return_url then drops through - this is used in index.php3
+}
+
 /** Adds slash at the end of a directory name if it is not yet there. */
 function endslash (&$s) {
     if (strlen ($s) && substr ($s,-1) != "/")
@@ -66,37 +88,6 @@ function debuglog ($text)
         fclose ($f);
     }
 }
-
-// Expand return_url, possibly adding a session to it
-function expand_return_url ($addsess) {
-    global $return_url, $sess;
-    $r1 = $return_url;    # return_url is encoded in calling URL, but decoded by PHP before global is set
-#	$r1 = urldecode($return_url);
-    if ($addsess && isset($sess))
-        return $sess->url($r1);
-    else	return $r1;
-}
-
-// This function goes to either $return_url if set, or to $url
-// if $usejs is set, then it will use inline Javascript, its not clear why this is done
-//    sometimes (item.php3) but not others.
-// if $addsess is set, then any session variable will be added, to the return_url case to allow for quicker 2nd access
-//    session is always added to the other case
-// if $add_param are set, then they are added to the cases EXCEPT return_url
-function go_return_or_url($url,$usejs,$addsess,$add_param="") {
-    global $return_url,$sess;
-    if ($return_url) {
-        if ($usejs) {
-            FrmJavascript( 'document.location = "'. expand_return_url($addsess) .'";');
-        } else {
-            go_url(expand_return_url($addsess));
-        }
-    } else {
-        if ($url) go_url($sess->url($url),$add_param);
-        // Note if no $url or $return_url then drops through - this is used in index.php3
-    }
-}
-
 
 // adds all items from source to target, but doesn't overwrite items
 function array_add ($source, &$target)
@@ -1190,6 +1181,27 @@ function HtmlPageEnd() {
     </BODY></HTML>";
 }
 
+function getHtmlPage($param='') {
+    $ret  = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
+    $ret .= "\n<html>\n<head>";
+    if ($param['title']) {
+        $ret .= "\n    <title>".$param['title']."</title>";
+    }
+    foreach ( (array)$param['css'] as $css ) {
+        $ret .= "\n    <link rel=\"StyleSheet\" href=\"".$css."\" type=\"text/css\">";
+    }
+    foreach ( (array)$param['js'] as $js ) {
+        $ret .= "\n    ". getJavascriptFile( $js );
+    }
+    $ret .= "\n</head>\n<body>\n";
+    $ret .= $param['body'];
+    $ret .= "\n</body>\n</html>";
+    return $ret;
+}
+
+function FrmHtmlPage($param='') {
+    echo getHtmlPage($param);
+}
 
 # Displays page with message and link to $url
 #   url - where to go if user clicks on Back link on this message page
@@ -1895,16 +1907,6 @@ class contentcache {
     }
 
 // end of contentcache class
-}
-
-/**  */
-function IncludeManagerJavascript() {
-    global $AA_INSTAL_PATH, $sess;
-    FrmJavascript( '
-        var aa_instal_path        = "'. $AA_INSTAL_PATH .'";
-        var aa_live_checkbox_file = "'. $sess->url($AA_INSTAL_PATH."live_checkbox.php3") .'";
-        var aa_live_change_file   = "'. $sess->url($AA_INSTAL_PATH."live_change.php3") .'"; ');
-    FrmJavascriptFile( 'javascript/manager.js' );
 }
 
 /** If $value is set, returns $value - else $else */
