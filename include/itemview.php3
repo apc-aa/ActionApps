@@ -1,5 +1,15 @@
 <?php
-//$Id$
+/**
+ * File contains definition of itemview class 
+ * used to display set of item/links
+ *
+ * Should be included to other scripts
+ *
+ * @package Include
+ * @version $Id$
+ * @author Honza Malik <honza.malik@ecn.cz>
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+*/
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
 http://www.apc.org/
@@ -19,37 +29,44 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# ----------------------------------------------------------------------------
-#                         itemview class
-# ----------------------------------------------------------------------------
-
 if (!defined ("ITEMVIEW_INCLUDED")) 
      define ("ITEMVIEW_INCLUDED",1);
 else return;
 
 require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
 
-class itemview{
+/** 
+ * itemview class - used to display set of items or links or ...
+ *
+ * it - selects right set of items/link IDs to display (based on page scroller
+ *      for example)
+ *    - get item/links content from database (using "Abstract Data Structure"
+ *      described also in {@link http://apc-aa.sourceforge.net/faq/#1337})
+ *    - instantiate 'item' class (defined in item.php3) for each item/link which
+ *      should be printed. 
+ *
+ * @see itemview
+ */
+class itemview {
   var $db;
-//  var $ids;                      # ids to show
-  var $zids;                     # zids to show
-  var $from_record;              # from which index begin showing items
-  var $num_records;              # number of shown records 
-  var $slice_info;               # record from slice database for current slice
-  var $fields;                   # array of fields used in this slice
-  var $aliases;                  # array of alias definitions. If used with multi-slice, 
-                                 # this variable contains an array of aliases for all slices
-                                 # aliases[slice_id0] are aliases for slice 0 etc.
-  var $clean_url;                # url of slice page with session id and encap..
-  var $group_fld;                # id of field for grouping
-  var $disc;                     # array of discussion parameters (see apc-aa/view.php3)
-//  var $use_short_ids;            # flag indicates if short_id used within $ids
+  var $zids;               // zids to show
+  var $from_record;        // from which index begin showing items
+  var $num_records;        // number of shown records 
+  var $slice_info;         // record from slice database for current slice
+  var $fields;             // array of fields used in this slice
+  var $aliases;            // array of alias definitions. If used with multi-slice, 
+                           // this variable contains an array of aliases for all slices
+                           // aliases[slice_id0] are aliases for slice 0 etc.
+  var $clean_url;          // url of slice page with session id and encap..
+  var $group_fld;          // id of field for grouping
+  var $disc;               // array of discussion parameters (see apc-aa/view.php3)
+  var $get_content_funct;  // function to call, if we want to get content 
+                           // (using "Abstract Data Structure" described also
+                           // in {@link http://apc-aa.sourceforge.net/faq/#1337})
   
   function itemview( $db, $slice_info, $fields, $aliases, $zids, $from, $number, 
-                     $clean_url, $disc=""){
-    #huhl("itemview: ",$zids);
-   #constructor
-
+                     $clean_url, $disc="", $get_content_funct='GetItemContent'){
+    #constructor
     $this->db = $db;
     $this->slice_info = $slice_info;  # $slice_info is array with this fields:
                                       #      - print_view() function:
@@ -75,8 +92,22 @@ class itemview{
     $this->num_records = $number;    # negative number used for displaying n-th group of items only
     $this->clean_url = $clean_url;
     $this->disc = $disc;
-//    $this->use_short_ids = $use_short_ids;
-  }  
+    
+    switch( (string)$get_content_funct ) {
+        case '1':          // for backward compatibility when $use_short_ids 
+                           // bool value was used instead of $get_content_funct
+            $this->get_content_funct = 'GetItemContent_Short'; break;
+        case '0':          // for backward compatibility ...
+                           // Item ids are in long format (default)
+            $this->get_content_funct = 'GetItemContent'; break;
+        default:
+            $this->get_content_funct = $get_content_funct;
+    }
+  }
+                     
+  function assign_items($zids) {
+      $this->zids = $zids; 
+  }                   
    
   function get_output_cached($view_type="") {  
     if ($GLOBALS[debug]) huhl("get_output_cached:".$view_type);
@@ -176,13 +207,14 @@ if (isset($this->zids))
 
       if ($this->slice_info['d_showimages'] || $this->slice_info['d_order'] == 'thread') {  // show discussion in the thread mode
          GetDiscussionThread($d_tree, "0", 0, $outcome);
-
-         while ( list( $d_id, $images ) = each( $outcome )) {
-            SetCheckboxContent( $d_content, $d_id, $cnt++ );
-            SetImagesContent( $d_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
-            $this->set_columns ($CurItem, $d_content, $d_id);
-            $out.= $CurItem->get_item();
-         }
+         if( $outcome ) {
+             while ( list( $d_id, $images ) = each( $outcome )) {
+                SetCheckboxContent( $d_content, $d_id, $cnt++ );
+                SetImagesContent( $d_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
+                $this->set_columns ($CurItem, $d_content, $d_id);
+                $out.= $CurItem->get_item();
+             }
+         }    
       }
       else {                      // show discussion sorted by date
         reset($d_content);
@@ -369,9 +401,14 @@ if (isset($this->zids))
       }
     }
 
-    # Create an array of content, indexed by either long or short id (not tagged id)
-    $content = GetItemContent($foo_zids);
+    // fill Abstract Data Structure by the right function 
+    // (GetItemContent / GetItemContent_Short / GetLinkContent)
+    $function2call = $this->get_content_funct;
+    // Create an array of content, indexed by either long or short id (not tagged id)
+    $content = $function2call($foo_zids);
+
     if ($debug) huhl("itemview:get_content: found",$content);
+    
     $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
     
     # process the random selection (based on weight)
@@ -430,7 +467,7 @@ if (isset($this->zids))
         $out = $this->get_output_calendar ($content);
         break;
         
-      default:                         # compact view
+      default:                         # compact view (of items or links)
         $oldcat = "_No CaTeg";
         $group_n = 0;                  # group counter (see group_n slice.php3 parameter)
   
@@ -485,7 +522,7 @@ if (isset($this->zids))
 
             # print item
           $CurItem->setformat( 
-             (!($i%2) AND $this->slice_info[even_odd_differ]) ?
+             (($i%2) AND $this->slice_info[even_odd_differ]) ?
              $this->slice_info[even_row_format] : $this->slice_info[odd_row_format],
              $this->slice_info[compact_remove] );
 
