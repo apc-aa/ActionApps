@@ -378,11 +378,9 @@ if (!$slice_id) {                           // feed establishing mode
 
   $SQL   = "SELECT id, publish_date, last_edit FROM item
             WHERE slice_id = '$p_slice_id' 
-              AND (externally_fed='' OR externally_fed IS NULL)
-              AND $cond1 
-              AND $cond2";
-
-//ech( $SQL );
+              AND $cond1
+              AND $cond2";  
+// AND (externally_fed='' OR externally_fed IS NULL)
 
   $db->query($SQL);
 
