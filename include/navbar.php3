@@ -36,7 +36,8 @@ if( $editor_page )
   $nb_context = L_AA_ADMIN;
 
 function get_url ($href) {
-    $res = AA_INSTAL_URL."admin/".$href;
+    global $AA_INSTAL_PATH;
+    $res = $AA_INSTAL_PATH."admin/".$href;
     if (strstr ($href,"?")) $res .= "&"; else $res .= "?";
     $res .= "AA_CP_Session=".$GLOBALS[AA_CP_Session];
     return $res;

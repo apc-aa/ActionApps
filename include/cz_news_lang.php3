@@ -44,7 +44,7 @@ define("HTML_PAGE_BEGIN",
 '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
   <HTML XMLNS:XS>
   <HEAD>
-  <LINK rel=StyleSheet href="'.AA_INSTAL_URL.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
+  <LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.ADMIN_CSS.'" type="text/css"  title="CPAdminCSS">
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
                
 # aa toolkit specific labels
@@ -852,6 +852,7 @@ define('L_C_NUMD','Kalendář: Den v měsíci příslušného data');
 define('L_C_NUMM','Kalendář: Číslo měsíce příslušného data');
 define('L_C_NUMY','Kalendář: Rok příslušného data');
 
+define('L_CONSTANT_WHERE_USED', 'Kde jsou konstanty použity?');
 define('L_CONSTANT_USED','Hodnoty použity v');
 
 define('L_VIEW_CREATE_NEW', 'Vytvořit nový pohled');    
@@ -861,7 +862,52 @@ define('L_USE_AS_NEW', 'Nové&nbsp;dle&nbsp;vybraných');
 define('L_SLICE_NOT_CONST', 'V poli -Hodnoty- máte zvolen webík. Webík nelze takto měnit. Vyberte nějakou skupinu hodnot (výše v seznamu).');
 
 
+define ("L_E_IMPORT_DATA_COUNT", "Počet importovaných článků: %d.");			
+define ("L_E_IMPORT_ADDED", "Přidán byl:");
+define ("L_E_IMPORT_OVERWRITTEN", "Přepsán byl:");
+define ("L_CHOOSE_JUMP", "Zvolte modul, který chcete editovat");
 
+define ("L_A_FIELD_IDS_TIT", "Správa webíku - Změna ID políčka");
+define ("L_FIELD_IDS", "Změna ID políčka");
+define ("L_FIELD_IDS_CHANGED", "ID políčka bylo změněno");
+define ("L_V_MONTH_LIST", "Month list (separated by ,)");
+define ("L_F_JAVASCRIPT", "Javascript pro políčka");
+define ("L_FIELD_ALIASES", "Aliasy");
+
+define('L_CHANGE_FROM','Změnit z');
+define('L_TO', 'na');
+define('L_FIELD_ID_HELP',
+    'Tato stránka umožňuje změnit identifikátory jednotlivých políček. 
+     Je to poměrně nebezpečná operace a může trvat dlouho. Je dost 
+     pravděpodobné, že tuto operaci nikdy nevyužijete - používá se jen 
+     ve výjimečných případech (nastavení formuláře pro vyhledávání ve více 
+     webících.<br><br>
+     Vyberte ID políčka, které chcete změnit a potom nové ID a číslo. Tečky 
+     budou automaticky doplněny.<br>');
+
+define('L_AA_ADMIN','Administrace AA Toolkitu');
+define('L_SLICE_ADMIN','Administrace webíku');
+define('L_AA_ADMIN2','AA');
+define('L_SLICE_ADMIN2','Nastavení');
+define('L_ARTICLE_MANAGER2','Správa zpráv');
+define('L_MODULES', 'Webíky / Moduly');
+define ('L_ADD_MODULE', "Nový");
+define ('L_DELETE_MODULE', "Vymazat");
+define ('L_A_MODULE_ADD', 'Vytvořit nový Webík / Modul');
+define ('L_A_SLICE', 'Webík');
+define ('L_A_MODULE', 'Modul');
+
+define('L_MODULE_NAME','Jméno modulu');
+define('L_JUMP_TO','Přejít na');
+define('L_AA_RELATIVE','Zadej cestu relativně k adresáři AA - t.j.');
+define('L_JUMP_SLICE','Přejít do webíku');
+define('L_A_JUMP_EDT','Editovat modul Jump');
+define('L_A_JUMP_ADD','Vytvořit nový Jump modul');
+define('L_EDIT_JUMP','Editovat Jump');
+define('L_MODULE_ID','ID modulu');
+define('L_UPDATE','Změň');
+define('L_CREATE','Vytvoř');
+     
 // constants used in param wizard only:
 require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
 
