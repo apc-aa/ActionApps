@@ -145,6 +145,9 @@ function ParseViewParameters($query_string="") {
 
   $arr = ParseSettings($set[$vid]);
 
+  if( $arr['slices'] )
+     $arr['slices'] = split('-', $arr['slices']);
+
   #  This code below do not work!! - it is not the same as the code above!!
   #  (the code above parses only the specific guerystring for this view)
   #  if (!$set[$vid])
@@ -166,7 +169,7 @@ function ParseViewParameters($query_string="") {
   $arr['als']=GetAliasesFromUrl(true);
   $arr['vid']=$vid;
   $arr['conds']=$v_conds;
-  $arr['slices']=$slices;
+  if ( !$arr['slices'] )   $arr['slices']=$slices;
   $arr['mapslices']=$mapslices;
   $arr['param_conds'] = $param_conds;
 //  $arr['item_ids'] = $item_ids;
