@@ -19,6 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if (!defined("AA_LOCSESSI_INCLUDED") && !defined("AA_LOCAUTH_INCLUDED"))
+     define ("AA_LOCSESSI_INCLUDED", 1);
+else return;
 
 if (!is_array($_PHPLIB)) {
   $_PHPLIB["libdir"] = "";
