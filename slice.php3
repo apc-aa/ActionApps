@@ -200,6 +200,12 @@ else {
   ExitPage();
 }
 
+// Use right language (from slice settings) - languages are used for scroller (Next, ...)
+$lang_file = substr ($slice_info['lang_file'], 0, 2);
+if (!$LANGUAGE_NAMES [$lang_file])
+    $lang_file = "en";
+bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$lang_file."_output_lang.php3");
+
 if( !$slice_info['even_odd_differ'] )
   $slice_info['even_row_format'] = "";
 
@@ -445,7 +451,7 @@ else {
       case '9': $gbd = '9'; break;      # 9 (9)- descending by priority (for fields using constants)
       default:  $gbd = 'a';             # 2 (2) - ascending;
     }
-  	$sort_tmp[] = array ( $slice_info['group_by'] => $gbd);
+    $sort_tmp[] = array ( $slice_info['group_by'] => $gbd);
   }
   if(isset($sort)) {
     if( !is_array($sort) )
@@ -501,7 +507,7 @@ if( $zids->count() > 0 ) {
               $sess->MyUrl($slice_id, $encap) );
   $itemview->print_view();
 
-	if( ($scr->pageCount() > 1) AND !$no_scr AND !$group_n)
+    if( ($scr->pageCount() > 1) AND !$no_scr AND !$group_n)
     $scr->pnavbar();
 }
 else {
