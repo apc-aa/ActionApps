@@ -517,11 +517,6 @@ class item {
     return htmlspecialchars($this->getval($col));
   }
 
-  function mystripos($haystack, $needle) {
-      $sub = stristr($haystack, $needle);
-      return ($sub ? strlen($haystack)-strlen($sub) : strlen($haystack));
-  }
-
   /** Prints abstract ($col) or grabed fulltext text from field_id
    *  param: length:field_id:paragraph
    *         length    - max number of characters taken from field_id
@@ -534,18 +529,25 @@ class item {
    *                     first paragraph or at least stop at the end of sentence
    */
   function f_a($col, $param="") {
+      list(         , $field )               = ParamExplode($param);  // we need $field unexpanded
       list( $plength, $pfield, $pparagraph ) = $this->subst_aliases( ParamExplode($param) );
-      if ( !$pfield ) {
-          $pfield = $col;                // content is grabbed from current $col
-      }
       $value = $this->getval($col);
-      if ($value AND ($col != $pfield)) {
+      if ($value AND !($col == $field)) {  // special case - return whole field
           return DeHtml( $value, $this->getval($col,'flag') );
       }
+      $shorted_text = substr(get_if($value, $pfield), 0, $plength);    // pfield is already expanded!!!
+
+      // search the text for following ocurrences in the order!
+      $PARAGRAPH_ENDS = array( '</p>','<p>','<br>', "\n", "\r" );
       if ($pparagraph) {
-          $paraend      = min(my_stripos($value,"<p>"),my_stripos($value,"</p>"),my_stripos($value,"<br>"),my_stripos($value,"\n"),my_stripos($value,"\r"), $plength);
-          $shorted_text = substr($value, 0, $paraend);
-          if ($paraend==$plength) {      // no <BR>, <P>, ... found
+          foreach ( $PARAGRAPH_ENDS as $end_str ) {
+              $paraend = strpos(strtolower($shorted_text), $end_str, 10);  // we do not want to
+              if ( $paraend !== false ) {   // end_str found
+                  $shorted_text = substr($shorted_text, 0, $paraend);
+                  break;
+              }
+          }
+          if ($paraend===false) {      // no <BR>, <P>, ... found
               // try to find dot (first from the end)
               $dot = strrpos( $shorted_text,".");
               if ( $dot > $paraend/3 ) { // take at least one third of text
@@ -554,8 +556,6 @@ class item {
                   $shorted_text = substr($shorted_text, 0, $space);
               } // no dot, no space - leave the text plength long
           }
-      } else {
-          $shorted_text = substr($value, 0, $plength);
       }
       return strip_tags( $shorted_text );
   }
