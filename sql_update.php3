@@ -568,7 +568,7 @@ $tablelist = array( 'active_sessions' => "(
                           PRIMARY KEY  (id),
                           UNIQUE KEY dir (dir)
                       )"
-) 
+ 
 
     
 );
