@@ -156,7 +156,7 @@ define("L_USER_PASSWORD2", "Potvrdit heslo");
 define("L_USER_FIRSTNAME", "Jméno");
 define("L_USER_SURNAME", "Pøíjmení");
 define("L_USER_MAIL", "E-mail");
-define("L_USER_SUPER", "Administrativní úèet");
+define("L_USER_SUPER", "Superadmin");
 define("L_A_USERS_TIT", "Správa webíku - Uživatelé");
 define("L_A_PERMISSIONS", "Správa webíku - Pøístupová práva");
 define("L_A_ADMIN", "Správa webíku - Vzhled Administrace");

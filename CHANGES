@@ -1,3 +1,5 @@
+09/12/02 - added Editorial to Alerts Collection
+09/11/02 - fixed problems with related items view
 08/20/02 - first parts of new language environment mini gettext 
 08/20/02 - new AA Alerts introduced, allowing to send new items to users by e-mail
 08/20/02 - because MsgPage is sometimes called with menu which again uses some permissions functions, these occurences were changed to MsgPageMenu in include/msgpage.php3

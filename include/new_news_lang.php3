@@ -310,6 +310,7 @@ define("L_DESCRIPTION","Description");
 define("L_ALERTS","Alerts");
 define("L_ALERTS_COLLECTION_TITLE", "Alerts Collections");
 define("L_ALERTS_USERS", "Users");
+define("L_ALERTS_UI", "User Interface");
 
 /* END OF E-MAIL ALERTS */
 
