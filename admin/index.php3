@@ -24,7 +24,7 @@ require $GLOBALS[AA_INC_PATH] . "varset.php3";
 require $GLOBALS[AA_INC_PATH] . "item.php3";
 require $GLOBALS[AA_INC_PATH] . "feeding.php3";
                      
-//huh("--$action==");
+//huh("-=-$action==");
 function MoveItems($chb,$status) {
   global $db;
 //p_arr_m($chb);
@@ -35,6 +35,16 @@ function MoveItems($chb,$status) {
       $db->query("update items set status_code = $status where id='".q_pack_id($it_id)."'");
   }
 }  
+
+function FeedAllItems($chb) {    // Feed all checked items
+  global $db;
+  if( isset($chb) AND is_array($chb) ) {
+    reset( $chb );
+    while( list($it_id,) = each( $chb ) )
+      FeedItem( $it_id, $db );
+  }
+}  
+
 
 #prints icon1 or icon2 depending on cond
 function SelectIconIf( $cond, $icon1, $alt1, $icon2, $alt2 ) {
@@ -99,7 +109,7 @@ switch( $action ) {  // script post parameter
       exit;
     }  
     MoveItems($chb,1);
-    FeedItem($id, $db);    // moved to approved so feed
+    FeedAllItems($chb, $db);    // Feed all checked items
     break;
   case "hold":
     if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD)) {
@@ -122,6 +132,8 @@ switch( $action ) {  // script post parameter
     }  
     break;
   case "feed":  // feed selected items to selected slices
+// huh("feed2slices:". $slices4feed);
+// huh("feed2app:". $feed2app);
     $slices4feed  = split(",", $feed2slice);
     $fooappfeed = split(",", $feed2app);
 
@@ -140,6 +152,7 @@ switch( $action ) {  // script post parameter
         if( isset($chb) AND is_array($chb) ) {
           reset( $chb );
           while( list($it_id,) = each( $chb ) ) {
+//          huh("Item: $it_id -> $sl_id <br>/n");
             FeedItemTo($it_id, $sl_id, $approvedfeed[$sl_id] , $db);
           }  
         }
@@ -213,14 +226,18 @@ var feedformwindow
 function OpenPreview() {
   var len = document.itemsform.elements.length
   var i=0
-  for( i=0; i<len; i++ )
-    if( document.itemsform.elements[i].name.substr(0,3) == 'chb')  //items checkboxes
+  var name = document.itemsform.elements[i].name
+  for( i=0; i<len; i++ ) {
+    name = document.itemsform.elements[i].name
+    if( name.substring(0,3) == 'chb') {  //items checkboxes
       if( document.itemsform.elements[i].checked == true) {
         if( previewwindow != null ) 
           previewwindow.close()    // in order to preview go on top after open
-        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+document.itemsform.elements[i].value,'fullwindow');
+        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(4,name.indexOf(']')),'fullwindow');
         return;
       }  
+    }
+  }    
 }  
 
 function SelectVis(state) {
@@ -556,8 +573,8 @@ echo '
 
 /*
 $Log$
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
+Revision 1.3  2000/07/07 21:28:17  honzam
+Both manual and automatical feeding bug fixed
 
 Revision 1.1.1.1  2000/06/21 18:39:55  madebeer
 reimport tree , 2nd try - code works, tricky to install
