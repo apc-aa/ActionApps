@@ -45,7 +45,7 @@ function PrintMoreHelp( $txt ) {
 
 # shows boxes allowing to choose constant in a hiearchical way
 function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $boxWidth, 
-	$size, $horizontal=0, $needed=false, $hlp="", $morehlp="") 
+	$size, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="") 
 {
 	if (!$levelCount) $levelCount = 3;
 	if (!$size) $size = 5;
@@ -58,12 +58,14 @@ function FrmHierarchicalConstant ($name, $txt, $value, $group_id, $levelCount, $
 	  echo "</tr><tr align=left>";
 	echo "<td>";
 	showHierConstInitJavaScript ($group_id, $levelCount, "inputform", false);
-	showHierConstBoxes ($levelCount, $horizontal, $name, false, 1, $boxWidth);
+	showHierConstBoxes ($levelCount, $horizontal, $name, false, $firstSelect, $boxWidth);
 	for ($i=0; $i<$boxWidth; ++$i) $widthTxt .= "m";
 	echo "
 	<TABLE border=1 cellpadding=2 width='100%'><TR>
 	<TD align=center><B>Selected:</B><BR><BR><INPUT TYPE=BUTTON VALUE='Delete' onclick='hcDelete(\"$name\")'></TD>
-	<TD><SELECT name=$name MULTIPLE size=$size>";
+	<TD><SELECT name='$name' MULTIPLE size=$size>";
+//    debuglog (serialize ($value));
+    if (is_array ($value))
 	for ($i=0; $i < count($value); ++$i)
 		if ($value[$i]['value'])
 		    echo "<option>".htmlspecialchars($value[$i]['value'])."\n";
@@ -241,38 +243,35 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $needed=fals
 	//	$scriptStart = "<script language=javascript src=\"". AA_INSTAL_URL. "misc/wysiwyg/richedt_";
 	$scriptStart = "<script language=javascript src=\"../misc/wysiwyg/richedt_";
 	echo $scriptStart . ($BName == "MSIE " ? "ie.js\">" : "ns.js\">").
-	"</script>
-	<script>
-		var edt$name"."_doc_complet = 0;
- 		var edt = \"edt$name\";
-        var richHeight = ".($rows * 22).";
-        var richWidth = ".($cols * 8).";
+	"</script> 
+	<script> 
+		var edt$name"."_doc_complet = 0; 
+        var edt = \"edt$name\"; 
+ 		var edtdoc = \"edt$name.document\"; 
+        var richHeight = ".($rows * 22)."; 
+        var richWidth = ".($cols * 8)."; 
+        var imgpath = '../misc/wysiwyg/images/'; 
 	</script>";
 	echo $scriptStart . ($BName == "MSIE " ? "ie.html\">" : "ns.html\">");
-    echo "</script>";
+    echo "</script> ";
 
-echo "<script language =javascript >
- edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100);
- function edt$name"."_inicial(){ ".
- ($BName == "MSIE "
-	? "if( document[\"edt$name\"]){ 
-  	   obj_editor = document.edt$name;
-			   document.edt$name.DocumentHTML = '$val';"
-  : "if( window[\"PropertyAccessor\"] && window[\"edt$name\"]){ 
- 		   obj_editor = edt$name;
-	 		   PropertyAccessor.Set(edt$name,\"DocumentHTML\",'$val');").
- 	"    clearInterval(edt$name"."_timerID);
-    } 
-    return true;
- } 
- </script>	";
-		echo "<input type=hidden name=\"$name\" value='$val'>\n";
-        $htmlvar = $name."html";
- 	echo "<input type=hidden name=\"$htmlvar\" value=\"h\">\n";
-		
-  PrintMoreHelp($morehlp);
-  PrintHelp($hlp);
-  echo "</td></tr>\n";
+    echo "
+    <script language =javascript > 
+        <!-- 
+        edt$name"."_timerID=setInterval(\"edt$name"."_inicial()\",100); 
+        function edt$name"."_inicial() { 
+            posa_contingut_html('edt$name','$val');
+     	    clearInterval(edt$name"."_timerID); 
+            return true; 
+        } 
+        // --> 
+    </script> 
+	<input type=hidden name='$name' value='$val'> 
+ 	<input type=hidden name='".$name."html' value='h'>";	
+    
+    PrintMoreHelp($morehlp);
+    PrintHelp($hlp);
+    echo "</td></tr>\n";
 }
 
 # Prints html tag <input type=checkbox .. to 2-column table
@@ -478,15 +477,16 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false,
   echo "<tr align=left><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n <td>";	
-  reset($arr);
-  while(list($k, $v) = each($arr)) { 
-    echo "<input type='checkbox' name='$name'
-                 value='". htmlspecialchars($k) ."'";
-    if ($selected[$k]) 
-      echo " checked";
-    echo ">".htmlspecialchars($v);
+  if (is_array ($arr)) {
+      reset($arr);
+      while(list($k, $v) = each($arr)) { 
+        echo "<input type='checkbox' name='$name'
+                     value='". htmlspecialchars($k) ."'";
+        if ($selected[$k]) 
+          echo " checked";
+        echo ">".htmlspecialchars($v);
+      }
   }
-  reset($arr);
   PrintMoreHelp($morehlp);
   PrintHelp($hlp);
   echo "</td></tr>\n";
