@@ -1,9 +1,11 @@
+05/19/13 - new {user:} inline alias which is able to dislplay informations
+(honzam)   about logged user (from PHP_USER_AUTH and ReaderManagement slice)
 05/19/03 - fixed RSS2 so recognizes HTML in description etc
 05/15/03 - added debugging to misc/file2slice/importer (mitra)
-05/15/03 - removed test for nocache in site.php3 on store, for consistency
-(mitra)  - made get_output_cached include apc_state and als in keystr
+(mitra)  - removed test for nocache in site.php3 on store, for consistency
+         - made get_output_cached include apc_state and als in keystr
 05/14/03 - fix bug in caching of views run under other slices (mitra)
-05/12/03 - changed UI elements in fileAction to buttons from links 
+05/12/03 - changed UI elements in fileAction to buttons from links
          - this included changing parameter from uploadarg to upload
          - admin/test.php3 now correctly tests for presence of FILEMAN_BASE_DIR
          - fixed fileman path to images from /apc-aa/images to ../images
@@ -17,12 +19,12 @@
 (mitra)  - Fixed overlong for loop in calendar generating warnings
          - fixed address of sql_update in install-4.html (mitra)
 05/01/03 - integrated summarize.php3 into menus and styles etc
-05/01/03 - updated fileman.php3 and admin/test.php3 to check for missing 
+05/01/03 - updated fileman.php3 and admin/test.php3 to check for missing
 05/01/03 - integrated summarize.php3 into menus and styles etc (mitra)
-(mitra)  - updated fileman.php3 and admin/test.php3 to check for missing 
+(mitra)  - updated fileman.php3 and admin/test.php3 to check for missing
            fileman directory - still has UI and other bugs
-04/28/03 - introduced AA_BASE_DIR into config.php3 
-(mitra)  - se_inputform.php3 can be called with onlyupdate and parameters 
+04/28/03 - introduced AA_BASE_DIR into config.php3
+(mitra)  - se_inputform.php3 can be called with onlyupdate and parameters
             to update a single field as called from summarize.php3
          - changed f_r to handle p[1]
          - Updates to summarize.php3 (mitra)

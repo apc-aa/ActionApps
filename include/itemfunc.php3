@@ -340,10 +340,10 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
     $e = aa_move_uploaded_file($filevarname, $dirname,
         $fileman_used ? $FILEMAN_MODE_FILE : 0, $dest_file);
     if ($debugupload) huhl("File moved to $dirname/$dest_file: ");
-    if ($e) { 
+    if ($e) {
         $err[$field["id"]] = $e;
         if ($debugupload) { huhl("Errors = ",$err); exit; }
-        return; 
+        return;
     }
 
     // ---------------------------------------------------------------------
@@ -358,7 +358,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
             $params[1],$params[2])) {
         $err[$field["id"]] = $e;
         if ($debugupload) { huhl("Errors on ResampleImage = ",$err); exit; }
-        return; 
+        return;
     }
     if ($params[3]!="") {
             // get ids of field store thumbnails
@@ -381,7 +381,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
                         $thumb_params[2],$thumb_params[3])) {
                     $err[$field["id"]] = $e;
                     if ($debugupload) { huhl("Errors on nested ResampleImage = ",$err); exit; }
-                    return; 
+                    return;
                 }
 
             // delete content just for displayed fields
@@ -420,7 +420,7 @@ function insert_fnc_pwd($item_id, $field, $value, $param)
     global $$change_varname, $$retype_varname, $$delete_varname, $$original_varname;
 
     if ($$change_varname && $$change_varname == $$retype_varname)
-        $value["value"] = md5 ($$change_varname);
+        $value["value"] = crypt($$change_varname, 'xx');
     else if ($$delete_varname)
         $value["value"] = "";
     else $value["value"] = $$original_varname;
