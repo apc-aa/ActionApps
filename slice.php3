@@ -193,7 +193,16 @@ function LogItem($id, $column) {
   }
   return false;
 }  
-    
+
+function GetSortArray( $sort ) {
+  if( substr($sort,-1) == '-' )
+    return array ( substr($sort,0,-1) => 'd' );
+  if( substr($sort,-1) == '+' )
+    return array ( substr($sort,0,-1) => 'a' );
+  return array ( $sort => 'a' );
+}    
+
+
 //-----------------------------End of functions definition---------------------
 # $debugtimes[]=microtime();
 
@@ -342,42 +351,38 @@ if($query) {              # complex query - posted by big search form ---
 elseif( (isset($conds) AND is_array($conds)) OR isset($group_by)) {     # posted by query form ----------------
   $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","conds", "sort", "group_by")); # store in session
 
-  reset($conds); 
-  while( list( $k , $cond) = each( $conds )) {
-    if( !isset($cond) OR !is_array($cond) ) {
-      $conds[$k] = false;
-      continue;             # bad condition - ignore
-    }
-    if( !isset($cond['value']) )
-      $conds[$k]['value'] = current($cond);
-    if( !isset($cond['operator']) )
-      $conds[$k]['operator'] = 'LIKE';
-  }    
-
+  if(isset($conds) AND is_array($conds)) {
+    reset($conds); 
+    while( list( $k , $cond) = each( $conds )) {
+      if( !isset($cond) OR !is_array($cond) ) {
+        $conds[$k] = false;
+        continue;             # bad condition - ignore
+      }
+      if( !isset($cond['value']) )
+        $conds[$k]['value'] = current($cond);
+      if( !isset($cond['operator']) )
+        $conds[$k]['operator'] = 'LIKE';
+    }    
+  }
 
   if( isset($group_by) ) {
-    $groupdirection = 'a';
-    if( substr($group_by,-1) == '-' ) {
-      $groupdirection = "d";
-      $group_by = substr($group_by,0,-1);
-    }
-    if( substr($group_by,-1) == '+' )   # just skip
-      $group_by = substr($group_by,0,-1);
-    $sort_tmp[] = array ( "$group_by" => $groupdirection );
-    $slice_info["group_by"] = $group_by;
+    $foo = GetSortArray( $group_by );
+    $sort_tmp[] = $foo;
+    $slice_info["group_by"] = key($foo);
   }    
 
   if(isset($sort)) {
-    if( !is_array($sort) ) {
-      $sort_tmp[] = array ( "$sort" => 'a' );
-    } else {  
+    if( !is_array($sort) )
+      $sort_tmp[] = GetSortArray( $sort );
+    else {  
+      ksort( $sort, SORT_NUMERIC); # it is not sorted and the order is important
       reset($sort); 
       while( list( $k , $srt) = each( $sort )) {
         if( isset($srt))
           if( is_array($srt) )
             $sort_tmp[$k] = array( key($srt) => (( strtoupper(current($srt)) == "D" ) ? 'd' : 'a'));
            else
-            $sort_tmp[] =  array( $srt => 'a' );
+            $sort_tmp[] =  GetSortArray( $srt );
       }
     }
   }  
@@ -510,6 +515,9 @@ ExitPage();
 
 /*
 $Log$
+Revision 1.29  2001/11/05 13:46:11  honzam
+Improved sort url parameters
+
 Revision 1.28  2001/10/24 16:45:17  honzam
 search expressions with AND, OR, NOT, (, ) allowed in conditions; group_by parametr extension for direction specification (+/-)
 
