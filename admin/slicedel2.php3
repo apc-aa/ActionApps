@@ -59,7 +59,9 @@ switch ($g_modules[$del]['type']) {
 }
 
 page_close();                                // to save session variables
-go_url(con_url($sess->url($AA_INSTAL_PATH . "slicedel.php3"),
+// There is a bug in here, that typically if you go SliceAdmin->delete->AA->delete it 
+// will delete your current slice, and leave you nowhere to go to, you have to login again (mitra)
+go_url(con_url($sess->url("slicedel.php3"),
                                           "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
 function DeleteAlerts ($module_id) {

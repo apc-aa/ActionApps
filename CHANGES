@@ -1,3 +1,4 @@
+01/26/01 - fixed bad url from slicedel2 to slicedel 
 01/25/01 - added warnings to GD tests (controlled by errcheck=1) (mitra)
 01/25/01 - restored en_news_lang.php3  (mitra)
 01/25/01 - restored en_site_lang.php3 since _m conversion not done completely
