@@ -1,3 +1,5 @@
+02/03/05 - added 'integer' field type so searches and sorting can be done 
+(mimo)     numerically
 01/29/05 - new {str_replace:search:replace:subject} aliase construct
 (honzam) - {dictionary} now creates also links for all the words with first 
            letter in uppercase
