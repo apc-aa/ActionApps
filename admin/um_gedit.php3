@@ -20,14 +20,14 @@ http://www.apc.org/
 */
 
 # um_gedit.php3 - adds and edits groups in permission system (now LDAP directory)
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update succesfull)
+# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 # selected_group
 # state variables:
 #    $grp_edit       - comes from um_gsrch - button Edit $selected_group
 #    $grp_new        - comes from um_inc   - New user link
 #    $submit_action  - = update_submit if pressed update
 #                      = grp_del if delete group is confirmed
-#    $add_submit     - if new group Add buutton pressed
+#    $add_submit     - if new group Add button pressed
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -83,7 +83,7 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
 }
 
 if( ($submit_action == "grp_del") AND $selected_group ) {
-  DeleteGroupComplete( $selected_group );
+  DelGroup( $selected_group );     // default is to delete any references as well
   go_url( $sess->url($PHP_SELF) );
 }  
   
@@ -131,9 +131,12 @@ if( $add_submit OR ($submit_action == "update_submit"))
 //  $grouprecord["owner"] = ...;           // not used, for now
 
     if( $add_submit ) {
-      if(!AddGroup($grouprecord))
+      if(!($newgroupid = AddGroup($grouprecord)))
         $err["LDAP"] = MsgErr( L_ERR_GROUP_ADD );
       if( count($err) <= 1 ) {
+	if ($group_super) {	// set super admin privilege
+	  AddPerm($newgroupid, AA_ID, "aa", $perms_roles_id["SUPER"]);
+	}
         $Msg = MsgOK(L_NEWGROUP_OK);
         go_url( con_url($sess->url($PHP_SELF), 'GrpSrch=1&grp='. urlencode($group_name)), $Msg);
       }
@@ -141,17 +144,25 @@ if( $add_submit OR ($submit_action == "update_submit"))
       $grouprecord["uid"] = $selected_group;
       if(!ChangeGroup($grouprecord))
         $err["LDAP"] = MsgErr( L_ERR_GROUP_CHANGE );
+      if ($group_super) {		// set or revoke super admin privilege
+	AddPerm($grouprecord["uid"], AA_ID, "aa", $perms_roles_id["SUPER"]);
+      } else {
+	DelPerm($grouprecord["uid"], AA_ID, "aa");
+      }
     }
+
     # Procces users data ---------------------
-//huh("Posted_users:".$posted_users);
-    $assigned_users = explode(",",$posted_users); //posted_users contains comma delimeted list of selected users of group
-//p_arr_m($sel_groups);
-    if( isset($sel_users) AND is_array($sel_users) AND ($sel_users["n"]=="")) {
+    //posted_users contains comma delimeted list of selected users of group
+    if ($posted_users) {
+       $assigned_users = explode(",",$posted_users); 
+    }
+    
+    if (isset($sel_users) AND is_array($sel_users) AND ($sel_users["n"]=="")) {
       reset($sel_users);
-      while( list($foo_uid,) = each($sel_users))  // first we remove all users from group
+      while( list($foo_uid,) = each($sel_users))  // first remove all members
         DelGroupMember ($selected_group, $foo_uid);
     }
-    if( isset($assigned_users) AND is_array($assigned_users) ) {
+    if (isset($assigned_users)) {
       reset($assigned_users);
       while( list(,$foo_uid) = each($assigned_users)){  // then we add specified users to group
         $foo_uid = urldecode($foo_uid);                 // we use urldecode in order to use comma as separator
@@ -159,7 +170,7 @@ if( $add_submit OR ($submit_action == "update_submit"))
       }
     }
   } while(false);
-  if( count($err) <= 1 ) {
+  if (count($err) <= 1) {
     $Msg = MsgOK(L_NEWGROUP_OK);
     go_url( con_url($sess->url($PHP_SELF), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
   }
@@ -240,6 +251,10 @@ do {
         break;
       $group_name = $group_data[name];
       $group_description = $group_data[description];
+      $aa_users = GetObjectsPerms(AA_ID, "aa");
+      if (strstr($aa_users[$selected_group]["perm"], $perms_roles_id["SUPER"])) {
+	$group_super = true;
+      }
     }  
   } else {
     echo '</BODY></HTML>';
@@ -270,6 +285,7 @@ if( $grp_edit OR ($submit_action == "update_submit") )
     FrmStaticText( L_GROUP_ID, $group_data[uid]);
   FrmInputText("group_name", L_GROUP_NAME, $group_name, 50, 50, true);
   FrmInputText("group_description", L_GROUP_DESCRIPTION, $group_description, 50, 50, false);
+  FrmInputChBox("group_super", L_GROUP_SUPER, $group_super, false, "", 1, false);
 echo '</table></td></tr>';
 
 if( !$add_submit AND !$grp_new) {?>
@@ -321,8 +337,24 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:06  madebeer
-Initial revision
+Revision 1.6  2000/08/14 12:20:57  kzajicek
+$assigned_users was always non-empty array after explode().
+
+Revision 1.5  2000/08/03 12:49:22  kzajicek
+English editing
+
+Revision 1.4  2000/07/28 15:11:41  kzajicek
+Functions DeleteUserComplete and buggy DeleteGroupComlete are now
+obsolete, DelUser and DelGroup do the job.
+
+Revision 1.3  2000/07/27 18:42:40  kzajicek
+*** empty log message ***
+
+Revision 1.2  2000/07/27 18:17:21  kzajicek
+Added superadmin settings in User/Group management
+
+Revision 1.1.1.1  2000/06/21 18:40:06  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:57  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

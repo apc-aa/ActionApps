@@ -1,5 +1,6 @@
 /aa
   admin.css          Style sheet file for administative interface
+  adm_slice.css      Style sheet for "Live page view" if slice is not encapsulated (incuded to .shtml file vie SSI)
   changes.txt        File for notices about chenges done in toolkit project
   slice.php3         Main file, which make all work for view of live page - public slice view. Obviosly called from user's shtml file (slice.shtml for example). This script shows just one category or all items or only highlighted ones or search form or ... if you set appropriate parameters.
 

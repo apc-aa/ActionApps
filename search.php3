@@ -25,7 +25,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require "./include/config.inc";
+require "./include/config.php3";
 
 require ($GLOBALS[AA_INC_PATH] . "locsess.php3");
 require ($GLOBALS[AA_INC_PATH] . "searchlib.php3");
@@ -70,11 +70,11 @@ echo("</table>");
    
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:51  madebeer
-Initial revision
+Revision 1.3  2000/07/11 12:05:18  kzajicek
+Renamed config.inc to config.php3
 
-Revision 1.1.1.1  2000/06/12 21:49:43  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
 
 Revision 1.5  2000/06/12 19:57:51  madebeer
 added GPL LICENSE file, added copyright notice to all files that

@@ -72,7 +72,7 @@ function SearchWhere ($search, $srchflds) {
 
    // Build the WHERE parameters for SQL
    if ($count["keywords"] AND $count["srchflds"]) {
-     $where = "((";
+     $where = "((status_code=1) AND ((";
      $oprator = "";
      reset($srchflds);
      while( list(,$field) = each($srchflds)) {
@@ -85,10 +85,10 @@ function SearchWhere ($search, $srchflds) {
        }
        $operator = ") OR (";
      }
-     $where .=")) ";
+     $where .="))) ";
    }  
    else
-     $where ="(1=1)";
+     $where ="(status_code=1)";
 
    if($search[category] == "0") $search[category]="";
    if($search[slice] == "0") $search[slice]="";
@@ -136,8 +136,11 @@ function aa_search_db ($where, $retflds) {
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:47  madebeer
-Initial revision
+Revision 1.2  2000/08/17 15:07:27  honzam
+Searching only in approved items
+
+Revision 1.1.1.1  2000/06/21 18:40:47  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:26  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
