@@ -1,3 +1,4 @@
+04/28/03 - Updates to summarize.php3 (mitra)
 04/27/03 - picture is not resized if no width and height is given
 (honzam) - global category support for Links module
 04/25/03 - GetTable2Array no longer needs $db parameter
