@@ -1,7 +1,7 @@
 <?php  #slice_id expected
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -308,7 +308,7 @@ switch( $More ) {
 if($Delete == "trash") {
     // feeded items we can easy delete
     ProovePerm( PS_DELETE_ITEMS, _m("You have not permissions to remove items"));
- 	$db->query("SELECT id FROM item
+    $db->query("SELECT id FROM item
                WHERE status_code=3 AND slice_id = '$p_slice_id'");
     $items_to_delete = "";
     while( $db->next_record() )
@@ -564,7 +564,7 @@ echo "<table border=0 cellspacing=0 class=login width=460>" .
 # echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF) .'">'.
 // action URL with return_url if $return_url is set.
 echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url=") .'">'.
-'<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7">';
+'<table border="0" cellspacing="0" cellpadding="1" bgcolor="#F5F0E7" class="mgr_table">';
 
 
 if( $zids->count() == 0 ) {
