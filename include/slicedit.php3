@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -50,23 +50,23 @@ if( $add || $update ) {
         if( !$owner ) {  # insert new owner
           ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
           ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
-    
+
           if( count($err) > 1)
             break;
-            
+
           $owner = new_id();
           $varset->set("id", $owner, "unpacked");
           $varset->set("name", $new_owner, "text");
           $varset->set("email", $new_owner_email, "text");
-           
+
             # create new owner
           if( !$db->query("INSERT INTO slice_owner " . $varset->makeINSERT() )) {
             $err["DB"] .= MsgErr("Can't add slice");
             break;
           }
-          
+
           $varset->clear();
-        }  
+        }
         ValidateInput("name", _m("Title"), $name, $err, true, "text");
         ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
         ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
@@ -75,9 +75,9 @@ if( $add || $update ) {
         ValidateInput("permit_anonymous_edit", _m("Allow anonymous editing of items"), $permit_anonymous_edit, $err, false, "number");
         ValidateInput("permit_offline_fill", _m("Allow off-line item filling"), $permit_offline_fill, $err, false, "number");
         ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
-//mimo change        
+//mimo change
         ValidateInput(MLX_SLICEDB_COLUMN, _m("Language Control Slice"), $mlxctrl, $err, false, "id");
-//       
+//
         ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
         ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
 
@@ -85,32 +85,30 @@ if( $add || $update ) {
             $db->query("SELECT * FROM slice WHERE fileman_dir='$fileman_dir' AND id <> '".q_pack_id($slice_id)."'");
             if ($db->num_rows()) $err[] = _m("This File Manager Directory is already used by another slice.");
         }
-    
+
         if( count($err) > 1)
           break;
-        if(!$d_expiry_limit)   // default value for limit
-          $d_expiry_limit = 2000;
         $template = ( $template ? 1 : 0 );
         $deleted  = ( $deleted  ? 1 : 0 );
-        
+
         if( $update )
         {
           $varset->clear();
           $varset->add("name", "quoted", $name);
           $varset->add("owner", "unpacked", $owner);
           $varset->add("slice_url", "quoted", $slice_url);
-          if( $superadmin ) 
+          if( $superadmin )
             $varset->add("deleted", "number", $deleted);
           $varset->add("lang_file", "quoted", $lang_file);
-    	
+
           $SQL = "UPDATE module SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
           if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
             $err["DB"] = MsgErr("Can't change slice");
             break;
           }
-    
+
           $varset->add("d_listlen", "number", $d_listlen);
-          if( $superadmin ) 
+          if( $superadmin )
             $varset->add("template", "number", $template);
           $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
           $varset->add("permit_anonymous_edit", "number", $permit_anonymous_edit);
@@ -121,9 +119,9 @@ if( $add || $update ) {
           $varset->add("mailman_field_lists", "text", $mailman_field_lists);
           $varset->add("reading_password", "text", $reading_password);
 //mlx
-	  //print("<br>$mlxctrl<br>");
+      //print("<br>$mlxctrl<br>");
           $varset->add(MLX_SLICEDB_COLUMN, "quoted", q_pack_id($mlxctrl)); //store 16bytes packed
-   
+
           $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
           if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
             $err["DB"] = MsgErr("Can't change slice");
@@ -133,7 +131,7 @@ if( $add || $update ) {
           $r_slice_view_url = ($slice_url=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                           : stripslashes($slice_url));
         }
-        
+
         else  // insert (add)
         {
           $slice_id = new_id();
@@ -146,14 +144,14 @@ if( $add || $update ) {
           $varset->set("deleted", $deleted, "number");
           $varset->set("lang_file", $lang_file, "quoted");
           $varset->set("type","S","quoted");
-    	  
+
           if( !$db->query("INSERT INTO module" . $varset->makeINSERT() )) {
             $err["DB"] .= MsgErr("Can't add slice");
             break;
           }
-    	  
+
           $varset->clear();
-    
+
             # get template data
           $varset->addArray( $SLICE_FIELDS_TEXT, $SLICE_FIELDS_NUM );
           $SQL = "SELECT * FROM slice WHERE id='". q_pack_id($set_template_id) ."'";
@@ -183,15 +181,15 @@ if( $add || $update ) {
           $varset->add("reading_password", "text", $reading_password);
 //mimo
           $varset->add(MLX_SLICEDB_COLUMN, "quoted", $mlxctrl);
-    
+
              # create new slice
           if( !$db->query("INSERT INTO slice" . $varset->makeINSERT() )) {
             $err["DB"] .= MsgErr("Can't add slice");
             break;
           }
-    
+
              # copy fields
-          $db2  = new DB_AA;         
+          $db2  = new DB_AA;
           $SQL = "SELECT * FROM field WHERE slice_id='". q_pack_id($set_template_id) ."'";
           $db->query($SQL);
           while( $db->next_record() ) {
@@ -204,10 +202,10 @@ if( $add || $update ) {
               $err["DB"] .= MsgErr("Can't copy fields");
               break;
             }
-          }  
-    
+          }
+
           $sess->register(slice_id);
-    
+
           AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
 
             /* Added by Jakub on June 2002 to support Add slice Wizard */
@@ -219,15 +217,15 @@ if( $add || $update ) {
             }
             // Copy views
             if ($wiz["copyviews"] && $slice_id && $set_template_id) {
-            	if (!CopyTableRows (
-            		"view", 
-            		"slice_id='".q_pack_id($set_template_id)."'", 
-            		array ("slice_id"=>q_pack_id($slice_id)), 
-            		array ("id"))) {
-            	    $err[] = _m("Error when copying views.");
+                if (!CopyTableRows (
+                    "view",
+                    "slice_id='".q_pack_id($set_template_id)."'",
+                    array ("slice_id"=>q_pack_id($slice_id)),
+                    array ("id"))) {
+                    $err[] = _m("Error when copying views.");
                 }
-            }        
-            
+            }
+
             // Add new editor / administrator privileges from Wizard page
             if ($user_login) {
                 $myerr = add_user_and_welcome ($wiz["welcome"], $user_login, $slice_id, $user_role);
@@ -240,7 +238,7 @@ if( $add || $update ) {
 
     if( count($err) <= 1 )
     {
-    	go_return_or_url($sess->url(self_base() . "slicedit.php3"),0,0);
+        go_return_or_url($sess->url(self_base() . "slicedit.php3"),0,0);
     }
 }
 

@@ -1,5 +1,22 @@
-01/20/05 - fixed a problem in MLXGetText and added {mlx:setlang:(LANG_CODE)} macro
-(mimo)   - added MLX_OPTIMIZE, if >5 it should speed up MLX results
+01/29/05 - new {str_replace:search:replace:subject} aliase construct
+(honzam) - {dictionary} now creates also links for all the words with first 
+           letter in uppercase
+         - added new value for nocache slice.php3 and view.php3 url parameter - 
+           nocache=invalidate. It not only create the page without cache, 
+           it also clear the cache for all views used in generation of the page 
+         - new fix=1 parameter for alerts.php3 - if set, then send only e-mail 
+           to not processed collections
+         - AA generates as short url as possible 
+           (sometimes only parameters "?x=17232" - see f_b, f_f)
+         - parameters for user alias functions f_u are expanded before call user
+           functions
+         - fixed some help texts for Parameter Wizard
+         - removed unused fields form slice table 
+         - added some debug messages written to the AA log for alerts
+         - standard QueryZids() function used for readers collection in alerts
+01/20/05 - fixed a problem in MLXGetText and added {mlx:setlang:(LANG_CODE)} 
+(mimo)     macro
+         - added MLX_OPTIMIZE, if >5 it should speed up MLX results
 01/13/05 - words for {dictionary} feature are not replaced, if it is just
 (honzam)   substrings of another (bigger) words (thanks to Hana Havelkova)
          - added favicon for AA (thanks to Sarka Vasku)
@@ -41,6 +58,8 @@
          - fixed adding item to related slice
 12/14/04 - new possibility to open inputform to popup window and fill item
 (honzam)   to another slice during filling in another item in the current slice
+           (used in Related Item Window - enable it by 'show actions' parameter
+           of "Related Item Window" input type)
          - prepared for improved pagecache implementation; generalized API
          - code improvements - used OOP more (slice object, zids)
                              - reduced ussage of global variables

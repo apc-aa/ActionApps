@@ -206,7 +206,7 @@ define('NO_PICTURE_URL', AA_INSTAL_URL.'images/blank.gif');
 $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "type", "fulltext_format_top", "fulltext_format", "fulltext_format_bottom",
    "odd_row_format", "even_row_format", "compact_top", "compact_bottom",
-   "category_top", "category_format", "category_bottom", "config", "slice_url",
+   "category_top", "category_format", "category_bottom", "slice_url",
    "lang_file", "fulltext_remove", "compact_remove", "notify_sh_offer",
    "notify_sh_accept", "notify_sh_remove", "notify_holding_item_s",
    "notify_holding_item_b", "notify_holding_item_edit_s",
@@ -218,7 +218,7 @@ $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "mailman_field_lists", "auth_field_group", "reading_password");
 
 $SLICE_FIELDS_NUM  = array( "deleted", "export_to_all", "template",
-   "even_odd_differ", "category_sort", "d_expiry_limit", "d_listlen",
+   "even_odd_differ", "category_sort", "d_listlen",
    "email_sub_enable", "exclude_from_dir","permit_anonymous_post",
    "permit_anonymous_edit", "permit_offline_fill",);
 
