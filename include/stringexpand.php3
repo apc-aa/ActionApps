@@ -356,7 +356,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     # If found, unalias the value, then quote it, this expands
     # anything inside the value, and then makes sure any remaining quotes
     # don't interfere with caller
-    elseif (isset($GLOBALS['apc_state'][$out])) {
+    if (isset($GLOBALS['apc_state'][$out])) {
         return QuoteColons($level, $maxlevel,
             new_unalias_recurent($GLOBALS['apc_state'][$out],"",$level+1,
                 $maxlevel,$item,$itemview,$aliases));
