@@ -26,17 +26,21 @@ function GetWhereExp( $field, $operator, $querystring ) {
   # search operator for functions (some operators can be in function:operator
   # fomat - the function is called to $querystring (good for date transform ...)
   if ( $pos = strpos($operator,":") ) {  # not ==
+    $func = substr($operator,0,$pos);
     $operator = substr($operator,$pos+1);
-    switch( substr($s,0,$pos) ) {
+    
+    switch( $func ) {
       case 'd': # english style datum (like '12/31/2001' or '10 September 2000')
                 $querystring = strtotime($querystring);
                 break;
       case 'e': # european datum style (like 24. 12. 2001)
-                if( !ereg("^ *([0-9]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{4}) *$", $dttm, $part))
-                  if( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{2}) *$", $dttm, $part))
-                    if( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$", $dttm, $part))
+                if( !ereg("^ *([0-9]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{4}) *$", $querystring, $part))
+                  if( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{2}) *$", $querystring, $part))
+                    if( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$", $querystring, $part)) {
                       $querystring = time();
-                $querystring = mktime(0,0,0,$part[1],$part[2],$part[3]);
+                      break;
+                    }  
+                $querystring = mktime(0,0,0,$part[2],$part[1],$part[3]);
                 break;
     }
   }               
@@ -46,7 +50,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
     case 'RLIKE':  $bgn='%';  $end='';   $op='LIKE';    break;
     case 'LLIKE':  $bgn='';   $end='%';  $op='LIKE';    break;
     case 'XLIKE':  $bgn='';   $end='';   $op='LIKE';    break;
-    default:       $bgn='%';  $end='%';  $op=$operator; break;
+    default:       $bgn='';  $end='';  $op=$operator; break;
   }  
 
   $arr = explode( " OR ", $querystring );
@@ -774,6 +778,9 @@ if ($debug) echo "$condition<br>";
 
 /*
 $Log$
+Revision 1.15  2001/07/09 17:47:41  honzam
+Operator date modifiers fixed
+
 Revision 1.14  2001/06/15 20:05:16  honzam
 little search imrovements and bugfixes
 
