@@ -84,43 +84,51 @@ class AA_SL_Session extends Session {
   var $gc_probability = 5;  
   
   //rewriten to return URL of shtml page that includes this script instead to return self url of this script. If noquery parameter is true, session id is not added    
-  function MyUrl($SliceID=0, $Encap=true, $noquery=false){  //SliceID is here just for compatibility with MyUrl function in extsess.php3
-   global $HTTP_HOST, $HTTPS, $DOCUMENT_URI
-   if( isset($HTTPS) && $HTTPS == 'on' ){
-          ## You will need to fix suexec as well, if you use Apache and CGI PHP
-          $PROTOCOL='https';
-        } else {
-          $PROTOCOL='http';
-        }
-          $foo=$PROTOCOL. "://". $HTTP_HOST.$DOCUMENT_URI;  
-     switch ($this->mode) {
-      case "get":  
-        if (!$noquery){$foo .= "?".urlencode($this->name)."=".$this->id;}
-        break;
-      default:
-        ;
-      break;
-     }
-    return $foo;
-  }
+   function MyUrl($SliceID=0, $Encap=true, $noquery=false){  //SliceID is here just for compatibility with MyUrl function in extsess.php3
+      global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REDIRECT_DOCUMENT_URI
+      if (isset($HTTPS) && $HTTPS == 'on') {
+         ## You will need to fix suexec as well, if you use Apache and CGI PHP
+         $PROTOCOL='https';
+      } else {
+         $PROTOCOL='http';
+      }
+      if (isset($REDIRECT_DOCUMENT_URI)) {  ## CGI --enable-force-cgi-redirect
+         $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_DOCUMENT_URI;
+      } else {
+         $foo = $PROTOCOL. "://". $HTTP_HOST.$DOCUMENT_URI;
+      }
+      switch ($this->mode) {
+         case "get":  
+            if (!$noquery){$foo .= "?".urlencode($this->name)."=".$this->id;}
+            break;
+         default:
+            break;
+      }
+      return $foo;
+   }
   
  
  // adds variables passesd by QUERY_STRING_UNESCAPED to GLOBALS 
   function add_vars() {
-  global $QUERY_STRING_UNESCAPED 
-    $a = split ("\\\&",$QUERY_STRING_UNESCAPED);
-    $i = 0;
-     while ($i < count ($a)) 
-      {
-       $b = split ('=', $a [$i]);
-       if(ERegI("^(.+)\\\\\\[(.*)\\\\\\]", $b[0], $c))      // for array variable
-         // (I do not know exactly, why there are so much '\' but '\\\\\\[' it means '\[')
-         $GLOBALS[urldecode ($c[1])][urldecode ($c[2])] = urldecode ($b[1]);
-        else 
-         $GLOBALS[urldecode ($b [0])]= urldecode ($b [1]);
-       $i++;
-      }
-    return $i;
+     global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED;
+        if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
+           $a = split ("\\\&",$REDIRECT_QUERY_STRING_UNESCAPED);
+        } else {
+           $a = split ("\\\&",$QUERY_STRING_UNESCAPED);
+        }
+        $i = 0;
+        while ($i < count ($a)) {
+           $b = split ('=', $a [$i]);
+           if (ERegI("^(.+)\\\\\\[(.*)\\\\\\]", $b[0], $c)) {  // for array variable
+              // I do not know exactly, why there is
+              // so much '\' but '\\\\\\[' means '\['
+              $GLOBALS[urldecode ($c[1])][urldecode ($c[2])] = urldecode ($b[1]);
+           } else {
+              $GLOBALS[urldecode ($b [0])]= urldecode ($b [1]);
+           }
+           $i++;
+        }
+     return $i;
   }
   
   function expand_getvars() {
@@ -232,8 +240,12 @@ class AA_SL_Session extends Session {
 }
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:37  madebeer
-Initial revision
+Revision 1.2  2000/07/21 15:28:46  kzajicek
+When PHP (CGI version) is configured with --enable-force-cgi-redirect,
+most of standard environmental variables are moved to REDIRECT_variable_name.
+
+Revision 1.1.1.1  2000/06/21 18:40:37  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:23  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

@@ -141,29 +141,33 @@ class AA_SL_Session extends Session {
   var $that_class     = "AA_CT_Sql"; ## name of data storage container
   var $gc_probability = 5;  
 
-  function MyUrl($SliceID, $Encap=false, $noquery=false){
-   global $HTTP_HOST, $HTTPS, $SCRIPT_NAME
-   if( isset($HTTPS) && $HTTPS == 'on' ){
-          ## You will need to fix suexec as well, if you use Apache and CGI PHP
-          $PROTOCOL='https';
-        } else {
-          $PROTOCOL='http';
-        }
-     $foo = $PROTOCOL. "://". $HTTP_HOST.$SCRIPT_NAME;
-     switch ($this->mode) {
-      case "get":
-        if (!$noquery)
-        { $foo .= "?slice_id=$SliceID";
-          $foo .= ($Encap?"":"&encap=false");
-          $foo .= "&".urlencode($this->name)."=".$this->id;
-        }
-        break;
-      default:
-        ;
-      break;
-     }
-    return $foo;
-  }
+   function MyUrl($SliceID, $Encap=false, $noquery=false) {
+      global $HTTP_HOST, $HTTPS, $SCRIPT_NAME, $REDIRECT_SCRIPT_NAME
+      if (isset($HTTPS) && $HTTPS == 'on') {
+         ## You will need to fix suexec as well, if you use Apache and CGI PHP
+         $PROTOCOL='https';
+      } else {
+         $PROTOCOL='http';
+      }
+      ## PHP used in CGI mode and ./configure --enable-force-cgi-redirect
+      if (isset($REDIRECT_SCRIPT_NAME)) {
+         $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_SCRIPT_NAME;
+      } else {
+         $foo = $PROTOCOL. "://". $HTTP_HOST.$SCRIPT_NAME;
+      }
+      switch ($this->mode) {
+         case "get":
+           if (!$noquery) {
+              $foo .= "?slice_id=$SliceID";
+              $foo .= ($Encap?"":"&encap=false");
+              $foo .= "&".urlencode($this->name)."=".$this->id;
+           }
+           break;
+         default:
+           break;
+      }
+      return $foo;
+   }
 }
 
 #class Example_CT_Shm extends CT_Shm {
@@ -187,8 +191,9 @@ class AA_SL_Session extends Session {
 
 /*
 $Log$
-Revision 1.2  2000/07/21 15:25:03  kzajicek
-Fixed DOS newlines
+Revision 1.3  2000/07/21 15:28:46  kzajicek
+When PHP (CGI version) is configured with --enable-force-cgi-redirect,
+most of standard environmental variables are moved to REDIRECT_variable_name.
 
 Revision 1.1.1.1  2000/06/21 18:40:36  madebeer
 reimport tree , 2nd try - code works, tricky to install
