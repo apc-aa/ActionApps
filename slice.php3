@@ -418,10 +418,11 @@ else {
                       'value' => $cat_name,
                       'operator' => ($exact ? '=' : 'LIKE'));
 
-  if ( $restrict )
-    $conds[] = array( $restrict=>1,
-                      'value' => ((($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 ) ? $res_val : "'$res_val'"),
+  if ( $restrict ) {
+      $conds[] = array( $restrict=>1,
+                      'value' => ((($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 ) ? $res_val : "\"$res_val\""),
                       'operator' => ($exact ? '=' : 'LIKE'));
+  }
 
   if( $highlight != "" )
     $conds[] = array ('highlight.......' => 1);
