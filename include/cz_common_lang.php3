@@ -30,7 +30,7 @@ define("L_SEARCH_TIP", "Seznam je omezen na 5 uživatelù.<br>Pokud v seznamu není
 define("L_USERNAME", "Uživatelské jméno:");
 define("L_PASSWORD", "Heslo:");
 define("L_LOGINNOW", "Pøihlásit se");
-define("L_BAD_LOGIN", "Uživatelské jméno èi helso je neplatné.");
+define("L_BAD_LOGIN", "Uživatelské jméno èi heslo je neplatné.");
 define("L_TRY_AGAIN", "Zkuste to znovu!");
 define("LOGIN_PAGE_BEGIN",
 '<!DOCTYPE html public "-/W3C/DTD HTML 4.0 Transitional/EN">
@@ -74,11 +74,6 @@ define( "L_ICON_LEGEND", '
                   <br>
                   <i>Legenda</i>
                   <TABLE BORDER=1>
-                  <TR>
-                  <TD><img src="../images/notpubl.gif" width=24 height=24 border=0 alt=""> Dosud nepublikováno</TD>
-                  <TD><img src="../images/publish.gif" width=24 height=24 border=0 alt=""> Publikovaná zpráva</TD>
-                  <TD><img src="../images/expired.gif" width=24 height=24 border=0 alt=""> Expirovaná zpráva</TD>
-                  </TR>
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/hlight.gif" border=0 alt=""> Dùležité</TD>
                   <TD COLSPAN=2><img src="../images/feed.gif" border=0 alt=""> Importováno</TD></TR>
@@ -89,11 +84,12 @@ define( "L_ICON_LEGEND", '
                   <TR bgcolor="#FFCC66">
                   <TD><img src="../images/less.gif" border=0 alt=""> Ménì detailù</TD>
                   <TD COLSPAN=2><img src="../images/more.gif" border=0 alt=""> Více detailù</TD></TR>
-                  </TABLE>
-                  Kategorie zobrazené èervenì nejsou souèástí tohoto webíku (èlánek byl zøejmì importován z jiného webíku)<br><br>
-                  Webík zahrnete do své *.shtml stránky pøidáním následujícího pøíkazu do HTML kódu:<br><code>&lt;!--#include virtual=&quot;/aa/slice.php3?slice_id='. $slice_id .'&quot;--&gt;
-                  </code>');
-
+                  </TABLE>');
+                           
+define( "L_SLICE_HINT", '
+                  <br>
+                  Webík zahrnete do své *.shtml stránky pøidáním následující øádky v HTML kódu:
+                  ');
                    
 function datetime2date ($dttm) {
 	return ereg_replace("^([[:digit:]]{4})-([[:digit:]]{2})-([[:digit:]]{2}).*", 
@@ -117,8 +113,14 @@ function dateExample() {
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:23  madebeer
-Initial revision
+Revision 1.4  2000/07/12 14:26:40  kzajicek
+Poor printing of the SSI statement fixed
+
+Revision 1.3  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:23  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:12  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

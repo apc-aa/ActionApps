@@ -32,9 +32,9 @@ define("HTML_PAGE_BEGIN",
         type="text/css" title="CPAdminCSS">
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
                
-define("IMAGE_DOWNLOAD_MAX_SIZE", "400000");    // max size of file in picture downloading
-define("IMG_DOWNLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
-define("IMG_DOWNLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
+define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
+define("IMG_UPLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
+define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
 define("EDITOR_GRAB_LEN", 200);                 // not used, i think
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -168,7 +168,7 @@ define("L_CREATED_BY","Vyplnil");
 define("L_LASTEDIT","Naposled editoval");
 define("L_AT","dne");   
 define("L_EDIT_NOTE","Klíčová slova"); 
-define("L_IMG_DOWNLOAD","Uložení obrázku"); 
+define("L_IMG_UPLOAD","Uložení obrázku"); 
 define("L_CANT_UPLOAD","Obrázek nelze uložit"); 
 
 # toolkit aplication dependent labels
@@ -215,7 +215,7 @@ define("L_A_ITEM_EDT", "Upravit článek");
 define("L_IMP_EXPORT", "Povolit zasílání článků do webíku:");
 define("L_EXPORT_TO_ALL", "Povol zasílání článků do jakéhokoliv webíku");
 define("L_IMP_IMPORT", "Přijímat články z webíku:");
-define("L_ADD_NEW_ITEM", "Přidat nový článek");
+define("L_ADD_NEW_ITEM", "Nový článek");
 define("L_ERR_FEEDED_ITEMS", "V koši je článek, který byla zaslán jinému webíku - nemůže být odstraněn.");
 define("L_EDIT_ITEMS", "Editace článku");
 define("L_VIEW_FULLTEXT", "Zobraz článek");
@@ -389,9 +389,9 @@ define("L_MORE_SPECIFIC", "Zkuste zadat přesnější údaje.");
 define("L_REMOVE", "Odstranit");
 define("L_ID", "Id");
 define("L_TYPE", "Typ");
-define("L_SETTINGS", "Nastavení webíku");
-define("L_LOGO", "Econnect logo");
-define("L_USER_MANAGEMENT", "Správa uživatelů");
+define("L_SETTINGS", "Nastavení");
+define("L_LOGO", "Econnect");
+define("L_USER_MANAGEMENT", "Uživatelé");
 define("L_ITEMS", "Správa příspěvků");
 define("L_NEW_SLICE_HEAD", "Nový webík");
 define("L_ERR_USER_CHANGE", "Nelze změnit data uživatele - LDAP Error");
@@ -492,7 +492,7 @@ define("L_HEADLINE_PREVIEW", "Nadpis (preview po kliknutí)");
 define("L_EDIT_LINK", "&nbsp;");
 define("L_PREVIEW_LINK", "&nbsp;");
 define("L_ARTICLE_MANAGER", "Správa článků");
-define("L_SWITCH_TO", "Změnit webík");
+define("L_SWITCH_TO", "Webík:");
 define("L_ADMIN", "Administrace");
 
 define("L_NO_PS_NEW_USER", "Nemáte právo vytvořit uživatele");
@@ -525,30 +525,27 @@ define("L_FEEDTO_TITLE", "Předávání zpráv");
 define("L_FEED_TO", "Zaslat vybrané zprávy vybraným webíkům");
 define("L_NO_PERMISSION_TO_FEED", "Nemáte právo zasílat zprávy");
 
+define("L_ACTIVE_BIN_EXPIRED", "Aktuální - Expirované");
+define("L_ACTIVE_BIN_PENDING", "Aktuální - Připravené");
+define("L_ACTIVE_BIN_EXPIRED_MENU", "... expirované");
+define("L_ACTIVE_BIN_PENDING_MENU", "... připravené");
+
 //----------------------------
 //define("", "");   //prepared for new constants
  
 $l_month = array( 1 => 'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 
 		'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec');
 
-# aliases used in fulltext and compact format in place of database fields
-# change only text after _# !!!
-# length of alias must! be!! 10 characters !!!
-# if you change it, change compact and fulltext format strings in database, too !
-# do not use _# inside alias !
-$alias = array("headline"=>"_#HEADLINE", "category"=>"_#CATEGORY", "hl_href"=>"_#HDLN_URL",
-               "post_date"=>"_#POSTDATE", "publish_date"=>"_#PUB_DATE",
-               "expiry_date"=>"_#EXP_DATE", "abstract"=>"_#ABSTRACT", "full_text"=>"_#FULLTEXT",
-               "img_src"=>"_#IMAGESRC", "source"=>"_#SOURCE##", "source_href"=>"_#SRC_URL#",
-               "place"=>"_#PLACE###", "posted_by"=>"_#POSTEDBY", "e_posted_by"=>"_#E_POSTED",
-               "created_by"=>"_#CREATED#", "edited_by"=>"_#EDITEDBY", "last_edit"=>"_#LASTEDIT",
-               "contact1"=>"_#CONTACT1", "contact2"=>"_#CONTACT2", "contact3"=>"_#CONTACT3",
-               "edit_note"=>"_#EDITNOTE", "img_width"=>"_#IMGWIDTH", "img_height"=>"_#IMG_HGHT");  
-  
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:25  madebeer
-Initial revision
+Revision 1.3  2000/07/12 11:06:26  kzajicek
+names of image upload variables were a bit confusing
+
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:25  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:13  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

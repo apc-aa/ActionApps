@@ -24,9 +24,9 @@ http://www.apc.org/
 # must correspond with fileneme in $ActionAppConfig[xxx][file]!!
 define("CONFIG_FILE", "en_news_lang.php3");
 
-define("IMAGE_DOWNLOAD_MAX_SIZE", "400000");    // max size of file in picture downloading
-define("IMG_DOWNLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
-define("IMG_DOWNLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
+define("IMG_UPLOAD_MAX_SIZE", "400000");    // max size of file in picture uploading
+define("IMG_UPLOAD_URL", "http://web.ecn.cz/aauser/img_upload/");
+define("IMG_UPLOAD_PATH", "/usr/local/httpd/htdocs/aauser/img_upload/");
 define("EDITOR_GRAB_LEN", 200);                 // not used, i think
 define("EDIT_ITEM_COUNT", 20);                  // number of items in editor window
 
@@ -167,7 +167,7 @@ define("L_CREATED_BY","Written by");
 define("L_LASTEDIT","Last edited by");
 define("L_AT","at");   
 define("L_EDIT_NOTE","Editor's note"); 
-define("L_IMG_DOWNLOAD","Image upload"); 
+define("L_IMG_UPLOAD","Image upload"); 
 
 # aa toolkit specific labels
 define("L_HLP_HEADLINE",'alias for Item Headline');
@@ -480,7 +480,6 @@ define("L_PREVIEW_LINK", "&nbsp;");
 define("L_ARTICLE_MANAGER", "Article Manager");
 define("L_SWITCH_TO", "Switch to slice");
 define("L_ADMIN", "Admin");
-define("L_", "");
 
 //new_constants
 define("L_NO_PS_NEW_USER", "No permission to create new user");
@@ -507,31 +506,29 @@ define("L_GROUPS_USERS", "Group's Users");
 define("L_POST", "Post");
 define("L_POST_PREV", "Post & Preview");
 define("L_OK", "OK");
+define("L_FEEDED_FROM", "Fed from");
+define("L_ACTIVE_BIN_EXPIRED", "Approved - Expired");
+define("L_ACTIVE_BIN_PENDING", "Approved - Pending");
+define("L_ACTIVE_BIN_EXPIRED_MENU", "... expired");
+define("L_ACTIVE_BIN_PENDING_MENU", "... pending");
+
+// not appended to other lang files
 //define("", "");
 
 
 $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June', 
 		'July', 'August', 'September', 'October', 'November', 'December');
 
-# aliases used in fulltext and compact format in place of database fields
-# change only text after _# !!!
-# length of alias must! be!! 10 characters !!!
-# if you change it, change compact and fulltext format strings in database, too !
-# do not use _# inside alias !
-$alias = array("headline"=>"_#HEADLINE", "category"=>"_#CATEGORY", "hl_href"=>"_#HDLN_URL",
-               "post_date"=>"_#POSTDATE", "publish_date"=>"_#PUB_DATE",
-               "expiry_date"=>"_#EXP_DATE", "abstract"=>"_#ABSTRACT", "full_text"=>"_#FULLTEXT",
-               "img_src"=>"_#IMAGESRC", "source"=>"_#SOURCE##", "source_href"=>"_#SRC_URL#",
-               "place"=>"_#PLACE###", "posted_by"=>"_#POSTEDBY", "e_posted_by"=>"_#E_POSTED",
-               "created_by"=>"_#CREATED#", "edited_by"=>"_#EDITEDBY", "last_edit"=>"_#LASTEDIT",
-               "contact1"=>"_#CONTACT1", "contact2"=>"_#CONTACT2", "contact3"=>"_#CONTACT3",
-               "edit_note"=>"_#EDITNOTE", "img_width"=>"_#IMGWIDTH", "img_height"=>"_#IMG_HGHT");  
-               
-
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:33  madebeer
-Initial revision
+Revision 1.3  2000/07/12 11:06:26  kzajicek
+names of image upload variables were a bit confusing
+
+Revision 1.2  2000/07/03 15:00:14  honzam
+Five table admin interface. 'New slice expiry date bug' fixed.
+
+Revision 1.1.1.1  2000/06/21 18:40:33  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:19  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

@@ -44,9 +44,9 @@ switch ($HTTP_HOST) {
      define (SITE_CONFIG, "config-ecn.inc"); break;
   }
 
-$testing_gets_around_isset = SITE_CONFIG;
-if (isset($testing_gets_around_isset)) {
-   require ($AA_INC_PATH . SITE_CONFIG);
+if (defined ("SITE_CONFIG")) {
+  // require does not work as expected inside control structures!
+  include ($AA_INC_PATH . SITE_CONFIG);
 }
 // end SITE_CONFIG
 // ------------------------------------------------------------------
@@ -56,7 +56,7 @@ if (isset($testing_gets_around_isset)) {
 // new INSTALL, set this variable
 #  $AA_INC_PATH = ""; 
 if (!isset($AA_INC_PATH)){
-  echo "you must set AA_INC_PATH and other variables in config.inc !";
+  echo "you must set AA_INC_PATH and other variables in config.php3 !";
 };
 
 # Your Internet Domain
@@ -83,6 +83,9 @@ define("LDAP_PEOPLE", "dc=ecn,dc=apc,dc=org");
 define("LDAP_GROUPS", "dc=ecn,dc=apc,dc=org");
 define("LDAP_ACLS", "dc=ecn,dc=apc,dc=org");
 
+# e-mail for bug reporting contact
+define("ERROR_REPORTING_EMAIL", "technical@ecn.cz");
+
 # set this directive to true, if you use MySQL 
 # (uses LIMIT clause in SELECTs)
 define("OPTIMIZE_FOR_MYSQL", false);
@@ -97,6 +100,12 @@ define("OPTIMIZE_FOR_MYSQL", false);
 define("PHPLIB_ALREADY_LOADED", false);
 define("ADM_SLICE_CSS","adm_slice.css");
 define("ADMIN_CSS","admin.css");
+
+# number of shown pages links in scroller's navigation bar
+define("SCROLLER_LENGTH", 7);
+
+# Would you like to display debug messagess?
+define("DEBUG_FLAG", true);
 
 # Language: uncomment one language file
 #echo "AA is $AA_INC_PATH \n";
@@ -130,8 +139,21 @@ $ActionAppConfig[en_media_mon][file] = "en_news_lang.php3";
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:23  madebeer
-Initial revision
+Revision 1.2  2000/07/12 10:47:28  kzajicek
+ fixed print of old config name
+
+Revision 1.1  2000/07/11 09:31:54  kzajicek
+Renamed config.inc to config.php3
+
+Revision 1.3  2000/07/07 21:41:42  honzam
+SCROLLER_LENGTH missing bug fixed
+
+Revision 1.2  2000/07/05 14:41:30  kzajicek
+Replaced "require" by "include" (include does not work inside if - then) and
+changed the test to use "defined".
+
+Revision 1.1.1.1  2000/06/21 18:40:23  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:12  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

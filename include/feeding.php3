@@ -25,6 +25,7 @@ http://www.apc.org/
 
 function FeedItemTo($item_id, $destination, $approved, $db, $tocategory=0) {
   global $item_fields_text, $item_fields_num;
+//huh("FeedItemTo($item_id, $destination, $approved, $db, $tocategory =0)");
    
   $varset = new Cvarset;
   $varset->addArray( $item_fields_text, $item_fields_num );
@@ -44,7 +45,7 @@ function FeedItemTo($item_id, $destination, $approved, $db, $tocategory=0) {
            WHERE master_id='". quote($varset->value(master_id)). "' AND slice_id='". q_pack_id($destination). "'";
   $db->query($SQL);
   if( !$db->next_record() ) { // this condition is enough - we can import
-    //  huh("Pass feeding condition => feeding<br>");
+//huh("Pass feeding condition => feeding<br>");
     $p_new_id = pack_id(new_id()); 
     $varset->set("id", $p_new_id );
     $varset->set("slice_id", pack_id($destination));  //this is "text" type of varset variable - quote is done in makeInsert()
@@ -53,7 +54,7 @@ function FeedItemTo($item_id, $destination, $approved, $db, $tocategory=0) {
     if( (string)$tocategory != "0" )
       $varset->set("category_id", pack_id($tocategory) );    // to category setted in filters
     $insertSQL = "INSERT INTO items" . $varset->makeINSERT();
-//    $db->query($insertSQL );
+    $db->query($insertSQL );
 //      $db->query("INSERT INTO fulltexts (ft_id, full_text) VALUES ('$q_p_new_id', '')");  // added to keep 1:1 relation between items and fulltexts - (why???)
     if ($db->affected_rows() == 0)
       return false;
@@ -117,8 +118,11 @@ function FeedItem($item_id, $db) {               //TODO  - category problem when
 }
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:38  madebeer
-Initial revision
+Revision 1.2  2000/07/07 21:28:17  honzam
+Both manual and automatical feeding bug fixed
+
+Revision 1.1.1.1  2000/06/21 18:40:38  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:23  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

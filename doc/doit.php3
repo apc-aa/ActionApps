@@ -2,8 +2,11 @@
 
 /* $Id$
 $Log$
-Revision 1.1  2000/06/21 18:40:16  madebeer
-Initial revision
+Revision 1.2  2000/07/11 12:05:18  kzajicek
+Renamed config.inc to config.php3
+
+Revision 1.1.1.1  2000/06/21 18:40:16  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:02  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
@@ -25,7 +28,7 @@ aadb.sql now includes users.uid
 define("L_USER",'user');  define("L_GROUP",'group');
 define("MAX_GROUPS_DEEP", 2);
 echo "begin";
-require("../include/config.inc");
+require("../include/config.php3");
 require("../include/locsessi.php3");
 require("../include/perm_".PERM_LIB.".php3");
 

@@ -19,13 +19,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH] . "varset.php3";
 require $GLOBALS[AA_INC_PATH] . "item.php3";
 require $GLOBALS[AA_INC_PATH] . "feeding.php3";
                      
-//huh("--$action==");
+//huh("-=-$action==");
 function MoveItems($chb,$status) {
   global $db;
 //p_arr_m($chb);
@@ -36,6 +35,16 @@ function MoveItems($chb,$status) {
       $db->query("update items set status_code = $status where id='".q_pack_id($it_id)."'");
   }
 }  
+
+function FeedAllItems($chb) {    // Feed all checked items
+  global $db;
+  if( isset($chb) AND is_array($chb) ) {
+    reset( $chb );
+    while( list($it_id,) = each( $chb ) )
+      FeedItem( $it_id, $db );
+  }
+}  
+
 
 #prints icon1 or icon2 depending on cond
 function SelectIconIf( $cond, $icon1, $alt1, $icon2, $alt2 ) {
@@ -51,6 +60,8 @@ if(isset($r_slice_id)) {
   if($slice_id != $r_slice_id) {
     $r_slice_id = $slice_id;
     $st1="";
+    $st1b="";
+    $st1c="";
     $st2="";
     $st3="";
   }  
@@ -60,17 +71,17 @@ if(isset($r_slice_id)) {
 }
 
 // $r_bin_state - controls display of editor pages. It should be:
-// app, hold, trash
+// app, appb, appc, hold, trash
 if(!isset($r_bin_state)) {
   $r_bin_state = "app";
-	 $sess->register(r_bin_state); 
+  $sess->register(r_bin_state); 
 }
 
 // $r_bin_show - controls complexity of display of editor pages. It should be:
 // short, long
 if(!isset($r_bin_show)) {
   $r_bin_show = "short";
-	 $sess->register(r_bin_show); 
+  $sess->register(r_bin_show); 
 }
 
 $perm_edit_all  = CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT_ALL_ITEMS);
@@ -98,7 +109,7 @@ switch( $action ) {  // script post parameter
       exit;
     }  
     MoveItems($chb,1);
-    FeedItem($id, $db);    // moved to approved so feed
+    FeedAllItems($chb, $db);    // Feed all checked items
     break;
   case "hold":
     if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD)) {
@@ -121,6 +132,8 @@ switch( $action ) {  // script post parameter
     }  
     break;
   case "feed":  // feed selected items to selected slices
+// huh("feed2slices:". $slices4feed);
+// huh("feed2app:". $feed2app);
     $slices4feed  = split(",", $feed2slice);
     $fooappfeed = split(",", $feed2app);
 
@@ -139,6 +152,7 @@ switch( $action ) {  // script post parameter
         if( isset($chb) AND is_array($chb) ) {
           reset( $chb );
           while( list($it_id,) = each( $chb ) ) {
+//          huh("Item: $it_id -> $sl_id <br>/n");
             FeedItemTo($it_id, $sl_id, $approvedfeed[$sl_id] , $db);
           }  
         }
@@ -150,6 +164,8 @@ switch( $action ) {  // script post parameter
 // script paramerer - table switching
 switch( $Tab ) {
   case "app":   $r_bin_state = "app";   break;
+  case "appb":  $r_bin_state = "appb";  break;
+  case "appc":  $r_bin_state = "appc";  break;
   case "hold":  $r_bin_state = "hold";  break;
   case "trash": $r_bin_state = "trash"; break;
 }  
@@ -210,14 +226,18 @@ var feedformwindow
 function OpenPreview() {
   var len = document.itemsform.elements.length
   var i=0
-  for( i=0; i<len; i++ )
-    if( document.itemsform.elements[i].name.substr(0,3) == 'chb')  //items checkboxes
+  var name = document.itemsform.elements[i].name
+  for( i=0; i<len; i++ ) {
+    name = document.itemsform.elements[i].name
+    if( name.substring(0,3) == 'chb') {  //items checkboxes
       if( document.itemsform.elements[i].checked == true) {
         if( previewwindow != null ) 
           previewwindow.close()    // in order to preview go on top after open
-        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+document.itemsform.elements[i].value,'fullwindow');
+        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(4,name.indexOf(']')),'fullwindow');
         return;
       }  
+    }
+  }    
 }  
 
 function SelectVis(state) {
@@ -251,17 +271,34 @@ $category_defined = isset($categories);
 
 switch( $r_bin_state ) {
   case "app":   $st_name = "st1";    // name of scroller for approved bin
-                $status_c = "1";
+                if( $apple_design )   // apple_design is old admin interface design with three bins Approved, Holding bin and Trash, where expired and pending items was shown by apples.
+                  $bin_condition = "status_code = 1";
+                 else 
+                  $bin_condition = "(status_code = 1) AND ".
+                                   "(publish_date <= '". date("Y-m-d"). " 23:59:59') AND ".
+                                   "(expiry_date > '". date("Y-m-d"). "')";
                 $table_icon = "../images/app.gif";
                 $table_name = L_ACTIVE_BIN;
                 break;
+  case "appb":  $st_name = "st1b";    // name of scroller for approved bin - pending
+                $bin_condition = "(status_code = 1) AND ".
+                                 "(publish_date > '". date("Y-m-d"). " 23:59:59') ";
+                $table_icon = "../images/app.gif";
+                $table_name = L_ACTIVE_BIN_PENDING;
+                break;
+  case "appc":  $st_name = "st1c";    // name of scroller for approved bin - expired
+                $bin_condition = "(status_code = 1) AND ".
+                                 "(expiry_date <= '". date("Y-m-d"). "')";
+                $table_icon = "../images/app.gif";
+                $table_name = L_ACTIVE_BIN_EXPIRED;
+                break;
   case "hold":  $st_name = "st2";    // name of scroller for holding bin
-                $status_c = "2";
+                $bin_condition = "status_code = 2";
                 $table_icon = "../images/hold.gif";
                 $table_name = L_HOLDING_BIN;
                 break;
   case "trash": $st_name = "st3";    // name of scroller for trash bin
-                $status_c = "3";
+                $bin_condition = "status_code = 3";
                 $table_icon = "../images/trsh.gif";
                 $table_name = L_TRASH_BIN;
                 break;
@@ -292,9 +329,9 @@ $st->addFilter("slice_id", "md5", $slice_id);
 
 $from = ( ( $perm_edit_all ) ?  
   "items, fulltexts left join categories on items.category_id=categories.id 
-     where ((status_code=$status_c) AND fulltexts.ft_id=items.master_id AND (". $st->sqlCondFilter().")) " :
+     where (($bin_condition) AND fulltexts.ft_id=items.master_id AND (". $st->sqlCondFilter().")) " :
   "items, fulltexts left join categories on items.category_id=categories.id 
-     where ((status_code=$status_c) AND fulltexts.ft_id=items.master_id AND created_by='".$auth->auth[uid]."' AND (". $st->sqlCondFilter().")) ");
+     where (($bin_condition) AND fulltexts.ft_id=items.master_id AND created_by='".$auth->auth[uid]."' AND (". $st->sqlCondFilter().")) ");
 
 $db->query("select count(*) as cnt from $from");
 $db->next_record();
@@ -526,6 +563,12 @@ echo '<input type=hidden name=feed2app value="">';    // array of comma delimete
 echo '</form></center>';
 
 echo L_ICON_LEGEND;
+echo L_SLICE_HINT;
+
+$ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
+
+echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
+     "?slice_id=" . $slice_id . "&quot;--&gt;</pre>";
 
 echo '
   </body>
@@ -536,8 +579,14 @@ echo '
 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:39:55  madebeer
-Initial revision
+Revision 1.4  2000/07/12 14:26:40  kzajicek
+Poor printing of the SSI statement fixed
+
+Revision 1.3  2000/07/07 21:28:17  honzam
+Both manual and automatical feeding bug fixed
+
+Revision 1.1.1.1  2000/06/21 18:39:55  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:46  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
