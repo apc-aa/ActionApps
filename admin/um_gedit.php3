@@ -134,7 +134,7 @@ function RealyDelete() {
 </HEAD>
 
 <?php
-  require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+  require_once menu_include();   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin",$usr_new? "g_new" : "g_edit");
 
   echo "<H1><B>". ( $grp_new ? _m("New Group") : _m("Edit Group") )."</B></H1>";

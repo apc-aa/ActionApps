@@ -1,6 +1,7 @@
 <?php
 /**
- * Redirects to the main Alerts page, kept only for compatibility with the modules interface.
+ * Redirects to the main Alerts page.
+ * Kept only for compatibility with the modules interface.
  * 
  * @package Alerts
  * @version $Id$
@@ -27,9 +28,13 @@ http://www.apc.org/
 */
 $directory_depth = "../";
 require_once $directory_depth."../include/init_page.php3";
+require_once $GLOBALS["AA_INC_PATH"]."go_url.php3";
 
-header("Status: 302 Moved Temporarily");
-header("Location: ".$AA_INSTAL_PATH
+$session = $AA_CP_Session ? "AA_CP_Session=$AA_CP_Session" 
+    : "AA_SL_Session=$AA_SL_Session";
+$goto = $AA_INSTAL_PATH
 	."modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
-	.$slice_id."]=1&AA_CP_Session=$AA_CP_Session");
+    .$slice_id."]=1&".$session;
+//echo $goto; exit;
+go_url ($goto);
 ?>

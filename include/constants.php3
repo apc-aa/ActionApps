@@ -39,34 +39,34 @@ http://www.apc.org/
 $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'name' => 'Slice',
                                 'hide_create_module' => 1,
-                                'directory' => $AA_INSTAL_PATH ."admin/",
-                                'menu' => $AA_INC_PATH ."menu.php3"),
+                                'directory' => "admin/",
+                                'menu' => "include/menu.php3"),
                   'W' => array( 'table' => 'site',
                                 'name' => 'Site',
                                 'show_templates' => 1,  # show list of sites on 'create new' - used as templates
-                                'directory' => $AA_INSTAL_PATH ."modules/site/",
-                                'menu' => $AA_BASE_PATH. "modules/site/menu.php3",
+                                'directory' => "modules/site/",
+                                'menu' => "modules/site/menu.php3",
                                 'language_files' => array( 
                                     'en_site_lang.php3' => 'en_site_lang.php3',
                                     'cz_site_lang.php3' => 'cz_site_lang.php3')),
                   'A' => array( 'table' => 'module', # this module doesn't have any special info yet
                                 'name' => 'MySQL Auth',
                                 'hide_create_module' => 1,
-                                'directory' => $AA_INSTAL_PATH ."modules/mysql_auth/",
-                                'menu' => $AA_BASE_PATH ."modules/mysql_auth/menu.php3"),
+                                'directory' => "modules/mysql_auth/",
+                                'menu' => "modules/mysql_auth/menu.php3"),
                   'J' => array( 'table' => 'jump',
                                 'name' => 'Jump inside AA control panel',
-                                'directory' => $AA_INSTAL_PATH ."modules/jump/",
-                                'menu' => $AA_INC_PATH ."menu.php3"),
+                                'directory' => "modules/jump/",
+                                'menu' => "menu.php3"),
             	  'P' => array ('table' => 'polls',
                   				'name' => 'Polls for AA',
                                 'show_templates' => 1,
-                   				'directory' => $AA_INSTAL_PATH ."modules/polls/",
-                                'menu' => $AA_BASE_PATH ."modules/polls/menu.php3"));
+                   				'directory' => "modules/polls/",
+                                'menu' => "modules/polls/menu.php3"));
 $MODULES['Alerts'] = array ('table' => 'module',
                             'name' => 'Alerts',
-                            'directory' => $AA_INSTAL_PATH ."modules/alerts/",
-                            'menu' => $AA_BASE_PATH ."modules/alerts/menu.php3",
+                            'directory' => "modules/alerts/",
+                            'menu' => "modules/alerts/menu.php3",
                             'letter' => 'A');  // letter is used for the modules 
                                                // which indentificator is not 1 
                                                // letter long (we need 1-letter
@@ -75,8 +75,8 @@ $MODULES['Alerts'] = array ('table' => 'module',
 $MODULES['Links'] =  array ('table' => 'links',
                             'name' => 'Links',
                             'show_templates' => 1,
-                            'directory' => $AA_INSTAL_PATH ."modules/links/",
-                            'menu' => $AA_BASE_PATH ."modules/links/menu.php3",
+                            'directory' => "modules/links/",
+                            'menu' => "modules/links/menu.php3",
                             'letter' => 'L');
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 

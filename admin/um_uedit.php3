@@ -158,7 +158,7 @@ include $GLOBALS[AA_BASE_PATH]."javascript/js_lib.js";
 
 <?php
 
-  require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+  require_once menu_include();   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin", $usr_new ? "u_new" : "u_edit");
 
   echo "<H1><B>". ( $usr_new ? _m("New User") : _m("Edit User") )."</B></H1>";

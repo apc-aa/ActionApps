@@ -76,12 +76,10 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             $txt = HTMLSpecialChars ($db->f("fdesc"));
             if (IsSuperadmin() || strchr ($myslices [unpack_id128($db->f("slice_id"))], PS_FULLTEXT)) {
                 $new_filters[$db->f("filterid")] = $txt;
-                $txt =            
-                    "<a href='".$sess->url("tabledit.php3"
-                    ."?change_id=".unpack_id128($db->f("slice_id"))
-                    ."&change_page=se_view.php3"
-                    ."&change_params[view_id]=".$db->f("view_id")
-                    ."&change_params[view_type]=".$db->f("view_type"))
+                $txt = "<a href='".$sess->url($GLOBALS["AA_INSTAL_PATH"]
+                    ."admin/se_view.php3?slice_id=".unpack_id128($db->f("slice_id"))
+                    ."&view_id=".$db->f("view_id")
+                    ."&view_type=".$db->f("view_type"))
                     ."'>".$txt." ("."f".$db->f("filterid").")"."</a>";
             }
             $filters[$db->f("filterid")] = $txt;

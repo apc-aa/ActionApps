@@ -13,7 +13,7 @@ require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
-require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+require_once $AA_BASE_PATH.menu_include();   //show navigation column depending on $show
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 require_once $GLOBALS["AA_INC_PATH"]."../misc/alerts/util.php3";
 

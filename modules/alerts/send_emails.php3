@@ -36,7 +36,7 @@ require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
 require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
 require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   
+require_once menu_include();   
 require_once "alerts_sending.php3";
 
 // ----------------------------------------------------------------------------
@@ -144,31 +144,36 @@ function showSelectionTable ()
         <TR class=tabtit><TD><B>"._m("Slice")."</B></TD>
         <TD><B>"._m("View (Selection set)")."</B></TD>
         <TD><B>"._m("Selections")."</B></TD></TR>";
-    reset ($a);
-    while (list ($slice_id, $slice) = each ($a)) {
-        if (! IsSuperadmin() && ! strchr ($myslices [unpack_id128($slice_id)], PS_FULLTEXT)) 
-            continue;
-        echo "<TR><TD class=tabtxt rowspan=".count($slice["views"]).">
-            <A href=\"".$sess->url($GLOBALS["AA_INSTAL_PATH"]
-                ."admin/index.php3?slice_id=".unpack_id ($slice_id))."\">"
-                .$slice["name"]."</A></TD>";
-        reset ($slice["views"]);
-        $first_view = true;
-        while (list ($vid, $view) = each ($slice["views"])) {
-            if (! $first_view)
-                echo "<TR>";
-            $first_view = false;
-            echo "<TD class=tabtxt>
+    
+    if (!is_array ($a)) 
+        echo "<TR><TD colspan=3 align=center class=tabtxt><B>"
+        ._m("Define selections in slices from which you want to send Alerts, 
+        in views of type Alerts Selection Set")."</B></TD></TR>";
+    else {
+        reset ($a);
+        while (list ($slice_id, $slice) = each ($a)) {
+            if (! IsSuperadmin() && ! strchr ($myslices [unpack_id128($slice_id)], PS_FULLTEXT)) 
+                continue;
+            echo "<TR><TD class=tabtxt rowspan=".count($slice["views"]).">
                 <A href=\"".$sess->url($GLOBALS["AA_INSTAL_PATH"]
-                ."admin/se_view.php3?slice_id=".unpack_id ($slice_id)
-                ."&change_page=se_view.php3"
-                ."&change_params[view_id]=".$vid
-                ."&change_params[view_type]=".$view["type"])
-                ."\">".$view["name"]."</A></TD><TD class=tabtxt>";
-            reset ($view["filters"]);
-            while (list ($fid, $filter) = each ($view["filters"]))
-                echo "f".$fid." ".$filter."<br>";
-            echo "</TD></TR>";    
+                    ."admin/index.php3?slice_id=".unpack_id ($slice_id))."\">"
+                    .$slice["name"]."</A></TD>";
+            reset ($slice["views"]);
+            $first_view = true;
+            while (list ($vid, $view) = each ($slice["views"])) {
+                if (! $first_view)
+                    echo "<TR>";
+                $first_view = false;
+                echo "<TD class=tabtxt>
+                    <a href=\"".$sess->url($GLOBALS["AA_INSTAL_PATH"]
+                    ."admin/se_view.php3?slice_id=".unpack_id128($slice_id)
+                    ."&view_id=".$vid."&view_type=".$view["type"])
+                    ."\">".$view["name"]."</A></TD><TD class=tabtxt>";
+                reset ($view["filters"]);
+                while (list ($fid, $filter) = each ($view["filters"]))
+                    echo "f".$fid." ".$filter."<br>";
+                echo "</TD></TR>";    
+            }
         }
     }
     echo "</TABLE>";

@@ -30,7 +30,7 @@ http://www.apc.org/
 $directory_depth = "../";
 require_once "../../include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   
+require_once menu_include();   
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". _m("Collection Form Wizard") ."</TITLE>

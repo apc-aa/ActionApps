@@ -8,11 +8,6 @@
  * @param $slice_id  The same as $change_id.
  * @param $change_id Change to another slice / module. If $change_id == session
  *                   stored $slice_id, it is ignored.
- * @param $change_page When going to another module type, the script 
- *                     automatically jumps to index.php3.
- *                     You can choose another page, e.g. change_page=se_view.php3/
- * @param $change_params Array of parameters to be passed to $change_page,
- *                        e.g. change_params[vid]=8.
  *
  * WARNING: The variable slice_id (p_slice_id respectively)
  *          does not hold just id of slices, but it may
@@ -47,6 +42,13 @@ http://www.apc.org/
 if (!defined ("INIT_PAGE_INCLUDED"))
 	define ("INIT_PAGE_INCLUDED",1);
 else return;
+
+/** Use require menu_include(); to include module-specific menu, 
+*   call showMenu() afterwards. */
+function menu_include() {
+    global $AA_BASE_PATH, $MODULES, $g_modules, $slice_id;
+    return $AA_BASE_PATH.$MODULES[$g_modules[$slice_id]["type"]]["menu"];
+}
 
  // handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
@@ -218,20 +220,25 @@ if( !$no_slice_id ) {
     $module_type_changed = $after_login
         || $g_modules[$last_slice_id]['type'] != $g_modules[$slice_id]['type'];
 
-    // If we switch to another module type, we should go to module main page.
-    // But not if we are jumping with the Jump module
+/* If we switch to another module type, we try whether the requested file
+   exists in the module direcory and if not, we go to module's index.php3 page.
+
+   Discussion: There is a chance two modules will have the same page name 
+   for very different behavior and that this would be a bit confusing when
+   using the Select Slice box. 
+*/   
     if( $module_type_changed && !$jumping ) {
-        $page = $change_page ? $change_page : "index.php3";
-        $page = $sess->url($MODULES[$g_modules[$slice_id]['type']]['directory']
-            .$page."?slice_id=$slice_id");
-        if ($change_params) {
-            reset ($change_params);
-            while (list ($param, $val) = each ($change_params))
-                $page .= "&$param=$val";
+        $page = filename ($PHP_SELF);        
+        $hdd_dir = $AA_INC_PATH."../".$MODULES[$g_modules[$slice_id]['type']]['directory'];
+        $web_dir = $AA_INSTAL_PATH.$MODULES[$g_modules[$slice_id]['type']]['directory'];
+        if (!file_exists ($hdd_dir.$page))
+            $page = "index.php3";
+        if ($web_dir.$page != $PHP_SELF) {
+            $page = $sess->url($web_dir.$page."?slice_id=$slice_id");
+            page_close();
+            go_url($page);
+            exit;
         }
-        page_close();
-        go_url($page);
-        exit;
     }
 }
 

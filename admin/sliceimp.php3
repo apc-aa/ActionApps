@@ -317,7 +317,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 
 <?php 
-  require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+  require_once menu_include();   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin","sliceimp");
 ?>
 <?php echo $pom ?>

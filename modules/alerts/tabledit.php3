@@ -44,8 +44,9 @@ if ($cmd["modedit"]["update"])
 
 $directory_depth = "../";
 require_once "$directory_depth../include/init_page.php3";
+
 if (!$no_slice_id)
-    require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   
+    require_once menu_include();   
 
 // ----------------------------------------------------------------------------------------
 

@@ -26,6 +26,7 @@ http://www.apc.org/
 require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
 require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
+require_once $GLOBALS["AA_INC_PATH"]."go_url.php3";
 
 function get_aa_url ($href) {
     global $AA_INSTAL_PATH, $sess;
@@ -56,29 +57,6 @@ function debuglog ($text)
     	fwrite ($f, date( "h:i:s j-m-y ")  . $text . "\n");
 	    fclose ($f);
     }
-}
-
-// Shift to another page (must be before any output from script)
-function go_url($url, $add_param="") {
-  global $sess;
-  if( isset( $sess ) )
-    page_close();
-  if( $add_param != "" )
-    $url = con_url( $url, rawurlencode($add_param));
-  $netscape = (rXn=="") ? "rXn=1" : "rXn=".++$rXn;   // special parameter for Netscape to reload page
-  header("Status: 302 Moved Temporarily");
-	header("Location: ". con_url($url,$netscape));
- 	exit;
-}
-
-// Note this doesn't appear to be used (mitra)
-function go_url_javascript ($to_go_url) {
-	echo "
-    <SCRIPT language=JavaScript>
-    <!--\n
-   		document.location = \"".$sess->url($to_go_url)."\";\n
-    // -->\n
-    </SCRIPT>";
 }
 
 // Expand return_url, possibly adding a session to it
@@ -287,11 +265,6 @@ function GetHidden() {
 function dequote($str) {
 		return $str;
 }
-
-# This function appends any number of QUERY_STRING (separated by &) parameters to given URL, using apropriate ? or &.
-function con_url($Url,$Params){
-  return ( strstr($Url, '?') ? $Url."&".$Params : $Url."?".$Params );
-} 
 
 # prints content of a (multidimensional) array
 function p_arr_m ($arr, $level = 0) {
@@ -1158,7 +1131,13 @@ function filepath ($filename) {
     return substr ($filename,0,$i+1);
 }
 
-
+function filename ($filename) {
+    if (!strstr ($filename,"/")) return "./";
+    $i = strlen($filename);
+    while ($filename[$i] != "/") $i --;
+    return substr ($filename,$i+1);
+}
+    
 /** 
  * Transforms simplified version of conditions to th eextended syntax
  * for example conds[0][headline........]='Hi' transforms into

@@ -39,7 +39,7 @@ function PrintSlice($id, $name, $type) {
   global $sess, $MODULES;
 
   $name=safe($name); $id=safe($id);
-  $url = (($type=='S') ? './slicedel2.php3' : $MODULES[$type]['directory']."moddelete.php3" );
+  $url = (($type=='S') ? './slicedel2.php3' : $AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
 
   echo "<tr class=tabtxt><td>$name</td>
           <td class=tabtxt><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td></tr>";
@@ -62,7 +62,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 $useOnLoad = ($new_compact ? true : false);
 
-require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+require_once $AA_BASE_PATH.menu_include();   //show navigation column depending on $show
 showMenu ($aamenus, "aaadmin","slicedel");
 
 echo "<H1><B>" . _m("Admin - Delete Slice") . "</B></H1>";

@@ -29,7 +29,7 @@ else return;
 
 require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
 if( isset($g_modules[$slice_id])) {
-  require_once $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+  require_once menu_include();   //show navigation column depending on $show
 } else {
   require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
 }

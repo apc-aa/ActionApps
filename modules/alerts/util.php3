@@ -249,5 +249,5 @@ function getAlertsField ($field_id, $collection_id) {
 function alerts_con_url($Url,$Params){
   return ( strstr($Url, '?') ? $Url."&".$Params : $Url."?".$Params );
 } 
-               
+
 ?>
