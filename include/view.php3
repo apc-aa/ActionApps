@@ -387,7 +387,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
       if (! $item_ids ) {    # ids could be defined via cmd[]=x command
         $sort  = GetViewSort($view_info);
-        $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, "ACTIVE", $slices, $mapslices );
+        $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $group_by, "ACTIVE", $slices);
       }  
       $format = GetViewFormat($view_info);
       $format['calendar_month'] = $month;
