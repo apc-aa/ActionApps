@@ -2,7 +2,7 @@
 # $Id$
 # Language: CZ
 # This file was created automatically by the Mini GetText environment
-# on 11.6.2003 23:53
+# on 4.11.2003 13:20
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -81,9 +81,9 @@ $_m["not subscribed"]
   = "neodebírat";
 
 # modules/alerts/synchro2.php3, row 67
-# modules/alerts/menu.php3, row 115
-# modules/alerts/tableviews.php3, row 101
+# modules/alerts/menu.php3, row 117
 # modules/alerts/send_emails.php3, row 145
+# modules/alerts/tableviews.php3, row 101
 $_m["Selections"]
   = "Výbìry";
 
@@ -187,47 +187,158 @@ $_m["Change password"]
 $_m["Retype new password"]
   = "Zopakujte nové heslo";
 
-# modules/alerts/menu.php3, row 60, 61
+# modules/alerts/menu.php3, row 62, 63
 # modules/alerts/tableviews.php3, row 149, 150
 $_m["Alerts Settings"]
   = "Nastavení Zasílání";
 
-# modules/alerts/menu.php3, row 94
+# modules/alerts/menu.php3, row 96
 $_m["AA"]
   = "";
 
-# modules/alerts/menu.php3, row 95
+# modules/alerts/menu.php3, row 97
 $_m["AA Administration"]
   = "Nastavení AA";
 
-# modules/alerts/menu.php3, row 108
+# modules/alerts/menu.php3, row 110
 # modules/alerts/tableviews.php3, row 254, 255
 $_m["Alerts Admin"]
   = "Nastavení Zasílání";
 
-# modules/alerts/menu.php3, row 112
+# modules/alerts/menu.php3, row 114
 $_m["Settings"]
   = "Nastavení";
 
-# modules/alerts/menu.php3, row 119
+# modules/alerts/menu.php3, row 121
 $_m["Send emails"]
   = "Poslat emaily";
 
-# modules/alerts/menu.php3, row 122
+# modules/alerts/menu.php3, row 124
 $_m["Reader management"]
   = "Správa ètenáøù";
 
-# modules/alerts/menu.php3, row 123
+# modules/alerts/menu.php3, row 125
 $_m["Documentation"]
   = "Dokumentace";
 
-# modules/alerts/menu.php3, row 125
+# modules/alerts/menu.php3, row 127
 $_m["Common"]
   = "Spoleèné";
 
-# modules/alerts/menu.php3, row 127
+# modules/alerts/menu.php3, row 129
 $_m["Email templates"]
   = "Šablony emailù";
+
+# modules/alerts/send_emails.php3, row 73
+$_m["Example"]
+  = "Pøíklad";
+
+# modules/alerts/send_emails.php3, row 79
+$_m["Send now an example alert email to"]
+  = "Poslat ukázkový email se zprávami na";
+
+# modules/alerts/send_emails.php3, row 83
+$_m["as if"]
+  = "jako kdyby";
+
+# modules/alerts/send_emails.php3, row 85, 110
+$_m["Go!"]
+  = "Proveï!";
+
+# modules/alerts/send_emails.php3, row 91
+$_m["Send alerts"]
+  = "Poslat novinky";
+
+# modules/alerts/send_emails.php3, row 96
+$_m["Last time the alerts were sent on:"]
+  = "Naposled byly novinky poslány:";
+
+# modules/alerts/send_emails.php3, row 107
+$_m["Send now alerts to all users subscribed to "]
+  = "Poslat novinky uživatelùm zapsaným pro ";
+
+# modules/alerts/send_emails.php3, row 109
+$_m["digest"]
+  = "souhrn";
+
+# modules/alerts/send_emails.php3, row 111
+$_m["Warning: This is a real command!"]
+  = "Pozor: Toto je skuteèný pøíkaz!";
+
+# modules/alerts/send_emails.php3, row 115
+$_m["%1 email(s) sent"]
+  = "%1 emailù posláno";
+
+# modules/alerts/send_emails.php3, row 143
+$_m["Slice"]
+  = "Webík";
+
+# modules/alerts/send_emails.php3, row 144
+$_m["View (Selection set)"]
+  = "Pohled (Výbìry)";
+
+# modules/alerts/send_emails.php3, row 150
+$_m["Define selections in slices from which you want to send Alerts, \n"
+   ."        in views of type Alerts Selection Set"]
+  = "";
+
+# modules/alerts/synchro.php3, row 43
+$_m["Slice Synchro"]
+  = "Synchro s webíkem";
+
+# modules/alerts/synchro.php3, row 48
+$_m["Synchronization with Reader Management Slice"]
+  = "Synchronizace s webíkem spravujícím ètenáøe";
+
+# modules/alerts/synchro.php3, row 73
+$_m["Not Yet Set"]
+  = "Ještì nenastaveno";
+
+# modules/alerts/synchro.php3, row 82
+$_m["Choose Reader Management Slice"]
+  = "Zvolte webík se Správou Ètenáøù";
+
+# modules/alerts/synchro.php3, row 83
+$_m["This Alerts Collection takes user data from the slice"]
+  = "Toto Zasílání používá ètenáøská data z webíku";
+
+# modules/alerts/synchro.php3, row 89
+$_m["Change to: "]
+  = "Zmìnit na: ";
+
+# modules/alerts/synchro.php3, row 95
+$_m["and delete the %1-specific fields from %2"]
+  = "a smazat políèka specifická pro %1 z %2";
+
+# modules/alerts/synchro.php3, row 99
+$_m["Change"]
+  = "Zmìnit";
+
+# modules/alerts/synchro.php3, row 109
+$_m["Add %1-specific fields to %2"]
+  = "Pøidat políèka specifická pro %1 do %2";
+
+# modules/alerts/synchro.php3, row 112
+$_m["Adds only fields the IDs of which don't yet exist in the slice.\n"
+   ."    Refreshes the constant group containing selections if it already exists."]
+  = "Pøidá pouze políèka jejichž ID ještì neexistují ve webíku. \n"
+   ."    Obnoví skupinu hodnot s výbìry pokud tato již existuje.";
+
+# modules/alerts/synchro.php3, row 117
+$_m["Field Name"]
+  = "Název Políèka";
+
+# modules/alerts/synchro.php3, row 118
+$_m["Field ID"]
+  = "ID Políèka";
+
+# modules/alerts/synchro.php3, row 128
+$_m["Add or refresh fields"]
+  = "Pøidat nebo obnovit políèka";
+
+# modules/alerts/synchro.php3, row 129
+$_m["This command can not be used until you choose the Reader Management Slice."]
+  = "Tento pøíkaz nemùžete použít dokud nezvolíte Webík se Správou Ètenáøù.";
 
 # modules/alerts/tabledit.php3, row 64
 $_m["You have not permissions to add slice"]
@@ -377,116 +488,5 @@ $_m["Holding bin"]
 # modules/alerts/util.php3, row 70
 $_m["Trash bin"]
   = "Koš";
-
-# modules/alerts/send_emails.php3, row 73
-$_m["Example"]
-  = "Pøíklad";
-
-# modules/alerts/send_emails.php3, row 79
-$_m["Send now an example alert email to"]
-  = "Poslat ukázkový email se zprávami na";
-
-# modules/alerts/send_emails.php3, row 83
-$_m["as if"]
-  = "jako kdyby";
-
-# modules/alerts/send_emails.php3, row 85, 110
-$_m["Go!"]
-  = "Proveï!";
-
-# modules/alerts/send_emails.php3, row 91
-$_m["Send alerts"]
-  = "Poslat novinky";
-
-# modules/alerts/send_emails.php3, row 96
-$_m["Last time the alerts were sent on:"]
-  = "Naposled byly novinky poslány:";
-
-# modules/alerts/send_emails.php3, row 107
-$_m["Send now alerts to all users subscribed to "]
-  = "Poslat novinky uživatelùm zapsaným pro ";
-
-# modules/alerts/send_emails.php3, row 109
-$_m["digest"]
-  = "souhrn";
-
-# modules/alerts/send_emails.php3, row 111
-$_m["Warning: This is a real command!"]
-  = "Pozor: Toto je skuteèný pøíkaz!";
-
-# modules/alerts/send_emails.php3, row 115
-$_m["%1 email(s) sent"]
-  = "%1 emailù posláno";
-
-# modules/alerts/send_emails.php3, row 143
-$_m["Slice"]
-  = "Webík";
-
-# modules/alerts/send_emails.php3, row 144
-$_m["View (Selection set)"]
-  = "Pohled (Výbìry)";
-
-# modules/alerts/send_emails.php3, row 150
-$_m["Define selections in slices from which you want to send Alerts, \n"
-   ."        in views of type Alerts Selection Set"]
-  = "";
-
-# modules/alerts/synchro.php3, row 43
-$_m["Slice Synchro"]
-  = "Synchro s webíkem";
-
-# modules/alerts/synchro.php3, row 48
-$_m["Synchronization with Reader Management Slice"]
-  = "Synchronizace s webíkem spravujícím ètenáøe";
-
-# modules/alerts/synchro.php3, row 73
-$_m["Not Yet Set"]
-  = "Ještì nenastaveno";
-
-# modules/alerts/synchro.php3, row 82
-$_m["Choose Reader Management Slice"]
-  = "Zvolte webík se Správou Ètenáøù";
-
-# modules/alerts/synchro.php3, row 83
-$_m["This Alerts Collection takes user data from the slice"]
-  = "Toto Zasílání používá ètenáøská data z webíku";
-
-# modules/alerts/synchro.php3, row 89
-$_m["Change to: "]
-  = "Zmìnit na: ";
-
-# modules/alerts/synchro.php3, row 95
-$_m["and delete the %1-specific fields from %2"]
-  = "a smazat políèka specifická pro %1 z %2";
-
-# modules/alerts/synchro.php3, row 99
-$_m["Change"]
-  = "Zmìnit";
-
-# modules/alerts/synchro.php3, row 109
-$_m["Add %1-specific fields to %2"]
-  = "Pøidat políèka specifická pro %1 do %2";
-
-# modules/alerts/synchro.php3, row 112
-$_m["Adds only fields the IDs of which don't yet exist in the slice.\n"
-   ."    Refreshes the constant group containing selections if it already exists."]
-  = "Pøidá pouze políèka jejichž ID ještì neexistují ve webíku. \n"
-   ."    Obnoví skupinu hodnot s výbìry pokud tato již existuje.";
-
-# modules/alerts/synchro.php3, row 117
-$_m["Field Name"]
-  = "Název Políèka";
-
-# modules/alerts/synchro.php3, row 118
-$_m["Field ID"]
-  = "ID Políèka";
-
-# modules/alerts/synchro.php3, row 128
-$_m["Add or refresh fields"]
-  = "Pøidat nebo obnovit políèka";
-
-# modules/alerts/synchro.php3, row 129
-$_m["This command can not be used until you choose the Reader Management Slice."]
-  = "Tento pøíkaz nemùžete použít dokud nezvolíte Webík se Správou Ètenáøù.";
 
 ?>

@@ -2,7 +2,7 @@
 # $Id$
 # Language: RO
 # This file was created automatically by the Mini GetText environment
-# on 11.6.2003 23:53
+# on 4.11.2003 13:20
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -28,9 +28,9 @@ $_m["not subscribed"]
   = "";
 
 # modules/alerts/synchro2.php3, row 67
-# modules/alerts/menu.php3, row 115
-# modules/alerts/tableviews.php3, row 101
+# modules/alerts/menu.php3, row 117
 # modules/alerts/send_emails.php3, row 145
+# modules/alerts/tableviews.php3, row 101
 $_m["Selections"]
   = "";
 
@@ -134,46 +134,156 @@ $_m["Change password"]
 $_m["Retype new password"]
   = "";
 
-# modules/alerts/menu.php3, row 60, 61
+# modules/alerts/menu.php3, row 62, 63
 # modules/alerts/tableviews.php3, row 149, 150
 $_m["Alerts Settings"]
   = "";
 
-# modules/alerts/menu.php3, row 94
+# modules/alerts/menu.php3, row 96
 $_m["AA"]
   = "";
 
-# modules/alerts/menu.php3, row 95
+# modules/alerts/menu.php3, row 97
 $_m["AA Administration"]
   = "";
 
-# modules/alerts/menu.php3, row 108
+# modules/alerts/menu.php3, row 110
 # modules/alerts/tableviews.php3, row 254, 255
 $_m["Alerts Admin"]
   = "";
 
-# modules/alerts/menu.php3, row 112
+# modules/alerts/menu.php3, row 114
 $_m["Settings"]
   = "";
 
-# modules/alerts/menu.php3, row 119
+# modules/alerts/menu.php3, row 121
 $_m["Send emails"]
   = "";
 
-# modules/alerts/menu.php3, row 122
+# modules/alerts/menu.php3, row 124
 $_m["Reader management"]
   = "";
 
-# modules/alerts/menu.php3, row 123
+# modules/alerts/menu.php3, row 125
 $_m["Documentation"]
   = "";
 
-# modules/alerts/menu.php3, row 125
+# modules/alerts/menu.php3, row 127
 $_m["Common"]
   = "";
 
-# modules/alerts/menu.php3, row 127
+# modules/alerts/menu.php3, row 129
 $_m["Email templates"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 73
+$_m["Example"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 79
+$_m["Send now an example alert email to"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 83
+$_m["as if"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 85, 110
+$_m["Go!"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 91
+$_m["Send alerts"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 96
+$_m["Last time the alerts were sent on:"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 107
+$_m["Send now alerts to all users subscribed to "]
+  = "";
+
+# modules/alerts/send_emails.php3, row 109
+$_m["digest"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 111
+$_m["Warning: This is a real command!"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 115
+$_m["%1 email(s) sent"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 143
+$_m["Slice"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 144
+$_m["View (Selection set)"]
+  = "";
+
+# modules/alerts/send_emails.php3, row 150
+$_m["Define selections in slices from which you want to send Alerts, \n"
+   ."        in views of type Alerts Selection Set"]
+  = "";
+
+# modules/alerts/synchro.php3, row 43
+$_m["Slice Synchro"]
+  = "";
+
+# modules/alerts/synchro.php3, row 48
+$_m["Synchronization with Reader Management Slice"]
+  = "";
+
+# modules/alerts/synchro.php3, row 73
+$_m["Not Yet Set"]
+  = "";
+
+# modules/alerts/synchro.php3, row 82
+$_m["Choose Reader Management Slice"]
+  = "";
+
+# modules/alerts/synchro.php3, row 83
+$_m["This Alerts Collection takes user data from the slice"]
+  = "";
+
+# modules/alerts/synchro.php3, row 89
+$_m["Change to: "]
+  = "";
+
+# modules/alerts/synchro.php3, row 95
+$_m["and delete the %1-specific fields from %2"]
+  = "";
+
+# modules/alerts/synchro.php3, row 99
+$_m["Change"]
+  = "";
+
+# modules/alerts/synchro.php3, row 109
+$_m["Add %1-specific fields to %2"]
+  = "";
+
+# modules/alerts/synchro.php3, row 112
+$_m["Adds only fields the IDs of which don't yet exist in the slice.\n"
+   ."    Refreshes the constant group containing selections if it already exists."]
+  = "";
+
+# modules/alerts/synchro.php3, row 117
+$_m["Field Name"]
+  = "";
+
+# modules/alerts/synchro.php3, row 118
+$_m["Field ID"]
+  = "";
+
+# modules/alerts/synchro.php3, row 128
+$_m["Add or refresh fields"]
+  = "";
+
+# modules/alerts/synchro.php3, row 129
+$_m["This command can not be used until you choose the Reader Management Slice."]
   = "";
 
 # modules/alerts/tabledit.php3, row 64
@@ -323,116 +433,6 @@ $_m["Holding bin"]
 
 # modules/alerts/util.php3, row 70
 $_m["Trash bin"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 73
-$_m["Example"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 79
-$_m["Send now an example alert email to"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 83
-$_m["as if"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 85, 110
-$_m["Go!"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 91
-$_m["Send alerts"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 96
-$_m["Last time the alerts were sent on:"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 107
-$_m["Send now alerts to all users subscribed to "]
-  = "";
-
-# modules/alerts/send_emails.php3, row 109
-$_m["digest"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 111
-$_m["Warning: This is a real command!"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 115
-$_m["%1 email(s) sent"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 143
-$_m["Slice"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 144
-$_m["View (Selection set)"]
-  = "";
-
-# modules/alerts/send_emails.php3, row 150
-$_m["Define selections in slices from which you want to send Alerts, \n"
-   ."        in views of type Alerts Selection Set"]
-  = "";
-
-# modules/alerts/synchro.php3, row 43
-$_m["Slice Synchro"]
-  = "";
-
-# modules/alerts/synchro.php3, row 48
-$_m["Synchronization with Reader Management Slice"]
-  = "";
-
-# modules/alerts/synchro.php3, row 73
-$_m["Not Yet Set"]
-  = "";
-
-# modules/alerts/synchro.php3, row 82
-$_m["Choose Reader Management Slice"]
-  = "";
-
-# modules/alerts/synchro.php3, row 83
-$_m["This Alerts Collection takes user data from the slice"]
-  = "";
-
-# modules/alerts/synchro.php3, row 89
-$_m["Change to: "]
-  = "";
-
-# modules/alerts/synchro.php3, row 95
-$_m["and delete the %1-specific fields from %2"]
-  = "";
-
-# modules/alerts/synchro.php3, row 99
-$_m["Change"]
-  = "";
-
-# modules/alerts/synchro.php3, row 109
-$_m["Add %1-specific fields to %2"]
-  = "";
-
-# modules/alerts/synchro.php3, row 112
-$_m["Adds only fields the IDs of which don't yet exist in the slice.\n"
-   ."    Refreshes the constant group containing selections if it already exists."]
-  = "";
-
-# modules/alerts/synchro.php3, row 117
-$_m["Field Name"]
-  = "";
-
-# modules/alerts/synchro.php3, row 118
-$_m["Field ID"]
-  = "";
-
-# modules/alerts/synchro.php3, row 128
-$_m["Add or refresh fields"]
-  = "";
-
-# modules/alerts/synchro.php3, row 129
-$_m["This command can not be used until you choose the Reader Management Slice."]
   = "";
 
 ?>

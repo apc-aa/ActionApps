@@ -2,7 +2,7 @@
 # $Id$
 # Language: ES
 # This file was created automatically by the Mini GetText environment
-# on 11.6.2003 23:55
+# on 4.11.2003 13:21
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -21,47 +21,47 @@ $_m["You do not have permission to edit items in this slice"]
 $_m["Starting spot not found"]
   = "No se encontró el nodo inicial";
 
-# modules/site/index.php3, row 131
+# modules/site/index.php3, row 137
 $_m["Editor window - site code manager"]
   = "Edición - Administrador de sitios";
 
-# modules/site/index.php3, row 140
+# modules/site/index.php3, row 146
 $_m["Add&nbsp;spot"]
   = "Nuevo&nbsp;nodo";
 
-# modules/site/index.php3, row 141
+# modules/site/index.php3, row 147
 $_m["Add&nbsp;choice"]
   = "Nueva&nbsp;opción";
 
-# modules/site/index.php3, row 142
+# modules/site/index.php3, row 148
 $_m["Delete&nbsp;spot"]
   = "Borrar&nbsp;nodo";
 
-# modules/site/index.php3, row 143
+# modules/site/index.php3, row 149
 $_m["Move&nbsp;up"]
   = "Mover&nbsp;arriba";
 
-# modules/site/index.php3, row 144
+# modules/site/index.php3, row 150
 $_m["Move&nbsp;down"]
   = "Mover&nbsp;abajo";
 
-# modules/site/menu.php3, row 50
+# modules/site/menu.php3, row 51
 $_m["View site"]
   = "Ver sitio";
 
-# modules/site/menu.php3, row 56, 57
+# modules/site/menu.php3, row 57, 58
 $_m["Code&nbsp Manager"]
   = "Código&nbsp;del&nbsp;sitio";
 
-# modules/site/menu.php3, row 62, 63
+# modules/site/menu.php3, row 63, 64
 $_m["Module Settings"]
   = "Propiedades del módulo";
 
-# modules/site/menu.php3, row 69
+# modules/site/menu.php3, row 70
 $_m["AA"]
   = "";
 
-# modules/site/menu.php3, row 70
+# modules/site/menu.php3, row 71
 $_m["AA Administration"]
   = "Administración AA";
 
@@ -161,27 +161,27 @@ $_m["Reset form"]
 $_m["Cancel"]
   = "Cancelar";
 
-# modules/site/util.php3, row 95
+# modules/site/util.php3, row 98
 $_m["Spot&nbsp;variables"]
   = "Variables&nbsp;nodo";
 
-# modules/site/util.php3, row 99, 115
+# modules/site/util.php3, row 102, 118
 $_m["Delete"]
   = "Borrar";
 
-# modules/site/util.php3, row 101, 119
+# modules/site/util.php3, row 104, 122
 $_m["Add"]
   = "Añadir";
 
-# modules/site/util.php3, row 109
+# modules/site/util.php3, row 112
 $_m["Spot&nbsp;conditions"]
   = "Condiciones&nbsp;nodo";
 
-# modules/site/util.php3, row 145
+# modules/site/util.php3, row 150
 $_m["Spot name"]
   = "Nombr del nodo";
 
-# modules/site/util.php3, row 147
+# modules/site/util.php3, row 152
 $_m["Submit"]
   = "Enviar";
 
