@@ -2151,7 +2151,7 @@ function GetFormJavascript($show_func_used, $js_proove_fields) {
                 // global variables used in HTMLArea
                 var _editor_url = "'.get_aa_url("misc/htmlarea/", false).'";
                 var long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", false).'";
-                var _editor_lang = "'.get_mgettext_lang().'";'
+                var _editor_lang = "'.substr(get_mgettext_lang(),0,2).'";'
                 );
     // HtmlArea scripts should be loaded allways - we use Dialog() function
     // from it ...
