@@ -47,10 +47,10 @@ $SQL= "SELECT name, id FROM slice, feeds
           AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
           AND feeds.to_id='$p_slice_id' ORDER BY name";
 
-
 $db->query($SQL);
-while($db->next_record())
-  $impslices[unpack_id128($db->f(id))] = $db->f(name);
+while($db->next_record()) {
+    $impslices[unpack_id128($db->f('id'))] = $db->f('name');
+}
 
 // lookup external slices
 $SQL = "SELECT remote_slice_id, remote_slice_name, feed_id, node_name
@@ -59,64 +59,63 @@ $SQL = "SELECT remote_slice_id, remote_slice_name, feed_id, node_name
 $db->query($SQL);
 
 while($db->next_record()) {
-  $impslices[unpack_id128($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
-  $remote_slices[unpack_id128($db->f(remote_slice_id))] = $db->f(feed_id);
+    $impslices[unpack_id128($db->f(remote_slice_id))] = $db->f(node_name)." - ".$db->f(remote_slice_name);
+    $remote_slices[unpack_id128($db->f(remote_slice_id))] = $db->f(feed_id);
 }
 
 if( !isset($impslices) OR !is_array($impslices)){
-  MsgPageMenu(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), _m("There are no imported slices"), "sliceadmin", "filters");
-  exit;
+    MsgPageMenu(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), _m("There are no imported slices"), "sliceadmin", "filters");
+    exit;
 }
 
 if( $import_id == "" ) {
-  reset($impslices);
-  $import_id = key($impslices);
+    reset($impslices);
+    $import_id = key($impslices);
 }
 $p_import_id = q_pack_id($import_id);
+
 
 // lookup (to_categories)
 $group = GetCategoryGroup($slice_id);
 if( $group ) {
-  $db->query("SELECT id, name FROM constant
-               WHERE group_id='$group'
-               ORDER BY pri");
-  $first_time = true;               # in order to The Same to be first in array
-  while($db->next_record()) {
-    if( $first_time AND !$remote_slices[$import_id]) {  # for remote categories must be set
-      $to_categories["0"] = _m("-- The same --");
-      $first_time = false;
+    $db->query("SELECT id, name FROM constant
+                 WHERE group_id='$group'
+                 ORDER BY pri");
+    $first_time = true;               # in order to The Same to be first in array
+    while($db->next_record()) {
+        if( $first_time ) {
+            $to_categories[unpack_id128('AA_The_Same_Cate')] = _m("-- The same --");
+            $first_time = false;
+        }
+        $to_categories[unpack_id128($db->f('id'))] = $db->f('name');
     }
-    $to_categories[unpack_id128($db->f(id))] = $db->f(name);
-  }
 }
 
 // lookup (from_categories) and preset form values
-if ($feed_id = $remote_slices[$import_id]) {
-    $ext_categs = GetExternalCategories($feed_id);
+if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external feed
+
+    $ext_categs = GetExternalCategories($feed_id, true);  // get also default 'AA_Other_Categor' category
+
     $imp_count  = sizeof($ext_categs);
 
-    if ($ext_categs && is_array($ext_categs)) {
+    if ($ext_categs AND is_array($ext_categs)) {
 
-        // Check if all categories should have set exactly the same destination
-        // category
-        $v0   = current($ext_categs);
-        $same = true;
-        while (list(,$v) = each($ext_categs)) {
-            if (($v['target_category_id'] != $v0['target_category_id']) || ($v['approved'] != $v0['approved'])) {
-                // no categories do not go to the same categories
-                $same = false;
+        // check, if we use 'All categories' option
+        $all_categories = true;
+        foreach ( $ext_categs as $k => $v ) {
+            if ( $v['target_category_id'] AND ($k != UNPACKED_AA_OTHER_CATEGOR) ) {
+                $all_categories = false;
                 break;
             }
         }
-        if ($same) {
-            // yes, allsource categories are mapped to the same destination
-            // categories
-            $all_categories = true;
-            $approved_0     = $v0['approved'];
-            $categ_0        = $v0['target_category_id'];
+
+        if ( $all_categories ) {
+            // first row - all categories
+            $approved_0     = $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['approved'];
+            $categ_0        = $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['target_category_id'];
         } else {
             foreach ( $ext_categs as $id => $v) {
-                $chboxcat[$id] = ($v['target_category_id'] != ""); // selected
+                $chboxcat[$id] = (strlen($v['target_category_id'])>1);
                 $selcat[$id]   =  $v['target_category_id'];
                 $chboxapp[$id] =  $v['approved'];
             }
@@ -126,7 +125,8 @@ if ($feed_id = $remote_slices[$import_id]) {
     $imp_group = GetCategoryGroup($import_id);
 
     // count number of imported categories
-    $SQL= "SELECT count(*) as cnt FROM constant WHERE group_id='$imp_group'";
+    $SQL= "SELECT count(*) as cnt FROM constant
+            WHERE group_id='$imp_group'";
     $db->query($SQL);
     $imp_count = ($db->next_record() ? $db->f('cnt') : 0);
 
@@ -139,9 +139,9 @@ if ($feed_id = $remote_slices[$import_id]) {
             $all_categories = true;
             $approved_0     = $db->f('to_approved');
             $categ_0        = unpack_id($db->f('to_category_id'));  // if 0 => the same category
-        } else {
+        }else{
             $chboxcat[unpack_id($db->f('category_id'))] = true;
-            $selcat[  unpack_id($db->f('category_id'))] = unpack_id($db->f('to_category_id'));
+            $selcat[unpack_id($db->f('category_id'))]   = unpack_id($db->f('to_category_id'));
             $chboxapp[unpack_id($db->f('category_id'))] = $db->f('to_approved');
         }
     }
@@ -299,43 +299,50 @@ if ($imp_count) {
 <?php
 
 function PrintOneRow($id, $cat_name, $i) {
-  global $chboxcat, $selcat, $chboxapp, $to_categories;
+    global $chboxcat, $selcat, $chboxapp, $to_categories;
 
     echo "<tr><td align=CENTER>";
     $chboxname = "chbox_". $i;
-     FrmChBoxEasy($chboxname, $chboxcat[$id] );
-  echo "</td>\n<td class=tabtxt>". $cat_name. "</td><TD>";
+    FrmChBoxEasy($chboxname, $chboxcat[$id] );
+    echo "</td>\n<td class=tabtxt>". $cat_name. "</td><TD>";
     $selectname = "categ_". $i;
-    if( isset($to_categories) AND is_array($to_categories) )
-     FrmSelectEasy($selectname, $to_categories, isset($selcat[$id]) ? $selcat[$id] : $id);
-     else
-       echo "<span class=tabtxt>". _m("No category defined") ."</span>";
+    if( isset($to_categories) AND is_array($to_categories) ) {
+        FrmSelectEasy($selectname, $to_categories, isset($selcat[$id]) ? $selcat[$id] : $id);
+    } else {
+        echo "<span class=tabtxt>". _m("No category defined") ."</span>";
+    }
     echo "</td>\n<TD align=CENTER>";
     $chboxname = "approved_". $i;
-     FrmChBoxEasy($chboxname, $chboxapp[$id] );
+    FrmChBoxEasy($chboxname, $chboxapp[$id] );
     echo "<input type=hidden name=hid_$i value=$id>";
     echo "</td></tr>";
 }
 
 if ($feed_id) {
-  if (isset($ext_categs) && is_array($ext_categs)) {
-    $i=1;
-    reset($ext_categs);
-    while (list($id,$v) = each($ext_categs)) {
-      PrintOneRow($id,$v[name],$i++);
+    if (isset($ext_categs) && is_array($ext_categs)) {
+        $i=1;
+        foreach ($ext_categs as $id => $v ) {
+            if ( $id == UNPACKED_AA_OTHER_CATEGOR ) {
+                $other_categ = $v;   // we just want to list it at the end
+                continue;
+            }
+            PrintOneRow($id,$v['name'],$i++);
+        }
+        if ( $other_categ ) {
+            PrintOneRow(UNPACKED_AA_OTHER_CATEGOR,$other_categ['name'],$i++);
+        }
     }
-  }
 }
 else {
-  if( $imp_group ) {
-    $db->query("SELECT id, name, value FROM constant
-               WHERE group_id='$imp_group'
-               ORDER BY name");
-    $i=1;
-    while($db->next_record()) {
-      PrintOneRow(unpack_id128($db->f(id)),$db->f(name),$i++);
+    if( $imp_group ) {
+        $db->query("SELECT id, name, value FROM constant
+                     WHERE group_id='$imp_group'
+                     ORDER BY name");
+        $i=1;
+        while($db->next_record()) {
+            PrintOneRow(unpack_id128($db->f('id')),$db->f('name'),$i++);
+        }
     }
-  }
 }
 ?>
 <tr><td colspan=3><a href="javascript:SelectChboxes('chbox_')"><?php echo _m('Select all');?></td><td><a href="javascript:SelectChboxes('approved_')"><?php echo _m('Select all');?></td></tr>

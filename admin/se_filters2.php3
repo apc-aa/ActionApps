@@ -59,26 +59,28 @@ if ($feed_id) { // cross server feeding
         // delete current filters and then insert new
         $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");
 
-        if ($all) {                           // all categories
-            $to_id = ParseIdA($C, $app);
-
-            // $to_id could be zero, which means "The Same category"
-            if ( !$to_id ) {
-                // 'AA_Other_Categor' and 'AA_The_Same_Cate' are keywords
-                $ext_categs['AA_Other_Categor']['target_category_id'] = 'AA_The_Same_Cate';
-                $ext_categs['AA_Other_Categor']['approved']           = $app;
-            } else {
-                while (list($id, ) = each($ext_categs)) {
-                    $ext_categs[$id]['target_category_id'] = $to_id;
-                    $ext_categs[$id]['approved']           = $app;
-                }
-            }
-        } else {                              // individual categories
-            while (list($id, ) = each($ext_categs)) {
-                $ext_categs[$id]['target_category_id'] = "";
+        // clear setting of feeding
+        // Note all external categories MUST be stored in the ef_categories
+        // table even if no feed (we need to have listing of external categs)
+        if ( is_array( $ext_categs ) ) {
+            foreach ( $ext_categs as $id => $v ) {
+                $ext_categs[$id]['target_category_id'] = '';   // do not feed
                 $ext_categs[$id]['approved']           = 0;
             }
+        }
 
+        // now set the external category feeding as specified in the array
+        if ($all) {                           // all categories
+            $to_id = ParseIdA($C, $app);
+            // $to_id could be 'AA_The_Same_Cate' keyword, which means "The Same category"
+            // ('AA_Other_Categor' and 'AA_The_Same_Cate' are keywords)
+            $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['target_category_id'] = $to_id;
+            $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['approved']           = $app;
+            // add also name and value (not crucial for the functionality, but nice)
+            $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['value']              = 'AA_Other_Categor';
+            $ext_categs[UNPACKED_AA_OTHER_CATEGOR]['name']               = _m('Other categories');
+        } else {                              // individual categories
+            // set according the posted values
             while (list($index,$id ) = each($_GET['F'])) {
                 $from_cat = ParseIdA($id, $app);
                 $ext_categs[$from_cat]['target_category_id'] = $_GET['T'][$index];
@@ -108,10 +110,13 @@ if ($feed_id) { // cross server feeding
     // A transaction would be nice.
 
     $db->query("DELETE FROM feeds WHERE to_id = '$p_slice_id' " .
-    "AND from_id = '$p_import_id'");
+                  "AND from_id = '$p_import_id'");
 
     if ($all) {                                         // all_categories
         $id = ParseIdA($C, $app);
+        if ( $id == UNPACKED_THE_SAME_CAT ) {           // the same category
+            $id = 0;
+        }
         $catVS->clear();
         $catVS->add("to_id",          "unpacked", $slice_id);
         $catVS->add("from_id",        "unpacked", $import_id);
@@ -127,8 +132,9 @@ if ($feed_id) { // cross server feeding
         while( list($index,$val) = each($_GET['F']) ) {
             $from_cat = ParseIdA($val, $app);
             $to_cat = $_GET['T'][$index];
-            if( $to_cat == "0" )
-            $to_cat = $from_cat;
+            if( ($to_cat == UNPACKED_THE_SAME_CAT) OR ($to_cat == "0") ) { // "0" is from older versions - it could be never "0"
+                $to_cat = $from_cat;
+            }
             $catVS->clear();
             $catVS->add("to_id",          "unpacked", $slice_id);
             $catVS->add("from_id",        "unpacked", $import_id);
