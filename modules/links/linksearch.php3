@@ -158,13 +158,13 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
  *  @global bool $debug=1       - many debug messages
  *  @global bool $nocache       - do not use cache, even if use_cache is set
  */
-function Links_QueryCatZIDs($cid, $conds, $sort="", $type="app") {
+function Links_QueryCatZIDs($cid, $conds, $sort="", $subcat=false, $type="app") {
     global $debug;                 # displays debug messages
     global $nocache;               # do not use cache, if set
 
     if( $debug ) huhl( "<br>CatPath:", $cat_path, '<br>Subcat:', $subcat,"<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
-    $keystr = 'cats'.$cid. serialize($conds). serialize($sort). $type;
+    $keystr = 'cats'.$cid. $subcat. serialize($conds). serialize($sort). $type;
     $cache_condition = $use_cache AND !$nocache;
     if ( $res = CachedSearch( $cache_condition, $keystr )) {
         return $res;
@@ -176,10 +176,15 @@ function Links_QueryCatZIDs($cid, $conds, $sort="", $type="app") {
     $where_sql    = MakeSQLConditions($CATEGORY_FIELDS, $conds, $foo);
     $order_by_sql = MakeSQLOrderBy(   $CATEGORY_FIELDS, $sort,  $foo);
 
-    $SQL  = "SELECT DISTINCT links_categories.id  FROM links_categories, links_cat_cat
-              WHERE links_categories.id = links_cat_cat.what_id
-                AND links_cat_cat.category_id = $cid ";
-
+    if ( $subcat ) {  // this is not obvious ussage - used for category search
+        $cat_path = Links_GetCategoryColumn( $cid, 'path');
+        $SQL  = "SELECT DISTINCT links_categories.id  FROM links_categories
+                  WHERE ((path = '$cat_path') OR (path LIKE '$cat_path,%')) ";
+    } else {         // standard ussage - looking for subcategories of given $cid (crossreferenced included)
+        $SQL  = "SELECT DISTINCT links_categories.id  FROM links_categories, links_cat_cat
+                  WHERE links_categories.id = links_cat_cat.what_id
+                    AND links_cat_cat.category_id = $cid ";
+    }
     $SQL .=  $where_sql . $order_by_sql;
 
     # get result --------------------------
