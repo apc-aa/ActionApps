@@ -110,6 +110,8 @@ if( $add || $update ) {
           $varset->add("permit_offline_fill", "number", $permit_offline_fill);
           $varset->add("fileman_access", "text", $fileman_access);
           $varset->add("fileman_dir", "text", $fileman_dir);
+          $varset->add("auth_field_group", "text", $auth_field_group);
+          $varset->add("mailman_field_lists", "text", $mailman_field_lists);
     
           $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
           if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
@@ -164,6 +166,8 @@ if( $add || $update ) {
           $varset->set("permit_offline_fill", $permit_offline_fill, "number");
           $varset->set("fileman_access", $fileman_access, "text");
           $varset->set("fileman_dir", $fileman_dir, "quoted");
+          $varset->add("auth_field_group", "text", $auth_field_group);
+          $varset->add("mailman_field_lists", "text", $mailman_field_lists);
     
              # create new slice
           if( !$db->query("INSERT INTO slice" . $varset->makeINSERT() )) {

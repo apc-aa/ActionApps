@@ -1,13 +1,18 @@
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-   <title>Reader Management</title><meta name="generator" content="DocBook XSL Stylesheets V1.49"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article"><div class="titlepage"><div><h2 class="title"><a name="d0e1"></a>Reader Management</h2></div><div><div class="author"><h3 class="author">Jakub Ad&aacute;mek</h3><div class="affiliation"><span class="orgname">Econnect<br></span></div></div></div><div><div class="revhistory"><table border="1" width="100%" summary="Revision history"><tr><th align="left" valign="top" colspan="2"><b>Revision History</b></th></tr><tr><td align="left">Revision 1.0</td><td align="left">5.2.2003</td></tr></table></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#d0e25">Basic idea</a></dt><dt><a href="#d0e47">Central point: Slice</a></dt><dt><a href="#d0e122">Editing Reader Info: Anonymous posting form</a></dt><dd><dl><dt><a href="#d0e127">General usage of Anonymous Forms</a></dt><dt><a href="#d0e146">Reader management specifics</a></dt><dt><a href="#d0e170">Show results</a></dt></dl></dd><dt><a href="#d0e197">Module common behaviour</a></dt><dt><a href="#d0e204">Module specific behaviour</a></dt><dd><dl><dt><a href="#d0e207">Alerts specific behaviour</a></dt><dt><a href="#d0e262">Auth specific behaviour</a></dt><dt><a href="#d0e308">Mailman specific behaviour</a></dt></dl></dd><dt><a href="#d0e318">Discussion - Why to use slice?</a></dt></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e25"></a>Basic idea</h2></div></div><p>Readers are users with no AA admin access. I don't want to use
+   <title>Reader Management</title><meta name="generator" content="DocBook XSL Stylesheets V1.49"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article"><div class="titlepage"><div><h2 class="title"><a name="d0e1"></a>Reader Management</h2></div><div><div class="author"><h3 class="author">Jakub Ad&aacute;mek</h3><div class="affiliation"><span class="orgname">Econnect<br></span></div></div></div><div><div class="revhistory"><table border="1" width="100%" summary="Revision history"><tr><th align="left" valign="top" colspan="2"><b>Revision History</b></th></tr><tr><td align="left">Revision 1.1</td><td align="left">11.2.2003</td></tr><tr><td align="left" colspan="2">Added a remark about using several slices (second paragraph
+        in "Central point: Slice"). Enhanced and corrected the Auth
+        specific section to reflect the recent implementation.</td></tr><tr><td align="left">Revision 1.0</td><td align="left">5.2.2003</td></tr></table></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#d0e32">Basic idea</a></dt><dt><a href="#d0e54">Central point: Slice</a></dt><dt><a href="#d0e131">Editing Reader Info: Anonymous posting form</a></dt><dd><dl><dt><a href="#d0e136">General usage of Anonymous Forms</a></dt><dt><a href="#d0e155">Reader management specifics</a></dt><dt><a href="#d0e179">Show results</a></dt></dl></dd><dt><a href="#d0e206">Module common behaviour</a></dt><dt><a href="#d0e213">Module specific behaviour</a></dt><dd><dl><dt><a href="#d0e216">Alerts specific behaviour</a></dt><dt><a href="#d0e271">Auth specific behaviour</a></dt><dd><dl><dt><a href="#d0e275">Apache module mod_auth_mysql</a></dt><dt><a href="#d0e313">Auth feature</a></dt></dl></dd><dt><a href="#d0e372">Mailman specific behaviour</a></dt></dl></dd><dt><a href="#d0e382">Discussion - Why to use slice?</a></dt></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e32"></a>Basic idea</h2></div></div><p>Readers are users with no AA admin access. I don't want to use
     the term &#8220;users&#8221; because of possible confusion with the AA
     users like Authors and more.</p><p>Several modules may be connected with readers:</p><div class="itemizedlist"><ul type="disc"><li>Alerts, for sending new items by email</li><li>Authorization (Auth), for HTTP authorization via MySQL_Auth</li><li>Mailman, for e-mail discussions</li></ul></div><p>Readers are identified by email in Alerts and Mailman and by
-    username in Auth.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e47"></a>Central point: Slice</h2></div></div><p>After a lot of discussing and unhappily also a lot of work to be
+    username in Auth.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e54"></a>Central point: Slice</h2></div></div><p>After a lot of discussing and unhappily also a lot of work to be
     thrown off, we have in Econnect decided the best approach to handle Reader
     management will be a slice. It is so simple: each item belongs to one
     person. The individual settings for Alerts, Auth etc. are added as fields
-    to the item design.</p><p>The minimal slice template named Reader Management Minimal is now a
+    to the item design.</p><p>Note this means not one slice but several slices, one for each web
+    site which uses Alerts, Auth or Mailman. Readers of different web sites
+    are in different slices and thus independent. Slice features like item
+    feeding may be used when necessary.</p><p>The minimal slice template named Reader Management Minimal is now a
     part of the sql_update script and consists of:</p><div class="table"><p><b>Table 1. Fields in the Reader Management Minimal template</b></p><table summary="Fields in the Reader Management Minimal template" border="1"><colgroup><col><col></colgroup><tbody><tr><td>Username</td><td>Used in the Authorization (Auth) module</td></tr><tr><td>Email</td><td>Required for Alerts and Mailman modules. For each Reader
             Management slice either username or email should be flagged as
             required.</td></tr><tr><td>Password</td><td>If the web uses Auth, this is the HTTP password. Otherwise
@@ -30,8 +35,8 @@
     different Alerts Collections. They all link to the same reader group and
     thus use the same Reader management slice.</p><p>In the simplest cases, there will be one Reader management slice +
     one Alerts or Auth module. The Alerts or Auth module will always use
-    (almost) directly the slice data.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e122"></a>Editing Reader Info: Anonymous posting form</h2></div></div><p>As readers do not have access to the AA control panel, they must
-    edit their personal details on the Anonymous posting form.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e127"></a>General usage of Anonymous Forms</h3></div></div><p>Anonymous posting forms are similar in function and design to the
+    (almost) directly the slice data.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e131"></a>Editing Reader Info: Anonymous posting form</h2></div></div><p>As readers do not have access to the AA control panel, they must
+    edit their personal details on the Anonymous posting form.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e136"></a>General usage of Anonymous Forms</h3></div></div><p>Anonymous posting forms are similar in function and design to the
       Add / Edit item page. The main difference is they are placed outside of
       AA Control Panel and thus do not provide the AA authorization and have a
       design of their own.</p><p>The most common usage is to allow web readers to suggest new
@@ -46,7 +51,7 @@
       &#8220;Password and Change Password&#8221; provide the usual edit boxes
       for changing, deleting and entering password, which is stored encrypted.
       If a password-protected item is edited and a password is set for this
-      item, it must be sent on every update.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e146"></a>Reader management specifics</h3></div></div><p>Each reader has her or his own item in the Reader management
+      item, it must be sent on every update.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e155"></a>Reader management specifics</h3></div></div><p>Each reader has her or his own item in the Reader management
       slice. Thus the HTTP authentication may be used directly to determine
       which item (reader personal details) to show in the form. This is
       achieved by sending the <tt>use_http_auth=1</tt> setting to
@@ -58,7 +63,7 @@
       edits but even views the data. This is achieved by assigning a special
       &#8220;Access Code&#8221; (<a href="#access_code">see above</a>)
       to each reader, which must be added to the URL in order that the data
-      are prefilled.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e170"></a>Show results</h3></div></div><p>Sending the data to AA results in adding the data into database or
+      are prefilled.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e179"></a>Show results</h3></div></div><p>Sending the data to AA results in adding the data into database or
       in an error. Some of the errors may be excluded by Javascript, which
       does not allow to send an errornous form. But some of them, like a
       username being already used, can't.</p><p>You may create your own PHP script and send its URL as a value of
@@ -75,11 +80,11 @@ err_page[*]="err_unrecognized.shtml"</pre>and by creating the
       PHP. The disadvantage is the necessity of creating many pages but using
       SSI includes the pages could look only like:<pre class="screen">&lt;!--#include file="err_top.shtml"--&gt;
 The username you entered has already been used. Please try another username.
-&lt;!--#include file="err_bottom.shtml"--&gt;</pre></p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e197"></a>Module common behaviour</h2></div></div><p>Only readers in Active bin will receive Alerts, be allowed to pages
+&lt;!--#include file="err_bottom.shtml"--&gt;</pre></p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e206"></a>Module common behaviour</h2></div></div><p>Only readers in Active bin will receive Alerts, be allowed to pages
     guarded by Authorization etc.</p><p>In special cases, when you want to stop web access for some reader
     (authorization) but don't want to stop him or her receiving Alerts,
     you must create a dummy authorization group and assign this group to him
-    or her.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e204"></a>Module specific behaviour</h2></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e207"></a>Alerts specific behaviour</h3></div></div><p>The Alerts module appears like other regular modules in the slice
+    or her.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e213"></a>Module specific behaviour</h2></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e216"></a>Alerts specific behaviour</h3></div></div><p>The Alerts module appears like other regular modules in the slice
       select box. It offers these pages:</p><div class="table"><p><b>Table 2. Alerts menu</b></p><table summary="Alerts menu" border="1"><colgroup><col><col></colgroup><tbody><tr><td>Alerts Admin - Design</td><td>Email design, choose which filters you want to show and
               their order. You can send an example email to see exactly what
               readers receive.</td></tr><tr><td>Alerts Admin - Settings</td><td>Core settings for the Collection</td></tr><tr><td>Alerts Admin - Emails</td><td>Allows to edit all emails.</td></tr><tr><td>Slice Synchro</td><td>Sets the Reader Management Slice which feeds this Alerts
@@ -88,30 +93,44 @@ The username you entered has already been used. Please try another username.
               item in one e-mail), daily, weekly, monthly.</td></tr><tr><td>choose filters</td><td>Multiple checkboxes allowing to choose which filters from
               the collection the reader wants to read.</td></tr></tbody></table></div><p>You may show <span class="emphasis"><em>how often</em></span> or
       <span class="emphasis"><em>choose filters </em></span>in the anonymous forms or you may
-      set defaults by hidden fields.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e262"></a><a name="auth"></a>Auth specific behaviour</h3></div></div><p>The Auth administration includes creating groups (Membership
-      Types) and assigning disk folders to them. This may be achieved with the
-      usage of AA constants, where the constant name is the membership type
-      and the constant value are the subgroups assigned to individual folders,
-      joined by semicolon.</p><p>For example, if you want to create Standard Membership and
-      Privileged Membership, where the first is permitted to folders
-      "main" and "search" and the second to "main",
-      "search" and "privileged", you create these two
-      constants:</p><div class="table"><p><b>Table 4. Membership Constants Example</b></p><table summary="Membership Constants Example" border="1"><colgroup><col><col></colgroup><tbody><tr><td><span class="emphasis"><em>Name</em></span></td><td><span class="emphasis"><em>Value</em></span></td></tr><tr><td>Standard Membership</td><td>main;search</td></tr><tr><td>Privileged Membership</td><td>main;search;privileged</td></tr></tbody></table></div><p>The StoreItem function must be edited to call some synchronization
-      function, which exports user / group assignments into tables auth_user
-      and auth_group, which are used by the MySQL_Auth Apache module.</p><p>To avoid the conflict when two slices use the same subgroup names,
-      a postfix (preceded by "_") will be added to each subgroup
-      during the export. This is a new setting in Admin - Slice Settings, the
-      field &#8220;Auth Postfix&#8221;.</p><p>The second new field in Slice Settings is &#8220;Auth Group&#8221;
-      with the name of the field containing the membership type. If this field
-      is filled, the slice is synchronized with the auth_user/group tables.</p><p>Both these fields are offered only for Reader Management slices
-      created from the Reader Management Minimal template.</p><p>You may set to which bin new users are put on subscription with
-      the standard "Allow anonymous posting of items" setting.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e308"></a>Mailman specific behaviour</h3></div></div><p>The Mailman functionality includes some script run regularly by
+      set defaults by hidden fields.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e271"></a><a name="auth"></a>Auth specific behaviour</h3></div></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e275"></a>Apache module mod_auth_mysql</h4></div></div><p>The Auth feature (it is not a real module) is meant to be used
+        by the <tt>mod_auth_mysql</tt> Apache module. You must
+        install this module on your web server to appreciate the Auth feature.
+        There are several versions of the module with different option names.
+        Find the correct ones in your version. This is the info you will need:</p><div class="table"><p><b>Table 4. Tables maintained by the Auth feature</b></p><table summary="Tables maintained by the Auth feature" border="1"><colgroup><col><col></colgroup><tbody><tr><td>auth_user</td><td>with the fields &#8220;username&#8221; and
+                &#8220;passwd&#8221;</td></tr><tr><td>auth_group</td><td>with the fields &#8220;username&#8221; and
+                &#8220;groups&#8221;</td></tr></tbody></table></div><p>Set up Apache and fill correct group info into the
+        <tt>.htaccess</tt> files in folders which you want to
+        protect. Note the groups you are using here are the groups separated
+        by semicolon in the AA constants, see below.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="d0e313"></a>Auth feature</h4></div></div><p>The Auth administration includes creating membership types
+        (meta-groups) and assigning (sub)groups to them. This may be achieved
+        with the usage of AA constants, where the constant name is the
+        membership type and the constant value are the subgroups assigned to
+        individual folders, separated by semicolon.</p><p>For example, if you want to create Standard Membership and
+        Privileged Membership, where the first is permitted to folders
+        "main" and "search" and the second to "main",
+        "search" and "privileged", you create these two
+        constants:</p><div class="table"><p><b>Table 5. Membership Constants Example</b></p><table summary="Membership Constants Example" border="1"><colgroup><col><col></colgroup><tbody><tr><td><span class="emphasis"><em>Name</em></span></td><td><span class="emphasis"><em>Value</em></span></td></tr><tr><td>Standard Membership</td><td>myreaders_main;myreaders_search</td></tr><tr><td>Privileged Membership</td><td>myreaders_main;myreaders_search;myreaders_privileged</td></tr></tbody></table></div><p>The user / membership type assignments are synchronized with
+        tables <tt>auth_user</tt> and <tt>auth_group</tt>
+        using event handlers for events like updating an item or moving the
+        item into another bin.</p><p>To avoid the conflict of another Reader Management slice using
+        the same subgroup names, I recommend to use some pre- or postfix (like
+        &#8220;myreaders_&#8221; in my example).</p><p>The Auth feature is set on and off using a new item in Slice
+        Settings, named &#8220;Auth Group Field&#8221;, with the name of the
+        field containing the membership type. This is visible only in Reader
+        Management slices created from the Reader Management Minimal template.</p><p>Only when &#8220;Auth Group Field&#8221; is filled, the slice
+        is synchronized with the auth_user/group tables.</p><p>You may set to which bin new readers are put on subscription
+        with the standard "Allow anonymous posting of items" setting.</p><p>Because readers are assigned to items, they may appear in
+        Pending or Expired bin depending on Start date and Expiry date
+        settings. You should run the script <tt>auth_maintain.php3?maintain_auth=1</tt>
+        once a day by cron to automatically add or delete users moved to or
+        from the Active bin.</p></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="d0e372"></a>Mailman specific behaviour</h3></div></div><p>The Mailman functionality includes some script run regularly by
       cron, which copies info from the AA databse to some text file which in
       turn is read by mailman and used to synchronize its database.</p><p>A multi-checkbox for selecting to which mail lists a user is
       subscribed may be created by standard constants. The name and values of
       the constants are the names of the mail lists. A new Slice Setting is
       shown in Reader Management slices, named &#8220;Mailman Lists&#8221;,
-      with the name of the field containing the list names. </p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e318"></a>Discussion - Why to use slice?</h2></div></div><p>The main reason to use slice was that we need some reader management
+      with the name of the field containing the list names.</p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e382"></a>Discussion - Why to use slice?</h2></div></div><p>The main reason to use slice was that we need some reader management
     with the possibility to add any new fields. This is exactly what slice
     does. Also, we can use many other nice features already developed for
     slice. And last but not least if we need to improve the current slice

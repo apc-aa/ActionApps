@@ -67,6 +67,7 @@ header ("Content-Type: image/gif");
 $content4ids = GetItemContent($item_id);
 reset ($content4ids);
 $content4id = current ($content4ids);
+$oldcontent4id = $content4id;
 $action = ! ($content4id[$field_id][0]["value"]);
 $content4id = array ($field_id => array (0 => array ("value" => $action)));
 list($fields) = GetSliceFields ($slice_id);   
@@ -77,7 +78,8 @@ StoreItem ($item_id,
            $fields,
            false,
            true,
-           false);
+           false,
+           $oldcontent4id);
 
 readfile ($image_path.'cb_'.($action ? "on" : "off").'.gif');
 page_close();

@@ -102,7 +102,7 @@ if( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
     $id = new_id();
 
   $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, $insert,
-                            true, true );     # invalidatecache, feed
+                            true, true, $oldcontent4id );     # invalidatecache, feed
 
   if( count($err) <= 1) {
     page_close();

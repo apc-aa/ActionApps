@@ -34,16 +34,14 @@ require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 $now = now();
 
 function MoveItems($chb,$status) {
-  global $db, $auth;
+  global $db, $auth, $slice_id;
   if( isset($chb) AND is_array($chb) ) {
     $item_ids = "";
     reset( $chb );
-    while( list($it_id,) = each( $chb ) ) {
-        if ($item_ids) $item_ids .= ",";
-        $item_ids .= "'".q_pack_id(substr($it_id,1))."'";
-    }
+    while( list($it_id) = each( $chb ) ) 
+        $item_ids[] = pack_id(substr($it_id,1));
     
-    if ($item_ids) {
+    if ($item_ids && Event_ItemsBeforeMove( $item_ids, $slice_id, $status )) {
         $SQL = "UPDATE item SET
            status_code = $status, 
            last_edit   = '$now',
@@ -53,8 +51,9 @@ function MoveItems($chb,$status) {
         $moved2active = $status == 1 ? time() : 0;
         $SQL .= ", moved2active = $moved2active";
        
-        $SQL .= " WHERE id IN ($item_ids)"; 
+        $SQL .= " WHERE id IN ('".join_and_quote("','",$item_ids)."')"; 
         $db->tquery ($SQL);
+        Event_ItemsAfterMove( $item_ids, $slice_id, $status );
     }
                                          // substr removes first 'x'
     $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
@@ -206,28 +205,26 @@ if ($bodyonly == "1") {
 }
 ######################################
 
+function ProovePerm( $perm, $msg ) {
+    if(!IfSlPerm($perm)) {
+        MsgPageMenu($sess->url(self_base())."index.php3", $msg, "items");
+        exit;
+    }
+}
+
 if ($akce) {
   switch( $akce ) {  // script post parameter
     case "app":
-      if(!IfSlPerm(PS_ITEMS2ACT)) {
-        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to move items"), "items");
-        exit;
-      }
+      ProovePerm( PS_ITEMS2ACT, _m("You have not permissions to move items"));
       MoveItems($chb,1);
       FeedAllItems($chb, $fields);    // Feed all checked items
       break;
     case "hold":
-      if(!IfSlPerm(PS_ITEMS2HOLD)) {
-        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to move items"), "items");
-        exit;
-      }
+      ProovePerm( PS_ITEMS2HOLD, _m("You have not permissions to move items"));
       MoveItems($chb,2);
       break;
     case "trash":
-      if(!IfSlPerm(PS_ITEMS2TRASH)) {
-        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to move items"), "items");
-        exit;
-      }
+      ProovePerm( PS_ITEMS2TRASH, _m("You have not permissions to move items"));
       MoveItems($chb,3);
       break;
     case "edit":  // edit the first one
@@ -295,25 +292,25 @@ switch( $More ) {
   case "short": $r_bin_show = "short"; break;
 }  
 
-if($Delete == "trash") {         // delete feeded items in trash bin
+// empty trash:
+if($Delete == "trash") {         
     // feeded items we can easy delete
-  if(!IfSlPerm(PS_DELETE_ITEMS )) {
-    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to remove items"), "items");
-    exit;
-  }  
+    ProovePerm( PS_DELETE_ITEMS, _m("You have not permissions to remove items"));
  	$db->query("SELECT id FROM item 
                WHERE status_code=3 AND slice_id = '$p_slice_id'");
-    # delete content of all fields
-  while( $db->next_record() ) {   
-    $db2->query("DELETE FROM content
-                  WHERE item_id = '". quote($db->f(id)) ."'");  # don't worry 
-  }                                      # about fed fields - content is copied
-    # delete content of item fields
- 	$db->query("DELETE FROM item 
-             WHERE status_code=3 AND slice_id = '$p_slice_id'");
+    $items_to_delete = "";           
+    while( $db->next_record() )           
+        $items_to_delete[] = $db->f("id");
+    if (Event_ItemsBeforeDelete( $items_to_delete, $slice_id )) {
+        // delete content of all fields
+        // don't worry about fed fields - content is copied
+        $wherein = "IN ('".join_and_quote("','", $items_to_delete)."')";
+        $db->query("DELETE FROM content WHERE item_id ".$wherein);
+        $db->query("DELETE FROM item WHERE id ".$wherein);
 
-  $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ); # database changed - 
-  $cache->invalidateFor("slice_id=$slice_id");  # - invalidate old cached values
+        $cache = new PageCache($db, CACHE_TTL, CACHE_PURGE_FREQ); 
+        $cache->invalidateFor("slice_id=$slice_id");  
+   }
 }
 
 # count items in each bin -----------

@@ -25,6 +25,8 @@ require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
 require_once $GLOBALS["AA_INC_PATH"]."imagefunc.php3";
 require_once $GLOBALS["AA_INC_PATH"]."javascript.php3";
 require_once $GLOBALS["AA_INC_PATH"]."date.php3";
+require_once $GLOBALS["AA_INC_PATH"]."item_content.php3";
+require_once $GLOBALS["AA_INC_PATH"]."event_handler.php3";
  
 # ----------------------- functions for default item values -------------------
 function default_fnc_now($param) {
@@ -86,7 +88,7 @@ function default_fnc_rnd($param) {
         
 function default_fnc_($param) {
   global $err;
-  $err[default_fnc] = "No default function defined for parameter '$param'- default_fnc_()";
+  $err["default_fnc"] = "No default function defined for parameter '$param'- default_fnc_()";
   return "";
 }
 
@@ -101,7 +103,7 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
     
     // if input function is 'selectbox with presets' and add2connstant flag is set,
     // store filled value to constants
-    $fnc = ParseFnc($field[input_show_func]);   # input show function
+    $fnc = ParseFnc($field["input_show_func"]);   # input show function
     if( $fnc AND ($fnc['fnc']=='pre') ) {
         // get add2constant and constgroup (other parameters are irrelevant in here)
         list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding,
@@ -137,11 +139,11 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
         }
     }
     
-    if( $field[in_item_tbl] ) {
+    if( $field["in_item_tbl"] ) {
         // Mitra thinks that this might want to be 'expiry_date.....' ...
         // ... which is not correct because in 'in_item_tbl' database field 
         // we store REAL database field names from aadb.item table (honzam)
-        if( ($field[in_item_tbl] == 'expiry_date') && 
+        if( ($field["in_item_tbl"] == 'expiry_date') && 
             (date("Hi",$value['value']) == "0000") )
 
         // $value['value'] += 86399;  
@@ -150,13 +152,13 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
         $value['value'] = mktime(23,59,59,date("m",$value['value']),date("d",$value['value']),date("Y",$value['value']));
         
         // field in item table
-        $itemvarset->add( $field[in_item_tbl], "quoted", $value['value']);
+        $itemvarset->add( $field["in_item_tbl"], "quoted", $value['value']);
         return;
     }
     
     // field in content table
     $varset->clear();
-    if( $field[text_stored] ) 
+    if( $field["text_stored"] ) 
         $varset->add("text", "quoted", $value['value']);
     else 
         $varset->add("number", "quoted", $value['value']);
@@ -164,7 +166,7 @@ function insert_fnc_qte($item_id, $field, $value, $param) {
     
     // insert item but new field
     $varset->add("item_id", "unpacked", $item_id);
-    $varset->add("field_id", "quoted", $field[id]);
+    $varset->add("field_id", "quoted", $field["id"]);
     $SQL =  "INSERT INTO content" . $varset->makeINSERT();
     $db->query( $SQL );
 }
@@ -209,8 +211,8 @@ function insert_fnc_ids($item_id, $field, $value, $param) {
         # is reverse relation already set?
       $SQL = "SELECT * FROM content 
                WHERE item_id = '". q_pack_id($reverse_id) ."' 
-                 AND field_id = '". $field[id] ."' 
-                 AND ". ($field[text_stored] ? "text" : "number") ."= '". $value['value'] ."'";
+                 AND field_id = '". $field["id"] ."' 
+                 AND ". ($field["text_stored"] ? "text" : "number") ."= '". $value['value'] ."'";
       $db->query( $SQL );
       if( !$db->next_record() )  # not found
         insert_fnc_qte($reverse_id, $field, $value, $param);
@@ -257,7 +259,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
 {
     global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR;
 
-    $filevarname = "v".unpack_id($field[id])."x";
+    $filevarname = "v".unpack_id($field["id"])."x";
     
     // look if the uploaded picture exists
     if($GLOBALS[$filevarname."_name"] == "none" || $GLOBALS[$filevarname."_name"] == "") 
@@ -337,8 +339,8 @@ function insert_fnc_fil($item_id, $field, $value, $param, $fields="")
         		$num ++;
         		//copy thumbnail
    				$thumbnail = $fields[$fid];
-    		    $fncpar = ParseFnc($f[input_insert_func]);
-    		    $thumb_params=explode(":",$fncpar[param]);
+    		    $fncpar = ParseFnc($f["input_insert_func"]);
+    		    $thumb_params=explode(":",$fncpar["param"]);
     		    //echo $thumb_params[0].$thumb_params[1];
     		    $dest_file_tmb=substr($dest_file,0,strrpos($dest_file,"."))
                     ."_thumb$num".substr($dest_file,strrpos($dest_file,"."));
@@ -400,40 +402,40 @@ function insert_fnc_($item_id, $field, $value, $param) {
 # ----------------------- show functions --------------------------------------
 
 function show_fnc_chb($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmInputChBox($varname, $field['name'], $value[0]['value'], false, "", 1,
-                $field[required], $field[input_help], $field[input_morehlp] );
+                $field["required"], $field["input_help"], $field["input_morehlp"] );
 }
 
 function show_fnc_freeze_chb($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], $value[0]['value'] ? _m("set") : _m("unset") );
 }
 
 function show_fnc_txt($varname, $field, $value, $param, $html){
-  echo $field[input_before];
+  echo $field["input_before"];
   $rows      = ($param ? $param : 4);
-  $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
+  $htmlstate = ( !$field["html_show"] ? 0 : ( $html ? 1 : 2 ));
   FrmTextarea($varname, $field['name'], $value[0]['value'], 
-   $rows, 60, $field[required], $field[input_help], $field[input_morehlp], 
+   $rows, 60, $field["required"], $field["input_help"], $field["input_morehlp"], 
    false, $htmlstate );
 }
 
 function show_fnc_freeze_txt($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], $value[0]['value']);
 }
 
 function show_fnc_edt($varname, $field, $value, $param, $html){
-  echo $field[input_before];
+  echo $field["input_before"];
   list($rows, $cols, $type) = explode(':', $param);
   if ($rows == 0) $rows = 10;
   if ($cols == 0) $cols = 70;
   if ($type == "") $type = "class";
-  $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
+  $htmlstate = ( !$field["html_show"] ? 0 : ( $html ? 1 : 2 ));
 
   FrmRichEditTextarea($varname, $field['name'], $value[0]['value'], 
-   $rows, $cols, $type, $field[required], $field[input_help], $field[input_morehlp], 
+   $rows, $cols, $type, $field["required"], $field["input_help"], $field["input_morehlp"], 
    false, $htmlstate );
    
 	global $list_fnc_edt;
@@ -441,25 +443,25 @@ function show_fnc_edt($varname, $field, $value, $param, $html){
 }
 
 function show_fnc_freeze_edt($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], $value[0]['value']);
 }
 
 function show_fnc_fld($varname, $field, $value, $param, $html) {
-   echo $field[input_before];
+   echo $field["input_before"];
    $maxlength = 255;
    $fieldsize = 60;
    if (!empty($param)) 
      list($maxlength, $fieldsize) = split('[ ,:]+', $param, 2);
 
-   $htmlstate = ( !$field[html_show] ? 0 : ( $html ? 1 : 2 ));
+   $htmlstate = ( !$field["html_show"] ? 0 : ( $html ? 1 : 2 ));
    FrmInputText($varname, $field['name'], $value[0]['value'], $maxlength,
-                $fieldsize, $field[required], $field[input_help],
-                $field[input_morehlp], $htmlstate );
+                $fieldsize, $field["required"], $field["input_help"],
+                $field["input_morehlp"], $htmlstate );
 }
 
 function show_fnc_freeze_fld($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], $value[0]['value']);
 }
 
@@ -474,13 +476,13 @@ function show_fnc_rio($varname, $field, $value, $param, $html) {
    else 
     $arr = GetConstants($constgroup, $db);
   
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmInputRadio($varname, $field['name'], $arr, $value[0]['value'],
-                $field[required], $field[input_help], $field[input_morehlp] );
+                $field["required"], $field["input_help"], $field["input_morehlp"] );
 }
 
 function show_fnc_freeze_rio($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], $value[0]['value']);
 }
 
@@ -509,13 +511,13 @@ function show_fnc_mch($varname, $field, $value, $param, $html) {
     print_r($arr);
   }  
     
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmInputMultiChBox($varname."[]", $field['name'], $arr, $selected, 
-    $field[required], $field[input_help], $field[input_morehlp]);
+    $field["required"], $field["input_help"], $field["input_morehlp"]);
 }
   
 function show_fnc_freeze_mch($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], implode (", ", $value));
 }
 
@@ -531,7 +533,7 @@ function show_fnc_mse($varname, $field, $value, $param, $html) {
   if( substr($param,0,7) == "#sLiCe-" ) {  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7), "" );
     #add blank selection for not required field
-    if( !$field[required] )
+    if( !$field["required"] )
       $arr[''] = " ";
    } else 
     $arr = GetConstants($constgroup, $db);
@@ -545,13 +547,13 @@ function show_fnc_mse($varname, $field, $value, $param, $html) {
     }
   }
 
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmInputMultiSelect($varname."[]", $field['name'], $arr, $selected, $selectsize,
-    false, $field[required], $field[input_help], $field[input_morehlp]);
+    false, $field["required"], $field["input_help"], $field["input_morehlp"]);
 }
 
 function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], implode (", ", $value));
 }
 
@@ -561,53 +563,53 @@ function show_fnc_sel($varname, $field, $value, $param, $html) {
   if( substr($param,0,7) == "#sLiCe-" ) { # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
     #add blank selection for not required field
-    if( !$field[required] )
+    if( !$field["required"] )
       $arr[''] = " ";
   } else
     $arr = GetConstants($constgroup, $db);
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmInputSelect($varname, $field['name'], $arr, $value[0]['value'],
-                 $field[required], $field[input_help], $field[input_morehlp], $usevalue );
+                 $field["required"], $field["input_help"], $field["input_morehlp"], $usevalue );
 }
 
 function show_fnc_freeze_sel($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], $value[0]['value']);
 }
 
 # $param is uploaded_file_type:field_name:help (like "image/*::Select image")
 # if no $param specified, no file upload field is displayed
 function show_fnc_fil($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmInputText($varname, $field['name'], $value[0]['value'], 255,60,
-               $field[required], $field[input_help], $field[input_morehlp], 0);
+               $field["required"], $field["input_help"], $field["input_morehlp"], 0);
   if( !$param )
     return;                       # no upload field displayed
   $arr = explode(":",$param);
 
-  FrmInputFile($varname."x", $arr[1], 60, $field[required],
+  FrmInputFile($varname."x", $arr[1], 60, $field["required"],
                $arr[0], $arr[2], false );
 }
 
 function show_fnc_freeze_fil($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], $value[0]['value']);
 }
 
 function show_fnc_dte($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   if( strstr($param, "'"))
     $arr = explode("'",$param);  // old format
    else
     $arr = explode(":",$param);  // new format
   $datectrl = new datectrl($varname, $arr[0], $arr[1], $arr[2], $arr[3]);
   $datectrl->setdate_int($value[0]['value']);
-  FrmStaticText($field['name'], $datectrl->getselect(), $field[required],
-                $field[input_help], $field[input_morehlp], "0" );
+  FrmStaticText($field['name'], $datectrl->getselect(), $field["required"],
+                $field["input_help"], $field["input_morehlp"], "0" );
 }
 
 function show_fnc_freeze_dte($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   $datectrl->setdate_int($value[0]['value']);
   FrmStaticText($field['name'], $datectrl->get_datestring());
 }
@@ -624,14 +626,14 @@ function show_fnc_pre($varname, $field, $value, $param, $html) {
     $arr = GetItemHeadlines( $db, substr($constgroup, 7),$slice_field);
    else
     $arr = GetConstants($constgroup, $db);
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmInputPreSelect($varname, $field['name'], $arr, $value[0]['value'], $maxlength,
-    $fieldsize, $field[required], $field[input_help], $field[input_morehlp], $adding,
+    $fieldsize, $field["required"], $field["input_help"], $field["input_morehlp"], $adding,
 	$secondfield, $usevalue );
 }
 
 function show_fnc_freeze_pre($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], $value[0]['value']);
 }
 
@@ -647,13 +649,13 @@ function show_fnc_tpr($varname, $field, $value, $param, $html) {
     $arr = GetItemHeadlines( $db, substr($constgroup, 7), "" );
    else
     $arr = GetConstants($constgroup, $db);
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmTextareaPreSelect($varname, $field['name'], $arr, $value[0]['value'],
-    $field[required], $field[input_help], $field[input_morehlp], $rows, $cols);
+    $field["required"], $field["input_help"], $field["input_morehlp"], $rows, $cols);
 }
 
 function show_fnc_freeze_tpr($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], $value[0]['value']);
 }
 
@@ -704,11 +706,11 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
 
   $items = GetItemHeadlines($db, $sid, "headline.", $value, "ids",$tagprefix);
   FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid, $mode,
-          $design, $field[required], $field[input_help], $field[input_morehlp]);
+          $design, $field["required"], $field["input_help"], $field["input_morehlp"]);
 }
 
 function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
     $sid = substr($constgroup, 7);
    else
@@ -723,7 +725,7 @@ function show_fnc_hco($varname, $field, $value, $param, $html) {
     list($constgroup, $levelCount, $boxWidth, $size, $horizontalLevels, $firstSelectable, $levelNames) = explode(':', $param);
 
   FrmHierarchicalConstant ($varname."[]", $field['name'], $value, $constgroup, $levelCount, $boxWidth,
-  	$size, $horizontalLevels, $firstSelectable, $field[required],$field[input_help], $field[input_morehlp], split("~",$levelNames));
+  	$size, $horizontalLevels, $firstSelectable, $field["required"],$field["input_help"], $field["input_morehlp"], split("~",$levelNames));
 }
 
 function show_fnc_wi2($varname, $field, $value, $param, $html) {
@@ -735,7 +737,7 @@ function show_fnc_wi2($varname, $field, $value, $param, $html) {
   if( substr($param,0,7) == "#sLiCe-" ) {  # prefix indicates select from items
     $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
      #add blank selection for not required field
-     #    if( !$field[required] )
+     #    if( !$field["required"] )
      #      $arr[''] = " ";
    } else {
     $arr = GetConstants($constgroup, $db); }
@@ -751,12 +753,12 @@ function show_fnc_wi2($varname, $field, $value, $param, $html) {
   }
 
   FrmTwoBox($varname, $field['name'], $arr, $constgroup, $size, $selected,
-            $field[required], $wi2_offer, $wi2_selected,$field[input_help],
-            $field[input_morehlp]);
+            $field["required"], $wi2_offer, $wi2_selected,$field["input_help"],
+            $field["input_morehlp"]);
 }
 
 function show_fnc_freeze_wi2($varname, $field, $value, $param, $html) {
-  echo $field[input_before];
+  echo $field["input_before"];
   FrmStaticText($field['name'], implode (", ", $value));
 }
 
@@ -776,13 +778,13 @@ function show_fnc_pwd($varname, $field, $value, $param, $html) {
                  
   if (!$field["required"])               
       FrmInputChBox($varname."d", $delete_pwd_label, 0, false, "", 1,
-                    0, $delete_pwd_help, $field[input_morehlp] );               
+                    0, $delete_pwd_help, $field["input_morehlp"] );               
   
   FrmInputText($varname."a", $change_pwd_label, "", 255, $fieldsize, 0, 
-               $change_pwd_help, $field[input_morehlp], 0, "PASSWORD");
+               $change_pwd_help, $field["input_morehlp"], 0, "PASSWORD");
 
   FrmInputText($varname."b", $retype_pwd_label, "", 255, $fieldsize, 0,
-               $retype_pwd_help, $field[input_morehlp], 0, "PASSWORD");
+               $retype_pwd_help, $field["input_morehlp"], 0, "PASSWORD");
 }
 
 function show_fnc_pwd_anonym($varname, $field, $value, $param, $html) {
@@ -796,17 +798,17 @@ function show_fnc_pwd_anonym($varname, $field, $value, $param, $html) {
   if (!$fieldsize) $fieldsize = 60;
                
   FrmInputText($varname, $field['name'], "", 255, $fieldsize, $field['required'], 
-               $field['input_help'], $field[input_morehlp], 0, "PASSWORD");
+               $field['input_help'], $field["input_morehlp"], 0, "PASSWORD");
                  
   if (!$field["required"])               
       FrmInputChBox($varname."d", $delete_pwd_label, 0, false, "", 1,
-                    0, $delete_pwd_help, $field[input_morehlp] );               
+                    0, $delete_pwd_help, $field["input_morehlp"] );               
   
   FrmInputText($varname."a", $change_pwd_label, "", 255, $fieldsize, 0, 
-               $change_pwd_help, $field[input_morehlp], 0, "PASSWORD");
+               $change_pwd_help, $field["input_morehlp"], 0, "PASSWORD");
 
   FrmInputText($varname."b", $retype_pwd_label, "", 255, $fieldsize, 0,
-               $retype_pwd_help, $field[input_morehlp], 0, "PASSWORD");
+               $retype_pwd_help, $field["input_morehlp"], 0, "PASSWORD");
 }
 
 function show_fnc_freeze_pwd($varname, $field, $value, $param, $html) {
@@ -824,7 +826,7 @@ function show_fnc_freeze_nul($varname, $field, $value, $param, $html) {
 
 function IsEditable($fieldcontent, $field) {
   return (!($fieldcontent[0]['flag'] & FLAG_FREEZE)
-       AND $field[input_show]
+       AND $field["input_show"]
        AND !GetProfileProperty('hide',$field['id'])
        AND !GetProfileProperty('hide&fill',$field['id'])
        AND !GetProfileProperty('fill',$field['id']));
@@ -894,10 +896,11 @@ function GetContentFromForm( $fields, $prifields, $oldcontent4id="", $insert=tru
 *
 *   @param array $content4id   array (field_id => array of values 
 *						      (usually just a single value, but still an array))
+*   @param array $oldcontent4id if not sent, StoreItem finds it
 *   @return true on success, false otherwise
 */
 function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
-                    $invalidatecache=true, $feed=true ) 
+                    $invalidatecache=true, $feed=true, $oldcontent4id="" ) 
 {
     global $db, $varset, $itemvarset;
     
@@ -911,6 +914,13 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     
     // remove old content first (just in content table - item is updated)
     if( !$insert ) {  
+        if (!$oldcontent4id) {
+            $oldcontent4id = GetItemContent ($id);
+            $oldcontent4id = $oldcontent4id[$id];
+        }
+        if (!Event_ItemBeforeUpdate ($id, $slice_id, new ItemContent ($content4id), 
+            new ItemContent ($oldcontent4id)))
+            return false;
         reset($content4id);
         $delim="";
         while(list($fid,) = each($content4id)) {
@@ -926,17 +936,19 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
             $db->query($SQL);
         }
     }
+    else if (!Event_ItemBeforeInsert ($id, $slice_id, new ItemContent ($content4id)))
+        return false;
     
     reset($content4id);
     while(list($fid,$cont) = each($content4id)) {
         $f = $fields[$fid];
         //print_r($f);
         // input insert function
-        $fnc = ParseFnc($f[input_insert_func]);   
+        $fnc = ParseFnc($f["input_insert_func"]);   
         // input insert function parameters of field
-        $fncpar = ParseFnc($f[input_insert_func]);   
+        $fncpar = ParseFnc($f["input_insert_func"]);   
         if( $fnc ) {                  
-            $fncname = 'insert_fnc_' . $fnc[fnc];
+            $fncname = 'insert_fnc_' . $fnc["fnc"];
             // update content table or fill $itemvarset
             if( !is_array($cont))
                 continue;
@@ -945,7 +957,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
             while(list(,$v) = each($cont)) {
                 // file upload needs the $fields array, because it stores
                 // some other fields as thumbnails
-                if ($fnc[fnc]=="fil") 
+                if ($fnc["fnc"]=="fil") 
                 {    
                     //print_r($arr_stop);                    
                     if (is_array($thumbnails)){
@@ -955,19 +967,30 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                     };
                     
                     if (!$stop)	  
-                        $thumbnails = $fncname($id, $f, $v, $fncpar[param], $fields);
+                        $thumbnails = $fncname($id, $f, $v, $fncpar["param"], $fields);
                 }
                 else  
                     /*{ echo "<b>$fid</b>";print_r ($f);
                     echo  "=>".$fncname."<br><br>"; }*/
-                    $fncname($id, $f, $v, $fncpar[param]);
+                    $fncname($id, $f, $v, $fncpar["param"]);
                 //    print_r($fnc);
                 // do not store multiple values if field is not marked as multiple
                 // ERRORNOUS
-                //if( !$f[multiple]!=1 ) 
+                //if( !$f["multiple"]!=1 ) 
                     //continue;
             }
         }
+    }
+
+    /* Alerts module uses moved2active as the time when
+       an item was moved to the active bin */
+    $oldItemContent = new ItemContent ($oldcontent4id);
+    if( $insert || 
+      ( $itemvarset->get('status_code') != $oldItemContent->getStatusCode() 
+        && $itemvarset->get('status_code') >= 1))
+    {
+        $itemvarset->add("moved2active", "number", 
+            $itemvarset->get('status_code') == 1 ? time () : 0);
     }
 
     // update item table    
@@ -984,10 +1007,6 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         $itemvarset->add("slice_id", "unpacked", $slice_id);
         $itemvarset->add("display_count", "quoted", "0");
         
-        /* Alerts module uses moved2active as the time when
-           an item was moved to the active bin */
-        $itemvarset->add("moved2active", "number", 
-            $itemvarset->get('status_code') == 1 ? time () : 0);
         $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
     }  
     $db->query($SQL);
@@ -999,46 +1018,33 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     if( $feed )
         FeedItem($id, $fields);
 
-    // notifications 
-    $status_id = 'status_code.....'; 
-    
-    $status_code = $content4id[$status_id][0]['value']; 
-    
-    if( $insert ) {                          // new + 
-        if ($status_code == '1')             //    active 
-            email_notify($slice_id, 3, $id); // notify function 3) 
-        elseif($status_code == '2')          // holding bin   
-            email_notify($slice_id, 1, $id); // notify function 1 
-    } else {                                 // changed + 
-        if ($status_code == '1')             //    active 
-            email_notify($slice_id, 4, $id); // = notify-function 4 
-        elseif ($status_code == '2')         // hodling bin 
-            email_notify($slice_id, 2, $id); // =  notify-function 2 
-    }
+    if ($insert) Event_ItemAfterInsert ($id, $slice_id, new ItemContent ($content4id));
+    else Event_ItemAfterUpdate ($id, $slice_id, new ItemContent ($content4id), 
+        $oldItemContent);
     return true;
 } // end of StoreItem
 
 // -----------------------------------------------------------------------------
 
 function GetDefault($f) {
-  $fnc = ParseFnc($f[input_default]);    # all default should have fnc:param format
+  $fnc = ParseFnc($f["input_default"]);    # all default should have fnc:param format
   if( $fnc ) {                     # call function
-    $fncname = 'default_fnc_' . $fnc[fnc];
-    return $fncname($fnc[param]);
+    $fncname = 'default_fnc_' . $fnc["fnc"];
+    return $fncname($fnc["param"]);
   } else
     return false;
 }    
 
 function GetDefaultHTML($f) {
-  return (($f[html_default]>0) ? FLAG_HTML : 0);
+  return (($f["html_default"]>0) ? FLAG_HTML : 0);
 }  
 
 function GetFromProfile($value) {
   # profile value format:  <html_flag>:<default_fnc_* function>:<parameter>
   $fnc = ParseFnc(substr($value,2));  # all default should have fnc:param format
   if( $fnc ) {                        # call function
-    $fncname = 'default_fnc_' . $fnc[fnc];
-    $x= array( $fncname($fnc[param]), ($value[0] == '1') );
+    $fncname = 'default_fnc_' . $fnc["fnc"];
+    $x= array( $fncname($fnc["param"]), ($value[0] == '1') );
     return $x;
   } else
     return array();
@@ -1061,14 +1067,14 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="")
         if (is_array ($show))
             $showme = $show [$f['id']];
             
-        else $showme = $f[input_show]                   
+        else $showme = $f["input_show"]                   
             AND ! GetProfileProperty('hide',$f['id'])
             AND ! GetProfileProperty('hide&fill',$f['id']);
             
         if (!$showme)
     	    continue;
     
-        $fnc = ParseFnc($f[input_show_func]);   # input show function
+        $fnc = ParseFnc($f["input_show_func"]);   # input show function
     	if( ! $fnc ) 
             continue;
 
@@ -1090,7 +1096,7 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="")
 	    # updates content table or fills $itemvarset
         if( $edit ) {
        	    $fncname($varname, $f, $content4id[$pri_field_id],
-                     $fnc[param], $content4id[$pri_field_id][0]['flag'] & FLAG_HTML );
+                     $fnc["param"], $content4id[$pri_field_id][0]['flag'] & FLAG_HTML );
         } else {        
             # insert or new reload of form after error in inserting    
             # first get values from profile, if there are some predefined value
@@ -1102,7 +1108,7 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="")
             }
     
             # get values from form (values are filled when error on form ocures
-            if( $f[multiple] AND is_array($GLOBALS[$varname]) ) {
+            if( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {
                   # get the multivalues
                 reset($GLOBALS[$varname]);
                 $i=0;
@@ -1111,7 +1117,7 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="")
             } else
                 $arr[0]['value'] = $GLOBALS[$varname];
               
-      	    $fncname($varname, $f, $arr, $fnc[param], 
+      	    $fncname($varname, $f, $arr, $fnc["param"], 
                 ((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
         }
 	}
@@ -1300,6 +1306,9 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
 
         list ($validate) = split (":", $f["input_validate"]);
         
+        $js_proove_password_filled = $action != "edit" 
+            && $f["required"] && ! $oldcontent4id[$pri_field_id][0]["value"];
+        
         # prepare javascript function for validation of the form
         if( $editable ) switch( $validate ) {
             case 'text':
@@ -1310,7 +1319,8 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
             case 'pwd':
                 $js_proove_fields .= "
             && validate (myform, '$varname', '$validate', "
-                    .($f[required] ? "1" : "0").", ".($action=="add" ? "1" : "0").")";
+                    .($f["required"] ? "1" : "0").", "
+                    .($js_proove_password_filled ? "1" : "0").")";
                 break;
         }
 
@@ -1322,7 +1332,7 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
                 $foo_datectrl_name->update();                   # updates datectrl
                 if( $$varname != "")                            # loaded from defaults
                   $foo_datectrl_name->setdate_int($$varname);
-                $foo_datectrl_name->ValidateDate($f[name], $err);
+                $foo_datectrl_name->ValidateDate($f["name"], $err);
                 $$varname = $foo_datectrl_name->get_date();  # write to var
                 break;
             case 'bool':
@@ -1345,20 +1355,21 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
             case 'email':
             case 'number':
             case 'id':
-                ValidateInput($varname, $f[name], $$varname, $err,
-                          $f[required] ? 1 : 0, $f[input_validate]);
+                ValidateInput($varname, $f["name"], $$varname, $err,
+                          $f["required"] ? 1 : 0, $f["input_validate"]);
                 break;
             // necessary for 'unique' validation: do not validate if
-            // the value did not change
+            // the value did not change (otherwise would the value always
+            // be found)
             case 'unique':                
                 if ($oldcontent4id[$pri_field_id][0]["value"] != $$varname)                
-                    ValidateInput($varname, $f[name], $$varname, $err,
-                              $f[required] ? 1 : 0, $f[input_validate]);
+                    ValidateInput($varname, $f["name"], $$varname, $err,
+                              $f["required"] ? 1 : 0, $f["input_validate"]);
                 break;                        
             case 'user':
                 // this is under development.... setu, 2002-0301
                 // value can be modified by $$varname = "new value";
-                $$varname = usr_validate($varname, $f[name], $$varname, $err, $f, $fields);
+                $$varname = usr_validate($varname, $f["name"], $$varname, $err, $f, $fields);
                 ##	echo "ItemEdit- user value=".$$varname."<br>";
                 break;
             }

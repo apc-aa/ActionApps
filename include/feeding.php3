@@ -184,6 +184,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
   if( !$content )
     $content = GetItemContent($item_id);
   $content4id = $content[$item_id];   # shortcut
+  $oldcontent4id = $content4id;
 
 // print_r($content4id);
 
@@ -243,7 +244,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
       $new4id[$f_id] = $content4id[$f_id];
   }
 
-  StoreItem( $id, $destination, $new4id, $fields_to, true, true, false );
+  StoreItem( $id, $destination, $new4id, $fields_to, true, true, false, $oldcontent4id );
                                         # insert, invalidatecache, not feed
   AddRelationFeed($id,$item_id); // Add to relation table
 
@@ -309,6 +310,7 @@ function Update($item_id, $slice_id, $dest_id, $destination) {
 
   $oldcontent = GetItemContent($dest_id);
   $oldcontent4id = $oldcontent[$dest_id];
+  $backup_oldcontent4id =  $oldcontent4id;
   $content = GetItemContent($item_id);
   $content4id = $content[$item_id];   # shortcut
 
@@ -325,7 +327,8 @@ function Update($item_id, $slice_id, $dest_id, $destination) {
        $oldcontent4id[$key][0][value] = quote($oldcontent4id[$key][0][value]);   
        # we have to quote - data is from database
   }
-  StoreItem( $dest_id, $destination, $oldcontent4id, $fields_to, false, true, false );
+  StoreItem( $dest_id, $destination, $oldcontent4id, $fields_to, false, true, false,
+    $backup_oldcontent4id );
                                         # update, invalidatecache, not feed
 }
 

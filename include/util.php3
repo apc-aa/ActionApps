@@ -1216,6 +1216,17 @@ function join_escaped ($pattern, $strings, $escape_pattern)
     return $retval;
 }
 
+function join_and_quote( $pattern, $strings )
+{
+    if (!is_array ($strings))
+        $strings = array ($strings);        
+    foreach ($strings as $string) {
+        if ($retval) $retval .= $pattern;
+        $retval .= addslashes ($string);
+    }
+    return $retval;
+}
+
 function stripslashes_magic ($str)
 {
   if( get_magic_quotes_gpc() )

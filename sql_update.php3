@@ -103,7 +103,8 @@ $tablelist = array( 'active_sessions' => "(
                           emailid_alert int(11) default NULL,
                           emailid_access int(11) default NULL,
                           sliceid char(16) default NULL,
-                          PRIMARY KEY  (id)
+                          PRIMARY KEY  (id),
+                          UNIQUE KEY moduleid (moduleid)                          
                       )",
                       'alerts_collection_filter' => "(
                           collectionid char(6) NOT NULL,
@@ -124,6 +125,23 @@ $tablelist = array( 'active_sessions' => "(
                           last int(10) NOT NULL default '0',
                           text text NOT NULL,
                           PRIMARY KEY  (filterid,howoften)
+                      )",
+                      'auth_group' => "(
+                          username varchar(50) NOT NULL,
+                          groups varchar(50) NOT NULL,
+                          last_changed int(11) NOT NULL,
+                          PRIMARY KEY  (username,groups)
+                      )",
+                      'auth_log' => "(
+                          result text NOT NULL,
+                          created int(11) NOT NULL,
+                          PRIMARY KEY  (created)
+                      )",
+                      'auth_user' => "(
+                          username varchar(50) NOT NULL,
+                          passwd varchar(50) NOT NULL,
+                          last_changed int(11) NOT NULL,
+                          PRIMARY KEY  (username)
                       )",
                       'constant' => "(
                          id char(16) NOT NULL default '',

@@ -1,10 +1,17 @@
+02/11/03 - created the item_content.php3 file to ease manipulation with
+           $content4id (jakub)
+02/11/03 - created the event_handler.php3 file, useful for various
+           event handlers which synchronize different parts of AA. Several
+           Auth handlers set. (jakub)
+02/11/03 - created the Auth feature which updates the auth_user and auth_group
+           tables so allowing to use the mysql_auth Apache module (jakub)
+02/05/03 - changed almost all files by changing require to require_once, 
+           deleting the "if (defined) return" constructs and changing
+           GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"] (jakub)
 02/04/03 - fixed bug in sliceimp.xml (tested $add instead of $add_fields)
          - fixed so displays Headlines of conflicting items
          - added functionality to import and export XML
          - fixed so conflict screen will still import from file, (textarea truncates)
-02/05/03 - changed almost all files by changing require to require_once, 
-           deleting the "if (defined) return" constructs and changing
-           GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"] (jakub)
 02/04/03 - sql_update.php3: Changed the Alerts tables, added the Email table
 02/04/03 - big changes in init_page. The script was a mess. With mgettext
            and some other changes it is much tidier and perhaps readable.

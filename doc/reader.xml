@@ -19,6 +19,16 @@
 
     <revhistory>
       <revision>
+        <revnumber>1.1</revnumber>
+
+        <date>11.2.2003</date>
+
+        <revremark>Added a remark about using several slices (second paragraph
+        in &#34;Central point: Slice&#34;). Enhanced and corrected the Auth
+        specific section to reflect the recent implementation.</revremark>
+      </revision>
+
+      <revision>
         <revnumber>1.0</revnumber>
 
         <date>5.2.2003</date>
@@ -61,6 +71,11 @@
     management will be a slice. It is so simple: each item belongs to one
     person. The individual settings for Alerts, Auth etc. are added as fields
     to the item design.</para>
+
+    <para>Note this means not one slice but several slices, one for each web
+    site which uses Alerts, Auth or Mailman. Readers of different web sites
+    are in different slices and thus independent. Slice features like item
+    feeding may be used when necessary.</para>
 
     <para>The minimal slice template named Reader Management Minimal is now a
     part of the sql_update script and consists of:</para>
@@ -332,62 +347,110 @@ The username you entered has already been used. Please try another username.
     <sect2>
       <title><anchor id="auth" />Auth specific behaviour</title>
 
-      <para>The Auth administration includes creating groups (Membership
-      Types) and assigning disk folders to them. This may be achieved with the
-      usage of AA constants, where the constant name is the membership type
-      and the constant value are the subgroups assigned to individual folders,
-      joined by semicolon.</para>
+      <sect3>
+        <title>Apache module mod_auth_mysql</title>
 
-      <para>For example, if you want to create Standard Membership and
-      Privileged Membership, where the first is permitted to folders
-      &#34;main&#34; and &#34;search&#34; and the second to &#34;main&#34;,
-      &#34;search&#34; and &#34;privileged&#34;, you create these two
-      constants:</para>
+        <para>The Auth feature (it is not a real module) is meant to be used
+        by the <constant>mod_auth_mysql</constant> Apache module. You must
+        install this module on your web server to appreciate the Auth feature.
+        There are several versions of the module with different option names.
+        Find the correct ones in your version. This is the info you will need:</para>
 
-      <table>
-        <title>Membership Constants Example</title>
+        <table>
+          <title>Tables maintained by the Auth feature</title>
 
-        <tgroup cols="2">
-          <tbody>
-            <row>
-              <entry><emphasis>Name</emphasis></entry>
+          <tgroup cols="2">
+            <tbody>
+              <row>
+                <entry>auth_user</entry>
 
-              <entry><emphasis>Value</emphasis></entry>
-            </row>
+                <entry>with the fields <quote>username</quote> and
+                <quote>passwd</quote></entry>
+              </row>
 
-            <row>
-              <entry>Standard Membership</entry>
+              <row>
+                <entry>auth_group</entry>
 
-              <entry>main;search</entry>
-            </row>
+                <entry>with the fields <quote>username</quote> and
+                <quote>groups</quote></entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
 
-            <row>
-              <entry>Privileged Membership</entry>
+        <para>Set up Apache and fill correct group info into the
+        <constant>.htaccess</constant> files in folders which you want to
+        protect. Note the groups you are using here are the groups separated
+        by semicolon in the AA constants, see below.</para>
+      </sect3>
 
-              <entry>main;search;privileged</entry>
-            </row>
-          </tbody>
-        </tgroup>
-      </table>
+      <sect3>
+        <title>Auth feature</title>
 
-      <para>The StoreItem function must be edited to call some synchronization
-      function, which exports user / group assignments into tables auth_user
-      and auth_group, which are used by the MySQL_Auth Apache module.</para>
+        <para>The Auth administration includes creating membership types
+        (meta-groups) and assigning (sub)groups to them. This may be achieved
+        with the usage of AA constants, where the constant name is the
+        membership type and the constant value are the subgroups assigned to
+        individual folders, separated by semicolon.</para>
 
-      <para>To avoid the conflict when two slices use the same subgroup names,
-      a postfix (preceded by &#34;_&#34;) will be added to each subgroup
-      during the export. This is a new setting in Admin - Slice Settings, the
-      field <quote>Auth Postfix</quote>.</para>
+        <para>For example, if you want to create Standard Membership and
+        Privileged Membership, where the first is permitted to folders
+        &#34;main&#34; and &#34;search&#34; and the second to &#34;main&#34;,
+        &#34;search&#34; and &#34;privileged&#34;, you create these two
+        constants:</para>
 
-      <para>The second new field in Slice Settings is <quote>Auth Group</quote>
-      with the name of the field containing the membership type. If this field
-      is filled, the slice is synchronized with the auth_user/group tables.</para>
+        <table>
+          <title>Membership Constants Example</title>
 
-      <para>Both these fields are offered only for Reader Management slices
-      created from the Reader Management Minimal template.</para>
+          <tgroup cols="2">
+            <tbody>
+              <row>
+                <entry><emphasis>Name</emphasis></entry>
 
-      <para>You may set to which bin new users are put on subscription with
-      the standard &#34;Allow anonymous posting of items&#34; setting.</para>
+                <entry><emphasis>Value</emphasis></entry>
+              </row>
+
+              <row>
+                <entry>Standard Membership</entry>
+
+                <entry>myreaders_main;myreaders_search</entry>
+              </row>
+
+              <row>
+                <entry>Privileged Membership</entry>
+
+                <entry>myreaders_main;myreaders_search;myreaders_privileged</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+
+        <para>The user / membership type assignments are synchronized with
+        tables <constant>auth_user</constant> and <constant>auth_group</constant>
+        using event handlers for events like updating an item or moving the
+        item into another bin.</para>
+
+        <para>To avoid the conflict of another Reader Management slice using
+        the same subgroup names, I recommend to use some pre- or postfix (like
+        <quote>myreaders_</quote> in my example).</para>
+
+        <para>The Auth feature is set on and off using a new item in Slice
+        Settings, named <quote>Auth Group Field</quote>, with the name of the
+        field containing the membership type. This is visible only in Reader
+        Management slices created from the Reader Management Minimal template.</para>
+
+        <para>Only when <quote>Auth Group Field</quote> is filled, the slice
+        is synchronized with the auth_user/group tables.</para>
+
+        <para>You may set to which bin new readers are put on subscription
+        with the standard &#34;Allow anonymous posting of items&#34; setting.</para>
+
+        <para>Because readers are assigned to items, they may appear in
+        Pending or Expired bin depending on Start date and Expiry date
+        settings. You should run the script <constant>auth_maintain.php3?maintain_auth=1</constant>
+        once a day by cron to automatically add or delete users moved to or
+        from the Active bin.</para>
+      </sect3>
     </sect2>
 
     <sect2>
@@ -401,7 +464,7 @@ The username you entered has already been used. Please try another username.
       subscribed may be created by standard constants. The name and values of
       the constants are the names of the mail lists. A new Slice Setting is
       shown in Reader Management slices, named <quote>Mailman Lists</quote>,
-      with the name of the field containing the list names. </para>
+      with the name of the field containing the list names.</para>
     </sect2>
   </sect1>
 

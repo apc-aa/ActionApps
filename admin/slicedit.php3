@@ -135,13 +135,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     $db->next_record();
     $slicetype = $db->f("type");
     if ($slicetype == 'ReaderManagement') {
-        $db->query ("SELECT id, name FROM field WHERE slice_id='".q_pack_id($slice_id)."'");
+        $db->query ("SELECT id, name FROM field WHERE slice_id='"
+            .q_pack_id($slice_id)."' ORDER BY input_pri");
         $slicefields[] = "";
         while ($db->next_record())
-            $slicefields[unpack_id($db->f("id"))] = $db->f("name");
+            $slicefields[$db->f("id")] = $db->f("name");
         FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, 
             $auth_field_group, false);
-        FrmInputText("auth_postfix", _m("Auth Group Postfix"), $auth_postfix, 99, 25, false);
         FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields,
             $mailman_field_lists, false);
     }
