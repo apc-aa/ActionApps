@@ -409,7 +409,9 @@ class item {
   }
 
   function subst_alias( $text ) {
-    return $this->unalias( $text );
+	if (IsField($text)) 
+		return $this->getval($text);
+	else return  $this->unalias( $text );
   }  
   
   function subst_aliases( $var ) {
@@ -543,7 +545,6 @@ class item {
     # last parameter - condition field
     $url = $this->getitemurl($plink_only, $purl_field, $predirect, $pcondition, $pno_sess);
     $flg = ( $this->columns[$p[3]] ? $this->getval($p[3],'flag') : true );
-               
     return $this->getahref($url,$ptxt,$paddition,$flg);
   }    
 

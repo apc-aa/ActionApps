@@ -1,3 +1,4 @@
+01/11/02 - Fixed item.php3:subst_alias, it relied on old bug of expanding bare field name without { }
 1/11/02 - Changed typos of _#ITEMEDIT to _#EDITITEM
 1/11/02 - Changed a type $New_silce to $New_slice in init_page.php3
 1/11/02 - Added alias checking so {xx} will also check als[xx] (it will default to returning "{xx}" if not set
