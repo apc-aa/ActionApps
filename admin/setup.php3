@@ -113,8 +113,7 @@ function InitForm() {
 }
  
 function HtmlEnd() {
-   echo "</center>";
-   HtmlPageEnd();
+   echo "</center></body></html>";
 }
 
 ///////////////////////////////////////////////////////////////////////////

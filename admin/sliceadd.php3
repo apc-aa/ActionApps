@@ -74,6 +74,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </FORM>
 </center>
 <?php echo L_APP_TYPE_HELP ?>
-<?php HtmlPageEnd();
+<?php echo "</body></html>";
 page_close()?>
 
