@@ -1,3 +1,14 @@
+02/04/03 - sql_update.php3: Changed the Alerts tables, added the Email table
+02/04/03 - big changes in init_page. The script was a mess. With mgettext
+           and some other changes it is much tidier and perhaps readable.
+           (jakub)
+02/04/03 - enhanced and fixed fillorm.php3 and filler.php3 in order
+           to allow easy creation of anonymous forms. This involved
+           changes in itemedit.php3 and itemfunc.php3 (jakub)
+02/04/03 - added the Anonymous Form Wizard (jakub)
+02/04/03 - slightly changed the "Language" field in Slice Settings (jakub)
+02/04/03 - fixed Slice Deleting (was in a bad state, deleted almost nothing) (jakub)
+02/04/03 - added the Reader Management Minimal template to sql_update.php3 (jakub)
 02/04/03 - added Hex checkbox to Slice Export (default), uncheck to get XML
 02/04/03 - fixed bug in discussion views (mitra)
 02/04/03 - fixed new_id to skip ids ending in space (honza, via mitra)
@@ -19,6 +30,10 @@
 01/30/03 - allow time_limit parameter to extend PHP timeout on view.php3 (mitra)
          - switched ereg for preg in stringexpand 10000* speedup! (mitra)
          - added debug_times parameter to print timestamps (mitra)
+01/28/03 - added new Password and Change Password field type and insert function (jakub)
+01/28/03 - added new Random function into Field Default (jakub)
+01/28/03 - added parameters for Field Validation, Param Wizard for Field Validation
+           and new Unique validation (jakub)
 01/28/03 - added paramater wizzard for i_s (mitra)
          - added some more warnings: in i_s, and stringexpand/alias
          - fixed title on site admin window
