@@ -75,6 +75,9 @@ define("PHPLIB_ALREADY_LOADED", false);
 # number of shown pages links in scroller's navigation bar
 define("SCROLLER_LENGTH", 3);
 
+# Since v1.8 you can use short id for item identification (x instead of sh_itm)
+$USE_SHORT_URL = true;
+
 # Would you like to display debug messagess?
 define("DEBUG_FLAG", true);
                                                         
