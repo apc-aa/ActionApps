@@ -40,7 +40,7 @@ function userdate2sec ($dttm, $time="") {
 }
 
 
-require $GLOBALS[AA_INC_PATH] . "statestore.php3";
+require_once $GLOBALS[AA_INC_PATH] . "statestore.php3";
 
 
 class scroller extends storable_class {

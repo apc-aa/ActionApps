@@ -8,10 +8,10 @@
  * @package Links
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ if (!defined("INCLUDE_SEARCHBAR_CLASS_INCLUDED"))
      define ("INCLUDE_SEARCHBAR_CLASS_INCLUDED",1);
 else return;
 
-require $GLOBALS[AA_INC_PATH] . "statestore.php3";
+require_once $GLOBALS[AA_INC_PATH] . "statestore.php3";
 
 
 /** helper function to sort search fields */
@@ -47,8 +47,8 @@ function orderfields_cmp($a, $b) {
     return ($a['order_pri'] < $b['order_pri']) ? -1 : 1;
 }
 
-/** 
- * searchbar class - handles search and order bar in AA admin interface 
+/**
+ * searchbar class - handles search and order bar in AA admin interface
  * (on Links Manager page, for example)
  */
 class searchbar extends storable_class{
@@ -60,20 +60,20 @@ class searchbar extends storable_class{
 
     var $search_row;     // internal array - stores current state of search rows
     var $order_row;      // internal array - stores current state of order rows
-     
+
     // state variables (class settings)
     var $search_row_count_min;
     var $order_row_count_min;
     var $add_empty_search_row;
-    
+
     // PHPLib variables - used to store class instances into sessions
 	var $classname = "searchbar";    // required - class name
 	var $persistent_slots =          // required - object's slots to save
-        array("search_fields", 'search_operators', "order_fields", 'fields', 
+        array("search_fields", 'search_operators', "order_fields", 'fields',
               "form_name", "search_row", "order_row", "search_row_count_min",
               "order_row_count_min", "add_empty_search_row");
-     
-    function searchbar($fields, $f, $srcm=1, $orcm=1, $aesr=1) { // constructor 
+
+    function searchbar($fields, $f, $srcm=1, $orcm=1, $aesr=1) { // constructor
         $this->fields               = $fields;
         if( isset($fields) AND is_array($fields) ) {
             uasort ($fields, "searchfields_cmp");
@@ -88,8 +88,8 @@ class searchbar extends storable_class{
                     $last_pri = $v['search_pri'];
                     $this->search_fields[$fid]    = $v['name'];
                     $this->search_operators[$fid] = $v['operators'];
-                    
-                }    
+
+                }
             }
             uasort ($fields, "orderfields_cmp");
             $last_pri = 0;
@@ -102,33 +102,33 @@ class searchbar extends storable_class{
                     }
                     $last_pri = $v['search_pri'];
                     $this->order_fields[$fid]     = $v['name'];
-                }    
+                }
             }
-        }        
+        }
         $this->form_name            = $f;
         $this->search_row_count_min = $srcm;
         $this->order_row_count_min  = $orcm;
         $this->add_empty_search_row = $aesr;
     }
 
-    /** 
+    /**
      * Updates internal search_row and order_row variables from data posted from
      * form (in $_POST[])
      */
     function update() {
         if ( !$_POST['srchbr_akce'] )     // no searchbar action
             return;
-        // set the searchbar from form values    
+        // set the searchbar from form values
         $this->setOrder( $_POST['srchbr_order'], $_POST["srchbr_order_dir"]);
         $this->setSearch($_POST['srchbr_field'], $_POST["srchbr_value"], $_POST["srchbr_oper"]);
     }
 
-    /** 
-     * Resets the searchbar and sets new values 
-     * @param  array $order[<bar>] = <field>   (bar is probably just '1')   
+    /**
+     * Resets the searchbar and sets new values
+     * @param  array $order[<bar>] = <field>   (bar is probably just '1')
      * @param  array $order_dir[<bar>] = <set>|<unset>
      *               (bar is probably just '1')
-     *               if set (to any value), the order is DESCENDING                           
+     *               if set (to any value), the order is DESCENDING
      */
     function setOrder($order, $order_dir) {
         unset($this->search_row);
@@ -137,16 +137,16 @@ class searchbar extends storable_class{
         if (isset($order) AND is_array($order)) {
             $i=1;
             while( list($bar, $fld) = each( $order ) ) {
-                $this->order_row[$i++] = 
+                $this->order_row[$i++] =
                      array( 'field' => $fld,
                             'dir' => ($order_dir[$bar] ? 'd' : 'a'));
             }
         }
-    }    
-    
-    /** 
-     * Resets the searchbar and sets new values 
-     * @param  array $search_field[<bar>] = <field>   (bar indicates row)   
+    }
+
+    /**
+     * Resets the searchbar and sets new values
+     * @param  array $search_field[<bar>] = <field>   (bar indicates row)
      * @param  array $search_value[<bar>] = <search_for_what>
      * @param  array $search_oper[<bar>] = <search_operator>
      */
@@ -157,14 +157,14 @@ class searchbar extends storable_class{
         if (isset($search_field) AND is_array($search_field)) {
             $i=1;
             while( list($bar, $fld) = each( $search_field ) ) {
-                $this->search_row[$i++] = 
+                $this->search_row[$i++] =
                      array( 'field' => $fld,
                             'value' => $search_value[$bar],
                             'oper'  => $search_oper[$bar]);
             }
         }
     }
- 
+
     /**
      * Returns conds[] array to use with QueryIDs() (or Links_QueryIDs(), ...)
      */
@@ -172,7 +172,7 @@ class searchbar extends storable_class{
         if( !isset($this->search_row) OR !is_array($this->search_row) )
             return false;
 
-        $fields = $this->fields;    
+        $fields = $this->fields;
         reset( $this->search_row );
         while( list( , $c ) = each( $this->search_row ) ) {
             $conds[]=array( 'operator' => $c['oper'],
@@ -190,20 +190,20 @@ class searchbar extends storable_class{
             return false;
 
         reset( $this->order_row );
-        while( list( , $s ) = each( $this->order_row ) ) 
+        while( list( , $s ) = each( $this->order_row ) )
             $sort[]=array( $s['field'] => $s['dir'] );
         return $sort;
     }
-                    
-    /** 
+
+    /**
      * Prints one search bar (one row)
      * @param int $bar which bar to print (index)
      * @return bool true, if the printed searchrow is not empty
      */
     function print_search_bar($bar) {
 
-        list($val, $fld, $oper) = ( isset($this->search_row[$bar]) AND 
-                                    is_array($this->search_row[$bar]) ) ?  
+        list($val, $fld, $oper) = ( isset($this->search_row[$bar]) AND
+                                    is_array($this->search_row[$bar]) ) ?
                                 array(safe($this->search_row[$bar]['value']),
                                       $this->search_row[$bar]['field'],
                                       $this->search_row[$bar]['oper']) :
@@ -211,50 +211,50 @@ class searchbar extends storable_class{
 
         if( $bar == 1 ) {   // first bar is described as 'SEARCH' others 'AND'
             $searchimage = "<a href='javascript:document.".$this->form_name.
-                           ".submit()'><img src='". 
-                           $GLOBALS['AA_INSTAL_PATH'] . "images/search.gif' alt='". 
+                           ".submit()'><img src='".
+                           $GLOBALS['AA_INSTAL_PATH'] . "images/search.gif' alt='".
                            _m('Search') ."' width='15' height='15' border=0></a>";
             $searchtext = _m('Search');
         } else {
             $searchimage = "<img src='". $GLOBALS['AA_INSTAL_PATH'] .
                            "images/px.gif' alt='-' width='15' height='15' border=0>";
             $searchtext = _m('And');
-        }    
-       
+        }
+
         # filter
         echo "<tr><td class='search'>&nbsp;$searchimage&nbsp;&nbsp;<b>$searchtext</b></td><td>";
         FrmSelectEasy("srchbr_field[$bar]", $this->search_fields, $fld, 'onchange="ChangeOperators('.$bar.', \'\')"' );
         FrmSelectEasy("srchbr_oper[$bar]", array(' ' => ' '));
         echo "<input type='Text' name='srchbr_value[$bar]' size=20 maxlength=254
               value=\"$val\">&nbsp;"."$searchimage</td></tr>";
-        return $val != "";      
+        return $val != "";
     }
 
-    /**  
+    /**
      * Access function to searchba operator
      */
     function getSearchBarOperator($bar) {
         return $this->search_row[$bar]['oper'];
-    }          
-        
-    /** 
+    }
+
+    /**
      * Prints one order bar (one row)
      * @param int $bar which bar to print (index)
      */
     function print_order_bar($bar) {
 
-        list($dir, $fld) = ( isset($this->order_row[$bar]) AND 
-                             is_array($this->order_row[$bar]) ) ?  
+        list($dir, $fld) = ( isset($this->order_row[$bar]) AND
+                             is_array($this->order_row[$bar]) ) ?
                                 array(safe($this->order_row[$bar]['dir']),
                                       $this->order_row[$bar]['field']) :
                                 array( "a", $this->order_fields[0]);
-          
+
         echo "<tr><td class=search>&nbsp;<a href='javascript:document.".$this->form_name.
                         ".submit()'><img src='".
               $GLOBALS['AA_INSTAL_PATH'] . "images/order.gif' alt='".
               _m('Order'). "' border=0></a>&nbsp;&nbsp;<b>".
               _m('Order'). "</b></td><td class=leftmenuy>";
-              
+
         FrmSelectEasy("srchbr_order[$bar]", $this->order_fields, $fld,
                       "onchange='submit()'");
         FrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d',
@@ -262,22 +262,22 @@ class searchbar extends storable_class{
         echo _m('Descending'). "</td></tr>";
     }
 
-    /** 
+    /**
      * Prints searchbar (search rows and order rows - based on current settings)
      */
     function printBar() {
         echo '<input type=hidden name=srchbr_akce value="1">
-              <table width="100%" border="0" cellspacing="0" cellpadding="0" 
+              <table width="100%" border="0" cellspacing="0" cellpadding="0"
               class=leftmenu bgcolor="'. COLOR_TABBG .'">';
-        
+
         // print searchbars
         $count_sb = 1;
         $empty = false;   // flag - true if the last printed searchrow is empty
         while( ($count_sb <= $this->order_row_count_min) OR
                ($this->add_empty_search_row AND !$empty) ) {
             $empty = !$this->print_search_bar($count_sb++);
-        }    
-            
+        }
+
         // print searchbars
         $i = 1;
         while( $i <= $this->order_row_count_min )
@@ -314,15 +314,15 @@ class searchbar extends storable_class{
                 operator_names[2]  = new Array(" < (12/24/2002) "," > (12/24/2002) ");
                 operator_values[2] = new Array("d:<"             ,"d:>");
                 var field_types    = "';
-         
-        // print string like "120021020010" which defines field type (charAt()) 
-        $oper_translate = array( 'text' => 0, 'numeric' => 1, 'date' => 2);        
+
+        // print string like "120021020010" which defines field type (charAt())
+        $oper_translate = array( 'text' => 0, 'numeric' => 1, 'date' => 2);
         if ( isset($this->search_operators) AND is_array($this->search_operators) ) {
             reset($this->search_operators);
             while ( list(,$v) = each($this->search_operators) ) {
                 echo $oper_translate[$v];
             }
-        }    
+        }
         echo "\";\n";
         for( $i=1; $i<$count_sb; $i++ ) {
             echo "   ChangeOperators($i,'".$this->getSearchBarOperator($i)."');\n";
@@ -331,6 +331,6 @@ class searchbar extends storable_class{
             </script>';
     }
 }
-   
- 
+
+
 ?>
