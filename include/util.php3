@@ -28,6 +28,7 @@ require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
 require_once $GLOBALS["AA_INC_PATH"]."logs.php3";
 require_once $GLOBALS["AA_INC_PATH"]."go_url.php3";
+require_once $GLOBALS["AA_INC_PATH"]."logs.php3";
 
 function get_aa_url ($href) {
     global $AA_INSTAL_PATH, $sess;
