@@ -166,7 +166,8 @@ function get_file_array ($path, $dirname) {
             reset ($sortable_columns); 
             $sort_key = key ($sortable_columns);
         }
-        uasort ($files, "compare_files");
+        if (is_array ($files))
+            uasort ($files, "compare_files");
     }
     return $files;
 }
