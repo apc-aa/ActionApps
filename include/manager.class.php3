@@ -32,8 +32,8 @@ if (!defined("INCLUDE_MANAGER_CLASS_INCLUDED"))
      define ("INCLUDE_MANAGER_CLASS_INCLUDED",1);
 else return;
 
-require $GLOBALS[AA_INC_PATH] . "searchbar.class.php3";
-require $GLOBALS[AA_INC_PATH] . "statestore.php3";
+require_once $GLOBALS[AA_INC_PATH] . "searchbar.class.php3";
+require_once $GLOBALS[AA_INC_PATH] . "statestore.php3";
 
 /**
  * manager class - used for 'item' manipulation 'managers' pages
