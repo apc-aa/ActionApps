@@ -462,7 +462,6 @@ class item {
       $stringToMatch = $this->columns[$stringToMatch_Raw][0][value] ? 
          $this->columns[$stringToMatch_Raw][0][value] : $stringToMatch_Raw;
 
-      $p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
       $fieldToMatch    = quote(     $p[2] ? $p[2] : BLURB_FIELD_TO_MATCH  );
       $fieldToReturn   = quote(     $p[3] ? $p[3] : BLURB_FIELD_TO_RETURN );
      /*
@@ -483,6 +482,7 @@ class item {
                      c2.field_id    = '$fieldToReturn' AND
                      c2.item_id     = '$fqsqlid'";
       } else {	
+      	$p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
       	$SQL = "SELECT c2.text AS text 
                 FROM item LEFT JOIN content c1 ON item.id = c1.item_id 
                           LEFT JOIN content c2 ON item.id = c2.item_id
@@ -802,6 +802,9 @@ This creates an alias for Slice ID ( like _#this), called _#slice and can be use
 
 /*
 $Log$
+Revision 1.39  2002/04/04 06:55:56  mitraearth
+Fix to bug in f_q to allow blank blurb_slice and undefined BLURB_SLICE_ID
+
 Revision 1.38  2002/04/04 01:00:59  mitraearth
 Extended f_q so that if field is specified as id.............. then it
 will do a different SQL lookup and return the field as expected. Note that
