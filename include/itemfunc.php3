@@ -666,12 +666,13 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     $itemvarset->add("display_count", "quoted", "0");
     
     /* e-mail alerts */
+/* Commented out because sql_update.php3 not updated
     if ($itemvarset->get('status_code') == 1) {
         $itemvarset->add("alerts_daily", "number", 1);
         $itemvarset->add("alerts_weekly", "number", 1);
         $itemvarset->add("alerts_monthly", "number", 1);
     }
-    
+*/    
     $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
   }  
   $db->query($SQL);
