@@ -616,7 +616,8 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
           if ($slicesText != "") $slicesText .= ",";
           $slicesText .= "'".q_pack_id($slice)."'";
       }
-      $SQL .= " item.slice_id IN ( $slicesText ) AND ";
+      $SQL .= 'item.slice_id' . ((count($slices) == 1) ? " = $slicesText AND " :
+                                      " IN ($slicesText) AND ");
   }
   if (is_object($restrict_zids)) {
     if ($restrict_zids->count() == 0) {
@@ -655,16 +656,19 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",
     } elseif ($numeric_type == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
       $SQL .= " item.status_code=1 ";
     } elseif ($numeric_type == (AA_BIN_ACTIVE | AA_BIN_PENDING)) {
-      $SQL .= " item.status_code=1 AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
+//      $SQL .= " item.status_code=1 AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
+      $SQL .= " item.status_code=1 AND (item.expiry_date > '$now') ";
     } else {
         $SQL2 = "";
         if ($numeric_type & AA_BIN_ACTIVE) {
-          $SQL2 .= " ( item.status_code=1 AND (  item.publish_date <= '$now' OR item.publish_date IS NULL ) ";
+//          $SQL2 .= " ( item.status_code=1 AND (  item.publish_date <= '$now' OR item.publish_date IS NULL ) ";
+          $SQL2 .= " ( item.status_code=1 AND (item.publish_date <= '$now') ";
             /* condition can specify expiry date (good for archives) */
             if( !( $ignore_expiry_date &&
                    defined("ALLOW_DISPLAY_EXPIRED_ITEMS") &&
                    ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
-              $SQL2 .= " AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
+//              $SQL2 .= " AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
+              $SQL2 .= " AND (item.expiry_date > '$now') ";
             }
           $SQL2 .= ' )';
         }
