@@ -47,7 +47,7 @@ class ItemContent {
     var $content;
 
     /// Constructor which takes content for ID or item_id (unpacked).
-    function ItemContent ($content4id = "") {
+    function ItemContent($content4id = "") {
         if ( is_array($content4id) ) {
             $this->setFromArray($content4id);
         } elseif ( $content4id ) {
