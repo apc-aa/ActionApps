@@ -271,12 +271,22 @@ class item {
   }
 
   # get link from url and text
-  function getahref($url, $txt, $add="", $html=false) {
+  function getahref($url, $txt, $add="", $html=false, $hide=false) {
     if( $url AND $txt ) {
       # repair url if user omits to write http://
       if( substr($url,4)=='www.' )
         $url = 'http://'.$url;
-      return '<a href="'. $url ."\" $add>". DeHtml($txt, $html).'</a>';
+      # hide email from spam robots
+      if ($hide=='1') {
+        $linkpart=explode('@',str_replace("'", "\'", $url.'@'.DeHtml($txt, $html)),4);
+		$ret = "\n<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\ndocument.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $linkpart[2];
+        if ($linkpart[3])
+		  $ret .= "'+'@'+'".$linkpart[3];
+		$ret .= "</a>')\n// -->\n</script>\n";
+        return $ret;
+	  } else {
+        return '<a href="'. $url ."\" $add>". DeHtml($txt, $html).'</a>';
+      }
     }
     return DeHtml($txt,$html);
   }
@@ -845,7 +855,7 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
   # linktype: mailto/href (default is mailto)
   function f_m($col, $param="") {
     $p = ParamExplode($param);
-    list ($pbegin, $pfield, $pelse, $ptype, $padd) = $this->subst_aliases($p);
+    list ($pbegin, $pfield, $pelse, $ptype, $padd, $phide) = $this->subst_aliases($p);
 
     if( !$this->getval($col) ) {
         return $pelse ? $pbegin.$pelse : "";
@@ -859,7 +869,7 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
       $flg = ( $p[1] ? FLAG_HTML : $this->getval($col,'flag'));
     }
     $linktype =  (($ptype && ($ptype!='mailto')) ? "" : "mailto:");
-    return $pbegin.$this->getahref( $linktype.$this->getval($col), $txt, $padd, $flg);
+    return $pbegin.$this->getahref( $linktype.$this->getval($col), $txt, $padd, $flg, $phide);
   }
 
   # substring with case conversion
