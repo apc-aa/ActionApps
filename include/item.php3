@@ -639,6 +639,10 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
 
   # prints the field content and converts text to html or escape html (due to
   # html flag). If param is specified, it prints rather param (instead of field)
+
+  # f_t looks to see if param is a field, and if so gets the value, and 
+  #  if it doesn't look like a field, then it unaliases the param
+  # If there is no param, then it converts the field to HTML (if text)
   # param: string to be printed (like <img src="{img_src........1}"></img>
   function f_t($col, $param="") {
     if($param)
