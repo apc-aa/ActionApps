@@ -18,10 +18,9 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
+ 
 # expected at least $slice_id 
 # user calling is with $edit for edit item
-# optionally $feeded - when user edit feeded item (if submitted it)
 # optionaly encap="false" if this form is not encapsulated into *.shtml file
 # optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
@@ -40,6 +39,7 @@ if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED
                                #       and REDIRECT_STRING_UNESCAPED
 
 QuoteVars("post");  // if magicquotes are not set, quote variables
+
 GetHidden();        // unpacks variables from $r_hidden session var.
 unset($r_hidden);
 $r_hidden["hidden_acceptor"] = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
@@ -52,11 +52,6 @@ if( $upd_preview )
   $update = true;
   
 $add = !( $update OR $cancel OR $insert OR $edit );
-
-function LoadDefault($add,$insert,$update,$show, $variable, $value) {
-  if( $add OR (!$show AND $insert) OR (!$show AND $update) ) 
-    $variable = $value;
-}
 
 if($cancel) {
   if( $anonymous )  // anonymous login
@@ -71,230 +66,256 @@ if($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
 }    
 
+# ----------------------- functions -------------------------------------------
+function default_fnc_now($param) {
+  return now();
+}  
+
+function default_fnc_uid($param) {
+  global $auth;
+  return quote($auth->auth["uid"]);
+}  
+
+function default_fnc_dte($param) {
+  return mktime(0,0,0,date("m"),date("d")+$param,date("Y"));
+}
+
+function default_fnc_qte($param) {
+  return quote($param);
+}
+
+function default_fnc_txt($param) {
+  return quote($param);
+}
+
+# ----------------------- insert functions
+
+function insert_fnc_qte($item_id, $field, $value, $param, $insert=true) {
+  global $varset, $itemvarset, $db;
+  if( $field[in_item_tbl] ) {
+    # field in item table
+    $itemvarset->add( $field[in_item_tbl], "quoted", $value);
+    return;
+  }  
+    # field in content table
+  $varset->clear();
+  $varset->add("text", "quoted", $value);
+  if( $insert ) {
+    $varset->add("item_id", "unpacked", $item_id);
+    $varset->add("field_id", "quoted", $field[id]);
+    $db->query("INSERT INTO content" . $varset->makeINSERT() );
+  } else {
+    $db->query("UPDATE content SET ". $varset->makeUPDATE() . " 
+                 WHERE item_id='". q_pack_id($item_id). "' 
+                   AND field_id='". $field[id] . "'");
+  }                 
+}
+
+function insert_fnc_dte($item_id, $field, $value, $param, $insert=true) {
+  insert_fnc_qte($item_id, $field, $value, $param, $insert);
+}
+
+function insert_fnc_cns($item_id, $field, $value, $param, $insert=true) {
+  insert_fnc_qte($item_id, $field, $value, $param, $insert);
+}
+
+function insert_fnc_num($item_id, $field, $value, $param, $insert=true) {
+  insert_fnc_qte($item_id, $field, $value, $param, $insert);
+}
+
+function insert_fnc_boo($item_id, $field, $value, $param, $insert=true) {
+  insert_fnc_qte($item_id, $field, $value ? 1:0, $param, $insert);
+}
+
+function insert_fnc_uid($item_id, $field, $value, $param, $insert=true) {
+  global $auth;
+  insert_fnc_qte($item_id, $field, $auth->auth["uid"], $param, $insert);
+}
+
+function insert_fnc_now($item_id, $field, $value, $param, $insert=true) {
+  insert_fnc_qte($item_id, $field, now(), $param, $insert);
+}
+
+  # File upload
+function insert_fnc_fil($item_id, $field, $value, $param, $insert=true) {
+  $varname = 'v'.unpack_id($field[id]);
+  
+  if(($value <> "none")&&($value <> "")) {   # see if the uploaded file exists
+    $dest_file = $GLOBALS[$varname . "_name"];
+    if( file_exists(IMG_UPLOAD_PATH.$dest_file) )
+      $dest_file = new_id().substr(strrchr($dest_file, "." ), 0 );
+
+    if(!copy($value,IMG_UPLOAD_PATH.$dest_file)){     // copy the file from the temp directory to the upload directory, and test for success
+      $err["Image"] = MsgErr(L_CANT_UPLOAD);          // error array (Init - just for initializing variable
+      break;
+    }   
+    insert_fnc_qte($item_id, $field, IMG_UPLOAD_URL.$dest_file, $param, $insert);
+  }
+}    
+
+function insert_fnc_nul($item_id, $field, $value, $param, $insert=true) {
+}
+
+# not defined insert func in field table (it is better to use insert_fnc_nul)
+function insert_fnc_($item_id, $field, $value, $param, $insert=true) {
+}
+
+# ----------------------- show functions
+
+function show_fnc_chb($varname, $field, $content, $value, $param, $edit) {
+  echo $field[input_before];
+  FrmInputChBox($varname, $field[name], $edit ? $content[0] : $value, false,
+    "", 1, $field[required], $field[input_help], $field[input_morehlp] );
+}
+
+function show_fnc_txt($varname, $field, $content, $value, $param, $edit) {
+  echo $field[input_before];
+  $rows = ($param ? $param : 4);
+  FrmTextarea($varname, $field[name], $edit ? $content[0] : $value, $rows, 60,
+   $field[required], $field[input_help], $field[input_morehlp] );
+}
+
+function show_fnc_fld($varname, $field, $content, $value, $param, $edit) {
+  echo $field[input_before];
+  FrmInputText($varname, $field[name], safe($edit ? $content[0]:$value), 255,60,
+   $field[required], $field[input_help], $field[input_morehlp] );
+}
+
+function show_fnc_rio($varname, $field, $content, $value, $param, $edit) {
+  global $db;
+  $arr = GetConstants($param, $db); 
+  echo $field[input_before];
+  FrmInputRadio($varname, $field[name], $arr, $edit ? $content[0] : $value,
+    $field[required], $field[input_help], $field[input_morehlp] );
+}
+  
+function show_fnc_sel($varname, $field, $content, $value, $param, $edit) {
+  global $db;
+  $arr = GetConstants($param, $db); 
+  echo $field[input_before];
+  FrmInputSelect($varname, $field[name], $arr, $edit ? $content[0] : $value,
+    $field[required], $field[input_help], $field[input_morehlp] );
+}
+
+  # $param is uploaded file type (like "image/*");
+function show_fnc_fil($varname, $field, $content, $value, $param, $edit) {
+  echo $field[input_before];
+  FrmInputFile($varname, $field[name], safe($edit ? $content[0]:$value), 255,60,
+       $field[required], $param, $field[input_help], $field[input_morehlp] );
+}
+
+function show_fnc_dte($varname, $field, $content, $value, $param, $edit) {
+  echo $field[input_before];
+  $arr = explode("'",$param);
+  $datectrl = new datectrl($varname, $arr[0], $arr[1], $arr[2]);
+  $datectrl->setdate_int($edit ? $content[0] : $value);
+  FrmStaticText($field[name], $datectrl->getselect(), $field[required], 
+                $field[input_help], $field[input_morehlp] );
+}
+
+function show_fnc_nul($varname, $field, $content, $value, $param, $edit) {
+}
+
+# ----------------------- functions end ---------------------------------------
+
 $db = new DB_AA;
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
-$publishdate = new datectrl("publish_date", 1, 8);
-$expirydate = new datectrl("expiry_date", 0, 15, true);
-
-if( defined("EXTENDED_ITEM_TABLE") ) {
-  $startdate = new datectrl("start_date", 1, 8);
-  $enddate = new datectrl("end_date", 1, 8);
-}
-
 $varset = new Cvarset();
+$itemvarset = new Cvarset();
 
-//lookup (slice) 
-$SQL= " SELECT * FROM slices WHERE id='".q_pack_id($slice_id)."'";
+$SQL= " SELECT * FROM field WHERE slice_id='".q_pack_id($slice_id)."' 
+         ORDER BY input_pri";
 $db->query($SQL);
-if ($db->next_record()){ 
-  $slicetype = $db->f(type);
-  $show = UnpackFieldsToArray($db->f(edit_fields), $itemedit_fields);
-  $needed = UnpackFieldsToArray($db->f(needed_fields), $itemedit_fields);
-  LoadDefault($add,$insert,$update,$show[language_code],&$language_code, quote($db->f(d_language_code)));
-  LoadDefault($add,$insert,$update,$show[cp_code],&$cp_code, quote($db->f(d_cp_code)));
-  LoadDefault($add,$insert,$update,$show[category_id],&$category_id, unpack_id($db->f(d_category_id)));
-  LoadDefault($add,$insert,$update,$show[status_code],&$status_code, quote($db->f(d_status_code)));
-  LoadDefault($add,$insert,$update,$show[hl_href],&$hl_href, quote($db->f(d_hl_href)));
-  LoadDefault($add,$insert,$update,$show[link_only],&$link_only, quote($db->f(d_link_only)));
-  LoadDefault($add,$insert,$update,$show[img_src],&$img_src, quote($db->f(d_img_src)));
-  LoadDefault($add,$insert,$update,$show[img_width],&$img_width, quote($db->f(d_img_width)));
-  LoadDefault($add,$insert,$update,$show[img_height],&$img_height, quote($db->f(d_img_height)));
-  LoadDefault($add,$insert,$update,$show[source],&$source, quote($db->f(d_source)));
-  LoadDefault($add,$insert,$update,$show[source_href],&$source_href, quote($db->f(d_source_href)));
-  LoadDefault($add,$insert,$update,$show[redirect],&$redirect, quote($db->f(d_redirect)));
-  LoadDefault($add,$insert,$update,$show[place],&$place, quote($db->f(d_place)));
-  LoadDefault($add,$insert,$update,$show[html_formatted],&$html_formatted, quote($db->f(d_html_formatted)));
-  LoadDefault($add,$insert,$update,$show[posted_by],&$posted_by, quote($db->f(d_posted_by)));
-  LoadDefault($add,$insert,$update,$show[e_posted_by],&$e_posted_by, quote($db->f(d_e_posted_by)));
-  LoadDefault($add,$insert,$update,$show[highlight],&$highlight, $db->f(d_highlight));
-  LoadDefault($add,$insert,$update,$show[post_date],&$post_date, now());
-  LoadDefault($add,$insert,$update,$show[edited_by],&$edited_by, quote($auth->auth["uid"]));
-  LoadDefault($add,$insert,$update,$show[last_edit],&$last_edit, now());
-  LoadDefault($add,$insert,$update,$show[publish_date],&$publish_date, now());
-  if ($db->f(d_expiry_limit)>0) 
-    $e_d = date("Y-m-d H:m:s",mktime(0,0,0,date("m"),date("d")+$db->f(d_expiry_limit),date("Y")));
-   else $e_d = $db->f(d_expiry_date);                   
-  LoadDefault($add,$insert,$update,$show[expiry_date],&$expiry_date, $e_d);
-  if( $publish_date != "")
-    $publishdate->setdate($publish_date);
-  if( $expiry_date != "")
-    $expirydate->setdate($expiry_date);
+while($db->next_record()) {
+  $fields[] = $db->Record;   # cache rows
 
-  if( defined("EXTENDED_ITEM_TABLE") ) {
-    if( $start_date != "")
-      $startdate->setdate($start_date);
-    if( $end_date != "")
-      $enddate->setdate($end_date);
+    # get default values if needed
+  $varname = 'v'. unpack_id($db->f(id));   # "v" prefix - database field var
+  if( $add OR (!$db->f(input_show) AND ($insert OR $update) )) {
+    $fnc = ParseFnc($db->f(input_default));    # all default should have fnc:param format
+
+    if( $fnc ) {                     # call function
+      $fncname = 'default_fnc_' . $fnc[fnc];
+      $$varname = $fncname($fnc[param]);
+    } else
+      $$varname = $foo;
   }    
-}
+    # validate input data
+  if( $insert || $update )
+  {
+    if( $db->f(input_show) AND !$db->f(feed) ) {
+      switch( $db->f(input_validate) ) {
+        case 'text': 
+          ValidateInput($varname, $db->f(name), &$$varname, &$err,
+                        $db->f(required) ? 1 : 0, "text");
+          break;
+        case 'url':  
+          ValidateInput($varname, $db->f(name), &$$varname, &$err,
+                        $db->f(required) ? 1 : 0, "url");
+          break;
+        case 'email':  
+          ValidateInput($varname, $db->f(name), &$$varname, &$err,
+                        $db->f(required) ? 1 : 0, "email");
+          break;
+        case 'number':  
+          ValidateInput($varname, $db->f(name), &$$varname, &$err,
+                        $db->f(required) ? 1 : 0, "number");
+          break;
+        case 'id':  
+          ValidateInput($varname, $db->f(name), &$$varname, &$err,
+                        $db->f(required) ? 1 : 0, "id");
+          break;
+        case 'date':  
+          $foo_datectrl_name = new datectrl($varname);
+          $foo_datectrl_name->update();                   # updates datectrl
+          if( $$varname != "")                            # loaded from defaults
+            $foo_datectrl_name->setdate_int($$varname);
+          $foo_datectrl_name->ValidateDate($db->f(name), &$err);
+          $$varname = $foo_datectrl_name->get_date();  # write to var
+          break;
+        case 'bool':  
+          $$varname = ($$varname ? 1 : 0);
+          break;
+      }
+    }
+  }   
+}      
 
-if($update) {
-  $SQL= " SELECT items.*, fulltexts.full_text FROM items,fulltexts 
-            WHERE fulltexts.ft_id = items.master_id AND id='".q_pack_id($id)."'";
-  $db->query($SQL);
-  if ($db->next_record()){ 
-    if( !$show[full_text] ) $full_text = quote($db->f(full_text));
-//    if( !$show[headline] ) $headline = $db->f(headline);
-    if( !$show[abstract] ) $abstract = quote($db->f(abstract));
-    if( !$show[edit_note] ) $edit_note = quote($db->f(edit_note));
+  # update database
+if( ($insert || $update) AND (count($err)<=1) 
+    AND isset($fields) AND is_array($fields) ) {
+  if( $insert )
+    $id = new_id();
+
+//p_arr_m($fields);
+
+  reset($fields);
+  while(list(,$f) = each($fields)) {
+    $varname = 'v'. unpack_id($f[id]);   # "v" prefix - database field var
+    $fnc = ParseFnc($f[input_insert_func]);   # input insert function
+    if( $fnc ) {                     # call function
+      $fncname = 'insert_fnc_' . $fnc[fnc];
+        # updates content table or fills $itemvarset 
+      $fncname($id, $f, $$varname, $fnc[param], $insert); # add to content table
+    }                                                     # or to itemvarset
   }
-}  
   
-// poor checkbox doesn't have value if unchecked
-$link_only = ($link_only ? 1 : 0);  
-$highlight = ($highlight ? 1 : 0); 
-$html_formatted = ($html_formatted ? 1 : 0 );
-
-// validate input data
-if( $insert || $update )
-{
-  do{
-    ValidateInput("headline", L_HEADLINE, &$headline, &$err, true, "text");
-    ValidateInput("abstract", L_ABSTRACT, &$abstract, &$err, $needed[abstract], "text");
-    if( !$feeded )
-      ValidateInput("full_text", L_FULL_TEXT, &$full_text, &$err, $needed[full_text], "text");
-    ValidateInput("hl_href", L_HL_HREF, &$hl_href, &$err, $needed[hl_href], "url");
-    ValidateInput("place", L_PLACE, &$place, &$err, $needed[place], "text");
-    ValidateInput("source", L_SOURCE, &$source, &$err, $needed[source], "text");
-    ValidateInput("source_href", L_SOURCE_HREF, &$source_href, &$err, $needed[source_href], "url");
-    ValidateInput("redirect", L_REDIRECT, &$redirect, &$err, $needed[redirect], "url");
-    ValidateInput("img_src", L_IMG_SRC, &$img_src, &$err, $needed[img_src], "text");
-    ValidateInput("img_width", L_IMG_WIDTH, &$img_width, &$err, $needed[img_width], "text");
-    ValidateInput("img_height", L_IMG_HEIGHT, &$img_height, &$err, $needed[img_height], "text");
-    ValidateInput("posted_by", L_POSTED_BY, &$posted_by, &$err, $needed[posted_by], "text");
-    ValidateInput("e_posted_by", L_E_POSTED_BY, &$e_posted_by, &$err, $needed[e_posted_by], "email");
-    ValidateInput("edit_note", L_EDIT_NOTE, &$edit_note, &$err, $needed[edit_note], "text");
-    ValidateInput("language_code", L_LANGUAGE_CODE, &$language_code, &$err, $needed[language_code], "text");
-    ValidateInput("cp_code", L_CP_CODE, &$cp_code, &$err, $needed[cp_code], "text");
-    ValidateInput("status_code", L_STATUS_CODE, &$status_code, &$err, $needed[status_code], "number");
-    ValidateInput("category_id", L_CATEGORY_ID, &$category_id, &$err, $needed[category_id], "id");
-
-    $publishdate->ValidateDate (L_PUBLISH_DATE, &$err);
-    $expirydate->ValidateDate (L_EXPIRY_DATE, &$err);
+    # update item table
+  if( $update )
+    $SQL = "UPDATE item SET ". $itemvarset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
+   else {
+    $itemvarset->add("id", "unpacked", $id);
+    $itemvarset->add("slice_id", "unpacked", $slice_id);
+    $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
+    $added_to_db = true;
+  }  
+  $db->query($SQL);
   
+//  FeedItem($id, $db);   // TODO - odstranit a feedovat
 
-    if( defined("EXTENDED_ITEM_TABLE") ) {
-      ValidateInput("source_desc", L_SOURCE_DESC, &$source_desc, &$err, $needed[source_desc], "text");
-      ValidateInput("source_address", L_SOURCE_ADDRESS, &$source_address, &$err, $needed[source_address], "text");
-      ValidateInput("source_city", L_SOURCE_CITY, &$source_city, &$err, $needed[source_city], "text");
-      ValidateInput("source_prov", L_SOURCE_PROV, &$source_prov, &$err, $needed[source_prov], "text");
-      ValidateInput("source_country", L_SOURCE_COUNTRY, &$source_country, &$err, $needed[source_country], "text");
-      ValidateInput("time", L_TIME, &$time, &$err, $needed[time], "text");
-      ValidateInput("con_name", L_CON_NAME, &$con_name, &$err, $needed[con_name], "text");
-      ValidateInput("con_email", L_CON_EMAIL, &$con_email, &$err, $needed[con_email], "text");
-      ValidateInput("con_phone", L_CON_PHONE, &$con_phone, &$err, $needed[con_phone], "text");
-      ValidateInput("con_fax", L_CON_FAX, &$con_fax, &$err, $needed[con_fax], "text");
-      ValidateInput("loc_name", L_LOC_NAME, &$loc_name, &$err, $needed[loc_name], "text");
-      ValidateInput("loc_address", L_LOC_ADDRESS, &$loc_address, &$err, $needed[loc_address], "text");
-      ValidateInput("loc_city", L_LOC_CITY, &$loc_city, &$err, $needed[loc_city], "text");
-      ValidateInput("loc_prov", L_LOC_PROV, &$loc_prov, &$err, $needed[loc_prov], "text");
-      ValidateInput("loc_country", L_LOC_COUNTRY, &$loc_country, &$err, $needed[loc_country], "text");
-
-      $startdate->ValidateDate (L_START_DATE, &$err, $needed[start_date]);
-      $enddate->ValidateDate (L_END_DATE, &$err, $needed[end_date]);
-    }    
-
-    if( count($err) > 1)
-      break;
-
-    if(($img_upload <> "none")&&($img_upload <> "")){        // see if the uploaded picture exists
-      $dest_file = $img_upload_name;
-      if( file_exists(IMG_UPLOAD_PATH.$img_upload_name) )
-        $dest_file = new_id().substr(strrchr($img_upload_name, "." ), 0 );
-
-      if(!copy($img_upload,IMG_UPLOAD_PATH.$dest_file)){     // copy the file from the temp directory to the upload directory, and test for success
-        $err["Image"] = MsgErr(L_CANT_UPLOAD);          // error array (Init - just for initializing variable
-        break;
-      }   
-      $img_src = IMG_UPLOAD_URL.$dest_file;
-    }
-  
-    if( count($err) > 1)
-      break;
-    $varset->add("headline", "quoted", $headline);
-    $varset->add("abstract", "quoted", $abstract);              //full_text is removed from this table - moved to fultexts table
-    $varset->add("publish_date", "text", $publishdate->getdatetime());
-    $varset->add("expiry_date", "text", $expirydate->getdate());
-    $varset->add("category_id", "unpacked", $category_id);
-    $varset->add("status_code", "number", $status_code);
-    $varset->add("cp_code", "quoted", $cp_code);
-    $varset->add("link_only", "number", $link_only);
-    $varset->add("hl_href", "quoted", $hl_href);
-    $varset->add("img_src", "quoted", $img_src);
-    $varset->add("language_code", "quoted", $language_code);
-    $varset->add("img_width", "quoted", $img_width);
-    $varset->add("img_height", "quoted", $img_height);
-    $varset->add("html_formatted", "number", $html_formatted);
-    $varset->add("source", "quoted", $source);
-    $varset->add("source_href", "quoted", $source_href);
-    $varset->add("redirect", "quoted", $redirect);
-    $varset->add("place", "quoted", $place);
-    $varset->add("highlight", "number", $highlight);
-    $varset->add("posted_by", "quoted", $posted_by);
-    $varset->add("e_posted_by", "quoted", $e_posted_by);
-    $varset->add("edited_by", "quoted", $auth->auth["uid"]);
-    $varset->add("last_edit", "quoted", now());
-    $varset->add("edit_note", "quoted", $edit_note);
-    $varset->add("contact1", "unpacked", $contact1);
-    $varset->add("contact2", "unpacked", $contact2);
-    $varset->add("contact3", "unpacked", $contact3);
-  
-    if( defined("EXTENDED_ITEM_TABLE") ) {
-      $varset->add("source_desc", "quoted", $source_desc); 
-      $varset->add("source_address", "quoted", $source_address); 
-      $varset->add("source_city", "quoted", $source_city); 
-      $varset->add("source_prov", "quoted", $source_prov);     
-      $varset->add("source_country", "quoted", $source_country);
-      $varset->add("start_date", "text", $startdate->getdate());    
-      $varset->add("end_date", "text", $enddate->getdate());  
-      $varset->add("time", "quoted", $time);
-      $varset->add("con_name", "quoted", $con_name);
-      $varset->add("con_email", "quoted", $con_email);
-      $varset->add("con_phone", "quoted", $con_phone); 
-      $varset->add("con_fax", "quoted", $con_fax); 
-      $varset->add("loc_name", "quoted", $loc_name);
-      $varset->add("loc_address", "quoted", $loc_address);
-      $varset->add("loc_city", "quoted", $loc_city);
-      $varset->add("loc_prov", "quoted", $loc_prov);    
-      $varset->add("loc_country", "quoted", $loc_country); 
-    }  
-    
-    if( $update )
-    {
-      $SQL = "UPDATE items SET ". $varset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
-//huh($SQL);
-      if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
-        $err["DB"] = MsgErr( L_ITEM_NOT_CHANGED );
-        break;
-      }     
-      $db->query("UPDATE fulltexts SET full_text = '". $full_text ."' WHERE ft_id='".q_pack_id($id)."'");
-      if( $status_code == 1 )  //Approved bin
-        FeedItem($id, $db);
-    }    
-    else { // insert
-      $id = new_id();
-      $varset->add("id", "unpacked", $id);    
-      $varset->add("master_id", "unpacked", $id);    
-      $varset->add("slice_id", "unpacked", $slice_id);
-      $varset->add("created_by", "text", $auth->auth["uid"]);
-      $varset->add("post_date", "quoted", $post_date);
-  
-      $SQL = "INSERT INTO items " . $varset->makeINSERT();
-      if (!$db->query($SQL)) {
-        $err["DB"] .= MsgErr( L_CANT_ADD_ITEM );
-        break;   # not necessary - we have set the halt_on_error
-      }   
-      $SQL="INSERT INTO fulltexts (ft_id, full_text) 
-            VALUES ('". q_pack_id($id) ."', '". $full_text ."')";
-    	$db->query($SQL);
-      $added_to_db = true;
-      FeedItem($id, $db);
-    }
-  } while(false);
   if( count($err) <= 1) {
-//huh("OK");    
     page_close(); 
 
     if( $anonymous )  // anonymous login
@@ -311,90 +332,144 @@ if( $insert || $update )
       go_url( con_url($sess->url(self_base() .  "index.php3"), "slice_id=$slice_id"));
   }  
 }
-
-// override Memo with File if provided
-//if($Ffile_size > 0) { $Fmemo = (join("", file($Ffile))); } 
-
-// lookup (categories) 
-$SQL= " SELECT name, id FROM categories LEFT JOIN catbinds ON categories.id = catbinds.category_id WHERE catbinds.slice_id='".q_pack_id($slice_id)."'";
-$db->query($SQL);
-while($db->next_record()) 
-  $categories[unpack_id($db->f(id))] = $db->f(name);
-
-// lookup (contacts) 
-// not coded yet 
-
-// lookup (languages) 
-$SQL= " SELECT * FROM lt_langs ";
-$db->query($SQL);
-while($db->next_record()) {    
-  $languages[$db->f(code)]= $db->f(name);
-  $languages[$db->f(code)].=$db->f(altcode)?" (".$db->f(altcode).")":"";
-}
-
-// lookup (codepages) 
-$SQL= " SELECT * FROM lt_cps ";
-$db->query($SQL);
-while($db->next_record()) {    
-  $codepages[$db->f(code)]= $db->f(code);
-  $codepages[$db->f(code)].=$db->f(w32cp)?" (".$db->f(w32cp).")":"";
-}
+    
+# -----------------------------------------------------------------------------
+# Input form
+# -----------------------------------------------------------------------------
 
 if($edit) {
-  $SQL = "SELECT items.*, fulltexts.full_text FROM items, fulltexts 
-                WHERE fulltexts.ft_id = items.master_id AND id='".q_pack_id($id)."'";
+  if( !(isset($fields) AND is_array($fields)) ) {
+    $err["DB"] = MsgErr(L_ERR_NO_FIELDS);
+    MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"),
+            $err, "standalone");
+    exit;
+  }
+
+    # fill content array from item table
+  $SQL = "SELECT * FROM item WHERE id='".q_pack_id($id)."'";
 	$db->query($SQL);
 	if($db->next_record()) {
-    $tmp_slice_id = $slice_id;  
-    $tmp_id = $id;  
     while (list($key,$val,,) = each($db->Record)) {  
       if( EReg("^[0-9]*$", $key))
         continue;
-      $$key = $val; // there are the same name for variables and database atributs => fill variables
-    }               // replaces $id and $slice_id !!!
-    $slice_id = $tmp_slice_id;  
-    $id = $tmp_id;  
-		$publishdate->setdate($db->f("publish_date"));
-		$expirydate->setdate($db->f("expiry_date"));
+      $foo = substr($key.'................',0,16);  #create id
+      $content[unpack_id($foo)][] = $val;
+    } 
+  } else {
+    $err["DB"] = MsgErr(L_BAD_ITEM_ID);  
+    MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"),
+            $err, "standalone");
+    exit;
+  }  
+    
+    # fill content array from content table
+  $SQL = "SELECT * FROM content WHERE item_id='".q_pack_id($id)."'
+           ORDER BY field_id";
+	$db->query($SQL);
+  while( $db->next_record() ) {       
+           #  flag bit 0 set - fed
+           #  flag bit 1 set - html
+    if ( $db->f(flag) && 1 )
+        $content[unpack_id($db->f(field_id))][feed] = true;
+    if ( $db->f(flag) && 2 )
+        $content[unpack_id($db->f(field_id))][html] = true;
+    if ( $db->f(number) > 0 )    # both values are set (fed)
+      $content[unpack_id($db->f(field_id))][] = $db->f(number);
+    else  
+      $content[unpack_id($db->f(field_id))][] = $db->f(text);
+  }     
+}    
 
-    if( defined("EXTENDED_ITEM_TABLE") ) {
-  		$enddate->setdate($db->f("end_date"));
-  		$startdate->setdate($db->f("start_date"));
-    }
-
-    $category_id = unpack_id($db->f("category_id")); 
-  }
-}
+# print begin ---------------------------------------------------------------
 
 if( !$encap ) {
-  HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-  echo '<title>'.( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT). '</title>
-      </head>
-      <body>
-       <H1><B>' . ( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT) . '</B></H1>';
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+echo '<title>'.( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT). '</title>
+    </head>
+    <body>
+     <H1><B>' . ( $edit=="" ? L_A_ITEM_ADD : L_A_ITEM_EDT) . '</B></H1>';
 }       
 PrintArray($err);
 echo $Msg;  
 
-// the itemedit FORM is done on a type by type basis.
-// if there isn't a slice-specific form page, use the default form page
-// the slice specific page will be named like: itemedit-en_news.php3
-// if you want to create one of these, just copy itemedit-default.php3 to the
-// the file and make your edits.
+?>
+<center>
+<form enctype="multipart/form-data" method=post action="<?php echo $sess->url( ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF) ?>">
 
-$formparams = ($encap ? 
-  ' method="get" ' : ' enctype="multipart/form-data" method=post" ');
-$includefile = ($AA_INC_PATH . 'itemedit-' .$slicetype. '.php3');
-
-if (! file_exists($includefile))
-     $includefile = ($AA_INC_PATH . 'itemedit-default.php3');
-include ($includefile);
-
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center" class="inputtab">
+<tr><td class=tabtit><b>&nbsp;<?php echo L_ITEM_HDR?></b>
+</td>
+</tr>
+<tr><td>
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE" class="inputtab2">
+<?php
+//p_arr_m($fields);
+//p_arr_m($content);
+if( !isset($fields) OR !is_array($fields) ) {
+  echo "<tr><td>". 	MsgErr(L_NO_FIELDS). "</td></tr>";
+} else {  
+	reset($fields);
+	while(list(,$f) = each($fields)) {
+    $field_id = unpack_id($f[id]);
+	  $varname = 'v'. $field_id;   # "v" prefix - database field var
+	  if( $content[$field_id][feed] OR !$f[input_show])
+	    continue;                  # fed fields or not shown fields do not show
+	  $fnc = ParseFnc($f[input_show_func]);   # input show function
+	  if( $fnc ) {                     # call function
+	    $fncname = 'show_fnc_' . $fnc[fnc];
+	      # updates content table or fills $itemvarset 
+	    $fncname($varname, $f, $content[$field_id], $$varname, $fnc[param], $edit);
+	  }
+	}
+}	
+?>
+<tr>
+  <td colspan=2>
+  <?php 
+  if(DEBUG_FLAG && $id) {       //  do not print empty info for new articles
+/*    echo '<I>';
+    echo L_POSTDATE.": ".(sec2userdate(dequote($post_date)));
+    $userinfo = GetUser($created_by);
+    echo  " ".L_CREATED_BY.": ", $userinfo["cn"] ? $userinfo["cn"] : $created_by;
+    echo "<br>";
+    $userinfo = GetUser($edited_by);
+    echo  L_LASTEDIT . " ", $userinfo["cn"] ? $userinfo["cn"] : $edited_by;
+    echo " ".L_AT." ". dequote($last_edit); 
+    echo '</I>'; */
+  }  
+  $r_hidden["slice_id"] = $slice_id;
+  $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
+  echo '<input type=hidden name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">'; 
+  echo '<input type=hidden name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
+  </td>
+</tr>
+</table></td></tr>
+<tr><td align=center><?php
+if($edit || $update || ($insert && $added_to_db)) { ?>
+   <input type=submit name=update value="<?php echo L_POST ?>">
+   <input type=submit name=upd_preview value="<?php echo L_POST_PREV ?>">
+   <input type=reset value="<?php echo L_RESET ?>"><?php
+   $r_hidden["id"] = $id;
+} else { ?>
+   <input type=submit name=insert value="<?php echo L_INSERT ?>">
+   <input type=submit name=ins_preview value="<?php echo L_POST_PREV ?>"><?php
+} ?>
+<input type=submit name=cancel value="<?php echo L_CANCEL ?>">
+</td>
+</tr>
+</table>
+</form>
+</center>
+<?php
 if( !$encap ) 
   echo '</body></html>';
 page_close(); 
+
 /*
 $Log$
+Revision 1.14  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.13  2000/12/05 14:20:35  honzam
 Fixed bug with Netscape - not allowed method POST - in annonymous posting.
 

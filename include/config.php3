@@ -3,9 +3,6 @@
 
 # Application wide configuration options
 
-# THIS FILE SHOULD NOT BE WORLD READABLE, BUT IT NEEDS TO BE READABLE BY
-# YOUR WWW SERVER
-
 # This is the Action Application main configuration file. In fact, this file
 # is a php script which is included into every php program, thus, php
 # syntax is used. This basically means that this file defines constants
@@ -23,16 +20,14 @@
 # $AA_INC_PATH = "/home/httpd/html/aa/include/";
 $AA_INC_PATH = "/usr/local/httpd/htdocs/apc-aa2/include/"; 
 
-# Fill in your internet domain name here.
+# Your Internet Domain
 define("DEFAULT_ORG_ID", "ecn.cz");
 
-# This is for accessing the database. You need to define the name of the host
-# where the database server runs, the database name, a user name for logging
-# in and a passowrd in clear text for the login.
+# DB Access Configuration
 define("DB_HOST", "localhost");
-define("DB_NAME", "aadb");
-define("DB_USER", "aadbuser");
-define("DB_PASSWORD", "");
+define("DB_NAME", "aadbnew");
+define("DB_USER", "aauser");
+define("DB_PASSWORD", "sklenycka");
 
 # ID of AA (any unique 32chars long hexadecimal number)
 # Please change this value to be unique
@@ -40,23 +35,23 @@ define("AA_ID", "420224311780abcd420224311780abcd");
 #define("AA_ID", "000111222333444555666777888999A9");
 
 # Select permissions system (exactly one of "dummy", "ldap", "sql")
-define("PERM_LIB", "sql");
+define("PERM_LIB", "ldap");
 
-# The following settings are needed for LDAP based permission system only.
-define("LDAP_HOST", "ecn4.ecn.cz");
-define("LDAP_BINDDN", "cn=aa,dc=ecn,dc=apc,dc=org");
-define("LDAP_BINDPW", "");                           // password
-define("LDAP_BASEDN", "dc=ecn,dc=apc,dc=org");
-define("LDAP_PEOPLE", "dc=ecn,dc=apc,dc=org");
-define("LDAP_GROUPS", "dc=ecn,dc=apc,dc=org");
-define("LDAP_ACLS", "dc=ecn,dc=apc,dc=org");
+# LDAP Configuration
+define("LDAP_HOST", "localhost");
+define("LDAP_BINDDN", "cn=aauser,ou=AA");
+define("LDAP_BINDPW", "sklenycka");  // password
+define("LDAP_BASEDN", "ou=AA");
+define("LDAP_PEOPLE", "ou=People,ou=AA");
+define("LDAP_GROUPS", "ou=AA");
+define("LDAP_ACLS", "ou=ACLs,ou=AA");
 
 # e-mail for bug reporting contact
-define("ERROR_REPORTING_EMAIL", "root");
+define("ERROR_REPORTING_EMAIL", "technical@ecn.cz");
 
 # set this directive to true, if you use MySQL 
 # (uses LIMIT clause in SELECTs)
-define("OPTIMIZE_FOR_MYSQL", false);
+define("OPTIMIZE_FOR_MYSQL", true);
 
 # set this directive to 1 if you want to data-entry forms to have only
 # one column
@@ -66,22 +61,22 @@ define("SINGLE_COLUMN_FORM", "0");
 # if it is 'false' and it should be true you'll get an error like:
 # Fatal error: DB_Sql is already a function or class in
 #/var/php/phplib/php/db_mysql.inc on line 12
-define("PHPLIB_ALREADY_LOADED", false);
 
-# The style sheet for administrative pages. Leave it as it is for now,
-# you can later customize it if you want.
-define("ADMIN_CSS","admin.css");
-# The style sheet for slice preview.
+define("PHPLIB_ALREADY_LOADED", false);
 define("ADM_SLICE_CSS","adm_slice.css");
+define("ADMIN_CSS","admin.css");
 
 # number of shown pages links in scroller's navigation bar
-define("SCROLLER_LENGTH", 7);
+define("SCROLLER_LENGTH", 3);
 
 # Would you like to display debug messagess?
 define("DEBUG_FLAG", true);
+                                                        
+# Language: uncomment one language  file
+require ($GLOBALS[AA_INC_PATH] . "en_common_lang.php3");  # English
+# require ($GLOBALS[AA_INC_PATH] . "cz_common_lang.php3");  # Czech
 
 # If you use Web.net's extended items table, uncomment this definition
-
 define("EXTENDED_ITEM_TABLE", "1");
 define("SINGLE_COLUMN_FORM", "0");
 
@@ -98,39 +93,6 @@ require ($AA_INC_PATH . "en_common_lang.php3");  # English
 # to care about them.
 
 define("DEFAULT_LANG_INCLUDE", "en_news_lang.php3");
-
-# index names must be less than 20 characters (as is en_news)
-# "en_news" is slice type (each slice has its type stored in database)
-#    we can say, type is the same as application
-# "News (En)" is name of this slice type (application)
-# "en_news_lang.php3" is the name of use language file for this slice type
-
-$ActionAppConfig[en_news][name] = "News (En)";
-$ActionAppConfig[en_news][file] = "en_news_lang.php3";
-
-$ActionAppConfig[cz_news][name] = "News (Cz)";
-$ActionAppConfig[cz_news][file] = "cz_news_lang.php3";
-
-$ActionAppConfig[cz_media][name] = "Media monitoring (Cz)";
-$ActionAppConfig[cz_media][file] = "cz_media_lang.php3";
-
-$ActionAppConfig[en_all][name] = "Article publisher (En)";  // maximalistic version of inpu form
-$ActionAppConfig[en_all][file] = "en_all_lang.php3";
-
-$ActionAppConfig[en_press_rel][name] = "Press release publisher (En)";
-$ActionAppConfig[en_press_rel][file] = "en_press_lang.php3";
-
-$ActionAppConfig[en_jobs_rel][name] = "Jobs listing (En)";
-$ActionAppConfig[en_jobs_rel][file] = "en_jobs_lang.php3";
-
-$ActionAppConfig[en_events_rel][name] = "Events (En)";
-$ActionAppConfig[en_events_rel][file] = "en_events_lang.php3";
-
-$ActionAppConfig[en_whos_rel][name] = "Who`s who (En)";
-$ActionAppConfig[en_whos_rel][file] = "en_whos_lang.php3";
-
-$ActionAppConfig[en_rsrcs_rel][name] = "Resources (En)";
-$ActionAppConfig[en_rsrcs_rel][file] = "en_rsrcs_lang.php3";
 
 // ------------------------------------------------------------------
 // developer SITE_CONFIG

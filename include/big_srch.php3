@@ -62,18 +62,16 @@ $p_slice_id = q_pack_id($slice_id);
 $SQL= "SELECT search_show, search_default FROM slices where id='$p_slice_id'";
 $db->query($SQL);
 if($db->next_record()) {
-  $show    = UnpackFieldsToArray($db->f(search_show), $shown_search_fields);
+  $show    = UnpackFieldsToArray($db->f(search_show), $SHOWN_SEARCH_FIELDS);
   if( !isset($s_col))
-    $s_col = UnpackFieldsToArray($db->f(search_default), $default_search_in);
+    $s_col = UnpackFieldsToArray($db->f(search_default), $DEFAULT_SEARCH_IN);
 }    
 
 // lookup (languages) 
-$SQL= " SELECT * FROM lt_langs ";
+$SQL= " SELECT * FROM constant WHERE group_id='lt_languages'";
 $db->query($SQL);
-while($db->next_record()) {    
-  $languages[$db->f(code)]= $db->f(name);
-  $languages[$db->f(code)].=$db->f(altcode)?" (".$db->f(altcode).")":"";
-}
+while($db->next_record())
+  $languages[$db->f(value)]= $db->f(name);
 
 // lookup (slices) 
 $SQL= " SELECT id, short_name FROM slices ";
@@ -100,6 +98,9 @@ while($db->next_record())
 */
 /*
 $Log$
+Revision 1.3  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.2  2000/10/16 12:52:18  honzam
 Big search form can be customized via style sheets
 

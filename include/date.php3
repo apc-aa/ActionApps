@@ -69,83 +69,83 @@ class datectrl {
 		return "";
 	}
 
-	# get stored date
-	function getdate() {
-		if(checkdate($this->month, $this->day, $this->year)) 
-			return "$this->year-$this->month-$this->day";
-		return "";
+	# set date, format form integer
+	function setdate_int($date) {
+    $d = getdate($date);
+  	$this->year = $d[year];
+		$this->month = $d[mon];
+		$this->day = $d[mday];
 	}
 
 	# get stored date
-	function getdatetime() {
+	function get_datetime() {
     if( "$this->year-$this->month-$this->day" == date("Y-m-d"))  // today
 			return now();                                              // add time
-    return $this->getdate();  
+    return $this->get_date();  
+	}
+
+  # get stored date as integer
+	function get_date() {
+    return  mktime (0,0,0,$this->month,$this->day,$this->year);
 	}
 
   # check if date is valid  
-  function ValidateDate($inputName, &$err, $needed=true)  {
-    if( $this->getdate()=="" AND $needed ) {
-      $err["$this->name"] = MsgErr(L_ERR_IN." $inputName");
-      return false;
-    } 
-    return true;
+  function ValidateDate($inputName, &$err)
+  {
+    if( $this->get_date() > 0 ) 
+      return true;
+    $err["$this->name"] = MsgErr(L_ERR_IN." $inputName");
+    return false;
   }  
                    
 	# print select box for day
-	function pdayselect() {
-		echo "<select name=\"tdctr_" . $this->name . "_day\">";
+	function getdayselect() {
 		$at = getdate(time());
 		$sel =  ($this->day != 0 ? $this->day : $at[mday]);
-		for($i = 1; $i <= 31; $i++) {
-			echo "<option value=\"$i\"";
-			if($i == $sel) echo " selected";
-			echo ">$i</option>";
-		}
-		echo "</select>";
+		for($i = 1; $i <= 31; $i++)
+			$ret .= "<option value=\"$i\"". 
+              (($i == $sel) ? " selected" : "") . ">$i</option>";
+		return "<select name=\"tdctr_" . $this->name . "_day\">$ret</select>";
 	}	
 
 	# print select box for month
-	function pmonthselect() {
-		global $l_month;
-		echo "<select name=\"tdctr_" . $this->name . "_month\">";
+	function getmonthselect() {
+		global $L_MONTH;
 		$at = getdate(time());
 		$sel =  ($this->month != 0 ? $this->month : $at[mon]);
 		for($i = 1; $i <= 12; $i++) {
-			echo "<option value=\"$i\"";
-			if($i == $sel) echo " selected";
-			echo ">" . $l_month[$i] . "</option>";
+			$ret .= "<option value=\"$i\"". (($i == $sel) ? " selected" : "") . ">".
+             $L_MONTH[$i] ."</option>";
 		}
-		echo "</select>";
+		return "<select name=\"tdctr_" . $this->name . "_month\">$ret</select>";
 	}	
 
 	# print select box for year
-	function pyearselect() {
-		echo "<select name=\"tdctr_" . $this->name . "_year\">";
+	function getyearselect() {
 		$at = getdate(time());
 		$sel = ((($this->year==0) OR ($this->from_now)) ? $at[year] : $this->year );
 		for($i = $sel - $this->y_range_minus; $i <= $sel + $this->y_range_plus; $i++) {
-			echo "<option value=\"$i\"";
-			if($i == $this->year) echo " selected";
-			echo ">", $i, "</option>";
+			$ret .= "<option value=\"$i\"" . (($i == $this->year) ? " selected":""). 
+			       ">$i</option>";
 		}
-		echo "</select>";
+    return "<select name=\"tdctr_" . $this->name . "_year\">$ret</select>";
 	}	
 
 	# print complete date control 
-	function pselect () {
-		$this->pdayselect();
-		$this->pmonthselect();
-		$this->pyearselect();
+	function getselect () {
+		return $this->getdayselect(). $this->getmonthselect(). $this->getyearselect();
 	}
+	
+	# print complete date control 
+	function pselect () {
+		echo $this->getselect();
+	}
+
 }
 /*
 $Log$
-Revision 1.3  2000/11/15 16:16:22  honzam
-Date in Validate date can be set as not required
-
-Revision 1.2  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+Revision 1.4  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
 
 Revision 1.1.1.1  2000/06/21 18:40:27  madebeer
 reimport tree , 2nd try - code works, tricky to install

@@ -19,96 +19,149 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
 define("VIEW_PHP3_INC",1);
 
-class itemview{    
-  var $from_record;
-  var $num_records;
+class itemview{
   var $db;
-  var $slice_id;
-  var $highlight;
-  var $category_id;
-  var $category_sort;
-  var $category_format;
   var $sort_order;
-  var $compact_top;
-  var $compact_bottom;
-  var $fulltext_format;
-  var $odd_row_format;
-  var $even_row_format;
-  var $grab_len;
-  var $compact_remove;
-  var $fulltext_remove;
-  var $slice_url;
+  var $ids;                      # ids to show
+  var $from_record;              # from which index begin showing items
+  var $num_records;              # number of shown records 
+  var $slice_info;               # record from slice database for current slice
+  var $fields;                   # array of fields used in this slice
+  var $aliases;                  # array of alias definitions
+  var $clean_url;                # url of slice page with session id and encap..
 
-  function itemview( $db, $params){                   #constructor 
+  function itemview( $db, $slice_info, $fields, $aliases, $ids, $from, $number, $clean_url){                   #constructor 
     $this->db = $db;
-    $this->from_record = $params["from_record"];
-    $this->num_records = $params["num_records"];
-    $this->slice_id = $params["slice_id"];
-    $this->highlight = $params["highlight"];
-    $this->category_id = $params["category_id"];
-    $this->category_sort = $params["category_sort"];
-    $this->category_format = $params["category_format"];
-    $this->sort_order = $params["sort_order"];
-    $this->compact_top = $params["compact_top"];
-    $this->compact_bottom = $params["compact_bottom"];
-    $this->fulltext_format = $params["fulltext_format"];
-    $this->odd_row_format = $params["odd_row_format"];
-    $this->even_row_format = $params["even_row_format"];
-    $this->grab_len = $params["grab_len"];
-    $this->compact_remove = $params["compact_remove"];
-    $this->fulltext_remove = $params["fulltext_remove"];
-    $this->slice_url = $params["slice_url"];
+    $this->slice_info = $slice_info;  # $slice_info is array with this fields:
+                                      #      - print_view() function:
+                                      #   grab_len, compact_top, category_sort,
+                                      #   category_format, category_top,
+                                      #   category_bottom, even_odd_differ,
+                                      #   even_row_format, odd_row_format,
+                                      #   compact_remove, compact_bottom,
+                                      #      - print_item() function:
+                                      #   fulltext_format, fulltext_remove,
+                                      #   fulltext_format_top, 
+                                      #   fulltext_format_bottom, 
+    $this->aliases = $aliases;
+    $this->fields = $fields;
+    $this->ids = $ids;
+    $this->from_record = $from;
+    $this->num_records = $number;
+    $this->clean_url = $clean_url;
   }  
     
-  function print_view() {
-    $where = MakeWhere(q_pack_id($this->slice_id), $this->category_id, $this->highlight);
-    $SQL = "SELECT items.*, fulltexts.full_text, categories.name as category FROM items, fulltexts LEFT JOIN categories ON categories.id=items.category_id".
-           " WHERE $where AND fulltexts.ft_id=items.master_id";
+    #view_type used internaly for fulltext view  
+  function print_view($view_type="") {  
+    $db = $this->db;
+    if( !( isset($this->ids) AND is_array($this->ids) ))
+      return;
 
-    if( $category_sort )
-      $SQL .= " ORDER BY category_id, publish_date $this->sort_order";
-     else 
-      $SQL .= " ORDER BY publish_date $this->sort_order";
-  
-    if( OPTIMIZE_FOR_MYSQL )                             // if no mySQL - go to item no (mySQL use LIMIT)
-      $SQL .= " LIMIT ". $this->from_record .", ". $this->num_records;
-      
-    $this->db->query($SQL);
-    
-    if ($this->db->nf()>0) {    
-      echo $this->compact_top;
-      
-      $CurItem = new item($foo,false,1,$this->slice_url, $this->fulltext_format, $this->odd_row_format, $this->even_row_format, $this->category_format, $this->grab_len, 
-                          $this->compact_remove, $this->fulltext_remove);
-      $oldcat = "_No CaTeg";
-  
-      if( !OPTIMIZE_FOR_MYSQL )                             // if no mySQL - go to item no (mySQL use LIMIT)
-        $this->db->seek(max(0,$this->from_record));
-        
-      while($this->db->next_record()){ 
-        $CurItem->odd = $i%2;
-        $CurItem->columns = $this->db->Record; # active row 
-        $catname = $this->db->f("category");
-//        SubstFulltext(&$CurItem->columns);   //changes $db2 !!
-        if($this->category_sort AND ($catname != $oldcat)) {
-          $oldcat = $catname;
-          $CurItem->print_category();
-        }  
-        $CurItem->print_item();
-        if(++$i >= $this->num_records) break; 
-      }
-      echo $this->compact_bottom;
+    $sel_in = "(";
+    $delim = "";
+    for( $i=$this->from_record; $i<$this->from_record+$this->num_records; $i++){
+      if( $this->ids[$i] !="" ) {
+        $sel_in .= $delim. "'".q_pack_id($this->ids[$i])."'";
+        $delim = ",";
+      }  
     }  
-    else 
-      echo "<div>". L_NO_ITEM ."</div>";
+    $sel_in .= ( ($delim=="") ? "'')" : ")"); 
+    
+       # get content from item table
+    $SQL = "SELECT * FROM item WHERE id IN $sel_in";
+    $db->query($SQL);
+    while( $db->next_record() ) {
+      reset( $db->Record );
+      while( list( $key, $val ) = each( $db->Record )) {
+        if( EReg("^[0-9]*$", $key))
+          continue;
+        $content[unpack_id($db->f(id))][$key][] = array("value" => $val);
+      }  
+    }  
+
+       # get content from content table
+       # feeding - don't worry about it - when fed item is updated, informations
+       # in content table is updated too
+
+/* Constants are directly in fields - we don't need this join
+    $db->query("SELECT * FROM content LEFT JOIN constant 
+                    ON content.text=constant.value
+                    WHERE item_id IN $sel_in");  # usable just for constants
+    while( $db->next_record() ) {
+      $content[unpack_id($db->f(item_id))][$db->f(field_id)][] = 
+        array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
+               "name"=> $db->f(name) );
+    }
+*/    
+
+    $db->query("SELECT * FROM content 
+                 WHERE item_id IN $sel_in");  # usable just for constants
+    while( $db->next_record() ) {
+      $content[unpack_id($db->f(item_id))][$db->f(field_id)][] = 
+        array( "value"=>( ($db->f(text)=="") ? $db->f(number) : $db->f(text)),
+               "flag"=> $db->f(flag) );
+    }
+
+    $CurItem = new item("", "", $this->aliases, $this->clean_url, "",
+                        $this->slice_info[grab_len]);   # just prepare
+
+//p_arr_m($content);
+
+    if( $view_type == "" ) {                            # compact view
+      $oldcat = "_No CaTeg";
+      echo $this->slice_info[compact_top];
+      for( $i=0; $i<$this->num_records; $i++ ) {
+        $iid = $this->ids[$this->from_record+$i];
+        if( !$iid )
+          continue;                                     # iid = unpacked item id 
+        $catname = $content[$iid]["category........"][0][name];
+            
+        $CurItem->columns = $content[$iid];   # set right content for aliases
+        
+          # print category name if needed
+        if($this->slice_info[category_sort] AND ($catname != $oldcat)) {
+          $oldcat = $catname;
+          $CurItem->setformat( $this->slice_info[category_format], "",
+                               $this->slice_info[category_top],
+                               $this->slice_info[category_bottom] );
+          $CurItem->print_item();
+        }  
+  
+          # print item
+        $CurItem->setformat( 
+           (!($i%2) AND $this->slice_info[even_odd_differ]) ?
+           $this->slice_info[even_row_format] : $this->slice_info[odd_row_format],
+           $this->slice_info[compact_remove], "", "");
+        $CurItem->print_item();
+      }
+      echo $this->slice_info[compact_bottom];
+    }
+    else {  # fulltext
+      $iid = $this->$ids[0];      # unpacked item id
+      $CurItem->columns = $content[$iid];   # set right content for aliases
+
+      # print item
+      $CurItem->setformat( $this->slice_info[fulltext_format],
+                           $this->slice_info[fulltext_remove],
+                           $this->slice_info[fulltext_format_top],
+                           $this->slice_info[fulltext_format_bottom]);
+      $CurItem->print_item();
+    }  
+  }
+    
+  function print_item() {
+    $this->print_view("fulltext");
   }
 };
 
+
 /*
 $Log$
+Revision 1.3  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.2  2000/08/03 12:39:35  honzam
 Bug in sort order fixed
 

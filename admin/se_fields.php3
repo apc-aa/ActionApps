@@ -23,6 +23,7 @@ http://www.apc.org/
 
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
+require $GLOBALS[AA_INC_PATH]."varset.php3";
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -33,64 +34,139 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FIELDS)) {
 }  
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
+$varset = new Cvarset();
 
-function PackFields($name,$fields_count) {
-  $foo="";
-  for( $i=0; $i<$fields_count; $i++ ) {
-    $varname = "$name$i";
-    $foo .= ( $GLOBALS[$varname] ? "y" : "n");
-  }
-  return $foo;
-}  
+# lookup - APC wide possible field types are defined as special slice AA_Core_Fields..
+$field_types = GetTable2Array("SELECT * FROM field 
+                                WHERE slice_id='AA_Core_Fields..'", $db);
 
-// function for unpacking string in edit_fields and needed_fields in database
-// example: for "yynnny" string fils variable f0=1, f1=1, f2=0 .. ($name='f')
-function UnpackFields($packed,$name,$field_count) {
-  for( $i=0; $i<$field_count; $i++ ) {
-    $varname = "$name$i";
-    $GLOBALS[$varname] = (substr($packed,$i,1)=="y" ? true : false);
-  }
-}  
-
-function FieldInput($name1, $name2, $txt)
-{ echo "<tr><td class=tabtxt><b>$txt</b></td>\n ";
-  echo "<td align=center><input type=\"checkbox\" name=\"$name1\"";
-  if($GLOBALS[$name1])
-    echo " checked";
-  echo "></td>";
-  echo "<td align=center><input type=\"checkbox\" name=\"$name2\"";
-  if($GLOBALS[$name2])
-    echo " checked";
-  echo "></td>";
-  echo "</tr>\n";
+function ShowField($id, $name, $pri, $required, $show, $type="") {
+  global $sess, $field_types;
+  echo "
+  <tr>
+    <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>";
+    if( $type=="new" ){
+      echo '<td class=tabtxt>
+             <select name="ftype">';	
+	  reset($field_types);
+	  while(list($k, $v) = each($field_types)) { 
+	    echo '<option value="'. htmlspecialchars($k).'"> '. 
+		                        htmlspecialchars($v[name]) ." </option>";
+	  }
+	  echo "</select>\n
+          </td>";
+    } else {
+      $ft = GetFieldType($id);
+      echo "<td class=tabtxt>". 
+        ($field_types[$ft][name] =="" ? $ft : $field_types[$ft][name]) ."</td>";
+    }  
+    echo "  
+    <td class=tabtxt><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>
+    <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
+    <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
+    if( $type=="new")
+      echo "<td class=tabtxt>&nbsp;</td><td class=tabtxt>&nbsp;</td>";
+     else { 
+      echo "<td class=tabtxt><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". L_EDIT ."</a></td>";
+      if( $type=="in_item_tbl" )
+        echo "<td class=tabtxt>". L_DELETE ."</td>";
+       else 
+        echo "<td class=tabtxt><a href=\"javascript:DeleteField('$id')\">". L_DELETE ."</a></td>";
+      echo "</tr>\n";
+    }  
 }
 
 if( $update )
 {
-  $shown  = PackFields('f', count($itemedit_fields));
-  $needed = PackFields('n', count($itemedit_fields));
-    
-  if( $update )
-  {
-    $SQL = "UPDATE slices SET edit_fields = '$shown', needed_fields = '$needed' WHERE id='$p_slice_id'";
-    if (!$db->query($SQL))    # not necessary - we have set the halt_on_error
-      $err["DB"] = MsgErr("Can't change fields");
-  }    
-  if( count($err) <= 1 )
-    $Msg = MsgOK(L_FIELDS_OK);
-}
-else if( $slice_id!="" ) { // update => set variables from database
-  $SQL= "SELECT edit_fields, needed_fields FROM slices WHERE id='$p_slice_id'";
-  $db->query($SQL);
-  if ($db->next_record()) {
-    UnpackFields( $db->f(edit_fields), 'f', count($itemedit_fields));
-    UnpackFields( $db->f(needed_fields), 'n', count($itemedit_fields));
-  }  
-}
+  do {
+    if( !(isset($name) AND is_array($name) ))
+      break;
+    reset($name);
+    while( list($key,$val) = each($name) ) {
+      if( $key == "New_Field" )
+        continue;
+      $prior = $pri[$key];
+      ValidateInput("val", L_FIELD, $val, &$err, true, "text");
+      ValidateInput("prior", L_FIELD_PRIORITY, $prior, &$err, true, "number");
+    }
+      
+    if( count($err) > 1)
+      break;
 
+    reset($name);
+    while( list($key,$val) = each($name) ) {
+      if( $key == "New_Field" ){   # add new field
+        if( $val == "" )           # if not filled - don't add the field
+          continue;
+
+          # copy fields
+          # use the same setting for new field as template in AA_Core_Fields..
+        $varset->clear();
+        $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
+        $varset->setFromArray($field_types[$ftype]);   # from template for this field
+
+          # get new field id
+        $SQL = "SELECT id FROM field 
+                 WHERE slice_id='$p_slice_id' AND id like '". $ftype ."%'";
+        $db->query($SQL);   # get all fields with the same type in this slice
+        $max=0; 
+        while( $db->next_record() ) 
+          $max = max( $max, substr (strrchr ($db->f(id), "."), 1 ));
+        $max++;
+           #create name like "time...........2"
+        $fieldid = $ftype. substr("................$max", -(16-strlen($ftype)));
+        
+        $varset->set("slice_id", $slice_id, "unpacked" );
+        $varset->set("id", $fieldid, "quoted" );
+        $varset->set("name",  $val, "quoted");
+        $varset->set("input_pri", $pri[$key], "number");
+        $varset->set("required", ($req[$key] ? 1 : 0), "number");
+        $varset->set("input_show", ($shw[$key] ? 1 : 0), "number");
+        if( !$db->query("INSERT INTO field " . $varset->makeINSERT() )) {
+          $err["DB"] .= MsgErr("Can't copy field");
+          break;
+        }
+      } else { # current field
+        $varset->clear();
+        $varset->add("name", "quoted", $val);
+        $varset->add("input_pri", "number", $pri[$key]);
+        $varset->add("required", "number", ($req[$key] ? 1 : 0));
+        $varset->add("input_show", "number", ($shw[$key] ? 1 : 0));
+        $SQL = "UPDATE field SET ". $varset->makeUPDATE() . " WHERE id='$key'";
+        if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+          $err["DB"] = MsgErr("Can't change field");
+          break;
+        }
+      }
+      $r_filelds = "";   // unset the r_fields array to be load again
+    }
+    if( count($err) <= 1 ) {
+      $Msg = MsgOK(L_FIELDS_OK);
+      if( $name["New_Field"] )
+        go_url( $sess->url($PHP_SELF) );  # reload to incorporate new field
+    }    
+  } while( 0 );           #in order we can use "break;" statement
+}    
+
+  # lookup fields
+$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
+          FROM field
+         WHERE slice_id='$p_slice_id' ORDER BY input_pri";
+$s_fields = GetTable2Array($SQL, $db);
+         
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <TITLE><?php echo L_A_FIELDS_TIT;?></TITLE>
+ <SCRIPT Language="JavaScript"><!--
+   function DeleteField(id) {
+     if( !confirm("<?php echo L_DELETE_FIELD; ?>"))
+       return
+     var url="<?php echo $sess->url(con_url("./se_inputform.php3", "del=1")); ?>"
+     document.location=url + "&fid=" + escape(id);
+   }
+// -->
+</SCRIPT>
+
 </HEAD>
 <?php 
   $xx = ($slice_id!="");
@@ -109,25 +185,44 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </tr>
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
-<tr><td class=tabtxt align=center><b><?php echo L_FIELD ?></b></td><td class=tabtxt align=center><b><?php echo L_FIELD_IN_EDIT ?></b></td><td class=tabtxt align=center><b><?php echo L_NEEDED_FIELD ?></b></td></tr>
-<tr><td colspan=3><hr></td></tr>
+<tr>
+ <td class=tabtxt align=center><b><?php echo L_FIELD ?></b></td>
+ <td class=tabtxt align=center><b><?php echo L_FIELD_TYPE ?></b></td>
+ <td class=tabtxt align=center><b><?php echo L_FIELD_PRIORITY ?></b></td>
+ <td class=tabtxt align=center><b><?php echo L_NEEDED_FIELD ?></b></td>
+ <td class=tabtxt align=center><b><?php echo L_FIELD_IN_EDIT ?></b></td>
+ <td class=tabtxt colspan=2>&nbsp;</td>
+</tr>
+<tr><td colspan=7><hr></td></tr>
 <?php
-  reset($itemedit_fields);
-  $i=0;
-  while( list(, $val) = each($itemedit_fields)) {
-    FieldInput("f$i", "n$i", $val);
-    $i++;
-  }  
+  reset($s_fields);
+  while( list(, $v) = each($s_fields)) {
+    $type = ( $v[in_item_tbl] ? "in_item_tbl" : "" );
+    if( $update ) # get values from form
+      ShowField($v[id], $name[$v[id]], $pri[$v[id]], $req[$v[id]], $shw[$v[id]], $type);
+    else  
+      ShowField($v[id], $v[name], $v[input_pri], $v[required], $v[input_show], $type);
+  }
+    # one row for possible new field
+  ShowField("New_Field", "", "1000", false, true, "new");
+  
 ?>  
 </table>
 <tr><td align="center">
 <?php 
   echo "<input type=hidden name=\"update\" value=1>";
-  echo "<input type=hidden name=\"slice_id\" value=$slice_id>";
   echo '<input type=submit name=update value="'. L_UPDATE .'">&nbsp;&nbsp;';
-  echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
+  echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;
+</td></tr></table>
+</FORM>
+</BODY>
+</HTML>';
+
 /*
 $Log$
+Revision 1.3  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.2  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 
@@ -151,9 +246,4 @@ also added Id and Log keywords to all .php3 and .inc files
 *.php3 makes use of new variables in config.inc
 
 */
-?>   
-</td></tr></table>
-</FORM>
-</BODY>
-</HTML>
-<?php page_close()?>
+page_close()?>

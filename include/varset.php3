@@ -61,9 +61,12 @@ class Cvarset {
 	}	
 
 	# set variable value
-  function set($varname, $value){
-    $v = $this->vars[$varname];
-    $this->add($varname, $v->type, $value);   // it must be assigned this way, because $v is just copy
+  function set($varname, $value, $type=""){
+    if( $type=="" ) {
+      $v = $this->vars[$varname];
+      $type = $v->type;
+    }  
+    $this->add($varname, $type, $value);   // it must be assigned this way, because $v is just copy
   }
 
 	# return variable value
@@ -81,13 +84,17 @@ class Cvarset {
   }
 
 	# add variable to varset
-	function addArray($text_fields, $num_fields) {
-    reset( $text_fields );
-    while( list(,$name) = each($text_fields) )
-      $this->add($name, "text"); 
-    reset( $num_fields );
-    while( list(,$name) = each($num_fields) )
-      $this->add($name, "number"); 
+	function addArray($text_fields, $num_fields="") {
+    if( isset($text_fields) AND is_array($text_fields)) {
+      reset( $text_fields );
+      while( list(,$name) = each($text_fields) )
+        $this->add($name, "text"); 
+    }    
+    if( isset($num_fields) AND is_array($num_fields)) {
+      reset( $num_fields );
+      while( list(,$name) = each($num_fields) )
+        $this->add($name, "number"); 
+    }    
 	}	
 
   # makes SQL INSERT clause from varset
@@ -167,8 +174,11 @@ class Cvarset {
 }
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:50  madebeer
-Initial revision
+Revision 1.2  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
+Revision 1.1.1.1  2000/06/21 18:40:50  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:27  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

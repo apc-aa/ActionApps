@@ -27,6 +27,8 @@ define("ITEM_PHP3_INC",1);
 # length of alias must! be!! 10 characters !!!
 # if you change it, change compact and fulltext format strings in database, too !
 # do not use _# inside alias !
+
+/*
 $aliases["_#HEADLINE"] = array("fce"=>"f_h", "param"=>"headline", "hlp" => L_HLP_HEADLINE);
 $aliases["_#CATEGORY"] = array("fce"=>"f_h", "param"=>"category", "hlp" => L_HLP_CATEGORY);
 $aliases["_#HDLN_URL"] = array("fce"=>"f_f", "param"=>"", "hlp" => L_HLP_HDLN_URL);
@@ -51,7 +53,6 @@ $aliases["_#IMG_HGHT"] = array("fce"=>"f_g", "param"=>"", "hlp" => L_HLP_IMG_HGH
 $aliases["_#ITEM_ID#"] = array("fce"=>"f_n", "param"=>"id", "hlp" => L_HLP_ITEM_ID);
 $aliases["_#CATEG_ID"] = array("fce"=>"f_n", "param"=>"category_id", "hlp" => L_HLP_CATEGORY_ID);
 
-
 if( defined("EXTENDED_ITEM_TABLE") ) {
   $aliases["_#SRC_DEST"] = array("fce"=>"f_h", "param"=>"source_desc", "hlp" => L_HLP_SOURCE_DESC);
   $aliases["_#SRC_ADDR"] = array("fce"=>"f_h", "param"=>"source_address", "hlp" => L_HLP_SOURCE_ADDRESS);
@@ -71,7 +72,7 @@ if( defined("EXTENDED_ITEM_TABLE") ) {
   $aliases["_#LOC_PROV"] = array("fce"=>"f_h", "param"=>"loc_prov", "hlp" => L_HLP_LOC_PROV);
   $aliases["_#LOC_CNTR"] = array("fce"=>"f_h", "param"=>"loc_country", "hlp" => L_HLP_LOC_COUNTRY);
 }
-
+*/
 
 function txt2html($txt) {          #converts plain text to html
   $txt = nl2br(htmlspecialchars($txt));
@@ -79,78 +80,129 @@ function txt2html($txt) {          #converts plain text to html
   return $txt;
 }  
 
+function GetAliasesFromFields($fields) {
+  if( !( isset($fields) AND is_array($fields)) )
+    return false;
+
+  #  Standard aliases
+  $aliases["_#ITEM_ID#"] = array("fce" => "f_n:id",
+                                 "param" => "id",
+                                 "hlp" => L_ITEM_ID_ALIAS);
+  $aliases["_#EDITITEM"] = array("fce" => "f_e",
+                                 "param" => "id",
+                                 "hlp" => L_EDITITEM_ALIAS);
+
+  # database stored aliases
+  while( list( ,$val) = each($fields) ) {
+    if( $val[alias1] )
+      $aliases[$val[alias1]] = array("fce" => $val[alias1_func],
+                                     "param" => ( ($val[in_item_tbl] != "") ? 
+                                                      $val[in_item_tbl] :
+                                                      $val[id] ),
+                                     "hlp" => $val[alias1_help]);
+    if( $val[alias2] )
+      $aliases[$val[alias2]] = array("fce" => $val[alias2_func],
+                                     "param" => ( ($val[in_item_tbl] != "") ? 
+                                                      $val[in_item_tbl] :
+                                                      $val[id] ),
+                                     "hlp" => $val[alias2_help]);
+    if( $val[alias3] )
+      $aliases[$val[alias3]] = array("fce" => $val[alias3_func],
+                                     "param" => ( ($val[in_item_tbl] != "") ? 
+                                                      $val[in_item_tbl] :
+                                                      $val[id] ),
+                                     "hlp" => $val[alias3_help]);
+  }                                   
+  return($aliases);
+}  
+
+
 class item {    
-  var $columns;               # asociative array with names of columns and values of  current row 
-  var $full;                  # fulltext view/compact view    
-  var $odd;
-  var $clean_url;
-  var $fulltext_format;
-  var $odd_row_format;
-  var $even_row_format;
-  var $category_format;
-  var $grab_len;
+  var $item_content;   # asociative array with names of columns and values from item table
+  var $columns;        # asociative array with names of columns and values of current row 
+  var $clean_url;      # 
+  var $top;
+  var $format;         # format string with aliases 
+  var $bottom;
+  var $grab_len;              
+  var $remove;         # remove string
+  var $aliases;        # array of usable aliases              
   
-  function item($cols,$f,$o,$c,$ff,$orf,$erf,$cf,$gl,$cr,$fr){                   #constructor 
-   $this->columns = $cols;
-   $this->full = $f;
-   $this->odd = $o;
-   $this->clean_url = $c;
-   $this->fulltext_format = $ff;
-   $this->even_row_format = $erf;
-   $this->odd_row_format = $orf;
-   $this->category_format = $cf;
-   $this->grab_len = $gl;
-   $this->compact_remove = $cr;
-   $this->fulltext_remove = $fr;
+  
+  function item($ic, $cols, $ali, $c, $ff, $gl, $fr="", $top="", $bottom=""){   #constructor 
+    $this->item_content = $ic;
+    $this->columns = $cols;
+    $this->aliases = $ali;
+    $this->clean_url = $c;
+    $this->format = $ff;
+    $this->grab_len = $gl;
+    $this->remove = $fr;
+    $this->top = $top;
+    $this->bottom = $bottom;
+  }
+  
+  function setformat( $format, $remove="", $top="", $bottom="") {
+    $this->format = $format;
+    $this->remove = $remove;
+    $this->top = $top;
+    $this->bottom = $bottom;
   }
   
   // functions called for alias substitution
-  function f_h($col) { return htmlspecialchars($this->columns[$col]); }
-  function f_x($col) { return $this->columns[$col]; }
-  function f_d($col) { return datetime2date($this->columns[$col]); }
-  function f_i($col) { return ( $this->columns["img_src"] ? $this->columns["img_src"] : NO_PICTURE_URL); }
-  function f_n($col) { return unpack_id( $this->columns[$col] ); }
+  function f_h($col) { return htmlspecialchars($this->columns[$col][0][value]); }
+  function f_x($col) { return $this->columns[$col][0][value]; }
+  function f_d($col) { return sec2userdate($this->columns[$col][0][value]); }  #can be used use $format in sec2userdate
+  function f_i($col) { return ( $this->columns["img_src........."][0][value] ? $this->columns["img_src........."][0][value] : NO_PICTURE_URL); }
+  function f_n($col) { return unpack_id( $this->columns[$col][0][value] ); }
   function f_g($col) { 
     global $out;
-    if( !$this->columns["img_height"] ) {
+    if( !$this->columns["img_height......"][0][value] ) {
       $out = ERegI_Replace( "height[[:space:]]*=[[:space:]]*[\"]?^", "", $out );  // delete height = x
       return false;
     }
-    return htmlspecialchars($this->columns["img_height"]);
+    return htmlspecialchars($this->columns["img_height......"][0][value]);
   }
   function f_w($col) { 
     global $out;
-    if( !$this->columns["img_width"] ) {
+    if( !$this->columns["img_width......."][0][value] ) {
       $out = ERegI_Replace( "width[[:space:]]*=[[:space:]]*[\"]?^", "", $out );  // delete width = x
       return false;
     }
-    return htmlspecialchars($this->columns["img_width"]);
+    return htmlspecialchars($this->columns["img_width......."][0][value]);
   }
   function f_a($col)     {            // returns abstract or grabed fulltext
-    if ($this->columns["abstract"])
-      return htmlspecialchars($this->columns["abstract"]);
-    return htmlspecialchars(substr($this->columns["full_text"],0,$this->grab_len));
+    if ($this->columns["abstract........"][0][value])
+      return htmlspecialchars($this->columns["abstract........"][0][value]);
+    return htmlspecialchars(substr($this->columns["full_text......."][0][value],0,$this->grab_len));
   }
   function f_f($col) { 
-    if( $this->columns["link_only"] )
-      return ($this->columns["hl_href"] ? $this->columns["hl_href"] : NO_OUTER_LINK_URL);
-    if( $this->columns["redirect"] )  // redirecting to another page (should contain SSI include ../slice.php3 too)
-      return con_url($this->columns["redirect"],"sh_itm=".unpack_id($this->columns["id"]));
+    if( $this->columns["link_only......."][0][value] )
+      return ($this->columns["hl_href........."][0][value] ? 
+                $this->columns["hl_href........."][0][value] :
+                NO_OUTER_LINK_URL);
+    if( $this->columns["redirect........"][0][value] )  // redirecting to another page (should contain SSI include ../slice.php3 too)
+      return con_url($this->columns["redirect........"][0][value],"sh_itm=".unpack_id($this->columns["id"][0][value]));
      else 
-      return con_url($this->clean_url,"sh_itm=".unpack_id($this->columns["id"]));
+      return con_url($this->clean_url,"sh_itm=".unpack_id($this->columns["id"][0][value]));
   }    
   function f_t($col) { 
-    return ( ($this->columns["html_formatted"]==0) ? 
-      txt2html($this->columns["full_text"]) : $this->columns["full_text"]);
-  }    
-  function f_s($col) { return ( $this->columns["source_href"] ? $this->columns["source_href"] : NO_SOURCE_URL); }
-  function f_l($col) { 
-    if( $this->columns["source_href"] AND $this->columns["source"] )
-      return '<a href="'. htmlspecialchars($this->columns["source_href"]) .'">'.
-              htmlspecialchars($this->columns["source"]).'</a>';
-    return htmlspecialchars($this->columns["source"]); 
+    return ( ($this->columns["full_text......."][0][flag] & 2) ? 
+      $this->columns["full_text......."][0][value] : txt2html($this->columns["full_text......."][0][value]) );
   }
-                         
+  function f_s($col) { return ( $this->columns["source_href....."][0][value] ? $this->columns["source_href....."][0][value] : NO_SOURCE_URL); }
+  function f_l($col) { 
+    if( $this->columns["source_href....."][0][value] AND $this->columns["source.........."][0][value] )
+      return '<a href="'. htmlspecialchars($this->columns["source_href....."][0][value]) .'">'.
+              htmlspecialchars($this->columns["source.........."][0][value]).'</a>';
+    return htmlspecialchars($this->columns["source.........."][0][value]); 
+  }
+  function f_e($col) { // _#ITEMEDIT used on admin page index.php3 for itemedit url
+    global $sess;
+    return con_url($sess->url("itemedit.php3"),
+                   "encap=false&edit=1&id=".
+                   unpack_id( $this->columns["id"][0][value]));
+  }                 
+  
   // function shows full text navigation (back, home)
   function show_navigation($home_url) {
     echo '<br><a href="javascript:history.back()">'. L_BACK .'</a> &nbsp; ';
@@ -159,27 +211,13 @@ class item {
 
   function print_item() {
   // format string
-    if( $this->full) {
-      $out = $this->fulltext_format;
-      $remove = $this->fulltext_remove;
-     } else {
-      $out = ((!$this->odd AND $this->even_row_format) ? $this->even_row_format : $this->odd_row_format);
-      $remove = $this->compact_remove;
-    }  
+    $out = $this->format;
+    $remove = $this->remove;
     $out = $this->unalias($out, $remove);
     echo $out;
   }  
 
-  function print_category() {
-    $out = $this->unalias($this->category_format);
-    echo $out;
-  }  
-
   function unalias($out, $remove_string="") {
-    global $alias2column, $aliases, $debugtimes;
-
-//$debugtimes[] = "In: unalias".microtime();
-
     $piece = explode("_#",$out);
     if( !is_array($piece))
       $piece = array($out);
@@ -191,9 +229,10 @@ class item {
       next($piece);
     }
     while(current($piece)) {
-      $ali_arr = $aliases["_#".($als_name=substr(current($piece),0,8))];
+      $ali_arr = $this->aliases["_#".($als_name=substr(current($piece),0,8))];
       if( is_array($ali_arr)) {
-        $fce = $ali_arr[fce];   // fce as parameter (pointer to function)
+        $function = ParseFnc($ali_arr[fce]);   // fce as parameter (pointer to function)
+        $fce = $function[fnc];
 //huh($ali_arr[param]);
         $contents[$als_name] = $this->$fce($ali_arr[param]);
 //p_arr_m($contents);
@@ -239,27 +278,11 @@ class item {
   }
 };
 
-
-# Prints alias names as help for fulltext and compact format page
-function PrintAliasHelp() {
-  global $aliases;
-  ?>
-  <tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HLP ?></b></td></tr>
-  <tr><td>
-  <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
-  <?php
-  $count = 0;
-  while ( list( $ali,$v ) = each( $aliases ) ) 
-    echo "<tr><td nowrap>$ali</td><td>".$v[hlp]."</td></tr>";
-//    echo "<tr><td nowrap>ali</td><td>"."v[hlp]"."</td></tr>";
-  ?>  
-  </table>
-  </td></tr>
-  <?php
-}  
-
 /*
 $Log$
+Revision 1.5  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.4  2000/10/10 18:28:00  honzam
 Support for Web.net's extended item table
 

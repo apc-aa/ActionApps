@@ -37,34 +37,34 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 // lookup all slices without this one
-$SQL= "SELECT id, short_name FROM slices WHERE id<>'$p_slice_id' ORDER BY short_name";
+$SQL= "SELECT id, name FROM slice WHERE id<>'$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
-  $all_slices[unpack_id($db->f(id))] = $db->f(short_name);
+  $all_slices[unpack_id($db->f(id))] = $db->f(name);
 
-// lookup export_to slices
-$SQL= "SELECT short_name, id FROM slices, feedperms WHERE slices.id=feedperms.to_id 
-                   AND feedperms.from_id='$p_slice_id' ORDER BY short_name";
+// lookup export_to slice
+$SQL= "SELECT name, id FROM slice, feedperms WHERE slice.id=feedperms.to_id 
+                   AND feedperms.from_id='$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
-  $export_to[unpack_id($db->f(id))] = $db->f(short_name);
+  $export_to[unpack_id($db->f(id))] = $db->f(name);
 
-// lookup importable slices
-$SQL= "SELECT short_name, id FROM slices LEFT JOIN feedperms ON slices.id=feedperms.from_id 
-       WHERE (feedperms.to_id='$p_slice_id' OR slices.export_to_all=1) AND slices.id<>'$p_slice_id' ORDER BY short_name";
+// lookup importable slice
+$SQL= "SELECT name, id FROM slice LEFT JOIN feedperms ON slice.id=feedperms.from_id 
+       WHERE (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1) AND slice.id<>'$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
-  $importable[unpack_id($db->f(id))] = $db->f(short_name);
+  $importable[unpack_id($db->f(id))] = $db->f(name);
 
 // lookup imported slices
-$SQL= "SELECT short_name, id FROM slices, feeds WHERE slices.id=feeds.from_id 
-                                AND feeds.to_id='$p_slice_id' ORDER BY short_name";
+$SQL= "SELECT name, id FROM slice, feeds WHERE slice.id=feeds.from_id 
+                                AND feeds.to_id='$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
-  $imported[unpack_id($db->f(id))] = $db->f(short_name);
+  $imported[unpack_id($db->f(id))] = $db->f(name);
 
 // export_to_all setting
-$SQL= "SELECT export_to_all FROM slices WHERE slices.id='$p_slice_id'";
+$SQL= "SELECT export_to_all FROM slice WHERE slice.id='$p_slice_id'";
 $db->query($SQL);
 if($db->next_record())
   $export_to_all = $db->f(export_to_all);
@@ -131,12 +131,12 @@ function UpdateImportExport(slice_id)
   <?
   reset($all_slices);
   if( isset($export_to) AND is_array($export_to)) {
-    while(list($s_id,$short_name) = each($all_slices))
+    while(list($s_id,$name) = each($all_slices))
       if( $export_to[$s_id] == "" )
-        echo "<option value=\"$s_id\"> $short_name </option>"; 
+        echo "<option value=\"$s_id\"> $name </option>"; 
   }else 
-    while(list($s_id,$short_name) = each($all_slices))
-      echo "<option value=\"$s_id\"> $short_name </option>"; 
+    while(list($s_id,$name) = each($all_slices))
+      echo "<option value=\"$s_id\"> $name </option>"; 
   ?>
 </SELECT></td>
 <td><input type="button" VALUE="  >>  " onClick = "MoveSelected('document.f.export_n','document.f.export_y')" align=center>
@@ -146,8 +146,8 @@ function UpdateImportExport(slice_id)
   <?
   if( isset($export_to) AND is_array($export_to)) {
     reset($export_to);
-    while(list($s_id,$short_name) = each($export_to))
-      echo "<option value=\"$s_id\"> $short_name </option>"; 
+    while(list($s_id,$name) = each($export_to))
+      echo "<option value=\"$s_id\"> $name </option>"; 
   }    ?>
 </SELECT>
 </td>
@@ -155,34 +155,6 @@ function UpdateImportExport(slice_id)
 <tr><td colspan=3><table>
 <?php
   FrmInputChBox("export_to_all", L_EXPORT_TO_ALL, $export_to_all, true, "OnClick=\"ExportAllClick()\"");
-/*
-$Log$
-Revision 1.2  2000/08/03 12:49:22  kzajicek
-English editing
-
-Revision 1.1.1.1  2000/06/21 18:40:02  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:50  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.14  2000/06/12 19:58:24  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.13  2000/06/09 15:14:10  honzama
-New configurable admin interface
-
-Revision 1.12  2000/04/24 16:45:02  honzama
-New usermanagement interface.
-
-Revision 1.11  2000/03/29 14:34:12  honzama
-Better Netscape Navigator support in javascripts.
-
-Revision 1.10  2000/03/22 09:36:43  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>  
 </table></td></tr>
 <tr><td colspan=3>&nbsp;</td></tr>
@@ -201,9 +173,9 @@ also added Id and Log keywords to all .php3 and .inc files
   <?
   if( isset($importable) AND is_array($importable)) {
     reset($importable);
-    while(list($s_id,$short_name) = each($importable))
+    while(list($s_id,$name) = each($importable))
       if( $imported[$s_id] == "" )
-        echo "<option value=\"$s_id\"> $short_name </option>"; 
+        echo "<option value=\"$s_id\"> $name </option>"; 
   }
   ?>
 </SELECT></td>
@@ -231,4 +203,36 @@ also added Id and Log keywords to all .php3 and .inc files
 </FORM>
 </BODY>
 </HTML>
-<?php page_close()?>
+<?php
+/*
+$Log$
+Revision 1.3  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
+Revision 1.2  2000/08/03 12:49:22  kzajicek
+English editing
+
+Revision 1.1.1.1  2000/06/21 18:40:02  madebeer
+reimport tree , 2nd try - code works, tricky to install
+
+Revision 1.1.1.1  2000/06/12 21:49:50  madebeer
+Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
+
+Revision 1.14  2000/06/12 19:58:24  madebeer
+Added copyright (APC) notice to all .inc and .php3 files that have an $Id
+
+Revision 1.13  2000/06/09 15:14:10  honzama
+New configurable admin interface
+
+Revision 1.12  2000/04/24 16:45:02  honzama
+New usermanagement interface.
+
+Revision 1.11  2000/03/29 14:34:12  honzama
+Better Netscape Navigator support in javascripts.
+
+Revision 1.10  2000/03/22 09:36:43  madebeer
+also added Id and Log keywords to all .php3 and .inc files
+*.php3 makes use of new variables in config.inc
+
+*/
+ page_close()?>

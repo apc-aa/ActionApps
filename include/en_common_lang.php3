@@ -59,7 +59,6 @@ define("L_SETUP_SLICE", "Add Slice");
 define("L_LOGIN", "Welcome!");
 define("L_LOGIN_TXT", "Welcome! Please identify yourself with a username and a password:");
 define("L_LOGINNAME_TIP", "Type your username or mail");
-define("L_LOGINORG_TIP", "like econet.org -- (if you leave it blank, default is ".DEFAULT_ORG_ID.")");
 define("L_SEARCH_TIP", "List is limitted to 5 users.<br>If some user is not in list, try to be more specific in your query");
 define("L_USERNAME", "Username:");
 define("L_PASSWORD", "Password:");
@@ -103,12 +102,7 @@ define("L_VIEW_SLICE", "View site");
 define("L_SLICE_INACCESSIBLE", "Invalid slice number or slice was deleted");
 define("L_APP_TYPE", "Slice type");
 define("L_SELECT_APP", "Select slice type");
-define("L_APP_TYPE_HELP", "<small><br><br><br><br> You can easy create new slice type:<br><ul>
-                           <li>create new application language file (see en_news_lang.php3)
-                           <li>edit config.php3 and to add new app type:<br>
-                            &nbsp; \$ActionAppConfig[en_news][name] = \"News\";<br>
-                            &nbsp; \$ActionAppConfig[en_news][file] = \"en_news_lang.php3\";
-                           </ul></small>");
+define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
 define( "L_ICON_LEGEND", '');
 
@@ -117,21 +111,23 @@ define( "L_SLICE_HINT", '
                   To include slice in your webpage type next line to your shtml code:
                   ');
 
-//transforms my_sql date to human date format
-function datetime2date ($dttm) {
-	return ereg_replace("^([[:digit:]]{4})-([[:digit:]]{2})-([[:digit:]]{2}).*", 
-		"\\2/\\3/\\1", $dttm);
+//transforms database date to human date format
+function sec2userdate($timestamp, $format="") {
+  if( !$format )
+    $format = "m/d/Y";
+	return date($format, $timestamp);
 }
 
 // tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
 // break year for short year description is 1950
-function date2datetime ($dttm) {
+function userdate2sec ($dttm, $time="") {
   if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $dttm, $part))
     if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $dttm, $part))
       return "";
-     else
-      $part[3] = ($part[3]<50 ? "20".$part[3] : "19".$part[3]);
-	return $part[3] . "-" . $part[1] . "-" . $part[2];
+  if( !ereg("^ *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *$", $time, $tpart))
+    return mktime(0,0,0,$part[1],$part[2],$part[3]);
+   else
+    return mktime($tpart[1],$tpart[2],$tpart[3],$part[1],$part[2],$part[3]);
 }
 
 function dateExample() {
@@ -141,6 +137,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.12  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.11  2000/12/05 14:01:19  honzam
 Better help for upload image alias
 

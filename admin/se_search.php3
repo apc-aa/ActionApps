@@ -77,8 +77,8 @@ function FieldInputShow($name1, $txt){
 
 if( $update )
 {
-  $shown   = PackFields('f', count($shown_search_fields));
-  $default = PackFields('d', count($default_search_in));
+  $shown   = PackFields('f', count($SHOWN_SEARCH_FIELDS));
+  $default = PackFields('d', count($DEFAULT_SEARCH_IN));
     
   $SQL = "UPDATE slices SET search_show = '$shown', search_default = '$default' WHERE id='$p_slice_id'";
   if (!$db->query($SQL))   # not necessary - we have set the halt_on_error
@@ -90,8 +90,8 @@ else if( $slice_id!="" ) { // update => set variables from database
   $SQL= "SELECT search_show, search_default FROM slices WHERE id='$p_slice_id'";
   $db->query($SQL);
   if ($db->next_record()) {
-    UnpackFields( $db->f(search_show), 'f', count($shown_search_fields));
-    UnpackFields( $db->f(search_default), 'd', count($default_search_in));
+    UnpackFields( $db->f(search_show), 'f', count($SHOWN_SEARCH_FIELDS));
+    UnpackFields( $db->f(search_default), 'd', count($DEFAULT_SEARCH_IN));
   }  
 }
 
@@ -118,10 +118,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <tr><td class=tabtxt width="40%"><b><?php echo L_FIELD ?></b></td><td class=tabtxt width="30%" align=center><b><?php echo L_SEARCH_SHOW ?></b></td><td>&nbsp;</td></tr>
 <?php
-  reset($shown_search_fields);
+  reset($SHOWN_SEARCH_FIELDS);
   $number=0;
-  while( list($name, $val) = each($shown_search_fields)) {
-    if($default_search_in[$name]=="") {    // no default value for this field
+  while( list($name, $val) = each($SHOWN_SEARCH_FIELDS)) {
+    if($DEFAULT_SEARCH_IN[$name]=="") {    // no default value for this field
       FieldInputShow("f$number", $val);
       $number++;
     }  
@@ -137,9 +137,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     <td class=tabtxt width="30%" align=center><b><?php echo L_SEARCH_SHOW ?></b></td>
     <td class=tabtxt align=center><b><?php echo L_SEARCH_DEFAULT ?></b></td></tr>
 <?php
-  reset($default_search_in);
+  reset($DEFAULT_SEARCH_IN);
   $i=0;
-  while( list($name, $val) = each($default_search_in)) {
+  while( list($name, $val) = each($DEFAULT_SEARCH_IN)) {
     FieldInput("f$number", "d$i", $val);
     $number++; $i++;
   }  
@@ -153,6 +153,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.3  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.2  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

@@ -36,7 +36,7 @@ $catVS = new Cvarset();
 $expVS = new Cvarset();
 
 // update export_to_all switch
-$SQL= "UPDATE slices SET export_to_all=". ($to_all ? 1 : 0) ." WHERE id='$p_slice_id'";
+$SQL= "UPDATE slice SET export_to_all=". ($to_all ? 1 : 0) ." WHERE id='$p_slice_id'";
 $db->query($SQL);
 
 // ------------------------ Export --------------------------
@@ -124,6 +124,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.3  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.2  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

@@ -29,14 +29,17 @@ http://www.apc.org/
 #optionaly cat_name  // select only items in category with name cat_name
 #optionaly inc       // for dispalying another file instead of slice data 
                      // (like static html file - inc=/contact.html)
+#optionaly listlen   // change number of listed items in compact view
+                     // (aplicable in compact viewe only) 
 
 $encap = ( ($encap=="false") ? false : true );
 
 require "./include/config.php3";
-//require $GLOBALS[AA_INC_PATH]."en_common_lang.php3";  // we need datetime2date function
+//require $GLOBALS[AA_INC_PATH]."en_common_lang.php3";  // we need sec2userdate function
 require $GLOBALS[AA_INC_PATH]."easy_scroller.php3";
 require $GLOBALS[AA_INC_PATH]."util.php3";
 require $GLOBALS[AA_INC_PATH]."item.php3";
+require $GLOBALS[AA_INC_PATH]."view.php3";
 require $GLOBALS[AA_INC_PATH]."searchlib.php3";
 
 if ($encap){require $GLOBALS[AA_INC_PATH]."locsessi.php3";}
@@ -44,7 +47,7 @@ else {require $GLOBALS[AA_INC_PATH]."locsess.php3";}
 page_open(array("sess" => "AA_SL_Session"));
 $sess->register(r_highlight); 
 $sess->register(r_category); 
-$sess->register(r_unpacked_where); 
+$sess->register(r_item_ids); 
 
 //-----------------------------Functions definition--------------------------------------------------- 
 
@@ -70,10 +73,10 @@ function Page_HTML_End(){ ?>
 }
 
 function GetCategories($db,$p_slice_id){
- $SQL= " SELECT name, id FROM categories, catbinds WHERE categories.id = catbinds.category_id AND catbinds.slice_id='".$p_slice_id."'";
+ $SQL= " SELECT name, value FROM constant WHERE group_id='".$p_slice_id."'";
  $db->query($SQL);
  while ($db->next_record()){
-   $unpacked=unpack_id($db->f("id"));  
+   $unpacked=unpack_id($db->f("value"));  
    $arr[$unpacked]=$db->f("name");  
  }
  return $arr;  
@@ -102,245 +105,148 @@ function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps
  }
 }    
 
-function SubstFulltext($arr) {
-  global $db2;
-  if( $arr[id] == $arr[master_id] )
-    return;
-  $SQL = "SELECT full_text FROM fulltexts WHERE ft_id = '". $arr[master_id]. "'";
-  $db2->query($SQL);
-  if( $db2->next_record() )
-    $arr[full_text] = $db2->f(full_text); 
-  return;
-}    
+//-----------------------------End of functions definition------------------------------------------ 
 
-function CompactView($where, $catsel=false) {
-  global $scr, $db, $sess, $slice_id, $encap, $cur_cats, $highlight,
-         $category_sort, $category_format, $sort_order,
-         $compact_top, $compact_bottom, $fulltext_format, $odd_row_format, 
-         $even_row_format, $grab_len, $compact_remove, $fulltext_remove,
-         $debugtimes;
+if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
+                               #       and REDIRECT_STRING_UNESCAPED
 
-// the complexity of sql query significantly changes the time of execution
-// test: 
-//  select just from items:                                                      0.3 s
-//  select items left join categories order by category_id                       0.3 s
-//  select items left join categories order by categories.name                   0.9 s
-//  select items,fulltext left join categories order by category_id              0.4 s
-//  select items,fulltext left join categories order by category_id bez limit    0.9 s
-
-// -----------------------------------------------------------------
-// Test of OPTIMIZE_FOR_MYSQL
-// There is no difference between OPTIMIZE_FOR_MYSQL and not OPTIMIZE_FOR_MYSQL set in
-// execution time (both 0.4 s). That's because even we use LIMIT we have to count number of entries
-// for scroller (we do two queries for OPTIMIZE_FOR_MYSQL). The advantage is, that second query
-// is after items are dislayed, so user see what he want to see - items.
-//$debugtimes[]="> ".microtime();
-
-  $SQL = "SELECT items.*, fulltexts.full_text, categories.name as category FROM items, fulltexts LEFT JOIN categories ON categories.id=items.category_id".
-         " WHERE $where AND fulltexts.ft_id=items.master_id";
-  // $SQLcount used in OPTIMIZE_FOR_MYSQL for counting of items
-  $SQLcount = "SELECT count(*) as numrows FROM items, fulltexts LEFT JOIN categories ON categories.id=items.category_id WHERE $where AND fulltexts.ft_id=items.master_id";
-  if( $category_sort )
-    $SQL .= " ORDER BY category_id, publish_date DESC";
-   else 
-    $SQL .= " ORDER BY publish_date DESC";
-
-  if( OPTIMIZE_FOR_MYSQL ) {                 // mySQL - use LIMIT
-    $SQL .= " LIMIT ". $scr->metapage * ($scr->current - 1). ", ". $scr->metapage;
+  # url posted command to display another file
+if( $inc ) {                   # this section must be after $sess->add_vars()
+  if( !eregi("^([0-9a-z_])+(\.[0-9a-z]*)?$", $inc) ) {
+    echo L_BAD_INC. " $inc";
+    page_close();
+    exit;
+  } else {  
+    $fp = @fopen( shtml_base().$inc, "r");    #   if encapsulated
+    if( !$fp )
+      echo L_NO_SUCH_FILE ." $inc";
+     else
+      FPassThru($fp); 
+    exit;
   }  
+}  
 
-#huh("$SQL");
-  $db->query($SQL);
-#huh("nf:". $db->nf());
+$p_slice_id= q_pack_id($slice_id);
+$db = new DB_AA; 		 // open BD	
+$db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
+$cur_cats=GetCategories($db,$p_slice_id);     // get list of categories 
+
+  # get fields info
+$fields = GetTable2Array("SELECT * FROM field WHERE slice_id='$p_slice_id'", $db);
+
+  # get slice info
+$SQL= " SELECT * FROM slice WHERE id='".$p_slice_id."' AND deleted<1";
+//huh($SQL);
+
+$db->query($SQL);
+if ($db->next_record()) {
+  $slice_info = $db->Record;
+  include $GLOBALS[AA_INC_PATH] . $db->f(lang_file);  // language constants (used in searchform...)
+}
+else {
+  echo L_SLICE_INACCESSIBLE . " (ID: $slice_id)";
+  if (!$encap)
+    Page_HTML_End();
+  page_close();
+  exit;
+}  
   
-  if ($db->nf()>0) {    
-    if(!$encap) 
-      echo '<a href="'. $sess->MyUrl($slice_id, $encap). '&bigsrch=1">Search form</a><br>';
-    if( $catsel )
-      pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
-    echo $compact_top;
-    
-    $CurItem = new item($foo,false,1,$sess->MyUrl($slice_id, $encap), $fulltext_format, $odd_row_format, $even_row_format, $category_format, $grab_len, 
-                        $compact_remove, $fulltext_remove);
-    $oldcat = "_No CaTeg";
+if( !$slice_info[even_odd_differ] )
+  $slice_info[even_row_format] = "";
 
-    if( !OPTIMIZE_FOR_MYSQL )                // no mySQL - seek in result set
-      $db->seek($scr->metapage * ($scr->current - 1));
-      
-    while($db->next_record()){ 
-      $CurItem->odd = $i%2;
-      $CurItem->columns = $db->Record; # active row 
-      $catname = $db->f("category");
-      SubstFulltext(&$CurItem->columns);   //changes $db2 !!
-      if($category_sort AND ($catname != $oldcat)) {
-        $oldcat = $catname;
-        $CurItem->print_category();
-      }  
-      $CurItem->print_item();
-      if(++$i >= $scr->metapage) break; 
-    }
+if (!$encap)
+  Page_HTML_Begin("iso-8859-1", $slice_info[name] );  // TODO codepage
 
-    if( !OPTIMIZE_FOR_MYSQL )                  // if no mySQL - go to item no (mySQL use LIMIT)
-      $scr->countPages($db->nf());
-     else { 
-      $db->query($SQLcount);
-      $db->next_record();
-      $scr->countPages($db->f(numrows));      // count rows
+if( $bigsrch ) {      // big search form --------------------------------------
+  $show = Array("slice"=>true, "category"=>true, "author"=>true, "lang"=>true, "headline"=>true,
+                "full_text"=>true, "abstract"=>true, "from"=>true, "to"=>true, "edit_note"=>true);
+  require $GLOBALS[AA_INC_PATH]."big_srch.php3";
+}
+elseif( $sh_itm ) {   // fulltext view ----------------------------------------
+  $aliases = GetAliasesFromFields($fields);
+  $itemview = new itemview( $db, $slice_info, $fields, $aliases, $sh_itm, "","", $sess->MyUrl($slice_id, $encap));
+  $itemview->print_item();
+}
+else {               //compact view -------------------------------------------
+  if(!is_object($scr)) {
+    $sess->register(scr); 
+    $scr = new easy_scroller("scr",$sess->MyUrl($slice_id, $encap)."&", $slice_info[d_listlen]);	
+  }
+  if( $listlen )    // change number of listed items
+    $scr->metapage = $listlen;
+  
+  if($srch) {
+    $r_category_id = "";
+    $r_highlight = "";
+    if( !$big )      // posted by bigsrch form -------------------
+      $search[slice] = $slice_id;
+    $r_item_ids = unpack_id(SearchWhere($search, $s_col));  // it is problem to store packed slice_id in session variable
+    $scr->current = 1;
+  }
+  else {
+    if( $cat_id ) {         // optional parameter cat_id ---------
+      $r_category = ( $cat_id == "all" ? "" : $cat_id );
+      $r_highlight = $highlight;
+      $scr->current = 1;
     }  
+    elseif ( $cat_name ) {  // optional parameter cat_name -------
+      $SQL = "SELECT value FROM constant
+               WHERE group = '$p_slice_id'
+                 AND name LIKE '%$cat_name%'";
+      $db->query($SQL);
+      $r_category = ( $db->next_record() ? $db->f(value) : "" );
+      $r_highlight = $highlight;
+      $scr->current = 1;
+    }
+    elseif( $scrl ) {      // comes from easy_scroller -----------
+      if (is_object($scr)) 
+        $scr->update();
+    }    
+    else {                 // no parameters - initial settings ---
+      $r_category_id = "";
+      $r_highlight = $highlight;
+      $scr->current = 1;
+    }  
+    if( $r_category != "" )
+      $conditions['category........'] = $r_category;
+    if( $r_highlight != "" )
+      $conditions['highlight.......'] = 1;
+    $r_item_ids = GetItemAppIds($fields, $db, $p_slice_id, $conditions, 
+                   "DESC", $slice_info[category_sort] ? "category........" : "", "" );
+  }    
 
+  if(!$encap) 
+    echo '<a href="'. $sess->MyUrl($slice_id, $encap). '&bigsrch=1">Search form</a><br>';
+  if( !$srch AND !$encap )
+    pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
+
+  if( count( $r_item_ids ) > 0 ) {
+    $aliases = GetAliasesFromFields($fields);
+    $itemview = new itemview( $db, $slice_info, $fields, $aliases, $r_item_ids,
+                $scr->metapage * ($scr->current - 1), $scr->metapage, $sess->MyUrl($slice_id, $encap) );
+    $itemview->print_view();
+      
+    $scr->countPages( count( $r_item_ids ) );
   	if($scr->pageCount() > 1)
       $scr->pnavbar();
-    echo $compact_bottom;
   }  
   else 
     echo "<div>". L_NO_ITEM ."</div>";
 }
-
-//-----------------------------End of functions definition------------------------------------------ 
-
-  if ($encap) $sess->add_vars(); # adds values from QUERY_STRING_UNESCAPED 
-                                 #       and REDIRECT_STRING_UNESCAPED
-
-    # url posted command to display another file
-  if( $inc ) {                   # this section must be after $sess->add_vars()
-    if( !eregi("^([0-9a-z_])+(\.[0-9a-z]*)?$", $inc) ) {
-      echo L_BAD_INC. " $inc";
-      page_close();
-      exit;
-    } else {  
-      $fp = @fopen( shtml_base().$inc, "r");    #   if encapsulated
-      if( !$fp )
-        echo L_NO_SUCH_FILE ." $inc";
-       else
-        FPassThru($fp); 
-      exit;
-    }  
-  }  
-
-  $p_slice_id= q_pack_id($slice_id);
-  $db = new DB_AA; 		 // open BD	
-  $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
-  $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories 
-
-  $SQL= " SELECT headline, d_cp_code, d_listlen, fulltext_format, odd_row_format,
-                 even_row_format, even_odd_differ, compact_top, compact_bottom,
-                 category_sort, category_format, slice_url, grab_len, compact_remove,
-                 fulltext_remove, type
-          FROM slices WHERE id='".$p_slice_id."' AND deleted<1";
-  $db->query($SQL);
-  if ($db->next_record()) {
-    $codepage = $db->f(d_cp_code);
-    $fulltext_format = $db->f(fulltext_format);
-    $odd_row_format = $db->f(odd_row_format);
-    $even_row_format = $db->f(even_row_format);
-    $even_odd_differ = $db->f(even_odd_differ);
-    $compact_top = $db->f(compact_top);
-    $compact_bottom = $db->f(compact_bottom);
-    $category_sort = $db->f(category_sort);
-    $category_format = $db->f(category_format);
-    $headline = $db->f(headline);
-    $listlen = $db->f(d_listlen);
-    $slice_url = $db->f(slice_url);
-    $grab_len = $db->f(grab_len);
-    $compact_remove = $db->f(compact_remove);
-    $fulltext_remove = $db->f(fulltext_remove);
-    include $GLOBALS[AA_INC_PATH] . $ActionAppConfig[$db->f(type)][file];  // language constants (used in searchform...)
-  }
-  else {
-    echo L_SLICE_INACCESSIBLE;
-    if (!$encap)
-      Page_HTML_End();
-    page_close();
-    exit;
-  }  
-    
-  if( !$even_odd_differ )
-    $even_row_format = "";
-  
-  if (!$encap)
-    Page_HTML_Begin($codepage, $headline );
-
-  if( $bigsrch ) {      // big search form
-    $show = Array("slice"=>true, "category"=>true, "author"=>true, "lang"=>true, "headline"=>true,
-                  "full_text"=>true, "abstract"=>true, "from"=>true, "to"=>true, "edit_note"=>true);
-    require $GLOBALS[AA_INC_PATH]."big_srch.php3";
-  }
-  elseif( $sh_itm ) {   // fulltext view
-    $SQL= "SELECT items.*, fulltexts.full_text, categories.name as category 
-             FROM items, fulltexts 
-             LEFT JOIN categories ON categories.id=items.category_id 
-             WHERE fulltexts.ft_id=items.master_id AND (items.id='".q_pack_id($sh_itm)."')";
-    $db->query($SQL);
-    if ($db->next_record()) {
-      $CurItem = new item($foo,true,1,$sess->MyUrl($slice_id, $encap), $fulltext_format, $odd_row_format, $even_row_format, "", $grab_len, $compact_remove, $fulltext_remove);
-      $CurItem->columns = $db->Record; 
-//p_arr_m($CurItem->columns);
-      SubstFulltext(&$CurItem->columns);    //changes $db2 !!
-      $CurItem->print_item();
-      $CurItem->show_navigation($slice_url);
-    }
-    else 
-      echo "are you sure about the existence of this ?";   
-  }
-  else {               //compact view
-    if(!is_object($scr)) {
-      $sess->register(scr); 
-      $scr = new easy_scroller("scr",$sess->MyUrl($slice_id, $encap)."&", $listlen);	
-    }  
-    if($srch) {
-      $r_category_id = "";
-      $r_highlight = "";
-      if( !$big )      // posted by bigsrch form
-        $search[slice] = $slice_id;
-      $r_unpacked_where = unpack_id(SearchWhere($search, $s_col));  // it is problem to store packed slice_id in session variable
-      $scr->current = 1;
-    }
-    else {
-      if( $cat_id ) {         // optional parameter cat_id
-        $r_category = ( $cat_id == "all" ? "" : $cat_id );
-        $r_highlight = $highlight;
-        $r_unpacked_where = unpack_id(MakeWhere($p_slice_id, $r_category, $r_highlight));
-        $scr->current = 1;
-      }  
-      elseif ( $cat_name ) {  // optional parameter cat_name
-        $SQL = "SELECT categories.id FROM categories, catbinds 
-                  WHERE categories.id=catbinds.category_id 
-                    AND catbinds.slice_id = '$p_slice_id'
-                    AND categories.name LIKE '%$cat_name%'";
-        $db->query($SQL);
-        $r_category = ( $db->next_record() ? unpack_id($db->f(id)) : "" );
-        $r_highlight = $highlight;
-        $r_unpacked_where = unpack_id(MakeWhere($p_slice_id, $r_category, $r_highlight));
-        $scr->current = 1;
-      }
-      elseif( $scrl ) {      // comes from easy_scroller
-        if (is_object($scr)) 
-          $scr->update();
-      }    
-      else {                 // no parameters - initial settings 
-        $r_category_id = "";
-        $r_highlight = $highlight;
-        $r_unpacked_where = unpack_id(MakeWhere($p_slice_id, $r_category, $r_highlight));
-        $scr->current = 1;
-      }  
-    }    
-    //$debugtimes["callcompact"]=microtime();
-    CompactView(pack_id($r_unpacked_where), (!$srch AND !$encap) );
-    //$debugtimes[]=microtime();
-  }
 ?>
  <br>
 <?php 
   //<a href= $sess->MyUrl($slice_id, $encap)> Reload this</a> 
- //p_arr_m($debugtimes);
-  if (!$encap)
-    Page_HTML_End();
-    //$debugtimes["end"]=microtime();
-  page_close();
-    //$debugtimes["end2"]=microtime();
+if (!$encap)
+  Page_HTML_End();
+  //$debugtimes[]=microtime();
+page_close();
 //    p_arr_m($debugtimes);
 /*
 $Log$
+Revision 1.9  2000/12/21 16:39:33  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.8  2000/08/23 12:29:57  honzam
 fixed security problem with inc parameter to slice.php3
 

@@ -22,6 +22,9 @@ http://www.apc.org/
 
 /*
 $Log$
+Revision 1.3  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.2  2000/07/03 15:00:14  honzam
 Five table admin interface. 'New slice expiry date bug' fixed.
 
@@ -88,10 +91,11 @@ added $Id $Log and $Copyright to some stray files
   <tr><td class=leftmenu><?php echo L_MISC ?></td></tr>
   <tr><td><img src="../images/black.gif" width=120 height=1></td></tr>
   <?php
-  if( $r_bin_show == "long")
+/*  if( $r_bin_show == "long")
     echo "<tr><td><img src='../images/spacer.gif' width=5 height=1 border=0 alt=''><a href=\"". con_url($sess->url($PHP_SELF),"More=short")."\" class=leftmenuy>".L_LESS_DETAILS."</a></td></tr>";
    else
     echo "<tr><td><img src='../images/spacer.gif' width=5 height=1 border=0 alt=''><a href=\"". con_url($sess->url($PHP_SELF),"More=long")."\" class=leftmenuy>".L_MORE_DETAILS."</a></td></tr>";
+*/
   if( ($slice_id AND IfSlPerm(PS_DELETE_ITEMS) ))
     echo '<tr><td><img src="../images/spacer.gif" width=5 height=1 border=0 alt=""><a href="'. $sess->url("index.php3?Delete=trash") .  '" class=leftmenuy>'. L_DELETE_TRASH .'</a></td></tr>';?>
   <tr><td align=center height=10><img src="../images/black.gif" width=120 height=1></td></tr><?php

@@ -24,11 +24,11 @@ http://www.apc.org/
 #
 
 function FeedItemTo($item_id, $destination, $approved, $db, $tocategory=0) {
-  global $item_fields_text, $item_fields_num;
+  global $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM;
 //huh("FeedItemTo($item_id, $destination, $approved, $db, $tocategory =0)");
    
   $varset = new Cvarset;
-  $varset->addArray( $item_fields_text, $item_fields_num );
+  $varset->addArray( $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM );
   $SQL = "SELECT items.* FROM items WHERE id='". q_pack_id($item_id) ."'";
   $db->query($SQL);
   if( $db->next_record() )
@@ -65,11 +65,30 @@ function FeedItemTo($item_id, $destination, $approved, $db, $tocategory=0) {
 # Feeds item to all apropriate slices
 # item_id is unpacked id of feeded item
 function FeedItem($item_id, $db) {               //TODO  - category problem when you feed down and down, the category can change
-  global $item_fields_text, $item_fields_num;    //      - it is no so big problem (19.11.99) 
+  global $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM;    //      - it is no so big problem (19.11.99) 
+
+
+
+
+
+
+
+
    
+//zkontolovat status_code (kdyz neni 1 - konec)
+
+
+
+
+
+
+
+
+
+
   // select slices where item should be exported
   $varset = new Cvarset;
-  $varset->addArray( $item_fields_text, $item_fields_num );
+  $varset->addArray( $ITEM_FIELDS_TEXT, $ITEM_FIELDS_NUM );
   $SQL = "SELECT items.* FROM items WHERE id='". q_pack_id($item_id) ."'";
   $db->query($SQL);
   if( $db->next_record() ){
@@ -117,6 +136,9 @@ function FeedItem($item_id, $db) {               //TODO  - category problem when
 }
 /*
 $Log$
+Revision 1.4  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.3  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

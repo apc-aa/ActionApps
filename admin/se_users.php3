@@ -136,7 +136,9 @@ HtmlPageBegin();   // Prints HTML start page tags
       DelPerm($UsrDel, $slice_id, "slice");
   }
   if( $continue ) {
-    # create or update scroller
+/* # unused code (I hope)
+
+   # create or update scroller
     if(is_object($st_usr))
       $st_usr->updateScr($sess->url($PHP_SELF) . "&");
     else {
@@ -148,6 +150,7 @@ HtmlPageBegin();   // Prints HTML start page tags
     $db->next_record();
     $st_usr->countPages($db->f(cnt));
     $pgsize = $st_usr->metapage; # scroller page size 
+*/    
     ?>
     
     <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
@@ -187,6 +190,9 @@ HtmlPageBegin();   // Prints HTML start page tags
   }  
 /*
 $Log$
+Revision 1.5  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.4  2000/07/27 14:26:55  kzajicek
 Higher privileges are now necessary to change permissions
 of other users (sooner was equality adequate).

@@ -38,11 +38,11 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FEEDING)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 // lookup (slices) 
-$SQL= "SELECT short_name, id FROM slices, feeds WHERE slices.id=feeds.from_id 
-                                AND feeds.to_id='$p_slice_id' ORDER BY short_name";
+$SQL= "SELECT name, id FROM slice, feeds WHERE slice.id=feeds.from_id 
+                                AND feeds.to_id='$p_slice_id' ORDER BY name";
 $db->query($SQL);
 while($db->next_record())
-  $impslices[unpack_id($db->f(id))] = $db->f(short_name);
+  $impslices[unpack_id($db->f(id))] = $db->f(name);
 
 if( !isset($impslices) OR !is_array($impslices)){
   MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), L_NO_IMPORTED_SLICE);
@@ -56,22 +56,28 @@ if( $import_id == "" ) {
 $p_import_id = q_pack_id($import_id);
 
 // lookup (to_categories) 
-$SQL= "SELECT id, name FROM categories, catbinds WHERE catbinds.category_id=categories.id 
-         AND catbinds.slice_id='$p_slice_id' ORDER BY name";
-
+$SQL = "SELECT input_show_func FROM field
+         WHERE slice_id='$p_slice_id' AND id='category........'
+         ORDER BY input_pri";
 $db->query($SQL);
-$first_time = true;
-while($db->next_record()) {
-  if( $first_time ) {          // in order to The Same to be first in array
-    $to_categories["0"] = L_THE_SAME;
-    $first_time = false;
-  } 
-  $to_categories[unpack_id($db->f(id))] = $db->f(name);
+if( $db->next_record()) {
+  $foo = ParseFnc($db->f(input_show_func));
+  $group = $foo['param'];
+  $db->query("SELECT name, value FROM constant 
+               WHERE group_id='$group'
+               ORDER BY pri");
+  $first_time = true;
+  while($db->next_record())
+    if( $first_time ) {          // in order to The Same to be first in array
+      $to_categories["0"] = L_THE_SAME;
+      $first_time = false;
+    } 
+    $to_categories[unpack_id($db->f(value))] = $db->f(name);
 }
 
 // count number of imported categories
-$SQL= "SELECT count(*) as cnt FROM categories, catbinds WHERE catbinds.category_id=categories.id 
-         AND catbinds.slice_id='$p_import_id'";
+$SQL= "SELECT count(*) as cnt FROM constant 
+        WHERE group_id='$group'";
 $db->query($SQL);
 $imp_count = ($db->next_record() ? $db->f(cnt) : 0);
 
@@ -223,30 +229,42 @@ if ($imp_count) {
 <tr><td colspan=4><hr></td></tr>
 <?php
 
-$SQL= "SELECT id, name FROM categories, catbinds WHERE catbinds.category_id=categories.id 
-         AND catbinds.slice_id='$p_import_id' ORDER BY name";
+
+// lookup (to_categories) 
+$SQL = "SELECT input_show_func FROM field
+         WHERE slice_id='$p_import_id' AND id='category........'";
 $db->query($SQL);
-$i=1;
-while($db->next_record()) {
-  $id = unpack_id($db->f(id));
-  echo "<tr><td align=CENTER>";
-  $chboxname = "chbox_". $i;
-   FrmChBoxEasy($chboxname, $chboxcat[$id] );
-  echo "</td>\n<td class=tabtxt>". $db->f(name). "</td><TD>";
-  $selectname = "categ_". $i;
-  if( isset($to_categories) AND is_array($to_categories) )
-     FrmSelectEasy($selectname, $to_categories, $selcat[$id]); 
-   else   
-     echo "<span class=tabtxt>". L_NO_CATEGORY ."</span>";
-  echo "</td>\n<TD align=CENTER>";
-  $chboxname = "approved_". $i;
-   FrmChBoxEasy($chboxname, $chboxapp[$id] );
-  echo "<input type=hidden name=hid_$i value=$id>";
-  echo "</td></tr>";
-  $i++;
-}  
+if( $db->next_record()) {
+  $foo = ParseFnc($db->f(input_show_func));
+  $imp_group = $foo['param'];
+  $db->query("SELECT name, value FROM constant 
+               WHERE group_id='$imp_group'
+               ORDER BY name");
+  $i=1;
+  while($db->next_record()) {
+    $id = unpack_id($db->f(id));
+    echo "<tr><td align=CENTER>";
+    $chboxname = "chbox_". $i;
+     FrmChBoxEasy($chboxname, $chboxcat[$id] );
+    echo "</td>\n<td class=tabtxt>". $db->f(name). "</td><TD>";
+    $selectname = "categ_". $i;
+    if( isset($to_categories) AND is_array($to_categories) )
+       FrmSelectEasy($selectname, $to_categories, $selcat[$id]); 
+     else   
+       echo "<span class=tabtxt>". L_NO_CATEGORY ."</span>";
+    echo "</td>\n<TD align=CENTER>";
+    $chboxname = "approved_". $i;
+     FrmChBoxEasy($chboxname, $chboxapp[$id] );
+    echo "<input type=hidden name=hid_$i value=$id>";
+    echo "</td></tr>";
+    $i++;
+  }
+} 
 /*
 $Log$
+Revision 1.5  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.4  2000/08/03 12:49:22  kzajicek
 English editing
 

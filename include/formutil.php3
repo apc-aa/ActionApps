@@ -23,30 +23,52 @@ http://www.apc.org/
 # Form utility functions
 #
 
-# if $condition, shows exclamatiom point
+# if $condition, shows star
 function Needed( $condition=true ) {
   if( $condition )
     echo "&nbsp;*";
 }    
 
+# if $txt, shows help message
+function PrintHelp( $txt ) {
+  if( $txt )
+    echo "<div class=tabhlp>$txt</div>";
+}    
+
+# if $txt, shows link to more help
+function PrintMoreHelp( $txt ) {
+  if( $txt )
+    echo "&nbsp;<a href='$txt'>?</a>";
+}    
+
 # Prints html tag <input type=text .. to 2-column table
 # for use within <form> and <table> tag
-function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false) {
+function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false,
+                      $hlp="", $morehlp="") {
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>\n";
   if ( SINGLE_COLUMN_FORM )
     echo "</tr><tr>";
-  echo "<td><input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value='$val'></td></tr>\n";
+  echo "<td><input type=\"Text\" name=\"$name\" size=$size
+          maxlength=$maxsize value=\"$val\">";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
 }
 
 # Prints two static text to 2-column table
 # for use within <table> tag
-function FrmStaticText($txt, $val){
-  echo "<tr><td class=tabtxt><b>$txt</b></td>";
+function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp=""){
+  echo "<tr><td class=tabtxt><b>$txt</b>";
+  Needed($needed); 
+  echo "</td>";
   if (SINGLE_COLUMN_FORM)
     echo "</tr><tr>";
-  echo "<td>$val</td></tr>\n";
+  echo "<td>$val";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
 }
 
 # Prints html tag <input type=password .. to 2-column table
@@ -62,13 +84,17 @@ function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false)
 
 # Prints html tag <input type=file .. to 2-column table
 # for use within <form> and <table> tag
-function FrmInputFile($name, $txt, $size=25, $needed=false)
-{ echo "<tr><td class=tabtxt><b>$txt</b>";
+function FrmInputFile($name, $txt, $size=25, $needed=false, $accepts="image/*",
+                      $hlp="", $morehlp="" ){
+  echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed); 
   echo "</td>\n";
   if (SINGLE_COLUMN_FORM)
     echo "</tr><tr>";
-  echo "  <td><input type=\"file\" name=\"$name\" size=$size accept=\"image/*\"></td></tr>\n";  // /**/
+  echo "<td><input type=\"file\" name=\"$name\" size=$size accept=\"$accepts\">";  // /**/
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
 }
 
 # Prints html tag <textarea .. to 2-column table
@@ -85,8 +111,9 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false)
 
 # Prints html tag <input type=checkbox .. to 2-column table
 # for use within <form> and <table> tag
-function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", $colspan=1, $needed=false)
-{ echo "<tr>";
+function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, 
+                    $add="", $colspan=1, $needed=false, $hlp="", $morehlp=""){
+  echo "<tr>";
   if( !$changeorder ) {
     echo "<td class=tabtxt colspan=$colspan><b>$txt</b>";
     Needed($needed);
@@ -97,7 +124,10 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", 
   echo "<td><input type=\"checkbox\" name=\"$name\" $add ";
   if($checked)
     echo " checked";
-  echo "></td>";
+  echo ">";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo"</td>";
   if( $changeorder ) {
     if (SINGLE_COLUMN_FORM)
       echo "</tr><tr>";
@@ -116,9 +146,22 @@ function FrmChBoxEasy($name, $checked=true, $add="")
   echo ">";
 }
 
+# Prints html tag <textarea .. to 2-column table
+# for use within <form> and <table> tag
+function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, 
+                     $hlp="", $morehlp="") {
+  echo "<tr><td class=tabtxt><b>$txt</b>";
+  Needed($needed);
+  echo "</td>\n  <td><textarea name=\"$name\" rows=$rows cols=$cols wrap=virtual>$val</textarea>";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
+}
+
 # Prints html tag <select .. to 2-column table
 # for use within <form> and <table> tag
-function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false) {
+function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false,
+                        $hlp="", $morehlp="") {
   echo "<tr><td class=tabtxt><b>$txt</b>";
   Needed($needed);
   echo "</td>\n";
@@ -133,7 +176,31 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false) {
     echo "> ". htmlspecialchars($v) ." </option>";
   }
   reset($arr);
-  echo "</select></td></tr>\n";
+  echo "</select>";
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
+}  
+
+# Prints html tag <input type="radio" .. to 2-column table
+# for use within <form> and <table> tag
+function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false,
+                       $hlp="", $morehlp="") {
+  echo "<tr><td class=tabtxt><b>$txt</b>";
+  Needed($needed);
+  echo "</td>\n <td>";	
+  reset($arr);
+  while(list($k, $v) = each($arr)) { 
+    echo "<input type='radio' name='". htmlspecialchars($k)."'
+                 value='". htmlspecialchars($v) ."'";
+    if ((string)$selected == (string)$k) 
+      echo " checked";
+    echo ">$txt ";
+  }
+  reset($arr);
+  PrintMoreHelp($morehlp);
+  PrintHelp($hlp);
+  echo "</td></tr>\n";
 }  
 
 # Prints html tag <select .. 
@@ -213,6 +280,9 @@ function safe( $var ) {
 
 /*
 $Log$
+Revision 1.6  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.5  2000/11/17 19:05:20  madebeer
 added SINGLE_COLUMN_FORM
 

@@ -26,7 +26,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";  // just for $alias array and PrintAliasHelp
+require $GLOBALS[AA_INC_PATH]."item.php3";     // GetAliasesFromField funct def 
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -39,33 +39,49 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_FULLTEXT)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
+$fields = ($r_fields ? 
+             $r_fields : 
+             GetTable2Array("SELECT * FROM field 
+                              WHERE slice_id='$p_slice_id'
+                              ORDER BY input_pri", $db));
+
 if( $update )
 {
   do
   {
+    ValidateInput("fulltext_format_top", L_FULLTEXT_FORMAT_TOP, &$fulltext_format_top, &$err, false, "text");
     ValidateInput("fulltext_format", L_FULLTEXT_FORMAT, &$fulltext_format, &$err, true, "text");
+    ValidateInput("fulltext_format_bottom", L_FULLTEXT_FORMAT_BOTTOM, &$fulltext_format_bottom, &$err, false, "text");
     ValidateInput("fulltext_remove", L_FULLTEXT_REMOVE, &$fulltext_remove, &$err, false, "text");
     if( count($err) > 1)
       break;
 
+    $varset->add("fulltext_format_top", "quoted", $fulltext_format_top);
     $varset->add("fulltext_format", "quoted", $fulltext_format);
+    $varset->add("fulltext_format_bottom", "quoted", $fulltext_format_bottom);
     $varset->add("fulltext_remove", "quoted", $fulltext_remove);
-    if( !$db->query("UPDATE slices SET ". $varset->makeUPDATE() . 
+    if( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . 
                      "WHERE id='".q_pack_id($slice_id)."'")) {
       $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
       break;    # not necessary - we have set the halt_on_error
     }     
+    $fulltext_format_top = dequote($fulltext_format_top);
     $fulltext_format = dequote($fulltext_format);
+    $fulltext_format_bottom = dequote($fulltext_format_bottom);
   }while(false);
   if( count($err) <= 1 )
     $Msg = MsgOK(L_FULLTEXT_OK);
 }
 
 if( $slice_id!="" ) {  // set variables from database
-  $SQL= " SELECT fulltext_format, fulltext_remove FROM slices WHERE id='". q_pack_id($slice_id)."'";
+  $SQL= " SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, 
+                 fulltext_remove 
+            FROM slice WHERE id='". q_pack_id($slice_id)."'";
   $db->query($SQL);
   if ($db->next_record()) {
+    $fulltext_format_top = $db->f(fulltext_format_top);
     $fulltext_format = $db->f(fulltext_format);
+    $fulltext_format_bottom = $db->f(fulltext_format_bottom);
     $fulltext_remove = $db->f(fulltext_remove);
   }  
 }
@@ -75,7 +91,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <TITLE><?php echo L_A_FULLTEXT_TIT;?></TITLE>
 <SCRIPT Language="JavaScript"><!--
 function Defaults() {
+  document.f.fulltext_format_top.value = '<?php echo DEFAULT_FULLTEXT_TOP ?>'
   document.f.fulltext_format.value = '<?php echo DEFAULT_FULLTEXT_HTML ?>'
+  document.f.fulltext_format_bottom.value = '<?php echo DEFAULT_FULLTEXT_BOTTOM ?>'
   document.f.fulltext_remove.value = '<?php echo DEFAULT_FULLTEXT_REMOVE ?>'
 }
 // -->
@@ -100,12 +118,14 @@ function Defaults() {
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?php
+  FrmTextarea("fulltext_format_top", L_FULLTEXT_FORMAT_TOP, $fulltext_format_top, 4, 60, false);
   FrmTextarea("fulltext_format", L_FULLTEXT_FORMAT, $fulltext_format, 8, 60, true);
+  FrmTextarea("fulltext_format_bottom", L_FULLTEXT_FORMAT_BOTTOM, $fulltext_format_bottom, 4, 60, false);
   FrmInputText("fulltext_remove", L_FULLTEXT_REMOVE, $fulltext_remove, 254, 50, false);
 ?>
 </table></td></tr>
 <?php
-  PrintAliasHelp();
+  PrintAliasHelp(GetAliasesFromFields($fields));
 ?>
 <tr><td align="center">
 <?php 
@@ -116,6 +136,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.4  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.3  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

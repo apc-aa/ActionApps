@@ -51,17 +51,17 @@ echo '<!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN"
 
 
 // RSS chanel (= slice) info
-$SQL= "SELECT * FROM slices WHERE id='$p_slice_id'";
+$SQL= "SELECT * FROM slice WHERE id='$p_slice_id'";
 $db->query($SQL);
 if (!$db->next_record()){
   echo "Can't get slice info";
   exit;
 }  
  
-$title           = RSS_restrict( $db->f(headline), 100);
+$title           = RSS_restrict( $db->f(name), 100);
 $link            = RSS_restrict( $db->f(slice_url), 500);
-$description     = RSS_restrict( $db->f(type).": ".$db->f(headline), 500);
-$language        = RSS_restrict( strtolower($db->f(d_language_code)), 5);
+$description     = RSS_restrict( $db->f(owner).": ".$db->f(name), 500);
+//$language        = RSS_restrict( strtolower($db->f(d_language_code)), 5);
 $lastBuildDate   = RSS_restrict( GMDate("D, d M Y H:i:s "). "GMT", 100);
 
 echo "

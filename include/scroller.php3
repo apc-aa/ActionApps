@@ -62,8 +62,8 @@ class scroller {
 	
 	# print Toggle Visibility button
 	function pVisButton($url = "",
-			$show = "<img src=\"/aa/images/expand.gif\" border=0 align=left alt=Expand>", 
-			$hide = "<img src=\"/aa/images/collapse.gif\" border=0 align=left alt=Collapse>") {
+			$show = "<img src=\"../images/expand.gif\" border=0 align=left alt=Expand>", 
+			$hide = "<img src=\"../images/collapse.gif\" border=0 align=left alt=Collapse>") {
 		if(!$url) $url = $this->urldefault;
 		echo "<a href=\"$url" . $this->ToggleVis() . "\">" . 
 			($this->visible ? $hide : $show) . "</a>";
@@ -84,7 +84,7 @@ class scroller {
 		if(!$url) $url = $this->urldefault;
 		echo "<a href=\"$url" . $this->Sort($sortcol) . "\">$show";
 		if($this->sortcol == $sortcol && $this->sortdir) 
-			echo "<img src=\"/aa/images/sort" . $this->sortdir . ".gif\" border=0>"; 
+			echo "<img src=\"../images/sort" . $this->sortdir . ".gif\" border=0>"; 
     echo "</a>";  
 	}
 
@@ -241,10 +241,10 @@ class scroller {
 				$cond[] = "$name $op " . $value;
 				break;
 			case "date":
-				$cond[] = "$name $op '" . date2datetime($value) . "'";
+				$cond[] = "$name $op '" . userdate2sec($value) . "'";
 				break;
 			case "md5":
-			        $cond[]= "$name $op '". quote(pack("H*",$value))."'";	
+        $cond[]= "$name $op '". quote(pack("H*",$value))."'";	
 			}
 		}
 		if(!is_array($cond)) return "1 = 1";
@@ -254,6 +254,9 @@ class scroller {
 			
 /*
 $Log$
+Revision 1.4  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.3  2000/10/10 10:02:33  honzam
 new function for explicit sorting order setting
 

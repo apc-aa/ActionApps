@@ -2,7 +2,7 @@
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
-http://www.apc.org/
+  http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ http://www.apc.org/
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
-require $GLOBALS[AA_INC_PATH]."item.php3";  // just for $alias array and PrintAliasHelp
+require $GLOBALS[AA_INC_PATH]."item.php3";     // GetAliasesFromField funct def 
 
 if($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -35,6 +35,12 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_COMPACT)) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_COPMPACT);
   exit;
 }  
+
+$fields = ($r_fields ? 
+             $r_fields : 
+             GetTable2Array("SELECT * FROM field 
+                              WHERE slice_id='$p_slice_id'
+                              ORDER BY input_pri", $db));
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
@@ -49,21 +55,26 @@ if( $update )
     ValidateInput("compact_remove", L_COMPACT_REMOVE, &$compact_remove, &$err, false, "text");
     if( $even_odd_differ )
       ValidateInput("even_row_format", L_EVEN_ROW_FORMAT, &$even_row_format, &$err, true, "text");
-    if( $category_sort )
+    if( $category_sort ) {
+      ValidateInput("category_top", L_CATEGORY_TOP, &$category_top, &$err, false, "text");
       ValidateInput("category_format", L_CATEGORY_FORMAT, &$category_format, &$err, true, "text");
+      ValidateInput("category_bottom", L_CATEGORY_BOTTOM, &$category_bottom, &$err, false, "text");
+    }  
     if( count($err) > 1)
       break;
 
     $varset->add("odd_row_format", "quoted", $odd_row_format);
     $varset->add("even_row_format", "quoted", $even_row_format);
+    $varset->add("category_top", "quoted", $category_top);
     $varset->add("category_format", "quoted", $category_format);
+    $varset->add("category_bottom", "quoted", $category_bottom);
     $varset->add("compact_top", "quoted", $compact_top);
     $varset->add("compact_bottom", "quoted", $compact_bottom);
     $varset->add("compact_remove", "quoted", $compact_remove);
     $varset->add("even_odd_differ", "number", $even_odd_differ ? 1 : 0);
     $varset->add("category_sort", "number", $category_sort ? 1 : 0);
 
-    if( !$db->query("UPDATE slices SET ". $varset->makeUPDATE() . " 
+    if( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . " 
                       WHERE id='".q_pack_id($slice_id)."'")) {
       $err["DB"] = MsgErr( L_ERR_CANT_CHANGE );
       break;   # not necessary - we have set the halt_on_error
@@ -74,14 +85,17 @@ if( $update )
 }
 
 if( $slice_id!="" ) {  // set variables from database - allways
-  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top, compact_bottom, compact_remove,
-                 category_sort, category_format
-          FROM slices WHERE id='". q_pack_id($slice_id)."'";
+  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top, 
+                 compact_bottom, compact_remove, category_sort, category_format,
+                 category_top, category_bottom
+          FROM slice WHERE id='". q_pack_id($slice_id)."'";
   $db->query($SQL);
   if ($db->next_record()) {
     $odd_row_format = $db->f(odd_row_format);
     $even_row_format = $db->f(even_row_format);
+    $category_top = $db->f(category_top);
     $category_format = $db->f(category_format);
+    $category_bottom = $db->f(category_bottom);
     $compact_top = $db->f(compact_top);
     $compact_bottom = $db->f(compact_bottom);
     $compact_remove = $db->f(compact_remove);
@@ -98,7 +112,9 @@ function Defaults()
 {
   document.f.odd_row_format.value = '<?php echo DEFAULT_ODD_HTML ?>'
   document.f.even_row_format.value = '<?php echo DEFAULT_EVEN_HTML ?> '
+  document.f.category_top.value = '<?php echo DEFAULT_CATEGORY_TOP ?>'
   document.f.category_format.value = '<?php echo DEFAULT_CATEGORY_HTML ?>'
+  document.f.category_bottom.value = '<?php echo DEFAULT_CATEGORY_BOTTOM ?>'
   document.f.compact_top.value = '<?php echo DEFAULT_TOP_HTML ?>'
   document.f.compact_remove.value = '<?php echo DEFAULT_COMPACT_REMOVE ?>'
   document.f.even_odd_differ.checked = <?php echo (DEFAULT_EVEN_ODD_DIFFER ? "true" : "false"). "\n"; ?>
@@ -140,18 +156,20 @@ function EnableClick(cond,what) {
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?php
-  FrmInputText("compact_top", L_COMPACT_TOP, $compact_top, 254, 50, false);
+  FrmTextarea("compact_top", L_COMPACT_TOP, $compact_top, 4, 50, false);
   FrmTextarea("odd_row_format", L_ODD_ROW_FORMAT, $odd_row_format, 6, 50, false);
   FrmInputChBox("even_odd_differ", L_EVEN_ODD_DIFFER, $even_odd_differ, true, "OnClick=\"EnableClick('document.f.even_odd_differ','document.f.even_row_format')\"");
   FrmTextarea("even_row_format", L_EVEN_ROW_FORMAT, $even_row_format, 6, 50, false);
-  FrmInputText("compact_bottom", L_COMPACT_BOTTOM, $compact_bottom, 254, 50, false);
+  FrmTextarea("compact_bottom", L_COMPACT_BOTTOM, $compact_bottom, 4, 50, false);
   FrmInputChBox("category_sort", L_CATEGORY_SORT, $category_sort, true, "OnClick=\"EnableClick('document.f.category_sort','document.f.category_format')\"");
+  FrmTextarea("category_top", L_CATEGORY_TOP, $category_top, 4, 50, false);
   FrmTextarea("category_format", L_CATEGORY_FORMAT, $category_format, 6, 50, false);
+  FrmTextarea("category_bottom", L_CATEGORY_BOTTOM, $category_bottom, 4, 50, false);
   FrmInputText("compact_remove", L_COMPACT_REMOVE, $compact_remove, 254, 50, false);
 ?>
 </table></td></tr>
 <?php
-  PrintAliasHelp();
+  PrintAliasHelp(GetAliasesFromFields($fields));
 ?>
 <tr><td align="center">
 <?php 
@@ -162,6 +180,9 @@ function EnableClick(cond,what) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.5  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.4  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

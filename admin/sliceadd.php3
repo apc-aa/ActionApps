@@ -30,6 +30,18 @@ if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
   exit;
 }
 
+$SQL = "SELECT name, id, template, lang_file FROM slice WHERE deleted<>1";
+$db->query($SQL);
+while( $db->next_record() ) {
+  if( $db->f(template) ) {
+    $templates[unpack_id( $db->f(id) )][value] = unpack_id( $db->f(id) ) ."{". $db->f(lang_file);
+    $templates[unpack_id( $db->f(id) )][name]  = $db->f(name);
+  } else {
+    $temp_slices[unpack_id( $db->f(id) )][value] = unpack_id( $db->f(id) ) ."{". $db->f(lang_file);
+    $temp_slices[unpack_id( $db->f(id) )][name]  = $db->f(name);
+  }  
+}    
+   
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -51,15 +63,36 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?php
-  echo "<tr><td class=tabtxt><b>". L_APP_TYPE ."</b>";
-  echo "</td>\n <td><select name=\"slice_type\">";	
-  reset($ActionAppConfig);
-  while(list($k, $v) = each($ActionAppConfig)) { 
-    echo "<option value=\"". htmlspecialchars($k)."\"";
-    echo "> ". htmlspecialchars($v[name]) ." </option>";
-  }
-  echo "</select></td></tr>\n";
-?>  
+  if( isset( $templates ) AND is_array( $templates )) {
+    echo "<tr><td class=tabtxt colspan=2><b>". L_TEMPLATE ."</b>";
+    echo "</td>\n <td><select name=\"template_id\">";	
+    reset($templates);
+    while(list(,$v) = each($templates)) { 
+      echo "<option value=\"". htmlspecialchars($v[value])."\"";
+      echo "> ". htmlspecialchars($v[name]) ." </option>";
+    }
+    echo '</select></td><td>
+          <input type="radio" name="template_slice_sel" value="template" checked>
+        </td></tr>';
+  } else
+    echo "<tr><td class=tabtxt colspan=2>". L_NO_TEMPLATES ."</td></tr>";
+        
+
+  if( isset( $temp_slices ) AND is_array( $temp_slices )) {
+    echo "<tr><td class=tabtxt colspan=2><b>". L_SLICE ."</b>";
+    echo "</td>\n <td><select name=\"template_id2\">";	
+    reset($temp_slices);
+    while(list(,$v) = each($temp_slices)) { 
+      echo "<option value=\"". htmlspecialchars($v[value])."\"";
+      echo "> ". htmlspecialchars($v[name]) ." </option>";
+    }
+    echo '</select></td><td>
+          <input type="radio" name="template_slice_sel" value="slice">
+        </td></tr>';
+  } else
+    echo "<tr><td class=tabtxt colspan=2>". L_NO_SLICES ."</td></tr>";
+ ?>
+
 </table>
 <tr><td align="center">
 <?php 
@@ -67,8 +100,11 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:04  madebeer
-Initial revision
+Revision 1.2  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
+Revision 1.1.1.1  2000/06/21 18:40:04  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:49:52  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

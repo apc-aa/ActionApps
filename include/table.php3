@@ -109,9 +109,9 @@ class Ctable {
         $i = 1;
         while($this->db->next_record()) { 
       		echo '<tr>';
-          if( date2sec($this->db->f(publish_date)) > date2sec(date("Y-m-d"). " 23:59:59") )
+          if( $this->db->f(publish_date) > mktime(23,59,59,date("m"),date("d"),date("Y")) )
             $i_state = "N";
-           else if( date2sec($this->db->f(expiry_date)) <= date2sec(date("Y-m-d"). " 0:0:0"))
+           else if( $this->db->f(expiry_date) <= mktime(0,0,0,date("m"),date("d"),date("Y")) )
             $i_state = "E";
            else 
             $i_state = "P";
@@ -125,7 +125,7 @@ class Ctable {
                   case "E": echo '<img src="../images/expired.gif" align="right" border=0 alt="'. L_EXPIRED .'">'; break;
                   case "P": echo '<img src="../images/publish.gif" align="right" border=0 alt="'. L_PUBLISHED .'">'; break;
                 }  
-                echo htmlspecialchars(datetime2date($this->db->f($name))) .'</td>';
+                echo htmlspecialchars(sec2userdate($this->db->f($name))) .'</td>';  # there can be used use $format in sec2userdate
                 break;
               case "category":
                 $foo = ( $this->db->f($name)=="" ? '&nbsp;' : htmlspecialchars($this->db->f($name)));
@@ -190,8 +190,11 @@ class Ctable {
 } 
 /*
 $Log$
-Revision 1.1  2000/06/21 18:40:48  madebeer
-Initial revision
+Revision 1.2  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
+Revision 1.1.1.1  2000/06/21 18:40:48  madebeer
+reimport tree , 2nd try - code works, tricky to install
 
 Revision 1.1.1.1  2000/06/12 21:50:27  madebeer
 Initial upload.  Code works, tricky to install. Copyright, GPL notice there.

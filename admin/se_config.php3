@@ -101,8 +101,8 @@ function UpdateConfig(action) {
 <td align="CENTER" valign="TOP">
 <SELECT name="hidden" size=8 class=tabtxt>
   <?
-  reset($af_columns);
-  while(list($name,$val) = each($af_columns)) {
+  reset($AF_COLUMNS);
+  while(list($name,$val) = each($AF_COLUMNS)) {
     if( !$r_slice_config["admin_fields"][$name] ) {
       if ( !($foo = $val[name])) // if there is no name defined, use title
         $foo = $val[title];
@@ -119,8 +119,8 @@ function UpdateConfig(action) {
   if( isset($r_slice_config["admin_fields"]) AND is_array($r_slice_config["admin_fields"])) {
     reset($r_slice_config["admin_fields"]);
     while(list($name,) = each($r_slice_config["admin_fields"])) {
-      if ( !($foo = $af_columns[$name][name])) // if there is no name defined, use title
-        $foo = $af_columns[$name][title];
+      if ( !($foo = $AF_COLUMNS[$name][name])) // if there is no name defined, use title
+        $foo = $AF_COLUMNS[$name][title];
       echo "<option value=\"$name\"> $foo </option>"; 
     }  
   }    ?>
@@ -135,8 +135,8 @@ function UpdateConfig(action) {
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
 <?php
-  reset($af_columns);
-  while(list($name,$val) = each($af_columns)) {
+  reset($AF_COLUMNS);
+  while(list($name,$val) = each($AF_COLUMNS)) {
     $fooname = ($val["name"] ? $val["name"] : $val["title"]);
     $foowidth = ($r_slice_config["admin_fields"][name] ? $r_slice_config["admin_fields"][name][width] : $val[width]);
     FrmInputText("frm_".$name, $fooname, $foowidth, 20, 10, false);
@@ -156,6 +156,9 @@ function UpdateConfig(action) {
 <?php 
 /*
 $Log$
+Revision 1.4  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.3  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

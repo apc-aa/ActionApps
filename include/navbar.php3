@@ -61,6 +61,9 @@ $nb_usermng = ( (!$slice_id OR !IfSlPerm(PS_NEW_USER) OR $usermng_page) ?
 
 /*
 $Log$
+Revision 1.4  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.3  2000/07/12 14:38:19  kzajicek
 Switch to slice printed only when meaningful
 
@@ -103,7 +106,7 @@ config.inc
   </TR>
   <TR>
     <TD bgcolor="#584011" align=center> <?php echo $nb_logo; ?></td>
-    <TD height=43 colspan=2 align=center valign=middle class=slicehead bgcolor=#EBDABE><?php echo "$nb_context  -  $r_slice_headline &nbsp; &nbsp; <span class=navbar>" .$ActionAppConfig[$r_config_type[$slice_id]][name] ."</span>"; ?></TD>
+    <TD height=43 colspan=2 align=center valign=middle class=slicehead bgcolor=#EBDABE><?php echo "$nb_context  -  $r_slice_headline "; ?></TD>
   </TR>
   <TR>
     <TD bgcolor=#584011 align=center> <?php echo $nb_view ?> </td>

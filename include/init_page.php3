@@ -56,10 +56,10 @@ if( $new_sliceid )
 if( $Add_slice )
   unset($slice_id);
 
-if( isset($slice_type) ) {                             // used if new slice is created
-  include $GLOBALS[AA_INC_PATH] . $ActionAppConfig[$slice_type][file];
-} elseif(isset($r_config_type) AND is_array($r_config_type) AND ($r_config_type[$slice_id] != "")) {
-  include $GLOBALS[AA_INC_PATH] . $ActionAppConfig[$r_config_type[$slice_id]][file];
+if( isset($slice_lang_file) ) {                             // used if new slice is created
+  include $GLOBALS[AA_INC_PATH] . $slice_lang_file;
+} elseif(isset($r_config_file) AND is_array($r_config_file) AND ($r_config_file[$slice_id] != "")) {
+  include $GLOBALS[AA_INC_PATH] . $r_config_file[$slice_id];
 } else {
   include $GLOBALS[AA_INC_PATH] . DEFAULT_LANG_INCLUDE ;
 }
@@ -67,12 +67,13 @@ if( isset($slice_type) ) {                             // used if new slice is c
 require $GLOBALS[AA_INC_PATH] . "util.php3"; // must be after language include because of lang constants in util.php3
 
 $sess->register("slice_id");
-$sess->register("r_config_type");
+$sess->register("r_config_file");
 $sess->register("r_slice_config");      // stores many config parameters for slice (WDDX in slices.config field)
 $sess->register("r_slice_headline");    // stores headline of slice
 $sess->register("r_slice_view_url");    // url of slice
 $sess->register("r_stored_slice");      // id of slice which values are in r_slice_headline ,r_slice_config and r_slice_view_url
 $sess->register("r_hidden");            // array of variables - used to transport variables between pages (instead of dangerous hidden tag)
+//$sess->register("r_fields");            // array of fields for current slice
 
 if( $unset_r_hidden OR 
    ($r_hidden["hidden_acceptor"] != (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF))) {
@@ -90,16 +91,16 @@ if( !$New_slice AND !$Add_slice AND is_array($ldap_slices) AND (reset($ldap_slic
 $db  = new DB_AA;
 
 // lookup (not deleted slices) 
-$SQL= " SELECT id, headline, short_name FROM slices WHERE deleted<1";
+$SQL= " SELECT id, name FROM slice WHERE deleted<1 ORDER BY name";
 $db->query($SQL);
 while($db->next_record()) 
-  $all_slices[unpack_id($db->f(id))] = $db->f(short_name);
+  $all_slices[unpack_id($db->f(id))] = $db->f(name);
 
 if( $ldap_slices[all] ) {  // super admin - permission to manage all slices (deleted too)
-  $SQL= " SELECT id, short_name FROM slices";
+  $SQL= " SELECT id, name FROM slice ORDER BY name";
   $db->query($SQL);
   while($db->next_record()) 
-    $slices[unpack_id($db->f(id))] = $db->f(short_name);
+    $slices[unpack_id($db->f(id))] = $db->f(name);
  } else {
   reset($ldap_slices);  // find names for slice ids
   while( list($slid,) = each($ldap_slices) ) {
@@ -124,11 +125,11 @@ if( !$Add_slice AND !$New_slice ) {
   $p_slice_id = q_pack_id($slice_id);
 
   if( $slice_id != $r_stored_slice ) {                     // it is not cached - we must get it
-    $SQL= " SELECT * FROM slices WHERE id='$p_slice_id'";  // check for headline and slice type
+    $SQL= " SELECT * FROM slice WHERE id='$p_slice_id'";  // check for headline and slice type
     $db->query($SQL);
     if($db->next_record()) {
-      $r_slice_headline = $db->f(headline);
-      $r_config_type[$slice_id] = $db->f(type);
+      $r_slice_headline = $db->f(name);
+      $r_config_file[$slice_id] = $db->f(lang_file);
       if ($db->f(config)) {
         // in config field are stored many parameters of this slice
         $r_slice_config = wddx_deserialize($db->f(config));
@@ -138,12 +139,13 @@ if( !$Add_slice AND !$New_slice ) {
       $r_stored_slice = $slice_id;
       $r_slice_view_url = ($db->f(slice_url)=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                       : $db->f(slice_url));
+      $r_fields = GetTable2Array("SELECT * FROM field 
+                                   WHERE slice_id='$p_slice_id'", $db);
     }
   }  
 
   // The config file not loaded -> the slice type was changed
-  if( CONFIG_FILE != $ActionAppConfig[$r_config_type[$slice_id]][file] ) {
-//echo CONFIG_FILE . "!= ". $ActionAppConfig[$r_config_type[$slice_id]][file];
+  if( CONFIG_FILE != $r_config_file[$slice_id] ) {
     page_close();             // save variables
     // Netscape does not reload when URL does not change
 
@@ -165,6 +167,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.8  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
+
 Revision 1.7  2000/11/20 16:45:58  honzam
 fixed bug with anonymous posting to other aplications than news
 

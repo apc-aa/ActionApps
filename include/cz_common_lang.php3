@@ -91,12 +91,6 @@ define("L_NEW_GROUP", "Nová skupina");
 define("L_EDIT_GROUP", "Editace Skupiny");
 
 // application not specific strings
-
-define("NO_PICTURE_URL", "http://aa.ecn.cz/aa/images/pixel_blank.gif");  // image used when 
-  // there is img_source in html format string but no img_source is stored in database 
-  // (you can use blank pixel for none picture)
-
-define("NO_SOURCE_URL", "javascript: window.alert('Nebylo zadáno')"); 
 define("L_ALLCTGS", "Všechny kategorie");
 define("L_BAD_INC", "Špatný parametr inc - soubor mùže být v tomtéž adresáøi, kde je .shtml soubor - smi obsahovat jen znaky a cisla");
 define("L_NO_SUCH_FILE", "Soubor nenalezen");
@@ -106,12 +100,7 @@ define("L_VIEW_SLICE", "Zobraz webík");
 define("L_SLICE_INACCESSIBLE", "Špatné identifikaèní èíslo webíku, nebo byl webík vymazán");
 define("L_APP_TYPE", "Typ webíku");
 define("L_SELECT_APP", "Zvol typ webíku");
-define("L_APP_TYPE_HELP", "<small><br><br><br><br> Vytvoøení nového typu webíku je jednoduché:<br><ul>
-                           <li>vytvoøte nový jazykový soubor (see en_news_lang.php3)
-                           <li>pøidejte do config.php3 následující øádky (samozøejmì upravené):<br>
-                            &nbsp; \$ActionAppConfig[en_news][name] = \"Novinky\";<br>
-                            &nbsp; \$ActionAppConfig[en_news][file] = \"en_news_lang.php3\";
-                           </ul></small>");
+define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
 define( "L_ICON_LEGEND", '
                   <br>
@@ -134,20 +123,22 @@ define( "L_SLICE_HINT", '
                   Webík zahrnete do své *.shtml stránky pøidáním následující øádky v HTML kódu:
                   ');
                    
-function datetime2date ($dttm) {
-	return ereg_replace("^([[:digit:]]{4})-([[:digit:]]{2})-([[:digit:]]{2}).*", 
-		"\\2/\\3/\\1", $dttm);
+function sec2userdate($timestamp, $format="") {
+  if( !$format )
+    $format = "m/d/Y";
+	return date($format, $timestamp);
 }
 
-// tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
-// break year for short year description is 1950
-function date2datetime ($dttm) {
+// tranformation from english style datum (3/16/1999 or 3/16/99) to timestamp
+// break year for short year description is 1970
+function userdate2sec ($dttm, $time="") {
   if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $dttm, $part))
     if( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $dttm, $part))
       return "";
-     else
-      $part[3] = ($part[3]<50 ? "20".$part[3] : "19".$part[3]);
-	return $part[3] . "-" . $part[1] . "-" . $part[2];
+  if( !ereg("^ *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *$", $time, $tpart))
+    return mktime(0,0,0,$part[1],$part[2],$part[3]);
+   else
+    return mktime($tpart[1],$tpart[2],$tpart[3],$part[1],$part[2],$part[3]);
 }
 
 function dateExample() {
@@ -156,11 +147,8 @@ function dateExample() {
 
 /*
 $Log$
-Revision 1.10  2000/12/05 14:01:58  honzam
-Better help for upload image alias
-
-Revision 1.9  2000/10/10 10:06:54  honzam
-Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
+Revision 1.11  2000/12/21 16:39:34  honzam
+New data structure and many changes due to version 1.5.x
 
 Revision 1.8  2000/08/23 12:29:57  honzam
 fixed security problem with inc parameter to slice.php3
