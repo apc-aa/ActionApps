@@ -77,20 +77,14 @@ function Item_Feed($slice, $item_arr, $akce_param) {
     }
     $export_to = split(",", $akce_param);          // <status>-<slice_id> pairs
 
-//    print_r($export_to);
-//    print_r($item_arr);
-
     foreach ( $item_arr as $it_id => $foo ) {
         $it_id = substr($it_id,1);                 // remove initial 'x'
         foreach ( $export_to as $exp_slice_pair ) {
             list($status,$sid) = split("-", $exp_slice_pair);
-//            huhl("FeedItemTo(", $it_id, $slice->unpacked_id(), $sid, $slice->fields['record'],
-//                       ($status=='1' ? 'y':'n'), 0);
-            FeedItemTo($it_id, $slice->unpacked_id(), $sid, $slice->fields['record'],
+            FeedItemTo($it_id, $slice->unpacked_id(), $sid, $slice->fields('record'),
                      ($status=='1' ? 'y':'n'), 0);
         }
     }
-//    exit;
     return false;                                  // OK - no error
 }
 
