@@ -77,7 +77,7 @@ if(isset($r_slice_id)) {
 
 $p_slice_id = q_pack_id($slice_id);
 
-$slice_info = GetSliceInfo($p_slice_id);
+$slice_info = GetSliceInfo($slice_id);
 
 // $r_bin_state - controls display of editor pages. It should be:
 // app, appb, appc, hold, trash
@@ -107,7 +107,7 @@ $db2 = new DB_AA; 	 // open DB	(for subqueries)
 if( $r_fields )
   $fields = $r_fields;
 else
-  list($fields,) = GetSliceFields($p_slice_id);
+  list($fields,) = GetSliceFields($slice_id);
 
 switch( $action ) {  // script post parameter 
   case "app":
@@ -206,6 +206,14 @@ if($Delete == "trash") {         // delete feeded items in trash bin
   $cache->invalidateFor("slice_id=$slice_id");  # - invalidate old cached values
 }
 
+# count items in each bin -----------
+$item_bin_cnt[1]=$item_bin_cnt[2]=$item_bin_cnt[3]=0;
+$db->query("SELECT status_code, count(*) as cnt FROM item 
+             WHERE slice_id = '$p_slice_id'
+             GROUP BY status_code");
+while( $db->next_record() )
+  $item_bin_cnt[ $db->f(status_code) ] = $db->f(cnt);
+
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 <title><?php echo L_EDITOR_TITLE ?></title>
@@ -244,8 +252,8 @@ function OpenPreview() {
       if( document.itemsform.elements[i].checked == true) {
         if ((previewwindow != null) && (!previewwindow.closed)) {
           previewwindow.close()    // in order to preview go on top after open
-        }
-        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(4,name.indexOf(']')),'fullwindow');
+        }  // extract id from chb[x14451...]  - x is just foo character
+        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(5,name.indexOf(']')),'fullwindow');
         return;
       }  
     }
@@ -348,7 +356,7 @@ $conditions['slice_id........'] = $p_slice_id;
 if (! $perm_edit_all )
   $conditions['posted_by.......'] = $auth->auth[uid];
   
-$item_ids = GetItemAppIds($fields, $db, $p_slice_id, 
+$item_ids = GetItemAppIds($fields, $db, $slice_id, 
                             $conditions, "DESC", "", "",$item_cond);
 
 $format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
@@ -452,6 +460,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.19  2001/03/20 15:31:11  honzam
+Feeding support, Fixed bug in preview selection, Item counting for each bin
+
 Revision 1.18  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 
