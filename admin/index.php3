@@ -30,6 +30,7 @@ require $GLOBALS[AA_INC_PATH] . "notify.php3";
 require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
 require $GLOBALS[AA_INC_PATH] . "formutil.php3";
 
+
 $now = now();
 
 function MoveItems($chb,$status) {
@@ -158,6 +159,29 @@ if( $r_fields )
   $fields = $r_fields;
 else
   list($fields,) = GetSliceFields($slice_id);
+
+######## add by setu@gwtech.org 2002-0206 #######
+# New options in Query Strings
+# by default it shows everything as original version.
+# It works differently if the query string has....
+#	navbar=0			// no top navigator
+#	leftbar=0			// no left navigator
+#	footer=0			// no footer message
+#	sort_filter=0			// no sort / no filter
+#	action_selected=0		// no action for selected (marked) item
+# Big switch to hide many things
+#	bodyonly=1
+#
+if ($bodyonly == "1")
+{
+	$navbar = "0";			// no top navigator
+	$leftbar = "0";			// no left navigator
+	$footer = "0";			// no footer message
+	$sort_filter = "0";		// no sort / no filter
+	$action_selected = "0";		// no action for selected (marked) item
+}
+######################################
+
 
 switch( $action ) {  // script post parameter 
   case "app":
@@ -352,10 +376,17 @@ if( $open_preview )
   echo "<body OnLoad=\"OpenPreview('$open_preview')\">";
  else 
   echo '<body>';
+##if ($return_url) {echo "return_url=".$return_url."<br>\n"; ###### tracer by Setu
+##echo "make_return_url()=".make_return_url("&return_url=")."<br>\n";} #### this, too
 
 $editor_page = true;
-require $GLOBALS[AA_INC_PATH] . "navbar.php3";
-require $GLOBALS[AA_INC_PATH] . "leftbar.php3";
+######## add by setu 2002-0206 #######
+global $navbar, $leftbar;
+if ($navbar != "0")
+  require $GLOBALS[AA_INC_PATH] . "navbar.php3";
+if ($leftbar != "0")
+  require $GLOBALS[AA_INC_PATH] . "leftbar.php3";
+######
 
   # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
 switch( $r_bin_state ) {
@@ -485,93 +516,137 @@ if( count( $item_ids ) > 0 ) {
 }  
 else 
   echo "<tr><td><div class=tabtxt>". L_NO_ITEM ."</div></td></td></table>";
-  
-echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
-echo '<input type=hidden name=feed2slice value="">';  // array of comma delimeted slices in which feed to - filled by javascript function SendFeed in feed_to.php3 
-echo '<input type=hidden name=feed2app value="">';    // array of comma delimeted slices in which we have to feed into approved - filled by javascript function SendFeed in feed_to.php3 
-echo '</form></center>';
 
 
-if( ($r_bin_state != "app")  AND 
+######## add by setu 2002-0206 #######
+### Action for Marked item ###
+
+if ($action_selected != "0")
+{  
+  echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
+  echo '<input type=hidden name=feed2slice value="">';  // array of comma delimeted slices in which feed to - filled by javascript function SendFeed in feed_to.php3 
+  echo '<input type=hidden name=feed2app value="">';    // array of comma delimeted slices in which we have to feed into approved - filled by javascript function SendFeed in feed_to.php3 
+  echo '</form></center>';
+
+
+  if( ($r_bin_state != "app")  AND 
     ($r_bin_state != "appb") AND 
     ($r_bin_state != "appc") AND 
     CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT))
-  $markedaction["1-app"] = L_MOVE_TO_ACTIVE_BIN; 
+      $markedaction["1-app"] = L_MOVE_TO_ACTIVE_BIN; 
 
-if( ($r_bin_state != "hold") AND 
+  if( ($r_bin_state != "hold") AND 
     CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD))
-  $markedaction["2-hold"] = L_MOVE_TO_HOLDING_BIN;
+      $markedaction["2-hold"] = L_MOVE_TO_HOLDING_BIN;
   
-if( ($r_bin_state != "trash") AND 
+  if( ($r_bin_state != "trash") AND 
      CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH))
-  $markedaction["3-trash"] = L_MOVE_TO_TRASH_BIN;
+    $markedaction["3-trash"] = L_MOVE_TO_TRASH_BIN;
 
-$markedaction["4-feed"] = L_FEED;
-$markedaction["5-view"] = L_VIEW_FULLTEXT;
+  $markedaction["4-feed"] = L_FEED;
+  $markedaction["5-view"] = L_VIEW_FULLTEXT;
   
-echo "<center>
-      <form name=markedform method=post action=\"". $sess->url($PHP_SELF)."\">
+  echo "<center>
+      <form name=markedform method=post action=\"". $sess->url($PHP_SELF).
+#make_return_url("&return_url=").
+	"\">
       <table border=0 cellspacing=0 class=login width=460>
       <TR><TD align=center class=tablename>".
       L_CHANGE_MARKED ." &nbsp; <select name=markedaction>";
 
-reset($markedaction);
-while(list($k, $v) = each($markedaction)) 
-  echo "<option value=\"". htmlspecialchars($k)."\"> ".
+  reset($markedaction);
+  while(list($k, $v) = each($markedaction)) 
+    echo "<option value=\"". htmlspecialchars($k)."\"> ".
            htmlspecialchars($v) ." </option>";
-echo "</select></td><td align='right' class=tablename>
+  echo "</select></td><td align='right' class=tablename>
       <a href=\"javascript:MarkedActionGo()\" class=leftmenuy>".L_GO.
       "</a> </TD></TR>".
- "</table></form>";
-
+   "</table></form>";
+}
+###############
  
+######## add by setu 2002-0206 #######
 # user definend sorting and filtering ---------------------------------------
-echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
+global $sort_filter;
+if ($sort_filter != "0")
+{
+  echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
       <table width="460" border="0" cellspacing="0" cellpadding="0" 
       class=leftmenu bgcolor="'. COLOR_TABBG .'">';
 
-reset( $fields );
-while( list ($k, $v ) = each( $fields ) ) {
-  $lookup_fields[$k] = $v[name];
-  if( $v[text_stored] )
-    $lookup_text_fields[$k] = $v[name];
-}
+  reset( $fields );
+  while( list ($k, $v ) = each( $fields ) ) {
+    $lookup_fields[$k] = $v[name];
+    if( $v[text_stored] )
+      $lookup_text_fields[$k] = $v[name];
+  }
     
   #order
-echo "<tr>
+  echo "<tr>
        <td class=leftmenuy><b>". L_ORDER ."</b></td>
        <td class=leftmenuy>";
-FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order);
-echo "<input type='checkbox' name='admin_order_dir'". 
+  FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order);
+  echo "<input type='checkbox' name='admin_order_dir'". 
      ( ($r_admin_order_dir=='d') ? " checked> " : "> " ) . L_DESCENDING. "</td>
      <td rowspan=2 align='right' valign='middle'><a
       href=\"javascript:document.filterform.submit()\" class=leftmenuy>". L_GO ."</a> </td></tr>";
 
   # filter
-echo "<tr><td class=leftmenuy><b>". L_SEARCH ."</b></td>
+  echo "<tr><td class=leftmenuy><b>". L_SEARCH ."</b></td>
      <td>";
-FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
-echo "<input type='Text' name='admin_search' size=20
+  FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
+  echo "<input type='Text' name='admin_search' size=20
       maxlength=254 value='$r_admin_search'></td></tr></table>
       <input type=hidden name=action value='filter'></form></center>";
+}
  
-echo L_ICON_LEGEND;
-echo L_SLICE_HINT;
+######## add by setu 2002-0206 #######
+#echo L_ICON_LEGEND;
+#echo L_SLICE_HINT;
+#
+#$ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
+#
+#echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
+#     "?slice_id=" . $slice_id . "&quot;--&gt;</pre>
+#  </body>
+#</html>";
+global $footer;
+if ($footer != "0")
+{
+  echo L_ICON_LEGEND;
+  echo L_SLICE_HINT;
 
-$ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
+  $ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
 
-echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
-     "?slice_id=" . $slice_id . "&quot;--&gt;</pre>
-
-  </body>
+  echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
+       "?slice_id=" . $slice_id . "&quot;--&gt;</pre>";
+}
+echo "  </body>
 </html>";
-
+##
   $$st_name = $st;   // to save the right scroller 
   page_close();
 
 /*
 
 $Log$
+Revision 1.34  2002/02/12 10:11:47  mitraearth
+FILE: apc-aa/admin/index.php3
+Changed by: Setu
+Change:
+
+New options in Query Strings to hide few items from the page.
+By default, it shows everything as original version.
+
+navbar=0 - to hide the navigation bar at the top of page.
+leftbar=0 - to hide the navigation bar at the left of page.
+footer=0 - to hide the footer message
+sort_filter=0 - to hide box for sort / filter.
+action_selected=0 - to hide box for the actions for selected (marked) item
+
+Big switch to hide many things, to show only the title and item list.
+bodyonly=1 - this single switch will hides all of the items above.
+
 Revision 1.33  2002/02/05 21:40:33  honzam
 items are counted in all bins - including pending bin and expired bin
 
