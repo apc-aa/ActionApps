@@ -149,7 +149,7 @@ function ParseViewParameters($query_string="") {
                break;
     case 'c':  // Check for experimental c-OR-1-aaa-2-bbb-3-ccc syntax
                // Note param_conds[0] is not otherwise used
-               // It is converted into conds in GetViewConds 
+               // It is converted into conds in GetViewConds
                // which is consumed in ParseMultiSelectConds
                if ( $command[1] == 'OR')
                 { $param_conds[0] = 'OR'; array_shift($command); }
@@ -245,7 +245,7 @@ function GetViewConds($view_info, $param_conds) {
                                $view_info['cond2cond'],  $param_conds[2]);
   ResolveCondsConflict($conds, $view_info['cond3field'], $view_info['cond3op'],
                                $view_info['cond3cond'],  $param_conds[3]);
-  if ($param_conds[0]) 
+  if ($param_conds[0])
     $cond['valuejoin'] = $param_conds[0];
   trace("-");
   return $conds;
@@ -609,9 +609,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
       }   #zids2->count >0
       else {
 /* Not sure if this was a necessary change that got missed, or got changed again
-        # $ret = $noitem_msg; 
+        # $ret = $noitem_msg;
         $level = 0; $maxlevel = 0;
-        # This next line is not 100% clear, might not catch aliases 
+        # This next line is not 100% clear, might not catch aliases
         #since there are two formats for aliases structures. (mitra)
 #    huhl("XYZZY:v578, msg=",$noitem_msg);
         $ret = new_unalias_recurent($noitem_msg,"",$level,$maxlevel,null,null,$aliases);

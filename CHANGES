@@ -1,30 +1,70 @@
-04/30/04 - new "Group Update" possibility, which is used for filling one field 
-(honzam)   of all (or selected) items in the slice with specified content. 
-           Items could be selected manualy from Item Manager or by "Stored 
-           Search" feature (just like in "Bulk e-mail" feature. New content 
-           could be constant or could be combination of current items field. 
+05/11/04 - improved Cross Server Feeding
+(honzam)    - added APC RSS and RSS test pages with debug options (see AA menu),
+            - better handled categories (possibility to import any category
+              (= all items) without change), you can also specify to feed items
+              TO THE SAME category (just like for inner feeding),
+            - better handled languages - all feeds now encoded and decoded
+              to/from utf-8
+         - improved all types of selectboxes and radio selections - if the
+           content of variable (in the database) is a bit broken so the value is
+           not listed in the array, which specifies the selectbox, then now
+           the value is also listed in selectbox and is displayed in red
+           (by CSS). This behavior make us sure, that we do not loose the value
+           if we commit the form with such selectbox. It also gives information
+           to user, that something is not right in the database.
+           Also the bug for multiple selections was fixed (when empty value was
+           selected, the number was written to the database. Now empty values
+           aren't written to the DB for text_stored fields in content table
+         - CSV import improvements
+             - better default field mapping (tries to guess corresponding fields
+               by field name),
+             - possibility to create item id from any of the fields
+               (from string/packed id/unpacked id)
+             - better cache handling (invalidated after whole import
+         - new parameters for i_s (image size) alias function
+             - html    - (default) - returns image size as HTML atributes
+                         (height='xxx' width='yyy')
+             - width   - returns width of image in pixes
+             - height  - returns height of image in pixels
+             - imgtype - returns flag indicating the type of the image: 1 = GIF,
+                         2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF
+                         (intel byte order), 8 = TIFF (motorola byte order),
+                         9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC,
+                         14 = IFF, 15 = WBMP, 16 = XBM
+             - mime    - returns mimetype of the image (like 'image/gif',
+                         'application/x-shockwave-flash', ...)
+         - added possibility to display static columns in tabledit (used in
+           admin/rsstest.php3 and admin/aarsstest.php3 pages
+         - fixed broken admin interface for feeding (Update button didn't work)
+         - fixed bug in alerts sending
+         - fixed problem with displaying related items
+04/30/04 - new "Group Update" possibility, which is used for filling one field
+(honzam)   of all (or selected) items in the slice with specified content.
+           Items could be selected manualy from Item Manager or by "Stored
+           Search" feature (just like in "Bulk e-mail" feature. New content
+           could be constant or could be combination of current items field.
            Any AA construct and aliases could be used for there.
-         - Cross server feeding improved 
-            * slice character encoding is now handled properly - it uses 
+         - Cross server feeding improved
+            * slice character encoding is now handled properly - it uses
               conversion to utf-8 based on the encoding set for the slice
-            * improved category handling - now we get all items and filtering 
+            * improved category handling - now we get all items and filtering
               is done on client side. New approach allows to download also items
-              with not known category 
+              with not known category
          - slice imported by "slice import" is now imported also with all VIEWs
-         - new f_t alias function parameter asis {alias:<field_id>::asis} which 
-           prints the field exactly as is in the database (regardless of 
-           HTML/Plain text settings). It is well used in conjunction with new 
+         - new f_t alias function parameter asis {alias:<field_id>::asis} which
+           prints the field exactly as is in the database (regardless of
+           HTML/Plain text settings). It is well used in conjunction with new
            "Group update" feature, where we often need the field as is.
-         - added "Exported to" information to feedin setting page in order you 
+         - added "Exported to" information to feedin setting page in order you
            know, where the slice is currently exported
          - the code is prepared for new - cookie based debuging (for programmers
-           and superadministrators  
-         - "Bulk e-mail wizard" is converted to new FrmItemGroupSelect widget 
-           (used also for new "Group update" feature) 
-         - added default manager.class design (used for user listing as well 
+           and superadministrators
+         - "Bulk e-mail wizard" is converted to new FrmItemGroupSelect widget
+           (used also for new "Group update" feature)
+         - added default manager.class design (used for user listing as well
            as for related item selection listing
-         - item class uses standard ItemContent class internaly for storing 
-           item data" 
+         - item class uses standard ItemContent class internaly for storing
+           item data"
 04/29/04 - special field "all_fields" and "all_fields_numeric" which you can use
 (honzam)   with slice conditions (search form, ...)
               conds[0][all_fields]="hi"

@@ -189,18 +189,19 @@ class zids {
     # Return an array of long ids
     # TODO: look at where used, typically used in interface to pre-zid code
     function longids($i=null) {
-        if ($this->warnid($i,"longids")) return null;
+        if ($this->warnid($i,"longids"))         return null;
+        if ( !isset($i) AND ($this->count()<1) ) return array();
         switch ($this->type) {
-        case "l":  return (isset($i) ? $this->a[$i] : $this->a);
-        case "p":  return (isset($i) ? unpack_id128($this->a[$i])
-                        : array_map("unpack_id128", $this->a));
-        case "t":  return (isset($i) ? id_t2l($this->a[$i]) : array_map("id_t2l", $this->a));
-        case 's':  $trans = $this->translate('l');
-                   return (isset($i) ? $trans[$i] : $trans );
-        default:
-        print("ERROR - zids:longids(): can't handle type $this->type conversion to longids - ask mitra");
-        $this->printobj();
-        return false;  #TODO - handle other types
+            case "l":  return (isset($i) ? $this->a[$i] : $this->a);
+            case "p":  return (isset($i) ? unpack_id128($this->a[$i])
+                                         : array_map("unpack_id128", $this->a));
+            case "t":  return (isset($i) ? id_t2l($this->a[$i]) : array_map("id_t2l", $this->a));
+            case 's':  $trans = $this->translate('l');
+                       return (isset($i) ? $trans[$i] : $trans );
+            default:
+                       print("ERROR - zids:longids(): can't handle type $this->type conversion to longids - ask mitra");
+                       $this->printobj();
+                       return false;  #TODO - handle other types
         }
     }
 
@@ -301,7 +302,7 @@ class zids {
             return new zids(array_slice($this->a,$offset,$length),$this->type);
         else return new zids(null, $this->type);
     }
-    
+
     /** Returns n-th zid */
     function zid($index) {
         return $this->slice($index);
