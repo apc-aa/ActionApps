@@ -31,19 +31,13 @@ require $GLOBALS[AA_INC_PATH]."constants.php3";
 require $GLOBALS[AA_INC_PATH]."mgettext.php3";
 
 function get_aa_url ($href) {
-    global $AA_INSTAL_PATH;
-    $res = $AA_INSTAL_PATH.$href;
-    if (strstr ($href,"?")) $res .= "&"; else $res .= "?";
-    $res .= "AA_CP_Session=".$GLOBALS[AA_CP_Session];
-    return $res;
+    global $AA_INSTAL_PATH, $sess;
+    return $sess->url ($AA_INSTAL_PATH.$href);
 }    
 
 function get_admin_url ($href) {
-    global $AA_INSTAL_PATH;
-    $res = $AA_INSTAL_PATH."admin/".$href;
-    if (strstr ($href,"?")) $res .= "&"; else $res .= "?";
-    $res .= "AA_CP_Session=".$GLOBALS[AA_CP_Session];
-    return $res;
+    global $AA_INSTAL_PATH, $sess;
+    return $sess->url ($AA_INSTAL_PATH."admin/".$href);
 }
 
 // adds slash at the end of a directory name
@@ -1266,9 +1260,11 @@ function setdefault (&$var, $default) {
     if (!isset ($var)) $var = $default;
 }
 
-// Cooperates with the script post2shtml, which allows to easily post variables
-// to PHP scripts called through shtml.
-
+/** Cooperates with the script post2shtml.php3, which allows to easily post variables
+ * to PHP scripts SSI-included in a .shtml page. No parameters necessary. 
+ *
+ * @author Jakub Adamek, Econnect, December 2002
+ */
 function add_post2shtml_vars () {
     global $db, $debug, $post2shtml_id;
     
@@ -1297,4 +1293,13 @@ function delete_post2shtml_vars ($post2sthml_id) {
     $db->query ("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
 }
 
+/** List of email types with translated description.
+    You should never list email types directly, always call this function. */
+function get_email_types () {
+    return array (
+        "alerts welcome" => _m("alerts welcome"),
+        "alerts alert" => _m("alerts alert"),
+        "alerts access" => _m("alerts single usage access"));
+}
+        
 ?>
