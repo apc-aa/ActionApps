@@ -308,6 +308,10 @@ function stringexpand_substr($string,$start,$length=999999999) {
     return substr($string,$start,$length);
 }
 
+function stringexpand_str_replace($search,$replace,$string) {
+    return str_replace($search,$replace,$string);
+}
+
 function stringexpand_item($item_id,$field) {
     $zid  = new zids($item_id);
     $item = GetItemFromId($zid);
