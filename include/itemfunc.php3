@@ -1375,9 +1375,10 @@ function ValidateContent4Id (&$err, $slice_id, $action, $id=0, $do_validate=true
 	while(list(,$pri_field_id) = each($prifields)) {
         $f = $fields[$pri_field_id];
         if( ($pri_field_id=='edited_by.......') ||
-            ($pri_field_id=='posted_by.......') ||
-            ($pri_field_id=='status_code.....') ) {
-            continue;   // filed by AA - it could not be filled here
+            ($pri_field_id=='posted_by.......')
+        //  || ($pri_field_id=='status_code.....')  // commented out by honza
+          ) {                    // status_code could be set from defaults
+                continue;   // filed by AA - it could not be filled here
         }
         $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
         $htmlvarname = $varname."html";
