@@ -1,3 +1,8 @@
+08/02/00 - fixed problem with zero scroller length error message
+         - partialy fixed problem with quoting values on machinech with no 
+           magic_quotes_gpc = on
+         - default variables for new slices defined
+         - new images for "HTML formated" column in admin interface index.php3            
 08/01/00 - fixed problem with OpenLDAP and ldap_mod_del (apcaci changes)
          - global SuperAdmin access rights take precedence over slice-specific
          - membership in groups now queried in SQL version of GetIDPerms()
