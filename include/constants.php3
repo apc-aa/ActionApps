@@ -1,4 +1,4 @@
-<?php 
+<?php
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -40,19 +40,23 @@ else return;
 $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'name' => 'Slice',
                                 'hide_create_module' => 1,
-                                'directory' => $AA_INSTAL_PATH ."admin/"),
+                                'directory' => $AA_INSTAL_PATH ."admin/",
+                                'menu' => $AA_INC_PATH ."menu.php3"),
                   'W' => array( 'table' => 'site',
                                 'name' => 'Site',
                                 'show_templates' => 1,  # show list of sites on 'create new' - used as templates
-                                'directory' => $AA_INSTAL_PATH ."modules/site/"),
+                                'directory' => $AA_INSTAL_PATH ."modules/site/",
+                                'menu' => $AA_BASE_PATH. "modules/site/menu.php3"),
                   'A' => array( 'table' => 'module', # this module doesn't have any special info yet
                                 'name' => 'MySQL Auth',
                                 'hide_create_module' => 1,
-                                'directory' => $AA_INSTAL_PATH ."modules/mysql_auth/"),
+                                'directory' => $AA_INSTAL_PATH ."modules/mysql_auth/",
+                                'menu' => $AA_BASE_PATH ."modules/mysql_auth/menu.php3"),
                   'J' => array( 'table' => 'jump',
                                 'name' => 'Jump inside AA control panel',
-                                'directory' => $AA_INSTAL_PATH ."modules/jump/"));
-                  
+                                'directory' => $AA_INSTAL_PATH ."modules/jump/",
+                                'menu' => $AA_INC_PATH ."menu.php3"));
+
 # language files for slices (not for some modules, e.g. site)
 $LANGUAGE_FILES = array( "en_news_lang.php3" => "en_news_lang.php3",
                          "es_news_lang.php3" => "es_news_lang.php3",
