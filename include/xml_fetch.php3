@@ -309,9 +309,7 @@ function itemIsDuplicate($item_id,$slice_id) {
 // should check
 function field2arr($field) {
     global $rss_version;
-    if (ereg("^0\.9",$rss_version)) {
-        $flag = "";
-    } elseif (ereg("2\.",$rss_version)) {
+    if (ereg("2\.",$rss_version) || ereg("^0\.9",$rss_version)) {
         $flag = (ereg("<",$field) ? FLAG_HTML : "");
     } else { // Must be 1.0 which doesn't have an RSS version
         $flag = FLAG_HTML;
