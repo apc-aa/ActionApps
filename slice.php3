@@ -260,6 +260,9 @@ else {
     reset($slices);
     while (list(,$slice) = each($slices)) {
         list($fields) = GetSliceFields ($slice);
+        // hack for searching in multiple slices. This is not so nice part
+        // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
+        // it is needed by itemview::set_column() (see include/itemview.php3)
         $aliases[q_pack_id($slice)] = GetAliasesFromFields($fields,$als);
         if (is_array ($urlaliases))
             array_add ($urlaliases, $aliases[q_pack_id($slice)]);

@@ -88,7 +88,7 @@ function getTriggers ($control, $unpacked_fieldid, $add="") {
     elseif(preg_match("/^[0-9a-f]+$/", $unpacked_fieldid))
         $fieldid = pack_id ($unpacked_fieldid);
     else $fieldid = $unpacked_fieldid;
-
+    
     reset ($js_triggers[$control]);
     while (list (,$ctrig) = each ($js_triggers[$control])) {
         $funcs = "";
@@ -99,6 +99,7 @@ function getTriggers ($control, $unpacked_fieldid, $add="") {
         if ($funcs)
             $retval .= " $ctrig=\"$funcs\"";
     }
+
     return $retval;
 }
 ?>

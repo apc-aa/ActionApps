@@ -44,7 +44,7 @@ function MoveCategoryTo(catid, totxt, toval)
   }
   if( catid != downcat[level])
     tmp += delim + a[catid];  // highlighted option
-  eval(totxt).value = tmp;
+  SetContent(totxt,tmp);
   eval(toval).value = catid;
 }
 
@@ -336,8 +336,7 @@ function SetContent(id,txt) {
 
 // js for linkedit.php3
 function DeleteField(index) {
-  var field = "document.f.selcat"+index
-  eval(field).value = "";
+  SetContent('selcat'+index,'')
   field = "document.f.selcatSelect"+index
   eval(field).value = "";
 }

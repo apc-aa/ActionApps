@@ -26,17 +26,18 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/*
-  ItemContent class is an abstract data structure, used mostly for storing an item. The item can contain many  fields, and
-  each field contains 1..n value including the value attribute (now attribute may be only html flag).
-  */
+/**
+ *  ItemContent class is an abstract data structure, used mostly for storing
+ *  an item. The item can contain many fields, and each field contains 1..n
+ *  valueincluding the value attribute (now attribute may be only html flag).
+ */
 
 /** Stores all info about an item. Uses both info from the <em>item</em> and
-*   <em>content</em> tables.
-*
-*   Gives convenient access to the things previously stored in the
-*   array $content4id.
-*/
+ *   <em>content</em> tables.
+ *
+ *   Gives convenient access to the things previously stored in the
+ *   array $content4id.
+ */
 class ItemContent {
     var $classname = "ItemContent";
 
@@ -109,16 +110,16 @@ class ItemContent {
 
     /*------------------------ */
     function setFieldValues($field_id,$v) {
-	    $this->content[$field_id] = $v;
+        $this->content[$field_id] = $v;
     }
 
     /** Sets the content with CSV data */
     function importCSVData($csvRec, $fieldNames) {
-	    $i = 0;
-	    while (list ($k, ) = each($fieldNames)) {
-		$this->content[$k][0][value] = $csvRec[$i];
-		$i++;
-	    }
+        $i = 0;
+        while (list ($k, ) = each($fieldNames)) {
+        $this->content[$k][0][value] = $csvRec[$i];
+        $i++;
+        }
     }
     /**
     Exports item content to CSV. TODO
@@ -129,70 +130,72 @@ class ItemContent {
     Transforms $itemContent according to the $trans_actions.
     */
     function transform(&$itemContent, $trans_actions, $slice_fields) {
-	    while (list ($field_id, ) = each($slice_fields)) {
-		    $trans_actions->transform($itemContent,$field_id,$this->content[$field_id]);
-	    }
+        while (list ($field_id, ) = each($slice_fields)) {
+            $err = $trans_actions->transform($itemContent,$field_id,$this->content[$field_id]);
+            if ($err)
+                return $err;
+        }
     }
 
     /** Shows item in one row in a table
     */
     function showAsRowInTable($tr_att="") {
-	  echo "<tr ".$tr_att." >";
-	  while (list($k,$v) = each($this->content)) {
-		    echo "<td>";
-		    unset($s);
-		    while (list (,$v2) = each ($v)) {
-		    	$v2[value] = stripslashes($v2[value]);
-			$s[] = $v2[html] ? $v2[value] : htmlspecialchars($v2[value]);
-		    }
-		    if (count($s) == 1) {
-		    	echo $s[0];
-		    }
-		    else {
-			echo "[ ". implode(", ",$s) . " ]";
-		    }
-		    echo "</td>";
-	    }
-	    echo "</tr>";
+      echo "<tr ".$tr_att." >";
+      while (list($k,$v) = each($this->content)) {
+            echo "<td>";
+            unset($s);
+            while (list (,$v2) = each ($v)) {
+                $v2[value] = stripslashes($v2[value]);
+            $s[] = $v2[html] ? $v2[value] : htmlspecialchars($v2[value]);
+            }
+            if (count($s) == 1) {
+                echo $s[0];
+            }
+            else {
+            echo "[ ". implode(", ",$s) . " ]";
+            }
+            echo "</td>";
+        }
+        echo "</tr>";
     }
 
     /** Store item content to DB. if an item has item_id, which is already stored in $items_id, then
         according to the $actionIfItemExists performs:
-	  a) "update" : update the item in DB
-	  b) or "new_id" : store the item with different (unique random) id
-	  c) otherwise : do nothing
+      a) "update" : update the item in DB
+      b) or "new_id" : store the item with different (unique random) id
+      c) otherwise : do nothing
     */
     function storeToDB($slice_id,$fields, $items_id ="", $actionIfItemExists="update") {
 
-	  require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-	  require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+      require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+      require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
 
-	  global $db, $err, $varset, $itemvarset, $error, $ok;
-	  $varset = new Cvarset();
-	  $itemvarset = new Cvarset();
-	  $db = new DB_AA;
+      global $db, $err, $varset, $itemvarset, $error, $ok;
+      $varset = new Cvarset();
+      $itemvarset = new Cvarset();
+      $db = new DB_AA;
 
-	  $insert = true;
-	  $id = new_id();		// we suppose, that item is not already stored in the DB
+      $insert = true;
+      $id = new_id();		// we suppose, that item is not already stored in the DB
 
-	  if (isset($items_id)) {
-		  if ($items_id[$this->getItemID()]) {
-			  // item is already stored
-			  switch ($actionIfItemExists) {
-				  case "update" : { // item  should be updated
-					  $insert = false;
-					  $id = $items_id[$this->getItemID()];
-					  break;
-				  }
-				  case "new_id" :
-				  	break; // item should be stored with new id
-				  default:
-				  	return;	// do nothing
-			  }
-		  }
-	  }
+      if (isset($items_id)) {
+          if ($items_id[$this->getItemID()]) {
+              // item is already stored
+              switch ($actionIfItemExists) {
+                  case "update" : { // item  should be updated
+                      $insert = false;
+                      $id = $items_id[$this->getItemID()];
+                      break;
+                  }
+                  case "new_id" :
+                    break; // item should be stored with new id
+                  default:
+                    return;	// do nothing
+              }
+          }
+      }
 
-	  $added_to_db=StoreItem( $id, $slice_id, $this->content, $fields, $insert, true, false ); // invalidatecache, feed
-	  return $added_to_db;
+      $added_to_db=StoreItem( $id, $slice_id, $this->content, $fields, $insert, true, false ); // invalidatecache, feed
+      return $added_to_db;
     }
 }

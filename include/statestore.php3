@@ -1,17 +1,17 @@
 <?php
 /**
- * File contains definition of storable_class class - abstract class which 
- * implements two methods for storing and restoring class data (used in 
+ * File contains definition of storable_class class - abstract class which
+ * implements two methods for storing and restoring class data (used in
  * searchbar class, manager class, ...
  *
  * Should be included to other scripts (as /include/searchbar.class.php3)
  *
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -33,44 +33,42 @@ if (!defined("INCLUDE_STORABLE_CLASS_INCLUDED"))
      define ("INCLUDE_STORABLE_CLASS_INCLUDED",1);
 else return;
 
-/** 
+/**
  * storable_class - abstract class which implements methods for storing and
- * restoring class data (used in searchbar class, manager class, ...). 
+ * restoring class data (used in searchbar class, manager class, ...).
  *
- * If you want to use strable methods in your class, you should derive the new 
+ * If you want to use strable methods in your class, you should derive the new
  * class from storable_class. Then you should define $persistent_slots array,
  * where you specify all the variables you want to store. Then you just call
  * getState() and setFromState() methods for storing and restoring object's data
  */
-class storable_class { 
-    /** 
+class storable_class {
+    /**
      * Restores the object's data from $state
      * @param  array $state state array which stores object's data. The array
-     *                      you will get by getState() method.      
+     *                      you will get by getState() method.
      */
     function setFromState(&$state) {
         if ( !isset($this->persistent_slots) OR !is_array($this->persistent_slots) )
             return false;
-        reset($this->persistent_slots);
-        while ( list( ,$v ) = each($this->persistent_slots) ) {
+        foreach ($this->persistent_slots as $v) {
             if( is_object( $this->$v ) )
                 $this->$v->setFromState($state[$v]);
-            else  
+            else
                 $this->$v = $state[$v];
         }
     }
 
-    /** 
-     * Returns state array of the object - stores object's data for leter 
+    /**
+     * Returns state array of the object - stores object's data for leter
      * restoring (by setFromState() method)
      */
     function getState() {
         if ( !isset($this->persistent_slots) OR !is_array($this->persistent_slots) )
             return false;
-        reset($this->persistent_slots);
-        while ( list( ,$v ) = each($this->persistent_slots) ) 
+        foreach ( $this->persistent_slots as $v )
             $ret[$v] = ( is_object( $this->$v ) ? $this->$v->getState() : $this->$v);
         return $ret;
     }
-}    
+}
 ?>
