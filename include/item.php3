@@ -119,14 +119,14 @@ function GetAliases4Type( $type, $additional="" ) {
             $aliases = GetCategoryAliases();   // defined in modules/links/constant.php3
             break;
     }
-    
+
     // add additoinal aliases
     if( isset( $additional ) AND is_array( $additional ) ) {
         foreach ( $additional as $k => $v)
             $aliases["_#".$k] = GetAliasDef( "f_s:$v");
     }
     return($aliases);
-}    
+}
 
 # helper function for f_e
 # this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
@@ -721,6 +721,8 @@ if ($GLOBALS[debug]) huhl("Got for image",$a);
       case 'selected':  // returns true, if current item is the selected one
                         // (given by set[]=selected-454343 view.php3 parameter)
         return (( (integer)$p[1] == (integer)($this->getval('short_id........')) ) ? '1' : '0');
+      case 'username':    // prints user name form its id
+        return perm_username( $this->getval($col) );
       case "add":
     	$add="add=1";
 	// drop through to default

@@ -1149,4 +1149,13 @@ $_m["November"]
 $_m["December"]
   = "prosinec";
 
+$_m["All my links"]
+  = "Všechny mé odkazy";
+
+$_m["Links to check"]
+  = "Ke kontrole";
+
+$_m["Last edited"]
+  = "Naposledy editované";
+
 ?>

@@ -1,5 +1,9 @@
 <?php
-//$Id$
+/** @param url         - url to check
+ *  @param tree_start  - from which category you have to search
+ *  @param checked_id  - link_id of checked link
+ */
+ //$Id$
 
 $directory_depth = '../';
 require_once "../../include/init_page.php3";
@@ -48,11 +52,13 @@ $sort = '';
 
 
 // 1 - base category - look for all links in the database (no matter in which subtree)
-$links_zids = Links_QueryZIDs(1, $conds, $sort, true, 'all');
-$links_zids->add(Links_QueryZIDs(1, $conds, $sort, true, 'unasigned'));
+$start_cat_path = ($tree_start ? GetCategoryPath( $tree_start ) : 1);
 
-$format_strings = array ( "compact_top"   =>'<table border=0 cellspacing=0 cellpadding=5 bgcolor="'. COLOR_TABBG .'"><tr class=tabtit><td class=tabtit colspan=2>'. _m('URL') .': <b>_#LINK_URL</b></td></tr>',
-                          "odd_row_format"=>'<tr class=tabtxt><td class=tabtxt><a href="_#LINK_URL">_#LINK_NAM</a><div class="tabsmall">_#LINK_DES<br>({switch({_#CAT_NAME}).+:'._m('In category').'#: _#CAT_NAME:'._m('Link is not assigned to any category').'})</div></td><td class=tabtxt><a href="javascript:edit(\'_#LINK_ID_\')">'._m('Edit').'</a><div class=tabsmall>('._m('Rewrites link in bottom form').')</div></td></tr>',
+$links_zids    = Links_QueryZIDs($start_cat_path, $conds, $sort, true, 'all');
+$links_zids->add(Links_QueryZIDs($start_cat_path, $conds, $sort, true, 'unasigned'));
+
+$format_strings = array ( "compact_top"   =>'<table border=0 cellspacing=0 cellpadding=5 bgcolor="'. COLOR_TABBG .'"><tr class=tabtit><td class=tabtit colspan=2>'. _m('URL') .': <b>_#L_URL___</b></td></tr>',
+                          "odd_row_format"=>'<tr class=tabtxt><td class=tabtxt><a href="_#L_URL___">_#L_NAME__</a><div class="tabsmall">_#L_DESCRI<br>({switch({_#L_CATNAM}).+:'._m('In category').'#: _#L_CATNAM:'._m('Link is not assigned to any category').'})</div></td><td class=tabtxt><a href="javascript:edit(\'_#LINK_ID_\')">'._m('Edit').'</a><div class=tabsmall>('._m('Rewrites link in bottom form').')</div></td></tr>',
                           "compact_bottom"=>'</table>'
                         );
 

@@ -492,6 +492,7 @@ echo '</td></tr>
  </form>
  	<form name="f_hidden" method="get" action="check_url.php3" target="message">
 		<input type="hidden" name="url" value="">
+		<input type="hidden" name="tree_start" value="'.$links_info['tree_start'].'">
 		<input type="hidden" name="checked_id" value="'.$r_state['link_id'].'">';
         $sess->hidden_session();
 echo '
