@@ -1,5 +1,19 @@
+07/08/02 - new 'group_n' parameter for slice.php3 allowing display of first 
+           (second, ...) category only 
+           (good for display of last issue of magazine, for example)
+07/03/02 - new possibility to use data (aliases) from the first item in listing 
+           for the 'top HTML code'
+07/02/02 - new possibility to change all user permissions on one page 
+           (in user management)
+         - new possibility to sort and mainly group items in 'priority' order 
+           (usable for all fields defined by 'constants' - like categories)  
 06/30/02 - added Slice Wizard
+06/26/02 - bugfix - bad parsing of parameters of Input type function (el:.. bug)
+         - bugfix - RSS view works again
+06/21/02 - new "{include()}" inline function
+         - bugfix - multiple checkboxes now works (again)
 06/17/02 - patched PHPLib is part of AA, now (use 'cvs update -d' to get it)
+         - fillform.php3 works with scroller (fillconds)
          - removed call-time passed-by-reference variables in function calls
          - better variable handling if magic_qoutes are not set (no more 
            warning displayed)
