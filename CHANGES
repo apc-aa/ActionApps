@@ -1,3 +1,21 @@
+05/17/02 - new 'textarea with presets' input type
+         - added new possibility to "selectbox with presets" - two field could 
+           be filled by single selection (source and source_href, for example)
+         - new possibility to concaternate texts filled by presets (field or 
+           textarea
+         - added RLIKE possibility in operator list for views
+         - fixed bug of not working url aliases in static view
+         - added error description text passed to error page (on err_url)' filler.php3
+         - removed old and unused parameter "query" and all related functions
+         - added accesskey "s" for form submit
+         - slice owners are ordered by name, now
+         - fixed problem with displayed warning on discussion administration 
+           page, when accessed through https
+         - fixed bug of ocassional warning of redeclare userdate2sec() function
+         - fixed bug of ocassional warning of wrong language file include
+05/15/02 - added 'storemultiasone' option in /misc/file2slice/importer.php3
+05/14/02 - fixed bug in edit constant - se_constedit (udated to modules version)
+         - removed debug messages from hierarchy constant editor
 04/25/02 - module interface introduced (not only slices, but other modules are 
            now possible to do. see /modules directory for module listing)
          - new 'inline' aliases definition (in {} brckets)
