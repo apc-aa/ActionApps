@@ -287,19 +287,33 @@ while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
   }    
   if( !($value = $vw_data[$k]) && $VIEW_TYPES_INFO[$view_type][$k]['default'] )  // we can define default values for fields (see constants.php3)
     $value = $VIEW_TYPES_INFO[$view_type][$k]['default'];
-  switch ( $VIEW_FIELDS[$k]["input"] ) {
-    case "field":   FrmInputText($k, $v, $value, 254, 50, false, "", DOCUMENTATION_URL); break;
-    case "area":    FrmTextarea($k, $v, $value, 4, 50, false, "", DOCUMENTATION_URL); break;
-    case "areabig":    FrmTextarea($k, $v, $value, 15, 80, false, "", DOCUMENTATION_URL); break;
-    case "seltype": FrmInputSelect($k, $v, $VIEW_TYPES_INFO[$view_type][modification], $value, false, "", DOCUMENTATION_URL); break;
-    case "selfld":  FrmInputSelect($k, $v, $lookup_fields, $value, false, "", DOCUMENTATION_URL); break;
-    case "selgrp":  FrmInputSelect($k, $v, $lookup_groups, $value, false, "", DOCUMENTATION_URL); break;
-    case "op":      FrmInputSelect($k, $v, $lookup_op, $value, false, "", DOCUMENTATION_URL); break;
-    case "chbox":   FrmInputChBox($k, $v, $value, true); break;
-    case "cond":    ConditionFrm($k, $v, $value); break;
-    case "order":   OrderFrm($k, $v, $value, $VIEW_TYPES_INFO[$view_type][order] ? 
+    
+  $input = $VIEW_FIELDS[$k]["input"];
+    
+  if (is_array ($v)) {
+    $label = $v["label"];
+    $help = $v["help"];
+    if ($v["input"])
+        $input = $v["input"];
+  }
+  else {
+    $label = $v;
+    $help = "";
+  }
+  
+  switch( $input ) {
+    case "field":   FrmInputText($k, $label, $value, 254, 50, false, $help, DOCUMENTATION_URL); break;
+    case "area":    FrmTextarea($k, $label, $value, 4, 50, false, $help, DOCUMENTATION_URL); break;
+    case "areabig":    FrmTextarea($k, $label, $value, 15, 80, false, $help, DOCUMENTATION_URL); break;
+    case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type][modification], $value, false, $help, DOCUMENTATION_URL); break;
+    case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help, DOCUMENTATION_URL); break;
+    case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help, DOCUMENTATION_URL); break;
+    case "op":      FrmInputSelect($k, $label, $lookup_op, $value, false, $help, DOCUMENTATION_URL); break;
+    case "chbox":   FrmInputChBox($k, $label, $value, true); break;
+    case "cond":    ConditionFrm($k, $label, $value); break;
+    case "order":   OrderFrm($k, $label, $value, $VIEW_TYPES_INFO[$view_type][order] ? 
                                      $VIEW_TYPES_INFO[$view_type][order] : $lookup_fields); break;
-    case "select":  FrmInputSelect($k, $v, $VIEW_FIELDS[$k]["values"], $vw_data[$k], false, "", DOCUMENTATION_URL); break;
+    case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]["values"], $vw_data[$k], false, $help, DOCUMENTATION_URL); break;
     case "none": break;
   }
 }  
