@@ -12,15 +12,22 @@ body { margin-left: 4px;
        font-size: 8pt;
 }
 
-SELECT {  
+.tabtxt, TD {  
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 10pt;
+ }
+ 
+TEXTAREA {  
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  width: 100%;
  }
 
-.tabtxt, TD, INPUT, TEXTAREA {  
+INPUT, SELECT {  
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 10pt;
+  font-size: 8pt;
  }
+ 
 
 H1, .tablename {
   font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -134,7 +141,7 @@ TD.leftmenu {
 
 .tabhlp {
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: x-small;
+  font-size: 8pt;
 }
 
 .taberr {

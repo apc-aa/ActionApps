@@ -264,7 +264,6 @@ if( !$encap ) {
         }
       }  
         
-      var box_index=0;   // index variable for box input fields
       var listboxes=Array(); // array of listboxes where all selection should be selected
       var relatedwindow;  // window for related stories
       
@@ -323,7 +322,7 @@ else
 
 <form name=inputform onsubmit="BeforeSubmit()" enctype="multipart/form-data" method=post action="<?php echo  ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PASS_PARAM ?>">
 <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center" class="inputtab">
-<tr><td class=tabtit align="center"><b>&nbsp;<?php echo L_ITEM_HDR?></b>
+<tr><td class=tabtit align="center"><b>&nbsp;<?php //echo L_ITEM_HDR?></b>
 </td>
 </tr>
 <tr><td>
@@ -401,6 +400,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.30  2002/03/06 13:45:53  honzam
+just small design change
+
 Revision 1.29  2002/02/12 09:55:51  mitraearth
 File: apc-aa/admin/itemedit.php3
 Changed By: Ram Prasad
