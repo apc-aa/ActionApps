@@ -29,13 +29,6 @@ if (!defined ("AA_MENU_INCLUDED"))
     define("AA_MENU_INCLUDED","1");
 else return;
 
-// use instead of </body></html> on pages which show menu
-function HtmlPageEnd() {
-  echo "
-    </TD></TR></TABLE>
-    </TD></TR></TABLE>
-    </BODY></HTML>";
-}
 
 // ----------------------------------------------------------------------------------------
 /* creates a JavaScript variable modulesOptions, which allows to create another Module selectbox
@@ -274,6 +267,11 @@ function showSubMenuRows( $aamenuitems, $active ) {
                               $item["exact_href"] : get_aa_url($item["href"]));
                 if ($slice_id && !$item["no_slice_id"])
                     $href = con_url ($href, "slice_id=$slice_id");
+                if ($item['js']) {
+                    $item['js'] = str_replace("{href}",$href,$item['js']);
+                    $item['js'] = str_replace("{exact_href}",$href,$item['js']);
+                    $href = "javascript:".$item['js'];
+                }
                 echo '<a href="'.$href.'" class=leftmenuy>'.$item["label"]."</a>\n";
             } else {
                 echo "<span class=leftmenun>".$item["label"]."</span>\n";
