@@ -74,12 +74,14 @@ function ParseViewParameters($query_string="") {
     case 'v':  $vid = $command[1];
                break;
     case 'i':  $vid = $command[1];
-               $item_ids[] = $command[2];
+               for( $i=2; $i<count($command); $i++)
+                 $item_ids[] = $command[$i];
                break;
     case 'x':  $vid = $command[1];
                for( $i=2; $i<count($command); $i++)
                  $item_ids[] = $command[$i];
-               $use_short_ids = true;
+               if( strlen($command[2]) < 16  )
+                 $use_short_ids = true;
                break;
     case 'c':  if( $command[1] ) 
                  $param_conds[$command[1]] = $command[2];
@@ -677,6 +679,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.19  2001/11/05 18:43:38  honzam
+fixed bug with multiple ids passed to view in i and x option
+
 Revision 1.18  2001/11/05 13:43:00  honzam
 fixed bug of wrong html code generated for empty comments table
 
