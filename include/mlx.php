@@ -360,7 +360,7 @@ class MLXView
 	//                  ONLY -> show only items available in this language (like conds[lc]=lang)
 	//                  ALL  -> show all articles regardless of language (like without MLX)
 	var $mode = "MLX";
-	
+	//var $translations;
 	///@param mlx is the thing set in the URL
 	///@param slice_id is a fallback in case mlx is missing
 	function MLXView($mlx,$slice_id=0) {
@@ -429,7 +429,7 @@ class MLXView
 				return;
 			}
 		}
-		$translations = $this->getPrioTranslationFields($ctrlSliceID);
+		$translations = $this->getPrioTranslationFields($ctrlSliceID,$slice_id);
 		$arr = array();
 		foreach($zidsObj->a as $packedid) {
 			$arr[(string)$packedid] = 1; 
@@ -471,6 +471,11 @@ class MLXView
 				if(MLX_TRACE)
 					__mlx_dbg(array($db->f('field_id'),unpack_id128($db->f('text'))),"JOIN");
 				$aMlxCtrl[(string)$db->Record[0]] = $db->Record[1];
+				/*
+				$GLOBALS['MLX_ALT'][(string)unpack_id128($db->Record[1])] = array(
+				'lang' => array_search((string)$db->Record[0],$translations),
+				'id' => (string)unpack_id128($upContId));
+				*/
 			}
 			//__mlx_dbg($aMlxCtrl,"aMlxCtrl");
 			$bFound = false;
@@ -478,6 +483,9 @@ class MLXView
 				$fieldSearch = $aMlxCtrl[$tr];
 				if(!$fieldSearch)
 					continue;
+				/*$GLOBALS['MLX_ALT'][(string)unpack_id128($fieldSearch)][] = array($l=>
+					unpack_id128($upContId));
+				*/
 				if($bFound) {
 					if(MLX_TRACE)
 						__mlx_dbg(unpack_id128($fieldSearch),"unset");
@@ -496,6 +504,83 @@ class MLXView
         if ( !$nocache ) {
             $pagecache->store($keystr, serialize($zidsObj), $str2find);
         }
+	}
+	///at the moment this is not useful unless you write your own
+	///stringexpand function to produce useable output
+	///ideally, this would use the a view from some slice to display 
+	///the languages -- it doesnt have to know the itemdids since 
+	///mlx can handle "wrong" itemids
+	function getAlternatives($p_itemid,$slice_id) {
+		if(!$p_itemid) {
+			if($GLOBALS['errcheck']) huhl("MLXView::getAlternatives zero id passed");
+			return "";
+		}
+		$ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id128($slice_id)];
+		if(!$ctrlSliceID)
+			return "";
+		$translations = $this->getPrioTranslationFields($ctrlSliceID);
+		$db = getDB();
+		$sql = "SELECT c2.text,c2.field_id FROM `content` AS c1" //c2.text c2.field_id,  
+//			." LEFT JOIN `content` AS c2 ON ("
+			." INNER JOIN `content` AS c2 ON ("
+			." c2.item_id=c1.text )"
+			." WHERE (c1.item_id='".quote($p_itemid)."'"
+			." AND c1.field_id='".MLX_CTRLIDFIELD."'"
+			." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."') ";/*LIMIT ".count($translations);*/
+		$db->tquery($sql);
+		$o = "";
+		$cnt = 0;
+		while( $db->next_record() ) { //get all translations
+			if($db->Record[0] == $p_itemid)
+				continue;
+			if($cnt++ > 0)
+				$o .= "-";
+			$o .= array_search((string)$db->Record[1],$translations)."=";
+			$o .= unpack_id128($db->Record[0]);
+			//__mlx_dbg($db->Record);
+			//__mlx_dbg(unpack_id128($db->Record[1]));
+		}
+		return $o;
+	}
+	/** the mlx mini view generator **/
+	/// 
+	function getTranslations($p_itemid,$slice_id,$params) {
+		//__mlx_dbg(unpack_id128($p_itemid),"itemid");
+		//__mlx_dbg(unpack_id128($slice_id),"slice_id");
+		//__mlx_dbg($params,"params");
+		if(!$p_itemid) {
+			if($GLOBALS['errcheck']) huhl("MLXView::getAlternatives zero id passed");
+			return "";
+		}
+		$ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id128($slice_id)];
+		if(!$ctrlSliceID) 
+			return "MLXView::getAlternatives no ctrlSliceID";
+		$translations = $this->getPrioTranslationFields($ctrlSliceID);
+		$db = getDB();
+		$sql = "SELECT c2.text,c2.field_id FROM `content` AS c1" //c2.text c2.field_id,  
+//			." LEFT JOIN `content` AS c2 ON ("
+			." INNER JOIN `content` AS c2 ON ("
+			." c2.item_id=c1.text )"
+			." WHERE (c1.item_id='".quote($p_itemid)."'"
+			." AND c1.field_id='".MLX_CTRLIDFIELD."'"
+			." AND c2.field_id RLIKE '".MLX_LANG2ID_TYPE."') LIMIT ".count($translations);
+		$db->tquery($sql);
+		$o = "";
+		$tmpl = $params[0];
+		if(!$tmpl)
+			return "mlx_view: forgot the view template..";
+		while( $db->next_record() ) { //get all translations
+			if($db->Record[0] == $p_itemid)
+				continue;
+			//$o .= array_search((string)$db->Record[1],$translations)."=";
+			//$o .= unpack_id128($db->Record[0]);
+			$lang = array_search((string)$db->Record[1],$translations);
+			$itemid = unpack_id128($db->Record[0]);
+			$o .= str_replace(array("%lang","%itemid"),array($lang,"$itemid"),
+				$tmpl);
+			//__mlx_dbg($db->Record);
+		}
+		return $o;
 	}
 	/*
 	// I am still unsure if the JOIN is correct -- use this one to compare results (And nocache!)
@@ -582,7 +667,9 @@ class MLXView
 		
 	}
 	*/
-	function getPrioTranslationFields($ctrlSliceID) {
+	function getPrioTranslationFields($ctrlSliceID,$slice_id=0) {
+		if($GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID])
+			return $GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID];
 		list($fields,) = GetSliceFields($ctrlSliceID);
 		$translations = array();
 		if(!is_array($fields))
@@ -600,6 +687,9 @@ class MLXView
 		}
 		foreach( $tmptrans as $lang => $langfield)
 			$translations[(string)$lang] = $langfield;
+		$GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID] = $translations;
+		if($slice_id)
+			$GLOBALS['MLX_TRANSLATIONS'][(string)$slice_id] = (string)$ctrlSliceID;
 		return $translations;
 	}
 	function getLangByIdx($idx) {
