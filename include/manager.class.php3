@@ -123,28 +123,54 @@ class manager extends storable_class {
         }
 
         // create itemview ----------------------------------------------------
-        if ( $settings['itemview']['manager_vid'] ) {
-            $view_info = GetViewInfo( $settings['itemview']['manager_vid'] );
+
+        $manager_vid    = $settings['itemview']['manager_vid'];
+        $format_strings = $settings['itemview']['format'];
+        $aliases        = $settings['itemview']['aliases'];
+
+        // modify $format_strings and $aliases (passed by reference)
+        $this->setDesign($format_strings, $aliases, $manager_vid, $settings['scroller']['slice_id'] );
+
+        $this->itemview = new itemview( $format_strings,
+                                        $settings['itemview']['fields'],
+                                        $aliases,
+                                        false,   // no item ids yet
+                                        0,       // first item
+                                        $this->scroller->metapage,
+                                        '',      // not necessary I think: $settings['itemview']['url'],  // $r_slice_view_url
+                                        '',      // no discussion settings
+                                        $settings['itemview']['get_content_funct']);
+    }
+
+
+    /** Fills format array with manager default design and ensures, the aliases are
+     *  properly. If aliases there are not needed aliases, the function will add it
+     */
+    function setDesign(&$format_strings, &$aliases, $manager_vid, $module_id) {
+        if ( $manager_vid ) {
+            $view_info = GetViewInfo( $manager_vid );
             if ( $view_info AND !($view_info['deleted']>0) ) {
                 $format_strings = GetViewFormat($view_info);
                 $this->messages['noitem_msg'] = $view_info['noitem_msg'];
                 if( isset($this->scroller) )
                     $this->scroller->metapage = $view_info['listlen'];
             }
+        } else {
+            if ( !isset($aliases["_#ITEM_ID_"]) ) $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............");
+            if ( !isset($aliases["_#SITEM_ID"]) ) $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........");
+            if ( !isset($aliases["_#HEADLINE"]) ) $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($module_id));
+            if ( !isset($aliases["_#JS_HEAD_"]) ) $aliases["_#JS_HEAD_"] = GetAliasDef( "f_e:javascript",       GetHeadlineFieldID($module_id));
+
+            if ( !$format_strings ) {
+                $row = '<td>_#PUB_DATE&nbsp;</td><td>_#HEADLINE</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>_#AA_ACTIO</td>': '');
+                $format_strings["odd_row_format"]  = '<tr class="tabtxt">'.$row.'</tr>';
+                $format_strings["even_row_format"] = '<tr class="tabtxteven">'.$row.'</tr>';
+                $format_strings["even_odd_differ"] = 1;
+                $format_strings["compact_top"]     = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">
+                    <tr class="tabtitlight"><td>'._m("Publish date").'</td><td>'._m("Headline").'</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>'._m("Actions").'</td>' : ''). '</tr>';
+                $format_strings["compact_bottom"]  = '</table>';
+            }
         }
-
-        if ( !$format_strings )
-            $format_strings = $settings['itemview']['format'];
-
-        $this->itemview = new itemview( $format_strings,
-                                       $settings['itemview']['fields'],
-                                       $settings['itemview']['aliases'],
-                                       false,   // no item ids yet
-                                       0,       // first item
-                                       $this->scroller->metapage,
-                                       '',      // not necessary I think: $settings['itemview']['url'],  // $r_slice_view_url
-                                       '',      // no discussion settings
-                                       $settings['itemview']['get_content_funct']);
     }
 
     /** initial manager setting from user's profile */
