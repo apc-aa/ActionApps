@@ -48,7 +48,7 @@ if($slice_id) {  // edit slice
     <?php
     $xx = ($slice_id!="");
     $show = Array("main"=>false, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
-                  "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+                  "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
     require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
     MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT);
     exit;
@@ -62,6 +62,7 @@ if($slice_id) {  // edit slice
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
+$superadmin = IsSuperadmin();
 
 if( $add || $update ) {
   do {
@@ -107,8 +108,10 @@ if( $add || $update ) {
       $varset->add("owner", "unpacked", $owner);
       $varset->add("slice_url", "quoted", $slice_url);
       $varset->add("d_listlen", "number", $d_listlen);
-      $varset->add("deleted", "number", $deleted);
-      $varset->add("template", "number", $template);
+      if( $superadmin ) {
+        $varset->add("deleted", "number", $deleted);
+        $varset->add("template", "number", $template);
+      }  
       $varset->add("lang_file", "quoted", $lang_file);
 
       $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . "WHERE id='$p_slice_id'";
@@ -277,7 +280,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
   $xx = ($slice_id!="");
   $show = Array("main"=>false, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
-                "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . ( $slice_id=="" ? L_A_SLICE_ADD : L_A_SLICE_EDT) . "</B></H1>";
@@ -285,12 +288,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo $Msg;
 ?>
 <form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_SLICES_HDR?></b>
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   FrmStaticText(L_ID, $slice_id);
   FrmInputText("name", L_SLICE_NAME, $name, 99, 25, true);
@@ -306,8 +309,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     FrmInputText("new_owner_email", L_NEW_OWNER_EMAIL, $new_owner_email, 99, 25, false);
   }  
   FrmInputText("d_listlen", L_D_LISTLEN, $d_listlen, 5, 5, true);
-  FrmInputChBox("template", L_TEMPLATE, $template);
-  FrmInputChBox("deleted", L_DELETED, $deleted);
+  if( $superadmin ) {
+    FrmInputChBox("template", L_TEMPLATE, $template);
+    FrmInputChBox("deleted", L_DELETED, $deleted);
+  }  
   FrmInputChBox("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post);
   FrmInputChBox("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $permit_offline_fill);
   FrmInputSelect("lang_file", L_LANG_FILE, $LANGUAGE_FILES, $lang_file, false);
@@ -329,6 +334,9 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.17  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.16  2001/02/26 12:22:30  madebeer
 moved hint on .shtml to slicedit
 changed default item manager design
@@ -398,4 +406,3 @@ also added Id and Log keywords to all .php3 and .inc files
 </BODY>
 </HTML>
 <?php page_close()?>
-

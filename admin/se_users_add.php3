@@ -45,10 +45,10 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
 
 ?>
 <form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_PERM_NEW ?></b></td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
         <td width="30%" class=tabtxt><b><?php echo L_USERS ?></b></td>
         <td width="40%"><input type=Text name=usr value=<?php echo $usr?>></td>
@@ -68,7 +68,7 @@ if ($GrpSrch || $UsrSrch) {
     $addable = FindUsers($usr); ?>
   <tr><td class=tabtit><b>&nbsp;<?php echo L_PERM_SEARCH ?></b></td></tr>
   <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE"><?php 
+  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>"><?php 
 
   // determine role of this user
   if (ComparePerms($editor_perms, $perms_roles_perms["SUPER"])!="L")
@@ -119,6 +119,9 @@ if ($GrpSrch || $UsrSrch) {
 }
 /*
 $Log$
+Revision 1.5  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.4  2000/07/27 14:26:55  kzajicek
 Higher privileges are now necessary to change permissions
 of other users (sooner was equality adequate).

@@ -146,7 +146,7 @@ function EnableClick(cond,what) {
   $xx = ($slice_id!="");
   $useOnLoad = true;
   $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>false, "fulltext"=>$xx, 
-                "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . L_A_COMPACT . "</B></H1>&nbsp;" . L_COMPACT_HELP;
@@ -154,12 +154,12 @@ function EnableClick(cond,what) {
   echo $Msg;
 ?>
 <form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_COMPACT_HDR?></b><BR>
 </td>
 </tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   FrmTextarea("compact_top", L_COMPACT_TOP, $compact_top, 4, 50, false,
                L_TOP_HLP, "", DOCUMENTATION_URL, 1);
@@ -193,6 +193,9 @@ function EnableClick(cond,what) {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.10  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.9  2001/02/20 13:25:16  honzam
 Better search functions, bugfix on show on alias, constant definitions ...
 

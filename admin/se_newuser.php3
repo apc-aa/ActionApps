@@ -85,7 +85,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   $xx = ($slice_id!="");
   $useOnLoad = false;
   $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "addusers"=>$xx, "newusers"=>false, "import"=>$xx, "filters"=>$xx);
+                "views"=>$xx, "addusers"=>$xx, "newusers"=>false, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . L_A_NEWUSER . "</B></H1>";
@@ -93,12 +93,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo $Msg;
 ?>
 <form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_NEWUSER_HDR?></b>
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   FrmInputText("user_login", L_USER_LOGIN, $user_login, 50, 50, true);
   FrmInputPwd("user_password1", L_USER_PASSWORD1, $user_password1, 50, 50, true);
@@ -118,6 +118,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.4  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.3  2000/10/10 10:06:54  honzam
 Database operations result checking. Messages abstraction via MsgOK(), MsgErr()
 

@@ -255,12 +255,12 @@ echo $Msg;
 <center>
 <form enctype="multipart/form-data" method=post action="<?php echo $sess->url( ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF) ?>">
 
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center" class="inputtab">
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center" class="inputtab">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_ITEM_HDR?></b>
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE" class="inputtab2">
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" class="inputtab2">
 <?php
 //p_arr_m($fields);
 if( !isset($prifields) OR !is_array($prifields) ) {
@@ -326,6 +326,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.17  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.16  2001/02/20 13:25:16  honzam
 Better search functions, bugfix on show on alias, constant definitions ...
 

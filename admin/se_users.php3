@@ -110,7 +110,7 @@ HtmlPageBegin();   // Prints HTML start page tags
   $xx = ($slice_id!="");
   $show = Array("main"=>true,"config"=>$xx, "category"=>$xx, "compact"=>$xx,
                 "fields"=>$xx, "search"=>$xx, "users"=>$show_adduser, 
-                "fulltext"=>$xx, "addusers"=>!$show_adduser, "newusers"=>$xx, 
+                "fulltext"=>$xx, "views"=>$xx, "addusers"=>!$show_adduser, "newusers"=>$xx, 
                 "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   // show navigation column in dependance
                                                  // on $show variable
@@ -158,12 +158,12 @@ HtmlPageBegin();   // Prints HTML start page tags
 */    
     ?>
     
-    <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+    <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
     <tr>
      <td class=tabtit><b>&nbsp;<?php echo L_PERM_CURRENT ?></b></td>
     </tr>
     <tr><td>
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">  <?php
+    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">  <?php
 
     $slice_users = GetObjectsPerms($slice_id, "slice");
     $aa_users = GetObjectsPerms(AA_ID, "aa");   // higher than slice
@@ -195,6 +195,9 @@ HtmlPageBegin();   // Prints HTML start page tags
   }  
 /*
 $Log$
+Revision 1.7  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.6  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

@@ -108,7 +108,7 @@ function Defaults() {
 <?php
   $xx = ($slice_id!="");
   $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>false, 
-                "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . L_A_ADMIN . "</B></H1>";
@@ -116,12 +116,12 @@ function Defaults() {
   echo $Msg;
 ?>
 <form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_ADMIN_HDR?></b>
 </td>
 </tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
   FrmTextarea("admin_format_top", L_ADMIN_FORMAT_TOP, $admin_format_top, 4, 60,
               false, L_TOP_HLP, "", DOCUMENTATION_URL, 1); 
@@ -144,6 +144,9 @@ function Defaults() {
   echo '<input type=button onClick = "Defaults()" align=center value="'. L_DEFAULTS .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.6  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.5  2001/02/20 13:25:16  honzam
 Better search functions, bugfix on show on alias, constant definitions ...
 

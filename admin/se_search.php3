@@ -106,7 +106,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php 
   $xx = ($slice_id!="");
   $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>false, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   
   echo "<H1><B>" . L_A_SEARCH_EDT . "</B></H1>";
@@ -114,12 +114,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo $Msg;  
 ?>
 <form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_SEARCH_HDR?></b>
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr><td class=tabtxt width="40%"><b><?php echo L_FIELD ?></b></td><td class=tabtxt width="30%" align=center><b><?php echo L_SEARCH_SHOW ?></b></td><td>&nbsp;</td></tr>
 <?php
   reset($SHOWN_SEARCH_FIELDS);
@@ -136,7 +136,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr><td class=tabtxt width="40%"><b><?php echo L_FIELD ?></b></td>
     <td class=tabtxt width="30%" align=center><b><?php echo L_SEARCH_SHOW ?></b></td>
     <td class=tabtxt align=center><b><?php echo L_SEARCH_DEFAULT ?></b></td></tr>
@@ -157,6 +157,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">&nbsp;&nbsp;';
 /*
 $Log$
+Revision 1.5  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.4  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

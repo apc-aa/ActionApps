@@ -181,7 +181,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php 
   $xx = ($slice_id!="");
   $show = Array("main"=>true, "config"=>$xx, "category"=>($xx && !$categ), "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   
   echo "<H1><B>" . L_A_CONSTANTS_EDT . "</B></H1>";
@@ -189,12 +189,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo $Msg;  
 ?>
 <form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_CONSTANTS_HDR?></b>
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
  <td class=tabtxt><b><?php echo L_CONSTANT_GROUP ?></b></td>
  <td class=tabtxt colspan=3><?php
@@ -248,6 +248,9 @@ echo '</table>
 
 /*
 $Log$
+Revision 1.6  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.5  2001/02/20 13:25:16  honzam
 Better search functions, bugfix on show on alias, constant definitions ...
 

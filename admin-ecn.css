@@ -1,0 +1,158 @@
+td.scroller {background: #a0a0a0;} 
+
+.scrhead {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  color: #4A4A4A;
+} 
+
+body { margin-left: 4px;
+       background: #F5F0E7;
+       font-family: Verdana, Arial, Helvetica, sans-serif;
+       font-size: 8pt;
+}
+
+SELECT {  
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+ }
+
+TD, INPUT, TEXTAREA {  
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+ }
+
+H1, .tablename {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: medium;
+  margin-left: 20px;  
+}
+
+.navbar {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+  background: #EBDABE;
+	color: #584011;
+}
+
+.nbviewlp {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+  background: #584011;
+	color: #F5F0E7;
+}
+
+.nblogo {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-weight : bold;
+  background: #584011;
+	color: #F5F0E7;
+  text-decoration: none;
+}
+
+.nbmenu {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+  background: #F5F0E7;
+	color: #584011;
+}
+
+.nbenable {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+  background: #EBDABE;
+	color: #4A4A4A;
+}
+
+.nbdisable {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+  background: #EBDABE;
+	color: #4A4A4A;
+}
+
+.example {
+	font-family: Courier, sans-serif;
+	font-size: 8pt;
+}
+
+.slicehead {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size : 13pt;
+	color: #584011;
+	font-weight : bold;
+  background: #EBDABE;
+}
+
+.leftmenu  {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+	font-weight : bold;
+  color: #4A4A4A;
+}
+
+.leftmenuy  {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: #4A4A4A;
+}
+
+.leftmenun  {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: x-small;
+  color: #4A4A4A;
+}
+
+.ipreview, .iid, .ipostdate, .ihedline, .icategory, .ifeedtit, .ifeed, .navbar, .headline {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  color: #4A4A4A;
+}
+
+.inoutertd {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: #FFFFFF;
+}
+
+.tabtit {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: #FFFFFF;
+}
+
+.tabtxt {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: small;
+}
+
+.tabhlp {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+}
+
+.taberr {
+  color: red;
+}
+
+.notpubl {
+  color: blue;
+}
+
+.expired {
+  color: red;
+}
+
+
+.err {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: red;
+}
+
+.okmsg {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: x-small;
+  color: green;
+}

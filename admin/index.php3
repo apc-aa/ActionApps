@@ -210,7 +210,23 @@ function SubmitItems(act) {
   document.itemsform.action.value = act
   document.itemsform.submit()
 }
-  
+
+function MarkedActionGo() {
+  var ms = document.markedform.markedaction;
+  switch( ms.options[ms.selectedIndex].value ) {
+    case "1-app": SubmitItems('app'); 
+                  break;
+    case "2-hold": SubmitItems('hold'); 
+                  break;
+    case "3-trash": SubmitItems('trash'); 
+                  break;
+    case "4-feed": OpenFeedForm(); 
+                  break;
+    case "5-view": OpenPreview(); 
+                  break;
+  }
+}
+
 var previewwindow
 var feedformwindow
 
@@ -341,8 +357,9 @@ $format_strings = array ( "compact_top"=>$slice_info[admin_format_top],
                           "odd_row_format"=>$slice_info[admin_format],
                           "compact_remove"=>$slice_info[admin_remove],
                           "compact_bottom"=>$slice_info[admin_format_bottom]);
+
 echo "<center>";
-echo "$Msg";
+echo "$Msg <br>";
 
 # ------- Caption -----------
 
@@ -381,13 +398,59 @@ echo '<input type=hidden name=feed2slice value="">';  // array of comma delimete
 echo '<input type=hidden name=feed2app value="">';    // array of comma delimeted slices in which we have to feed into approved - filled by javascript function SendFeed in feed_to.php3 
 echo '</form></center>';
 
-  echo L_ICON_LEGEND . "</body></html>";
+
+if( ($r_bin_state != "app")  AND 
+    ($r_bin_state != "appb") AND 
+    ($r_bin_state != "appc") AND 
+    CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT))
+  $markedaction["1-app"] = L_MOVE_TO_ACTIVE_BIN; 
+
+if( ($r_bin_state != "hold") AND 
+    CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD))
+  $markedaction["2-hold"] = L_MOVE_TO_HOLDING_BIN;
+  
+if( ($r_bin_state != "trash") AND 
+     CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH))
+  $markedaction["3-trash"] = L_MOVE_TO_TRASH_BIN;
+
+$markedaction["4-feed"] = L_FEED;
+$markedaction["5-view"] = L_VIEW_FULLTEXT;
+  
+echo "<center>
+      <form name=markedform method=post action=\"". $sess->url($PHP_SELF)."\">
+      <table border=0 cellspacing=0 class=login width=460>
+      <TR><TD align=center class=tablename width=436>".
+      L_CHANGE_MARKED ." &nbsp; <select name=markedaction>";
+
+reset($markedaction);
+while(list($k, $v) = each($markedaction)) 
+  echo "<option value=\"". htmlspecialchars($k)."\"> ".
+           htmlspecialchars($v) ." </option>";
+echo "</select>
+      <a href=\"javascript:MarkedActionGo()\" class=leftmenuy>".L_GO.
+      "</a></TD></TR>".
+ "</table></form></center>";
+
+echo L_ICON_LEGEND;
+echo L_SLICE_HINT;
+
+$ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
+
+echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
+     "?slice_id=" . $slice_id . "&quot;--&gt;</pre>
+
+  </body>
+</html>";
 
   $$st_name = $st;   // to save the right scroller 
   page_close();
 
 /*
+
 $Log$
+Revision 1.17  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.16  2001/02/26 12:22:30  madebeer
 moved hint on .shtml to slicedit
 changed default item manager design

@@ -191,7 +191,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php 
   $xx = ($slice_id!="");
   $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
+                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   
   echo "<H1><B>" . L_A_FIELDS_EDT . "</B></H1>";
@@ -201,13 +201,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 echo "
 <form enctype=\"multipart/form-data\" method=post action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">
- <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"#584011\" align=\"center\">
+ <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
   <tr>
    <td class=tabtit><b>&nbsp;". L_FIELDS_HDR ."</b></td>
   </tr>
   <tr>
    <td>
-    <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"#EBDABE\">
+    <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
      <tr>
       <td class=tabtxt><b>". L_FIELD ."</b></td>
       <td class=tabtxt>".  htmlspecialchars($fld[name]) ."</td>
@@ -291,7 +291,7 @@ echo "
   </tr>
   <tr>
    <td>
-    <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"#EBDABE\">
+    <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
      <tr>
       <td class=tabtxt><b>". L_ALIAS1 ."</b></td>
       <td class=tabtxt colspan=3><input type=\"Text\" name=\"alias1\" size=20 maxlength=10 value=\"$alias1\">
@@ -383,6 +383,9 @@ echo "
 
 /*
 $Log$
+Revision 1.5  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.4  2001/01/23 23:58:03  honzam
 Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
 

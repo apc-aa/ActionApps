@@ -108,7 +108,7 @@ function UpdateImportExport(slice_id)
   $xx = ($slice_id!="");
   $useOnLoad = true;
   $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "addusers"=>$xx, "newusers"=>$xx, "import"=>false, "filters"=>$xx);
+                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>false, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
   echo "<H1><B>" . L_A_SLICE_IMP . "</B></H1>";
@@ -116,10 +116,10 @@ function UpdateImportExport(slice_id)
   echo $Msg;
 ?>
 <form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_IMP_EXPORT ?></b></td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
 	<td width="45%" class=tabtxt align=center><b><?php echo L_IMP_EXPORT_N ?></b></td>
 	<td width="10%">&nbsp;</td>
@@ -161,7 +161,7 @@ function UpdateImportExport(slice_id)
 </table></tr></td>
 <tr><td class=tabtit><b>&nbsp;<?php echo L_IMP_IMPORT ?></b></td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
 	<td width="45%" class=tabtxt align=center><b><?php echo L_IMP_IMPORT_N ?></b></td>
 	<td width="10%">&nbsp;</td>
@@ -206,6 +206,9 @@ function UpdateImportExport(slice_id)
 <?php
 /*
 $Log$
+Revision 1.5  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.4  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

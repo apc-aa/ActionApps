@@ -211,11 +211,11 @@ function RealyDelete() {
 
 ?>
 <!-- Select user form -->
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align=center>
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align=center>
  <tr><td class=tabtit><b>&nbsp;<?php echo L_GROUPS?></b></td></tr>
  <tr><td>
    <form enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE" align=center>
+    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
             <td>&nbsp;</td>
             <td><input type=Text name=grp value="<?php echo $rgrp?>"></td>
@@ -228,7 +228,7 @@ function RealyDelete() {
  </tr>
  <tr>
   <td><form enctype="multipart/form-data" name=f2 method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE" align=center>
+    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
      <tr>
             <td class=tabtxt><b><?php echo L_GROUP ?></b></td>
             <td><?php SelectGU_ID("selected_group", $groups, $selected_group);
@@ -265,7 +265,7 @@ do {
 
 ?>
 <form name=f enctype="multipart/form-data" method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;
 <?php
 if( $grp_edit OR ($submit_action == "update_submit") )
@@ -276,7 +276,7 @@ if( $grp_edit OR ($submit_action == "update_submit") )
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE" align=center>
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
 <?php
 
 # User data ---------------------------------------------------
@@ -292,7 +292,7 @@ if( !$add_submit AND !$grp_new) {?>
 
   <tr><td class=tabtit><b>&nbsp;<?php echo L_USERS?></b></td></tr>
   <tr><td>
-  <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+  <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
   <?php
   
   # User - group membership -----------------------------------------
@@ -337,6 +337,9 @@ echo '<input type=hidden name=submit_action value=0>';  // to this variable stor
 <?php page_close()
 /*
 $Log$
+Revision 1.7  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.6  2000/08/14 12:20:57  kzajicek
 $assigned_users was always non-empty array after explode().
 

@@ -56,12 +56,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 <center>
 <form enctype="multipart/form-data" method=post action="<?php echo $sess->url("slicedit.php3") ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_SELECT_APP?></b>
 </td>
 </tr>
 <tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
 
 if( isset( $templates ) AND is_array( $templates ) AND
@@ -107,6 +107,9 @@ if( isset( $templates ) AND is_array( $templates ) AND
   echo '<input type=submit name=cancel value="'. L_CANCEL .'">';
 /*
 $Log$
+Revision 1.4  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.3  2001/01/13 20:21:27  madebeer
 added help prompt for adding slices.
 clarified what 'slice url' means in slicedit.php3

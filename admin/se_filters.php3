@@ -181,7 +181,7 @@ function UpdateFilters(slice_id, import_id) {
   $xx = ($slice_id!="");
   $useOnLoad = true;
   $show = Array("main"=>true, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx, 
-                "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>false);
+                "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>false);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
   echo "<H1><B>" . L_A_FILTERS_FLT . "</B></H1>";
   PrintArray($err);
@@ -189,10 +189,10 @@ function UpdateFilters(slice_id, import_id) {
   
 ?>
 <form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
+<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;<?php echo L_FLT_SETTING ?></b></td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
 	<td colspan class=tabtxt align=center><b><?php echo L_FLT_FROM_SL . "&nbsp; "?></b></td>
   <td><?php FrmSelectEasy("import_id", $impslices, $import_id, "OnChange=\"ChangeImport()\""); ?></td>
@@ -200,7 +200,7 @@ function UpdateFilters(slice_id, import_id) {
 </table></td></tr>
 <tr><td class=tabtit><b>&nbsp;<?php echo L_FLT_CATEGORIES ?></b></td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#EBDABE">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
 	<td width="40%" colspan=2 class=tabtxt align=center><b><?php echo L_FLT_FROM ?></b></td>
 	<td width="30%" class=tabtxt align=center><b><?php echo L_FLT_TO ?></b></td>
@@ -262,6 +262,9 @@ if( $db->next_record()) {
 } 
 /*
 $Log$
+Revision 1.7  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.6  2001/01/22 17:32:48  honzam
 pagecache, logs, bugfixes (see CHANGES from v1.5.2 to v1.5.3)
 

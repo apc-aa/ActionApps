@@ -1,24 +1,29 @@
-23/01/01 - added possibility to define Aliases in se_inputform.php3
+02/24/01 - color profiles definitoins
+         - template/delete options in slicedit.php3 visible only to Superadmins
+--------------------
+26/01/00 - v1.6
+--------------------
+01/23/01 - added possibility to define Aliases in se_inputform.php3
          - fixed bug in permission handling (no showed slices for no superusers)
          - added help texts to design pages se_admin, se_fulltext, se_compact
-20/01/01 - final 'I hope' version of APC-wide categories implemented
+01/20/01 - final 'I hope' version of APC-wide categories implemented
          - better categy handling for new slices (predefined its own category 
            set)
          - fixed problem with storing item ids to session in too big slices
          - implemented posibility to view multiple fulltext items on one page
            (see item parameter in slice.php3)         
-19/01/01 - removed absolute paths to some pictures
+01/19/01 - removed absolute paths to some pictures
          - fixed bug in displaying admin pages (table caption not displayed)
-14/01/01 - modified db table constant (added id column - used with categories)
+01/14/01 - modified db table constant (added id column - used with categories)
          - include/view.php3 modified to use page caching
          - new include/pagecache.php3 with functions allowing caching of pages
-13/01/01 - loging for change slice feeding settings
+01/13/01 - loging for change slice feeding settings
          - new include/logs.php3 with utilities for logging (log table modified)
-09/01/01 - located and fixed bug in in PHPLib. Fixed by patching ac_store()\
+01/09/01 - located and fixed bug in in PHPLib. Fixed by patching ac_store()\
            function in PHPLib :-(.
-08/01/01 - fixed problem with unpack_id() in some PHP versions (4.0.3) 
+01/08/01 - fixed problem with unpack_id() in some PHP versions (4.0.3) 
            (Documents contain no data problem)
-04/01/01 - fixed "cannot redeclare sec2userdate() problem"
+01/04/01 - fixed "cannot redeclare sec2userdate() problem"
          - fixed problem with wrong .htaccess file ("Internal Server Error"
            problem)
 --------------------

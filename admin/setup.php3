@@ -32,7 +32,7 @@ require ("$GLOBALS[AA_INC_PATH]" . DEFAULT_LANG_INCLUDE);
 function HtmlStart() {
    echo L_SETUP_PAGE_BEGIN;
    echo "<title>" . L_SETUP_TITLE . "</title></head>\n";
-   echo "<body bgcolor=\"#F5F0E7\" link=\"#D20000\" vlink=\"#D20000\">\n";
+   echo "<body bgcolor=\"". COLOR_BACKGROUND ."\" link=\"#D20000\" vlink=\"#D20000\">\n";
    echo "<center>\n";
    echo "<h1>" . L_SETUP_H1 . "</h1>\n";
 }
@@ -53,11 +53,11 @@ function SuperForm() {
   ?>
   <form method=post action="<?php echo $myurl; ?>">
     <table border="0" cellspacing="0" cellpadding="1" width="440"
-           bgcolor="#584011" align="center">
+           bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
       <tr><td class=tabtit><b><?php echo L_SETUP_USER; ?></b></td></tr>
       <tr><td>
          <table border="0" cellspacing="0" cellpadding="4" width="100%"
-                bgcolor="#EBDABE" align=center>
+                bgcolor="<?php echo COLOR_TABBG ?>" align=center>
             <?php 
               FrmInputText("login", L_SETUP_LOGIN, $login, 12, 30, true);
               FrmInputPwd("password1", L_SETUP_PWD1, $password1, 12, 30, true);
@@ -258,6 +258,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.7  2001/02/26 17:26:08  honzam
+color profiles
+
 Revision 1.6  2001/01/26 14:52:55  honzam
 Fixed setup.php3 problem with non existing database for cache
 
