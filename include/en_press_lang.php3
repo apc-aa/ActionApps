@@ -149,7 +149,7 @@ define("L_POSTED_BY", "Author");
 define("L_E_POSTED_BY","Author's e-mail"); 
 define("L_PUBLISH_DATE", "Publish date");
 define("L_EXPIRY_DATE", "Expiry date");
-define("L_CATEGORY", "Release category");
+define("L_CATEGORY", "Category");
 define("L_STATUS_CODE", "Release status");
 define("L_LANGUAGE_CODE", "Language");
 define("L_CP_CODE", "Encoding");
@@ -372,7 +372,7 @@ define("L_MORE_SPECIFIC", "Try to be more specific.");
 define("L_REMOVE", "Remove");
 define("L_ID", "Id");
 define("L_TYPE", "Type");
-define("L_SETTINGS", "Slice settings");
+define("L_SETTINGS", "Admin");
 define("L_LOGO", "APC toolkit logo");
 define("L_USER_MANAGEMENT", "User management");
 define("L_ITEMS", "Item management page");
@@ -525,8 +525,8 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
-Revision 1.2  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
+Revision 1.3  2000/07/07 21:40:36  honzam
+Better words
 
 Revision 1.1.1.1  2000/06/21 18:40:35  madebeer
 reimport tree , 2nd try - code works, tricky to install
