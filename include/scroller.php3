@@ -1,7 +1,7 @@
 <?php # -*-mode: Fundamental; tab-width: 4; -*-
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ require $GLOBALS[AA_INC_PATH] . "statestore.php3";
 
 class scroller extends storable_class {
 	var $classname = "scroller";
-	var $persistent_slots = Array("pgcnt", "current", "id", "visible", "sortdir", 
+	var $persistent_slots = Array("pgcnt", "current", "id", "visible", "sortdir",
   		"sortcol", "filters", "itmcnt", "metapage", "urldefault");
 	var $current = 1;		# current page
 	var $id;				    # scroller id
@@ -57,7 +57,7 @@ class scroller extends storable_class {
 	var $sortdir = 1;
 	var $sortcol = "";
 	var $filters;
-	
+
 	# constructor
 	# $id identifies scroller on a web page
 	# $pgcnt is the number of pages to scroll
@@ -80,13 +80,13 @@ class scroller extends storable_class {
 	function Absolute($page) {
 		return urlencode("scr_" . $this->id . "_Go") . "=" . urlencode($page);
 	}
-	
+
 	# print Toggle Visibility button
 	function pVisButton($url = "",
-			$show = "<img src=\"../images/expand.gif\" border=0 align=left alt=Expand>", 
+			$show = "<img src=\"../images/expand.gif\" border=0 align=left alt=Expand>",
 			$hide = "<img src=\"../images/collapse.gif\" border=0 align=left alt=Collapse>") {
 		if(!$url) $url = $this->urldefault;
-		echo "<a href=\"$url" . $this->ToggleVis() . "\">" . 
+		echo "<a href=\"$url" . $this->ToggleVis() . "\">" .
 			($this->visible ? $hide : $show) . "</a>";
 	}
 
@@ -104,24 +104,24 @@ class scroller extends storable_class {
 	function pSort($sortcol, $show, $url = "") {
 		if(!$url) $url = $this->urldefault;
 		echo "<a href=\"$url" . $this->Sort($sortcol) . "\">$show";
-		if($this->sortcol == $sortcol && $this->sortdir) 
-			echo "<img src=\"../images/sort" . $this->sortdir . ".gif\" border=0>"; 
-    echo "</a>";  
+		if($this->sortcol == $sortcol && $this->sortdir)
+			echo "<img src=\"../images/sort" . $this->sortdir . ".gif\" border=0>";
+    echo "</a>";
 	}
 
 	# return "order by" sql clause
 	function sortSql() {
-		if($this->sortcol && $this->sortdir) 
+		if($this->sortcol && $this->sortdir)
 			return " order by $this->sortcol " . ($this->sortdir == 2 ? "desc" : "");
 		return "";
 	}
 
 	# keep current page within bounds
-	function checkBounds() {	
+	function checkBounds() {
 		if($this->current < 1) $this->current = 1;
 		if($this->current > $this->pgcnt) $this->current = max($this->pgcnt,1);
 	}
-	
+
 	# adjust number of pages
   # deprecated - use coutPages instead
 	function adjustSize($pgcnt) {
@@ -136,31 +136,31 @@ class scroller extends storable_class {
     $this->itmcnt = $itmcnt;
   }
 
- 
+
   #returns number of pages
 	function pageCount() {
     return floor(($this->itmcnt - 1) / max(1,$this->metapage)) + 1;
-  }  
+  }
 
   function setSort($column, $desc="") {
   	$this->sortcol = $column;
   	$this->sortdir = ( $desc ? 2 : 1 );
-  }  
-		
+  }
+
   # process query string and execute commands for this scroller
 	# query string is taken from global variables
   # deprecated - better to use updateScr (based on $itmcnt)
-	function update($url = "", $pgcnt = "") { 
+	function update($url = "", $pgcnt = "") {
 		$this->updateFilters();
 		if($url) $this->urldefault = $url;
 		if($pgcnt) $this->pgcnt = $pgcnt; # adjust size
-		if(isset($GLOBALS["scr_" . $this->id . "_Vi"])) 
+		if(isset($GLOBALS["scr_" . $this->id . "_Vi"]))
 			$this->visible = $GLOBALS["scr_" . $this->id . "_Vi"];
-		if($GLOBALS["scr_" . $this->id . "_Go"]) 
+		if($GLOBALS["scr_" . $this->id . "_Go"])
 			$this->current = $GLOBALS["scr_" . $this->id . "_Go"];
-		if($GLOBALS["scr_" . $this->id . "_Mv"]) 
+		if($GLOBALS["scr_" . $this->id . "_Mv"])
 			$this->current += $GLOBALS["scr_" . $this->id . "_Mv"];
-		if($GLOBALS["scr_" . $this->id . "_Sort"]) { 
+		if($GLOBALS["scr_" . $this->id . "_Sort"]) {
 			$sortcol = $GLOBALS["scr_" . $this->id . "_Sort"];
 			if($sortcol == $this->sortcol) $this->sortdir = ($this->sortdir + 1) % 3;
 			else $this->sortdir = 1;
@@ -172,12 +172,12 @@ class scroller extends storable_class {
   # process query string and execute commands for this scroller
 	# query string is taken from global variables
   # (based on $itmcnt)
-	function updateScr($url = "", $itmcnt = "") { 
+	function updateScr($url = "", $itmcnt = "") {
 		if($itmcnt)
       $this->countPages($itmcnt);
     $this->update($url);
   }
-   
+
 	# return navigation bar as a hash
 	# labels as keys, query string fragments a values
 	function navarray() {
@@ -190,11 +190,11 @@ class scroller extends storable_class {
 		if($from > 1) $arr["1"] = $this->Absolute(1);
 		if($from > 2) $arr[".. "] = "";
 		for($i = $from; $i <= $to; $i++) {
-			$arr[(string)$i] = ($i == $this->current ? "" : 
+			$arr[(string)$i] = ($i == $this->current ? "" :
 				$this->Absolute($i));
-		}	
+		}
 		if($to < $this->pgcnt - 1) $arr[" .."] = "";
-		if($to < $this->pgcnt) 
+		if($to < $this->pgcnt)
 			$arr[(string) $this->pgcnt] = $this->Absolute($this->pgcnt);
 		if($this->current < $this->pgcnt)
 			$arr[">>"] = $this->Relative(1);
@@ -205,16 +205,16 @@ class scroller extends storable_class {
 	# convert array provided by navarray into HTML code
 	# commands are added to $url
 	function pnavbar($url = "") {
-		if(!$this->visible) {return;};
+		if(!$this->visible) return;
 		if(!$url) $url = $this->urldefault;
 		$i = 0;
 		$arr = $this->navarray();
 		while(list($k, $v) = each($arr)) {
-            if($i++) echo " | ";	
+            if($i++) echo " | ";
 			if($v) echo "<a href=\"$url$v\" class=\"scroller\">$k</a>\n";
 			else   echo "<span class=\"scroller_actual\">$k</span>\n";
 		}
-	     echo "<a href=\"" . $url . "&listlen=99999\" class=\"scroller\">| " . _m("All") . "</a>";
+	     echo "| <a href=\"" . $url . "listlen=99999\" class=\"scroller\">" . _m("All") . "</a>";
  	}
 
 	# add filter
@@ -231,7 +231,7 @@ class scroller extends storable_class {
 		while(list($name, $flt) = each($this->filters)) {
 			if(isset($GLOBALS["flt_" . $this->id . "_${name}_val"])){
 			  $this->filters[$name][value] = $GLOBALS["flt_" . $this->id . "_${name}_val"];
-			}  
+			}
 		}
 	}
 
@@ -262,7 +262,7 @@ class scroller extends storable_class {
 				$cond[] = "$name $op '" . userdate2sec($value) . "'";
 				break;
 			case "md5":
-        $cond[]= "$name $op '". quote(pack("H*",$value))."'";	
+        $cond[]= "$name $op '". quote(pack("H*",$value))."'";
 			}
 		}
 		if(!is_array($cond)) return "1 = 1";
