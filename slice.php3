@@ -231,9 +231,9 @@ if (!$encap)
 
 
 if( $bigsrch ) {  # big search form ------------------------------------------
-   echo 'bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br> See 
+   echo '<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br> See 
          <a href="http://apc-aa.sourceforge.net/faq/index.shtml#215">AA FAQ</a> 
-         for more details.';
+         for more details. -->';
   ExitPage();
 }
 
