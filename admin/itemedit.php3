@@ -129,8 +129,6 @@ if( ($insert || $update) AND (count($err)<=1)
   # prepare content4id array before call StoreItem function
   $content4id = GetContentFromForm( $fields, $prifields );
 
-//p_arr_m ( $content4id );
-
   if( $insert )
     $id = new_id();
 
@@ -258,6 +256,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.22  2001/05/29 19:14:58  honzam
+copyright + AA logo changed
+
 Revision 1.21  2001/05/18 13:50:09  honzam
 better Message Page handling (not so much)
 

@@ -111,6 +111,11 @@ define( "L_SLICE_HINT", '
                   To include slice in your webpage type next line to your shtml code:
                   ');
 
+// copyright message for all screens
+define( "L_COPYRIGHT", 'Copyright (C) 2001 the 
+						<a href="http://www.apc.org">Association for Progressive  Communications (APC)</a> 
+						under the 
+						<a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>'); 
 
 // log texts
 define( "LOG_EVENTS_UNDEFINED", "Undefined" );
@@ -158,6 +163,9 @@ function dateExample() {
                    
 /*
 $Log$
+Revision 1.17  2001/05/29 19:14:58  honzam
+copyright + AA logo changed
+
 Revision 1.16  2001/05/18 13:55:04  honzam
 New View feature, new and improved search function (QueryIDs)
 

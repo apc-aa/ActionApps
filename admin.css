@@ -55,7 +55,7 @@ H1 {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	font-weight : bold;
-  background: #FFFFFF;
+  background: #FFCC66;
 	color: #FFFFFF;
   text-decoration: none;
 }
@@ -204,4 +204,12 @@ H1 {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: x-small;
   color: green;
+}
+
+
+.copymsg {
+       background: #000000;
+       font-family: Verdana, Arial, Helvetica, sans-serif;
+       font-size: 8pt;
+       color: #999999;
 }
