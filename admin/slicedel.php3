@@ -62,7 +62,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 $useOnLoad = ($new_compact ? true : false);
 
-require_once $AA_BASE_PATH.menu_include();   //show navigation column depending on $show
+require_once menu_include();   //show navigation column depending on $show
 showMenu ($aamenus, "aaadmin","slicedel");
 
 echo "<H1><B>" . _m("Admin - Delete Slice") . "</B></H1>";

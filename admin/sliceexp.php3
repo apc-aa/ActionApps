@@ -137,7 +137,7 @@ if (isset($b_export_to_file))
 <BODY>
 
 <?php
-  require_once $AA_BASE_PATH.menu_include();   //show navigation column depending on $show
+  require_once menu_include();   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin","sliceexp");
 ?>
 
