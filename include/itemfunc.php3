@@ -28,7 +28,6 @@ require_once $GLOBALS["AA_INC_PATH"]."date.php3";
 require_once $GLOBALS["AA_INC_PATH"]."item_content.php3";
 require_once $GLOBALS["AA_INC_PATH"]."event_handler.php3";
 require_once $GLOBALS["AA_INC_PATH"]."event.class.php3";   // newer and better than event_handler.php3
-
 if( !is_object($event) ) $event = new aaevent;   // not defined in scripts which do not include init_page.php3 (like offline.php3)
 
 # ----------------------- functions for default item values -------------------
@@ -292,7 +291,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="")
         $order = $additional["order"];
     }
 
-#$debugupload=1;
+#$debugupload=7;
     if ($debugupload) huhl("insert_fnc_fil:field=",$field,"value=",$value,"param=",$param);
     if ($debugupload >= 5) huhl("Globals=",$GLOBALS);
     $filevarname = "v".unpack_id($field["id"])."x";
@@ -340,22 +339,20 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="")
         // images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
         $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
         $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
-
         if( !is_dir( $dirname )) {
           if ($debugupload) huhl("Creating directory ".$dirname);
           if( !mkdir( $dirname, IMG_UPLOAD_DIR_MODE ) )
             return _m("Can't create directory for image uploads");
           }
     }
-
     $dest_file = GetDestinationFileName($dirname, $dest_file);
     if ($debugupload) huhl("Moving $filevarname to $dirname fileman_used = $fileman_used $dest_file");
 
     // copy the file from the temp directory to the upload directory, and test for success
     $e = aa_move_uploaded_file($filevarname, $dirname,
-        $fileman_used ? $FILEMAN_MODE_FILE : (int)IMG_UPLOAD_FILE_MODE, $dest_file);
+    $fileman_used ? $FILEMAN_MODE_FILE : (int)IMG_UPLOAD_FILE_MODE, $dest_file);
     if ($debugupload) huhl("File moved to $dirname/$dest_file: ");
-    if ($e) {
+ if ($e) {
         $err[$field["id"]] = $e;
         if ($debugupload) { huhl("Errors = ",$err); exit; }
         return;
@@ -755,6 +752,7 @@ function show_fnc_iso($varname, $field, $value, $param, $html) {
 
   $items = GetItemHeadlines($sid, "headline.", $value, "ids",$tagprefix);
 
+  echo $field["input_before"];
   FrmRelated($varname."[]", $field['name'], $items, $selectsize, $sid, $mode,
              $design, $field["required"], $field["input_help"],
              $field["input_morehlp"], $movebuttons);
@@ -807,6 +805,7 @@ function show_fnc_wi2($varname, $field, $value, $param, $html) {
     }
   }
 
+  echo $field["input_before"];
   FrmTwoBox($varname, $field['name'], $arr, $constgroup, $size, $selected,
             $field["required"], $wi2_offer, $wi2_selected,$field["input_help"],
             $field["input_morehlp"]);
