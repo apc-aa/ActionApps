@@ -229,9 +229,10 @@ function Inputform_url($add, $iid, $sid, $ret_url, $vid = null, $var = null) {
     $param[]           = "slice_id=$sid";
     $param[]           = make_return_url("return_url=",$ret_url);
     if ($iid) $param[] = "id=$iid";
-    if ($vid) $param[] = "vid=$vid";
     if ($var) $param[] = "openervar=$var";  // id of variable in parent window (used for popup inputform)
-    if (isset($profile) AND $profile->getProperty('input_view')) {
+    if ($vid) {
+        $param[]       = "vid=$vid";
+    } elseif (isset($profile) AND $profile->getProperty('input_view')) {
         $param[]       = 'vid='.$profile->getProperty('input_view');
     }
     return con_url($url2go,$param);
@@ -360,17 +361,25 @@ class item {
   function getItemID()        { return $this->columns->getItemID();  }
   function getSliceID()       { return $this->columns->getSliceID(); }
 
-  function getbaseurl($redirect=false, $no_sess=false) {
-      # redirecting to another page
-      $url_base = ($redirect ? $redirect : $this->clean_url );
+  function getbaseurl($redirect, $no_sess) {
+      global $sess;
+      /*  old version - it prints whole url (http://...). Current uses url as
+          short as possible - like "?x=445445"
 
+      $url_base = ($redirect ? $redirect : $this->clean_url );
       if( $no_sess ) {                     #remove session id
           $pos = strpos($url_base, '?');
-          if($pos) {
+          if ($pos) {
               $url_base = substr($url_base,0,$pos);
           }
       }
-      # add state variable, if defined (apc - AA Pointer Cache)
+      */
+
+      // redirecting to another page?
+      $url_base = ( $redirect ? $redirect :
+                    (($no_sess OR !is_object($sess))  ? '' : $sess->url('')) );
+
+      // add state variable, if defined (apc - AA Pointer Cache)
       if( $GLOBALS['apc_state'] ) {
           $url_base = con_url( $url_base, 'apc='.$GLOBALS['apc_state']['state'] );
       }
@@ -657,8 +666,9 @@ class item {
     $p = ParamExplode($param);
     list ($plink_only, $purl_field, $predirect, $ptxt, $pcondition, $paddition, $pno_sess) = $this->subst_aliases($p);
 
-    if (!$p[4])           # undefined condition parameter
+    if (!$p[4]) {          // undefined condition parameter
       $pcondition = true;
+    }
 
     # last parameter - condition field
     $url = $this->getitemurl($plink_only, $purl_field, $predirect, $pcondition, $pno_sess);
@@ -974,15 +984,18 @@ function RSS_restrict($txt, $len) {
     return  ($negate ? $pnone : $pbegin. $coltxt .$pend);
   }
 
-  # calls user defined function in file /include/usr_aliasfnc.php3
+  /** Calls user defined function in file /include/usr_aliasfnc.php3 */
   function f_u($col, $param="") {
-    $p = ParamExplode($param);
-    $fnc = $p[0];
-    if (!is_callable($fnc)) {
-        huhl("Field $col is defined with f_u and function '$fnc', but '$fnc' is not defined in apc-aa/include/usr_aliasfnc.php3");
-        return "";
-    }
-    return $fnc($this->columns->getContent(), $col, $param);
+      // first we substitute alias on whole param string
+      // (it will be passed to usr_function already substituted
+      $param = $this->subst_alias($param);
+      $p = ParamExplode($param);
+      $fnc = $p[0];
+      if (!is_callable($fnc)) {
+          huhl("Field $col is defined with f_u and function '$fnc', but '$fnc' is not defined in apc-aa/include/usr_aliasfnc.php3");
+          return "";
+      }
+      return $fnc($this->columns->getContent(), $col, $param);
   }
 
   # display specified view
@@ -1076,7 +1089,7 @@ function RSS_restrict($txt, $len) {
   }
 
   # live checkbox -- updates database immediately on clicking without reloading the page
-  function f_k ($col, $param = "") {
+  function f_k($col, $param = "") {
     global $AA_INSTAL_PATH;
     $short_id = $this->getval("short_id........");
 
@@ -1105,7 +1118,7 @@ function RSS_restrict($txt, $len) {
   #   if $col==<from2> the function returns <to2>
   #   else it returns <dafault>
   #   <to1>, <to2>, ... and <default> can be field ids
-  function f_x ($col, $param="") {
+  function f_x($col, $param="") {
     $p = $this->subst_aliases( ParamExplode($param) );
     $to = (int) floor(count($p)/2);
     $colvalue = $this->getval($col);
