@@ -159,7 +159,7 @@ class inputform {
         $out = $CurItem->get_item();
 
         FrmTabCaption( '', 'id="inputtab"', 'id="inputtabrows"' );
-        $parts = $GLOBALS['g_formpart'];
+       $parts = $GLOBALS['g_formpart'];
         if ( $parts ) {
             $idx = 0;
             while ( $parts+1 ) {

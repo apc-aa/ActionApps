@@ -25,6 +25,7 @@ http://www.apc.org/
 # optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
 
+
 $encap = ( ($encap=="false") ? false : true );
 
 if( $edit OR $add )         # parameter for init_page - we edited new item so
@@ -38,6 +39,9 @@ require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
 require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
 require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
+//mimo include mlx functions
+require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
+
 //require_once $GLOBALS["AA_INC_PATH"]."inputform.class.php3";
 
 // needed for field JavaScript to work
@@ -101,6 +105,10 @@ ValidateContent4Id ($err, $slice_id, $action, $id);
 
 $slice = new slice($slice_id);
 
+//mimo changes
+$lang_control = IsMLXSlice($slice);
+//
+
   # update database
 if( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
 
@@ -114,9 +122,18 @@ if( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
   if( $insert )
     $id = new_id();
 
+// mimo change
+  if($lang_control) {
+    //print("mlxl=$mlxl<br>mlxid=$mlxid<br>action=$action<br>");
+    $mlx = new MLX($slice);
+    $mlx->update($content4id,$id,$action,$mlxl,$mlxid);
+    //mlx_update($slice,$content4id,$id);
+    //echo "<pre>"; print_r($content4id); echo "</pre>";
+  }
+// end
+
   $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, $insert,
                             true, true, $oldcontent4id );     # invalidatecache, feed
-
 //echo "</pre>"; exit;
   if( count($err) <= 1) {
     page_close();
@@ -139,6 +156,7 @@ if( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
 # -----------------------------------------------------------------------------
 # Input form
 # -----------------------------------------------------------------------------
+
 
 unset( $content );       # used in another context for storing item to db
 unset( $content4id );
@@ -163,6 +181,32 @@ if($edit) {
   $content4id = $content[$id];
 }
 
+//mimo changes
+if($lang_control ) {
+	if(MLX_TRACE)
+		print("mlxl=$mlxl<br>mlxid=$mlxid<br>action=$action<br>");
+	if(empty($mlx)) 
+		$mlx = new MLX($slice);
+	$mlx_formheading = $mlx->itemform($lang_control,
+		array('AA_CP_Session'=>$AA_CP_Session,'slice_id'=>$slice_id,'encap'=>$encap),
+		$content4id,$action,$mlxl,$mlxid);
+}
+
+// end mimo changes
+
+//mimo changes
+if($lang_control ) {
+	if(MLX_TRACE)
+		print("mlxl=$mlxl<br>mlxid=$mlxid<br>action=$action<br>");
+	if(empty($mlx)) 
+		$mlx = new MLX($slice);
+	$mlx_formheading = $mlx->itemform($lang_control,
+		array('AA_CP_Session'=>$AA_CP_Session,'slice_id'=>$slice_id,'encap'=>$encap),
+		$content4id,$action,$mlxl,$mlxid);
+}
+
+// end mimo changes
+
 $r_hidden["slice_id"] = $slice_id;
 $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
 
@@ -175,7 +219,8 @@ if( !$encap ) {
         // next two variables are used for GetFormJavascript() function - javascript
         // validation when display_aa_begin_end is true
         'show_func_used'       => $show_func_used,
-        'js_proove_fields'     => $js_proove_fields);
+        'js_proove_fields'     => $js_proove_fields,
+	'formheading'          => $mlx_formheading ); //added MLX
 }
 $inputform_settings['messages']            = array('err' => $err);
 $inputform_settings['form_action']         = ($DOCUMENT_URI != "" ? $DOCUMENT_URI :

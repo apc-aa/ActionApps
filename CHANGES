@@ -1,9 +1,5 @@
-10/01/04 - new {str_replace:<search>,<replace>,<string>} alias function'
-(honzam) - improved f_a (abstract grabbing) alias
-         - documentation: changed cvs login information to match current
-           sourceforge state
-         - fixed bug of not parsed spots in new (copied) site module
-         - e-mail is now mandatory for AA user
+10/04/04 - Added MLX (multililingual stuff)
+(mimo)
 09/20/04 - Fixed buggy hierarchical constant editor (honzam)
 09/07/04 - The value of Display counter could be set be CSV importer of itemform
 (honzam) - bugfix - html flag for CSV import now works
