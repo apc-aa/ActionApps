@@ -148,7 +148,7 @@ if( !(isset($prifields) AND is_array($prifields)) )
 reset($prifields);
 while(list(,$pri_field_id) = each($prifields)) {
   $f = $fields[$pri_field_id];
-  $varname = 'v'. unpack_id($pri_field_id);  // "v" prefix - database field var
+  $varname = 'v'. unpack_id128($pri_field_id);  // "v" prefix - database field var
   $htmlvarname = $varname."html";
   if( !$$varname ) {
     $$varname = GetDefault($f);
@@ -206,7 +206,7 @@ $insert_item = true;
 # the my_item_id hidden field
 if (!isset ($my_item_id)) $my_item_id = new_id();
 else {
-	$item_pid = addslashes(pack_id($my_item_id));
+	$item_pid = addslashes(pack_id128($my_item_id));
 	$SQL = "SELECT * FROM item WHERE id='$item_pid'";
 	$db->query($SQL);
 	if ($db->next_record())	{
@@ -217,7 +217,7 @@ else {
 		reset ($fields);
 		while (list ($field) = each($fields))
 			if (substr ($field,0,15) == "password.......") {
-				$db->query ("SELECT * FROM content WHERE item_id='$item_pid' AND field_id='$field'");
+				$db->query("SELECT * FROM content WHERE item_id='$item_pid' AND field_id='$field'");
 				if (!$db->next_record() || $db->f("text") != $content4id[$field])
 					$err[] = "You must set correct password to edit this field.";
 				break;

@@ -64,7 +64,7 @@ while (list ($key) = each ($vars)) {
 $vars = addslashes (serialize ($vars));
      
 $id = new_id();    
-$db->query ("
+$db->query("
     INSERT INTO post2shtml (id, vars, time) 
     VALUES ('$id', '$vars', ".time().")");
 

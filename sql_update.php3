@@ -1299,7 +1299,7 @@ if( $update_modules ) {
 
 if( $alerts ) {
   echo '<h2>Adding to Alerts Collection table and Cron table</h2>';
-  $db->query ("SELECT * FROM cron WHERE script='misc/alerts/alerts.php3'");
+  $db->query("SELECT * FROM cron WHERE script='misc/alerts/alerts.php3'");
   if ($db->num_rows())
     echo "Some rows with script = misc/alerts/alerts.php3 exist already in table cron, not added.<br>";
   else {
@@ -1312,10 +1312,10 @@ if( $alerts ) {
   
   for ($i=0; $i < 2; $i ++) {
     $desc = $i ? $ALERTS_DEFAULT_COLLECTION : $ALERTS_SUBSCRIPTION_COLLECTION;
-    $db->query ("SELECT * FROM alerts_collection WHERE description = '$desc'");
+    $db->query("SELECT * FROM alerts_collection WHERE description = '$desc'");
     if ($db->num_rows())
         echo "Collection $desc already defined, not added.<br>";
-    else $db->query ("INSERT INTO alerts_collection (description, showme) VALUES ('$desc',0);");
+    else $db->query("INSERT INTO alerts_collection (description, showme) VALUES ('$desc',0);");
   }  
 }
 

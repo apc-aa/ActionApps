@@ -272,7 +272,8 @@ if( $sh_itm OR $x ) {
     $sh_itm = LogItem($x,"short_id");
     
   if (!isset ($hideFulltext)) {
-      $itemview = new itemview( $db, $slice_info, $fields, $aliases, array(0=>$sh_itm), 0,1, $sess->MyUrl($slice_id, $encap));
+      $itemview = new itemview( $db, $slice_info, $fields, $aliases, new zids($sh_itm,"l"),
+                        0,1, $sess->MyUrl($slice_id, $encap));
       $itemview->print_item();
   }
 
@@ -308,7 +309,8 @@ if( $items AND is_array($items) ) {   # shows all $items[] as fulltext one after
 //  $r_state_vars = StoreVariables(array("items")); # store in session
   while(list($k) = each( $items ))
     $ids[] = substr($k,1);    #delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
-  $itemview = new itemview( $db, $slice_info, $fields, $aliases, $ids, 0,count($ids), $sess->MyUrl($slice_id, $encap));
+    $zids = new zids($ids,"l");
+  $itemview = new itemview( $db, $slice_info, $fields, $aliases, $zids, 0,$zids->count(), $sess->MyUrl($slice_id, $encap));
   $itemview->print_itemlist();
   ExitPage();
 }
@@ -466,11 +468,12 @@ else {
   else 
     $sort[] = array ( 'publish_date....' => 'd' );
 
-  $item_ids=QueryIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by],
+  $zids=QueryZIDs($fields, $slice_id, $conds, $sort, $slice_info[group_by],
                      "ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator, true );
 
-  if( isset($item_ids) AND !is_array($item_ids))
-    echo "<div>$item_ids</div>";
+// Commented out because queryids doesn't return error strings
+//  if( isset($item_ids) AND !is_array($item_ids))
+//    echo "<div>$item_ids</div>";
   if( !$scrl )
     $scr->current = 1;
     
@@ -482,10 +485,10 @@ if( !$srch AND !$encap AND !$easy_query ) {
   pCatSelector($sess->name,$sess->id,$sess->MyUrl($slice_id, $encap, true),$cur_cats,$scr->filters[category_id][value], $slice_id, $encap);
 }
 
-if( count( $item_ids ) > 0 ) {
-  $scr->countPages( count( $item_ids ) );
+if( $zids->count() > 0 ) {
+  $scr->countPages( $zids->count() );
 
-  $itemview = new itemview( $db, $slice_info, $fields, $aliases, $item_ids,
+  $itemview = new itemview( $db, $slice_info, $fields, $aliases, $zids,
               $scr->metapage * ($scr->current - 1), 
               ($group_n ? -$group_n : $scr->metapage),  # negative number used for displaying n-th group
               $sess->MyUrl($slice_id, $encap) );

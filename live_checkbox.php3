@@ -52,10 +52,10 @@ reset ($ar);
 list ($field_id, $action) = each ($ar);
 
 $db = new DB_AA;
-$db->query ("SELECT id, slice_id FROM item WHERE short_id = $short_id");
+$db->query("SELECT id, slice_id FROM item WHERE short_id = $short_id");
 if ($db->next_record()) {
-    $item_id = unpack_id ($db->f("id"));
-    $slice_id = unpack_id ($db->f("slice_id")); 
+    $item_id = unpack_id128($db->f("id"));
+    $slice_id = unpack_id128($db->f("slice_id")); 
 }
 else failed();
 
@@ -64,7 +64,7 @@ if (!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT))
 
 header ("Content-Type: image/gif");
 
-$content4ids = GetItemContent (array ($item_id));
+$content4ids = GetItemContent($item_id);
 reset ($content4ids);
 $content4id = current ($content4ids);
 $action = ! ($content4id[$field_id][0]["value"]);

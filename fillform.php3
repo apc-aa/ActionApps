@@ -186,7 +186,7 @@ function safeChars ($str) {
 function fillForm () {
 	global $form, $conds, $dateConds, $my_item_id, $db;
 
-	$item_pid = addslashes(pack_id($my_item_id));
+	$item_pid = addslashes(pack_id128($my_item_id));
 	$SQL = "SELECT * FROM item WHERE id='$item_pid'";
 	$db->query($SQL);
 	if (!$db->next_record()) {
@@ -219,7 +219,7 @@ function fillForm () {
 			while (list (,$field) = each ($field_array)) {
 				$myvalue = safeChars ($field[value]);
 				//$control_id = $field_id;
-				$control_id = 'v'.unpack_id ($field_id);
+				$control_id = 'v'.unpack_id128($field_id);
 				// field password.......x is used to authenticate item edit
 				if (substr ($field_id, 0, 15) != "password......." 
 					&& $field_id != "id.............."

@@ -69,7 +69,7 @@ function PutSearchLog ()
     list($usec, $sec) = explode(" ",microtime()); 
     $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS[disc_starttime]); 
     $user = $GLOBALS[HTTP_SERVER_VARS]['REMOTE_USER'];
-    $db->query (
+    $db->query(
     "INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) 
     VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'discuss $searchlog')");
 }

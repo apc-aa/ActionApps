@@ -87,7 +87,7 @@ switch( $type ) {
 
     $db->query($SQL);
     if( $db->next_record() ) {
-      $item = unpack_id($db->f(source_id));
+      $item = unpack_id128($db->f(source_id));
       $slice_url = ($db->f(slice_url));
     }
     else { // if this item is not fed - give its own id
@@ -112,6 +112,9 @@ go_url(con_url($url,"sh_itm=$item"));
 
 /*
 $Log$
+Revision 1.5  2003/01/21 06:58:30  mitraearth
+cron.php3
+
 Revision 1.4  2002/12/18 13:32:14  drifta
 Just changes in comments - moving to phpdoc style.
 
