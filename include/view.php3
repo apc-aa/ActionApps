@@ -182,16 +182,17 @@ function GetView($view_param) {
   $param_conds = $view_param["param_conds"];
   $item_ids = $view_param["item_ids"];
   $use_short_ids = $view_param["use_short_ids"];
-  $listlen = $view_param["listlen"];
+  $list_from = $view_param["from"];
+  $list_to = $view_param["to"];
+  $list_page = $view_param["page"];
   
   # gets view data
   $view_info = GetViewInfo($vid);
-  
-  if (!$view_info OR ($view_info['deleted']>0)) {
+  if (!$view_info OR ($view_info['deleted']>0)) 
     return false; 
-  }  
-  
-  $p_slice_id = $view_info["slice_id"];
+
+  $listlen    = ($view_param["listlen"] ? $view_param["listlen"] : $view_info['listlen'] );
+  $p_slice_id = ($view_param["slice_id"] ? q_pack_id($view_param["slice_id"]) : $view_info['slice_id'] );
   $slice_id = unpack_id($p_slice_id);
   
   # ---- display content in according to view type ----
@@ -210,8 +211,7 @@ function GetView($view_param) {
 
         return $itemview->get_output_cached("view");
       }  
-      return "<div>". L_NO_ITEM ."</div>";
-  
+      return $view_info['noitem_msg'] ? $view_info['noitem_msg'] : ("<div>".L_NO_ITEM ."</div>");
     case 'const':
       $format = GetViewFormat($view_info);
       $aliases = GetConstantAliases($als);
@@ -243,13 +243,33 @@ function GetView($view_param) {
       $ids_cnt = count( $item_ids );
       if( $ids_cnt > 0 ) {
         $aliases = GetAliasesFromFields($fields, $als);
-        $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, 0,
-                                  ($listlen ? $listlen : $view_info['listlen']), 
-                                  shtml_url(), "", $use_short_ids );
+        
+        if( $list_to )
+          $listlen = max(0, $list_to-$list_from + 1);
+        
+        if( $list_page ) {   # split listing to pages
+                             # Format:  <page>-<number of pages>
+          $pos=strpos($list_page,'-');
+          if( $pos ) {
+            $no_of_pages = substr($list_page,$pos+1);
+            $page_n = substr($list_page,0,$pos)-1;      #count from zero
+            $items = count($item_ids);
+            $items_plus = $items + ($no_of_pages-1); # to be last page shorter than others if there is not so good number of items
+            $list_from = ($page_n * $items_plus)/$no_of_pages;
+            $listlen = ((($page_n+1) * $items_plus)/$no_of_pages) - $list_from;
+          } else  # second parameter is not specified - take listlen parameter
+            $list_from = $listlen * ($list_page-1);
+        }                     
+         
+       if( !$list_from )
+         $list_from = 0;
+         
+        $itemview = new itemview( $db, $format, $fields, $aliases, $item_ids, $list_from,
+                                  $listlen, shtml_url(), "", $use_short_ids );
         return $itemview->get_output_cached("view");
       }  
       // 	if( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
-      return "<div>". L_NO_ITEM ."</div>";
+      return $view_info['noitem_msg'] ? $view_info['noitem_msg'] : ("<div>".L_NO_ITEM ."</div>");
       
     case 'static':   # parameters: 0
   case 'static': 
@@ -527,14 +547,13 @@ class itemview{
         $oldcat = "_No CaTeg";
 	//        $out = $this->slice_info[compact_top];
 	$out = $CurItem->unalias( $this->slice_info[compact_top], "");
-        $group_by_field = GetCategoryFieldId( $this->fields );
+//        $group_by_field = GetCategoryFieldId( $this->fields );
         
         for( $i=0; $i<$this->num_records; $i++ ) {
           $iid = $this->ids[$this->from_record+$i];
           if( !$iid )
             continue;                                     # iid = unpacked item id 
           $catname = $content[$iid][$this->group_fld][0][value];
-              
           $CurItem->columns = $content[$iid];   # set right content for aliases
           
             # print category name if needed
@@ -680,6 +699,9 @@ class constantview{
 
 /*
 $Log$
+Revision 1.24  2002/02/05 21:54:52  honzam
+added new parametrs to view - from, to, page and slice_id. "No item found" message is redefinable
+
 Revision 1.23  2002/01/10 13:56:58  honzam
 fixed bug in user profiles
 
