@@ -82,7 +82,7 @@ echo "
 <input type=hidden name='fmset[directory]' value='".dirname($fe_filename)."'>"
 .fileAction ("cancel", _m("Back to file list"))
 .formatAction("<a href='$fe_wwwpath$fe_filename'>"._m("Download (right-click)")."</a>&nbsp;&nbsp;")
-.fileAction ("rename",_m("Rename to"))."<input type=text name='arg[rename]' value='".basename($fe_filename)."'>";
+.fileAction("rename",_m("Rename to"))."<input type=text name='arg[rename]' value='".basename($fe_filename)."'>";
 
 echo "<hr>";
 

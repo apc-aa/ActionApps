@@ -81,19 +81,21 @@ $filetypes = array (
     _m("Parent") => array ("img"=>"parent"),
     _m("Other") => array ("img"=>"oth"));
     
-function get_filetype ($filepath) {
+function get_filetype($filepath) {
     global $filetypes;
 
-    if ($filepath == ".." || substr ($filepath,-3) == "/..")
+    if ($filepath == ".." || substr($filepath,-3) == "/..")
         return _m("Parent");
-    else if (is_dir ($filepath)) 
+    else if (is_dir($filepath)) 
         return _m("Directory");
     else {
-        $ext = filesuffix ($filepath);
+        $ext = filesuffix($filepath);
         reset ($filetypes);
-        while (list ($filetype, $val) = each ($filetypes)) 
-            if (my_in_array ($ext, $val["ext"])) 
+        while (list ($filetype, $val) = each ($filetypes)) {
+            if (!$val["ext"]) continue;
+            if (my_in_array($ext, $val["ext"])) 
                 return $filetype;
+        }
         return _m("Other");
     }
 }
@@ -189,7 +191,7 @@ function file_table ($path, $dirname)
             $href = $sess->url("fileman.php3?cmd=" . ($file["dir"] ? "chdir&arg[chdir]=" : "edit&arg[edit]=") . "$file[path]&fmset[directory]=$directory");
             $retval .= "<tr>
             <td>".($file[name]!=".." ? "<input type='Checkbox' name='chb[$file[path]]'>" : "&nbsp;")."</td>
-            <td><a href='$href'><img src='/apc-aa/images/$file[img].gif' alt='$file[type]' border=0></a></td>
+            <td><a href='$href'><img src='../images/$file[img].gif' alt='$file[type]' border=0></a></td>
             <td><a href='$href'>$file[name]</a></td>
             <td align=right>".($file["dir"] ? "&nbsp;" : format_file_size($file["size"]))."</td>
             <td>$file[type]</td>
@@ -269,7 +271,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         // Upload file
     else if ($cmd=='upload') {
         set_time_limit(FILEMAN_UPLOAD_TIME_LIMIT);
-        $uploaderr = aa_move_uploaded_file ("uploadarg", $basedir.$directory, $FILEMAN_MODE_FILE);
+        $uploaderr = aa_move_uploaded_file("uploadarg", $basedir.$directory, $FILEMAN_MODE_FILE);
         if ($uploaderr) $err[] = _m("Error: ").": $uploaderr";
     }
     

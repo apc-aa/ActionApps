@@ -1,3 +1,10 @@
+05/12/03 - changed UI elements in fileAction to buttons from links 
+         - this included changing parameter from uploadarg to upload
+         - admin/test.php3 now correctly tests for presence of FILEMAN_BASE_DIR
+         - fixed fileman path to images from /apc-aa/images to ../images
+         - fixed get_filetype not to generate errors on "Other"
+(mitra)  - changed se_fields to start new ids with .... instead of ...1
+05/09/03 - added f_y to expand a string or a field
 05/09/03 - better error reporting in input_fnc_fil (mitra)
 05/09/03 - added f_y to expand a string or a field (mitra)
 05/02/03 - FilemanPerms and GetModuleInfo and get_aamenus handle null

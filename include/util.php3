@@ -47,8 +47,8 @@ function endslash (&$s) {
 }
 
 /// Wraps the in_array function, which was introduced only in PHP 4.
-function my_in_array ($needle, $array) {
-    return in_array ($needle, $array);
+function my_in_array($needle, $array) {
+    return in_array($needle, $array);
 }
 
 /** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
@@ -1307,7 +1307,7 @@ function gensalt($saltlen)
 *   @return string  error description or empty string */
 function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
 {
-    endslash ($destdir);
+    endslash($destdir);
     if (!$GLOBALS[$varname]) return "No $varname?";
     if ($filename == "") {
         # get filename and replace bad characters

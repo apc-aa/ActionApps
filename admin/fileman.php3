@@ -79,6 +79,7 @@ if ($cmd == 'edit' || $cmd == 'createfile') {
     $fe_path = $basedir;
     $fe_script = $sess->url("fileman.php3");
     $fe_wwwpath = FILEMAN_BASE_URL;
+    // NOTE require_once outputs text, its not just defining functions
     require_once $GLOBALS["AA_INC_PATH"]."filedit.php3";
     page_close ();
     exit;
@@ -113,16 +114,50 @@ function formatAction ($value) {
     return "<strong>$value</strong>";
 }
 
+/** Creates a fileAction user element,
+*   @param string $name - the name of the javascript command
+*   @param string $value - the internationalized string to display
+*/
 function fileAction ($name,$value) {
-    return formatAction ("<a href='javascript:command(\"$name\")'>$value</a>")
+    # Old style uses a link mostly to left of input field
+    # this is BAD UI design, should be a button to the right. 
+    # switch the comments, if you disagree with me!  (mitra)
+# OLD - links
+/*
+    return formatAction("<a href='javascript:command(\"$name\")'>$value</a>")
     ."&nbsp;&nbsp;";
+*/
+# NEW - buttons
+     return "<input type=button name=button$name value='$value' onclick='command(\"$name\")'>&nbsp;&nbsp;";
 }
+
+/** Returns two columns of input and action, can flip and table
+*   @param string $inp - the HTML for the input element
+*   @param string $act - the HTML for the action element
+*/
+function uilr($inp,$act) {
+# OLD input on right of action
+#   return ("<tr><td class=tabtxt>$act</td><td class=tabtxt>$inp</td></tr>\n");
+# NEW input on left of action
+    return ("<tr><td class=tabtxt>$inp</td><td class=tabtxt>$act</td></tr>\n");
+}
+
+/** Creates a input box and action, uses uilr and fileAction which vary
+*   @param string $name - the name of the javascript command
+*   @param string $value - the internationalized string to display
+*/
+function inputplusaction($name,$value) {
+    $argname = ($argname ? $argname : "arg[$name]");
+    return uilr("<input type=$inputtype name='arg[$name]'>",
+        fileAction($name,$value));
+}
+
 
 echo $jsSender;
 echo "<tr><td class=tabtit align=left>";
 echo //fileAction ("checkall",_m("Select All")) . 
      fileAction ("uncheckall",_m("Unselect all")) . 
-     fileAction ("delete",_m("Delete"));
+     fileAction ("delete",_m("Delete selected"));
 echo "</td></tr>
 <tr><td class=tabtxt align=center>";
 echo '<table border="1" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITBG.'" align="center">';
@@ -160,29 +195,24 @@ echo "</table>
 echo '<table border="0" cellspacing="0" cellpadding="5" align="center">';
 
 $space = 0;
-
 echo "<tr height=$space><td class=tabtxt colspan=2></td></tr>";
-
-echo "<tr><td class=tabtxt>".fileAction ("createfile",_m("Create new file")) ."</td>
-<td class=tabtxt><input type=text name='arg[createfile]'></td></tr>";
-
-echo "<tr><td class=tabtxt>".fileAction ("upload",_m("Upload file")." (max. 10 MB)") ."</td>
-<td class=tabtxt><input type='hidden' name='MAX_FILE_SIZE' value='10485760'>
-<input type='file' name='uploadarg'></td></tr>";
+echo inputplusaction("createfile",_m("Create new file"));
+echo "<input type='hidden' name='MAX_FILE_SIZE' value='10485760'>";
+echo uilr("<input type=file name=uploadarg>",
+    fileAction("upload",_m("Upload file")." (max. 10 MB)"));
 echo "<tr height=$space><td class=tabtxt colspan=2></td></tr>";
 
 $db->query("SELECT * FROM wizard_template");
 if ($db->num_rows()) {
-    echo "<tr><td class=tabtxt>".fileAction("copytmp",_m("Copy template dir")). "</td>
-    <td class=tabtxt><select name='arg[copytmp]'>";
+    $i = "<select name='arg[copytmp]'>";
     while ($db->next_record()) 
-        echo "<option value='".$db->f("dir")."'>".$db->f("dir")." (".$db->f("description").")";
-    echo "</select></td></tr>";    
+        $i.="<option value='".$db->f("dir")."'>".$db->f("dir")." (".$db->f("description").")";
+    $i .= "</select>";    
+    echo uilr($i,fileAction("copytmp",_m("Copy template dir")));
 }
 
-echo "<tr><td class=tabtxt>".fileAction ("createdir",_m("Create new directory")) ."</td>
-<td class=tabtxt><input type=text name='arg[createdir]'></td></tr>
-</table></td></tr>";
+echo inputplusaction("createdir",_m("Create new directory"));
+echo "</table></td></tr>";
 
 echo "</table></form><p></p>";
 HtmlPageEnd();

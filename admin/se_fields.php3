@@ -106,6 +106,7 @@ if( $update )
     if( count($err) > 1)
       break;
 
+    $db = getDB();
     reset($name);
     while( list($key,$val) = each($name) ) {
       if( $key == "New_Field" ){   # add new field
@@ -118,13 +119,14 @@ if( $update )
         $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
         $varset->setFromArray($field_types[$ftype]);   # from template for this field
 
-          # get new field id
+        # get new field id
         $SQL = "SELECT id FROM field 
                  WHERE slice_id='$p_slice_id' AND id like '". $ftype ."%'";
-        $max=0;
+        $max=-1;  # Was 0
         $db->query($SQL);   # get all fields with the same type in this slice
-        while( $db->next_record() ) 
-          $max = max( $max, substr (strrchr ($db->f(id), "."), 1 ));
+        while( $db->next_record() ) {
+          $max = max( $max, substr (strrchr ($db->f(id), "."), 1 ),0);
+        }
         $max++;
            #create name like "time...........2"
         $fieldid = CreateFieldId ($ftype, $max);
@@ -154,7 +156,7 @@ if( $update )
       }
       $r_filelds = "";   // unset the r_fields array to be load again
     }
-
+    freeDB($db);
     $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
 
     if( count($err) <= 1 ) {
