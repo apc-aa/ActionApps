@@ -398,7 +398,8 @@ function CopyConstants ($slice_id)
     $db->query("SELECT name FROM constant WHERE group_id='lt_groupNames'");
     while ($db->next_record())
         $group_list[] = $db->f("name");
-    $db->query("SELECT id, input_show_func FROM field WHERE slice_id ='$q_slice_id'");    while ($db->next_record()) {
+    $db->query ("SELECT id, input_show_func FROM field WHERE slice_id ='$q_slice_id'");    
+	while ($db->next_record()) {
         $shf = $db->f("input_show_func");
         if (strlen ($shf) > 4) {
             list (,$group_id) = split (":",$shf);
@@ -464,3 +465,82 @@ function CopyConstants ($slice_id)
     return true;
 }
 
+// -------------------------------------------------------------------
+/** Adds a new constant group. Sets priority increasingly in the same
+*   order as are the constants in @c $items.
+*
+*   @author Jakub Adamek, Econnect, January 2003
+*   @param string $group_id Desired group name, may be changed if conflicts
+*   @param array $items (constant name => constant value)
+*   @return string The name of the new group. This will be the given @c $name 
+*           followed by a number if necessary in order that the group name 
+*			is not yet in database.
+*/			
+function add_constant_group ($group_id, $items)
+{
+	global $db;
+	
+	$db->query ("SELECT value FROM constant WHERE group_id = 'lt_groupNames'
+		AND value LIKE '".$group_id."%'");
+	while ($db->next_record())
+		$gnames[$db->f("value")] = 1;
+	$unique_name = $group_id;
+	if (is_array ($gnames)) {
+		$i = 1;
+		while ($gnames [$unique_name]) 
+			$unique_name = $group_id." ".($i++);
+	}
+	$varset = new CVarset;
+	$varset->add ("group_id", "text", "lt_groupNames");
+	$varset->add ("value","text",$unique_name);
+	$varset->add ("name","text",$unique_name);
+	$varset->add ("id", "unpacked", new_id());
+	$db->query ($varset->makeINSERT ("constant"));
+	
+	$priority = 100;
+	reset ($items);
+	while (list ($value, $name) = each ($items)) {
+		$varset->clear();
+		$varset->add ("value", "text", $value);
+		$varset->add ("name", "text", $name);
+		$varset->add ("pri", "number", $priority);
+		$priority += 100;
+		$varset->add ("id", "unpacked", new_id());
+		$varset->add ("group_id", "text", $unique_name);
+		$db->query ($varset->makeINSERT ("constant"));
+	}
+	return $unique_name;
+}
+
+// -------------------------------------------------------------------
+
+/** Deletes a constant group. If $slice_id is provided, the group
+*   is deleted only if it is used only in the given slice.
+*
+*   @author Jakub Adamek, Econnect, January 2003
+*   @param string $slice_id  unpacked slice ID
+*   @return bool  @c true if group was deleted, @c false otherwise	*/
+function delete_constant_group ($group_id, $slice_id = "") {
+	global $db;
+	$delete = true;
+	if ($slice_id) {
+		$db -> query ("
+			SELECT * FROM slice INNER JOIN field ON slice.id = field.slice_id
+			WHERE field.input_show_func LIKE '%$group_id%'
+			AND slice.id <> '".q_pack_id($slice_id)."'");
+		if ($db->next_record())
+			$delete = false;
+	}
+	if ($delete) {
+	    // delete group name and constants 
+	    $db->query ("
+	   		DELETE FROM constant 
+			WHERE (group_id='lt_groupNames' AND value='$group_id')
+                  OR group_id='$group_id'");
+		$delete = $db->affected_rows();
+	}
+	return $delete;
+}
+		
+// -------------------------------------------------------------------
+		
