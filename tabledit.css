@@ -10,6 +10,13 @@
 
 /* TABLE EDIT STYLES */
 
+.te_help_link {
+	font-size: xx-small;
+	font-weight: bold;
+	text-align: right;
+	white-space: nowrap;
+}
+
 .te_button_text {
     font-size: xx-small;
     font-weight : bold;
