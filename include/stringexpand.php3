@@ -33,6 +33,7 @@ else return;
 
 require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
 require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
+require_once $GLOBALS["AA_INC_PATH"]."perm_core.php3";   // needed for GetAuthData();
 
 function translateString( $string, $translation ) {
     $twos = ParamExplode( $translation );
