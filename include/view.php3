@@ -504,6 +504,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                 $zids, $list_from, $listlen, shtml_url(),
                                 "", $content_function);
       $itemview->parameter('category_id', $category_id);
+      $itemview->parameter('start_cat',   $view_param['start_cat']);
 
       if ( !isset($zids) || $zids->count() <= 0) {
         # $ret = $noitem_msg;
