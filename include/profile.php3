@@ -21,45 +21,6 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
 
-# deletes all rules for the user (used on revoking the perms for user on a slice)
-function DelUserProfile($uid, $slice_id) {
-  global $db, $err;
-
-  $p_slice_id = q_pack_id($slice_id);
-  $SQL = "DELETE FROM profile WHERE uid='$uid'
-                                AND slice_id='$p_slice_id'";
-  if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
-    $err["DB"] = MsgErr("Can't delete profile");
-    break;
-  }
-}
-
-function InsertProfileProperty($uid, $property, $selector, $value) {
-  global $db, $p_slice_id, $err;
-  $SQL = "INSERT INTO profile SET slice_id='$p_slice_id',
-                                  uid = '$uid',
-                                  property = '$property',
-                                  selector = '$selector',
-                                  value = '$value'";
-  if (!$db->query($SQL))
-    $err["DB"] = MsgErr("Can't update profile");
-}
-
-function DeleteProfileProperty($property, $selector="") {
-  global $db, $p_slice_id, $err, $uid;
-  # first delete the records in order we can add new
-  if( $selector )
-    $add = " AND selector = '$selector' ";
-
-  $SQL = "DELETE FROM profile WHERE property='$property'
-                                AND uid='$uid'
-                                AND slice_id='$p_slice_id' $add";
-  if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
-    $err["DB"] = MsgErr("Can't delete profile");
-    break;
-  }
-}
-
 function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
   global $sess, $uid;
   echo "<tr class='tabtxt'>
@@ -81,8 +42,12 @@ function PrintRule($rule) {
   $rid  = $rule['id'];
 
   switch($prop) {
+    case 'input_view':
     case 'listlen':
       PrintRuleRow($rid, $PROPERTY_TYPES[$prop], "", $rule['value']);
+      break;
+    case 'bookmark':
+      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector']);
       break;
     case 'admin_order':
       $fid = substr( $rule['value'], 0, -1 );

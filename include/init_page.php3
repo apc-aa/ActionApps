@@ -154,8 +154,8 @@ if( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_l
     exit;
 }
 
-$db    = new DB_AA;
-$event = new aaevent;
+$db           = new DB_AA;
+$event        = new aaevent;
 $contentcache = new contentcache;
 
 // if we want to use random number generator, we have to use srand just once per
@@ -200,25 +200,6 @@ if( !$no_slice_id ) {
     $r_slice_view_url = $db->f('slice_url') ? $db->f('slice_url')
         : $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false";
 
-    // Get user profile for the slice.
-    // Default setting for the slice is stored as user with uid = *
-    unset( $r_profile );
-    $SQL= " SELECT * FROM profile
-            WHERE slice_id='$p_slice_id'
-            AND (uid='". $auth->auth["uid"] ."' OR uid='*')";
-
-    $db->query($SQL);
-    while($db->next_record())
-        if( $db->f('uid') == '*' )
-             $general_profile[] = $db->Record;
-        else $r_profile[$db->f('property')][$db->f('selector')] = $db->f('value');
-
-    if( $general_profile ) {
-        reset( $general_profile );
-        while( list(,$v) = each($general_profile) )
-            if( !GetProfileProperty($v['property'],$v['selector']) )
-                $r_profile[$v['property']][$v['selector']] = $v['value'];
-    }
     $module_type = $g_modules[$slice_id]['type'];
     $module_type_changed = $after_login
         || $g_modules[$last_slice_id]['type'] != $module_type;

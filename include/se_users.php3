@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ http://www.apc.org/
 $editor_perms = GetSlicePerms($auth->auth["uid"], $slice_id);
 
 // Function decides whether current user can change role
-// of specified user. Only allowed when $editor_perm (current user) is greater 
+// of specified user. Only allowed when $editor_perm (current user) is greater
 // than $perm (user's role) and $perm_role (new user's role)
 function CanChangeRole ($user_perm, $editor_perm, $role_perm) {
   if ((ComparePerms($editor_perm, $user_perm)=="G") &&
@@ -35,11 +35,11 @@ function CanChangeRole ($user_perm, $editor_perm, $role_perm) {
   } else {
     return false;
   }
-}    
-  
+}
+
 function ChangeRole () {
-  global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role, $perms_roles, $db;   
-  
+  global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role, $perms_roles, $db;
+
   if( $UsrAdd ) {
     if( CanChangeRole( GetSlicePerms($UsrAdd, $slice_id, false),
                        $editor_perms,
@@ -52,7 +52,9 @@ function ChangeRole () {
                       $editor_perms,
                       $perms_roles["AUTHOR"]['perm']) )  // smallest permission
       DelPerm($UsrDel, $slice_id, "slice");
-      DelUserProfile($UsrDel, $slice_id); 
+
+      $profile = new aaprofile($UsrDel, $slice_id);      // user settings
+      $profile->delUserProfile();
       $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
   }
 }
