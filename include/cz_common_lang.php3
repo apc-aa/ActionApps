@@ -56,12 +56,12 @@ define("L_SETUP_NEXT", "Zalogujte se tímto úètem a vytvoøte první webík:");
 define("L_SETUP_SLICE", "Pøidat webík");
 
 // loginform language constants
-define("L_LOGIN", "Pøihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.0");
-define("L_LOGIN_TXT", "Vítejte! Pøihlašte se prosím Vaším jménem a heslem (Welcome! Log in by your name and password): ");
-define("L_LOGINNAME_TIP", "Uživatelské jméno èi e-mail (User name or e-mail)");
+define("L_LOGIN", "Pøihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.2");
+define("L_LOGIN_TXT", "Vítejte! Pøihlašte se prosím Vaším jménem a heslem<br>(Welcome! Log in by your name and password): ");
+define("L_LOGINNAME_TIP", "Uživatelské jméno èi e-mail<br>(User name or e-mail)");
 define("L_SEARCH_TIP", "Seznam je omezen na 5 uživatelù.<br>Pokud v seznamu není požadovaný uživatel, upøesnìte svùj dotaz");
-define("L_USERNAME", "Uživatelské jméno (User name):");
-define("L_PASSWORD", "Heslo (Password):");
+define("L_USERNAME", "Uživatelské jméno<br>(User name):");
+define("L_PASSWORD", "Heslo<br>(Password):");
 define("L_LOGINNOW", "Pøihlásit se - Log in");
 define("L_BAD_LOGIN", "Uživatelské jméno èi heslo je neplatné. (User name or password is not valid.)");
 define("L_TRY_AGAIN", "Zkuste to znovu! (Try it again!)");
@@ -105,8 +105,6 @@ define("L_APP_TYPE", "Typ webíku");
 define("L_SELECT_APP", "Zvol typ webíku");
 define("L_APP_TYPE_HELP", "<br><br><br><br>");
 
-define( "L_ICON_LEGEND", '');
-                           
 // log texts
 define( "LOG_EVENTS_UNDEFINED", "Undefined" );
 
@@ -156,73 +154,4 @@ function dateExample() {
 	return "mm/dd/yyyy";
 }
 
-/*
-$Log$
-Revision 1.20  2002/02/05 21:46:03  honzam
-the message "no item found" can be redefined
-
-Revision 1.19  2001/12/20 14:32:43  honzam
-*** empty log message ***
-
-Revision 1.18  2001/09/27 13:09:53  honzam
-New Cross Server Networking now is working (RSS item exchange)
-
-Revision 1.17  2001/06/05 08:58:02  honzam
-default codepage for slice not hard-coded now - moved to *_common_lang
-
-Revision 1.16  2001/05/29 21:05:07  honzam
-copyright + new logo
-
-Revision 1.15  2001/05/18 13:55:04  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.14  2001/01/26 15:06:50  honzam
-Off-line filling - first version with WDDX (then we switch to APC RSS+)
-
-Revision 1.11  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.8  2000/08/23 12:29:57  honzam
-fixed security problem with inc parameter to slice.php3
-
-Revision 1.7  2000/08/17 15:17:55  honzam
-new possibility to redirect item displaying (for database changes see CHANGES)
-
-Revision 1.6  2000/08/14 12:39:13  kzajicek
-Language definitions required by setup.php3
-
-Revision 1.5  2000/07/26 16:01:48  kzajicek
-More descriptive message for "login failed"
-
-Revision 1.4  2000/07/12 14:26:40  kzajicek
-Poor printing of the SSI statement fixed
-
-Revision 1.3  2000/07/03 15:00:14  honzam
-Five table admin interface. 'New slice expiry date bug' fixed.
-
-Revision 1.1.1.1  2000/06/21 18:40:23  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:50:12  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.6  2000/06/12 19:58:34  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.5  2000/05/30 09:11:39  honzama
-MySQL permissions upadted and completed.
-
-Revision 1.4  2000/04/24 16:50:33  honzama
-New usermanagement interface.
-
-Revision 1.3  2000/03/29 15:54:46  honzama
-Better Netscape Navigator javascript support, new direct feeding support, minor changes in texts and look.
-
-Revision 1.2  2000/03/22 09:38:39  madebeer
-perm_mysql improvements
-Id and Log added to all .php3 and .inc files
-system for config-ecn.inc and config-igc.inc both called from
-config.inc
-
-*/
 ?>

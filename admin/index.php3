@@ -166,7 +166,6 @@ else
 # It works differently if the query string has....
 #	navbar=0			// no top navigator
 #	leftbar=0			// no left navigator
-#	footer=0			// no footer message
 #	sort_filter=0			// no sort / no filter
 #	action_selected=0		// no action for selected (marked) item
 #	feed_selected=0			// no feed action for selected item
@@ -180,7 +179,6 @@ if ($bodyonly == "1")
 	// example: "&bodyonly=1&action_selected=1" will show action_selected....
 	if (!$navbar) 	$navbar = "0";			// no top navigator
 	if (!$leftbar ) $leftbar = "0";			// no left navigator
-	if (!$footer ) 	$footer = "0";			// no footer message
 	if (!$sort_filter ) 	$sort_filter = "0";	// no sort / no filter
 	if (!$action_selected )	$action_selected = "0";	// no action for selected (marked) item
 	if (!$feed_selected)	$feed_selected  = "0";
@@ -189,78 +187,78 @@ if ($bodyonly == "1")
 ######################################
 
 if ($action) {
-switch( $action ) {  // script post parameter 
-  case "app":
-    if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT)) {
-      MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
-      exit;
-    }  
-    MoveItems($chb,1);
-    FeedAllItems($chb, $fields);    // Feed all checked items
-    break;
-  case "hold":
-    if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD)) {
-      MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
-      exit;
-    }  
-    MoveItems($chb,2);
-    break;
-  case "trash":
-    if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH)) {
-      MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
-      exit;
-    }  
-    MoveItems($chb,3);
-    break;
-  case "edit":  // edit the first one
-    if( isset($chb) AND is_array($chb) ) {
-      reset( $chb );
-      go_url(con_url($sess->url("itemedit.php3"),"encap=false&edit=1&id=")
-            . substr(key($chb),1) );
-    }  
-    break;
-  case "feed":  // feed selected items to selected slices
+  switch( $action ) {  // script post parameter 
+    case "app":
+      if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT)) {
+        MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
+        exit;
+      }  
+      MoveItems($chb,1);
+      FeedAllItems($chb, $fields);    // Feed all checked items
+      break;
+    case "hold":
+      if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD)) {
+        MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
+        exit;
+      }  
+      MoveItems($chb,2);
+      break;
+    case "trash":
+      if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH)) {
+        MsgPage($sess->url(self_base())."index.php3", L_NO_PS_MOVE_ITEMS, "items");
+        exit;
+      }  
+      MoveItems($chb,3);
+      break;
+    case "edit":  // edit the first one
+      if( isset($chb) AND is_array($chb) ) {
+        reset( $chb );
+        go_url(con_url($sess->url("itemedit.php3"),"encap=false&edit=1&id=")
+              . substr(key($chb),1) );
+      }  
+      break;
+    case "feed":  // feed selected items to selected slices
 // huh("feed2slices:". $slices4feed);
 // huh("feed2app:". $feed2app);
-    $slices4feed  = split(",", $feed2slice);
-    $fooappfeed = split(",", $feed2app);
+      $slices4feed  = split(",", $feed2slice);
+      $fooappfeed = split(",", $feed2app);
 
-    // reverse $fooappfeed array $key <--> $val
-    if( isset($fooappfeed) AND is_array($fooappfeed) ) {
-      reset( $fooappfeed );
-      while( list(,$foo_sl_id) = each( $fooappfeed ) )
-        $approvedfeed[$foo_sl_id] = true;
-    }    
-    if( !isset($approvedfeed) OR !is_array($approvedfeed) )
-      $approvedfeed = Array();
+      // reverse $fooappfeed array $key <--> $val
+      if( isset($fooappfeed) AND is_array($fooappfeed) ) {
+        reset( $fooappfeed );
+        while( list(,$foo_sl_id) = each( $fooappfeed ) )
+          $approvedfeed[$foo_sl_id] = true;
+      }    
+      if( !isset($approvedfeed) OR !is_array($approvedfeed) )
+        $approvedfeed = Array();
     
-    if( isset($slices4feed) AND is_array($slices4feed)) {
-      reset( $slices4feed );
-      while( list(,$sl_id) = each( $slices4feed ) ) {
-        if( isset($chb) AND is_array($chb) ) {
-          reset( $chb );
-          while( list($it_id,) = each( $chb ) ) {
-            $it_id = substr($it_id,1);  // remove beginning 'x'
-//          huh("Item: $it_id ($slice_id) -> $sl_id <br>/n");
-            FeedItemTo($it_id, $slice_id, $sl_id, $fields, ($approvedfeed[$sl_id] ? 'y':'n'), 0);
-          }  
+      if( isset($slices4feed) AND is_array($slices4feed)) {
+        reset( $slices4feed );
+        while( list(,$sl_id) = each( $slices4feed ) ) {
+          if( isset($chb) AND is_array($chb) ) {
+            reset( $chb );
+            while( list($it_id,) = each( $chb ) ) {
+              $it_id = substr($it_id,1);  // remove beginning 'x'
+//            huh("Item: $it_id ($slice_id) -> $sl_id <br>/n");
+              FeedItemTo($it_id, $slice_id, $sl_id, $fields, ($approvedfeed[$sl_id] ? 'y':'n'), 0);
+            }  
+          }
         }
-      }
-    }        
-    break;
-  case "filter":  // edit the first one
-    $r_admin_order = ( $admin_order ? $admin_order : "publish_date...." );
-    $r_admin_order_dir = ( $admin_order_dir ? "d" : "a");
+      }        
+      break;
+    case "filter":  // edit the first one
+      $r_admin_order = ( $admin_order ? $admin_order : "publish_date...." );
+      $r_admin_order_dir = ( $admin_order_dir ? "d" : "a");
     
-    $r_admin_search = stripslashes($admin_search);
-    $r_admin_search_field = $admin_search_field;
-    break;
-}
-if ($return_url) { // after work for action, if return_url is there, we go to the page.
-	go_url(urldecode($return_url));
-	// Never come bask....
-	exit();
-}
+      $r_admin_search = stripslashes($admin_search);
+      $r_admin_search_field = $admin_search_field;
+      break;
+  }
+  if ($return_url) { // after work for action, if return_url is there, we go to the page.
+  	go_url(urldecode($return_url));
+  	// Never come back....
+  	exit();
+  }
 
 } // end if ($action)
 
@@ -361,8 +359,8 @@ function OpenPreview() {
         if ((previewwindow != null) && (!previewwindow.closed)) {
           previewwindow.close()    // in order to preview go on top after open
         }  // extract id from chb[x14451...]  - x is just foo character
-	previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(5,name.indexOf(']')),'fullwindow');
-return;
+        previewwindow = open('<?php echo con_url($r_slice_view_url,"sh_itm=")?>'+name.substring(5,name.indexOf(']')),'fullwindow');
+        return;
       }  
     }
   }    
@@ -393,10 +391,12 @@ if( $open_preview )
 $editor_page = true;
 ######## add by setu 2002-0206 #######
 global $navbar, $leftbar;
-if ($navbar != "0")
+if ($navbar != "0") {
   require $GLOBALS[AA_INC_PATH] . "navbar.php3";
-if ($leftbar != "0")
+}
+if ($leftbar != "0") {
   require $GLOBALS[AA_INC_PATH] . "leftbar.php3";
+}
 ######
 
   # ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL
@@ -432,25 +432,10 @@ $st = $$st_name;   // use right scroller
 
 # create or update scroller for actual bin
 if(is_object($st)) {
-#  $st->updateScr($sess->url($PHP_SELF) . "&");
   $st->updateScr(sess_return_url($PHP_SELF) . "&"); // use $return_url if set.
 }else {
-# $st = new scroller($st_name, $sess->url($PHP_SELF) . "&");	
   $st = new scroller($st_name, sess_return_url($PHP_SELF) . "&"); // use $return_url if set.
   $st->metapage=($listlen ? $listlen : EDIT_ITEM_COUNT);
-
-/*
-  reset($AF_COLUMNS);   // set filters for all possibly displayed fields
-  while( list($afname, $afarr) = each($AF_COLUMNS) ) {
-    if( $afarr["field"] ) {
-      if( $afname != $afarr["field"] )
-       	$st->addFilter($afname, $afarr["type"], "", $afarr["field"]);
-       else 
-       	$st->addFilter($afname, $afarr["type"]);
-    }  
-  }    
-*/
-  
   $sess->register($st_name); 
 }
 
@@ -458,10 +443,6 @@ if( $listlen )
   $st->metapage = $listlen;
 
 $st->addFilter("slice_id", "md5", $slice_id);
-
-//  where (($bin_condition) AND fulltexts.ft_id=items.master_id AND created_by='".$auth->auth[uid]."' AND (". $st->sqlCondFilter().")) ");
-
-//huh ( "PSlice:$p_slice_id");
 
 # find item ids to show
 if (! $perm_edit_all )
@@ -512,9 +493,6 @@ echo '<form name="itemsform" method=post action="'. $sess->url($PHP_SELF).make_r
 if( count( $item_ids ) > 0 ) {
   $aliases = GetAliasesFromFields($fields);
 
-//p_arr_m($aliases);
-//p_arr_m($format_strings);
-
   $itemview = new itemview( $db, $format_strings, $fields, $aliases, $item_ids,
               $st->metapage * ($st->current-1), $st->metapage, $r_slice_view_url );
   $itemview->print_view("NOCACHE");   # big security hole is open if we cache it
@@ -531,39 +509,39 @@ if( count( $item_ids ) > 0 ) {
 }  
 else 
   echo "<tr><td><div class=tabtxt>". L_NO_ITEM_FOUND ."</div></td></td></table>";
-
+  
 ######## add by setu 2002-0206 #######
 ### Action for Marked item ###
 
 if ($action_selected != "0")
 {  
-  echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
-  echo '<input type=hidden name=feed2slice value="">';  // array of comma delimeted slices in which feed to - filled by javascript function SendFeed in feed_to.php3 
-  echo '<input type=hidden name=feed2app value="">';    // array of comma delimeted slices in which we have to feed into approved - filled by javascript function SendFeed in feed_to.php3 
-  echo '</form></center>';
+echo '<input type=hidden name=action value="">';      // filled by javascript function SubmitItem and SendFeed in feed_to.php3
+echo '<input type=hidden name=feed2slice value="">';  // array of comma delimeted slices in which feed to - filled by javascript function SendFeed in feed_to.php3 
+echo '<input type=hidden name=feed2app value="">';    // array of comma delimeted slices in which we have to feed into approved - filled by javascript function SendFeed in feed_to.php3 
+echo '</form></center>';
 
 
-  if( ($r_bin_state != "app")  AND 
+if( ($r_bin_state != "app")  AND 
     ($r_bin_state != "appb") AND 
     ($r_bin_state != "appc") AND 
     CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2ACT))
-      $markedaction["1-app"] = L_MOVE_TO_ACTIVE_BIN; 
+  $markedaction["1-app"] = L_MOVE_TO_ACTIVE_BIN; 
 
-  if( ($r_bin_state != "hold") AND 
+if( ($r_bin_state != "hold") AND 
     CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2HOLD))
-      $markedaction["2-hold"] = L_MOVE_TO_HOLDING_BIN;
+  $markedaction["2-hold"] = L_MOVE_TO_HOLDING_BIN;
   
-  if( ($r_bin_state != "trash") AND 
+if( ($r_bin_state != "trash") AND 
      CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_ITEMS2TRASH))
-    $markedaction["3-trash"] = L_MOVE_TO_TRASH_BIN;
+  $markedaction["3-trash"] = L_MOVE_TO_TRASH_BIN;
 if ($feed_selected != "0")
-  $markedaction["4-feed"] = L_FEED;
+$markedaction["4-feed"] = L_FEED;
 if ($view_selected != "0")
-  $markedaction["5-view"] = L_VIEW_FULLTEXT;
-
+$markedaction["5-view"] = L_VIEW_FULLTEXT;
+  
   // click "go" does not use markedform, it uses itemsfrom above...
   // maybe this action is not used.
-  echo "<center>
+echo "<center>
       <form name=markedform method=post action=\"". $sess->url($PHP_SELF).
 	make_return_url("&return_url=").			// added by setu, 
 	"\">
@@ -571,257 +549,57 @@ if ($view_selected != "0")
       <TR><TD align=center class=tablename>".
       L_CHANGE_MARKED ." &nbsp; <select name=markedaction>";
 
-  reset($markedaction);
-  while(list($k, $v) = each($markedaction)) 
-    echo "<option value=\"". htmlspecialchars($k)."\"> ".
+reset($markedaction);
+while(list($k, $v) = each($markedaction)) 
+  echo "<option value=\"". htmlspecialchars($k)."\"> ".
            htmlspecialchars($v) ." </option>";
-  echo "</select></td><td align='right' class=tablename>
+echo "</select></td><td align='right' class=tablename>
       <a href=\"javascript:MarkedActionGo()\" class=leftmenuy>".L_GO.
       "</a> </TD></TR>".
-   "</table></form>";
+ "</table></form>";
 }
 ###############
- 
+
 ######## add by setu 2002-0206 #######
 # user definend sorting and filtering ---------------------------------------
 global $sort_filter;
-if ($sort_filter != "0")
-{
-# echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
-#if ($debug)  echo "sess_return_url=".sess_return_url($PHP_SELF)."<br>";
-// action URL with return_url if $return_url is set.
-echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url="). '">
+if ($sort_filter != "0") {
+  # echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
+  #if ($debug)  echo "sess_return_url=".sess_return_url($PHP_SELF)."<br>";
+  // action URL with return_url if $return_url is set.
+  echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF).make_return_url("&return_url="). '">
       <table width="460" border="0" cellspacing="0" cellpadding="0" 
       class=leftmenu bgcolor="'. COLOR_TABBG .'">';
 
-  reset( $fields );
-  while( list ($k, $v ) = each( $fields ) ) {
-    $lookup_fields[$k] = $v[name];
-    if( $v[text_stored] )
-      $lookup_text_fields[$k] = $v[name];
-  }
+reset( $fields );
+while( list ($k, $v ) = each( $fields ) ) {
+  $lookup_fields[$k] = $v[name];
+  if( $v[text_stored] )
+    $lookup_text_fields[$k] = $v[name];
+}
     
   #order
-  echo "<tr>
+echo "<tr>
        <td class=leftmenuy><b>". L_ORDER ."</b></td>
        <td class=leftmenuy>";
-  FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order);
-  echo "<input type='checkbox' name='admin_order_dir'". 
+FrmSelectEasy('admin_order', $lookup_fields, $r_admin_order);
+echo "<input type='checkbox' name='admin_order_dir'". 
      ( ($r_admin_order_dir=='d') ? " checked> " : "> " ) . L_DESCENDING. "</td>
      <td rowspan=2 align='right' valign='middle'><a
       href=\"javascript:document.filterform.submit()\" class=leftmenuy>". L_GO ."</a> </td></tr>";
 
   # filter
-  echo "<tr><td class=leftmenuy><b>". L_SEARCH ."</b></td>
+echo "<tr><td class=leftmenuy><b>". L_SEARCH ."</b></td>
      <td>";
-  FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
-  echo "<input type='Text' name='admin_search' size=20
-      maxlength=254 value='$r_admin_search'></td></tr></table>
+FrmSelectEasy('admin_search_field', $lookup_text_fields, $r_admin_search_field);
+echo "<input type='Text' name='admin_search' size=20
+      maxlength=254 value=\"". safe($r_admin_search). "\"></td></tr></table>
       <input type=hidden name=action value='filter'></form></center>";
 }
  
-######## add by setu 2002-0206 #######
-global $footer;
-if ($footer != "0")
-{
-  echo L_ICON_LEGEND;
-  echo L_SLICE_HINT;
-
-  $ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
-
-  echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri . 
-       "?slice_id=" . $slice_id . "&quot;--&gt;</pre>";
-}
 echo "  </body>
 </html>";
+
   $$st_name = $st;   // to save the right scroller 
   page_close();
-
-/*
-
-$Log$
-Revision 1.36  2002/03/14 11:20:45  mitraearth
-[[ User Validation for add item / edit item (itemedit.php3). ]]
-
-(by Setu)
- - new selection "User" at admin->field->edit(any field)->validation.
- - if "include/usr_validate.php3" exist, it is included. (in admin/itemedit.php3) and defines "usr_validate()" function.
- - At submit in itemedit if "User" is selected, function usr_validate() is called from itemedit.php3.
- - It can validate the value and return new value for the field.
-
- - Related files:
-   - admin/itemedit.php3
-   - include/constants.php3
-   - include/en_news_lang.php3
-     - "L_INPUT_VALIDATE_USER" for User Validation.
-
-* There is sample code for defining this function at http://apc-aa.sourceforge.net/faq/index.shtml#476
-
-[[ Default value from query variable (add item & edit item :  itemedit.php3) ]]
-(by Ram)
- - if the field is blank, it can load default value from URL query strings.
- - new selection "Variable" in admin->field->edit(any field)->Default:
- - "parameter" is the name of variable in URL query strings
-   - (or any global variable in APC-AA php3 code while itemedit.php3 is running).
-
- - Related files:
-   - include/constant.php3
-   - include/en_news_lang.php3
-     - "L_INPUT_DEFAULT_VAR" for Default by variable.
-   - include/itemfunc.php3
-     - new function "default_fnc_variable()" for "Default by variable"
-
-
-[[ admin/index.php3 ]]
-(by Setu)
- - more switches to allow admin/index.php3 to be called from another program (with return_url).
-   - sort_filter=1
-   - action_selected=1
-     - "feed selected" is not supported.
-     - "view selected" is not supported.
- - scroller now works with return_url.
-   - caller php3 code needs to pass parameter for scroller for  admin/index.php3
-     - scr_st3_Mv
-     - scr_st3_Go
- - more changes to work with &return_url.
-
- - related files:
-   - admin/index.php3
-   - include/item.php3
-     - new function make_return_url()
-     - new function sess_return_url()
-
-* Sample code to call admin/index.php3 is at http://apc-aa.sourceforge.net/faq/index.shtml#477
-
-[[ admin/slicedit.php3 can be called from outside to submit the value. ]]
-(by Setu)
- - it supports "&return_url=...." to jump to another web page after  submission.
- - related files:
-   - admin/slicedit.php3
-
-Revision 1.35  2002/03/06 12:42:58  honzam
-bugfix
-
-Revision 1.34  2002/02/12 10:11:47  mitraearth
-FILE: apc-aa/admin/index.php3
-Changed by: Setu
-Change:
-
-New options in Query Strings to hide few items from the page.
-By default, it shows everything as original version.
-
-navbar=0 - to hide the navigation bar at the top of page.
-leftbar=0 - to hide the navigation bar at the left of page.
-footer=0 - to hide the footer message
-sort_filter=0 - to hide box for sort / filter.
-action_selected=0 - to hide box for the actions for selected (marked) item
-
-Big switch to hide many things, to show only the title and item list.
-bodyonly=1 - this single switch will hides all of the items above.
-
-Revision 1.33  2002/02/05 21:40:33  honzam
-items are counted in all bins - including pending bin and expired bin
-
-Revision 1.32  2002/01/03 15:48:07  honzam
-No item table width limit
-
-Revision 1.31  2001/12/21 11:44:55  honzam
-fixed bug of includes in e-mail notify
-
-Revision 1.30  2001/12/18 11:42:21  honzam
-new user profile feature
-
-Revision 1.29  2001/10/24 16:41:34  honzam
-search expressions with AND, OR, NOT, (, ) allowed in conditions
-
-Revision 1.28  2001/10/05 10:51:29  honzam
-Slice import/export allows backup of more slices, bugfixes
-
-Revision 1.27  2001/09/27 15:55:21  honzam
-Fixed security hole with cached sessions, Moving between bins change last_edit and edited_by fields
-
-Revision 1.26  2001/07/09 17:45:32  honzam
-Listing length defined by listlen parameter
-
-Revision 1.25  2001/06/24 16:46:22  honzam
-new sort and search possibility in admin interface
-
-Revision 1.24  2001/06/15 21:17:41  honzam
-fixed bug in manual feeding, fulltext f_b alias function improved
-
-Revision 1.23  2001/06/03 15:58:21  honzam
-small fixes, better user interface
-
-Revision 1.22  2001/05/23 23:05:34  honzam
-fixed bug of not updated list of item in Item manager after item edit
-
-Revision 1.21  2001/05/18 13:43:43  honzam
-New View feature, new and improved search function (QueryIDs)
-
-Revision 1.20  2001/05/10 10:01:42  honzam
-New spanish language files, removed <form enctype parameter where not needed, better number validation
-
-Revision 1.19  2001/03/20 15:31:11  honzam
-Feeding support, Fixed bug in preview selection, Item counting for each bin
-
-Revision 1.18  2001/03/06 00:15:14  honzam
-Feeding support, color profiles, radiobutton bug fixed, ...
-
-Revision 1.17  2001/02/26 17:26:08  honzam
-color profiles
-
-Revision 1.16  2001/02/26 12:22:30  madebeer
-moved hint on .shtml to slicedit
-changed default item manager design
-
-Revision 1.15  2001/02/25 08:33:40  madebeer
-fixed some table formats, cleaned up admin headlines
-
-Revision 1.14  2001/01/23 23:58:03  honzam
-Aliases setings support, bug in permissions fixed (can't login not super user), help texts for aliases page
-
-Revision 1.12  2000/12/21 16:39:34  honzam
-New data structure and many changes due to version 1.5.x
-
-Revision 1.8  2000/08/17 15:14:32  honzam
-new possibility to redirect item displaying (for database changes see CHANGES)
-
-Revision 1.7  2000/08/07 15:27:45  kzajicek
-Added missing semicolon in global statement
-
-Revision 1.6  2000/08/03 12:38:01  honzam
-HTML formated pictures for admin interface added
-
-Revision 1.5  2000/07/25 13:23:36  kzajicek
-Fixed small inaccuracy in OpenPreview (Netscape only).
-
-Revision 1.4  2000/07/12 14:26:40  kzajicek
-Poor printing of the SSI statement fixed
-
-Revision 1.3  2000/07/07 21:28:17  honzam
-Both manual and automatical feeding bug fixed
-
-Revision 1.1.1.1  2000/06/21 18:39:55  madebeer
-reimport tree , 2nd try - code works, tricky to install
-
-Revision 1.1.1.1  2000/06/12 21:49:46  madebeer
-Initial upload.  Code works, tricky to install. Copyright, GPL notice there.
-
-Revision 1.17  2000/06/12 19:58:23  madebeer
-Added copyright (APC) notice to all .inc and .php3 files that have an $Id
-
-Revision 1.16  2000/06/09 15:14:09  honzama
-New configurable admin interface
-
-Revision 1.15  2000/04/24 16:43:41  honzama
-Small interface changes.
-
-Revision 1.14  2000/03/29 14:30:47  honzama
-New direct feeding (Export). Icon legend updated.
-
-Revision 1.13  2000/03/22 09:36:43  madebeer
-also added Id and Log keywords to all .php3 and .inc files
-*.php3 makes use of new variables in config.inc
-
-*/
 ?>
