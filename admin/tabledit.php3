@@ -55,13 +55,13 @@ if (is_array ($cmd)) {
         if ($com["update"]) {
             $key = key ($com["update"]);      
             $myview = GetTableView ($myviewid);
-            $error = TableUpdate ($myview["table"], $key, $val, $myview["fields"]);
+            $error = TableUpdate ($myview["table"], $key, $val, $myview["fields"], $myview["messages"]["error_update"]);
             if ($error) PrintArray ($err);
         }
         // WARNING: a bit hackish: after inserting an item, the command is changed to edit it
         if ($com["insert"]) {
             $myview = GetTableView ($myviewid);
-            $newkey = TableInsert ($myview["table"], $val, $myview["fields"]);
+            $newkey = TableInsert ($myview["table"], $val, $myview["fields"], $myview["messages"]["error_insert"]);
             unset ($cmd[$myviewid]["insert"]);
             if ($newkey != "") {
                 // show inserted record again
@@ -73,7 +73,7 @@ if (is_array ($cmd)) {
         if ($com["delete"]) {
             $key = key ($com["delete"]);      
             $myview = GetTableView ($myviewid);
-            TableDelete ($myview["table"], $key, $myview["fields"]);
+            TableDelete ($myview["table"], $key, $myview["fields"], $myview["messages"]["error_delete"]);
         }
     }
 }
@@ -83,9 +83,11 @@ PrintArray($err);
 $script = "tabledit.php3?AA_CP_Session=$AA_CP_Session";
 
 // add currently inserted item to editable items
-if ($after_insert[$tview] && is_array ($tableview["restrict"]))
-    $tableview["restrict"][] = $after_insert[$tview];
-
+if ($after_insert[$tview] && $tableview["where"]) {
+	$mywhere = CreateWhereCondition ($after_insert[$tview], GetColumnTypes ($tableview["table"], $tableview["fields"]));
+	$tableview["where"] = "(".$tableview["where"].") OR $mywhere";		 
+}
+	
 $tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."images/", $sess, "", "", "GetTableView");
 $err = $tabledit->view ($where);
 

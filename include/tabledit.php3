@@ -321,7 +321,7 @@ class tabledit {
         if ($srch["where"]) {
             // care user can't add another SQL command with this field
             $srch["where"] = str_replace (";", "", $srch["where"]);
-            $where .= " AND ".stripslashes_magic($srch["where"]);
+            $where .= " AND (".stripslashes_magic($srch["where"]).") ";
             unset($srch["value"]);
             unset($srch["field"]);
         }
@@ -332,7 +332,7 @@ class tabledit {
         }
         
         if ($this->view["where"]) 
-            $where .= " AND ".$this->view["where"];
+            $where .= " AND (".$this->view["where"].") ";
             
         return $where;
     }   
@@ -579,13 +579,16 @@ function GetColumnTypes ($table, $columns) {
 // -----------------------------------------------------------------------------------
 
 // deletes one record identified by key values from given table
-function TableDelete ($table, $key_value, $columns, $be_cautious=1) {
-    global $db;
+function TableDelete ($table, $key_value, $columns, $error_msg="", $be_cautious=1) {
+    global $db, $err;
     $columns = GetColumnTypes ($table, $columns);
     $where = CreateWhereCondition ($key_value, $columns);
     if ($be_cautious) {
         $db->query ("SELECT * FROM $table WHERE $where");
-        if ($db->num_rows() != 1) return false;
+        if ($db->num_rows() != 1) {
+			$err[] = $error_msg ? $error_msg : _m("Error deleting from $table. ".$db->num_rows()." rows instead of 1.");
+			return false;
+		}
     }
     return $db->query ("DELETE FROM $table WHERE $where");
 }
@@ -593,11 +596,11 @@ function TableDelete ($table, $key_value, $columns, $be_cautious=1) {
 // -----------------------------------------------------------------------------------
    
 // updates one record identified by key values in given table    
-function TableUpdate ($table, $key_value, $val, $columns, $be_cautious=1) {
+function TableUpdate ($table, $key_value, $val, $columns, $error_msg="",  $be_cautious=1) {
     global $db;
     $columns = GetColumnTypes ($table, $columns);
     if (!ProoveVals ($table, $val, $columns))
-        return join ("\n", $GLOBALS["err"]);
+        return $error_msg ? $error_msg : join ("\n", $GLOBALS["err"]);
     $varset = new CVarset();
     reset ($columns);
     while (list ($colname, $col) = each ($columns)) {
@@ -622,7 +625,7 @@ function TableUpdate ($table, $key_value, $val, $columns, $be_cautious=1) {
 // -----------------------------------------------------------------------------------
 
 // inserts a record and returns the key or "" if not successfull
-function TableInsert ($table, $val, $columns, $be_cautious=1) {
+function TableInsert ($table, $val, $columns, $error_msg="", $be_cautious=1) {
     global $db, $err;
     $columns = GetColumnTypes ($table, $columns);
     if (!ProoveVals ($table, $val, $columns)) { return ""; }
@@ -633,7 +636,7 @@ function TableInsert ($table, $val, $columns, $be_cautious=1) {
             if ($col["auto_increment"])
                 $auto_inc = true;
             else if (!$val[$colname]) 
-                { $err[] = "Error: Primary column $colname not set."; return ""; }
+                { $err[] = $error_msg ? $error_msg : "Error: Primary column $colname not set."; return ""; }
             else $key[] = $val[$colname];
         }
         if (isset ($val[$colname])) {
@@ -652,11 +655,11 @@ function TableInsert ($table, $val, $columns, $be_cautious=1) {
         $db->query ("SELECT COUNT(*) AS key_already_used FROM $table WHERE $where");
         $db->next_record();
         if ($db->f("key_already_used") > 0)
-            { $err[] = "Error inserting to $table: A row with the same primary key ($key) already exists."; return ""; }
+            { $err[] = $error_msg ? $error_msg : "Error inserting to $table: A row with the same primary key ($key) already exists."; return ""; }
     }
     
     $ok = $db->query ("INSERT INTO $table ".$varset->makeINSERT());
-    if (!$ok) { $err[] = "DB error on inserting record to $table"; return ""; }
+    if (!$ok) { $err[] = $error_msg ? $error_msg : "DB error on inserting record to $table"; return ""; }
     if ($auto_inc) return get_last_insert_id ($db, $table);
     else return join_escaped (":", $key, "#:");
 }

@@ -43,7 +43,11 @@ http://www.apc.org/
    "listlen" => number of records to be shown at once, default: 15
    "orderby" => field to sort by (default: don't sort)
    "orderdir" => order direction, "a" = ascending or "d" = descending (default: "a")
-   "no_item_msg" => message to be shown when no items pass the WHERE SQL clause
+   "messages" => array (
+	   "no_item" => message to be shown when no items pass the WHERE SQL clause
+	   "error_insert" => when insert fails
+	   "error_update" => when update fails
+	   "error_delete" => when delete fails
    "readonly" => true | false  default for all fields
    "where" => SQL WHERE condition
    "search" => view the search form?, default: true for browse view, false for edit view
@@ -180,7 +184,10 @@ function GetTableView ($viewID) {
              )
         ),
         "where" => CreateWhereFromList ("id", FindCollectionPermissions()),
-        "no_item_msg" => _m("You don't have permissions to edit any collection or no collection exists."));
+		"messages" => array (
+	        "no_item" => _m("You don't have permissions to edit any collection or no collection exists.")
+		)
+	);
     
     if ($viewID == "acf") {
         // filter select box        
@@ -209,6 +216,8 @@ function GetTableView ($viewID) {
         "attrs" => $attrs_browse,
         "search" => false,
         "orderby" => "myindex",
+		"messages" => array (
+			"error_insert" => _m("Error inserting Filter. Perhaps it is already in the collection.")),
         "fields" => array (
             "filterid" => array (
                 "view" => array (
@@ -246,7 +255,8 @@ function GetTableView ($viewID) {
         "caption" => L_ALERTS_COLLECTION_TITLE,
         "attrs" => $attrs_browse,
         "orderby" => "howoften",
-        "no_item_msg" => _m ("There are no users subscribed to this collection yet."),
+		"messages" => array (
+	        "no_item" => _m ("There are no users subscribed to this collection yet.")),
         "fields" => array (
             "userid" => array (
                 "view" => array (
@@ -277,7 +287,8 @@ function GetTableView ($viewID) {
         "mainmenu" => "sliceadmin",
         "submenu" => "te_alerts_collections",
         "orderby" => "description",
-        "no_item_msg" => _m("No collection uses any filter defined in any slice you have Admin permissions to."),
+		"messages" => array (
+	        "no_item" => _m("No collection uses any filter defined in any slice you have Admin permissions to.")),
         "fields" => array (
             "id" => array (
                 "view" => array ("readonly" => true)),
@@ -330,7 +341,8 @@ function GetTableView ($viewID) {
             "lang" => array ("view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2)))),
         "attrs" => $attrs_browse,
         "where" => CreateWhereFromList ("id", FindAlertsUserPermissions()),
-        "no_item_msg" => _m("No user is subscribed to any collection you have permissions to."));
+		"messages" => array (
+	        "no_item" => _m("No user is subscribed to any collection you have permissions to.")));
     
     /* ------------------------------------------------------------------------------------
        au_edit and its child auc
