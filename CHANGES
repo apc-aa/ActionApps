@@ -1,3 +1,12 @@
+01/21/03 - code rule changes
+         - added global flag $errcheck like $debug but generates warnings on strangeness
+         - added zids.php3 to encapsulate id management including:
+           * adds support for tagged ids in many places (not all yet)
+           ** If related item window field set to store text, it will cleanly edit these
+           *** More changes to related item window coming
+           * duplicates pack_id and unpack_id to pack_id128 and unpack_id128 which check type
+         - commented out require of  _lang.php3 files from config.php3
+01/21/03 - changed {....} expansion to use f_h for fields, allowing multi-value fields
 01/21/03 - fixed bug in stringexpand for scroller (mitra)
 01/20/03 - modified mgettext language files extension from .inc to .php3 
            (mainly for backward compatibility) (jakub)
@@ -16,7 +25,7 @@
             * changed include/init_page.php3 to use mini-gettext
             * changed slice.php3 to use the ??_output_lang.inc language file
             * changed admin/param_wizard.php3 to use the ??_param_wizard.inc language file            
-01/17/03 - Documentation - ref to GD (but no instructions) 
+01/17/03 - Documentation - ref to GD (but no instructions) (mitra)
             -- and ref FAQ for developer CVS install
          - stringexpand: do unalias on results of expanding apc_state or als
 01/16/03 - added functions to module/site/site.php3 for site_* files (mitra)
@@ -29,11 +38,11 @@
 01/14/03 - hiding the slice select box for users with access to only one module (jakub)
 01/14/03 - new function GetUserEmails in perm_core.php3 (jakub)
 01/14/03 - new language file selectbox for site module (Site Admin - modedit)
-01/13/03 - added "add" as option to f_e for adding an item; 
+01/13/03 - added "add" as option to f_e for adding an item;  (mitra)
            created parameter wizard for f_e
-01/12/03 - changed site module to go to prior sibling when deleting rather than 
+01/12/03 - changed site module to go to prior sibling when deleting rather than (mitra)
            parent
-01/12/03 - added default $item=null to new_unalias_recurent to allow calling 
+01/12/03 - added default $item=null to new_unalias_recurent to allow calling (mitra)
            from site module without warnings
 01/12/03 - fixed adding AA_CP_Session to url in site module AAPage where it is 
            already there.
