@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,15 @@ http://www.apc.org/
 */
 
 $New_slice = true;  // variable tells to init_page, there should not be defined slices, here
+$require_default_lang = true;      // do not use module specific language file
+
 require "../include/init_page.php3";
+require $GLOBALS[AA_INC_PATH] . DEFAULT_LANG_INCLUDE;  // aa menu is in default
+
 // the parts used by the slice wizard are in the included file
 
-    if($cancel)
-        go_url( $sess->url(self_base() . "index.php3"));
+if($cancel)
+  go_url( $sess->url(self_base() . "index.php3"));
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 

@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if (!defined ("DE_NEWS_LANG_INCLUDED"))
+   	  define ("DE_NEWS_LANG_INCLUDED",1);
+else return;
 
 # config file identifier
 # must correspond with this file name
@@ -559,7 +562,7 @@ define("L_FEED_STATE", "Export-Modus");
 define("L_STATE_FEEDABLE", "Exportieren" );
 define("L_STATE_UNFEEDABLE", "Nicht exportieren" );
 define("L_STATE_FEEDNOCHANGE", "Exportieren und Sperren" );
-define("L_INPUT_FEED_MODES_HLP", "Soll der Inhalt dieses Feldes beim Austausch exportiert werden?"); 
+define("L_INPUT_FEED_MODES_HLP", "Soll der Inhalt dieses Feldes beim Austausch exportiert werden?");
 // "Should the content of this field be copied to another slice if it is fed?");
 
 define("L_CANT_CREATE_IMG_DIR", "Kann Verzeichnis für Datei/Bild-Upload nicht anlegen.");

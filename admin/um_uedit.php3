@@ -28,8 +28,11 @@ http://www.apc.org/
 #    $usr_new        - comes from um_inc   - New user link
 #    $submit_action  - = update_submit if pressed update
 #                      = usr_del if delete user is confirmed
-#    $add_submit     - if new user Add buutton pressed
+#    $add_submit     - if new user Add button pressed
 
+
+$require_default_lang = true;      // do not use module specific language file
+                                   // (message for init_page.php3)
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
@@ -47,15 +50,15 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
 if( ($submit_action == "usr_del") AND $selected_user ) {
   DelUser( $selected_user );    // default is to delete any references as well
   go_url( $sess->url($PHP_SELF) );
-}  
-  
+}
+
 $sess->register("rusr");
 if( $usr OR $UsrSrch )
   $rusr = $usr;
 
 if( $usr_new )
   $rusr = $selected_user = "";
-  
+
 $users  = GetFiltered("U", $rusr, L_TOO_MUCH_USERS, L_NO_USERS);   // get list of users
 if( $UsrSrch ) {
   reset( $users );
@@ -103,17 +106,17 @@ $varset = new Cvarset();
 
 if( $add_submit OR ($submit_action == "update_submit")) {
 
-  # all the actions are in following require (we reuse this part of code for 
+  # all the actions are in following require (we reuse this part of code for
   # slice wizard ...
   require $GLOBALS[AA_INC_PATH]."um_uedit.php3";
-  
+
   if( count($err) <= 1 ) {
     $Msg = MsgOK(L_NEWUSER_OK);
     go_url( con_url($sess->url($PHP_SELF), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
   }
 }
 
-# HTML form -----------------------------------------
+# HtmlPageBegin----------------------------------------
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 include $GLOBALS[AA_INC_PATH]."js_lib.js";
@@ -126,12 +129,12 @@ include $GLOBALS[AA_INC_PATH]."js_lib.js";
     document.fx.submit_action.value = action
     document.fx.submit()
   }
-  
+
   function RealyDelete() {
     if( window.confirm('<?php echo L_REALY_DELETE_USER ?>')) {
       document.f2.submit_action.value = 'usr_del'
       document.f2.submit()
-    }  
+    }
   }
 
   // function changes content of role listbox for new module, when user selects another module to be added
@@ -143,18 +146,19 @@ include $GLOBALS[AA_INC_PATH]."js_lib.js";
     // clear selectbox
     for( i=(document.fx.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
       document.fx.elements['new_module_role['+no+']'].options[i] = null
-    }  
-    // fill selectbox from the right slice  
+    }
+    // fill selectbox from the right slice
     for( i=0; i<roles.length ; i++) {
       document.fx.elements['new_module_role['+no+']'].options[i] = new Option(roles[i], roles[i])
     }
-  }  
+  }
 // -->
 </SCRIPT>
 </HEAD>
 
 <?php
-  require $GLOBALS[AA_INC_PATH]."menu.php3";   //show navigation column depending on $show   
+
+  require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin", $usr_new ? "u_new" : "u_edit");
 
   echo "<H1><B>". ( $usr_new ? L_NEW_USER : L_EDIT_USER )."</B></H1>";
@@ -201,7 +205,7 @@ if( !($usr_new OR ($usr_edit AND ($selected_user!="n"))) ) {
   page_close();
   exit;
 }
-  
+
 do {
   if($usr_edit AND !($submit_action == "update_submit")) {
     if( !is_array($user_data = GetUser($selected_user)))

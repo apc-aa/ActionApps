@@ -32,6 +32,8 @@ http://www.apc.org/
 	To show the exported text the page sliceexp_text.php3 is called.
 */
 
+$require_default_lang = true;      // do not use module specific language file
+                                   // (message for init_page.php3)
 require "../include/init_page.php3";
 require "./sliceexp_text.php3";
 
@@ -45,7 +47,7 @@ if (isset($b_export_to_file))
 	exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date);
     exit;
 } else {
-  
+
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 ?>
@@ -59,7 +61,7 @@ function b_export_date_onchange(vstup)
 	error = 0; tecka = 0; den = 0; rok = 0; mesic = 0;
 	for (index = 0; index < vstup.value.length; index++) {
       	ch = vstup.value.charAt(index);
-		if (ch != "0" && ch != "1" && ch != "2" && ch != "3" && ch != "4" && ch != "5" && ch != "6" && ch != "7" && ch != "8" && ch != "9" && ch != ".") 
+		if (ch != "0" && ch != "1" && ch != "2" && ch != "3" && ch != "4" && ch != "5" && ch != "6" && ch != "7" && ch != "8" && ch != "9" && ch != ".")
 				{ error = 1; }
 		if ((ch == "0" || ch == "1" || ch == "2" || ch == "3" || ch == "4" || ch == "5" || ch == "6" || ch == "7" || ch == "8" || ch == "9") && (error == 0))
 		{
@@ -71,9 +73,9 @@ function b_export_date_onchange(vstup)
 		{
 			if (tecka == 1) {tecka=2}
 			if (tecka == 0) {tecka=1}
-		}	
+		}
 	}
-			
+
 	if ((den<1 || den >31) && (error == 0)) { error = 1; }
 	if ((mesic<1 || mesic>12) && (error == 0)) { error = 1;}
 	if (rok<1990 && tecka == 2 && error == 0 && rok != "") { error = 1;}
@@ -83,25 +85,25 @@ function b_export_date_onchange(vstup)
 		alert(<?php echo '"'.L_EXPORT_DATE_ERROR.'"' ?>);
 		vstup.focus();
 	}
-	if (error == 2) 
+	if (error == 2)
 	{
 		alert(<?php echo '"'.L_EXPORT_DATE_TYPE_ERROR.'"' ?>);
-		vstup.focus();	
-	}	
+		vstup.focus();
+	}
 	document.forms["f"].b_export_spec_date.checked = true;
 }
 
 	function validate () {
-		form = document.forms["f"];	
+		form = document.forms["f"];
 		if (form.SliceID.value.length != 16) {
 			alert (<?php echo '"'.L_E_EXPORT_IDLENGTH.'"' ?>
 				+ form.SliceID.value.length);
 			form.SliceID.focus();
-		} 
+		}
 		else {
 			form.submit();
 		}
-	};	
+	};
 	function validate2() {
 		sl_count = 0;
 		x = document.f['export_slices[]'];
@@ -112,13 +114,13 @@ function b_export_date_onchange(vstup)
 		if (sl_count == 0) {
 		  alert (<?  echo '"'.L_E_EXPORT_MUST_SELECT.'"' ?>);
 		  return false;
-		} 
+		}
 		else {
 			return true;
 		}
 	};
 	//-->
-</SCRIPT>	
+</SCRIPT>
 
 <?php include $GLOBALS[AA_INC_PATH]."js_lib.js"; ?>
 
@@ -127,15 +129,15 @@ function b_export_date_onchange(vstup)
 <BODY>
 
 <?php
-	require $GLOBALS[AA_INC_PATH]."menu.php3";
-    showMenu ($aamenus, "aaadmin","sliceexp");
+  require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+  showMenu ($aamenus, "aaadmin","sliceexp");
 ?>
 
 <h1><b><?php echo L_E_EXPORT_TITLE ?></b></h1>
 
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
 
-<?php 
+<?php
 if ($SHOWTEXT == ""): ?>
 	<form name="f" method=post action="<?php echo $sess->url("sliceexp.php3") ?>" onsubmit="return validate2();">
 	

@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
 /* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,8 @@ http://www.apc.org/
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
-if (!defined("AA_MENU_INCLUDED"))
-      define("AA_MENU_INCLUDED",1);
+if (!defined("SITE_MENU_INCLUDED"))
+      define("SITE_MENU_INCLUDED",1);
 else return;
 
 require $GLOBALS[AA_INC_PATH]."menu_util.php3";
@@ -49,49 +49,52 @@ function get_aamenus ()
 {
     global $r_slice_view_url,
            $auth,
-           $AA_INSTAL_PATH, 
-           $AA_CP_Session;    
+           $AA_INSTAL_PATH,
+           $AA_CP_Session;
 
     $aamenus["view"] = array (
-        "label" => L_VIEW_SLICE, 
+        "label" => L_VIEW_SLICE,
         "exact_href"  => $r_slice_view_url,
         "cond"  => 1,
-        "level" => "main");    
-        
+        "level" => "main");
+
     $aamenus["codemanager"] = array (
-        "label" => L_CODE_MANAGER, 
+        "label" => L_CODE_MANAGER,
         "title" => L_CODE_MANAGER,
         "href"  => "modules/site/index.php3",
         "level" => "main");
-        
+
     $aamenus["modadmin"] = array (
         "label" => L_SITE_SETTINGS,
         "title" => L_SITE_SETTINGS,
         "href"  => "modules/site/modedit.php3",
         "cond"  => IfSlPerm(PS_MODW_SETTINGS),
-        "level" => "main");    
-        
+        "level" => "main");
+
     $aamenus["aaadmin"] = array (
         "label" => L_AA_ADMIN2,
         "title" => L_AA_ADMIN,
         "href"  => "admin/um_uedit.php3",
         "cond"  => IfSlPerm(PS_NEW_USER),
-        "level" => "main");
-     
+        "level" => "main",
+        "submenu"=>"aaadmin_submenu");
+
     /*  Second-level (left) menu description:
         bottom_td       empty space under the menu
         items           array of menu items in form item_id => properties
-                        if item_id is "headerxxx", shows a header, 
+                        if item_id is "headerxxx", shows a header,
                             be careful that xxx be always a different number
                         if item_id is "line", shows a line
             label       to be shown
-            cond        if not satisfied, don't show the label linked  
+            cond        if not satisfied, don't show the label linked
                         slice_id is included in the cond automatically
             href        link, relative to aa/
             exact_href  link, absolute (use either exact_href or href, not both)
             show_always don't include slice_id in cond
     */
-    
+
+    // left menu for aaadmin is common to all modules, so it is shared
+    require $GLOBALS[AA_INC_PATH]."menu_aa.php3";
     return $aamenus;
 }
 ?>

@@ -21,6 +21,7 @@ http://www.apc.org/
 
 # expected $slice_id for edit slice, nothing for adding slice
 
+$require_default_lang = true;      // do not use module specific language file
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
@@ -32,12 +33,12 @@ if($cancel)
 if(!IsSuperadmin()) {
   MsgPageMenu($sess->url(self_base())."index.php3", L_NO_PS_DEL_SLICE, "admin");
   exit;
-}  
+}
 
 function PrintSlice($id, $name) {
   global $sess;
 
-  $name=safe($name); $id=safe($id);     
+  $name=safe($name); $id=safe($id);
   echo "<tr class=tabtxt><td>$name</td>
           <td class=tabtxt><a href=\"javascript:DeleteSlice('$id')\">". L_DELETE ."</a></td></tr>";
 }
@@ -58,7 +59,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
 
 $useOnLoad = ($new_compact ? true : false);
-require $GLOBALS[AA_INC_PATH]."menu.php3";
+
+require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
 showMenu ($aamenus, "aaadmin","slicedel");
 
 echo "<H1><B>" . L_A_DELSLICE . "</B></H1>";

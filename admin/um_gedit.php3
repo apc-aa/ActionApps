@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,8 @@ http://www.apc.org/
 #                      = grp_del if delete group is confirmed
 #    $add_submit     - if new group Add button pressed
 
+$require_default_lang = true;      // do not use module specific language file
+                                   // (message for init_page.php3)
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
@@ -46,15 +48,15 @@ if(!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_NEW_USER)) {
 if( ($submit_action == "grp_del") AND $selected_group ) {
   DelGroup( $selected_group );     // default is to delete any references as well
   go_url( $sess->url($PHP_SELF) );
-}  
-  
+}
+
 $sess->register("rgrp");
 if( $grp OR $GrpSrch )
   $rgrp = $grp;
 
 if( $grp_new )
   $rgrp = $selected_group = "";
-  
+
 $groups  = GetFiltered("G", $rgrp, L_TOO_MUCH_GROUPS, L_NO_GROUPS);   // get list of users
 if( $GrpSrch ) {
   reset( $groups );
@@ -65,7 +67,7 @@ if( $GrpSrch ) {
 $all_users = GetFiltered("U", $usr1_flt, L_TOO_MUCH_USERS, L_NO_USERS);
 
 if( $selected_group ) {
-  if( $selected_group != "n" )  // none group selected 
+  if( $selected_group != "n" )  // none group selected
     $group_users = GetGroupMembers($selected_group);   // get list of users and groups right under $selected_group
   if( !is_array($group_users) )
     $sel_users["n"][name] = (( $group_users == "too much" ) ? L_TOO_MUCH_USERS : "");
@@ -132,7 +134,7 @@ function RealyDelete() {
 </HEAD>
 
 <?php
-  require $GLOBALS[AA_INC_PATH]."menu.php3";
+  require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin",$usr_new? "g_new" : "g_edit");
 
   echo "<H1><B>". ( $grp_new ? L_NEW_GROUP : L_EDIT_GROUP )."</B></H1>";

@@ -19,6 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if (!defined ("JA_NEWS_LANG_INCLUDED"))
+   	  define ("JA_NEWS_LANG_INCLUDED",1);
+else return;
 
 # config file identifier
 # must correspond with this file name

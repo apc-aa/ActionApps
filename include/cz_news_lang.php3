@@ -19,6 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if (!defined ("CZ_NEWS_LANG_INCLUDED"))
+   	  define ("CZ_NEWS_LANG_INCLUDED",1);
+else return;
 
 # config file identifier
 # must correspond with this file name
@@ -927,7 +930,7 @@ require  $GLOBALS[AA_INC_PATH]."en_param_wizard_lang.php3";
 // If You want to translate the new texts (which is in new_news_lang.php3 file),
 // just copy them from the new_news_lang.php3 file here and translate.
 // IMPORTANT: Leave the require new_news_lang.php3 as the last line of this
-// file - it will not redefine the constant You translated and helps You when 
+// file - it will not redefine the constant You translated and helps You when
 // we add new texts !!!
 require  $GLOBALS[AA_INC_PATH]."new_news_lang.php3";
 ?>

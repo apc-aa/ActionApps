@@ -5,13 +5,15 @@
        $set_tview -- required, name of the table view
 */
 
+$require_default_lang = true;      // do not use module specific language file
+                                   // (message for init_page.php3)
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."tabledit.php3";
-require $GLOBALS[AA_INC_PATH]."menu.php3";
+require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
 require $GLOBALS[AA_INC_PATH]."mgettext.php3";
 require $GLOBALS[AA_INC_PATH]."../misc/alerts/util.php3";
 

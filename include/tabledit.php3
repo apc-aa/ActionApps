@@ -190,6 +190,12 @@ class tabledit {
         if (!$record_count) 
             $no_item = !$this->cmd["search"]["value"];
         else $no_item = false;
+
+        if ($this->view["help"]) {
+            echo '<table border="0" cellspacing="0" cellpadding="5"><tr><td class="te_help">'
+                .$this->view["help"]
+                .'</td></tr></table><br>';
+        }
         
         if (!$record_count && !$this->show_new) {
             if ($no_item)
@@ -427,7 +433,7 @@ class tabledit {
             else $where .= " AND $srch[field] LIKE '%".addslashes_magic($srch[value])."%' ";
         }
         
-        if ($this->view["where"]) 
+        if (isset ($this->view["where"])) 
             $where .= " AND (".$this->view["where"].") ";
             
         echo "<!-- where_condition $where -->";

@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if (!defined ("CZ_SITE_LANG_INCLUDED"))
+   	  define ("SK_SITE_LANG_INCLUDED",1);
+else return;
 
 # config file identifier
 # must correspond with this file name
@@ -30,7 +33,7 @@ define("HTML_PAGE_BEGIN",
  '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
   <HTML>
   <HEAD>
-  <LINK rel=StyleSheet href="../../'.ADMIN_CSS.'" type="text/css">
+  <LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.ADMIN_CSS.'" type="text/css">
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">');
     
 
@@ -59,4 +62,4 @@ define("L_ADD", "Add");
 define("L_SPOT_CONDITIONS", "Spot&nbsp;conditions");
 define("L_SPOT_NAME", "Spot name");
 define("L_SUBMIT", "Change");
-?> 
+?>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -28,7 +28,12 @@ if (!defined ("AA_MSGPAGE_INCLUDED"))
 else return;
 
 require $GLOBALS[AA_INC_PATH]."constants.php3";
-require $GLOBALS[AA_INC_PATH]."menu.php3";
+if( isset($g_modules[$slice_id])) {
+  require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+} else {
+  require $GLOBALS[AA_INC_PATH]."menu.php3";
+}
+
 
 # Displays page with message and link to $url
 #   url - where to go if user clicks on Back link on this message page

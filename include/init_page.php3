@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -30,24 +30,24 @@ else return;
 
  # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
-    if (!is_array($val)) 
+    if (!is_array($val))
         return addslashes($val);
     for (reset($val); list($k, $v) = each($val); )
         $ret[$k] = Myaddslashes($v, $n+1);
     return $ret;
-}    
+}
 
-if (!get_magic_quotes_gpc()) { 
-  // Overrides GPC variables 
+if (!get_magic_quotes_gpc()) {
+  // Overrides GPC variables
   if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
+      $$k = Myaddslashes($v);
   if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
+      $$k = Myaddslashes($v);
 }
 
 if($encap == "false")    # used in itemedit for anonymous form
@@ -63,17 +63,22 @@ if (!$AA_INSTAL_PATH) {
 	$AA_INSTAL_PATH = $url_components['path'];
 }
 
+# should be set in config.php3 - base is better for modules
+if (!$AA_BASE_PATH) {
+  $AA_BASE_PATH = substr($AA_INC_PATH, 0, -8);
+}
+
 if($free)            // anonymous authentication
   $nobody = true;
 
 require $GLOBALS[AA_INC_PATH] . "locauth.php3";
-require $GLOBALS[AA_INC_PATH] . "scroller.php3";  
+require $GLOBALS[AA_INC_PATH] . "scroller.php3";
 
 $new_sliceid = $change_id;
- 
+
 if( $encap ) // we can't use AA_CP_Session - it uses more Header information
   page_open(array("sess" => "AA_SL_Session", "auth" => "AA_CP_Auth"));
-else 
+else
   page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
 
 if($free) {           // anonymous login
@@ -82,8 +87,8 @@ if($free) {           // anonymous login
   if( !($auth->auth["uid"] = $auth->auth_validatelogin()) ){
     echo L_BAD_LOGIN;
     exit;
-  }    
-}  
+  }
+}
 
 $auth->relogin_if($relogin); // relogin if requested
 
@@ -93,7 +98,7 @@ if( $new_sliceid )
 if( $Add_slice )
   unset($slice_id);
 
-if(isset($r_lang_file) AND is_array($r_lang_file) AND ($r_lang_file[$slice_id] != "")) {
+if( !$require_default_lang AND isset($r_lang_file) AND is_array($r_lang_file) AND ($r_lang_file[$slice_id] != "")) {
   include $GLOBALS[AA_INC_PATH] . $r_lang_file[$slice_id];  # do not delete the curly braces - include in condition statement must be in braces!
 }else{
   include $GLOBALS[AA_INC_PATH] . DEFAULT_LANG_INCLUDE ;
@@ -104,7 +109,7 @@ require $GLOBALS[AA_INC_PATH] . "util.php3"; // must be after language include b
 
 if( $slice_id )
   $p_slice_id = q_pack_id($slice_id);
-  
+
 $sess->register("slice_id");
 $sess->register("p_slice_id");
 $sess->register("r_lang_file");
@@ -117,32 +122,32 @@ $sess->register("wrong_language_file"); // cares about the infinite loop with wr
 //$sess->register("r_fields");            // array of fields for current slice
 
 if( !$save_hidden ) {      # sometimes we need to not unset hidden - popup for related stories ...
-  if( $unset_r_hidden OR 
+  if( $unset_r_hidden OR
      ($r_hidden["hidden_acceptor"] != (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF))) {
-    unset( $r_hidden );    // only acceptor can read this values. 
+    unset( $r_hidden );    // only acceptor can read this values.
                            // For others they are destroyed.
   }
-}  
+}
 
 $perm_slices = GetUsersSlices( $auth->auth[uid] );
 
 if( !$New_slice AND !$Add_slice AND is_array($perm_slices) AND (reset($perm_slices)=="") ) {
   MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT_ITEMS, "standalone");
   exit;
-}  
+}
 
 $db  = new DB_AA;
 
-# if we want to use random number generator, we have to use srand just once per 
+# if we want to use random number generator, we have to use srand just once per
 # script. That's why we called it here. Do not use it on other places in scripts
-srand((double)microtime()*1000000);      
+srand((double)microtime()*1000000);
 
 # get all modules
 $SQL= "SELECT id, name, type, deleted FROM module ORDER BY name";
 $db->query($SQL);
 while($db->next_record()) {
   $up = unpack_id($db->f('id'));
-  
+
   # g_modules is global array which holds user editable modules
   # hide the deleted slices (if the user is not superadmin)
 
@@ -152,31 +157,31 @@ while($db->next_record()) {
                             'type' => ( ($db->f('type') AND $MODULES[$db->f('type')] ) ? $db->f('type') : 'S'));
 }
 
-  
+
 if( !$Add_slice AND !$New_slice ) {
   if( !is_array($g_modules)) {   // this slice was deleted
     MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
     exit;
-  }  
+  }
   if(!$slice_id) {       // user is here for the first time -  find any slice for him
     reset($g_modules);
     $slice_id = key($g_modules);   # the variable slice_id (p_slice_id respectively)
                                    # do not hold just id of slices, but it possibly
                                    # holds id of any module. The name comes from
-                                   # history, when there was no other modules 
+                                   # history, when there was no other modules
                                    # than slices
-                                   
+
       # skip AA Core Field slice, if possible
-    if( ($slice_id == "41415f436f72655f4669656c64732e2e") AND next($g_modules) ) 
+    if( ($slice_id == "41415f436f72655f4669656c64732e2e") AND next($g_modules) )
       # 41415f436f72655f4669656c64732e2e is unpacked "AA_Core_Fields.."
       $slice_id = key($g_modules);
     $p_slice_id = q_pack_id($slice_id);
-  }    
+  }
 
   if( !isset($g_modules[$slice_id])) {   # this module was deleted
     MsgPage($sess->url(self_base())."index.php3", L_DELETED_SLICE, "standalone");
     exit;
-  }  
+  }
   $p_slice_id = q_pack_id($slice_id);
   if( $slice_id != $r_stored_module ) {  # it is not cached - we must get it
 
@@ -186,9 +191,9 @@ if( !$Add_slice AND !$New_slice ) {
     # Get module informations and store them to session variables
     $r_slice_headline = $g_modules[$slice_id]['name'];
 
-#    $SQL= "SELECT * FROM ". $MODULES[ $g_modules[$slice_id]['type'] ]['table'] . 
-    $SQL= "SELECT * FROM module ". 
-          " WHERE id='$p_slice_id'"; 
+#    $SQL= "SELECT * FROM ". $MODULES[ $g_modules[$slice_id]['type'] ]['table'] .
+    $SQL= "SELECT * FROM module ".
+          " WHERE id='$p_slice_id'";
     $db->query($SQL);
     if($db->next_record()) {
       $r_lang_file[$slice_id] = $db->f('lang_file');
@@ -199,8 +204,8 @@ if( !$Add_slice AND !$New_slice ) {
 
     # Get user profile for the slice
     unset( $r_profile );
-    $SQL= " SELECT * FROM profile 
-             WHERE slice_id='$p_slice_id' 
+    $SQL= " SELECT * FROM profile
+             WHERE slice_id='$p_slice_id'
                AND (uid='". $auth->auth["uid"] ."' OR uid='*')";
 
     $db->query($SQL);
@@ -209,19 +214,19 @@ if( !$Add_slice AND !$New_slice ) {
       if( $db->f('uid') == '*' ) {
         $general_profile[] = $db->Record;   # store the row for this moment
         continue;
-      }  
+      }
       $r_profile[$db->f('property')][$db->f('selector')] = $db->f('value');
     }
-    if( isset($general_profile) ) {         # use general preferences if not 
-      reset( $general_profile );            # definned special   
+    if( isset($general_profile) ) {         # use general preferences if not
+      reset( $general_profile );            # definned special
       while( list(,$v) = each($general_profile) ) {
         if( !GetProfileProperty($v['property'],$v['selector']) )
           $r_profile[$v['property']][$v['selector']] = $v['value'];
       }
-    }      
+    }
 //print_r( $r_profile );
-  }  
-  
+  }
+
   # if we switch to another module type, we should go to module main page
   # but not if we are jumping with the Jump module
   if( $module_change && !$jumping) {
@@ -231,7 +236,7 @@ if( !$Add_slice AND !$New_slice ) {
     exit;
   }
 
-	if( LANG_FILE != $r_lang_file[$slice_id] ) {
+	if( (LANG_FILE != $r_lang_file[$slice_id]) AND !$require_default_lang ) {
   	if (++$wrong_language_file == 10) {
       echo "<b>WRONG LANGUAGE FILE</b>: you must have<br>
 		    define(\"LANG_FILE\",\"file_name.php3\") in the language file, with file_name.php3 replaced by the real file name (which seems to be ".$r_lang_file[$slice_id].").";

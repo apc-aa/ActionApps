@@ -1,8 +1,8 @@
 <?php
 
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@ http://www.apc.org/
 */
 
 $directory_depth = "../";
+$require_default_lang = true;      // do not use module specific language file
 require "../../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
@@ -35,7 +36,7 @@ require $GLOBALS[AA_INC_PATH]."varset.php3";
 // create the $jumps array:
 $db = new DB_AA;
 $db->query ("SELECT * FROM module WHERE type='J'");
-while ($db->next_record()) 
+while ($db->next_record())
     $jumps[unpack_id($db->f("id"))] = $db->f("name");
 
 // choose the first module when none is chosen
@@ -47,18 +48,18 @@ if ($edit && !$jump_id && count ($jumps)) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "</head><body>";
 
-require $GLOBALS[AA_INC_PATH] . "menu.php3";
+require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
 showMenu ($aamenus, "aaadmin","jumpedit");
 
 if ($update) {
     if (!$jump_id) $jump_id = new_id ();
     $q_jump_id = q_pack_id ($jump_id);
-    
+
     $varset = new Cvarset();
     $varset->clear();
     $varset->add("destination", "quoted", $jump_url);
     $varset->add("dest_slice_id", "unpacked", $dest_id);
-    
+
     $db->query ("SELECT * FROM module WHERE id='$q_jump_id'");
     if ($db->next_record()) {
         $db->query ("UPDATE jump SET ".$varset->makeUPDATE() ." WHERE slice_id='$q_jump_id'");
@@ -67,13 +68,13 @@ if ($update) {
     else {
         $varset->add("slice_id", "unpacked", $jump_id);
         $db->query ("INSERT INTO jump ".$varset->makeINSERT());
-        
+
         $varset->clear();
         $varset->add("id","unpacked",$jump_id);
         $varset->add("name","quoted",$jump_name);
         $varset->add("type","quoted",'J');
         $varset->add("lang_file","quoted","en_news_lang.php3");
-        
+
         $db->query ("INSERT INTO module ".$varset->makeINSERT());
     }
 }

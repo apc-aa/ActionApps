@@ -23,6 +23,8 @@ http://www.apc.org/
 require "../include/slicedit2.php3";
 
 $New_slice = true;  // variable tells to init_page, there should not be defined slices, here
+$require_default_lang = true;      // do not use module specific language file
+
 require "../include/init_page.php3";
 // the parts used by the slice wizard are in the included file
 require $GLOBALS[AA_INC_PATH]."formutil.php3";
@@ -32,19 +34,19 @@ if($cancel)
 
 $wizard = 1;
 
-if ($add) 
+if ($add)
     require $GLOBALS[AA_INC_PATH]."slicedit.php3";
-    
+
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <TITLE><?php echo L_A_SLICE_WIZ_TIT;?></TITLE>
 </HEAD>
-<?php 
+<?php
   echo "<H1><B>" . L_A_SLICE_WIZ_TIT ."</B></H1>";
   PrintArray($err);
-  echo $Msg;  
+  echo $Msg;
 ?>
 
 <center>

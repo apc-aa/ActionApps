@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 2001 Association for Progressive Communications 
+/*
+Copyright (C) 2001 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,13 +19,15 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* 
+/*
 	Author: Jakub Adámek, Pavel Jisl
 
 	Imports the slice definition and data, exported from toolkit
-	
+
 */
 
+$require_default_lang = true;      // do not use module specific language file
+                                   // (message for init_page.php3)
 require "../include/init_page.php3";
 require $GLOBALS[AA_INC_PATH]."itemfunc.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
@@ -303,18 +305,18 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 
 <?php 
-	require $GLOBALS[AA_INC_PATH]."menu.php3"; 
-    showMenu ($aamenus, "aaadmin","sliceimp");
+  require $MODULES[$g_modules[$slice_id]['type']]['menu'];   //show navigation column depending on $show
+  showMenu ($aamenus, "aaadmin","sliceimp");
 ?>
 <?php echo $pom ?>
-<form name=formular method=post action="<?php echo $sess->url("sliceimp.php3") ?>" 
+<form name=formular method=post action="<?php echo $sess->url("sliceimp.php3") ?>"
 enctype="multipart/form-data">
 
 <h1><b><?php echo L_E_IMPORT_TITLE.$pom?></b></h1>
 
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit>
-<?php 
+<?php
 if ($Cancel || $conflicts_list || $data_conflicts_list):
 	echo "<B>".sprintf(L_E_IMPORT_COUNT,count($imported_list)+count($overwritten_list))."</p>";
 	if (is_array($imported_list)) {

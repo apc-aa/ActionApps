@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,10 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
+if (!defined ("NEW_NEWS_LANG_INCLUDED"))
+   	  define ("NEW_NEWS_LANG_INCLUDED",1);
+else return;
 
 /* Here are new constants to be added to all xx_news_lang.php3 files.
 	You don't have to put them in every language file, just put them here
@@ -324,4 +328,7 @@ define("L_V_MAIL_BODY","Mail Body:");
 
 define("L_AUTO_CHECKBOX", "Auto Update Checkbox");
 define("L_SLI_NAME_ALIAS", "Slice name");
+define("L_CODE_MANAGER", "Code&nbsp Manager");
+define("L_SITE_SETTINGS", "Module Settings");
+
 ?>
