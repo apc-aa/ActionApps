@@ -60,7 +60,7 @@ function PrintModuleSelection() {
     $db->query ("SELECT module.id, module.type, slice.type AS slice_type, module.name 
         FROM module LEFT JOIN slice ON module.id=slice.id "
         .$slice_ids
-        ."ORDER BY module.type, slice.type, name");
+        ."ORDER BY module.type, slice.type, module.name");
     $option_begin = "\t+'<option value=\"";
     while ($db->next_record()) {
         switch ($db->f("type")) {
