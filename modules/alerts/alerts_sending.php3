@@ -368,9 +368,8 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
 // -------------------------------------------------------------------------------------
 /** Used in send_emails(). Finds filter text for the given reader.
 *   @param object $readerContent  if null, use all filters
-*   @param array $filters  sent by reference just for better performance. 
 */
-function get_filter_text_4_reader ($readerContent, &$filters, $cid)
+function get_filter_text_4_reader ($readerContent, $filters, $cid)
 {  
     if ($readerContent) {
         $user_filters_value = $readerContent->getValues( 
@@ -388,21 +387,27 @@ function get_filter_text_4_reader ($readerContent, &$filters, $cid)
     $filter_ids = "";
     $user_zids = new zids (null, "p");
     
+    // add dummy filter
+    $filters[99999] = "dummy";
+    
     for (reset ($filters); list ($filterid, $fprop) = each ($filters); ) {
+        // Send items from filters with "group" not set when the view changes.        
+        if ($last_fprop["vid"] != $fprop["vid"]
+          && is_array ($filter_ids)
+          && $user_zids->count()) {
+            $user_text .= get_filter_output_cached (
+                $last_fprop["vid"], join (",",$filter_ids), $user_zids);
+            $filter_ids = "";
+            $user_zids->clear("p");
+        }
+        if ($fprop == "dummy")
+            break;
         if (! $readerContent || $user_filters [$filterid]) {
             if ($fprop["group"]) {
                 $user_text .= get_filter_output_cached (
                     $fprop["vid"], $filterid, $fprop["zids"]);                                
             }
             else {
-                if ($last_fprop 
-                  && $last_fprop["vid"] != $fprop["vid"]
-                  && ! $last_fprop["group"]) {
-                    $user_text .= get_filter_output_cached (
-                        $fprop["vid"], join (",",$filter_ids), $user_zids);
-                    $filter_ids = "";
-                    $user_zids->clear("p");
-                }
                 $user_zids->union ($fprop["zids"]);
                 $filter_ids[] = $filterid;
             }
