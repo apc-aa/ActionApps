@@ -60,7 +60,10 @@ HtmlPageBegin();
     initSummarize();
     $nocache=1;
     sliceshortcuts(1);
-    mapslices();
+    setnr();
+    print("<p>");
+    mapslice();
+#    mapslices();
     HtmlPageEnd();
     page_close();
 
@@ -114,6 +117,20 @@ function editslicefields($sid) {
     global $AA_CP_Session;
     return "<a href=\"se_fields.php3?AA_CP_Session=$AA_CP_Session&change_id=$sid\"> Edit fields </a>";
 }
+
+function mapslice() {
+    global $sao,$slice_id,$nr;
+    $sid = $slice_id;
+    $so = $sao[$sid];
+    if ($nearest = $nr[$slice_id]) {
+        $sno = $sao[$nearest];
+        print("<a name=\"$sid\"></a>$sid: '" . $so->name() . "' closest to <a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'<br>".editslicefields($sid));
+        compareSlices($so,$sno,1);
+    } else {
+        huhl("No match for ",$sid," nr=",$nr);
+    }
+}
+
 function mapslices() {
     global $sao;
     print("<ul>");
@@ -279,4 +296,48 @@ function qenc($val,$htmlformat,$unp,$color) {
     );
 }
 
+
+// This part needs configuring, eventually each slice can have the slice it was
+// built from as a field in the database.
+function setnr() {
+    global $nr;
+    //Pan blog
+ $blog = "7a74a7bf81661ea18537e05136adf6c9"; //bbkm
+ $import = "db1452fab6282a0da83050e7d844fb69"; // km
+ $directory = "480fddb2820269b80555042d1a8c8dbb"; // bin
+ $calendar = "22b754b09bbadfbf12d9755817819021"; //bbkm
+ $faq = "6279726f6e6261796b6d666171666171";
+ $newstemplate = "4e6577735f454e5f746d706c2e2e2e2e";
+ $photos = "70616e2e70686f746f732e2e2e2e2e2e";
+ $photosections = "70616e2e70686f746f732e7365637469";
+ $alerts = "c338bb154f445afb84307f35f5facd9d"; //bbkm
+
+//BIN
+ $nr["4b88f1c5e5a94e1e379d12f247a252b3"] = $blog;
+ $nr["1b5d8a892fc9e6867ab841bec079984d"] = $import;
+ $nr[$directory] = $blog;
+//BBKM
+ $nr[$calendar] = $newstemplate;
+ $nr[$blog] = $newstemplate;
+ $nr[$faq] = $blog;
+// Events
+ $nr["aefcbfdbe065cf09d6dd51753c7c0a97"] = $blog;
+ $nr["6b509741ed05cbd59f9a708ed817996a"] = $calendar;
+// KM
+ $nr["665c74e7fc97171dc2c6fecfca3b80a2"] = $newstemplate;
+ $nr["3fe8a82dd09ab2d1dea85e15088daafe"] = $blog;
+ $nr[$import] = $blog;
+// PAN
+ $nr["26ca387aa4ef6616c64fa42c71a51013"] = $calendar;
+ $nr[$photos] = $blog;
+ $nr["11b6fc5706ba0601552d0cb40602efda"] = $blog;
+ $nr["d562cc4dd82cdfbb72d9868af9781c6c"] = $faq;
+ $nr[$photosections] = $blog;
+//SART
+ $nr["e8e885b0143c1ccee94d576d488210da"] = $import;
+ $nr["420a65b68496d0f869b5519ff0f7b0c0"] = $blog;
+//Alerts
+ $nr["98122b72f41dcd4ac5724f91e9bd85c0"] = $alerts;
+ $nr["635a1206228867bfc5d7e3feb1d950c8"] = $alerts;
+}
 ?>

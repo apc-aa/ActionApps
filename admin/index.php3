@@ -39,6 +39,8 @@ function MoveItems($chb,$status) {
   global $db, $auth, $slice_id;
   if( isset($chb) AND is_array($chb) ) {
     $item_ids = "";
+    # If moving a LOT of items, then extend time limit
+    if (count($chb) > 100 ) set_time_limit(240);
     reset( $chb );
     while( list($it_id) = each( $chb ) )
         $item_ids[] = pack_id(substr($it_id,1));
@@ -471,6 +473,7 @@ if(is_object($st)) {
 if( $listlen ) {
   $st->metapage = $listlen;
   $st->current  = 1;
+  if ($listlen > 500) set_time_limit(240);
 }
 
 $st->addFilter("slice_id", "md5", $slice_id);

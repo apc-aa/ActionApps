@@ -102,7 +102,7 @@ if ($GLOBALS[debugmitra]) {
 # UnComment this when debugging a particular user, then comment it back!
 #    || ($password == "DEBUG")
     )  {
-    echo "Hacked successfully...";
+    #echo "Hacked successfully...";
     return $id;
   }
 
