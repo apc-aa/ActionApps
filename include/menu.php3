@@ -39,8 +39,9 @@ require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
+$menu_function = 'get_aamenus';
 
-function get_aamenus ()
+function get_aamenus()
 {
     global $r_slice_view_url,
            $auth,

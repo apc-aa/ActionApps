@@ -125,12 +125,18 @@ function PrintModuleSelection() {
 function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
 {
     global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad, $sess, $db;
+    global $menu_function;
     global $debug;
     trace("+","showMenu",$smmenus);
     #huhsess("Session Variables");
     // load the main AA menu (see menu.php3)
-    if ($smmenus == "aamenus")
-        $smmenus = get_aamenus();
+    if ($smmenus == "aamenus") {
+        // Menu functions are defined in include/menu.php3 or modules/*/menu.php3
+        // We need to call last defined menu function (when switching to another
+        // module). This solution is not so nice, but it removes get_aamenus()
+        // redeclaration error. We probably change menus to object in the future
+        $smmenus = $menu_function();
+    }
 
     // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
     if ($activeMain == "aaadmin")

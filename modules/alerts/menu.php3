@@ -40,10 +40,12 @@ require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
+$menu_function = 'get_aamenus_alerts';
 
 set_collectionid();
 
-function get_aamenus ()
+
+function get_aamenus_alerts()
 {
     global $r_slice_view_url,
            $auth,
@@ -65,29 +67,29 @@ function get_aamenus ()
         "level" => "main",
         "submenu" => "admin_submenu");
 /*
-	$aamenus["filters"] = array (
-		"label" => _m("Filters"),
-		"title" => _m("Filters"),
-		"href"=>"modules/alerts/tabledit.php3?set_tview=acf",
-		"cond" => IfSlPerm (PS_USERS),
-		"level" => "main",
+    $aamenus["filters"] = array (
+        "label" => _m("Filters"),
+        "title" => _m("Filters"),
+        "href"=>"modules/alerts/tabledit.php3?set_tview=acf",
+        "cond" => IfSlPerm (PS_USERS),
+        "level" => "main",
         "submenu"=>"admin_submenu");
 
-	$aamenus["send_emails"] = array (
-		"label" => _m("Send emails"),
-		"title" => _m("Send emails"),
+    $aamenus["send_emails"] = array (
+        "label" => _m("Send emails"),
+        "title" => _m("Send emails"),
         "href"=>"modules/alerts/tabledit.php3?set_tview=send_emails&cmd[send_emails][edit]["
                 .$GLOBALS["collectionid"]."]=1",
-		"cond" => IfSlPerm (PS_USERS),
-		"level" => "main",
+        "cond" => IfSlPerm (PS_USERS),
+        "level" => "main",
         "submenu"=>"admin_submenu");
 
-	$aamenus["synchro"] = array (
-		"label" => _m("Synchro"),
-		"title" => _m("Slice synchro"),
+    $aamenus["synchro"] = array (
+        "label" => _m("Synchro"),
+        "title" => _m("Slice synchro"),
         "href"=>"modules/alerts/synchro.php3",
-		"cond" => IfSlPerm (PS_USERS),
-		"level" => "main",
+        "cond" => IfSlPerm (PS_USERS),
+        "level" => "main",
         "submenu"=>"admin_submenu");
 */
     $aamenus["aaadmin"] = array (
@@ -118,13 +120,13 @@ function get_aamenus ()
                 .$GLOBALS["collectionid"]."]=1",
             "label"=>_m("Send emails")),
         "synchro"=>array("cond"=>IfSlPerm(PS_USERS),
-       		"href" => "modules/alerts/synchro.php3",
-    		"label" => _m("Reader management")),
+            "href" => "modules/alerts/synchro.php3",
+            "label" => _m("Reader management")),
         "doc"=>array("cond"=>1, "href"=>"doc/alerts.html", "label" => _m("Documentation")),
 
         "header2" => _m("Common"),
-		"email"=>array ("cond"=>IfSlPerm(PS_USERS),
-			"href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Email templates"))
+        "email"=>array ("cond"=>IfSlPerm(PS_USERS),
+            "href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Email templates"))
     ));
     return $aamenus;
 }
