@@ -232,7 +232,6 @@ PrintArray($err);
 echo $Msg;  
 
 ?>
-<center>
 <form name=inputform onsubmit="BeforeSumbit()" enctype="multipart/form-data" method=post action="<?php echo  ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF ?>">
 
 <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center" class="inputtab">
@@ -288,7 +287,6 @@ if($edit || $update || ($insert && $added_to_db)) { ?>
 </tr>
 </table>
 </form>
-</center>
 <?php
 if( !$encap ) 
   echo '</body></html>';
@@ -296,6 +294,9 @@ page_close();
 
 /*
 $Log$
+Revision 1.26  2001/11/26 11:04:48  honzam
+IE6.0 center bug fig
+
 Revision 1.25  2001/09/27 16:00:39  honzam
 New related stories support
 
