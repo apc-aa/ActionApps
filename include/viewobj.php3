@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -25,12 +25,12 @@ http://www.apc.org/
 # Author and Maintainer: Mitra mitra@mitra.biz
 #
 # And yes, I'll move the docs to phpDocumentor as soon as someone explains how
-# to use it! 
+# to use it!
 #
-# It is intended - and you are welcome - to extend this to bring into 
+# It is intended - and you are welcome - to extend this to bring into
 # one place the functions for working with views.
 #
-# A design goal is to use lazy-evaluation wherever possible, i.e. to only 
+# A design goal is to use lazy-evaluation wherever possible, i.e. to only
 # go to the database when something is needed.
 
 #require_once "../include/config.php3";
@@ -48,9 +48,9 @@ class view {
     function f($k=null) {
         if (!isset($this->fields)) {
           $db = getDB();
-          $db->tquery("SELECT view.*, module.deleted FROM view, module
-               WHERE module.id=view.slice_id
-                 AND view.id='".$this->id."'");
+          $db->tquery("SELECT view.*, module.deleted, module.lang_file FROM view, module
+                        WHERE module.id=view.slice_id
+                          AND view.id='".$this->id."'");
           if ($db->next_record())
             $this->fields = DBFields($db);
           else $this->fields = null;
@@ -89,9 +89,9 @@ class views {
     }
 
     function GetViewInfo($vid) {
-        if(!isset($this->a[$vid])) 
+        if(!isset($this->a[$vid]))
             $this->a[$vid] = new view($vid);
-        if (! $this->a[$vid]) 
+        if (! $this->a[$vid])
             return null;
         return $this->a[$vid]->f();
     }
@@ -127,11 +127,11 @@ function GetViewsWhere($sql="") {
     freeDB($db);
     #huhl("VO:GVW:",$a);
     return $a;
-}  
+}
 
 
 
 #$foo = GetViewInfo(18);
-#huhl("VO:GVI:",$foo,$allviews); 
+#huhl("VO:GVI:",$foo,$allviews);
 
 ?>

@@ -396,6 +396,15 @@ function GetViewFromDB($view_param, &$cache_sid) {
     trace("-");
     return false;
   }
+
+  // Use right language (from slice settings) - languages are used for
+  // 'No item found', ... messages
+  $lang_file = substr( get_if($view_info['lang_file'],DEFAULT_LANG_INCLUDE), 0, 2);
+  if (!$GLOBALS['LANGUAGE_NAMES'][$lang_file]) {
+      $lang_file = "en";
+  }
+  bind_mgettext_domain($GLOBALS["AA_INC_PATH"]."lang/".$lang_file."_output_lang.php3");
+
   $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
                    ( $view_info['noitem_msg'] ?
                    str_replace( '<!--Vacuum-->', '', $view_info['noitem_msg']) :
@@ -418,10 +427,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
     } else {
         $slice_id = unpack_id128($view_info["slice_id"]);
     }
-
-  // Use right language (from slice settings) - languages are used for scroller (Next, ...)
-  $lang_file = substr(DEFAULT_LANG_INCLUDE, 0, 2);
-  bind_mgettext_domain($GLOBALS["AA_INC_PATH"]."lang/".$lang_file."_output_lang.php3");
 
     // At this point, view_info["slice_id"] = $slice_id
     // and view_param[slice_id] is empty or same
