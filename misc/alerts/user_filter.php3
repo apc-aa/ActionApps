@@ -67,16 +67,6 @@ function process_data ()
     }        
     
     else {
-        // add filter
-        if ($howoften_options[ $add["f"]["ho"] ]) 
-            $db->tquery("INSERT INTO alerts_user_filter (howoften, filterid, userid)
-                        VALUES ('".$add[f][ho]."', ".$add[f][id].", ".$user[id].")");
-
-        // add collection                        
-        if ($howoften_options[ $add["c"]["ho"] ]) 
-            $db->tquery("INSERT INTO alerts_user_filter (howoften, collectionid, userid)
-                         VALUES ('".$add[c][ho]."', ".$add[c][id].", ".$user[id].")");
-        
         // update filter    
         if (is_array ($howoften["f"])) {
             reset ($howoften["f"]);
@@ -89,7 +79,19 @@ function process_data ()
             }
         }
         
-        execute_edit_collections (0, $user);
+        else if (!is_array ($howoften["c"])) {
+            // add filter
+            if ($howoften_options[ $add["f"]["ho"] ]) 
+                $db->tquery("INSERT INTO alerts_user_filter (howoften, filterid, userid)
+                            VALUES ('".$add[f][ho]."', ".$add[f][id].", ".$user[id].")");
+    
+            // add collection                        
+            if ($howoften_options[ $add["c"]["ho"] ]) 
+                $db->tquery("INSERT INTO alerts_user_filter (howoften, collectionid, userid)
+                             VALUES ('".$add[c][ho]."', ".$add[c][id].", ".$user[id].")");
+        }
+        
+        else execute_edit_collections (0, $user);
     }
 }
 
