@@ -110,7 +110,7 @@ function showMenu ($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $s
             }
         }
         
-        echo "</td><TD valign=center class=navbar>";
+        echo "</td><TD class=navbar>";
         PrintModuleSelection();
         echo "</TD></TR></TABLE>
         </TD></TR><TR>";
