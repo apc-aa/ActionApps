@@ -136,6 +136,14 @@ define("DEFAULT_CATEGORY_SORT", true);
 define("DEFAULT_COMPACT_REMOVE", "()");
 define("DEFAULT_FULLTEXT_REMOVE", "()");
 
+define("DEFAULT_LIST_LENGTH", "20");
+define("DEFAULT_GRAB_LEN", "200");
+define("DEFAULT_LANGUAGE_CODE", "CS");
+define("DEFAULT_CP_CODE", "iso8859-2");
+define("DEFAULT_STATUS_CODE", "1");
+define("DEFAULT_HIGHLIGHT", "0");
+define("DEFAULT_EXPIRY_LIMIT", "5000");
+
      
 # database fields labels
 define("L_HEADLINE", "Titulek");
@@ -276,6 +284,7 @@ define("L_IMP_IMPORT_N", "Nepøijímat");
 define("L_RELOGIN", "Pøihlásit se jako jiný uživatel");
 
 define("L_ERR_IN", "Chyba v");
+define("L_ERR_BE_POSITIVE", "Number should be positive");
 define("L_ERR_NEED", "musí být vyplnìno");
 define("L_ERR_LOG", "použijte znaky a-z, A-Z a 0-9");
 define("L_ERR_LOGLEN", "musí být dlouhé 5 - 32 znakù");
@@ -547,6 +556,9 @@ $l_month = array( 1 => 'Leden', 'Únor', 'Bøezen', 'Duben', 'Kvìten', 'Èerven',
 
 /*
 $Log$
+Revision 1.8  2000/08/03 12:34:27  honzam
+Default values for new slice defined.
+
 Revision 1.7  2000/07/27 18:17:21  kzajicek
 Added superadmin settings in User/Group management
 

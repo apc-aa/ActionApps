@@ -128,6 +128,14 @@ define("DEFAULT_CATEGORY_SORT", true);
 define("DEFAULT_COMPACT_REMOVE", "()");
 define("DEFAULT_FULLTEXT_REMOVE", "()");
 
+define("DEFAULT_LIST_LENGTH", "20");
+define("DEFAULT_GRAB_LEN", "200");
+define("DEFAULT_LANGUAGE_CODE", "EN");
+define("DEFAULT_CP_CODE", "iso8859-1");
+define("DEFAULT_STATUS_CODE", "1");
+define("DEFAULT_HIGHLIGHT", "0");
+define("DEFAULT_EXPIRY_LIMIT", "5000");
+
 # HTML begin of admin page
 # You should set language of admin pages and possibly any meta tags
 define("HTML_PAGE_BEGIN",
@@ -258,6 +266,7 @@ define("L_IMP_IMPORT_N", "Do not import");
 define("L_KONSTANTS_HLP", "Use these aliases for database fields");
 define("L_RELOGIN", "Logout and login as another user");
 define("L_ERR_IN", "Error in");
+define("L_ERR_BE_POSITIVE", "Number should be positive");
 define("L_ERR_NEED", "it must be filled");
 define("L_ERR_LOG", "you should use a-z, A-Z and 0-9 characters");
 define("L_ERR_LOGLEN", "it must by 5 - 32 characters long");
@@ -529,6 +538,9 @@ $l_month = array( 1 => 'January', 'February', 'March', 'April', 'May', 'June',
 
 /*
 $Log$
+Revision 1.8  2000/08/03 12:34:27  honzam
+Default values for new slice defined.
+
 Revision 1.7  2000/07/27 18:17:21  kzajicek
 Added superadmin settings in User/Group management
 

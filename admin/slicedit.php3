@@ -63,7 +63,7 @@ if( $add || $update ) {
     ValidateInput("d_source", L_D_SOURCE, $d_source, &$err, false, "text");
     ValidateInput("d_source_href", L_D_SOURCE_HREF, $d_source_href, &$err, false, "url");
     ValidateInput("d_place", L_D_PLACE, $d_place &$err, false, "text");
-    ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, &$err, true, "number");
+    ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, &$err, true, "positivenumber");
     ValidateInput("grab_len", L_GRAB_LEN, $grab_len, &$err, true, "number");
     ValidateInput("d_img_src", L_D_IMG_SRC, $d_img_src, &$err, false, "url");
     ValidateInput("d_img_width", L_D_IMG_WIDTH, $d_img_width, &$err, false, "number");
@@ -176,7 +176,14 @@ if( $slice_id!="" ) {  // set variables from database - allways
   $id = unpack_id($db->f("id"));  // correct ids
   $d_category_id = unpack_id($db->f("d_category_id"));
   $res_pers_id = unpack_id($db->f("res_pers_id"));
-#  $dexpirydate->setdate($d_expiry_date);
+} else {    // load default values for new slice
+  $d_listlen = DEFAULT_LIST_LENGTH;
+  $grab_len  = DEFAULT_GRAB_LEN;
+  $d_language_code = DEFAULT_LANGUAGE_CODE;
+  $d_cp_code = DEFAULT_CP_CODE;
+  $d_status_code = DEFAULT_STATUS_CODE;
+  $d_highlight = DEFAULT_HIGHLIGHT;
+  $d_expiry_limit = DEFAULT_EXPIRY_LIMIT;
 }
 
 // lookup (languages)
@@ -287,6 +294,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 /*
 $Log$
+Revision 1.7  2000/08/03 12:34:27  honzam
+Default values for new slice defined.
+
 Revision 1.6  2000/07/26 14:36:59  honzam
 default WDDX value is set to config field for new slices
 
