@@ -96,6 +96,37 @@ function insert_fnc_boo($item_id, $field, $value, $param) {
   insert_fnc_qte($item_id, $field, $value, $param);
 }
 
+function insert_fnc_ids($item_id, $field, $value, $param) {
+  global $varset, $itemvarset, $db;
+
+#echo "<script> alert( 'insert_fnc_ids($item_id, $field, $value, $param), ". $value[value] ." ".substr($value[value],0,1)."');</script>";
+#flush();  
+  switch( substr($value[value],0,1) ) {
+    case 'x':   // just filling character - remove it
+      $value[value] = substr($value[value],1);
+      insert_fnc_qte($item_id, $field, $value, $param);
+      return;
+    case 'y':   // y means 2way related item id - we have to store it for both
+      $value[value] = substr($value[value],1);
+      insert_fnc_qte($item_id, $field, $value, $param);
+
+        # add reverse related
+      $reverse_id = $value[value];
+      $value[value] = $item_id;
+        # is reverse relation already set?
+      $SQL = "SELECT * FROM content 
+               WHERE item_id = '". q_pack_id($reverse_id) ."' 
+                 AND field_id = '". $field[id] ."' 
+                 AND ". ($field[text_stored] ? "text" : "number") ."= '". $value[value] ."'";
+      $db->query( $SQL );
+      if( !$db->next_record() )  # not found
+        insert_fnc_qte($reverse_id, $field, $value, $param);
+      return;
+    default:
+      insert_fnc_qte($item_id, $field, $value, $param);
+  }    
+}
+
 function insert_fnc_uid($item_id, $field, $value, $param) {
   global $auth;
   # if not $auth, it is from anonymous posting - 9999999999 is anonymous user
@@ -114,7 +145,8 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
     
   # look if the uploaded picture exists
   if(($GLOBALS[$filevarname] <> "none")&&($GLOBALS[$filevarname] <> "")) {
-    $dest_file = $GLOBALS[$filevarname . "_name"];
+    # get filename and replace bad characters
+    $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$filevarname."_name"]);
 
     # images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
     $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
@@ -192,7 +224,12 @@ function show_fnc_freeze_fld($varname, $field, $value, $param, $html) {
 
 function show_fnc_rio($varname, $field, $value, $param, $html) {
   global $db;
-  $arr = GetConstants($param, $db); 
+
+  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    $arr = GetItemHeadlines( $db, substr($param, 7) );
+   else 
+    $arr = GetConstants($param, $db);
+  
   echo $field[input_before];
   FrmInputRadio($varname, $field[name], $arr, $value[0][value],
                 $field[required], $field[input_help], $field[input_morehlp] );
@@ -206,7 +243,10 @@ function show_fnc_freeze_rio($varname, $field, $value, $param, $html) {
 function show_fnc_mch($varname, $field, $value, $param, $html) {
   global $db;
 
-  $arr = GetConstants($param, $db); 
+  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    $arr = GetItemHeadlines( $db, substr($param, 7) );
+   else 
+    $arr = GetConstants($param, $db);
 
   # fill selected array from value
   if( isset($value) AND is_array($value) ) {
@@ -231,12 +271,15 @@ function show_fnc_mse($varname, $field, $value, $param, $html) {
   global $db;
 
   if (!empty($param)) 
-    list($contgroup, $selectsize) = explode(':', $param);
+    list($constgroup, $selectsize) = explode(':', $param);
 
   if( $selectsize < 1 )   # default size
     $selectsize = 5;
       
-  $arr = GetConstants($contgroup, $db); 
+  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
+   else 
+    $arr = GetConstants($constgroup, $db);
 
   # fill selected array from value
   if( isset($value) AND is_array($value) ) {
@@ -249,7 +292,7 @@ function show_fnc_mse($varname, $field, $value, $param, $html) {
   
   echo $field[input_before];
   FrmInputMultiSelect($varname."[]", $field[name], $arr, $selected, $selectsize, 
-    $field[required], $field[input_help], $field[input_morehlp]);
+    false, $field[required], $field[input_help], $field[input_morehlp]);
 }
   
 function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
@@ -259,7 +302,10 @@ function show_fnc_freeze_mse($varname, $field, $value, $param, $html) {
 
 function show_fnc_sel($varname, $field, $value, $param, $html) {
   global $db;
-  $arr = GetConstants($param, $db); 
+  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    $arr = GetItemHeadlines( $db, substr($param, 7) );
+   else 
+    $arr = GetConstants($param, $db);
   echo $field[input_before];
   FrmInputSelect($varname, $field[name], $arr, $value[0][value],
                  $field[required], $field[input_help], $field[input_morehlp] );
@@ -305,6 +351,53 @@ function show_fnc_freeze_dte($varname, $field, $value, $param, $html) {
   echo $field[input_before];
   $datectrl->setdate_int($value[0][value]);
   FrmStaticText($field[name], $datectrl->get_datestring());
+}
+
+function show_fnc_pre($varname, $field, $value, $param, $html) {
+  global $db;
+
+  if (!empty($param)) 
+    list($constgroup, $maxlength, $fieldsize) = explode(':', $param);
+
+  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    $arr = GetItemHeadlines( $db, substr($constgroup, 7) );
+   else 
+    $arr = GetConstants($constgroup, $db);
+  echo $field[input_before];
+  FrmInputPreSelect($varname, $field[name], $arr, $value[0][value], $maxlength, 
+    $fieldsize, $field[required], $field[input_help], $field[input_morehlp] );
+}
+  
+function show_fnc_freeze_pre($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  FrmStaticText($field[name], $value[0][value]);
+}
+
+function show_fnc_iso($varname, $field, $value, $param, $html) {
+  global $db;
+
+  if (!empty($param)) 
+    list($constgroup, $selectsize) = explode(':', $param);
+
+  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    $sid = substr($constgroup, 7);
+   else
+    return;                              # wrong - there must be slice selected
+
+  $items = GetItemHeadlines($db, $sid, $value, "ids");
+    
+  FrmRelated($varname."[]", $field[name], $items, $selectsize, $sid,
+                      $field[required], $field[input_help], $field[input_morehlp]);
+}
+  
+function show_fnc_freeze_iso($varname, $field, $value, $param, $html) {
+  echo $field[input_before];
+  if( substr($param,0,7) == "#sLiCe-" )  # prefix indicates select from items
+    $sid = substr($constgroup, 7);
+   else
+    return;                              # wrong - there must be slice selected
+  $items = GetItemHeadlines($db, $sid, $value, "ids");
+  FrmStaticText($field[name], implode ("<br>", $items));
 }
 
 function show_fnc_nul($varname, $field, $value, $param, $html) {
@@ -378,8 +471,6 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
     }  
   }  
 
-//print_r($content4id);
-
   reset($content4id);
   while(list($fid,$cont) = each($content4id)) {
     $f = $fields[$fid];
@@ -415,7 +506,6 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
   }  
 
   $db->query($SQL);
-
   if( $invalidatecache ) {
     $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
     $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
@@ -485,6 +575,9 @@ function ShowForm($content4id, $fields, $prifields, $edit) {
 
 /*
 $Log$
+Revision 1.15  2001/09/27 16:02:23  honzam
+Filename in file upload correction, New related stories support, New "Preselect" input option
+
 Revision 1.14  2001/08/03 10:09:30  honzam
 if no time in expiry date is specified, the end of day is stored
 
