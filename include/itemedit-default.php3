@@ -3,7 +3,7 @@
 ?>
 
 <center>
-<form enctype="multipart/form-data" method="<?php echo $method ?>" action="<?php echo ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF ?>">
+<form <?php echo $formparams ?> action="<?php echo ($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF ?>">
 
 <table class=inouter border="0" cellspacing="0" cellpadding="1" bgcolor="#584011" align="center">
 <tr class=inoutertr><td class=inoutertd><b>&nbsp;<?php echo L_ITEM_HDR ?></b>
@@ -224,6 +224,9 @@ if($edit || $update || ($insert && $added_to_db)) { ?>
 
 <?php
 // $Log$
+// Revision 1.3  2000/12/05 14:20:36  honzam
+// Fixed bug with Netscape - not allowed method POST - in annonymous posting.
+//
 // Revision 1.2  2000/11/20 16:45:58  honzam
 // fixed bug with anonymous posting to other aplications than news
 //

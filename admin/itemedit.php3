@@ -382,7 +382,8 @@ echo $Msg;
 // if you want to create one of these, just copy itemedit-default.php3 to the
 // the file and make your edits.
 
-$method = ($encap ? "get" : "post");
+$formparams = ($encap ? 
+  ' method="get" ' : ' enctype="multipart/form-data" method=post" ');
 $includefile = ($AA_INC_PATH . 'itemedit-' .$slicetype. '.php3');
 
 if (! file_exists($includefile))
@@ -394,6 +395,9 @@ if( !$encap )
 page_close(); 
 /*
 $Log$
+Revision 1.13  2000/12/05 14:20:35  honzam
+Fixed bug with Netscape - not allowed method POST - in annonymous posting.
+
 Revision 1.12  2000/11/17 19:08:03  madebeer
 itemedit now creates the form on a application type specific basis.
 
