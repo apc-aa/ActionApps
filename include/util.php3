@@ -581,9 +581,11 @@ function GetFieldNo($id) {
   return (string) substr( strrchr($id,'.'), 1 );
 }
 
-# fills content arr with current content of $sel_in items (comma separated ids)
-# Note $zids can be an array of ids, for backward compatability
+// -------------------------------------------------------------------------------
+/** Basic function to get item content. Use this function, not direct SQL queries.
+*/
 function GetItemContent($zids, $use_short_ids=false) {
+  // Fills array $content with current content of $sel_in items (comma separated ids). 
   global $db;
 
   if (!is_object ($db)) $db = new DB_AA;
@@ -613,10 +615,7 @@ function GetItemContent($zids, $use_short_ids=false) {
   $delim = "";
   $id_column = ($use_short_ids ? "short_id" : "id");   
   $SQL = "SELECT * FROM item WHERE $id_column $sel_in";
-  if( $GLOBALS['debug'] )
-    $db->dquery($SQL);
-  else
-    $db->query($SQL);
+  $db->tquery($SQL);
   while( $db->next_record() ) {
     reset( $db->Record );
     if( $use_short_ids ) {
@@ -661,10 +660,7 @@ function GetItemContent($zids, $use_short_ids=false) {
   $SQL = "SELECT * FROM content 
            WHERE item_id $sel_in";  # usable just for constants
                
-  if( $GLOBALS['debug'] )
-    $db->dquery($SQL);
-  else
-    $db->query($SQL);
+  $db->tquery($SQL);
 
   while( $db->next_record() ) {
     $fooid = ( $use_short_ids ? $translate[unpack_id128($db->f(item_id))] : 
@@ -676,6 +672,8 @@ function GetItemContent($zids, $use_short_ids=false) {
   return $content;
 }  
 
+// -------------------------------------------------------------------------------
+
 function GetHeadlineFieldID($sid, $db, $slice_field="headline.") {
   # get id of headline field  
   $SQL = "SELECT id FROM field 
@@ -685,6 +683,8 @@ function GetHeadlineFieldID($sid, $db, $slice_field="headline.") {
   $db->query( $SQL );
   return ( $db->next_record() ? $db->f(id) : false );
 }
+
+// -------------------------------------------------------------------------------
 
 # fills array by headlines of items in specified slice (unpacked_id => headline)
 # $tagprefix is array as defined in itemfunc.php3
@@ -748,6 +748,8 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........",
   return $arr;
 }
 
+// -------------------------------------------------------------------------------
+
 # fills content arr with specified constant data
 function GetConstantContent( $group, $order='pri,name' ) {
   global $db;
@@ -770,6 +772,8 @@ function GetConstantContent( $group, $order='pri,name' ) {
   return $content;
 }  
 
+// -------------------------------------------------------------------------------
+
 # find group_id for constants of the slice
 function GetCategoryGroup($slice_id) {
   global $db;
@@ -786,7 +790,9 @@ function GetCategoryGroup($slice_id) {
     return false; 
 }    
 
-# returns field id of field which stores category (obviously "category........")
+// -------------------------------------------------------------------------------
+
+# returns field id of field which stores category (usually "category........")
 function GetCategoryFieldId( $fields ) {
   $no = 10000;
   if( isset($fields) AND is_array($fields) ) {
@@ -804,6 +810,7 @@ function GetCategoryFieldId( $fields ) {
   return CreateFieldId("category", $no);
 }  
 
+// -------------------------------------------------------------------------------
 
 # get id from item short id
 function GetId4Sid($sid) {
@@ -818,6 +825,8 @@ function GetId4Sid($sid) {
   return false;  
 }
 
+// -------------------------------------------------------------------------------
+
 # get short item id item short id
 function GetSid4Id($iid) {
   global $db;
@@ -830,6 +839,8 @@ function GetSid4Id($iid) {
     return $db->f("short_id");
   return false;  
 }
+
+// -------------------------------------------------------------------------------
 
 # in_array and compact is available since PHP4
 if (substr(PHP_VERSION, 0, 1) < "4") {
@@ -984,18 +995,16 @@ function is_field_type_numerical ($field_type) {
 }
 
 // -----------------------------------------------------------------------------
-/*  function: CopyTableRows
-    author:   Jakub Adámek
-    purpose:  copies rows within a table changing only given columns and omitting given columns
-	returns:  true if all additions succeed, false otherwise
-    
-    $table .. table name
-    $where .. where condition (filter)
-    $set_columns .. array ($column_name => $value, ...) - fields the value of which will be changed
-    [optionally] $omit_columns .. array ($column_name, ...) - fields to be omitted
-    [optionally] $id_columns .. array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
+/** Copies rows within a table changing only given columns and omitting given columns.
+*   @author Jakub Adámek
+*	@return bool  true if all additions succeed, false otherwise
+*    
+*   @param string $table    table name
+*   @param string $where    where condition (filter)
+*   @param array  $set_columns  array ($column_name => $value, ...) - fields the value of which will be changed
+*   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
+*   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
 */
-
 function CopyTableRows ($table, $where, $set_columns, $omit_columns = array(), $id_columns = array()) {
     if ($GLOBALS[debug]) {
         echo "CopyTableRows: SELECT * FROM $table WHERE $where<br>
@@ -1063,8 +1072,7 @@ function get_last_insert_id ($db, $table)
 
 // -----------------------------------------------------------------------------
 
-/* returns the suffix part of the filename (beginning with the last dot (.) in the filename) */
-
+/** returns the suffix part of the filename (beginning with the last dot (.) in the filename) */
 function filesuffix ($filename) {
     if (!strstr ($filename,".")) return "";
     $i = strlen($filename);
@@ -1107,9 +1115,7 @@ function GetTimeZone () {
     - gmmktime ($d[hours],$d[minutes],$d[seconds],$d[mon],$d[mday],$d[year])) / 3600;
 }
 
-/*  Function: gensalt
-    Purpose:  generates random string of given length (useful as MD5 salt)
-*/
+/** generates random string of given length (useful as MD5 salt) */
 function gensalt($saltlen)
 {    
  list($usec, $sec) = explode(' ', microtime());
@@ -1126,10 +1132,8 @@ function gensalt($saltlen)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-# Moves uploaded file to given directory and (optionally) changes permissions
-# Returns: error description or empty string
-
+/** Moves uploaded file to given directory and (optionally) changes permissions
+*   @return string  error description or empty string */
 function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "") 
 {   
     endslash ($destdir);    
