@@ -30,12 +30,16 @@ require $GLOBALS[AA_INC_PATH] . "searchlib.php3";
 require $GLOBALS[AA_INC_PATH] . "formutil.php3";
 
 function MoveItems($chb,$status) {
-  global $db;
+  global $db, $auth;
   if( isset($chb) AND is_array($chb) ) {
     reset( $chb );
     while( list($it_id,) = each( $chb ) )
-      $db->query("UPDATE item SET status_code = $status 
+      $db->query("UPDATE item SET
+       status_code = $status, 
+       last_edit   = '". now() ."',
+       edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999") ."'
                    WHERE id='".q_pack_id(substr($it_id,1))."'"); 
+                   
                                          // substr removes first 'x'
     $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
     $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
@@ -51,15 +55,6 @@ function FeedAllItems($chb, $fields) {    // Feed all checked items
     }  
   }
 }  
-
-#prints icon1 or icon2 depending on cond
-function SelectIconIf( $cond, $icon1, $alt1, $icon2, $alt2 ) {
-  if( !$cond ) {
-    $icon1=$icon2; 
-    $alt1=$alt2;
-  }  
-  echo '<td><img src="'. $icon1 .'" width=24 border=0 alt="'. $alt1 .'"></td>'; 
-}
 # ----------------- function definition end -----------------------------------
 
 // if there was change to another slice - reset scrollers
@@ -224,8 +219,8 @@ if($Delete == "trash") {         // delete feeded items in trash bin
     # delete content of all fields
   while( $db->next_record() ) {   
     $db2->query("DELETE FROM content
-                    WHERE item_id = '". $db->f(id) ."'");  # don't worry about
-  }                                           # fed fields - content is copied
+                  WHERE item_id = '". quote($db->f(id)) ."'");  # don't worry 
+  }                                      # about fed fields - content is copied
     # delete content of item fields
  	$db->query("DELETE FROM item 
              WHERE status_code=3 AND slice_id = '$p_slice_id'");
@@ -369,6 +364,9 @@ if(is_object($st)) {
   $sess->register($st_name); 
 }
 
+if( $listlen )
+  $st->metapage = $listlen;
+
 $st->addFilter("slice_id", "md5", $slice_id);
 
 //  where (($bin_condition) AND fulltexts.ft_id=items.master_id AND created_by='".$auth->auth[uid]."' AND (". $st->sqlCondFilter().")) ");
@@ -427,7 +425,10 @@ if( count( $item_ids ) > 0 ) {
 
   $itemview = new itemview( $db, $format_strings, $fields, $aliases, $item_ids,
               $st->metapage * ($st->current-1), $st->metapage, $r_slice_view_url );
-  $itemview->print_view();
+  $itemview->print_view("NOCACHE");   # big security hole is open if we cache it
+                                      # (links to itemedit.php3 would stay with 
+                                      # session ids in cache - you bacame 
+                                      # another user !!!
     
   $st->countPages( count( $item_ids ) );
 
@@ -525,6 +526,9 @@ echo "<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
 /*
 
 $Log$
+Revision 1.27  2001/09/27 15:55:21  honzam
+Fixed security hole with cached sessions, Moving between bins change last_edit and edited_by fields
+
 Revision 1.26  2001/07/09 17:45:32  honzam
 Listing length defined by listlen parameter
 
