@@ -279,7 +279,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         $newfile = $basedir.$directory.$arg;
         if (file_exists ($newfile)) { $err[] = L_FILE_EXISTS." ($newfilename)."; return; }
         if (!fopen ($newfile, "w")) { $err[] = L_UNABLE_TO_CREATE_FILE." $newfilename."; return; }
-        chmod ($newfile, FILEMAN_MODE);
+        chmod ($newfile, $FILEMAN_MODE_FILE);
         $fe_filename = $directory.$arg;
     }
 
@@ -287,10 +287,9 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
     else if ($cmd=='createdir') {
         if( !EReg("^[0-9a-zA-Z_]*$", $arg)) { $err[] = L_WRONG_DIR_NAME; return; }
         $newdir = $basedir.$directory.$arg;
-        mkdir ($newdir, FILEMAN_MODE);
+        mkdir ($newdir, $FILEMAN_MODE_DIR);
         if (!is_dir ($newdir)) 
             $err[] = L_UNABLE_TO_CREATE_DIR." $newdirname.";
-        chmod ($newdir, FILEMAN_MODE);
     }
 
     // Delete
@@ -310,7 +309,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         // Upload file
     else if ($cmd=='upload') {
         set_time_limit(FILEMAN_UPLOAD_TIME_LIMIT);
-        $uploaderr = fileman_move_uploaded_file ("uploadarg", $basedir.$directory, FILEMAN_MODE);
+        $uploaderr = fileman_move_uploaded_file ("uploadarg", $basedir.$directory, $FILEMAN_MODE_FILE);
         if ($uploaderr) $err[] = L_ERROR.": $uploaderr";
     }
     
@@ -408,7 +407,7 @@ function fileman_copy_template ($srcdir, $dstdir) {
             }
         }
         else copy ($srcdir."/".$file, $dstdir."/".$file);
-        chmod ($dstdir."/".$file, FILEMAN_MODE);
+        chmod ($dstdir."/".$file, $FILEMAN_MODE_FILE);
     }        
 }    
 

@@ -235,8 +235,10 @@ if (defined ("SITE_CONFIG")) {
 // ------------------------------------------------------------------
 // FILE MANAGER CONFIG
 
-# mkdir and create file perms (511 = 0777 in octal, but octal value in constant don't work)
-define("FILEMAN_MODE", 511);
+# mkdir perms, set by variable because constants don't work with octal values
+$FILEMAN_MODE_DIR = 0770;
+# create file perms
+$FILEMAN_MODE_FILE = 0664;
 # in this directory individual slice directories and directory "templates" are created
 define("FILEMAN_BASE_DIR","/www/apc-aa/wizard/"); 
 # URL path to the base directory

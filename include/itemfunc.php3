@@ -184,7 +184,7 @@ function insert_fnc_fil($item_id, $field, $value, $param) {
             $dirname = FILEMAN_BASE_DIR.$fileman_dir."/items";
             $dirurl = FILEMAN_BASE_URL.$fileman_dir."/items";
             if (!is_dir ($dirname)) 
-               mkdir ($dirname, FILEMAN_MODE);
+               mkdir ($dirname, $FILEMAN_MODE_DIR);
         }
     }
     if (!$dirname) {

@@ -44,16 +44,16 @@ require $GLOBALS[AA_INC_PATH]."date.php3";
 require $GLOBALS[AA_INC_PATH]."varset.php3";
 require $GLOBALS[AA_INC_PATH]."pagecache.php3";
 require $GLOBALS[AA_INC_PATH]."fileman.php3";
+require $GLOBALS[AA_INC_PATH]."msgpage.php3";
 
 // FilemanPerms() is defined in perm_core.php3, it sets $fileman_dir
-if (!FilemanPerms($auth, $slice_id)) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_NEW_USER, "admin");
-    exit;
-}
+if (!FilemanPerms($auth, $slice_id)) 
+    MsgPageMenu ("index.php3", L_NO_PS_FILEMAN, "admin:fileman");
 
 $basedir = FILEMAN_BASE_DIR.$fileman_dir;
+
 if (!is_dir ($basedir) && !file_exists ($basedir))
-    mkdir ($basedir,FILEMAN_MODE);
+    mkdir ($basedir, $FILEMAN_MODE_DIR);
   
 if (IsSuperadmin()) {
     $basedir = FILEMAN_BASE_DIR;

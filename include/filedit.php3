@@ -130,13 +130,15 @@ if ($filetype == L_FILETYPE_TEXT || $filetype == L_FILETYPE_WEB || $filetype == 
 //            }
     }
     else {
-        echo formatAction(L_FILE_CONTENT.":")."<br>";
-        $filedes = fopen ($fe_path.$fe_filename, "r");
-        while (!feof ($filedes)) {
-            $row = fgets($filedes, 4096);
-            echo str_replace("\t","    ",nl2br (HTMLEntities ($row)));
+        $filedes = @fopen ($fe_path.$fe_filename, "r");
+        if ($filedes) {
+            echo formatAction(L_FILE_CONTENT.":")."<br>";
+            while (!feof ($filedes)) {
+                $row = fgets($filedes, 4096);
+                echo str_replace("\t","    ",nl2br (HTMLEntities ($row)));
+            }
+            fclose ($filedes);           
         }
-        fclose ($filedes);           
     }
 }
 else if ($filetype == L_FILETYPE_IMAGE) 
