@@ -51,6 +51,10 @@ if (!get_magic_quotes_gpc()) {
 # modules other than slices are in deeper directory -> $directory_depth
 require "$directory_depth../include/config.php3";
 
+if($encap == "false")    # used in itemedit for anonymous form
+  $encap = false;        # it must be here, because the variable is rewriten
+                         # if the get_magic_quotes_gpc()==false (see above)
+
 if($free)            // anonymous authentication
   $nobody = true;
 
