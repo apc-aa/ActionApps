@@ -594,16 +594,9 @@ function GetFieldNo($id) {
 }
 
 // -------------------------------------------------------------------------------
-/** Basic function to get item content. Use this function, not direct SQL queries.
-*/
-function GetItemContent($zids, $use_short_ids=false) {
-  // Fills array $content with current content of $sel_in items (comma separated ids). 
-  global $db;
 
-  if ($GLOBALS[debug]) huhl("GetItemContent short='",$use_short_ids,"' " ,$zids);
-  if (!is_object ($db)) $db = new DB_AA;
-
-  # construct WHERE clause
+// helper function for GetItemContent and such functions
+function itemContent_getWhere($zids, $use_short_ids=false) {
   if( $zids and is_array($zids) ) { # Backward compat. array plus flag
     if( $use_short_ids )
       $sel_in = " IN (". implode( ",", $zids). ")";
@@ -621,7 +614,23 @@ function GetItemContent($zids, $use_short_ids=false) {
       $sel_in = "='$zids'";
      else
       $sel_in = "='".q_pack_id($zids)."'";
-  } else 
+  }
+ 
+  return array( $sel_in, $settags );
+}    
+
+/** Basic function to get item content. Use this function, not direct SQL queries.
+*/
+function GetItemContent($zids, $use_short_ids=false) {
+  // Fills array $content with current content of $sel_in items (comma separated ids). 
+  global $db;
+
+  if ($GLOBALS[debug]) huhl("GetItemContent short='",$use_short_ids,"' " ,$zids);
+  if (!is_object ($db)) $db = new DB_AA;
+
+  # construct WHERE clause
+  list($sel_in, $settags) = itemContent_getWhere($zids, $use_short_ids);
+  if(!$sel_in)
     return false;
        
   # get content from item table
@@ -713,6 +722,35 @@ function GetItemContent_Short($ids) {
     GetItemContent($ids, true);
 }
 
+/**
+ * The same as GetItemContent function, but it returns just id and short_id for 
+ * the item (used in URL listing view @see view_type['urls'])
+ */
+function GetItemContentMinimal($zids) {
+  global $db;
+
+  if (!is_object ($db)) $db = new DB_AA;
+
+  # construct WHERE clause
+  list($sel_in, $settags) = itemContent_getWhere($zids);
+  if(!$sel_in)
+    return false;
+
+  # get content from item table
+  $delim = "";
+  $SQL = "SELECT id, short_id FROM item WHERE id $sel_in";
+  $db->tquery($SQL);
+  $n_items = 0;
+  while( $db->next_record() ) {
+    $n_items++;
+    $foo_id = unpack_id128($db->f("id"));
+    $content[$foo_id]['id..............'][] = array("value" => $db->f("id"));
+    $content[$foo_id]['short_id........'][] = array("value" => $db->f("short_id"));
+  }
+
+  return ($n_items == 0) ? null : $content;   // null returned if no items found
+}
+
 // -------------------------------------------------------------------------------
 
 function GetHeadlineFieldID($sid, $db, $slice_field="headline.") {
@@ -788,30 +826,6 @@ function GetItemHeadlines( $db, $sid="", $slice_field="headline........",
   if ($debug)  huhl("GetItemHeadlines found ",$arr);
   return $arr;
 }
-
-// -------------------------------------------------------------------------------
-
-# fills content arr with specified constant data
-function GetConstantContent( $group, $order='pri,name' ) {
-  global $db;
-
-  $db->query("SELECT * FROM constant 
-               WHERE group_id='$group'
-               ORDER BY $order");
-  $i=1;               
-  while($db->next_record()) {
-    $foo_id = unpack_id128($db->f(id));
-    $content[$foo_id]["const_name......"][] = array( "value"=> $db->f("name") );
-    $content[$foo_id]["const_value....."][] = array( "value"=> $db->f("value"),
-                                                     "flag" => FLAG_HTML );
-    $content[$foo_id]["const_priority.."][] = array( "value"=> $db->f("pri") );
-    $content[$foo_id]["const_group....."][] = array( "value"=> $db->f("group_id") );
-    $content[$foo_id]["const_class....."][] = array( "value"=> $db->f("class") );
-    $content[$foo_id]["const_counter..."][] = array( "value"=> $i++ );
-    $content[$foo_id]["const_id........"][] = array( "value"=> $db->f("id") );
-  }  
-  return $content;
-}  
 
 // -------------------------------------------------------------------------------
 
@@ -1015,12 +1029,16 @@ function IsField($fld) {
 # fulltext is viewed - count hit
 #TODO: Modify to use zid and then change in ParseViewCommand - mitra
 function CountHit($id, $column='id') {
-  global $db;
-  $where = (( $column == "id" ) ? "id='".q_pack_id($id)."'" : "short_id='$id'");
-  $SQL = "UPDATE item 
-             SET display_count=(display_count+1) 
-          WHERE $where";
-  $db->query($SQL);
+    # This should be rewritten:
+    # We can't update the item table directly, because the script waits
+    # until the data are written to the database. This could be quite long time
+    # if someone does long search in the database (Tested in EIN project)
+    global $db;
+    $where = (( $column == "id" ) ? "id='".q_pack_id($id)."'" : "short_id='$id'");
+    $SQL = "UPDATE item
+               SET display_count=(display_count+1)
+             WHERE $where";
+    $db->query($SQL);
 }  
 
 

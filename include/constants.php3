@@ -469,7 +469,7 @@ function getViewTypes ()
                                   "noitem_msg" => _m("HTML code for \"No item found\" message") );
     
     $VIEW_TYPES['static'] = array( 'name' => _m("Static page"), 
-                                  "odd" => _m("Odd Rows") );
+                                   "odd" => _m("HTML code") );
                                   
     
     # for javascript list of items 
@@ -545,6 +545,33 @@ function getViewTypes ()
                                   "group_bottom" => _m("Group bottom format") ,
                                   "listlen" => _m("Max number of items"),
                                   "noitem_msg" => _m("HTML code for \"No item found\" message"));
+
+    // View used for listing of ursl - mainly for listing items for index 
+    // servers (HtDig, MnogoSearch, ...)
+    // The main difference from 'list' view is that the aliases are created just
+    // from item table, so the memory usage is much smaller - you can list all
+    // urls, even if there is a lot of items in the slice.
+    $VIEW_TYPES['urls']  = array( "name" => _m("URL listing"),
+                                  "before" => _m("Top HTML") ,
+                                  "odd" => _m("Row HTML"),
+                                  "after" => _m("Bottom HTML") ,
+                                  "remove_string" => _m("Remove strings") ,
+                                  "order1" => _m("Sort primary") ,
+                                  "o1_direction" => " " ,
+                                  "order2" => _m("Sort secondary") ,
+                                  "o2_direction" => " " ,
+                                  "cond1field" => _m("Condition 1") ,
+                                  "cond1op" => " " ,
+                                  "cond1cond" => " " ,
+                                  "cond2field" => _m("Condition 2") ,
+                                  "cond2op" => " " ,
+                                  "cond2cond" => " " ,
+                                  "cond3field" => _m("Condition 3") ,
+                                  "cond3op" => " " ,
+                                  "cond3cond" => " " ,
+                                  "listlen" => _m("Listing length") ,
+                                  "noitem_msg" => _m("HTML code for \"No item found\" message") );
+                                  
     return $VIEW_TYPES;
 }                                  
 
@@ -581,6 +608,8 @@ function getViewTypesInfo() {
                                       'order' => array('name'=>'name', 
                                                        'value'=>'value',
                                                        'pri'=>'priority'));
+
+    $VIEW_TYPES_INFO['urls'] = array('aliases' => 'justids');
                                       
     $VIEW_TYPES_INFO['rss'] = array('aliases' => 'field');
     $VIEW_TYPES_INFO['calendar'] = array('aliases' => 'field',

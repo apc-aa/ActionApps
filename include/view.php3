@@ -404,6 +404,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
     case 'digest':
     case 'list':
     case 'rss':
+    case 'urls':
     case 'script':  # parameters: conds, param_conds, als
       if (! $conds )         # conds could be defined via cmd[]=d command
         $conds = GetViewConds($view_info, $param_conds);
@@ -467,9 +468,14 @@ function GetViewFromDB($view_param, &$cache_sid) {
         if( !$list_from )
           $list_from = 0;
 
+//  function itemview( $db, $slice_info, $fields, $aliases, $zids, $from, $number, 
+//                     $clean_url, $disc="", $get_content_funct='GetItemContent'){
+          
         $itemview = new itemview( $db, $format, $fields, $aliases, $zids2, 
-                                  $random ? $random : $list_from, $listlen, 
-                                  shtml_url(), "");
+                                  $random ? $random : $list_from, 
+                                  $listlen, shtml_url(), "",
+                                  ($view_info['type'] == 'urls') ? 
+                                               'GetItemContentMinimal' : '');
                                   
         if ($view_info['type'] == 'calendar')
             $itemview_type = 'calendar';
@@ -480,7 +486,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
       // 	if( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
       return $noitem_msg;
       
-    case 'static':   # parameters: 0
   case 'static':
     // $format = GetViewFormat($view_info);  // not needed now
     // I create a CurItem object so I can use the unalias function 
@@ -488,6 +493,37 @@ function GetViewFromDB($view_param, &$cache_sid) {
     $formatstring = $view_info["odd"];          # it is better to copy format-
     return $CurItem->unalias( $formatstring );  # string to variable - unalias
   }                                             # uses call by reference
+}  
+
+# ----------------------------------------------------------------------------
+#                        constants
+# ----------------------------------------------------------------------------
+
+
+# fills content arr with specified constant data
+function GetConstantContent( $group, $order='pri,name' ) {
+  global $db;
+
+  $db->query("SELECT * FROM constant 
+               WHERE group_id='$group'
+               ORDER BY $order");
+  $i=1;               
+  while($db->next_record()) {
+    $foo_id = unpack_id128($db->f(id));
+    $content[$foo_id]["const_name......"][] = array( "value"=> $db->f("name") );
+    $content[$foo_id]["const_value....."][] = array( "value"=> $db->f("value"),
+                                                     "flag" => FLAG_HTML );
+    $content[$foo_id]["const_priority.."][] = array( "value"=> $db->f("pri") );
+    $content[$foo_id]["const_group....."][] = array( "value"=> $db->f("group_id") );
+    $content[$foo_id]["const_class....."][] = array( "value"=> $db->f("class") );
+    $content[$foo_id]["const_counter..."][] = array( "value"=> $i++ );
+    $content[$foo_id]["const_id........"][] = array( "value"=> $db->f("id") );
+    $content[$foo_id]["const_descr....."][] = array( "value"=> $db->f("description"),
+                                                     "flag" => FLAG_HTML);
+    $content[$foo_id]["const_short_id.."][] = array( "value"=> $db->f("short_id") );
+    $content[$foo_id]["const_level....."][] = array( "value"=> strlen($db->f("ancestors"))/16);
+  }  
+  return $content;
 }  
 
 # ----------------------------------------------------------------------------

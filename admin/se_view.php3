@@ -305,17 +305,19 @@ echo "</table></td></tr>";
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
   case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases());
-  case 'discus': PrintAliasHelp(GetDiscussionAliases());
-                 break;
-  case 'field' :  if( $r_fields )
-                    $fields = $r_fields;
-                  else
-                    list($fields,) = GetSliceFields($slice_id);
-                  PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']));
-                  break;
-  case 'const': PrintAliasHelp(GetConstantAliases());
-                break;
-  case 'none':  break;
+  case 'discus':      PrintAliasHelp(GetDiscussionAliases());
+                      break;
+  case 'field':       if( $r_fields )
+                        $fields = $r_fields;
+                      else
+                        list($fields,) = GetSliceFields($slice_id);
+                      PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']));
+                      break;
+  case 'justids':     PrintAliasHelp(GetAliasesFromFields('','','justids'));
+                      break;              
+  case 'const':       PrintAliasHelp(GetConstantAliases());
+                      break;
+  case 'none':        break;
 }                
 
 echo "<tr><td align='center'>

@@ -94,11 +94,13 @@ class itemview {
     $this->disc = $disc;
     
     switch( (string)$get_content_funct ) {
-        case '1':          // for backward compatibility when $use_short_ids 
-                           // bool value was used instead of $get_content_funct
+        case '1':         // - for backward compatibility when $use_short_ids 
+                          //   bool value was used instead of $get_content_funct
             $this->get_content_funct = 'GetItemContent_Short'; break;
-        case '0':          // for backward compatibility ...
-                           // Item ids are in long format (default)
+        case '':          // - use default
+        case '0':         // - for backward compatibility ...
+                          //   Item ids are in long format (default)
+            $this->get_content_funct = 'GetItemContent'; break;
             $this->get_content_funct = 'GetItemContent'; break;
         default:
             $this->get_content_funct = $get_content_funct;
@@ -408,7 +410,7 @@ if (isset($this->zids))
     $function2call = $this->get_content_funct;
     // Create an array of content, indexed by either long or short id (not tagged id)
     $content = $function2call($foo_zids);
-
+    
     if ($debug) huhl("itemview:get_content: found",$content);
     
     $CurItem = new item("", "", $this->aliases, $this->clean_url, "", "");   # just prepare
