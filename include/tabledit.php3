@@ -347,7 +347,7 @@ class tabledit {
                 $this->view["readonly"] || $column["view"]["type"] == "userdef");
 			$cols = 40;
 			if ($column["len"]) 
-				$cols = $column["len"];
+				$cols = min (80, $column["len"]);
 			if ($column["view"]["type"] == "date") 
 				$cols = strlen (date ($column["view"]["format"], "31.12.1970"));
             $this->setDefault ($column["view"]["size"]["cols"], $cols);
@@ -411,7 +411,7 @@ class tabledit {
         
         echo "<FORM name='search_".$this->viewID."' method=post action='".$this->getAction($this->gotoview())."'>
               <TABLE ".$this->view["attrs"]["table_search"]." class=te_search_table>"
-            ."<TR>$td"._m("Quick Search: ")."$tdd"
+            ."<TR>$td"._m("Search: ")."$tdd"
             ."$td";
         reset ($this->cols);
         while (list ($colname,$column) = each ($this->cols)) 
@@ -421,12 +421,12 @@ class tabledit {
         FrmSelectEasy ("cmd[".$this->viewID."][search][field]", $options, $srch["field"]);
         echo "&nbsp;<INPUT name='cmd[".$this->viewID."][search][value]' type=text size=30 "
                 ."value=\"".stripslashes_magic($srch[value])."\">$tdd"
-            ."$td<INPUT type=submit name='go' value='"._m("Go")."'>$tdd</TR>"
-            ."<TR>$td"._m("Complex Search (SQL WHERE clause): ")."$tdd"  
+            ."$td<INPUT type=submit name='go' value='"._m("Go")."'>$tdd</TR>";
+    /*  echo "<TR>$td"._m("Complex Search (SQL WHERE clause): ")."$tdd"  
             ."$td<INPUT name='cmd[".$this->viewID."][search][where]' type=text size=50 "
                 ."value=\"".stripslashes_magic($srch[where])."\">$tdd"
-            ."$td<INPUT type=submit name='go' value='"._m("Go")."'>$tdd</TR>
-              </TABLE></FORM>";
+            ."$td<INPUT type=submit name='go' value='"._m("Go")."'>$tdd</TR>"; */
+        echo "</TABLE></FORM>";
     }
 
     // -----------------------------------------------------------------------------------

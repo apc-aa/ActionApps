@@ -144,7 +144,7 @@ function GetTableView ($viewID) {
     if ($viewID == "acf") {
         // filter select box        
         $SQL = "SELECT slice.name, DF.description as fdesc, DF.id AS filterid, 
-                       view.id AS view_id, view.type as view_type FROM
+                       view.id AS view_id, view.type as view_type, view.slice_id FROM
                         slice INNER JOIN
                         view ON slice.id = view.slice_id INNER JOIN
                         alerts_digest_filter DF ON DF.vid = view.id";
@@ -156,6 +156,7 @@ function GetTableView ($viewID) {
             $txt = $db->f("name"). " - ". $db->f("fdesc");
             $filters[$db->f("filterid")] = 
                 "<a href=\"se_view.php3?view_id=".$db->f("view_id")."&view_type=".$db->f("view_type")
+                ."&change_id=".unpack_id($db->f("slice_id"))
                 ."&AA_CP_Session=$AA_CP_Session\">".HTMLEntities($txt)."</a>";
             if (!is_array ($filter_perms) || my_in_array ($db->f("filterid"), $filter_perms))
                 $new_filters[$db->f("filterid")] = $txt;
@@ -286,7 +287,7 @@ function GetTableView ($viewID) {
         "mainmenu" => "sliceadmin",
         "submenu" => "te_alerts_users",
         "readonly" => !IsSuperadmin(),
-        "buttons_down" => array ("update_all" => 1, "delete_all" => 1),
+        //"buttons_down" => array ("update_all" => 1, "delete_all" => 1),
         "addrecord" => false,
         "help" => _m("To add users use the standard Alerts User Interface."),
         "gotoview" => "au_edit",
@@ -333,6 +334,7 @@ function GetTableView ($viewID) {
                 "required" => true),
             "firstname" => array ("caption"=>_m("first name"),"view" => array ("type"=>"text","size"=>array("cols"=>8))),
             "lastname" => array ("caption"=>_m("last name"),"view" => array ("type"=>"text","size"=>array("cols"=>15))),
+            "confirm" => array ("caption" =>_m("confirmed"),"view" => array ("type" => "userdef", "function" => "te_au_confirm")),
             "lang" => array ("caption"=>_m("language"),"view" => array ("type"=>"select","source"=>$langs,"size"=>array("cols"=>2)))),
         "attrs" => $attrs_edit,
         "children" => array (
@@ -366,7 +368,7 @@ function GetTableView ($viewID) {
         "orderby" => "howoften",
         "fields" => array (
             "collectionid" => array (
-				"caption"=>"collection",
+				"caption"=>_m("collection"),
                 "view" => array (
                     "readonly" => true,
                     "type" => "select",
