@@ -293,8 +293,17 @@ function GetIDPerms ($id, $objectType, $flags = 0) {
   $sth = $db->query( $sql );
   if (!$sth) return false;
 
+  $user_perms = array();
+  
   while($row = mysql_fetch_array($sth)) {
-    $by_id[ $row[id] ] = $row[perm];
+      if ( $user_perms[$row[id]] )          // perms for user defined - stronger
+          continue;
+      if ( $row['userid'] == $id ) {        // user specific permissions defined
+          $by_id[ $row[id] ] = $row[perm];
+          $user_perms[$row[id]] =  true;    // match the object id (to ignore 
+      } else {                              // group permissions 
+          $by_id[ $row[id] ] .= $row[perm]; // JOIN group permissions !!!
+      }    
   }  
   return $by_id;
 }
