@@ -1,3 +1,5 @@
+1/06/02 - changed cases of "action" to "akce" as form component name because its a 
+	property of "form". Bug shows up in Omniweb but not in IE (fee_to.php3,index.php3 related_sel.php3)
 1/05/02 - added utils.php3:huhl function for wrapping print_r
 	- changed richEditShowable to return false for macintosh (Mac IE 5.2 does not support either class or iframe versions of RichTextEdit)
 12/30/02 - spelling correction in L_TOO_MUCH_RELATED all *news_lang.php3 still in english (mitra)
