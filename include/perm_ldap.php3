@@ -55,7 +55,6 @@ $aa_ldap_servers = array(
 // returns uid if user is authentificied, else false.
 function AuthenticateUsername($username, $password, $flags = 0) {
   global $aa_ldap_servers, $aa_default_ldap;
-
   if (!$username or !$password) {         // no password => anonymous in LDAP
      return false;
   }
@@ -65,7 +64,7 @@ function AuthenticateUsername($username, $password, $flags = 0) {
     $LDAPserver = WhereToSearch( substr($org,"@"));  // get ldap server for this address
    else 
     $LDAPserver = $aa_default_ldap;
-    
+
   $ds = LDAP_Connect($LDAPserver[host]);	// connect LDAP server
   if (!$ds)                  			// not connected
     return false;	
@@ -690,6 +689,9 @@ function GetIDsInfo ($id, $ds = "") {
 
 /*
 $Log$
+Revision 1.12  2001/01/10 15:49:16  honzam
+Fixed problem with unpack_id (No content Error on index.php3)
+
 Revision 1.11  2000/08/14 09:22:17  kzajicek
 Fixed incorrect default for in DelGroup
 

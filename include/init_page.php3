@@ -96,12 +96,14 @@ $db->query($SQL);
 while($db->next_record()) 
   $all_slices[unpack_id($db->f(id))] = $db->f(name);
 
-if( $ldap_slices[all] ) {  // super admin - permission to manage all slices (deleted too)
+if( $ldap_slices="all" ) {  // super admin - permission to manage all slices (deleted too)
   $SQL= " SELECT id, name FROM slice ORDER BY name";
   $db->query($SQL);
-  while($db->next_record()) 
-    $slices[unpack_id($db->f(id))] = $db->f(name);
- } else {
+  while($db->next_record()) {
+    $up = unpack_id($db->f(id));
+    $slices[$up] = $db->f(name);
+  }
+} else {
   reset($ldap_slices);  // find names for slice ids
   while( list($slid,) = each($ldap_slices) ) {
     if( $all_slices[$slid] != "" )  // do not show deleted slices
@@ -123,7 +125,6 @@ if( !$Add_slice AND !$New_slice ) {
     exit;
   }  
   $p_slice_id = q_pack_id($slice_id);
-
   if( $slice_id != $r_stored_slice ) {                     // it is not cached - we must get it
     $SQL= " SELECT * FROM slice WHERE id='$p_slice_id'";  // check for headline and slice type
     $db->query($SQL);
@@ -137,13 +138,11 @@ if( !$Add_slice AND !$New_slice ) {
                                    WHERE slice_id='$p_slice_id'", $db);
     }
   }  
-
+  
   // The config file not loaded -> the slice type was changed
   if( CONFIG_FILE != $r_config_file[$slice_id] ) {
     page_close();             // save variables
-    // Netscape does not reload when URL does not change
 
-    $to_go_url = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
 
     if( $free )  // anonymous login
       if( $encap ) {
@@ -161,6 +160,9 @@ if( !$Add_slice AND !$New_slice ) {
 }
 /*
 $Log$
+Revision 1.10  2001/01/10 15:49:16  honzam
+Fixed problem with unpack_id (No content Error on index.php3)
+
 Revision 1.9  2001/01/08 13:31:58  honzam
 Small bugfixes
 

@@ -205,7 +205,7 @@ function GetUsersSlices( $user_id ) {
 
   if($permission_uid != $user_id) 
     CachePermissions($user_id);
-    
+
   if( IsPerm($permission_to_aa[AA_ID], PS_MANAGE_ALL_SLICES) )
     return "all";
 
@@ -220,6 +220,9 @@ function IfSlPerm($perm) {
 
 /*
 $Log$
+Revision 1.4  2001/01/10 15:49:16  honzam
+Fixed problem with unpack_id (No content Error on index.php3)
+
 Revision 1.3  2000/08/01 14:32:33  kzajicek
 AA-super access level takes precedence
 

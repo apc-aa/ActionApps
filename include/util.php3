@@ -159,8 +159,8 @@ function q_pack_id ($unpacked_id){
 function unpack_id($packed_id){
   if( (string)$packed_id == "0" )
     return "0";
-  $foo=unpack("H*",$packed_id);  // "H*" does not work in PHP 4.0.3 
-  return $foo[""];
+  $foo=bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
+  return (string)$foo;
 }
 
 # returns current date/time as timestamp
@@ -330,6 +330,9 @@ function PrintAliasHelp($aliases) {
 
 /*
 $Log$
+Revision 1.13  2001/01/10 15:49:16  honzam
+Fixed problem with unpack_id (No content Error on index.php3)
+
 Revision 1.12  2001/01/08 13:31:58  honzam
 Small bugfixes
 
