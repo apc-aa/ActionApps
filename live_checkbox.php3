@@ -59,7 +59,7 @@ if ($db->next_record()) {
 }
 else failed();
 
-if (!CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_EDIT)) 
+if (!IfSlPerm(PS_EDIT)) 
     failed ();
 
 header ("Content-Type: image/gif");

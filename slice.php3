@@ -188,7 +188,7 @@ $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in 
 $db3 = new DB_AA; 	 // open BD	(for another subqueries)
 
   # get fields info
-list($fields,) = GetSliceFields($slice_id);
+list($fields) = GetSliceFields($slice_id);
 
   # get slice info
 $slice_info = GetSliceInfo($slice_id);

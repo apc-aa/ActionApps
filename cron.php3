@@ -19,7 +19,7 @@
  *
  *  @package UserOutput
  *  @version $Id$
- *  @author Jakub Adamek <jakubadamek@seznam.cz>
+ *  @author Jakub Adamek <jakubadamek@ecn.cz>
  *  @copyright Econnect, Jakub Adamek, February 2002
 */
 /* 

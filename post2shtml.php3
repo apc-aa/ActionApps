@@ -14,9 +14,9 @@
  *
  * Call this script with the name of the .shtml page you want to send variables to.
  * Parameters: <br>
- *     shtml_page = complete URL of the requested .shtml page
+ *     URL $shtml_page = complete URL of the requested .shtml page
  *
- * @package ??
+ * @package UserInput
  * @version $Id$
  * @author Jakub Adámek, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
@@ -43,35 +43,41 @@ http://www.apc.org/
 require "include/config.php3";
 require $GLOBALS[AA_INC_PATH]."locsess.php3"; 
 
-$db = new DB_AA;
+store_vars ();
 
-$vars = array (
-    "post" => $HTTP_POST_VARS,
-    "get" => $HTTP_GET_VARS,
-    "files" => $HTTP_POST_FILES,
-    "cookie" => $HTTP_COOKIE_VARS);
-    
-reset ($vars);    
-while (list ($key) = each ($vars)) {
-    $var = &$vars[$key];
-    if (is_array($var["md5"])) {
-        md5_array ($var["md5"]);
-        add_var2 ($var["md5"], $var);
-        unset ($var["md5"]);
+function store_vars () 
+{
+    global $db, $shtml_page;
+    if (!is_object ($db)) $db = new DB_AA;
+
+    $vars = array (
+        "post" => &$GLOBALS["HTTP_POST_VARS"],
+        "get" => &$GLOBALS["HTTP_GET_VARS"],
+        "files" => &$GLOBALS["HTTP_POST_FILES"],
+        "cookie" => &$GLOBALS["HTTP_COOKIE_VARS"]);
+          
+    reset ($vars);    
+    while (list ($key) = each ($vars)) {
+        $var = &$vars[$key];
+        if (is_array($var["md5"])) {
+            md5_array ($var["md5"]);
+            add_var2 ($var["md5"], $var);
+            unset ($var["md5"]);
+        }
     }
-}
 
-$vars = addslashes (serialize ($vars));
+    $vars = addslashes (serialize ($vars));
      
-$id = new_id();    
-$db->query("
-    INSERT INTO post2shtml (id, vars, time) 
-    VALUES ('$id', '$vars', ".time().")");
+    $id = new_id();    
+    $db->query("
+        INSERT INTO post2shtml (id, vars, time) 
+        VALUES ('$id', '$vars', ".time().")");
 
-header("Status: 302 Moved Temporarily");
-$shtml_page = stripslashes ($shtml_page);
-$shtml_page .= (strchr ($shtml_page,"?") ? "&" : "?") . "post2shtml_id=$id";
-header("Location: $shtml_page");
+    header("Status: 302 Moved Temporarily");
+    $shtml_page = stripslashes ($shtml_page);
+    $shtml_page .= (strchr ($shtml_page,"?") ? "&" : "?") . "post2shtml_id=$id";
+    header("Location: $shtml_page");
+}    
 
 # returns new unpacked md5 unique id, except these which can  force unexpected end of string  
 function new_id ($seed="hugo"){
