@@ -19,6 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once "perm_core.php3";
 
 // default ldap server for all searches
 $aa_default_ldap = array("host"=>LDAP_HOST, 
@@ -97,6 +98,9 @@ function AuthenticateUsername($username, $password, $flags = 0) {
 
 // creates new person in LDAP permission system
 function AddUser($user, $flags = 0) {
+  if (! IsUsernameFree ($user["uid"]))
+    return false;
+
   global $aa_default_ldap;
   if( !($ds=InitLDAP()) )
     return false;
@@ -705,4 +709,10 @@ function GetIDsInfo ($id, $ds = "") {
     ldap_close($ds);
   return $res;
 }
+
+function IsUsernameFree ($username) {
+    return ! GetUser ("uid=$username,".$LDAPserver[people]))
+        && IsReadernameFree ($username);
+}
+
 ?>

@@ -48,6 +48,8 @@ use the escape character \ - the wizard will translate the characters. Remember 
 		"desc"=>a thoroughfull description
 		"params"=>the params in the internal format (divided by :)
 */
+
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
 	
 $INSERT_TYPES["name"] = _m("Insert Function");
 $INSERT_TYPES["items"]["qte"] = 
@@ -161,10 +163,13 @@ $VALIDATE_TYPES["items"]["unique"] = array (
               "desc"=>_m("Field in which to look for matching values."),
               "type"=>"STRID",
               "example"=>"undefined......."),
-        array("name"=>_m("Slice only"),
-              "desc"=>_m("Do you want to check for uniqueness this slice only 
-                  or all slices?"),
-              "type"=>"BOOL",
+        array("name"=>_m("Scope"),
+              "desc"=>_m("<b>1</b> = This slice only. 
+                <b>2</b> = All slices.<br>
+                <b>0</b> = Username, special: Checks uniqueness in reader management
+                slices and in the permission system. Always uses field ID %1", 
+                array(FIELDID_USERNAME)),
+              "type"=>"INT",
               "example"=>1)
      ));
 $VALIDATE_TYPES["items"]["e-unique"] = array (

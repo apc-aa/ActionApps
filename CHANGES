@@ -1,3 +1,15 @@
+04/05/03 - enhanced the view types definitions in constant.php3 so that
+(jakub)    help text may be added and field type overrided
+         - enhanced zids->add() to work with arrays and zids objects
+         - added zids->union()
+         - added a new setting to Alerts Selection Set view, to choose
+           whether the corresponding filters should be grouped by selections
+           (see doc/reader.html for a description)
+         - fixed Alerts manual sending: all collections were sent instead of 
+           only the current one
+         - added mutual exclusion to reader management usernames and AA 
+           permissions usernames (the same username can't be used in both)
+         - separated Alerts doc to doc/alerts.xml and enhanced it
 03/31/03 - updated all language files with xmgettext
 (jakub)    and added some Czech translations 
          - changed sql_update to work better with cron entries and updated
@@ -6,7 +18,7 @@
 (jakub)  - improved the Send Email Wizard, now it allows using field aliases             
          - added links to reader.html and anonym.html to doc/index.html
 03/28/03 - fixed bug with sliceobj that broke RSS
-(mitra)  - changed debugging in itemfunc & 
+(mitra)  - changed debugging in itemfunc
          - fixed bug searchlib not showing items with no exp or publish date
 03/24/03 - fixed "Bad Table view ID: modedit" bug when switching from one module 
 (honzam)   type to another

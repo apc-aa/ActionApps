@@ -155,11 +155,13 @@ $SLICE_FIELDS_TEXT = array("id", "name", "owner", "created_by", "created_at",
    "notify_active_item_edit_b", "notify_active_item_s", "notify_active_item_b",
    "noitem_msg",
    "admin_format_top", "admin_format", "admin_format_bottom", "admin_remove",
-   "fileman_dir","fileman_access","javascript","aditional");
+   "fileman_dir","fileman_access","javascript","aditional",
+   "mailman_field_lists", "auth_field_group", "reading_password");
 
 $SLICE_FIELDS_NUM  = array( "deleted", "export_to_all", "template",
    "even_odd_differ", "category_sort", "d_expiry_limit", "d_listlen",
-   "email_sub_enable", "exclude_from_dir","permit_anonymous_post","permit_offline_fill",);
+   "email_sub_enable", "exclude_from_dir","permit_anonymous_post",
+   "permit_anonymous_edit", "permit_offline_fill",);
 
 $FIELD_FIELDS_TEXT = array(  "id", "type", "slice_id", "name",
   "input_help", "input_morehlp", "input_default",
@@ -334,9 +336,20 @@ function getViewFields ()
     return $VIEW_FIELDS;
 }                                         
 
+/** View types is an array. The basic format is 
+*       view_type => array (
+*           "view_field (one from $VIEW_FIELDS, see above)" => "label", ...)
+*
+*   You can use extended format for view_field info:
+*       view_field => array (
+*           "label" => "field label",
+*           "help" => "help text",
+*           "input" => "overrides the input function from $VIEW_FIELDS")
+*
+*   See the "digest" view below for an example.
+*/
 function getViewTypes ()
 {
-    # se_views.php3 - view types
     $VIEW_TYPES['list']  = array( "name" => _m("Item listing"),
                                   "before" => _m("Top HTML") ,
                                   "odd" => _m("Odd Rows") ,
@@ -530,7 +543,16 @@ function getViewTypes ()
     #                              "aditional" => _m("Additional") );
     
     $VIEW_TYPES['digest']  = array( "name" => _m("Alerts Selection Set"),
+                                  "aditional" => array (
+                                      "label" => _m("Group by selections (some items 
+                                         may be shown several times)"),    
+                                      "input" => "chbox"),                            
                                   "function:digest_filters" => "",
+                                  "aditional2" => array (
+                                      "label" => _m("Fulltext URL"),
+                                      "input" => "field",
+                                      "help" => _m("Link to the .shtml page used
+                                        to create headline links.")),
                                   "before" => _m("Top HTML") ,
                                   "odd" => _m("Odd Rows") ,
                                   "even_odd_differ" => _m("Use different HTML code for even rows") ,

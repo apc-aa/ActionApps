@@ -1073,29 +1073,44 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
                      // ... and proceed to "unique"
                      
     case "unique":
+        
+        // username is searched in all slices AND in permission system
+        define("SCOPE_USERNAME",0);
+        // search only in this slice
+        define("SCOPE_SLICE",1);
+        // search in all slices
+        define("SCOPE_ALLSLICES",2);
     
-        list ($field_id, $slice_only) = split (":", $params);
+        list ($field_id, $scope) = split (":", $params);
         if (!strchr ($params, ":"))
-            $slice_only = true;
+            $scope = SCOPE_SLICE;
         if (strlen ($field_id) != 16) {
             $err[$variableName] = MsgErr(_m("Error in parameters for UNIQUE validation: "
                 ."field ID is not 16 but %1 chars long: ",array(strlen($field_id))).$field_id);
             return false;
         } else {            
             global $slice_id, $db;
-            if ($slice_only)
-                $SQL = "SELECT * FROM content INNER JOIN 
-                        item ON content.item_id = item.id
-                        WHERE item.slice_id='".q_pack_id($slice_id)."'
-                        AND field_id='".addslashes($field_id)."'
-                        AND text='".$variable."'";
-            else $SQL = "SELECT * FROM content WHERE field_id='".addslashes($field_id)
-                        ."' AND text='$variable'";
-            $db->query ($SQL);
-            if ($db->next_record())
+            if ($scope == SCOPE_USERNAME) {
+                $ok = IsUsernameFree ($variable);
+            }
+            else {
+                if ($scope == SCOPE_SLICE)
+                    $SQL = "SELECT * FROM content INNER JOIN 
+                            item ON content.item_id = item.id
+                            WHERE item.slice_id='".q_pack_id($slice_id)."'
+                            AND field_id='".addslashes($field_id)."'
+                            AND text='".$variable."'";
+                else $SQL = "SELECT * FROM content WHERE field_id='".addslashes($field_id)
+                            ."' AND text='$variable'";
+                $db->query ($SQL);
+                $ok = ! $db->next_record();
+            }
+            
+            if (! $ok) {                
                 $err[$variableName] = MsgErr(_m("Error in")." $inputName (".
                     _m("this value is already used, choose another one").")");
-            return false;
+                return false;
+            }
         }
         return true;
         

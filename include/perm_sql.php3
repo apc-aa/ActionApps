@@ -19,6 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once "perm_core.php3";
+
 //php_sql - functions for working with permissions with SQL
 
 /* INSTALL notes
@@ -33,10 +35,6 @@ users        membership     perms
   givenname  
   sn
 
-*/
-
-/* TODO/NOTES:
-     AddUser() AddGroup() : unique-problem
 */
 
 // ----------------------------- QUERY -----------------------------------
@@ -316,13 +314,15 @@ function GetIDPerms ($id, $objectType, $flags = 0) {
 
 // creates new person in permission system
 function AddUser($user, $flags = 0) {
-
+  if (! IsUsernameFree ($user["uid"]))
+    return false;
+  
   $db  = new DB_AA;
 
   # do a little bit of QA on the $user array
   # 
   $array["type"] = _m("User");
-  $array["uid"] = $user[uid];
+  $array["uid"] = $user["uid"];
   $array["mail"] = ((is_array($user[mail])) ? $user[mail][0] : $user[mail]);
   $array["name"] = $user["givenname"]." ".$user["sn"];
   $array["sn"] = $user["sn"];
@@ -438,7 +438,7 @@ function GetUser ($user_id, $flags = 0) {
 // $group is an array ("name", "description", ...)
 function AddGroup ($group, $flags = 0) {
 // creates new person in permission system
-
+    
   $db  = new DB_AA;
    # do a little bit of QA on the $user array
   $array["type"] = _m("Group");
@@ -639,6 +639,16 @@ function A2sql_update ($table, $keyField, $aData) {
                 SET $set
               WHERE $where
 	    ";
+}
+
+function IsUsernameFree ($username) {
+    $db = getDB();
+    $db->query ("SELECT uid FROM users WHERE uid='".addslashes($username)."'");
+    $free = ! $db->next_record();
+    freeDB ($db);
+    if (! $free) 
+        return false;
+    return IsReadernameFree ($username);
 }
 
 ?>

@@ -91,7 +91,7 @@ function showCollectionAddOns ()
     <h2>'._m("Send alerts").'</h2><B>';
         
     if ($fire["fire"]) 
-        $mail_count = send_emails($fire["howoften"], "all", "all", true, "");
+        $mail_count = send_emails($fire["howoften"], array ($collectionid), "all", true, "");
     
     echo _m("Last time the alerts were sent on:");
     $db->query("SELECT * FROM alerts_collection_howoften 

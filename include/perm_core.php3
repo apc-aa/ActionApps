@@ -441,4 +441,24 @@ function perm_username( $username ) {
     return substr($username, $begin+1, $end-$begin-1);
 }
 
+require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
+
+/** Looks into reader management slices whether the reader name is not yet used. 
+*   This function is used in perm_ldap and perm_sql in IsUsernameFree().
+*/
+function IsReadernameFree ($username) {
+    $db = getDB();
+    $SQL = "SELECT content.text FROM content 
+            INNER JOIN item ON content.item_id = item.id
+            INNER JOIN slice ON item.slice_id = slice.id
+            WHERE content.field_id='".FIELDID_USERNAME."' 
+            AND slice.type='ReaderManagement'
+            AND content.text='$username'";
+    $db->query ($SQL);
+    $retval = ! $db->next_record();
+    freeDB ($db);
+    return $retval;        
+}
+
+
 ?>

@@ -485,6 +485,7 @@ if (isset($this->zids))
               ($this->slice_info['banner_position']==$i) )
             $out .= GetView(ParseViewParameters($this->slice_info['banner_parameters']));
 
+
           $zidx = $this->from_record+$i;
           if ($zidx >= $this->zids->count()) continue;
           $iid = $this->zids->short_or_longids($zidx);
@@ -529,6 +530,7 @@ if (isset($this->zids))
              (($i%2) AND $this->slice_info[even_odd_differ]) ?
              $this->slice_info[even_row_format] : $this->slice_info[odd_row_format],
              $this->slice_info[compact_remove] );
+             
 
           $out .= $CurItem->get_item();
         }

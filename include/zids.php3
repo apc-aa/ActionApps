@@ -105,10 +105,34 @@ class zids {
         $this->type = $inittype;
     }
 
-    // adds new id (the type must be already set (from init))
-    function add($id) {
-        if( $id )
-            $this->a[]=$id;
+    /** Adds new id or array of ids or zids object.
+    *   The type must be already set (from init). */
+    function add($ids) {
+        if( is_object ($ids) )
+            $this->a = array_merge ($this->a, $ids->a);
+        else if( is_array ($ids) )
+            $this->a = array_merge ($this->a, $ids);
+        else if( $ids )
+            $this->a[]=$ids;
+    }
+
+    /** Adds new id or array of ids or zids object and deletes duplicate ids.
+    *   If called without parameters, only deletes duplicate ids.
+    *   The type must be already set (from init). */
+    function union($ids = "") {
+        $this->add ($ids);
+        // we can't use array_unique because we need to preserve key range 0..x
+        sort ($this->a);
+        $last = "XXXXXXXX";
+        $unique = "";
+        for (reset ($this->a); list (,$v) = each($this->a);) {
+            if ($v && $v != $last) 
+                $unique[] = $v;
+            $last = $v;
+        }
+        if ($v && $v != $last)
+            $unique[] = $v;
+        $this->a = $unique;
     }
 
     // Debugging function to print zids, don't rely on the output format, its only for debuging

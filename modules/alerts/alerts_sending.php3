@@ -60,8 +60,10 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
 {
     global $db;
 
+    // the view.aditional field stores info about grouping by selections
     $SQL = "
-    SELECT F.conds, view.slice_id, F.id AS filterid, F.vid, slice.name AS slicename, 
+    SELECT F.conds, view.slice_id, view.aditional,
+        F.id AS filterid, F.vid, slice.name AS slicename, 
         slice.lang_file, CH.last
         FROM alerts_filter F INNER JOIN
              alerts_collection_filter CF ON CF.filterid = F.id INNER JOIN
@@ -77,13 +79,18 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
             return "";
         $SQL .= " AND slice.id='".addslashes($db->f("slice_id"))."'";
     }
-    
+
+    initialize_last ();
+        
     $db->query($SQL);
     while ($db->next_record()) {
+        $last = $db->f("last");
         $slices[$db->f("slice_id")]["name"] = $db->f("slicename");
         $slices[$db->f("slice_id")]["lang"] = substr ($db->f("lang_file"),0,2);
-        $slices[$db->f("slice_id")]["views"][$db->f("vid")]["filters"][$db->f("filterid")] = 
-            array ("conds"=>$db->f("conds"), "last"=>$db->f("last"));
+        $slices[$db->f("slice_id")]["views"][$db->f("vid")]["filters"]
+            [$db->f("filterid")] = array ("conds"=>$db->f("conds"));
+        $slices[$db->f("slice_id")]["views"][$db->f("vid")]["group"] 
+            = $db->f("aditional");
     }
     if (! is_array ($slices))
         return;
@@ -93,8 +100,6 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
     global $debug_alerts, $conds, $sort;
     $howoften_options = get_howoften_options();
     
-    initialize_last ();
-    
     // first I create a hierarchical array $slices and than use it instead of the recordset
             
     $now = time();
@@ -102,21 +107,7 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
     reset ($slices);
     while (list ($p_slice_id, $slice) = each ($slices)) {
         $slice_id = unpack_id128($p_slice_id);
-        list($fields) = GetSliceFields($slice_id);
-        $aliases = GetAliasesFromFields($fields, $als);       
-        // set language
-        bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$slice["lang"]."_alerts_lang.php3", true);
-        
-        reset ($slice["views"]);
-        while (list ($vid, $view) = each ($slice["views"])) {                      
-            $view_info = GetViewInfo($vid);
-            $format = GetViewFormat($view_info); 
-            
-            reset ($view["filters"]);
-            while (list ($fid, $filter) = each ($view["filters"])) {
-                $now = time();
-                $last = $filter["last"];
-                
+
 /* this query is carefully made to include only items, which:                
      a) 1. were moved to active between $last and $now 
         2. and were active (not expired nor pending) between $last and $now,
@@ -131,45 +122,46 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
    The field is cleared whenever the item is moved from Active bin to another one.
 */
                 
-                $SQL = "SELECT id FROM item ";
-                
-                if ($item_id)
-                    $SQL .= "WHERE id = '".q_pack_id($item_id)."'";
-                    
-                else $SQL .=
-                    "WHERE publish_date <= $now AND expiry_date >= $last "  # a) 2. and b) 2.
-                       ."AND ((moved2active BETWEEN $last AND $now) "       # a) 1.
-                             ."OR (moved2active < $last "                   # b) 1.
-                                 ."AND publish_date > $last) "              # b) 3.
-                           .")";
+        $SQL = "SELECT id FROM item ";
+        
+        if ($item_id)
+            $SQL .= "WHERE id = '".q_pack_id($item_id)."'";
+            
+        else $SQL .=
+            "WHERE publish_date <= $now AND expiry_date >= $last "  # a) 2. and b) 2.
+               ."AND ((moved2active BETWEEN $last AND $now) "       # a) 1.
+                     ."OR (moved2active < $last "                   # b) 1.
+                         ."AND publish_date > $last) "              # b) 3.
+                   .")";
+        $db->query ($SQL);                                   
+                   
+        $all_ids = "";
+        while ($db->next_record())
+            $all_ids[] = $db->f("id");
+        
+        reset ($slice["views"]);
+        while (list ($vid, $view) = each ($slice["views"])) {                      
 
-                $db->query ($SQL);                                   
-                           
-                $all_ids = "";
-                while ($db->next_record())
-                    $all_ids[] = $db->f("id");
-
+            reset ($view["filters"]);
+            while (list ($fid, $filter) = each ($view["filters"])) {                
                 $dbconds = $filter["conds"];
                 if ($debug_alerts) echo "<br>Slice ".$slice["name"].", conds ".$dbconds."<br>";       
                 $conds = ""; $sort = "";
                 add_vars ($dbconds);
                 if ($debug_alerts) { print_r ($conds); echo "<br>"; }
         
-                $items_text = "";
+                $zids = new zids (null, "p");
                 if (is_array ($all_ids)) {
                     // find items for the given filter
                     $zids = QueryZIDs ($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, new zids( $all_ids,'p' ));
                     if ($debug_alerts) echo "<br>Item IDs count: ".$zids->count()."<br>";
-                    if( $zids->count() > 0 ) { 
-                        $itemview = new itemview( $db, $format, $fields, $aliases, $zids, 
-                              0, $view_info["listlen"], shtml_url());                          
-                        $items_text = $itemview->get_output ("view");        
-                    }
                 }
                 
-                if ($debug_alerts && $items_text) echo "<hr>Items text:<br><br>$items_text<br><br><hr>";
-
-                $retval[$fid] = $items_text;                
+                $retval[$fid] = array (
+                    "group" => $view["group"],
+                    "vid" => $vid,
+                    "zids" => $zids,
+                );
             }
         }
     }
@@ -182,6 +174,7 @@ function create_filter_text ($ho, $collectionid, $update, $item_id)
         $db->query($varset->makeINSERTorUPDATE("alerts_collection_howoften"));               
     }        
     
+    //print_r ($retval);
     return $retval;
 }
 
@@ -201,7 +194,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
             
     if (is_array ($collection_ids))
         $where = " WHERE AC.id IN ('".join ("','", $collection_ids)."')";    
-    $db->query("
+    $db->tquery("
             SELECT module.slice_url, AC.id AS collectionid, AC.*, email.* 
             FROM alerts_collection AC
             INNER JOIN email ON AC.emailid_alert = email.id
@@ -214,7 +207,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
     $readerContent = new ItemContent ();
     if (!is_object ($db2))            
         $db2 = new DB_AA;
-
+        
     reset ($colls);
     while (list ($cid, $collection) = each ($colls)) {        
         $unordered_filters = create_filter_text ($ho, $cid, $update, $item_id);
@@ -246,24 +239,11 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
                 if( $readerContent->getValue( $field_howoften ) != $ho
                     || ! $readerContent->getValue( FIELDID_MAIL_CONFIRMED ))
                     continue;
-                   
-                $user_filters = "";
-                $user_text = "";    
-                $user_filters_value = $readerContent->getValues( 
-                    getAlertsField (FIELDID_FILTERS, $cid));
                     
-                if (is_array ($user_filters_value)) {
-                    foreach ($user_filters_value as $user_filter)
-                        // filter numbers are stored with "f" added to the beginning
-                        $user_filters [substr ($user_filter ["value"], 1)] = 1;
-                
-                    reset ($filters);
-                    while (list ($filterid, $text) = each ($filters))
-                        if ($user_filters [$filterid])
-                            $user_text .= $text;
-                }
+                $user_text = get_filter_text_4_reader ($readerContent, $filters, $cid);
+                   
                 // Don't send if nothing new emerged         
-                if ($user_text) {        
+                if ($user_text) {
                     $alias["_#FILTERS_"] = $user_text;
                     $alias["_#HOWOFTEN"] = $ho;
                     $alias["_#COLLFORM"] = alerts_con_url ($collection["slice_url"],
@@ -279,7 +259,7 @@ function send_emails ($ho, $collection_ids, $emails, $update, $item_id)
         } else {
             reset ($emails);
             while (list (,$email) = each ($emails)) {
-                $alias["_#FILTERS_"] = join ("", $filters);
+                $alias["_#FILTERS_"] = get_filter_text_4_reader (null, $filters, $cid);
                 $alias["_#HOWOFTEN"] = $ho;
                 $alias["_#COLLFORM"] = alerts_con_url ($collection["slice_url"], "ac=ABCDE");
     
@@ -332,5 +312,111 @@ function initialize_last ()
                 ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
     }
 }           
+
+// -------------------------------------------------------------------------------------
+/** Warning: This function caches all combinations of selections. If there
+*   are too many different combinations, memory may be exhausted. 
+*
+*   TODO: Rewrite this function using a DB table. 
+*
+*   @param string $filter_settings  One or more filter IDs separted by comma ",".
+*/
+function get_filter_output_cached ($vid, $filter_settings, $zids) {
+    global $cached_view_settings,
+           $cached_filter_outputs,
+           $db;
+
+    //echo "zids"; print_r ($zids);
+    if ($zids->count() == 0)
+        return "";
+        
+    if (! $cached_view_settings [$vid]) {
+        $view_info = GetViewInfo($vid);
+        list($fields) = GetSliceFields (unpack_id ($view_info ["slice_id"]));        
+        $slice_info = GetSliceInfo (unpack_id ($view_info ["slice_id"]));
+        $cached_view_settings[$vid] = array (
+            "lang" => substr ($slice_info["lang_file"],0,2),
+            "info" => $view_info,
+            "fields" => $fields,
+            "aliases" => GetAliasesFromFields ($fields),
+            "format" => GetViewFormat ($view_info),
+        );
+    }
+    
+    if (! isset ($cached_filter_settings [$filter_settings])) {
+        $set = &$cached_view_settings[$vid];
+        // set language
+        bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".
+            $set["lang"]."_alerts_lang.php3", true);
+        // $set["info"]["aditional2"] stores item URL
+        //global $debug;        $debug = 1;
+        //echo "<i>";print_r ($zids->a);echo"</i>";
+        $itemview = new itemview( $db, $set["format"], $set["fields"], 
+            $set["aliases"], $zids, 0, 9999, $set["info"]["aditional2"]);                          
+        $items_text = $itemview->get_output ("view");        
+    //echo "<h1>items $items_text</h1>"; print_r ($set["format"]); exit;
+        //if (! strstr ($filter_settings, ","))
+        $cached_filter_settings [$filter_settings] = $items_text;
+    }
+    
+    else $items_text = $cached_filter_settings [$filter_settings];
+        
+  //  echo "items $items_text"; exit;
+    return $items_text;
+}        
+
+// -------------------------------------------------------------------------------------
+/** Used in send_emails(). Finds filter text for the given reader.
+*   @param object $readerContent  if null, use all filters
+*   @param array $filters  sent by reference just for better performance. 
+*/
+function get_filter_text_4_reader ($readerContent, &$filters, $cid)
+{  
+    if ($readerContent) {
+        $user_filters_value = $readerContent->getValues( 
+            getAlertsField (FIELDID_FILTERS, $cid));
+            
+        if (! is_array ($user_filters_value)) 
+            return "";
+            
+        foreach ($user_filters_value as $user_filter)
+            // filter numbers are stored with "f" added to the beginning
+            $user_filters [substr ($user_filter ["value"], 1)] = 1;
+    }
+
+    $last_fprop = "";
+    $filter_ids = "";
+    $user_zids = new zids (null, "p");
+    
+    for (reset ($filters); list ($filterid, $fprop) = each ($filters); ) {
+        if (! $readerContent || $user_filters [$filterid]) {
+            if ($fprop["group"]) {
+                $user_text .= get_filter_output_cached (
+                    $fprop["vid"], $filterid, $fprop["zids"]);                                
+            }
+            else {
+                if ($last_fprop 
+                  && $last_fprop["vid"] != $fprop["vid"]
+                  && ! $last_fprop["group"]) {
+                    $user_text .= get_filter_output_cached (
+                        $fprop["vid"], join (",",$filter_ids), $user_zids);
+                    $filter_ids = "";
+                    $user_zids->clear("p");
+                }
+                $user_zids->union ($fprop["zids"]);
+                $filter_ids[] = $filterid;
+            }
+            $last_fprop = $fprop;
+        }
+    }
+    
+    // add the last filter group
+    if (is_array ($filter_ids)) {
+        $user_text .= get_filter_output_cached (
+            $last_fprop["vid"], join (",",$filter_ids), $user_zids);
+    }
+    
+    return $user_text;
+}
 
 ?>
