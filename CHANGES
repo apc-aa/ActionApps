@@ -2,7 +2,7 @@
          - global SuperAdmin access rights take precedence over slice-specific
          - membership in groups now queried in SQL version of GetIDPerms()
 7/28/00  - deletion of groups now works
-         - resolved differencies in behaviour of perm_sql and perm_ldap
+         - resolved some differencies in behaviour of perm_sql and perm_ldap
 7/27/00  - to change privileges of other accounts, equality of permissions 
            is no longer adequate (higher role is required)
          - superadmin privilege settings in User / Group management
