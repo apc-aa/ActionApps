@@ -1,24 +1,38 @@
-11/05/04 - MLXGetText added (based on Honza's {_m:); will post instructions on http://mimo.gn.apc.org/mlx/
-  (mimo)   - {mlx:addslice:slice id:language[:domain[:mode]]} (domain defaults to global)
-             use mode=learn to enable adding new items to the slice for unknown strings
-	     e.g. {mlx:addslice:3a0c44958b1c6ad697804cfdbccd8b09:{l}:IWPR Site:learn}
-	   - {_m:text to translate[:param1:param2:..]} 
-	     {_m:Test %1 and %2 and %3:bla 1:bla 2:bla 3} would give 'Test bla1 and bla2 and bla3' in EN
-	   - {mlx:setdomain:domain} set MLXGetText to use this domain
-	 - removed my {include:file:filter} nonsense
+11/06/04 - Link module improved 
+(honzam)   - new class for link management
+           - completely changed handling of general categories (full automatic)
+         - new HTMLArea 3.0rc
+         - new possibility for cached javascripts (used in links module)
+           (dynamicaly generated javascript is stored into database and then
+            is included to the HTML file as external javascript file. Advantage
+            is, that when the content of js is not changed, yhen the external
+            file is not loaded (so it is quicker) - prooved with Apache log
+         - prepared new item action - move to different slice (item manager)
+11/05/04 - MLXGetText added (based on Honza's {_m:); will post instructions 
+(mimo)     on http://mimo.gn.apc.org/mlx/
+           - {mlx:addslice:slice id:language[:domain[:mode]]} (domain defaults 
+             to global) use mode=learn to enable adding new items to the slice
+             for unknown strings e.g. 
+             {mlx:addslice:3a0c44958b1c6ad697804cfdbccd8b09:{l}:IWPR Site:learn}
+	       - {_m:text to translate[:param1:param2:..]} 
+	         {_m:Test %1 and %2 and %3:bla 1:bla 2:bla 3} 
+             would give 'Test bla1 and bla2 and bla3' in EN
+	       - {mlx:setdomain:domain} set MLXGetText to use this domain
+	     - removed my {include:file:filter} nonsense
 10/25/04 - New {include:file:file:method1[:method2[:...]]}
-(mimo)	   This calls filter methods method1, method2,.. on global object $GLOBALS[filter]
-	   after reading the file. Very nice with site module.
-	   Member function is called like this: method1(&$fileout,&$args)
-10/20/04 - changes to {include} -- extended support for a very specialised readfile mode
-(mimo)   - MLX: now using packed id for storing MLX control slice
+(mimo)	   This calls filter methods method1, method2,.. on global object 
+           $GLOBALS[filter] after reading the file. Very nice with site module.
+	       Member function is called like this: method1(&$fileout,&$args)
+10/20/04 - changes to {include} -- extended support for a very specialised 
+(mimo)     readfile mode
+         - MLX: now using packed id for storing MLX control slice
 10/15/04 - view.php3 now with MLX support for fulltext (single item) views
 (mimo)     e.g. cmd[11]=x-1280&set[11]=mlx-DE will display the German version of
                 the item with shortid 1280 instead of item 1280
 10/14/04 - new {include:file:readfile} reads file contents, file is relative to
 (mimo)     $_SERVER["DOCUMENT_ROOT"]
-10/11/04 - Added script support, mlx.php has its own mappings table which indicates
-(mimo)     what kind of DIR to use for controls in the Add/Edit Item
+10/11/04 - Added script support, mlx.php has its own mappings table which
+(mimo)     indicates what kind of DIR to use for controls in the Add/Edit Item
            This gets passed through a global mlxFormControlExtra to formutil
            - changed formutil to include the value of this global
            - added a new utf-8 language file and a language def en-utf8 which
@@ -26,7 +40,8 @@
 10/06/04 - Added MLX support for views and finetuning slice settings interface
 (mimo)     Parameter for view.php3
            - set[vid]=mlx-(lang)-(lang1)-..-(MODE) same as for slice.php3
-10/05/04 - Totally reworked MLX, now using packed ids for storing MLX info (mimo)
+10/05/04 - Totally reworked MLX, now using packed ids for storing MLX info
+(mimo)
 10/04/04 - Added Multilingual Extension - dont use yet (mimo) 
              - mlx in URL to slice.php3
 	     - Slice Settings MLX field
