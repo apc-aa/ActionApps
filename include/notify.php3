@@ -82,15 +82,18 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
   $SQL = "SELECT uid from email_notify where slice_id = '$p_slice_id' AND function = '$event'";
   $db->query($SQL);
 
+/* Jakub replaced by mail_html_text (see util.php3)
   $headers = "";
   // Comment this out to send text mail
   $headers = "Content-Type: text/html; charset=iso-8859-1\n";
+*/
+
   // loop through the users for the event
   while( $db->next_record() ){
     // unalias the text
    $email = $db->f('uid');
-   // mail the text
-   mail($email, $subject, $body,$headers);
+   // CHARSET is defined in language files
+   mail_html_text ($email, $subject, $body, $headers, CHARSET, 0);
    // you cant output here, you are still in the headers section!
    // echo "DONE $email, $s, $body <BR>";
   }
