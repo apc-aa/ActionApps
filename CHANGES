@@ -1,16 +1,17 @@
+01/25/01 - added warnings to GD tests (controlled by errcheck=1) (mitra)
 01/25/01 - restored en_news_lang.php3  (mitra)
 01/25/01 - restored en_site_lang.php3 since _m conversion not done completely
 01/24/01 - bug fix in slicedit.php3, mistyped URL sliceEdit.php3 (Jakub)
 01/24/01 - changed design of se_fields.php3 (Jakub)
 01/24/01 - added H2 to admin.css (Jakub)
-01/24/01 - fixed bug in code for non 128 bit ids
+01/24/01 - fixed bug in code for non 128 bit ids (mitra)
          - parameterised RelatedItemsWindow, using table in itemfunc (later
             will allow redefining that table)
-01/23/03 - doc/install Recommended php4.0.6 or later, 
+01/23/03 - doc/install Recommended php4.0.6 or later, (mitra)
          - instructions for non-shell accounts
          - added notes to install-3 that these packages are often preinstalled
          - added admin/test.php3 to CVS to enable checking options
-01/23/03 - stringexpand - fixed bug in math
+01/23/03 - stringexpand - fixed bug in math (mitra)
 01/23/03 - commented out insecure default_fnc_variable (mitra)
          - fixed zids.guesstype to allow for buggy shorter ids (14 or 15 char) 
          - fixed new_id to only return 16 char ids in future
@@ -25,7 +26,7 @@
            * duplicates pack_id and unpack_id to pack_id128 and unpack_id128 which check type
          - commented out require of  _lang.php3 files from config.php3
 01/21/03 - changed {....} expansion to use f_h for fields, allowing multi-value fields
-01/21/03 - fixed bug in stringexpand for scroller (mitra)
+         - fixed bug in stringexpand for scroller (mitra)
 01/20/03 - modified mgettext language files extension from .inc to .php3 
            (mainly for backward compatibility) (jakub)
 01/17/03 - changed all January dates here from /02 to /03 :-)) (jakub)

@@ -39,9 +39,11 @@ else return;
 ######################################
 
 function GDinstalled() {
-    if (!extension_loaded('gd'))
+    if (!extension_loaded('gd')) {
         //      if (!dl('gd.so'))
+        huhe("GD is not installed, cannot perform image manipulation");
         return false;
+    }
     return true;        
 }
 
@@ -131,6 +133,7 @@ function GetSupportedTypes($type="") { //type 1-gif, 2-jpeg, 3-png;
             case 3: if (ImageTypes() & IMG_PNG) 
                         return true;
         }
+        huhe("Warning: GD cant manipulate images of type $type");
         return false;
     }
 }
