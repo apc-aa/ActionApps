@@ -185,3 +185,5 @@
 7/13/00  - created_by and created_at are no more zeroized during slice updates
          - Article Editor prints people's names instead of UIDs
 7/14/00  - fixed filters bug (no defined categories)
+7/17/00  - fixed login without password bug (LDAP)
+7/18/00  - added support for other crypt() variants
