@@ -78,23 +78,18 @@ $varset = new Cvarset();
 $itemvarset = new Cvarset();
 
   # get slice fields and its priorities in inputform
-list($fields,$prifields) = GetSliceFields(q_pack_id($slice_id));   
+list($fields,$prifields) = GetSliceFields($slice_id);   
 
 if( isset($prifields) AND is_array($prifields) ) {
 	reset($prifields);
 	while(list(,$pri_field_id) = each($prifields)) {
     $f = $fields[$pri_field_id];
-    $u_pri_field_id = unpack_id($pri_field_id);
-	  $varname = 'v'. $u_pri_field_id;   # "v" prefix - database field var
+	  $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
+    $htmlvarname = $varname."html";
 
     if( $add OR (!$f[input_show] AND ($insert OR $update) )) {
-      $fnc = ParseFnc($f[input_default]);    # all default should have fnc:param format
-  
-      if( $fnc ) {                     # call function
-        $fncname = 'default_fnc_' . $fnc[fnc];
-        $$varname = $fncname($fnc[param]);
-      } else
-        $$varname = $foo;
+      $$varname = GetDefault($f);
+      $$htmlvarname = GetDefaultHTML($f);
     }    
     
       # validate input data
@@ -103,24 +98,12 @@ if( isset($prifields) AND is_array($prifields) ) {
       if( $f[input_show] AND !$f[feed] ) {
         switch( $f[input_validate] ) {
           case 'text': 
-            ValidateInput($varname, $f[name], &$$varname, &$err,
-                          $f[required] ? 1 : 0, "text");
-            break;
           case 'url':  
-            ValidateInput($varname, $f[name], &$$varname, &$err,
-                          $f[required] ? 1 : 0, "url");
-            break;
           case 'email':  
-            ValidateInput($varname, $f[name], &$$varname, &$err,
-                          $f[required] ? 1 : 0, "email");
-            break;
           case 'number':  
-            ValidateInput($varname, $f[name], &$$varname, &$err,
-                          $f[required] ? 1 : 0, "number");
-            break;
           case 'id':  
-            ValidateInput($varname, $f[name], &$$varname, &$err,
-                          $f[required] ? 1 : 0, "id");
+            ValidateInput($varname, $f[name], $$varname, &$err,
+                          $f[required] ? 1 : 0, $f[input_validate]);
             break;
           case 'date':  
             $foo_datectrl_name = new datectrl($varname);
@@ -142,36 +125,18 @@ if( isset($prifields) AND is_array($prifields) ) {
   # update database
 if( ($insert || $update) AND (count($err)<=1) 
     AND isset($prifields) AND is_array($prifields) ) {
+
+  # prepare content4id array before call StoreItem function
+  $content4id = GetContentFromForm( $fields, $prifields );
+
+//p_arr_m ( $content4id );
+
   if( $insert )
     $id = new_id();
-  reset($prifields);
-  while(list(,$pri_field_id) = each($prifields)) {
-    $f = $fields[$pri_field_id];
-    $varname = 'v'. unpack_id($pri_field_id); # "v" prefix - database field var
-    $fnc = ParseFnc($f[input_insert_func]);   # input insert function
-    if( $fnc ) {                     # call function
-      $fncname = 'insert_fnc_' . $fnc[fnc];
-        # updates content table or fills $itemvarset 
-      $fncname($id, $f, $$varname, $fnc[param], $insert); # add to content table
-    }                                                     # or to itemvarset
-  }
+
+  $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, $insert, 
+                            true, true );     # invalidatecache, feed
  
-    # update item table
-  if( $update )
-    $SQL = "UPDATE item SET ". $itemvarset->makeUPDATE() . " WHERE id='". q_pack_id($id). "'";
-   else {
-    $itemvarset->add("id", "unpacked", $id);
-    $itemvarset->add("slice_id", "unpacked", $slice_id);
-    $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
-    $added_to_db = true;
-  }  
-  $db->query($SQL);
-
-  $cache = new PageCache($db,CACHE_TTL,CACHE_PURGE_FREQ); # database changed - 
-  $cache->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
-
-  FeedItem($id, $fields);
-
   if( count($err) <= 1) {
     page_close(); 
 
@@ -194,6 +159,9 @@ if( ($insert || $update) AND (count($err)<=1)
 # Input form
 # -----------------------------------------------------------------------------
 
+unset( $content );       # used in another context for storing item to db
+unset( $content4id ); 
+
 if($edit) {
   if( !(isset($fields) AND is_array($fields)) ) {
     $err["DB"] = MsgErr(L_ERR_NO_FIELDS);
@@ -202,39 +170,15 @@ if($edit) {
     exit;
   }
 
-    # fill content array from item table
-  $SQL = "SELECT * FROM item WHERE id='".q_pack_id($id)."'";
-	$db->query($SQL);
-	if($db->next_record()) {
-    while (list($key,$val,,) = each($db->Record)) {  
-      if( EReg("^[0-9]*$", $key))
-        continue;
-      $foo = substr($key.'................',0,16);  #create id
-      $content[unpack_id($foo)][] = $val;
-    } 
-  } else {
+    # fill content array from item and content tables
+  $content = GetItemContent($id);
+  if( !$content ) {
     $err["DB"] = MsgErr(L_BAD_ITEM_ID);  
     MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"),
             $err, "standalone");
     exit;
-  }  
-    
-    # fill content array from content table
-  $SQL = "SELECT * FROM content WHERE item_id='".q_pack_id($id)."'
-           ORDER BY field_id";
-	$db->query($SQL);
-  while( $db->next_record() ) {       
-           #  flag bit 0 set - fed
-           #  flag bit 1 set - html
-    if ( $db->f(flag) && 1 )
-        $content[unpack_id($db->f(field_id))][feed] = true;
-    if ( $db->f(flag) && 2 )
-        $content[unpack_id($db->f(field_id))][html] = true;
-    if ( $db->f(number) > 0 )    # both values are set (fed)
-      $content[unpack_id($db->f(field_id))][] = $db->f(number);
-    else  
-      $content[unpack_id($db->f(field_id))][] = $db->f(text);
-  }     
+  }
+  $content4id = $content[$id];
 }    
 
 //print_r($content);
@@ -262,25 +206,10 @@ echo $Msg;
 <tr><td>
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" class="inputtab2">
 <?php
-//p_arr_m($fields);
-if( !isset($prifields) OR !is_array($prifields) ) {
-  echo "<tr><td>". 	MsgErr(L_NO_FIELDS). "</td></tr>";
-} else {  
-	reset($prifields);
-	while(list(,$pri_field_id) = each($prifields)) {
-    $f = $fields[$pri_field_id];
-    $u_pri_field_id = unpack_id($pri_field_id);
-	  $varname = 'v'. $u_pri_field_id;   # "v" prefix - database field var
-	  if( $content[$u_pri_field_id][feed] OR !$f[input_show])
-	    continue;                  # fed fields or not shown fields do not show
-	  $fnc = ParseFnc($f[input_show_func]);   # input show function
-	  if( $fnc ) {                     # call function
-	    $fncname = 'show_fnc_' . $fnc[fnc];
-	      # updates content table or fills $itemvarset 
-	    $fncname($varname, $f, $content[$u_pri_field_id], $$varname, $fnc[param], $edit);
-	  }
-	}
-}	
+
+if( ($errmsg = ShowForm($content4id, $fields, $prifields, $edit)) != "" )
+  echo "<tr><td>$errmsg</td></tr>";
+
 ?>
 <tr>
   <td colspan=2>
@@ -298,6 +227,9 @@ if( !isset($prifields) OR !is_array($prifields) ) {
   }  
   $r_hidden["slice_id"] = $slice_id;
   $r_hidden["anonymous"] = (($free OR $anonymous) ? true : "");
+  # the slice_id is not needed here, but it helps, if someone will try to create
+  # anonymous posted form (posted to filler.php3) - there must be slice_id
+  echo '<input type=hidden name="slice_id" value="'. $slice_id .'">'; 
   echo '<input type=hidden name="MAX_FILE_SIZE" value="'. IMG_UPLOAD_MAX_SIZE .'">'; 
   echo '<input type=hidden name="encap" value="'. (($encap) ? "true" : "false") .'">'; ?>
   </td>
@@ -326,6 +258,10 @@ page_close();
 
 /*
 $Log$
+Revision 1.19  2001/03/20 16:01:13  honzam
+HTML / Plain text selection implemented
+Standardized content management for items - filler, itemedit, offline, feeding
+
 Revision 1.18  2001/03/06 00:15:14  honzam
 Feeding support, color profiles, radiobutton bug fixed, ...
 

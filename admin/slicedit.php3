@@ -20,7 +20,6 @@ http://www.apc.org/
 */
 # expected $slice_id for edit slice, Add_slice=1 for adding slice
 
-
 if($template_slice_sel=="slice")          # new slice - template as slice 
   $template_id = $template_id2;
 if( $template_id ) {
@@ -47,7 +46,7 @@ if($slice_id) {  // edit slice
     </HEAD>
     <?php
     $xx = ($slice_id!="");
-    $show = Array("main"=>false, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
+    $show = Array("main"=>false, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
                   "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
     require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
     MsgPage($sess->url(self_base())."index.php3", L_NO_PS_EDIT);
@@ -90,7 +89,9 @@ if( $add || $update ) {
     ValidateInput("name", L_SLICE_NAME, &$name, &$err, true, "text");
     ValidateInput("owner", L_OWNER, &$owner, &$err, false, "id");
     ValidateInput("slice_url", L_SLICE_URL, &$slice_url, &$err, false, "url");
-    ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, &$err, true, "positivenumber");
+    ValidateInput("d_listlen", L_D_LISTLEN, $d_listlen, &$err, true, "number");
+    ValidateInput("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post, &$err, false, "number");
+    ValidateInput("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $permit_offline_fill, &$err, false, "number");
     ValidateInput("lang_file", L_LANG_FILE, $lang_file, &$err, true, "text");
 
     if( count($err) > 1)
@@ -99,8 +100,6 @@ if( $add || $update ) {
       $d_expiry_limit = 2000;
     $template = ( $template ? 1 : 0 );
     $deleted  = ( $deleted  ? 1 : 0 );
-    $permit_anonymous_post  = ( $permit_anonymous_post ? 1 : 0 );
-    $permit_offline_fill   = ( $permit_offline_fill  ? 1 : 0 );
     
     if( $update )
     {
@@ -112,6 +111,8 @@ if( $add || $update ) {
         $varset->add("deleted", "number", $deleted);
         $varset->add("template", "number", $template);
       }  
+      $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
+      $varset->add("permit_offline_fill", "number", $permit_offline_fill);
       $varset->add("lang_file", "quoted", $lang_file);
 
       $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . "WHERE id='$p_slice_id'";
@@ -268,10 +269,9 @@ while ($db->next_record()) {
   $slice_owners[unpack_id($db->f(id))] = $db->f(name);
 }
 
-  # lookup (bins)
-$bins[1]= L_ACTIVE_BIN;
-$bins[2]= L_HOLDING_BIN;
-$bins[3]= L_TRASH_BIN;
+$PERMS_STATE = array( "0" => L_PROHIBITED,
+                      "1" => L_ACTIVE_BIN,
+                      "2" => L_HOLDING_BIN );
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -279,7 +279,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php
   $xx = ($slice_id!="");
-  $show = Array("main"=>false, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
+  $show = Array("main"=>false, "slicedel"=>$xx, "config"=>$xx, "category"=>$xx, "fields"=>$xx, "search"=>$xx, "users"=>$xx, "compact"=>$xx, "fulltext"=>$xx,
                 "views"=>$xx, "addusers"=>$xx, "newusers"=>$xx, "import"=>$xx, "filters"=>$xx);
   require $GLOBALS[AA_INC_PATH]."se_inc.php3";   //show navigation column depending on $show variable
 
@@ -313,8 +313,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     FrmInputChBox("template", L_TEMPLATE, $template);
     FrmInputChBox("deleted", L_DELETED, $deleted);
   }  
-  FrmInputChBox("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $permit_anonymous_post);
-  FrmInputChBox("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $permit_offline_fill);
+  FrmInputSelect("permit_anonymous_post", L_PERMIT_ANONYMOUS_POST, $PERMS_STATE, $permit_anonymous_post, false);
+  FrmInputSelect("permit_offline_fill", L_PERMIT_OFFLINE_FILL, $PERMS_STATE, $permit_offline_fill, false);
   FrmInputSelect("lang_file", L_LANG_FILE, $LANGUAGE_FILES, $lang_file, false);
 ?>
 </table>
@@ -334,6 +334,10 @@ if($slice_id=="") {
 
 /*
 $Log$
+Revision 1.18  2001/03/20 16:01:13  honzam
+HTML / Plain text selection implemented
+Standardized content management for items - filler, itemedit, offline, feeding
+
 Revision 1.17  2001/02/26 17:26:08  honzam
 color profiles
 
