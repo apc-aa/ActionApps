@@ -1,3 +1,5 @@
+09/09/03 - added multiple checkbox refill to setControlArray, so now multiple 
+(marek)    checkboxes can be used in search forms that use fillform.php 
 09/04/03 - fixed show_fnc_hco to do input_before
 (mitra)  - $db fixes to constedit_util itemfunc site/util admin/itemedit
          - fixed invalid_email regexp use [.] instead of \\.
