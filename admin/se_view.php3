@@ -173,8 +173,12 @@ function ConditionFrm($name, $txt, $val) {
   echo "</td></tr>\n";
 }
 
+$back_url = ( (($view_type == 'categories') OR ($view_type == 'links')) ?
+                get_aa_url('modules/links/modedit.php3') :
+                get_admin_url('se_views.php3') );
+
 if($cancel)
-  go_url( $sess->url(self_base() . "se_views.php3"));
+  go_url( $back_url );
 
 if(!IfSlPerm(PS_FULLTEXT)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
@@ -238,7 +242,7 @@ if( $update )
         $show_fn ();
       }
 
-    go_url( $sess->url(self_base() . "se_views.php3"));
+    go_url( $back_url );
   }while(false);
 
   if( count($err) <= 1 )
@@ -254,7 +258,7 @@ if( !$update ) {  # set variables from database
                                #            take first view of the same type
     $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
   else         # error - someone swith the slice or so
-    go_url($sess->url("se_views.php3"));
+    go_url($back_url);
 
   $db->query($SQL);
 
@@ -293,13 +297,13 @@ $lookup_groups = GetConstants('lt_groupNames', 'name');
 # lookup slice fields
 $lookup_fields[''] = " ";  # default - none
 if ( $VIEW_TYPES_INFO[$view_type]['fields'] == 'constant' ) {
-    $lookup_fields += $CONSTANT_FIELDS;
-} else {    
+    $lookup_fields += GetConstantFields();
+} else {
     $db->tquery("SELECT id, name FROM field
                  WHERE slice_id='$p_slice_id' ORDER BY name");
     while($db->next_record())
         $lookup_fields[$db->f(id)] = $db->f(name);
-}        
+}
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 echo "<TITLE>". _m("Admin - design View") ."</TITLE>
@@ -317,87 +321,89 @@ echo "<TITLE>". _m("Admin - design View") ."</TITLE>
     </HEAD>";
 
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
-require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
-showMenu ($aamenus, "sliceadmin","");
+
+require_once (($view_type == 'categories') OR ($view_type == 'links')) ?
+                       $GLOBALS["AA_BASE_PATH"]."/modules/links/menu.php3" :
+                       $GLOBALS["AA_INC_PATH"]."menu.php3";
+
+switch ( $view_type ) {
+    case 'categories': showMenu ($aamenus, "modadmin", $view_id ? "view$view_id" : "newcatview"); break;
+    case 'links':      showMenu ($aamenus, "modadmin", $view_id ? "view$view_id" : "newlinkview"); break;
+    default:           showMenu ($aamenus, "sliceadmin",""); break;
+}
 
 echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";
 PrintArray($err);
 echo $Msg;
 
-?>
-<form name=f enctype='multipart/form-data' method=post action='<?php echo $sess->url($PHP_SELF) ?>'>
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Defined Views")?></b><BR>
-</td></tr>
-<tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-<?php
-
+// Print View Form ----------
+echo "<form name=f method=post action='$PHP_SELF'>";
+FrmTabCaption( _m("Defined Views") );
 FrmStaticText(_m("Id"), $view_id );
-
-echo "<input type=hidden name='view_type' value='$view_type'>";
 
 reset($VIEW_TYPES[$view_type]);
 while(list($k, $v) = each($VIEW_TYPES[$view_type])) {
-  if (substr ($k,0,strlen("function:")) == "function:") {
-    $show_fn = "show_".substr($k,strlen("function:"));
-    $show_fn ();
-  }
-  if( !($value = $vw_data[$k]) && $VIEW_TYPES_INFO[$view_type][$k]['default'] )  // we can define default values for fields (see constants.php3)
-    $value = $VIEW_TYPES_INFO[$view_type][$k]['default'];
+    if (substr ($k,0,strlen("function:")) == "function:") {
+        $show_fn = "show_".substr($k,strlen("function:"));
+        $show_fn ();
+    }
+    if ( !($value = $vw_data[$k]) && $VIEW_TYPES_INFO[$view_type][$k]['default'] )  // we can define default values for fields (see constants.php3)
+        $value = $VIEW_TYPES_INFO[$view_type][$k]['default'];
 
-  $input = $VIEW_FIELDS[$k]["input"];
+    $input = $VIEW_FIELDS[$k]["input"];
 
-  if (is_array ($v)) {
-    $label = $v["label"];
-    $help = $v["help"];
-    if ($v["input"])
-        $input = $v["input"];
-  }
-  else {
-    $label = $v;
-    $help = "";
-  }
+    if (is_array ($v)) {
+        $label = $v["label"];
+        $help = $v["help"];
+        if ($v["input"])  $input = $v["input"];
+    }
+    else {
+        $label = $v;
+        $help = "";
+    }
 
-  switch( $input ) {
-    case "field":   FrmInputText($k, $label, $value, 254, 50, false, $help, DOCUMENTATION_URL); break;
-    case "area":    FrmTextarea($k, $label, $value, 4, 50, false, $help, DOCUMENTATION_URL); break;
-    case "areabig": FrmTextarea($k, $label, $value, 15, 80, false, $help, DOCUMENTATION_URL); break;
-    case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type][modification], $value, false, $help, DOCUMENTATION_URL); break;
-    case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help, DOCUMENTATION_URL); break;
-    case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help, DOCUMENTATION_URL); break;
-    case "op":      FrmInputSelect($k, $label, $lookup_op, $value, false, $help, DOCUMENTATION_URL); break;
-    case "chbox":   FrmInputChBox($k, $label, $value, true); break;
-    case "cond":    ConditionFrm($k, $label, $value); break;
-    case "order":   OrderFrm($k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
-    case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]["values"], $vw_data[$k], false, $help, DOCUMENTATION_URL); break;
-    case "none":    break;
-  }
+    switch( $input ) {
+        case "field":   FrmInputText($k, $label, $value, 254, 50, false, $help, DOCUMENTATION_URL); break;
+        case "area":    FrmTextarea($k, $label, $value, 4, 50, false, $help, DOCUMENTATION_URL); break;
+        case "areabig": FrmTextarea($k, $label, $value, 15, 80, false, $help, DOCUMENTATION_URL); break;
+        case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type][modification], $value, false, $help, DOCUMENTATION_URL); break;
+        case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help, DOCUMENTATION_URL); break;
+        case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help, DOCUMENTATION_URL); break;
+        case "op":      FrmInputSelect($k, $label, $lookup_op, $value, false, $help, DOCUMENTATION_URL); break;
+        case "chbox":   FrmInputChBox($k, $label, $value, true); break;
+        case "cond":    ConditionFrm($k, $label, $value); break;
+        case "order":   OrderFrm($k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
+        case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]["values"], $vw_data[$k], false, $help, DOCUMENTATION_URL); break;
+        case "none":    break;
+    }
 }
 echo "</table></td></tr>";
 
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
-  case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases());
-  case 'discus':      PrintAliasHelp(GetDiscussionAliases());
-                      break;
-  case 'field':       if( $r_fields )
-                        $fields = $r_fields;
-                      else
-                        list($fields,) = GetSliceFields($slice_id);
-                      PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']),$fields);
-                      break;
-  case 'justids':     PrintAliasHelp(GetAliasesFromFields('','','justids'));
-                      break;
-  case 'const':       PrintAliasHelp(GetConstantAliases());
-                      break;
-  case 'none':        break;
+    case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases());
+    case 'discus':      PrintAliasHelp(GetDiscussionAliases());    break;
+    case 'field':       if( $r_fields )
+                            $fields = $r_fields;
+                        else
+                            list($fields,) = GetSliceFields($slice_id);
+                        PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']),$fields);
+                        break;
+    case 'justids':     PrintAliasHelp(GetAliasesFromFields('','','justids'));
+                        break;
+    case 'links':
+    case 'categories':
+    case 'const':       PrintAliasHelp(GetAliases4Type( $VIEW_TYPES_INFO[$view_type]['aliases'] ));
+                        break;
+    case 'none':        break;
 }
 
-echo "<tr><td align='center'>
-      <input type=hidden name=view_id value='$view_id'>
-      <input type=submit name=update value='". _m("Update") ."'>&nbsp;&nbsp;<input
-             type=submit name=cancel value='". _m("Cancel") ."'></td></tr></table>
-    </FORM><br>";
+FrmInputButtons( array( 'update',
+                        'cancel',
+                        'view_id'   => array('value'=> $view_id),
+                        'view_type' => array('value'=> $view_type),
+                      ), $sess, $slice_id );
+echo "</table></FORM><br>";
+
 
 if( $view_id ) {
   $ssiuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF);

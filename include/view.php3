@@ -21,6 +21,8 @@ http://www.apc.org/
 
 require_once $GLOBALS["AA_INC_PATH"] . "itemview.php3";
 require_once $GLOBALS["AA_INC_PATH"] . "viewobj.php3";
+require_once $GLOBALS["AA_BASE_PATH"]. "modules/links/util.php3";
+require_once $GLOBALS["AA_BASE_PATH"]. "modules/links/linksearch.php3";
 
 # ----------------------------------------------------------------------------
 #                         view functions
@@ -302,6 +304,7 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 // Expand a set of view parameters, and return the view
 function GetView($view_param) {
   global $db, $nocache, $debug;
+
   trace("+","GetView",$view_param);
   #create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param).stringexpand_keystring();
@@ -335,6 +338,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
   $slices = $view_param["slices"];
   $mapslices = $view_param["mapslices"];
   $param_conds = $view_param["param_conds"];
+  $category_id = $view_param['cat'];
 //  $item_ids = $view_param["item_ids"];
   $zids = $view_param["zids"];
 //  $use_short_ids = $view_param["use_short_ids"];
@@ -347,6 +351,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                                  # alias - =1 for selected item
   # gets view data
   $view_info = GetViewInfo($vid);
+
   if (!$view_info OR ($view_info['deleted']>0)) {
     trace("-");
     return false;
@@ -437,11 +442,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
     case 'links':              // links       (module Links)
     case 'categories':         // categories  (module Likns)
-      if ( $view_param['cat'] ) {
-          $cat_path = Links_GetCategoryColumn( $view_param['cat'], 'path');
-      }
-      // no break here !!!
     case 'const':              // constants
+      if ( !$category_id )
+          $category_id = Links_SliceID2Category(unpack_id128($view_info['slice_id']));             // get default category for the view
       $format    = GetViewFormat($view_info);
       $aliases   = GetAliases4Type($view_info['type'],$als);
       if (! $conds )         # conds could be defined via cmd[]=d command
@@ -450,11 +453,14 @@ function GetViewFromDB($view_param, &$cache_sid) {
       if ( $view_info['type'] == 'const' ) {
           $zids             = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
           $content_function = 'GetConstantContent';
-      } elseif ( ($view_info['type'] == 'links') AND $cat_path ) {
-          $zids             = Links_QueryZIDs($cat_path, $conds, $sort, $view_param['show_subcat']);
-          $content_function = 'Links_GetLinkContent';
-      } elseif ( ($view_info['type'] == 'categories') AND $cat_path ) {
-          $zids             = Links_QueryCatZIDs($cat_path, $conds, $sort, $view_param['show_subcat']);
+      } elseif ( ($view_info['type'] == 'links') AND $category_id ) {
+          $cat_path = Links_GetCategoryColumn( $category_id, 'path');
+          if ( $cat_path ) {
+              $zids             = Links_QueryZIDs($cat_path, $conds, $sort, $view_param['show_subcat']);
+              $content_function = 'Links_GetLinkContent';
+          }
+      } elseif ( ($view_info['type'] == 'categories') AND $category_id ) {
+          $zids             = Links_QueryCatZIDs($category_id, $conds, $sort);
           $content_function = 'Links_GetCategoryContent';
       }
 
@@ -464,7 +470,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"],
                       $view_param["from"], $list_page, $zids->count(), $random);
 
-      $itemview = new itemview( $db, $format, $CONSTANT_FIELDS, $aliases,
+      $itemview = new itemview( $db, $format, GetConstantFields(), $aliases,
                                 $zids, $list_from, $listlen, shtml_url(),
                                 "", $content_function);
       return $itemview->get_output_cached($itemview_type);

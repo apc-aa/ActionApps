@@ -247,6 +247,12 @@ function Links_Category2SliceID($cid) {
     return unpack_id128(substr( $cid.'Links'.q_pack_id(AA_ID), 0, 16 ));
 }
 
+/** Get base category from slice id (reverse to Links_Category2SliceID())  */
+function Links_SliceID2Category($sl_id) {
+    $psl_id = q_pack_id($sl_id);
+    return (int) substr( $psl_id, 0, strspn($psl_id, "1234567890"));
+}
+
 /**
  * Loads data from database for given link ids (called in itemview class)
  * and stores it in the 'Abstract Data Structure' for use with 'item' class

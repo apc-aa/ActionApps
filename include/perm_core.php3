@@ -82,11 +82,12 @@ define("PS_LINKS_EDIT_LINKS",     "l");   # slice # edit links
 define("PS_LINKS_ADD_SUBCATEGORY","m");   # slice # add subcategory to category
 define("PS_LINKS_DEL_SUBCATEGORY","n");   # slice # delete subcategory from category
 define("PS_LINKS_ADD_LINK",       "o");   # slice # add new link
-define("PS_LINKS_LINK2FOLDER",    "p");   # slice # add new link
-define("PS_LINKS_LINK2ACT",       "q");   # slice # add new link
+define("PS_LINKS_LINK2FOLDER",    "p");   
+define("PS_LINKS_LINK2ACT",       "q");   
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
 // super         - possibly letters 'QRSTUVW'
-define("PS_LINKS_SETTINGS",       "T");   # slice # add new link
+define("PS_LINKS_SETTINGS",       "T");   
+define("PS_LINKS_EDIT_DESIGN",    "U");   
 
 //---------- Site -----------------
 // author        - possibly letters 'abcdefg'

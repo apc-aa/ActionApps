@@ -1,6 +1,6 @@
 <?php
-require_once $GLOBALS[AA_INC_PATH]."searchlib.php3";
-require_once "./constants.php3";
+require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
+require_once $GLOBALS['AA_BASE_PATH']. "modules/links/constants.php3";
 
 if (!defined ("LINKS_LINKSEARCH_INCLUDED"))
    	  define ("LINKS_LINKSEARCH_INCLUDED",1);
@@ -69,7 +69,6 @@ function IsFieldSupported($field_info, $v, $param) {
 function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app") {
     global $debug;                 # displays debug messages
     global $nocache;               # do not use cache, if set
-    global $LINKS_FIELDS;          # link fields definitions
 
     if( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
@@ -78,6 +77,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
     if ( $res = CachedSearch( $cache_condition, $keystr )) {
         return $res;
     }
+    $LINKS_FIELDS = GetLinkFields();
     ParseEasyConds($conds, $LINKS_FIELDS);
     if( $debug ) huhl( "<br>Conds after ParseEasyConds():", $conds, "<br>--");
 
@@ -158,29 +158,32 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
  *  @global bool $debug=1       - many debug messages
  *  @global bool $nocache       - do not use cache, even if use_cache is set
  */
-function Links_QueryCatZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app") {
+function Links_QueryCatZIDs($cid, $conds, $sort="", $type="app") {
     global $debug;                 # displays debug messages
     global $nocache;               # do not use cache, if set
-    global $CATEGORY_FIELDS;       # link fields definitions
 
-    if( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
+    if( $debug ) huhl( "<br>CatPath:", $cat_path, '<br>Subcat:', $subcat,"<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
-    $keystr = 'cats'.$cat_path . $subcat. serialize($conds). serialize($sort). $type;
+    $keystr = 'cats'.$cid. serialize($conds). serialize($sort). $type;
     $cache_condition = $use_cache AND !$nocache;
     if ( $res = CachedSearch( $cache_condition, $keystr )) {
         return $res;
     }
+    $CATEGORY_FIELDS = GetCategoryFields();
     ParseEasyConds($conds, $CATEGORY_FIELDS);
     if( $debug ) huhl( "<br>Conds after ParseEasyConds():", $conds, "<br>--");
 
     $where_sql    = MakeSQLConditions($CATEGORY_FIELDS, $conds, $foo);
     $order_by_sql = MakeSQLOrderBy(   $CATEGORY_FIELDS, $sort,  $foo);
 
-    $SQL  = 'SELECT  DISTINCT links_categories.id  FROM links_categories ';
+    $SQL  = "SELECT DISTINCT links_categories.id  FROM links_categories, links_cat_cat
+              WHERE links_categories.id = links_cat_cat.what_id 
+                AND links_cat_cat.category_id = $cid ";
+
     $SQL .=  $where_sql . $order_by_sql;
 
     # get result --------------------------
-    return GetZidsFromSQL( $SQL, 'id', $cache_condition, $keystr, "cat_path=$cat_path");
+    return GetZidsFromSQL( $SQL, 'id', $cache_condition, $keystr, "cat_path=" . Links_GetCategoryColumn( $cid, 'path'));
 }
 
 ?>
