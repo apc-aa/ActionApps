@@ -64,7 +64,7 @@ require $GLOBALS[AA_INC_PATH]."feeding.php3";
 
 function SendErrorPage($txt) {
   if( $GLOBALS["err_url"] ) {
-    go_url( con_url($GLOBALS["err_url"], "err=".substr(serialize($txt),0,100)));
+    go_url( con_url($GLOBALS["err_url"], "err=".substr(serialize($txt),0,200)));
   }
   echo (L_OFFLINE_ERR_BEGIN);
   if( isset( $txt ) AND is_array( $txt ) )
@@ -179,7 +179,7 @@ else {
 	if ($db->next_record())	{
 	 	# are we allowed to update this item?
 		if (!($db->f("flags") & ITEM_FLAG_ANONYMOUS_EDITABLE)) 
-			$err[] = "This item isn't allowed to be changed anonymously.";
+			$err[] = "This item no. $item_pid isn't allowed to be changed anonymously.";
 		# find the password.......x field to authenticate item update
 		reset ($fields);
 		while (list ($field) = each($fields))
