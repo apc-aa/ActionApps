@@ -277,24 +277,28 @@ $QuoteArray = array(":" => "_AA_CoLoN_",
 $UnQuoteArray = array_flip($QuoteArray);
 
 
-# Substitutes all colons with special AA string and back depending on unalias nesting.
-# Used to mark characters :{}() which are content, not syntax elements
+/** Substitutes all colons with special AA string and back depending on unalias 
+ *  nesting. Used to mark characters :{}() which are content, not syntax 
+ * elements
+ */
 function QuoteColons($level, $maxlevel, $text) {
-  global $QuoteArray, $UnQuoteArray; # Global so not built at each call
-  if( $level > 0 )                  # there is no need to substitute on level 1
-    return strtr($text, $QuoteArray);
-
-  #level 0 - return from unalias - change all back to ':'
-  if( ($level == 0) AND ($maxlevel > 0) )  # maxlevel - just for speed optimalization
-    return strtr($text, $UnQuoteArray);
-  return $text;
+    global $QuoteArray, $UnQuoteArray;  // Global so not built at each call
+    if ( $level > 0 ) {                 // there is no need to substitute on level 1
+        return strtr($text, $QuoteArray);
+    }
+    
+    // level 0 - return from unalias - change all back to ':'
+    if ( ($level == 0) AND ($maxlevel > 0) ) { // maxlevel - just for speed optimalization
+        return strtr($text, $UnQuoteArray);
+    }
+    return $text;
 }
 
-# Substitutes special AA 'colon' string back to colon ':' character
-# Used for parameters, where is no need colons are not parameter separators
+/** Substitutes special AA 'colon' string back to colon ':' character
+ *  Used for parameters, where is no need colons are not parameter separators
+ */
 function DeQuoteColons($text) {
-    global $UnQuoteArray;
-    return strtr($text, $UnQuoteArray);
+    return strtr($text, $GLOBALS['UnQuoteArray']);
 }
 
 /*
@@ -307,11 +311,9 @@ $GLOBALS[eb_functions] = array (
 
 
 // Alternative is to create functions starting with "stringexpand_"
-function stringexpand_testexpfnctn($var) {
-    return "Just testing it".$var;
-}
-function stringexpand_fmod($x,$y)   { return fmod($x,$y); }
-function stringexpand_cookie($name) { return $_COOKIE[$name]; }
+function stringexpand_testexpfnctn($var) { return "Just testing it".$var; }
+function stringexpand_fmod($x,$y)        { return fmod($x,$y); }
+function stringexpand_cookie($name)      { return $_COOKIE[$name]; }
 
 function stringexpand_substr($string,$start,$length=999999999) {
     return substr($string,$start,$length);
@@ -369,13 +371,47 @@ function getDictReplacePairs($dictionary, $format, $conds='') {
     return $replace_pairs;
 }
 
+
+/** Store $text in the $html_subst_arr array - used for distinary escaping html 
+ *  tags
+ */
+function makeAsShortcut($text) {
+    static $count=0;
+    $shortcut = '_AA_'.$count.'_ShCut';
+    $GLOBALS['html_subst_arr'][$shortcut] = stripslashes($text);
+    $count++;
+    return $shortcut;
+}
+
 /** Uses one slice ($dictionary) and replace any word which matches a word in
  *  dictionary by the text specified in $format
  */
 function stringexpand_dictionary($dictionaries, $text, $format, $conds='') {
     global $contentcache;
+    // get pairs (like APC - <a href="http://apc.org">APC</a>' from dict. slice
+    // (we call it through the contentcache in order it is called only once for 
+    // the same parameters)
     $replace_pairs = $contentcache->get_result("getDictReplacePairs", array($dictionaries, $format, $conds));
-    return strtr($text,$replace_pairs);
+    
+    // we do not want to replace text in the html tags, so we substitute all 
+    // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the 
+    // $html_subst_arr. Then it is used with replace_pairs to return back
+    $GLOBALS['html_subst_arr'] = array();
+    $search = array ("'<script[^>]*?>.*?</script>'sie",  // Strip out javascript
+                     "'<h[1-6][^>]*?>.*?</h[1-6]>'sie",  // Strip out titles (can't be nested)
+                     "'<a[^>]*?>.*?</a>'sie",            // Strip out links
+                     "'<[\/\!]*?[^<>]*?>'sie");          // Strip out HTML tags
+
+    $replace = array ("makeAsShortcut('\\0')", "makeAsShortcut('\\0')", "makeAsShortcut('\\0')", "makeAsShortcut('\\0')");
+
+    // substitute html tags with shortcuts
+    $text = preg_replace($search, $replace, $text);
+    
+    $replace_pairs = array_merge($replace_pairs,$GLOBALS['html_subst_arr']);
+    unset($GLOBALS['html_subst_arr']);                   // just clean up
+    
+    // do both: process dictionary words and put back the shortcuted text
+    return strtr($text,$replace_pairs);  
 }
 
 
