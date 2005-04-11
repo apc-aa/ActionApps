@@ -255,7 +255,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id)
                                   'value'                => 1,
                                   FIELDID_MAIL_CONFIRMED => 1 ));
             $zids  = QueryZIDs($slice->fields('record'), $slice->unpacked_id(), $conds);
-            writeLog("ALERTS", $ho, "Users for collection $cid: ". ((int)$zids->count()));
+            writeLog("ALERTS", "Users for collection $cid: ". ((int)$zids->count()), $ho);
 
             // loop through readers might want to send
             for( $i=0, $zcount=$zids->count(); $i<$zcount; $i++) {
@@ -277,7 +277,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id)
                         huhl("\n<br>send_mail_from_table(".$collection["emailid_alert"].", ".$readerContent->getValue(FIELDID_EMAIL).", $alias)");
                         $email_count[$cid]++;
                     } elseif (send_mail_from_table($collection["emailid_alert"], $readerContent->getValue(FIELDID_EMAIL), $alias)) {
-                        writeLog("ALERTS", $ho, "$cid: ". $readerContent->getValue(FIELDID_EMAIL));
+                        writeLog("ALERTS", "$cid: ". $readerContent->getValue(FIELDID_EMAIL), $ho);
                         $email_count[$cid]++;
                     }
                 }
@@ -285,7 +285,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id)
 
         // Use the emails sent as param
         } else {
-            writeLog("ALERTS", $ho, "Emails for collection $cid: ". ((int)count($emails)));
+            writeLog("ALERTS", "Emails for collection $cid: ". ((int)count($emails)), $ho);
             foreach ( (array)$emails as $email ) {
                 $alias["_#FILTERS_"] = get_filter_text_4_reader(null, $filters, $cid);
                 $alias["_#HOWOFTEN"] = $ho;
@@ -297,7 +297,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id)
                 }
             }
         }
-        writeLog("ALERTS", $ho, "Sent for collection $cid: ". ((int)$email_count[$cid]));
+        writeLog("ALERTS", "Sent for collection $cid: ". ((int)$email_count[$cid]), $ho);
     }
     freeDB($db);
     foreach ( (array)$email_count as $num ) {
