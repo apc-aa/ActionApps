@@ -345,7 +345,7 @@ function string2id($str) {
 
 // returns packed md5 id, not quoted !!!
 // Note that pack_id is used in many places where it is NOT 128 bit ids.
-function pack_id ($unpacked_id){
+function pack_id($unpacked_id){
     global $errcheck;
     // Give up tracking this, too many errors in Honza's code!
     /*
@@ -372,6 +372,7 @@ function now($step=false) {
         time() :
         ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
 }
+
 
 // returns number of second since 1970 from date in MySQL format
 function date2sec($dat) {
@@ -495,8 +496,8 @@ function huhlo($a) {
 }
 
 function get_microtime() {
-  list($usec, $sec) = explode(" ",microtime());
-  return ((float)$usec + (float)$sec);
+    list($usec, $sec) = explode(" ",microtime());
+    return ((float)$usec + (float)$sec);
 }
 
 // Set a starting timestamp, if checking times, huhl can report
@@ -1205,8 +1206,7 @@ function CountHit($id) {
     if ( rand(0,COUNTHIT_PROBABILITY) == 1) {
         $logarray = getLogEvents("COUNT_HIT", $from="", $to="", true, true);
         if ( isset($logarray) AND is_array($logarray) ) {
-            reset($logarray);
-            while (list(,$log) = each($logarray)) {
+            foreach ($logarray as $log) {
                 $myid = $log["params"];
                 $zid->refill($myid);
                 switch ($zid->onetype()) {
@@ -1349,64 +1349,6 @@ function filename ($filename) {
     return substr ($filename,$i+1);
 }
 
-/**
- * Transforms simplified version of conditions to the extended syntax
- * for example conds[0][headline........]='Hi' transforms into
- * conds[0][headline........]=1,conds[0]['value']='Hi',conds[0][operator]=LIKE
- *
- * It also replaceS all united field conds
- *    like conds[0][headline........,abstract........]='Hi'
- * with its equivalents:
- *     conds[0][headline........]=1,conds[0][abstract........]=1,
- *     conds[0]['value']='Hi',conds[0][operator]=LIKE
- * (number of united field conds is unlimited and you can use it in simplified
- *  condition syntax as well as in extended condition syntax)
- *
- * @param array $conds input/output - transformed conditions
- * @param array $defaultCondsOperator - could be scalar (default), but also
- *              array: field_id => array('operator'=>'LIKE')
- */
-function ParseEasyConds (&$conds, $defaultCondsOperator = "LIKE") {
-    if (is_array($conds)) {
-        // In first step we remove conds with wrong syntax (like conds[xx]=yy)
-        // and replace easy conds with extended syntax conds
-        foreach ($conds as $k => $cond) {
-            if ( !is_array($cond) ) {
-                unset($conds[$k]);
-                continue;             // bad condition - ignore
-            }
-            if ( !isset($cond['value']) && (count($cond) == 1) ) {
-                $conds[$k]['value'] = reset($cond);
-            }
-            if ( !isset($cond['operator']) ) {
-                if ( is_array($defaultCondsOperator) ) {
-                    if ( is_array($defaultCondsOperator[key($cond)] )) {
-                        $conds[$k]['operator'] = get_if($defaultCondsOperator[key($cond)]['operator'], 'LIKE');
-                    } else {
-                        $conds[$k]['operator'] = 'LIKE';
-                    }
-                } else {
-                    $conds[$k]['operator'] = $defaultCondsOperator;
-                }
-            }
-            if (!isset($conds[$k]['value']) OR ($conds[$k]['value']==""))
-            unset ($conds[$k]);
-        }
-        // and now replace all united conds (like conds[0][headline........,abstract........]=1)
-        // with its equivalents
-        foreach ($conds as $k => $cond) {
-            foreach ( $cond as $field => $val ) {
-                if ( strpos( $field, ',') !== false ) {
-                    unset($conds[$k][$field]);
-                    foreach ( explode(',',$field) as $separate_field ) {
-                        $conds[$k][$separate_field] = $val;
-                    }
-                }
-            }
-        }
-    }
-}
-
 function GetTimeZone() {
     $d = getdate();
     return (mktime ($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year'])
@@ -1473,13 +1415,13 @@ function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
 
 function split_escaped($pattern, $string, $escape_pattern) {
     $dummy = "~#$?_";
-    if (strstr($string, $dummy)) {
-        echo "INTERNAL ERROR."; return "INTERNAL ERROR";
+    while (strpos($string, $dummy) !== false) {
+        $dummy .= '^';   // add another strange character to the
     }
     $string  = str_replace($escape_pattern, $dummy, $string);
-    $strings = split($pattern, $string);
+    $strings = explode($pattern, $string);
     foreach ($strings as $key => $val) {
-        $strings[$key] = str_replace($dummy, $pattern, $val);
+        $strings[$key] = (string)str_replace($dummy, $pattern, $val);
     }
     return $strings;
 }
@@ -1788,21 +1730,6 @@ function trace($d,$v="NONE",$c="") {
     }
 }
 
-/** Transforms 'publish_date....-' like sort definition (used in prifiles, ...)
- *  to $arr['publish_date....'] = 'd' as used in sort[] array
- */
-function GetSortArray( $sort ) {
-    if ( !$sort )  return array();
-    switch ( substr($sort,-1) ) {    // last character
-        case '-':  return array( substr($sort,0,-1) => 'd' );
-        case '+':  return array( substr($sort,0,-1) => 'a' );
-    }
-    return array ( $sort => 'a' );
-}
-
-
-
-
 /** contentcache class - prevents from executing the same - time consuming code
  *  twice in one run of the script.
  *  Ussage:
@@ -1894,8 +1821,6 @@ class contentcache {
  *  by inserting some data in the database.
  */
 class toexecute {
-    // used for global cache of contents
-    var $onepass_tasks = 20;
 
     /** "class function" obviously called as toexecute::global_instance();
      *  This function makes sure, there is global instance of the class
@@ -1906,14 +1831,22 @@ class toexecute {
         }
     }
 
-    function later( $object, $params=array(), $priority=100, $time=null ) {
+    /** Stores the object and params to the database for later execution.
+     *  Such task is called from cron (the order depends on priority)
+     *  selector is used foridentifying class of task - used for deletion
+     *  of duplicated task
+     *  Example: we need to recount all links in allcategories (Links module),
+     *           so we need to cancel all older "recount" tasks, since it will
+     *           be dubled in the queue (we call cancel_all() method for it)
+     */
+    function later( &$object, $params=array(), $selector='', $priority=100, $time=null ) {
         global $auth;
         $varset = new Cvarset(
             array( 'created'       => time(),
                    'execute_after' => ($time ? $time : time()),
                    'aa_user'       => $auth->auth['uid'],
                    'priority'      => $priority,
-                   'selector'      => '',
+                   'selector'      => $selector,
                    'object'        => serialize($object),
                    'params'        => serialize($params)
                   ));
@@ -1926,31 +1859,51 @@ class toexecute {
          return true;
     }
 
-    function execute() {
+    function cancel_all($selector) {
+        $varset = new Cvarset;
+        $varset->doDeleteWhere('toexecute',"selector='".quote($selector)."'");
+    }
+
+    function execute($allowed_time = 10.0) {  // standard run is 10 s
+
+        /** there we store the the time needed for last task of given type
+         *  (selector) - this value we use in next round to determine, if we can
+         *  run one more such task or if we left it for next time */
+        $execute_times = array();
+
         $tasks = GetTable2Array("SELECT * FROM toexecute WHERE execute_after < ".now()." ORDER by priority", 'id', 'aa_fields');
 
-        $passcounter = $this->onepass_tasks;
-        foreach ( (array)$tasks as $task ) {
-            if ( !($passcounter--) ) {   // run only onepass_tasks tasks
-                break;
+        $execute_start = get_microtime();
+        if (is_array($tasks)) {
+            foreach ($tasks as $task) {
+                $task_type     = get_if($tasks['selector'],'aa_unspecified');
+                $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task if 1 second
+                $task_start    = get_microtime();
+
+                // can we run next task? Does it (most probably) fit in allowed_time?
+                if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
+                    break;
+                }
+                $varset = new Cvarset( array( 'priority' => max( $task['priority']-1, 0 )));
+                $varset->addkey('id', 'number', $task['id']);
+                // We lower the priority for this task before the execution, so
+                // if the task is not able to finish, then other tasks with the same
+                // priority is called before this one (next time)
+                $varset->doUpdate('toexecute');
+
+                $object = unserialize($task['object']);
+                if ( $GLOBALS['debug'] ) {huhl($object);}
+                $retcode = $this->execute_one($object, unserialize($task['params']));
+
+                // Task is done - remove it from queue
+                $varset->doDelete('toexecute');
+                writeLog('TOEXECUTE', "$expected_time:$retcode:".$task['params'], get_class($object));
+                $execute_times[$task_type] = get_microtime() - $task_start;
             }
-            $varset = new Cvarset( array( 'priority' => max( $task['priority']-1, 0 )));
-            $varset->addkey('id', 'number', $task['id']);
-            // We lower the priority for this task before the execution, so
-            // if the task is not able to finish, then other tasks with the same
-            // priority is called before this one (next time)
-            $varset->doUpdate('toexecute');
-            $object = unserialize($task['object']);
-
-            $retcode = $this->execute_one($object, unserialize($task['params']));
-
-            // Task is done - remove it from queue
-            $varset->doDelete('toexecute');
-            writeLog('TOEXECUTE', $retcode. ":".$task['params'], get_class($object));
         }
     }
 
-    function execute_one($object, $params) {
+    function execute_one(&$object, $params) {
         if ( !is_object($object) ) {
             return 'No object'; // Error
         }
