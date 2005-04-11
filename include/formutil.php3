@@ -1000,9 +1000,18 @@ class aainputfield {
         $selectedused = false;
         $select_string = ( $do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
 
+        $already_selected = array();    // array where we mark selected values
+        $pair_used        = array();    // array where we mark used pairs
         if (isset($arr) && is_array($arr)) {
             foreach ( $arr as $k => $v ) {
-                if( $usevalue ) $k = $v;    // special parameter to use values instead of keys
+                if ($usevalue) {
+                    $k = $v;    // special parameter to use values instead of keys
+                }
+
+                // ignore pairs (key=>value) we already used
+                if ($pair_used[$k."aa~$v"]) continue;
+                $pair_used[$k."aa~$v"] = true;   // mark this pair - do not use it again
+
                 $select_val = $testval ? $v : $k;
                 $selected = $this->if_selected($select_val, $select_string);
                 if ($selected != '') {
@@ -1225,7 +1234,7 @@ class aainputfield {
         $rows       = get_if( $rows      , 5 );
 
         $this->field_name('plus');
-        $this->echoo( getHierConstInitJavaScript($hcid, $group_id, $levelCount, "inputform", false) );
+        $this->echovar( getHierConstInitJavaScript($hcid, $group_id, $levelCount, "inputform", false), 'init_javascript' );
         $this->echoo( getHierConstBoxes($hcid, $levelCount, $horizontal, $name, false, $firstSelect, $boxWidth, $levelNames));
 
         $widthTxt = str_repeat("m",$boxWidth);
@@ -2436,7 +2445,7 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
         // search in all slices
         define("SCOPE_ALLSLICES",2);
 
-        list ($field_id, $scope) = split (":", $params);
+        list($field_id, $scope) = explode(":", $params);
         if (!strchr ($params, ":"))
             $scope = SCOPE_SLICE;
         if (strlen ($field_id) != 16) {
@@ -2446,7 +2455,7 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
         } else {
             global $slice_id, $db;
             if ($scope == SCOPE_USERNAME) {
-                $ok = IsUsernameFree ($variable);
+                $ok = IsUsernameFree($variable);
             }
             else {
                 if ($scope == SCOPE_SLICE)
