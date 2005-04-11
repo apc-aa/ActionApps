@@ -214,14 +214,20 @@ function parseLoop($out, &$item) {
                             // for something else we need use db
                             $par = getConstantValue($group_id, $what, $value['value']);
                         }
-                    } elseif(substr($params[$i],0,2) == "_#") { // special parameter is alias
+                    } elseif (substr($params[$i],0,2) == "_#") { // special parameter is alias
+                        /** alias could be used as:
+                         *       {list:relation........(_#GET_HEAD): ,:_#1}
+                         *  where _#GET_HEAD is alias defined somewhere in
+                         *  current slice using f_t (for example):
+                         *       {item:{loop............}:headline}
+                         *  this displays all the related headlines delimeted
+                         *   by comma
+                         */
                         // we need set some special field, which will be changed to actual
                         // constant value
-                        $item->set_field_value("loop............", "_#1");
+                        $item->set_field_value("loop............", $value['value']);
                         // get for this alias his output
                         $par = $item->get_alias_subst($params[$i],"loop............");
-                        // change _#1 to value
-                        $par = str_replace("_#1", $value['value'], $par);
                     }
                     $dummy = str_replace("_#".($i+1), $par, $dummy);
                 }
@@ -437,13 +443,18 @@ function makeAsShortcut($text) {
  *  @author Honza Malik, Hana Havelková
  */
 function stringexpand_dictionary($dictionaries, $text, $format, $conds='') {
-    global $contentcache;
+    global $pagecache;
+
+    // sometimes this function last to much time - try to extend it
+    if (($max_execution_time = ini_get('max_execution_time')) > 0) {
+        set_time_limit($max_execution_time+20);
+    }
 
     $delimiters = define_delimiters();
     // get pairs (like APC - <a href="http://apc.org">APC</a>' from dict. slice
-    // (we call it through the contentcache in order it is called only once for
+    // (we call it through the pagecache in order it is called only once for
     // the same parameters)
-    $replace_pairs = $contentcache->get_result("getDictReplacePairs", array($dictionaries, $format, $delimiters, $conds));
+    $replace_pairs = $pagecache->cacheMemDb("getDictReplacePairs", array($dictionaries, $format, $delimiters, $conds), new CacheStr2find($dictionaries));
 
     // we do not want to replace text in the html tags, so we substitute all
     // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the
