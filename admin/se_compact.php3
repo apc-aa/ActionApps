@@ -1,7 +1,7 @@
-<?php  
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
   http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ Copyright (C) 1999, 2000 Association for Progressive Communications
 require_once "../include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";     // GetAliasesFromField funct def 
+require_once $GLOBALS["AA_INC_PATH"]."item.php3";     // GetAliasesFromField funct def
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
 
@@ -36,7 +36,7 @@ if($cancel)
 if(!IfSlPerm(PS_COMPACT)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change compact view formatting"), "admin");
   exit;
-}  
+}
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
@@ -62,7 +62,7 @@ if( $update )
       ValidateInput("category_top", _m("Category top HTML"), $category_top, $err, false, "text");
       ValidateInput("category_format", _m("Category Headline"), $category_format, $err, true, "text");
       ValidateInput("category_bottom", _m("Category bottom HTML"), $category_bottom, $err, false, "text");
-    }  
+    }
     if( count($err) > 1)
       break;
 
@@ -83,24 +83,24 @@ if( $update )
       # historical reasons
     $varset->add("noitem_msg", "quoted", $noitem_msg ? $noitem_msg : " " );
 
-    if( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . " 
+    if( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . "
                       WHERE id='".q_pack_id($slice_id)."'")) {
       $err["DB"] = MsgErr( _m("Can't change slice settings") );
       break;   # not necessary - we have set the halt_on_error
-    }     
-    
+    }
+
     $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
-    
+
   }while(false);
   if( count($err) <= 1 )
     $Msg = MsgOK(_m("Design of compact design successfully changed"));
 }
 
 if( $slice_id!="" ) {  // set variables from database - allways
-/*  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top, 
+/*  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top,
                  compact_bottom, compact_remove, category_sort, category_format,
                  category_top, category_bottom, noitem_msg */
-	$SQL = " SELECT *
+    $SQL = " SELECT *
           FROM slice WHERE id='". q_pack_id($slice_id)."'";
   $db->query($SQL);
   if ($db->next_record()) {
@@ -125,10 +125,10 @@ if( $slice_id!="" ) {  // set variables from database - allways
         $group_by = $db->f("id");
         $gb_direction  = "2";      # number 2 represents 'a' - ascending (because gb_direction in number)
         $gb_header = 0;
-        $category_sort = 0;
       }
+      $category_sort = 0; // correct it
     }
-  }  
+  }
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -160,7 +160,7 @@ function InitPage() {
 function EnableClick(cond,what) {
   eval(what).disabled=!(eval(cond).checked);
   // property .disabled supported only in MSIE 4.0+
-}   
+}
 
 
 // -->
@@ -175,14 +175,14 @@ function EnableClick(cond,what) {
   echo "<H1><B>" . _m("Admin - design Index view") . "</B></H1>&nbsp;" . _m("Use these boxes ( and the tags listed below ) to control what appears on summary page");
   PrintArray($err);
   echo $Msg;
-  
+
   $form_buttons = array ("update",
                          "update" => array ('type' => 'hidden', 'value'=>'1'),
                          "cancel"=>array("url"=>"se_fields.php3"),
                          "default" => array('type' => 'button',
                                             'value' => _m("Default"),
                                             'add' => 'onclick="Defaults()"'));
-    
+
 ?>
 <form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
@@ -198,19 +198,19 @@ function EnableClick(cond,what) {
   FrmTextarea("compact_top", _m("Top HTML"), $compact_top, 4, 50, false,
                _m("HTML code which appears at the top of slice area"), DOCUMENTATION_URL, 1);
   FrmTextarea("odd_row_format", _m("Odd Rows"), $odd_row_format, 6, 50, false,
-               _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliase will be substituted by real values from database when it will be posted to page"), DOCUMENTATION_URL, 1); 
+               _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliase will be substituted by real values from database when it will be posted to page"), DOCUMENTATION_URL, 1);
   FrmInputChBox("even_odd_differ", _m("Use different HTML code for even rows"), $even_odd_differ, true, "OnClick=\"EnableClick('document.f.even_odd_differ','document.f.even_row_format')\"");
   FrmTextarea("even_row_format", _m("Even Rows"), $even_row_format, 6, 50, false,
-               _m("You can define different code for odd and ever rows\n                         <br>first red, second black, for example"), DOCUMENTATION_URL, 1); 
+               _m("You can define different code for odd and ever rows\n                         <br>first red, second black, for example"), DOCUMENTATION_URL, 1);
   FrmTextarea("compact_bottom", _m("Bottom HTML"), $compact_bottom, 4, 50, false,
-               _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1); 
+               _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1);
   echo "<tr><td class=tabtxt><b>"._m("Group by")."</b></td><td>";
   FrmSelectEasy ("group_by", $lookup_fields, $group_by);
   echo "<br>"."";
   echo "</td></tr>
   <tr><td>&nbsp;</td><td>";
   FrmSelectEasy ("gb_header", array (_m("Whole text"),_m("1st letter"),"2 "._m("letters"),"3 "._m("letters")), $gb_header);
-  FrmSelectEasy("gb_direction", array( '2'=>_m("Ascending"), '8' => _m("Descending"), '1' => _m("Ascending by Priority"), '9' => _m("Descending by Priority")  ), 
+  FrmSelectEasy("gb_direction", array( '2'=>_m("Ascending"), '8' => _m("Descending"), '1' => _m("Ascending by Priority"), '9' => _m("Descending by Priority")  ),
                 $gb_direction);
   PrintHelp( _m("'by Priority' is usable just for fields using constants (like category)") );
   echo "<input type=hidden name='category_sort' value='$category_sort'>";
@@ -218,9 +218,9 @@ function EnableClick(cond,what) {
   FrmTextarea("category_top", _m("Category top HTML"), $category_top, 4, 50, false,
                _m("HTML code which appears at the top of slice area"), DOCUMENTATION_URL, 1);
   FrmTextarea("category_format", _m("Category Headline"), $category_format, 6, 50, false,
-               _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliase will be substituted by real values from database when it will be posted to page"), DOCUMENTATION_URL, 1); 
+               _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliase will be substituted by real values from database when it will be posted to page"), DOCUMENTATION_URL, 1);
   FrmTextarea("category_bottom", _m("Category bottom HTML"), $category_bottom, 4, 50, false,
-               _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1); 
+               _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1);
   FrmInputText("compact_remove", _m("Remove strings"), $compact_remove, 254, 50, false,
                _m("Removes empty brackets etc. Use ## as delimeter."), DOCUMENTATION_URL);
   FrmInputText("noitem_msg", _m("'No item found' message"), $noitem_msg, 254, 50, false,
