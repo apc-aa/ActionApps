@@ -103,21 +103,21 @@ function ResampleImage($simage,$dimage,$new_w,$new_h) {
             $f="ImageCreateFrom".$imagetype;
             $src_img=$f($simage);
             if (!$src_img) return _m("ResampleImage unable to %1",array($f));
-            if ($debugupload)
-             huhl("imagecopyresized(...$new_w,$new_h,$imginfo[0],$imginfo[1]");
-            imageCopyResized($dst_img,$src_img,0,0,0,0,$new_w,$new_h,$imginfo[0],$imginfo[1]);
-            // Alternative on GD2, looks same to me (mitra)
-//            imageCopyresampled($dst_img,$src_img,0,0,0,0,$new_w,$new_h,$imginfo[0],$imginfo[1]);
-            //Header("Content-type: image/png");
+            if ($debugupload)  huhl("imagecopyresized(...$new_w,$new_h,$imginfo[0],$imginfo[1]");
+            if (function_exists('imagecopyresampled')) {
+                // better quality resizing - works with GD 2.0.1
+                imagecopyresampled($dst_img,$src_img,0,0,0,0,$new_w,$new_h,$imginfo[0],$imginfo[1]);
+            } else {
+                imagecopyresized($dst_img,$src_img,0,0,0,0,$new_w,$new_h,$imginfo[0],$imginfo[1]);
+            }
             $f="Image".$imagetype;
-            //$f($src_img);//,$img
             $f($dst_img,$dimage);
             if ($debugupload) huhl("Resampled it");
-        };
+        }
         return false;
     }
     else {
-    	$err = _m("Type not supported for resize");
+        $err = _m("Type not supported for resize");
         if ($debugupload) huhl($err);
         return $err;
     }
@@ -143,29 +143,29 @@ $imageTable = array(
 ######################################################
 
 function PrintSupportedTypes() {
-	global $imageTable;
-	reset($imageTable);
-	$it = ImageTypes();
-	while(list($k,$v) = each($imageTable)) {
-		print($v["u"].(($it & $v["b"]) ? " " : " Not ")."Supported \n");
-	}
+    global $imageTable;
+    reset($imageTable);
+    $it = ImageTypes();
+    while(list($k,$v) = each($imageTable)) {
+        print($v["u"].(($it & $v["b"]) ? " " : " Not ")."Supported \n");
+    }
 }
 
 function GetSupportedTypes($type) { //type 1-gif, 2-jpeg, 3-png;
-	global $imageTable, $debugupload;
+    global $imageTable, $debugupload;
     if (!GDInstalled()) {
-    	if ($debugupload) huhl("GD not installed");
+        if ($debugupload) huhl("GD not installed");
         return(false);
     }
-    	if ($debugupload) huhl("ImageTypes = ",ImageTypes());
-	if (ImageTypes() & $imageTable[$type]["b"]) return true;
-	// Note won't see this warning when run in itemedit cos redirects
+        if ($debugupload) huhl("ImageTypes = ",ImageTypes());
+    if (ImageTypes() & $imageTable[$type]["b"]) return true;
+    // Note won't see this warning when run in itemedit cos redirects
         huhe("Warning: GD cant manipulate ".imgU($type)." images");
         return false;
 }
 function imgU($type) {
-	global $imageTable;
-	return ($imageTable[$type]["u"] ? $imageTable[$type]["u"]
-		: ("Type ".$type));
+    global $imageTable;
+    return ($imageTable[$type]["u"] ? $imageTable[$type]["u"]
+        : ("Type ".$type));
 }
 ?>
