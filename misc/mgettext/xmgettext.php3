@@ -25,20 +25,142 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/** Prints language file header. */
-function lang_file_header ($fd, $lang)
-{
-    fputs ($fd, "<?php\n");
-    fputs ($fd, "# \$Id$\n");
-    fputs ($fd, "# Language: ".strtoupper($lang)."\n");
-    fputs ($fd, "# This file was created automatically by the Mini GetText environment\n");
-    fputs ($fd, "# on ".date("j.n.Y H:i")."\n\n");
-    fputs ($fd, "# Do not change this file otherwise than by typing translations on the right of =\n\n");
-    fputs ($fd, "# Before each message there are links to program code where it was used.\n");
-    fputs ($fd, "\n");
-    fputs ($fd, "\$mgettext_lang = \"$lang\";\n");
-    fputs ($fd, "\n");
+/** abstract class as base for different language file formats */
+class mgettext_writer {
+    var $fd;   // file
+
+    function mgettext_writer($langfile) {
+        $this->fd = fopen($langfile, "wb");
+    }
+
+    function write_header($lang)     {}
+    function write_pair(&$pair)      {}
+    function write_footer()          {}
+    function write_comment($comment) {}
+    /** Prepares a string to be printed in double quotes into a file. */
+    function prepare_string($str)    {}
+    function close()                 {}
 }
+
+
+/** Writer class for PHP language files */
+class mgettext_writer_php extends mgettext_writer {
+
+    /** constructor */
+    function mgettext_writer_php($langfile) {
+        echo "<br>open $langfile";
+        $this->fd = fopen($langfile, "wb");
+    }
+
+    /** Prints language file header. */
+    function write_header($lang) {
+        fputs($this->fd, "<?php\n");
+        fputs($this->fd, "# \$Id$\n");
+        fputs($this->fd, "# Language: ".strtoupper($lang)."\n");
+        fputs($this->fd, "# This file was created automatically by the Mini GetText environment\n");
+        fputs($this->fd, "# on ".date("j.n.Y H:i")."\n\n");
+        fputs($this->fd, "# Do not change this file otherwise than by typing translations on the right of =\n\n");
+        fputs($this->fd, "# Before each message there are links to program code where it was used.\n");
+        fputs($this->fd, "\n");
+        fputs($this->fd, "\$mgettext_lang = \"$lang\";\n");
+        fputs($this->fd, "\n");
+    }
+
+    /** Write language constructs */
+    function write_pair(&$pair) {
+        $text = "";
+        if ($pair['comments']) {
+            foreach ( $pair['comments'] as $comment ) {
+                $text .= "# $comment\n";
+            }
+        }
+        $text .= "\$_m[".$this->prepare_string($pair['message'])."]\n = ".$this->prepare_string($pair['translation']).";\n\n";
+        fputs($this->fd, $text);
+    }
+
+    function write_comment($comment) {
+        fputs($this->fd, "# $comment\n");
+    }
+
+    function write_footer() {
+        fputs($this->fd, "?>\n");
+    }
+
+    function close() {
+        fclose($this->fd);
+    }
+
+    /** Prepares a string to be printed in double quotes into a file. */
+    function prepare_string($str) {
+        $str = str_replace(array("\\", '"', "$"), array("\\\\",'\\"', "\\$"), $str);
+        // write line ends as new lines, but handle two line ends in other way
+        while (strstr($str, "\n\n")) {
+            $str = str_replace("\n\n", "\\n\n", $str);
+        }
+        $str = str_replace("\n", "\\n\"\n   .\"", $str);
+        return '"'.$str.'"';
+    }
+}
+
+/** Writer class for PO (gettext) language files */
+class mgettext_writer_po extends mgettext_writer {
+
+    /** constructor */
+    function mgettext_writer_po($langfile) {
+        echo "<br>open (PO) $langfile";
+        $this->fd = fopen($langfile, "wb");
+    }
+
+    /** Prints language file header. */
+    function write_header($lang) {
+        fputs($this->fd, "# \$Id$\n");
+        fputs($this->fd, "# Language: ".strtoupper($lang)."\n");
+        fputs($this->fd, "# This file was created automatically by the Mini GetText environment\n");
+        fputs($this->fd, "# on ".date("j.n.Y H:i")."\n\n");
+        fputs($this->fd, "# Before each message there are links to program code where it was used.\n");
+        fputs($this->fd, "# \n");
+        fputs($this->fd, "# \$mgettext_lang = \"$lang\";\n");
+        fputs($this->fd, "# \n\n");
+    }
+
+    /** Write language constructs */
+    function write_pair(&$pair) {
+        $text = "";
+        if ($pair['comments']) {
+            foreach ( $pair['comments'] as $comment ) {
+                $text .= "# $comment\n";
+            }
+        }
+        $text .= "msgid ". $this->prepare_string($pair['message'])."\n";
+        $text .= "msgstr ".$this->prepare_string($pair['translation'])."\n\n";
+        fputs($this->fd, $text);
+    }
+
+    function write_comment($comment) {
+        fputs($this->fd, "# $comment\n");
+    }
+
+    function write_footer() {
+        fputs($this->fd, "");
+    }
+
+    function close() {
+        fclose($this->fd);
+    }
+
+    /** Prepares a string to be printed in double quotes into a file. */
+    function prepare_string($str) {
+        $str = str_replace(array("\\", '"'), array("\\\\",'\\"'), $str);
+        // write line ends as new lines, but handle two line ends in other way
+        while (strstr($str, "\n\n")) {
+            $str = str_replace("\n\n", "\\n\n", $str);
+        }
+        $str = str_replace("\n", "\\n\"\n   \"", $str);
+        return '"'.$str.'"';
+    }
+
+}
+
 
 // -------------------------------------------------------------------------------------
 /**
@@ -66,10 +188,10 @@ function lang_file_header ($fd, $lang)
 *                         If empty, no logs are used.
 * $param bool   $add_source_links Should xmgettext add commentary specifying where was the message used?
 */
-function xmgettext ($lang_list, $logfile, $lang_files, $files_base_dir, $files, $chmod = 0664, $stop_on_warning = true,
-    $old_logs = "", $add_source_links = true) {
+function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $chmod=0664, $stop_on_warning=true,
+                   $old_logs="", $add_source_links=true, $file_type='php3') {
     set_time_limit(10000);
-    collect_messages ($logfile, $files_base_dir, $files, $messages, $warnings);
+    collect_messages($logfile, $files_base_dir, $files, $messages, $warnings);
 
     if (is_array ($warnings)) {
         echo "<Br>Warnings:<br>";
@@ -78,84 +200,96 @@ function xmgettext ($lang_list, $logfile, $lang_files, $files_base_dir, $files, 
     }
 
     reset ($lang_list);
-    while (list ($lang) = each ($lang_list)) {
+    while (list($lang) = each ($lang_list)) {
         $langfile = str_replace ("??", $lang, $lang_files);
         // read the language constants
         $_m = "";
-        if (file_exists ($langfile)) {
+        echo "<br> exist $langfile?";
+        if (file_exists($langfile)) {
+            echo " YES - require it - ";
             require $langfile;
         }
-        if ($old_logs)
-            add_old_translations ($old_logs, $lang, $_m, $other_translations);
+        echo count($_m) ." ($old_logs)";
+
+        if ($old_logs) {
+            add_old_translations($old_logs, $lang, $_m, $other_translations);
+        }
+        echo " - ". count($_m) .'<br>';
 
         // write the file
-        $fd = fopen ($langfile, "wb");
-        lang_file_header ($fd, $lang);
+        if ($file_type == 'php3') {
+            $out = new mgettext_writer_php($langfile);
+        } else {
+            $out = new mgettext_writer_po(str_replace('php3', 'PO', $langfile));
+        }
+        $out->write_header($lang);
 
-        if (is_array ($_m)) {
+        if (is_array($_m)) {
             // unused messages
-            fputs ($fd, "# Unused messages\n");
-            reset ($_m);
-            while (list ($message, $tr) = each ($_m))
-                if (!isset ($messages[$message]) && $tr)
-                    fputs ($fd, "\$_m[".prepare_string($message)."]\n".
-                        "  = ".prepare_string($tr).";\n");
-            fputs ($fd, "# End of unused messages\n\n");
+            $out->write_comment('Unused messages');
+            foreach ( $_m as $message => $tr) {
+                if (!isset($messages[$message]) && $tr) {
+                    $pair = array('message'=>$message, 'translation'=>$tr);
+                    $out->write_pair($pair);
+                }
+            }
+            $out->write_comment('End of unused messages');
         }
 
         // messages with code location description and other translations (from old lang files)
         if (is_array ($messages)) {
-            reset ($messages);
-            while (list ($message, $params) = each ($messages)) {
-                reset ($params["code"]);
-                if ($add_source_links)
-                    while (list ($filename,$rows) = each ($params["code"]))
-                        fputs ($fd, "# $filename, row ".join(", ",$rows)."\n");
+            foreach ( $messages as $message => $params) {
+                $pair = array();    // clean the variable
+                if ($add_source_links) {
+                    foreach ($params["code"] as $filename => $rows) {
+                        $pair['comments'][] = "$filename, row ".join(", ",$rows);
+                    }
+                }
 
                 // other translations
                 if (is_array ($other_translations) && $other_translations[$message]) {
-                    reset ($other_translations[$message]);
                     $other_join = "";
-                    while (list ($other) = each ($other_translations[$message]))
+                    foreach ( $other_translations[$message] as $other => $foo) {
                         $other_join[] = $other;
-                    fputs ($fd, "# other translations: ".join (", ", $other_join)."\n");
+                    }
+                    $pair['comments'][] = "other translations: ".join (", ", $other_join);
                 }
 
                 $mmsg = $_m[$message];
-                if ($message == $mmsg)
+                if ($message == $mmsg) {
                     $mmsg = "";
-                fputs ($fd, "\$_m[".prepare_string($message)."]\n".
-                    "  = ".prepare_string($mmsg).";\n");
-                fputs ($fd, "\n");
+                }
+                $pair['message']     = $message;
+                $pair['translation'] = $mmsg;
+                $out->write_pair($pair);
             }
         }
-        fputs ($fd, "?>\n");
-        fclose ($fd);
-        chmod ($langfile, $chmod);
+        $out->write_footer();
+        $out->close();
+        chmod($langfile, $chmod);
     }
 }
 
 // -------------------------------------------------------------------------------------
 
 /** Adds translations from logs from old language files to $_m. */
-function add_old_translations ($log_files, $lang, &$_m, &$other_translations) {
-    $file = str_replace ("??","en",$log_files);
-    if (!file_exists ($file))
+function add_old_translations($log_files, $lang, &$_m, &$other_translations) {
+    $file = str_replace("??","en",$log_files);
+    if (!file_exists($file)) {
         echo "ERROR: $file does not exist<br>";
-    else {
+    } else {
         $_log = "";
         require $file;
         $en_log = $_log;
         $_log = "";
-        require str_replace ("??",$lang,$log_files);
-        reset ($en_log);
-        while (list ($msg, $names) = each ($en_log)) {
-            reset ($names);
-            while (list (, $name) = each ($names)) {
-                if (!$_m[$msg])
+        require str_replace("??",$lang,$log_files);
+        foreach ($en_log as $msg => $names) {
+            foreach ($names as $name) {
+                if (!$_m[$msg]) {
                     $_m[$msg] = $_log[$name];
-                else if ($_m[$msg] != $_log[$name])
+                } elseif ($_m[$msg] != $_log[$name]) {
                     $other_translations[$msg][$_log[$name]] = 1;
+                }
             }
         }
     }
@@ -163,8 +297,8 @@ function add_old_translations ($log_files, $lang, &$_m, &$other_translations) {
 
 /** creates php string which could be printed into ph apostroph construct */
 function php_string($text) {
-    $text = str_replace ("\\", "\\\\", $text);
-    return  str_replace ("'",  "\\'",  $text);
+    $text = str_replace("\\", "\\\\", $text);
+    return  str_replace("'",  "\\'",  $text);
 }
 
 /** add file to $skiplist or $filelist */
@@ -189,18 +323,18 @@ function mark_file_4_processing($dirname, $fname, $skip, &$skiplist, &$filelist)
 *                    $messages [message_text]["code"][filename][row_number]
 * @param array $warnings (output) wrong syntax warnings
 */
-function collect_messages ($logfile, $files_base_dir, $files, &$messages, &$warnings)
+function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warnings)
 {
     // creates a log file allowing to process lots of files
 
     if (file_exists ($logfile)) {
         require $logfile;
     }
-    reset ($files);
-    while (list (,$fname) = each ($files)) {
+    foreach ( $files as $fname) {
         $skip = ($fname[0] == "-");
-        if ($skip)
+        if ($skip) {
             $fname = substr ($fname, 1);
+        }
         echo "$fname<br>";
         if (! is_dir($files_base_dir.$fname)) {
             mark_file_4_processing('', $fname, $skip, $skiplist, $filelist);
@@ -216,24 +350,23 @@ function collect_messages ($logfile, $files_base_dir, $files, &$messages, &$warn
         }
     }
 
-    if (is_array ($skiplist)) {
-        reset ($skiplist);
-        while (list ($skipfile) = each ($skiplist))
-            unset ($filelist[$skipfile]);
+    if (is_array($skiplist)) {
+        foreach ($skiplist as $skipfile => $foo) {
+            unset($filelist[$skipfile]);
+        }
     }
 
-    reset ($filelist);
-    while (list ($filename) = each ($filelist)) {
-        $messages = array ();
-        $warnings = array ();
+    foreach ($filelist as $filename => $foo) {
+        $messages = array();
+        $warnings = array();
         if (!$processed_files[$filename]) {
-            collect_messages_from_file ($files_base_dir, $filename, $messages, $warnings);
-            $msgstr = php_string(serialize ($messages));
-            $wrnstr = php_string(serialize ($warnings));
-            $fd = fopen ($logfile, "ab");
-            chmod ($logfile, 0664);
-            fwrite ($fd, "\n<?php \$processed_files[\n\n'$filename']=array ('messages'=>'$msgstr','warnings'=>'$wrnstr');?>");
-            fclose ($fd);
+            collect_messages_from_file($files_base_dir, $filename, $messages, $warnings);
+            $msgstr = php_string(serialize($messages));
+            $wrnstr = php_string(serialize($warnings));
+            $fd = fopen($logfile, "ab");
+            chmod($logfile, 0664);
+            fwrite($fd, "\n<?php \$processed_files[\n\n'$filename']=array ('messages'=>'$msgstr','warnings'=>'$wrnstr');?>");
+            fclose($fd);
         }
     }
 
@@ -242,25 +375,22 @@ function collect_messages ($logfile, $files_base_dir, $files, &$messages, &$warn
     $messages = "";
     $warnings = "";
     require $logfile;
-    reset ($processed_files);
-    while (list (,$msgwrn) = each ($processed_files)) {
-        $msg = unserialize ($msgwrn["messages"]);
-        if (is_array ($msg)) {
-            reset ($msg);
-            while (list ($message,$code) = each ($msg)) {
-                reset ($code["code"]);
-                while (list ($filename,$rows) = each ($code["code"])) {
-                    reset ($rows);
-                    while (list (,$row) = each ($rows))
+    foreach ($processed_files as $msgwrn) {
+        $msg = unserialize($msgwrn["messages"]);
+        if (is_array($msg)) {
+            foreach ($msg as $message => $code) {
+                foreach ($code["code"] as $filename => $rows) {
+                    foreach ($rows as $row) {
                         $messages [$message]["code"][$filename][] = $row;
+                    }
                 }
             }
         }
-        $wrn = unserialize ($msgwrn["warnings"]);
+        $wrn = unserialize($msgwrn["warnings"]);
         if (is_array ($wrn)) {
-            reset ($wrn);
-            while (list (,$warning) = each ($wrn))
+            foreach ($wrn as $warning) {
                 $warnings[] = $warning;
+            }
         }
     }
 
@@ -275,13 +405,13 @@ function collect_messages_from_file ($base_dir, $filename, &$messages, &$warning
 {
     $content = file ($base_dir.$filename);
     $filetext = "";
-    reset ($content);
-    while (list ($irow, $row) = each ($content)) {
+    foreach ( $content as $irow => $row) {
         $row_start [$irow+1] = strlen ($filetext);
         $filetext .= $row;
     }
-    if (!strstr ($filetext, "_m"))
+    if (!strstr ($filetext, "_m")) {
         return;
+    }
 
     $quotes = "0";
     $comment = "0";
@@ -290,26 +420,26 @@ function collect_messages_from_file ($base_dir, $filename, &$messages, &$warning
     if ($debug) echo "<br><br><hr>File $filename";
 
     for ($pos = 0; $pos < strlen ($filetext); $pos ++) {
-        if ($row_start [$irow+1] && $row_start[$irow+1] <= $pos)
+        if ($row_start [$irow+1] && $row_start[$irow+1] <= $pos) {
             $irow ++;
+        }
 
         // comments of all types (#, //, /*)
 
         if ($comment == "0" && $quotes == "0") {
-            if ($filetext[$pos] == "#")
+            if ($filetext[$pos] == "#") {
                 $comment = "#";
-            else if (substr ($filetext, $pos, 2) == "//") {
+            } elseif (substr ($filetext, $pos, 2) == "//") {
                 $comment = "#";
                 $pos ++;
-            }
-            else if (substr ($filetext, $pos, 2) == "/*") {
+            } elseif (substr ($filetext, $pos, 2) == "/*") {
                 $comment = "/*";
                 $pos ++;
             }
         }
-        else if ($comment == "#" && $filetext[$pos] == "\n")
+        elseif ($comment == "#" && $filetext[$pos] == "\n") {
             $comment = "0";
-        else if ($comment == "/*" && substr ($filetext, $pos, 2) == "*/") {
+        } elseif ($comment == "/*" && substr ($filetext, $pos, 2) == "*/") {
             $comment = "0";
             $pos ++;
         }
@@ -318,112 +448,99 @@ function collect_messages_from_file ($base_dir, $filename, &$messages, &$warning
 
         if ($comment == "0" && strchr ("\"'", $filetext[$pos])) {
             if ($pos == 0 || $filetext[$pos-1] != "\\") {
-                if (!$quotes)
+                if (!$quotes) {
                     $quotes = $filetext[$pos];
-                else if ($quotes == $filetext[$pos])
+                } elseif ($quotes == $filetext[$pos]) {
                     $quotes = "0";
+                }
             }
         }
 
-        if ($find == 0)
+        if ($find == 0) {
             $message = "";
+        }
 
         //if ($find) echo $find;
         //if ($quotes != $old_quotes) echo "row $irow: $quotes<br>";
         $old_quotes = $quotes;
 
-        if (!$comment)
-        switch ($find) {
-        // outside _m()
-        case 0:
-            if (($pos == 0 || !isidletter ($filetext[$pos-1]))
-              && $filetext[$pos] == '_'
-              && $filetext[$pos+1] == 'm'
-              && !isidletter ($filetext[$pos+2])) {
-                if ($quotes == "0") {
-                    // _m was the whole identifier
-                    $find = 1;
-                    $pos ++;
+        if (!$comment) {
+            switch ($find) {
+            // outside _m()
+            case 0:
+                if (($pos == 0 || !isidletter ($filetext[$pos-1]))
+                  && $filetext[$pos] == '_'
+                  && $filetext[$pos+1] == 'm'
+                  && !isidletter ($filetext[$pos+2])) {
+                    if ($quotes == "0") {
+                        // _m was the whole identifier
+                        $find = 1;
+                        $pos ++;
+                    }
+                    //else echo "<br>row $irow: _m inside quotes $quotes<br>";
                 }
-                //else echo "<br>row $irow: _m inside quotes $quotes<br>";
-            }
-            break;
-        // after _m
-        case 1:
-            if (isspace ($filetext[$pos]))
-                continue;
-            else if ($filetext[$pos] == '(') {
-                $find = 2;
-            }
-            else $find = 0;
-            break;
-        // after _m (
-        case 2:
-            if ($quotes == "0") {
+                break;
+            // after _m
+            case 1:
                 if (isspace ($filetext[$pos]))
                     continue;
+                else if ($filetext[$pos] == '(') {
+                    $find = 2;
+                }
+                else $find = 0;
+                break;
+            // after _m (
+            case 2:
+                if ($quotes == "0") {
+                    if (isspace ($filetext[$pos]))
+                        continue;
+                    else {
+                        $warnings[] = "$filename, row $irow: bad syntax after _m (";
+                        $find = 0;
+                    }
+                }
                 else {
-                    $warnings[] = "$filename, row $irow: bad syntax after _m (";
+                    $find = 3;
+                    $quotes_start = $quotes;
+                }
+                break;
+            // inside message, e.g. after _m ( " or after _m ( "Hello" . "
+            case 3:
+                if ($quotes != "0") {
+                    $message_part .= $filetext[$pos];
+                    if ($filetext[$pos] == '$' && $quotes == '"'
+                     && $filetext[$pos-1] != "\\")
+                        $warnings[] = "$filename, row $irow: using variable in _m is not allowed";
+                }
+                else {
+                    $to_be_evaled = "\$message .= ".$quotes_start.$message_part.$quotes_start.";";
+                    $message_part = "";
+                    eval($to_be_evaled);
+                    $find = 4;
+                }
+                break;
+            // after message, e.g. _m ( "Hello"
+            case 4:
+                if (isspace($filetext[$pos])) {
+                    ;
+                } elseif ($filetext[$pos] == ".") {
+                    $find = 2;
+                } elseif ($filetext[$pos] == "," || $filetext[$pos] == ")") {
+                    $messages [$message]["code"][$filename][] = $irow;
+                    $find = 0;
+                } else {
+                    $warnings[] = "$filename, row $irow: bad syntax inside _m () after $message";
                     $find = 0;
                 }
+                break;
             }
-            else {
-                $find = 3;
-                $quotes_start = $quotes;
-            }
-            break;
-        // inside message, e.g. after _m ( " or after _m ( "Hello" . "
-        case 3:
-            if ($quotes != "0") {
-                $message_part .= $filetext[$pos];
-                if ($filetext[$pos] == '$' && $quotes == '"'
-                 && $filetext[$pos-1] != "\\")
-                    $warnings[] = "$filename, row $irow: using variable in _m is not allowed";
-            }
-            else {
-                $to_be_evaled = "\$message .= ".$quotes_start.$message_part.$quotes_start.";";
-                $message_part = "";
-                eval ($to_be_evaled);
-                $find = 4;
-            }
-            break;
-        // after message, e.g. _m ( "Hello"
-        case 4:
-            if (isspace ($filetext[$pos]))
-                ;
-            else if ($filetext[$pos] == ".")
-                $find = 2;
-            else if ($filetext[$pos] == "," || $filetext[$pos] == ")") {
-                $messages [$message]["code"][$filename][] = $irow;
-                $find = 0;
-            }
-            else {
-                $warnings[] = "$filename, row $irow: bad syntax inside _m () after $message";
-                $find = 0;
-            }
-            break;
         }
     }
 }
 
 // -------------------------------------------------------------------------------------
 
-/** Prepares a string to be printed in double quotes into a file. */
-function prepare_string ($str) {
-    $str = str_replace ("\\", "\\\\", $str);
-    $str = str_replace ('"', '\\"', $str);
-    $str = str_replace ("$", "\\$", $str);
-    // write line ends as new lines, but handle two line ends in other way
-    while (strstr ($str, "\n\n"))
-        $str = str_replace ("\n\n", "\\n\n", $str);
-    $str = str_replace ("\n", "\\n\"\n   .\"", $str);
-    return '"'.$str.'"';
-}
-
-
-// -------------------------------------------------------------------------------------
-
-function isidletter ($c)
+function isidletter($c)
 { return ($c >= 'a' && $c <= 'z')
       || ($c >= 'A' && $c <= 'Z')
       || ($c >= '0' && $c <= '9')
@@ -431,15 +548,15 @@ function isidletter ($c)
       || (ord ($c) > 127);
 }
 
-function isspace ($c)
-{ return strchr (" \t\r\n", $c); }
+function isspace($c)
+{ return strchr(" \t\r\n", $c); }
 
 /** strips path from file name */
-function filepath ($filename) {
-    if (!strstr ($filename,"/")) return "./";
+function filepath($filename) {
+    if (!strstr($filename,"/")) return "./";
     $i = strlen($filename);
     while ($filename[$i] != "/") $i --;
-    return substr ($filename,0,$i+1);
+    return substr($filename,0,$i+1);
 }
 
 ?>

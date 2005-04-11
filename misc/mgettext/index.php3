@@ -37,25 +37,28 @@ require_once "./translate.php3";
 require_once "./createlogs.php3";
 
 // list of all languages. Useful if you want e.g. to update only one language file.
-$lang_list = array ("cz"=>1,
-                    "sk"=>1,
-                    "es"=>1,
-                    "en"=>1,
-                    "ro"=>1,
-                    "ja"=>1,
-                    "de"=>1,
-                    "ru"=>1,
-                    "vn"=>1,
+$lang_list = array ("cz"     => 1,
+                    "sk"     => 1,
+                    "es"     => 1,
+                    "en"     => 1,
+                    "en-utf8"=> 1,
+                    "ro"     => 1,
+                    "ja"     => 1,
+                    "de"     => 1,
+                    "ru"     => 1,
+                    "vn"     => 1,
+                    "fr"     => 1,
+                    "hr"     => 1
                    );
 
 // $aadir is the source dir for updating translation files
 $aadir = $AA_BASE_PATH;
-endslash ($aadir);
+endslash($aadir);
 /* IMPORTANT:
    $destdir is the destination dir where are the copies of language files to which
    PHP has read-write access. By default, it is set in config.php3. */
 $destdir = $XMGETTEXT_DESTINATION_DIR;
-endslash ($destdir);
+endslash($destdir);
 
 /* IMPORTANT:
    Groups of directories / files assigned to individual language files.
@@ -130,8 +133,9 @@ $old_lang_files = $aadir."include/??_".$old_group."_lang.php3";
 $log_files = $destdir."log_??_".$old_group."_lang.php3";
 
 // directories from which to translate files (replace language constants by _m() calls)
-$translate_dirlist = array (".","include","admin","modules","modules/module_TEMPLATE",
-    "modules/jump", "modules/alerts", "misc/oldDb2db", "modules/links");
+$translate_dirlist = array (".","include","admin",
+    "modules","modules/module_TEMPLATE", "modules/jump", "modules/alerts", "modules/links",
+    "misc/oldDb2db", 'misc/charset', 'misc/msconvert', 'misc/offline2slice');
 
 
 /*
@@ -149,60 +153,63 @@ $translate_lang_file = str_replace ("??","en",$old_lang_files);
 // ----------------------------------------------------------------------------
 
 // Command called from the form:
-if ($cmd == "create logs")
-    create_logs ($lang_list, $old_lang_files, $log_files);
-else if ($cmd == "update language files" && is_array ($update))
-    update_language_files ($aadir, $destdir, false);
-else if ($cmd == "convert scripts")
-    translate_aa_files ($aadir, $translateddir);
+if ($cmd == "create logs") {
+    create_logs($lang_list, $old_lang_files, $log_files);
+} elseif ($cmd == "update language files" && is_array ($update)) {
+    update_language_files($aadir, $destdir, false);
+} elseif ($cmd == "convert scripts") {
+    translate_aa_files($aadir, $translateddir);
+}
 
 // ----------------------------------------------------------------------------
 
-function update_language_files ($aadir, $destdir)
+function update_language_files($aadir, $destdir)
 {
-    global $update, $lang_groups, $addlogs, $lang_list;
+    global $update, $lang_groups, $addlogs, $lang_list, $file_type;
     //echo $aadir." ".$destdir;    @mkdir ($destdir, 0777);
 
     $logfile = $destdir."log_language_updates.php3";
-    if (file_exists ($logfile))
+    if (file_exists ($logfile)) {
         include $logfile;
+    }
 
     $xmgettext_logfile = $destdir."collect_msg_log.php3";
 
-    reset ($lang_groups);
-    while (list ($langfiles, $srcfiles) = each ($lang_groups)) {
-        if (!$update[$langfiles])
+    foreach ( $lang_groups as $langfiles => $srcfiles) {
+        if (!$update[$langfiles]) {
             continue;
-        if ($log_group_processed == $langfiles)
+        }
+        if ($log_group_processed == $langfiles) {
             unset ($log_group_processed);
+        }
         if (!$log_group_processed) {
             $fd = fopen ($logfile, "w");
             fwrite ($fd, "<?php \$log_group_processed = \"$langfiles\"; ?>\n");
             fclose ($fd);
             chmod ($logfile, 0664);
-            if (!$addlogs)
-                xmgettext ($lang_list, $xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false);
-            else xmgettext ($lang_list, $xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false,
-                $destdir."log_??_".$langfiles."_lang.php3");
+            if (!$addlogs) {
+                xmgettext($lang_list, $xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false, '', true, $file_type);
+            } else {
+                xmgettext($lang_list, $xmgettext_logfile, $destdir."??_".$langfiles."_lang.php3", $aadir, $srcfiles, 0666, false, $destdir."log_??_".$langfiles."_lang.php3", true, $file_type);
+            }
         }
     }
-    unlink ($logfile);
+    unlink($logfile);
     echo '<font color="red"><b>Update Language Files has FINISHED</b></font><Br>';
 }
 
 // ----------------------------------------------------------------------------
 
-function translate_aa_files ($aadir, $dstdir)
+function translate_aa_files($aadir, $dstdir)
 {
     global $translate_dirlist, $translate_lang_file;
-    @mkdir ($dstdir,0777);
+    @mkdir($dstdir,0777);
 
-    reset ($translate_dirlist);
-    while (list (,$dir) = each ($translate_dirlist)) {
-        @mkdir ($dstdir.$dir,0777);
-        translate_files ($translate_lang_file,
-                         $aadir.$dir."/",
-                         $dstdir.$dir."/");
+    foreach ($translate_dirlist as $dir) {
+        @mkdir($dstdir.$dir,0777);
+        translate_files($translate_lang_file,
+                        $aadir.$dir."/",
+                        $dstdir.$dir."/");
     }
     echo "Ready<br>";
 }
@@ -210,14 +217,15 @@ function translate_aa_files ($aadir, $dstdir)
 // ----------------------------------------------------------------------------
 
 /// Adds slash at the end of a directory name if it is not yet there.
-function endslash (&$s) {
-    if (strlen ($s) && substr ($s,-1) != "/")
+function endslash(&$s) {
+    if (strlen ($s) && substr ($s,-1) != "/") {
         $s .= "/";
+    }
 }
 
 // ----------------------------------------------------------------------------
 
-if ( isset($lang_list) AND is_array($lang_list) ) {
+if (isset($lang_list) AND is_array($lang_list)) {
     foreach ( $lang_list as $k => $v ) {
         $langs2print .= $delim. $k;
         $delim = ', ';
@@ -251,13 +259,16 @@ echo '</p>
 </td></tr>
 <tr><td valign="top">
     <table border="1">
+    <tr><td colspan=2>generate:
+                       <br><input type="radio" name="file_type" value="php3" checked> .php3 files (standard)
+                       <br><input type="radio" name="file_type" value="po"> .PO files (gettext .PO files - can\'t be used directly in AA)</td></tr>
     <tr><td><b>language files</b></td><td><b>are updated from</b></td></tr>';
 
-reset ($lang_groups);
-while (list ($group, $members) = each ($lang_groups))
+foreach ( $lang_groups as $group => $members) {
     echo '<tr><td>
         <input type="checkbox" name="update['.$group.']" checked>
         ??_'.$group.'_lang.php3</td><td>'.join (", ", $members).'</td></tr>';
+}
 
 echo '</table>';
 
@@ -281,10 +292,11 @@ echo '
         <li>copy the updated files back to <tt>'.$aadir.'include/lang</tt></li>
     </ol></p>';
 
-if ($show_create_related)
+if ($show_create_related) {
     echo '<p>If this is the first time you run Create or update, you should
        first create log files (see below) and check the box
        "'.$addlog_hint.'".</p>';
+}
 
 echo '</td></tr>';
 
