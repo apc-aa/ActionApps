@@ -89,7 +89,7 @@ function GetLinkFields() {  // function - we need trnslate _m() on use (not at i
     'cat_deleted'         => GetFieldDef( _m('Category deleted'),      'links_categories.deleted',      'numeric', false,          0,    0),
     'cat_path'            => GetFieldDef( _m('Category path'),         'links_categories.path',         'text',    false,          0,    0),
     'cat_link_count'      => GetFieldDef( _m('Category link count'),   'links_categories.link_count',   'numeric', false,       2038, 2038),
-    'cat_description'     => GetFieldDef( _m('Category description'),  'links_categories.decsription',  'text',    false,       2032, 2032),
+    'cat_description'     => GetFieldDef( _m('Category description'),  'links_categories.description',  'text',    false,       2032, 2032),
     'cat_note'            => GetFieldDef( _m('Category editor\'s note'),'links_categories.note',        'text',    false,       2034, 2034),
     'cat_base'            => GetFieldDef( _m('Base'),                  'links_link_cat.base',           'text',    false,          0,    0),
     'cat_state'           => GetFieldDef( _m('State'),                 'links_link_cat.state',          'text',    false,          0,    0),
