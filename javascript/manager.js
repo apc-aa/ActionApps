@@ -194,6 +194,24 @@ function ChangeOperators(form_name, bar, selectedVal ) {
     var doc = eval("document."+form_name);
     var idx=doc.elements['srchbr_field['+bar+']'].selectedIndex;
     var type = field_types.charAt(idx);
+
+    // added by haha
+    // get index of form element named srchbr_value[bar]
+    // in order to set default value of this text field
+    srch_field_index=0;
+    while(doc.elements[srch_field_index].name!="") {
+      if(doc.elements[srch_field_index].name =="srchbr_value["+bar+"]") {
+        break;
+      }
+      srch_field_index++;
+    }
+
+    if ((type=='2') && (doc.elements[srch_field_index].value=='')){ // date field
+      doc.elements[srch_field_index].value = getToday();
+    }
+    //else
+    //  document.'.$this->form_name.'.elements[srch_field_index].value = "";
+
     // clear selectbox
     for( i=(doc.elements['srchbr_oper['+bar+']'].options.length-1); i>=0; i--){
       doc.elements['srchbr_oper['+bar+']'].options[i] = null
@@ -208,6 +226,17 @@ function ChangeOperators(form_name, bar, selectedVal ) {
     if( idx != -1 )
         doc.elements['srchbr_oper['+bar+']'].selectedIndex = idx;
 }
+
+/*
+added by haha
+function returning today's date in m/d/y format
+*/
+function getToday(){
+    now = new Date();
+    today = (now.getMonth()+1)+"/"+ now.getDate() + "/"+ ((now.getYear() < 200) ? now.getYear()+1900 : now.getYear());
+    return today;
+}
+
 var constantswindow;  // window for related stories
 
 function OpenConstantsWindow(varname, sid, field_name, design, sel_text, admin_url) {

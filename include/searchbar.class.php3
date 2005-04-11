@@ -28,9 +28,6 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-if (!defined("INCLUDE_SEARCHBAR_CLASS_INCLUDED"))
-     define ("INCLUDE_SEARCHBAR_CLASS_INCLUDED",1);
-else return;
 
 require_once $GLOBALS[AA_INC_PATH] . "statestore.php3";
 require_once $GLOBALS[AA_INC_PATH] . "profile.class.php3";
@@ -279,7 +276,7 @@ class searchbar extends storable_class{
         } else {
             $this->addOrder( array( 0=>$foo_order ));
         }
-        list($fld,$search_str) = split( ':', $profile->getProperty('admin_search') );
+        list($fld,$search_str) = explode(':', $profile->getProperty('admin_search'));
         if ( $fld ) {
           /* path.net specific change to make profiles readonly */
           //            $this->addSearch( array( 0=>array( $fld => 1, 'value'=>$search_str, 'operator'=>'RLIKE', 'readonly' => 1)),1);
@@ -490,8 +487,8 @@ class searchbar extends storable_class{
                 operator_names[1]  = new Array(" = "," < "," > ", " <> ");
                 operator_values[1] = new Array( "=" , "<" , ">" ,  "<>");
                 // date
-                operator_names[2]  = new Array(" < (12/24/2002) "," > (12/24/2002) ");
-                operator_values[2] = new Array( "d:<"            , "d:>");
+                operator_names[2]  = new Array(" < "," > ");
+                operator_values[2] = new Array("d:<","d:>");
                 // constants
                 operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m("select ...").' ");
                 operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,        "select");
