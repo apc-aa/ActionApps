@@ -70,6 +70,46 @@ class PageCache  {
         return false;
     }
 
+    /** Calls $function with $params and returns its return value. The result
+     *  value is then stored into pagecache (database), so next call
+     *  of the $function (also from another script) with the same parameters
+     *  is returned from cache - function is not performed.
+     *  Use this feature mainly for repeating, time consuming functions!
+     *  You could use also object methods - then the $function parameter should
+     *  be array (see http://php.net/manual/en/function.call-user-func.php)
+     */
+    function cacheDb($function, $params, $str2find, $action='get') {
+        $keyString = (serialize($function).serialize($params));
+        if ( $res = $this->get($keyString, $action) ) {
+            return unserialize($res);  // it is setrialized for storing in the database
+        }
+        $res = call_user_func_array($function, $params);
+        if (!is_numeric($action)) {  // nocache is not
+            $this->store($keyString, serialize($res), $str2find);
+        }
+        return $res;
+    }
+
+    /** Look in memory (contentcache) for the result. If not found, use database
+     *  (pagecache). The result is stored into memory as well as to the database
+     */
+    function cacheMemDb($function, $params, $str2find, $action='get') {
+        global $contentcache;
+        $keyString = serialize($function).serialize($params);
+        if ($res = $contentcache->get($keyString)) {
+            return $res;
+        }
+        $res = $this->cacheDb($function, $params, $str2find, $action);
+        $contentcache->set($keyString,$res);
+        return $res;
+    }
+
+    /** Wrapper for contentcache->get_result */
+    function cacheMem($function, $params) {
+        global $contentcache;
+        return $contentcache->get_result( $function, $params );
+    }
+
     /** Get cache content by ID (not keystring) */
     function getById($keyid) {
         $ret   = false;
