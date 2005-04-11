@@ -25,19 +25,19 @@ Author: Pavel Jisl (pavelji@ecn.cz)
 
 functions:
 
-    check_url($url) - checks url (http and mailto), retunrs array with status 
+    check_url($url) - checks url (http and mailto), retunrs array with status
                       code, content-type, ...
-    checking() - run checking of urls from table links_links, number of checked 
+    checking() - run checking of urls from table links_links, number of checked
                  links defined in LINKS_VALIDATION_CHECK
     add_check($arr, $valid_codes) - add new check values to string valid_codes
-    remove_old($valid_codes) - removes old check values from valid_codes 
+    remove_old($valid_codes) - removes old check values from valid_codes
     count_weight($valid_codes) - count valid_rank from valid_codes
-    
+
 arrays:
 
-    $http_error_codes - associates comment and weight to http error code 
+    $http_error_codes - associates comment and weight to http error code
 */
-    
+
 class linkcheck
 {
     // http codes, error names and their weight
@@ -46,7 +46,7 @@ class linkcheck
         'N/A' => array ("comment" => "Non HTTP", "weight" => "5"),
         'OK'  => array ("comment" => "Valid hostname", "weight" => "0"),
         'ERROR' => array ("comment" => "Invalid hostname", "weight" => "5"),
-    // http error codes    
+    // http error codes
         '999' => array ("comment" => "No response", "weight" => "5"),
         '100' => array ("comment" => "Continue", "weight" => "0"),
         '101' => array ("comment" => "Switching Protocols", "weight" => "0"),
@@ -88,14 +88,14 @@ class linkcheck
         '503' => array ("comment" => "Service Unavailable", "weight" => "5"),
         '504' => array ("comment" => "Gateway Timeout", "weight" => "5"),
         '505' => array ("comment" => "HTTP Version Not Supported", "weight" => "5"));
-   
+
     // check url - returns error codes, content type, error weight and comment
     function check_url($url) {
-        $time = time();        
+        $time = time();
         if (!eregi("^http://", $url)) {
             if (eregi("^mailto:", $url)) {
                 $url = trim(eregi_replace("^mailto:(.+)", "\\1", $url));
-                list($brugernavn, $host) = split("@", $url);
+                list($brugernavn, $host) = explode("@", $url);
                 $dnsCheck = checkdnsrr($host,"MX");
                 if ($dnsCheck) {
                     $return["code"] = "OK";
@@ -126,7 +126,7 @@ class linkcheck
                while(($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
                    if (eregi("^http/[0-9]+.[0-9]+ ([0-9]{3}) [a-z ]*", $str)) {
                        $return["code"] = trim(eregi_replace("^http/[0-9]+.[0-9]+ ([0-9]{3}) [a-z ]*", "\\1", $str));
-                   }    
+                   }
                    if (eregi("^Content-Type: ", $str)) {
                        $return["contentType"] = trim(eregi_replace("^Content-Type: ", "", $str));
                    }
@@ -145,31 +145,31 @@ class linkcheck
     function checking() {
         global $db;
         $db2 = new DB_AA;
-        
+
         // select from links_links, ordered by validated (timestamp),
         // unchecked links have validated = 0
-        $SQL = "SELECT id, url, valid_codes, valid_rank FROM links_links ORDER BY validated";        
+        $SQL = "SELECT id, url, valid_codes, valid_rank FROM links_links ORDER BY validated";
         $db->tquery($SQL);
-        
+
         for ($i = 0; (($i < LINKS_VALIDATION_COUNT) && ($db->next_record())); $i++) {
 
             $l_id = $db->f(id);
             $l_url = $db->f(url);
             $l_vc = $db->f(valid_codes);
             $l_vr = $db->f(valid_rank);
-            
+
             $val = $this->check_url($l_url); // check url
             $val["valid_codes"] = $this->add_check($val, $l_vc); // add this check into valid_codes
             $val["valid_rank"] = $this->count_weight($val["valid_codes"]); // count rank for link
-            
-            if ($debug) { print_r($val); } 
-            
+
+            if ($debug) { print_r($val); }
+
             // update values in db
-            $SQL = "UPDATE links_links SET valid_codes='".$val["valid_codes"]."', 
+            $SQL = "UPDATE links_links SET valid_codes='".$val["valid_codes"]."',
                                            valid_rank='".$val["valid_rank"]. "',
                                            validated='".$val["timestamp"]."'
                     WHERE id = '".$l_id."'";
-            if ($debug) { echo "<pre> $SQL </pre>"; }       
+            if ($debug) { echo "<pre> $SQL </pre>"; }
             $db2->tquery($SQL);
         }
     }
@@ -180,12 +180,12 @@ class linkcheck
         $element = $arr["timestamp"]. ",". $arr["code"]. ":". $element;
         return $element;
     }
-    
+
     // remove old checks - more than 10
     function remove_old($valid_codes) {
-        $dummy = split(":", $valid_codes);
+        $dummy = explode(":", $valid_codes);
         rsort($dummy);
-        $valid_codes2 = "";        
+        $valid_codes2 = "";
         if (count($dummy) > 9) {
             for ($i=0; $i < 10; $i++) {
                 $valid_codes2 .= $dummy[$i]. ($i==9 ? "" : ":");
@@ -194,12 +194,12 @@ class linkcheck
         return $valid_codes2;
     }
 
-    // function count_weight - counts weight of link from it's http error codes    
+    // function count_weight - counts weight of link from it's http error codes
     function count_weight($valid_codes) {
-        $dummy = split(":", $valid_codes);
+        $dummy = explode(":", $valid_codes);
         rsort($dummy); // sort descend (newest is first)
         for ($i=0; $i<count($dummy); $i++) {
-            list($arr[$i]["time"],$arr[$i]["code"]) = split(",", $dummy[$i]); // split to array
+            list($arr[$i]["time"],$arr[$i]["code"]) = explode(",", $dummy[$i]); // split to array
             /*
             if ($i == 0) { // latest timestamp
                 $latest = $arr[$i]["time"];
@@ -209,22 +209,22 @@ class linkcheck
         }
         $count = count($arr);
         if ($count > 10) { $count = 10; } // take only last 10
-        $num = 0; 
+        $num = 0;
         for ($i=0; $i<$count; $i++) {
             /* exponential function - too fast near zero :(
             // $num =  exp((-1)*($arr[$i]["reltime"]/60/60/24))*$this->http_error_codes[$arr[$i]["code"]]["weight"];
             */
             // linear function
             $n1 = ($this->http_error_codes[$arr[$i]["code"]]["weight"]/($i+1));
-            $num = $num + $n1;            
+            $num = $num + $n1;
         }
         // returned number - 1000 is the biggest number, with worst error codes, we want to return
         // 14.64... is the count of linear function with the worst error code weights
         $ret = round($num * (1000/14.644841269841));
 
-        return $ret;        
+        return $ret;
     }
-    
+
 } // end - class linkcheck
 
 ?>

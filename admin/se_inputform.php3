@@ -22,7 +22,7 @@ http://www.apc.org/
 # expected $slice_id for edit slice, nothing for adding slice
 
 require_once "../include/init_page.php3";
-bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".get_mgettext_lang()."_param_wizard_lang.php3", false, get_mgettext_lang());
+bind_mgettext_domain($GLOBALS["AA_INC_PATH"]."lang/".get_mgettext_lang()."_param_wizard_lang.php3", false, get_mgettext_lang());
 require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
@@ -318,7 +318,7 @@ echo "
              <tr>
               <td class=tabtit><b>". _m("Constants") ."</b> ";
                FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
-      $constants_menu = split ("\|", str_replace (" ","&nbsp;",_m("Edit|Use as new|New")));
+      $constants_menu = explode('|', str_replace(" ","&nbsp;",_m("Edit|Use as new|New")));
       echo "   <div class=tabtit>". _m("Choose a Constant Group or a Slice.") ."</div>
               </td>
               <td class=tabtit>

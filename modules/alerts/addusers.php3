@@ -1,14 +1,14 @@
 <?php
 /**
  * This is the "Add users" page from Alerts menu
- * 
+ *
  * @package Alerts
  * @version $Id$
  * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
- * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2002 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2002 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -30,13 +30,13 @@ $directory_depth = "../";
 require_once "../../include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once menu_include();   
+require_once menu_include();
 
 $db->query("SELECT * FROM alerts_collection WHERE id=$collectionid");
 $db->next_record();
 $collection_record = $db->Record;
 
-if ($add["go"]) 
+if ($add["go"])
     process_form_data();
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -69,14 +69,14 @@ echo _m("Enter email addresses one on a row, you may add first and last name sep
 
 echo "<BR><BR><TABLE border='0'>";
 
-if (!$collection_record ["fix_howoften"]) 
+if (!$collection_record ["fix_howoften"])
     FrmInputRadio("add[howoften]", _m("How often"), get_howoften_options(), "daily", false, "", "", 1);
 
 FrmInputRadio("add[confirm]", _m("Confirmation"), array (
     "notconfirmed" => _m("Send a confirmation email to users (recommended)."),
     "confirmed" => _m("Subscribe users immediately (use carefully).")),
-    "notconfirmed", false, "", "", true);    
-echo "</TABLE>";    
+    "notconfirmed", false, "", "", true);
+echo "</TABLE>";
 echo _m("Set the bin, into which the users will be added, on Alerts Admin.");
 //echo "<BR><BR>\n<INPUT type=\"checkbox\" name=\"add[override]\">\n".
 //    _m("Override settings for users already subscribed.");
@@ -95,12 +95,12 @@ function process_form_data ()
     $okemail = "/^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)\$/";
     $koemail = "/^(@.*@)|(\\.\\.)|(@\\.)|(\\.@)|(^\\.)\$/";
 
-    if ($collection_record ["fix_howoften"]) 
+    if ($collection_record ["fix_howoften"])
         $add["howoften"] = $collection_record ["fix_howoften"];
-    $rows = split ("\n", $add["emails"]);
+    $rows = explode("\n", $add["emails"]);
     reset ($rows);
     while (list (,$row) = each ($rows)) {
-        $word = "([^ \\t\\n]+)";    
+        $word = "([^ \\t\\n]+)";
         $space = "[ \\t]+";
         $aspace = "[ \\t]*";
         $row = str_replace ("\r","",$row);
@@ -110,13 +110,13 @@ function process_form_data ()
             $err[] = "Wrong row: ".$row;
             continue;
         }
-        if ($add["proove_emails"] 
-            && (!preg_match ($okemail, $fields[1]) 
+        if ($add["proove_emails"]
+            && (!preg_match ($okemail, $fields[1])
                 || preg_match ($koemail, $fields[1]))) {
             $err[] = "Wrong email: ".$row;
             continue;
         }
-                
+
         add_email ($fields[1], $fields[2], $fields[3]);
     }
     $Msg = _m ("%1 new users were created and %2 users were subscribed (including the new ones).",
@@ -125,7 +125,7 @@ function process_form_data ()
 
 
 // the parameters are coming from a form and thus escaped
-function add_email ($email, $firstname, $lastname) 
+function add_email ($email, $firstname, $lastname)
 {
     global $db, $err, $add, $collection_record, $new_user_count, $subscribed_user_count;
 
@@ -153,13 +153,13 @@ function add_email ($email, $firstname, $lastname)
         $collection_record,
         $add["confirm"] == "confirmed",
         $add["override"]);
-        
+
     if ($ok)
         $subscribed_user_count ++;
     else $err[] = "$email $firstname $lastname "
             ._m("is already subscribed to this collection.<br>");
-}            
-        
+}
+
 
 ?>
 

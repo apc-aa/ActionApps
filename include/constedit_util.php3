@@ -320,13 +320,13 @@ function hcUpdate()
         $hcalldata = str_replace("\\~", "--$$--", $hcalldata);
         $chtag = ":changes:";
         if (strstr ($hcalldata, "$chtag")) {
-            $changes = substr ($hcalldata, strpos ($hcalldata,$chtag) + strlen($chtag) + 1);
+            $changes   = substr ($hcalldata, strpos ($hcalldata,$chtag) + strlen($chtag) + 1);
             $hcalldata = substr ($hcalldata, 0, strpos ($hcalldata,$chtag) - 1);
-            $chs = split (":", $changes);
-            $changes = array ();
+            $chs       = explode(":", $changes);
+            $changes   = array();
             foreach ($chs as $ch) {
                 if (!strchr($ch,"~")) continue;
-                $ar = split("~",$ch);
+                $ar = explode("~",$ch);
                 for ($i=0; $i < count($ar); ++$i) {
                     $ar[$i] = str_replace ("--$$--","~",str_replace("--$--",":",$ar[$i]));
                 }
@@ -369,7 +369,7 @@ function hcUpdate()
                 $id = q_pack_id (new_id());
                 $shortIDmap[$new_id] = $id;
                 $ancestors = "";
-                $path = split (",",$change[$column_ancestors]);
+                $path = explode(",",$change[$column_ancestors]);
                 reset ($path);
                 while (list (,$myid) = each ($path)) {
                     if (!$myid) continue;
@@ -410,8 +410,8 @@ function CopyConstants ($slice_id)
     while ($db->next_record()) {
         $shf = $db->f("input_show_func");
         if (strlen ($shf) > 4) {
-            list (,$group_id) = split (":",$shf);
-            if (my_in_array ($group_id, $group_list))
+            list(,$group_id) = explode(":",$shf);
+            if (my_in_array($group_id, $group_list))
                 $group_ids[$group_id][$db->f("id")] = $shf;
         }
     }

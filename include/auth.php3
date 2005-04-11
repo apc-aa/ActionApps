@@ -225,7 +225,7 @@ function AuthUpdateGroups ($username, $groups = "") {
     global $db;
     $username = addslashes ($username);
     $db->query ("DELETE FROM auth_group WHERE username='$username'");
-    if ($groups) foreach (split (";", $groups) as $group)
+    if ($groups) foreach (explode(";", $groups) as $group)
         $db->query ("INSERT INTO auth_group (username, groups, last_changed)
             VALUES ('$username','".addslashes($group)."',".time().")");
 }

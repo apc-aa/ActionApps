@@ -334,8 +334,8 @@ function find_user_by_login ($login) {
     if (is_array ($users)) {
         reset ($users);
         while (list ($userid,$user) = each ($users)) {
-            list ($user_login) = split (",", $userid);
-            list (,$user_login) = split ("=", $user_login);
+            list ($user_login) = explode(",", $userid);
+            list (,$user_login) = explode("=", $user_login);
             if ($user_login == $login)
                 return array ($userid=>$user);
         }

@@ -74,7 +74,7 @@ function MailmanCreateSynchroFiles ($slice_id) {
         WHERE slice_id='".q_pack_id($slice_id)."' AND id='$field'");
     if (! $db->next_record())
         return;
-    list (,$group_id) = split (":", $db->f("input_show_func"));
+    list(,$group_id) = explode(":", $db->f("input_show_func"));
     $db->query ("SELECT value FROM constant WHERE group_id='".addslashes($group_id)."'");
     while ($db->next_record())
         if (! $maillist[$db->f("value")])

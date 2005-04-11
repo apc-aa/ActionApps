@@ -207,7 +207,7 @@ class slice {
             }
             $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
 
-            list($validate) = split (":", $f["input_validate"]);
+            list($validate) = explode(":", $f["input_validate"]);
             if ($validate == 'e-unique') {
                 $validate = "email";
             }

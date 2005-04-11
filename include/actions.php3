@@ -75,12 +75,12 @@ function Item_Feed($slice, $item_arr, $akce_param) {
     if (strlen($akce_param) < 1) {
         return _m('No slice selected');
     }
-    $export_to = split(",", $akce_param);          // <status>-<slice_id> pairs
+    $export_to = explode(",", $akce_param);          // <status>-<slice_id> pairs
 
     foreach ( $item_arr as $it_id => $foo ) {
         $it_id = substr($it_id,1);                 // remove initial 'x'
         foreach ( $export_to as $exp_slice_pair ) {
-            list($status,$sid) = split("-", $exp_slice_pair);
+            list($status,$sid) = explode("-", $exp_slice_pair);
             FeedItemTo($it_id, $slice->unpacked_id(), $sid, $slice->fields('record'),
                      ($status=='1' ? 'y':'n'), 0);
         }

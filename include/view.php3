@@ -59,16 +59,16 @@ function ParseCommand($cmd,$als=false) {
     if ( isset($cmd) AND is_array($cmd) ) {
         // handle cmd[89][]=... parameters (for combining more commands)
         foreach( $cmd as $cmd_part ) {
-            if( !$cmd_res ) {
+            if (!$cmd_res) {
                 $cmd_res = $cmd_part;
-            } elseif ( $cmd_res{0} == $cmd_part{0} ) {   // we can combine only
+            } elseif ($cmd_res{0} == $cmd_part{0}) {     // we can combine only
                 $cmd_res .= '-'.substr($cmd_part,2);     // the same commands
             }
         }
         $cmd = $cmd_res;
-    } elseif ( isset( $als ) AND is_array( $als ) ) {  # substitute url aliases in cmd
+    } elseif ( isset($als) AND is_array($als) ) {  # substitute url aliases in cmd
         foreach( $als as $k => $v ) {
-            $cmd = str_replace ($k, $v, $cmd);
+            $cmd = str_replace($k, $v, $cmd);
         }
     }
     return split_escaped("-", $cmd, "--");
@@ -82,16 +82,17 @@ function ParseCommand($cmd,$als=false) {
  * @return array asociative array of properties
  */
 function ParseSettings($set) {
-  $sets = split_escaped(",", $set, ",,");
-  if( !( isset($sets) AND is_array($sets) ))
-    return false;
-  reset($sets);
-  while( list(,$v) = each($sets) ) {
-    $pos=strpos($v,'-');
-    if( $pos )
-      $ret[substr($v,0,$pos)] = substr($v,$pos+1);
-  }
-  return $ret;
+    $sets = split_escaped(",", $set, ",,");
+    if (!(isset($sets) AND is_array($sets))) {
+        return false;
+    }
+    foreach ($sets as $v) {
+        $pos = strpos($v,'-');
+        if ($pos) {
+            $ret[substr($v,0,$pos)] = substr($v,$pos+1);
+        }
+    }
+    return $ret;
 }
 
 /** Checks if the condition is in right format - is valid */
@@ -181,8 +182,9 @@ function ParseViewParameters($query_string="") {
 
   $arr = ParseSettings($set[$vid]);
 
-  if( $arr['slices'] )
-     $arr['slices'] = split('-', $arr['slices']);
+  if ($arr['slices']) {
+     $arr['slices'] = explode('-', $arr['slices']);
+  }
 
   #  This code below do not work!! - it is not the same as the code above!!
   #  (the code above parses only the specific guerystring for this view)
@@ -224,10 +226,11 @@ function ParseViewParameters($query_string="") {
  * Helper function for GetViewConds() - resolves database x url conds conflict
  */
 function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
-  if( $fld AND $op )
-    $conds[]=array( 'operator' => $op,
-                    'value' => ($param ? $param : $val),
-                     $fld => 1 );
+    if( $fld AND $op ) {
+        $conds[] = array( 'operator' => $op,
+                          'value'    => (strlen((string)$param)>0 ? $param : $val),  // param could be also "0"
+                          $fld       => 1 );
+    }
 }
 
 /**
@@ -240,18 +243,20 @@ function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
 // If param_conds[0] = "OR" as set by ParseViewParameters then set valuejoin
 // used by ParseMultiSelectConds
 function GetViewConds($view_info, $param_conds) {
-  trace("+","GetViewConds");
-  # param_conds - redefines default condition values by url parameter (cmd[]=c)
-  ResolveCondsConflict($conds, $view_info['cond1field'], $view_info['cond1op'],
-                               $view_info['cond1cond'],  $param_conds[1]);
-  ResolveCondsConflict($conds, $view_info['cond2field'], $view_info['cond2op'],
-                               $view_info['cond2cond'],  $param_conds[2]);
-  ResolveCondsConflict($conds, $view_info['cond3field'], $view_info['cond3op'],
-                               $view_info['cond3cond'],  $param_conds[3]);
-  if ($param_conds[0])
-    $cond['valuejoin'] = $param_conds[0];
-  trace("-");
-  return $conds;
+    // param_conds - redefines default condition values by url parameter (cmd[]=c)
+
+    if ( $GLOBALS['debug'] ) huhl("<br>(GetViewConds) param_conds=",$param_conds);
+
+    ResolveCondsConflict($conds, $view_info['cond1field'], $view_info['cond1op'], $view_info['cond1cond'],  $param_conds[1]);
+    ResolveCondsConflict($conds, $view_info['cond2field'], $view_info['cond2op'], $view_info['cond2cond'],  $param_conds[2]);
+    ResolveCondsConflict($conds, $view_info['cond3field'], $view_info['cond3op'], $view_info['cond3cond'],  $param_conds[3]);
+    if ($param_conds[0]) {
+        $cond['valuejoin'] = $param_conds[0];
+    }
+
+    if ( $GLOBALS['debug'] ) huhl("<br>(GetViewConds) conds=",$conds);
+
+    return $conds;
 }
 
 function GetViewSort($view_info, $param_sort="") {
