@@ -217,8 +217,6 @@ class itemview {
     $d_tree = GetDiscussionTree($d_content);
 
     $out .= "<a name=\"disc\"></a><form name=discusform>";
-    $script_loc = con_url($this->clean_url,"sh_itm=".$this->disc['item_id']); // location of the shtml with slice.php3 script
-
     $cnt = 0;     // count of discussion comments
 
     $out .= $this->unaliasWithScroller($this->slice_info['d_top']);           // top html code
@@ -254,18 +252,21 @@ class itemview {
      $col["d_buttons......."][0]['value'] = $this->unaliasWithScroller($this->get_disc_buttons($cnt==0));
      $col["d_buttons......."][0]['flag'] = FLAG_HTML;
      $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
-     $col["d_disc_url......"][0]['value'] = $this->clean_url ."&nocache=1&sh_itm=".$this->disc['item_id'];
-     $col["d_disc_url......"][0]['flag'] = FLAG_HTML;   // do not change &->&amp;
+
+     // set $col["d_url_fulltext.."], $col["d_url_reply....."], $col["d_disc_url......"]
+     setDiscUrls($col, $this->clean_url, $this->disc['item_id']);
      $CurItem->set_data($col);
      $out.= $CurItem->get_item() ;
 
      $out.= "</form>";
 
     // create a javascript code for getting selected ids and sending them to a script
+    list($script_loc,) = explode('#',$col["d_disc_url......"][0]['value']); // remove #disc part
+
     $out .= "
       <SCRIPT Language=\"JavaScript\"><!--
         function showSelectedComments() {
-          var url = \"". $script_loc . "&nocache=1&sel_ids=1\"
+          var url = \"". $script_loc . "&sel_ids=1\"
           var done = 0;
 
           for (var i = 0; i < ".$cnt."; i++) {
@@ -282,10 +283,10 @@ class itemview {
           }
         }
         function showAllComments() {
-          document.location = \"". $script_loc . "&nocache=1&all_ids=1#disc\"
+          document.location = \"". $script_loc . "&all_ids=1#disc\"
         }
         function showAddComments() {
-          document.location = \"". $script_loc . "&nocache=1&add_disc=1#disc\"
+          document.location = \"". $script_loc . "&add_disc=1#disc\"
         }
        // --></SCRIPT>";
    return $out;
@@ -343,12 +344,11 @@ class itemview {
     if ($this->disc['parent_id']) {
       $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],$this->disc['vid'],true,'timeorder',$this->disc['html_format'],$this->clean_url);
       $CurItem->setformat( $this->slice_info['d_fulltext']);
-      $this->set_columns ($CurItem, $d_content, $this->disc['parent_id']);
+      $this->set_columns($CurItem, $d_content, $this->disc['parent_id']);
       $out .= $CurItem->get_item();
     } else {
       $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
-      $col["d_disc_url......"][0]['value'] = $this->clean_url . "&sh_itm=".$this->disc['item_id'];
-      $col["d_disc_url......"][0]['flag'] = FLAG_HTML;   // do not change &->&amp;
+      setDiscUrls($col, $this->clean_url, $this->disc['item_id']);
       $CurItem->set_data($col);
     }
     // show a form for posting a comment
@@ -442,7 +442,7 @@ class itemview {
     $content = $function2call($foo_zids);
 
     trace("=","",$view_type." after content");
-    if ($debug) huhl("itemview:get_content: found",$content);
+    if ($debug>1) huhl("itemview:get_content: found",$content);
 
     $CurItem = new item("", $this->aliases, $this->clean_url);   # just prepare
     $CurItem->set_parameters($this->parameters);
@@ -525,11 +525,11 @@ class itemview {
 
             $zidx = $this->from_record+$i;
             if ($zidx >= $this->zids->count()) continue;
-	    /* mimo hack -- put this on a stack **/
-	    if(!$GLOBALS['QueryIDsIndex'])
-	    	$GLOBALS['QueryIDsIndex'] = array();
-	    if(!$GLOBALS['QueryIDsPageIndex'])
-	    	$GLOBALS['QueryIDsPageIndex'] = array();
+        /* mimo hack -- put this on a stack **/
+        if(!$GLOBALS['QueryIDsIndex'])
+            $GLOBALS['QueryIDsIndex'] = array();
+        if(!$GLOBALS['QueryIDsPageIndex'])
+            $GLOBALS['QueryIDsPageIndex'] = array();
             array_push($GLOBALS['QueryIDsIndex'],$zidx);  // So that _#ITEMINDX = f_e:itemindex can find it
             array_push($GLOBALS['QueryIDsPageIndex'],$i);     // So that _#PAGEINDX = f_e:pageindex can find it
 
@@ -586,10 +586,10 @@ class itemview {
             // TODO - do QueryIDs* better - not as global variables with such hacks
             /*$GLOBALS['QueryIDsIndex']     = $zidx;  // So that _#ITEMINDX = f_e:itemindex can find it
             $GLOBALS['QueryIDsPageIndex'] = $i;     // So that _#PAGEINDX = f_e:pageindex can find it
-	    */
-	    /*mimo hack, clear the end of the stack **/
-	    array_pop($GLOBALS['QueryIDsIndex']); 
-	    array_pop($GLOBALS['QueryIDsPageIndex']); 
+        */
+        /*mimo hack, clear the end of the stack **/
+        array_pop($GLOBALS['QueryIDsIndex']);
+        array_pop($GLOBALS['QueryIDsPageIndex']);
         }
         if ($category_top_html_printed) {
             $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $CurItem);
