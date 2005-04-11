@@ -303,15 +303,14 @@ function aa_rss_parse($xml_data) {
 
     if ($GLOBALS['debugfeed'] >=8) huhl("aa_rss_parse:Parsing ...");
 
-    // Older versions of AA RSS do not contain XML encoding setting but uses
-    // utf-8 (but only for iso-8859-1 slices - as supported by php.
-    // New versions (>=2.8) uses encoding setting and utf-8 and works well with
-    // slices in other encoding
-    if ( strpos( substr($xml_data,0,100), 'encoding="UTF-8"' ) ) {
-        $GLOBALS['g_source_encoding'] = 'utf-8';
+
+    // get encoding from the xml document: it is used in decode() function above
+    // Added by Norbert Brazda
+    $regexp = '/<\?xml.*encoding=[\'"]([^\'"]*)[\'"].*\?>/m';  // /m means multiline
+    if (preg_match($regexp, $xml_data, $enc)) {
+        $GLOBALS['g_source_encoding'] = strtolower($enc[1]);
     } else {
-        $GLOBALS['g_source_encoding'] = ( seems_utf8($xml_data) ? 'utf-8' : 'iso-8859-1');
-        if ($GLOBALS['debugfeed'] >=8) huhl("aa_rss_parse:Encoding not specified, used: ".$GLOBALS['g_source_encoding'] );
+        $GLOBALS['g_source_encoding'] = 'iso-8859-1';
     }
 
     // Destination slice encoding should be set in aa_rss_parse caller function.
@@ -319,7 +318,19 @@ function aa_rss_parse($xml_data) {
     if ( !$GLOBALS['g_slice_encoding'] ) {
         $GLOBALS['g_slice_encoding'] = getSliceEncoding($GLOBALS['slice_id']);
     }
-    $xml_parser = xml_parser_create_ns($GLOBALS['g_source_encoding']);
+
+    // Older versions of AA RSS do not contain XML encoding setting but uses
+    // utf-8 (but only for iso-8859-1 slices - as supported by php.
+    // New versions (>=2.8) uses encoding setting and utf-8 and works well with
+    // slices in other encoding
+    if ( strpos( substr($xml_data,0,100), 'encoding="UTF-8"' ) ) {
+        $source_encoding = 'utf-8';
+    } else {
+        $source_encoding = ( seems_utf8($xml_data) ? 'utf-8' : 'iso-8859-1');
+        if ($GLOBALS['debugfeed'] >=8) huhl("aa_rss_parse:Encoding not specified, used: $source_encoding" );
+    }
+    // see php.net/xml_parser_create_ns for mmore info - it supports only utf-8
+    $xml_parser = xml_parser_create_ns($source_encoding);
 
     // Clear out, or will just append to previous parse!
     // unset do not works for GLOBAL variables!!!
