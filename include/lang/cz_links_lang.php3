@@ -2,7 +2,7 @@
 # $Id$
 # Language: CZ
 # This file was created automatically by the Mini GetText environment
-# on 17.2.2004 13:43
+# on 7.3.2005 15:48
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -12,1262 +12,1317 @@ $mgettext_lang = "cz";
 
 # Unused messages
 $_m["APC ActionApps - Link Edit"]
-  = "Editace odkazu";
+ = "Editace odkazu";
+
 $_m["Changed"]
-  = "Zmìnìno";
+ = "Zmìnìno";
+
 $_m["Bookmark"]
-  = "Pøidej k oblíbeným";
+ = "Pøidej k oblíbeným";
+
 $_m["Type"]
-  = "Obecná kategorie";
+ = "Obecná kategorie";
+
 $_m["Trash bin"]
-  = "Koš";
+ = "Koš";
+
 $_m["Misc"]
-  = "Rùzné";
+ = "Rùzné";
+
 $_m["Up"]
-  = "Posun vybrané kategorie v seznamu o jeden stupeò výše";
+ = "Posun vybrané kategorie v seznamu o jeden stupeò výše";
+
 $_m["Down"]
-  = "Posun vybrané kategorie v seznamu o jeden stupeò níže";
+ = "Posun vybrané kategorie v seznamu o jeden stupeò níže";
+
 $_m["Rating"]
-  = "Výchozí hodnocení odkazu";
+ = "Výchozí hodnocení odkazu";
+
 $_m["Polls"]
-  = "Ankety";
+ = "Ankety";
+
 $_m["Alerts"]
-  = "Zasílání e-mailù";
+ = "Zasílání e-mailù";
+
 $_m["Reader Management Slice"]
-  = "Správa ètenáøù";
+ = "Správa ètenáøù";
+
 $_m["HTML Template"]
-  = "HTML šablona";
+ = "HTML šablona";
+
 $_m["Cetegory editor's note"]
-  = "Poznámka editora kategorie";
+ = "Poznámka editora kategorie";
+
 $_m["Page is already in database"]
-  = "Odkaz je v katalogu již zaøazen.";
+ = "Odkaz je v katalogu již zaøazen.";
+
 $_m["Page is already in database, but it is not displayed in any category, now"]
-  = "Odkaz je v katalogu již zaøazen, nemá však pøiøazenu žádnou kategorii (nachází se ve schránce <em>Nezaøazené odkazy</em>).";
-# End of unused messages
-
-$_m["unfilled"]
-  = "prázdná hodnota";
-
-$_m["Accept"]
-  = "Pøijmout";
+ = "Odkaz je v katalogu již zaøazen, nemá však pøiøazenu žádnou kategorii (nachází se ve schránce <em>Nezaøazené odkazy</em>).";
 
 $_m["Submit"]
-  = "Poslat";
+ = "Poslat";
 
 $_m["Cancel"]
-  = "Storno";
+ = "Storno";
 
-$_m["No links"]
-  = "Bez odkazù";
+$_m["The same url as "]
+ = "Pøidaný odkaz má stejné URL jako";
 
-$_m["Disalow storing of the links to this category?"]
-  = "Tato kategorie nesmí obsahovat odkazy?";
+$_m["Link changed"]
+ = "Odkaz byl zmìnìn";
 
-# modules/links/linkedit.php3, row 33
+$_m["Link assigned to category"]
+ = "Odkaz byl zaøazen do kategorie";
+
+# End of unused messages
+# modules/links/linkedit.php3, row 37
+$_m["Accept"]
+ = "Pøijmout";
+
+# modules/links/linkedit.php3, row 39
+$_m["unfilled"]
+ = "prázdná hodnota";
+
+# modules/links/linkedit.php3, row 40
 # modules/links/constants.php3, row 99
 $_m["Change"]
-  = "Zmìna";
+ = "Zmìna";
 
-# modules/links/linkedit.php3, row 66
+# modules/links/linkedit.php3, row 75
 # modules/links/menu.php3, row 78, 79
 $_m["Edit Link"]
-  = "Editace odkazu";
+ = "Editace odkazu";
 
-# modules/links/linkedit.php3, row 73
+# modules/links/linkedit.php3, row 82
 # modules/links/menu.php3, row 78
 $_m["Add Link"]
-  = "Nový odkaz";
+ = "Nový odkaz";
 
-# modules/links/linkedit.php3, row 78
+# modules/links/linkedit.php3, row 87
 $_m["Link do not exist or the base category is not set"]
-  = "Adresa (odkaz) neexistuje nebo nemá pøiøazenu základní kategorii";
+ = "Adresa (odkaz) neexistuje nebo nemá pøiøazenu základní kategorii";
 
-# modules/links/linkedit.php3, row 237, 255
+# modules/links/linkedit.php3, row 249, 267
 $_m["Proposal to uncheck"]
-  = "Návrh na vyøazení";
+ = "Návrh na vyøazení";
 
-# modules/links/linkedit.php3, row 238, 256
+# modules/links/linkedit.php3, row 250, 268
 $_m["Proposal to check"]
-  = "Návrh na zaøazení";
+ = "Návrh na zaøazení";
 
-# modules/links/linkedit.php3, row 286
+# modules/links/linkedit.php3, row 298
 $_m["Proposal to add"]
-  = "Návrh na pøidání";
+ = "Návrh na pøidání";
 
-# modules/links/linkedit.php3, row 288
+# modules/links/linkedit.php3, row 300
 $_m["Proposal to del"]
-  = "Návrh na zrušení";
+ = "Návrh na zrušení";
 
-# modules/links/linkedit.php3, row 355
+# modules/links/linkedit.php3, row 366
 $_m["APC ActionApps"]
-  = "APC ActionApps (Toolkit)";
+ = "APC ActionApps (Toolkit)";
 
-# modules/links/linkedit.php3, row 378
+# modules/links/linkedit.php3, row 388
 $_m["<!--NewPublicLinkText-->"]
-  = "V tomto formuláøi pro vložení nového odkazu do katalogu KORMIDLO\n"
+ = "V tomto formuláøi pro vložení nového odkazu do katalogu KORMIDLO\n"
    ."mùžete ale nemusíte vyplòovat všechna pole. Pro snadné zaøazení odkazu\n"
    ."do katalogu však prosíme o vyplnìní pøedevším <b>URL</b> odkazu, <b>NÁZVU</b> a\n"
    ."zaøazení odkazu do nìkteré <b>KATEGORIE</b>. Máte-li se stránkami zkušenosti,\n"
    ."mùžete vyplnit také popis odkazu. Dìkujeme.";
 
-# modules/links/linkedit.php3, row 388
+# modules/links/linkedit.php3, row 404
 $_m["Link"]
-  = "Odkaz";
-
-# modules/links/linkedit.php3, row 393
-# modules/links/catedit.php3, row 87
-# modules/links/constants.php3, row 53, 156
-$_m["Id"]
-  = "ID";
-
-# modules/links/linkedit.php3, row 398
-# modules/links/linkedit2.php3, row 31
-# modules/links/constants.php3, row 67
-$_m["Url"]
-  = "URL";
-
-# modules/links/linkedit.php3, row 401
-$_m["Check url"]
-  = "Hledej URL v Kormidle";
-
-# modules/links/linkedit.php3, row 402
-# modules/links/menu.php3, row 72
-# include/searchbar.class.php3, row 434
-$_m["View"]
-  = "Zobraz stránku";
-
-# modules/links/linkedit.php3, row 403
-$_m["You can check, if the page is not in database already"]
-  = "Internetová adresa odkazu. Pozor na pøeklepy!";
-
-# modules/links/linkedit.php3, row 407
-# modules/links/linkedit2.php3, row 27
-$_m["Page name"]
-  = "Název odkazu";
-
-# modules/links/linkedit.php3, row 408
-$_m["English name of the page"]
-  = "Originální název odkazu (èeský nebo cizojazyèný)";
+ = "Odkaz";
 
 # modules/links/linkedit.php3, row 410
-# modules/links/linkedit2.php3, row 28
-$_m["Original page name"]
-  = "Pøeklad názvu";
+# modules/links/catedit.php3, row 92
+# modules/links/constants.php3, row 53, 156
+$_m["Id"]
+ = "ID";
 
-# modules/links/linkedit.php3, row 411
-$_m["Name of the page in original language"]
-  = "Pøeklad originálního názvu odkazu je-li cizojazyèný. Slovenský název se nepøekládá.";
+# modules/links/linkedit.php3, row 415
+# modules/links/constants.php3, row 67
+# modules/links/link.class.php3, row 645
+$_m["Url"]
+ = "URL";
 
-# modules/links/linkedit.php3, row 413
-# modules/links/linkedit2.php3, row 29
-# modules/links/constants.php3, row 56, 160
-$_m["Description"]
-  = "Popis odkazu";
+# modules/links/linkedit.php3, row 418
+$_m["Check url"]
+ = "Hledej URL v Kormidle";
 
-# modules/links/linkedit.php3, row 414
-$_m["Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters."]
-  = "Popis = anotace odkazu. Maximální délka je 300 znakù - cca 2 vìty. Používejte 3. osobu. Nepoužívejte slova typu nejlepší, nejúplnìjší, tyto stránky; neuvádìjte kontaktní údaje.";
+# modules/links/linkedit.php3, row 419
+# modules/links/menu.php3, row 72
+# include/searchbar.class.php3, row 431
+$_m["View"]
+ = "Zobraz";
 
 # modules/links/linkedit.php3, row 420
-# modules/links/linkedit2.php3, row 33
-# modules/links/constants.php3, row 57, 110
-$_m["Link type"]
-  = "Obecná kategorie";
+$_m["You can check, if the page is not in database already"]
+ = "Internetová adresa odkazu. Pozor na pøeklepy!";
 
-# modules/links/linkedit.php3, row 421
-$_m["Select the type, if the link belongs to some special category"]
-  = "Je-li to relevantní, vyberte pro odkaz obecnou kategorii.";
+# modules/links/linkedit.php3, row 424
+# modules/links/link.class.php3, row 641
+$_m["Page name"]
+ = "Název odkazu";
 
-# modules/links/linkedit.php3, row 426
-$_m["Author's e-mail"]
-  = "E-mail vkladatele";
+# modules/links/linkedit.php3, row 425
+$_m["English name of the page"]
+ = "Originální název odkazu (èeský nebo cizojazyèný)";
 
-# modules/links/linkedit.php3, row 429
-# modules/links/catedit.php3, row 90
-# modules/links/catedit2.php3, row 199
-# modules/links/linkedit2.php3, row 40
-# modules/links/constants.php3, row 70
-$_m["Editor's note"]
-  = "Poznámka";
+# modules/links/linkedit.php3, row 427
+# modules/links/link.class.php3, row 642
+$_m["Original page name"]
+ = "Pøeklad názvu";
+
+# modules/links/linkedit.php3, row 428
+$_m["Name of the page in original language"]
+ = "Pøeklad originálního názvu odkazu je-li cizojazyèný. Slovenský název se nepøekládá.";
 
 # modules/links/linkedit.php3, row 430
-$_m["You can type any message here - it is never shown on the website"]
-  = "Poznámka pro správce - na webu se nikde neobjeví";
+# modules/links/constants.php3, row 56, 160
+# modules/links/link.class.php3, row 643
+$_m["Description"]
+ = "Popis odkazu";
 
-# modules/links/linkedit.php3, row 435
-$_m["Last checked"]
-  = "Poslední kontrola:";
-
-# modules/links/linkedit.php3, row 435, 436, 437
-$_m["n/j/Y"]
-  = "j. n. Y";
-
-# modules/links/linkedit.php3, row 436
-$_m["Last changed"]
-  = "Poslední zmìna:";
+# modules/links/linkedit.php3, row 431
+$_m["Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters."]
+ = "Popis = anotace odkazu. Maximální délka je 300 znakù - cca 2 vìty. Používejte 3. osobu. Nepoužívejte slova typu nejlepší, nejúplnìjší, tyto stránky; neuvádìjte kontaktní údaje.";
 
 # modules/links/linkedit.php3, row 437
-$_m["Inserted"]
-  = "Vloženo:";
+# modules/links/constants.php3, row 57, 110
+# modules/links/link.class.php3, row 647
+$_m["Link type"]
+ = "Obecná kategorie";
 
-# modules/links/linkedit.php3, row 439
-$_m["Show in category"]
-  = "Zaøazení odkazu do kategorií";
+# modules/links/linkedit.php3, row 438
+$_m["Select the type, if the link belongs to some special category"]
+ = "Je-li to relevantní, vyberte pro odkaz obecnou kategorii.";
 
-# modules/links/linkedit.php3, row 446
+# modules/links/linkedit.php3, row 447
+$_m["Author's e-mail"]
+ = "E-mail vkladatele";
+
+# modules/links/linkedit.php3, row 450
 # modules/links/catedit.php3, row 96
+# modules/links/catedit2.php3, row 212
+# modules/links/constants.php3, row 70
+# modules/links/link.class.php3, row 654
+$_m["Editor's note"]
+ = "Poznámka";
+
+# modules/links/linkedit.php3, row 451
+$_m["You can type any message here - it is never shown on the website"]
+ = "Poznámka pro správce - na webu se nikde neobjeví";
+
+# modules/links/linkedit.php3, row 456
+$_m["Last checked"]
+ = "Poslední kontrola:";
+
+# modules/links/linkedit.php3, row 456, 457, 458
+$_m["n/j/Y"]
+ = "j. n. Y";
+
+# modules/links/linkedit.php3, row 457
+$_m["Last changed"]
+ = "Poslední zmìna:";
+
+# modules/links/linkedit.php3, row 458
+$_m["Inserted"]
+ = "Vloženo:";
+
+# modules/links/linkedit.php3, row 461
+# modules/links/constants.php3, row 77
+$_m["Folder"]
+ = "Schránka";
+
+# modules/links/linkedit.php3, row 465
+$_m["Show in category"]
+ = "Zaøazení odkazu do kategorií";
+
+# modules/links/linkedit.php3, row 472
+# modules/links/catedit.php3, row 102
 $_m["Category tree"]
-  = "Strom kategorií celého katalogu";
+ = "Strom kategorií celého katalogu";
 
-# modules/links/linkedit.php3, row 446
+# modules/links/linkedit.php3, row 472
 $_m["select the category"]
-  = "Zde vybírejte kategorie.<br> Po nalistování kategorie ve stromu ji mùžete pøidat k odkazu kliknutím na šipku vpravo";
+ = "Zde vybírejte kategorie.<br> Po nalistování kategorie ve stromu ji mùžete pøidat k odkazu kliknutím na šipku vpravo";
 
-# modules/links/linkedit.php3, row 449
+# modules/links/linkedit.php3, row 475
 $_m["Selected categories"]
-  = "Vybrané kategorie, kde je odkaz zaøazen";
+ = "Vybrané kategorie, kde je odkaz zaøazen";
 
-# modules/links/linkedit.php3, row 449
+# modules/links/linkedit.php3, row 475
 $_m["go to the category you want to select and click on the right arrow button to select"]
-  = "Vyberte alespoò jednu kategorii, jinak se odkaz v kalalogu neobjeví!";
+ = "Vyberte alespoò jednu kategorii, jinak se odkaz v kalalogu neobjeví!";
 
-# modules/links/linkedit.php3, row 486
+# modules/links/linkedit.php3, row 511
 $_m["Organization"]
-  = "Kontaktní údaje (jde-li o organizaci)";
+ = "Kontaktní údaje (jde-li o organizaci)";
 
-# modules/links/linkedit.php3, row 488
-# modules/links/linkedit2.php3, row 34
+# modules/links/linkedit.php3, row 513
+# modules/links/link.class.php3, row 648
 $_m["City"]
-  = "Mìsto / Obec";
+ = "Mìsto / Obec";
 
-# modules/links/linkedit.php3, row 490
-# modules/links/linkedit2.php3, row 35
+# modules/links/linkedit.php3, row 515
+# modules/links/link.class.php3, row 649
 $_m["Street"]
-  = "Ulice + cislo";
+ = "Ulice + cislo";
 
-# modules/links/linkedit.php3, row 492
-# modules/links/linkedit2.php3, row 36
+# modules/links/linkedit.php3, row 517
+# modules/links/link.class.php3, row 650
 $_m["Post code"]
-  = "PSÈ";
+ = "PSÈ";
 
-# modules/links/linkedit.php3, row 494
-# modules/links/linkedit2.php3, row 37
+# modules/links/linkedit.php3, row 519
+# modules/links/link.class.php3, row 651
 $_m["Phone"]
-  = "Telefon";
-
-# modules/links/linkedit.php3, row 496
-# modules/links/linkedit2.php3, row 38
-$_m["Fax"]
-  = "";
-
-# modules/links/linkedit.php3, row 498
-# modules/links/linkedit2.php3, row 39
-# modules/links/constants.php3, row 66
-$_m["E-mail"]
-  = "";
-
-# modules/links/linkedit.php3, row 502
-$_m["Regions and languages"]
-  = "Regiony a jazyky";
-
-# modules/links/linkedit.php3, row 505
-$_m["Region"]
-  = "";
-
-# modules/links/linkedit.php3, row 505
-$_m["select up to 4 regions"]
-  = "Region, kterého se stránky týkají. <br> Vyberte nejvýše 4 regiony. V pøípadì, že pokrývá více, zaøaïte odkaz do nadøazené kategorie.";
-
-# modules/links/linkedit.php3, row 506
-# modules/links/constants.php3, row 85
-$_m["Language"]
-  = "Jazyk";
-
-# modules/links/linkedit.php3, row 506
-$_m["select pege's languages"]
-  = "Jazyk(y), ve kterém jsou stránky psány. Uveïte všechny základní jazyky.";
-
-# modules/links/linkedit.php3, row 520
-# modules/links/catedit.php3, row 124
-# modules/links/catselect.php3, row 57
-$_m["OK"]
-  = "";
+ = "Telefon";
 
 # modules/links/linkedit.php3, row 521
-# modules/links/check_url.php3, row 81
-# include/util.php3, row 1129
-$_m["Back"]
-  = "Zpìt";
+# modules/links/link.class.php3, row 652
+$_m["Fax"]
+ = "";
+
+# modules/links/linkedit.php3, row 523
+# modules/links/constants.php3, row 66
+# modules/links/link.class.php3, row 653
+$_m["E-mail"]
+ = "";
+
+# modules/links/linkedit.php3, row 528
+$_m["Regions and languages"]
+ = "Regiony a jazyky";
+
+# modules/links/linkedit.php3, row 531
+$_m["Region"]
+ = "";
+
+# modules/links/linkedit.php3, row 531
+$_m["select up to 4 regions"]
+ = "Region, kterého se stránky týkají. <br> Vyberte nejvýše 4 regiony. V pøípadì, že pokrývá více, zaøaïte odkaz do nadøazené kategorie.";
+
+# modules/links/linkedit.php3, row 532
+# modules/links/constants.php3, row 85
+$_m["Language"]
+ = "Jazyk";
+
+# modules/links/linkedit.php3, row 532
+$_m["select pege's languages"]
+ = "Jazyk(y), ve kterém jsou stránky psány. Uveïte všechny základní jazyky.";
 
 # modules/links/catedit.php3, row 39
-# modules/links/catedit2.php3, row 187
+# modules/links/catedit2.php3, row 198
 $_m["No permission to edit category"]
-  = "Nemáte právo editovat tuto kategorii.";
+ = "Nemáte právo editovat tuto kategorii.";
 
-# modules/links/catedit.php3, row 65
+# modules/links/catedit.php3, row 66
 $_m["APC ActionApps - Category Edit"]
-  = "Editace kategorie";
+ = "Editace kategorie";
 
-# modules/links/catedit.php3, row 79
+# modules/links/catedit.php3, row 84
+# modules/links/tabledit.php3, row 68, 69
 $_m["Category Edit"]
-  = "Editace kategorie";
+ = "Editace kategorie";
 
-# modules/links/catedit.php3, row 85
+# modules/links/catedit.php3, row 90
 $_m["Category"]
-  = "Kategorie";
-
-# modules/links/catedit.php3, row 87
-$_m["Links in subtree"]
-  = "Poèet odkazù v kategorii - vèetnì všech podkategorií";
-
-# modules/links/catedit.php3, row 88
-# modules/links/catedit2.php3, row 196
-# modules/links/constants.php3, row 88, 171
-$_m["Category name"]
-  = "Název kategorie";
-
-# modules/links/catedit.php3, row 89
-# modules/links/catedit2.php3, row 197
-# modules/links/constants.php3, row 92, 173
-$_m["Category description"]
-  = "Popis kategorie";
+ = "Kategorie";
 
 # modules/links/catedit.php3, row 92
+$_m["Links in subtree"]
+ = "Poèet odkazù v kategorii - vèetnì všech podkategorií";
+
+# modules/links/catedit.php3, row 93
+# modules/links/catedit2.php3, row 207
+# modules/links/constants.php3, row 88, 171
+$_m["Category name"]
+ = "Název kategorie";
+
+# modules/links/catedit.php3, row 94
+# modules/links/catedit2.php3, row 208
+# modules/links/constants.php3, row 92, 173
+$_m["Category description"]
+ = "Popis kategorie";
+
+# modules/links/catedit.php3, row 95
+$_m["No links"]
+ = "Bez odkazù";
+
+# modules/links/catedit.php3, row 95
+$_m["Disalow storing of the links to this category?"]
+ = "Tato kategorie nesmí obsahovat odkazy?";
+
+# modules/links/catedit.php3, row 98
 $_m["Subcategories"]
-  = "Podkategorie";
+ = "Podkategorie";
 
-# modules/links/catedit.php3, row 96
+# modules/links/catedit.php3, row 102
 $_m["select the category for crossreference"]
-  = "Vyberte kategorii, kterou chcete crossrefernecovat";
+ = "Vyberte kategorii, kterou chcete crossrefernecovat";
 
-# modules/links/catedit.php3, row 98
+# modules/links/catedit.php3, row 104
 $_m["Selected subcategories"]
-  = "Podkategorie";
+ = "Podkategorie";
 
-# modules/links/catedit.php3, row 98
+# modules/links/catedit.php3, row 104
 $_m["subcategories of this category"]
-  = "Pøidejte èi zrušte podkategorie této kategorie.<br>Z levého okna mùžete též crossreferencovat kategorii z jiné èásti katalogu.";
+ = "Pøidejte èi zrušte podkategorie této kategorie.<br>Z levého okna mùžete též crossreferencovat kategorii z jiné èásti katalogu.";
 
-# modules/links/catedit.php3, row 118
+# modules/links/catedit.php3, row 124
 $_m["New subcategory"]
-  = "Jméno nové podkategorie";
+ = "Jméno nové podkategorie";
 
-# modules/links/catedit.php3, row 118
+# modules/links/catedit.php3, row 124
 $_m["Add"]
-  = "Vytvoø novou";
+ = "Vytvoø novou";
 
-# modules/links/catedit.php3, row 120
+# modules/links/catedit.php3, row 126
 $_m["Remove selected subcategory?"]
-  = "Zrušit vybranou podkategorii?";
+ = "Zrušit vybranou podkategorii?";
 
-# modules/links/catedit.php3, row 120
+# modules/links/catedit.php3, row 126
 $_m["Del"]
-  = "Zruš vybranou";
+ = "Zruš vybranou";
 
-# modules/links/catedit.php3, row 121
+# modules/links/catedit.php3, row 127
 $_m["Change state"]
-  = "Zmìò stav podkategorie";
+ = "Zmìò stav podkategorie";
 
-# modules/links/catedit2.php3, row 137
-$_m["Category reassigned"]
-  = "Kategorie byla pøesunuta";
-
-# modules/links/catedit2.php3, row 146
-$_m["Subcategory deleted"]
-  = "Podkategorie byla zrušena";
+# modules/links/catedit.php3, row 130
+# modules/links/catselect.php3, row 56
+$_m["OK"]
+ = "";
 
 # modules/links/catedit2.php3, row 148
+$_m["Category reassigned"]
+ = "Kategorie byla pøesunuta";
+
+# modules/links/catedit2.php3, row 157
+$_m["Subcategory deleted"]
+ = "Podkategorie byla zrušena";
+
+# modules/links/catedit2.php3, row 159
 $_m["Can't delete category which contains links"]
-  = "Nelze zrušit kategorii, která obsahuje odkazy.";
+ = "Nelze zrušit kategorii, která obsahuje odkazy.";
 
-# modules/links/catedit2.php3, row 198
+# modules/links/catedit2.php3, row 211
 $_m["Additional information"]
-  = "Další informace";
+ = "Další informace";
 
-# modules/links/catedit2.php3, row 207
+# modules/links/catedit2.php3, row 221
 $_m["Category data changed"]
-  = "Údaje pro kategorii byly zmìnìny";
+ = "Údaje pro kategorii byly zmìnìny";
 
-# modules/links/catedit2.php3, row 267
+# modules/links/catedit2.php3, row 281
 $_m["New category created"]
-  = "Byla vytovøena nová kategorie";
+ = "Byla vytovøena nová kategorie";
 
-# modules/links/catedit2.php3, row 273
+# modules/links/catedit2.php3, row 287
 $_m["Foreign category assigned"]
-  = "Byla pøiøazena crossreferencovaná kategorie";
+ = "Byla pøiøazena crossreferencovaná kategorie";
 
-# modules/links/check_url.php3, row 17, 60
-$_m["Edit"]
-  = "Edituj";
-
-# modules/links/check_url.php3, row 17, 60
-$_m["Rewrites link in bottom form"]
-  = "Pøepíše odkaz ve formuláøi";
-
-# modules/links/check_url.php3, row 23
+# modules/links/check_url.php3, row 18
 $_m["APC ActionApps - URL Check"]
-  = "Hledání URL v katalogu";
+ = "Hledání URL v katalogu";
 
-# modules/links/check_url.php3, row 59
+# modules/links/check_url.php3, row 29
 $_m["URL"]
-  = "";
+ = "";
 
-# modules/links/check_url.php3, row 60
+# modules/links/check_url.php3, row 30
 $_m["In category"]
-  = "Zaøazeno v kategorii";
+ = "Zaøazeno v kategorii";
 
-# modules/links/check_url.php3, row 60
+# modules/links/check_url.php3, row 30
 $_m["Link is not assigned to any category"]
-  = "Odkaz není zaøazen do žádné kategorie";
+ = "Odkaz není zaøazen do žádné kategorie";
 
-# modules/links/check_url.php3, row 74
+# modules/links/check_url.php3, row 30
+$_m["Edit"]
+ = "Edituj";
+
+# modules/links/check_url.php3, row 30
+$_m["Rewrites link in bottom form"]
+ = "Pøepíše odkaz ve formuláøi";
+
+# modules/links/check_url.php3, row 35
 $_m["Page with the specified Url is not in database, yet"]
-  = "Tento odkaz v katalogu ještì není zaøazen.";
+ = "Tento odkaz v katalogu ještì není zaøazen.";
+
+# modules/links/check_url.php3, row 39
+# include/util.php3, row 1164
+$_m["Back"]
+ = "Zpìt";
 
 # modules/links/index.php3, row 46
 $_m["No permissions to edit links"]
-  = "Nemáte právo editovat tento odkaz";
+ = "Nemáte právo editovat tento odkaz";
 
-# modules/links/index.php3, row 248
+# modules/links/index.php3, row 250
 $_m["HINT: \"social ecology\" AND environment"]
-  = "TIP: (právo AND informace) OR \"obèanská práva\"";
+ = "TIP: (právo AND informace) OR \"obèanská práva\"";
 
-# modules/links/index.php3, row 275
+# modules/links/index.php3, row 277
 $_m["Perform action on selected items"]
-  = "Vyber akci, která se provede s vybranými odkazy";
+ = "Vyber akci, která se provede s vybranými odkazy";
 
-# modules/links/index.php3, row 279
+# modules/links/index.php3, row 281
 $_m["Check Link"]
-  = "Kontrola odkazu provedena";
+ = "Kontrola odkazu provedena";
 
-# modules/links/index.php3, row 282
+# modules/links/index.php3, row 284
 $_m["Highlight Link"]
-  = "Doporuèit odkaz";
+ = "Doporuèit odkaz";
 
-# modules/links/index.php3, row 285
+# modules/links/index.php3, row 287
 $_m["Dehighlight Link"]
-  = "Zrušit doporuèení odkazu";
+ = "Zrušit doporuèení odkazu";
 
-# modules/links/index.php3, row 288
+# modules/links/index.php3, row 290
 $_m["Remove from category"]
-  = "Vyøadit z této kategorie";
+ = "Vyøadit z této kategorie";
 
-# modules/links/index.php3, row 291
+# modules/links/index.php3, row 293
 $_m["Move to Active"]
-  = "Pøesunout mezi Aktivní";
+ = "Pøesunout mezi Aktivní";
 
-# modules/links/index.php3, row 295
+# modules/links/index.php3, row 297
 $_m["Move to Holding bin"]
-  = "Pøesunout do Zásobníku";
+ = "Pøesunout do Zásobníku";
 
-# modules/links/index.php3, row 299
+# modules/links/index.php3, row 301
 $_m["Move to Trash"]
-  = "Pøesunout do Koše";
+ = "Pøesunout do Koše";
 
-# modules/links/index.php3, row 302
+# modules/links/index.php3, row 304
 $_m["Add to category"]
-  = "Pøidat do kategorie";
+ = "Pøidat do kategorie";
 
-# modules/links/index.php3, row 306
+# modules/links/index.php3, row 308
 $_m["Move to category"]
-  = "Pøesunout do kategorie";
+ = "Pøesunout do kategorie";
 
-# modules/links/index.php3, row 335
+# modules/links/index.php3, row 337
 $_m["APC ActionApps - Links Manager"]
-  = "Správa odkazù";
+ = "Správa odkazù";
 
 # modules/links/index.php3, row 393
 $_m["All my links"]
-  = "Všechny mé odkazy";
+ = "Všechny mé odkazy";
 
 # modules/links/index.php3, row 394
 $_m["Links to check"]
-  = "Ke kontrole";
+ = "Ke kontrole";
 
 # modules/links/index.php3, row 395
 $_m["Last edited"]
-  = "Naposledy editované";
-
-# modules/links/index.php3, row 419
-$_m["Show Links"]
-  = "Zobraz odkazy";
+ = "Naposledy editované";
 
 # modules/links/index.php3, row 423
+$_m["Show Links"]
+ = "Zobraz odkazy";
+
+# modules/links/index.php3, row 427
 $_m["Edit Category"]
-  = "Edituj kategorii";
+ = "Edituj kategorii";
 
-# modules/links/index.php3, row 433
+# modules/links/index.php3, row 436
 $_m["Show subtree links"]
-  = "Zobrazuj odkazy i ze všech podkategorií";
+ = "Zobrazuj odkazy i ze všech podkategorií";
 
-# modules/links/linkedit2.php3, row 30
-# modules/links/constants.php3, row 60
-$_m["Author"]
-  = "Vkladatel";
-
-# modules/links/linkedit2.php3, row 32
-# modules/links/constants.php3, row 58
-$_m["Rate"]
-  = "Hodnocení";
-
-# modules/links/linkedit2.php3, row 55
-$_m["The same url as "]
-  = "Pøidaný odkaz má stejné URL jako";
-
-# modules/links/linkedit2.php3, row 349
+# modules/links/linkedit2.php3, row 54
 $_m["Link change proposal inserted"]
-  = "Vložen návrh na zmìnu";
+ = "Vložen návrh na zmìnu";
 
-# modules/links/linkedit2.php3, row 359
+# modules/links/linkedit2.php3, row 54, 58
 $_m["Link inserted"]
-  = "Odkaz byl vložen";
+ = "Odkaz byl vložen";
 
-# modules/links/linkedit2.php3, row 400
-$_m["Link changed"]
-  = "Odkaz byl zmìnìn";
-
-# modules/links/linkedit2.php3, row 416
-$_m["Link assigned to category"]
-  = "Odkaz byl zaøazen do kategorie";
+# modules/links/linkedit2.php3, row 64
+$_m["Continue"]
+ = "";
 
 # modules/links/catselect.php3, row 25
 $_m["APC ActionApps - Select Category"]
-  = "Výbìr kategorie";
+ = "Výbìr kategorie";
 
-# modules/links/catselect.php3, row 45
+# modules/links/catselect.php3, row 44
 $_m["Select Category"]
-  = "Vyber kategorii";
+ = "Vyber kategorii";
 
 # modules/links/modedit.php3, row 56
 $_m["No permission to add module"]
-  = "";
+ = "";
 
 # modules/links/modedit.php3, row 61
 $_m["No permission to edit module"]
-  = "";
+ = "";
 
-# modules/links/modedit.php3, row 78, 215, 218
+# modules/links/modedit.php3, row 79, 219, 222
 $_m["Start category id"]
-  = "";
+ = "";
 
-# modules/links/modedit.php3, row 79, 220
+# modules/links/modedit.php3, row 80, 225, 228
 $_m["Tree start id"]
-  = "";
+ = "";
 
-# modules/links/modedit.php3, row 80, 221
+# modules/links/modedit.php3, row 81, 226, 229
 $_m["Select start id"]
-  = "";
+ = "";
 
-# modules/links/modedit.php3, row 186
+# modules/links/modedit.php3, row 189
 $_m["APC ActionApps - Links Admin"]
-  = "Nastavení modulu odkazù";
+ = "Nastavení modulu odkazù";
 
-# modules/links/modedit.php3, row 192
+# modules/links/modedit.php3, row 195
 $_m["Add Links module"]
-  = "Pøidat modul odkazù";
+ = "Pøidat modul odkazù";
 
-# modules/links/modedit.php3, row 192
+# modules/links/modedit.php3, row 195
 $_m["Edit Links module"]
-  = "Editovat modul odkazù";
-
-# modules/links/modedit.php3, row 198
-$_m["Module Links data"]
-  = "Data modulu odkazù";
-
-# modules/links/modedit.php3, row 200
-$_m["ID"]
-  = "";
+ = "Editovat modul odkazù";
 
 # modules/links/modedit.php3, row 201
-$_m["Title"]
-  = "Jméno";
-
-# modules/links/modedit.php3, row 202
-$_m["URL of .shtml page"]
-  = "";
+$_m["Module Links data"]
+ = "Data modulu odkazù";
 
 # modules/links/modedit.php3, row 203
-$_m["Use following SSI command to include links to the page: "]
-  = "";
+$_m["ID"]
+ = "";
 
 # modules/links/modedit.php3, row 204
-$_m["Owner"]
-  = "";
+$_m["Title"]
+ = "Jméno";
+
+# modules/links/modedit.php3, row 205
+$_m["URL of .shtml page"]
+ = "";
 
 # modules/links/modedit.php3, row 206
-$_m["New Owner"]
-  = "";
+$_m["Use following SSI command to include links to the page: "]
+ = "";
 
 # modules/links/modedit.php3, row 207
-$_m["New Owner's E-mail"]
-  = "";
+$_m["Owner"]
+ = "";
+
+# modules/links/modedit.php3, row 209
+$_m["New Owner"]
+ = "";
 
 # modules/links/modedit.php3, row 210
-$_m["Deleted"]
-  = "";
+$_m["New Owner's E-mail"]
+ = "";
 
-# modules/links/modedit.php3, row 211
+# modules/links/modedit.php3, row 213
+$_m["Deleted"]
+ = "";
+
+# modules/links/modedit.php3, row 215
 $_m["Used Language File"]
-  = "";
+ = "";
 
 # modules/links/actions.php3, row 63
 $_m["Can't get link data"]
-  = "Údaje o odkazu nelze zobrazit.";
+ = "Údaje o odkazu nelze zobrazit.";
 
 # modules/links/actions.php3, row 66, 88
 $_m["No permission to change state of the link"]
-  = "Nemáte právo mìnit údaje odkazu.";
+ = "Nemáte právo mìnit údaje odkazu.";
 
 # modules/links/actions.php3, row 84, 111, 156, 181
 $_m["Can't find link in given category"]
-  = "Odkaz v zadané kategorii nelze najít.";
+ = "Odkaz v zadané kategorii nelze najít.";
 
 # modules/links/actions.php3, row 117, 187
 $_m["No permission to delete link from the category - link set as PROPOSAL to DELETE from given category"]
-  = "Nemáte oprávnìní zrušit zaøazení odkazu do kategorie - odkaz byl navržen na vymazání z této kategorie pøíslušnému správci.";
+ = "Nemáte oprávnìní zrušit zaøazení odkazu do kategorie - odkaz byl navržen na vymazání z této kategorie pøíslušnému správci.";
 
 # modules/links/actions.php3, row 124, 194
 $_m["Can't get asociation informations"]
-  = "Nelze zjistit údaje o zaøazení odkazu do kategorie";
+ = "Nelze zjistit údaje o zaøazení odkazu do kategorie";
 
 # modules/links/actions.php3, row 159
 $_m["No permission to approve link to given category"]
-  = "Nemáte oprávnìní pro potvrzení odkazu ve vybrané kategorii.";
+ = "Nemáte oprávnìní pro potvrzení odkazu ve vybrané kategorii.";
 
 # modules/links/actions.php3, row 226
 $_m["Base category not found"]
-  = "Nenalezena primární (base) kategorie";
+ = "Nenalezena primární (base) kategorie";
 
 # modules/links/actions.php3, row 230
 $_m["No permission to move link"]
-  = "Nemáte práva pøesunout odkaz";
+ = "Nemáte práva pøesunout odkaz";
 
 # modules/links/constants.php3, row 54, 157
 $_m["Name"]
-  = "Název odkazu";
+ = "Název odkazu";
 
 # modules/links/constants.php3, row 55
 $_m["Original name"]
-  = "Pøeklad názevu odkazu";
+ = "Pøeklad názevu odkazu";
+
+# modules/links/constants.php3, row 58
+$_m["Rate"]
+ = "Hodnocení";
 
 # modules/links/constants.php3, row 59
 $_m["Votes"]
-  = "Poèet hlasù";
+ = "Poèet hlasù";
+
+# modules/links/constants.php3, row 60
+# modules/links/link.class.php3, row 644
+$_m["Author"]
+ = "Vkladatel";
 
 # modules/links/constants.php3, row 61
 $_m["Insert date"]
-  = "Datum vložení";
+ = "Datum vložení";
 
 # modules/links/constants.php3, row 62
 $_m["Editor"]
-  = "Naposledy upravoval";
+ = "Naposledy upravoval";
 
 # modules/links/constants.php3, row 63
 $_m["Last edit date"]
-  = "Datum poslední úpravy";
+ = "Datum poslední úpravy";
 
 # modules/links/constants.php3, row 64
 $_m["Revised by"]
-  = "Kontrolu provedl";
+ = "Kontrolu provedl";
 
 # modules/links/constants.php3, row 65
 $_m["Revision date"]
-  = "Datum poslední kontroly";
+ = "Datum poslední kontroly";
 
 # modules/links/constants.php3, row 68
 $_m["Last vote time"]
-  = "Poslední hlasování";
+ = "Poslední hlasování";
 
 # modules/links/constants.php3, row 69
 $_m["Flag"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 71
 $_m["Organization city"]
-  = "Organizace - Mìsto ";
+ = "Organizace - Mìsto ";
 
 # modules/links/constants.php3, row 72
 $_m["Organization street"]
-  = "Organizace - ulice";
+ = "Organizace - ulice";
 
 # modules/links/constants.php3, row 73
 $_m["Organization post code"]
-  = "Organizace - PSÈ";
+ = "Organizace - PSÈ";
 
 # modules/links/constants.php3, row 74
 $_m["Organization phone"]
-  = "Organizace - telefon";
+ = "Organizace - telefon";
 
 # modules/links/constants.php3, row 75
 $_m["Organization fax"]
-  = "Organizace - fax";
+ = "Organizace - fax";
 
 # modules/links/constants.php3, row 76
 $_m["Organization e-mail"]
-  = "Organizace - e-mail";
-
-# modules/links/constants.php3, row 77
-$_m["Folder"]
-  = "Schránka";
+ = "Organizace - e-mail";
 
 # modules/links/constants.php3, row 78
 $_m["Last validation date"]
-  = "Datum kontroly dostupnosti";
+ = "Datum kontroly dostupnosti";
 
 # modules/links/constants.php3, row 79
 $_m["Validation codes"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 80
 $_m["Validity Rank"]
-  = "Dostupnost stránky";
+ = "Dostupnost stránky";
 
 # modules/links/constants.php3, row 81
 $_m["Region id"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 82
 $_m["Region name"]
-  = "Region";
+ = "Region";
 
 # modules/links/constants.php3, row 83
 $_m["Region level"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 84
 $_m["Language id"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 86
 $_m["Language short name"]
-  = "Zkratka jazyka";
+ = "Zkratka jazyka";
 
 # modules/links/constants.php3, row 87, 170
 $_m["Category id"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 89
 $_m["Category deleted"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 90
 $_m["Category path"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 91
 $_m["Category link count"]
-  = "Poèet odkazù v kategorii";
+ = "Poèet odkazù v kategorii";
 
 # modules/links/constants.php3, row 93, 174
 $_m["Category editor's note"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 94
 $_m["Base"]
-  = "Primární";
+ = "Primární";
 
 # modules/links/constants.php3, row 95, 163
 $_m["State"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 96
 $_m["Change proposal"]
-  = "Návrh na zmìnu";
+ = "Návrh na zmìnu";
 
 # modules/links/constants.php3, row 97
 $_m["To be deleted"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 98, 162
 $_m["Priority"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 106
 $_m["Link id"]
-  = "ID odkazu";
+ = "ID odkazu";
 
 # modules/links/constants.php3, row 107
 $_m["Link name"]
-  = "Název odkazu";
+ = "Název odkazu";
 
 # modules/links/constants.php3, row 108
 $_m["Link original name"]
-  = "Pøeklad názvu odkazu";
+ = "Pøeklad názvu odkazu";
 
 # modules/links/constants.php3, row 109
 $_m["Link description"]
-  = "Popis odkazu";
+ = "Popis odkazu";
 
 # modules/links/constants.php3, row 111
 $_m["Link rate"]
-  = "Hodnocení odkazu";
+ = "Hodnocení odkazu";
 
 # modules/links/constants.php3, row 112
 $_m["Link votes"]
-  = "Hlasování o odkazu";
+ = "Hlasování o odkazu";
 
 # modules/links/constants.php3, row 113
 $_m["Link - last vote date"]
-  = "Datum posledního hlasování o odkazu";
+ = "Datum posledního hlasování o odkazu";
 
 # modules/links/constants.php3, row 114
 $_m["Link - created by"]
-  = "Vkladatele odkazu";
+ = "Vkladatele odkazu";
 
 # modules/links/constants.php3, row 115
 $_m["Link creation date"]
-  = "Data vložení odkazu";
+ = "Data vložení odkazu";
 
 # modules/links/constants.php3, row 116
 $_m["Link - last edited by"]
-  = "Pùvodce poslední úpravy odkazu";
+ = "Pùvodce poslední úpravy odkazu";
 
 # modules/links/constants.php3, row 117
 $_m["Link - last edit date"]
-  = "Data poslední úpravy odkazu";
+ = "Data poslední úpravy odkazu";
 
 # modules/links/constants.php3, row 118
 $_m["Link - checked by"]
-  = "Pùvodce poslední kontroly odkazu";
+ = "Pùvodce poslední kontroly odkazu";
 
 # modules/links/constants.php3, row 119
 $_m["Link - last checked date"]
-  = "Data poslední kontroly odkazu";
+ = "Data poslední kontroly odkazu";
 
 # modules/links/constants.php3, row 120
 $_m["Link author's e-mail"]
-  = "E-mail vkladatele odkazu";
+ = "E-mail vkladatele odkazu";
 
 # modules/links/constants.php3, row 121
 $_m["Link url"]
-  = "URL odkazu";
+ = "URL odkazu";
 
 # modules/links/constants.php3, row 122
 $_m["Link link"]
-  = "Odkaz";
+ = "Odkaz";
 
 # modules/links/constants.php3, row 123
 $_m["Link flag"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 124
 $_m["Link - validity rank"]
-  = "Dostupnost odkazu";
+ = "Dostupnost odkazu";
 
 # modules/links/constants.php3, row 125
 $_m["Link - last validation date"]
-  = "Odkaz - poslední kontrola dostupnosti";
+ = "Odkaz - poslední kontrola dostupnosti";
 
 # modules/links/constants.php3, row 126
 $_m["Link editor's note"]
-  = "Odkaz - poznámka editora";
+ = "Odkaz - poznámka editora";
 
 # modules/links/constants.php3, row 127
 $_m["Link organization city"]
-  = "Odkaz - Organizace - mìsto";
+ = "Odkaz - Organizace - mìsto";
 
 # modules/links/constants.php3, row 128
 $_m["Link organization street"]
-  = "Odkaz - Organizace - ulice";
+ = "Odkaz - Organizace - ulice";
 
 # modules/links/constants.php3, row 129
 $_m["Link organization post code"]
-  = "Odkaz - Organizace - PSÈ";
+ = "Odkaz - Organizace - PSÈ";
 
 # modules/links/constants.php3, row 130
 $_m["Link organization phone"]
-  = "Odkaz - Organizace - telefon";
+ = "Odkaz - Organizace - telefon";
 
 # modules/links/constants.php3, row 131
 $_m["Link organization fax"]
-  = "Odkaz - Organizace - fax";
+ = "Odkaz - Organizace - fax";
 
 # modules/links/constants.php3, row 132
 $_m["Link organization e-mail"]
-  = "Odkaz - Organizace - e-mail";
+ = "Odkaz - Organizace - e-mail";
 
 # modules/links/constants.php3, row 133
 $_m["Link folder (status code) - 1~Active, 2~Holding, 3~Trash"]
-  = "Odkaz - Schránka (1~Aktivní, 2~Zásobník, 3~Koš)";
+ = "Odkaz - Schránka (1~Aktivní, 2~Zásobník, 3~Koš)";
 
 # modules/links/constants.php3, row 134
 $_m["Link - ids of regions (comma separated)"]
-  = "Odkaz - Id regionù (oddìlené èárkou)";
+ = "Odkaz - Id regionù (oddìlené èárkou)";
 
 # modules/links/constants.php3, row 135
 $_m["Link - names of regions (comma separated)"]
-  = "Odkaz - Jména regionù (oddìlené èárkou)";
+ = "Odkaz - Jména regionù (oddìlené èárkou)";
 
 # modules/links/constants.php3, row 136
 $_m["Link - ids of languages (comma separated)"]
-  = "Odkaz - Id jazykù (oddìlené èárkou)";
+ = "Odkaz - Id jazykù (oddìlené èárkou)";
 
 # modules/links/constants.php3, row 137
 $_m["Link - names of languages (comma separated)"]
-  = "Odkaz - jména jazykù (oddìlené èárkou)";
+ = "Odkaz - jména jazykù (oddìlené èárkou)";
 
 # modules/links/constants.php3, row 138
 $_m["Link - short names of languages (comma separated)"]
-  = "Odkaz - krátká jména jazykù (oddìlené èárkou)";
+ = "Odkaz - krátká jména jazykù (oddìlené èárkou)";
 
 # modules/links/constants.php3, row 139
 $_m["Category ids (comma separated)"]
-  = "Id kategorií (oddìlené èárkou)";
+ = "Id kategorií (oddìlené èárkou)";
 
 # modules/links/constants.php3, row 140
 $_m["Category names (comma separated)"]
-  = "Jména kategorií (oddìlené èárkou)";
+ = "Jména kategorií (oddìlené èárkou)";
 
 # modules/links/constants.php3, row 141
 $_m["State of link in this category (visible/highlighted)"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 142
 $_m["Link - validity color"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 143
 $_m["Paths to the categories"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 144
 $_m["Number of found Links"]
-  = "Poèet nalezených odkazù";
+ = "Poèet nalezených odkazù";
 
 # modules/links/constants.php3, row 145
 $_m["Link to link editing page (for admin interface only)"]
-  = "Odkaz na editaci odkazu (jen pro admin stránky)";
+ = "Odkaz na editaci odkazu (jen pro admin stránky)";
 
 # modules/links/constants.php3, row 146
 $_m["Category listing with links (for admin interface only)"]
-  = "Pøehled kategorií s odkazy (jen pro admin stránky)";
+ = "Pøehled kategorií s odkazy (jen pro admin stránky)";
 
 # modules/links/constants.php3, row 158
 $_m["Path"]
-  = "Cesta";
+ = "Cesta";
 
 # modules/links/constants.php3, row 159
 $_m["Link Count"]
-  = "Poèet odkazù";
+ = "Poèet odkazù";
 
 # modules/links/constants.php3, row 161
 $_m["Note"]
-  = "Poznámka";
+ = "Poznámka";
 
 # modules/links/constants.php3, row 172
 $_m["Number of links in category"]
-  = "Poèet odkazù v kategorii";
+ = "Poèet odkazù v kategorii";
 
 # modules/links/constants.php3, row 175
 $_m["Crossreferenced category"]
-  = "Krosreferencovaná kategorie";
+ = "Krosreferencovaná kategorie";
 
 # modules/links/constants.php3, row 176
 $_m["Path to current category"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 177
 $_m["Is this category general one? (1/0)"]
-  = "";
+ = "";
 
 # modules/links/constants.php3, row 178
 $_m["Print category priority, if category is general one."]
-  = "";
+ = "";
 
-# modules/links/cattree.php3, row 289
+# modules/links/cattree.php3, row 406
 $_m["Switch to category"]
-  = "Jdi";
+ = "Jdi";
+
+# modules/links/info.php3, row 59
+$_m["No permissions to manage links"]
+ = "";
+
+# modules/links/info.php3, row 147
+$_m["No permissions to info page"]
+ = "";
+
+# modules/links/tabledit.php3, row 78
+$_m["name"]
+ = "";
+
+# modules/links/tabledit.php3, row 82
+$_m["HTML template"]
+ = "";
+
+# modules/links/tabledit.php3, row 113
+$_m["No such category."]
+ = "";
 
 # modules/links/menu.php3, row 79
 $_m["Add new link"]
-  = "Pøidej nový odkaz";
+ = "Pøidej nový odkaz";
 
 # modules/links/menu.php3, row 85, 86
 $_m["Link Manager"]
-  = "Správa odkazù a kategorií";
+ = "Správa odkazù a kategorií";
 
 # modules/links/menu.php3, row 92, 93
 $_m["Link Admin"]
-  = "Nastavení";
+ = "Nastavení";
 
 # modules/links/menu.php3, row 100, 101
 $_m["AA"]
-  = "";
+ = "";
 
 # modules/links/menu.php3, row 111
 $_m["Folders"]
-  = "Schránky odkazù";
+ = "Schránky odkazù";
 
 # modules/links/menu.php3, row 111
 $_m["Folders with links, sorted by their status (active, changed, new, ...)"]
-  = "Odkazy rozdìlené podle jejích stavu - aktivní, zmìnìné, nové,...";
+ = "Odkazy rozdìlené podle jejích stavu - aktivní, zmìnìné, nové,...";
 
 # modules/links/menu.php3, row 114
 $_m["Active"]
-  = "Aktivní";
+ = "Aktivní";
 
 # modules/links/menu.php3, row 117
 $_m["Changed Links"]
-  = "Návrhy na zmìnu";
+ = "Návrhy na zmìnu";
 
 # modules/links/menu.php3, row 120
 $_m["New Links"]
-  = "Nové odkazy";
+ = "Nové odkazy";
 
 # modules/links/menu.php3, row 123
 $_m["Holding bin"]
-  = "Zásobník";
+ = "Zásobník";
 
 # modules/links/menu.php3, row 126
 $_m["Trash"]
-  = "Koš";
+ = "Koš";
 
 # modules/links/menu.php3, row 129
 $_m["Unasigned"]
-  = "Nezaøazené odkazy";
+ = "Nezaøazené odkazy";
 
-# modules/links/menu.php3, row 130
+# modules/links/menu.php3, row 133
+$_m["Set Debug OFF"]
+ = "";
+
+# modules/links/menu.php3, row 133
+$_m["Set Debug ON"]
+ = "";
+
+# modules/links/menu.php3, row 134
 $_m["Bookmarks"]
-  = "Záložky odkazù";
+ = "Záložky odkazù";
 
-# modules/links/menu.php3, row 130
+# modules/links/menu.php3, row 134
 $_m["My own links"]
-  = "";
+ = "";
 
-# modules/links/menu.php3, row 154
+# modules/links/menu.php3, row 155
 $_m["Main settings"]
-  = "Hlavní nastavení";
-
-# modules/links/menu.php3, row 157
-$_m["Links"]
-  = "Správa odkazù";
+ = "Hlavní nastavení";
 
 # modules/links/menu.php3, row 158
+$_m["Links"]
+ = "Správa odkazù";
+
+# modules/links/menu.php3, row 159
 $_m["Design"]
-  = "Vzhled";
+ = "Vzhled";
 
-# modules/links/menu.php3, row 163
+# modules/links/menu.php3, row 164
 $_m["New Category View"]
-  = "Nový pøehled kategorií";
+ = "Nový pøehled kategorií";
 
-# modules/links/menu.php3, row 166
+# modules/links/menu.php3, row 167
 $_m["New Link View"]
-  = "Nový pøehled odkazù";
+ = "Nový pøehled odkazù";
 
 # modules/links/usr_addlink.php3, row 205
 $_m["Jdi"]
-  = "";
+ = "";
 
-# modules/links/getcat.php3, row 45
+# modules/links/getcat.php3, row 46
 $_m["Category Tree"]
-  = "Strom kategorií";
+ = "Strom kategorií";
 
-# modules/links/getcat.php3, row 50
+# modules/links/getcat.php3, row 51
 $_m["Select category"]
-  = "Vyber kategorii";
+ = "Vyber kategorii";
 
 # modules/links/moddelete.php3, row 35
 $_m["You don't have permissions to delete a links module."]
-  = "";
+ = "";
 
 # modules/links/moddelete.php3, row 39
 $_m["Module not found."]
-  = "Modul nenalezen";
+ = "Modul nenalezen";
 
 # modules/links/moddelete.php3, row 61
 $_m["Links module successfully deleted"]
-  = "Modul správz odkazù bzl vzmazán";
+ = "Modul správz odkazù bzl vzmazán";
 
 # include/manager.class.php3, row 122
 $_m["No item found"]
-  = "Žádný odkaz nenalezen.";
+ = "Žádný odkaz nenalezen.";
 
-# include/manager.class.php3, row 379
+# include/manager.class.php3, row 168
+$_m["Publish date"]
+ = "";
+
+# include/manager.class.php3, row 168
+$_m["Headline"]
+ = "";
+
+# include/manager.class.php3, row 168
+$_m["Actions"]
+ = "";
+
+# include/manager.class.php3, row 410
 $_m["Select all"]
-  = "Vybrat vše";
+ = "Vybrat vše";
 
-# include/manager.class.php3, row 384
+# include/manager.class.php3, row 415
 $_m["Selected items"]
-  = "Vybrané odkazy";
+ = "Vybrané odkazy";
 
-# include/manager.class.php3, row 391
+# include/manager.class.php3, row 422
 $_m["Go"]
-  = "Proveï";
+ = "Proveï";
 
-# include/manager.class.php3, row 407
+# include/manager.class.php3, row 438
 $_m["Items Page"]
-  = "Stránka odkazù";
+ = "Stránka odkazù";
 
-# include/searchbar.class.php3, row 337, 404
-# include/tabledit.php3, row 510
+# include/searchbar.class.php3, row 343, 410
 $_m["Search"]
-  = "Vyhledat";
+ = "Vyhledat";
 
-# include/searchbar.class.php3, row 397
-$_m["Descending"]
-  = "Sestupnì";
-
-# include/searchbar.class.php3, row 437
-$_m["Update"]
-  = "Zmìò";
-
-# include/searchbar.class.php3, row 439
-$_m["Delete"]
-  = "Odstranit";
-
-# include/searchbar.class.php3, row 342
+# include/searchbar.class.php3, row 348
 $_m["And"]
-  = "a zároveò";
+ = "a zároveò";
 
-# include/searchbar.class.php3, row 351, 487, 496
-$_m["begins with"]
-  = "zaèíná";
-
-# include/searchbar.class.php3, row 352, 487, 496
+# include/searchbar.class.php3, row 357, 484, 493
 $_m["contains"]
-  = "obsahuje";
+ = "obsahuje";
 
-# include/searchbar.class.php3, row 353, 487, 496
+# include/searchbar.class.php3, row 358, 484, 493
+$_m["begins with"]
+ = "zaèíná";
+
+# include/searchbar.class.php3, row 359, 484, 493
 $_m["is"]
-  = "je";
+ = "je";
 
-# include/searchbar.class.php3, row 389
+# include/searchbar.class.php3, row 395
 $_m["Order"]
-  = "Seøadit";
+ = "Seøadit";
 
-# include/searchbar.class.php3, row 405
+# include/searchbar.class.php3, row 403
+$_m["Descending"]
+ = "Sestupnì";
+
+# include/searchbar.class.php3, row 411
 $_m["Clear"]
-  = "Vyèistit";
+ = "Vyèistit";
 
-# include/searchbar.class.php3, row 408
+# include/searchbar.class.php3, row 414
 $_m["Stored search name"]
-  = "Jméno filtru";
+ = "Jméno filtru";
 
-# include/searchbar.class.php3, row 409
+# include/searchbar.class.php3, row 415
 $_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
-  = "Uložit globálnì? Filtr mùžete uložit tak, že bude viditelný pro všechny uživatele tohoto webíku - tedy globálnì [ OK ], èi pouze jako váš osobní filtr [ Storno ]. Má-li být filtr globální - kliknìte na OK, má-li být váš osobní - kliknìte na Storno (popø. Cancel).";
+ = "Uložit globálnì? Filtr mùžete uložit tak, že bude viditelný pro všechny uživatele tohoto webíku - tedy globálnì [ OK ], èi pouze jako váš osobní filtr [ Storno ]. Má-li být filtr globální - kliknìte na OK, má-li být váš osobní - kliknìte na Storno (popø. Cancel).";
 
-# include/searchbar.class.php3, row 409
+# include/searchbar.class.php3, row 415
 $_m["Store"]
-  = "Uložit";
+ = "Uložit";
 
-# include/searchbar.class.php3, row 431
+# include/searchbar.class.php3, row 428
 $_m["Stored searches"]
-  = "Uložené filtry";
+ = "Uložené filtry";
 
 # include/searchbar.class.php3, row 434
-$_m["View"]
-  = "Zobraz";
-
-# include/searchbar.class.php3, row 438
-$_m["Enter new name"]
-  = "Zadej nové jméno";
-
-# include/searchbar.class.php3, row 438
-$_m["Rename"]
-  = "Pøejmenovat";
-
 $_m["Are you sure to refine current search?"]
-  = "Opravdu chcete pøedefinovat vybraný filtr?";
+ = "Opravdu chcete pøedefinovat vybraný filtr?";
 
-# include/searchbar.class.php3, row 439
+# include/searchbar.class.php3, row 434
+$_m["Update"]
+ = "Zmìò";
+
+# include/searchbar.class.php3, row 435
+$_m["Enter new name"]
+ = "Zadej nové jméno";
+
+# include/searchbar.class.php3, row 435
+$_m["Rename"]
+ = "Pøejmenovat";
+
+# include/searchbar.class.php3, row 436
 $_m["Are you sure to delete selected search?"]
-  = "Opravdu smazat vybraný filtr?";
+ = "Opravdu smazat vybraný filtr?";
 
-# include/searchbar.class.php3, row 496
+# include/searchbar.class.php3, row 436
+$_m["Delete"]
+ = "Odstranit";
+
+# include/searchbar.class.php3, row 493
 $_m["select ..."]
-  = "vyber ...";
+ = "vyber ...";
 
-# include/searchbar.class.php3, row 676
+# include/searchbar.class.php3, row 673
 $_m["Select one..."]
-  = "vyber ...";
+ = "vyber ...";
 
-# include/util.php3, row 722, 762
+# include/util.php3, row 799, 844
 $_m["Error: Missing Reading Password"]
-  = "";
+ = "";
 
-# include/util.php3, row 1121
+# include/util.php3, row 1156
 $_m["Toolkit news message"]
-  = "Vzkaz z Toolkitu";
+ = "Vzkaz z Toolkitu";
 
-# include/util.php3, row 1381
+# include/util.php3, row 1382
 $_m["Internal error. File upload: Dir does not exist?!"]
-  = "";
+ = "";
 
-# include/util.php3, row 1384
+# include/util.php3, row 1386
 $_m["File with this name already exists."]
-  = "";
+ = "";
 
-# include/util.php3, row 1393
+# include/util.php3, row 1396
 $_m["Can't move image  %s to %s"]
-  = "";
+ = "";
 
-# include/util.php3, row 1400
+# include/util.php3, row 1403
 $_m["Can't copy image  %s to %s"]
-  = "";
-
-# include/util.php3, row 1608
-$_m["alerts alert"]
-  = "";
-
-# include/util.php3, row 1609
-$_m["alerts welcome"]
-  = "";
+ = "";
 
 # include/util.php3, row 1610
-$_m["slice wizard welcome"]
-  = "";
+$_m["alerts alert"]
+ = "";
 
 # include/util.php3, row 1611
+$_m["alerts welcome"]
+ = "";
+
+# include/util.php3, row 1612
+$_m["slice wizard welcome"]
+ = "";
+
+# include/util.php3, row 1613
 $_m["other"]
-  = "";
+ = "";
 
-# include/util.php3, row 1618
+# include/util.php3, row 1620
 $_m["January"]
-  = "leden";
+ = "leden";
 
-# include/util.php3, row 1618
+# include/util.php3, row 1620
 $_m["February"]
-  = "únor";
+ = "únor";
 
-# include/util.php3, row 1618
+# include/util.php3, row 1620
 $_m["March"]
-  = "bøezen";
+ = "bøezen";
 
-# include/util.php3, row 1618
+# include/util.php3, row 1620
 $_m["April"]
-  = "duben";
+ = "duben";
 
-# include/util.php3, row 1618
+# include/util.php3, row 1620
 $_m["May"]
-  = "kvìten";
+ = "kvìten";
 
-# include/util.php3, row 1618
+# include/util.php3, row 1620
 $_m["June"]
-  = "èerven";
+ = "èerven";
 
-# include/util.php3, row 1619
+# include/util.php3, row 1621
 $_m["July"]
-  = "èervenec";
+ = "èervenec";
 
-# include/util.php3, row 1619
+# include/util.php3, row 1621
 $_m["August"]
-  = "srpen";
+ = "srpen";
 
-# include/util.php3, row 1619
+# include/util.php3, row 1621
 $_m["September"]
-  = "záøí";
+ = "záøí";
 
-# include/util.php3, row 1619
+# include/util.php3, row 1621
 $_m["October"]
-  = "øíjen";
+ = "øíjen";
 
-# include/util.php3, row 1619
+# include/util.php3, row 1621
 $_m["November"]
-  = "listopad";
+ = "listopad";
 
-# include/util.php3, row 1619
+# include/util.php3, row 1621
 $_m["December"]
-  = "prosinec";
+ = "prosinec";
 
 ?>
