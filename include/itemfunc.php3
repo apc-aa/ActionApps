@@ -240,7 +240,7 @@ function insert_fnc_ids($item_id, $field, $value, $param, $additional='') {
       // get rid of empty dummy relations (text='')
       // this is only a problem for text content
       $db = getDB();
-      if($field["text_stored"]) { 
+      if($field["text_stored"]) {
         $SQL = "DELETE FROM content
                  WHERE item_id = '". q_pack_id($reverse_id) ."'
                    AND field_id = '". $field["id"] ."'
@@ -707,6 +707,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert,
         $itemvarset->add("slice_id", "unpacked", $slice_id);
         $itemvarset->add("post_date", "quoted", default_fnc_now(""));
         $itemvarset->add("posted_by", "quoted", default_fnc_uid(""));
+        $itemvarset->add("externally_fed", "quoted", '');
         $SQL = "INSERT INTO item " . $itemvarset->makeINSERT();
     }
     $db = getDB();

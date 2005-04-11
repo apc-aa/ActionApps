@@ -50,14 +50,14 @@ $SQL        = "SELECT name, id FROM slice LEFT JOIN feedperms ON slice.id=feedpe
 $importable = GetTable2Array($SQL, 'unpack:id', 'name');
 
               // lookup imported slices
-$SQL        = "SELECT name, id FROM slice, feeds LEFT JOIN feedperms ON slice.id=feedperms.from_id
+$SQL        = "SELECT name, id FROM feeds, slice LEFT JOIN feedperms ON slice.id=feedperms.from_id
                 WHERE slice.id=feeds.from_id
                   AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
                   AND feeds.to_id='$p_slice_id' ORDER BY name";
 $imported   = GetTable2Array($SQL, 'unpack:id', 'name');
 
               // lookup exported slices
-$SQL        = "SELECT name, id FROM slice, feeds LEFT JOIN feedperms ON slice.id=feedperms.to_id
+$SQL        = "SELECT name, id FROM feeds, slice LEFT JOIN feedperms ON slice.id=feedperms.to_id
                 WHERE slice.id=feeds.to_id
                   AND feeds.from_id='$p_slice_id' ORDER BY name";
 $exported   = GetTable2Array($SQL, 'unpack:id', 'name');

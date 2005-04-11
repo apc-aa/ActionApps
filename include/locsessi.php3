@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -25,20 +25,21 @@ if (!is_array($_PHPLIB)) {
 
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
   /* Change this to match your database. */
-  require_once($_PHPLIB["libdir"] . "db_mysql.inc");  
+  $db_type_filename = (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc");
+  require_once($_PHPLIB["libdir"] . $db_type_filename);
 
   /* Change this to match your data storage container */
-  require_once($_PHPLIB["libdir"] . "ct_sql.inc");    
+  require_once($_PHPLIB["libdir"] . "ct_sql.inc");
 
   /* Required for everything below.      */
-  require_once($_PHPLIB["libdir"] . "session.inc");   
+  require_once($_PHPLIB["libdir"] . "session.inc");
 
   /* Disable this, if you are not using authentication. */
-  require_once($_PHPLIB["libdir"] . "auth.inc");      
+  require_once($_PHPLIB["libdir"] . "auth.inc");
 }
 
 /* Required, contains your local session management extension */
-require_once($GLOBALS["AA_INC_PATH"] . "extsessi.php3");     
+require_once($GLOBALS["AA_INC_PATH"] . "extsessi.php3");
 
 /* Required, contains the page management functions. */
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {

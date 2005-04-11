@@ -150,11 +150,8 @@ class aaprofile {
 
     function insertProperty($property, $selector, $value, $global=false) {
         $property = quote($property); $selector = quote($selector); $value = quote($value);
-        $last_id = $this->do_sql("INSERT INTO profile SET slice_id='". q_pack_id($this->module_id) ."',
-                                                          uid='". ($global ? '*' : $this->user_id) ."',
-                                                          property='$property',
-                                                          selector='$selector',
-                                                          value='$value'",
+        $last_id = $this->do_sql("INSERT INTO profile (slice_id, uid, property, selector, value)
+                                         VALUES ('". q_pack_id($this->module_id) ."','". ($global ? '*' : $this->user_id) ."','$property','$selector','$value')",
                       "Can't update profile");
         return $last_id;
     }

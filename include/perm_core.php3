@@ -416,7 +416,7 @@ function GetUserEmails ($type = "", $user_id = "current") {
     if ($user_id == "current")
         $user_id = $auth->auth["uid"];
     $slices = GetUserSlices ($user_id);
-    $where = "WHERE 1";
+    $where = "WHERE (1=1)";
     if ($type) $where .= " AND type='$type'";
     if ($slices == "all")
         ;

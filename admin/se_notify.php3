@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,21 @@ http://www.apc.org/
 require_once "../include/init_page.php3";
 require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-#require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+
+function save_notify2db($slice_id, $function, $emails) {
+    global $db;
+    $p_slice_id = q_pack_id($slice_id);
+    // split $notify_holding_item_e textarea into array
+    $arr = explode("\n", $emails);
+    foreach ($arr as $uid) {
+        if ( strpos($uid, '@') === false ) {
+            continue;
+        }
+        $uid = clean_email($uid);
+        $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', '$p_slice_id', $function)";
+        $result = $db->query($SQL);
+    }
+}
 
 // sanity checks
 
@@ -86,15 +100,14 @@ if( $update ) {
       break;
 
   // if we passed our validation, change the slice records
-  $up  = "notify_holding_item_s = '" . addslashes($notify_holding_item_s) . "',\n ";
-  $up .= "notify_holding_item_edit_s = '" . addslashes($notify_holding_item_edit_s) . "',\n ";
-  $up .= "notify_holding_item_b = '" . addslashes($notify_holding_item_b) . "',\n";
-  $up .= "notify_holding_item_edit_s = '" . addslashes($notify_holding_item_edit_s) . "',\n";
-  $up .= "notify_holding_item_edit_b = '" . addslashes($notify_holding_item_edit_b) . "',\n";
-  $up .= "notify_active_item_s = '" . addslashes($notify_active_item_s) . "',\n";
-  $up .= "notify_active_item_b = '" . addslashes($notify_active_item_b) . "',\n";
+  $up  = "notify_holding_item_s = '" .     addslashes($notify_holding_item_s) . "',\n ";
+  $up .= "notify_holding_item_b = '" .     addslashes($notify_holding_item_b) . "',\n";
+  $up .= "notify_holding_item_edit_s = '". addslashes($notify_holding_item_edit_s) . "',\n";
+  $up .= "notify_holding_item_edit_b = '". addslashes($notify_holding_item_edit_b) . "',\n";
+  $up .= "notify_active_item_s = '" .      addslashes($notify_active_item_s) . "',\n";
+  $up .= "notify_active_item_b = '" .      addslashes($notify_active_item_b) . "',\n";
   $up .= "notify_active_item_edit_s = '" . addslashes($notify_active_item_edit_s) . "',\n";
-  $up .= "notify_active_item_edit_b = '" .addslashes($notify_active_item_edit_b) ."' ";
+  $up .= "notify_active_item_edit_b = '" . addslashes($notify_active_item_edit_b) ."' ";
 
   $SQL= "UPDATE slice set $up WHERE id = '$p_slice_id'";
   $result = $db->query($SQL);
@@ -102,7 +115,7 @@ if( $update ) {
   // in email_notify
 
   // delete all the records in email_notify relating to this slice
-  // keep a backup until our transaction has gone through. 
+  // keep a backup until our transaction has gone through.
   //   ideally we would have transaction that would roll back, but mysql
   //   does not have these transactions
   $SQL= "delete from email_notify where slice_id = 'not_transition'";
@@ -113,59 +126,16 @@ if( $update ) {
 
   // insert all the records into email_notify
 
-  // split $notify_holding_item_e textarea into array
-  $z = 1;  $arr = split("\n", $notify_holding_item_e);
-  reset ($arr);
-  $y = "'" . q_pack_id($slice_id) . "'";
-  while (list(, $uid) = each ($arr)) {
-    if ( ! strstr($uid, '@') )
-      continue;
-   $uid = clean_email($uid);
-   $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', $y, $z)";
-   $result = $db->query($SQL);
-  }
-
-  // split $notify_holding_item_edit_e textarea into array
-  $z = 2;  $arr = split("\n", $notify_holding_item_edit_e);
-  reset ($arr);
-  $y = "'" . q_pack_id($slice_id) . "'";
-  while (list(, $uid) = each ($arr)) {
-    if ( ! strstr($uid, '@') )
-      continue;
-   $uid = clean_email($uid);
-   $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', $y, $z)";
-   $result = $db->query($SQL);
-  }
-
-  // split $notify_active_item_e textarea into array
-  $z = 3;  $arr = split("\n", $notify_active_item_e);
-  reset ($arr);
-  $y = "'" . q_pack_id($slice_id) ."'";
-  while (list(, $uid) = each ($arr)) {
-    if ( ! strstr($uid, '@') )
-      continue;
-   $uid = clean_email($uid);
-   $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', $y, $z)";
-   $result = $db->query($SQL);
-  }
-
-  // split $notify_active_item_edit_e textarea into array
-  $z = 4;  $arr = split("\n", $notify_active_item_edit_e);
-  reset ($arr);
-  $y = "'" . q_pack_id($slice_id) ."'";
-  while (list(, $uid) = each ($arr)) {
-    if ( ! strstr($uid, '@') )
-      continue;
-   $uid = clean_email($uid);
-   $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', $y, $z)";
-   $result = $db->query($SQL);
-  }
+  save_notify2db($slice_id, 1, $notify_holding_item_e);
+  save_notify2db($slice_id, 2, $notify_holding_item_edit_e);
+  save_notify2db($slice_id, 3, $notify_active_item_e);
+  save_notify2db($slice_id, 4, $notify_active_item_edit_e);
 
   // delete the backed-up users
   $SQL= "DELETE FROM email_notify WHERE slice_id='not_transition'";
   $result = $db->query($SQL);
 
-} 
+}
 
 ////////////////////////////////////////////////////////////////////
 //  III) prepare to write the form (select from the database)
@@ -173,9 +143,9 @@ if( $update ) {
 
 // grab variables from the table slice
 
-$SQL= " 
-SELECT notify_holding_item_s,      notify_holding_item_b,  
-       notify_holding_item_edit_s, notify_holding_item_edit_b, 
+$SQL= "
+SELECT notify_holding_item_s,      notify_holding_item_b,
+       notify_holding_item_edit_s, notify_holding_item_edit_b,
        notify_active_item_s,  notify_active_item_b,
        notify_active_item_edit_s,  notify_active_item_edit_b
  FROM slice WHERE id='".q_pack_id($slice_id)."'";
@@ -192,21 +162,15 @@ $SQL= "SELECT uid, function FROM email_notify WHERE slice_id='".q_pack_id($slice
 $notify_active_item_edit_e = $notify_active_item_e = $notify_holding_item_edit_e = $notify_holding_item_e = '';
 
 $result = $db->query($SQL);
-while ($row = mysql_fetch_array ($result)){
-  //  echo $row['uid'] . " " . $row['function'] . "<BR>";
-  // if the uid does not have an @ in it, we should really do a lookup in users
-  if ($row['function'] == 1){
-    $notify_holding_item_e .= $row['uid'] . "\n";
-    //    echo "<h1>MATCH</h1>";
-  }
-  else if ($row['function'] == 2)
-    $notify_holding_item_edit_e .= $row['uid'] . "\n";
-  else if ($row['function'] == 3)
-    $notify_active_item_e .= $row['uid'] . "\n"; 
-  else if ($row['function'] == 4)
-    $notify_active_item_edit_e .= $row['uid'] . "\n"; 
+while ($db->next_record()) {
+    switch ($db->Record['function']) {
+        case 1: $notify_holding_item_e      .= $db->Record['uid'] . "\n"; break;
+        case 2: $notify_holding_item_edit_e .= $db->Record['uid'] . "\n"; break;
+        case 3: $notify_active_item_e       .= $db->Record['uid'] . "\n"; break;
+        case 4: $notify_active_item_edit_e  .= $db->Record['uid'] . "\n"; break;
+    }
 }
-//exit;
+
 ////////////////////////////////////////////////////////////////////
 //   IV) write the form  (HTML output)
 ////////////////////////////////////////////////////////////////////
@@ -216,22 +180,22 @@ HtmlPageBegin();
 echo '<TITLE> '. _m("Email Notifications of Events"). '</TITLE></HEAD>';
   require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
   showMenu ($aamenus, "sliceadmin","notify");
-  
+
   echo "<H1><B>" . _m("Email Notifications of Events") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
 
-  
+
   $form_buttons = array("update" => array ("type"=>"hidden", "value"=>"1"),
                         "update","reset","cancel"=>array("url"=>"se_fields.php3"));
-  
+
 ?>
 
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
 
     FrmTabCaption(_m("Email Notifications of Events"),'','',$form_buttons, $sess, $slice_id);
-/*    
+/*
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 
 <tr><td class=tabtit><b>&nbsp;<?php echo _m("Email Notifications of Events")?></b>
@@ -243,28 +207,28 @@ echo '<TITLE> '. _m("Email Notifications of Events"). '</TITLE></HEAD>';
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 */
 
-echo "<TR><TD COLSPAN =2>". _m("<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>"; 
+echo "<TR><TD COLSPAN =2>". _m("<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>";
   FrmTextArea("notify_holding_item_e", _m("Email addresses, one per line"), $notify_holding_item_e, 3, 40, false);
   FrmInputText("notify_holding_item_s", _m("Subject of the Email message"), $notify_holding_item_s, 99, 40, true);
   FrmTextArea("notify_holding_item_b", _m("Body of the Email message"), $notify_holding_item_b, 3, 40, true);
 
-echo "<TR><TD COLSPAN =2>". _m("<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>"; 
+echo "<TR><TD COLSPAN =2>". _m("<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>";
 FrmTextArea("notify_holding_item_edit_e", _m("Email addresses, one per line"), $notify_holding_item_edit_e, 3, 40, false);
   FrmInputText("notify_holding_item_edit_s", _m("Subject of the Email message"), $notify_holding_item_edit_s, 99, 40, true);
   FrmTextArea("notify_holding_item_edit_b", _m("Body of the Email message"), $notify_holding_item_edit_b, 3, 40, true);
 
-echo "<TR><TD COLSPAN =2>". _m("<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>"; 
+echo "<TR><TD COLSPAN =2>". _m("<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>";
   FrmTextArea("notify_active_item_e", _m("Email addresses, one per line"), $notify_active_item_e, 3, 40, false);
   FrmInputText("notify_active_item_s", _m("Subject of the Email message"), $notify_active_item_s, 99, 40, true);
   FrmTextArea("notify_active_item_b", _m("Body of the Email message"), $notify_active_item_b, 3, 40, true);
 
-echo "<TR><TD COLSPAN =2>". _m("<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>"; 
+echo "<TR><TD COLSPAN =2>". _m("<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</TD></TR>";
 FrmTextArea("notify_active_item_edit_e", _m("Email addresses, one per line"), $notify_active_item_edit_e, 3, 40, false);
   FrmInputText("notify_active_item_edit_s", _m("Subject of the Email message"), $notify_active_item_edit_s, 99, 40, true);
   FrmTextArea("notify_active_item_edit_b", _m("Body of the Email message"), $notify_active_item_edit_b, 3, 40, true);
 
   FrmTabEnd($form_buttons, $sess, $slice_id);
-  
+
 /*
 </table>
 </td></tr><tr><td align="center">

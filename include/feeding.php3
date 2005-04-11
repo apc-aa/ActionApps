@@ -80,7 +80,7 @@ function GetBaseItem($item_id) {
     $p_dest_id = q_pack_id($dest_id);
     $SQL=  "SELECT source_id FROM relation
            WHERE  destination_id = '$p_dest_id'
-             AND flag & ". REL_FLAG_FEED;
+             AND ((flag & ". REL_FLAG_FEED .") = 1)";
     $db->query($SQL);
     $item_id = $db->next_record() ? unpack_id($db->f(source_id)) : false;
   }
@@ -105,7 +105,7 @@ function IsItemFed($item_id, $destination) {
   $SQL = "SELECT source_id FROM relation, item
            WHERE relation.destination_id = item.id
              AND item.slice_id = '$p_destination'
-             AND flag & ". REL_FLAG_FEED;
+             AND ((flag & ". REL_FLAG_FEED .") = 1)";
   $db->query($SQL);
   while ($db->next_record() ) // Build an array of source id's
     $sources[] = unpack_id128($db->f(source_id));
@@ -136,7 +136,7 @@ function IsItemFed($item_id, $destination) {
 function FeedJoin ($columns, $fields, $params, &$result)
 {
     $params = str_replace ("#:","#~",$params);
-    $params = split (":",$params);
+    $params = explode(":",$params);
     reset($params);
     $parts;
     $i = 0;
@@ -302,7 +302,7 @@ function CreateFeedTree($sl_id, $from_category_id) {
 
       $SQL = "SELECT feeds.to_id, feeds.category_id, feeds.all_categories,
                    feeds.to_approved, feeds.to_category_id
-            FROM feeds, slice LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
+            FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
             WHERE feeds.from_id = slice.id
                   AND feeds.from_id='". q_pack_id($sl_id) ."'
                   AND (slice.export_to_all=1
@@ -373,7 +373,7 @@ function UpdateItems($tree, $item_id, $slice_id, $cat_id) {
     $SQL = "SELECT destination_id, slice_id  FROM relation, item
             WHERE destination_id = id
              AND  source_id='$p_item_id'
-             AND flag & ". REL_FLAG_FEED;
+             AND ((flag & ". REL_FLAG_FEED .") = 1)";
     $db2->query($SQL);
     while( $db2->next_record() ) {
       $update = true;
@@ -456,7 +456,7 @@ function DeleteItem($db, $id) {
   # delete feeding relation
   $SQL = "DELETE LOW_PRIORITY FROM relation WHERE (source_id='$p_itm_id'
                                                OR destination_id='$p_itm_id')
-                                              AND flag & ".REL_FLAG_FEED;
+                                               AND ((flag & ". REL_FLAG_FEED .") = 1)";
   $db->query($SQL);
 }
 ?>

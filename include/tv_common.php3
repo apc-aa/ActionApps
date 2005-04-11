@@ -72,7 +72,7 @@ function CreateWhereFromList ($column, $list, $type="number") {
 function SelectModule ($all = false) {
     global $db, $auth;
     if (IsSuperadmin() || $all) {
-        $where = '1';
+        $where = '(1=1)';
     } else {
         // get all slices where we have edit permission
         $myslices = GetUserSlices();

@@ -175,7 +175,7 @@ function GetEmailTableView ($viewID, $processForm = false)
 function GetEmailWhere () {
     global $auth, $db;
     if (IsSuperadmin ())
-        return 1;
+        return "(1=1)";
     else {
         $myslices = GetUserSlices();
         if (is_array ($myslices)) {
@@ -185,7 +185,7 @@ function GetEmailWhere () {
                     $restrict_slices[] = q_pack_id($my_slice_id);
             return "owner_module_id IN ('".join("','",$restrict_slices)."')";
         }
-        else return 0;
+        else return "(1=0)";
     }
     return $retval;
 }

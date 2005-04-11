@@ -41,7 +41,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 // lookup (slices)
-$SQL= "SELECT name, id FROM slice, feeds
+$SQL= "SELECT name, id FROM feeds, slice
         LEFT JOIN feedperms ON slice.id=feedperms.from_id
         WHERE slice.id=feeds.from_id
           AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)

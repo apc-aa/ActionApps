@@ -51,7 +51,7 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
     while (list ($myviewid, $com) = each ($cmd)) {
         $myview = $getTableViewsFn ($myviewid, "form");
         SetColumnTypes ($myview["fields"], $primary_aliases, $myview["table"],
-            $myview["join"], false, $primary);
+            $myview["join"], false, $myview['primary']);
         reset ($com);
         while (list ($command, $par) = each ($com)) {
             switch ($command) {

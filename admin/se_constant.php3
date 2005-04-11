@@ -201,13 +201,17 @@ if( $update ) {
 
     # add new group to constant group list
     if ($add_new_group) {
-        $SQL = "INSERT INTO constant SET id='". q_pack_id(new_id()) ."',
-                                         group_id='lt_groupNames',
-                                         name='$group_id',
-                                         value='$group_id',
-                                         class='',
-                                         pri='100'";
-        $db->tquery($SQL);
+        $varset->clear();
+        $varset->set("id", new_id(), "unpacked" );
+        $varset->set("group_id", 'lt_groupNames', "quoted" );
+        $varset->set("name", $group_id, "quoted");
+        $varset->set("value", $group_id, "quoted");
+        $varset->set("class", '', "quoted");
+        $varset->set("pri", 100, "number");
+        if (!$db->tquery("INSERT INTO constant " . $varset->makeINSERT())) {
+            $err["DB"] .= MsgErr("Can't create constant group");
+            break;
+        }
     }
 
     reset($name);

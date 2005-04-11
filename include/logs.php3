@@ -50,11 +50,8 @@ function writeLog($event, $params="", $selector="" ) {
     $params   = addslashes($params);
     $selector = addslashes($selector);
 
-    $SQL = "INSERT into log SET time='". time() ."',
-                                user='". $auth->auth["uid"] ."',
-                                type='$event',
-                                selector='$selector',
-                                params='$params'";
+    $SQL = "INSERT INTO log (id, time, user, type, selector, params)
+                     VALUES ('', '". time() ."','". $auth->auth["uid"] ."','$event','$selector','$params')";
     $db->query($SQL);
     freeDB($db);
 }
@@ -71,7 +68,7 @@ function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_o
 
     $time = time();
 
-    if (strpos($event, '%') == false) { $like = false; } else { $like = true; }
+    $like = (strpos($event, '%') !== false);
 
     // if "to" isn't set, we use time of query, because of saving log entries
     // written in (and after) query
@@ -80,19 +77,20 @@ function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_o
     if ($selector != "") { $slctr = " AND selector = '$selector'"; }
 
     if ($group_by_param) {
-        $SQL = "SELECT *,COUNT(*) AS count FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
+        $SQL = "SELECT params,COUNT(*) AS count FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
         if ($from)  { $SQL .= " AND time >= '$from'"; }
         if ($to)    { $SQL .= " AND time <= '$to'";}
         if ($slctr) { $SQL .= $slctr; }
         $SQL .= " GROUP BY params";
+        $return = GetTable2Array($SQL, 'NoCoLuMn');
     } else {
         $SQL = "SELECT * FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
         if ($from)  { $SQL .= " AND time >= '$from'"; }
         if ($to)    { $SQL .= " AND time <= '$to'"; }
         if ($slctr) { $SQL .= $slctr;  }
         // $SQL .= "ORDER BY TIME";
+        $return = GetTable2Array($SQL, 'id');
     }
-    $return = GetTable2Array($SQL);
 
     // remove old log entries from table
     if ($delete_old_logs) {
