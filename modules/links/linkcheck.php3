@@ -29,13 +29,13 @@ http://www.apc.org/
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
 include "../../include/config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";   # DB_AA definition
-require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";   // DB_AA definition
+require_once $GLOBALS['AA_INC_PATH']."zids.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
 
 $db = new DB_AA;
 
-require_once $GLOBALS["AA_INC_PATH"]."linkcheck.class.php3";
+require_once $GLOBALS['AA_INC_PATH']."linkcheck.class.php3";
 
 $check_links = new linkcheck;
 

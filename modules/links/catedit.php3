@@ -1,10 +1,10 @@
 <?php
 //$Id$
-# Edit Category Page
+// Edit Category Page
 
 // $cid category id should be send to the slice
 
-# Edit Link Page
+// Edit Link Page
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
@@ -15,7 +15,7 @@ require_once "./util.php3";
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id = $slice_id;
-$p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
+$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $links_info = GetModuleInfo($module_id,'Links');
 
 // r_err and r_msg - passes messages between scripts
@@ -24,14 +24,14 @@ if ( !isset($r_err) ) {
     $sess->register('r_msg');
 }
 
-if($cancel)
+if ($cancel)
     go_url( $sess->url(self_base() . "index.php3"));
 
-if( !$cid )
+if ( !$cid )
     $cid = $r_state['cat_id'];
 
 $cpath = GetCategoryPath( $cid );
-if( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
+if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
     $r_state['cat_id']    = $cid;
     $r_state['cat_path']  = $cpath;
 }
@@ -40,8 +40,8 @@ else {
     exit;
 }
 
-if( !$updated ) {
-    # get this category info (r_category_id must be set (see init_page.php3))
+if ( !$updated ) {
+    // get this category info (r_category_id must be set (see init_page.php3))
     $SQL= " SELECT * FROM links_categories WHERE id=".$r_state['cat_id'];
     $db->query($SQL);
     if ($db->next_record()) {
@@ -55,10 +55,6 @@ if( !$updated ) {
 }
 $id = $r_state['cat_id'];
 
-# count links in all subtree
-$links_count = CountCategLinks($cat_path, $r_state['cat_id']);
-
-
 // AND now display the form --------------------------------------------------
 
 // Print HTML start page (html begin, encoding, style sheet, no title)
@@ -71,13 +67,18 @@ $tree_to_begin = ($links_info['select_start'] ?
                     $links_info['tree_start']);
 
 $tree = new cattree( $db, $tree_to_begin, true, ' > ');
+
+// count links in all subtree
+$linkcounter = new linkcounter;
+$links_count = $linkcounter->get_link_count($cpath, true);  // count and update
+
 FrmJavascriptFile('javascript/js_lib.js');
 FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
 $tree->printTreeData($tree_to_begin);
 
 echo '
  <style>
-  #body_white_color { color: #000000; }
+  //body_white_color { color: //000000; }
  </style>
 </head>
 <body id="body_white_color">
@@ -120,9 +121,9 @@ echo '
        <td align="center">';
 //         <a href="javascript:MoveSelectedUp(\'document.f.selcat\')"><img src="'.$AA_INSTAL_PATH.'images/cup.gif" border="0" alt="'. _m('Up') .'"></a>
 //         <a href="javascript:MoveSelectedDown(\'document.f.selcat\')"><img src="'.$AA_INSTAL_PATH.'images/cdown.gif" border="0" alt="'. _m('Down') .'"></a><br>';
-if( IsCatPerm(PS_LINKS_ADD_SUBCATEGORY, $r_state['cat_path']) )
+if ( IsCatPerm(PS_LINKS_ADD_SUBCATEGORY, $r_state['cat_path']) )
     echo ' <a href="javascript:NewCateg(\''._m('New subcategory').'\')">'. _m('Add') .'</a> &nbsp; ';
-if( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )
+if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )
     echo ' <a href="javascript:DelCateg(\''._m('Remove selected subcategory?').'\')">'. _m('Del') .'</a> &nbsp; ';
     echo ' <a href="javascript:ChangeStateCateg(\'document.f.selcat\')">'. _m('Change state') .'</a>';
 

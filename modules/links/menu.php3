@@ -19,11 +19,11 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# $r_slice_headline - should be defined
-# $slice_id - should be defined
-# $r_slice_view_url - should be defined
-# $editor_page or $usermng_page or $settings_page - should be defined
-# $g_modules - should be defined
+// $r_slice_headline - should be defined
+// $slice_id - should be defined
+// $r_slice_view_url - should be defined
+// $editor_page or $usermng_page or $settings_page - should be defined
+// $g_modules - should be defined
 
 /*  Top level (navigation bar) menu description:
     label       to be shown
@@ -203,7 +203,7 @@ function CreateMenu4Views( $foo ) {
 
     $SQL = "SELECT id, name, type FROM view WHERE slice_id='". q_pack_id($slice_id)."'";
     $db->tquery( $SQL );
-    while($db->next_record()) {
+    while ($db->next_record()) {
         $menu['view'.$db->f('id')] = CreateMetuItem( $db->f('name'),  // label, href [, cond]
             'admin/se_view.php3?view_id='.$db->f('id').'&view_type='.$db->f('type'));
     }

@@ -327,13 +327,13 @@ class assignmentset {
         global $selcatCount;   // selcatSelect* and selcatState* are global too!!!
         $new_ass = new assignmentset();
         $base = true;          // mark first assignment as base
-        for( $i=0; $i<$GLOBALS['selcatCount']; $i++) {
+        for ( $i=0; $i<$GLOBALS['selcatCount']; $i++) {
             $cid    = $GLOBALS["selcatSelect$i"];
 //            $cstate = $GLOBALS["selcatSelect$i"];
             if ( strrpos($cid, ',') ) {   // get category id if in path
                  $cid = GetCategoryFromPath( $path );
             }
-            if( $cid ) {
+            if ( $cid ) {
                 $new_ass->add($cid, null, $base);
                 $base = false;
             }
@@ -942,7 +942,7 @@ debug("SAVE (loaded): ", $this);
             $db->tquery("INSERT INTO links_links ". $varset->makeINSERT());
             // get inserted link id
             $db->tquery( "SELECT LAST_INSERT_ID() as id" );
-            if(!$db->next_record()) {
+            if (!$db->next_record()) {
                 huh("Error - Last inserted ID is lost");
                 exit;
             }

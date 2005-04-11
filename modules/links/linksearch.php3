@@ -1,6 +1,7 @@
 <?php
 require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
 require_once $GLOBALS['AA_BASE_PATH']. "modules/links/constants.php3";
+require_once $GLOBALS['AA_BASE_PATH']. "modules/links/util.php3";
 
 //$Id$
 /*
@@ -63,10 +64,10 @@ function IsFieldSupported($field_info, $v, $param) {
  *  @global bool $nocache       - do not use cache, even if use_cache is set
  */
 function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app") {
-    global $debug;                 # displays debug messages
-    global $nocache;               # do not use cache, if set
+    global $debug;                 // displays debug messages
+    global $nocache;               // do not use cache, if set
 
-    if( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
+    if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
     $keystr = $cat_path . $subcat. serialize($conds). serialize($sort). $type;
     $cache_condition = $use_cache AND !$nocache;
@@ -83,21 +84,21 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id ' :
            'SELECT  DISTINCT links_links.id  FROM links_links, links_link_cat, links_categories ');
 
-    if( $type == 'changed' ) {
+    if ( $type == 'changed' ) {
         $join_tables['changes'] = true;
     }
 
-    if( $join_tables['regions'] )
+    if ( $join_tables['regions'] )
         $SQL .= ' LEFT JOIN links_link_reg ON links_links.id = links_link_reg.link_id
                   LEFT JOIN links_regions ON links_regions.id = links_link_reg.region_id ';
-    if( $join_tables['languages'] )
+    if ( $join_tables['languages'] )
         $SQL .= ' LEFT JOIN links_link_lang ON links_links.id = links_link_lang.link_id
                   LEFT JOIN links_languages ON links_languages.id = links_link_lang.lang_id ';
-    if( $join_tables['changes'] )
+    if ( $join_tables['changes'] )
         $SQL .= ' LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id ';
 
 
-    if( $type != 'unasigned' ) {
+    if ( $type != 'unasigned' ) {
         $SQL .= '  WHERE links_links.id = links_link_cat.what_id
                      AND links_link_cat.category_id = links_categories.id ';
 
@@ -135,7 +136,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
     }
     $SQL .=  $where_sql . $order_by_sql;
 
-    # get result --------------------------
+    // get result --------------------------
     $str2find = new CacheStr2find($cat_path, 'cat_path');
     return GetZidsFromSQL($SQL, 'id', $cache_condition, $keystr, $str2find);
 }
@@ -156,10 +157,10 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
  *  @global bool $nocache       - do not use cache, even if use_cache is set
  */
 function Links_QueryCatZIDs($cid, $conds, $sort="", $subcat=false, $type="app") {
-    global $debug;                 # displays debug messages
-    global $nocache;               # do not use cache, if set
+    global $debug;                 // displays debug messages
+    global $nocache;               // do not use cache, if set
 
-    if( $debug ) huhl( "<br>CatPath:", $cat_path, '<br>Subcat:', $subcat,"<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
+    if ( $debug ) huhl( "<br>CatPath:", $cat_path, '<br>Subcat:', $subcat,"<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
     $keystr = 'cats'.$cid. $subcat. serialize($conds). serialize($sort). $type;
     $cache_condition = $use_cache AND !$nocache;
@@ -182,7 +183,7 @@ function Links_QueryCatZIDs($cid, $conds, $sort="", $subcat=false, $type="app") 
     }
     $SQL .=  $where_sql . $order_by_sql;
 
-    # get result --------------------------
+    // get result --------------------------
     $str2find = new CacheStr2find(Links_GetCategoryColumn($cid, 'path'), 'cat_path');
     return GetZidsFromSQL($SQL, 'id', $cache_condition, $keystr, $str2find);
 }

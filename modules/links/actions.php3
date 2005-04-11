@@ -39,7 +39,7 @@ else return;
 function Links_GetAsociationId($lid, $cid) {
     global $db;
 
-    if( !$lid OR !$cid )
+    if ( !$lid OR !$cid )
         return false;
     $SQL = "SELECT a_id FROM links_link_cat
              WHERE category_id = '$cid'
@@ -57,12 +57,12 @@ function Links_GetAsociationId($lid, $cid) {
 function Links_CheckLink($param, $lid, $akce_param) {
     global $auth, $db;
 
-      # get link's base category
+      // get link's base category
     $base_category_path = GetBaseCategoryPath( $lid );
-    if( !isset($base_category_path) )
+    if ( !isset($base_category_path) )
         return _m('Can\'t get link data');  // error
 
-    if(!IsCatPerm( PS_LINKS_CHECK_LINK, $base_category_path)) // have I perm to check?
+    if (!IsCatPerm( PS_LINKS_CHECK_LINK, $base_category_path)) // have I perm to check?
         return _m('No permission to change state of the link');  // error
 
     $SQL = "UPDATE links_links SET checked = '". now() ."',
@@ -80,11 +80,11 @@ function Links_HighlightLink($param, $lid, $akce_param, $highlight=true) {
     global $db, $r_state;
 
     $aid = Links_GetAsociationId($lid, $r_state['cat_id']);
-    if( !$aid )
+    if ( !$aid )
         return _m('Can\'t find link in given category');  // error
 
     $state = ( $highlight ? 'highlight' : 'visible');
-    if( !IsCatPerm( PS_LINKS_HIGHLIGHT_LINK, $r_state['cat_path'] ))            // Perm to highlight?
+    if ( !IsCatPerm( PS_LINKS_HIGHLIGHT_LINK, $r_state['cat_path'] ))            // Perm to highlight?
         return _m('No permission to change state of the link');
 
     $SQL = "UPDATE links_link_cat SET state = '$state'
@@ -107,10 +107,10 @@ function Links_DeHighlightLink($param, $lid, $akce_param) {
 function Links_DeleteLink($param, $lid, $akce_param) {
     global $db, $r_state;
     $aid = Links_GetAsociationId($lid, $r_state['cat_id']);
-    if( !$aid )
+    if ( !$aid )
         return _m('Can\'t find link in given category');  // error
 
-    if( !IsCatPerm( PS_LINKS_DELETE_LINK, $r_state['cat_path'] ) ) { // have I perm to del?
+    if ( !IsCatPerm( PS_LINKS_DELETE_LINK, $r_state['cat_path'] ) ) { // have I perm to del?
         $SQL = "UPDATE links_link_cat SET proposal_delete = 'y'
                 WHERE a_id = $aid";
         $db->query($SQL);                      //   delele_proposal too
@@ -120,16 +120,16 @@ function Links_DeleteLink($param, $lid, $akce_param) {
       // get assignment info
     $SQL = "SELECT * FROM links_link_cat WHERE a_id = $aid";
     $db->query($SQL);
-    if( !$db->next_record() )
+    if ( !$db->next_record() )
         return _m('Can\'t get asociation informations');
 
-    if( $db->f('base') == 'y' ) {    // we have to find another base for the link
+    if ( $db->f('base') == 'y' ) {    // we have to find another base for the link
       $SQL = "SELECT * FROM links_link_cat WHERE what_id = ". $db->f('what_id').
                                          " AND a_id <> $aid
                                          ORDER BY state DESC";  // visible - highlight - hidden
       $db->query($SQL);
-      if( $db->next_record() ) {
-        if( $db->f('state') == 'hidden' ) {
+      if ( $db->next_record() ) {
+        if ( $db->f('state') == 'hidden' ) {
           $SQL = "UPDATE links_link_cat SET state='visible', base='y'
                    WHERE a_id = ". $db->f('a_id');
         } else {
@@ -152,10 +152,10 @@ function Links_DeleteLink($param, $lid, $akce_param) {
 function Links_ApproveLink($param, $lid, $akce_param) {
     global $db, $r_state;
     $aid = Links_GetAsociationId($lid, $r_state['cat_id']);
-    if( !$aid )
+    if ( !$aid )
         return _m('Can\'t find link in given category');  // error
 
-    if( !IsCatPerm( PS_LINKS_ADD_LINK, $r_state['cat_path'] ) )   // have I perm to add?
+    if ( !IsCatPerm( PS_LINKS_ADD_LINK, $r_state['cat_path'] ) )   // have I perm to add?
         return _m('No permission to approve link to given category');
 
     $SQL = "UPDATE links_link_cat SET proposal = 'n'
@@ -177,10 +177,10 @@ function Links_ApproveLink($param, $lid, $akce_param) {
 function Links_RefuseLink($param, $lid, $akce_param) {
     global $db, $r_state;
     $aid = Links_GetAsociationId($lid, $r_state['cat_id']);
-    if( !$aid )
+    if ( !$aid )
         return _m('Can\'t find link in given category');  // error
 
-    if( !IsCatPerm( PS_LINKS_DELETE_LINK, $r_state['cat_path']) ) { // have I perm to DEL?
+    if ( !IsCatPerm( PS_LINKS_DELETE_LINK, $r_state['cat_path']) ) { // have I perm to DEL?
         $SQL = "UPDATE links_link_cat SET proposal_delete = 'y'
                 WHERE a_id = $aid";
         $db->query($SQL);                      //   delele_proposal too
@@ -190,16 +190,16 @@ function Links_RefuseLink($param, $lid, $akce_param) {
       // get assignment info
     $SQL = "SELECT * FROM links_link_cat WHERE a_id = $aid";
     $db->query($SQL);
-    if( !$db->next_record() )
+    if ( !$db->next_record() )
         return _m('Can\'t get asociation informations');
 
-    if( $db->f('base') == 'y' ) {            // we have to find new base
+    if ( $db->f('base') == 'y' ) {            // we have to find new base
         $SQL = "SELECT * FROM links_link_cat
                    WHERE what_id = ". $db->f('what_id') ."
                    AND base = 'n'
                    ORDER BY proposal, state";  // true links first
         $db->query($SQL);
-        if( $db->next_record() ) {       // link is linked to another category
+        if ( $db->next_record() ) {       // link is linked to another category
             $SQL = ( ( $db->f(state)=='hidden' ) ?
                      "UPDATE links_link_cat SET base='y', state='visible'
                        WHERE a_id=".$db->f(a_id) :
@@ -208,8 +208,8 @@ function Links_RefuseLink($param, $lid, $akce_param) {
             $db->query($SQL);
         }
     }
-    $db->query("DELETE FROM links_link_cat WHERE a_id=$aid");  # delete assig.
-      # we have to make all other assignments
+    $db->query("DELETE FROM links_link_cat WHERE a_id=$aid");  // delete assig.
+      // we have to make all other assignments
     return false;                                         // OK - no error
 }
 
@@ -220,13 +220,13 @@ function Links_RefuseLink($param, $lid, $akce_param) {
 function Links_Move2Folder($lid, $folder) {
     global $auth, $db;
 
-      # get link's base category
+      // get link's base category
     $base_category_path = GetBaseCategoryPath( $lid );
-    if( !isset($base_category_path) )
+    if ( !isset($base_category_path) )
         return _m('Base category not found');  // error
 
     // have I perm to move?
-    if(!IsCatPerm( $folder==1 ? PS_LINKS_LINK2ACT : PS_LINKS_LINK2FOLDER,  $base_category_path))
+    if (!IsCatPerm( $folder==1 ? PS_LINKS_LINK2ACT : PS_LINKS_LINK2FOLDER,  $base_category_path))
         return _m('No permission to move link');  // error
 
     $SQL = "UPDATE links_links SET folder='$folder'
@@ -253,7 +253,7 @@ function Links_FolderLink($param, $lid, $akce_param) {
  * Assign link to the category specified in param
  */
 function Links_Add2CatLink($param, $lid, $akce_param) {
-    if( is_numeric($akce_param) ) {
+    if ( is_numeric($akce_param) ) {
         return Links_Assign2Category($lid, $akce_param);
     }
     return false;
@@ -263,7 +263,7 @@ function Links_Add2CatLink($param, $lid, $akce_param) {
  * Move link from current category to the destination category
  */
 function Links_Move2CatLink($param, $lid, $akce_param) {
-    if( is_numeric($akce_param) ) {
+    if ( is_numeric($akce_param) ) {
         // remove link from current category
         Links_DeleteLink($param, $lid, $akce_param);
         // add link to destination category

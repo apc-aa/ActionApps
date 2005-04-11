@@ -19,9 +19,9 @@ along with this program (LICENSE); if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# APC AA - Module links main administration page
+// APC AA - Module links main administration page
 
-# used in init_page.php3 script to include config.php3 from the right directory
+// used in init_page.php3 script to include config.php3 from the right directory
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
@@ -38,11 +38,11 @@ require_once "./cattree.php3";
 require_once "./util.php3";      // module specific utils
 
 
-# Check permissions for this page.
-# You should change PS_MODP_EDIT_POLLS permission to match the permission in your
-# module. See /include/perm_core.php3 for more details
+// Check permissions for this page.
+// You should change PS_MODP_EDIT_POLLS permission to match the permission in your
+// module. See /include/perm_core.php3 for more details
 
-if( !IfSlPerm(PS_LINKS_EDIT_LINKS) ) {
+if ( !IfSlPerm(PS_LINKS_EDIT_LINKS) ) {
     MsgPage($sess->url(self_base())."index.php3", _m("No permissions to edit links"));
     exit;
 }
@@ -60,7 +60,7 @@ function Links_GoCateg($value, $param) {
     global $r_state;
     // TODO - refresh permission for new category!!!
     $cpath = GetCategoryPath( $value );
-    if( IsCatPerm( PS_LINKS_EDIT_LINKS, $cpath ) ) {
+    if ( IsCatPerm( PS_LINKS_EDIT_LINKS, $cpath ) ) {
         $r_state["show_subtree"] = false;
         $r_state['cat_id']       = $value;
         $r_state['cat_path']     = $cpath;
@@ -120,9 +120,7 @@ function Links_GoBookmark($value, $param) {
 
 /** Handler for DeleteTrash switch - removes links from trash */
 function Links_DeleteTrash($value, $param) {
-    # delete polls of item fields
-    $db->query("DELETE FROM polls
-    WHERE status_code=3 AND id = '$p_module_id'");
+    // $db->query("DELETE FROM polls WHERE status_code=3 AND id = '$p_module_id'");
 }
 
 /** Function corresponding with 'actions' (see below) - returns true if user
@@ -164,7 +162,7 @@ function Links_CountLinkInBins($cat_path) {
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id
              WHERE (links_link_cat.category_id IS NULL)';
     $db->tquery($SQL);
-    if( $db->next_record() ) {
+    if ( $db->next_record() ) {
         $ret['unasigned'] = $db->f('count');
     }
 
@@ -178,22 +176,13 @@ function Links_CountLinkInBins($cat_path) {
                AND (links_link_cat.base = 'y')
                AND (links_links.folder < 2)";
     $db->tquery($SQL);
-    if( $db->next_record() ) {
+    if ( $db->next_record() ) {
         $ret['new'] = $db->f('count');
     }
 
     // app
-    $SQL = "SELECT  count(DISTINCT links_links.id) as count
-              FROM links_links, links_link_cat, links_categories
-             WHERE links_links.id = links_link_cat.what_id
-               AND links_link_cat.category_id = links_categories.id
-               AND ((path = '$cat_path') OR (path LIKE '$cat_path,%'))
-               AND (links_link_cat.proposal = 'n')
-               AND (links_links.folder < 2)";
-    $db->tquery($SQL);
-    if( $db->next_record() ) {
-        $ret['app'] = $db->f('count');
-    }
+    $linkcounter = new linkcounter;
+    $ret['app']  = $linkcounter->get_link_count($cat_path);
 
     // changed
     $SQL = "SELECT  count(DISTINCT links_links.id) as count
@@ -212,7 +201,7 @@ function Links_CountLinkInBins($cat_path) {
                          AND (links_link_cat.proposal = 'n')))
                AND (links_links.folder < 2)";
     $db->tquery($SQL);
-    if( $db->next_record() ) {
+    if ( $db->next_record() ) {
         $ret['changed'] = $db->f('count');
     }
 
@@ -227,16 +216,16 @@ function Links_CountLinkInBins($cat_path) {
                AND links_links.folder > 1
              GROUP BY links_links.folder";
     $db->tquery($SQL);
-    while( $db->next_record() ) {
+    while ( $db->next_record() ) {
         $ret['folder'.($db->f('folder'))] = $db->f('count');
     }
 
     return $ret;
 }
 
-# id of the editted module (id in long form (32-digit hexadecimal number))
+// id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id = $slice_id;
-$p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
+$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $links_info = GetModuleInfo($module_id,'Links');
 
 $manager_settings = array(
@@ -356,7 +345,7 @@ if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
 
 $manager = new manager($manager_settings);
 
-if( $r_state['manager'] )        // do not set state for the first time calling
+if ( $r_state['manager'] )        // do not set state for the first time calling
     $manager->setFromState($r_state['manager']);
 
 $manager->performActions();

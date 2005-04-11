@@ -1,4 +1,4 @@
-<?php  #catedit2.php3 - proceeds submitted data from catedit.php3
+<?php  //catedit2.php3 - proceeds submitted data from catedit.php3
 //$Id$
 
 $directory_depth = '../';
@@ -12,7 +12,7 @@ require_once "./util.php3";           // module specific utils
 $r_state['linkedit']['old'] = $HTTP_POST_VARS;  // in case of bad input
 unset($r_msg);
 unset($r_err);
-# Function definitions --------------------------------------------------------
+// Function definitions --------------------------------------------------------
 
 // Checks if category has subcategories or links
 // (for deletion, so it does not count links in trash and it also do not count
@@ -34,7 +34,7 @@ function IsCatEmpty($category_id) {
 
 
   $db->query($SQL);
-  if( $db->next_record() )
+  if ( $db->next_record() )
     return false;
 
   $SQL = "SELECT what_id FROM links_cat_cat
@@ -43,7 +43,7 @@ function IsCatEmpty($category_id) {
   return !($db->next_record());
 }
 
-# Delete one category assignment
+// Delete one category assignment
 function DeleteCatAssignment($parent, $child) {
   global $db;
   $SQL = "DELETE FROM links_cat_cat
@@ -53,7 +53,7 @@ function DeleteCatAssignment($parent, $child) {
   $db->query( $SQL );
 }
 
-# Delete one category
+// Delete one category
 function DeleteCategory($catId) {
   global $db;
 
@@ -94,7 +94,7 @@ function ChangeCatState($category_id, $insertedId, $state) {
     $db->query( $SQL );
 }
 
-# Moves this category to another subtree or delete (if clear and no link to it)
+// Moves this category to another subtree or delete (if clear and no link to it)
 function UnassignBaseCategory($parent, $child) {
     global $db, $r_msg, $r_err;
 
@@ -104,8 +104,8 @@ function UnassignBaseCategory($parent, $child) {
 
     $db->query($SQL);
 
-    while( $db->next_record() ) {  // this base category is linked to another
-        if( $db->f('category_id') == $parent )  // this we unasign => skip it
+    while ( $db->next_record() ) {  // this base category is linked to another
+        if ( $db->f('category_id') == $parent )  // this we unasign => skip it
             continue;
 
         $newParent = $db->f('category_id');
@@ -121,14 +121,14 @@ function UnassignBaseCategory($parent, $child) {
         $SQL = "SELECT path FROM links_categories
              WHERE id = $newParent";
         $db->query( $SQL );
-        if( $db->next_record() )
+        if ( $db->next_record() )
           $newPath = $db->f('path');
 
 
         $SQL = "SELECT path FROM links_categories
              WHERE id = $child";
         $db->query( $SQL );
-        if( $db->next_record() )
+        if ( $db->next_record() )
           $oldPath = $db->f('path');
 
         if ($newPath && $oldPath) {
@@ -149,7 +149,7 @@ function UnassignBaseCategory($parent, $child) {
         return;
     }
     // category is not linked to another => delete if clear
-    if( IsCatEmpty($child) ) {
+    if ( IsCatEmpty($child) ) {
         DeleteCategory($child);
         DeleteCatAssignment($parent, $child);
         DelPermObject($child, 'category');
@@ -181,18 +181,18 @@ function GetPureName($name, &$state) {
     return $name;
 }
 
-# End of function definitions -------------------------------------------------
+// End of function definitions -------------------------------------------------
 
 if ($cancel)
     go_url( $sess->url(self_base(). "index.php3"));
 
 
 // we allways sending cat id - it prevent us of bug with 'Back' browser button
-if( $cid )
+if ( $cid )
    $r_state['cat_id'] = $cid;
 
 $cpath = GetCategoryPath( $cid );
-if( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
+if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
     $r_state['cat_path']  = $cpath;
 } else {
     MsgPage($sess->url(self_base())."index.php3", _m('No permission to edit category'));
@@ -202,7 +202,7 @@ if( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
 $r_err[0] = "";            // error array (just for initializing variable)
 $varset = new Cvarset();
 
-# Category properties ------------------
+// Category properties ------------------
 
 ValidateInput("cat_name",    _m('Category name'),          $cat_name,    $r_err, true,  "text");
 ValidateInput("description", _m('Category description'),   $description, $r_err, false, "text");
@@ -224,7 +224,7 @@ if (count($r_err) <= 1) {
     go_url( $sess->url(self_base() . "catedit.php3"));
 }
 
-# Procces subcategories ---------------------
+// Procces subcategories ---------------------
 
 //subcatIds contains cross delimeted list of selected subcategories ids
 $ids = explode(",",$subcatIds);
@@ -249,7 +249,7 @@ $SQL = "SELECT what_id FROM links_cat_cat
 
 $db->tquery($SQL);                            //    - 'n' was deleted
 
-while( $db->next_record() )
+while ( $db->next_record() )
     $oldBaseSubcat[$db->f('what_id')] = $db->f('what_id');
 
 // Lookup new not base subcategories
@@ -261,7 +261,7 @@ if ($subcatIds) {
 
     $db->tquery($SQL);
 
-    while( $db->next_record() )
+    while ( $db->next_record() )
         $newNotBaseSubcat[$db->f('what_id')] = $db->f('what_id');
 }
 
@@ -269,7 +269,7 @@ if (isset($ids) && is_array($ids) && $subcatIds!="") {
     reset($ids);
     $pri = 0.0;
 
-    while( list($key, $insertedId) = each($ids) ) {
+    while ( list($key, $insertedId) = each($ids) ) {
         $pri += 1.0;
 
         // new subcategory
@@ -302,7 +302,7 @@ if (isset($ids) && is_array($ids) && $subcatIds!="") {
 // unassign old base subcategories
 if (isset($oldBaseSubcat) AND is_array($oldBaseSubcat) ) {
     reset($oldBaseSubcat);
-    while( list($key, $val) = each($oldBaseSubcat) ) {
+    while ( list($key, $val) = each($oldBaseSubcat) ) {
         if ($val=="" )  // this category was reassigned
             continue;
             // Moves this category to another subtree or delete

@@ -37,13 +37,13 @@ if ( $lid ) {
 $new_link = new linkobj($r_state['link_id']);
 $new_link->loadFromForm($r_err);
 
-if( count($r_err) > 1) {
+if ( count($r_err) > 1) {
     page_close();
     go_url( con_url($senderUrlErr, "getOldV=1"));
 }
 
 // old link (the atempt to change old link)
-if( $r_state['link_id'] ) {
+if ( $r_state['link_id'] ) {
     $old_link = new linkobj($r_state['link_id']);
     $old_link->load();
     debug('linkedit2: old link loaded:', $old_link);
@@ -58,7 +58,7 @@ if( $r_state['link_id'] ) {
     $r_msg[] = MsgOK(_m('Link inserted'));
     // $event->comes('LINK_NEW', $r_state["module_id"], 'Links', $categs2assign, Links_IsGlobalCategory($type), false);
 }
-//    Links_CountLinksInCategories($categs2assign);  // update number of links info
+Links_CountAllLinks();  // update number of links info
 
 page_close();
 debug('<a href="'.$senderUrlOK.'">'._m('Continue').'</a>');
