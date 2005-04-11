@@ -50,7 +50,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // packedids     p l   e.g. A!D\s'qwertyuio
 // q_packedids   p l   e.g. A!D\\ss\'qwertyuio
 // qq_packedids  p l   e.g. 'A!D\\ss\'qwertyuio'
-// qqq_packedids p l   e.g. "A!D\\ss\'qwertyuio"
 // shortids      s     e.g. 1234
 
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";  // quote
@@ -253,21 +252,6 @@ class zids {
         }
     }
 
-    // As above, but inside double quotes
-    function qqq_packedids($i=null) {
-        if ($this->warnid($i,"qqq_packedids")) return null;
-        switch ($this->type) {
-            case "p": return (isset($i) ? qqquote($this->a[$i]) : array_map("qqquote",$this->a));
-            case "l": return (isset($i) ? qqq_pack_id($this->a[$i])
-                                        : array_map("qqq_pack_id",$this->a));
-            case "t": return (isset($i) ? qqq_pack_id(id_t2l($this->a[$i]))
-                                        : array_map("qqq_pack_id", $this->longids()));
-            default:
-                      print("ERROR - zids:qqq_packedids(): can't handle type $this->type conversion to packedds - ask mitra");
-                      return false;
-        }
-    }
-
     function shortids($i=null) {
         if ($this->warnid($i,"shortids")) return null;
         if ( $this->type == 's' ) return (isset($i) ? $this->a[$i] : $this->a);
@@ -358,7 +342,7 @@ class zids {
             $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
         }
         $id_list = implode(",", $this->use_short_ids() ?
-                   array_map( "qquote", $this->shortids()) : $this->qqq_packedids() );
+                   array_map( "qquote", $this->shortids()) : $this->qq_packedids() );
 
         // '=' is much quicker than 'IN ()' in MySQL 4.0.x
         // - don't ask me why, please. Honza
@@ -459,9 +443,6 @@ function q_pack_id ($unpacked_id){
 }
 function qq_pack_id($str) {
     return "'".q_pack_id($str)."'";
-}
-function qqq_pack_id($str) {
-    return '"'.q_pack_id($str).'"';
 }
 function qquote($str) {
     return "'".quote($str)."'";

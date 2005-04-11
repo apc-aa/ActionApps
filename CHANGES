@@ -1,16 +1,73 @@
+04/11/05 - new possibility to specify "group limit". Group limit is used
+(honzam)   for limiting number of items from one category. If you want to list
+           items grouped by category.......1, but you want to see just first
+           three items from each category, then you could use "group limit".
+           You can specify it as:
+             3category.......1-
+             (limit to three items from category.......1 - descending)
+             for "order" slice.php3 parameter, or "sort" view.php3 parameter.
+           Another ussage is:
+             sort[0][category.......1]=d&sort[0][limit]=3
+             for slice.php3
+         - conditions (conds[]) now could contain also long (unpacked) ids
+           for id item field
+         - new possibility to define, how the Related Selection Window listing
+           should look - define view for it
+         - the records with the same key and value is not listed twice
+           in the inputform selectboxes
+         - fixed dicussion caching - the cache is now invalidated correctly
+           after user sendinds the post to the discussion
+         - fixed slice.php3 content caching - it was broken since we added
+           _#SESSION_ alias, which was different each time the slice.php3
+           was called. Now it is done better way (f_e:session) function
+         - searchbar now uses better help texts for date fields (the help text
+           is in "value" field, not in "operator" field)
+         - fixed counting of links in categories (Links module)
+         - new possibility to generete standard gettext .PO language files
+         - used longer database types for some fields (sql_update.php3)
+           (like fulltext_format of slice, view - 2^16 is not enough for some
+           aplications)
+         - removed all mysql specific functions from perm_sql.php3 (it was last
+           place in AA, where we did not use database abstract layer)
+         - fixed author/editor security problem in Related Selection Window
+           (thanks to Norbert Brazda)
+         - category_sort field is now filled by 0 and converted to group_by
+           field, when compact view is edited (for very old AA slices). This
+           field is there only for backward compatibility - now we use better
+           approach (at least three years) - group_by
+         - corrected some database queries for easier migration to other
+           database engines
+         - hierarchical constants are now better handled in inputform - we use
+           alias for javascript, which defines the constants, so it is possible
+           to change the look of the form without specifying the constants there
+         - small speed optimalizations (split() -> explode())
+         - imagecopyresampled used instead of imagecopyresized - better image
+           (thumbnail) quality generated (based on Norbert Brazda suggestion)
+         - new cacheDb(), cacheMemDb(), cacheMem() functions, which joins
+           pagecache and contentcache together
+         - speed optimalization, set bigger time limit for dictionary aliases
+         - improved toexecute class - time measurement implemented so we can run
+           as many tasks within given time as possible
+             - it allows execute many small tasks or only one big one
+         - RSS feeds is able to decode diferent character encoding
+           (thanks to Norbert Brazda)
+         - better logging of alerts
+         - fixed typo in category description cat-description field
+         - laguage files updated
+         - small fixes/security fixes
 02/22/05 - new logout functionality (logout from admin interface)
 (honzam) - fixed {include:/directory/file.inc} construct - corrected url when
            file starting with slash
          - fixed sql_update.php3 for MySQL 4.1
          - LDAP configuration updated (again)
-02/20/05 - Added MLX mini view to display list of alternative translations for 
+02/20/05 - Added MLX mini view to display list of alternative translations for
 (mimo)     an article
-           {mlx_view:view format in html} mini view of translations available 
-                                          for this article does substitutions 
+           {mlx_view:view format in html} mini view of translations available
+                                          for this article does substitutions
                                           %lang, %itemid
            e.g. {mlx_view:<a href='?x-_#SITEMID_-&mlx=%lang'>%lang</a>}
          - Fixed a problem in MLXGetText I had already fixed in 1.15
-         - Finalised reverse relation thing below  
+         - Finalised reverse relation thing below
 02/18/05 - fixed a bug with mutual/reverse related items:
 (mimo)     when adding a new reverse relation it used to keep an empty
            text content, so one reverse relation were 2 entries in the

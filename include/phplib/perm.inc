@@ -7,11 +7,11 @@
  *
  * $Id$
  *
- */ 
+ */
 
 class Perm {
   var $classname = "Perm";
-  
+
   ## Hash ("Name" => Permission-Bitmask)
   var $permissions = array ();
 
@@ -21,7 +21,7 @@ class Perm {
   function check($p) {
     global $auth;
 
-    if (! $this->have_perm($p)) {    
+    if (! $this->have_perm($p)) {
       if (! isset($auth->auth["perm"]) ) {
         $auth->auth["perm"] = "";
       }
@@ -32,15 +32,15 @@ class Perm {
 
   function have_perm($p) {
     global $auth;
-    
+
     if (! isset($auth->auth["perm"]) ) {
       $auth->auth["perm"] = "";
     }
-    $pageperm = split(",", $p);
-    $userperm = split(",", $auth->auth["perm"]);
-    
-    list ($ok0, $pagebits) = $this->permsum($pageperm);
-    list ($ok1, $userbits) = $this->permsum($userperm);
+    $pageperm = explode(",", $p);
+    $userperm = explode(",", $auth->auth["perm"]);
+
+    list($ok0, $pagebits) = $this->permsum($pageperm);
+    list($ok1, $userbits) = $this->permsum($userperm);
 
     $has_all = (($userbits & $pagebits) == $pagebits);
     if (!($has_all && $ok0 && $ok1) ) {
@@ -55,12 +55,12 @@ class Perm {
   ##
   function permsum($p) {
     global $auth;
-    
+
     if (!is_array($p)) {
       return array(false, 0);
     }
     $perms = $this->permissions;
-    
+
     $r = 0;
     reset($p);
     while(list($key, $val) = each($p)) {
@@ -72,7 +72,7 @@ class Perm {
 
     return array(true, $r);
   }
-  
+
   ## Look for a match within an list of strints
   ## I couldn't figure out a way to do this generally using ereg().
 
@@ -86,10 +86,10 @@ class Perm {
 
   ## Return a complete <select> tag for permission
   ## selection.
-  
+
   function perm_sel($name, $current = "", $class = "") {
     reset($this->permissions);
-    
+
     $ret = sprintf("<select multiple name=\"%s[]\"%s>\n",
       $name,
       ($class!="")?" class=$class":"");
@@ -107,8 +107,8 @@ class Perm {
   ##
   ## Dummy Method. Must be overridden by user.
   ##
-  function perm_invalid($does_have, $must_have) { 
-    printf("Access denied.\n"); 
+  function perm_invalid($does_have, $must_have) {
+    printf("Access denied.\n");
   }
 }
 ?>

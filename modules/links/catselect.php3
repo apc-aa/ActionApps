@@ -1,11 +1,11 @@
 <?php
 //$Id$
-# Allows to select category
+// Allows to select category
 
 // $cid - current category which should be shown
 // $tree_start - root categoruy for the tree
 
-# Edit Link Page
+// Edit Link Page
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
@@ -13,7 +13,7 @@ require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
 require_once "./cattree.php3";
 require_once "./util.php3";
 
-if( !$cid )
+if ( !$cid )
     $cid = $r_state['cat_id'];
 
 $cpath = GetCategoryPath( $cid );
@@ -29,7 +29,7 @@ FrmJavascriptFile('javascript/js_lib.js');
 FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
 $tree->printTreeData($links_info['tree_start']);
 
-if( !$cid ) {  // default category defined
+if ( !$cid ) {  // default category defined
     $on_load = 'onLoad="GoToCategoryID('.$cid.', eval(document.f.tree), \'patharea\', \'\')"';
 }
 

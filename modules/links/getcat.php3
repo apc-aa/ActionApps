@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 
-# used in init_page.php3 script to include config.php3 from the right directory
+// used in init_page.php3 script to include config.php3 from the right directory
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
@@ -31,7 +31,7 @@ require_once "./util.php3";      // module specific utils
 
 function PrintCategory( $id, $name, $base, $state, $parent, $level ) {
     echo "<br>";
-    while( $level-- )
+    while ( $level-- )
       echo '.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
     echo " <a href=\"javascript:ReturnParam('$id')\">$name</a> $base";
 }

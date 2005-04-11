@@ -118,7 +118,7 @@ function SubstituteAliases( $als, &$var ) {
     $var = str_replace ($k, $v, $var);
 }
 
-function PutSearchLog ()
+function PutSearchLog()
 {
     global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED,
         $searchlog;
@@ -129,7 +129,7 @@ function PutSearchLog ()
     $db = new DB_AA;
     $found_count = count ($GLOBALS[item_ids]);
     list($usec, $sec) = explode(" ",microtime());
-    $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS[slice_starttime]);
+    $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS['slice_starttime']);
     $user = $GLOBALS[HTTP_SERVER_VARS]['REMOTE_USER'];
     $db->query(
     "INSERT INTO searchlog (date,query,user,found_count,search_time,additional1)

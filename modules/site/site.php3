@@ -19,12 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-function getmicrotime(){
-  list($usec, $sec) = explode(" ",microtime());
-  return ((float)$usec + (float)$sec);
-}
-
-$timestart = getmicrotime();
 
 // APC AA site Module main administration page
 require_once "../../include/config.php3";
@@ -33,6 +27,8 @@ require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
 require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
 require_once $GLOBALS["AA_INC_PATH"]."item.php3"; // So site_ can create an item
+
+$timestart = get_microtime();
 
 function IsInDomain( $domain ) {
     global $HTTP_HOST;
@@ -82,7 +78,7 @@ $site_nocache = $nocache;
 if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($key_str,$nocache))) {
     echo $res;
     if( $debug ) {
-        $timeend = getmicrotime();
+        $timeend = get_microtime();
         $time    = $timeend - $timestart;
         echo "<br><br>Site cache hit!!! Page generation time: $time";
     }
@@ -116,9 +112,8 @@ if (is_array($slices4cache) && !$site_nocache) {
 }
 
 
-
 if ($debugtime) {
-    $timeend = getmicrotime();
+    $timeend = get_microtime();
     $time    = $timeend - $timestart;
     echo "<br><br>Page generation time: $time";
     print_r($GLOBALS['d_times']);

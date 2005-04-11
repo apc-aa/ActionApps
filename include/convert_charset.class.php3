@@ -331,7 +331,7 @@ class ConvertCharset {
                         * "space" and sometimes by "tab", the below preg_split can also be used
                         * to split files where separator is a ",", "\r", "\n" and "\f"
                         **/
-                        $HexValue = preg_split ("/[\s,]+/", $OneLine, 3);  //We need only first 2 values
+                        $HexValue = preg_split("/[\s,]+/", $OneLine, 3);  //We need only first 2 values
                         /**
                         * Sometimes char is UNDEFINED, or missing so we can't use it for convertion
                         **/

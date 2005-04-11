@@ -1,8 +1,8 @@
 <?php
 /**
- *  Mailman create list: Used only for Reader Management Slices using the 
+ *  Mailman create list: Used only for Reader Management Slices using the
  *  mailman feature. Adds a constant to the constant group with mail list names
- *  and adds a row 
+ *  and adds a row
  *
  *      createnew <listname> <listadmin-addr> <admin-password>
  *
@@ -15,10 +15,10 @@
  *  @package UserInput
  *  @version $Id$
  *  @author Jakub Adamek <jakubadamek@ecn.cz>, February 2003
- *  @copyright (C) 1999-2003 Association for Progressive Communications 
+ *  @copyright (C) 1999-2003 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@ if($cancel)
 if(!IfSlPerm(PS_FIELDS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
-}  
+}
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
@@ -58,12 +58,12 @@ echo "<TITLE>"._m("Admin - Create Mailman List")."</TITLE>
 </HEAD>";
 
 require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
-showMenu ($aamenus, "sliceadmin", "mailman_create_list");  
+showMenu ($aamenus, "sliceadmin", "mailman_create_list");
 
 echo "<H1>"._m("Admin - Create Mailman List")."</B></H1>";
 
 PrintArray($err);
-echo $Msg;  
+echo $Msg;
 
 $slice_info = GetSliceInfo($slice_id);
 if (! $slice_info["mailman_field_lists"]) {
@@ -71,14 +71,14 @@ if (! $slice_info["mailman_field_lists"]) {
     HtmlPageEnd(); page_close(); exit;
 }
 
-$db->query ("SELECT field.input_show_func, field.name FROM field
+$db->query("SELECT field.input_show_func, field.name FROM field
     WHERE slice_id='".q_pack_id($slice_id)."' AND id='"
     .$slice_info["mailman_field_lists"]."'");
-$db->next_record();    
+$db->next_record();
 $field_name = $db->f("name");
-list (,$groupid) = split (":", $db->f("input_show_func"));
+list (,$groupid) = explode(":", $db->f("input_show_func"));
 
-if ($create_list && $admin_email && $list_name && $admin_password) 
+if ($create_list && $admin_email && $list_name && $admin_password)
     add_mailman_list();
 
 function add_mailman_list() {
@@ -88,35 +88,35 @@ function add_mailman_list() {
     if ($db->next_record()) {
         echo _m("Error: This list name is already used.");
         return;
-    }    
+    }
     $db->query ("SELECT MAX(pri) AS max_pri FROM constant WHERE group_id='".addslashes($groupid)."'");
     $db->next_record();
     $pri = $db->f("max_pri") + 100;
     if (! $db->query ("INSERT INTO constant (id, group_id, name, value, pri)
         VALUES ('".q_pack_id(new_id())."', '".addslashes($groupid)."',
-        '$list_name', '$list_name', $pri)")) 
+        '$list_name', '$list_name', $pri)"))
     { echo "Internal Error with DB."; return; }
-    
+
     global $MAILMAN_SYNCHRO_DIR;
     endslash ($MAILMAN_SYNCHRO_DIR);
     $filelock = new FileLock ($MAILMAN_SYNCHRO_DIR.".mailman_lock");
     if (! $filelock->Lock())
     { echo "Internal Error when creating lock file."; return; }
-    
+
     if (! ($fd = fopen ($MAILMAN_SYNCHRO_DIR.".mailman", "a")))
-    { echo "Internal Error when creating request file."; return; }    
+    { echo "Internal Error when creating request file."; return; }
     fwrite ($fd, "createnew $list_name $admin_email $admin_password\n");
     fclose ($fd);
-    
+
     if (! $filelock->Unlock())
     { echo "Internal Error when deleting lock file."; return; }
-    echo _m("The list was successfully created.");        
-}       
+    echo _m("The list was successfully created.");
+}
 
-$me = GetUser ($auth->auth["uid"]);  
+$me = GetUser ($auth->auth["uid"]);
 if (! $admin_email)
-    $admin_email = $me["mail"][0];    
-    
+    $admin_email = $me["mail"][0];
+
 function caption ($s) { return "<B>".str_replace (" ","&nbsp;",$s)."&nbsp;*</B>"; }
 
 echo '

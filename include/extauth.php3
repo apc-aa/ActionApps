@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -33,34 +33,31 @@ class AA_CP_Auth extends Auth {
   var $lifetime       =  200;                // 200 minutes
 //  var $database_class = "DB_AA";
 //  var $database_table = "auth_user";
-  
+
   function relogin_if( $t ) {
-    if ($GLOBALS[debugpermissions]) print("extauth:relogin_if:$t");
     if ( $t )  {
       printf ("<center><b>User ".$this->auth["uname"]." has been logged out.</b></center><br>");
       $this->unauth();
       $this->start();
     }
   }
-  
+
   function auth_loginform() {
     global $sess, $_PHPLIB, $HTTP_POST_VARS, $anonymous_user;
     $username = $HTTP_POST_VARS["username"];  # there was problem with variables
-    $password = $HTTP_POST_VARS["password"];  # in cookies - if someone writes 
-                                              # to cookies username, then the 
+    $password = $HTTP_POST_VARS["password"];  # in cookies - if someone writes
+                                              # to cookies username, then the
                                               # cookies username is used - error
-    
+
     require_once ($GLOBALS["AA_INC_PATH"] . "loginform.inc");
   }
 
   function auth_validatelogin() {
     global $HTTP_POST_VARS;
     $username = $HTTP_POST_VARS["username"];  # there was problem with variables
-    $password = $HTTP_POST_VARS["password"];  # in cookies - if someone writes 
-                                              # to cookies username, then the 
+    $password = $HTTP_POST_VARS["password"];  # in cookies - if someone writes
+                                              # to cookies username, then the
                                               # cookies username is used - error
-    if ($GLOBALS[debugpermissions]) 
-        print("<br>auth_validatelogin username=$username password=$password");
     if(isset($username))
       $this->auth["uname"]=$username;
 
@@ -68,5 +65,5 @@ class AA_CP_Auth extends Auth {
     $uid = AuthenticateUsername($user, $password);
     return $uid;
   }
-};  
+};
 ?>
