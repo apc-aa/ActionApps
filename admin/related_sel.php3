@@ -76,15 +76,26 @@ $aliases = $slice->aliases();
 // special alias - will be automaticaly added as last column in manager view
 $aliases["_#AA_ACTIO"] = GetAliasDef( "f_t:$mode_string", "id..............");
 
-if ( $design ) {
-    $format  = $slice->get_format_strings();
-    // replace the checkbox with "action selection links"
-    // (we changed aliases _#ITEM_ID# to _#ITEM_ID_ so for backward
-    //  compatibility we need to replace both)
-    $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID_]" value="1">', $mode_string, $format['odd_row_format']);
-    $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">', $mode_string, $format['odd_row_format']);
-} else {
-    $format = null;   //default manager format will be used (and _#AA_ACTIO alias expanded)
+$manager_vid = null;
+$format      = null;   //default manager format will be used (and _#AA_ACTIO alias expanded)
+
+if ($design) {
+    if (is_numeric($design)) {
+        if ($design==1) {
+            $format  = $slice->get_format_strings();
+            // replace the checkbox with "action selection links"
+            // (we changed aliases _#ITEM_ID# to _#ITEM_ID_ so for backward
+            //  compatibility we need to replace both)
+            $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID_]" value="1">', $mode_string, $format['odd_row_format']);
+            $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">', $mode_string, $format['odd_row_format']);
+        } else {
+            $manager_vid = $design;
+        }
+    } else {
+        $format['odd_row_format']  = '<tr class="tabtxt"><td>'.$design.'</td></tr>';
+        $format['compact_top']     = '<table border="0" cellspacing="0" cellpadding="0" bgcolor="#F5F0E7" width="100%">';
+        $format['compact_bottom']  = '</table>';
+    }
 }
 
 $conds_ro = String2Conds( rawurldecode($showcondsro) );
@@ -104,7 +115,7 @@ $manager_settings = array(
          'slice_id'             => $module_id
                          ),
      'itemview'  => array(
-         'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
+         'manager_vid'          => $manager_vid,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => $format,
          'fields'               => $slice->fields('record'),
          'aliases'              => $aliases,
@@ -163,6 +174,14 @@ FrmJavascript("
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
+
+// authors have only permission to edit their own items
+$perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
+if (!$perm_edit_all ) {
+    $conds[] = array('operator'         => '=',
+                     'value'            => $auth->auth['uid'],
+                     'posted_by.......' => 1 );
+}
 
 $zids=QueryZIDs($slice->fields('record'), $module_id, $conds, $sort, "", $frombins);
 
