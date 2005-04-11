@@ -882,6 +882,8 @@ function RSS_restrict($txt, $len) {
 
     $p = ParamExplode($param);  # 0 = disc|itemcount|safe|slice_info  #2 = return_url
     switch( $p[0]) {
+      case "session":
+        return $sess->id;
       case "disc":
         # _#DISCEDIT used on admin page index.php3 for edit discussion comments
         return con_url($sess->url("discedit.php3"),

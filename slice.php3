@@ -86,13 +86,18 @@ http://www.apc.org/
               // mlx=EN-ONLY  displays only EN items (like conds)
               // mlx=ALL      turns of language extension
 
-function getmicrotime(){
-  list($usec, $sec) = explode(" ",microtime());
-  return ((float)$usec + (float)$sec);
+
+function add2sort(&$sort, $sarr) {
+    if (isset($sort) AND is_array($sort)) {
+        foreach ($sort as $s) {
+            if (key($s) == key($sarr)) {
+                return;  // do not add new sort value to the sort array (it is already presented)
+            }
+        }
+    }
+    $sort[] = $sarr;
+    return;
 }
-
-$timestart = getmicrotime();
-
 
 # handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
@@ -131,6 +136,8 @@ require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
 // function definitions:
 require_once $GLOBALS["AA_INC_PATH"]."slice.php3";
 
+$slice_starttime = get_microtime();
+
 if ($encap){require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";}
 else {require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";}
 
@@ -150,10 +157,6 @@ $r_state_vars = unserialize($r_packed_state_vars);
 # pagecache.php3, it is not so big problem now
 
 //$sess->register(item_ids);
-
-
-list($usec, $sec) = explode(" ",microtime());
-$slice_starttime = ((float)$usec + (float)$sec);
 
 if ($encap) add_vars("");        # adds values from QUERY_STRING_UNESCAPED
                                  #       and REDIRECT_STRING_UNESCAPED
@@ -266,7 +269,12 @@ if( $bigsrch ) {  # big search form ------------------------------------------
 }
 
 $add_aliases = $aliases    = GetAliasesFromUrl($als);
-$add_aliases['_#SESSION_'] = GetAliasDef( 'f_s:'. $sess->id, '', _m('session id'));
+
+// this is not good way - aliases are then different on each call, so it isn't
+// cached. The better way is below
+// $add_aliases['_#SESSION_'] = GetAliasDef( 'f_s:'. $sess->id, '', _m('session id'));
+
+$add_aliases['_#SESSION_'] = GetAliasDef( 'f_e:session', 'id..............', _m('session id'));
 
 // if banner parameter supplied => set format
 ParseBannerParam($slice_info, $banner);
@@ -470,8 +478,9 @@ else {
     // ***** SORT *****
 
     /** order by field xy if other than publish date.
-    *  Syntax: field_id[-]
+    *  Syntax: [number]field_id[-]
     *  (add minus sign for descending order (like "headline.......1-")
+    *  (add number before the field if you want to group limit (limit number of items of the same value))
     */
     if ( $order ) {
         $order = GetSortArray($order);
@@ -480,8 +489,9 @@ else {
     }
 
     if ($debug) {
-        echo "Group by: $group_by. Slice_info[category_sort] $slice_info[category_sort] slice_info[group_by] $slice_info[group_by]";
+        echo "<BR>Group by: -$group_by- <br>Slice_info[category_sort] -$slice_info[category_sort]-<br>slice_info[group_by] -$slice_info[group_by]-";
     }
+
 
     if ($group_by) {
         $foo                    = GetSortArray( $group_by );
@@ -504,14 +514,16 @@ else {
         $sort_tmp[] = array ( $slice_info['group_by'] => $gbd);
     }
 
+    if( $debug ) { huh($sort_tmp); }
+
     $sort_tmp = array_merge($sort_tmp, getSortFromUrl( $sort ));
 
-    if ( $order ) {
-        $sort_tmp[] = array ( $order => (( strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')));
+    if ($order) {
+        add2sort($sort_tmp, array($order => (strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')));
     }
 
     // time order the fields in compact view
-    $sort_tmp[] = array ( 'publish_date....' => (($timeorder == "rev") ? 'a' : 'd') );
+    add2sort($sort_tmp, array('publish_date....' => (($timeorder == "rev") ? 'a' : 'd')));
     $sort       = $sort_tmp;
 
     //mlx stuff
@@ -559,8 +571,8 @@ if ($searchlog) {
 }
 
 if ( $debug ) {
-    $timeend = getmicrotime();
-    $time    = $timeend - $timestart;
+    $timeend = get_microtime();
+    $time    = $timeend - $slice_starttime;
     echo "<br><br>Page generation time: $time";
 }
 
