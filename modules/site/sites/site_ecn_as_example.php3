@@ -1,7 +1,7 @@
 <?php
-# site definition file for Econnect's site (http://ecn.cz)
-# This is just an example of site file. For more details on sites see FAQ:
-# http://apc-aa.sourceforge.net/faq/
+// site definition file for Econnect's site (http://ecn.cz)
+// This is just an example of site file. For more details on sites see FAQ:
+// http://apc-aa.sourceforge.net/faq/
 
 function CheckW( $w ) {
   return ($w && strpos( ' ezn', $w )) ? $w : 'z';
@@ -48,7 +48,7 @@ define('L_D_SHOW_SELECTED','Zobrazit vybrané');
 define('L_D_SHOW_ALL','Zobrazit vše');
 define('L_D_SELECTED_NONE','Není vybrán žádný pøíspìvek');
 
-$regiony_arr = array(  # path, searchstring for zpravodajstvi, searchstrig for tiskove zpravy
+$regiony_arr = array(  // path, searchstring for zpravodajstvi, searchstrig for tiskove zpravy
   "p" => array( "&nbsp;&gt;&nbsp;Praha",                    "Praha",          "Praha"),
   "s" => array( "&nbsp;&gt;&nbsp;Støedoèeský&nbsp;kraj",    "Støedoèeský",    "Støedoèeský"),
   "j" => array( "&nbsp;&gt;&nbsp;Jihoèeský&nbsp;kraj",      "Jihoèeský",      "Jihoèeský"),
@@ -75,16 +75,16 @@ $formaty_arr = array( 'z' => 'zprávy',
                       'a' => 'kampanì',
                       's' => 'ze&nbsp;svìta');
 
-if( !$apc ) {
-  if( $x ) {         // want to view text?
+if ( !$apc ) {
+  if ( $x ) {         // want to view text?
     $SQL = "SELECT content.text, item.slice_id FROM item,content 
              WHERE item.id=content.item_id 
                AND item.short_id='$x' 
                AND content.field_id='switch.........2'";
     $db->query($SQL);
-    if( $db->next_record() ) {
+    if ( $db->next_record() ) {
       $apc = $db->f('text');
-      # pomocna promena, ktera nam rekne, ze jde o staticky text a ne zpravu  
+      // pomocna promena, ktera nam rekne, ze jde o staticky text a ne zpravu  
       $texty = ( unpack_id128($db->f('slice_id')) == '21c8416923d4b6c58abc7ed664651802' );  // Ecn - texty
     }   
     $apc .= substr('zzvx--',-( 6-strlen($apc) ));
@@ -112,55 +112,55 @@ if( !$apc ) {
   else $apc = 'zzvx--';
 }  
 
-if( ereg( "^([a-zA-Z0-9_])([a-zA-Z0-9_])([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|[0-9]+)([a-zA-Z_-])([0-9]*)", $apc, $vars )) 
+if ( ereg( "^([a-zA-Z0-9_])([a-zA-Z0-9_])([a-zA-Z0-9_-])([a-zA-Z_]+)([-]|[0-9]+)([a-zA-Z_-])([0-9]*)", $apc, $vars )) 
   list($old_state,$old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = $vars;
  else 
   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t) = array( 'z', 'z', 'v', 'x', '-', '-');
 
-if( isset($w) ) {                          # w stands for WEB (like zpravodajstvi - z, econnect - e, nno - n
+if ( isset($w) ) {                          // w stands for WEB (like zpravodajstvi - z, econnect - e, nno - n
   switch($w) {
     case 'z':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = array( 'z', 'z', 'v', 'x', '-', '-', ''); break;
     case 'n':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = array( 'n', 'N', '1', '-', '-', '-', ''); break;
     case 'e':   list($old_w,$old_s,$old_f,$old_r,$old_p,$old_t,$old_x) = array( 'e', '1', '1', '-', '-', '-', '73161'); break;
   }
 }    
-if( isset($s) ) {                          # s stands for SUBWEB (like zpravy - z, komentare - k, o Econnectu - 1) We use disjunct sets of subweb chracters, so zpravodajstvi uses [a-z], econnect uses [1-9], nno [A-Z]
+if ( isset($s) ) {                          // s stands for SUBWEB (like zpravy - z, komentare - k, o Econnectu - 1) We use disjunct sets of subweb chracters, so zpravodajstvi uses [a-z], econnect uses [1-9], nno [A-Z]
   $old_s=$s; 
   $old_x='';
   $old_p='1';
-  if( $old_w != 'z' ) # the format in zpravodajstvi stays the same
-    $old_f='';        #CheckS fills the right $f
+  if ( $old_w != 'z' ) // the format in zpravodajstvi stays the same
+    $old_f='';        //CheckS fills the right $f
 }
 
-if( isset($f) ) {$old_f=$f; $old_x='';$old_p='1';}    # f stands for FILTER (like zivotni protredi - z, kultura - k) - used only on zpravodajsvi page yet
-if( isset($r) ) {
-  if( isset($r) and is_array($r)) {
+if ( isset($f) ) {$old_f=$f; $old_x='';$old_p='1';}    // f stands for FILTER (like zivotni protredi - z, kultura - k) - used only on zpravodajsvi page yet
+if ( isset($r) ) {
+  if ( isset($r) and is_array($r)) {
     reset( $r );
-    while( list($k,) = each($r) )
+    while ( list($k,) = each($r) )
       $max_index = max($max_index, $k);
     $max_index = max( $max_index, strlen($old_r)-1 );
-    for( $i=0; $i<=$max_index; $i++)
+    for ( $i=0; $i<=$max_index; $i++)
       $new_r .= ($r[$i] ? $r[$i] : ( $old_r[$i] ? $old_r[$i] : 'x' ));
     $old_r = $new_r;   
   } else
     $old_r = ($r ? $r : 'x');
   $old_x='';
   $old_p='1';
-}                                          # r stands for REGION (like Praha - a ...) or any other second filter - used on zpravodajsvi for region selection or in joblist for switching between grant categories and types
-if( isset($p) ) {$old_p=$p; $old_x='';}    # page
-if( isset($t) ) {$old_t=$t; $old_x='';}    # switch to special mode (text only, print, ...)
-if( isset($x) ) {$old_x=$x;}               # item id to display
+}                                          // r stands for REGION (like Praha - a ...) or any other second filter - used on zpravodajsvi for region selection or in joblist for switching between grant categories and types
+if ( isset($p) ) {$old_p=$p; $old_x='';}    // page
+if ( isset($t) ) {$old_t=$t; $old_x='';}    // switch to special mode (text only, print, ...)
+if ( isset($x) ) {$old_x=$x;}               // item id to display
 
-if( isset($scrl) ) {      # page scroller
+if ( isset($scrl) ) {      // page scroller
 
   $pagevar = "scr_".$scrl."_Go";
   $old_p = $$pagevar;
   $old_x='';
 } 
-if( ($old_p <= 0) OR ($old_p=='-') )
+if ( ($old_p <= 0) OR ($old_p=='-') )
   $old_p = 1;
 
-# zaverecna kontrola a pripadna uprava promennych:
+// zaverecna kontrola a pripadna uprava promennych:
 $old_w = CheckW( $old_w );
 $old_s = CheckS( $old_s, $old_w );
 $old_f = CheckF( $old_f, $old_w );
@@ -169,7 +169,7 @@ $old_p = CheckP( $old_p );
 $old_t = CheckT( $old_t );
 $old_x = CheckX( $old_x );
   
-# pomocne promenne pouzite pro vyhledavani a pro zobrazeni cesty
+// pomocne promenne pouzite pro vyhledavani a pro zobrazeni cesty
 list( $region_cesta, $region_z, $region_k ) = $regiony_arr[$old_r];
 $format_cesta = '&nbsp;&gt;&nbsp;'.$formaty_arr[$old_s];
 
@@ -181,7 +181,7 @@ $apc_state = array ('state' => "$old_w$old_s$old_f$old_r$old_p$old_t$old_x",
                     't' => $old_t,
                     'p' => $old_p,
                     'x' => $old_x,
-  # pomocne promenne pouzite pro vyhledavani a pro zobrazeni cesty
+  // pomocne promenne pouzite pro vyhledavani a pro zobrazeni cesty
                     'texty' =>        ($texty ? $texty : ''),
                     'region_cesta' => ($region_cesta ? $region_cesta : ''),
                     'region_z' =>     ($region_z ? $region_z : ''),
@@ -189,10 +189,10 @@ $apc_state = array ('state' => "$old_w$old_s$old_f$old_r$old_p$old_t$old_x",
                     'format_cesta' => ($format_cesta ? $format_cesta : '')
                     );
                     
-# $r variable is could be array, so create variables like r0, r1, .. to be used in site
-for( $i=0; $i< strlen($old_r); $i++)
+// $r variable is could be array, so create variables like r0, r1, .. to be used in site
+for ( $i=0; $i< strlen($old_r); $i++)
   $apc_state['r'.$i] = $old_r[$i];
 
-if( $dbg )
+if ( $dbg )
   print_r($apc_state);
 ?>

@@ -18,20 +18,20 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-# expected $del - unpacked id of module to delete
+// expected $del - unpacked id of module to delete
 
 $directory_depth = "../";
 require_once "../../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "msgpage.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "modutils.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "modutils.php3";
 
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 
-if($del) {
-  if(!IsSuperadmin()) {
+if ($del) {
+  if (!IsSuperadmin()) {
     MsgPage($sess->url(self_base())."index.php3", _m("You don't have permissions to delete a site."), "admin");
     exit;
   }
@@ -43,21 +43,21 @@ if($del) {
 $err["Init"] = "";      // error array (Init - just for initializing variable
 $p_del = q_pack_id($del);
 
-# check if module can be deleted
+// check if module can be deleted
 ExitIfCantDelete( $del, $db );
 
-# delete module (from common module table)
+// delete module (from common module table)
 DeleteModule( $del, $db );
 
-# delete all module specific tables
+// delete all module specific tables
 $SQL = "DELETE LOW_PRIORITY FROM site WHERE id='$p_del'";
 $db->query($SQL);
 
 $SQL = "DELETE LOW_PRIORITY FROM site_spot WHERE site_id='$p_del'";
 $db->query($SQL);
 
-# delete module from permission system
-DelPermObject($del, "slice");  # the word 'slice' is not mistake - do not change
+// delete module from permission system
+DelPermObject($del, "slice");  // the word 'slice' is not mistake - do not change
 
 page_close();                                // to save session variables
 go_url(con_url($sess->url($AA_INSTAL_PATH . "admin/slicedel.php3"),

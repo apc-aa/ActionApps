@@ -22,11 +22,11 @@ http://www.apc.org/
 
 // APC AA site Module main administration page
 require_once "../../include/config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3"; // So site_ can create an item
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."stringexpand.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3"; // So site_ can create an item
 
 $timestart = get_microtime();
 
@@ -77,8 +77,8 @@ $key_str = serialize($apc_state).":".$site_id.":".$post2shtml_id;
 $site_nocache = $nocache;
 if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($key_str,$nocache))) {
     echo $res;
-    if( $debug ) {
-        $timeend = get_microtime();
+    if ( $debug ) {
+        $timeend = getmicrotime();
         $time    = $timeend - $timestart;
         echo "<br><br>Site cache hit!!! Page generation time: $time";
     }
@@ -89,11 +89,11 @@ trace("=","site.php3","precachecheck");
 
 require_once "./util.php3";                      // module specific utils
 require_once "./sitetree.php3";
-require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
-require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
-require_once $GLOBALS["AA_INC_PATH"]."view.php3";
-require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH']."easy_scroller.php3";
+require_once $GLOBALS['AA_INC_PATH']."view.php3";
+require_once $GLOBALS['AA_INC_PATH']."discussion.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";
 
 trace("=","site.php3","preGetSite");
 $res = ModW_GetSite( $apc_state, $site_id, $site_info );
@@ -148,7 +148,7 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
     $SQL = "SELECT spot_id, content, flag from site_spot
              WHERE site_id='$p_module_id' AND spot_id IN ($in_ids)";
     $db->tquery($SQL);
-    while( $db->next_record() ) {
+    while ( $db->next_record() ) {
         $contents[$db->f('spot_id')] = $db->f('content');
         $flags[$db->f('spot_id')]    = $db->f('flag');
     }
