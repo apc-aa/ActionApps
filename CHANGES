@@ -1,3 +1,6 @@
+04/15/05 - new possibility to Enable/Disable specified spots in the site module
+(honzam)   interface
+         - small bugfixes in site module code; code cleaned
 04/11/05 - new possibility to specify "group limit". Group limit is used
 (honzam)   for limiting number of items from one category. If you want to list
            items grouped by category.......1, but you want to see just first
@@ -6,9 +9,11 @@
              3category.......1-
              (limit to three items from category.......1 - descending)
              for "order" slice.php3 parameter, or "sort" view.php3 parameter.
-           Another ussage is:
+           Another usage is:
              sort[0][category.......1]=d&sort[0][limit]=3
              for slice.php3
+           (it is also good in case you want to list all categories header,
+           in which is at least one item - you can just set limit to 1)
          - conditions (conds[]) now could contain also long (unpacked) ids
            for id item field
          - new possibility to define, how the Related Selection Window listing
