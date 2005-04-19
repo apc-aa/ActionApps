@@ -197,7 +197,7 @@ function get_aamenus()
             $db->query ("SELECT module_id, module.name FROM alerts_collection AC
                 INNER JOIN module ON AC.module_id = module.id
                 WHERE slice_id='".q_pack_id($slice_id)."'");
-            AddAlertsModules ($items, $db, _m("Alerts"),
+            AddAlertsModules($items, $db, _m("Alerts"),
                     _m("List of Alerts modules using this slice as Reader Management."));
 
             $items["header4"] = _m("Bulk Emails") ."&nbsp;&nbsp;&nbsp;".GetAAImage("help50.gif", _m("Send bulk email to selected users or to users in Stored searches"));
@@ -208,13 +208,13 @@ function get_aamenus()
 
         }
         trace("=","","module ids slice_id=".$slice_id);
-        $db->query ("SELECT DISTINCT AC.module_id, module.name FROM alerts_collection AC
+        $db->query("SELECT DISTINCT AC.module_id, module.name FROM alerts_collection AC
             INNER JOIN module ON AC.module_id = module.id
             INNER JOIN alerts_collection_filter ACF ON AC.id = ACF.collectionid
             INNER JOIN alerts_filter AF ON AF.id = ACF.filterid
             INNER JOIN view ON view.id = AF.vid
             WHERE view.slice_id = '".q_pack_id($slice_id)."'");
-        AddAlertsModules ($items, $db, _m("Alerts Sent"),
+        AddAlertsModules($items, $db, _m("Alerts Sent"),
                 _m("List of Alerts modules sending items from this slice."));
     }
 

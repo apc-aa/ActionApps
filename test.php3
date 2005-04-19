@@ -1,17 +1,17 @@
-<?php 
-/** This script has been stolen from old version of Horde. 
-  * We keep it here to remind us that we shoudl indeed have 
-  * something like this for installation and troubleshooting 
-  * purposes. The installation docs refers to it. Maybe the first 
-  * thing AA user will see after the installation :-|   
+<?php
+/** This script has been stolen from old version of Horde.
+  * We keep it here to remind us that we shoudl indeed have
+  * something like this for installation and troubleshooting
+  * purposes. The installation docs refers to it. Maybe the first
+  * thing AA user will see after the installation :-|
   *
   * @version $Id$
   * @author Marek Tichy, Econnect
-  * @copyright (c) 2002-3 Association for Progressive Communications 
-*/ 
- 
+  * @copyright (c) 2002-3 Association for Progressive Communications
+*/
+
 define('APC_AA_VERSION','2.6.0-stable');
- 
+
 @session_start();
 /* Register a session. */
 if (!isset($HTTP_SESSION_VARS['apcaa_test_count'])) {
@@ -45,7 +45,7 @@ function status($foo) {
 }
 
 /* apcaa versions */
-//todo - this should be located somewhere clever 
+//todo - this should be located somewhere clever
 $versions['apcaa'] = APC_AA_VERSION;
 
 

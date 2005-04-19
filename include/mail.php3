@@ -240,7 +240,7 @@ function send_mail_from_table_inner($mail_id, $to, $item, $aliases = null) {
 
         // Yes, two nested arrays - mail->send() accepts array($to) and
         // all parameters to later must be in another only one array
-        if ( $toexecute->later($mail, array(array($to))) ) {
+        if ( $toexecute->later($mail, array(array($to)), 'send_mail') ) {
             $sent++;
         }
     }

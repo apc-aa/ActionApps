@@ -1605,7 +1605,7 @@ function add_post2shtml_vars ($delete = true) {
 
 /** List of email types with translated description.
     You should never list email types directly, always call this function. */
-function get_email_types () {
+function get_email_types() {
     return array (
         "alerts alert" => _m("alerts alert"),
         "alerts welcome" => _m("alerts welcome"),
@@ -1615,14 +1615,14 @@ function get_email_types () {
 }
 
 /// @return array month names
-function monthNames ()
+function monthNames()
 {
     return array( 1 => _m('January'), _m('February'), _m('March'), _m('April'), _m('May'), _m('June'),
         _m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December'));
 }
 
 /** Creates values for a select box showing some param wizard section. */
-function getSelectBoxFromParamWizard ($var)
+function getSelectBoxFromParamWizard($var)
 {
     reset ($var["items"]);
     while (list ($value, $prop) = each ($var["items"]))
@@ -1667,7 +1667,7 @@ function DBFields($db) {
     return $a;
 }
 
-function ShowWizardFrames ($aa_url, $wizard_url, $title, $noframes_html="") {
+function ShowWizardFrames($aa_url, $wizard_url, $title, $noframes_html="") {
     require $GLOBALS["AA_BASE_PATH"]."post2shtml.php3";
     global $post2shtml_id;
     echo
@@ -1680,7 +1680,7 @@ function ShowWizardFrames ($aa_url, $wizard_url, $title, $noframes_html="") {
 
 <frameset cols="*,300" frameborder="YES" border="1" framespacing="0">
     <frame src="'.$aa_url.'&called_from_wizard=1" name="aaFrame">
-    <frame src="'.con_url ($wizard_url,"post2shtml_id=$post2shtml_id").'" name="wizardFrame">
+    <frame src="'.con_url($wizard_url,"post2shtml_id=$post2shtml_id").'" name="wizardFrame">
 </frameset>
 <noframes><body>
 '.$noframes_html.'
