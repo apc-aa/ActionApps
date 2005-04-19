@@ -27,7 +27,7 @@ function MarkedActionGo() {
 function WriteEmailGo() {
   var iftarget = document.itemsform.target;
   var ifaction = document.itemsform.action;
-  OpenItemWindow(markedactionurl[5], "");
+  OpenItemWindow(markedactionurl[6], "");
   document.itemsform.action = ifaction;
   document.itemsform.target = iftarget;
 }
