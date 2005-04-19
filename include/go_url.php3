@@ -28,14 +28,14 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/** Appends any number of QUERY_STRING (separated by &) parameters
+/** Appends any number of QUERY_STRING (separated by & (&amp;)) parameters
 *   to given URL, using apropriate ? or &. */
 function con_url($url, $params) {
     list($path, $fragment) = explode( '#', $url, 2 );
     if (is_array($params)) {
-        $params = implode('&', $params);
+        $params = implode('&amp;', $params);
     }
-    return $path . (strstr($path, '?') ? "&" : "?"). $params. ($fragment ? '#'.$fragment : '') ;
+    return $path . (strstr($path, '?') ? "&amp;" : "?"). $params. ($fragment ? '#'.$fragment : '') ;
 }
 
 /// Move to another page (must be before any output from script)

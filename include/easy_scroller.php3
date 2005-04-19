@@ -25,10 +25,6 @@ http://www.apc.org/
  *  No SQL filters support (as in scroller.php3)
  */
 
-if (!defined ("EASY_SCROLLER_INCLUDED"))
-      define ("EASY_SCROLLER_INCLUDED",1);
-else return;
-
 class easy_scroller {
     var $classname = 'easy_scroller';
     var $persistent_slots = array('current', 'id', 'itmcnt', 'metapage', 'urldefault', 'show_all');
@@ -98,7 +94,7 @@ class easy_scroller {
             $this->current += $GLOBALS["scr_{$this->id}_Mv"];
         }
         $this->checkBounds();
-  }
+    }
 
     /** Return navigation bar as a hash
      *  labels as keys, query string fragments a values
@@ -141,7 +137,7 @@ class easy_scroller {
         $arr = $this->navarray();
         while (list($k, $v) = each($arr)) {
             if ($i++) { echo " | ";}
-            if ($v)   { echo "<a href=\"". $url. "scrl=1&". $v. "\" class=\"scroller\">$k</a>"; }
+            if ($v)   { echo "<a href=\"". $url. "scrl=1&amp;". $v. "\" class=\"scroller\">$k</a>"; }
             else      { echo "<span class=\"scroller_actual\">$k</span>"; }
         }
     }
@@ -221,7 +217,7 @@ class view_scroller {
         $url = con_url($this->urldefault,"scrl=".$this->id);
 
         if( $GLOBALS['apc_state'] ) {
-            $url .= '&apc='.$GLOBALS['apc_state']['state'];
+            $url .= '&amp;apc='.$GLOBALS['apc_state']['state'];
         }
         $i   = 0;
         $arr = $this->navarray();
@@ -230,7 +226,7 @@ class view_scroller {
 
         while (list($k, $v) = each($arr)) {
             if($i++) { $out .= " | "; }
-            $out .= ( $v ? "<a href=\"$url&$v\" $add>$k</a>" : $k);
+            $out .= ( $v ? "<a href=\"$url&amp;$v\" $add>$k</a>" : $k);
         }
 
         return $begin.$out.$end;

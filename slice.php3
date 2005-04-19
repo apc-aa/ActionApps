@@ -363,7 +363,7 @@ if( $items AND is_array($items) ) {   # shows all $items[] as fulltext one after
 # compact view ----------------------------------------------------------------
 if (!is_object($scr)) {
     $sess->register('scr');
-    $scr_url_param = ($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap))."&";
+    $scr_url_param = ($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap))."&amp;";
     $scr = new easy_scroller( 'scr', $scr_url_param, $slice_info['d_listlen'], 0);
 }
 // display 'All' option in scroller
