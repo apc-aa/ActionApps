@@ -86,7 +86,11 @@ function ShowAnonymousForm() {
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED)
         echo 'form=inputform&notrun=1&slice_id='.$slice_id.'"-->';
 
+
+
     echo '
+    <!-- '. _m('ActionApps Anonymous form') .'-->
+    <!-- '. _m('Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->', array("     <body onload=\"HTMLArea.init()\">   ")) .'
 
     <FORM name="inputform"'.$html_form_type.' method="post" '
     .'action="'.AA_INSTAL_URL.'filler.php3"'
@@ -115,7 +119,7 @@ function ShowAnonymousForm() {
     echo GetFormJavascript($show_func_used, $slice->get_js_validation('edit', 0, $notshown));
 
     // Destroy the ? help links at each field
-    foreach ( $fields as $field) {
+    foreach ($fields as $field => $foo) {
         $fields[$field]["input_morehlp"] = "";
     }
 
