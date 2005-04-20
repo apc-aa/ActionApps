@@ -102,7 +102,7 @@ function CheckConditionCommand($field, $value) {
 
 /** Converts a query string into a data view_params data structure */
 function ParseViewParameters($query_string="") {
-  global $cmd, $set, $vid, $als, $slice_id, $conds, $slices, $mapslices, $debug;
+  global $cmd, $set, $vid, $als, $slice_id, $debug;
 
   # Parse parameters
   # if view in cmd[] or set[] is not specified - fill it from vid
@@ -210,8 +210,6 @@ function ParseViewParameters($query_string="") {
   $arr['als']=GetAliasesFromUrl($GLOBALS['als']);
   $arr['vid']=$vid;
   $arr['conds']=$v_conds;
-  if ( !$arr['slices'] )   $arr['slices']=$slices;
-  $arr['mapslices']=$mapslices;
   $arr['param_conds'] = $param_conds;
 //  $arr['item_ids'] = $item_ids;
   $arr['zids'] = $zids;
@@ -377,7 +375,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
   $als = $view_param["als"];
   $conds = $view_param["conds"];
   $slices = $view_param["slices"];
-  $mapslices = $view_param["mapslices"];
   $param_conds = $view_param["param_conds"];
   $param_sort  = $view_param["sort"];
   $category_id = $view_param['cat'];
