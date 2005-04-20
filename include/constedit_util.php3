@@ -381,10 +381,13 @@ function hcUpdate()
                 $db->query("INSERT INTO constant ".$varset->makeINSERT());
             }
             else {
-                if ($propagate_changes)
-                    propagateChanges ($new_id, $newvalue);
-                $db->query("UPDATE constant SET ".$varset->makeUPDATE()
-                    ." WHERE short_id = ".$new_id);
+                if ($propagate_changes) {
+                    $db->tquery("SELECT id, value FROM constant WHERE short_id=$new_id");
+                    if ($db->next_record()) {
+                        propagateChanges(unpack_id($db->f("id")), $newvalue, addslashes($db->f("value")));
+                    }
+                }
+                $db->query("UPDATE constant SET ". $varset->makeUPDATE() ." WHERE short_id = ".$new_id);
             }
         }
     }
