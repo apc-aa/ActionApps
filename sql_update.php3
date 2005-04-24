@@ -21,12 +21,12 @@ http://www.apc.org/
 
 
 
-# script for MySQL database update
+// script for MySQL database update
 
-# this script updates the database to last structure, create all tables, ...
-# can be used for upgrade from apc-aa v. >= 1.5 or for create new database
+// this script updates the database to last structure, create all tables, ...
+// can be used for upgrade from apc-aa v. >= 1.5 or for create new database
 
-# handle with PHP magic quotes - quote the variables if quoting is set off
+// handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -38,32 +38,32 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
     for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
     for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
     for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
       $$k = Myaddslashes($v);
 }
 
-# need config.php3 to set db access, and phplib, and probably other stuff
+// need config.php3 to set db access, and phplib, and probably other stuff
 $AA_INC_PATH = "./include/";
-#$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/";
+//$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/";
 
-require_once $GLOBALS["AA_INC_PATH"]."config.php3";
+require_once $GLOBALS['AA_INC_PATH']."config.php3";
 
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";   # DB_AA definition
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";   // DB_AA definition
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."constants.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
 //function Links_Category2SliceID($cid) definition
 require_once $GLOBALS["AA_BASE_PATH"]."modules/links/util.php3";
 
-# init used objects
+// init used objects
 $db = new DB_AA;
 $db2 = new DB_AA;
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -74,12 +74,12 @@ $AA_DOC_URL = '/'. $GLOBALS["AA_BASE_DIR"] ."doc/";
 // ERROR_REPORTING_EMAIL  - also used in SQL queries
 $now = now();
 
-set_time_limit(160);
+set_time_limit(360);
 
 function IsPaired($field, $fld_array) {
   reset( $fld_array );
-  while( list( ,$fld_info) = each( $fld_array ) ) {   # copy all tables
-    if( $fld_info[name] == $field )
+  while ( list( ,$fld_info) = each( $fld_array ) ) {   // copy all tables
+    if ( $fld_info[name] == $field )
       return true;
   }
   return false;
@@ -98,12 +98,12 @@ function myquery($db, $SQL) {
     }
 }
 
-# table definitions
+// table definitions
 $tablelist = array(   'active_sessions' => "(
                           sid varchar(32) NOT NULL default '',
                           name varchar(32) NOT NULL default '',
                           val text,
-                          changed varchar(14) NOT NULL default '',
+                          `changed` varchar(14) NOT NULL default '',
                           PRIMARY KEY  (name,sid),
                           KEY changed (changed)
                       )",
@@ -133,7 +133,7 @@ $tablelist = array(   'active_sessions' => "(
                       'alerts_collection_howoften' => "(
                           collectionid char(6) NOT NULL default '',
                           howoften char(20) NOT NULL default '',
-                          last int(10) NOT NULL default '0',
+                          `last` int(10) NOT NULL default '0',
                           PRIMARY KEY  (collectionid,howoften)
                       )",
                       'alerts_filter' => "(
@@ -164,7 +164,7 @@ $tablelist = array(   'active_sessions' => "(
                           id char(16) NOT NULL default '',
                           group_id char(16) NOT NULL default '',
                           name char(150) NOT NULL default '',
-                          value char(255) NOT NULL default '',
+                          `value` char(255) NOT NULL default '',
                           class char(16) default NULL,
                           pri smallint(5) NOT NULL default '100',
                           ancestors char(160) default NULL,
@@ -185,15 +185,15 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (group_id)
                       )",
                       'content' => "(
-                          item_id varchar(16) NOT NULL default '',
-                          field_id varchar(16) NOT NULL default '',
-                          number bigint(20) default NULL,
-                          text mediumtext,
-                          flag smallint(6) default NULL,
-                          KEY item_id (item_id,field_id,text(16)),
-                          KEY text (text(10))
-                      )",
-                      'cron' => "(
+                         item_id varchar(16) NOT NULL default '',
+                         field_id varchar(16) NOT NULL default '',
+                         number bigint(20) default NULL,
+                         text mediumtext,
+                         flag smallint(6) default NULL,
+                         KEY item_id (item_id,field_id,text(16)),
+                         KEY text (text(10))
+                     )",
+                     'cron' => "(
                           id bigint(30) NOT NULL auto_increment,
                           minutes varchar(30) default NULL,
                           hours varchar(30) default NULL,
@@ -214,8 +214,8 @@ $tablelist = array(   'active_sessions' => "(
                           id varchar(16) NOT NULL default '',
                           parent varchar(16) NOT NULL default '',
                           item_id varchar(16) NOT NULL default '',
-                          date bigint(20) NOT NULL default '0',
-                          subject text,
+                          `date` bigint(20) NOT NULL default '0',
+                          `subject` text,
                           author varchar(255) default NULL,
                           e_mail varchar(80) default NULL,
                           body text,
@@ -240,13 +240,13 @@ $tablelist = array(   'active_sessions' => "(
                       'ef_permissions' => "(
                           slice_id varchar(16) NOT NULL default '',
                           node varchar(150) NOT NULL default '',
-                          user varchar(50) NOT NULL default '',
+                          `user` varchar(50) NOT NULL default '',
                           PRIMARY KEY  (slice_id,node,user)
                       )",
                       'email' => "(
                           id int(11) NOT NULL auto_increment,
                           description varchar(255) NOT NULL default '',
-                          subject text NOT NULL,
+                          `subject` text NOT NULL,
                           body text NOT NULL,
                           header_from text NOT NULL,
                           reply_to text NOT NULL,
@@ -255,7 +255,7 @@ $tablelist = array(   'active_sessions' => "(
                           lang char(2) NOT NULL default 'en',
                           owner_module_id varchar(16) NOT NULL default '',
                           html smallint(1) NOT NULL default '1',
-                          type varchar(20) NOT NULL default '',
+                          `type` varchar(20) NOT NULL default '',
                           PRIMARY KEY  (id)
                       )",
                       'email_auto_user' => "(
@@ -270,7 +270,7 @@ $tablelist = array(   'active_sessions' => "(
                       'email_notify' => "(
                           slice_id char(16) NOT NULL default '',
                           uid char(60) NOT NULL default '',
-                          function smallint(5) NOT NULL default '0',
+                          `function` smallint(5) NOT NULL default '0',
                           PRIMARY KEY  (slice_id,uid,function),
                           KEY slice_id (slice_id)
                       )",
@@ -282,6 +282,7 @@ $tablelist = array(   'active_sessions' => "(
                           user_id varchar(200) NOT NULL default '',
                           newest_item varchar(40) NOT NULL default '',
                           remote_slice_name varchar(200) NOT NULL default '',
+                          feed_mode varchar(10) NOT NULL default '',
                           PRIMARY KEY  (feed_id)
                       )",
                       'feedmap' => "(
@@ -290,7 +291,7 @@ $tablelist = array(   'active_sessions' => "(
                           to_slice_id varchar(16) NOT NULL default '',
                           to_field_id varchar(16) NOT NULL default '',
                           flag int(11) default NULL,
-                          value mediumtext,
+                          `value` mediumtext,
                           from_field_name varchar(255) NOT NULL default '',
                           KEY from_slice_id (from_slice_id,to_slice_id)
                       )",
@@ -310,7 +311,7 @@ $tablelist = array(   'active_sessions' => "(
                       )",
                       'field' => "(
                           id varchar(16) NOT NULL default '',
-                          type varchar(16) NOT NULL default '',
+                          `type` varchar(16) NOT NULL default '',
                           slice_id varchar(16) NOT NULL default '',
                           name varchar(255) NOT NULL default '',
                           input_pri smallint(5) NOT NULL default '100',
@@ -481,7 +482,7 @@ $tablelist = array(   'active_sessions' => "(
                           voted int(11) NOT NULL default '0',
                           flag int(11) default NULL,
                           original_name varchar(255) default NULL,
-                          type varchar(120) default NULL,
+                          `type` varchar(120) default NULL,
                           org_city varchar(255) default NULL,
                           org_post_code varchar(20) default NULL,
                           org_phone varchar(120) default NULL,
@@ -505,15 +506,15 @@ $tablelist = array(   'active_sessions' => "(
                       'links_regions' => "(
                           id int(10) unsigned NOT NULL default '0',
                           name varchar(60) NOT NULL default '',
-                          level tinyint(4) NOT NULL default '1',
+                          `level` tinyint(4) NOT NULL default '1',
                           PRIMARY KEY  (id),
                           KEY name (name)
                       )",
                       'log' => "(
                           id int(11) NOT NULL auto_increment,
-                          time bigint(20) NOT NULL default '0',
-                          user varchar(60) NOT NULL default '',
-                          type varchar(10) NOT NULL default '',
+                          `time` bigint(20) NOT NULL default '0',
+                          `user` varchar(60) NOT NULL default '',
+                          `type` varchar(10) NOT NULL default '',
                           selector varchar(255) default NULL,
                           params varchar(128) default NULL,
                           PRIMARY KEY  (id),
@@ -530,7 +531,7 @@ $tablelist = array(   'active_sessions' => "(
                           id char(16) NOT NULL default '',
                           name char(100) NOT NULL default '',
                           deleted smallint(5) default NULL,
-                          type char(16) default 'S',
+                          `type` char(16) default 'S',
                           slice_url char(255) default NULL,
                           lang_file char(50) default NULL,
                           created_at bigint(20) NOT NULL default '0',
@@ -572,7 +573,7 @@ $tablelist = array(   'active_sessions' => "(
                       )",
                       'mysql_auth_userlog' => "(
                           uid int(10) NOT NULL default '0',
-                          time int(10) NOT NULL default '0',
+                          `time` int(10) NOT NULL default '0',
                           from_bin smallint(6) NOT NULL default '0',
                           to_bin smallint(6) NOT NULL default '0',
                           organisation varchar(50) default NULL,
@@ -581,7 +582,7 @@ $tablelist = array(   'active_sessions' => "(
                       'nodes' => "(
                           name varchar(150) NOT NULL default '',
                           server_url varchar(200) NOT NULL default '',
-                          password varchar(50) NOT NULL default '',
+                          `password` varchar(50) NOT NULL default '',
                           PRIMARY KEY  (name)
                       )",
                       'offline' => "(
@@ -643,7 +644,7 @@ $tablelist = array(   'active_sessions' => "(
                           designID int(11) NOT NULL auto_increment,
                           pollsModuleID varchar(16) NOT NULL default '',
                           name text NOT NULL,
-                          comment mediumtext NOT NULL,
+                          `comment` mediumtext NOT NULL,
                           resultBarFile text NOT NULL,
                           resultBarWidth int(4) NOT NULL default '0',
                           resultBarHeight int(4) NOT NULL default '0',
@@ -657,20 +658,20 @@ $tablelist = array(   'active_sessions' => "(
                           pollID int(11) NOT NULL default '0',
                           voteID int(11) NOT NULL default '0',
                           votersIP char(16) NOT NULL default '',
-                          timeStamp int(11) NOT NULL default '0'
+                          `timeStamp` int(11) NOT NULL default '0'
                       )",
                       'polls_log' => "(
                           logID int(11) NOT NULL auto_increment,
                           pollID int(11) NOT NULL default '0',
                           voteID int(11) NOT NULL default '0',
                           votersIP char(16) NOT NULL default '',
-                          timeStamp int(11) NOT NULL default '0',
+                          `timeStamp` int(11) NOT NULL default '0',
                           PRIMARY KEY  (logID)
                       )",
                       'post2shtml' => "(
                           id varchar(32) NOT NULL default '',
                           vars mediumtext NOT NULL,
-                          time int(11) NOT NULL default '0',
+                          `time` int(11) NOT NULL default '0',
                           PRIMARY KEY  (id)
                       )",
                       'profile' => "(
@@ -679,7 +680,7 @@ $tablelist = array(   'active_sessions' => "(
                           uid varchar(60) NOT NULL default '*',
                           property varchar(20) NOT NULL default '',
                           selector varchar(255) default NULL,
-                          value mediumtext,
+                          `value` mediumtext,
                           PRIMARY KEY  (id),
                           KEY slice_user_id (slice_id,uid)
                       )",
@@ -699,11 +700,11 @@ $tablelist = array(   'active_sessions' => "(
                       )",
                       'searchlog' => "(
                           id int(11) NOT NULL auto_increment,
-                          date int(14) default NULL,
-                          query mediumtext,
+                          `date` int(14) default NULL,
+                          `query` mediumtext,
                           found_count int(11) default NULL,
                           search_time int(11) default NULL,
-                          user text,
+                          `user` text,
                           additional1 mediumtext,
                           PRIMARY KEY  (id),
                           KEY date (date)
@@ -732,7 +733,7 @@ $tablelist = array(   'active_sessions' => "(
                           created_by varchar(255) default NULL,
                           created_at bigint(20) default NULL,
                           export_to_all smallint(5) default NULL,
-                          type varchar(16) default NULL,
+                          `type` varchar(16) default NULL,
                           template smallint(5) default NULL,
                           fulltext_format_top longtext,
                           fulltext_format longtext,
@@ -746,27 +747,25 @@ $tablelist = array(   'active_sessions' => "(
                           category_format longtext,
                           category_bottom longtext,
                           category_sort smallint(5) default NULL,
-                          config longtext NOT NULL,
                           slice_url varchar(255) default NULL,
-                          d_expiry_limit smallint(5) default NULL,
                           d_listlen smallint(5) default NULL,
                           lang_file varchar(50) default NULL,
                           fulltext_remove longtext,
                           compact_remove longtext,
                           email_sub_enable smallint(5) default NULL,
                           exclude_from_dir smallint(5) default NULL,
-                          notify_sh_offer mediumtext,
-                          notify_sh_accept mediumtext,
-                          notify_sh_remove mediumtext,
-                          notify_holding_item_s mediumtext,
-                          notify_holding_item_b mediumtext,
-                          notify_holding_item_edit_s mediumtext,
-                          notify_holding_item_edit_b mediumtext,
-                          notify_active_item_edit_s mediumtext,
-                          notify_active_item_edit_b mediumtext,
-                          notify_active_item_s mediumtext,
-                          notify_active_item_b mediumtext,
-                          noitem_msg mediumtext,
+                          notify_sh_offer longtext,
+                          notify_sh_accept longtext,
+                          notify_sh_remove longtext,
+                          notify_holding_item_s longtext,
+                          notify_holding_item_b longtext,
+                          notify_holding_item_edit_s longtext,
+                          notify_holding_item_edit_b longtext,
+                          notify_active_item_edit_s longtext,
+                          notify_active_item_edit_b longtext,
+                          notify_active_item_s longtext,
+                          notify_active_item_b longtext,
+                          noitem_msg longtext,
                           admin_format_top longtext,
                           admin_format longtext,
                           admin_format_bottom longtext,
@@ -815,14 +814,14 @@ $tablelist = array(   'active_sessions' => "(
                           priority int(11) NOT NULL default '0',
                           selector varchar(255) NOT NULL default '',
                           object longtext NOT NULL,
-                          params text NOT NULL,
+                          params longtext NOT NULL,
                           PRIMARY KEY  (id),
                           KEY time (execute_after,priority)
                       )",
                       'users' => "(
                           id int(11) NOT NULL auto_increment,
-                          type char(10) NOT NULL default '',
-                          password char(30) NOT NULL default '',
+                          `type` char(10) NOT NULL default '',
+                          `password` char(30) NOT NULL default '',
                           uid char(40) NOT NULL default '',
                           mail char(40) NOT NULL default '',
                           name char(80) NOT NULL default '',
@@ -840,12 +839,12 @@ $tablelist = array(   'active_sessions' => "(
                           id int(10) unsigned NOT NULL auto_increment,
                           slice_id varchar(16) NOT NULL default '',
                           name varchar(50) default NULL,
-                          type varchar(10) default NULL,
+                          `type` varchar(10) default NULL,
                           `before` longtext,
                           even longtext,
                           odd longtext,
                           even_odd_differ tinyint(3) unsigned default NULL,
-                          after longtext,
+                          `after` longtext,
                           remove_string longtext,
                           group_title longtext,
                           order1 varchar(16) default NULL,
@@ -1350,9 +1349,9 @@ $SQL_links_create[] = "REPLACE INTO links_regions (id, name, level) VALUES (6050
 
 
 
-# -------------------------------- Executive part -----------------------------
+// -------------------------------- Executive part -----------------------------
 echo "<h2>update=".$update."</h2>";
-if( !$update AND !$restore AND !$restore_now) {
+if ( !$update AND !$restore AND !$restore_now) {
   echo '
   <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
   <html>
@@ -1434,7 +1433,7 @@ if( !$update AND !$restore AND !$restore_now) {
 }
 
 
-if( substr( DB_PASSWORD, 0, 5 ) != $dbpw5 ) {
+if ( substr( DB_PASSWORD, 0, 5 ) != $dbpw5 ) {
   echo '
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
     <html>
@@ -1459,7 +1458,7 @@ if( substr( DB_PASSWORD, 0, 5 ) != $dbpw5 ) {
 }
 
 
-if( $restore ) {
+if ( $restore ) {
   echo '
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
     <html>
@@ -1485,7 +1484,7 @@ if( $restore ) {
   exit;
 }
 
-if( $restore_now ) {
+if ( $restore_now ) {
   echo '
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
     <html>
@@ -1502,7 +1501,7 @@ if( $restore_now ) {
   reset( $tablelist );
   $store_halt = $db->Halt_On_Error;
   $db->Halt_On_Error = "report";
-  while( list($t) = each( $tablelist ) ) {
+  while ( list($t) = each( $tablelist ) ) {
     $SQL = "DROP TABLE IF EXISTS $t";
     safe_echo ($SQL);
     myquery($db, $SQL);
@@ -1530,15 +1529,15 @@ echo '
   <h1>APC-AA database update</h1>
   <p>Updating ...</p>';
 
-if( $dbcreate ) {
-  # this script copies data from old tables to temp tables,
-  # and then replaces the old tables with the temp tables.
-  # if an old table is 'missing' it will cause an error,
-  # so here, we create missing old tables.
+if ( $dbcreate ) {
+  // this script copies data from old tables to temp tables,
+  // and then replaces the old tables with the temp tables.
+  // if an old table is 'missing' it will cause an error,
+  // so here, we create missing old tables.
 
   echo '<h2>Delete temporary tables if exists</h2>';
   reset( $tablelist );
-  while( list($t) = each( $tablelist ) ) {
+  while ( list($t) = each( $tablelist ) ) {
     $SQL = "DROP TABLE IF EXISTS tmp_$t";
     safe_echo ($SQL);
     myquery($db, $SQL);
@@ -1546,7 +1545,7 @@ if( $dbcreate ) {
 
   echo '<h2>Creating temporary databases</h2>';
   reset( $tablelist );
-  while( list( $t, $def) = each( $tablelist ) ) {
+  while ( list( $t, $def) = each( $tablelist ) ) {
     $SQL = "  CREATE TABLE IF NOT EXISTS tmp_$t $def";
     safe_echo ($SQL);
     myquery($db, $SQL );
@@ -1554,36 +1553,36 @@ if( $dbcreate ) {
 
   echo '<h2>Creating new tables that do not exist in database</h2>';
   reset( $tablelist );
-  while( list( $t, $def ) = each( $tablelist ) ) {
+  while ( list( $t, $def ) = each( $tablelist ) ) {
     $SQL = "  CREATE TABLE IF NOT EXISTS $t $def";
     safe_echo ($SQL);
     myquery($db, $SQL );
   }
 }
 
-if( $copyold ) {
+if ( $copyold ) {
   echo '<h2>Copying old values to new tables </h2>';
   reset( $tablelist );
   $store_halt = $db->Halt_On_Error;
   $db->Halt_On_Error = "report";
 
-  while( list($t) = each( $tablelist ) ) {   # copy all tables
+  while ( list($t) = each( $tablelist ) ) {   // copy all tables
     unset($old_info);
     unset($tmp_info);
     $old_info = $db->metadata( $t );
     $tmp_info = $db->metadata( "tmp_$t" );
 
-    if( isset( $old_info ) AND is_array($old_info) ) {
+    if ( isset( $old_info ) AND is_array($old_info) ) {
       $delim = "";
       $field_list = "";
-      while( list ( ,$fld ) = each ($tmp_info)) {  #construct field list
-        if( IsPaired($fld[name], $old_info) )
-          $field_list .= $delim . $fld[name];
+      while ( list ( ,$fld ) = each ($tmp_info)) {  //construct field list
+        if ( IsPaired($fld[name], $old_info) )
+          $field_list .= $delim . '`'. $fld['name'] .'`';
          else
-          $field_list .= $delim .( strstr($fld[flags],"not_null") ? '" "':'""');
+          $field_list .= $delim .( strstr($fld['flags'],"not_null") ? '" "':'""');
         $delim = ",";
       }
-      if( $field_list == "")
+      if ( $field_list == "")
         $field_list = "*" ;
       $SQL = "INSERT INTO tmp_$t SELECT $field_list FROM $t";
       safe_echo ($SQL);
@@ -1593,18 +1592,18 @@ if( $copyold ) {
   $db->Halt_On_Error = $store_halt;
 }
 
-if( $backup )
+if ( $backup )
   echo '<h2>Backup old tables to bck_xxxx tables and use new tables instead</h2>';
  else
   echo '<h2>delete old tables and use new tables instead</h2>';
 
-if( $dbcreate ) {
+if ( $dbcreate ) {
   reset( $tablelist );
   $store_halt = $db->Halt_On_Error;
   $db->Halt_On_Error = "report";
 
-  while( list($t) = each( $tablelist ) ) {
-    if( $backup ) {
+  while ( list($t) = each( $tablelist ) ) {
+    if ( $backup ) {
       $SQL = "DROP TABLE IF EXISTS bck_$t";
       safe_echo ($SQL);
       myquery($db, $SQL);
@@ -1624,14 +1623,14 @@ if( $dbcreate ) {
   $db->Halt_On_Error = $store_halt;
 }
 
-if( $addstatistic ) {
+if ( $addstatistic ) {
   echo '<h2>Add statistic and discusion count field field for each slice</h2>';
   $SQL = "SELECT slice.id FROM slice LEFT JOIN field ON
           (slice.id=field.slice_id AND field.id IN ('display_count...', 'disc_count......', 'disc_app........'))
           WHERE field.id IS NULL";  // get only slices with not defined di... fields
   $db->query( $SQL );
-  while( $db->next_record() ) {
-    if( $db->f('id') == 'AA_Core_Fields..' )
+  while ( $db->next_record() ) {
+    if ( $db->f('id') == 'AA_Core_Fields..' )
       continue;
     $SQL = "REPLACE INTO field VALUES( 'display_count...', '', '". quote($db->f(id)) ."', 'Displayed Times', '5050', 'Internal field - do not change', '${AA_DOC_URL}help.html', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'display_count', '', 'nul', '0', '1')";
     safe_echo ($SQL);
@@ -1645,14 +1644,14 @@ if( $addstatistic ) {
   }
 }
 
-if( $additemidfields ) {
+if ( $additemidfields ) {
   echo '<h2>Add short_id and id field definition to fields table (for all slices)</h2>';
   $SQL = "SELECT slice.id FROM slice LEFT JOIN field ON
           (slice.id=field.slice_id AND field.id IN ('id..............', 'short_id........'))
           WHERE field.id IS NULL";  // get only slices with not defined di... fields
   $db->query( $SQL );
-  while( $db->next_record() ) {
-    if( $db->f('id') == 'AA_Core_Fields..' )
+  while ( $db->next_record() ) {
+    if ( $db->f('id') == 'AA_Core_Fields..' )
       continue;
 
     $SQL = "REPLACE INTO field VALUES ('id..............', '', '". quote($db->f('id')) ."', 'Long ID', 5080, 'Internal field - do not change', '${AA_DOC_URL}help.html', 'txt:', 0, 0, 0, 'nul', '', 0, '', '', '', '', 1, 1, 1, '_#ITEM_ID_', 'f_n:', 'alias for Long Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'id', '', 'nul', 0, 1)";
@@ -1665,14 +1664,14 @@ if( $additemidfields ) {
 }
 
 
-if( $fixmissingfields ) {
+if ( $fixmissingfields ) {
   echo '<h2>Fixing missing mandatory fields in slices</h2>';
   $SQL = "SELECT slice.id FROM slice LEFT JOIN field ON
           (slice.id=field.slice_id AND field.id='status_code.....')
           WHERE field.id IS NULL";  // get only slices with not defined status_code field
   $db->query( $SQL );
-  while( $db->next_record() ) {
-    if( $db->f('id') == 'AA_Core_Fields..' )
+  while ( $db->next_record() ) {
+    if ( $db->f('id') == 'AA_Core_Fields..' )
       continue;
     $SQL = "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'status_code.....', '',\"";
     $SQL .= quote($db->f(id));
@@ -1682,49 +1681,49 @@ if( $fixmissingfields ) {
   }
 }
 
-if( $replacecateg ) {
+if ( $replacecateg ) {
   echo '<h2>Updating APC wide categories</h2>';
   reset( $SQL_apc_categ );
-  while( list( ,$SQL) = each( $SQL_apc_categ ) ) {
+  while ( list( ,$SQL) = each( $SQL_apc_categ ) ) {
     safe_echo ($SQL);
     myquery($db, $SQL );
   }
 }
 
-if( $replaceconst ) {
+if ( $replaceconst ) {
   echo '<h2>Updating Constants</h2>';
   reset( $SQL_constants );
-  while( list( ,$SQL) = each( $SQL_constants ) ) {
+  while ( list( ,$SQL) = each( $SQL_constants ) ) {
     safe_echo ($SQL);
     myquery($db, $SQL );
   }
 }
 
-if( $newcore ) {
+if ( $newcore ) {
   echo '<h2>Updating Core field definitions</h2>';
   reset( $SQL_aacore );
-  while( list( ,$SQL) = each( $SQL_aacore ) ) {
+  while ( list( ,$SQL) = each( $SQL_aacore ) ) {
     safe_echo ($SQL);
     myquery($db, $SQL );
   }
 }
 
-if( $templates ) {
+if ( $templates ) {
   echo '<h2>Updating Slice templates</h2>';
   reset( $SQL_templates );
-  while( list( ,$SQL) = each( $SQL_templates ) ) {
+  while ( list( ,$SQL) = each( $SQL_templates ) ) {
     safe_echo ($SQL);
     myquery($db, $SQL );
   }
 }
 
-if( $view_templates ) {
+if ( $view_templates ) {
     $SQL = "SELECT * FROM view WHERE slice_id='AA_Core_Fields..'";
     $select = GetTable2Array($SQL, "type");
 //    print_r($select);
     if ($view_templates_rewrite_existing) {
         echo '<h2>Replacing existing View templates</h2>';
-        foreach($select as $key => $val) {
+        foreach ($select as $key => $val) {
             if ( !$SQL_view_templates[$key] ) continue;
             $SQL = "UPDATE ".$SQL_view_templates[$key]." WHERE id='".$val['id']."'";
             safe_echo( $SQL );
@@ -1741,19 +1740,19 @@ if( $view_templates ) {
     }
 }
 
-if( $update_modules ) {
+if ( $update_modules ) {
   echo '<h2>Updating Modules table</h2>';
   reset( $SQL_update_modules );
-  while( list( ,$SQL) = each( $SQL_update_modules ) ) {
+  while ( list( ,$SQL) = each( $SQL_update_modules ) ) {
     safe_echo ($SQL);
     myquery($db, $SQL );
   }
 }
 
-if( $cron ) {
+if ( $cron ) {
   echo '<h2>Adding to Cron table</h2>';
   reset( $SQL_cron );
-  while( list( ,$cron_entry) = each( $SQL_cron ) ) {
+  while ( list( ,$cron_entry) = each( $SQL_cron ) ) {
     $db->query("SELECT * FROM cron WHERE script='$cron_entry[script]'");
     if (! $db->next_record()) {
         foreach ($cron_entry["sql"] as $sql) {
@@ -1764,7 +1763,7 @@ if( $cron ) {
   }
 }
 
-if( $generic_emails ) {
+if ( $generic_emails ) {
   echo '<h2>Add generic mail templates</h2>';
   reset ($SQL_email_templates);
   while (list (, $SQL) = each ($SQL_email_templates)) {
@@ -1773,7 +1772,7 @@ if( $generic_emails ) {
   }
 }
 
-if( $links_create ) {
+if ( $links_create ) {
   echo '<h2>Update Links module</h2>';
   $db->query("SELECT * FROM links");
   if (! $db->next_record()) {          // only if links are not installed

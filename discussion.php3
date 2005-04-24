@@ -41,13 +41,13 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
     for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
     for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
     for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
       $$k = Myaddslashes($v);
 }
@@ -77,23 +77,23 @@ function PutSearchLog ()
 /** APC-AA configuration file */
 require_once "./include/config.php3";
 /** Defines simplified class for page scroller */
-require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
+require_once $GLOBALS['AA_INC_PATH']."easy_scroller.php3";
 /** Set of usefull functions used on most pages */
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
 /** Mail sending functions */
-require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
+require_once $GLOBALS['AA_INC_PATH']."mail.php3";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";
 /** parses view settings, gets view data and other functions */
-require_once $GLOBALS["AA_INC_PATH"]."view.php3";
+require_once $GLOBALS['AA_INC_PATH']."view.php3";
 /** discussion utility functions */
-require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
+require_once $GLOBALS['AA_INC_PATH']."discussion.php3";
 /** defines PageCache class used for caching informations into database */
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 /** functions for searching and filtering items */
-require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
 /** Main include file for using session management function on page */
-require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";    # DB_AA object definition
+require_once $GLOBALS['AA_INC_PATH']."locsessi.php3";    // DB_AA object definition
 
 add_vars();
 

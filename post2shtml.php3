@@ -66,11 +66,11 @@ http://www.apc.org/
 
 // post2shtml could be include from other files, where config.php3 is already
 // required (and probably is on another path)
-if( !defined('DB_NAME') ) {
+if ( !defined('DB_NAME') ) {
     require_once "./include/config.php3";
 }
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
 
 store_vars ();
 
@@ -116,7 +116,7 @@ function store_vars ()
 
 function md5_array (&$array) {
     // uses crypt() instead of md5() - Change by honza 06/19/2003 (see top)
-    if (is_array ($array)) {
+    if (is_array($array)) {
         reset ($array);
         while (list ($key) = each ($array))
             md5_array ($array[$key]);
@@ -129,7 +129,7 @@ function md5_array (&$array) {
 * in order that all values present in $dest and not in $source are kept.
 */
 function add_var2 (&$source, &$dest) {
-    if (is_array ($source)) {
+    if (is_array($source)) {
         reset ($source);
         while (list ($key) = each ($source))
             add_var3 ($key, $source[$key], $dest);
@@ -140,7 +140,7 @@ function add_var2 (&$source, &$dest) {
 * in order that all values present in $dest and not in $source are kept.
 */
 function add_var3 ($varname, &$source, &$dest) {
-    if (is_array ($source)) {
+    if (is_array($source)) {
         reset ($source);
         while (list ($key) = each ($source))
             add_var3 ($key, $source[$key], $dest[$varname]);

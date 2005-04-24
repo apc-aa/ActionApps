@@ -66,13 +66,13 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
     for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
     for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
     for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
       $$k = Myaddslashes($v);
 }
@@ -80,22 +80,22 @@ if (!get_magic_quotes_gpc()) {
 /** APC-AA configuration file */
 require_once "include/config.php3";
 /** Main include file for using session management function on a page */
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
 /** Set of useful functions used on most pages */
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 /** Defines class for inserting and updating database fields */
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
 /** utility for notifying people of events by email */
-require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
+require_once $GLOBALS['AA_INC_PATH']."notify.php3";
 /** defines PageCache class used for caching informations into database */
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 /** date helper functions */
-require_once $GLOBALS["AA_INC_PATH"]."date.php3";
-require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
-require_once $GLOBALS["AA_INC_PATH"]."zids.php3";
-require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
+require_once $GLOBALS['AA_INC_PATH']."date.php3";
+require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
+require_once $GLOBALS['AA_INC_PATH']."zids.php3";
+require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
 
 function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
@@ -156,12 +156,12 @@ function SendOkPage($txt) {
     }
 }
 
-#$debugfill=1;
+//$debugfill=1;
 if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER");
 
-# init used objects
-#if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
-if( !$slice_id ) SendErrorPage(array ("fatal"=>_m("Slice ID not defined")));
+// init used objects
+//if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
+if ( !$slice_id ) SendErrorPage(array ("fatal"=>_m("Slice ID not defined")));
 
 $slice      = new slice($slice_id);
 $p_slice_id = q_pack_id($slice_id);
@@ -212,7 +212,7 @@ $foocontent4id = new ItemContent($oldcontent4id);
 $oldcontent4id = $foocontent4id->getContentQuoted();
 
 // copy old values for fields not shown in the form
-if (! $insert && is_array ($notshown)) {
+if (! $insert && is_array($notshown)) {
     foreach ( $notshown as $vfield_id => $foo) {
         $field_ids[] = substr($vfield_id,1);  // remove first 'v'
     }
@@ -226,7 +226,7 @@ if (! $insert && is_array ($notshown)) {
 // put the item into the right bin
 $bin2fill = $slice_info["permit_anonymous_post"];
 if ($debugfill) huhl("bin2fill=",$bin2fill, " force_status_code=",$force_status_code);
-if( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
+if ( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
 // you may force to put the item into a higher bin (active < hold < trash)
 $bin2fill = max ($bin2fill, $force_status_code);
 // Allow setting status code in form, but only below force or bin2fill
@@ -292,7 +292,7 @@ if ($debugfill) huhl("Going to Store Item");
 if ($debugfill) huhl("content4id=",$content4id);
 if (is_array($result)) {
     SendErrorPage( $result );
-} elseif (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, true, true, $oldcontent4id )) { # insert, invalidatecache, feed
+} elseif (!StoreItem( $my_item_id, $slice_id, $content4id, $fields, $insert, true, true, $oldcontent4id )) { // insert, invalidatecache, feed
     if ($debugfill) huhl("Filler: sending error");
     SendErrorPage( array("store" => _m("Some error in store item.")));
 } else {

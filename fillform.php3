@@ -59,7 +59,7 @@
  *   @param array dateConds Special feature: contains names of textfields which are
  *      dates represented by 3 select boxes in the way of AA. E.g. <br>
  *      <tt>dateConds[3]="mydate"</tt> means:<br>
- *      <tt>conds[3][value]</tt> is a date in some strtotime format,
+ *      <tt>conds[3]['value']</tt> is a date in some strtotime format,
  *      mydate_day is the select box cotaining day, mydate_month contains month,
  *      mydate_year contains year
  *
@@ -94,28 +94,33 @@ $encap = ( ($encap=="false") ? false : true );
 /** APC-AA configuration file */
 require_once "include/config.php3";
 /** Defines simplified class for page scroller */
-require_once $GLOBALS["AA_INC_PATH"]."easy_scroller.php3";
+require_once $GLOBALS['AA_INC_PATH']."easy_scroller.php3";
 /** Set of useful functions used on most pages */
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";
 /** parses view settings, gets view data and other functions */
-require_once $GLOBALS["AA_INC_PATH"]."view.php3";
+require_once $GLOBALS['AA_INC_PATH']."view.php3";
 /** defines PageCache class used for caching informations into database */
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 /** functions for searching and filtering items */
-require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
 /** discussion utility functions */
-require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
+require_once $GLOBALS['AA_INC_PATH']."discussion.php3";
 /** Defines class for inserting and updating database fields */
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-/** Main include file for using session management function on an encapsulated (.shtml) page */
-if ($encap) require_once $GLOBALS["AA_INC_PATH"]."locsessi.php3";
-/** Main include file for using session management function on a page */
-else require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+if ($encap) {
+    /** Main include file for using session management function on an encapsulated (.shtml) page */
+    require_once $GLOBALS['AA_INC_PATH']."locsessi.php3";
+} else {
+    /** Main include file for using session management function on a page */
+    require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+}
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
+/** Used for getFrmJavascript() */
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 /** Some functions pulled from here to allow inclusion elsewhere */
-require_once $GLOBALS["AA_INC_PATH"]."fillform.php3";
+require_once $GLOBALS['AA_INC_PATH']."fillform.php3";
 
 page_open(array("sess" => "AA_SL_Session"));
 
@@ -133,7 +138,7 @@ echo fillFormFromVars($fillConds);
 
 if ($show_result) {
     if ($result) {
-        readfile(con_url ($show_result, "result=".urlencode(serialize($result))));
+        readfile(con_url($show_result, "result=".urlencode(serialize($result))));
     } else {
         readfile($show_result);
     }
@@ -141,8 +146,8 @@ if ($show_result) {
     echo "<b>";
     foreach ( $result as $k => $v) {
         echo $k.": ";
-        if (is_array ($v)) {
-            foreach ( $v as $kk => $vv) {
+        if (is_array($v)) {
+            foreach ($v as $kk => $vv) {
                 echo "$kk - $vv ";
             }
         } else {
@@ -154,4 +159,3 @@ if ($show_result) {
 }
 
 ?>
-

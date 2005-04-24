@@ -25,8 +25,8 @@ http://www.apc.org/
     back an image file
 
     Params: live_checkbox[short_id][field_id]=action
-    
-    where 
+
+    where
         short_id is the item short ID
         field_id is the field ID (like "highlight......")
         action is one of on, off and decides whether the checkbox should be switched on or off
@@ -39,11 +39,11 @@ function f () {
     readfile ($image_path.'cb_on.gif');
     exit;
 }
-*/       
-$directory_depth = "base";           
+*/
+$directory_depth = "base";
 require_once "./include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
 
 $image_path = $AA_BASE_PATH."images/";
 
@@ -56,11 +56,11 @@ $db = new DB_AA;
 $db->query("SELECT id, slice_id FROM item WHERE short_id = $short_id");
 if ($db->next_record()) {
     $item_id = unpack_id128($db->f("id"));
-    $slice_id = unpack_id128($db->f("slice_id")); 
+    $slice_id = unpack_id128($db->f("slice_id"));
 }
 else failed();
 
-if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) 
+if (!IfSlPerm(PS_EDIT_ALL_ITEMS))
     failed ();
 
 if (!$debug) {
@@ -70,18 +70,11 @@ $content4ids = GetItemContent($item_id);
 reset($content4ids);
 $content4id = current($content4ids);
 $oldcontent4id = $content4id;
-$action = ! ($content4id[$field_id][0]["value"]);
+$action = ! ($content4id[$field_id][0]['value']);
 $content4id = array ($field_id => array (0 => array ("value" => $action)));
-list($fields) = GetSliceFields($slice_id);   
-    
-StoreItem ($item_id,
-           $slice_id,
-           $content4id,
-           $fields,
-           false,
-           true,
-           false,
-           $oldcontent4id);
+list($fields) = GetSliceFields($slice_id);
+
+StoreItem($item_id, $slice_id, $content4id, $fields, false, true, false, $oldcontent4id);
 
 readfile ($image_path.'cb_'.($action ? "on" : "off").'.gif');
 page_close();
@@ -89,10 +82,10 @@ exit;
 
 // ------------------------------------------------------------------------------------
 
-function failed () {   
-    global $image_path; 
+function failed () {
+    global $image_path;
     readfile ($image_path.'cb_failed.gif');
     page_close();
     exit;
-}    
+}
 ?>

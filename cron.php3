@@ -44,9 +44,9 @@ http://www.apc.org/
 /** APC-AA configuration file */
 require_once "./include/config.php3";
 /** Main include file for using session management function on page */
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
 /** Defines class for inserting and updating database fields */
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 
 
 /**
@@ -121,13 +121,13 @@ function cron ($time = 0) {
                 $nearest_part = -1;
 
                 $tr = $translate[$part];
-                if (is_array ($tr)) {
+                if (is_array($tr)) {
                     reset ($tr);
                     while (list($search,$replace) = each($tr))
                         $value = str_replace ($search,$replace,$value);
                 }
 
-                if (strstr ($value,'/')) {
+                if (strstr($value,'/')) {
                     list($from,$to,$step) = split('[/-]',$value);
                     for ($i = $from; $i <= $to; $i += $step)
                         if ($i <= $now_part && $i > $nearest_part)

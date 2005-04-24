@@ -40,7 +40,7 @@ require_once "./include/mgettext.php3";
 $lang_file = substr ($lang_file, 0, 2);
 if (!$LANGUAGE_NAMES [$lang_file])
     $lang_file = "en";
-bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$lang_file."_news_lang.php3");
+bind_mgettext_domain ($GLOBALS['AA_INC_PATH']."lang/".$lang_file."_news_lang.php3");
 /** Main include file for using session management function on a page */
 require_once "./include/locsess.php3";
 /** Set of useful functions used on most pages */

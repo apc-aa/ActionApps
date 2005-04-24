@@ -49,13 +49,13 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) { 
   // Overrides GPC variables 
-  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
     for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
       $$k = Myaddslashes($v); 
-  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
     for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
       $$k = Myaddslashes($v); 
-  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
     for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
       $$k = Myaddslashes($v); 
 }
@@ -63,11 +63,11 @@ if (!get_magic_quotes_gpc()) {
 /** APC-AA configuration file */
 require_once "./include/config.php3";
 /** Set of useful functions used on most pages */
-require_once $GLOBALS["AA_INC_PATH"]. "util.php3";
+require_once $GLOBALS['AA_INC_PATH']. "util.php3";
 /** Main include file for using session management function on a page */
-require_once $GLOBALS["AA_INC_PATH"]. "locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']. "locsess.php3";
 
-if( !$sh_itm )
+if ( !$sh_itm )
   exit;
 
 $db  = new DB_AA;
@@ -86,7 +86,7 @@ switch( $type ) {
                AND relation.flag = '". REL_FLAG_FEED ."'";  // feed bit
 
     $db->query($SQL);
-    if( $db->next_record() ) {
+    if ( $db->next_record() ) {
       $item = unpack_id128($db->f(source_id));
       $slice_url = ($db->f(slice_url));
     }
@@ -95,23 +95,26 @@ switch( $type ) {
                WHERE item.slice_id=slice.id
                  AND item.id = '$p_id'";
       $db->query($SQL);
-      if( $db->next_record() ) {
+      if ( $db->next_record() ) {
         $item = $sh_itm;
         $slice_url = ($db->f(slice_url));
       }
     }  
 }
 
-if( !$url )   // url can be given by parameter
+if ( !$url )   // url can be given by parameter
   $url = $slice_url;
 
-if( !$url )   // url can be given by parameter
+if ( !$url )   // url can be given by parameter
   $url = $slice_url;
   
 go_url(con_url($url,"sh_itm=$item"));
 
 /*
 $Log$
+Revision 1.7  2005/04/24 21:48:11  honzam
+a bit more beauty code - some coding standards setting applied
+
 Revision 1.6  2003/02/05 14:50:43  jakubadamek
 changing require to require_once, deleting the "if (defined) return" constructs and changing GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"]
 
