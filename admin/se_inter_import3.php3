@@ -19,21 +19,21 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# se_inter_import3.php3 - Store feeds into tables
+// se_inter_import3.php3 - Store feeds into tables
 
-# $slice_id
-# $f_slices[]  - array of slice ids
-# $aa          - string holding serialized array from aa_rss parser
-# $remote_node_node
+// $slice_id
+// $f_slices[]  - array of slice ids
+// $aa          - string holding serialized array from aa_rss parser
+// $remote_node_node
 
 require_once "../include/init_page.php3";
 
-if(!IfSlPerm(PS_FEEDING)) {
+if (!IfSlPerm(PS_FEEDING)) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
     exit;
 }
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."csn_util.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."csn_util.php3";
 
 $aa_rss = unserialize(stripslashes($aa));
 
@@ -59,9 +59,10 @@ foreach ($f_slices as $f_slice) {
     $catVS->add("user_id",          "text",     $auth->auth['uname']);
     $catVS->add("node_name",        "quoted",   $remote_node_name);
     $catVS->add("newest_item",      "quoted",   unixstamp_to_iso8601(time()));
+    $catVS->add("feed_mode",        "quoted",   ($exact_copy ? 'exact' : ''));
 
     $SQL = "INSERT INTO external_feeds" . $catVS->makeINSERT();
-    if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
         $err["DB"] .= MsgErr("Can't add external import");
     }
 
@@ -83,7 +84,7 @@ foreach ($f_slices as $f_slice) {
         $catVS->add("approved",          "number",   0);
 
         $SQL = "INSERT INTO ef_categories" . $catVS->makeINSERT();
-        if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
             $err["DB"] .= MsgErr("Can't add external import");
         }
     }
@@ -104,7 +105,7 @@ foreach ($f_slices as $f_slice) {
         $catVS->add("from_field_name","text",     $aa_rss['fields'][$field_id]['name']);
 
         $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
-        if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
             $err["DB"] .= MsgErr("Can't add external import");
         }
     }
