@@ -19,10 +19,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# expected at least $slice_id
-# user calling is with $edit for edit item
-# optionaly encap="false" if this form is not encapsulated into *.shtml file
-# optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
+// expected at least $slice_id
+// user calling is with $edit for edit item
+// optionaly encap="false" if this form is not encapsulated into *.shtml file
+// optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
 $encap = ( ($encap=="false") ? false : true );
 
@@ -30,19 +30,19 @@ if ($edit OR $add) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
 
-require_once "../include/init_page.php3";     # This pays attention to $change_id
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
-require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
-require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
+require_once "../include/init_page.php3";     // This pays attention to $change_id
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."notify.php3";
+require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
 //mimo include mlx functions
-require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
+require_once $GLOBALS['AA_INC_PATH']."mlx.php";
 
-if ( file_exists( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" ) ) {
-    include( $GLOBALS["AA_INC_PATH"]."usr_validate.php3" );
+if ( file_exists( $GLOBALS['AA_INC_PATH']."usr_validate.php3" ) ) {
+    include( $GLOBALS['AA_INC_PATH']."usr_validate.php3" );
 }
 
 /** Function for extracting variables from $r_hidden session field */
@@ -85,11 +85,11 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
 
 FetchSliceReadingPassword();
 
-if ($encap) add_vars();        # adds values from QUERY_STRING_UNESCAPED
-                               #       and REDIRECT_STRING_UNESCAPED - from url
+if ($encap) add_vars();        // adds values from QUERY_STRING_UNESCAPED
+                               //       and REDIRECT_STRING_UNESCAPED - from url
 
-QuoteVars("post", array('encap'=>1) );  # if magicquotes are not set, quote variables
-                                        # but skip (already edited) encap variable
+QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote variables
+                                        // but skip (already edited) encap variable
 
 // TODO: GetHidden is not so correct in current AA code
 // Now we can have multiple itemedits open, so one set of r_hidden isn't correct
@@ -109,7 +109,7 @@ if ( $upd_preview ) { $update = true; $preview=true; }
 $add = !( $update OR $cancel OR $insert OR $edit );
 
 if ($cancel) {
-    if ( $anonymous ) { // anonymous login
+    if ($anonymous) { // anonymous login
         go_url( $r_slice_view_url, '', $encap );
     } elseif ($return_url=='close_dialog') {
         // Used for adding item to another slice from itemedit's popup.
@@ -141,31 +141,26 @@ $lang_control = IsMLXSlice($slice);
 if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
 
     // prepare content4id array before call StoreItem function
-    $content4id = GetContentFromForm( $slice, $oldcontent4id, $insert );
+    $content4id = new ItemContent;
+    $content4id->setFromForm( $slice, $oldcontent4id, $insert ); // sets also [slice_id] as well as [id]
 
-    if ($slice->getfield('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_EDITED_IN_AA
-            AND ($content4id["flags..........."][0]['value'] & ITEM_FLAG_ANONYMOUS_EDITABLE)) {
-        $content4id["flags..........."][0]['value'] -= ITEM_FLAG_ANONYMOUS_EDITABLE;
+    if ($slice->getfield('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_EDITED_IN_AA) {
+        // unset ITEM_FLAG_ANONYMOUS_EDITABLE bit in flag
+        $content4id->setValue('flags...........', $content4id->getValue('flags...........') & ~ITEM_FLAG_ANONYMOUS_EDITABLE);
     }
 
-    if ( $insert ) { $id = new_id(); }
-
     // mimo change
-    if($lang_control) {
-        //print("mlxl=$mlxl<br>mlxid=$mlxid<br>action=$action<br>");
+    if ($lang_control) {
         $mlx = new MLX($slice);
         $mlx->update($content4id,$id,$action,$mlxl,$mlxid);
-        //mlx_update($slice,$content4id,$id);
-        //echo "<pre>"; print_r($content4id); echo "</pre>";
     }
     // end
 
-    $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, $insert,
-                              true, true, $oldcontent4id );     // invalidatecache, feed
+    $added_to_db = $content4id->storeItem( $insert ? 'insert' : 'update', true, true, $oldcontent4id );     // invalidatecache, feed
 
     if (count($err) <= 1) {
         page_close();
-        if ( $preview ) {
+        if ($preview) {
             $preview_url = con_url(get_admin_url("preview.php3"), "slice_id=$slice_id&sh_itm=$id&return_url=$return_url");
         }
         if ($anonymous) { // anonymous login
@@ -183,12 +178,12 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
     }
 }
 
-# -----------------------------------------------------------------------------
-# Input form
-# -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Input form
+// -----------------------------------------------------------------------------
 
 
-unset( $content );       # used in another context for storing item to db
+unset( $content );       // used in another context for storing item to db
 unset( $content4id );
 
 if ($edit) {
@@ -224,8 +219,8 @@ if ($lang_control) {
 // end mimo changes
 
 
-# print begin ---------------------------------------------------------------
-if( !$encap ) {
+// print begin ---------------------------------------------------------------
+if ( !$encap ) {
     $inputform_settings = array(
         'display_aa_begin_end' => true,
         'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim($r_slice_headline).")",
