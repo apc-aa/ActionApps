@@ -19,17 +19,17 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# se_import.php3 - feeding settings
-# expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update successful)
+// se_import.php3 - feeding settings
+// expected $slice_id for edit slice
+// optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update successful)
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!IfSlPerm(PS_FEEDING, "admin")) {
+if (!IfSlPerm(PS_FEEDING, "admin")) {
   MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
   exit;
 }
@@ -90,11 +90,11 @@ function UpdateImportExport(slice_id)
   url += "&slice_id=" + slice_id
   url += "&to_all=" + (document.f.export_to_all.checked ? '1' : '0')
   for (var i = 0; i < document.f.import_y.options.length; i++) {
-    if(document.f.import_y.options[i].value != "0")    // imported slices
+    if (document.f.import_y.options[i].value != "0")    // imported slices
       url += "&I%5B" + i + "%5D=" + escape(document.f.import_y.options[i].value)
   }
   for (var i = 0; i < document.f.export_y.options.length; i++) {
-    if(document.f.export_y.options[i].value != "0")    // exported to slices
+    if (document.f.export_y.options[i].value != "0")    // exported to slices
       url += "&E%5B" + i + "%5D=" + escape(document.f.export_y.options[i].value)
   }
   document.location=url
@@ -104,7 +104,7 @@ function UpdateImportExport(slice_id)
 </HEAD>
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin", "import");
 
   echo "<H1><B>" . _m("Admin - configure Content Pooling") . "</B></H1>";
@@ -130,12 +130,12 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <SELECT name="export_n" size=8 class=tabtxt>
   <?php
   reset($all_slices);
-  if( isset($export_to) AND is_array($export_to)) {
-    while(list($s_id,$name) = each($all_slices))
-      if( $export_to[$s_id] == "" )
+  if ( isset($export_to) AND is_array($export_to)) {
+    while (list($s_id,$name) = each($all_slices))
+      if ( $export_to[$s_id] == "" )
         echo "<option value=\"$s_id\"> $name </option>";
   }else
-    while(list($s_id,$name) = each($all_slices))
+    while (list($s_id,$name) = each($all_slices))
       echo "<option value=\"$s_id\"> $name </option>";
   ?>
 </SELECT></td>
@@ -144,9 +144,9 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <td align="CENTER" valign="TOP">
 <SELECT name="export_y" size=8 class=tabtxt multiple>
   <?php
-  if( isset($export_to) AND is_array($export_to)) {
+  if ( isset($export_to) AND is_array($export_to)) {
     reset($export_to);
-    while(list($s_id,$name) = each($export_to))
+    while (list($s_id,$name) = each($export_to))
       echo "<option value=\"$s_id\"> $name </option>";
   }    ?>
 </SELECT>
@@ -178,10 +178,10 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <td align="CENTER" valign="TOP">
 <SELECT name="import_n" size=8 class=tabtxt>
   <?php
-  if( isset($importable) AND is_array($importable)) {
+  if ( isset($importable) AND is_array($importable)) {
     reset($importable);
-    while(list($s_id,$name) = each($importable))
-      if( $imported[$s_id] == "" )
+    while (list($s_id,$name) = each($importable))
+      if ( $imported[$s_id] == "" )
         echo "<option value=\"$s_id\"> $name </option>";
   }
   ?>
@@ -191,9 +191,9 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <td align="CENTER" valign="TOP">
 <SELECT name="import_y" size=8 class=tabtxt>
   <?php
-  if( isset($imported) AND is_array($imported)) {
+  if ( isset($imported) AND is_array($imported)) {
     reset($imported);
-    while( list($id, $name) = each($imported)) {
+    while ( list($id, $name) = each($imported)) {
       echo "<option value=$id> $name </option>";
     }
   }     ?>

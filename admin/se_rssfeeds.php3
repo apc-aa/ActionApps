@@ -22,28 +22,28 @@ http://www.apc.org/
 /* Change Log:
 	Mitra 25 Nov 2002  Copied and edited from se_nodes.php3 
 */
-# se_rssfeeds.php3 - RSS Feed administration
+// se_rssfeeds.php3 - RSS Feed administration
 
-# expected    $mode
-#             $name
-#             $server_url
-#             $password
-# optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
-#             $old_rssfeed_name
-#             $sel_rssfeed_name
+// expected    $mode
+//             $name
+//             $server_url
+//             $password
+// optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
+//             $old_rssfeed_name
+//             $sel_rssfeed_name
 
 require_once "../include/init_page.php3";
 
-if(!IfSlPerm(PS_FEEDING)) {
+if (!IfSlPerm(PS_FEEDING)) {
   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
 
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."xml_fetch.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."xml_fetch.php3";
 
 $err["Init"]="";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 $qp_slice_id=q_pack_id($slice_id);
 
  if ($mode == "map") {
@@ -81,7 +81,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 		  $catVS->add("name", "quoted", $rssfeed_name);
 		  $catVS->add("server_url","quoted",$server_url);
 		  $SQL = "INSERT INTO rssfeeds" . $catVS->makeINSERT();
-          if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+          if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
             $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
           }
         }
@@ -155,7 +155,7 @@ function checkData() {
 <BODY>
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin","rssfeeds");
 
   echo "<H1><B>" . _m("Remote RSS Feed administration") . "</B></H1>";
@@ -173,7 +173,7 @@ function checkData() {
       <?php
         if (isset($rssfeeds) && is_array($rssfeeds)) {
           reset($rssfeeds);
-          while(list(,$name) = each($rssfeeds))
+          while (list(,$name) = each($rssfeeds))
             echo "<option value=\"$name\">$name</option>";
         }
       ?>

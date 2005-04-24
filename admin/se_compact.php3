@@ -19,21 +19,21 @@ Copyright (C) 1999, 2000 Association for Progressive Communications
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# se_compact.php3 - assigns html format for compact view
-# expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+// se_compact.php3 - assigns html format for compact view
+// expected $slice_id for edit slice
+// optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";     // GetAliasesFromField funct def
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";     // GetAliasesFromField funct def
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!IfSlPerm(PS_COMPACT)) {
+if (!IfSlPerm(PS_COMPACT)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change compact view formatting"), "admin");
   exit;
 }
@@ -42,12 +42,12 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 $p_slice_id = q_pack_id($slice_id);
 
-if( $r_fields )
+if ( $r_fields )
   $fields = $r_fields;
 else
   list($fields,) = GetSliceFields($slice_id);
 
-if( $update )
+if ( $update )
 {
   do
   {
@@ -56,14 +56,14 @@ if( $update )
     ValidateInput("compact_bottom", _m("Bottom HTML"), $compact_bottom, $err, false, "text");
     ValidateInput("compact_remove", _m("Remove strings"), $compact_remove, $err, false, "text");
     ValidateInput("noitem_msg", _m("'No item found' message"), $noitem_msg, $err, false, "text");
-    if( $even_odd_differ )
+    if ( $even_odd_differ )
       ValidateInput("even_row_format", _m("Even Rows"), $even_row_format, $err, true, "text");
-    if( $group_by ) {
+    if ( $group_by ) {
       ValidateInput("category_top", _m("Category top HTML"), $category_top, $err, false, "text");
       ValidateInput("category_format", _m("Category Headline"), $category_format, $err, true, "text");
       ValidateInput("category_bottom", _m("Category bottom HTML"), $category_bottom, $err, false, "text");
     }
-    if( count($err) > 1)
+    if ( count($err) > 1)
       break;
 
     $varset->add("odd_row_format", "quoted", $odd_row_format);
@@ -79,24 +79,23 @@ if( $update )
     $varset->add("compact_remove", "quoted", $compact_remove);
     $varset->add("even_odd_differ", "number", $even_odd_differ ? 1 : 0);
     $varset->add("category_sort", "number", $category_sort ? 1 : 0);
-      # if not filled, store " " - the empty value displays "No item found" for
-      # historical reasons
+      // if not filled, store " " - the empty value displays "No item found" for
+      // historical reasons
     $varset->add("noitem_msg", "quoted", $noitem_msg ? $noitem_msg : " " );
 
-    if( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . "
+    if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . "
                       WHERE id='".q_pack_id($slice_id)."'")) {
       $err["DB"] = MsgErr( _m("Can't change slice settings") );
-      break;   # not necessary - we have set the halt_on_error
+      break;   // not necessary - we have set the halt_on_error
     }
 
-    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
-
+    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
   }while(false);
-  if( count($err) <= 1 )
+  if ( count($err) <= 1 )
     $Msg = MsgOK(_m("Design of compact design successfully changed"));
 }
 
-if( $slice_id!="" ) {  // set variables from database - allways
+if ( $slice_id!="" ) {  // set variables from database - allways
 /*  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top,
                  compact_bottom, compact_remove, category_sort, category_format,
                  category_top, category_bottom, noitem_msg */
@@ -123,7 +122,7 @@ if( $slice_id!="" ) {  // set variables from database - allways
       $db->query("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='".q_pack_id($slice_id)."'");
       if ($db->next_record()) {
         $group_by = $db->f("id");
-        $gb_direction  = "2";      # number 2 represents 'a' - ascending (because gb_direction in number)
+        $gb_direction  = "2";      // number 2 represents 'a' - ascending (because gb_direction in number)
         $gb_header = 0;
       }
       $category_sort = 0; // correct it
@@ -169,7 +168,7 @@ function EnableClick(cond,what) {
 
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin", "compact");
 
   echo "<H1><B>" . _m("Admin - design Index view") . "</B></H1>&nbsp;" . _m("Use these boxes ( and the tags listed below ) to control what appears on summary page");
@@ -188,11 +187,11 @@ function EnableClick(cond,what) {
 <?php
   FrmTabCaption(_m("HTML code for index view"), '','', $form_buttons, $sess, $slice_id);
 
-  # lookup slice fields
+  // lookup slice fields
   $db->query("SELECT id, name FROM field
                WHERE slice_id='$p_slice_id' ORDER BY name");
-  $lookup_fields[''] = " ";  # default - none
-  while($db->next_record())
+  $lookup_fields[''] = " ";  // default - none
+  while ($db->next_record())
     $lookup_fields[$db->f(id)] = $db->f(name);
 
   FrmTextarea("compact_top", _m("Top HTML"), $compact_top, 4, 50, false,

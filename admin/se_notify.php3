@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# expects $slice_id to be set
+// expects $slice_id to be set
 
 /* ////////////////////////////////////////////////////////////////////
 
@@ -45,8 +45,8 @@ http://www.apc.org/
 ////////////////////////////////////////////////////////////////////
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 
 function save_notify2db($slice_id, $function, $emails) {
     global $db;
@@ -65,16 +65,16 @@ function save_notify2db($slice_id, $function, $emails) {
 
 // sanity checks
 
-if($cancel){
+if ($cancel){
   go_url( $sess->url(self_base() . "index.php3"));
 }
 
-if(! $slice_id){
+if (! $slice_id){
   MsgPage($sess->url(self_base())."index.php3", "error on se_notify.php3", "standalone");
   exit;
 }
 
-if(!IfSlPerm(PS_EDIT)) {
+if (!IfSlPerm(PS_EDIT)) {
   MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"), "standalone");
   exit;
 }
@@ -90,13 +90,13 @@ $superadmin = IsSuperadmin();
 //  II) if in 'update mode', do the update to the database
 ////////////////////////////////////////////////////////////////////
 
-if( $update ) {
+if ( $update ) {
 
   //validate input
   //  ValidateInput("name", _m("Title"), $name, $err, true, "text");
 
   // check to make sure we passed our validation cleanly
-  if( count($err) > 1)
+  if ( count($err) > 1)
       break;
 
   // if we passed our validation, change the slice records
@@ -152,7 +152,7 @@ SELECT notify_holding_item_s,      notify_holding_item_b,
 $db->query($SQL);
 if ($db->next_record())
   while (list($key,$val,,) = each($db->Record)) {
-    if( EReg("^[0-9]*$", $key))
+    if ( EReg("^[0-9]*$", $key))
       continue;
     $$key = $val; // variables and database fields have identical names
   }
@@ -178,7 +178,7 @@ while ($db->next_record()) {
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 HtmlPageBegin();
 echo '<TITLE> '. _m("Email Notifications of Events"). '</TITLE></HEAD>';
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin","notify");
 
   echo "<H1><B>" . _m("Email Notifications of Events") . "</B></H1>";

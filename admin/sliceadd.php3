@@ -29,7 +29,7 @@ function GetModuleTemplateSelecbox($type, $g_modules) {
     if (isset($g_modules) AND is_array($g_modules) ) {
         reset ($g_modules);
         while (list ($mid,$mod) = each ($g_modules)) {
-            if( $mod['type']==$type )
+            if ( $mod['type']==$type )
                 $ret .=  "\n  <OPTION value=\"x$mid\">".$mod['name']."</OPTION>";
         }
     }
@@ -39,7 +39,7 @@ function GetModuleTemplateSelecbox($type, $g_modules) {
 
 // the parts used by the slice wizard are in the included file
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -57,7 +57,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <center>
 <form method=post action="<?php echo $sess->url("slicedit.php3") ?>">
 <?php
-    require_once $GLOBALS["AA_INC_PATH"]."sliceadd.php3";
+    require_once $GLOBALS['AA_INC_PATH']."sliceadd.php3";
 ?>
 
 </table>

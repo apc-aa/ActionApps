@@ -19,24 +19,24 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# se_nodes.php3 - Remote node administration
+// se_nodes.php3 - Remote node administration
 
-# expected    $mode
-#             $name
-#             $server_url
-#             $password
-# optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
-#             $old_node_name
-#             $sel_node_name
+// expected    $mode
+//             $name
+//             $server_url
+//             $password
+// optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
+//             $old_node_name
+//             $sel_node_name
 
 require_once "../include/init_page.php3";
 
-if( !isSuperadmin() ) {
+if ( !isSuperadmin() ) {
   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to manage nodes"));
   exit;
 }
 $err["Init"]="";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
  if ($mode == "edit") {
     $db->query("SELECT * FROM nodes WHERE name='$sel_node_name'");
@@ -61,7 +61,7 @@ require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
           $err["DB"] .= MsgErr("Can't add node $node_name");
         } else {
           $SQL = "INSERT INTO nodes VALUES('$node_name','$server_url','$password')";
-          if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+          if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
             $err["DB"] .= MsgErr("Can't add node $node_name");
           }
         }
@@ -136,7 +136,7 @@ function Cancel() {
 
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin","nodes");
 
   echo "<H1><B>" . _m("Remote node administration") . "</B></H1>";
@@ -158,7 +158,7 @@ function Cancel() {
       <?php
         if (isset($nodes) && is_array($nodes)) {
           reset($nodes);
-          while(list(,$name) = each($nodes))
+          while (list(,$name) = each($nodes))
             echo "<option value=\"$name\">$name</option>";
         }
       ?>

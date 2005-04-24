@@ -19,26 +19,26 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# sid expected - slice_id where to search
-# var_id expected - id of variable in calling form, which should be filled
-# mode expected - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
-# design expected - boolean - use standard or admin design
+// sid expected - slice_id where to search
+// var_id expected - id of variable in calling form, which should be filled
+// mode expected - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
+// design expected - boolean - use standard or admin design
 
-$save_hidden = true;   # do not delete r_hidden session variable in init_page!
+$save_hidden = true;   // do not delete r_hidden session variable in init_page!
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "varset.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "view.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "item.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "feeding.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "itemfunc.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "notify.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "util.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "varset.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "view.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "item.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "feeding.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "notify.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "util.php3";
 
-require_once $GLOBALS["AA_INC_PATH"] . "manager.class.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "manager.class.php3";
 
 /** RELATED SELECTION WINDOW - managed by MANAGER CLASS */
 
@@ -61,13 +61,13 @@ $module_id = get_if( $sid, $r_state['related']['sid'] );
 // modules. Now it is better to use module_id, because in other modules
 // (like Links, ...) it is not so confusing
 
-$p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
+$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice = new slice($module_id);
 
 /* prepare view format for manager class */
-if( !$mode ) { $mode='AMB'; }
+  if (!$mode ) { $mode='AMB'; }
 
-for( $i=0; $i<strlen($mode); $i++) {
+for ( $i=0; $i<strlen($mode); $i++) {
     $m1 = substr($mode,$i,1);
     $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','_#JS_HEAD_')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
 }
@@ -158,7 +158,7 @@ if ( !isset($r_state['related']) OR $sid OR ($r_state['related']['sid'] != $modu
     $manager->setFromProfile($profile);
 }
 
-if( $r_state['related']['manager'] ) {        // do not set state for the first time calling
+if ($r_state['related']['manager'] ) {        // do not set state for the first time calling
     $manager->setFromState($r_state['related']['manager']);
 }
 

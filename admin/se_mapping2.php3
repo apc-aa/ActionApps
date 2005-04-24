@@ -19,19 +19,19 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# se_mapping2.php3 - writes feed mapping to feedmap table
-# expected $slice_id for edit slice
-#          $from_slice_id for id of imported slice
-#          $fmap - array of fields mapping
-#          $fval - array of field value
-#          $extslice
+// se_mapping2.php3 - writes feed mapping to feedmap table
+// expected $slice_id for edit slice
+//          $from_slice_id for id of imported slice
+//          $fmap - array of fields mapping
+//          $fval - array of field value
+//          $extslice
 
 require_once "../include/init_page.php3";
 
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."csn_util.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."csn_util.php3";
 
-if(!IfSlPerm(PS_FEEDING)) {
+if (!IfSlPerm(PS_FEEDING)) {
   MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
   exit;
 }
@@ -82,7 +82,7 @@ while (list($to_field_id,$val) = each($fmap)) {
   $catVS->add("flag", "quoted",$flag);
 
   $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
-  if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+  if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
     $err["DB"] .= MsgErr("Can't add fields mapping");
   }
 }
@@ -98,7 +98,7 @@ if ($map_to && is_array($map_to)) {
 
     $catVS->add("flag", "quoted",FEEDMAP_FLAG_EXTMAP);
     $SQL = "INSERT INTO feedmap" . $catVS->makeINSERT();
-    if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
       $err["DB"] .= MsgErr("Can't add fields mapping");
     }
   }

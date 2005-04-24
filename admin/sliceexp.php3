@@ -35,12 +35,12 @@ http://www.apc.org/
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 require_once "./sliceexp_text.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
 // Make sure you have permissions to do this
-if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
+if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
     MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"), "standalone");
     exit;
 }
@@ -152,7 +152,7 @@ if ($SHOWTEXT == ""):
     <?php
         $SQL= "SELECT id, name FROM slice ORDER BY name";
         $db->query($SQL);
-        while($db->next_record())
+        while ($db->next_record())
             $all_slices[unpack_id128($db->f(id))] = $db->f(name);
     ?>
 
@@ -193,7 +193,7 @@ if ($SHOWTEXT == ""):
                 <SELECT name="export_slices[]" size=8 class=tabtxt MULTIPLE>
                 <?php
                     reset($all_slices);
-                    while(list($s_id,$name) = each($all_slices))
+                    while (list($s_id,$name) = each($all_slices))
                         echo "<option value=\"$s_id\"> $name </option>";
                 ?>
                 </SELECT>

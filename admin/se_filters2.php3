@@ -19,23 +19,23 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# se_filters2.php3 - assigns feeding filters to specified slice - writes it to database
-# expected $slice_id for edit slice
-#          $import_id for id of imported slice
-#          $all (set to 1 if import from all categories is selected)
-#          $C contains category into which all categories are imported (only when $all is 1)
-#             if $C==0 then import to the same category as source item category
-#          $F[] array of imported categories, plus string "-0" or "-1" in order to approved checked
-#          $T[] array of categories into which we should import (corresponds to F[] array)
-#             if $T[]==0 then import to the same category as source item category
-#          $feed_id
+// se_filters2.php3 - assigns feeding filters to specified slice - writes it to database
+// expected $slice_id for edit slice
+//          $import_id for id of imported slice
+//          $all (set to 1 if import from all categories is selected)
+//          $C contains category into which all categories are imported (only when $all is 1)
+//             if $C==0 then import to the same category as source item category
+//          $F[] array of imported categories, plus string "-0" or "-1" in order to approved checked
+//          $T[] array of categories into which we should import (corresponds to F[] array)
+//             if $T[]==0 then import to the same category as source item category
+//          $feed_id
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."csn_util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."csn_util.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
-if(!IfSlPerm(PS_FEEDING)) {
+if (!IfSlPerm(PS_FEEDING)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "admin");
   exit;
 }
@@ -97,7 +97,7 @@ if ($feed_id) { // cross server feeding
             $catVS->add("target_category_id", "unpacked", $v['target_category_id']);
             $catVS->add("approved",           "number",   $v['approved']);   // zero = the same category
             $SQL = "INSERT INTO ef_categories" . $catVS->makeINSERT();
-            if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+            if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
                 $err["DB"] .= MsgErr("Can't add import from $val");
             }
         }
@@ -124,15 +124,15 @@ if ($feed_id) { // cross server feeding
         $catVS->add("to_approved",    "number",   $app);
         $catVS->add("to_category_id", "unpacked", $id);   // zero = the same category
         $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
-        if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
             $err["DB"] .= MsgErr("Can't add import from $val");
         }
     } else if (isset($_GET['F']) AND is_array($_GET['F'])) {            // insert to categories
         reset($_GET['F']);
-        while( list($index,$val) = each($_GET['F']) ) {
+        while ( list($index,$val) = each($_GET['F']) ) {
             $from_cat = ParseIdA($val, $app);
             $to_cat = $_GET['T'][$index];
-            if( ($to_cat == UNPACKED_THE_SAME_CAT) OR ($to_cat == "0") ) { // "0" is from older versions - it could be never "0"
+            if ( ($to_cat == UNPACKED_THE_SAME_CAT) OR ($to_cat == "0") ) { // "0" is from older versions - it could be never "0"
                 $to_cat = $from_cat;
             }
             $catVS->clear();
@@ -143,7 +143,7 @@ if ($feed_id) { // cross server feeding
             $catVS->add("category_id",    "unpacked", $from_cat);
             $catVS->add("to_category_id", "unpacked", $to_cat);
             $SQL = "INSERT INTO feeds" . $catVS->makeINSERT();
-            if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+            if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
                 $err["DB"] .= MsgErr("Can't add import from $val");
                 break;
             }
@@ -151,7 +151,7 @@ if ($feed_id) { // cross server feeding
     }
 }
 
-if( count($err) <= 1 )
+if ( count($err) <= 1 )
   go_url( $sess->url(self_base() . "se_filters.php3") ."&import_id=$import_id&Msg=" . rawurlencode(MsgOK(_m("Content Pooling update successful"))));
 else
   MsgPageMenu($sess->url(self_base()."se_import.php3"), $err, "admin");

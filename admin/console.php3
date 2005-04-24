@@ -32,8 +32,8 @@ http://www.mitra.biz
 require_once "../include/init_page.php3"; // Loads variables etc
 require_once "../include/util.php3"; // Loads variables etc
 
-//require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";  // for slices
-#$debug = 1;
+//require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";  // for slices
+//$debug = 1;
 
 // Quick test to show contents of slice record
 if (0) {
@@ -48,7 +48,7 @@ HtmlPageBegin();
 </HEAD>
 
 <?php
-    require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+    require_once $GLOBALS['AA_INC_PATH']."menu.php3";
     showMenu($aamenus, "aaadmin","console");
   
     echo "<H1><B>" . _m("AA - Administration Console") . "</B></H1>";
@@ -83,7 +83,7 @@ function comments_table() {
                 while (list($qpitemid,$itarr) = each($itemsarr)) {
                     $uid=unpack_id128($qpitemid);
                     $ic = GetItemContent($uid);
-                    $headline = $ic[$uid]["headline........"][0][value];
+                    $headline = $ic[$uid]["headline........"][0]['value'];
 //                    huhl($GLOBALS);
                     $url = get_admin_url("discedit.php3?item_id=$uid")."&return_url=$GLOBALS[PHP_SELF]";
                     print("<li><a href=\"$url\">$headline</a>\n");

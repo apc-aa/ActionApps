@@ -19,32 +19,32 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# discedit2.php3 - admin discussion comments
-# expected    $item_id for comment's item_id
-#             $d_id
-# optionaly   $update
+// discedit2.php3 - admin discussion comments
+// expected    $item_id for comment's item_id
+//             $d_id
+// optionaly   $update
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 
-if($cancel)
+if ($cancel)
   go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
 
-if(!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
   MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
   exit;
 }
 
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."discussion.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if ($update) {
-  #update discussion table
+  //update discussion table
     ValidateInput("subject", _m("Subject"), $subject, $err, true, "text");
     ValidateInput("author", _m("Author"), $author, $err, true, "text");
     ValidateInput("e_mail", _m("E-mail"), $e_mail, $err, false, "text");
@@ -71,18 +71,18 @@ if ($update) {
       $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
       $db->query($SQL);
 
-      $GLOBALS[pagecache]->invalidateFor("slice_id=".$slice_id);  # invalidate old cached values
+      $GLOBALS[pagecache]->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
 
       go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
     }
 }
 
-# set variables from table discussion
+// set variables from table discussion
 $SQL= " SELECT * FROM discussion WHERE id='".q_pack_id($d_id)."'";
 $db->query($SQL);
 if ($db->next_record())
   while (list($key,$val,,) = each($db->Record)) {
-     if( EReg("^[0-9]*$", $key))
+     if ( EReg("^[0-9]*$", $key))
       continue;
     $$key = $val; // variables and database fields have identical names
 }

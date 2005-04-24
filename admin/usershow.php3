@@ -1,4 +1,4 @@
-<?php  #slice_id expected
+<?php  //slice_id expected
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -20,20 +20,20 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "varset.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "view.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "item.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "feeding.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "profile.class.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "itemfunc.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "notify.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "sliceobj.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "msgpage.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "manager.class.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "actions.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "varset.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "view.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "item.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "feeding.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "profile.class.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "notify.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "sliceobj.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "manager.class.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "actions.php3";
 
 // new manager class approach ------------------------------------------------
 
@@ -43,7 +43,7 @@ $module_id = $slice_id;
 // modules. Now it is better to use module_id, because in other modules
 // (like Links, ...) it is not so confusing
 
-$p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
+$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice = new slice($module_id);
 
 switch( $type ) {
@@ -108,7 +108,7 @@ if ( !isset($r_userstate) OR isset($group) OR isset($items)) {
 // echo "<pre>"; print_r($manager); echo "</pre>";
 
 
-if( $r_userstate['usershowmanager'] )        // do not set state for the first time calling
+if ( $r_userstate['usershowmanager'] )        // do not set state for the first time calling
     $manager->setFromState($r_userstate['usershowmanager']);
 
 $manager->performActions();

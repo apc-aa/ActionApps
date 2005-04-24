@@ -19,20 +19,20 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# se_admin.php3 - assigns html format for administation item view (index.php3)
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+// se_admin.php3 - assigns html format for administation item view (index.php3)
+// optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";     // GetAliasesFromField funct def
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";     // GetAliasesFromField funct def
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!IfSlPerm(PS_CONFIG)) {
+if (!IfSlPerm(PS_CONFIG)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have no permission to set configuration parameters of this slice"), "admin");
   exit;
 }
@@ -41,13 +41,13 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 $p_slice_id = q_pack_id($slice_id);
 
-if( $r_fields )
+if ( $r_fields )
   $fields = $r_fields;
 else
   list($fields,) = GetSliceFields($slice_id);
 
 
-if( $update )
+if ( $update )
 {
   do
   {
@@ -57,7 +57,7 @@ if( $update )
     ValidateInput("admin_remove",        _m("Remove strings"),                          $admin_remove,        $err, false, "text");
     ValidateInput("admin_noitem_msg",    _m("HTML code for \"No item found\" message"), $admin_noitem_msg,    $err, false, "text");
 
-    if( count($err) > 1)
+    if ( count($err) > 1)
       break;
 
     $varset->add("admin_format_top",    "quoted", $admin_format_top);
@@ -65,23 +65,23 @@ if( $update )
     $varset->add("admin_format_bottom", "quoted", $admin_format_bottom);
     $varset->add("admin_remove",        "quoted", $admin_remove);
     $varset->add("admin_noitem_msg",    "quoted", $admin_noitem_msg);
-    if( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() .
+    if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() .
                      "WHERE id='".q_pack_id($slice_id)."'")) {
       $err["DB"] = MsgErr( _m("Can't change slice settings") );
-      break;    # not necessary - we have set the halt_on_error
+      break;    // not necessary - we have set the halt_on_error
     }
 
-    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
     $admin_format_top = dequote($admin_format_top);
     $admin_format = dequote($admin_format);
     $admin_format_bottom = dequote($admin_format_bottom);
   }while(false);
-  if( count($err) <= 1 )
+  if ( count($err) <= 1 )
     $Msg = MsgOK(_m("Admin fields update successful"));
 }
 
-if( $slice_id!="" ) {  // set variables from database
+if ( $slice_id!="" ) {  // set variables from database
   $SQL= " SELECT admin_format, admin_format_top, admin_format_bottom,
                  admin_remove, admin_noitem_msg
             FROM slice WHERE id='". q_pack_id($slice_id)."'";
@@ -111,7 +111,7 @@ function Defaults() {
 </HEAD>
 
 <?php
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin", "config");
 
   echo "<H1><B>" . _m("Admin - design Item Manager view") . "</B></H1>";

@@ -18,18 +18,18 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-# expected $slice_id for edit slice, no_slice_id=1 for adding slice
+// expected $slice_id for edit slice, no_slice_id=1 for adding slice
 
 // set template id (changes language file => must be here):
 require_once "../include/slicedit2.php3";
   
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."date.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."date.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 // add mlx functions
-require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
+require_once $GLOBALS['AA_INC_PATH']."mlx.php";
 
 trace("+","slicedit.php3");
 $PERMS_STATE = array( "0" => _m("Not allowed"),
@@ -45,14 +45,14 @@ $PERMS_ANONYMOUS_EDIT = array(
     ANONYMOUS_EDIT_HTTP_AUTH => _m("Readers, authorized by HTTP auth"),
     );
                                
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
 reset ($MODULES);
 while (list ($type,$module) = each ($MODULES)) {
     if ($create[$type]) {
         $url = $sess->url($AA_INSTAL_PATH.$module["directory"] . "modedit.php3?no_slice_id=1");
-        if( $template[$type] )
+        if ( $template[$type] )
             $url = con_url( $url, "template%5B$type%5D=". $template[$type]);
         go_url( $url );
     }
@@ -61,16 +61,16 @@ while (list ($type,$module) = each ($MODULES)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $superadmin = IsSuperadmin();
 
-require_once $GLOBALS["AA_INC_PATH"]."slicedit.php3";
+require_once $GLOBALS['AA_INC_PATH']."slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
-  # set variables from database - allways
+  // set variables from database - allways
 $db = getDB();
 $SQL= " SELECT * FROM slice WHERE id='".q_pack_id($foo_source)."'";
 $db->query($SQL);
 if ($db->next_record())
   while (list($key,$val,,) = each($db->Record)) {
-    if( EReg("^[0-9]*$", $key))
+    if ( EReg("^[0-9]*$", $key))
       continue;
     $$key = $val; // variables and database fields have identical names
   }
@@ -85,13 +85,13 @@ $db->query($SQL);
 
 while ($db->next_record()) {
   //__mlx_dbg($db->Record);
-  if(!$db->f(MLX_SLICEDB_COLUMN)) //could be a ctrl slice
+  if (!$db->f(MLX_SLICEDB_COLUMN)) //could be a ctrl slice
     $mlx_slices[unpack_id128($db->f('id'))] = $db->f('name');
   else //is already ctrl slice
     $mlx_ctrl_slices[unpack_id128($db->f(MLX_SLICEDB_COLUMN))] = $db->f('name');
 }
 //mlx end
-if( $slice_id == "" ) {         // load default values for new slice
+if ( $slice_id == "" ) {         // load default values for new slice
   $name = "";
   $owner = "";
   $template = "";
@@ -99,7 +99,7 @@ if( $slice_id == "" ) {         // load default values for new slice
   $lang_control = "";
 }
 
-# lookup owners
+// lookup owners
 $slice_owners[0] = _m("Select owner");
 $SQL= " SELECT id, name FROM slice_owner ORDER BY name";
 $db->query($SQL);
@@ -118,7 +118,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php
   trace("=","","Menu");
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   trace("=","","calling showMenu");
   showMenu($aamenus, "sliceadmin","main");
   trace("=","","Post Menu");
@@ -151,12 +151,12 @@ if ($slice_id == "") {
      "?slice_id=" . $slice_id . "&quot;--&gt;</pre></TD></TR>";
 
   FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
-  if( !$owner ) {
+  if ( !$owner ) {
     FrmInputText("new_owner", _m("New Owner"), $new_owner, 99, 25, false);
     FrmInputText("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99, 25, false);
   }  
   FrmInputText("d_listlen", _m("Listing length"), $d_listlen, 5, 5, true);
-  if( $superadmin ) {
+  if ( $superadmin ) {
     FrmInputChBox("template", _m("Template"), $template);
     FrmInputChBox("deleted", _m("Deleted"), $deleted);
   }  
@@ -170,7 +170,7 @@ if ($slice_id == "") {
 //mimo change
   //print("<h2>mlxctrl:".$mlxctrl."</h2>");
   //FrmInputText(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlxctrl, 40,40, false, "", 
-  if($slice_id && isset($mlx_ctrl_slices[$slice_id]))
+  if ($slice_id && isset($mlx_ctrl_slices[$slice_id]))
     FrmStaticText(_m("MLX Control Slice for").": ",$mlx_ctrl_slices[$slice_id],0,0,"http://mimo.gn.apc.org/mlx/");
   else
     FrmInputSelect(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlx_slices, unpack_id128($mlxctrl), false, "", 
@@ -202,7 +202,7 @@ if ($slice_id == "") {
     FrmInputText ("reading_password", _m("Password for Reading"), $reading_password, 
         100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
 
-if($slice_id=="") {
+if ($slice_id=="") {
   echo "<input type=hidden name=\"add\" value=1>";        // action
   echo "<input type=hidden name=\"no_slice_id\" value=1>";  // detects new slice
   echo "<input type=hidden name=template_id value=\"". $set_template_id .'">';

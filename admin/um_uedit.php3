@@ -19,81 +19,81 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# um_uedit.php3 - adds new user to permission system
-# optionaly $Msg to show under <h1>Headline</h1> (typicaly: update successful)
-# selected_user
-# state variables:
-#    $usr_edit       - comes from um_usrch - button Edit $selected_user
-#    $usr_del        - comes from um_usrch - button Delete $selected_user
-#    $usr_new        - comes from um_inc   - New user link
-#    $submit_action  - = update_submit if pressed update
-#                      = usr_del if delete user is confirmed
-#    $add_submit     - if new user Add button pressed
+// um_uedit.php3 - adds new user to permission system
+// optionaly $Msg to show under <h1>Headline</h1> (typicaly: update successful)
+// selected_user
+// state variables:
+//    $usr_edit       - comes from um_usrch - button Edit $selected_user
+//    $usr_del        - comes from um_usrch - button Delete $selected_user
+//    $usr_new        - comes from um_inc   - New user link
+//    $submit_action  - = update_submit if pressed update
+//                      = usr_del if delete user is confirmed
+//    $add_submit     - if new user Add button pressed
 
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
-require_once $GLOBALS["AA_INC_PATH"]."um_util.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."um_util.php3";
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!IfSlPerm(PS_NEW_USER)) {
+if (!IfSlPerm(PS_NEW_USER)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to create new user"), "admin");
   exit;
 }
 
-if( ($submit_action == "usr_del") AND $selected_user ) {
+if ( ($submit_action == "usr_del") AND $selected_user ) {
   DelUser( $selected_user );    // default is to delete any references as well
   go_url( $sess->url($PHP_SELF) );
 }
 
 $sess->register("rusr");
-if( $usr OR $UsrSrch )
+if ( $usr OR $UsrSrch )
   $rusr = $usr;
 
-if( $usr_new )
+if ( $usr_new )
   $rusr = $selected_user = "";
 
 $users  = GetFiltered("U", $rusr, _m("Too many users or groups found."), _m("No user (group) found"));   // get list of users
-if( $UsrSrch ) {
+if ( $UsrSrch ) {
   reset( $users );
   $selected_user = key($users);
   $usr_edit = true;
 }
 $groups = GetFiltered("G", $grp, _m("Too much groups found."), _m("No groups found")); // get list of groups
 
-if( $grp1_flt )   // user editation - list of all groups
+if ( $grp1_flt )   // user editation - list of all groups
   $all_groups = GetFiltered("G", $grp1_flt, _m("Too much groups found."), _m("No groups found"));
  else
   $all_groups = $groups;  // in user editation is $grp=="", so $groups are list of all groups
 
-if( $usr1_flt )   // group editation - list of all users
+if ( $usr1_flt )   // group editation - list of all users
   $all_users = GetFiltered("U", $usr1_flt, _m("Too many users or groups found."), _m("No user (group) found"));
  else
   $all_users = $users;  // in group editation is $rusr=="", so $users are list of all users
 
 
-if( $selected_user ) {
-  if( $selected_user != "n" )  // none user selected
+if ( $selected_user ) {
+  if ( $selected_user != "n" )  // none user selected
     $user_groups = GetMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)
-  if( !isset($user_groups) OR !is_array($user_groups) )
+  if ( !isset($user_groups) OR !is_array($user_groups) )
     $sel_groups["n"][name] = (( $user_groups == "too much" ) ? _m("Too much groups found.") : "");
    else {
     reset($user_groups);
-    while( list(,$foo_gid) = each($user_groups) )
+    while ( list(,$foo_gid) = each($user_groups) )
       $sel_groups[$foo_gid] = GetGroup($foo_gid);
   }
 }
 
-if( $selected_group ) {
-  if( $selected_group != "n" )  // none group selected
+if ( $selected_group ) {
+  if ( $selected_group != "n" )  // none group selected
     $groups_user = GetGroupMembers($selected_group);   // get list of users and groups right under $selected_group
-  if( !isset($group_users) OR !is_array($group_users) )
+  if ( !isset($group_users) OR !is_array($group_users) )
     $sel_users["n"][name] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
    else
     $sel_users = $groups_user;
@@ -102,15 +102,15 @@ if( $selected_group ) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-# Process submited form -------------------------------------------------------
+// Process submited form -------------------------------------------------------
 
-if( $add_submit OR ($submit_action == "update_submit")) {
+if ( $add_submit OR ($submit_action == "update_submit")) {
 
-  # all the actions are in following require_once (we reuse this part of code for
-  # slice wizard ...
-  require_once $GLOBALS["AA_INC_PATH"]."um_uedit.php3";
+  // all the actions are in following require_once (we reuse this part of code for
+  // slice wizard ...
+  require_once $GLOBALS['AA_INC_PATH']."um_uedit.php3";
 
-  if( count($err) <= 1 ) {
+  if ( count($err) <= 1 ) {
     $Msg = MsgOK(_m("User successfully added to permission system"));
     go_url( con_url($sess->url($PHP_SELF), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
   }
@@ -131,7 +131,7 @@ HtmlPageBegin('default', true);
   }
 
   function RealyDelete() {
-    if( window.confirm('<?php echo _m("Are you sure you want to delete selected user from whole permission system?") ?>')) {
+    if ( window.confirm('<?php echo _m("Are you sure you want to delete selected user from whole permission system?") ?>')) {
       document.f2.submit_action.value = 'usr_del'
       document.f2.submit()
     }
@@ -144,11 +144,11 @@ HtmlPageBegin('default', true);
     // which roles is defined for the module
     roles = ( idx > 0 ) ? mod[mod_types.charCodeAt(idx-1)] : new Array('                     ');
     // clear selectbox
-    for( i=(document.fx.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
+    for ( i=(document.fx.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
       document.fx.elements['new_module_role['+no+']'].options[i] = null
     }
     // fill selectbox from the right slice
-    for( i=0; i<roles.length ; i++) {
+    for ( i=0; i<roles.length ; i++) {
       document.fx.elements['new_module_role['+no+']'].options[i] = new Option(roles[i], roles[i])
     }
   }
@@ -206,22 +206,22 @@ FrmTabSeparator("");
 */
 FrmTabEnd();
 
-if( !($usr_new OR ($usr_edit AND ($selected_user!="n"))) ) {
+if ( !($usr_new OR ($usr_edit AND ($selected_user!="n"))) ) {
   HtmlPageEnd();
   page_close();
   exit;
 }
 
 do {
-  if($usr_edit AND !($submit_action == "update_submit")) {
-    if( !is_array($user_data = GetUser($selected_user)))
+  if ($usr_edit AND !($submit_action == "update_submit")) {
+    if ( !is_array($user_data = GetUser($selected_user)))
       break;
     $user_login = $user_data[login];
     $user_firstname = $user_data[givenname];
     $user_surname = $user_data[sn];
     $user_password1 = "nOnEwpAsswD";    // unchanged password
     $user_password2 = "nOnEwpAsswD";    // unchanged password
-    if( is_array($user_data[mail]))
+    if ( is_array($user_data[mail]))
       $user_mail1 = $user_data[mail][0];
       $user_mail2 = $user_data[mail][1];
       $user_mail3 = $user_data[mail][2];
@@ -230,7 +230,7 @@ do {
       $user_super = true;
     }
   }
-} while(false);
+} while (false);
 
 
 ?>
@@ -241,7 +241,7 @@ do {
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class=tabtit><b>&nbsp;
 */
-if( $usr_edit OR ($submit_action == "update_submit") )
+if ( $usr_edit OR ($submit_action == "update_submit") )
   FrmTabCaption(_m("Edit User"));
  else
   FrmTabCaption(_m("New user"));
@@ -252,9 +252,9 @@ if( $usr_edit OR ($submit_action == "update_submit") )
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>*/
 
 
-# User data ---------------------------------------------------
+// User data ---------------------------------------------------
 
-  if( $usr_edit OR ($submit_action == "update_submit") ) {
+  if ( $usr_edit OR ($submit_action == "update_submit") ) {
     FrmStaticText( _m("Login name"), $user_data['login']);
     FrmStaticText( _m("User Id"),    $user_data['uid']);
   } else {
@@ -270,9 +270,9 @@ if( $usr_edit OR ($submit_action == "update_submit") )
   FrmInputChBox("user_super", _m("Superadmin account"), $user_super, false, "", 1, false);
 //echo '</table></td></tr>';
 
-if( !$add_submit AND !$usr_new) {
+if ( !$add_submit AND !$usr_new) {
 
-  # User - group membership -----------------------------------------
+  // User - group membership -----------------------------------------
 
   FrmTabSeparator(_m("Groups"));
   /*<tr><td class=tabtit><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
@@ -298,15 +298,15 @@ if( !$add_submit AND !$usr_new) {
         </tr>';
 //      </table></td></tr>';
 
-  # User - permissions -----------------------------------------
+  // User - permissions -----------------------------------------
 
-  $mod_types = PrintModulePermModificator($selected_user);   # shared with um_gedit.php3
+  $mod_types = PrintModulePermModificator($selected_user);   // shared with um_gedit.php3
 
 }
 /*
 echo '<tr><td align="center">';
 
-if( $usr_new OR $add_submit ){
+if ( $usr_new OR $add_submit ){
   echo '<input type=submit name=add_submit value="'. _m("Add") .'" >&nbsp;&nbsp;';
   echo '<input type=hidden name=usr_new value=1>&nbsp;&nbsp;';
 } else {
@@ -346,7 +346,7 @@ $form_buttons["cancel"]        = array("url"=>"um_uedit.php3");
 
 FrmTabEnd($form_buttons, $sess, $slice_id);
 
-if( !$add_submit AND !$usr_new) {
+if ( !$add_submit AND !$usr_new) {
   PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
 }
 

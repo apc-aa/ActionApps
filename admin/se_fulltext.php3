@@ -19,21 +19,21 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# se_fulltext.php3 - assigns html format for fulltext view
-# expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+// se_fulltext.php3 - assigns html format for fulltext view
+// expected $slice_id for edit slice
+// optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";     // GetAliasesFromField funct def
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";     // GetAliasesFromField funct def
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!IfSlPerm(PS_FULLTEXT)) {
+if (!IfSlPerm(PS_FULLTEXT)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fulltext formatting"), "admin");
   exit;
 }
@@ -42,12 +42,12 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 $p_slice_id = q_pack_id($slice_id);
 
-if( $r_fields )
+if ( $r_fields )
   $fields = $r_fields;
 else
   list($fields,) = GetSliceFields($slice_id);
 
-if( $update )
+if ( $update )
 {
   do
   {
@@ -57,7 +57,7 @@ if( $update )
     ValidateInput("fulltext_remove",        _m("Remove strings"),     $fulltext_remove,        $err, false, "text");
     ValidateInput("discus_sel",             _m("Show discussion"),    $discus_sel,             $err, false,  "text");
 
-    if( count($err) > 1)
+    if ( count($err) > 1)
       break;
 
     $varset->add("fulltext_format_top", "quoted", $fulltext_format_top);
@@ -71,22 +71,22 @@ if( $update )
     $SQL = "UPDATE slice SET ". $varset->makeUPDATE().
            " WHERE id='".q_pack_id($slice_id)."'";
 
-    if( !$db->query($SQL)) {
+    if ( !$db->query($SQL)) {
       $err["DB"] = MsgErr( _m("Can't change slice settings") );
-      break;    # not necessary - we have set the halt_on_error
+      break;    // not necessary - we have set the halt_on_error
     }
     $fulltext_format_top = dequote($fulltext_format_top);
     $fulltext_format = dequote($fulltext_format);
     $fulltext_format_bottom = dequote($fulltext_format_bottom);
 
-    $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
   }while(false);
-  if( count($err) <= 1 )
+  if ( count($err) <= 1 )
     $Msg = MsgOK(_m("Fulltext format update successful"));
 }
 
-if( $slice_id!="" ) {  // set variables from database
+if ( $slice_id!="" ) {  // set variables from database
   $SQL= " SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom,
                  fulltext_remove, flag, vid
             FROM slice WHERE id='". q_pack_id($slice_id)."'";
@@ -101,7 +101,7 @@ if( $slice_id!="" ) {  // set variables from database
   }
 }
 
-# lookup discussion views
+// lookup discussion views
 $SQL = "SELECT id, name FROM view WHERE slice_id ='". $p_slice_id ."' AND type='discus'";
 $db->query($SQL);
 while ($db->next_record()) {
@@ -124,7 +124,7 @@ function Defaults() {
 </HEAD>
 
 <?php
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin", "fulltext");
 
   echo "<H1><B>" . _m("Admin - design Fulltext view") . "</B></H1>&nbsp;&nbsp;" . _m("Use these boxes ( with the tags listed below ) to control what appears on full text view of each item");

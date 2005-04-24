@@ -19,19 +19,19 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# se_newuser.php3 - adds new user to permission system (now LDAP directory)
-# expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+// se_newuser.php3 - adds new user to permission system (now LDAP directory)
+// expected $slice_id for edit slice
+// optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!IfSlPerm(PS_NEW_USER)) {
+if (!IfSlPerm(PS_NEW_USER)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to create new user"), "admin");
   exit;
 }  
@@ -39,7 +39,7 @@ if(!IfSlPerm(PS_NEW_USER)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-if( $update )
+if ( $update )
 {
   do
   {
@@ -51,9 +51,9 @@ if( $update )
     //   ValidateInput("user_mail3", _m("E-mail")." 3", $user_mail3, $err, false, "email");
     ValidateInput("user_surname", _m("Surname"), $user_surname, $err, true, "text");
     ValidateInput("user_firstname", _m("First name"), $user_firstname, $err, true, "text");
-    if( $user_password1 != $user_password2 )
+    if ( $user_password1 != $user_password2 )
       $err[$user_password2] = MsgErr(_m("Retyped password is not the same as the first one"));
-    if( count($err) > 1)
+    if ( count($err) > 1)
       break;
       
     $userrecord["uid"] = $user_login;
@@ -61,14 +61,14 @@ if( $update )
     $userrecord["givenname"] = $user_firstname;
     $userrecord["sn"] = $user_surname;
 
-    if($user_mail1) $userrecord["mail"] = $user_mail1;
-    //    if($user_mail2) $userrecord["mail"][] = $user_mail2;
-    //    if($user_mail3) $userrecord["mail"][] = $user_mail3;
+    if ($user_mail1) $userrecord["mail"] = $user_mail1;
+    //    if ($user_mail2) $userrecord["mail"][] = $user_mail2;
+    //    if ($user_mail3) $userrecord["mail"][] = $user_mail3;
 
-    if(!AddUser($userrecord))
+    if (!AddUser($userrecord))
       $err["LDAP"] = MsgErr( _m("It is impossible to add user to permission system") );
   }while(false);
-  if( count($err) <= 1 ) {
+  if ( count($err) <= 1 ) {
     $Msg = MsgOK(_m("User successfully added to permission system"));
     $url = con_url($sess->url(self_base() . "se_users.php3"),"Msg=".rawurlencode($Msg));
     $url = con_url($url, "UsrSrch=".rawurlencode(_m("Search")));
@@ -84,7 +84,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 <?php
   $useOnLoad = false;
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin","newuser");
 
   echo "<H1><B>" . _m("New user in permission system") . "</B></H1>";

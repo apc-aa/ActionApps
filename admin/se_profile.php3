@@ -19,20 +19,20 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# expected $uid - user id we have to edit profile for
+// expected $uid - user id we have to edit profile for
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
-require_once $GLOBALS["AA_INC_PATH"]."profile.php3";
-require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."profile.php3";
+require_once $GLOBALS['AA_INC_PATH']."constants_param_wizard.php3";
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "./se_users.php3"));
 
-if(!IfSlPerm(PS_USERS)) {
+if (!IfSlPerm(PS_USERS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
   exit;
 }
@@ -40,10 +40,10 @@ if(!IfSlPerm(PS_USERS)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-if( $del ) {
+if ( $del ) {
   $SQL = "DELETE FROM profile WHERE id='$del'
-             AND slice_id='$p_slice_id'"; #slice identification is not neccessry
-  if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+             AND slice_id='$p_slice_id'"; //slice identification is not neccessry
+  if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
     $err["DB"] = MsgErr("Can't delete profile");
     break;
   }
@@ -51,34 +51,34 @@ if( $del ) {
   $Msg = MsgOK(_m("Rule deleted"));
 }
 
-if( $add ) {
+if ( $add ) {
   $profile = new aaprofile($uid, $slice_id);      // user settings
   do {
     switch($property) {
       case 'listlen':
       case 'input_view':
-        if( $param > 0 ) {
+        if ( $param > 0 ) {
           $profile->deleteProperty($property);
           $profile->insertProperty($property, '0', $param);
           $Msg = MsgOK(_m("Rule added"));
         }
         break;
       case 'admin_order':
-        if( $field_id ) {
+        if ( $field_id ) {
           $profile->deleteProperty($property);
           $profile->insertProperty($property, '0', $field_id.$fnction);
           $Msg = MsgOK(_m("Rule added"));
         }
         break;
       case 'admin_search':
-        if( $field_id ) {
+        if ( $field_id ) {
           $profile->deleteProperty($property);
           $profile->insertProperty($property, '0', "$field_id:$param");
           $Msg = MsgOK(_m("Rule added"));
         }
         break;
       case 'hide':
-        if( $field_id ) {
+        if ( $field_id ) {
           $profile->deleteProperty($property, $field_id);
           $profile->insertProperty($property, $field_id, '1');
           $Msg = MsgOK(_m("Rule added"));
@@ -87,35 +87,35 @@ if( $add ) {
       case 'fill':
       case 'hide&fill':
       case 'predefine':
-        if( $field_id ) {
+        if ( $field_id ) {
           $profile->deleteProperty($property,$field_id);
           $profile->insertProperty($property, $field_id, "$html:$fnction:$param");
           $Msg = MsgOK(_m("Rule added"));
         }
         break;
    }
-  } while( 0 );           #in order we can use "break;" statement
-  if( count($err) > 1)
+  } while ( 0 );           //in order we can use "break;" statement
+  if ( count($err) > 1)
     $Msg = MsgOK(_m("Error: Can't add rule"));
 }
 
-# prepare forms ---------------------------------------------------------------
+// prepare forms ---------------------------------------------------------------
 
-# get current profiles
+// get current profiles
 $SQL= "SELECT * FROM profile WHERE slice_id='$p_slice_id' AND (uid='$uid')
         ORDER BY property, selector";
 $db->query($SQL);
-while($db->next_record())
+while ($db->next_record())
   $rules[] = $db->Record;
 
-# get fields for this slice
+// get fields for this slice
 list($fields,) = GetSliceFields($slice_id);
 reset( $fields );
-while( list($k, $v) = each($fields) )
+while ( list($k, $v) = each($fields) )
   $lookup_fields[$k] = $v[name];
 
 
-# set property names array
+// set property names array
 $PROPERTY_TYPES = array( 'listlen'     =>_m("Item number"),
                          'input_view'  =>_m("Input view ID"),
                          'admin_search'=>_m("Item filter"),
@@ -138,15 +138,15 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 //    alert( eval('document.fr.prop'+n ).value );
 //    alert( eval('document.fr.prop'+n+'.value'));
     document.sf.property.value = eval('document.fr.prop'+n+'.value');
-    if( eval('document.fr.param'+n) != null )
+    if ( eval('document.fr.param'+n) != null )
       document.sf.param.value = eval('document.fr.param'+n+'.value');
-    if( eval('document.fr.html'+n) != null )
+    if ( eval('document.fr.html'+n) != null )
       document.sf.html.value = ((eval('document.fr.html'+n).checked) ? '1' : '0');
-    if( eval('document.fr.fnc'+n) != null ) {
+    if ( eval('document.fr.fnc'+n) != null ) {
       si = eval('document.fr.fnc'+n+'.options.selectedIndex');
       document.sf.fnction.value = eval('document.fr.fnc'+n+'.options['+si+'].value');
     }
-    if( eval('document.fr.fld'+n) != null ) {
+    if ( eval('document.fr.fld'+n) != null ) {
       si = eval('document.fr.fld'+n+'.options.selectedIndex');
 //      alert( si );
       document.sf.field_id.value = eval('document.fr.fld'+n+'.options['+si+'].value');
@@ -157,7 +157,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </script>
 </HEAD>
 <?php
-require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+require_once $GLOBALS['AA_INC_PATH']."menu.php3";
 showMenu ($aamenus, "sliceadmin","");
 
 echo "<H1><B>" . _m("Admin - user Profiles") . "</B></H1>";
@@ -173,9 +173,9 @@ echo "
    <td>
     <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">";
 
-if( isset($rules) AND is_array($rules) ) {
+if ( isset($rules) AND is_array($rules) ) {
   reset($rules);
-  while( list(,$v) = each($rules))
+  while ( list(,$v) = each($rules))
     PrintRule($v);
 } else
   echo "<tr><td>"._m("No rule is set")."</td></tr>";

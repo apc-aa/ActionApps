@@ -28,7 +28,7 @@ http://www.mitra.biz
 
 
 require_once "../include/init_page.php3"; // Loads variables etc
-//require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";  // for slices
+//require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";  // for slices
 
 // These parameters effect how slices compare to each other
 
@@ -45,7 +45,7 @@ HtmlPageBegin();
     if (!$submenu) $submenu = "app";
 
 
-    require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+    require_once $GLOBALS['AA_INC_PATH']."menu.php3";
     showMenu($aamenus, "$supmenu","$submenu");
 
     if ($time_limit) set_time_limit($time_limit);

@@ -32,9 +32,9 @@ http://www.apc.org/
 	slice array, in the form of a third-level associative array. 
 */
 
-require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "sliceobj.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "xml_serializer.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "sliceobj.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "xml_serializer.php3";
 
 function getRecord (&$array, &$record) 
 {
@@ -75,7 +75,7 @@ function exportOneSliceStruct ($slobj, $b_export_type, $new_slice_id, $b_export_
 	$SQL = "SELECT * FROM field WHERE slice_id='".$slobj->sql_id()."'";
 	$db->query($SQL);
 	
-	while($db->next_record()) {	
+	while ($db->next_record()) {	
 		//add the record to the fields array:
 		getRecord($new, $db->Record);
 		$new["slice_id"] = $uid; // Use new id if set
@@ -132,10 +132,10 @@ function exportOneSliceData ($slobj, $b_export_gzip, $temp_file, $b_export_spec_
 	if ($b_export_spec_date) {
 		$conds[0]["operator"] = "e:>=";
 		$conds[0]["publish_date...."] = 1;
-		$conds[0]["value"] = $b_export_from_date;
+		$conds[0]['value'] = $b_export_from_date;
 		$conds[1]["operator"] = "e:<=";
 		$conds[1]["publish_date...."] = 1;
-		$conds[1]["value"] = $b_export_to_date;
+		$conds[1]['value'] = $b_export_to_date;
 	} else {
 		$conds="";
 	}
@@ -193,7 +193,7 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $ne
 	if ($b_export_gzip != 1) { $b_export_gzip = 0; }
 	
 	reset($export_slices);
-    foreach($slices->objarr() as $slobj) {
+    foreach ($slices->objarr() as $slobj) {
 
 		if ($b_export_type != _m("Export to Backup")) {
 			if (strlen ($new_slice_id) != 16) {
@@ -237,10 +237,10 @@ function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices,
 	rewind($temp_file);
 		
 	header("Content-type: application/octec-stream");
-#	header("Content-type: text/xml");
+//	header("Content-type: text/xml");
 	header("Content-Disposition: attachment; filename=aaa.aaxml");
 
-	 while(!feof($temp_file)) {
+	 while (!feof($temp_file)) {
 		   $buffer = fread($temp_file, 4096);
 		   echo $buffer;
 	 }
@@ -266,7 +266,7 @@ function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices,
 
 //		fpassthru($export_file);
 
-		 while(!feof($temp_file)) {
+		 while (!feof($temp_file)) {
 			   $buffer = fread($temp_file, 4096);
 			   echo $buffer;
 		 }

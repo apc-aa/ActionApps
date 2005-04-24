@@ -19,28 +19,28 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# expected $slice_id for edit slice, nothing for adding slice
+// expected $slice_id for edit slice, nothing for adding slice
 
 require_once "../include/init_page.php3";
-bind_mgettext_domain($GLOBALS["AA_INC_PATH"]."lang/".get_mgettext_lang()."_param_wizard_lang.php3", false, get_mgettext_lang());
-require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/".get_mgettext_lang()."_param_wizard_lang.php3", false, get_mgettext_lang());
+require_once $GLOBALS['AA_INC_PATH']."constants_param_wizard.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
 function EditConstantURL() {
   global $fld, $sess;
-  if( substr($fld[id],0,8)== "category" )
+  if ( substr($fld[id],0,8)== "category" )
     return con_url($sess->url(self_base() . "se_constant.php3"), "categ=1");
    else
     return $sess->url(self_base() . "se_constant.php3");
 }
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "./se_fields.php3"));
 
-if(!IfSlPerm(PS_FIELDS)) {
+if (!IfSlPerm(PS_FIELDS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
 }
@@ -48,16 +48,16 @@ if(!IfSlPerm(PS_FIELDS)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-if( $del ) {
+if ( $del ) {
   $SQL = "DELETE FROM field WHERE id='$fid' AND slice_id='$p_slice_id'";
-  if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+  if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
     $err["DB"] = MsgErr("Can't change field");
     break;
   }
-  $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+  $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
   $Msg = MsgOK(_m("Field delete OK"));
-  go_url( $sess->url("./se_fields.php3") );  # back to field page
+  go_url( $sess->url("./se_fields.php3") );  // back to field page
 }
 
 $INPUT_SHOW_FUNC_TYPES = inputShowFuncTypes();
@@ -86,7 +86,7 @@ function Qvarsetadd($varname, $type, $value) {
     }
 }
 
-if( $update ) {
+if ( $update ) {
   do {
     QValidateInput("input_before", _m("Before HTML code"), $input_before, $err, false, "text");
     QValidateInput("input_help", _m("Help for this field"), $input_help, $err, false, "text");
@@ -105,7 +105,7 @@ if( $update ) {
         QValidateInput("alias".$iAlias."_func", _m("Function").$iAlias, $$alias_var, $err, false, "text");
     }
 
-    if( count($err) > 1)
+    if ( count($err) > 1)
       break;
     // A group that only appear with onlyupdate, normally edited in se_fields
     if ($onlyupdate) {
@@ -118,7 +118,7 @@ if( $update ) {
     Qvarsetadd("input_morehlp", "quoted", $input_morehlp);
     Qvarsetadd("input_default", "quoted",
         ($onlyupdate ? $input_default : "$input_default_f:$input_default"));
-    Qvarsetadd("multiple","quoted",                     # mark as multiple
+    Qvarsetadd("multiple","quoted",                     // mark as multiple
         ($onlyupdate ? $multiple :
               ($INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['multiple'] ? 1 : 0)));
 
@@ -130,7 +130,7 @@ if( $update ) {
             : $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]));
     }
 
-    # setting input show function
+    // setting input show function
     switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
       case "fnc:param":
         $isf = "$input_show_func_f:$input_show_func_p";
@@ -143,7 +143,7 @@ if( $update ) {
         $isf = "$input_show_func_f";
     }
 
-    # setting input insert function
+    // setting input insert function
     $iif="$input_insert_func_f:$input_insert_func_p";
 
     Qvarsetadd("input_show_func", "quoted",
@@ -165,46 +165,46 @@ if( $update ) {
                                          OR ($input_validate_f=="date")) ? 0:1)));
    $SQL = "UPDATE field SET ". $varset->makeUPDATE() .
            " WHERE id='$fid' AND slice_id='$p_slice_id'";
-    #huhl($SQL); exit;
-    if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+    //huhl($SQL); exit;
+    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
       $err["DB"] = MsgErr("Can't change field");
       break;
     }
-    $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-    if( count($err) <= 1 ) {
+    if ( count($err) <= 1 ) {
       $Msg = MsgOK(_m("Fields update successful"));
     go_url( ($return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) :
-        $sess->url("./se_fields.php3") ));  # back to field page
+        $sess->url("./se_fields.php3") ));  // back to field page
     }
-  } while( 0 );           #in order we can use "break;" statement
+  } while ( 0 );           //in order we can use "break;" statement
 }
 
-  # lookup constants
-$constants[] = "";   # add blank constant as the first option
+  // lookup constants
+$constants[] = "";   // add blank constant as the first option
 $constants += GetConstants('lt_groupNames', 'name');
 
 $constants[] = "";
 $constants[] = "*** SLICES: ***";
 $constants[] = "";
 
-  # add slices to constant array (good for related stories, link to authors ...)
+  // add slices to constant array (good for related stories, link to authors ...)
 reset($g_modules);
-while(list($k, $v) = each($g_modules)) {
-  if( $v['type'] == 'S' )
+while (list($k, $v) = each($g_modules)) {
+  if ( $v['type'] == 'S' )
     $constants["#sLiCe-".$k] =  $v['name'];
 }
-  # lookup fields
+  // lookup fields
 $SQL = "SELECT * FROM field
          WHERE slice_id='$p_slice_id' AND id='$fid'
          ORDER BY input_pri";
 $db->query($SQL);
-if( $db->next_record())
+if ( $db->next_record())
   $fld = $db->Record;
 else {
   $Msg = MsgErr(_m("No fields defined for this slice"));
   go_url( ($return_url ? expand_return_url(1) :
-        $sess->url("./se_fields.php3") ));  # back to field page
+        $sess->url("./se_fields.php3") ));  // back to field page
 }
 
 /** Finds the first ":" and fills the part before ":" into $fnc, after ":" into $params.
@@ -220,7 +220,7 @@ function get_params ($src, &$fnc, &$params) {
     }
 }
 
-if( !$update ) {      # load defaults
+if ( !$update ) {      // load defaults
   $input_before = $fld[input_before];
   $input_help = $fld[input_help];
   $input_morehlp = $fld[input_morehlp];
@@ -233,13 +233,13 @@ if( !$update ) {      # load defaults
           $GLOBALS["alias".$iAlias."_func"]);
   }
 
-  get_params ($fld["input_default"], $input_default_f, $input_default);
-  get_params ($fld["input_insert_func"], $input_insert_func_f, $input_insert_func_p);
-  get_params ($fld["input_validate"], $input_validate_f, $input_validate_p);
+  get_params($fld["input_default"], $input_default_f, $input_default);
+  get_params($fld["input_insert_func"], $input_insert_func_f, $input_insert_func_p);
+  get_params($fld["input_validate"], $input_validate_f, $input_validate_p);
 
-  # switching type of show
+  // switching type of show
   get_params ($fld["input_show_func"], $input_show_func_f, $input_show_func_p);
-  if( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']
+  if ( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']
     == "fnc:const:param")
       get_params ($input_show_func_p, $input_show_func_c, $input_show_func_p);
 
@@ -255,11 +255,11 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   function CallConstantEdit(as_new) {
     var url = "<?php echo EditConstantURL(); ?>"
     var conid = document.f.input_show_func_c.options[document.f.input_show_func_c.selectedIndex].value
-    if( conid.substring(0,7) == '#sLiCe-' ) {
+    if ( conid.substring(0,7) == '#sLiCe-' ) {
       alert('<?php echo _m("You selected slice and not constant group. It is unpossible to change slice. Go up in the list.") ?>');
       return;
     }
-    if( conid != "" ) {
+    if ( conid != "" ) {
       url += ( (as_new != 1) ? "&group_id=" : "&as_new=") + escape(conid);
       url += "&return_url=se_inputform.php3&fid=<?php echo $fid ?>";
       document.location=url;
@@ -282,7 +282,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </script>
 </HEAD>
 <?php
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin");
 
   echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";
@@ -369,7 +369,7 @@ echo "
      <tr>
          <td class=tabtxt><b>". _m("Insert") ."</b></td>
          <td class=tabtxt colspan=3>";
-         FrmSelectEasy("input_insert_func_f", getSelectBoxFromParamWizard ($INSERT_TYPES),
+         FrmSelectEasy("input_insert_func_f", getSelectBoxFromParamWizard($INSERT_TYPES),
             $input_insert_func_f);
          echo "<div class=tabhlp>"._m("Defines how value is stored in database.")."</div>
          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">

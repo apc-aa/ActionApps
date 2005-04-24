@@ -22,10 +22,10 @@ http://www.apc.org/
 /*
     Author: Mitra (based on earlier versions by Jakub Adámek, Pavel Jisl)
 
-# Slice Import - XML parsing function
-#
-# Note: This parser does not check correctness of the data. It assumes, that xml document
-#       was exported by slice export and has the form of
+// Slice Import - XML parsing function
+//
+// Note: This parser does not check correctness of the data. It assumes, that xml document
+//       was exported by slice export and has the form of
 
 <sliceexport version="1.0">
 ...
@@ -63,11 +63,11 @@ function bayfm_preimport($s) {
         $sl = &$s['SLICE'][$k];
         if ($slvs = &$sl['VIEWS']) {
             print("<br>Processing Views, translating shortids");
-#            foreach ($slvs->a as $slv) { # $slv is a viewobj
+//            foreach ($slvs->a as $slv) { // $slv is a viewobj
             $a = &$slvs->a; reset($a);
-            while(list($k,) = each($a)) { # $slv is a viewobj
+            while (list($k,) = each($a)) { // $slv is a viewobj
                 $slv = &$slvs->a[$k];
-                $slvf = &$slv->fields; # Array of fields
+                $slvf = &$slv->fields; // Array of fields
                 $id = $slvf["id"];
                 $newid = $id+1000;
                 $vid_translate[$id] = $newid;
@@ -80,11 +80,11 @@ function bayfm_preimport($s) {
     }
     // Edit Items, translate vids in field "unspecified....1"
     reset($s['SLICE']);
-    while(list($k,$sl) = each(&$s['SLICE'])) {
+    while (list($k,$sl) = each(&$s['SLICE'])) {
         if (is_array($sl['DATA'])) {
             print("<br>Processing Data");
-            foreach($sl['DATA'] as $sld) {
-                foreach($sld['item'] as $content4id) { // should only be one
+            foreach ($sl['DATA'] as $sld) {
+                foreach ($sld['item'] as $content4id) { // should only be one
                     // unspecified....1 contains a vid
                     print("Setting unspecified....1 from ".$content4id["unspecified....1"][0]['value']." to ".$vid_translate[$content4id["unspecified....1"][0]['value']]);
                     $content4id["unspecified....1"][0]['value'] = $vid_translate[$content4id["unspecified....1"][0]['value']];
@@ -132,7 +132,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
         }
         $slice["id"]   = $sl['ID'];
         $slice["name"] = $sl['NAME'];
-        if($dry_run) {
+        if ($dry_run) {
             huhl("Would import slice=",$slice);
             $slice_id_new = '11111111111111112222222222222222';
         } else {
@@ -140,7 +140,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
         }
     }
     elseif ($s['VERSION'] == "1.1") {
-        foreach($s['SLICE'] as $sl) {
+        foreach ($s['SLICE'] as $sl) {
             $sld = $sl['SLICEDATA'][0];
 
             /** First we have to import slice data */
@@ -159,7 +159,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
 
                 $slice["id"]   = $sl['ID'];
                 $slice["name"] = $sl['NAME'];
-                if($dry_run) {
+                if ($dry_run) {
                     huhl("Would import slice=",$slice);
                     $slice_id_new = '11111111111111112222222222222222';
                 } else {
@@ -194,7 +194,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
                     if (!is_array($content4id)) {
                         si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s['VERSION']);
                     }
-                    if($dry_run) {
+                    if ($dry_run) {
                         huhl("Would import data to ",$sld['ITEM_ID'],$content4id);
                     }
                     else {
@@ -245,7 +245,7 @@ function import_views(&$slvs, $slice_id_new) {
          */
         $slvf["slice_id"] = pack_id($slice_id_new);
 
-        foreach($slvf as $k => $v) {
+        foreach ($slvf as $k => $v) {
             // there was a bug in viewobj - we store 'slice.deleted' field to
             // view - we must skip it, now.
             if ( $k != 'deleted' ) {
@@ -268,7 +268,7 @@ function import_views(&$slvs, $slice_id_new) {
             $varset->remove('id');  // id is autoincremented
             $SQL = "INSERT INTO view ". $varset->makeINSERT();
         }
-        if($dry_run) {
+        if ($dry_run) {
             print("VIEW import: " .$SQL);
         } elseif ( !$db->query($SQL)) {
             $err["DB"] = MsgErr( _m("Can't insert into view.") );

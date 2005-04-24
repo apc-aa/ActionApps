@@ -28,15 +28,15 @@ $require_default_lang = true;
 
 require_once "../include/init_page.php3";
 // the parts used by the slice wizard are in the included file
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
-if($cancel)
+if ($cancel)
     go_url( $sess->url(self_base() . "index.php3"));
 
 $wizard = 1;
 
 if ($add)
-    require_once $GLOBALS["AA_INC_PATH"]."slicedit.php3";
+    require_once $GLOBALS['AA_INC_PATH']."slicedit.php3";
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
@@ -53,7 +53,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <center>
 <form method=post action="<?php echo $sess->url("slicedit.php3") ?>">
 <?php
-    require_once $GLOBALS["AA_INC_PATH"]."sliceadd.php3";
+    require_once $GLOBALS['AA_INC_PATH']."sliceadd.php3";
 
     FrmInputRadio ("wiz[copyviews]", _m("Copy Views"), array (1=>_m("yes"),0=>_m("no")), 1);
     FrmInputRadio ("wiz[constants]", _m("Categories/Constants"), 
@@ -68,7 +68,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 FrmTabCaption(_m("[Optional] Create New User"));
 
-# User data ---------------------------------------------------
+// User data ---------------------------------------------------
     FrmInputRadio("user_role", _m("Level of Access"), 
         array ("EDITOR"=>_m("Editor"), "ADMINISTRATOR"=>_m("Slice Administrator")), "EDITOR");
     FrmInputText("user_login", _m("Login name"), "", 50, 50, true);

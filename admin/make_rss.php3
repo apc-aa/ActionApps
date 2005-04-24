@@ -1,6 +1,6 @@
 <?php
-# make_rss.php3 - returns Rich Site Summary RDF file from slice
-# expected at least $slice_id
+// make_rss.php3 - returns Rich Site Summary RDF file from slice
+// expected at least $slice_id
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -21,13 +21,13 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#optionaly highlight // when true, shows only highlighted items
-#optionaly cat_id    // select only items in category with id cat_id
+//optionaly highlight // when true, shows only highlighted items
+//optionaly cat_id    // select only items in category with id cat_id
 
 require_once "../include/config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
 
 function RSS_restrict($txt, $len) {
   return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
@@ -81,7 +81,7 @@ $SQL = "SELECT items.id, items.headline, items.abstract, fulltexts.full_text
 
 $item_count = 1;
 $db->query($SQL);
-while($db->next_record()){
+while ($db->next_record()){
   $title       = RSS_restrict( $db->f(headline), 100);
   $link_item   = RSS_restrict( con_url($link, "sh_itm=".unpack_id128($db->f(id))), 500);
   $description = RSS_restrict( ($db->f(abstract)=="" ? $db->f(full_text) : strip_tags($db->f(abstract))), 256);   // should be 500 but whole RSS file must be less than 8 kB
@@ -91,7 +91,7 @@ while($db->next_record()){
       <link>$link_item</link>
       <description>$description</description>
     </item>";
-  if( ++$item_count > 15 )
+  if ( ++$item_count > 15 )
     break;
 }
 

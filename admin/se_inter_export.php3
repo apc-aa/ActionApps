@@ -19,16 +19,16 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#             $slice_id
-# optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
+//             $slice_id
+// optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
 
 require_once "../include/init_page.php3";
 
-if(!IfSlPerm(PS_FEEDING)) {
+if (!IfSlPerm(PS_FEEDING)) {
   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
 $p_slice_id = q_pack_id($slice_id);
 switch ($mode) {
@@ -90,7 +90,7 @@ function Delete() {
 <BODY>
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin", "n_export");
 
   echo "<H1><B>" . _m("Inter node export settings") . "</B></H1>";
@@ -109,7 +109,7 @@ FrmTabCaption(_m("Inter node export settings"));
          <?php
            if ($perms && is_array($perms)) {
               reset($perms);
-              while(list(,$perm) = each($perms)) {
+              while (list(,$perm) = each($perms)) {
                 $n = (!$perm[node]) ? "All Nodes" : $perm[node];
                 $u = (!$perm[user]) ? "All Users" : $perm[user];
                 $str = str_replace(" ","&nbsp;",substr($n."                              ",0,30)."  ");
@@ -131,7 +131,7 @@ FrmTabCaption(_m("Inter node export settings"));
         <?php
           if ($nodes && is_array($nodes)) {
           reset($nodes);
-          while(list(,$n) = each($nodes))
+          while (list(,$n) = each($nodes))
             echo "<option value=\"$n\"".($n==$node ? "SELECTED":"")." >$n</option>";
           }
         ?>

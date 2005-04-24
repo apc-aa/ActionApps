@@ -28,11 +28,11 @@ http://www.mitra.biz
 
 
 require_once "../include/init_page.php3"; // Loads variables etc
-require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";  // for slices
+require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";  // for slices
 
-#$debug = 1;
+//$debug = 1;
 
-#$debugsummarize = 01;
+//$debugsummarize = 01;
 
 // Quick test to show contents of slice record
 if (0) {
@@ -51,7 +51,7 @@ HtmlPageBegin();
 </HEAD>
 
 <?php
-    require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+    require_once $GLOBALS['AA_INC_PATH']."menu.php3";
     showMenu($aamenus, "aaadmin","summarize");
   
     echo "<H1><B>" . _m("AA - Summarize") . "</B></H1>";
@@ -62,7 +62,7 @@ HtmlPageBegin();
     setnr();
     print("<p>");
     mapslice();
-#    mapslices();
+//    mapslices();
     sliceshortcuts(1);
     HtmlPageEnd();
     page_close();
@@ -194,7 +194,7 @@ function mapslices() {
     reset($sao);
     while (list($sid,$so) = each($sao)) {
         if (! $so->deleted() && !ignored_slice($sid)) {
-            if($pm) {   // first time round no model
+            if ($pm) {   // first time round no model
                 $nearest = nearestSlice($so,$pm,1);
                 $sno = $sao[$nearest];
                 print("<li><a name=\"$sid\"></a>$sid: '" . $so->name() . "' closest to <a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'<br>".editslicefields($sid));
@@ -214,7 +214,7 @@ function nearestSlice($st,$possmodels) {
     $sc_min = 999999;
     $sm_min = "";
     reset($possmodels);
-    while(list(,$sm) = each($possmodels)) {
+    while (list(,$sm) = each($possmodels)) {
         if ($sm == $st->unpacked_id()) continue;
         $sc = compareSlices($st,$sao[$sm],0);
         if ($sc < $sc_min) {
@@ -262,9 +262,9 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
     } else {
       $fixer="";
       reset($ft);
-      while(list($ftk,$ftv) = each($ft)) {
+      while (list($ftk,$ftv) = each($ft)) {
         if ($ftk == "slice_id") continue;
-        if( EReg("^[0-9]*$", $ftk))
+        if ( EReg("^[0-9]*$", $ftk))
             continue;
         if ($ftv == $fm[$ftk]) continue; // They match
         if (EReg("^input_",$ftk) && ($ftv == $fm[$ftk] . ":")) continue;
@@ -274,7 +274,7 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
         if (EReg("^alias2_",$ftk) && (! $ft["alias2"]))  continue;
         if (EReg("^alias3_",$ftk) && (! $ft["alias3"]))  continue;
         if (!$opened && $pr) { print("<li>$pre field: $fn differs</li><ul>\n"); $opened = 1; }
-        if($pr) {
+        if ($pr) {
             print("<li>$ftk: ".qenc($fm[$ftk],true,false,"red")." -&gt; ".qenc($ftv,true,false,"purple") . "</li>\n");
             $fixert .= "&$ftk=" . urlencode($fm[$ftk]);
             $fixerm .= "&$ftk=" . urlencode($ftv);
@@ -302,17 +302,17 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
     return $score;
 }
 
-# st=sliceobj target,  sm=sliceob master pr=true if print difference
+// st=sliceobj target,  sm=sliceob master pr=true if print difference
 function compareSliceTableFields($st,$sm,$pr) {
     global $slicetablefields;
-#    global $scoreUnshown,$AA_CP_Session;
+//    global $scoreUnshown,$AA_CP_Session;
     $score = 0;
     $opened = 0;
     $ft = $slicetablefields[$st->packed_id()];
     $fm = $slicetablefields[$sm->packed_id()];
       $fixer="";
       reset($ft);
-      while(list($ftk,$ftv) = each($ft)) {
+      while (list($ftk,$ftv) = each($ft)) {
         $hf = 0;
         $unp = 0;
         if (($ftk == "id") || ($ftk == "name") || ($ftk == "created_at")
@@ -320,11 +320,11 @@ function compareSliceTableFields($st,$sm,$pr) {
              continue;    // Fields we expect to be different
         if (EReg("format",$ftk)) { $hf = 1; }
         if ($ftk == "owner") { $unp=1; }
-        if( EReg("^[0-9]*$", $ftk))
+        if ( EReg("^[0-9]*$", $ftk))
             continue;
         if ($ftv == $fm[$ftk]) continue; // They match
         if (!$opened && $pr) { print("<li>slice fields differ (".editsliceinfo($ft)."</a>)<ul>\n"); $opened = 1; }
-        if($pr) {
+        if ($pr) {
           if ($GLOBALS["slicefieldcopy"] == $ftk) {
             copyslicefield($fm[$ftk]);
             print("<li>$ftk copied</li>\n");

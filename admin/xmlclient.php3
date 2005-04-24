@@ -43,7 +43,7 @@ http://www.apc.org/
  *   apc-aa/admin/xmlclient.php3?debugfeed=9&rssfeed_id=16
  */
 
-# handle with PHP magic quotes - quote the variables if quoting is set off
+// handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -55,30 +55,30 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
     for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
     for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
     for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
       $$k = Myaddslashes($v);
 }
 
 
 require_once "../include/config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."csn_util.php3"; // defines HTML and PLAIN as well as other functions
-require_once $GLOBALS["AA_INC_PATH"]."xml_fetch.php3";
-require_once $GLOBALS["AA_INC_PATH"]."xml_rssparse.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
-require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
-require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
-require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."csn_util.php3"; // defines HTML and PLAIN as well as other functions
+require_once $GLOBALS['AA_INC_PATH']."xml_fetch.php3";
+require_once $GLOBALS['AA_INC_PATH']."xml_rssparse.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."notify.php3";
+require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
+require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
 
 if ($debugfeed >= 8) print("\n<br>XMLCLIENT STARTING");
 

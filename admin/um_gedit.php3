@@ -19,46 +19,46 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# um_gedit.php3 - adds and edits groups in permission system (now LDAP directory)
-# optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
-# selected_group
-# state variables:
-#    $grp_edit       - comes from um_gsrch - button Edit $selected_group
-#    $grp_new        - comes from um_inc   - New user link
-#    $submit_action  - = update_submit if pressed update
-#                      = grp_del if delete group is confirmed
-#    $add_submit     - if new group Add button pressed
+// um_gedit.php3 - adds and edits groups in permission system (now LDAP directory)
+// optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+// selected_group
+// state variables:
+//    $grp_edit       - comes from um_gsrch - button Edit $selected_group
+//    $grp_new        - comes from um_inc   - New user link
+//    $submit_action  - = update_submit if pressed update
+//                      = grp_del if delete group is confirmed
+//    $add_submit     - if new group Add button pressed
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
-require_once $GLOBALS["AA_INC_PATH"]."um_util.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."um_util.php3";
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!IfSlPerm(PS_NEW_USER)) {
+if (!IfSlPerm(PS_NEW_USER)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to create new user"), "admin");
   exit;
 }
 
-if( ($submit_action == "grp_del") AND $selected_group ) {
+if ( ($submit_action == "grp_del") AND $selected_group ) {
   DelGroup( $selected_group );     // default is to delete any references as well
   go_url( $sess->url($PHP_SELF) );
 }
 
 $sess->register("rgrp");
-if( $grp OR $GrpSrch )
+if ( $grp OR $GrpSrch )
   $rgrp = $grp;
 
-if( $grp_new )
+if ( $grp_new )
   $rgrp = $selected_group = "";
 
 $groups  = GetFiltered("G", $rgrp, _m("Too much groups found."), _m("No groups found"));   // get list of users
-if( $GrpSrch ) {
+if ( $GrpSrch ) {
   reset( $groups );
   $selected_group = key($groups);
   $grp_edit = true;
@@ -66,10 +66,10 @@ if( $GrpSrch ) {
 
 $all_users = GetFiltered("U", $usr1_flt, _m("Too many users or groups found."), _m("No user (group) found"));
 
-if( $selected_group ) {
-  if( $selected_group != "n" )  // none group selected
+if ( $selected_group ) {
+  if ( $selected_group != "n" )  // none group selected
     $group_users = GetGroupMembers($selected_group);   // get list of users and groups right under $selected_group
-  if( !is_array($group_users) )
+  if ( !is_array($group_users) )
     $sel_users["n"][name] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
    else
     $sel_users = $group_users;
@@ -79,13 +79,13 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 
 
-# Process submited form -------------------------------------------------------
+// Process submited form -------------------------------------------------------
 
-if( $add_submit OR ($submit_action == "update_submit")) {
+if ( $add_submit OR ($submit_action == "update_submit")) {
 
-  # all the actions are in following require_once (we reuse this part of code for
-  # slice wizard ...
-  require_once $GLOBALS["AA_INC_PATH"]."um_gedit.php3";
+  // all the actions are in following require_once (we reuse this part of code for
+  // slice wizard ...
+  require_once $GLOBALS['AA_INC_PATH']."um_gedit.php3";
 
   if (count($err) <= 1) {
     $Msg = MsgOK(_m("Group successfully added to permission system"));
@@ -107,7 +107,7 @@ function UpdateGroup(action) {
 }
 
 function RealyDelete() {
-  if( window.confirm('<?php echo _m("Are you sure you want to delete selected group from whole permission system?") ?>')) {
+  if ( window.confirm('<?php echo _m("Are you sure you want to delete selected group from whole permission system?") ?>')) {
     document.f2.submit_action.value = 'grp_del'
     document.f2.submit()
   }
@@ -120,11 +120,11 @@ function RealyDelete() {
     // which roles is defined for the module
       roles = ( idx > 0 ) ? mod[mod_types.charCodeAt(idx-1)] : new Array('                     ');
     // clear selectbox
-    for( i=(document.f.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
+    for ( i=(document.f.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
       document.f.elements['new_module_role['+no+']'].options[i] = null
     }
     // fill selectbox from the right slice
-    for( i=0; i<roles.length ; i++) {
+    for ( i=0; i<roles.length ; i++) {
       document.f.elements['new_module_role['+no+']'].options[i] = new Option(roles[i], roles[i])
     }
   }
@@ -180,9 +180,9 @@ FrmTabSeparator("");
 FrmTabEnd();
 
 do {
-  if( $grp_new OR ($grp_edit AND ($selected_group!="n")) ) {
-    if($grp_edit AND !($submit_action == "update_submit")) {
-      if( !is_array($group_data = GetGroup($selected_group)))
+  if ( $grp_new OR ($grp_edit AND ($selected_group!="n")) ) {
+    if ($grp_edit AND !($submit_action == "update_submit")) {
+      if ( !is_array($group_data = GetGroup($selected_group)))
         break;
       $group_name = $group_data[name];
       $group_description = $group_data[description];
@@ -196,13 +196,13 @@ do {
     page_close();
     exit;
   }
-} while(false);
+} while (false);
 
 echo "
 <form name=f method=post action=\"".$sess->url($PHP_SELF) ."\">";
 
 echo "<br />";
-if( $grp_edit OR ($submit_action == "update_submit") ) {
+if ( $grp_edit OR ($submit_action == "update_submit") ) {
   FrmTabCaption(_m("Edit group"));
 } else {
   FrmTabCaption(_m("New group"));
@@ -217,7 +217,7 @@ if( $grp_edit OR ($submit_action == "update_submit") ) {
 
 // User data ---------------------------------------------------
 
-if( $grp_new OR $add_submit ) {
+if ( $grp_new OR $add_submit ) {
     // buttons for adding new group
     $form_buttons = array("add_submit" => array("type"=>"submit","value"=>_m("Add"),"accesskey"=>"S"),
                           "grp_new" => array("value"=>"1"));
@@ -234,21 +234,21 @@ $form_buttons["selected_group"] = array("value"=>$selected_group);
 $form_buttons["posted_users"]   = array("value"=>"0");
 $form_buttons["submit_action"]  = array("value"=>"0");
 
-  if( $grp_edit OR ($submit_action == "update_submit") )
+  if ( $grp_edit OR ($submit_action == "update_submit") )
     FrmStaticText( _m("Group Id"), $group_data[uid]);
   FrmInputText("group_name", _m("Name"), $group_name, 50, 50, true);
   FrmInputText("group_description", _m("Description"), $group_description, 50, 50, false);
   FrmInputChBox("group_super", _m("Superadmin group"), $group_super, false, "", 1, false);
 echo '</table></td></tr>';
 
-if( !$add_submit AND !$grp_new) {
+if ( !$add_submit AND !$grp_new) {
    FrmTabSeparator(_m("Users"));
 
   echo "
   <tr><td>
   <table width=\"440\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"".COLOR_TABBG."\">";
 
-  # User - group membership -----------------------------------------
+  // User - group membership -----------------------------------------
 
   echo '<tr><td width=190 align=center>'. _m("All Users") .'</td>
                   <td width=60>&nbsp;</td>
@@ -269,9 +269,9 @@ if( !$add_submit AND !$grp_new) {
         ';
 //      </table></td></tr>';
 
-  # User - permissions -----------------------------------------
+  // User - permissions -----------------------------------------
 
-  $mod_types = PrintModulePermModificator($selected_group, $form_buttons, $sess, $slice_id);   # shared with um_gedit.php3
+  $mod_types = PrintModulePermModificator($selected_group, $form_buttons, $sess, $slice_id);   // shared with um_gedit.php3
 
 }
 
@@ -279,7 +279,7 @@ FrmTabEnd($form_buttons, $sess, $slice_id);
 
 echo '</FORM>';
 
-if( !$add_submit AND !$grp_new) {
+if ( !$add_submit AND !$grp_new) {
   PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
 }
 

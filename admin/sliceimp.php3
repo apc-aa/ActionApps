@@ -29,22 +29,22 @@ http://www.apc.org/
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
-require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
-require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
+require_once $GLOBALS['AA_INC_PATH']."notify.php3";
+require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
-if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
-    MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"), "standalone");
-    exit;
+if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
+	MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"), "standalone");
+	exit;
 }
 
 $varset = new Cvarset();
 $itemvarset = new Cvarset();
-#$debugimport=1;
+//$debugimport=1;
 
 // Prooves whether this ID already exists in the slices table,
 // changes the ID to a new chosen one
@@ -83,7 +83,7 @@ function proove_ID ($slice)
 
     global $db;
     $db->query($SQL);
-    if($db->next_record()) {
+    if ($db->next_record()) {
         // if we want overwrite, delete old slice definition
         if ($GLOBALS["Submit"] == _m("Overwrite")) {
             $SQL = "DELETE FROM slice WHERE id='$slice_id'";	$db->query($SQL);
@@ -119,21 +119,21 @@ function proove_data_ID ($data_id)
 //	if ((strlen($data_id) != 32)&&(strlen($data_id) != 30)) {
 //		echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", $slice["id"], strlen($slice["id"]));
 //	}
-    $old_data_id = addslashes(pack_id($data_id));
-    $SQL = "SELECT * FROM item WHERE id=\"$old_data_id\"";
-    global $db;
-    $db->query($SQL);
-    if($db->next_record()) {
-        // if we want overwrite existing items, delete it
-        if ($GLOBALS["Submit"] == _m("Overwrite")) {
-            $SQL = "DELETE FROM item WHERE id='$old_data_id'";	$db->query($SQL);
-            $SQL = "DELETE FROM content WHERE item_id='$old_data_id'";	$db->query($SQL);
-            $data_overwrite = true;
-        }
-        else return false;
-    }
-    else $data_overwrite = false;
-    return true;
+	$old_data_id = addslashes(pack_id($data_id));
+	$SQL = "SELECT * FROM item WHERE id=\"$old_data_id\"";
+	global $db;
+	$db->query($SQL);
+	if ($db->next_record()) {
+		// if we want overwrite existing items, delete it
+		if ($GLOBALS["Submit"] == _m("Overwrite")) {
+			$SQL = "DELETE FROM item WHERE id='$old_data_id'";	$db->query($SQL);
+			$SQL = "DELETE FROM content WHERE item_id='$old_data_id'";	$db->query($SQL);
+			$data_overwrite = true;
+		}
+		else return false;
+	}
+	else $data_overwrite = false;
+	return true;
 }
 
 // imports one slice (called by XML parser)
@@ -209,25 +209,25 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
             $data_import_failure[] = $id." No fields for slice_id=$slice_id";
             return false;
         }
-        $cont = $content4id[$id];
-        reset($fields);
-        while (list($name,) = each($fields)) {
-          if (isset($cont[$name]))
-            while(list($k,) = each($cont[$name])) {
-                $cont[$name][$k]["value"] =
-                    addslashes($cont[$name][$k]["value"]);
+	   	$cont = $content4id[$id];
+		reset($fields);
+		while (list($name,) = each($fields)) {
+          if (isset($cont[$name])) 
+            while (list($k,) = each($cont[$name])) {
+                $cont[$name][$k]['value'] = 
+                    addslashes($cont[$name][$k]['value']);
             }
-        }
-        $data_IDconflict = !proove_data_ID($id);
-        if (($data_IDconflict)&&($GLOBALS["Submit"]!=_m("Insert with new ids"))) {
-            $data_conflicts_ID[$id] = $cont["headline........"][0]["value"];
-            $Cancel = 0;
-            return false;
-        }
+		}
+		$data_IDconflict = !proove_data_ID($id);
+		if (($data_IDconflict)&&($GLOBALS["Submit"]!=_m("Insert with new ids"))) {
+			$data_conflicts_ID[$id] = $cont["headline........"][0]['value'];
+			$Cancel = 0;
+			return false;
+		}		
 
-        if ($GLOBALS["Submit"] == _m("Insert with new ids")) {
-          // when importing with new ids, we need create new id for item
-          // and get new id of slice
+		if ($GLOBALS["Submit"] == _m("Insert with new ids")) {
+		  // when importing with new ids, we need create new id for item
+		  // and get new id of slice
         // This looks like a bug to me, won't use new id if Overwrite (mitra)
           $new_data_id = new_id();
           $new_slice_id = $new_slice_ids[$slice_id]["new_id"];
@@ -260,26 +260,26 @@ $imported_count = 0;
 // insert xml parser
 require_once "./sliceimp_xml.php3";
 
-# import via exported file
+// import via exported file
 if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
   if ($debugimport) huhl("Importing a file");
   $dirname = IMG_UPLOAD_PATH;
   $fileman_used=false;
   $dest_file = $_FILES['slice_def_file']['name'];
   $perms = 0664;
-
-  # i must copy this from aa_move_uploaded_file because of some variables,that i can't (don't know how) set
-
-    list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
-    if( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    # '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
+  
+  // i must copy this from aa_move_uploaded_file because of some variables,that i can't (don't know how) set
+  
+    list($va,$vb,$vc) = explode(".",phpversion());   // this check work with all possibilities (I hope) -
+    if ( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    // '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
         if (is_uploaded_file($_FILES['slice_def_file']['tmp_name']))
-            if( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file"))
+            if ( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file"))
                 echo _m("Can't upload Import file") . "to $dirname$dest_file";
         else if ($perms)
-                chmod ($dirname.$dest_file, $perms);
-    }
-    else {   # for php 3.x and php <4.0.3
-        if (!copy($_FILES['slice_def_file']['tmp_name'],"$dirname$dest_file"))
+	            chmod ($dirname.$dest_file, $perms);
+    } 
+    else {   // for php 3.x and php <4.0.3
+        if (!copy($_FILES['slice_def_file']['tmp_name'],"$dirname$dest_file")) 
             echo _m("Can't upload Import file");
         else if ($perms)
             chmod ($dirname.$dest_file, $perms);
@@ -344,44 +344,44 @@ enctype="multipart/form-data">
 echo "<tr><td class=tabtxt>";
 
 if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list || $data_import_failure):
-    echo "<B>".sprintf(_m("Count of imported slices: %d."),count($imported_list)+count($overwritten_list))."</p>";
-    if (is_array($imported_list)) {
-        echo "</p>"._m("Added were:")."</p>";
-        reset($imported_list);
-        while(list(,$desc)=each($imported_list))
-            echo $desc."<br>";
-    }
-    if (is_array($overwritten_list)) {
-        echo "</p>"._m("Overwritten were:")."</p>";
-        reset($overwritten_list);
-        while(list(,$desc)=each($overwritten_list))
-            echo $desc."<br>";
-    }
+	echo "<B>".sprintf(_m("Count of imported slices: %d."),count($imported_list)+count($overwritten_list))."</p>";
+	if (is_array($imported_list)) {
+		echo "</p>"._m("Added were:")."</p>";
+		reset($imported_list);
+		while (list(,$desc)=each($imported_list))
+			echo $desc."<br>";
+	}
+	if (is_array($overwritten_list)) {
+		echo "</p>"._m("Overwritten were:")."</p>";
+		reset($overwritten_list);
+		while (list(,$desc)=each($overwritten_list))
+			echo $desc."<br>";
+	}
+	
+	echo "<br><br><B>".sprintf(_m("Count of imported stories: %d."),count($data_imported_list)+count($data_overwritten_list))."</p>";
+	echo $data_showme;
+	if (is_array($data_imported_list)) {
+		echo "</p>"._m("Added were:")."</p>";
+		reset($data_imported_list);
+		while (list(,$desc)=each($data_imported_list))
+			echo $desc."<br>";
+	}
+	if (is_array($data_overwritten_list)) {
+		echo "</p>"._m("Overwritten were:")."</p>";
+		reset($data_overwritten_list);
+		while (list(,$desc)=each($data_overwritten_list))
+			echo $desc."<br>";
+	}
+	if (is_array($data_import_failure)) {
+		echo "</p>"._m("Failed were:")."</p>";
+		reset($data_import_failure);
+		while (list(,$desc)=each($data_import_failure))
+			echo $desc."<br>";
+	}
 
-    echo "<br><br><B>".sprintf(_m("Count of imported stories: %d."),count($data_imported_list)+count($data_overwritten_list))."</p>";
-    echo $data_showme;
-    if (is_array($data_imported_list)) {
-        echo "</p>"._m("Added were:")."</p>";
-        reset($data_imported_list);
-        while(list(,$desc)=each($data_imported_list))
-            echo $desc."<br>";
-    }
-    if (is_array($data_overwritten_list)) {
-        echo "</p>"._m("Overwritten were:")."</p>";
-        reset($data_overwritten_list);
-        while(list(,$desc)=each($data_overwritten_list))
-            echo $desc."<br>";
-    }
-    if (is_array($data_import_failure)) {
-        echo "</p>"._m("Failed were:")."</p>";
-        reset($data_import_failure);
-        while(list(,$desc)=each($data_import_failure))
-            echo $desc."<br>";
-    }
-
-    ?>
-    </P>
-    <INPUT TYPE=SUBMIT NAME=Cancel VALUE="  OK  ">
+	?>
+	</P>
+	<INPUT TYPE=SUBMIT NAME=Cancel VALUE="  OK  ">
 <?php
 else:
 ?>
@@ -430,15 +430,15 @@ if ($data_IDconflict): ?>
 </TEXTAREA>
 <?php
 endif;
-if($IDconflict || $data_IDconflict): ?>
-    </P>
+if ($IDconflict || $data_IDconflict): ?>
+	</P>	
 <?php	echo _m("<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>") ?>
     <p align=center>
 <?php if ($only_slice)	 {?>
     <input type=hidden name=only_slice value=1>
 <?php };
-    if($only_data) { ?>
-    <input type=hidden name=only_data value=1>
+	if ($only_data) { ?>
+	<input type=hidden name=only_data value=1>
 <?php }; ?>
     <INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Overwrite") ?>">
     <INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Insert") ?>">

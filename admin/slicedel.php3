@@ -19,18 +19,18 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# expected $slice_id for edit slice, nothing for adding slice
+// expected $slice_id for edit slice, nothing for adding slice
 
 $require_default_lang = true;      // do not use module specific language file
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if(!IsSuperadmin()) {
+if (!IsSuperadmin()) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to delete slice."), "admin");
   exit;
 }
@@ -50,7 +50,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m("Admin - Delete Slice");?></TITLE>
  <SCRIPT Language="JavaScript"><!--
    function DeleteSlice(id,url2go) {
-     if( !confirm("<?php echo _m("Do you really want to delete this slice and all its fields and all its items?"); ?>"))
+     if ( !confirm("<?php echo _m("Do you really want to delete this slice and all its fields and all its items?"); ?>"))
        return
      var url=url2go+"<?php echo $sess->url("?"); ?>"
      document.location=url+'&del='+id;
@@ -71,14 +71,14 @@ echo _m("<p>You can delete only slices which are marked as &quot;<b>deleted</b>&
 
 FrmTabCaption(_m("Select slice to delete"));
 
-# -- get views for current slice --
+// -- get views for current slice --
 $SQL = "SELECT * FROM module WHERE deleted>0";
 $db->query($SQL);
-while( $db->next_record() ) {
+while ( $db->next_record() ) {
   PrintSlice(unpack_id128($db->f(id)), $db->f(name), $db->f(type) );
   $slice_to_delete = true;
 }
-if( !$slice_to_delete )
+if ( !$slice_to_delete )
   echo "<tr class=tabtxt><td>". _m("No slice marked for deletion") ."</td></tr>";
 
 FrmTabEnd(array("cancel"=>array("url"=>"um_uedit.php3")), $sess, $slice_id);

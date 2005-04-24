@@ -19,24 +19,24 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# constants select - for searchbar.class.php3, pavelji@ecn.cz
+// constants select - for searchbar.class.php3, pavelji@ecn.cz
 
-# sid        - expected - slice_id where to search
-# field_name - expected - field id from which we want take the constants
-# var_id     - expected - id of variable in calling form, which should be filled
-# design     - ???      - boolean - use standard or admin design (currently always 1)
-# sel_text   - expected - current setting of the search
+// sid        - expected - slice_id where to search
+// field_name - expected - field id from which we want take the constants
+// var_id     - expected - id of variable in calling form, which should be filled
+// design     - ???      - boolean - use standard or admin design (currently always 1)
+// sel_text   - expected - current setting of the search
 
-$save_hidden = true;   # do not delete r_hidden session variable in init_page!
+$save_hidden = true;   // do not delete r_hidden session variable in init_page!
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "item.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "itemfunc.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "sliceobj.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "item.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "sliceobj.php3";
 
 $module_id = $slice_id;
-$p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
+$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice = new slice($module_id);
 $fields = $slice->fields('record');
 
@@ -94,12 +94,12 @@ HtmlPageBegin('default', true);
 </script>
 </head> <?php
 
-# parse selected values
+// parse selected values
 if ($sel_text) {
     $content_tmp = explode(" OR ", $sel_text);
     if (is_array($content_tmp)) {
         for ($i = 0; $i < count($content_tmp); $i++) {
-            $content[]["value"] = str_replace("\\\"", "", $content_tmp[$i]);
+            $content[]['value'] = str_replace("\\\"", "", $content_tmp[$i]);
         }
     }
 }
@@ -118,7 +118,7 @@ switch ( $aainput->get_inputtype() ) {
 echo "<center>";
 echo "$Msg <br>";
 
-# ------- Caption -----------
+// ------- Caption -----------
 
 echo '<form name="inputform" method=post action="'. $sess->url($PHP_SELF) .'">';
 FrmTabCaption(_m("Select constants"), '','', '', $sess, $slice_id);

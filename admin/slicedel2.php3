@@ -18,19 +18,19 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-# expected $del - unpacked id of slice to delete
+// expected $del - unpacked id of slice to delete
 
 require_once "$directory_depth../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "feeding.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "msgpage.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "modutils.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "feeding.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "modutils.php3";
 
 
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if($del) {
-  if(!IsSuperadmin()) {
+if ($del) {
+  if (!IsSuperadmin()) {
     MsgPage($sess->url(self_base())."index.php3", _m("You don't have permissions to delete slice."), "admin");
     exit;
   }
@@ -42,13 +42,13 @@ if($del) {
 $err["Init"] = "";      // error array (Init - just for initializing variable
 $p_del = q_pack_id($del);
 
-# check if module can be deleted
+// check if module can be deleted
 ExitIfCantDelete( $del, $db );
 
-# delete module (from common module table)
+// delete module (from common module table)
 DeleteModule( $del, $db );
 
-# delete slice from permission system -----------------------------------------
+// delete slice from permission system -----------------------------------------
 DelPermObject($del, "slice");
     
 switch ($g_modules[$del]['type']) {
@@ -80,40 +80,40 @@ function DeleteAlerts ($module_id) {
 function DeleteSlice ($del) {
     global $db;
     $p_del = q_pack_id($del);
-    # delete all module specific tables
+    // delete all module specific tables
     $SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_del'";
     $db->query($SQL);
     
     $SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_del'";
     $db->query($SQL);
     
-    # delete fields
+    // delete fields
     $SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_del'";
     $db->query($SQL);
     
-    # delete items
+    // delete items
     $db2  = new DB_AA;
     $SQL = "SELECT id FROM item WHERE slice_id='$p_del'";
     $db->query($SQL);
-    while( $db->next_record() )
-      DeleteItem($db2, unpack_id128($db->f(id))); # deletes from content, offline and
-                                               # relation tables
+    while ( $db->next_record() )
+      DeleteItem($db2, unpack_id128($db->f(id))); // deletes from content, offline and
+                                               // relation tables
     
-    # delete items
+    // delete items
     $SQL = "DELETE LOW_PRIORITY FROM item WHERE slice_id='$p_del'";
     $db->query($SQL);
     
-    # delete feedmap
+    // delete feedmap
     $SQL = "DELETE LOW_PRIORITY FROM feedmap WHERE from_slice_id='$p_del'
                                                 OR to_slice_id='$p_del'";
     $db->query($SQL);
     
-    # delete feedprms
+    // delete feedprms
     $SQL = "DELETE LOW_PRIORITY FROM feedperms WHERE from_id='$p_del'
                                                 OR to_id='$p_del'";
     $db->query($SQL);
     
-    # delete email_notify
+    // delete email_notify
     $SQL = "DELETE LOW_PRIORITY FROM email_notify WHERE slice_id='$p_del'";
     $db->query($SQL);
 }

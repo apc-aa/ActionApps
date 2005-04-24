@@ -26,7 +26,7 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
 /** Print one row with one 'sliceexport' radiobuttons */
 function PrintExportRow( $sname, $sid, $odd) {
@@ -60,9 +60,9 @@ echo '
          <td width=100 align=center>'. _m("Do not export to this slice") .'</td></tr>';
 
 $i=1;     // slice checkbox counter
-if( is_array($g_modules) AND (count($g_modules) > 1) ) {
+if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
     foreach ( $g_modules as $sid => $v) {
-        if( ($v['type'] == 'S') AND    //  we can feed just between slices ('S')
+        if ( ($v['type'] == 'S') AND    //  we can feed just between slices ('S')
             ((string)$slice_id != (string)$sid) AND
             // we must have autor or editor perms in destination slices
             CheckPerms( $auth->auth["uid"], "slice", $sid, PS_EDIT_SELF_ITEMS) ) {
@@ -74,7 +74,7 @@ if( is_array($g_modules) AND (count($g_modules) > 1) ) {
         }
     }
 }
-if( $i==1 ) {   // can't feed to any slice
+if ( $i==1 ) {   // can't feed to any slice
   echo '<tr><td colspan=3>'. _m("No permission to set feeding for any slice") .'</td></tr>';
 }
 ?>

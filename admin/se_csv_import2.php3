@@ -31,10 +31,10 @@ http://www.apc.org/
 
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."import_util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."import_util.php3";
+require_once $GLOBALS['AA_INC_PATH']."constants_param_wizard.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
 /** Returns key of the $array, which value is most similar to given $text */
 function findNearestText($text, $array) {
@@ -53,7 +53,7 @@ function findNearestText($text, $array) {
 }
 
 
-if(!IfSlPerm(PS_FEEDING)) {
+if (!IfSlPerm(PS_FEEDING)) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to setting "));
     exit;
 }
@@ -61,8 +61,9 @@ if(!IfSlPerm(PS_FEEDING)) {
 $err["Init"] = "";         // error array (Init - just for initializing variable
 
 // check parameters
-if (!file_exists($fileName))
+if (!file_exists($fileName)) {
     MsgPage($sess->url(self_base()."se_csv_import.php3"), _m("File for import does not exists:").$fileName );
+}
 
 $addParams = unserialize(base64_decode($addParamsSerial));
 if (!$addParams) {
@@ -122,7 +123,7 @@ if ($upload) {
         $numProcessed++;
 
         if (!$err) {
-            $res = $itemContent->StoreToDB($slice_id, $slice_fields,$actionIfItemExists,false); // not invalidate cache
+            $res = $itemContent->StoreToDB($slice_id, $slice_fields, $actionIfItemExists, false); // not invalidate cache
             if ($res == false)
                 $err = _m("Cannot store item to DB");
         }
@@ -145,7 +146,7 @@ if ($upload) {
     writeLog("CSV_IMPORT",$logMsg);
 
     // invalidate cache;
-    $GLOBALS['pagecache']->invalidateFor("slice_id=".$GLOBALS['slice_id']);  # invalidate old cached values
+    $GLOBALS['pagecache']->invalidateFor("slice_id=".$GLOBALS['slice_id']);  // invalidate old cached values
 
     fclose($handle);
 
@@ -199,7 +200,7 @@ function InitPage() {}
 <BODY>
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin","CSVimport");
   PrintArray($err);
   echo stripslashes($Msg);

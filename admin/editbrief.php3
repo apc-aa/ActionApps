@@ -17,7 +17,7 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-/*  (c) Mitra Ardron March 2004 
+/*  (c) Mitra Ardron March 2004
     based on live_checkbox.php3 by Jakub Adámek, October 2002
 
     This is intended to be a basic utility that can be used in hand-made links
@@ -27,7 +27,7 @@ http://www.apc.org/
         return_url = where to go next
         fail_url = where to go on failure (if not set, goes to return_url)
 
-    where 
+    where
         short_id is the item short ID - or comma separated list
         field_id is the field ID (like "highlight......") or comma sep list
         action is value to set it to
@@ -35,10 +35,10 @@ http://www.apc.org/
             now()  means set to current unix time.
 */
 
-//$directory_depth = "base";           
+//$directory_depth = "base";
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
 
 //$image_path = $AA_BASE_PATH."images/";
 
@@ -66,12 +66,12 @@ while (list($short_ids, $ar) = each($edit)) {
         $db->query("SELECT id, slice_id FROM item WHERE short_id = $short_id");
         if ($db->next_record()) {
             $item_id = unpack_id128($db->f("id"));
-            $slice_id = unpack_id128($db->f("slice_id")); 
+            $slice_id = unpack_id128($db->f("slice_id"));
         }
         else failed("Can't find short_id=".$short_id);
 
         // Check have permissions on slice item is in
-        if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) 
+        if (!IfSlPerm(PS_EDIT_ALL_ITEMS))
             failed ("Insufficient permissions to change data");
 
 /* Don't think need old content, StoreItem will find
@@ -88,8 +88,7 @@ while (list($short_ids, $ar) = each($edit)) {
         }
         $fields = $slicefields[$slice_id];
 //        huhl("Would store i=",$item_id, "f=",$content4id);
-        StoreItem($item_id, $slice_id, $content4id, $fields, false,
-               true, false); 
+        StoreItem($item_id, $slice_id, $content4id, $fields, false, true, false);
       }
     }
 }
@@ -99,9 +98,9 @@ exit;
 
 // ------------------------------------------------------------------------------------
 
-function failed ($msg) {   
+function failed ($msg) {
     global $return_url;
     MsgPage($return_url,$msg);
     // Note MsgPage exits
-}    
+}
 ?>

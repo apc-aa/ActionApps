@@ -32,11 +32,11 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3"; // tryquery
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3"; // tryquery
 
 set_time_limit(600);
 
@@ -123,11 +123,11 @@ $maintain_sql = array (
      WHERE from_field_id=':old_id:' AND from_slice_id = '$p_slice_id'");
         
  
-if($cancel)
+if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
   
 
-if(!IfSlPerm(PS_FIELDS)) {
+if (!IfSlPerm(PS_FIELDS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
 }  
@@ -146,7 +146,7 @@ function ChangeFieldID ($old_id, $new_id)
         $SQL = "SELECT `$keyfield`, `".join($settings['fields'],"`, `")."` FROM `$table` 
                 WHERE $settings[slice_id] = '$p_slice_id'";
         $rows = GetTable2Array ($SQL);
-        if (is_array ($rows)) {
+        if (is_array($rows)) {
             reset ($rows);
             $i = 0;
             while (list (,$row) = each ($rows)) {
@@ -216,7 +216,7 @@ if ($update && $new_id_text && $p_slice_id) {
     }
 }
 
-  # lookup fields
+  // lookup fields
 $SQL = "SELECT id, name FROM field
         WHERE slice_id='$p_slice_id'
         ORDER BY id";
@@ -228,7 +228,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 </HEAD>
 <?php 
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin", "field_ids");  
   
   echo "<H1><B>" . _m("Admin - change Field IDs") . "</B></H1>";

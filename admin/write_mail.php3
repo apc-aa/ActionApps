@@ -28,10 +28,10 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]. "formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]. "searchbar.class.php3";
+require_once $GLOBALS['AA_INC_PATH']. "formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']. "searchbar.class.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
-require_once $GLOBALS["AA_INC_PATH"]. "varset.php3";
+require_once $GLOBALS['AA_INC_PATH']. "varset.php3";
 
 $searchbar = new searchbar();   // mainly for bookmarks
 $items=$chb;
@@ -60,7 +60,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             ValidateInput("lang",        _m("Language (charset)"), $lang,        $err, false, "text");
             ValidateInput("html",        _m("Use HTML"),           $html,        $err, false, "number");
 
-            if( count($err) > 1) break;
+            if ( count($err) > 1) break;
 
             $varset->addglobals( array('description', 'subject', 'body',
                                        'header_from', 'reply_to', 'errors_to', 'sender',
@@ -69,9 +69,9 @@ if ( !$send ) {               // for the first time - directly from item manager
             $varset->add('html', 'number', $html);
 
             $SQL = "INSERT email ". $varset->makeINSERT();
-            if( !$db->tquery($SQL)) {
+            if ( !$db->tquery($SQL)) {
                 $err["DB"] = MsgErr( _m("Can't change slice settings") );
-                break;    # not necessary - we have set the halt_on_error
+                break;    // not necessary - we have set the halt_on_error
             }
 
             // --- write the e-mail template to the table - end ---
@@ -109,11 +109,11 @@ if ( !$send ) {               // for the first time - directly from item manager
             // remove temporary email template from database
             // TODO - store the tamplate and allow user to reuse it
             $SQL = "DELETE FROM email WHERE id='$mail_id'";
-            if( !$db->tquery($SQL)) {
+            if ( !$db->tquery($SQL)) {
                 $err["DB"] = MsgErr( _m("Can't delete email template") );
-                break;    # not necessary - we have set the halt_on_error
+                break;    // not necessary - we have set the halt_on_error
             }
-        } while(false);
+        } while (false);
     }
 }
 

@@ -21,7 +21,7 @@ http://www.apc.org/
 
 ///////////////////////////////////////////////////////////////////////////
 
-# handle with PHP magic quotes - quote the variables if quoting is set off
+// handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -33,25 +33,25 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
     for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
     for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
     for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
       $$k = Myaddslashes($v);
 }
 
 require_once ("../include/config.php3");
-require_once ($GLOBALS["AA_INC_PATH"] . "locsessi.php3");
-require_once ($GLOBALS["AA_INC_PATH"] . "perm_core.php3");
-require_once ($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
-require_once ($GLOBALS["AA_INC_PATH"] . "util.php3");
-require_once ($GLOBALS["AA_INC_PATH"] . "formutil.php3");
-require_once ($GLOBALS["AA_INC_PATH"] . "mgettext.php3");
-bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".DEFAULT_LANG_INCLUDE);
+require_once ($GLOBALS['AA_INC_PATH'] . "locsessi.php3");
+require_once ($GLOBALS['AA_INC_PATH'] . "perm_core.php3");
+require_once ($GLOBALS['AA_INC_PATH'] . "perm_" . PERM_LIB . ".php3");
+require_once ($GLOBALS['AA_INC_PATH'] . "util.php3");
+require_once ($GLOBALS['AA_INC_PATH'] . "formutil.php3");
+require_once ($GLOBALS['AA_INC_PATH'] . "mgettext.php3");
+bind_mgettext_domain ($GLOBALS['AA_INC_PATH']."lang/".DEFAULT_LANG_INCLUDE);
 
 function HtmlStart() {
    HTMLPageBegin ("../".ADMIN_CSS);
@@ -127,7 +127,7 @@ $db = new DB_AA;
 $store_halt = $db->Halt_On_Error;
 $db->Halt_On_Error = "report";
 $info = $db->metadata( 'active_sessions' );
-if( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
+if ( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
     HtmlStart();
     echo _m('Database is not configured correctly or the database is empty.<br>
              Check please the database credentials in <b>include/config.php3</b>
@@ -225,7 +225,7 @@ switch ($phase) {
       ValidateInput("lname", _m("Last name"), $lname, $err, true, "all");
       ValidateInput("email", _m("E-mail"), $email, $err, false, "email");
 
-      if( $password1 != $password2 ) {
+      if ( $password1 != $password2 ) {
          $err[$password1] = MsgErr(_m("Retyped password is not the same as the first one"));
       }
 

@@ -19,18 +19,18 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Headline</h1>
-# (typicaly: Category update successful)
+// expected $slice_id for edit slice
+// optionaly $Msg to show under <h1>Headline</h1>
+// (typicaly: Category update successful)
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."se_users.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
-require_once $GLOBALS["AA_INC_PATH"]."profile.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."se_users.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."profile.php3";
 
-if(!IfSlPerm(PS_USERS)) {
+if (!IfSlPerm(PS_USERS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
   exit;
 }
@@ -38,7 +38,7 @@ if(!IfSlPerm(PS_USERS)) {
 // function shows link only if condition is true
 function IfLink( $cond, $url, $txt ) {
   echo "<td class=tabtxt>";
-  if( $cond )
+  if ( $cond )
     echo "<a href=\"$url\">$txt</a>";
   else
     echo $txt;
@@ -57,7 +57,7 @@ function PrintUser($usr, $usr_id, $editor_perm) {
   $perm = $usr["perm"];
   $role = 0;
 
-  if( IsPerm($perm,$perms_roles["SUPER"]['id']) )
+  if ( IsPerm($perm,$perms_roles["SUPER"]['id']) )
     $role = 4;
   elseif( IsPerm($perm,$perms_roles["ADMINISTRATOR"]['id'] ) )
     $role = 3;
@@ -103,7 +103,7 @@ HtmlPageBegin();   // Prints HTML start page tags
  <TITLE><?php echo _m("Admin - Permissions");?></TITLE>
 </HEAD>
 <?php
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin", $show_adduser ? "addusers" : "users");
 
   echo "<H1><B>"._m("Admin - Permissions")."</B></H1>";
@@ -112,11 +112,11 @@ HtmlPageBegin();   // Prints HTML start page tags
 
   $continue=true;
 
-  if( $show_adduser ) {
+  if ( $show_adduser ) {
     include "./se_users_add.php3";
   } elseif( $UsrAdd || $UsrDel)
     ChangeRole (); // in include/se_users.php3
-  if( $continue ) {
+  if ( $continue ) {
 
       FrmTabCaption(_m("Change current permisions"));
 /*
@@ -130,28 +130,28 @@ HtmlPageBegin();   // Prints HTML start page tags
     $slice_users = GetObjectsPerms($slice_id, "slice");
     $aa_users = GetObjectsPerms(AA_ID, "aa");   // higher than slice
 
-    if( isset($slice_users) AND !is_array($slice_users) )
+    if ( isset($slice_users) AND !is_array($slice_users) )
       unset($slice_users);
-    if( isset($aa_users) AND !is_array($aa_users) )
+    if ( isset($aa_users) AND !is_array($aa_users) )
       unset($aa_users);
 
-    if(isset($slice_users) AND is_array($slice_users)) {
+    if (isset($slice_users) AND is_array($slice_users)) {
       reset($slice_users);  // if conflicts slice perms and aa perms - solve it
-      while( list($usr_id,$usr)= each($slice_users))
-        if( $aa_users[$usr_id] )
+      while ( list($usr_id,$usr)= each($slice_users))
+        if ( $aa_users[$usr_id] )
           $slice_users[$usr_id][perm] = JoinAA_SlicePerm($slice_users[$usr_id][perm], $aa_users[$usr_id][perm]);
     }
 
-    if(isset($aa_users) AND is_array($aa_users)) {
+    if (isset($aa_users) AND is_array($aa_users)) {
       reset($aa_users);    // no slice permission set, but aa perms yes
-      while( list($usr_id,$usr)= each($aa_users)) {
-        if( !isset($slice_users) OR !is_array($slice_users) OR !$slice_users[$usr_id] )
+      while ( list($usr_id,$usr)= each($aa_users)) {
+        if ( !isset($slice_users) OR !is_array($slice_users) OR !$slice_users[$usr_id] )
           $slice_users[$usr_id] = $usr;
       }
     }
 
     reset($slice_users);
-    while( list($usr_id,$usr)= each($slice_users))
+    while ( list($usr_id,$usr)= each($slice_users))
       PrintUser($usr,$usr_id,$editor_perms);
 
     echo "<tr><td class=tabtxt>&nbsp;</td>

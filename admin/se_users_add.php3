@@ -96,32 +96,32 @@ if ($GrpSrch || $UsrSrch) {
   $slice_users = GetObjectsPerms($slice_id, "slice");
   $aa_users = GetObjectsPerms(AA_ID, "aa");   // higher than slice
 
-  if( isset($slice_users) AND !is_array($slice_users) )
+  if ( isset($slice_users) AND !is_array($slice_users) )
     unset($slice_users);
-  if( isset($aa_users) AND !is_array($aa_users) )
+  if ( isset($aa_users) AND !is_array($aa_users) )
     unset($aa_users);
 
-  if( is_array($aa_users)) {
+  if ( is_array($aa_users)) {
     reset($aa_users);    // add aa users too
-    while( list($usr_id,$usr)= each($aa_users))
-      if( !$slice_users[$usr_id] )
+    while ( list($usr_id,$usr)= each($aa_users))
+      if ( !$slice_users[$usr_id] )
         $slice_users[$usr_id] = $aa_users[$usr_id];
   }
 
   $l_counter = 1;
-  if( !is_array($addable) ) {
-    if( $addable == "too much" )
+  if ( !is_array($addable) ) {
+    if ( $addable == "too much" )
       echo "<tr><td class=tabtxt>". _m("Too many users or groups found.") ." ". _m("Try to be more specific.")."</td>\n";
      else
       echo "<tr><td class=tabtxt>". _m("No user (group) found") ."</td>\n";
   } else {
     reset($addable);
-    while( list($usr_id,$usr) = each($addable)) {
-      if(!$slice_users[$usr_id])                         // show only new users
+    while ( list($usr_id,$usr) = each($addable)) {
+      if (!$slice_users[$usr_id])                         // show only new users
         PrintAddableUser($usr, $usr_id, $curr_role, true);
        else
         PrintAddableUser($usr, $usr_id, $curr_role, false);
-      if($l_counter++ >= MAX_ENTRIES_SHOWN)
+      if ($l_counter++ >= MAX_ENTRIES_SHOWN)
         break;
     }
   }

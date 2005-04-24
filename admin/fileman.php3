@@ -39,12 +39,12 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."date.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."fileman.php3";
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."date.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."fileman.php3";
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
 // FilemanPerms() is defined in perm_core.php3, it sets $fileman_dir
 if (!FilemanPerms($auth, $slice_id)) 
@@ -80,7 +80,7 @@ if ($cmd == 'edit' || $cmd == 'createfile') {
     $fe_script = $sess->url("fileman.php3");
     $fe_wwwpath = FILEMAN_BASE_URL;
     // NOTE require_once outputs text, its not just defining functions
-    require_once $GLOBALS["AA_INC_PATH"]."filedit.php3";
+    require_once $GLOBALS['AA_INC_PATH']."filedit.php3";
     page_close ();
     exit;
 }
@@ -90,7 +90,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m("File Manager");?></TITLE>
 </HEAD>
 <?php
-require_once $GLOBALS["AA_INC_PATH"]."menu.php3"; 
+require_once $GLOBALS['AA_INC_PATH']."menu.php3"; 
 showMenu ($aamenus, "sliceadmin","fileman");
 
 echo "<H1><B>" . _m("File Manager");
@@ -119,15 +119,15 @@ function formatAction ($value) {
 *   @param string $value - the internationalized string to display
 */
 function fileAction ($name,$value) {
-    # Old style uses a link mostly to left of input field
-    # this is BAD UI design, should be a button to the right. 
-    # switch the comments, if you disagree with me!  (mitra)
-# OLD - links
+    // Old style uses a link mostly to left of input field
+    // this is BAD UI design, should be a button to the right. 
+    // switch the comments, if you disagree with me!  (mitra)
+// OLD - links
 /*
     return formatAction("<a href='javascript:command(\"$name\")'>$value</a>")
     ."&nbsp;&nbsp;";
 */
-# NEW - buttons
+// NEW - buttons
      return "<input type=button name=button$name value='$value' onclick='command(\"$name\")'>&nbsp;&nbsp;";
 }
 
@@ -136,9 +136,9 @@ function fileAction ($name,$value) {
 *   @param string $act - the HTML for the action element
 */
 function uilr($inp,$act) {
-# OLD input on right of action
-#   return ("<tr><td class=tabtxt>$act</td><td class=tabtxt>$inp</td></tr>\n");
-# NEW input on left of action
+// OLD input on right of action
+//   return ("<tr><td class=tabtxt>$act</td><td class=tabtxt>$inp</td></tr>\n");
+// NEW input on left of action
     return ("<tr><td class=tabtxt>$inp</td><td class=tabtxt>$act</td></tr>\n");
 }
 

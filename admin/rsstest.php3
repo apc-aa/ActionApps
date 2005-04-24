@@ -20,8 +20,8 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
+require_once $GLOBALS['AA_INC_PATH']."tabledit.php3";
+require_once $GLOBALS['AA_INC_PATH']."tv_common.php3";
 require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------

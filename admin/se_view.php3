@@ -19,16 +19,16 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# expected $view_type for both - new and edit
-# expected $view_id for editing specified view or $new
+// expected $view_type for both - new and edit
+// expected $view_id for editing specified view or $new
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";     // GetAliasesFromField funct def
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";  // GetDiscussionAliases funct def
-require_once $GLOBALS["AA_INC_PATH"]."msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";     // GetAliasesFromField funct def
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."discussion.php3";  // GetDiscussionAliases funct def
+require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
 // ----------------------------------------------------------------------------
 
@@ -118,9 +118,9 @@ function store_digest_filters ()
         if (substr ($rowid,0,3) != "new")
             $SQL = "UPDATE alerts_filter SET ". $varset->makeUPDATE() ." WHERE id='$rowid'";
         else $SQL = "INSERT INTO alerts_filter ".$varset->makeINSERT();
-        if( !$db->query($SQL)) {
+        if ( !$db->query($SQL)) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
-            break;   # not necessary - we have set the halt_on_error
+            break;   // not necessary - we have set the halt_on_error
         }
     }
     freeDB ($db);
@@ -139,7 +139,7 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false) {
   if (!SINGLE_COLUMN_FORM)
     echo "</td>\n<td>";
   FrmSelectEasy($name, $order_fields, $val);
-     # direction variable name - construct from $name
+     // direction variable name - construct from $name
   $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
   FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
 
@@ -155,10 +155,10 @@ function ConditionFrm($name, $txt, $val) {
   if (!SINGLE_COLUMN_FORM)
     echo "</td>\n<td>";
   FrmSelectEasy($name, $lookup_fields, $val);
-     # direction variable name - construct from $name
+     // direction variable name - construct from $name
   $opvarname = substr($name,0,5)."op";
   FrmSelectEasy($opvarname, $lookup_op, $vw_data[$opvarname]);
-     # direction variable name - construct from $name
+     // direction variable name - construct from $name
   if (!SINGLE_COLUMN_FORM)
     echo "</td></tr>\n<tr><td>&nbsp;</td><td>";
    else
@@ -177,10 +177,10 @@ $back_url = ( (($view_type == 'categories') OR ($view_type == 'links')) ?
                 get_aa_url('modules/links/modedit.php3') :
                 get_admin_url('se_views.php3') );
 
-if($cancel)
+if ($cancel)
   go_url( $back_url );
 
-if(!IfSlPerm(PS_FULLTEXT)) {
+if (!IfSlPerm(PS_FULLTEXT)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
   exit;
 }
@@ -203,42 +203,42 @@ $VIEW_TYPES_INFO = getViewTypesInfo();
 // the $view_type from $_POST array
 $view_type = $HTTP_POST_VARS['view_type'] ? $HTTP_POST_VARS['view_type'] : $HTTP_GET_VARS['view_type'];
 
-if( $update )
+if ( $update )
 {
   do
   {
-    foreach($VIEW_FIELDS as $k => $v) {
-      if( $v["validate"] AND $VIEW_TYPES[$view_type][$k] )
+    foreach ($VIEW_FIELDS as $k => $v) {
+      if ( $v["validate"] AND $VIEW_TYPES[$view_type][$k] )
         ValidateInput($k, $VIEW_TYPES[$view_type][$k], $$k, $err, false, $v["validate"]);
     }
-    if( count($err) > 1)
+    if ( count($err) > 1)
       break;
 
     $varset->add("slice_id", "unpacked", $slice_id);
     $varset->add("name", "quoted", $name);
     $varset->add("type", "quoted", $view_type);
 
-    foreach($VIEW_FIELDS as $k => $v) {
-      if( $VIEW_TYPES[$view_type][$k] ) {
+    foreach ($VIEW_FIELDS as $k => $v) {
+      if ( $VIEW_TYPES[$view_type][$k] ) {
         $varset->add($k, $v["insert"], (($v["type"]=="bool") ? ($$k ? 1 : 0)
                                                                       : $$k));
       }
     }
-    if( $view_id ) {
+    if ( $view_id ) {
       $SQL = "UPDATE view SET ". $varset->makeUPDATE() ." WHERE id='$view_id'";
-      if( !$db->query($SQL)) {
+      if ( !$db->query($SQL)) {
         $err["DB"] = MsgErr( _m("Can't change slice settings") );
-        break;   # not necessary - we have set the halt_on_error
+        break;   // not necessary - we have set the halt_on_error
       }
     } else {
-      if( !$db->query("INSERT INTO view ". $varset->makeINSERT())) {
+      if ( !$db->query("INSERT INTO view ". $varset->makeINSERT())) {
         $err["DB"] = MsgErr( _m("Can't insert into view.") );
-        break;   # not necessary - we have set the halt_on_error
+        break;   // not necessary - we have set the halt_on_error
       }
     }
-    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-    foreach($VIEW_TYPES[$view_type] as $k => $v) {
+    foreach ($VIEW_TYPES[$view_type] as $k => $v) {
       if (substr ($k,0,strlen("function:")) == "function:") {
         $show_fn = "store_".substr($k,strlen("function:"));
         $show_fn ();
@@ -248,42 +248,42 @@ if( $update )
     go_url( $back_url );
   }while(false);
 
-  if( count($err) <= 1 )
+  if ( count($err) <= 1 )
     $Msg = MsgOK(_m("View successfully changed"));
 }
 
-if( !$update ) {  # set variables from database
-  if( $view_id )  # edit specified view data
+if ( !$update ) {  // set variables from database
+  if ( $view_id )  // edit specified view data
     $SQL= " SELECT * FROM view WHERE id='$view_id'";
-  elseif( $new_templ AND $view_view)   # new view from template
+  elseif( $new_templ AND $view_view)   // new view from template
     $SQL= " SELECT * FROM view WHERE id='$view_view'";
-  elseif( $view_type == 'inputform') {         # new view - inputform
-    $vw_data['odd'] = GetInputFormTemplate(); # get current input form template
+  elseif( $view_type == 'inputform') {         // new view - inputform
+    $vw_data['odd'] = GetInputFormTemplate(); // get current input form template
     $SQL = false;
   }
-  elseif( $view_type )         # new view - get default values from view table -
-                               #            take first view of the same type
+  elseif( $view_type )         // new view - get default values from view table -
+                               //            take first view of the same type
     $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
-  else         # error - someone swith the slice or so
+  else         // error - someone swith the slice or so
     go_url($back_url);
 
   if ( $SQL ) {
       $db->query($SQL);
       if ($db->next_record()) {
         $vw_data = $db->Record;
-        if( $new_templ )           # if we create view from template - get view type
+        if ( $new_templ )           // if we create view from template - get view type
           $view_type = $db->f(type);
       } else
-        $vw_data = array( "listlen" => 10 );   # default values
+        $vw_data = array( "listlen" => 10 );   // default values
   }
-} else {        # updating - load data into vw_data array
-  foreach($VIEW_FIELDS as $k => $v) {
-    if( $VIEW_TYPES[$view_type][$k] )
+} else {        // updating - load data into vw_data array
+  foreach ($VIEW_FIELDS as $k => $v) {
+    if ( $VIEW_TYPES[$view_type][$k] )
       $vw_data[$k] = $$k;
   }
 }
 
-# operators array
+// operators array
 $lookup_op = array( "<"  => "<",
                     "<=" => "<=",
                     "="  => "=",
@@ -297,17 +297,17 @@ $lookup_op = array( "<"  => "<",
                     "m:<" => "< now() - x [in seconds]",
                     "m:>" => "> now() - x [in seconds]");
 
-# lookup group of constatnts
+// lookup group of constatnts
 $lookup_groups = GetConstants('lt_groupNames', 'name');
 
-# lookup slice fields
-$lookup_fields[''] = " ";  # default - none
+// lookup slice fields
+$lookup_fields[''] = " ";  // default - none
 if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
     $field_func = $VIEW_TYPES_INFO[$view_type]['fields'];
     $lookup_fields += $field_func();
 } else {
     $db->tquery("SELECT id, name FROM field WHERE slice_id='$p_slice_id' ORDER BY name");
-    while($db->next_record())
+    while ($db->next_record())
         $lookup_fields[$db->f('id')] = $db->f('name');
 }
 
@@ -330,7 +330,7 @@ $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
 
 require_once (($view_type == 'categories') OR ($view_type == 'links')) ?
                        $GLOBALS["AA_BASE_PATH"]."/modules/links/menu.php3" :
-                       $GLOBALS["AA_INC_PATH"]."menu.php3";
+                       $GLOBALS['AA_INC_PATH']."menu.php3";
 
 switch ( $view_type ) {
     case 'categories': showMenu ($aamenus, "modadmin", $view_id ? "view$view_id" : "newcatview"); break;
@@ -353,7 +353,7 @@ echo "<form name=f method=post action='$PHP_SELF'>";
 FrmTabCaption( _m("Defined Views"), '', '', $form_buttons, $sess, $slice_id);
 FrmStaticText(_m("Id"), $view_id );
 
-foreach($VIEW_TYPES[$view_type] as $k => $v) {
+foreach ($VIEW_TYPES[$view_type] as $k => $v) {
     if (substr ($k,0,strlen("function:")) == "function:") {
         $show_fn = "show_".substr($k,strlen("function:"));
         $show_fn ();
@@ -363,7 +363,7 @@ foreach($VIEW_TYPES[$view_type] as $k => $v) {
 
     $input = $VIEW_FIELDS[$k]["input"];
 
-    if (is_array ($v)) {
+    if (is_array($v)) {
         $label = $v["label"];
         $help = $v["help"];
         if ($v["input"])  $input = $v["input"];
@@ -384,7 +384,7 @@ foreach($VIEW_TYPES[$view_type] as $k => $v) {
         case "chbox":   FrmInputChBox( $k, $label, $value); break;
         case "cond":    ConditionFrm(  $k, $label, $value); break;
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
-        case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]["value"], $vw_data[$k], false, $help, DOCUMENTATION_URL); break;
+        case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help, DOCUMENTATION_URL); break;
         case "none":    break;
     }
 }
@@ -393,7 +393,7 @@ foreach($VIEW_TYPES[$view_type] as $k => $v) {
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
     case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases(), false, false , $form_buttons, $sess, $slice_id);
     case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons, $sess, $slice_id);    break;
-    case 'field':       if( $r_fields )
+    case 'field':       if ( $r_fields )
                             $fields = $r_fields;
                         else
                             list($fields,) = GetSliceFields($slice_id);
@@ -412,7 +412,7 @@ FrmTabEnd();
 echo "</FORM><br>";
 
 
-if( $view_id ) {
+if ( $view_id ) {
   $ssiuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF);
   echo _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") ."<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
        "?vid=$view_id&quot;--&gt;</pre>";

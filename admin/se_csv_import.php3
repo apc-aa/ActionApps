@@ -50,14 +50,14 @@ http://www.apc.org/
 // todo - work with global variable $err??
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]. 'import_util.php3';
+require_once $GLOBALS['AA_INC_PATH']. 'import_util.php3';
 
 $text      = stripslashes($text);
 $upfile    = stripslashes($upfile);
 $url       = stripslashes($url);
 $enclosure = stripslashes($enclosure);
 
-if(!IfSlPerm(PS_FEEDING)) {
+if (!IfSlPerm(PS_FEEDING)) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to import files"));
     exit;
 }
@@ -85,7 +85,7 @@ function createFile($dataType,$uploadpath,$file_name, $url,$text) {
             if (!fwrite($out,$data)) {
                 return _m("Cannot write to file");
             }
-        } while(true);
+        } while (true);
         fclose($in);
     } else {	// text
         if (!fwrite($out,stripslashes($text))) {
@@ -141,7 +141,7 @@ if ( $upload ) {
     go_url($sess->url(self_base()."se_csv_import2.php3"). "&fileName=" . $uploadpath.$file_name . "&addParamsSerial=" .base64_encode(serialize($addParams)));
 }
 
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 <TITLE><?php echo _m("Admin - Import .CSV file"); ?></TITLE>
@@ -153,7 +153,7 @@ function InitPage() {}
 <BODY>
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
   showMenu ($aamenus, "sliceadmin","CSVimport");
 
   echo "<H1><B>" . _m("Admin - Import CSV (1/2) - Source data") . "</B></H1>";

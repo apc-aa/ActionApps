@@ -28,7 +28,7 @@ http://www.apc.org/
 */
 
 require_once $directory_depth."../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
+require_once $GLOBALS['AA_INC_PATH']."tabledit.php3";
 require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------
@@ -36,20 +36,20 @@ require_once menu_include();   //show navigation column depending on $show
 $sess->register("tview");
 if ($set_tview) $tview = $set_tview;
 
-require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tv_misc.php3";
+require_once $GLOBALS['AA_INC_PATH']."tv_common.php3";
+require_once $GLOBALS['AA_INC_PATH']."tv_misc.php3";
 
 // is tableview defined in special file (tableviews.php3)?
 if ( ($tview{0} == "a") OR ( substr($tview,0,5) =='polls') ) {
     $func = "GetTableView";
-    require_once $GLOBALS["AA_INC_PATH"]."tableviews.php3";
+    require_once $GLOBALS['AA_INC_PATH']."tableviews.php3";
 }
 else
     $func = "GetMiscTableView";
 
 $tableview = $func($tview);
 
-if (!is_array ($tableview)) {
+if (!is_array($tableview)) {
     go_url ($sess->url(self_base()."index.php3?slice_id=$slice_id&Msg=Bad table view ID: $tview"));
     exit;
 }

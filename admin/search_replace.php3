@@ -28,9 +28,9 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]. "formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]. "searchbar.class.php3";
-require_once $GLOBALS["AA_INC_PATH"]. "varset.php3";
+require_once $GLOBALS['AA_INC_PATH']. "formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']. "searchbar.class.php3";
+require_once $GLOBALS['AA_INC_PATH']. "varset.php3";
 
 function ChangeContent($zids, $field_id, $new_content) {
     global $allknownslices;
@@ -45,8 +45,7 @@ function ChangeContent($zids, $field_id, $new_content) {
         $content4id[$field_id][0]['value'] = addslashes($item->subst_alias($new_content));
 
         $slice =& $allknownslices->addslice($item->getSliceID());
-        if ( StoreItem( $item->getItemID(), $slice->unpacked_id(), $content4id, $slice->fields('record'),
-                        false, true, false, $item->getContent() ) ) { // update, invalidate, notfeed
+        if ( StoreItem( $item->getItemID(), $slice->unpacked_id(), $content4id, $slice->fields('record'), false, true, false, $item->getContent() ) ) { // update, invalidate, notfeed
             $count++;
         }
     }
@@ -70,7 +69,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
             ValidateInput("field_id",    _m("Field"),       $field_id,    $err, true,  "text");
             ValidateInput("new_content", _m("New content"), $new_content, $err, false, "text");
 
-            if( count($err) > 1) break;
+            if ( count($err) > 1) break;
 
             // --- fill the fileds
             $zids    = ( ($group == 'testitemgroup') ?
@@ -86,7 +85,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
                 $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
             }
             writeLog("ITEM_FIELD_FILLED", array($zids->count(), $changed),$sel);
-        } while(false);
+        } while (false);
     }
 }
 

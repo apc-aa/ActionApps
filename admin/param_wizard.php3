@@ -39,8 +39,8 @@ http://www.apc.org/
 */	
 
 require_once "../include/init_page.php3";
-bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".get_mgettext_lang()."_param_wizard_lang.php3");
-require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
+bind_mgettext_domain ($GLOBALS['AA_INC_PATH']."lang/".get_mgettext_lang()."_param_wizard_lang.php3");
+require_once $GLOBALS['AA_INC_PATH']."constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
@@ -101,7 +101,7 @@ if (is_array($desc[params])) {
 <body onload=readParams()>
 <center>
 
-<?php # ------- Caption ----------- ?>
+<?php // ------- Caption ----------- ?>
 <table border="0" cellspacing="0" cellpadding="1" width="95%" bgcolor="<?php echo COLOR_TABTITBG ?>">
    <TR><TD align=center class=tablename width="100%"><?php echo $title ?></TD></TR>
 </table>
@@ -216,7 +216,7 @@ echo "
 </td></tr>
 <tr><td class=tabtit height=30>";
 
-if (is_array ($desc[examples])) {
+if (is_array($desc[examples])) {
 	echo _m("Have a look at these examples of parameters sets:");
 	echo "<table width = \"100%\" border=1 cellspacing=1 cellpadding = 2>";
 	for ($i = 0; $i < count($desc[examples]); ++$i) {
