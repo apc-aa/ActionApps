@@ -33,25 +33,25 @@ http://www.apc.org/
 * Form utility functions
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."constedit_util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."javascript.php3";
-require_once $GLOBALS["AA_INC_PATH"]."profile.class.php3";
-require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
-require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
+require_once $GLOBALS['AA_INC_PATH']."constedit_util.php3";
+require_once $GLOBALS['AA_INC_PATH']."javascript.php3";
+require_once $GLOBALS['AA_INC_PATH']."profile.class.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
 
 // IsUserNameFree() function deffinition here
-require_once($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
+require_once($GLOBALS['AA_INC_PATH'] . "perm_" . PERM_LIB . ".php3");
 
 define( 'AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
 define( 'AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
-# Easy to redefine this functionality by changing the array below
-# prefix is what goes in the selection box in "Edit Item",
-# tag is what goes on the front of the id as stored in the database
-# str is the string to display in the Related Items window
-# Note that A M B are hard-coded in the Related Items Window param wizard,
-# but any letters can be used, i.e. this table can be extended.
-# Next step might be to extend parameter recognition to load this table
-# Retaining backward compatability with "[AMB]+" recognition
+// Easy to redefine this functionality by changing the array below
+// prefix is what goes in the selection box in "Edit Item",
+// tag is what goes on the front of the id as stored in the database
+// str is the string to display in the Related Items window
+// Note that A M B are hard-coded in the Related Items Window param wizard,
+// but any letters can be used, i.e. this table can be extended.
+// Next step might be to extend parameter recognition to load this table
+// Retaining backward compatability with "[AMB]+" recognition
 global $tps;
 $tps = array (
   'AMB' => array (
@@ -125,10 +125,6 @@ class inputform {
         global $sess;
         if ( $this->display_aa_begin_end ) {
             HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-/*            echo '
-                <style>
-                    #body_white_color { color: #000000; }
-                </style>';*/
             echo GetFormJavascript($this->show_func_used, $this->js_proove_fields);
             echo '
                 <title>'. $this->page_title .'</title>
@@ -137,7 +133,7 @@ class inputform {
                 <H1><B>' . $this->page_title .'</B></H1>';
             PrintArray( $this->messages['err'] );     // prints err or OK messages
 
-            if ( $this->show_func_used['fil']) { # uses fileupload?
+            if ( $this->show_func_used['fil']) { // uses fileupload?
                   $html_form_type = 'enctype="multipart/form-data"';
             }
         }
@@ -159,7 +155,7 @@ class inputform {
 //        debug( $form, $GLOBALS['contentcache']);
     //added for MLX
         // print the inputform
-        $CurItem = new item(&$content4id, $slice->aliases(), '', $form, $remove_string);   # just prepare
+        $CurItem = new item(&$content4id, $slice->aliases(), '', $form, $remove_string);   // just prepare
 
         $out = $CurItem->get_item();
 
@@ -234,13 +230,13 @@ class inputform {
         }
 
         list($fields, $prifields) = $slice->fields();
-        if( !isset($prifields) OR !is_array($prifields) ) {
+        if ( !isset($prifields) OR !is_array($prifields) ) {
             return MsgErr(_m("No fields defined for this slice"));
         }
 
         $form4anonymous_wizard = is_array($show);
 
-        foreach($prifields as $pri_field_id) {
+        foreach ($prifields as $pri_field_id) {
             $f           = $fields[$pri_field_id];
             $varname     = 'v'. unpack_id($pri_field_id);
             $htmlvarname = $varname."html";
@@ -261,21 +257,21 @@ class inputform {
 
             // $field_value and $field_html_flag
 
-            if( $edit ) {
+            if ( $edit ) {
                 $field_value     = $content4id[$pri_field_id];
                 $field_html_flag = $content4id[$pri_field_id][0]['flag'] & FLAG_HTML;
-            } else {     # insert or new reload of form after error in inserting
-                # first get values from profile, if there are some predefined value
+            } else {     // insert or new reload of form after error in inserting
+                // first get values from profile, if there are some predefined value
                 $foo = $profile->getProperty('predefine',$f['id']);
-                if( $foo AND !$GLOBALS[$varname]) {
+                if ( $foo AND !$GLOBALS[$varname]) {
                     $x                     = $profile->parseContentProperty($foo);
-                    $GLOBALS[$varname]     = stripslashes($x[0]);  // it is quoted!!!
+                    $GLOBALS[$varname]     = $x[0];  // it is not quoted, so OK
                     $GLOBALS[$htmlvarname] = $x[1];
                 }
-                # get values from form (values are filled when error on form ocures
-                if( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {
-                      # get the multivalues
-                    foreach( $GLOBALS[$varname] as $value ) {
+                // get values from form (values are filled when error on form ocures
+                if ( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {
+                      // get the multivalues
+                    foreach ( $GLOBALS[$varname] as $value ) {
                         $field_value[] = array('value' => stripslashes($value)); // it is quoted!!!
                     }
                 } else {
@@ -433,7 +429,7 @@ class aainputfield {
     function implodaval($delim=',') {
         if ( isset($this->value) AND is_array($this->value) ) {
             foreach ( $this->value as $v ) {
-                $res .= ($res ? $delim : ''). $v['value']; # add value separator just if field is filled
+                $res .= ($res ? $delim : ''). $v['value']; // add value separator just if field is filled
             }
         }
         return $ret;
@@ -454,7 +450,7 @@ class aainputfield {
         $zids = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
         if ( !($constgroup=$this->param[0]) ) {  // assignment
             $this->const_arr = array();
-        } elseif ( substr($constgroup,0,7) == "#sLiCe-" ) { # prefix indicates select from items
+        } elseif ( substr($constgroup,0,7) == "#sLiCe-" ) { // prefix indicates select from items
             $sid = substr($constgroup, 7);
             /** Get format for which represents the id
              *  Could be field_id (then it is grabbed from item and truncated to 50
@@ -539,11 +535,11 @@ class aainputfield {
 
     /** returns $ret_val if given $option is selected for current field */
     function if_selected($option, $ret_val) {
-        # fill selected array from value
+        // fill selected array from value
         if ( !isset( $this->selected ) ) {  // not cached yet => create selected array
-            if( isset($this->value) AND is_array($this->value) ) {
+            if ( isset($this->value) AND is_array($this->value) ) {
                 foreach ( $this->value as $v ) {
-                    if( $v['value'] ) {
+                    if ( $v['value'] ) {
                         $this->selected[(string)$v['value']] = true;
                     }
                 }
@@ -642,7 +638,7 @@ class aainputfield {
                                $this->inputFile($accepts, $text, $hlp);
                                break;
             case 'anonym_dte':
-            case 'normal_dte': if( strstr($this->param[0], "'")) {     // old format
+            case 'normal_dte': if ( strstr($this->param[0], "'")) {     // old format
                                    $this->param = explode("'",$this->param[0]);
                                }
                                list($y_range_minus, $y_range_plus, $from_now, $display_time) = $this->param;
@@ -662,8 +658,8 @@ class aainputfield {
             case 'anonym_iso':
             case 'normal_iso':
             case 'freeze_iso': list(, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw) = $this->param;
-                               $mode      = get_if($mode,'AMB');         # AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
-                               $tp        = get_if($tp,  'AMB');         # Default to use the AMP table
+                               $mode      = get_if($mode,'AMB');         // AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
+                               $tp        = get_if($tp,  'AMB');         // Default to use the AMP table
                                $tagprefix = ( isset($GLOBALS['tps'][$tp])              ? $GLOBALS['tps'][$tp] :
                                             ( isset($GLOBALS['apc_state']['tps'][$tp]) ? $GLOBALS['apc_state']['tps'][$tp] :
                                                                                         null ));
@@ -703,9 +699,9 @@ class aainputfield {
     // pivate functions - functions helping field display ---------------------
 
     /** functions to show additional field data */
-    function needed()       { if( $this->required ) $this->echoo( "&nbsp;*" ); }
-    function help($hlp)     { if( $hlp )            $this->echoo( "<div class=tabhlp>$hlp</div>" ); }
-    function morehelp($hlp) { if( $hlp )            $this->echoo( "&nbsp;<a href=".safe($hlp)." target='_blank'>?</a>" ); }
+    function needed()       { if ( $this->required ) $this->echoo( "&nbsp;*" ); }
+    function help($hlp)     { if ( $hlp )            $this->echoo( "<div class=tabhlp>$hlp</div>" ); }
+    function morehelp($hlp) { if ( $hlp )            $this->echoo( "&nbsp;<a href=".safe($hlp)." target='_blank'>?</a>" ); }
 
     /** shows help message and link to more help document, if set */
     function helps( $plus=false, $hlp=null, $more_hlp=null ) {
@@ -729,9 +725,9 @@ class aainputfield {
     /** Print links to document convertors, if convertors are installed */
     function get_convertors() {
         global $CONV_HTMLFILTERS, $AA_INSTAL_PATH;
-        if( isset($CONV_HTMLFILTERS) AND is_array($CONV_HTMLFILTERS) ) {
+        if ( isset($CONV_HTMLFILTERS) AND is_array($CONV_HTMLFILTERS) ) {
             $delim='';
-            foreach( $CONV_HTMLFILTERS as $format => $program) {
+            foreach ( $CONV_HTMLFILTERS as $format => $program) {
                if ( $format == 'iconv' )
                     continue;
                 $convertor .= $delim . strtoupper(str_replace( '.', '', $format ));
@@ -745,14 +741,14 @@ class aainputfield {
     /** Prints html/plan_text radiobutton */
     function html_radio($convert=false, $show_rp_butt=true) {
         global $sess;
-        if( $this->html_rb_show ) {
+        if ( $this->html_rb_show ) {
             $htmlvar     = $this->varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" )."</input>";
             $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" )."</input>";
 //        debug($this->varname, $this->html_flag, !$this->html_flag,$radio_html, $radio_plain );
             $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$this->varname."', '".$sess->id."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
             // conversions menu
-            if( $convert AND ($convertor = $this->get_convertors())) {
+            if ( $convert AND ($convertor = $this->get_convertors())) {
                 $this->echoo('  <table width="100%" border="0" cellspacing="0" cellpadding="" bgcolor="'. COLOR_TABBG ."\">\n   <tr><td>");
                 if ($show_rp_butt) {
                     $this->echoo('<!-- used for hiding html/plain radio buttons, dont remove !!! --><span id="htmlplainspan'.$this->varname.'">');
@@ -819,7 +815,7 @@ class aainputfield {
         list($name,$val,$add) = $this->prepareVars();
 
         $this->echoo("\n<tr class=\"formrow{formpart}\">");
-        if( !$changeorder ) {
+        if ( !$changeorder ) {
             $this->field_name(false, $colspan);
         }
         $this->echoo("<td>");
@@ -828,7 +824,7 @@ class aainputfield {
                               getTriggers("input",$name).">");
         $this->helps();
         $this->echoo("</td>");
-        if( $changeorder ) {
+        if ( $changeorder ) {
             $this->field_name($colspan);
         }
         $this->echoo("</tr>\n");
@@ -877,7 +873,7 @@ class aainputfield {
     */
     function staticText($safing=true, $type='first') {
         list($name,$val,$add) = $this->prepareVars($type);
-        if( $safing ) $val=htmlspecialchars($val);
+        if ( $safing ) $val=htmlspecialchars($val);
         $this->field_name('plus');
         $this->echovar( $val );
         $this->helps('plus');
@@ -889,7 +885,7 @@ class aainputfield {
     */
     function hidden($safing=true ) {
         list($name,$val,$add) = $this->prepareVars();
-        if( $safing ) $val=htmlspecialchars($val);
+        if ( $safing ) $val=htmlspecialchars($val);
         $this->echoo('<tr height="1" colspan="2"><td height="1">');
         $this->echovar( "<input type=\"hidden\" name=\"$name\" value=\"$val\">" );
         $this->echoo("</td></tr>\n");
@@ -974,7 +970,7 @@ class aainputfield {
         list($name,$val,$add) = $this->prepareVars('multi');
         $this->field_name('plus');
 
-        if (is_array ($records)) {
+        if (is_array($records)) {
             if (! $ncols) {
                 $this->echovar( implode('', $records) );
             } else {
@@ -1057,7 +1053,7 @@ class aainputfield {
         $ret .= $this->get_options( $this->const_arr, false, false, 'all', !$this->required);
         $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
-        while( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
+        while ( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
             $ret .= AA_WIDTHTOR;
         }
         $ret .= "</select>";
@@ -1094,7 +1090,7 @@ class aainputfield {
         $ret .= $this->get_options( $this->const_arr, false, false, 'all', false, true);
         $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
-        while( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
+        while ( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
             $ret .= AA_WIDTHTOR;
         }
         $ret .= "</select>";
@@ -1190,7 +1186,7 @@ class aainputfield {
             $ret .= $this->get_options( $this->const_arr, false, false, 'all', false);
             $option_no = count($this->const_arr) + ($this->required ? 0:1);
             // add blank rows if asked for
-            while( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
+            while ( $option_no++ < $minrows ) { // if no options, we must set width of <select> box
                 $ret .= AA_WIDTHTOR;
             }
             $ret .= "</select>";
@@ -1246,7 +1242,7 @@ class aainputfield {
         $out = "<SELECT name='$name' MULTIPLE size=$rows".getTriggers("select",$name).">";
             if (is_array($val)) {
                 $constants_names = GetConstants($group_id);
-                foreach( $val as $v) {
+                foreach ( $val as $v) {
                     if ($v['value']) {
                         $out .= "<option value=\"".htmlspecialchars($v['value'])."\">".htmlspecialchars($constants_names[$v['value']])."\n";
                     }
@@ -1433,7 +1429,7 @@ function FrmMoreHelp($hlp, $text="", $hint="", $image=false) {
     if ($image) {
         $img = GetAAImage('help50.gif', htmlspecialchars($hint), 16, 12);
     }
-    if( $hlp ) {
+    if ( $hlp ) {
         if (is_array($text) || ($image)) {
           return "&nbsp;".($image ? "&nbsp;&nbsp;" : $text["before"])."<a href=".safe($hlp)." target='_blank' ".
             (($hint != "") ? "title=\"".htmlspecialchars($hint)."\"" : "") .">".($image ? $img : $text["text"])."</a>".($image ? "" : $text["after"]);
@@ -1618,7 +1614,7 @@ function FrmTwoBox($name, $txt, $arr, $val, $rows, $selected, $needed=false, $wi
 * if $condition, shows star
 */
 function Needed( $condition=true ) {
-  if( $condition )
+  if ( $condition )
     echo "&nbsp;*";
 }
 
@@ -1626,7 +1622,7 @@ function Needed( $condition=true ) {
 * if $txt, shows help message
 S*/
 function PrintHelp( $txt ) {
-  if( $txt )
+  if ( $txt )
     echo "<div class=tabhlp>$txt</div>";
 }
 
@@ -1634,7 +1630,7 @@ function PrintHelp( $txt ) {
 * if $txt, shows link to more help
 */
 function PrintMoreHelp( $txt ) {
-  if( $txt )
+  if ( $txt )
     echo "&nbsp;<a href='$txt' target='_blank'>?</a>";
 }
 
@@ -1662,9 +1658,9 @@ function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_
                             $secondfield="", $usevalue=false) {
   $name=safe($name); $val=safe($val); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
 
-  if( !$input_maxsize )
+  if ( !$input_maxsize )
     $input_maxsize = 254;
-  if( !$input_size )
+  if ( !$input_size )
     $input_size = 25;
   if ( !$select_size )
     $select_size = 6;
@@ -1677,7 +1673,7 @@ function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_
                   value = inputbox.value;
                   length = selectbox.length;
                   if (value.length != 0) {
-                    if((length == 1) && (selectbox.options[0].value=='wIdThTor') ){\n";
+                    if ((length == 1) && (selectbox.options[0].value=='wIdThTor') ){\n";
 
         if ($numbered==1) {
           echo "    text = length+'. '+value; ";
@@ -1771,7 +1767,7 @@ function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_
   if (is_array($arr)) {
     reset($arr);
     $i=0;
-    while(list($k, $v) = each($arr)) {
+    while (list($k, $v) = each($arr)) {
       $i++;
       echo "<option value=\"". htmlspecialchars($usevalue ? $v : $k)."\"";
       if ((string)$val == (string)(($usevalue OR $secondfield) ? $v : $k))
@@ -1825,7 +1821,7 @@ function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
 
   $retval = "<select name=\"$name\" $add>\n";
   reset($arr);
-  while(list($k, $v) = each($arr)) {
+  while (list($k, $v) = each($arr)) {
     $retval .= "  <option value=\"". htmlspecialchars($k)."\"";
     if ((string)$selected == (string)$k)
       $retval .= ' selected class="sel_on"';
@@ -1839,7 +1835,7 @@ function FrmRadioEasy($name, $arr, $selected="", $new_line=false) {
   $name=safe($name); // safe($add) - NO! - do not safe it
 
   reset($arr);
-  while(list($k, $v) = each($arr)) {
+  while (list($k, $v) = each($arr)) {
     $retval .= "<input type=radio name=\"$name\" value=\"". htmlspecialchars($k)."\"";
     if (!$selected) $selected = $k;
     if ((string)$selected == (string)$k)
@@ -1917,7 +1913,7 @@ function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
     echo '    </table>
             </td>
           </tr>';
-    if( $buttons ) FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABTITBG);
+    if ( $buttons ) FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABTITBG);
     echo '
         </table>';
 }
@@ -1933,7 +1929,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
 
     if ($tr) { echo '<tr class="formbuttons">'; }
     echo '<td align="center" valign="'.$valign.'" bgcolor='.$bgcolor. '>';
-    if( isset($buttons) AND is_array($buttons) ) {
+    if ( isset($buttons) AND is_array($buttons) ) {
         // preparison: is the accesskey working?
         detect_browser();
         if ($BPlatform == "Macintosh") {
@@ -1945,7 +1941,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
         }
 
         foreach ( $buttons as  $name => $properties ) {
-            if( !is_array($properties) ) {
+            if ( !is_array($properties) ) {
                 $name = $properties;
                 $properties = array();
             }
@@ -2026,9 +2022,9 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
         }
     }
 
-    if( $sess )
+    if ( $sess )
     $sess->hidden_session();
-    if( $slice_id )
+    if ( $slice_id )
     echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';
 
     echo "</td>";
@@ -2178,12 +2174,12 @@ function GetFormJavascript($show_func_used, $js_proove_fields) {
                  // HTMLArea.loadPlugin("ContextMenu");
                  // HTMLArea.loadPlugin("HtmlTidy");
                  // HTMLArea.loadPlugin("ListType");
-                 // HTMLArea.loadPlugin("ImageManager");
+              //    HTMLArea.loadPlugin("ImageManager");
                  // HTMLArea.loadPlugin("SpellChecker");
-                 // HTMLArea.loadPlugin("InsertFile");
+              //    HTMLArea.loadPlugin("InsertFile");
 
                     function initDocument() {
-                        for(var i = 0; i < htmlareas.length; i++) {
+                        for (var i = 0; i < htmlareas.length; i++) {
                             generateArea(htmlareas[i][0], htmlareas[i][1], htmlareas[i][2], htmlareas[i][3], htmlareas[i][4], htmlareas[i][5]);
                         }
                     }
@@ -2327,7 +2323,7 @@ function FrmItemListForm(&$items) {
     echo $out;
 }
 
-# Prints alias names as help for fulltext and compact format page
+// Prints alias names as help for fulltext and compact format page
 function PrintAliasHelp($aliases, $fields=false, $endtable=true, $buttons='', $sess='', $slice_id='') {
   global $sess;
 
@@ -2340,7 +2336,7 @@ function PrintAliasHelp($aliases, $fields=false, $endtable=true, $buttons='', $s
 
   $count = 0;
   while ( list( $ali,$v ) = each( $aliases ) ) {
-    # if it is possible point to alias editing page
+    // if it is possible point to alias editing page
     $aliasedit = ( !$v["fld"] ? "&nbsp;" :
       "<a href=\"". $sess->url(con_url("./se_inputform.php3",
                     "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
@@ -2362,8 +2358,8 @@ function PrintAliasHelp($aliases, $fields=false, $endtable=true, $buttons='', $s
 */
 function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all")
 {
-    if($variable=="" OR Chop($variable)=="")
-        if( $needed ) {                     // NOT NULL
+    if ($variable=="" OR Chop($variable)=="")
+        if ( $needed ) {                     // NOT NULL
             $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must be filled").")");
             return false;
         }
@@ -2375,26 +2371,26 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
     }
 
     switch($type) {
-    case "id":     if((string)$variable=="0" AND !$needed)
+    case "id":     if ((string)$variable=="0" AND !$needed)
                      return true;
-                   if( !EReg("^[0-9a-f]{1,32}$",Chop($variable)))
+                   if ( !EReg("^[0-9a-f]{1,32}$",Chop($variable)))
                    { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
-    case "alias":  if((string)$variable=="0" AND !$needed)
+    case "alias":  if ((string)$variable=="0" AND !$needed)
                      return true;
-                   if( !EReg("^_#[0-9_#a-zA-Z]{8}$",Chop($variable)))
+                   if ( !EReg("^_#[0-9_#a-zA-Z]{8}$",Chop($variable)))
                    { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
-    case "number": if( !EReg("^[0-9]+$",Chop($variable)) )
+    case "number": if ( !EReg("^[0-9]+$",Chop($variable)) )
                    { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
                    return true;
-    case "perms":  if( !(($Promenna=="editor") OR ($Promenna=="admin")))
+    case "perms":  if ( !(($Promenna=="editor") OR ($Promenna=="admin")))
                    { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
                      return false;
                    }
@@ -2406,8 +2402,8 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
                    return true;
     case "login":
       $len = strlen($variable);
-      if( ($len>=3) AND ($len<=32) )
-      { if( !EReg("^[a-zA-Z0-9]*$",Chop($variable)))
+      if ( ($len>=3) AND ($len<=32) )
+      { if ( !EReg("^[a-zA-Z0-9]*$",Chop($variable)))
         { $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("you should use a-z, A-Z and 0-9 characters").")");
           return false;
         }
@@ -2418,19 +2414,19 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
 
     case "password":
       $len = strlen($variable);
-      if( ($len>=5) AND ($len<=32) )
+      if ( ($len>=5) AND ($len<=32) )
         return true;
       $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must by 5 - 32 characters long").")");
       return false;
 
-    case "filename": if( !EReg("^[-.0-9a-zA-Z_]+$", $variable)) {
+    case "filename": if ( !EReg("^[-.0-9a-zA-Z_]+$", $variable)) {
                        $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("only 0-9 A-Z a-z . _ and - are allowed").")");
                        return false;
                      }
                      return true;
 
     case "e-unique": // validate email ...
-                     if( !EReg("^.+@.+\..+",Chop($variable)))
+                     if ( !EReg("^.+@.+\..+",Chop($variable)))
                        { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
                          return false;
                        }
