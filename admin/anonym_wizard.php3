@@ -6,10 +6,10 @@
  *  @package UserInput
  *  @version $Id$
  *  @author Jakub Adamek <jakubadamek@ecn.cz>, February 2003
- *  @copyright (C) 1999-2003 Association for Progressive Communications 
+ *  @copyright (C) 1999-2003 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -36,13 +36,13 @@ require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
 
 
 function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_show_result, $show_result) {
-    
-    // we do not want anonymous form to use sessions at all 
+
+    // we do not want anonymous form to use sessions at all
     $sess_bck = $GLOBALS['sess'];
     $GLOBALS['sess'] = null;
 
     $ret       = '';   // resulting HTML code
-    $slice_id  = $slice->unpacked_id(); 
+    $slice_id  = $slice->unpacked_id();
     $form_type = $slice->getfield('permit_anonymous_edit');
 
     foreach ($s_fields as $field) {
@@ -64,7 +64,7 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
         $html_form_type = ' enctype="multipart/form-data"';
     }
 
-    
+
     $ret .= '
     <!-- '. _m('ActionApps Anonymous form') .'-->
     <!-- '. _m('Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->', array("     <body onload=\"HTMLArea.init()\">   ")) .'
@@ -117,7 +117,7 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
         $ret .= getFrmJavascript( 'if (typeof(fillform_fields) != "undefined")  fillForm();');
     }
-    
+
     // restore session back
     $GLOBALS['sess'] = $sess_bck;
     return $ret;
@@ -132,30 +132,30 @@ if ($cancel) {
 if (!IfSlPerm(PS_FIELDS)) {
     MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
     exit;
-}  
+}
 
 // lookup fields
-$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl 
-        FROM field 
-        WHERE slice_id='$p_slice_id' 
+$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
+        FROM field
+        WHERE slice_id='$p_slice_id'
         ORDER BY input_pri";
 $s_fields = GetTable2Array($SQL);
 
 
-// get all warnings 
+// get all warnings
 $warning = array();
 $slice   = new slice($slice_id);
 
-if ($slice->getfield('permit_anonymous_post') == 0) { 
+if ($slice->getfield('permit_anonymous_post') == 0) {
     $warning[] = _m("WARNING: You did not permit anonymous posting in slice settings.");
-} 
+}
 elseif ($slice->getfield('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_ALLOWED) {
     $warning[] = _m("WARNING: You did not permit anonymous editing in slice settings. A form allowing only anonymous posting will be shown.");
 }
 
-if ($show_form) {        
+if ($show_form) {
     $fields = $slice->fields('record');
-    foreach ($fields as $fid => $foo) {    
+    foreach ($fields as $fid => $foo) {
         if (substr ($fid,0,13) == "password.....") {
             if ($show[$fid] && $slice->getfield('permit_anonymous_edit') != ANONYMOUS_EDIT_PASSWORD) {
                 $warning[] = _m("WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing.");
@@ -165,7 +165,7 @@ if ($show_form) {
     }
 }
 
-if (!$form_url)    $form_url = "http://FILL_YOUR_URL.shtml";        
+if (!$form_url)    $form_url = "http://FILL_YOUR_URL.shtml";
 if (!$ok_url)      $ok_url = "http://THANK_YOU.shtml";
 if (!$err_url)     $err_url = "http://ERROR_OCCURED.shtml";
 if (!$show_result) $show_result = "http://SHOW_RESULT.php3";
@@ -180,13 +180,13 @@ echo "<TITLE>"._m("Admin - Anonymous Form Wizard")."</TITLE>
 </HEAD>";
 
 require_once $GLOBALS['AA_INC_PATH']."menu.php3";
-showMenu($aamenus, "sliceadmin", "anonym_wizard");  
+showMenu($aamenus, "sliceadmin", "anonym_wizard");
 
 echo "<H1>"._m("Admin - Anonymous Form Wizard")."</B></H1>";
 
 PrintArray($err);
 PrintArray($warning);
-echo $Msg;  
+echo $Msg;
 
 $form_buttons=array("show_form" => array("value"=>_m("Show Form"),
                                          "type"=>"submit"),
@@ -199,7 +199,7 @@ $helplink = ' <a href="'.$AA_INSTAL_PATH.'doc/anonym.html#wizard">'. GetAAImage(
 FrmTabCaption(_m("URLs shown after the form was sent"). $helplink,'','',$form_buttons, $sess, $slice_id);
 FrmInputText('ok_url',  _m("OK page"),    $ok_url,  254, 60);
 FrmInputText('err_url', _m("Error page"), $err_url, 254, 60);
-FrmInputChBox('use_show_result', _m("Use a PHP script to show the result on the OK and Error pages:"), $use_show_result, true);                
+FrmInputChBox('use_show_result', _m("Use a PHP script to show the result on the OK and Error pages:"), $use_show_result, true);
 FrmInputText('show_result', '', $show_result, 254, 60);
 FrmTabSeparator(_m("Fields"));
 
@@ -240,7 +240,7 @@ FrmTabEnd($form_buttons, $sess, $slice_id);
 if ($show_form) {
     echo '<tr><td><a id="form_content"></a><textarea cols="70" rows="30">';
     $form_content = GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show_result, $show_result);
-    echo HTMLEntities($form_content);
+    echo htmlspecialchars($form_content);
     echo "\n</textarea></td></tr>\n";
 }
 
