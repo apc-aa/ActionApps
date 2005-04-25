@@ -19,17 +19,17 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS["AA_INC_PATH"] . "mgettext.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "itemview.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "viewobj.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "mgettext.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "itemview.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "viewobj.php3";
 require_once $GLOBALS["AA_BASE_PATH"]. "modules/links/util.php3";
 require_once $GLOBALS["AA_BASE_PATH"]. "modules/links/linksearch.php3";
 // add mlx functions
-require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
+require_once $GLOBALS['AA_INC_PATH']."mlx.php";
 
-# ----------------------------------------------------------------------------
-#                         view functions
-# ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+//                         view functions
+// ----------------------------------------------------------------------------
 
 function GetAliasesFromUrl($als) {
     $ret = array();
@@ -66,8 +66,8 @@ function ParseCommand($cmd,$als=false) {
             }
         }
         $cmd = $cmd_res;
-    } elseif ( isset($als) AND is_array($als) ) {  # substitute url aliases in cmd
-        foreach( $als as $k => $v ) {
+    } elseif (isset($als) AND is_array($als)) {  // substitute url aliases in cmd
+        foreach ($als as $k => $v) {
             $cmd = str_replace($k, $v, $cmd);
         }
     }
@@ -104,34 +104,34 @@ function CheckConditionCommand($field, $value) {
 function ParseViewParameters($query_string="") {
   global $cmd, $set, $vid, $als, $slice_id, $debug;
 
-  # Parse parameters
-  # if view in cmd[] or set[] is not specified - fill it from vid
-  if( EReg( "vid=([0-9]*)", $query_string, $parts) ) {
+  // Parse parameters
+  // if view in cmd[] or set[] is not specified - fill it from vid
+  if ( EReg( "vid=([0-9]*)", $query_string, $parts) ) {
     $query_string = str_replace( 'cmd[]', "cmd[".$parts[1]."]", $query_string );
     $query_string = str_replace( 'set[]', "set[".$parts[1]."]", $query_string );
   }
 
-  if( $debug ) huhl("ParseViewParameters: vid=$vid, query_string=$query_string", "cmd:", $cmd, "set:", $set, "als:", $als);
+  if ( $debug ) huhl("ParseViewParameters: vid=$vid, query_string=$query_string", "cmd:", $cmd, "set:", $set, "als:", $als);
 
-  add_vars($query_string);       # adds values from url (it's not automatical in SSIed script)
+  add_vars($query_string);       // adds values from url (it's not automatical in SSIed script)
 
-  # Splits on "-" and subsitutes aliases
+  // Splits on "-" and subsitutes aliases
   $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
 
   if ( $GLOBALS['debug'] ) huhl("<br>ParseViewParameters - command:", $command);
 
 
-  #  This code below do not work!! - it is not the same as the code above!!
-  #  (the code above parses only the specific guerystring for this view)
-  #  if (!$cmd[$vid])
-  #    $cmd[$vid] = $cmd[0];
-  #  $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
+  //  This code below do not work!! - it is not the same as the code above!!
+  //  (the code above parses only the specific guerystring for this view)
+  //  if (!$cmd[$vid])
+  //    $cmd[$vid] = $cmd[0];
+  //  $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
 
   switch ($command[0]) {
     case 'v':  $vid = $command[1];
                break;
     case 'i':  $vid = $command[1];
-//               for( $i=2; $i<count($command); $i++)
+//               for ( $i=2; $i<count($command); $i++)
 //                 $item_ids[] = $command[$i];
                $zids = new zids(array_slice($command,2));
                // TODO figure out why CountHit not called here - mitra
@@ -142,7 +142,7 @@ function ParseViewParameters($query_string="") {
                    $command[2] = $x;
                }
                $zids = new zids(array_slice($command,2));
-//               for( $i=2; $i<count($command); $i++)
+//               for ( $i=2; $i<count($command); $i++)
 //                 $item_ids[] = $command[$i];
 // This is bizarre code, just incrementing the first item, left as it is
 // but questioned on apc-aa-coders - mitra
@@ -157,17 +157,17 @@ function ParseViewParameters($query_string="") {
                // which is consumed in ParseMultiSelectConds
                if ( $command[1] == 'OR')
                 { $param_conds[0] = 'OR'; array_shift($command); }
-               if( CheckConditionCommand($command[1], $command[2]) )
+               if ( CheckConditionCommand($command[1], $command[2]) )
                  $param_conds[$command[1]] = stripslashes($command[2]);
-               if( CheckConditionCommand($command[3], $command[4]) )
+               if ( CheckConditionCommand($command[3], $command[4]) )
                  $param_conds[$command[3]] = stripslashes($command[4]);
-               if( CheckConditionCommand($command[5], $command[6]) )
+               if ( CheckConditionCommand($command[5], $command[6]) )
                  $param_conds[$command[5]] = stripslashes($command[6]);
                break;
     case 'd':  $i=1;
-               while( $command[$i] ) {
-                   if( CheckConditionCommand($command[$i], $command[$i+2]) ) {
-                       foreach( explode(',',$command[$i]) as $cond_field ) {
+               while ( $command[$i] ) {
+                   if ( CheckConditionCommand($command[$i], $command[$i+2]) ) {
+                       foreach ( explode(',',$command[$i]) as $cond_field ) {
                            $field_arr[$cond_field] = 1;
                        }
                        $v_conds[]= array_merge( $field_arr,
@@ -186,26 +186,26 @@ function ParseViewParameters($query_string="") {
      $arr['slices'] = explode('-', $arr['slices']);
   }
 
-  #  This code below do not work!! - it is not the same as the code above!!
-  #  (the code above parses only the specific guerystring for this view)
-  #  if (!$set[$vid])
-  #    $set[$vid] = $set[0];
-  #  $arr = ParseSettings($set[$vid]);
+  //  This code below do not work!! - it is not the same as the code above!!
+  //  (the code above parses only the specific guerystring for this view)
+  //  if (!$set[$vid])
+  //    $set[$vid] = $set[0];
+  //  $arr = ParseSettings($set[$vid]);
 
-  # the parameters for discussion comes (quite not standard way) from globals
-  if( !$arr["all_ids"] )     $arr["all_ids"]     = $GLOBALS['all_ids'];
-  if( !$arr["ids"] )         $arr["ids"]         = $GLOBALS['ids'];
-  if( !$arr["sel_ids"] )     $arr["sel_ids"]     = $GLOBALS['sel_ids'];
-  if( !$arr["add_disc"] )    $arr["add_disc"]    = $GLOBALS['add_disc'];
-  if( !$arr["sh_itm"] )      $arr["sh_itm"]      = $GLOBALS['sh_itm'];
-  if( !$arr["parent_id"] )   $arr["parent_id"]   = $GLOBALS['parent_id'];
-  # IDs of discussion items for discussion list
-  if( !$arr["disc_ids"] )    $arr["disc_ids"]    = $GLOBALS['disc_ids'];
-  # used for discussion list view
-  if( !$arr["disc_type"] )   $arr["disc_type"]   = $GLOBALS['disc_type'];
-  # used for Links module - categories and links
-  if( !$arr["cat"] )         $arr["cat"]         = $GLOBALS['cat'];
-  if( !$arr["show_subcat"] ) $arr["show_subcat"] = $GLOBALS['show_subcat'];
+  // the parameters for discussion comes (quite not standard way) from globals
+  if ( !$arr["all_ids"] )     $arr["all_ids"]     = $GLOBALS['all_ids'];
+  if ( !$arr["ids"] )         $arr["ids"]         = $GLOBALS['ids'];
+  if ( !$arr["sel_ids"] )     $arr["sel_ids"]     = $GLOBALS['sel_ids'];
+  if ( !$arr["add_disc"] )    $arr["add_disc"]    = $GLOBALS['add_disc'];
+  if ( !$arr["sh_itm"] )      $arr["sh_itm"]      = $GLOBALS['sh_itm'];
+  if ( !$arr["parent_id"] )   $arr["parent_id"]   = $GLOBALS['parent_id'];
+  // IDs of discussion items for discussion list
+  if ( !$arr["disc_ids"] )    $arr["disc_ids"]    = $GLOBALS['disc_ids'];
+  // used for discussion list view
+  if ( !$arr["disc_type"] )   $arr["disc_type"]   = $GLOBALS['disc_type'];
+  // used for Links module - categories and links
+  if ( !$arr["cat"] )         $arr["cat"]         = $GLOBALS['cat'];
+  if ( !$arr["show_subcat"] ) $arr["show_subcat"] = $GLOBALS['show_subcat'];
 
   $arr['als']=GetAliasesFromUrl($GLOBALS['als']);
   $arr['vid']=$vid;
@@ -214,7 +214,7 @@ function ParseViewParameters($query_string="") {
 //  $arr['item_ids'] = $item_ids;
   $arr['zids'] = $zids;
 
-  if( $debug ) huhl($arr);
+  if ( $debug ) huhl($arr);
 
   return $arr;
 }
@@ -224,7 +224,7 @@ function ParseViewParameters($query_string="") {
  * Helper function for GetViewConds() - resolves database x url conds conflict
  */
 function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
-    if( $fld AND $op ) {
+    if ($fld AND $op) {
         $conds[] = array( 'operator' => $op,
                           'value'    => (strlen((string)$param)>0 ? $param : $val),  // param could be also "0"
                           $fld       => 1 );
@@ -257,28 +257,41 @@ function GetViewConds($view_info, $param_conds) {
     return $conds;
 }
 
-function GetViewSort($view_info, $param_sort="") {
+function GetViewSort(&$view_info, $param_sort=null) {
     global $VIEW_SORT_DIRECTIONS;
     // translate sort codes (we use numbers in views from historical reason)
     // '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority")
 
-    if( $param_sort )
-      $sort[] = GetSortArray( $param_sort );
-    if( $view_info['group_by1'] )
-      $sort[] = array ( $view_info['group_by1'] => $VIEW_SORT_DIRECTIONS[$view_info['g1_direction']]);
-    if( $view_info['group_by2'] )
-      $sort[] = array ( $view_info['group_by2'] => $VIEW_SORT_DIRECTIONS[$view_info['g2_direction']]);
+    $sort = false;
+    if ($param_sort['sort']) {
+        if (count($new_sort=GetSortArray($param_sort['sort']))>0) {
+            $sort[] = $new_sort;
+        }
+    }
+    // grouping
+    if ($view_info['group_by1']) {
+        $sort[] = array($view_info['group_by1'] => $VIEW_SORT_DIRECTIONS[$view_info['g1_direction']]);
+    }
+    if ($view_info['group_by2']) {
+        $sort[] = array($view_info['group_by2'] => $VIEW_SORT_DIRECTIONS[$view_info['g2_direction']]);
+    }
+    //sorting
+    if ($view_info['order1']) {
+        $sort[] = array($view_info['order1'] => $VIEW_SORT_DIRECTIONS[$view_info['o1_direction']]);
+    }
+    if ($view_info['order2']) {
+        $sort[] = array($view_info['order2'] => $VIEW_SORT_DIRECTIONS[$view_info['o2_direction']]);
+    }
 
-    if( $view_info['order1'] )
-      $sort[] = array ( $view_info['order1'] => $VIEW_SORT_DIRECTIONS[$view_info['o1_direction']]);
-    if( $view_info['order2'] )
-      $sort[] = array ( $view_info['order2'] => $VIEW_SORT_DIRECTIONS[$view_info['o2_direction']]);
-
+    if ($param_sort['group_limit'] AND count($sort)>0) {
+        reset($sort);   // go to first record
+        $sort[key($sort)]['limit'] = $param_sort['group_limit'];
+    }
     return $sort;
 }
 
 function GetViewGroup($view_info) {
-  return false;                        # this is managed by GetViewSort()
+  return false;                        // this is managed by GetViewSort()
 }
 
 function GetViewFormat($view_info, $selected_item='') {
@@ -311,11 +324,11 @@ function GetViewFormat($view_info, $selected_item='') {
  *  (@see {@link http://apc-aa.sourceforge.net/faq/#219})
  */
 function ParseBannerParam(&$view_info, $banner_param) {
-    if( $banner_param ) {
+    if ( $banner_param ) {
         list( $foo_pos, $foo_vid, $foo_fld ) = explode('-',$banner_param);
         $view_info['banner_position'] = $foo_pos;
         $view_info['banner_parameters'] = "vid=$foo_vid";
-        if( $foo_fld == 'norandom' )
+        if ( $foo_fld == 'norandom' )
             return;
         $view_info['banner_parameters'] .= "&set[$foo_vid]=random-".
                                                      ($foo_fld ? $foo_fld : 1);
@@ -323,16 +336,16 @@ function ParseBannerParam(&$view_info, $banner_param) {
 }
 
 function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
-    $list_from = max(0, $from-1);    # user counts items from 1, we from 0
-    $list_to = max(0, $to-1);        # user counts items from 1, we from 0
+    $list_from = max(0, $from-1);    // user counts items from 1, we from 0
+    $list_to = max(0, $to-1);        // user counts items from 1, we from 0
 
-    if( $to > 0 )
+    if ( $to > 0 )
         $listlen = max(0, $list_to - $list_from + 1);
 
-    if( $page ) {   // split listing to pages
+    if ( $page ) {   // split listing to pages
         // Format:  <page>-<number of pages>
         $pos=strpos($page,'-');
-        if( $pos ) {
+        if ( $pos ) {
             $no_of_pages = substr($page,$pos+1);
             $page_n = substr($page,0,$pos)-1;    // count from zero
             // to be last page shorter than others if there is bad number of items
@@ -350,7 +363,7 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 // Expand a set of view parameters, and return the view
 function GetView($view_param) {
   global $nocache, $debug;
-  #create keystring from values, which exactly identifies resulting content
+  //create keystring from values, which exactly identifies resulting content
   $keystr = serialize($view_param).stringexpand_keystring();
 
   if ( $res = $GLOBALS['pagecache']->get($keystr, $nocache) ) {
@@ -376,19 +389,19 @@ function GetViewFromDB($view_param, &$cache_sid) {
   $conds = $view_param["conds"];
   $slices = $view_param["slices"];
   $param_conds = $view_param["param_conds"];
-  $param_sort  = $view_param["sort"];
+  $param_sort  = array('sort' => $view_param["sort"], 'group_limit' => $view_param["group_limit"]);
   $category_id = $view_param['cat'];
 //  $item_ids = $view_param["item_ids"];
   $zids = $view_param["zids"];
 //  $use_short_ids = $view_param["use_short_ids"];
   $list_page = $view_param["page"];
-  if( $view_param["random"] )
+  if ( $view_param["random"] )
     $random = ( ($view_param["random"]==1) ? 'random' :
                                              'random:'.$view_param["random"]);
 
-  $selected_item = $view_param["selected"];      # used for boolean (1|0) _#SELECTED
-                                                 # alias - =1 for selected item
-  # gets view data
+  $selected_item = $view_param["selected"];      // used for boolean (1|0) _#SELECTED
+                                                 // alias - =1 for selected item
+  // gets view data
   $view_info = GetViewInfo($vid);
 
   if (!$view_info OR ($view_info['deleted']>0)) {
@@ -402,7 +415,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
   if (!$GLOBALS['LANGUAGE_NAMES'][$lang_file]) {
       $lang_file = "en";
   }
-  bind_mgettext_domain($GLOBALS["AA_INC_PATH"]."lang/".$lang_file."_output_lang.php3");
+  bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/".$lang_file."_output_lang.php3");
 
   $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
                    ( $view_info['noitem_msg'] ?
@@ -430,22 +443,22 @@ function GetViewFromDB($view_param, &$cache_sid) {
     // At this point, view_info["slice_id"] = $slice_id
     // and view_param[slice_id] is empty or same
 
-  $cache_sid = $slice_id;     # pass back to GetView (passed by reference)
+  $cache_sid = $slice_id;     // pass back to GetView (passed by reference)
 
-  # ---- display content in according to view type ----
+  // ---- display content in according to view type ----
   if ($debug) huhl("GetViewFromDB:view_info=",$view_info);
   trace("=","GetViewFromDB",$view_info['type']);
   switch( $view_info['type'] ) {
-    case 'full':  # parameters: zids, als
+    case 'full':  // parameters: zids, als
       $format = GetViewFormat($view_info, $selected_item);
-      if( isset($zids) && ($zids->count() > 0) ) {
-        # get alias list from database and possibly from url
+      if ( isset($zids) && ($zids->count() > 0) ) {
+        // get alias list from database and possibly from url
         list($fields,) = GetSliceFields($slice_id);
         $aliases = GetAliasesFromFields($fields, $als);
        //mlx stuff
-       if(!$slice_info)
+       if (!$slice_info)
           $slice_info = GetSliceInfo($slice_id);
-       if(isMLXSlice($slice_info)) {  //mlx stuff, display the item's translation
+       if (isMLXSlice($slice_info)) {  //mlx stuff, display the item's translation
           $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
           //make sure the lang info doesnt get reused with different view
           $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]));
@@ -474,7 +487,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                     'html_format' => ($view_info['flag'] & DISCUS_HTML_FORMAT),
                     'parent_id'   => $view_param["parent_id"],
                     'disc_ids'    => $view_param["disc_ids"]);
-      if (($view_param["disc_type"] == "list") || is_array ($view_param["disc_ids"])) {
+      if (($view_param["disc_type"] == "list") || is_array($view_param["disc_ids"])) {
           $disc['type'] = "list";
       } elseif ($view_param["add_disc"]) {
           $disc['type'] = "adddisc";
@@ -513,8 +526,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
           $category_id = Links_SliceID2Category($slice_id);             // get default category for the view
       $format    = GetViewFormat($view_info);
       $aliases   = GetAliases4Type($view_info['type'],$als);
-      if (! $conds )         # conds could be defined via cmd[]=d command
+      if (!$conds) {          // conds could be defined via cmd[]=d command
           $conds = GetViewConds($view_info, $param_conds);
+      }
       $sort      = GetViewSort($view_info, $param_sort);
       if ( $view_info['type'] == 'const' ) {
           $zids             = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
@@ -563,23 +577,23 @@ function GetViewFromDB($view_param, &$cache_sid) {
                array( 'operator' => '>=',
                       'value' => mktime (0,0,0,$month,1,$year),
                       $view_info['field2'] => 1 ));
-        # Note drops through to next case
+        // Note drops through to next case
         trace("=","","calendar - drop through to digest, script etc");
 
     case 'digest':
     case 'list':
     case 'rss':
     case 'urls':
-    case 'script':  # parameters: conds, param_conds, als
+    case 'script':  // parameters: conds, param_conds, als
       switch( $view_info['type'] ) {
       case 'rss':
         header("Content-type: text/xml");
       }
 
-      if (! $conds )         # conds could be defined via cmd[]=d command
+      if (! $conds )         // conds could be defined via cmd[]=d command
         $conds = GetViewConds($view_info, $param_conds);
       // merge $conds with $calendar_conds
-      if (is_array ($calendar_conds)) {
+      if (is_array($calendar_conds)) {
           reset ($calendar_conds);
           while (list(,$v)=each($calendar_conds))
               $conds[] = $v;
@@ -588,7 +602,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       list($fields,) = GetSliceFields($slice_id);
       $aliases = GetAliasesFromFields($fields, $als);
 
-      if (is_array ($slices)) {
+      if (is_array($slices)) {
           reset($slices);
           while (list(,$slice) = each($slices)) {
               list($fields,) = GetSliceFields ($slice);
@@ -599,26 +613,24 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $sort  = GetViewSort($view_info, $param_sort);
 
     //mlx stuff
-    if(!$slice_info)
+    if (!$slice_info)
       $slice_info = GetSliceInfo($slice_id);
-    if(isMLXSlice($slice_info)) {
+    if (isMLXSlice($slice_info)) {
       $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
       //make sure the lang info doesnt get reused with different view
       $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]));
       $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
     }
-    $zids2 =
-        QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort,
-                         $group_by, "ACTIVE", $zids ? false : $slices, 0, $zids);
+    $zids2 = QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort, '', "ACTIVE", $zids ? false : $slices, 0, $zids);
 
-    if(isMLXSlice($slice_info)) {
+    if (isMLXSlice($slice_info)) {
       $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id,
                 $conds, $sort,
                 $slice_info[group_by],"ACTIVE", $slices, $neverAllItems, 0,
                 $defaultCondsOperator,$GLOBALS['nocache'],"vid=$vid t=list");
     }
     //end mlx stuff
-    # Note this zids2 is always packed ids, so lost tag information
+    // Note this zids2 is always packed ids, so lost tag information
     if ($debug) huhl("GetViewFromDB retrieved ".(isset($zids2) ? $zids2->count : 0)." IDS");
     if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {
         $zids2 = $zids2->retag($zids);
@@ -631,7 +643,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $format['calendar_month'] = $month;
       $format['calendar_year'] = $year;
 
-      #if (isset($zids2) && ($zids2->count() > 0)) {
+      //if (isset($zids2) && ($zids2->count() > 0)) {
         list( $listlen, $list_from ) = GetListLength($listlen, $view_param["to"],
                   $view_param["from"], $list_page, $zids2->count(), $random);
 
@@ -644,19 +656,19 @@ function GetViewFromDB($view_param, &$cache_sid) {
         $itemview_type = (($view_info['type'] == 'calendar')
                             ? 'calendar' : 'view');
         $ret = $itemview->get_output_cached($itemview_type);
-      }   #zids2->count >0
+      }   //zids2->count >0
       else {
 /* Not sure if this was a necessary change that got missed, or got changed again
-        # $ret = $noitem_msg;
+        // $ret = $noitem_msg;
         $level = 0; $maxlevel = 0;
-        # This next line is not 100% clear, might not catch aliases
-        #since there are two formats for aliases structures. (mitra)
-#    huhl("XYZZY:v578, msg=",$noitem_msg);
+        // This next line is not 100% clear, might not catch aliases
+        //since there are two formats for aliases structures. (mitra)
+//    huhl("XYZZY:v578, msg=",$noitem_msg);
         $ret = new_unalias_recurent($noitem_msg,"",$level,$maxlevel,null,null,$aliases);
 */
         $ret = $itemview->unaliasWithScroller($noitem_msg);
       }
-      // 	if( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
+      // 	if ( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
       trace("-");
       return $ret;
 
@@ -664,10 +676,10 @@ function GetViewFromDB($view_param, &$cache_sid) {
     // $format = GetViewFormat($view_info);  // not needed now
     // I create a CurItem object so I can use the unalias function
     $CurItem = new item("", $als);
-    $formatstring = $view_info["odd"];          # it is better to copy format-
-    $ret = $CurItem->unalias( $formatstring );  # string to variable - unalias
+    $formatstring = $view_info["odd"];          // it is better to copy format-
+    $ret = $CurItem->unalias( $formatstring );  // string to variable - unalias
     trace("-");
     return $ret;
-  }                                             # uses call by reference
+  }                                             // uses call by reference
 }
 ?>
