@@ -29,9 +29,9 @@ http://www.apc.org/
 $directory_depth = "../";
 $require_default_lang = true;      // do not use module specific language file
 require_once "../../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 
 // create the $jumps array:
 $db = new DB_AA;
@@ -132,9 +132,9 @@ echo '
      <tr><td class=tabtxt><b>'._m("Jump to slice").":</b></td>
         <td class=tabtxt><select name=dest_id>";
 //        <option value=''>* * * Don't change slice * * *";
-     if( is_array($g_modules) AND (count($g_modules) > 1) ) {
+     if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
         reset($g_modules);
-        while(list($k, $v) = each($g_modules)) { 
+        while (list($k, $v) = each($g_modules)) { 
             echo "<option value=\"". htmlspecialchars($k)."\"";
             if ( $dest_id == $k ) echo " selected";
             echo ">". htmlspecialchars($v['name']);

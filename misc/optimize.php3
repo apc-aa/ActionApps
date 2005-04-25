@@ -33,16 +33,16 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# need config.php3 to set db access, and phplib, and probably other stuff
+// need config.php3 to set db access, and phplib, and probably other stuff
 $AA_INC_PATH = "../include/";
-#$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/";
+//$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/";
 
 require_once $GLOBALS['AA_INC_PATH']."config.php3";
 
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";   # DB_AA definition
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";   // DB_AA definition
 require_once $GLOBALS['AA_INC_PATH']."util.php3";
 
-# init used objects
+// init used objects
 $db = new DB_AA;
 $err["Init"] = "";          // error array (Init - just for initializing variable
 

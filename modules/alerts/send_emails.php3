@@ -31,11 +31,11 @@ http://www.apc.org/
 /*
 $directory_depth = "../";
 require_once "$directory_depth../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."constants.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."tabledit.php3";
+require_once $GLOBALS['AA_INC_PATH']."tv_common.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
 require_once menu_include();   
 require_once "alerts_sending.php3";
 
@@ -144,7 +144,7 @@ function showSelectionTable ()
         <TD><B>"._m("View (Selection set)")."</B></TD>
         <TD><B>"._m("Selections")."</B></TD></TR>";
     
-    if (!is_array ($a)) 
+    if (!is_array($a)) 
         echo "<TR><TD colspan=3 align=center class=tabtxt><B>"
         ._m("Define selections in slices from which you want to send Alerts, 
         in views of type Alerts Selection Set")."</B></TD></TR>";

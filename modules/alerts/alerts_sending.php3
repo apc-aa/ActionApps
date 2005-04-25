@@ -27,12 +27,12 @@ http://www.apc.org/
 */
 
 //require_once "lang.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";
-require_once $GLOBALS["AA_INC_PATH"]."view.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
-require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item_content.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";
+require_once $GLOBALS['AA_INC_PATH']."view.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH']."mail.php3";
+require_once $GLOBALS['AA_INC_PATH']."item_content.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
 //$debug = 1;
@@ -137,10 +137,10 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
         } else {
             $SQL .=
             "WHERE slice_id = '$p_slice_id' AND
-                   publish_date <= $now AND expiry_date >= $last "  # a) 2. and b) 2.
-               ."AND ((moved2active BETWEEN $last AND $now) "       # a) 1.
-                     ."OR (moved2active < $last "                   # b) 1.
-                         ."AND publish_date > $last) "              # b) 3.
+                   publish_date <= $now AND expiry_date >= $last "  // a) 2. and b) 2.
+               ."AND ((moved2active BETWEEN $last AND $now) "       // a) 1.
+                     ."OR (moved2active < $last "                   // b) 1.
+                         ."AND publish_date > $last) "              // b) 3.
                    .")";
         }
 
@@ -157,7 +157,7 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
                 $conds = $dbconds_arr['conds'];
                 $sort  = $dbconds_arr['sort'];
                 $zids  = new zids (null, "p");
-                if (is_array ($all_ids)) {
+                if (is_array($all_ids)) {
                     // find items for the given filter
                     if ($debug_alerts) { print_r ($conds); echo "----<br>"; $GLOBALS['debug']=1; }
                     $zids = QueryZIDs($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, new zids( $all_ids,'p' ));
@@ -216,7 +216,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id)
     while ($db->next_record()) {
         $colls[$db->f("collectionid")] = $db->Record;
     }
-    if (!is_array ($colls)) {
+    if (!is_array($colls)) {
         freeDB($db);
         return;
     }
@@ -243,7 +243,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id)
         if ($GLOBALS['debug_email']) { huhl("\n-------\n send_emails\n",$collection); }
 
         // Find all users who should receive anything
-        if (! is_array ($emails)) {
+        if (! is_array($emails)) {
 
             // get all confirmed users for this collection and frequency
             $slice = new slice(unpack_id128($collection["slice_id"]));
@@ -258,7 +258,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id)
             writeLog("ALERTS", "Users for collection $cid: ". ((int)$zids->count()), $ho);
 
             // loop through readers might want to send
-            for( $i=0, $zcount=$zids->count(); $i<$zcount; $i++) {
+            for ( $i=0, $zcount=$zids->count(); $i<$zcount; $i++) {
                 $readerContent->setByItemID( $zids->longids($i), true);
 
                 $user_text = get_filter_text_4_reader($readerContent, $filters, $cid);
@@ -390,7 +390,7 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
     if ( !isset($cached_filter_settings[$filter_settings])) {
         $set = &get_view_settings_cached($vid);
         // set language
-        bind_mgettext_domain($GLOBALS["AA_INC_PATH"]."lang/". $set["lang"]."_alerts_lang.php3", true);
+        bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/". $set["lang"]."_alerts_lang.php3", true);
         // $set["info"]["aditional2"] stores item URL
         $item_url = $set["info"]["aditional2"];
         if (! $item_url) {
@@ -424,7 +424,7 @@ function get_filter_text_4_reader($readerContent, $filters, $cid)
 
         foreach ($user_filters_value as $user_filter) {
             // filter numbers are stored with "f" added to the beginning
-            $user_filters [substr ($user_filter ["value"], 1)] = 1;
+            $user_filters [substr ($user_filter ['value'], 1)] = 1;
         }
     }
 

@@ -25,8 +25,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
-require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once $GLOBALS['AA_INC_PATH']."mail.php3";
+require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/alerts_sending.php3";
 
@@ -84,7 +84,7 @@ function AlertsSendInstantAlert( $item_id, $slice_id ) {
             WHERE view.slice_id='".q_pack_id($slice_id)."'");
         while ($db->next_record())
             $collection_ids[] = $db->f("collectionid");
-        if (is_array ($collection_ids)) {
+        if (is_array($collection_ids)) {
             initialize_last();
             set_time_limit(600); // This can take a while
             send_emails("instant", $collection_ids, "", true, $item_id);

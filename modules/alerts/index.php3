@@ -28,7 +28,7 @@ http://www.apc.org/
 */
 $directory_depth = "../";
 require_once $directory_depth."../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."go_url.php3";
+require_once $GLOBALS['AA_INC_PATH']."go_url.php3";
 
 $session = $AA_CP_Session ? "AA_CP_Session=$AA_CP_Session" 
     : "AA_SL_Session=$AA_SL_Session";

@@ -1,9 +1,9 @@
 <?php
 
-# Example script for importing tabuller data into slice
-# Modify this script and then run it, in order to import your data
-# For more information see: 
-#      http://apc-aa.sourceforge.net/faq/index.shtml#312
+// Example script for importing tabuller data into slice
+// Modify this script and then run it, in order to import your data
+// For more information see: 
+//      http://apc-aa.sourceforge.net/faq/index.shtml#312
 
 $actions = array(
 "category.......1" => array("action" => "storeparsemulti", "delimiter" => ";", "from" => "Category"),

@@ -25,9 +25,9 @@ http://www.apc.org/
 // Settings for Alerts-related table views 
 
 require_once "util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tv_email.php3";
-require_once $GLOBALS["AA_INC_PATH"]."perm_core.php3";
-require_once $GLOBALS["AA_INC_PATH"]."extauth.php3";
+require_once $GLOBALS['AA_INC_PATH']."tv_email.php3";
+require_once $GLOBALS['AA_INC_PATH']."perm_core.php3";
+require_once $GLOBALS['AA_INC_PATH']."extauth.php3";
 
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
 function GetAlertsTableView ($viewID, $processForm = false) {        
@@ -92,7 +92,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "readonly" => false, //$no_filters,
         "buttons_left" => array ("delete_checkbox" => 1),
         "buttons_down" => array ("update_all" => 1, "delete_all" => 1),
-        "addrecord" => is_array ($new_filters),
+        "addrecord" => is_array($new_filters),
         "gotoview" => "au_edit",
         "mainmenu" => "admin",
         "submenu" => "filters",
@@ -324,7 +324,7 @@ function FindAlertsFilterPermissions() {
         if (strchr ($perms, PS_FULLTEXT))
             $restrict_slices[] = q_pack_id($my_slice_id);
     $_filter_permissions = array ();
-    if (is_array ($restrict_slices)) {
+    if (is_array($restrict_slices)) {
         $db->query("SELECT DISTINCT ADF.id FROM alerts_filter ADF 
                      INNER JOIN view ON view.id = ADF.vid
                      INNER JOIN slice ON slice.id = view.slice_id

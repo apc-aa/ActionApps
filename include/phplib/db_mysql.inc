@@ -69,7 +69,6 @@ class DB_Sql {
 
     /* establish connection, select database */
     if ( 0 == $this->Link_ID ) {
-
         if ( defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT ) {
             $method = 'connect';
             $this->Link_ID = mysql_connect($Host, $User, $Password);

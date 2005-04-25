@@ -31,11 +31,11 @@ http://www.apc.org/
 */
 
 require_once "../../include/config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."constants.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."tabledit.php3";
+require_once $GLOBALS['AA_INC_PATH']."tv_common.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
 require_once "send_emails.php3";
 require_once "tableviews.php3";
 
@@ -57,7 +57,7 @@ if ($set_tview) $tview = $set_tview;
 
 $tableview = GetAlertsTableView($tview);
 
-if (!is_array ($tableview)) { 
+if (!is_array($tableview)) { 
     go_url ($sess->url(self_base()."index.php3?slice_id=$slice_id&Msg=Bad table view ID: $tview")); 
     exit; 
 }

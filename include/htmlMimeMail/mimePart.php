@@ -301,7 +301,7 @@ class Mail_mimePart {
         $escape = '=';
         $output = '';
 
-        while(list(, $line) = each($lines)){
+        while (list(, $line) = each($lines)){
 
             $linlen     = strlen($line);
             $newline = '';

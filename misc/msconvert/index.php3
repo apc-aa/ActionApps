@@ -1,6 +1,6 @@
 <?php
 require_once "./../../include/config.php3";
-require_once ($GLOBALS["AA_INC_PATH"]."util.php3");
+require_once ($GLOBALS['AA_INC_PATH']."util.php3");
 
 if (!$view)     $view     = false;
 if (!$encoding) $encoding = CONV_DEFAULTENCODING;
@@ -113,7 +113,7 @@ if (!$userfile) {
                     $output[]=$line;
                     $insidesection=false;
                 } else {
-                    if($insidesection==true) $output[]=$line;
+                    if ($insidesection==true) $output[]=$line;
                 }
             }
         }
@@ -128,8 +128,8 @@ if (!$userfile) {
             $stringoutput .= $line;
         }
         // we need to remove added background color, ...
-        $stringoutput=preg_replace("/<\/?div.*>/i","",$stringoutput); # remove all DIVs
-        $stringoutput=preg_replace("/ style=\".+\"/i","",$stringoutput); # remove all styles
+        $stringoutput=preg_replace("/<\/?div.*>/i","",$stringoutput); // remove all DIVs
+        $stringoutput=preg_replace("/ style=\".+\"/i","",$stringoutput); // remove all styles
         $stringoutput=htmlspecialchars($stringoutput);
         echo $stringoutput;
         echo "\"></form>";
@@ -145,8 +145,8 @@ if (!$userfile) {
         <?php
     } else {
         // ERROR uploading...
-        if($my_uploader->errors) {
-            while(list($key, $var) = each($my_uploader->errors)){
+        if ($my_uploader->errors) {
+            while (list($key, $var) = each($my_uploader->errors)){
                 echo $var . "<br>";
             }
         }

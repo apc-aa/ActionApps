@@ -29,9 +29,9 @@ http://www.apc.org/
 $directory_depth = "../";
 require_once "$directory_depth../include/init_page.php3";
 require_once menu_include();   
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 require_once "./synchro2.php3";
 
 // -------------------------------------------------------------------

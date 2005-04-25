@@ -19,32 +19,32 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# APC AA - Module main administration page
+// APC AA - Module main administration page
 
-# used in init_page.php3 script to include config.php3 from the right directory
+// used in init_page.php3 script to include config.php3 from the right directory
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "varset.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "varset.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
 
-# id of the editted module
-$module_id = $slice_id;               # id in long form (32-digit hexadecimal
-                                      # number)
-$p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
+// id of the editted module
+$module_id = $slice_id;               // id in long form (32-digit hexadecimal
+                                      // number)
+$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 
 
-# Check permissions for this page.
-# You should change PS_MODW_EDIT_CODE permission to match the permission in your
-# module. See /include/perm_core.php3 for more details
+// Check permissions for this page.
+// You should change PS_MODW_EDIT_CODE permission to match the permission in your
+// module. See /include/perm_core.php3 for more details
  
-if( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
+if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
   MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
   exit;
 }  
 
 
-# fill code for handling the operations managed on this page
+// fill code for handling the operations managed on this page
 
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -52,11 +52,11 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <title><?php echo _m("Editor window - item manager") ?></title>
 </head> <?php
 
-require_once "navbar.php3"; # module specific navigation bar
-require_once "util.php3";   # module specific utils
+require_once "navbar.php3"; // module specific navigation bar
+require_once "util.php3";   // module specific utils
 
 
-# fill code for the main admin page layout
+// fill code for the main admin page layout
 
 
 echo '
@@ -68,6 +68,9 @@ exit;
 
 /*
 $Log$
+Revision 1.4  2005/04/25 11:46:22  honzam
+a bit more beauty code - some coding standards setting applied
+
 Revision 1.3  2003/02/05 14:57:01  jakubadamek
 changing require to require_once, deleting the "if (defined) return" constructs and changing GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"]
 

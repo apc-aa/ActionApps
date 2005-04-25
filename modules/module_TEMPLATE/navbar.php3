@@ -1,4 +1,4 @@
-<?php # navbar - application navigation bar for the module
+<?php // navbar - application navigation bar for the module
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -19,32 +19,32 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# $r_slice_headline - should be defined
-# $slice_id - should be defined
-# $r_slice_view_url - should be defined
-# $editor_page or $usermng_page or $settings_page - should be defined
-# $g_modules - should be defined
+// $r_slice_headline - should be defined
+// $slice_id - should be defined
+// $r_slice_view_url - should be defined
+// $editor_page or $usermng_page or $settings_page - should be defined
+// $g_modules - should be defined
 
 
 
-# This is the definition of main navigation bar. The navigation bar can be
-# slightly different for the modules, but in general it should look the
-# way for all the modules. There should be APC-AA logo, name of page, module
-# switching dropdown menu, ...
+// This is the definition of main navigation bar. The navigation bar can be
+// slightly different for the modules, but in general it should look the
+// way for all the modules. There should be APC-AA logo, name of page, module
+// switching dropdown menu, ...
 
-if( !$module_id )
+if ( !$module_id )
   $r_slice_headline = _m("New slice");
 
-if( $editor_page )
+if ( $editor_page )
   $nb_context = _m("Code&nbsp Manager");
  elseif( $settings_page )
   $nb_context = _m("Module Settings");
  elseif( $usermng_page )
   $nb_context = _m("Users");
 
-# modules are in directory one level deeper than scripts in /admin/...
-# if the '/admin' is in path, this navbar is called just after swithing to
-# this module - it is called from slice's /admin directory
+// modules are in directory one level deeper than scripts in /admin/...
+// if the '/admin' is in path, this navbar is called just after swithing to
+// this module - it is called from slice's /admin directory
 $nb_backpath = ( (strpos($PHP_SELF, '/admin/') > 0 ) ? '' : '../' );
 
 $nb_manager = ( $editor_page ?
@@ -90,6 +90,9 @@ echo "</TD></TR></TABLE>";
 
 /*
 $Log$
+Revision 1.6  2005/04/25 11:46:22  honzam
+a bit more beauty code - some coding standards setting applied
+
 Revision 1.5  2003/10/24 00:00:32  honzam
 Action Application replaced by ActionApps name
 

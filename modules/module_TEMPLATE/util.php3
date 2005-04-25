@@ -19,17 +19,20 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# Miscellaneous utility functions for the module
+// Miscellaneous utility functions for the module
 
 
 
-# This file You can use for storing usefull functions, which is specific for
-# the module. In general it could be empty.
+// This file You can use for storing usefull functions, which is specific for
+// the module. In general it could be empty.
 
 
 
 /*
 $Log$
+Revision 1.2  2005/04/25 11:46:22  honzam
+a bit more beauty code - some coding standards setting applied
+
 Revision 1.1  2002/04/25 12:07:26  honzam
 initial version
 

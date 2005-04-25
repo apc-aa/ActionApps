@@ -10,9 +10,9 @@
  */ 
 
 if (!isset($_PHPLIB) or !is_array($_PHPLIB)) {
-# Aren't we nice? We are prepending this everywhere 
-# we require_once or include something so you can fake
-# include_path  when hosted at provider that sucks.
+// Aren't we nice? We are prepending this everywhere 
+// we require_once or include something so you can fake
+// include_path  when hosted at provider that sucks.
   $_PHPLIB["libdir"] = ""; 
 }
 
@@ -24,7 +24,7 @@ require_once($_PHPLIB["libdir"] . "perm.inc");      /* Disable this, if you are 
 require_once($_PHPLIB["libdir"] . "user.inc");      /* Disable this, if you are not using per-user variables. */
 
 /* Additional require_once statements go below this line */
-# require_once($_PHPLIB["libdir"] . "menu.inc");      /* Enable to use Menu */
+// require_once($_PHPLIB["libdir"] . "menu.inc");      /* Enable to use Menu */
 
 /* Additional require_once statements go before this line */
 

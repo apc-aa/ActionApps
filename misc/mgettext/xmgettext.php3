@@ -193,7 +193,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
     set_time_limit(10000);
     collect_messages($logfile, $files_base_dir, $files, $messages, $warnings);
 
-    if (is_array ($warnings)) {
+    if (is_array($warnings)) {
         echo "<Br>Warnings:<br>";
         echo join ("<br>", $warnings);
         if ($stop_on_warning) exit;
@@ -237,7 +237,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
         }
 
         // messages with code location description and other translations (from old lang files)
-        if (is_array ($messages)) {
+        if (is_array($messages)) {
             foreach ( $messages as $message => $params) {
                 $pair = array();    // clean the variable
                 if ($add_source_links) {
@@ -387,7 +387,7 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
             }
         }
         $wrn = unserialize($msgwrn["warnings"]);
-        if (is_array ($wrn)) {
+        if (is_array($wrn)) {
             foreach ($wrn as $warning) {
                 $warnings[] = $warning;
             }

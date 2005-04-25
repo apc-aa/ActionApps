@@ -19,11 +19,11 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# $r_slice_headline - should be defined
-# $slice_id - should be defined
-# $r_slice_view_url - should be defined
-# $editor_page or $usermng_page or $settings_page - should be defined
-# $g_modules - should be defined
+// $r_slice_headline - should be defined
+// $slice_id - should be defined
+// $r_slice_view_url - should be defined
+// $editor_page or $usermng_page or $settings_page - should be defined
+// $g_modules - should be defined
 
 /*  Top level (navigation bar) menu description:
     label       to be shown
@@ -33,9 +33,9 @@ http://www.apc.org/
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."menu_util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."perm_core.php3";
-require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once $GLOBALS['AA_INC_PATH']."menu_util.php3";
+require_once $GLOBALS['AA_INC_PATH']."perm_core.php3";
+require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
@@ -101,7 +101,7 @@ function get_aamenus_alerts()
         "submenu"=>"aaadmin_submenu");
 
     // left menu for aaadmin is common to all modules, so it is shared
-    require_once $GLOBALS["AA_INC_PATH"]."menu_aa.php3";
+    require_once $GLOBALS['AA_INC_PATH']."menu_aa.php3";
 
     $aamenus["admin_submenu"] = array (
         "bottom_td"=>200,

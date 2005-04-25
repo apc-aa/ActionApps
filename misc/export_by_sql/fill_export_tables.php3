@@ -1,7 +1,7 @@
 <?php
 $directory_depth = "../";
 require_once $directory_depth."../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
 
 if (!IsSuperadmin()) {
   echo "This script is intended for super admins only.";

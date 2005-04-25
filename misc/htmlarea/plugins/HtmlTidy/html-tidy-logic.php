@@ -1,12 +1,12 @@
-<?  ###################################################################
-   ##
-  ##  Plugin for htmlArea, to run code through the server's HTML Tidy
- ##   By Adam Wright, for The University of Western Australia
-##    This is the server-side script, which dirty code is run through.
-##
-##  Distributed under the same terms as HTMLArea itself.
-##  This notice MUST stay intact for use (see license.txt).
-##
+<?  //##################################################################
+   //#
+  //#  Plugin for htmlArea, to run code through the server's HTML Tidy
+ //#   By Adam Wright, for The University of Western Australia
+//#    This is the server-side script, which dirty code is run through.
+//#
+//#  Distributed under the same terms as HTMLArea itself.
+//#  This notice MUST stay intact for use (see license.txt).
+//#
 
 	// Get the original source
 	$source = $_POST['htisource_name'];

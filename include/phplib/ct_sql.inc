@@ -5,7 +5,7 @@
 ##                    Boris Erdmann, Kristian Koehntopp
 ##
 ## Copyright (c) 1998-2000 Sascha Schumann <sascha@schumann.cx>
-## 
+##
 ## $Id$
 ##
 ## PHPLIB Data Storage Container using a SQL database
@@ -16,7 +16,7 @@ class CT_Sql {
   ## Define these parameters by overwriting or by
   ## deriving your own class from it (recommened)
   ##
-    
+
   var $database_table = "active_sessions";
   var $database_class = "DB_Sql";
   var $database_lock_semaphore = "";
@@ -52,7 +52,7 @@ class CT_Sql {
     $timeout = time();
     $sqldate = date("YmdHis", $timeout - ($gc_time * 60));
     $this->db->query(sprintf("DELETE FROM %s WHERE changed < '%s' AND name = '%s'",
-                    $this->database_table, 
+                    $this->database_table,
                     $sqldate,
                     addslashes($name)));
     }
@@ -90,10 +90,11 @@ class CT_Sql {
   }
 
   function ac_delete($id, $name) {
-    $this->db->query(sprintf("delete from %s where name = '%s' and sid = '%s'",
+    $SQL = sprintf("delete from %s where name = '%s' and sid = '%s'",
       $this->database_table,
       addslashes($name),
-      $id));
+      $id);
+    $this->db->query($SQL);
   }
 
   function ac_get_value($id, $name) {

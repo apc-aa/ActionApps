@@ -28,9 +28,9 @@ http://www.apc.org/
 $directory_depth = "../";
 require_once "$directory_depth../include/init_page.php3";
 require_once menu_include();
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."constedit_util.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."constedit_util.php3";
 require_once "./util.php3";
 
 // --------------------------------------------------------------
@@ -175,7 +175,7 @@ function add_fields_2_slice ($collectionid, $slice_id) {
         }
         reset ($fprop);
         while (list ($name, $value) = each ($fprop))
-            if (!is_array ($value)) {
+            if (!is_array($value)) {
                 $value = str_replace ("{ALERNAME}", $alerts_name, $value);
                 $varset->add ($name, "text", $value);
             }
@@ -204,7 +204,7 @@ function delete_fields_from_slice ($collectionid, $sliceid)
         $varset->addkey ("id", "text", $field_id);
         $db->query ($varset->makeSELECT ("field"));
         if ($db->next_record()) {
-            list ($fnc, $group_id) = explode(":", $db->f("input_show_func"));
+            list ($fnc, $group_id) = explode (":", $db->f("input_show_func"));
             if (delete_constant_group ($group_id, unpack_id ($sliceid)))
                 $ndeleted_groups ++;
             $ndeleted ++;
@@ -225,7 +225,7 @@ function getReaderManagementSlices () {
     $slices = GetUserSlices();
     $SQL = "SELECT id, name FROM slice WHERE type='ReaderManagement'
         AND id <> '".addslashes($collectionprop["sliceid"])."'";
-    if (is_array ($slices)) {
+    if (is_array($slices)) {
         reset ($slices);
         $delim = "";
         while (list ($slice_id) = each ($slices)) {

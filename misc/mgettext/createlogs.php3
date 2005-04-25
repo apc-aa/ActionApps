@@ -45,7 +45,7 @@ function create_logs ($lang_list, $old_lang_files, $log_files)
         if (!$fd) return;
         chmod ($logfile, 0777);
         fwrite ($fd,"<?php
-            # this is a log file of the language translation on ".date("d.j.Y H:i")."\n\n");
+            // this is a log file of the language translation on ".date("d.j.Y H:i")."\n\n");
         include $old_lang_file;    
         $consts = get_defined_constants();
         reset ($consts);

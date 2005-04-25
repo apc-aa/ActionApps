@@ -25,16 +25,16 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# script for anonymous filling
+// script for anonymous filling
 
-# Parameters:
-#   slice_id     - id of slice into which the item is added
-#   notvalidate  - if true, data input validation is skipped
-#   ok_url       - url where to go, if item is successfully sored in database
-#   err_url      - url where to go, if item is not sored in database (due to
-#                  validation of data, ...)
+// Parameters:
+//   slice_id     - id of slice into which the item is added
+//   notvalidate  - if true, data input validation is skipped
+//   ok_url       - url where to go, if item is successfully sored in database
+//   err_url      - url where to go, if item is not sored in database (due to
+//                  validation of data, ...)
 
-# handle with PHP magic quotes - quote the variables if quoting is set off
+// handle with PHP magic quotes - quote the variables if quoting is set off
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -46,35 +46,35 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
     for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
     for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
     for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
       $$k = Myaddslashes($v);
 }
 
 require_once "../../include/config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
-require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."date.php3";
-require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
-require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."notify.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."date.php3";
+require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
+require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
 
 function SendErrorPage($txt) {
-  if( $GLOBALS["err_url"] )
+  if ( $GLOBALS["err_url"] )
     go_url($GLOBALS["err_url"]);
   HtmlPageBegin("");
   echo "</head><body>";
-  if( isset( $txt ) AND is_array( $txt ) )
+  if ( isset( $txt ) AND is_array( $txt ) )
     PrintArray($txt);
    else
     echo $txt;
@@ -83,7 +83,7 @@ function SendErrorPage($txt) {
 }
 
 function SendOkPage($txt) {
-  if( $GLOBALS["ok_url"] )
+  if ( $GLOBALS["ok_url"] )
     go_url($GLOBALS["ok_url"]);
   go_url($GLOBALS[HTTP_REFERER]);
   exit;
@@ -114,7 +114,7 @@ while (list ($line_num, $line) = each ($import)) {
 //****************************************************************************
 
 
-    if( !$slice_id ) {
+    if ( !$slice_id ) {
       SendErrorPage(L_NO_SLICE_ID);
     }
 
@@ -125,34 +125,33 @@ while (list ($line_num, $line) = each ($import)) {
     $p_slice_id = q_pack_id($slice_id);
     $slice_info = GetSliceInfo($slice_id);
 
-    if( !$slice_info )
+    if ( !$slice_info )
       SendErrorPage(L_NO_SUCH_SLICE);
 
     $bin2fill = $slice_info["permit_anonymous_post"];
-    if( $bin2fill < 1 )
+    if ( $bin2fill < 1 )
         SendErrorPage(L_ANONYMOUS_POST_ADMITED);
 
     $id = new_id();
     ValidateContent4Id($err, $slice, "insert", 0, ! $notvalidate);
     list($fields, $prifields) = $slice->fields();
 
-    if( count($err)>1 )
+    if ( count($err)>1 )
       SendErrorPage( $err );
 
-    if( !(isset($prifields) AND is_array($prifields)) )
+    if ( !(isset($prifields) AND is_array($prifields)) )
       SendErrorPage(L_NO_FIELDS);
 
-      # prepare content4id array before call StoreItem function
+      // prepare content4id array before call StoreItem function
     $content4id = GetContentFromForm( $slice );
 
-      # put an item to the right bin
+      // put an item to the right bin
     $content4id["status_code....."][0]['value'] = ($bin2fill==1 ? 1 : 2);
 
-    # update database
-    $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, true,
-                              true, true );     # insert, invalidatecache, feed
+    // update database
+    $added_to_db = StoreItem( $id, $slice_id, $content4id, $fields, true, true, true );     // insert, invalidatecache, feed
 
-    if( count($err) > 1)
+    if ( count($err) > 1)
       SendErrorPage( $err );
   }
   // end while

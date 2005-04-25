@@ -1,8 +1,8 @@
 <?php
 
 //$Id$
-# NOTE: you need to change these variables
-#$host  = 'http://127.0.0.1';
+// NOTE: you need to change these variables
+//$host  = 'http://127.0.0.1';
 $host  = 'http://www.apc.org';
 $cachedir= '/tmp/cache';
 $cache4secs = 1000;
@@ -12,26 +12,26 @@ if (! $host ){
    exit;
 }
 
-# if you want URLs rewritten, set this to true and 
-# put the Snoopy.class.inc file in your include path (require php > 3.0.9)
+// if you want URLs rewritten, set this to true and 
+// put the Snoopy.class.inc file in your include path (require php > 3.0.9)
 $useSnoopy = 0; // set to either 0 or 'true'. it is on sourceforge
 
-# TODO: better decision making about caching.
-# for example, if there is an expired cache, but connections to the remote URL fail, 
-# there should be a configurable option to use the local copy, like how caching DNS systems work
+// TODO: better decision making about caching.
+// for example, if there is an expired cache, but connections to the remote URL fail, 
+// there should be a configurable option to use the local copy, like how caching DNS systems work
 
-# Index: 
-# 1. usage
-# 2. build URL
-# 3. figure out if the cachefile exists for this URL
-# 4. if the cachefile does not exist or is not new enough, 
-#    run the query, cache the result, and print the result
-# 5. else, print the cached version
+// Index: 
+// 1. usage
+// 2. build URL
+// 3. figure out if the cachefile exists for this URL
+// 4. if the cachefile does not exist or is not new enough, 
+//    run the query, cache the result, and print the result
+// 5. else, print the cached version
 
-# -------------------------------------------------
-# 1. usage
+// -------------------------------------------------
+// 1. usage
 
-# if not called correctly, echo a usage statement
+// if not called correctly, echo a usage statement
 if ( ! $PATH_INFO ) {
 
 echo '<PRE>' . htmlspecialchars ('
@@ -60,7 +60,7 @@ Strategic usage:
       these items into news.html, on their local webhost.
 
   Note: For high performance, frequently updated sites, set 
-   $cache4secs = "1000"; # about 15 minutes
+   $cache4secs = "1000"; // about 15 minutes
   and then have a cronjob visit the page every 10 minutes
   to keep the cache relevant.
   0,10,20,30,40,50 * * * lynx -dump http://www./page.html > /dev/null
@@ -91,19 +91,19 @@ You can use URL parameters, like:
     exit;
 }
 
-# -------------------------------------------------
-# 2. build URL
+// -------------------------------------------------
+// 2. build URL
 
-# we need a the next line, or get an HTTP error. 
-# it goes first, so if there is an error, we see it in the web browser
-#print "Content-type:text/html\n\n";
+// we need a the next line, or get an HTTP error. 
+// it goes first, so if there is an error, we see it in the web browser
+//print "Content-type:text/html\n\n";
 
-# build the URL of the page we are going to request
+// build the URL of the page we are going to request
 $url = $host . $PATH_INFO . "?". $QUERY_STRING;
 //echo $url; //debug
-# -------------------------------------------------
-# 3. figure out if a recent cache exists for this URL
-#    if there is, print it.
+// -------------------------------------------------
+// 3. figure out if a recent cache exists for this URL
+//    if there is, print it.
 
 // I would use the PEAR Cache.php file, but it only works with php4,
 // so I am handling caching in the code below.
@@ -116,9 +116,9 @@ if ( ( file_exists($target) ) and ( $age < $cache4secs ) ) {
    readfile ($target); 
 } else {
 
-# -------------------------------------------------
-# 4. if the cachefile does not exist or is not new enough, 
-# run the query, cache the result, and print the result
+// -------------------------------------------------
+// 4. if the cachefile does not exist or is not new enough, 
+// run the query, cache the result, and print the result
 
   if ($useSnoopy) {
     include "Snoopy.class.inc";  // will rewrite URLs
@@ -141,6 +141,9 @@ if ( ( file_exists($target) ) and ( $age < $cache4secs ) ) {
 }
 /*
 $Log$
+Revision 1.6  2005/04/25 11:46:21  honzam
+a bit more beauty code - some coding standards setting applied
+
 Revision 1.5  2001/10/19 08:24:17  madebeer
 fixed typo in cache4secs
 

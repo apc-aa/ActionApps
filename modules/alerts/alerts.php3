@@ -30,10 +30,10 @@ http://www.apc.org/
 */
 
 require_once "./lang.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";
-require_once $GLOBALS["AA_INC_PATH"]."view.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";
+require_once $GLOBALS['AA_INC_PATH']."view.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
 require_once "alerts_sending.php3";
 
 
@@ -68,7 +68,7 @@ $frequency['monthly'] = 31 * $frequency['daily'];
 
 //$debug = 1;
 
-if (!is_object ($db)) $db = new DB_AA;
+if (!is_object($db)) $db = new DB_AA;
 
 $howoften_options = get_howoften_options();
 

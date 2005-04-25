@@ -1,10 +1,10 @@
 <?php
 require_once "./../include/config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."searchlib.php3";
-require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
-require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH']."mail.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
 
 $KeyVal=90;  // generated key validity in minutes 
 $script_path=$GLOBALS["AA_INSTAL_PATH"]."misc/forgotten_pwd.php3";
@@ -68,8 +68,8 @@ if ($do=="chu") { //CHeck User
     // check if we can find the user either by username (preffered as it's unique) or email address 
     if (!$userdata=GetUserData($id,$by)) die("Can't find the user, sorry. Check the spelling and try again !!!");
     // generate MD5 hash 
-    $username=$userdata["headline........"][0]["value"];
-    $email=$userdata["con_email......."][0]["value"];
+    $username=$userdata["headline........"][0]['value'];
+    $email=$userdata["con_email......."][0]['value'];
     $pwdkey=MD5($username.$email.AA_ID.round(now()/60));
     // send it via email 
     $mail = new HtmlMail;
@@ -90,8 +90,8 @@ if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
     if (!($key.$user)) die ("Wrong way, go back !!!");   
     if (!$userdata=GetUserData($user,"headline........")) die("Can't find the user, sorry. Check the spelling and try again !!!");
     // Check the key
-    $username=$userdata["headline........"][0]["value"];
-    $email=$userdata["con_email......."][0]["value"];
+    $username=$userdata["headline........"][0]['value'];
+    $email=$userdata["con_email......."][0]['value'];
     $i=-1; 
     while ($i++<$KeyVal && $pwdkey!=$key) {
         $pwdkey=MD5($username.$email.AA_ID.round(round(now()/60)-$i));
@@ -111,12 +111,12 @@ if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
        <?php 
     }
     else  { //CHange Password   
-       $sliceID=unpack_id($userdata["slice_id........"][0]["value"]);
-       $itemID=unpack_id($userdata["id.............."][0]["value"]);
+       $sliceID=unpack_id($userdata["slice_id........"][0]['value']);
+       $itemID=unpack_id($userdata["id.............."][0]['value']);
        list($fields,) = GetSliceFields($sliceID);
        $fields["password........"]["input_insert_func"]="qte:";
-       $userdata["password........"][0]["value"]=crypt($password,'xx');
-       $update=StoreItem( $itemID, $sliceID, $userdata, $fields, false, true, false ); # insert, invalidatecache, feed
+       $userdata["password........"][0]['value']=crypt($password,'xx');
+       $update=StoreItem( $itemID, $sliceID, $userdata, $fields, false, true, false ); // insert, invalidatecache, feed
        if ($update) echo "Your password has been updated."; else 
        die ("There was an error updating your password. Please contact ".ERROR_REPORTING_EMAIL);
     }   
@@ -139,10 +139,10 @@ function GetUserData($identification,$findby="headline........") {
     // get item id of current user
     $zid = QueryZIDs($fields, '', $conds, '', '', 'ACTIVE', $slices, 1, false, '=' );
     //var_dump($conds);
-    if( $zid->count()<1 )      return false;
+    if ( $zid->count()<1 )      return false;
 
     $content = GetItemContent($zid);
-    if( !is_array($content) )  return false;
+    if ( !is_array($content) )  return false;
 
     $ret= reset($content);
     return $ret;

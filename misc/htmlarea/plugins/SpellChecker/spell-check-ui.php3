@@ -8,21 +8,21 @@
 
    Spell Checker Plugin for HTMLArea-3.0
    Implementation by Mihai Bazon.  Sponsored by www.americanbible.org
-  
+
    htmlArea v3.0 - Copyright (c) 2003 interactivetools.com, inc.
    This notice MUST stay intact for use (see license.txt).
-  
+
    A free WYSIWYG editor replacement for <textarea> fields.
    For full source code and docs, visit http://www.interactivetools.com/
-  
+
    Version 3.0 developed by Mihai Bazon for InteractiveTools.
-  	     http://dynarch.com/mishoo
-  
+         http://dynarch.com/mishoo
+
    $Id$
 
 -->
-<?php 
-/* changed for APC-AA by pavelji@ecn.cz - we need constants.php3 */  
+<?php
+/* changed for APC-AA by pavelji@ecn.cz - we need constants.php3 */
 include "../../../../include/constants.php3";
 ?>
 
@@ -64,7 +64,7 @@ include "../../../../include/constants.php3";
   </head>
 
   <body onload="initDocument()">
-  
+
 <?php /* changed for APC-AA by pavelji@ecn.cz - get path for spellchecker script */ ?>
     <form style="display: none;" action="<?php echo AA_HTMLAREA_SPELL_CGISCRIPT; ?>spell-check-logic.cgi"
         method="post" target="framecontent"

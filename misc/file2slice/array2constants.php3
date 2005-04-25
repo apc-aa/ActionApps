@@ -4,22 +4,22 @@
 */
 	
 require_once "../../include/config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."itemfunc.php3";
-require_once $GLOBALS["AA_INC_PATH"]."notify.php3";
-require_once $GLOBALS["AA_INC_PATH"]."discussion.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."date.php3";
-require_once $GLOBALS["AA_INC_PATH"]."feeding.php3";
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."notify.php3";
+require_once $GLOBALS['AA_INC_PATH']."discussion.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."date.php3";
+require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
 
 function myQuery (&$db, $SQL, $fire) {
   global $debug;
   echo "$SQL<br>";
 
-  if( !$fire )
+  if ( !$fire )
     return true;
   
   if ($debug) 
@@ -65,7 +65,7 @@ $SQL = "INSERT INTO constant SET id='". q_pack_id(new_id()) ."',
 myQuery ($db, $SQL, $fire);
 
 reset( $constants2import );
-while( list(,$cnst) = each($constants2import) ) {
+while ( list(,$cnst) = each($constants2import) ) {
   $varset->clear();
   $varset->set("name",  $cnst, "text");
   $varset->set("value", $cnst, "text");
@@ -74,7 +74,7 @@ while( list(,$cnst) = each($constants2import) ) {
   $varset->set("id", new_id(), "unpacked" ); 
   $varset->set("group_id", $group_id, "text" );
   $SQL =  "INSERT INTO constant " . $varset->makeINSERT();
-  if( !MyQuery ($db, $SQL, $fire )) {
+  if ( !MyQuery ($db, $SQL, $fire )) {
     $err["DB"] .= MsgErr("Can't copy constant");
     break;
   }

@@ -162,7 +162,7 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed, $display_only=false)
            (Honzam 04/26/04) */
 
 
-        $feed["DebugName"] = "APC Feed //$feed_id: $feed[name] : $feed[remote_slice_name] -> ".$l_slice->name();
+        $feed["DebugName"] = "APC Feed #$feed_id: $feed[name] : $feed[remote_slice_name] -> ".$l_slice->name();
         if ($debugfeed >= 1) print("\n<br>".$feed["DebugName"]);
 
         // now we have cat_ids[] array => we can ask for data
@@ -174,7 +174,7 @@ function onefeedFetchAndParse($feed_id, &$feed, $debugfeed, $display_only=false)
 
         $xml_data = xml_fetch( $feed['server_url'], ORG_NAME, $feed['password'], $feed['user_id'], unpack_id128($feed['remote_slice_id']),  $feed['newest_item'], $categories2fed);
     } else {   // not FEEDTYPE_APC
-        $feed["DebugName"] = "RSS Feed //$feed_id: $feed[name]: -> ".$l_slice->name();
+        $feed["DebugName"] = "RSS Feed #$feed_id: $feed[name]: -> ".$l_slice->name();
         if ($debugfeed >= 1) print("\n<br>$feed[DebugName]");
         if ($debugfeed >= 8) huhl("onefeedFetchAndParse:url=",$feed['server_url']);
 
@@ -332,7 +332,7 @@ class grabber_aarss extends grabber {
     var $status_code_id;
     var $ext_categs;
     var $l_categs;
-    
+
     function grabber_aarss(&$aa_rss, $l_slice_id, $r_slice_id, $feed_type, &$ext_categs, &$l_categs) {
         global $DEFAULT_RSS_MAP;
 
@@ -343,8 +343,8 @@ class grabber_aarss extends grabber {
         // Find channel definition
         if (!($this->channel = $aa_rss['channels'][$r_slice_id])) {
             while (list(,$this->channel) = each($aa_rss['channels'])) {
-                if ($this->channel) { 
-                   break; 
+                if ($this->channel) {
+                   break;
                 }
             }
         }
@@ -353,7 +353,7 @@ class grabber_aarss extends grabber {
         if (!$map && ($feed_type == FEEDTYPE_RSS)) {
             $map = $DEFAULT_RSS_MAP;
         }
-        $this->map = $map; 
+        $this->map = $map;
 
         if ($feed_type == FEEDTYPE_APC) { // Use the APC specific fields from the item
             $this->cat_field_id   = GetBaseFieldId( $aa_rss['fields'], "category" );
@@ -362,13 +362,13 @@ class grabber_aarss extends grabber {
 
         reset($this->aa_rss['items']);
     }
-    
+
     function getItem() {
         if (!($item = current($this->aa_rss['items']))) {
             return false;
         }
         $item_id = key($this->aa_rss['items']);
-        
+
         // A series of steps to make field specific edits
         // set fulltext field back from the content field, where it was put by
         // APC for RSS compatability
@@ -410,25 +410,25 @@ class grabber_aarss extends grabber {
                             break;
             } // switch
         } // while each($map)
-        
+
         next($this->aa_rss['items']);
-        
-        return new ItemContent($content4id); 
+
+        return new ItemContent($content4id);
     }
-    
-    
+
+
 }
 
 /** Stores items to the table item */
 function xmlUpdateItems(&$feed, &$aa_rss, $l_slice_id, $r_slice_id, &$ext_categs, &$l_categs, $debugfeed) {
 
     if ($debugfeed >= 8) print("\n<br>xmlUpdateItems");
-    
+
     $grabber = new grabber_aarss($aa_rss, $l_slice_id, $r_slice_id, $feed['feed_type'], $ext_categs, $l_categs);
 
     /** Now import all items to the slice */
     while ($content4id = $grabber->getItem()) {
-        
+
         $item_id = $content4id->getItemID();
 
         // Create new item id (always the same for item-slice pair)
@@ -441,11 +441,11 @@ function xmlUpdateItems(&$feed, &$aa_rss, $l_slice_id, $r_slice_id, &$ext_categs
                 continue;
         }
 
-        // set the item to be recevied from remote node 
+        // set the item to be recevied from remote node
         $content4id->setItemValue('externally_fed', $feed['name']);
         $content4id->setItemID($new_item_id);
         $content4id->setSliceID($l_slice_id);
-        
+
         if ($debugfeed >= 3) print("\n<br>      ". $content4id->getValue('headline........'));
         if ($debugfeed >= 8) { print("\n<br>xmlUpdateItems:content4id="); huh($content4id); }
 

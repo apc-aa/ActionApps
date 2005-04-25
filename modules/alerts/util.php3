@@ -19,10 +19,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
-require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once $GLOBALS['AA_INC_PATH']."mail.php3";
+require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
 
-if (!is_object ($db))
+if (!is_object($db))
     $db=new DB_AA;
 
 function set_collectionid () {

@@ -22,7 +22,7 @@ http://www.apc.org/
 $show_needed_fields = array( abstract=>L_ABSTRACT, html_formatted=>L_HTML_FORMATTED, full_text=>L_FULL_TEXT, highlight=>L_HIGHLIGHT, hl_href=>L_HL_HREF, link_only=>L_LINK_ONLY, place=>L_PLACE, source=>L_SOURCE, source_href=>L_SOURCE_HREF, status_code=>L_STATUS_CODE, language_code=>L_LANGUAGE_CODE, cp_code=>L_CP_CODE, category_id=>_m("Category ID"), img_src=>L_IMG_SRC, img_width=>L_IMG_WIDTH, img_height=>L_IMG_HEIGHT, posted_by=>L_POSTED_BY, e_posted_by=>L_E_POSTED_BY, publish_date=>L_PUBLISH_DATE, expiry_date=>L_EXPIRY_DATE, edit_note=>L_EDIT_NOTE, img_src=>L_IMG_UPLOAD, redirect=>L_REDIRECT );
 
 
-if( defined("EXTENDED_ITEM_TABLE") ) {
+if ( defined("EXTENDED_ITEM_TABLE") ) {
 //  $item_fields_text = array("id", "master_id", "slice_id", "category_id", "language_code", "cp_code", "headline", "hl_href", "post_date", "publish_date", "expiry_date", "abstract", "img_src", "source", "source_href", "place", "posted_by", "e_posted_by", "created_by", "edited_by", "last_edit", "contact1", "contact2", "contact3", "edit_note", "img_width", "img_height", "redirect", "source_desc", "source_address", "source_city", "source_prov", "source_country", "start_date", "end_date", "time", "con_name", "con_email", "con_phone", "con_fax", "loc_name", "loc_address", "loc_city", "loc_prov", "loc_country");
 //  $item_fields_num  = array("status_code", "link_only", "html_formatted", "highlight" );
     // list of fields in packed array of shown fields in itemedit.php3
@@ -106,7 +106,7 @@ if( defined("EXTENDED_ITEM_TABLE") ) {
                              redirect=>array(L_REDIRECT, "d_redirect", "url............."));
 }
 
-# gets slice fields
+// gets slice fields
 function GetOldSliceInfo($old_slice_id) {
   global $odb;
   $p_slice_id = q_pack_id($old_slice_id);
@@ -117,7 +117,7 @@ function GetOldSliceInfo($old_slice_id) {
 }  
 
 function ExitScript($txt) {
-  if( isset($txt) AND is_array($txt) )
+  if ( isset($txt) AND is_array($txt) )
     print_r($txt);
   else
     echo $txt;
@@ -131,15 +131,15 @@ function UpdateNewField( $field_id, $default, $show, $needed ) {
 
   $SQL = "UPDATE field set required = ". ($needed ? 1 : 0) . ", 
                            input_show = ". ($show ? 1 : 0);
-  if($default)
+  if ($default)
     $SQL .=             ", input_default = '$fce:$default'";
     
   $SQL .= " WHERE id='$field_id'
              AND slice_id = '$p_slice_id'";
   
   huhu( $SQL );
-  if( $GLOBALS['fire'] ) {
-    if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+  if ( $GLOBALS['fire'] ) {
+    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
       $err["DB"] .= MsgErr("Can't copy constant");
       return false;
     }
@@ -152,8 +152,8 @@ function PrepareContent4id($source) {
   global $itemedit_fields;
   
   reset($itemedit_fields);
-  while( list( $ofld, $arr ) = each( $itemedit_fields )) {
-    if( $arr[2] ) {
+  while ( list( $ofld, $arr ) = each( $itemedit_fields )) {
+    if ( $arr[2] ) {
       $res[$arr[2]][0]['value'] = (( $arr[3] == 'dte' ) ? strtotime($source[$ofld]) : addslashes($source[$ofld]));
       $res[$arr[2]][0]['flag'] = 0;
     }  
@@ -181,7 +181,7 @@ function GetOldCategories() {
 function huhu($txt) {
   echo "<br>";
   $txt = htmlspecialchars($txt);
-  if( $GLOBALS['fire'] )
+  if ( $GLOBALS['fire'] )
     echo "<font color='red'>$txt</font>";
    else 
     echo "$txt";
@@ -190,6 +190,9 @@ function huhu($txt) {
 
 /*
 $Log$
+Revision 1.4  2005/04/25 11:46:21  honzam
+a bit more beauty code - some coding standards setting applied
+
 Revision 1.3  2003/01/27 13:51:04  jakubadamek
 fixed language constants
 
