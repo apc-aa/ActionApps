@@ -178,7 +178,7 @@ function GetEmailWhere () {
         return "(1=1)";
     else {
         $myslices = GetUserSlices();
-        if (is_array ($myslices)) {
+        if (is_array($myslices)) {
             reset ($myslices);
             while (list ($my_slice_id, $perms) = each ($myslices))
                 if (strchr ($perms, PS_FULLTEXT))

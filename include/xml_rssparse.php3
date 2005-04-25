@@ -19,14 +19,14 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#
-# Cross-Server Networking - parsing function
-#
-# Note: This parser does not check correctness of the RSS document. It assumes, that xml document
-#       conforms to the RSS 1.0. Normally it parses document, which was created by aa server module (see
-#       getxml.php3)
+//
+// Cross-Server Networking - parsing function
+//
+// Note: This parser does not check correctness of the RSS document. It assumes, that xml document
+//       conforms to the RSS 1.0. Normally it parses document, which was created by aa server module (see
+//       getxml.php3)
 
-require_once $GLOBALS["AA_INC_PATH"]."convert_charset.class.php3";
+require_once $GLOBALS['AA_INC_PATH']."convert_charset.class.php3";
 
 // An array mapping all the name spaces we've seen in RSS feeds to abbreviations
 // Only a few of the abbreviations are likely to be used below
@@ -75,14 +75,14 @@ function decode($v) {
 /** Function decides if the string could be utf-8 or not */
 function seems_utf8($str) {
     for ($i=0; $i<strlen($str); $i++) {
-        if (ord($str[$i]) < 0x80) continue; # 0bbbbbbb
-        elseif ((ord($str[$i]) & 0xE0) == 0xC0) $n=1; # 110bbbbb
-        elseif ((ord($str[$i]) & 0xF0) == 0xE0) $n=2; # 1110bbbb
-        elseif ((ord($str[$i]) & 0xF8) == 0xF0) $n=3; # 11110bbb
-        elseif ((ord($str[$i]) & 0xFC) == 0xF8) $n=4; # 111110bb
-        elseif ((ord($str[$i]) & 0xFE) == 0xFC) $n=5; # 1111110b
-        else return false; # Does not match any model
-        for ($j=0; $j<$n; $j++) { # n bytes matching 10bbbbbb follow ?
+        if (ord($str[$i]) < 0x80) continue; // 0bbbbbbb
+        elseif ((ord($str[$i]) & 0xE0) == 0xC0) $n=1; // 110bbbbb
+        elseif ((ord($str[$i]) & 0xF0) == 0xE0) $n=2; // 1110bbbb
+        elseif ((ord($str[$i]) & 0xF8) == 0xF0) $n=3; // 11110bbb
+        elseif ((ord($str[$i]) & 0xFC) == 0xF8) $n=4; // 111110bb
+        elseif ((ord($str[$i]) & 0xFE) == 0xFC) $n=5; // 1111110b
+        else return false; // Does not match any model
+        for ($j=0; $j<$n; $j++) { // n bytes matching 10bbbbbb follow ?
             if ((++$i == strlen($str)) || ((ord($str[$i]) & 0xC0) != 0x80)) {
                 return false;
             }
@@ -193,7 +193,7 @@ function endElement($parser, $name) {
 
     case "^RSS^CHANNEL":
     case "^RDF:RDF^RSS:CHANNEL":
-      if(!($channel_uri)) $channel_uri = string2id($channel[title]);   // RSS 0.9
+      if (!($channel_uri)) $channel_uri = string2id($channel[title]);   // RSS 0.9
       $aa_rss[channels][$channel_uri] = $channel;
       $channel="";
       break;
@@ -287,7 +287,7 @@ function charD($parser, $data) {
         $fulltext_content .= decode($data); break;
 
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^RDF:VALUE":
-        $fielddata[value] .= decode($data); break;
+        $fielddata['value'] .= decode($data); break;
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^AA:FIELDFLAGS":
         $fielddata[flag] = $data; break;
   }

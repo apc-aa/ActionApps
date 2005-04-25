@@ -38,17 +38,17 @@ if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
 }
 
 /* Required, contains your local session management extension */
-if($encap) {
-  require_once($GLOBALS["AA_INC_PATH"] . "extsessi.php3");   // if encapsulated (itemedit.php3) we can't send more Header
+if ($encap) {
+  require_once($GLOBALS['AA_INC_PATH'] . "extsessi.php3");   // if encapsulated (itemedit.php3) we can't send more Header
  } else {
-  require_once($GLOBALS["AA_INC_PATH"] . "extsess.php3");     
+  require_once($GLOBALS['AA_INC_PATH'] . "extsess.php3");     
 }  
 
 /* Required, contains your local authentication extension. */
-if($nobody) {  // used in itemedit.php3 for anonymoous news posting
-  require_once($GLOBALS["AA_INC_PATH"] . "extauthnobody.php3");     
+if ($nobody) {  // used in itemedit.php3 for anonymoous news posting
+  require_once($GLOBALS['AA_INC_PATH'] . "extauthnobody.php3");     
  } else { 
-  require_once($GLOBALS["AA_INC_PATH"] . "extauth.php3");     
+  require_once($GLOBALS['AA_INC_PATH'] . "extauth.php3");     
 }  
 
 /* Required, contains the page management functions. */

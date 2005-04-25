@@ -20,13 +20,13 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# -----------------------------------------------------------------------------
-#  Constants
-# -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+//  Constants
+// -----------------------------------------------------------------------------
 
 $syntax_error = "";
 
-# -------------- Lexical analysis ---------------------------------------------
+// -------------- Lexical analysis ---------------------------------------------
 define("WHITE", " \t");
 define("LEFT_PARENTHESES", "({[");
 define("RIGHT_PARENTHESES", ")]}");
@@ -40,7 +40,7 @@ define("E_NO_ENDING_QUOTAPOS", 16);
 define("S_OK", 17);
 define("S_IMPLICIT", 18);
 
-# -------------- Syntax analysis ---------------------------------------------
+// -------------- Syntax analysis ---------------------------------------------
 
 // token types - number representation
 define("TOKEN_TYPE_UNKNOWN", 0);
@@ -127,9 +127,9 @@ $First = Array(
 		 );
 		 
 
-# -----------------------------------------------------------------------------
-#  Functions for Lexical analisys
-# -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+//  Functions for Lexical analisys
+// -----------------------------------------------------------------------------
      
 function eatWhiteSpaces($input, $i, $length) {
 	while ( ($i<$length) && isWhite($input[$i]) ) $i++;
@@ -214,19 +214,19 @@ function getToken($input, $i, $length) {
 		if ( isOperator($input[$i]) ) { // includes '+' and '-' (one character operators)
 			$tok["status"] = S_OK;
 			$val = resolveOperator($input[$i]);
-			$tok["value"]  = $val["value"];	// 'and' (for +) and 'not' (for -)
+			$tok['value']  = $val['value'];	// 'and' (for +) and 'not' (for -)
 			$tok["i"]      = $i+1;
 			$tok["type"]   = $val["type"];
 		}
 		else if ( isLeftParenthesis($input[$i]) ) { // includes '(', '[' a '{'
 			$tok["status"] = S_OK;
-			$tok["value"]  = "(";	// all parenthesis are equal
+			$tok['value']  = "(";	// all parenthesis are equal
 			$tok["i"]	   = $i+1;
 			$tok["type"]   = TOKEN_TYPE_LEFT_PARENTHESIS;
 		}
 		else if ( isRightParenthesis($input[$i]) ) { // includes ')', ']' a '}'
 			$tok["status"] = S_OK;
-			$tok["value"]  = ")";	// all parenthesis are equal
+			$tok['value']  = ")";	// all parenthesis are equal
 			$tok["i"]	   = $i+1;
 			$tok["type"]   = TOKEN_TYPE_RIGHT_PARENTHESIS;
 		}
@@ -240,37 +240,37 @@ function getToken($input, $i, $length) {
 }
 
 function preProcess($toks) {
-  if( isset($toks) AND is_array($toks) ) {
+  if ( isset($toks) AND is_array($toks) ) {
     Reset($toks);
     while ( List($ind,$val) = Each($toks) ) {
 
       // UNKNOWN will be set for strings not delimeted by apostrofs,
       // we can't say: "it is string" (see "and", ...)
       if ( $val["type"] == TOKEN_TYPE_UNKNOWN ) {
-        $lower = StrToLower($val["value"]);
+        $lower = StrToLower($val['value']);
         // Strings AND, OR, NOT in meaning as strings must be quoted ( "and" )
         if ( $lower=="and" ) {
-          $val["value"] = "and";
+          $val['value'] = "and";
           $val["type"]  = TOKEN_TYPE_OPERATOR_AND;
         }
         else if ( $lower=="or" ) {
-          $val["value"] = "or";
+          $val['value'] = "or";
           $val["type"]  = TOKEN_TYPE_OPERATOR_OR;
         }
         else if ( $lower=="not" ) {
-          $val["value"] = "not";
+          $val['value'] = "not";
           $val["type"]  = TOKEN_TYPE_OPERATOR_NOT;
         }
         else $val["type"] = TOKEN_TYPE_STRING;
       }
   //		else if ( $val["type"] == TOKEN_TYPE_OPERATOR ) {
-  //			if ( $val["value"] == "+" ) $val["value"] = "and";
-  //			else if ( $val["value"] == "-" ) $val["value"] = "not";
+  //			if ( $val['value'] == "+" ) $val['value'] = "and";
+  //			else if ( $val['value'] == "-" ) $val['value'] = "not";
   //		}
       $newtoks[] = $val;
     }
   }
-  if( isset($newtoks) AND is_array($newtoks) ) {
+  if ( isset($newtoks) AND is_array($newtoks) ) {
     Reset($newtoks);
     while ( $t1 = Current($newtoks) ) {
       $newtoks2[] = $t1;
@@ -298,9 +298,9 @@ function lex($input) {
 }
 
 
-# -----------------------------------------------------------------------------
-#  Functions for Syntax analisys
-# -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+//  Functions for Syntax analisys
+// -----------------------------------------------------------------------------
 
 class TokenList {
 	var $tList;
@@ -325,13 +325,13 @@ class TokenList {
 	
 	function getStringValue() {
 		if ( $this->tList[$this->index]["type"] == TOKEN_TYPE_STRING )
-			return $this->tList[$this->index]["value"];
+			return $this->tList[$this->index]['value'];
 		else return "";
 	}
 	
 	function getTokenBegin() {
 		$t = $this->tList[$this->index];
-		return $t["i"] - strlen($t["value"]);
+		return $t["i"] - strlen($t['value']);
 	}
 }	// class TokenList
 
@@ -371,9 +371,9 @@ class Syntax {
 			 ($la == TOKEN_TYPE_OPERATOR_NOT) )		// S -> E
 		{
 //			echo("S->E<BR>\n");//debug
-			if( ($val = $this->E()) == "_SYNTAX_ERROR" )
+			if ( ($val = $this->E()) == "_SYNTAX_ERROR" )
         return $val;
-      if( ($err = $this->tList->match(TOKEN_TYPE_EOF) )) {
+      if ( ($err = $this->tList->match(TOKEN_TYPE_EOF) )) {
         $GLOBALS["syntax_error"]=$err;
         return "_SYNTAX_ERROR";
       }  
@@ -394,9 +394,9 @@ class Syntax {
 			 ($la == TOKEN_TYPE_OPERATOR_NOT) )		// E -> TE'
 		{
 //			echo("E->TEap<BR>\n");//debug
-			if( ($val = $this->T()) == "_SYNTAX_ERROR" )
+			if ( ($val = $this->T()) == "_SYNTAX_ERROR" )
         return $val;
-			if( ($foo = $this->Eap()) == "_SYNTAX_ERROR" )
+			if ( ($foo = $this->Eap()) == "_SYNTAX_ERROR" )
         return $foo;
 			$val = $val . $foo;
 		}
@@ -412,13 +412,13 @@ class Syntax {
 		$la = $this->tList->lookAhead();
 		if ( $la == TOKEN_TYPE_OPERATOR_OR ) {	// E' -> orTE'
 //			echo("Eap->orTEap<BR>\n");//debug
-			if( ($err = $this->tList->match(TOKEN_TYPE_OPERATOR_OR) )) {
+			if ( ($err = $this->tList->match(TOKEN_TYPE_OPERATOR_OR) )) {
         $GLOBALS["syntax_error"]=$err;
         return "_SYNTAX_ERROR";
       }  
-			if( ($val = $this->T()) == "_SYNTAX_ERROR" )
+			if ( ($val = $this->T()) == "_SYNTAX_ERROR" )
         return $val;
-			if( ($foo = $this->Eap()) == "_SYNTAX_ERROR" )
+			if ( ($foo = $this->Eap()) == "_SYNTAX_ERROR" )
         return $foo;
 			$val = " or " . $val . $foo;
 		}
@@ -441,9 +441,9 @@ class Syntax {
 			 ($la == TOKEN_TYPE_OPERATOR_NOT) ) 		// T -> FT'
 		{
 //			echo("T->FTap<BR>\n");//debug
-			if( ($val = $this->F()) == "_SYNTAX_ERROR" )
+			if ( ($val = $this->F()) == "_SYNTAX_ERROR" )
         return $val;
-			if( ($foo = $this->Tap()) == "_SYNTAX_ERROR" )
+			if ( ($foo = $this->Tap()) == "_SYNTAX_ERROR" )
         return $foo;
 			$val = $val . $foo;
 		}
@@ -459,13 +459,13 @@ class Syntax {
 		$la = $this->tList->lookAhead();
 		if ( $la == TOKEN_TYPE_OPERATOR_AND ) {	// T' -> andFT'
 //			echo("Tap->andFTap<BR>\n");//debug
-			if( ($err = $this->tList->match(TOKEN_TYPE_OPERATOR_AND) )) {
+			if ( ($err = $this->tList->match(TOKEN_TYPE_OPERATOR_AND) )) {
         $GLOBALS["syntax_error"]=$err;
         return "_SYNTAX_ERROR";
       }  
-			if( ($val = $this->F()) == "_SYNTAX_ERROR" )
+			if ( ($val = $this->F()) == "_SYNTAX_ERROR" )
         return $val;
-			if( ($foo = $this->Tap()) == "_SYNTAX_ERROR" )
+			if ( ($foo = $this->Tap()) == "_SYNTAX_ERROR" )
         return $foo;
 			$val = " and " . $val . $foo;
 		}
@@ -487,17 +487,17 @@ class Syntax {
 		$la = $this->tList->lookAhead();
 		if ( $la == TOKEN_TYPE_OPERATOR_NOT ) {	// F -> not G
 //			echo("F->notG<BR>\n");//debug
-			if( ($err = $this->tList->match(TOKEN_TYPE_OPERATOR_NOT) )) {
+			if ( ($err = $this->tList->match(TOKEN_TYPE_OPERATOR_NOT) )) {
         $GLOBALS["syntax_error"]=$err;
         return "_SYNTAX_ERROR";
       }  
-			if( ($foo = $this->G()) == "_SYNTAX_ERROR" )
+			if ( ($foo = $this->G()) == "_SYNTAX_ERROR" )
         return $foo;
 			$val = "not ($foo)";
 		}
 		else if ( ($la == TOKEN_TYPE_LEFT_PARENTHESIS) || ($la == TOKEN_TYPE_STRING) ) { // F -> G
 //			echo("F->G<BR>\n");//debug
-			if( ($val = $this->G()) == "_SYNTAX_ERROR" )
+			if ( ($val = $this->G()) == "_SYNTAX_ERROR" )
         return $val;
 		}
 		else {
@@ -512,15 +512,15 @@ class Syntax {
 		$la = $this->tList->lookAhead();
 		if ( $la == TOKEN_TYPE_LEFT_PARENTHESIS ) { // G -> (E)
 //			echo("G->(E)<BR>\n");//debug
-			if( ($err = $this->tList->match(TOKEN_TYPE_LEFT_PARENTHESIS) )) {
+			if ( ($err = $this->tList->match(TOKEN_TYPE_LEFT_PARENTHESIS) )) {
         $GLOBALS["syntax_error"]=$err;
         return "_SYNTAX_ERROR";
       }  
 			$val = SYNTAX_LEFT_PAR;
-			if( ($foo = $this->E()) == "_SYNTAX_ERROR" )
+			if ( ($foo = $this->E()) == "_SYNTAX_ERROR" )
         return $foo;
 			$val = $val . $foo;
-			if( ($err = $this->tList->match(TOKEN_TYPE_RIGHT_PARENTHESIS) )) {
+			if ( ($err = $this->tList->match(TOKEN_TYPE_RIGHT_PARENTHESIS) )) {
         $GLOBALS["syntax_error"]=$err;
         return "_SYNTAX_ERROR";
       }  
@@ -529,7 +529,7 @@ class Syntax {
 		else if ( $la == TOKEN_TYPE_STRING ) {	// G -> string
 //			echo("G->string<BR>\n");//debug
 			$val = $this->column . " " . $this->operator . " \"" . $this->pre . $this->tList->getStringValue() . $this->post . "\"";
-			if( ($err = $this->tList->match(TOKEN_TYPE_STRING) )) {
+			if ( ($err = $this->tList->match(TOKEN_TYPE_STRING) )) {
         $GLOBALS["syntax_error"]=$err;
         return "_SYNTAX_ERROR";
       }  

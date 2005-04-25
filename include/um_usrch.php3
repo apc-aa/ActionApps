@@ -1,4 +1,4 @@
-<?php  #um_usrch.php3  - include file with user search form
+<?php  //um_usrch.php3  - include file with user search form
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -25,7 +25,7 @@ http://www.apc.org/
       case "U": $list = FindUsers($filter); break;
       case "G": $list = FindGroups($filter); break;
     }  
-    if( !is_array($list) ) {
+    if ( !is_array($list) ) {
       unset($list);
       $list["n"][name] = (( $list == "too much" ) ? $to_much : $none);
     }
@@ -35,30 +35,30 @@ http://www.apc.org/
   $users  = GetFiltered("U", $usr, _m("Too many users or groups found."), _m("No user (group) found"));   // get list of users
   $groups = GetFiltered("G", $grp, _m("Too much groups found."), _m("No groups found")); // get list of groups
 
-  if( $grp1_flt )   // user editation - list of all groups
+  if ( $grp1_flt )   // user editation - list of all groups
     $all_groups = GetFiltered("G", $grp1_flt, _m("Too much groups found."), _m("No groups found"));  
    else
     $all_groups = $groups;  // in user editation is $grp=="", so $groups are list of all groups 
 
-  if( $usr1_flt )   // group editation - list of all users
+  if ( $usr1_flt )   // group editation - list of all users
     $all_users = GetFiltered("U", $usr1_flt, _m("Too many users or groups found."), _m("No user (group) found"));  
    else
     $all_users = $users;  // in group editation is $usr=="", so $users are list of all users 
 
-  if( $selected_user ) {
+  if ( $selected_user ) {
     $user_groups = GetMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)
-    if( !is_array($user_groups) ) 
+    if ( !is_array($user_groups) ) 
       $sel_groups["n"][name] = (( $user_groups == "too much" ) ? _m("Too much groups found.") : "");
      else {
       reset($user_groups);
-      while( list(,$foo_uid) = each($user_groups) )
+      while ( list(,$foo_uid) = each($user_groups) )
         $sel_groups[$foo_uid] = GetIDsInfo($foo_uid);
     }  
   }
 
-  if( $selected_group ) {
+  if ( $selected_group ) {
     $groups_user = GetGroupMembers($selected_group);   // get list of users and groups right under $selected_group
-    if( !is_array($group_users) ) 
+    if ( !is_array($group_users) ) 
       $sel_users["n"][name] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
      else 
       $sel_users = $groups_user;

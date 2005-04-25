@@ -24,7 +24,7 @@ do  {
     // Procces group data ---------------------
     ValidateInput("group_name",        _m("Name"),        $group_name,        $err, ($add_submit ? true : false), "text");
     ValidateInput("group_description", _m("Description"), $group_description, $err, false,                        "text");
-    if( count($err) > 1) {
+    if ( count($err) > 1) {
         break;
     }
 
@@ -81,5 +81,5 @@ do  {
     // Add new modules for this user
     AddUserModulePerms( $new_module, $new_module_role, $selected_group, $perms_roles);
 
-} while(false);
+} while (false);
 ?>

@@ -80,7 +80,7 @@ class searchbar extends storable_class{
         $this->hint                 = $hint;
         $this->hint_url             = $hint_url;
 
-        if( isset($fields) AND is_array($fields) ) {
+        if ( isset($fields) AND is_array($fields) ) {
             uasort ($fields, "searchfields_cmp");
             foreach ( $fields as $fid => $v) {
                 if ($v['search_pri'] > 0 ) {           // not searchable fields
@@ -172,7 +172,7 @@ class searchbar extends storable_class{
     /** Resets the searchbar (both - Search as well as Order)  */
     function resetSearchAndOrder() {
         unset($this->order_row);
-        for( $i=0; $i<count($this->search_row); $i++ ) {
+        for ( $i=0; $i<count($this->search_row); $i++ ) {
             if ($this->search_row[$i]['readonly'] != true) {
                 unset($this->search_row[$i]);
             }
@@ -185,7 +185,7 @@ class searchbar extends storable_class{
         unset($srchbar);
         if ($this->show & MGR_SB_SEARCHROWS) {
             // cleaning all searchrows except 'readonly' searches
-            for( $i=0; $i<count($this->search_row); $i++ ) {
+            for ( $i=0; $i<count($this->search_row); $i++ ) {
                 if ($this->search_row[$i]['readonly'] == true) {
                     $srchbar[] = $this->search_row[$i];
                 }
@@ -248,7 +248,7 @@ class searchbar extends storable_class{
                             break;
                         }
                     }
-                    if( $field ) {
+                    if ( $field ) {
                         $this->search_row[] =
                             array( 'field' => $field,
                                    'value' => $cond['value'],
@@ -287,12 +287,12 @@ class searchbar extends storable_class{
      * Returns conds[] array to use with QueryIDs() (or Links_QueryIDs(), ...)
      */
     function getConds() {
-        if( !isset($this->search_row) OR !is_array($this->search_row) )
+        if ( !isset($this->search_row) OR !is_array($this->search_row) )
             return false;
 
         $fields = $this->fields;
         reset( $this->search_row );
-        while( list( , $c ) = each( $this->search_row ) ) {
+        while ( list( , $c ) = each( $this->search_row ) ) {
             $conds[]=array( 'operator' => $c['oper'],
                             'value' => $c['value'],
                             $c['field'] => 1 );
@@ -304,23 +304,23 @@ class searchbar extends storable_class{
      * Returns sort[] array to use with QueryIDs() (or Links_QueryIDs(), ...)
      */
     function getSort() {
-        if( !isset($this->order_row) OR !is_array($this->order_row) )
+        if ( !isset($this->order_row) OR !is_array($this->order_row) )
             return false;
 
         reset( $this->order_row );
-        while( list( , $s ) = each( $this->order_row ) )
+        while ( list( , $s ) = each( $this->order_row ) )
             $sort[]=array( $s['field'] => $s['dir'] );
         return $sort;
     }
 
      /** Returns array of bookmark names <key> => <name>  */
     function getBookmarkNames() {
-        if( isset($this->bookmarks) )  return $this->bookmarks->getKeyName();
+        if ( isset($this->bookmarks) )  return $this->bookmarks->getKeyName();
         return false;
     }
 
     function getBookmarkParams($key) {
-        if( isset($this->bookmarks) )  return $this->bookmarks->getBookmarkParams($key);
+        if ( isset($this->bookmarks) )  return $this->bookmarks->getBookmarkParams($key);
         return false;
     }
 
@@ -339,7 +339,7 @@ class searchbar extends storable_class{
                                       $this->search_row[$bar]['readonly']) :
                                 array( "", $this->search_fields[0], "", false);
 
-        if( $bar == 0 ) {   // first bar is described as 'SEARCH' others 'AND'
+        if ( $bar == 0 ) {   // first bar is described as 'SEARCH' others 'AND'
             $searchtext = _m('Search');
             $searchimage = "<a href='javascript:document.".$this->form_name. ".submit()'>".
                            GetAAImage('search.gif', $searchtext, 15, 15) .'</a>';
@@ -348,7 +348,7 @@ class searchbar extends storable_class{
             $searchtext = _m('And');
         }
 
-        # filter
+        // filter
         echo "<tr class=leftmenuy><td class='search'>$searchimage</td><td><b>$searchtext</b></td>";
         if ($readonly) {
             echo "<td class=\"tabtxteven\">".$this->search_fields[$fld]."</td>";
@@ -454,7 +454,7 @@ class searchbar extends storable_class{
         $empty = false;   // flag - true if the last printed searchrow is empty
 
         if ($this->show & MGR_SB_SEARCHROWS) {
-            while( ($count_sb < $this->order_row_count_min) OR
+            while ( ($count_sb < $this->order_row_count_min) OR
                    ($this->add_empty_search_row AND !$empty) ) {
                 $empty = !$this->print_search_bar($count_sb++);
             }
@@ -462,7 +462,7 @@ class searchbar extends storable_class{
 
         if ($this->show & MGR_SB_ORDERROWS) {
             $i = 0;
-            while( $i < $this->order_row_count_min ) {
+            while ( $i < $this->order_row_count_min ) {
                 $this->print_order_bar($i++);
             }
         }
@@ -504,7 +504,7 @@ class searchbar extends storable_class{
             }
         }
         echo "\";\n";
-        for( $i=0; $i<$count_sb; $i++ ) {
+        for ( $i=0; $i<$count_sb; $i++ ) {
             if ($this->search_row[$i]['readonly'] != true) {
                 echo "   ChangeOperators('".$this->form_name."','$i','".$this->getSearchBarOperator($i)."');\n";
             }

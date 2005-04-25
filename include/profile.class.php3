@@ -76,9 +76,9 @@ class aaprofile {
         }
 
         // now add properties from default profile, if it is not already set
-        if( $general_profile ) {
-            foreach( $general_profile as $v ) {
-                if( !$this->getProperty($v['property'],$v['selector'],true) ) {
+        if ( $general_profile ) {
+            foreach ( $general_profile as $v ) {
+                if ( !$this->getProperty($v['property'],$v['selector'],true) ) {
                     $this->set( $v['property'], $v['selector'], $v['value'], '*', $v['id'], $v['uid'] );
                 }
             }
@@ -128,11 +128,11 @@ class aaprofile {
      *  This functions parses it and returns in array.
      */
     function parseContentProperty($value) {
-        # profile value format:
-        $fnc = ParseFnc(substr($value,2));  # all default should have fnc:param format
-        if( $fnc ) {                        # call function
+        // profile value format:
+        $fnc = ParseFnc(substr($value,2));  // all default should have fnc:param format
+        if ( $fnc ) {                       // call function
             $fncname = 'default_fnc_' . $fnc["fnc"];
-            $x= array( $fncname($fnc["param"]), ($value[0] == '1') );
+            $x = array( $fncname($fnc["param"]), ($value[0] == '1') );
             return $x;
         } else {
             return array();

@@ -19,24 +19,24 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# A class for manipulating slices
-#
-# Author and Maintainer: Mitra mitra@mitra.biz
-#
-# And yes, I'll move the docs to phpDocumentor as soon as someone explains how
-# to use it!
-#
-# It is intended - and you are welcome - to extend this to bring into
-# one place the functions for working with slices.
-#
-# A design goal is to use lazy-evaluation wherever possible, i.e. to only
-# go to the database when something is needed.
+// A class for manipulating slices
+//
+// Author and Maintainer: Mitra mitra@mitra.biz
+//
+// And yes, I'll move the docs to phpDocumentor as soon as someone explains how
+// to use it!
+//
+// It is intended - and you are welcome - to extend this to bring into
+// one place the functions for working with slices.
+//
+// A design goal is to use lazy-evaluation wherever possible, i.e. to only
+// go to the database when something is needed.
 
-#If this is needed, comment why! It trips out anything calling sliceobj NOT from one level down
-#require_once "../include/config.php3";
-//require_once $GLOBALS["AA_INC_PATH"]."locsess.php3";
-require_once $GLOBALS["AA_INC_PATH"]."zids.php3"; // Pack and unpack ids
-require_once $GLOBALS["AA_INC_PATH"]."viewobj.php3"; //GetViewsWhere
+//If this is needed, comment why! It trips out anything calling sliceobj NOT from one level down
+//require_once "../include/config.php3";
+//require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once $GLOBALS['AA_INC_PATH']."zids.php3"; // Pack and unpack ids
+require_once $GLOBALS['AA_INC_PATH']."viewobj.php3"; //GetViewsWhere
 
 class slice {
     var $name;           // The name of the slice
@@ -191,9 +191,9 @@ class slice {
         }
 
         // it is needed to call IsEditable() function and GetContentFromForm()
-        if( $id ) {
+        if ( $id ) {
             $oldcontent = GetItemContent($id);
-            $oldcontent4id = $oldcontent[$id];   # shortcut
+            $oldcontent4id = $oldcontent[$id];   // shortcut
         }
 
         $js_proove_fields = 'true';
@@ -205,7 +205,7 @@ class slice {
             if (($pri_field_id=='edited_by.......') || ($pri_field_id=='posted_by.......')) {
                 continue;   // filed by AA - it could not be filled here
             }
-            $varname = 'v'. unpack_id($pri_field_id);  # "v" prefix - database field var
+            $varname = 'v'. unpack_id($pri_field_id);  // "v" prefix - database field var
 
             list($validate) = explode(":", $f["input_validate"]);
             if ($validate == 'e-unique') {
@@ -213,10 +213,10 @@ class slice {
             }
 
             $editable = IsEditable($oldcontent4id[$pri_field_id], $f, $profile) && !$notshown[$varname];
-            $js_proove_password_filled = ($action != "edit") && $f["required"] && !$oldcontent4id[$pri_field_id][0]["value"];
+            $js_proove_password_filled = ($action != "edit") && $f["required"] && !$oldcontent4id[$pri_field_id][0]['value'];
 
             // prepare javascript function for validation of the form
-            if( $editable ) {
+            if ( $editable ) {
 
                 list($show_func) = explode(":", $f["input_show_func"], 2);
                 $this->show_func_used[$show_func] = true;
@@ -245,12 +245,12 @@ class slice {
 }
 
 class slices {
-    var $a;     # Array unpackedsliceid -> slice obj
+    var $a;     // Array unpackedsliceid -> slice obj
 
     // Create slices array from unpacked slice ids
     function slices($iarr=null) {
         $this->a = array();
-        foreach( (array)$iarr as $unpackedsliceid) {
+        foreach ( (array)$iarr as $unpackedsliceid) {
             $this->addslice($unpackedsliceid);
         }
     }
@@ -268,7 +268,7 @@ class slices {
     }
 }
 
-$GLOBALS['allknownslices'] = new slices();  # Globally accessable
+$GLOBALS['allknownslices'] = new slices();  // Globally accessable
 
 // Utility functions to avoid mucking with classes where only used once
 function sliceid2name($unpackedsliceid) {
@@ -281,7 +281,7 @@ function sliceid2name($unpackedsliceid) {
 function sliceid2field($unpackedsliceid,$field) {
     global $allknownslices;
     $s = $allknownslices->addslice($unpackedsliceid);
-    $s = $s->getfield($field);  # Note this should save it but it doesn't BUG!
+    $s = $s->getfield($field);  // Note this should save it but it doesn't BUG!
     return $s;
 }
 
@@ -290,7 +290,7 @@ function sliceid2field($unpackedsliceid,$field) {
 function report_sliceids() {
     $db = getDB();
     $db->tquery("SELECT name,id FROM slice");
-    while($db->next_record()) {
+    while ($db->next_record()) {
         print("\nName=".$db->f("name")." unpacked ID=".unpack_id128($db->f("id")));
     }
     freeDB($db);

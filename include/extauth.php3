@@ -19,12 +19,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once($GLOBALS["AA_INC_PATH"] . "perm_core.php3"); // allways included!
+require_once($GLOBALS['AA_INC_PATH'] . "perm_core.php3"); // allways included!
 
 // choice of the permission system library
 // PERM_LIB is defined in config.php3
 
-require_once($GLOBALS["AA_INC_PATH"] . "perm_" . PERM_LIB . ".php3");
+require_once($GLOBALS['AA_INC_PATH'] . "perm_" . PERM_LIB . ".php3");
 
 // Required, contains your local session management extension
 
@@ -44,21 +44,21 @@ class AA_CP_Auth extends Auth {
 
   function auth_loginform() {
     global $sess, $_PHPLIB, $HTTP_POST_VARS, $anonymous_user;
-    $username = $HTTP_POST_VARS["username"];  # there was problem with variables
-    $password = $HTTP_POST_VARS["password"];  # in cookies - if someone writes
-                                              # to cookies username, then the
-                                              # cookies username is used - error
-
-    require_once ($GLOBALS["AA_INC_PATH"] . "loginform.inc");
+    $username = $HTTP_POST_VARS["username"];  // there was problem with variables
+    $password = $HTTP_POST_VARS["password"];  // in cookies - if someone writes 
+                                              // to cookies username, then the 
+                                              // cookies username is used - error
+    
+    require_once ($GLOBALS['AA_INC_PATH'] . "loginform.inc");
   }
 
   function auth_validatelogin() {
     global $HTTP_POST_VARS;
-    $username = $HTTP_POST_VARS["username"];  # there was problem with variables
-    $password = $HTTP_POST_VARS["password"];  # in cookies - if someone writes
-                                              # to cookies username, then the
-                                              # cookies username is used - error
-    if(isset($username))
+    $username = $HTTP_POST_VARS["username"];  // there was problem with variables
+    $password = $HTTP_POST_VARS["password"];  // in cookies - if someone writes 
+                                              // to cookies username, then the 
+                                              // cookies username is used - error
+    if (isset($username))
       $this->auth["uname"]=$username;
 
     $user=$username;

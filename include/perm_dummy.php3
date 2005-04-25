@@ -1,4 +1,4 @@
-<?php  # perm_dummy - pure permission functions - anyone can do anything
+<?php  // perm_dummy - pure permission functions - anyone can do anything
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 
-### API functions ###
+//## API functions //##
 
 function AuthenticateUsername($username, $password, $flags = 0) {
   return "foobar";

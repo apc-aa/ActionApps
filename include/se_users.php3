@@ -19,9 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# expected $slice_id for edit slice
-# optionaly $Msg to show under <h1>Headline</h1>
-# (typicaly: Category update successful)
+// expected $slice_id for edit slice
+// optionaly $Msg to show under <h1>Headline</h1>
+// (typicaly: Category update successful)
 
 $editor_perms = GetSlicePerms($auth->auth["uid"], $slice_id);
 
@@ -40,21 +40,21 @@ function CanChangeRole ($user_perm, $editor_perm, $role_perm) {
 function ChangeRole () {
   global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role, $perms_roles, $db;
 
-  if( $UsrAdd ) {
-    if( CanChangeRole( GetSlicePerms($UsrAdd, $slice_id, false),
+  if ( $UsrAdd ) {
+    if ( CanChangeRole( GetSlicePerms($UsrAdd, $slice_id, false),
                        $editor_perms,
                        $perms_roles[$role]['perm']) ) {
       AddPerm($UsrAdd, $slice_id, "slice", $perms_roles[$role]['id']);
-      $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+      $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
     }
   } elseif( $UsrDel ) {
-    if( CanChangeRole(GetSlicePerms($UsrDel, $slice_id, false),
+    if ( CanChangeRole(GetSlicePerms($UsrDel, $slice_id, false),
                       $editor_perms,
                       $perms_roles["AUTHOR"]['perm']) )  // smallest permission
       DelPerm($UsrDel, $slice_id, "slice");
 
       $profile = new aaprofile($UsrDel, $slice_id);      // user settings
       $profile->delUserProfile();
-      $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  # invalidate old cached values
+      $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
   }
 }

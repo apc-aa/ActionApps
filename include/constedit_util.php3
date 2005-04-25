@@ -341,7 +341,7 @@ function hcUpdate()
 
     // update items
 
-    if (is_array ($changes)) {
+    if (is_array($changes)) {
         $db->query("SELECT id, short_id FROM constant;");
         while ($db->next_record())
             $shortIDmap [$db->f("short_id")] = addslashes($db->f("id"));
@@ -418,7 +418,7 @@ function CopyConstants ($slice_id)
                 $group_ids[$group_id][$db->f("id")] = $shf;
         }
     }
-    if (!is_array ($group_ids)) {
+    if (!is_array($group_ids)) {
         freeDB($db);
         return true;
     }
@@ -499,7 +499,7 @@ function add_constant_group ($group_id, $items)
     while ($db->next_record())
         $gnames[$db->f("value")] = 1;
     $unique_name = $group_id;
-    if (is_array ($gnames)) {
+    if (is_array($gnames)) {
         $i = 1;
         while ($gnames [$unique_name])
             $unique_name = $group_id." ".($i++);
@@ -512,7 +512,7 @@ function add_constant_group ($group_id, $items)
     $db->query ($varset->makeINSERT ("constant"));
 
     $priority = 100;
-    if (is_array ($items)) {
+    if (is_array($items)) {
         reset ($items);
         while (list ($value, $name) = each ($items)) {
             $varset->clear();
@@ -587,7 +587,7 @@ function refresh_constant_group ($group_id, $items) {
     }
 
     $priority = 100;
-    if (is_array ($items)) {
+    if (is_array($items)) {
         reset ($items);
         while (list ($value, $name) = each ($items)) {
             $varset->clear();

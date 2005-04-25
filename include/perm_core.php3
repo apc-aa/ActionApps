@@ -19,10 +19,10 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# perm_core.php3
-# Definitions and functions used no matter which one perm_*.php3 backend
-# is used.
-#
+// perm_core.php3
+// Definitions and functions used no matter which one perm_*.php3 backend
+// is used.
+//
 
 define("MAX_GROUPS_DEEP", 16);   // Maximum number of nested groups (user belongs to group1, group1 to group2 ...)
 define("MAX_ENTRIES_SHOWN",5);   // Maximum number of shown users in search for users/groups
@@ -30,59 +30,59 @@ define("MAX_ENTRIES_SHOWN",5);   // Maximum number of shown users in search for 
 // permission letter definition
 //---------- Slice -----------------
 // author        - possibly letters 'abcdefg'
-define("PS_EDIT_SELF_ITEMS",      "a");   # slice # change self-written items
+define("PS_EDIT_SELF_ITEMS",      "a");   // slice | change self-written items
 // editor        - possibly letters 'hijklmnopqrs'
-define("PS_ITEMS2ACT",            "h");   # slice # move item to approved bin
-define("PS_ITEMS2HOLD",           "i");   # slice # move item to holding bin
-define("PS_ITEMS2TRASH",          "j");   # slice # move item to trash bin
-define("PS_EDIT_ALL_ITEMS",       "k");   # slice # change all items
-define("PS_DELETE_ITEMS",         "l");   # slice # delete items
+define("PS_ITEMS2ACT",            "h");   // slice | move item to approved bin
+define("PS_ITEMS2HOLD",           "i");   // slice | move item to holding bin
+define("PS_ITEMS2TRASH",          "j");   // slice | move item to trash bin
+define("PS_EDIT_ALL_ITEMS",       "k");   // slice | change all items
+define("PS_DELETE_ITEMS",         "l");   // slice | delete items
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
-define("PS_EDIT",                 "A");   # slice # set slice properties
-define("PS_CATEGORY",             "B");   # slice # change slice categories
-define("PS_FIELDS",               "C");   # slice # edit fields defauts
-define("PS_BOOKMARK",             "D");   # slice # change search form settings
-define("PS_USERS",                "E");   # slice # manage users (change perms
-                                                  # to slice, set profile)
-define("PS_COMPACT",              "F");   # slice # change slice compact view
-define("PS_FULLTEXT",             "G");   # slice # change item fulltext view
-define("PS_FEEDING",              "H");   # slice # change properties
-define("PS_ADD_USER",             "I");   # slice # add existing user to slice
-define("PS_CONFIG",               "J");   # slice # configure slice (show/hide
-                                                  #  columns in admin interface)
+define("PS_EDIT",                 "A");   // slice | set slice properties
+define("PS_CATEGORY",             "B");   // slice | change slice categories
+define("PS_FIELDS",               "C");   // slice | edit fields defauts
+define("PS_BOOKMARK",             "D");   // slice | change search form settings
+define("PS_USERS",                "E");   // slice | manage users (change perms
+                                          //         to slice, set profile)
+define("PS_COMPACT",              "F");   // slice | change slice compact view
+define("PS_FULLTEXT",             "G");   // slice | change item fulltext view
+define("PS_FEEDING",              "H");   // slice | change properties
+define("PS_ADD_USER",             "I");   // slice | add existing user to slice
+define("PS_CONFIG",               "J");   // slice | configure slice (show/hide
+                                          //         columns in admin interface)
 // super         - possibly letters 'QRSTUVW'
-define("PS_ADD",                  "Q");   # aa    # add slice
-define("PS_NEW_USER",             "R");   # aa    # create new user
-define("PS_MANAGE_ALL_SLICES",    "S");   # aa    # edit all slices (this
-                                                  # permission is useable, when
-                                                  # you want credit some rights
+define("PS_ADD",                  "Q");   // aa    | add slice
+define("PS_NEW_USER",             "R");   // aa    | create new user
+define("PS_MANAGE_ALL_SLICES",    "S");   // aa    | edit all slices (this
+                                          //         permission is useable, when
+                                          //         you want credit some rights
 
 //---------- Polls -----------------
 // author        - possibly letters 'abcdefg'
-define("PS_MODP_ADD_POLL",        "a");   # slice # add poll
+define("PS_MODP_ADD_POLL",        "a");   // slice | add poll
 // editor        - possibly letters 'hijklmnopqrs'
-define("PS_MODP_POLLS2ACT",       "h");   # slice # move poll to approved bin
-define("PS_MODP_POLLS2HOLD",      "i");   # slice # move poll to holding bin
-define("PS_MODP_POLLS2TRASH",     "j");   # slice # move poll to trash bin
-define("PS_MODP_EDIT_POLLS",      "k");   # slice #
-define("PS_MODP_DELETE_POLLS",    "l");   # slice # delete poll
+define("PS_MODP_POLLS2ACT",       "h");   // slice | move poll to approved bin
+define("PS_MODP_POLLS2HOLD",      "i");   // slice | move poll to holding bin
+define("PS_MODP_POLLS2TRASH",     "j");   // slice | move poll to trash bin
+define("PS_MODP_EDIT_POLLS",      "k");   // slice |
+define("PS_MODP_DELETE_POLLS",    "l");   // slice | delete poll
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
-define("PS_MODP_SETTINGS",        "A");   # slice # set polls properties
-define("PS_MODP_EDIT_DESIGN",     "B");   # slice # change polls design
+define("PS_MODP_SETTINGS",        "A");   // slice | set polls properties
+define("PS_MODP_EDIT_DESIGN",     "B");   // slice | change polls design
 // super         - possibly letters 'QRSTUVW'
 
 //---------- Links -----------------
 // author        - possibly letters 'abcdefg'
-define("PS_LINKS_INHERIT",        "a");   # slice # user have also the rights to subcategories
+define("PS_LINKS_INHERIT",        "a");   // slice | user have also the rights to subcategories
 // editor        - possibly letters 'hijklmnopqrs'
-define("PS_LINKS_CHECK_LINK",     "h");   # slice # check link
-define("PS_LINKS_HIGHLIGHT_LINK", "i");   # slice # highlight/dehighlight link
-define("PS_LINKS_DELETE_LINK",    "j");   # slice # move link to trash bin
-define("PS_LINKS_EDIT_CATEGORY",  "k");   # slice #
-define("PS_LINKS_EDIT_LINKS",     "l");   # slice # edit links
-define("PS_LINKS_ADD_SUBCATEGORY","m");   # slice # add subcategory to category
-define("PS_LINKS_DEL_SUBCATEGORY","n");   # slice # delete subcategory from category
-define("PS_LINKS_ADD_LINK",       "o");   # slice # add new link
+define("PS_LINKS_CHECK_LINK",     "h");   // slice | check link
+define("PS_LINKS_HIGHLIGHT_LINK", "i");   // slice | highlight/dehighlight link
+define("PS_LINKS_DELETE_LINK",    "j");   // slice | move link to trash bin
+define("PS_LINKS_EDIT_CATEGORY",  "k");   // slice |
+define("PS_LINKS_EDIT_LINKS",     "l");   // slice | edit links
+define("PS_LINKS_ADD_SUBCATEGORY","m");   // slice | add subcategory to category
+define("PS_LINKS_DEL_SUBCATEGORY","n");   // slice | delete subcategory from category
+define("PS_LINKS_ADD_LINK",       "o");   // slice | add new link
 define("PS_LINKS_LINK2FOLDER",    "p");
 define("PS_LINKS_LINK2ACT",       "q");
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
@@ -93,56 +93,56 @@ define("PS_LINKS_EDIT_DESIGN",    "B");
 //---------- Site -----------------
 // author        - possibly letters 'abcdefg'
 // editor        - possibly letters 'hijklmnopqrs'
-define("PS_MODW_EDIT_CODE", "h");         #
+define("PS_MODW_EDIT_CODE", "h");         //
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
-define("PS_MODW_SETTINGS",  "A");         #       # set site module properties
+define("PS_MODW_SETTINGS",  "A");         //       | set site module properties
 // super         - possibly letters 'QRSTUVW'
 
 
-# $perms_roles[role]['id'] is number stored to permission system for specified
-# role. On usege time the number is replaced by set of letters defined in
-# $perms_roles[role]['perm']. However, it is possible to store the permission
-# letters into perm system directly (in case you want user with specific rights)
+// $perms_roles[role]['id'] is number stored to permission system for specified
+// role. On usege time the number is replaced by set of letters defined in
+// $perms_roles[role]['perm']. However, it is possible to store the permission
+// letters into perm system directly (in case you want user with specific rights)
 
 $perms_roles = array(
-  "AUTHOR" => array(         # AUTHOR can write items and edit his items (is true for 'slice' module)
+  "AUTHOR" => array(         // AUTHOR can write items and edit his items (is true for 'slice' module)
      'id' => '1',
-     'perm' => 'abcdefg'),                # author
-  "EDITOR" => array(         # EDITOR = AUTHOR + can edit and manage all items (is true for 'slice' module)
+     'perm' => 'abcdefg'),                // author
+  "EDITOR" => array(         // EDITOR = AUTHOR + can edit and manage all items (is true for 'slice' module)
      'id' => '2',
-     'perm' => 'abcdefg'.                 # author
-               'hijklmnopqrs'),           # editor
-  "ADMINISTRATOR" => array(  # ADMINISTRATOR = EDITOR + can change slice properties (is true for 'slice' module)
+     'perm' => 'abcdefg'.                 // author
+               'hijklmnopqrs'),           // editor
+  "ADMINISTRATOR" => array(  // ADMINISTRATOR = EDITOR + can change slice properties (is true for 'slice' module)
      'id' => '3',
-     'perm' => 'abcdefg'.                 # author
-               'hijklmnopqrs'.            # editor
-               'ABCDEFGHIJKLMNOP'),       # administrator
-  "SUPER" => array(          # SUPER = ADMINISTRATOR + can set any properties for any slice (is true for 'slice' module)
+     'perm' => 'abcdefg'.                 // author
+               'hijklmnopqrs'.            // editor
+               'ABCDEFGHIJKLMNOP'),       // administrator
+  "SUPER" => array(          // SUPER = ADMINISTRATOR + can set any properties for any slice (is true for 'slice' module)
      'id' => '4',
-     'perm' => 'abcdefg'.                 # author
-               'hijklmnopqrs'.            # editor
-               'ABCDEFGHIJKLMNOP'.        # administrator
-               'QRSTUVW'));               # super
-# reserve: tuvwxyzXYZ and special characters like +-/*@... (but no numbers!!!)
+     'perm' => 'abcdefg'.                 // author
+               'hijklmnopqrs'.            // editor
+               'ABCDEFGHIJKLMNOP'.        // administrator
+               'QRSTUVW'));               // super
+// reserve: tuvwxyzXYZ and special characters like +-/*@... (but no numbers!!!)
 
 
-# defines, which roles youcan use with each module
+// defines, which roles youcan use with each module
 $perms_roles_modules = array(
-  'S'     => array("AUTHOR","EDITOR","ADMINISTRATOR"),  # S - slice
-      # There is not listed SUPER, because SUPER is permission for 'aa' object
-      # and not 'slice' object. 'aa' object is parent of all modules - setting
-      # perm to 'aa' object is the same as setting it for all the modules
-      # (specific setting of 'slice' module for the user is stronger than
-      # the 'aa' seting)
-  'W'     => array("ADMINISTRATOR"),                    # site module
-  'A'     => array("ADMINISTRATOR"),                    # MySQL Auth module
-  'J'     => array("ADMINISTRATOR"),                    # jump module
-      # There is no specific roles in 'W', 'A', 'J' modules.
-      # See include/constants.php3 for module definitions
-  'P'     => array("EDITOR","ADMINISTRATOR"),           # polls module
-  'Links' => array("AUTHOR","EDITOR","ADMINISTRATOR")); # Links module
-      # AUTHOR in Links module is public - probably identified by free/freepwd
-      # user. (S)he can just add links
+  'S'     => array("AUTHOR","EDITOR","ADMINISTRATOR"),  // S - slice
+      // There is not listed SUPER, because SUPER is permission for 'aa' object
+      // and not 'slice' object. 'aa' object is parent of all modules - setting
+      // perm to 'aa' object is the same as setting it for all the modules
+      // (specific setting of 'slice' module for the user is stronger than
+      // the 'aa' seting)
+  'W'     => array("ADMINISTRATOR"),                    // site module
+  'A'     => array("ADMINISTRATOR"),                    // MySQL Auth module
+  'J'     => array("ADMINISTRATOR"),                    // jump module
+      // There is no specific roles in 'W', 'A', 'J' modules.
+      // See include/constants.php3 for module definitions
+  'P'     => array("EDITOR","ADMINISTRATOR"),           // polls module
+  'Links' => array("AUTHOR","EDITOR","ADMINISTRATOR")); // Links module
+      // AUTHOR in Links module is public - probably identified by free/freepwd
+      // user. (S)he can just add links
 
 
 
@@ -152,7 +152,7 @@ function ResolvePerms($perms) {
   global $perms_roles;
 
   reset($perms_roles);
-  while( list(, $arr) = each($perms_roles))
+  while ( list(, $arr) = each($perms_roles))
     $perms = str_replace($arr['id'], $arr['perm'], $perms);
   return $perms;
 }
@@ -169,19 +169,19 @@ function CachePermissions($user_id) {
   $permission_uid = $user_id;
   $permission_to["slice"] = GetIDPerms ($permission_uid, "slice");
   $permission_to["aa"] = GetIDPerms ($permission_uid, "aa");     // aa is parent of all slices
-  if( !is_array($permission_to["slice"]) )  //convert to arrays
+  if ( !is_array($permission_to["slice"]) )  //convert to arrays
     $permission_to["slice"] = array();
-  if( !is_array($permission_to["aa"]) )
+  if ( !is_array($permission_to["aa"]) )
     $permission_to["aa"] = array();
 
-  # Resolve all permission (convert roles into perms)
+  // Resolve all permission (convert roles into perms)
   reset($permission_to["slice"]);
-  while( list($key,$val) = each($permission_to["slice"]) )
+  while ( list($key,$val) = each($permission_to["slice"]) )
     $permission_to["slice"][$key] = ResolvePerms($val);
 
   reset($permission_to["aa"]);
-  while( list($key,$val) = each($permission_to["aa"]) ) {
-    if( IsPerm($val, $perms_roles['SUPER']['id']) )
+  while ( list($key,$val) = each($permission_to["aa"]) ) {
+    if ( IsPerm($val, $perms_roles['SUPER']['id']) )
       $r_superuser[$key] = true;
     $permission_to["aa"][$key] = ResolvePerms($val);
   }
@@ -189,7 +189,7 @@ function CachePermissions($user_id) {
 
 // function check, if specified $perm is in $perms list
 function IsPerm($perms, $perm){
-  if( !$perms || !$perm )
+  if ( !$perms || !$perm )
     return false;
   return strstr($perms,$perm);
 }
@@ -198,7 +198,7 @@ function IsPerm($perms, $perm){
 function CheckPerms( $user_id, $objType, $objID, $perm) {
   global $permission_uid, $permission_to;
   trace("+","CheckPerms");
-  if($permission_uid != $user_id)
+  if ($permission_uid != $user_id)
     CachePermissions($user_id);
 
   switch($objType) {
@@ -207,7 +207,7 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
       trace("-");
       return($ret);
     case "slice":
-#huhl("XYZZY","pc209",$permission_to,$perm); exit;
+//huhl("XYZZY","pc209",$permission_to,$perm); exit;
       $ret = IsPerm(JoinAA_SlicePerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
       trace("-");
       return($ret);
@@ -229,8 +229,8 @@ function ComparePerms($perms1, $perms2) {
   $perms1 = ResolvePerms($perms1);
   $perms2 = ResolvePerms($perms2);
 
-  if( strlen($perms1) == strspn($perms1, $perms2) ) {
-    if( strlen($perms2) == strspn($perms2, $perms1) )
+  if ( strlen($perms1) == strspn($perms1, $perms2) ) {
+    if ( strlen($perms2) == strspn($perms2, $perms1) )
       return "E";       // perms are equal
      else
       return "L";
@@ -256,10 +256,10 @@ function GetUserSlices( $user_id = "current") {
   if ($user_id == "current")
     $user_id = $auth->auth ["uid"];
 
-  if($permission_uid != $user_id)
+  if ($permission_uid != $user_id)
     CachePermissions($user_id);
   if ($GLOBALS[debugpermissions] && !$permission_to["aa"][AA_ID]) huhe("Warning: No global permission on this system",AA_ID);
-  if( IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) )
+  if ( IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) )
     return "all";
 
   return  $permission_to["slice"];
@@ -276,7 +276,7 @@ function IfSlPerm($perm, $slice=null) {
 function IsSuperadmin() {
     global $auth, $r_superuser, $permission_uid;
     trace("+","isSuperadmin");
-    # check all superadmin's global permissions
+    // check all superadmin's global permissions
     if ($permission_uid != $auth->auth["uid"]) {
         CachePermissions($auth->auth["uid"]);
     }
@@ -348,16 +348,16 @@ function ChangeCatPermAsIn($category, $template) {
     $oldPerms = GetObjectsPerms($category_perm_id, 'slice');
 
     // Delete all old perms
-    if( isset($oldPerms) AND is_array($oldPerms)) {
+    if ( isset($oldPerms) AND is_array($oldPerms)) {
         reset($oldPerms);
-        while( list( $uid, ) = each($oldPerms))
+        while ( list( $uid, ) = each($oldPerms))
         DelPerm ($uid, $category_perm_id, 'slice');
     }
 
     // Copy template's permissions
-    if( isset($newPerms) AND is_array($newPerms)) {
+    if ( isset($newPerms) AND is_array($newPerms)) {
         reset($newPerms);
-        while( list( $uid, $arr) = each($newPerms))
+        while ( list( $uid, $arr) = each($newPerms))
         AddPerm ($uid, $category_perm_id, 'slice', $arr['perm']);
     }
 }
@@ -420,7 +420,7 @@ function GetUserEmails ($type = "", $user_id = "current") {
     if ($type) $where .= " AND type='$type'";
     if ($slices == "all")
         ;
-    else if (!is_array ($slices) || count ($slices) == 0)
+    else if (!is_array($slices) || count ($slices) == 0)
         return array ();
     else {
         reset ($slices);
@@ -443,7 +443,7 @@ function GetUserEmails ($type = "", $user_id = "current") {
  *  to database)
  */
 function perm_username( $username ) {
-    if( PERM_LIB != 'ldap' )
+    if ( PERM_LIB != 'ldap' )
         return $username;
     $begin = strpos($username, '=');
     $end   = strpos($username, ',');
@@ -452,9 +452,9 @@ function perm_username( $username ) {
     return substr($username, $begin+1, $end-$begin-1);
 }
 
-require_once $GLOBALS["AA_INC_PATH"] ."util.php3";          // for getDB()
-require_once $GLOBALS["AA_INC_PATH"] ."searchlib.php3";     // for queryzids()
-require_once $GLOBALS["AA_INC_PATH"] ."item_content.php3";  // for ItemContent class
+require_once $GLOBALS['AA_INC_PATH'] ."util.php3";          // for getDB()
+require_once $GLOBALS['AA_INC_PATH'] ."searchlib.php3";     // for queryzids()
+require_once $GLOBALS['AA_INC_PATH'] ."item_content.php3";  // for ItemContent class
 
 /** Looks into reader management slices whether the reader name is not yet used.
 *   This function is used in perm_ldap and perm_sql in IsUsernameFree().

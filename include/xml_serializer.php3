@@ -19,16 +19,16 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# A class for converting PHP structures to XML and back
-#
-# Author and Maintainer: Mitra mitra@mitra.biz
-#
-# And yes, I'll move the docs to phpDocumentor as soon as someone explains how
-# to use it!
-#
-# It is intended - and you are welcome - to extend this to be more
-# comprehensive.  It is a requirement that the routines here are inverses
-# of each other, i.e.
+// A class for converting PHP structures to XML and back
+//
+// Author and Maintainer: Mitra mitra@mitra.biz
+//
+// And yes, I'll move the docs to phpDocumentor as soon as someone explains how
+// to use it!
+//
+// It is intended - and you are welcome - to extend this to be more
+// comprehensive.  It is a requirement that the routines here are inverses
+// of each other, i.e.
 
 
 if (!defined("AA_XML_SERIALIZER_INCLUDED"))
@@ -48,7 +48,7 @@ function xml_serialize($k,&$v,$i,$ii,$a=null) {
         return "$i<$start />";
     }
     elseif (is_string($v) || is_integer($v) || is_real($v) || is_bool($v)) {
-        #if ($debug) print "STRING";
+        //if ($debug) print "STRING";
         // if contains stuff other than printable ascii and CRLF then hex it
         if (preg_match('/[\000-\011\013-\014\016-\037\200-\377]/',$v))
             return "$i<$start coding=\"bin2hex\">".bin2hex($v)."</$end>";
@@ -56,12 +56,12 @@ function xml_serialize($k,&$v,$i,$ii,$a=null) {
     }
     elseif (is_array($v)) {
         reset($v);
-        while(list($k1,$v1) = each($v)) {
+        while (list($k1,$v1) = each($v)) {
             $o .= xml_serialize($k1,$v1,$i.$ii,$ii);
         }
         return "$i<$start>$o$i</$end>";
     } elseif (is_object($v)) {
-        #if ($debug) print "OBJECT";
+        //if ($debug) print "OBJECT";
         if (is_callable(array($v,"xml_serialize")))
             return $v->xml_serialize($k,$i,$ii,$a);
         else
@@ -131,7 +131,7 @@ class xml_unserializer {
         }
         else $this->top = null;
         $this->chardata = "";
-#        if ($debugimport) huhl("START:$name: els=",$this->stack,"Top=",$this->top);
+//        if ($debugimport) huhl("START:$name: els=",$this->stack,"Top=",$this->top);
     }
 
     // End Element, two choices, either data, or attributes.
@@ -148,7 +148,7 @@ class xml_unserializer {
                 $this->chardata = "";
                 break;
           default:
-    #       $this->chardata = preg_replace("/^\s+/",'',$this->chardata);
+    //       $this->chardata = preg_replace("/^\s+/",'',$this->chardata);
     // Strip trailing whitespace, note this occurs in parent stack
             $this->chardata = preg_replace("/\s+$/",'',$this->chardata);
         }
@@ -165,14 +165,14 @@ class xml_unserializer {
             if (is_callable($name."_xml_unserialize")) {
                 $f=$name."_xml_unserialize";
                 $this->top[$n] = $f($n,$t);
-                #print("Unparsing object $name as name $n");
+                //print("Unparsing object $name as name $n");
             } elseif ($n == $name) {
                 // Cant assume its a structure export, import as array
                 $this->top[$n][] = $t;
-                #print("Unserialized stuff from somewhere $n []");
+                //print("Unserialized stuff from somewhere $n []");
             } else {  // This came from a xml_sequencer
                 $this->top[$n] = $t;
-                #print("Unserialized xmlserialized array $n");
+                //print("Unserialized xmlserialized array $n");
             }
         } else {  // Just chardata
             $this->top = array_pop($this->stack);
@@ -205,7 +205,7 @@ function test_xmlserializer() {
     $aa = new zids("12345678901234567890123456789012");
     $a = $aa->packedids();
     print_r($a);
-    #$a = array(" one");
+    //$a = array(" one");
     $serial_a = xml_serialize("OVERALL",$a,"\n","    ");
     print("SERIAL");print_r($serial_a);
     $x = new xml_unserializer();
@@ -213,6 +213,6 @@ function test_xmlserializer() {
     print "RESULT="; print_r($y);
 }
 
-#test_xmlserializer();
+//test_xmlserializer();
 
 ?>

@@ -19,7 +19,7 @@
     
     // If there were too many errors, the array is not complete and thus
     // unserialize does not work.
-    if (!is_array ($resarr)) {
+    if (!is_array($resarr)) {
         echo '<font class="tabtxt">Too many errors. Please contact the webmaster
             and tell him about the message: '.$result.'</font><br>'."\n";
         return;

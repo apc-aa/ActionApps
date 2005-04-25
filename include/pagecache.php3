@@ -31,7 +31,7 @@ http://www.apc.org/
  *   );
  */
 
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 
 class PageCache  {
     var $cacheTime     = 600; // number of seconds to store cached informations
@@ -136,7 +136,7 @@ class PageCache  {
     function store($keyString, $content, $str2find) {
         global $cache_nostore;
         if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache str2find:'.$str2find, '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
-        if( ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when
+        if (ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
             $keyid  = $this->getKeyId($keyString);
             if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->store(): - storing");

@@ -29,7 +29,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
+require_once $GLOBALS['AA_INC_PATH']."stringexpand.php3";
 
 /**
  * itemview class - used to display set of items or links or ...
@@ -65,21 +65,21 @@ class itemview {
 
   function itemview( $slice_info, $fields, $aliases, $zids, $from, $number,
                      $clean_url, $disc="", $get_content_funct='GetItemContent'){
-    #constructor
+    //constructor
     //Not used anymore: $this->db = $db;
-    $this->slice_info = $slice_info;  # $slice_info is array with this fields:
-                                      #      - print_view() function:
-                                      #   compact_top, category_sort,
-                                      #   category_format, category_top,
-                                      #   category_bottom, even_odd_differ,
-                                      #   even_row_format, odd_row_format,
-                                      #   compact_remove, compact_bottom,
-                                      #   vid - used for scroller
-                                      #      - print_item() function:
-                                      #   fulltext_format, fulltext_remove,
-                                      #   fulltext_format_top,
-                                      #   fulltext_format_bottom,
-                                      #   banner_position, banner_parameters
+    $this->slice_info = $slice_info;  // $slice_info is array with this fields:
+                                      //      - print_view() function:
+                                      //   compact_top, category_sort,
+                                      //   category_format, category_top,
+                                      //   category_bottom, even_odd_differ,
+                                      //   even_row_format, odd_row_format,
+                                      //   compact_remove, compact_bottom,
+                                      //   vid - used for scroller
+                                      //      - print_item() function:
+                                      //   fulltext_format, fulltext_remove,
+                                      //   fulltext_format_top,
+                                      //   fulltext_format_bottom,
+                                      //   banner_position, banner_parameters
 
     $this->group_fld   = ($slice_info['category_sort'] ?
                          GetCategoryFieldId($fields) : $slice_info['group_by']);
@@ -91,8 +91,8 @@ class itemview {
         $this->aliases['_#SELECTED'] = array('fce'=>'f_e:selected:'.$slice_info['selected_item'], "param"=>"", "hlp"=>"");
     $this->fields      = $fields;
     $this->zids        = $zids;
-    $this->from_record = $from;      # number or text "random[:<weight_field>]"
-    $this->num_records = $number;    # negative number used for displaying n-th group of items only
+    $this->from_record = $from;      // number or text "random[:<weight_field>]"
+    $this->num_records = $number;    // negative number used for displaying n-th group of items only
     $this->clean_url   = $clean_url;
     $this->disc        = $disc;
     $this->parameters  = array();
@@ -127,9 +127,9 @@ class itemview {
   }
 
   function get_output_cached($view_type="") {
-    #create keystring from values, which exactly identifies resulting content
+    //create keystring from values, which exactly identifies resulting content
 
-    if( $this->is_random() ) {                         # don't cache random item
+    if ( $this->is_random() ) {                         // don't cache random item
         $res = $this->get_output($view_type);
         return $res;
     }
@@ -143,9 +143,9 @@ class itemview {
               // (Honza 2004-11-4)
               //              $this->clean_url.
               ((isset($this->zids)) ? $this->zids->id(0) : "");
-    $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  # negative used for displaying n-th group of items only
+    $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  // negative used for displaying n-th group of items only
                                         $this->from_record+$this->num_records );
-    for( $i=$this->from_record; $i<$number_of_ids; $i++) {
+    for ( $i=$this->from_record; $i<$number_of_ids; $i++) {
         if (isset($this->zids)) {
             $keystr .= $this->zids->id($i);
         }
@@ -155,7 +155,7 @@ class itemview {
     $keystr .= stringexpand_keystring();
 
     global $str2find_passon, $pagecache;
-    if( !$GLOBALS['nocache'] && ($res = $pagecache->get($keystr)) ) {
+    if ( !$GLOBALS['nocache'] && ($res = $pagecache->get($keystr)) ) {
         return $res;
     }
 
@@ -194,7 +194,7 @@ class itemview {
         }
         $SQL = "SELECT * FROM discussion WHERE id IN ($ids_sql)";
         $d_content = GetDiscussionContentSQL($SQL, "", "",$this->disc['vid'],true,$this->disc['html_format'],$this->clean_url);
-        if (is_array ($d_content)) {
+        if (is_array($d_content)) {
             foreach ( $d_content as $id => $disc) {
                 $CurItem->set_data($disc);
                 $CurItem->setformat ($this->slice_info['d_compact']);
@@ -226,7 +226,7 @@ class itemview {
 
       if ($this->slice_info['d_showimages'] || $this->slice_info['d_order'] == 'thread') {  // show discussion in the thread mode
          GetDiscussionThread($d_tree, "0", 0, $outcome);
-         if( $outcome ) {
+         if ( $outcome ) {
              while ( list( $d_id, $images ) = each( $outcome )) {
                 SetCheckboxContent( $d_content, $d_id, $cnt++ );
                 SetImagesContent( $d_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
@@ -270,7 +270,7 @@ class itemview {
           var done = 0;
 
           for (var i = 0; i < ".$cnt."; i++) {
-            if( eval('document.forms[\"discusform\"].c_'+i).checked) {
+            if ( eval('document.forms[\"discusform\"].c_'+i).checked) {
               done = 1
               url += \"&ids[\" +  escape(eval('document.forms[\"discusform\"].h_'+i).value) + \"]=1\"
             }
@@ -300,7 +300,7 @@ class itemview {
                                       $this->disc['vid'], true, 'timeorder',
                                       $this->disc['html_format'], $this->clean_url);
     $d_tree = GetDiscussionTree($d_content);
-    if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array ($d_content)) {  // show selected cooments
+    if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array($d_content)) {  // show selected cooments
       reset($d_content);
       while (list ($id,) = each($d_content)) {
         if ($outcome[$id])            // if the comment is already in the outcome => skip
@@ -312,7 +312,7 @@ class itemview {
       GetDiscussionThread($d_tree, "0", 0, $outcome);
 
     $out.= '<a name="disc"></a>';
-    if( isset($outcome) AND is_array($outcome) ) {
+    if ( isset($outcome) AND is_array($outcome) ) {
       while ( list( $d_id, $images ) = each( $outcome )) {
         $this->set_columns ($CurItem, $d_content, $d_id);
         $depth = count($images)-1;
@@ -320,9 +320,9 @@ class itemview {
         $out.= '
           <table width="100%" border="0" cellspacing="0" cellpadding="0">
             <tr>';
-        for( $i=0; $i<$depth; $i++)
+        for ( $i=0; $i<$depth; $i++)
           $spacer .= $this->slice_info['d_spacer'];
-        if($spacer)
+        if ($spacer)
           $out .= "
               <td valign=top>$spacer</td>";
         $out .= "
@@ -359,9 +359,9 @@ class itemview {
   }
 
   function unaliasWithScroller($txt, $item=null) {
-    # get HTML code, unalias it and add scroller, if needed
+    // get HTML code, unalias it and add scroller, if needed
     $level = 0; $maxlevel = 0;
-    # If no item is specified, then still try and expand aliases using parameters
+    // If no item is specified, then still try and expand aliases using parameters
     if (! $item) {
         $item = new item(null,$this->aliases,null,null,null,$this->parameters);
     }
@@ -385,14 +385,14 @@ class itemview {
   // ----------------------------------------------------------------------------------
   //  get_output
 
-  #view_type used internaly for different view types
+  //view_type used internaly for different view types
   function get_output($view_type="") {
     global $debug;
     trace("+","itemview:get_output",$view_type);
 
     if ($view_type == "discussion") {
       trace("=","","discussion type ".$this->disc['type']);
-      $CurItem = new item("", $this->aliases, $this->clean_url);   # just prepare
+      $CurItem = new item("", $this->aliases, $this->clean_url);   // just prepare
       $CurItem->set_parameters($this->parameters);
       switch ($this->disc['type']) {
         case 'thread':   $out = $this->get_disc_thread($CurItem); break;
@@ -406,30 +406,30 @@ class itemview {
     }
      // other view_type than discussion
 
-    if( !( isset($this->zids) AND is_object($this->zids) )) {
+    if ( !( isset($this->zids) AND is_object($this->zids) )) {
       trace("-");
       return;
     }
 
     $is_random = $this->is_random();
 
-    # fill the foo_ids - ids to itemids to get from database
-    if( !$is_random ) {
+    // fill the foo_ids - ids to itemids to get from database
+    if ( !$is_random ) {
       $foo_zids = $this->zids->slice((integer)$this->from_record,
          ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
     } else { // Selecting random record
       list( $random, $rweight ) = explode( ":", $this->from_record);
-      if( !$rweight || !is_array($this->fields[$rweight]) ) {
-        # not weighted, we can select random id(s)
-        for( $i=0; $i<$this->num_records; $i++) {
+      if ( !$rweight || !is_array($this->fields[$rweight]) ) {
+        // not weighted, we can select random id(s)
+        for ( $i=0; $i<$this->num_records; $i++) {
           $sel = rand( 0, $this->zids->count() - 1) ;
-          if( $this->zids->id($sel) )
+          if ( $this->zids->id($sel) )
             $foo_ids[] = $this->zids->id($sel);
         }
         $foo_zids = new zids($foo_ids, $this->zids->onetype());
         $this->zids = $foo_zids;  // Set zids so can index into it
-      } else {   # weighted - we must get all items (banners) and then select
-                 # the one based on weight field (now in $rweight variable
+      } else {   // weighted - we must get all items (banners) and then select
+                 // the one based on weight field (now in $rweight variable
         $foo_zids = $this->zids;
       }
     }
@@ -444,24 +444,24 @@ class itemview {
     trace("=","",$view_type." after content");
     if ($debug>1) huhl("itemview:get_content: found",$content);
 
-    $CurItem = new item("", $this->aliases, $this->clean_url);   # just prepare
+    $CurItem = new item("", $this->aliases, $this->clean_url);   // just prepare
     $CurItem->set_parameters($this->parameters);
 
-    # process the random selection (based on weight)
-    if( $rweight && is_array($this->fields[$rweight]) ) {
+    // process the random selection (based on weight)
+    if ( $rweight && is_array($this->fields[$rweight]) ) {
       $this->zids->clear('l');   // remove id and prepare for long ids
-      #get sum of all weight
+      //get sum of all weight
       reset( $content );
-      while( list(,$v) = each($content) ) {
+      while ( list(,$v) = each($content) ) {
         $weightsum += $v[$rweight][0]['value'];
       }
-      for( $i=0; $i<$this->num_records; $i++) {
+      for ( $i=0; $i<$this->num_records; $i++) {
         $winner = rand(1,$weightsum);
         reset( $content );
         $ws=0;
-        while( list($k,$v) = each($content) ) {
+        while ( list($k,$v) = each($content) ) {
           $ws += $v[$rweight][0]['value'];
-          if( $ws >= $winner ) {
+          if ( $ws >= $winner ) {
             $this->zids->add($k);
             break;
           }
@@ -479,10 +479,10 @@ class itemview {
 
     switch ( $view_type ) {
       case "fulltext":
-        $iid = $this->zids->short_or_longids(0);  # unpacked or short id
-        $this->set_columns($CurItem, $content, $iid);   # set right content for aliases
+        $iid = $this->zids->short_or_longids(0);  // unpacked or short id
+        $this->set_columns($CurItem, $content, $iid);   // set right content for aliases
 
-        # print item
+        // print item
         $CurItem->setformat( $this->slice_info['fulltext_format'],
                              $this->slice_info['fulltext_remove']);
         $out  = $this->unaliasWithScroller($this->slice_info['fulltext_format_top'], $CurItem);
@@ -490,16 +490,16 @@ class itemview {
         $out .= $this->unaliasWithScroller($this->slice_info['fulltext_format_bottom'], $CurItem);
         break;
 
-      case "itemlist":          # multiple items as fulltext one after one
+      case "itemlist":          // multiple items as fulltext one after one
         $out = $this->slice_info['fulltext_format_top'];
-        for( $i=0; $i<$this->num_records; $i++ ) {
+        for ( $i=0; $i<$this->num_records; $i++ ) {
           $iid = $this->zids->short_or_longids($this->from_record+$i);
-          if( !$iid )
-            continue;                                     # iid = quoted or short id
+          if ( !$iid )
+            continue;                                     // iid = quoted or short id
 
-          $this->set_columns($CurItem, $content, $iid);   # set right content for aliases
+          $this->set_columns($CurItem, $content, $iid);   // set right content for aliases
 
-            # print item
+            // print item
           $CurItem->setformat( $this->slice_info['fulltext_format'],
                                $this->slice_info['fulltext_remove']);
           $out .= $CurItem->get_item();
@@ -511,31 +511,31 @@ class itemview {
         $out = $this->get_output_calendar ($content);
         break;
 
-      default:                         # compact view (of items or links)
+      default:                         // compact view (of items or links)
         $oldcat = "_No CaTeg";
-        $group_n = 0;                  # group counter (see group_n slice.php3 parameter)
+        $group_n = 0;                  // group counter (see group_n slice.php3 parameter)
 
-        # negative num_record used for displaying n-th group of items only
+        // negative num_record used for displaying n-th group of items only
         $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : $this->num_records );
-        for( $i=0; $i<$number_of_ids; $i++ ) {
-            # display banner, if you have to
-            if( $this->slice_info['banner_parameters'] && ($this->slice_info['banner_position']==$i) ) {
+        for ( $i=0; $i<$number_of_ids; $i++ ) {
+            // display banner, if you have to
+            if ( $this->slice_info['banner_parameters'] && ($this->slice_info['banner_position']==$i) ) {
                 $out .= GetView(ParseViewParameters($this->slice_info['banner_parameters']));
             }
 
             $zidx = $this->from_record+$i;
             if ($zidx >= $this->zids->count()) continue;
-        /* mimo hack -- put this on a stack **/
-        if(!$GLOBALS['QueryIDsIndex'])
-            $GLOBALS['QueryIDsIndex'] = array();
-        if(!$GLOBALS['QueryIDsPageIndex'])
-            $GLOBALS['QueryIDsPageIndex'] = array();
+            /* mimo hack -- put this on a stack **/
+            if (!$GLOBALS['QueryIDsIndex'])
+                $GLOBALS['QueryIDsIndex'] = array();
+            if (!$GLOBALS['QueryIDsPageIndex'])
+                $GLOBALS['QueryIDsPageIndex'] = array();
             array_push($GLOBALS['QueryIDsIndex'],$zidx);  // So that _#ITEMINDX = f_e:itemindex can find it
             array_push($GLOBALS['QueryIDsPageIndex'],$i);     // So that _#PAGEINDX = f_e:pageindex can find it
 
             $iid = $this->zids->short_or_longids($zidx);
-            if( !$iid ) { huhe("Warning: itemview: got a null id"); continue; }
-            # Note if iid is invalid, then expect empty answers
+            if ( !$iid ) { huhe("Warning: itemview: got a null id"); continue; }
+            // Note if iid is invalid, then expect empty answers
 
             $catname = $content[$iid][$this->group_fld][0]['value'];
             if ($this->slice_info['gb_header']) {
@@ -544,19 +544,19 @@ class itemview {
 
             $OldItem = $CurItem;  // this could be used in CATEGORY BOTTOM -
                                   // we need old item aliases & content there
-            $this->set_columns($CurItem, $content, $iid);   # set right content for aliases
+            $this->set_columns($CurItem, $content, $iid);   // set right content for aliases
 
-            # get top HTML code, unalias it and add scroller, if needed
-            if( !$top_html_already_printed ) {
+            // get top HTML code, unalias it and add scroller, if needed
+            if ( !$top_html_already_printed ) {
                 $out = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);
-                # we move printing of top HTML here, in order we can use aliases
-                # data from the first found item
+                // we move printing of top HTML here, in order we can use aliases
+                // data from the first found item
                 $top_html_already_printed = true;
             }
 
-            # print category name if needed
-            if($this->group_fld AND strcasecmp($catname,$oldcat)) {
-                if( $this->num_records >= 0 ) {
+            // print category name if needed
+            if ($this->group_fld AND strcasecmp($catname,$oldcat)) {
+                if ( $this->num_records >= 0 ) {
                     if ($oldcat != "_No CaTeg") {
                         // print bottom category code for previous category
                         $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $OldItem);
@@ -571,7 +571,7 @@ class itemview {
                 $oldcat = $catname;
             }
 
-            if( ($this->num_records < 0) AND ($group_n != -$this->num_records )) {
+            if ( ($this->num_records < 0) AND ($group_n != -$this->num_records )) {
                 continue;    // we have to display just -$this->num_records-th group
             }
 
@@ -594,7 +594,7 @@ class itemview {
         if ($category_top_html_printed) {
             $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $CurItem);
         }
-        if ( !$top_html_already_printed ) {  # print top HTML even no item found
+        if ( !$top_html_already_printed ) {  // print top HTML even no item found
             $out  = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);
         }
         $out .= $this->unaliasWithScroller($this->slice_info['compact_bottom'], $CurItem);
@@ -603,9 +603,9 @@ class itemview {
     return $out;
   }
 
-# ----------------------------------------------------------------------------
-#                            calendar view
-# ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+//                            calendar view
+// ----------------------------------------------------------------------------
     function resolve_calendar_aliases ($txt,$day="") {
         $month = $this->slice_info['calendar_month'];
         $year = $this->slice_info['calendar_year'];
@@ -623,10 +623,10 @@ class itemview {
         return $txt;
     }
 
-    # send content via reference to be quicker
+    // send content via reference to be quicker
     function get_output_calendar (&$content) {
         trace("+","get_output_calendar");
-        $CurItem = new item("", $this->aliases, $this->clean_url);   # just prepare
+        $CurItem = new item("", $this->aliases, $this->clean_url);   // just prepare
         $CurItem->set_parameters($this->parameters);
 
         $month = $this->slice_info['calendar_month'];
@@ -650,15 +650,15 @@ class itemview {
         $max_events = 0;
 
         trace("=","","pre-for");
-        for( $i=0;
+        for ( $i=0;
             $i<$this->num_records
             && ($i+$this->from_record < $this->zids->count());
             $i++ ) {
             $iid = $this->zids->short_or_longids($this->from_record+$i);
-            if( !$iid )
-                continue;                                     # iid = unpacked item id
-            $start_date = $content[$iid][$this->slice_info['calendar_start_date']][0][value];
-            $end_date = $content[$iid][$this->slice_info['calendar_end_date']][0][value];
+            if ( !$iid )
+                continue;                                     // iid = unpacked item id
+            $start_date = $content[$iid][$this->slice_info['calendar_start_date']][0]['value'];
+            $end_date = $content[$iid][$this->slice_info['calendar_end_date']][0]['value'];
             if ($start_date > $max_cell_date || $end_date < $min_cell_date)
                 if ($debug) echo "<h1>Some error in calendar view!
                 $start_date &gt; $max_cell_date || $end_date &lt; $min_cell_date </h1>";
@@ -805,37 +805,37 @@ class itemview {
         return $out;
     }
 
-# ----------------------------------------------------------------------------
-#                            end of calendar view
-# ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+//                            end of calendar view
+// ----------------------------------------------------------------------------
 
-  # compact view
+  // compact view
   function print_view($flag="CACHE") {
-    if( $flag == "CACHE" )
+    if ( $flag == "CACHE" )
       echo $this->get_output_cached("view");
      else
       echo $this->get_output("view");
   }
 
-  # fulltext of one item
+  // fulltext of one item
   function print_item($flag="CACHE") {
-    if( $flag == "CACHE" )
+    if ( $flag == "CACHE" )
       echo $this->get_output_cached("fulltext");
      else
       echo $this->get_output("fulltext");
   }
 
-  # multiple items as fulltext one after one
+  // multiple items as fulltext one after one
   function print_itemlist($flag="CACHE") {
-    if( $flag == "CACHE" )
+    if ( $flag == "CACHE" )
       echo $this->get_output_cached("itemlist");
      else
       echo $this->get_output("itemlist");
   }
 
-  # discusion thread or fulltext or one comment
+  // discusion thread or fulltext or one comment
   function print_discussion($flag="CACHE") {
-    if( $flag == "CACHE" )
+    if ( $flag == "CACHE" )
       echo $this->get_output_cached("discussion");
      else
       echo $this->get_output("discussion");

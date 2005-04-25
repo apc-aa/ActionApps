@@ -21,11 +21,11 @@ http://www.apc.org/
 
 // (c) Jakub Adámek, Econnect, December 2002
 
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";
-require_once $GLOBALS["AA_INC_PATH"]."item_content.php3";
-require_once $GLOBALS["AA_INC_PATH"]."sliceobj.php3";
-require_once $GLOBALS["AA_INC_PATH"]."stringexpand.php3";
-require_once $GLOBALS["AA_INC_PATH"]."htmlMimeMail/htmlMimeMail.php";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";
+require_once $GLOBALS['AA_INC_PATH']."item_content.php3";
+require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
+require_once $GLOBALS['AA_INC_PATH']."stringexpand.php3";
+require_once $GLOBALS['AA_INC_PATH']."htmlMimeMail/htmlMimeMail.php";
 
 class HtmlMail extends HtmlMimeMail {
 
@@ -177,7 +177,7 @@ function send_mail_from_table($mail_id, $to, $aliases="")
  */
 function send_mail_to_reader($mail_id, $zids, $recipient='aa_field_email') {
     $mail_count = 0;
-    for( $i=0; $i<$zids->count(); $i++) {
+    for ( $i=0; $i<$zids->count(); $i++) {
         $item = GetItemFromId($zids->longids($i));
         $to   = (($recipient=='aa_field_email') ? $item->getval(FIELDID_EMAIL) : $recipient);
         $mail_count += send_mail_from_table_inner($mail_id, $to, $item);

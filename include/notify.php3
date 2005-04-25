@@ -19,20 +19,20 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#
-# utility for notifying people of events by email
-#
+//
+// utility for notifying people of events by email
+//
 
-require_once $GLOBALS["AA_INC_PATH"]."item.php3";
-require_once $GLOBALS["AA_INC_PATH"]."view.php3"; 
-require_once $GLOBALS["AA_INC_PATH"]."mail.php3"; 
+require_once $GLOBALS['AA_INC_PATH']."item.php3";
+require_once $GLOBALS['AA_INC_PATH']."view.php3"; 
+require_once $GLOBALS['AA_INC_PATH']."mail.php3"; 
 
 // notify users of an event
 function email_notify($slice_id, $event, $item_id, $extra = ""){
   global $db;
   $p_slice_id = q_pack_id($slice_id);
 
-  # expand the body template using the itemview function
+  // expand the body template using the itemview function
   $format['group_by'] = '';
   $format['category_format'] = '';
   $format['compact_bottom'] = '';
@@ -55,7 +55,7 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
 
   $SQL = "SELECT ${prefix}_s as s, ${prefix}_b as b from slice where id = '$p_slice_id'";
   $db->query($SQL);
-  if( $db->next_record() ){
+  if ( $db->next_record() ){
     $s = $db->f('s');
     $b = $db->f('b');
   } else {
@@ -71,7 +71,7 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
 
   // determine body of message
   $format['odd_row_format'] = $b;
-  //$item_ids[] = $item_id;   # Ick, this would have put two ids in! 
+  //$item_ids[] = $item_id;   // Ick, this would have put two ids in! 
 
   $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, '');
   $body = $itemview->get_output_cached("view");
@@ -88,7 +88,7 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
 
   $emails = "";
   // loop through the users for the event
-  while( $db->next_record() )
+  while ( $db->next_record() )
      $emails[] = $db->f('uid');
 
   $mail = new HtmlMail();

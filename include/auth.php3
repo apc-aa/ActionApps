@@ -28,7 +28,7 @@ http://www.apc.org/
 */
 
 //require_once "config.php3";
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
 
 if (!is_object( $db )) $db = new DB_AA;
 
@@ -79,7 +79,7 @@ function AuthUpdateReaders( $item_ids, $slice_id ) {
         ." AND item.id IN ('".join_and_quote( "','", $item_ids )."')";
     freeDB($db);
     $readers = GetTable2Array( $SQL, "NoCoLuMn");
-    if( is_array( $readers )) foreach ($readers as $reader) {
+    if ( is_array( $readers )) foreach ($readers as $reader) {
         if (AuthIsActive ($reader) && $reader["groups"])
             AuthUpdateReader ($reader["username"], $reader["password"], $reader["groups"]);
         else AuthDeleteReader ($reader["username"]);
@@ -108,7 +108,7 @@ function AuthMaintenance() {
 
     // Work slice by slice
     reset( $slices );
-    while( list ($slice_id, $slice) = each ($slices)) {
+    while ( list ($slice_id, $slice) = each ($slices)) {
         if (! $slice["auth_field_group"])
             continue;
         // Get all reader data for this slice
@@ -178,7 +178,7 @@ function AuthMaintenance() {
 
     if ($GLOBALS["log_auth_results"]) {
         // Log the results
-        if (!is_array ($result))
+        if (!is_array($result))
             $log = "Nothing changed.";
         else {
             reset ($result);
@@ -250,7 +250,7 @@ function AuthSelect ($auth_field_group) {
 /** Called from Event_ItemsAfterPropagateConstantChanges(). */
 function AuthChangeGroups ($constant_id, $oldvalue, $newvalue) {
     global $db_usernames;
-    if (!is_object ($db_usernames))
+    if (!is_object($db_usernames))
         $db_usernames = new DB_AA;
 
     if (empty ($newvalue) || $oldvalue == $newvalue)

@@ -51,7 +51,7 @@ while (list ($l, $langname) = each ($LANGUAGE_NAMES)) {
 // ----------------------------------------------------------------------------------
 
 function CreateWhereFromList ($column, $list, $type="number") {
-    if (!is_array ($list)) return "1";
+    if (!is_array($list)) return "1";
     if (count ($list) == 0) return "0";
     if ($type == "number")
          return $column." IN (". join (",",$list). ")";

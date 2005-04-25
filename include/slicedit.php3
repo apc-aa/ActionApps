@@ -19,18 +19,18 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."se_users.php3";
-require_once $GLOBALS["AA_INC_PATH"]."slicewiz.php3";
+require_once $GLOBALS['AA_INC_PATH']."se_users.php3";
+require_once $GLOBALS['AA_INC_PATH']."slicewiz.php3";
 // add mlx functions
-require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
+require_once $GLOBALS['AA_INC_PATH']."mlx.php";
 
-if($slice_id) {  // edit slice
-  if(!IfSlPerm(PS_EDIT)) {
+if ($slice_id) {  // edit slice
+  if (!IfSlPerm(PS_EDIT)) {
     MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to edit this slice"), "standalone");
     exit;
   }
 } else {          // add slice
-  if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
+  if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
     MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"), "standalone");
     exit;
   }
@@ -42,16 +42,16 @@ $superadmin = IsSuperadmin();
 
 // Add new editor / administrator from Wizard page
 if ($user_firstname || $user_surname) {
-    require_once $GLOBALS["AA_INC_PATH"]."um_uedit.php3";
+    require_once $GLOBALS['AA_INC_PATH']."um_uedit.php3";
 }
 
-if( $add || $update ) {
+if ( $add || $update ) {
     do {
-        if( !$owner ) {  # insert new owner
+        if ( !$owner ) {  // insert new owner
           ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
           ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
 
-          if( count($err) > 1)
+          if ( count($err) > 1)
             break;
 
           $owner = new_id();
@@ -59,8 +59,8 @@ if( $add || $update ) {
           $varset->set("name", $new_owner, "text");
           $varset->set("email", $new_owner_email, "text");
 
-            # create new owner
-          if( !$db->query("INSERT INTO slice_owner " . $varset->makeINSERT() )) {
+            // create new owner
+          if ( !$db->query("INSERT INTO slice_owner " . $varset->makeINSERT() )) {
             $err["DB"] .= MsgErr("Can't add slice");
             break;
           }
@@ -86,29 +86,29 @@ if( $add || $update ) {
             if ($db->num_rows()) $err[] = _m("This File Manager Directory is already used by another slice.");
         }
 
-        if( count($err) > 1)
+        if ( count($err) > 1)
           break;
         $template = ( $template ? 1 : 0 );
         $deleted  = ( $deleted  ? 1 : 0 );
 
-        if( $update )
+        if ( $update )
         {
           $varset->clear();
           $varset->add("name", "quoted", $name);
           $varset->add("owner", "unpacked", $owner);
           $varset->add("slice_url", "quoted", $slice_url);
-          if( $superadmin )
+          if ( $superadmin )
             $varset->add("deleted", "number", $deleted);
           $varset->add("lang_file", "quoted", $lang_file);
 
           $SQL = "UPDATE module SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
-          if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+          if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
             $err["DB"] = MsgErr("Can't change slice");
             break;
           }
 
           $varset->add("d_listlen", "number", $d_listlen);
-          if( $superadmin )
+          if ( $superadmin )
             $varset->add("template", "number", $template);
           $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
           $varset->add("permit_anonymous_edit", "number", $permit_anonymous_edit);
@@ -123,7 +123,7 @@ if( $add || $update ) {
           $varset->add(MLX_SLICEDB_COLUMN, "quoted", q_pack_id($mlxctrl)); //store 16bytes packed
 
           $SQL = "UPDATE slice SET ". $varset->makeUPDATE() . " WHERE id='$p_slice_id'";
-          if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+          if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
             $err["DB"] = MsgErr("Can't change slice");
             break;
           }
@@ -145,18 +145,18 @@ if( $add || $update ) {
           $varset->set("lang_file", $lang_file, "quoted");
           $varset->set("type","S","quoted");
 
-          if( !$db->query("INSERT INTO module" . $varset->makeINSERT() )) {
+          if ( !$db->query("INSERT INTO module" . $varset->makeINSERT() )) {
             $err["DB"] .= MsgErr("Can't add slice");
             break;
           }
 
           $varset->clear();
 
-            # get template data
+            // get template data
           $varset->addArray( $SLICE_FIELDS_TEXT, $SLICE_FIELDS_NUM );
           $SQL = "SELECT * FROM slice WHERE id='". q_pack_id($set_template_id) ."'";
           $db->query($SQL);
-          if( !$db->next_record() ) {
+          if ( !$db->next_record() ) {
             $err["DB"] = MsgErr("Bad template id");
             break;
           }
@@ -182,23 +182,23 @@ if( $add || $update ) {
 //mimo
           $varset->add(MLX_SLICEDB_COLUMN, "quoted", $mlxctrl);
 
-             # create new slice
-          if( !$db->query("INSERT INTO slice" . $varset->makeINSERT() )) {
+             // create new slice
+          if ( !$db->query("INSERT INTO slice" . $varset->makeINSERT() )) {
             $err["DB"] .= MsgErr("Can't add slice");
             break;
           }
 
-             # copy fields
+             // copy fields
           $db2  = new DB_AA;
           $SQL = "SELECT * FROM field WHERE slice_id='". q_pack_id($set_template_id) ."'";
           $db->query($SQL);
-          while( $db->next_record() ) {
+          while ( $db->next_record() ) {
             $varset->clear();
             $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
             $varset->setFromArray($db->Record);
             $varset->set("slice_id", $slice_id, "unpacked" );
             $SQL = "INSERT INTO field " . $varset->makeINSERT();
-            if( !$db2->query($SQL)) {
+            if ( !$db2->query($SQL)) {
               $err["DB"] .= MsgErr("Can't copy fields");
               break;
             }
@@ -233,10 +233,10 @@ if( $add || $update ) {
             }
             /* End of Wizard stuff */
         }
-        $GLOBALS[pagecache]->invalidate();  # invalidate old cached values - all
+        $GLOBALS[pagecache]->invalidate();  // invalidate old cached values - all
     }while(false);
 
-    if( count($err) <= 1 )
+    if ( count($err) <= 1 )
     {
         go_return_or_url($sess->url(self_base() . "slicedit.php3"),0,0);
     }

@@ -123,7 +123,7 @@ class linkcheck
                $dump .= "Host: ".$urlArray["host"]."\r\nConnection: close\r\n";
                $dump .= "Connection: close\r\n\r\n";
                fputs($sock, $dump);
-               while(($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
+               while (($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
                    if (eregi("^http/[0-9]+.[0-9]+ ([0-9]{3}) [a-z ]*", $str)) {
                        $return["code"] = trim(eregi_replace("^http/[0-9]+.[0-9]+ ([0-9]{3}) [a-z ]*", "\\1", $str));
                    }

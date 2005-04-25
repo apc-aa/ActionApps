@@ -8,16 +8,16 @@
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"]."date.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
-require_once $GLOBALS["AA_INC_PATH"]."pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."date.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH']."tabledit.php3";
 require_once menu_include();      //show navigation column depending on $show
-require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
+require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/alerts/util.php3";
 
-// ----------------------------------------------------------------------------------------    
+// ----------------------------------------------------------------------------------------
 
 if (!IsSuperadmin()) {
     MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone");
@@ -27,7 +27,7 @@ if (!IsSuperadmin()) {
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 echo "<TITLE>"._m("AA finder")."</TITLE></HEAD>";
-showMenu ($aamenus, "aaadmin", "aafinder");
+showMenu($aamenus, "aaadmin", "aafinder");
 echo "<H1><B>" ._m("AA finder"). "</B></H1>";
 PrintArray($err);
 echo $Msg;
@@ -59,16 +59,16 @@ if ($go_findview && $findview) {
         "field1",
         "field2",
         "field3");
-    
-    $SQL = "SELECT view.id, view.type, view.slice_id, slice.name 
+
+    $SQL = "SELECT view.id, view.type, view.slice_id, slice.name
         FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
     reset ($fields);
-    while (list (,$field) = each ($fields)) 
-        $SQL .= "view.$field LIKE \"%".addslashes_magic ($findview)."%\" OR ";
+    while (list (,$field) = each ($fields))
+        $SQL .= "view.$field LIKE \"%". magic_add($findview)."%\" OR ";
     $SQL .= "0";
     $db->query($SQL);
     echo $db->num_rows()." matching views found:<br>";
-    while ($db->next_record()) 
+    while ($db->next_record())
         echo $db->f("id")." (".$db->f("name").") "
                 ."<a href=\"".$sess->url("se_view.php3?view_id=".$db->f("id")."&view_type=".$db->f("type")
                 ."&change_id=".unpack_id128($db->f("slice_id")))
@@ -95,34 +95,34 @@ if ($go_findslice && $findslice) {
         "admin_format_bottom",
         "aditional",
         "javascript");
-    
-    $SQL = "SELECT slice.name, slice.id
-        FROM slice WHERE ";
-    reset ($fields);
-    while (list (,$field) = each ($fields)) 
-        $SQL .= "$field LIKE \"%".addslashes_magic ($findslice)."%\" OR ";
+
+    $SQL = "SELECT slice.name, slice.id FROM slice WHERE ";
+    foreach ($fields as $field) {
+        $SQL .= "$field LIKE \"%". magic_add($findslice) ."%\" OR ";
+    }
     $SQL .= "0";
     $db->query($SQL);
     echo $db->num_rows()." matching slices found:<br>";
-    while ($db->next_record()) 
+    while ($db->next_record()) {
         echo $db->f("name")." "
                 ."<a href=\"".$sess->url("se_fulltext.php3?change_id=".unpack_id128($db->f("id")))
                 ."\">"._m("Jump")."</a><br>";
+    }
 }
-    
+
 // ------------------------------------------------------------------------------------------
 // SHOW THE PAGE
 
 FrmTabCaption(_m("AA finder"));
 echo '<tr><td>';
 echo '<FORM name="f_findview" action="'.$sess->url("aafinder.php3").'" method="post">';
-echo '<b>'._m("Find all VIEWS containing in any field the string:").'</b><br> 
+echo '<b>'._m("Find all VIEWS containing in any field the string:").'</b><br>
     <input type="text" name="findview" value="'.$findview.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findview" value="'._m("Go!").'">';
 echo '</FORM>';
 echo '</td></tr><tr><td>';
 echo '<FORM name="f_findslice" action="'.$sess->url("aafinder.php3").'" method="post">';
-echo '<b>'._m("Find all SLICES containing in any field the string:").'</b><br> 
+echo '<b>'._m("Find all SLICES containing in any field the string:").'</b><br>
     <input type="text" name="findslice" value="'.$findslice.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findslice" value="'._m("Go!").'">';
 echo '</FORM></td></tr>';

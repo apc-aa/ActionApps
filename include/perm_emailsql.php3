@@ -56,7 +56,7 @@ function AuthenticateUsername($username, $password, $flags = 0) {
 
   $db  = new DB_AA;
   $id = false; $i = 0;
-  # build and execute a query for $username
+  // build and execute a query for $username
 
   // match by uid if it is like 'toolkit' , by email if like 'madebeer@igc.org'
   // in the future, if it is like @igc.org, it should query an external
@@ -122,7 +122,7 @@ function GetGroup ($user_id, $flags = 0) {
                     WHERE id = '%s'", $user_id);
   $sth = $db->query( $sql );
 
-  # TODO: something about a sizelimit??
+  // TODO: something about a sizelimit??
   if ($db->next_record()) {
     $res[uid] = $user_id;
     $res[name] = $db->f("name");
@@ -142,7 +142,7 @@ function FindGroups ($pattern, $flags = 0) {
                           type = '%s'", addslashes($pattern), _m("Group"));
   $sth = $db->query( $sql );
 
-  # TODO: something about a sizelimit??
+  // TODO: something about a sizelimit??
 
   $db->query($SQL);
   while ($db->next_record())
@@ -164,7 +164,7 @@ function FindUsers ($pattern, $flags = 0) {
             type = '%s'", $pattern, $pattern, $pattern, _m("User"));
   $sth = $db->query( $sql );
 
-  # TODO: something about a sizelimit??
+  // TODO: something about a sizelimit??
 
   $db->query($SQL);
   while ($db->next_record())
@@ -173,7 +173,7 @@ function FindUsers ($pattern, $flags = 0) {
   return $by_id;
 };
 
-# TODO : make this recursive friendly?
+// TODO : make this recursive friendly?
 
 function GetGroupMembers ($group_id, $flags = 0) {
   $db  = new DB_AA;
@@ -184,9 +184,9 @@ function GetGroupMembers ($group_id, $flags = 0) {
                    WHERE groupid = %s", $group_id);
   $sth = $db->query( $sql );
 
-  # TODO: something about a sizelimit??
+  // TODO: something about a sizelimit??
 
-  while($row = mysql_fetch_array($sth)){
+  while ($row = mysql_fetch_array($sth)){
     $id = $row[id];
     $info = GetIDsInfo($id);
     $by_id[$id] = $info;
@@ -206,7 +206,7 @@ function GetMembership ($id, $flags = 0) {
   $deep_counter = 0;
 
   do{
-    if($deep_counter++ > MAX_GROUPS_DEEP)
+    if ($deep_counter++ > MAX_GROUPS_DEEP)
       break;
     //echo "counter $deep_counter\n";
 
@@ -216,10 +216,10 @@ function GetMembership ($id, $flags = 0) {
     $sth = $db->query( $sql );
 
     unset($last_groups);  //get deeper groups to last_groups and groups
-    while($row = mysql_fetch_array($sth)) {
+    while ($row = mysql_fetch_array($sth)) {
       //echo "row $row[id]\n";
-        # Realize that it has already checked a group and eliminate it.
-        if(! in_array($row[id],array($all_groups))) {
+        // Realize that it has already checked a group and eliminate it.
+        if (! in_array($row[id],array($all_groups))) {
           $last_groups[] = $row["id"];
           $all_groups[]  = $row["id"];
    /*
@@ -231,13 +231,13 @@ function GetMembership ($id, $flags = 0) {
      }
     }
 
-  } while( is_array($last_groups) );
+  } while ( is_array($last_groups) );
 
-  # I _think_ this is a list of groupids.
+  // I _think_ this is a list of groupids.
   //  echo "FA";
-# $return[] = sort( $all_groups );
-#  echo "R";
-#  p_array ($return);
+// $return[] = sort( $all_groups );
+//  echo "R";
+//  p_array ($return);
   return $all_groups;
 }
 
@@ -264,17 +264,17 @@ function GetObjectsPerms ($objectID, $objectType, $flags = 0) {
                 userid      = id", 
          $objectType, $objectID);
 
-#  echo $sql;
+//  echo $sql;
   $sth = $db->query( $sql );
 
   if (!$sth) return false;
 
-  while($row = mysql_fetch_array($sth)) {
+  while ($row = mysql_fetch_array($sth)) {
     $by_id[$row[id]] = $row;
   };
 
-  # I am not sure if I perm should be transformed from role->action here 
-  # right now it is not.
+  // I am not sure if I perm should be transformed from role->action here 
+  // right now it is not.
 
   return $by_id;
 }
@@ -302,7 +302,7 @@ function GetIDPerms ($id, $objectType, $flags = 0) {
   $sth = $db->query( $sql );
   if (!$sth) return false;
 
-  while($row = mysql_fetch_array($sth)) {
+  while ($row = mysql_fetch_array($sth)) {
     $by_id[ $row[id] ] = $row[perm];
   }  
   return $by_id;
@@ -329,8 +329,8 @@ function AddUser($user, $flags = 0) {
   if (!$sth) return false;
   if (mysql_num_rows($sth)) return false;
 
-  # do a little bit of QA on the $user array
-  # 
+  // do a little bit of QA on the $user array
+  // 
   $array["type"] = _m("User");
   $array["uid"] = $user[uid];
   $array["mail"] = ((is_array($user[mail])) ? $user[mail][0] : $user[mail]);
@@ -344,24 +344,24 @@ function AddUser($user, $flags = 0) {
     $cryptpw = "*";
   $array["password"] = $cryptpw;
 
-#  print $user[mail];
-#  print $array[mail];
+//  print $user[mail];
+//  print $array[mail];
 
-  # insert into users
-  # 
+  // insert into users
+  // 
 
   $sql = A2sql_insert('users',$array);
-  #print $sql;
+  //print $sql;
   $db->query($sql);
   $id = mysql_insert_id();
 
-#  echo "id is $id\n<BR>";
+//  echo "id is $id\n<BR>";
 
 
 /*  OLD -- since salt is now userid, don't need to do this
 
-  # fix the password if that was successful
-  #
+  // fix the password if that was successful
+  //
 
   if ($id) { 
      $cryptpw = crypt( $user["userpassword"], $id );
@@ -407,8 +407,8 @@ function DelUser ($user_id, $flags = 3) {
 function ChangeUser ($user, $flags = 0) {
   $db  = new DB_AA;
 
-  # do a little bit of QA on the $user array
-  # 
+  // do a little bit of QA on the $user array
+  // 
   $array["id"] = $user["uid"];
   $array["mail"] = ((is_array($user[mail])) ? $user[mail][0] : $user[mail]);
   $array["name"] = $user["givenname"]." ".$user["sn"];
@@ -418,7 +418,7 @@ function ChangeUser ($user, $flags = 0) {
   if ($user["userpassword"])
     $array["password"] = crypt( $user["userpassword"]); // salt is generated by PHP
 
-  # alter users
+  // alter users
   $sql = A2sql_update('users','id', $array);
   $db->query($sql);
   return true;
@@ -432,7 +432,7 @@ function GetUser ($user_id, $flags = 0) {
                     WHERE id = '%s'", $user_id);
   $sth = $db->query( $sql );
 
-  # TODO: something about a sizelimit??
+  // TODO: something about a sizelimit??
 
   if ($db->next_record()) {
     $res[uid] = $user_id;
@@ -453,7 +453,7 @@ function AddGroup ($group, $flags = 0) {
 // creates new person in permission system
 
   $db  = new DB_AA;
-   # do a little bit of QA on the $user array
+   // do a little bit of QA on the $user array
   $array["type"] = _m("Group");
   $array["name"] = $group["name"];
   $array["description"] = $group["description"];
@@ -496,7 +496,7 @@ function DelGroup ($group_id, $flags = 3) {
 // $group is an array ("name", "description", ...)
 function ChangeGroup ($group, $flags = 0) {
   $db  = new DB_AA;
-  # do a little bit of QA on the $user array
+  // do a little bit of QA on the $user array
   $array["id"] = $group["uid"];
   $array["name"] = $group["name"];
   $array["description"] = $group["description"];
@@ -563,9 +563,9 @@ function ChangePerm ($id, $objectID, $objectType, $perm, $flags = 0) {
 }
 
 
-##############################################################################
-# Internal functions
-##############################################################################
+//#############################################################################
+// Internal functions
+//#############################################################################
 
 // returns an array containing basic information on $id (user DN or group DN)
 // or false if ID does not exist 
@@ -579,7 +579,7 @@ function GetIDsInfo ($id, $ds = "") {
                     WHERE id = '%s'", $id);
   $sth = $db->query( $sql );
 
-  # TODO: something about a sizelimit??
+  // TODO: something about a sizelimit??
 
   if ($db->next_record()) {
     $res[type] = $db->f("type");
@@ -601,9 +601,9 @@ function L2sql_insert($table, $aData) {
   while ($i < count($aData)) {
      $var = $aData[$i];
      $val = $GLOBALS[$var];
-     $fields[$i] = addslashes( $var ); # in case we don't even trust that
+     $fields[$i] = addslashes( $var ); // in case we don't even trust that
      $values[$i] = "'" . addslashes( $val ) . "'";
-#    print "$fields[$i] : $values[$i]";
+//    print "$fields[$i] : $values[$i]";
      $i++;
   }  
 
@@ -647,7 +647,7 @@ function A2sql_update ($table, $keyField, $aData) {
   $set = join (", ",  $set_terms);
   $where   = "$keyField = '" . addslashes($aData[$keyField]). "'";
 
-  # create the sql
+  // create the sql
   return " UPDATE $table
                 SET $set
               WHERE $where

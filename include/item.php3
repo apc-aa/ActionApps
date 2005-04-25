@@ -19,13 +19,13 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if( file_exists( $GLOBALS["AA_INC_PATH"]."usr_aliasfnc.php3" ) ) {
-  include( $GLOBALS["AA_INC_PATH"]."usr_aliasfnc.php3" );
+if ( file_exists( $GLOBALS['AA_INC_PATH']."usr_aliasfnc.php3" ) ) {
+  include( $GLOBALS['AA_INC_PATH']."usr_aliasfnc.php3" );
 }
 
-require_once $GLOBALS["AA_INC_PATH"]. "math.php3";
-require_once $GLOBALS["AA_INC_PATH"]. "stringexpand.php3";
-require_once $GLOBALS["AA_INC_PATH"]. "item_content.php3";
+require_once $GLOBALS['AA_INC_PATH']. "math.php3";
+require_once $GLOBALS['AA_INC_PATH']. "stringexpand.php3";
+require_once $GLOBALS['AA_INC_PATH']. "item_content.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/links/constants.php3";
 
 if ( !is_object($contentcache) ) {
@@ -51,25 +51,25 @@ function DefineBaseAliases(&$aliases, $module_id) {
 
 function GetAliasesFromFields($fields, $additional="", $type='') {
   trace("+","GetAliasesFromFields");
-  if( !( isset($fields) AND is_array($fields)) AND ($type != 'justids') ) {
+  if ( !( isset($fields) AND is_array($fields)) AND ($type != 'justids') ) {
     trace("-");
     return false;
   }
-  #add additional aliases
-  if( is_array( $additional ) ) {
+  //add additional aliases
+  if ( is_array( $additional ) ) {
       reset ($additional);
       while (list($k,$v) = each($additional))
           $aliases[$k] = $v;
   }
 
-  #  Standard aliases
+  //  Standard aliases
   $aliases["_#ID_COUNT"] = GetAliasDef( "f_e:itemcount",        "id..............", _m("number of found items"));
   $aliases["_#ITEMINDX"] = GetAliasDef( "f_e:itemindex",        "id..............", _m("index of item within whole listing (begins with 0)"));
   $aliases["_#PAGEINDX"] = GetAliasDef( "f_e:pageindex",        "id..............", _m("index of item within a page (it begins from 0 on each page listed by pagescroller)"));
   $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............", _m("alias for Item ID"));
   $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........", _m("alias for Short Item ID"));
 
-  if( $type == 'justids') {  // it is enough for view of urls
+  if ( $type == 'justids') {  // it is enough for view of urls
       trace("-");
       return $aliases;
   }
@@ -86,21 +86,21 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
   $aliases["_#MLX_LANG"] = GetAliasDef(  "f_e:mlx_lang",   MLX_CTRLIDFIELD,             _m("Current MLX language"));
   $aliases["_#MLX_DIR_"] = GetAliasDef(  "f_e:mlx_dir",   MLX_CTRLIDFIELD,             _m("HTML markup direction tag (e.g. DIR=RTL)"));
 
-  # database stored aliases
-  while( list($k,$val) = each($fields) ) {
-    if( $val[alias1] )
+  // database stored aliases
+  while ( list($k,$val) = each($fields) ) {
+    if ( $val[alias1] )
       $aliases[$val[alias1]] = array("fce" =>  $val[alias1_func],
                                      "param" => ( $val[id] ),
                                      "hlp" => $val[alias1_help],
-                                     "fld" => $k);                 # fld used
-                           # in PrintAliasHelp to point to alias editing page
+                                     "fld" => $k);                 // fld used
+                           // in PrintAliasHelp to point to alias editing page
 
-    if( $val[alias2] )
+    if ( $val[alias2] )
       $aliases[$val[alias2]] = array("fce" =>  $val[alias2_func],
                                      "param" => ( $val[id] ),
                                      "hlp" => $val[alias2_help],
                                      "fld" => $k);
-    if( $val[alias3] )
+    if ( $val[alias3] )
       $aliases[$val[alias3]] = array("fce" => $val[alias3_func],
                                      "param" => ( $val[id] ),
                                      "hlp" => $val[alias3_help],
@@ -116,7 +116,7 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
 function GetAliases4Type( $type, $additional="" ) {
     switch ( $type ) {
         case 'const':
-            #  Standard aliases
+            //  Standard aliases
             $aliases["_#NAME###_"] = GetAliasDef( "f_h", "const_name",        _m("Constant name"));
             $aliases["_#VALUE##_"] = GetAliasDef( "f_h", "const_value",       _m("Constant value"));
             $aliases["_#PRIORITY"] = GetAliasDef( "f_h", "const_pri",         _m("Constant priority"));
@@ -137,7 +137,7 @@ function GetAliases4Type( $type, $additional="" ) {
     }
 
     // add additoinal aliases
-    if( isset( $additional ) AND is_array( $additional ) ) {
+    if ( isset( $additional ) AND is_array( $additional ) ) {
         $aliases = array_merge($aliases, $additional);
     }
     return($aliases);
@@ -149,39 +149,39 @@ function GetAliases4Type( $type, $additional="" ) {
  */
 function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML) {
     // you can specify multiple value ($value is array then)
-    if( !is_array($value) ) {   $value = array($value);  }
+    if ( !is_array($value) ) {   $value = array($value);  }
 
     do {
         $colname = CreateFieldId( strtolower( substr( $alias,2,12 )));
     } while ( isset($content4id[$colname]) );
 
-    foreach( $value as $v ) {
+    foreach ( $value as $v ) {
         $content4id[$colname][] = array ("value" => $v, "flag" => $flag);
     }
     $aliases[$alias] = GetAliasDef("f_h", $colname, _m("Alias for %1",array($colname)));
 }
 
-# helper function for f_e
-# this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
-# added by setu@gwtech.org 2002-0211
+// helper function for f_e
+// this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
+// added by setu@gwtech.org 2002-0211
 //
 // make_return_url
-# global function to get return_url
-# this function may replaced by extension of $sess as a method $sess->return_url().
+// global function to get return_url
+// this function may replaced by extension of $sess as a method $sess->return_url().
 function sess_return_url($url) {
   global $sess;
   global $return_url;
 
-  if (!$return_url)   # return for standard APC-AA behavier
+  if (!$return_url)   // return for standard APC-AA behavier
     return $sess->url($url);
-  else                # decode and return $return_url
+  else                // decode and return $return_url
     return expand_return_url(1);
 }
 
 
-# helper function for f_e
-# this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
-# added by setu@gwtech.org 2002-0211
+// helper function for f_e
+// this is called from admin/index.php3 and include/usr_aliasfnc.php3 in some site
+// added by setu@gwtech.org 2002-0211
 //
 // make_return_url
 //function make_return_url($prifix="&return_url=")
@@ -195,8 +195,8 @@ function make_return_url($prifix,$r1="") {
     return $prifix . urlencode($r1);
   elseif ($return_url)
     return $prifix . urlencode($return_url);
-  elseif (!$sess) {   # If there is no $sess, then we need a return url, default to self, including parameters
-            # but remove any left over AA_CP_Session, it will be re-added if needed
+  elseif (!$sess) {   // If there is no $sess, then we need a return url, default to self, including parameters
+            // but remove any left over AA_CP_Session, it will be re-added if needed
         if (ereg("(.*)([?&])AA_CP_Session=[0-9a-f]{32}(.*)",$REQUEST_URI,$parts))
           return $prifix . urlencode($parts[1].$parts[2].$parts[3]);
         return($prifix . urlencode($REQUEST_URI));
@@ -205,7 +205,7 @@ function make_return_url($prifix,$r1="") {
     return "";
 }
 
-# helper function for f_e:link_*  (links module admin page link) - honzam
+// helper function for f_e:link_*  (links module admin page link) - honzam
 function Links_admin_url($script, $add) {
     global $sess, $AA_INSTAL_EDIT_PATH;
     return $sess->url($AA_INSTAL_EDIT_PATH. "modules/link/$script?$add");
@@ -367,7 +367,7 @@ class item {
           short as possible - like "?x=445445"
 
       $url_base = ($redirect ? $redirect : $this->clean_url );
-      if( $no_sess ) {                     #remove session id
+      if ( $no_sess ) {                     //remove session id
           $pos = strpos($url_base, '?');
           if ($pos) {
               $url_base = substr($url_base,0,$pos);
@@ -380,33 +380,33 @@ class item {
                     (($no_sess OR !is_object($sess))  ? '' : $sess->url('')) );
 
       // add state variable, if defined (apc - AA Pointer Cache)
-      if( $GLOBALS['apc_state'] ) {
+      if ( $GLOBALS['apc_state'] ) {
           $url_base = con_url( $url_base, 'apc='.$GLOBALS['apc_state']['state'] );
       }
       return $url_base;
   }
 
-  # get item url - take in mind: item_id, external links and redirection
+  // get item url - take in mind: item_id, external links and redirection
   function getitemurl($extern, $extern_url, $redirect, $condition=true, $no_sess=false) {
-    if( $extern )       # link_only
+    if ( $extern )       // link_only
       return ($extern_url ? $extern_url : NO_OUTER_LINK_URL);
-    if( !$condition )
+    if ( !$condition )
       return false;
 
     $url_param = ( $GLOBALS['USE_SHORT_URL'] ?
-            "x=".$this->getval('short_id........') :
-            "sh_itm=".unpack_id128($this->getval('id..............')));
+            "x=". $this->getval('short_id........') :
+            "sh_itm=". $this->getItemID());
 
     return con_url( $this->getbaseurl($redirect, $no_sess), $url_param );
   }
 
-  # get link from url and text
+  // get link from url and text
   function getahref($url, $txt, $add="", $html=false, $hide=false) {
-    if( $url AND $txt ) {
-      # repair url if user omits to write http://
-      if( substr($url,4)=='www.' )
+    if ( $url AND $txt ) {
+      // repair url if user omits to write http://
+      if ( substr($url,4)=='www.' )
         $url = 'http://'.$url;
-      # hide email from spam robots
+      // hide email from spam robots
       if ($hide=='1') {
         $linkpart=explode('@',str_replace("'", "\'", $url.'@'.DeHtml($txt, $html)),4);
         $ret = "\n<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\ndocument.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $linkpart[2];
@@ -424,28 +424,28 @@ class item {
   function get_alias_subst( $alias, $use_field="" ) {
       // use_field is for expanding aliases with loop - prefix {@
     $ali_arr = $this->aliases[$alias];
-      # is this realy alias?
+      // is this realy alias?
 
-    if( !is_array($ali_arr) ) {
-      # try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
-      # unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
-      if( ! ((substr($alias,9,1)=='#') AND is_array($ali_arr = $this->aliases[substr($alias,0,9).'_'])))
+    if ( !is_array($ali_arr) ) {
+      // try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
+      // unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
+      if ( ! ((substr($alias,9,1)=='#') AND is_array($ali_arr = $this->aliases[substr($alias,0,9).'_'])))
         return $alias;
     }
 
-    # get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
+    // get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
     $function = ParseFnc($ali_arr['fce']);
     $fce = $function['fnc'];
 
-    # call function (called by function reference (pointer))
-    # like f_d("start_date......", "mm-dd")
+    // call function (called by function reference (pointer))
+    // like f_d("start_date......", "mm-dd")
     return $this->$fce(get_if($use_field, $ali_arr['param']), $function['param']);
   }
 
   function remove_strings( $text, $remove_arr ) {
-    if( is_array($remove_arr) ) {
+    if ( is_array($remove_arr) ) {
       reset($remove_arr);
-      while( current($remove_arr) ) {
+      while ( current($remove_arr) ) {
         $text = str_replace(current($remove_arr), "", $text);
         next($remove_arr);
       }
@@ -453,21 +453,21 @@ class item {
     return $text;
   }
 
-  # the function substitutes all _#... aliases and then applies "remove strings"
-  # it searches for removal just in parts where all aliases are expanded
-  # to empty string
+  // the function substitutes all _#... aliases and then applies "remove strings"
+  // it searches for removal just in parts where all aliases are expanded
+  // to empty string
   function substitute_alias_and_remove( $text, $remove_arr=null ) {
     $piece = explode( "_#", $text );
     reset( $piece );
-    $out = current($piece);   # initial sequence
-    while( $vparam = next($piece) ) {
-          #search for alias definition (fce,param,hlp)
+    $out = current($piece);   // initial sequence
+    while ( $vparam = next($piece) ) {
+          //search for alias definition (fce,param,hlp)
       $substitution = $this->get_alias_subst( "_#".(substr($vparam,0,8)));
-      if( $substitution != "" ) {   # alias produced some output, so we can remove
-                              # strings in previous section and we can start new
-                              # section
+      if ( $substitution != "" ) {   // alias produced some output, so we can remove
+                              // strings in previous section and we can start new
+                              // section
         $clear_output .= $this->remove_strings($out,$remove_arr).$substitution;
-        $out = substr($vparam,8);         # start with clear string
+        $out = substr($vparam,8);         // start with clear string
       } else
         $out .= substr($vparam,8);
     }
@@ -480,8 +480,8 @@ class item {
     $maxlevel = 0;
     $level    = 0;
     $GLOBALS['g_formpart'] = 0;  // used for splited inputform into parts
-#   return $this->old_unalias_recurent( $text, $remove, $level, $maxlevel );
-    $ret = new_unalias_recurent($text, $remove, $level, $maxlevel, $this ); # Note no itemview param
+//   return $this->old_unalias_recurent( $text, $remove, $level, $maxlevel );
+    $ret = new_unalias_recurent($text, $remove, $level, $maxlevel, $this ); // Note no itemview param
     trace("-");
     return $ret;
   }
@@ -491,7 +491,7 @@ class item {
   }
 
   function subst_aliases( $var ) {
-      if( !is_array( $var ) ) {
+      if ( !is_array( $var ) ) {
           return $this->subst_alias( $var );
       }
       foreach ( $var as $k => $v ) {
@@ -500,58 +500,58 @@ class item {
       return $ret;
   }
 
-  # --------------- functions called for alias substitution -------------------
+  // --------------- functions called for alias substitution -------------------
 
-  # null function
-  # param: 0
+  // null function
+  // param: 0
   function f_0($col, $param="") { return ""; }
 
-  # print due to html flag set (escape html special characters or just print)
-  # param: delimeter - used to separate values if the field is multi
+  // print due to html flag set (escape html special characters or just print)
+  // param: delimeter - used to separate values if the field is multi
   function f_h($col, $param="") {
       $values = $this->getvalues($col);
-      if ( $param AND $values) {  # create list of values for multivalue fields
+      if ( $param AND $values) {  // create list of values for multivalue fields
           $param = $this->subst_alias( $param );
-          foreach( $values as $v ) {
-              $res .= ($res ? $param : ''). DeHtml($v['value'], $v['flag']); # add value separator just if field is filled
+          foreach ( $values as $v ) {
+              $res .= ($res ? $param : ''). DeHtml($v['value'], $v['flag']); // add value separator just if field is filled
           }
           return $res;
       }
       return DeHtml($this->getval($col), $this->getval($col,'flag'));
   }
 
-  # prints date in user defined format
-  # param: date format like in PHP (like "m-d-Y")
+  // prints date in user defined format
+  // param: date format like in PHP (like "m-d-Y")
   function f_d($col, $param="") {
       $param = $this->subst_alias( $param );
-      if( $param=="" ) {
+      if ( $param=="" ) {
           $param = "m/d/Y";
       }
       $dstr = date($param, $this->getval($col));
       return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
   }
 
-  # prints image scr (<img src=...) - NO_PICTURE for none
-  # param: 0
+  // prints image scr (<img src=...) - NO_PICTURE for none
+  // param: 0
   function f_i($col, $param="") {
       return get_if( $this->getval($col), NO_PICTURE_URL);
   }
 
-  # expands and prints a string, if parameters are blank then expands field
+  // expands and prints a string, if parameters are blank then expands field
   function f_y($col, $param="") {
       $str2unalias = get_if( $param, $this->getval($col) );
       return $this->unalias( $str2unalias );
   }
 
-  # prints height and width of image file or URL referenced in field
-  # Could be special case if in uploads directory, so can read directly
+  // prints height and width of image file or URL referenced in field
+  // Could be special case if in uploads directory, so can read directly
   function i_s($col, $param="") {
     if (! isField($col))
         huhe("Warning: i_s: $col is not a field, don't wrap it in { } ");
     $f = $this->getval($col);
-    if (! $f) { return ""; }  # No picture, common don't warn (expanding inside switch)
-    # Could speed up a little with a test for URLs in uploads directory here
-    # PHP>4.0.5 supports URLs so no need to skip URLs
+    if (! $f) { return ""; }  // No picture, common don't warn (expanding inside switch)
+    // Could speed up a little with a test for URLs in uploads directory here
+    // PHP>4.0.5 supports URLs so no need to skip URLs
     $a = getimagesize($f);
     // No warning required, will be generated by getimagesize
     //    if (! $a)
@@ -563,31 +563,31 @@ class item {
         case 'imgtype': return $a[2]; // 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM
         case 'mime':    return image_type_to_mime_type($a[2]);
     }
-    return $a[3];  #height="xxx" width="yyy"
+    return $a[3];  //height="xxx" width="yyy"
   }
 
-  # prints unpacked id
-  # param: 0
+  // prints unpacked id
+  // param: 0
   function f_n($col, $param="") {
     return unpack_id( $this->getval($col) );
   }
 
-  # prints image height atribut (<img height=...) or clears it
-  # param: 0
-  function f_g($col, $param="") {    # image height
+  // prints image height atribut (<img height=...) or clears it
+  // param: 0
+  function f_g($col, $param="") {    // image height
     global $out;
-    if( !$this->getval($col) ) {
+    if ( !$this->getval($col) ) {
       $out = ERegI_Replace( "height[[:space:]]*=[[:space:]]*[\"]?^", "", $out );  // delete height = x
       return false;
     }
     return htmlspecialchars($this->getval($col));
   }
 
-  # prints image width atribut (<img width=...) or clears it
-  # param: 0
-  function f_w($col, $param="") {    # image width
+  // prints image width atribut (<img width=...) or clears it
+  // param: 0
+  function f_w($col, $param="") {    // image width
     global $out;
-    if( !$this->getval($col) ) {
+    if ( !$this->getval($col) ) {
       $out = ERegI_Replace( "width[[:space:]]*=[[:space:]]*[\"]?^", "", $out );  // delete width = x
       return false;
     }
@@ -639,29 +639,29 @@ class item {
       return strip_tags( $shorted_text );
   }
 
-  # prints link to fulltext (hedline url)
-  # col: hl_href.........
-  # param: link_only:redirect
-  #    link_only field id (like "link_only.......")
-  #    redirect - url of another page which shows the content of item
-  #             - this page should contain SSI include ../slice.php3 too
-  #    no_sess  - if true, it does not add session id to url
+  // prints link to fulltext (hedline url)
+  // col: hl_href.........
+  // param: link_only:redirect
+  //    link_only field id (like "link_only.......")
+  //    redirect - url of another page which shows the content of item
+  //             - this page should contain SSI include ../slice.php3 too
+  //    no_sess  - if true, it does not add session id to url
   function f_f($col, $param="") {
     list($plink, $predir, $psess) = $this->subst_aliases(ParamExplode($param));
     return $this->getitemurl($plink, $this->getval($col), $predir, 1, $psess);
   }
 
-  # prints text with link to fulltext (hedline url)
-  # param: link_only:url_field:redirect:txt:condition_fld
-  #    link_only     - field id (like "link_only.......")
-  #    url_field     - field id of external url for link_only
-  #                  - (like hl_href.........)
-  #    redirect      - url of another page which shows the content of item
-  #                  - this page should contain SSI include ../slice.php3 too
-  #    txt           - if txt is field_id content is shown as link, else txt
-  #    condition_fld - field id - if no content of this field, no link
-  #    addition      - additional parameter to <a tag (like target=_blank)
-  #    no_sess  - if true, it does not add session id to url
+  // prints text with link to fulltext (hedline url)
+  // param: link_only:url_field:redirect:txt:condition_fld
+  //    link_only     - field id (like "link_only.......")
+  //    url_field     - field id of external url for link_only
+  //                  - (like hl_href.........)
+  //    redirect      - url of another page which shows the content of item
+  //                  - this page should contain SSI include ../slice.php3 too
+  //    txt           - if txt is field_id content is shown as link, else txt
+  //    condition_fld - field id - if no content of this field, no link
+  //    addition      - additional parameter to <a tag (like target=_blank)
+  //    no_sess  - if true, it does not add session id to url
   function f_b($col, $param="") {
     $p = ParamExplode($param);
     list ($plink_only, $purl_field, $predirect, $ptxt, $pcondition, $paddition, $pno_sess) = $this->subst_aliases($p);
@@ -670,14 +670,14 @@ class item {
       $pcondition = true;
     }
 
-    # last parameter - condition field
+    // last parameter - condition field
     $url = $this->getitemurl($plink_only, $purl_field, $predirect, $pcondition, $pno_sess);
     $flg = ( $this->columns->is_set($p[3]) ? $this->getval($p[3],'flag') : true );
     return $this->getahref($url,$ptxt,$paddition,$flg);
   }
 
-  # prints 'blurb' (piece of text) based from another slice,
-  # based on a simple condition.
+  // prints 'blurb' (piece of text) based from another slice,
+  // based on a simple condition.
   /*
     Blurb slice, has fields
     headline........  ; example: "Computer Basics - Technology"
@@ -692,7 +692,7 @@ class item {
   */
 
 
-  # returns fulltext of the blurb
+  // returns fulltext of the blurb
   function f_q($col, $param="") {
       /* Usually this is called with no parameters.
      Optional parameters for f_q are:
@@ -769,16 +769,16 @@ class item {
 // iso-8859-1. OR possibly better, output the encoding in the head of the RSS
 // via  a new alias - mitra@mitra.biz 30Oct03
 function RSS_restrict($txt, $len) {
-#    return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
+//    return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
     return htmlspecialchars(substr($txt,0,$len));
   }
 
-  # standard aliases to generate RSS .91 compliant meta-information
+  // standard aliases to generate RSS .91 compliant meta-information
   function f_r($col, $param="") {
     static $title, $link, $description;
 
-    $p_slice_id = addslashes($this->getval('slice_id........'));
-    $slice_id = unpack_id( $p_slice_id );
+    $slice_id   = $this->getSliceID();
+    $p_slice_id = q_pack_id($slice_id);
 
     if (! $title) {
       if ($slice_id==""){ echo "Error: slice_id not defined"; exit; }
@@ -827,13 +827,13 @@ function RSS_restrict($txt, $len) {
       return $this->RSS_restrict( $foo, $p[0]);
   }
 
-  # prints the field content and converts text to html or escape html (due to
-  # html flag). If param is specified, it prints rather param (instead of field)
+  // prints the field content and converts text to html or escape html (due to
+  // html flag). If param is specified, it prints rather param (instead of field)
 
-  # f_t looks to see if param is a field, and if so gets the value, and
-  #  if it doesn't look like a field, then it unaliases the param
-  # If there is no param, then it converts the field to HTML (if text)
-  # param: string to be printed (like <img src="{img_src........1}"></img>
+  // f_t looks to see if param is a field, and if so gets the value, and
+  //  if it doesn't look like a field, then it unaliases the param
+  // If there is no param, then it converts the field to HTML (if text)
+  // param: string to be printed (like <img src="{img_src........1}"></img>
   function f_t($col, $param="") {
       $p = ParamExplode($param);
       if ( isset($p[1]) ) {
@@ -858,52 +858,52 @@ function RSS_restrict($txt, $len) {
                       DeHtml($this->getval($col), $this->getval($col,'flag'));
   }
 
-  # print database field or default value if empty
-  # param: default (like "javascript: window.alert('No source url specified')")
+  // print database field or default value if empty
+  // param: default (like "javascript: window.alert('No source url specified')")
   function f_s($col, $param="") {
     return ( $this->getval($col) ? $this->getval($col) : $param);
   }
 
-  # prints $col as link, if field_id in $param is defined, else prints just $col
-  # param: field_id         - of possible link (like "source_href.....")
-  #        additional atrib - for <a> tag
+  // prints $col as link, if field_id in $param is defined, else prints just $col
+  // param: field_id         - of possible link (like "source_href.....")
+  //        additional atrib - for <a> tag
   function f_l($col, $param="") {
     list($plink, $padditional) = $this->subst_aliases( ParamExplode($param) );
     return $this->getahref($plink, $this->getval($col),
                            $padditional,$this->getval($col,'flag'));
   }
 
-  # If someone understands the parameter wizzard, it would be good to expand this to take a second parameter
-  # i.e. return url.
-  # _#EDITITEM used on admin page index.php3 for itemedit url
-  # param: 0
+  // If someone understands the parameter wizzard, it would be good to expand this to take a second parameter
+  // i.e. return url.
+  // _#EDITITEM used on admin page index.php3 for itemedit url
+  // param: 0
   function f_e($col, $param="") {
     global $sess, $slice_info;
 
-    $p = ParamExplode($param);  # 0 = disc|itemcount|safe|slice_info  #2 = return_url
+    $p = ParamExplode($param);  // 0 = disc|itemcount|safe|slice_info  //2 = return_url
     switch( $p[0]) {
       case "session":
         return $sess->id;
       case "disc":
-        # _#DISCEDIT used on admin page index.php3 for edit discussion comments
-        return con_url($sess->url("discedit.php3"),
-          "item_id=".unpack_id128( $this->getval('id..............')));
-      # These next two return values from globals that would actually be better coming froom the item or itemview,
-      # otherwise won't work if there are nested views.
+        // _#DISCEDIT used on admin page index.php3 for edit discussion comments
+        return con_url($sess->url("discedit.php3"), "item_id=". $this->getItemID());
+      // These next two return values from globals that would actually be better coming froom the item or itemview,
+      // otherwise won't work if there are nested views.
       case "itemcount":
         return $GLOBALS['QueryIDsCount'];
       case "itemindex": /*mimo hack, this is now a stack*/
-        return "".end($GLOBALS['QueryIDsIndex']);   # Need to append to "" so doesn't return "false" on 0th item
+        return "".end($GLOBALS['QueryIDsIndex']);   // Need to append to "" so doesn't return "false" on 0th item
       case "pageindex": /*mimo hack, this is now a stack*/
-        return "".end($GLOBALS['QueryIDsPageIndex']);   # Need to append to "" so doesn't return "false" on 0th item
+        return "".end($GLOBALS['QueryIDsPageIndex']);   // Need to append to "" so doesn't return "false" on 0th item
       case "safe":         // safe, javascript, urlencode, csv - for backward
       case "javascript":   // compatibility
       case "urlencode":
       case "csv":
         return $this->f_t($col,":".$p[0]);
       case "slice_info":
-        if( !is_array( $slice_info ) )
-          $slice_info = GetSliceInfo(unpack_id128( $this->getval('slice_id........')));
+        if (!is_array($slice_info)) {
+          $slice_info = GetSliceInfo( $this->getSliceID());
+        }
         return $slice_info[$col];
       case "link_edit":
         return (($p[1]=='anonym') ?
@@ -915,7 +915,7 @@ function RSS_restrict($txt, $len) {
         $cat_highlight        = $this->getvalues('cat_state');
         $cat_proposal         = $this->getvalues('cat_proposal');
         $cat_proposal_delete  = $this->getvalues('cat_proposal_delete');
-        if( !is_array($cat_names) )
+        if ( !is_array($cat_names) )
           return "";
         while ( list($k, $cat) = each($cat_names) ) {
           $print_cname = $cat['value'];
@@ -942,38 +942,36 @@ function RSS_restrict($txt, $len) {
       case 'username':    // prints user name form its id
         return perm_username( $this->getval($col) );
       case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)
-        if (!$GLOBALS[mlxView]) {
+        if (!$GLOBALS['mlxView']) {
           return "MLX no global mlxView set: this shouldnt happen in:".__FILE__.",".__LINE__;
         }
-        return $GLOBALS[mlxView]->getCurrentLang();
+        return $GLOBALS['mlxView']->getCurrentLang();
         break;
       case 'mlx_dir':    // print the current mlx language html markup dir tag
                          //(the article's 'real' one!)
-        $mlx_dir = $GLOBALS[mlxScriptsTable][$this->getval('lang_code.......')];
+        $mlx_dir = $GLOBALS['mlxScriptsTable'][$this->getval('lang_code.......')];
         return ($mlx_dir?" DIR=".$mlx_dir['DIR']." ":"");
         break;
       case 'addform':   // show link to inputform with special design defined in view (id in p[1])
         $add = true;
       // drop through to default
       case 'editform':
-        return Inputform_url($add, unpack_id128($this->getval('id..............')),
-                                   unpack_id128($this->getval('slice_id........')), $p[2], $p[1]);
+        return Inputform_url($add, $this->getItemID(), $this->getSliceID(), $p[2], $p[1]);
       case "add":
         $add = true;
       // drop through to default
       default:
-          return Inputform_url($add, unpack_id128($this->getval('id..............')),
-                                     unpack_id128($this->getval('slice_id........')), $p[1]);
+          return Inputform_url($add, $this->getItemID(), $this->getSliceID(), $p[1]);
     }
   }
 
-  # prints "begin".$col."end" if $col="condition", else prints "none"
-  # if no cond_col specified - $col is used
-  # if pskip_col == 1, skips $col
-  # param: condition:begin:end:none:cond_col
-  # if pararam begins with "!", condition is negated
+  // prints "begin".$col."end" if $col="condition", else prints "none"
+  // if no cond_col specified - $col is used
+  // if pskip_col == 1, skips $col
+  // param: condition:begin:end:none:cond_col
+  // if pararam begins with "!", condition is negated
   function f_c($col, $param="") {
-    if( $param[0]=="!" ){
+    if ( $param[0]=="!" ){
       $param = substr($param, 1);
       $negate=true;
     }
@@ -983,7 +981,7 @@ function RSS_restrict($txt, $len) {
     list ($pcond, $pbegin, $pend, $pnone, $pccol, $pskip_col) = $this->subst_aliases($p);
 
     $cond = ( $p[4] ? $pccol : $this->subst_alias($col) );
-    if( $cond != $pcond )
+    if ( $cond != $pcond )
       $negate = !$negate;
     if (!$pskip_col)
         $coltxt = DeHtml($this->getval($col), $this->getval($col,'flag'));
@@ -1004,35 +1002,35 @@ function RSS_restrict($txt, $len) {
       return $fnc($this->columns->getContent(), $col, $param);
   }
 
-  # display specified view
-  # param:
-  #    link_only     - field id (like "link_only.......")
-  #    url_field     - field id of external url for link_only
-  #                  - (like hl_href.........)
-  #    redirect      - url of another page which shows the content of item
-  #                  - this page should contain SSI include ../slice.php3 too
-  #    txt           - if txt is field_id content is shown as link, else txt
-  #    condition_fld - field id - if no content of this field, no link
-  #    addition      - additional parameter to <a tag (like target=_blank)
+  // display specified view
+  // param:
+  //    link_only     - field id (like "link_only.......")
+  //    url_field     - field id of external url for link_only
+  //                  - (like hl_href.........)
+  //    redirect      - url of another page which shows the content of item
+  //                  - this page should contain SSI include ../slice.php3 too
+  //    txt           - if txt is field_id content is shown as link, else txt
+  //    condition_fld - field id - if no content of this field, no link
+  //    addition      - additional parameter to <a tag (like target=_blank)
 
   function f_v($col, $param="") {
     global $vid, $als, $conds, $param_conds, $item_ids, $use_short_ids;
 
-    # if no parameter specified, the content of this field specifies view id
-    if( !$param )
+    // if no parameter specified, the content of this field specifies view id
+    if ( !$param )
       $param = "vid=".$this->getval($col);
 
-  # older aliases substitution ------------- (_#publish_date....) -----------
-    # substitute aliases by real item content
+  // older aliases substitution ------------- (_#publish_date....) -----------
+    // substitute aliases by real item content
     $part = $param;
 
-// If you change this to support more items, please change FAQ item #1488
-    while( $part = strstr( $part, "_#" )) {  # aliases for field content
-      $fid = substr( $part, 2, 16 );         # looks like _#headline........
+// If you change this to support more items, please change FAQ item //1488
+    while ( $part = strstr( $part, "_#" )) {  // aliases for field content
+      $fid = substr( $part, 2, 16 );         // looks like _#headline........
 
-      if( substr( $fid, 0, 4 ) == "this" )   # special alias _#this
+      if ( substr( $fid, 0, 4 ) == "this" )   // special alias _#this
         $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
-      elseif( substr( $fid, 0, 5) == "slice" )   # Another special alias _#slice
+      elseif( substr( $fid, 0, 5) == "slice" )   // Another special alias _#slice
         //Mitra says: looks like this mucks up _#slice_id........
         $param = str_replace("_#slice", $this->getval('slice_id........'), $param);
       elseif( $fid == 'unpacked_id.....' )
@@ -1042,21 +1040,21 @@ function RSS_restrict($txt, $len) {
       $part = substr( $part, 6 );
     }
 
-  # unalias new ------------ ({publish_date....}, _#ITEM_ID_, ...) -----------
+  // unalias new ------------ ({publish_date....}, _#ITEM_ID_, ...) -----------
     $param = $this->subst_alias($param);
     return GetView(ParseViewParameters($param));
   }
 
-  # mailto link
-  # prints: "begin<a href="mailto:$col">field/text</a>"
-  # if no $col is filled, prints "else_fileld/text"
-  # param: begin:field/text:else_fileld/text
-  # linktype: mailto/href (default is mailto)
+  // mailto link
+  // prints: "begin<a href="mailto:$col">field/text</a>"
+  // if no $col is filled, prints "else_fileld/text"
+  // param: begin:field/text:else_fileld/text
+  // linktype: mailto/href (default is mailto)
   function f_m($col, $param="") {
     $p = ParamExplode($param);
     list ($pbegin, $pfield, $pelse, $ptype, $padd, $phide) = $this->subst_aliases($p);
 
-    if( !$this->getval($col) ) {
+    if ( !$this->getval($col) ) {
         return $pelse ? $pbegin.$pelse : "";
     }
     if ( $this->columns->is_set($p[1]) ) {
@@ -1090,11 +1088,11 @@ function RSS_restrict($txt, $len) {
     elseif ($case == "lower")	$ret = strtolower ($ret);
     elseif ($case == "first")   $ret = ucwords (strtolower ($ret));
 
-    if( $addstr AND (strlen($ret) <> strlen($text)))  $ret .= $addstr;
+    if ( $addstr AND (strlen($ret) <> strlen($text)))  $ret .= $addstr;
     return $ret;
   }
 
-  # live checkbox -- updates database immediately on clicking without reloading the page
+  // live checkbox -- updates database immediately on clicking without reloading the page
   function f_k($col, $param = "") {
     global $AA_INSTAL_PATH;
     $short_id = $this->getval("short_id........");
@@ -1118,30 +1116,30 @@ function RSS_restrict($txt, $len) {
     }
   }
 
-  # transformation function - transforms strings to another strings
-  # Parameters: <from1>:<to1>:<from2>:<to2>:<default>
-  #   if $col==<from1> the function returns <to1>
-  #   if $col==<from2> the function returns <to2>
-  #   else it returns <dafault>
-  #   <to1>, <to2>, ... and <default> can be field ids
+  // transformation function - transforms strings to another strings
+  // Parameters: <from1>:<to1>:<from2>:<to2>:<default>
+  //   if $col==<from1> the function returns <to1>
+  //   if $col==<from2> the function returns <to2>
+  //   else it returns <dafault>
+  //   <to1>, <to2>, ... and <default> can be field ids
   function f_x($col, $param="") {
     $p = $this->subst_aliases( ParamExplode($param) );
     $to = (int) floor(count($p)/2);
     $colvalue = $this->getval($col);
 
-    for( $i=0; $i < $to; $i++ ) {
+    for ( $i=0; $i < $to; $i++ ) {
       $first = $i*2;
       $second = $first +1;
-      if( ($p[$first] != '') AND ereg( $p[$first] , $colvalue ) )
+      if ( ($p[$first] != '') AND ereg( $p[$first] , $colvalue ) )
         return $p[$second];
     }
-      # the last option can be definned as default
+      // the last option can be definned as default
     return $p[$second+1];
   }
 
-  # prints 'New' (or something similar) for new items
-  # Parameters: <time_in_minutes>:<text_to_print_if_newer>:<text_to_print_if_older>
-  #   (this alias will be probably used with expiry date field)
+  // prints 'New' (or something similar) for new items
+  // Parameters: <time_in_minutes>:<text_to_print_if_newer>:<text_to_print_if_older>
+  //   (this alias will be probably used with expiry date field)
   function f_o($col, $param="") {
     $p = $this->subst_aliases( ParamExplode($param) );
     return ((time() - $this->getval($col)) < $p[0]*60) ? $p[1] : $p[2];  // time in minutes
@@ -1207,10 +1205,10 @@ function RSS_restrict($txt, $len) {
         $way = explode(',', $path);
         $start_count = $start;
         $delimeter = '';
-        if( isset($way) AND is_array($way)) {
+        if ( isset($way) AND is_array($way)) {
             $last = $linklast ? '' : end($way);
             foreach ( $way as $catid ) {
-                if($start_count-- > 0)  continue;
+                if ($start_count-- > 0)  continue;
                 $cat_url = con_url( $url_base, 'cat='.$catid.$urlprm);
                 $ret .= ( ( $catid == $last ) ?  // do not make link for last category
                     $delimeter.$translate[$catid]['name'] :
@@ -1223,7 +1221,7 @@ function RSS_restrict($txt, $len) {
   }
 
 
-  # ----------------- alias function definition end --------------------------
+  // ----------------- alias function definition end --------------------------
 
   // function shows full text navigation (back, home)
   function show_navigation($home_url) {

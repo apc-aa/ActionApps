@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."constants_param_wizard.php3";
+require_once $GLOBALS['AA_INC_PATH']."constants_param_wizard.php3";
 
 function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
   global $sess, $uid;
@@ -66,7 +66,7 @@ function PrintRule($rule) {
     case 'fill':
     case 'hide&fill':
     case 'predefine':
-      $fnc = ParseFnc(substr($rule['value'],2));  # all default should have fnc:param format
+      $fnc = ParseFnc(substr($rule['value'],2));  // all default should have fnc:param format
       PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name'],
                    $INPUT_DEFAULT_TYPES[$fnc['fnc']], $fnc['param'],
                    ($rule['value'][0] == '1')? 'HTML' : "" );
@@ -79,13 +79,13 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
   echo "<tr class=tabtxt>
          <td>". $PROPERTY_TYPES[$rule]. "<input type=hidden name=prop$n value=$rule></td>
          <td>";
-  if($sfld)
+  if ($sfld)
     FrmSelectEasy("fld$n", $lookup_fields, "");
    else
     echo "&nbsp;";
   echo " </td>
          <td>";
-  if($func)
+  if ($func)
     FrmSelectEasy("fnc$n", $func, "");
    else
     echo "&nbsp;";

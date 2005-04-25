@@ -57,18 +57,18 @@ function Myaddslashes($val, $n=1) {
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
     for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
     for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
       $$k = Myaddslashes($v);
-  if( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
     for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
       $$k = Myaddslashes($v);
 }
 
-if($encap == "false")    // used in itemedit for anonymous form
+if ($encap == "false")    // used in itemedit for anonymous form
   $encap = false;        // it must be here, because the variable is rewriten
                          // if the get_magic_quotes_gpc()==false (see above)
 
@@ -76,7 +76,7 @@ if($encap == "false")    // used in itemedit for anonymous form
 $config_path = ( $directory_depth == 'base' ) ? "./include/config.php3" :  // base (for live_checkbox.php3)
                                "$directory_depth../include/config.php3";
 require_once $config_path;
-require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
 
 // should be set in config.php3
 if (!$AA_INSTAL_PATH) {
@@ -88,12 +88,12 @@ if (!$AA_BASE_PATH)
     $AA_BASE_PATH = substr($AA_INC_PATH, 0, -8);
 
 // anonymous authentication - locauth calls extauthnobody
-if($free)
+if ($free)
     $nobody = true;
 
-require_once $GLOBALS["AA_INC_PATH"] . "locauth.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "scroller.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "perm_core.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "locauth.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "scroller.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "perm_core.php3";
 
 // save before getting the session stored variables
 if ($change_id)
@@ -101,16 +101,16 @@ if ($change_id)
 else $pass_sliceid = $slice_id;
 
 // Load the session stored variables.
-if( $encap ) // we can't use AA_CP_Session - it uses more Header information
+if ( $encap ) // we can't use AA_CP_Session - it uses more Header information
      page_open(array("sess" => "AA_SL_Session", "auth" => "AA_CP_Auth"));
 else page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
 
 // anonymous login
-if($nobody) {
+if ($nobody) {
     $username = $free;
     $password = $freepwd;
     $auth->auth["uid"] = $auth->auth_validatelogin();
-    if( !$auth->auth["uid"] ) {
+    if ( !$auth->auth["uid"] ) {
         echo _m("Either your username or your password is not valid.");
         exit;
     }
@@ -121,14 +121,14 @@ $auth->relogin_if($relogin);
 
 $last_slice_id = $slice_id;
 
-if( $pass_sliceid )
+if ( $pass_sliceid )
     $slice_id = $pass_sliceid;
 
-if( $no_slice_id )
+if ( $no_slice_id )
     unset($slice_id);
 
-require_once $GLOBALS["AA_INC_PATH"] . "util.php3";  // must be after language include because of lang constants in util.php3
-require_once $GLOBALS["AA_INC_PATH"] . "event.class.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "util.php3";  // must be after language include because of lang constants in util.php3
+require_once $GLOBALS['AA_INC_PATH'] . "event.class.php3";
 
 /* It is not a good idea to store $slice_id, it made some damage in AA
    installations already. But for historical reasons before somebody ensures
@@ -142,13 +142,13 @@ $sess->register("r_hidden");
 // sometimes we need not to unset hidden - popup for related stories ...
 // only acceptor can read values. For others they are destroyed.
 $my_document_uri = $DOCUMENT_URI ? $DOCUMENT_URI : $PHP_SELF;
-if( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_document_uri))
+if ( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_document_uri))
     unset( $r_hidden );
 
 $after_login = !$no_slice_id && !$slice_id;
 $perm_slices = GetUserSlices();
 
-if( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_login ) {
+if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_login ) {
     MsgPage($sess->url(self_base())."index.php3",
         _m("You do not have permission to edit items in the slice").": ".sliceid2name($slice_id),"standalone");
     exit;
@@ -164,9 +164,9 @@ srand((double)microtime()*1000000);
 
 // Create g_modules: a global array which holds user editable modules
 $db->query("SELECT id, name, type, deleted FROM module ORDER BY name");
-while( $db->next_record() ) {
+while ($db->next_record()) {
     $my_slice_id = unpack_id128($db->f('id'));
-    if (IsSuperadmin() OR (!$db->f('deleted') AND $perm_slices[$my_slice_id])) {
+    if (IsSuperadmin() OR ( !$db->f('deleted') AND $perm_slices[$my_slice_id] )) {
         $g_modules[$my_slice_id] = array(
             'name' => $db->f('name'),
             'type' => $MODULES[$db->f('type')] ? $db->f('type') : 'S');
@@ -174,7 +174,7 @@ while( $db->next_record() ) {
 }
 
 if (!$no_slice_id) {
-    if( !is_array($g_modules)) {
+    if (!is_array($g_modules)) {
         MsgPage($sess->url(self_base())."index.php3", _m("No slice found for you"), "standalone");
         exit;
     }
@@ -197,13 +197,12 @@ if (!$no_slice_id) {
     // These variables have names of $r_ but are not session stored
     // because this is unnecessary: their evaluation is very fast.
     $r_slice_headline = $db->f("name");
-    $r_lang_file = $db->f('lang_file');
+    $r_lang_file      = $db->f('lang_file');
     $r_slice_view_url = $db->f('slice_url') ? $db->f('slice_url')
         : $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false";
 
-    $module_type = $g_modules[$slice_id]['type'];
-    $module_type_changed = $after_login
-        || $g_modules[$last_slice_id]['type'] != $module_type;
+    $module_type         = $g_modules[$slice_id]['type'];
+    $module_type_changed = $after_login || $g_modules[$last_slice_id]['type'] != $module_type;
 
 /* If we switch to another module type, we try whether the requested file
    exists in the module direcory and if not, we go to module's index.php3 page.
@@ -212,7 +211,7 @@ if (!$no_slice_id) {
    for very different behavior and that this would be a bit confusing when
    using the Select Slice box.
 */
-    if( $module_type_changed && !$jumping ) {
+    if ( $module_type_changed && !$jumping ) {
         $page = filename ($PHP_SELF);
         $hdd_dir = $AA_INC_PATH."../".$MODULES[$module_type]['directory'];
         $web_dir = $AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
@@ -227,10 +226,7 @@ if (!$no_slice_id) {
     }
 }
 
-if( !$require_default_lang AND ($r_lang_file != "") ) {
-    // do not delete the curly braces - include in condition statement must be in braces!
-    bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".$r_lang_file);
-}
-else bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".DEFAULT_LANG_INCLUDE);
+$mgettext_file = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_file : DEFAULT_LANG_INCLUDE;
+bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/$mgettext_file");
 
 ?>

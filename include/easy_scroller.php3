@@ -1,4 +1,4 @@
-<?php # -*-mode: Fundamental; tab-width: 4; -*-
+<?php
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -100,7 +100,7 @@ class easy_scroller {
      *  labels as keys, query string fragments a values
      */
     function navarray() {
-        if(!$this->itmcnt) return array();
+        if (!$this->itmcnt) return array();
         $pgcnt = $this->pageCount();
         $mp    = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
         $from  = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
@@ -110,7 +110,7 @@ class easy_scroller {
         }
         if ($from > 1) { $arr["1"]   = $this->Absolute(1); }
         if ($from > 2) { $arr[".. "] = ""; }
-        for($i = $from; $i <= $to; $i++) {
+        for ($i = $from; $i <= $to; $i++) {
             $arr[(string)$i] = ($i==$this->current ? "" : $this->Absolute($i));
         }
         if ($to < $pgcnt - 1) { $arr[" .."] = ""; }
@@ -216,7 +216,7 @@ class view_scroller {
     function get($begin='', $end='', $add='class="scroller"', $nopage='') {
         $url = con_url($this->urldefault,"scrl=".$this->id);
 
-        if( $GLOBALS['apc_state'] ) {
+        if ($GLOBALS['apc_state']) {
             $url .= '&amp;apc='.$GLOBALS['apc_state']['state'];
         }
         $i   = 0;
@@ -225,7 +225,7 @@ class view_scroller {
         if ( count($arr) <= 1 ) return $nopage;
 
         while (list($k, $v) = each($arr)) {
-            if($i++) { $out .= " | "; }
+            if ($i++) { $out .= " | "; }
             $out .= ( $v ? "<a href=\"$url&amp;$v\" $add>$k</a>" : $k);
         }
 

@@ -19,7 +19,7 @@
 /* First you need to add variables from URL --- this is not automatical when including PHP from .shtml 
     The function add_vars is copied from in aaa/include/util.php3 */
 
-# skips terminating backslashes
+// skips terminating backslashes
 function DeBackslash($txt) {
 	return str_replace('\\', "", $txt);        // better for two places
 }   
@@ -42,12 +42,12 @@ function add_vars($query_string="", $debug="") {
     unset($lvalue); 
     unset($value); 
     $pos = strpos($a[$i], "=");
-    if($pos) {
+    if ($pos) {
       $lvalue = substr($a[$i],0,$pos);
       $value  = urldecode (DeBackslash(substr($a[$i],$pos+1)));
     }  
     if (!ERegI("^(.+)\[(.*)\]", $lvalue, $c))   // is it array variable[]
-      $GLOBALS[urldecode (DeBackslash($lvalue))]= $value;   # normal variable
+      $GLOBALS[urldecode (DeBackslash($lvalue))]= $value;   // normal variable
     else {
       $index1 = urldecode (DeBackslash($c[2]));
       if (ERegI("^(.+)\[(.*)\]", $c[1], $d)) { // for double array variable[][]
@@ -55,7 +55,7 @@ function add_vars($query_string="", $debug="") {
         $varname = urldecode (DeBackslash($d[1]));  
       } else 
         $varname  = urldecode (DeBackslash($c[1]));  
-      if( isset($index2) ) 
+      if ( isset($index2) ) 
         $GLOBALS[$varname][$index2][$index1] = $value;
        else 
         $GLOBALS[$varname][$index1] = $value;

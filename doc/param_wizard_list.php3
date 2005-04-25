@@ -29,7 +29,7 @@ http://www.apc.org/
 require_once "../include/config.php3";
 require_once "../include/util.php3";
 require_once "../include/mgettext.php3";
-bind_mgettext_domain ("../include/lang/".get_mgettext_lang()."_param_wizard_lang.php3");
+bind_mgettext_domain("../include/lang/".get_mgettext_lang()."_param_wizard_lang.php3");
 require_once "../include/constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -41,7 +41,7 @@ $list = $$mylist;
 
 $lists = array ("INPUT_TYPES", "FIELD_FUNCTIONS", "INSERT_TYPES", "DEFAULT_VALUE_TYPES");
 
-if (!is_array ($list)) {
+if (!is_array($list)) {
     echo "<h1>"._m("Choose a Parameter Wizard")."</h1>";
     echo '<FORM action="param_wizard_list.php3" method="get">';
     echo '<SELECT name=mylist MULTIPLE size="'.count($list).'" style=".">';
@@ -88,7 +88,7 @@ while (list ($name, $item) = each ($list["items"])) {
     echo "<h2 id=$name>$name: $item[name]</h2>\n";
     echo processSlashes ($item[desc]). "<br>\n";
     $params = $item["params"];
-    if (is_array ($params)) {
+    if (is_array($params)) {
         echo "<br>"._m("Parameters:");
         echo "<TABLE border=1 cellpadding=3>";
         echo "<TR>"
@@ -118,12 +118,12 @@ while (list ($name, $item) = each ($list["items"])) {
 
 echo "</body></html>";
 
-function nl ($s) { return $s ? $s : "&nbsp;"; }
+function nl($s) { return $s ? $s : "&nbsp;"; }
 
-function processSlashes ($s)
+function processSlashes($s)
 {
-    $s = str_replace ("\\<", HTMLSpecialChars("<"), $s);
-    $s = str_replace ("\\>", HTMLSpecialChars(">"), $s);
+    $s = str_replace("\\<", HTMLSpecialChars("<"), $s);
+    $s = str_replace("\\>", HTMLSpecialChars(">"), $s);
     return $s;
 }
 ?>

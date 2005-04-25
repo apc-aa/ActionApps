@@ -102,7 +102,7 @@ class manager extends storable_class {
                               $settings['searchbar']['hint'],
                               $settings['searchbar']['hint_url']);
             $this->searchbar_funct = $settings['searchbar']['function'];
-            if( isset($settings['searchbar']['default_bookmark']) ) {
+            if ( isset($settings['searchbar']['default_bookmark']) ) {
                 $this->searchbar->setFromBookmark($settings['searchbar']['default_bookmark']);
             }
         }
@@ -115,7 +115,7 @@ class manager extends storable_class {
         $this->scroller = $scroller;
 
         $this->messages = $settings['messages'];
-        if( !isset($this->messages['noitem_msg']) ) {
+        if ( !isset($this->messages['noitem_msg']) ) {
             // could be redefined by view (see ['itemview']['manager_vid'])
             $this->messages['noitem_msg'] =
                   get_if($settings['itemview']['format']['noitem_msg'],
@@ -152,7 +152,7 @@ class manager extends storable_class {
             if ( $view_info AND !($view_info['deleted']>0) ) {
                 $format_strings = GetViewFormat($view_info);
                 $this->messages['noitem_msg'] = $view_info['noitem_msg'];
-                if( isset($this->scroller) )
+                if ( isset($this->scroller) )
                     $this->scroller->metapage = $view_info['listlen'];
             }
         } else {
@@ -178,7 +178,7 @@ class manager extends storable_class {
         // get default number of listed items from user's profile
         $this->setListlen( $profile->getProperty('listlen') );
 
-        if( $this->searchbar ) {
+        if ( $this->searchbar ) {
             $this->searchbar->setFromProfile($profile);
         }
     }
@@ -188,7 +188,7 @@ class manager extends storable_class {
      * Get conditios (conds[] array) for *_QueryIDs from scroller
      */
     function getConds() {
-        if( $this->searchbar )
+        if ( $this->searchbar )
             return $this->searchbar->getConds();
         return false;
     }
@@ -197,14 +197,14 @@ class manager extends storable_class {
      * Get sort[] array for *_QueryIDs from scroller
      */
     function getSort() {
-        if( $this->searchbar )
+        if ( $this->searchbar )
             return $this->searchbar->getSort();
         return false;
     }
 
     /** Resets the searchbar (both - Search as well as Order)  */
     function resetSearchBar() {
-        if( $this->searchbar )
+        if ( $this->searchbar )
             $this->searchbar->resetSearchAndOrder();
     }
 
@@ -215,7 +215,7 @@ class manager extends storable_class {
      * for description @see searchbar.class.php3
      */
     function addOrderBar($sort) {
-        if( $this->searchbar )
+        if ( $this->searchbar )
             $this->searchbar->addOrder($sort);
     }
 
@@ -227,7 +227,7 @@ class manager extends storable_class {
      * for description @see searchbar.class.php3
      */
     function addSearchBar($conds) {
-        if( $this->searchbar )
+        if ( $this->searchbar )
             $this->searchbar->addSearch($conds);
     }
 
@@ -290,7 +290,7 @@ class manager extends storable_class {
             $function   = $action2do['function'];   // programmer defined action to do
             $func_param = $action2do['func_param']; // aditional parameter for the 'function'
             if ( $function AND isset($chb) AND is_array($chb) ) {
-                if( $action2do['type'] == 'one_by_one' ) {
+                if ( $action2do['type'] == 'one_by_one' ) {
                     // call action-function for each checked item
                     foreach ( $chb as $item_id => $foo ) {
                         $this->msg[] = $function($func_param, $item_id, $_POST['akce_param']);
@@ -360,7 +360,7 @@ class manager extends storable_class {
         $sess->hidden_session();
 
         $ids_count = $zids->count();
-        if( $ids_count == 0 ) {
+        if ( $ids_count == 0 ) {
             echo "<div class=tabtxt>". $this->messages['noitem_msg']. "</div></form><br>";
             return $ids_count;
         }
@@ -394,9 +394,9 @@ class manager extends storable_class {
                     if ( $actions_perm_function( $action ) ) {
                         $options .= '<option value="'. htmlspecialchars($action).'"> '.
                                                        htmlspecialchars($param['name'] . ($param['open_url'] ? '...' : ''));
-                        if( $param['open_url'] )  { // we have to open window
+                        if ( $param['open_url'] )  { // we have to open window
                             $javascr .= "\n markedactionurl[$i] = '". $param['open_url'] ."';";
-                            if( $param['open_url_add'] )  { // we have to open window
+                            if ( $param['open_url_add'] )  { // we have to open window
                                 $javascr .= "\n markedactionurladd[$i] = '". $param['open_url_add'] ."';";
                             }
                         }

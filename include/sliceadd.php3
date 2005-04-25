@@ -23,25 +23,25 @@ function cmp ($a, $b) {
   return strcmp($a["name"], $b["name"]);
 }
 
-if(!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
+if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD)) {
     MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to add slice"), "standalone");
     exit;
 }
 
 $SQL = "SELECT name, id, template, lang_file FROM slice WHERE deleted<>1";
 $db->query($SQL);
-while( $db->next_record() ) {
+while ( $db->next_record() ) {
     if ( $db->f(template) ) {
-        $templates[unpack_id128( $db->f(id) )][value] = unpack_id128( $db->f(id) ) ."{". $db->f(lang_file);
+        $templates[unpack_id128( $db->f(id) )]['value'] = unpack_id128( $db->f(id) ) ."{". $db->f(lang_file);
         $templates[unpack_id128( $db->f(id) )][name]  = $db->f(name);
     }
     else {
-        $temp_slices[unpack_id128( $db->f(id) )][value] = unpack_id128( $db->f(id) ) ."{". $db->f(lang_file);
+        $temp_slices[unpack_id128( $db->f(id) )]['value'] = unpack_id128( $db->f(id) ) ."{". $db->f(lang_file);
         $temp_slices[unpack_id128( $db->f(id) )][name]  = $db->f(name);
     }
 }
 
-require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
 /*echo '
     <table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">
@@ -53,19 +53,19 @@ require_once $GLOBALS["AA_INC_PATH"]."formutil.php3";
 
 FrmTabCaption(_m("Slice"));
 
-if( isset( $templates ) AND is_array( $templates ) AND
+if ( isset( $templates ) AND is_array( $templates ) AND
     isset( $temp_slices ) AND is_array( $temp_slices )
     ){
       echo "<tr><td class=tabtxt colspan=4>" . _m("To create the new Slice, please choose a template.\n        The new slice will inherit the template's default fields.  \n        You can also choose a non-template slice to base the new slice on, \n        if it has the fields you want.") . "</TD></TR>";
     }
 
-  if( isset( $templates ) AND is_array( $templates )) {
+  if ( isset( $templates ) AND is_array( $templates )) {
     usort($templates, "cmp");
     echo "<tr><td width=\"20%\" class=tabtxt><b>". _m("Template") ."</b>";
     echo "</td><td width=\"60%\"><select name=\"template_id\">";
     reset($templates);
-    while(list(,$v) = each($templates)) {
-      echo "<option value=\"". htmlspecialchars($v[value])."\"";
+    while (list(,$v) = each($templates)) {
+      echo "<option value=\"". htmlspecialchars($v['value'])."\"";
       echo "> ". htmlspecialchars($v[name]) ." </option>";
     }
     echo '</select></td><td width=\"20%\">';
@@ -77,18 +77,18 @@ if( isset( $templates ) AND is_array( $templates ) AND
     echo "<tr><td class=tabtxt colspan=2>". _m("No templates") ."</td></tr>";
 
 
-  if( isset( $temp_slices ) AND is_array( $temp_slices )) {
+  if ( isset( $temp_slices ) AND is_array( $temp_slices )) {
     usort($temp_slices, "cmp");
     $out =  "<tr><td class=tabtxt><b>". _m("Slice") ."</b>";
     $out .= "</td>\n <td><select name=\"template_id2\">";
     reset($temp_slices);
-    while(list(,$v) = each($temp_slices)) {
-      if( substr( $v['value'], 0, 32 ) == '41415f436f72655f4669656c64732e2e' )
+    while (list(,$v) = each($temp_slices)) {
+      if ( substr( $v['value'], 0, 32 ) == '41415f436f72655f4669656c64732e2e' )
         continue;    // 'Action Aplication Core' slice - do not use as template
-      $slice_sb .= "<option value=\"". htmlspecialchars($v[value])."\"";
+      $slice_sb .= "<option value=\"". htmlspecialchars($v['value'])."\"";
       $slice_sb .= "> ". htmlspecialchars($v[name]) ." </option>";
     }
-    if( $slice_sb ) {
+    if ( $slice_sb ) {
       echo $out . $slice_sb . '</select></td><td>';
       if ($wizard)
           echo '<input type="radio" name="template_slice_radio" value="slice" checked>';

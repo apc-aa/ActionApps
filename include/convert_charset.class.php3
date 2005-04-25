@@ -9,12 +9,12 @@
 
 // $convert_tables_path could be specified also before including this script
 // it is usen in /misc/charset/convert.php3 script, where config.php3
-// is not used (so we can't use $GLOBALS["AA_INC_PATH"]
+// is not used (so we can't use $GLOBALS['AA_INC_PATH']
 if ( !$convert_tables_path ) {
-    $convert_tables_path = $GLOBALS["AA_INC_PATH"]."ConvertTables/";
+    $convert_tables_path = $GLOBALS['AA_INC_PATH']."ConvertTables/";
 }
 
-define (CONVERT_TABLES_DIR, $GLOBALS["AA_INC_PATH"]."ConvertTables/");
+define (CONVERT_TABLES_DIR, $GLOBALS['AA_INC_PATH']."ConvertTables/");
 define (DEBUG_MODE, -1);
 
 /**
@@ -275,7 +275,7 @@ class ConvertCharset {
      * - The files with encoding tables have to be complet (Non of chars can be missing, unles you are sure you are not going to use it)
      *
      * "Format A" encoding file, if you have to build it by yourself should aplly these rules:
-     * - you can comment everything with #
+     * - you can comment everything with //
      * - first column contains 1 byte chars in hex starting from 0x..
      * - second column contains unicode equivalent in hex starting from 0x....
      * - then every next column is optional, but in "Format A" it should contain unicode char name or/and your own comment
@@ -303,7 +303,7 @@ class ConvertCharset {
     function MakeConvertTable($FirstEncoding, $SecondEncoding = "")
     {
         $ConvertTable = array();
-        for($i = 0; $i < func_num_args(); $i++) {
+        for ($i = 0; $i < func_num_args(); $i++) {
             /**
             * Because func_*** can't be used inside of another function call
             * we have to save it as a separate value.
@@ -314,12 +314,12 @@ class ConvertCharset {
                 exit;
             }
             $FileWithEncTabe = fopen(CONVERT_TABLES_DIR . $FileName, "r") or die(); //This die(); is just to make sure...
-            while(!feof($FileWithEncTabe)) {
+            while (!feof($FileWithEncTabe)) {
                 /**
                 * We asume that line is not longer
                 * than 1024 which is the default value for fgets function
                 **/
-                if($OneLine=trim(fgets($FileWithEncTabe))) {
+                if ($OneLine=trim(fgets($FileWithEncTabe))) {
                     /**
                     * We don't need all comment lines. I check only for "#" sign, because
                     * this is a way of making comments by unicode.org in thair encoding files
@@ -431,7 +431,7 @@ class ConvertCharset {
                      if (in_array($HexChar, $CharsetTable[$FromCharset])) {
                          $UnicodeHexChar = array_search($HexChar, $CharsetTable[$FromCharset]);
                          $UnicodeHexChars = explode("+",$UnicodeHexChar);
-                         for($UnicodeHexCharElement = 0; $UnicodeHexCharElement < count($UnicodeHexChars); $UnicodeHexCharElement++) {
+                         for ($UnicodeHexCharElement = 0; $UnicodeHexCharElement < count($UnicodeHexChars); $UnicodeHexCharElement++) {
                              if (array_key_exists($UnicodeHexChars[$UnicodeHexCharElement], $CharsetTable[$ToCharset])) {
                                  if ($this->Entities == true) {
                                      $NewString .= $this->UnicodeEntity($this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement]));
@@ -461,7 +461,7 @@ class ConvertCharset {
                          * 0x007A+0x0142+0x2034 (that string means nothing, it just shows the possibility...)
                          **/
                          $UnicodeHexChars = explode("+",$UnicodeHexChar);
-                         for($UnicodeHexCharElement = 0; $UnicodeHexCharElement < count($UnicodeHexChars); $UnicodeHexCharElement++) {
+                         for ($UnicodeHexCharElement = 0; $UnicodeHexCharElement < count($UnicodeHexChars); $UnicodeHexCharElement++) {
                              if ($this->Entities == true) {
                                  $NewString .= $this->UnicodeEntity($this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement]));
                              }

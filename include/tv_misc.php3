@@ -22,7 +22,7 @@ http://www.apc.org/
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tableview.html
 
-require_once $GLOBALS["AA_INC_PATH"]."tv_email.php3";
+require_once $GLOBALS['AA_INC_PATH']."tv_email.php3";
 
 // Settings for miscellaneous table views (see doc/tabledit.html for more info)
 /** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */

@@ -829,7 +829,7 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
         "desc"=>_m("if string is shorted, <i>add string</i> is appended to the string (probably something like [...])"),
         "type"=>"STR",
         "example"=>"..."))),
-"f_k"=>array("name" => _m("Auto Update Checkbox")),  #auto update check box
+"f_k"=>array("name" => _m("Auto Update Checkbox")),  //auto update check box
 "f_l"=>array("name"=>_m("linked field"),
     "desc"=>_m("prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>"),
     "params"=>array(
@@ -1063,7 +1063,7 @@ $TRANS_ACTIONS["items"]["web"] = array (
     "desc"=>_m("Adds 'http://' prefix to the field if not beginning with 'http://' and not empty.")
     );
 
-$TRANS_ACTIONS["items"]["value"] = array (
+$TRANS_ACTIONS["items"]['value'] = array (
     "name"=>_m("Store parameter"),
     "desc"=>_m("Store parameter instead of the input field") ,
     "params"=>array(

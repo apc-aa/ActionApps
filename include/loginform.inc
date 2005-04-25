@@ -2,7 +2,7 @@
 bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".DEFAULT_LANG_INCLUDE);
 require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 
-HTMLPageBegin();
+HtmlPageBegin();
 
 echo '<title>APC ActionApps - '.ORG_NAME.'</title>';
 ?>

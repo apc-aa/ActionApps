@@ -19,22 +19,22 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# Classes for manipulating views,
-# viewobj has static info about views, not anything dependent on parameters
-#
-# Author and Maintainer: Mitra mitra@mitra.biz
-#
-# And yes, I'll move the docs to phpDocumentor as soon as someone explains how
-# to use it!
-#
-# It is intended - and you are welcome - to extend this to bring into
-# one place the functions for working with views.
-#
-# A design goal is to use lazy-evaluation wherever possible, i.e. to only
-# go to the database when something is needed.
+// Classes for manipulating views,
+// viewobj has static info about views, not anything dependent on parameters
+//
+// Author and Maintainer: Mitra mitra@mitra.biz
+//
+// And yes, I'll move the docs to phpDocumentor as soon as someone explains how
+// to use it!
+//
+// It is intended - and you are welcome - to extend this to bring into
+// one place the functions for working with views.
+//
+// A design goal is to use lazy-evaluation wherever possible, i.e. to only
+// go to the database when something is needed.
 
-#require_once "../include/config.php3";
-//require_once $GLOBALS["AA_INC_PATH"]."locsess.php3"; #DB_AA etc
+//require_once "../include/config.php3";
+//require_once $GLOBALS['AA_INC_PATH']."locsess.php3"; //DB_AA etc
 
 class view {
     var $id;
@@ -89,7 +89,7 @@ class views {
     }
 
     function GetViewInfo($vid) {
-        if(!isset($this->a[$vid]))
+        if (!isset($this->a[$vid]))
             $this->a[$vid] = new view($vid);
         if (! $this->a[$vid])
             return null;
@@ -101,7 +101,7 @@ $allviews = new views();
 function VIEWS_xml_unserialize($n,$a) {
     $vs = new views();
     $vs->a = $a;
-    #huhl("created VIEWS ",$vs);
+    //huhl("created VIEWS ",$vs);
     return $vs;
 }
 function GetViewInfo($vid) {
@@ -125,13 +125,13 @@ function GetViewsWhere($sql="") {
         $a["$id"] = &$allviews->a[$id];
     }
     freeDB($db);
-    #huhl("VO:GVW:",$a);
+    //huhl("VO:GVW:",$a);
     return $a;
 }
 
 
 
-#$foo = GetViewInfo(18);
-#huhl("VO:GVI:",$foo,$allviews);
+//$foo = GetViewInfo(18);
+//huhl("VO:GVI:",$foo,$allviews);
 
 ?>

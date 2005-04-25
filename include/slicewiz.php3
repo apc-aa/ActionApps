@@ -1,5 +1,5 @@
 <?php
-require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
+require_once $GLOBALS['AA_INC_PATH']."mail.php3";
 
 /*  Assigns user privileges and sends a welcome email, if the email address is filled.
     Returns error description or empty string. */
@@ -9,7 +9,7 @@ function add_user_and_welcome ($welcome_id, $user_login, $slice_id, $role) {
 
     // 1. Assign user privileges
     $userinfo = find_user_by_login ($user_login); 
-    if (!is_array ($userinfo) || count ($userinfo) != 1) 
+    if (!is_array($userinfo) || count ($userinfo) != 1) 
         return _m("User not found");              
         
     reset ($userinfo);

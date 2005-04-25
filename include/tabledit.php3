@@ -534,7 +534,7 @@ class tabledit {
             }
         }
         $srch = $this->cmd["search"];
-        FrmSelectEasy ("cmd[".$this->viewID."][search][field]", $options, $srch["field"]);
+        FrmSelectEasy("cmd[".$this->viewID."][search][field]", $options, $srch["field"]);
         echo "&nbsp;<INPUT name='cmd[".$this->viewID."][search][value]' type=text size=30 "
                 ."value=\"". magic_strip($srch['value'])."\">$tdd"
             ."$td".$searchimage.$tdd."</TR>";

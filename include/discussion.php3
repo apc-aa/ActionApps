@@ -19,11 +19,11 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# discussion.php3 - discussion utility functions
+// discussion.php3 - discussion utility functions
 
-require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
+require_once $GLOBALS['AA_INC_PATH']."mail.php3";
 
-# discussion images
+// discussion images
 define ("D_EXPAND_IMG", 0);
 define ("D_HLINE_IMG", 1);
 define ("D_VLINE_IMG", 2);
@@ -53,7 +53,7 @@ function GetImageSrc($img) {
   return $imgsrc[$img];
 }
 
-# get discussion content from database belong to item_id
+// get discussion content from database belong to item_id
 function GetDiscussionContent($item_id, $ids="", $vid="",$state=true, $order='timeorder', $html_flag=true, $clean_url="") {
     if ( !$item_id ) {
         return false;
@@ -80,7 +80,7 @@ function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
 function GetDiscussionContentSQL($SQL, $item_id, $ids, $vid, $state, $html_flag, $clean_url) {
     global $db;
     $db->tquery($SQL);
-    while($db->next_record()) {
+    while ($db->next_record()) {
         $d_id = unpack_id128($db->f('id'));
         if (!$ids || $ids["x".$d_id]) {
             $col["d_id............"][0]['value'] = $d_id;
@@ -113,7 +113,7 @@ function GetDiscussionContentSQL($SQL, $item_id, $ids, $vid, $state, $html_flag,
 
 // set the right content for a checkbox
 function SetCheckboxContent(&$content, $d_id, $cnt) {
-  $content[$d_id]["d_checkbox......"][0][value] =
+  $content[$d_id]["d_checkbox......"][0]['value'] =
     "<input type=\"checkbox\" name=c_".$cnt." ><input type=hidden name=h_".$cnt." value=x".$d_id."> ";
 }
 
@@ -127,7 +127,7 @@ function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
   else {
     $imgs = PrintImg("blank.gif",count($images)*15, 21, 'abs');
   }
-  $content[$d_id]["d_treeimages...."][0][value] = $imgs;
+  $content[$d_id]["d_treeimages...."][0]['value'] = $imgs;
 }
 
 function GetButtons($empty, $script_loc) {
@@ -140,7 +140,7 @@ function GetButtons($empty, $script_loc) {
 }
 
 function GetDiscussionAliases() {
-  #  Standard aliases
+  //  Standard aliases
   $aliases["_#SUBJECT_"] = GetAliasDef("f_h",          "d_subject.......", _m("Alias for subject of the discussion comment"));
   $aliases["_#BODY###_"] = GetAliasDef("f_t",          "d_body..........", _m("Alias for text of the discussion comment"));
   $aliases["_#AUTHOR#_"] = GetAliasDef("f_h",          "d_author........", _m("Alias for written by"));
@@ -200,7 +200,7 @@ function GetDiscussionTree(&$d_content) {
       continue;
     $id = $d_id;                                // searching approved parent disc. comment for $d_id
     do {
-      $id = $d_content[$id]["d_parent........"][0][value];
+      $id = $d_content[$id]["d_parent........"][0]['value'];
       if ($id == "0")
         break;
     } while ($d_content[$id]["hide"] == true);
@@ -270,7 +270,7 @@ function DeleteNode(&$tree, &$d_content, $d_id) {
 
   if (!$tree[$d_id])
     return;
-  $parent = $d_content[$d_id]["d_parent........"][0][value];
+  $parent = $d_content[$d_id]["d_parent........"][0]['value'];
 
   while (list ($child, ) = each($tree[$d_id])) {
     $db->tquery("UPDATE discussion SET parent='".($parent == "0" ? "" : q_pack_id($parent))."' WHERE id='".q_pack_id($child)."'");
@@ -285,7 +285,7 @@ function updateDiscussionCount($item_id) {
   $p_item_id = q_pack_id($item_id);
   $SQL= "SELECT * FROM discussion WHERE item_id='$p_item_id'";
   $db->tquery($SQL);
-  while($db->next_record()) {
+  while ($db->next_record()) {
     $all++;
     if ($db->f(state) == '1')    // hidden comment
       $hide++;
@@ -385,9 +385,9 @@ function send2mailList ($d_item_id, $new_id) {
             $db->next_record();
             $mail->setCharset($GLOBALS["LANGUAGE_CHARSETS"][substr($db->f("lang_file"),0,2)]);
             $mail->send(array($maillist));
-        } #view found
-      } # vid present
-    } # DiscussionMailList Field present
+        } //view found
+      } // vid present
+    } // DiscussionMailList Field present
 }
 
 ?>

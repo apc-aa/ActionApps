@@ -145,7 +145,7 @@ function Item_DeleteTrash($param, $item_arr, $akce_param) {
     $db->query("SELECT id FROM item
                WHERE status_code=3 AND slice_id = '". q_pack_id($slice_id) ."'");
     $items_to_delete = "";
-    while( $db->next_record() )
+    while ( $db->next_record() )
         $items_to_delete[] = $db->f("id");
 
 //mimo enabled -- problem?
@@ -171,9 +171,9 @@ function Item_Tab($value, $param) {
 
 function FeedAllItems($chb, $fields) {    // Feed all checked items
   global $db;
-  if( isset($chb) AND is_array($chb) ) {
+  if ( isset($chb) AND is_array($chb) ) {
     reset( $chb );
-    while( list($it_id,) = each( $chb ) ) {
+    while ( list($it_id,) = each( $chb ) ) {
       FeedItem( substr($it_id,1), $fields );       // substr removes first 'x'
     }
   }

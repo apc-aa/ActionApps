@@ -30,12 +30,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."auth.php3";
-require_once $GLOBALS["AA_INC_PATH"]."mailman.php3";
-require_once $GLOBALS["AA_INC_PATH"]."mail.php3";
+require_once $GLOBALS['AA_INC_PATH']."auth.php3";
+require_once $GLOBALS['AA_INC_PATH']."mailman.php3";
+require_once $GLOBALS['AA_INC_PATH']."mail.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/event.php3";
 //mimo add
-require_once $GLOBALS["AA_INC_PATH"]."mlx.php";
+require_once $GLOBALS['AA_INC_PATH']."mlx.php";
 
 
 /**
@@ -233,7 +233,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 
     // if new link type is not general (global) category or general category
     // was already set - return
-    if( !( trim($name)) OR trim($oldname) )
+    if ( !( trim($name)) OR trim($oldname) )
         return false;
 
     // get all informations about general categories
@@ -241,7 +241,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
              WHERE group_id='$LINK_TYPE_CONSTANTS'
                AND value='$name'";
     $db->tquery($SQL);
-    if( $db->next_record() ) {
+    if ( $db->next_record() ) {
         $general_cat = $db->Record;
     } else {
         return false;    // not general category - do not modify category set
@@ -265,7 +265,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // = categories and all subcategories - 1,2,33,88 => 1,2; 1,2,33; 1,2,33,88
     $final_categories = array();     // clear return categories
     if ( isset($ret_params) AND is_array($ret_params) ) {
-        foreach( $ret_params as $cid ) {
+        foreach ( $ret_params as $cid ) {
             $cpath = GetCategoryPath( $cid );
             if ( substr($cpath, 0, 4) != '1,2,' ) {
                 // category is not in 'Kormidlo' => do not add link to
@@ -298,8 +298,8 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 
     // go through desired categories and translate it, if we have to
     if ( isset($subcategories) AND isset($trans) ) {
-        foreach( $subcategories as $cid => $path ) {
-            foreach( $trans as $from => $to ) {
+        foreach ( $subcategories as $cid => $path ) {
+            foreach ( $trans as $from => $to ) {
                 if ( $path == $from ) {        // translate this category
                     $subcat_translated[GetCategoryFromPath($to)] = $to;
                     continue 2;  // next subcategory

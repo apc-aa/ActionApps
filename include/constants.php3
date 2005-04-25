@@ -19,18 +19,18 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
 
-#
-# Used constants. Do not edit if you are not developer.
-#
+//
+// Used constants. Do not edit if you are not developer.
+//
 
 /** Field definition shortcut (used in constants.php3 for CONSTANT_FILEDS) */
 function GetFieldDef( $name, $field, $operators='text', $table=false, $search_pri=false, $order_pri=false) {
     $ret = array('name' => $name, 'field' => $field, 'operators' => $operators);
-    if( $table )      $ret['table']      = $table;
-    if( $search_pri ) $ret['search_pri'] = $search_pri;  // searchbar priority (false = "do not show in searchbar")
-    if( $order_pri )  $ret['order_pri']  = $order_pri;   // orderbar  priority (false = "do not show in orderbar")
+    if ( $table )      $ret['table']      = $table;
+    if ( $search_pri ) $ret['search_pri'] = $search_pri;  // searchbar priority (false = "do not show in searchbar")
+    if ( $order_pri )  $ret['order_pri']  = $order_pri;   // orderbar  priority (false = "do not show in orderbar")
     return $ret;
 }
 
@@ -39,13 +39,13 @@ function GetAliasDef( $fce, $field='', $hlp='') {
     return array('fce' => $fce, 'param' => $field, 'hlp' => $hlp);
 }
 
-  # There we can mention $FIELD_TYPES, but they are not defined in this file,
-  # but in database as special slice with id 'AA_Core_Fields..'
+  // There we can mention $FIELD_TYPES, but they are not defined in this file,
+  // but in database as special slice with id 'AA_Core_Fields..'
 
-  # Field types - each field in slice is one of this type.
-  # The types are defined APC wide for easy item interchanging between APC nodes
-  # (on the other hand, new type can be added just by placing new fileld
-  # in database table fields as for 'AA_Core_Fields..' slice).
+  // Field types - each field in slice is one of this type.
+  // The types are defined APC wide for easy item interchanging between APC nodes
+  // (on the other hand, new type can be added just by placing new fileld
+  // in database table fields as for 'AA_Core_Fields..' slice).
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * @global array $MODULES
@@ -59,14 +59,14 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'menu' => "include/menu.php3"),
                   'W' => array( 'table' => 'site',
                                 'name' => 'Site',
-                                'show_templates' => 1,  # show list of sites on 'create new' - used as templates
+                                'show_templates' => 1,  // show list of sites on 'create new' - used as templates
                                 'directory' => "modules/site/",
                                 'menu' => "modules/site/menu.php3",
                                 'language_files' => array(
                                     'en_site_lang.php3' => 'en_site_lang.php3',
                                     'es_site_lang.php3' => 'es_site_lang.php3',
                                     'cz_site_lang.php3' => 'cz_site_lang.php3')),
-                  'A' => array( 'table' => 'module', # this module doesn't have any special info yet
+                  'A' => array( 'table' => 'module', // this module doesn't have any special info yet
                                 'name' => _m('MySQL Auth'),
                                 'hide_create_module' => 1,
                                 'directory' => "modules/mysql_auth/",
@@ -197,8 +197,8 @@ define("ANONYMOUS_EDIT_NOT_EDITED_IN_AA", 3);
 define("ANONYMOUS_EDIT_PASSWORD", 4);
 define("ANONYMOUS_EDIT_HTTP_AUTH", 5);
 
-# MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and
-# specifies how many items from the begining we have to search
+// MAX_NO_OF_ITEMS_4_GROUP is used with group_n slice.php3 parameter and
+// specifies how many items from the begining we have to search
 define( 'MAX_NO_OF_ITEMS_4_GROUP', 1000 );
 
 define('NO_PICTURE_URL', AA_INSTAL_URL.'images/blank.gif');
@@ -274,7 +274,7 @@ function inputShowFuncTypes () {
         "nul" => GetInputShowFuncTypesDef( _m("Do not show"),                 false, 'fnc' ),
         "hco" => GetInputShowFuncTypesDef( _m("Hierachical constants"),       false, 'fnc:const:param'),
         "pwd" => GetInputShowFuncTypesDef( _m("Password and Change password"),false, 'fnc:param' ),
-        "hid" => GetInputShowFuncTypesDef( _m("Hidden field"),                false, 'fnc')  # hidden field (good for javascript triggers
+        "hid" => GetInputShowFuncTypesDef( _m("Hidden field"),                false, 'fnc')  // hidden field (good for javascript triggers
     );
 }
 
@@ -327,7 +327,7 @@ function GetViewFieldDef( $validate, $insert, $type, $input, $value=false ) {
 }
 
 function getViewFields() {
-    # se_views.php3 - view field definition
+    // se_views.php3 - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
                                                  // $validate, $insert,  $type,   $input,  $value
     $VIEW_FIELDS["name"]            = GetViewFieldDef("text",  "quoted", "text",  "field"  );
@@ -402,22 +402,22 @@ function getViewTypes () {
                          "after" => _m("Bottom HTML") ,
                          "remove_string" => _m("Remove strings") ,
     // TODO                     "modification" => _m("Type") ,
-    #                     "parameter" => _m("Parameter") ,
-    #                     "img1" => _m("View image 1") ,
-    #                     "img2" => _m("View image 2") ,
-    #                     "img3" => _m("View image 3") ,
-    #                     "img4" => _m("View image 4") ,
+    //                     "parameter" => _m("Parameter") ,
+    //                     "img1" => _m("View image 1") ,
+    //                     "img2" => _m("View image 2") ,
+    //                     "img3" => _m("View image 3") ,
+    //                     "img4" => _m("View image 4") ,
                          "order1" => _m("Sort primary") ,
                          "o1_direction" => " " ,
                          "order2" => _m("Sort secondary") ,
                          "o2_direction" => " " ,
                          "group_by1" => _m("Group by") ,
                          "g1_direction" => " " ,
-    #                     "group_by2" => _m("Group by") ,
-    #                     "g2_direction" => " " ,
+    //                     "group_by2" => _m("Group by") ,
+    //                     "g2_direction" => " " ,
                          "group_title" => _m("Group title format") ,
                          "group_bottom" => _m("Group bottom format") ,
-    #                     "selected_item" => _m("HTML for Selected") ,
+    //                     "selected_item" => _m("HTML for Selected") ,
                          "cond1field" => _m("Condition 1") ,
                          "cond1op" => " " ,
                          "cond1cond" => " " ,
@@ -429,9 +429,9 @@ function getViewTypes () {
                          "cond3cond" => " " ,
                          "listlen" => _m("Listing length") ,
                          "noitem_msg" => _m("HTML code for \"No item found\" message")
-    #                     "flag" => _m("Flag") ,
+    //                     "flag" => _m("Flag") ,
     // TODO                     "scroller" => _m("Display page scroller") ,
-    #                     "aditional" => _m("Additional") );
+    //                     "aditional" => _m("Additional") );
                        ),
 
         'full' => array( 'name' => _m("Fulltext view"),
@@ -727,10 +727,10 @@ function getViewTypes () {
 }
 
 function getViewTypesInfo() {
-    # modification - options for modification field of views
-    # alias  - which aliases to show
-    # order  - 'easy' - show just Ascending/Descending
-    # fields - which fields show in selectboxes (slice / 'constant')
+    // modification - options for modification field of views
+    // alias  - which aliases to show
+    // order  - 'easy' - show just Ascending/Descending
+    // fields - which fields show in selectboxes (slice / 'constant')
     $VIEW_TYPES_INFO['list'] = array('modification'=>array('1'=>'search',
                                                            '2'=>'parameter',
                                                            '3'=>'statistic',

@@ -50,14 +50,14 @@ function get_mgettext_lang () {
 function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
     global $_m, $mgettext_lang, $mgettext_domain;
 
-    if( $mgettext_domain == $filename )
+    if ( $mgettext_domain == $filename )
         return;                             // allready loaded
 
     // store strings into backup and look for new strings in backup
     if (!$_m_backup[$mgettext_domain] && $cache)
         $_m_backup[$mgettext_domain] = $_m;
 
-    if( $mgettext_domain == $filename )
+    if ( $mgettext_domain == $filename )
         return;                             // allready loaded
 
     $mgettext_domain = $filename;
@@ -68,7 +68,7 @@ function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
 
     if ( !is_file($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
-#        exit;
+//        exit;
     }
     else {
         if ($lang != get_mgettext_lang())
@@ -93,7 +93,7 @@ function _m ($id, $params = 0) {
     if (!$retval)
         $retval = $id;
 
-    if (is_array ($params)) {
+    if (is_array($params)) {
         $foo = "#$&*-";
         $retval = str_replace ('\%', $foo, $retval);
         for ($i = 0; $i < count ($params); $i ++)

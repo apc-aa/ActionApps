@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# This file is being loaded any time on AA_CP_Session establishment
+// This file is being loaded any time on AA_CP_Session establishment
 
 if (!isset($login)) {
  $sess->register($login);

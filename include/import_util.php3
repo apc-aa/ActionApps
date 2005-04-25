@@ -95,7 +95,7 @@ class Actions {
     var $globalParams;
 
     function Actions($actions, $inFields, $html, $params, $globalParams="") {
-        foreach( $actions as $f_id => $action) {
+        foreach ( $actions as $f_id => $action) {
             $this->actions[$f_id] = array( "from"=>$inFields[$f_id],
                                            "action"=>new Action($action,$html[$f_id],stripslashes($params[$f_id])));
         }
@@ -206,37 +206,37 @@ class Action {
     function transform(&$itemContent, $from, &$globalParams, &$fvalues ) {
         switch ( $this->action) {
             case "store": {
-                $fvalues[][value] = $itemContent->GetValue($from);		// todo - pokud neexistuje pole s $from , co delat?
+                $fvalues[]['value'] = $itemContent->GetValue($from);		// todo - pokud neexistuje pole s $from , co delat?
                 break;
             }
             case "pack_id": {
-                $fvalues[][value] = pack_id($itemContent->GetValue($from));		// todo - pokud neexistuje pole s $from , co delat?
+                $fvalues[]['value'] = pack_id($itemContent->GetValue($from));		// todo - pokud neexistuje pole s $from , co delat?
                 break;
             }
             case "removestring": {
                 $v =  $itemContent->GetValue($from);
-                $fvalues[][value] = $this->params ? ereg_replace($this->params, "", $v) :$v;
+                $fvalues[]['value'] = $this->params ? ereg_replace($this->params, "", $v) :$v;
                 break;
             }
             case "formatdate": {
                 $v = strtotime($itemContent->GetValue($from));
                 if ($v == -1)
                     return "Invalid date: ".$itemContent->GetValue($from);
-                $fvalues[][value] = $v;
+                $fvalues[]['value'] = $v;
                 break;
             }
             case "convertvalue": {
                 // ???
-                $fvalues[][value] = $globalParams["table"][$itemContent->GetValue($from)]["return"];
+                $fvalues[]['value'] = $globalParams["table"][$itemContent->GetValue($from)]["return"];
                 break;
             }
             case "web": {
                 $value = $itemContent->GetValue($from);
-                if( $value ) {
+                if ( $value ) {
                     if (strtolower(substr($value, 0, 4)) != "http")
                     $value = "http://". $value;
                 }
-                $fvalues[][value] = $value;
+                $fvalues[]['value'] = $value;
                 break;
                 }
             case "storemultiasone" : {

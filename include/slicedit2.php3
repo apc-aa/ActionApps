@@ -22,7 +22,7 @@ http://www.apc.org/
 function set_template_id ($template_id) {
     global $set_template_id, $change_lang_file;
     $set_template_id = $template_id;
-    if( $set_template_id ) {
+    if ( $set_template_id ) {
       $foo = explode("{", $set_template_id);
       $set_template_id = $foo[0];
       $change_lang_file = $foo[1];

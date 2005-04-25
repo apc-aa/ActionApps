@@ -35,7 +35,7 @@ function ptest( $boolean, $label) {
 
 function p_array($haystack)
 {
-  for($i=0;$i<count($haystack);$i++)
+  for ($i=0;$i<count($haystack);$i++)
     echo $haystack[$i];
 
   echo "\n";

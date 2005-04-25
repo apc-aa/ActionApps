@@ -30,7 +30,7 @@ require_once("perm_sql.php3");
 function uniq_array($haystack)
 {
   $uniq;
-  for($i=0;$i<count($haystack);$i++){
+  for ($i=0;$i<count($haystack);$i++){
     if (! in_array($haystack[$i],$uniq))
       $uniq [] = $haystack[$i];
   };
@@ -41,6 +41,9 @@ function uniq_array($haystack)
 
 /*
 $Log$
+Revision 1.3  2005/04/25 10:54:24  honzam
+optimized - converted to standard inputs
+
 Revision 1.2  2003/02/05 15:10:42  jakubadamek
 changing require to require_once
 

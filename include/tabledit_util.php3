@@ -28,7 +28,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 
 // -----------------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ function ProcessFormData ($getTableViewsFn, $val, &$cmd)
         return;
     $tabledit_formdata_processed = true;
 
-    if (!is_array ($cmd)) return;
+    if (!is_array($cmd)) return;
     if ($debug)
     { echo "cmd: ";print_r ($cmd); echo "<br>val: ";print_r($val); echo"<br>"; }
 
@@ -401,7 +401,7 @@ function ProcessInsert($myviewid, $myview, $primary_aliases, $val, &$cmd) {
 // -----------------------------------------------------------------------------------
 
 function RunColumnFunctions(&$val, $columns, $table, $join) {
-    if (!is_array ($val)) {
+    if (!is_array($val)) {
         return;
     }
 
@@ -412,7 +412,7 @@ function RunColumnFunctions(&$val, $columns, $table, $join) {
     }
 
     // copy values between joining fields
-    if (is_array ($join)) {
+    if (is_array($join)) {
         foreach ( $join as $childtable => $joinprop) {
             reset ($joinprop["joinfields"]);
             while (list ($masterf, $childf) = each ($joinprop["joinfields"])) {
@@ -489,7 +489,7 @@ function GetKeyFromRecord($primary, $columns, $record)
 */
 function AddKeyValues(&$varset, $val, $primary, $columns, $auto_increment = true)
 {
-    if (!is_array ($primary)) { echo "error in AddKeyValues"; exit; }
+    if (!is_array($primary)) { echo "error in AddKeyValues"; exit; }
 
     reset ($primary);
     while (list ($alias) = each ($primary)) {
@@ -578,7 +578,7 @@ function PrintJavaScript_Validate () {
 function GetEditedKey($tview) {
     global $cmd;
     $edit = $cmd[$tview]["edit"];
-    if (!is_array ($edit)) {
+    if (!is_array($edit)) {
         global $tabledit_cmd;
         $edit = $tabledit_cmd[$tview]["edit"];
         if (!is_array($edit)) { echo "Error calling GetEditedKey ($tview)"; exit; }
@@ -588,7 +588,7 @@ function GetEditedKey($tview) {
 }
 
 function CallTrigger($triggers, $event, $varset) {
-    if (is_array ($triggers) && $triggers[$event]) {
+    if (is_array($triggers) && $triggers[$event]) {
         $fn = $triggers[$event];
         return $fn($varset);
     }

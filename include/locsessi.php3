@@ -39,7 +39,7 @@ if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
 }
 
 /* Required, contains your local session management extension */
-require_once($GLOBALS["AA_INC_PATH"] . "extsessi.php3");
+require_once($GLOBALS['AA_INC_PATH'] . "extsessi.php3");     
 
 /* Required, contains the page management functions. */
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {

@@ -19,31 +19,31 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#
-# Message page with menu. Can't be in util.php3 since of the menu usage.
-#
+//
+// Message page with menu. Can't be in util.php3 since of the menu usage.
+//
 
 if (!defined ("AA_MSGPAGE_INCLUDED"))
     define("AA_MSGPAGE_INCLUDED","1");
 else return;
 
-require_once $GLOBALS["AA_INC_PATH"]."constants.php3";
-if( isset($g_modules[$slice_id])) {
+require_once $GLOBALS['AA_INC_PATH']."constants.php3";
+if ( isset($g_modules[$slice_id])) {
   require_once menu_include();   //show navigation column depending on $show
 } else {
-  require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
 }
 
 
-# Displays page with message and link to $url
-#   url - where to go if user clicks on Back link on this message page
-#   msg - displayed message
-#   mode - items/admin/standalone for surrounding of message
+// Displays page with message and link to $url
+//   url - where to go if user clicks on Back link on this message page
+//   msg - displayed message
+//   mode - items/admin/standalone for surrounding of message
 function MsgPageMenu ($url, $msg, $mode, $menu="") {
   global $sess, $auth, $slice_id, $aamenus;
 
-  if( !isset($sess) ) {
-    require_once $GLOBALS["AA_INC_PATH"] . "locauth.php3";
+  if ( !isset($sess) ) {
+    require_once $GLOBALS['AA_INC_PATH'] . "locauth.php3";
     page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
   }
     
@@ -65,7 +65,7 @@ function MsgPageMenu ($url, $msg, $mode, $menu="") {
       break;
   }    
 
-  if( isset($msg) AND is_array($msg))
+  if ( isset($msg) AND is_array($msg))
     PrintArray($msg);
    else 
     echo "<P>$msg</p><br><br>";

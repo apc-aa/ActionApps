@@ -168,7 +168,7 @@ function get_file_array ($path, $dirname) {
             reset ($sortable_columns); 
             $sort_key = key ($sortable_columns);
         }
-        if (is_array ($files))
+        if (is_array($files))
             uasort ($files, "compare_files");
     }
     return $files;
@@ -184,7 +184,7 @@ function file_table ($path, $dirname)
     global $directory;
 
     $files = get_file_array ($path, $dirname);
-    if (is_array ($files)) {
+    if (is_array($files)) {
         // create the HTML code
         reset ($files);
         while (list (,$file) = each ($files)) {
@@ -214,8 +214,8 @@ function is_dir_empty ($dirname) {
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-# Paramater arg is an array e.g. $arg[edit] = "myfilename.htm"
-#
+// Paramater arg is an array e.g. $arg[edit] = "myfilename.htm"
+//
 function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset) {
     global $AA_CP_Session, $err,
         // set to the name of file which should be viewed by filedit.php3
@@ -238,7 +238,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
 
     // Create file
     else if ($cmd=='createfile') {
-        if( !EReg("^[0-9a-zA-Z_.]*$", $arg)) { $err[] = _m("Wrong file name."); return; }
+        if ( !EReg("^[0-9a-zA-Z_.]*$", $arg)) { $err[] = _m("Wrong file name."); return; }
         if (filesuffix($arg) == "") $arg .= ".html";
         $newfile = $basedir.$directory.$arg;
         if (file_exists ($newfile)) { $err[] = _m("File already exists")." ($newfilename)."; return; }
@@ -250,7 +250,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
 
     // Create directory
     else if ($cmd=='createdir') {
-        if( !EReg("^[0-9a-zA-Z_]*$", $arg)) { $err[] = _m("Wrong directory name."); return; }
+        if ( !EReg("^[0-9a-zA-Z_]*$", $arg)) { $err[] = _m("Wrong directory name."); return; }
         $newdir = $basedir.$directory.$arg;
         mkdir ($newdir, $FILEMAN_MODE_DIR);
         if (!is_dir ($newdir)) 
@@ -258,7 +258,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
     }
 
     // Delete
-    else if ($cmd=='delete' && is_array ($chb)) {
+    else if ($cmd=='delete' && is_array($chb)) {
         reset ($chb);
         while (list ($arg) = each ($chb)) {
             $f = $basedir.$arg;
@@ -353,7 +353,7 @@ function fileman_copy_template ($srcdir, $dstdir) {
     while (list (,$file) = each ($files)) 
         if (file_exists ($dstdir."/".$file)) 
             $errfiles[] = $file;
-    if (is_array ($errfiles)) 
+    if (is_array($errfiles)) 
         return _m("Files with the same names as some in the template already exist. Please change the file names first.") . " (".join(", ",$errfiles).").";
     reset ($files);
     while (list (,$file) = each ($files)) {
@@ -385,8 +385,8 @@ $fileman_js = "
     <!--
         function SelectVis (form, prefix, state) {
             var elem = document.forms[form].elements;
-            for( var i=0; i < elem.length; i++ )
-                if( elem[i].name.substring(0,prefix.length) == prefix)
+            for ( var i=0; i < elem.length; i++ )
+                if ( elem[i].name.substring(0,prefix.length) == prefix)
                     elem[i].checked = state;    
         }
 

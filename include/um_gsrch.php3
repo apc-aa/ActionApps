@@ -1,4 +1,4 @@
-<?php  #um_gsrch.php3  - include file with user search form
+<?php  //um_gsrch.php3  - include file with user search form
 //$Id$
 /* 
 Copyright (C) 1999, 2000 Association for Progressive Communications 
@@ -20,8 +20,8 @@ http://www.apc.org/
 */
 
   $groups = FindGroups($grp);
-  if( !is_array($groups) ) {
-    if( $groups == "too much" ) {
+  if ( !is_array($groups) ) {
+    if ( $groups == "too much" ) {
       unset($groups);
       $groups[0] = _m("Too many users or groups found.");
     } else {

@@ -19,16 +19,16 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-# Misc functions used with modules
+// Misc functions used with modules
 
-# Adds new owner to database
-# returns unpacked owner_id or false (on error)
+// Adds new owner to database
+// returns unpacked owner_id or false (on error)
 function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
   $varset->clear();
   ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
   ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
 
-  if( count($err) > 1)
+  if ( count($err) > 1)
     return false;
 
   $owner = new_id();
@@ -36,8 +36,8 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
   $varset->set("name", $new_owner, "text");
   $varset->set("email", $new_owner_email, "text");
 
-    # create new owner
-  if( !$db->query("INSERT INTO slice_owner " . $varset->makeINSERT() )) {
+    // create new owner
+  if ( !$db->query("INSERT INTO slice_owner " . $varset->makeINSERT() )) {
     $err["DB"] .= MsgErr("Can't add owner");
     return false;
   }
@@ -45,7 +45,7 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
   return $owner;
 }
 
-# Validate all fields needed for module table (name, slice_url, lang_file, owner)
+// Validate all fields needed for module table (name, slice_url, lang_file, owner)
 function ValidateModuleFields( $name, $slice_url, $lang_file, $owner, &$err ) {
   ValidateInput("name", _m("Title"), $name, $err, true, "text");
   ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
@@ -53,22 +53,22 @@ function ValidateModuleFields( $name, $slice_url, $lang_file, $owner, &$err ) {
   ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
 }
 
-# Updates or inserts all necessary fields to module table
+// Updates or inserts all necessary fields to module table
 function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
                             $type, $name, $slice_url, $lang_file, $owner,
                             $deleted, $new_id="" ) {
   $varset->clear();
-  if( $module_id )  {
+  if ( $module_id )  {
     $p_module_id = q_pack_id($module_id);
     $varset->add("name", "quoted", $name);
     $varset->add("slice_url", "quoted", $slice_url);
     $varset->add("lang_file", "quoted", $lang_file);
     $varset->add("owner", "unpacked", $owner);
-    if( $superadmin )
+    if ( $superadmin )
       $varset->add("deleted", "number", $deleted);
 
     $SQL = "UPDATE module SET ". $varset->makeUPDATE() . " WHERE id='$p_module_id'";
-    if (!$db->query($SQL)) {  # not necessary - we have set the halt_on_error
+    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
       $err["DB"] = MsgErr("Can't change module");
       return false;
     }
@@ -90,7 +90,7 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
     $varset->set("lang_file", $lang_file, "quoted");
     $varset->set("type", $type, "quoted");
 
-    if( !$db->query("INSERT INTO module" . $varset->makeINSERT() )) {
+    if ( !$db->query("INSERT INTO module" . $varset->makeINSERT() )) {
       $err["DB"] .= MsgErr("Can't add module");
       return false;
     }
@@ -101,9 +101,9 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
   return $module_id;
 }
 
-# fills variables from module and owners table
+// fills variables from module and owners table
 function GetModuleFields( $source_id, $db ) {
-  # lookup owners
+  // lookup owners
   $slice_owners[0] = _m("Select owner");
   $SQL= " SELECT id, name FROM slice_owner ORDER BY name";
   $db->query($SQL);
@@ -125,18 +125,18 @@ function GetModuleFields( $source_id, $db ) {
 }
 
 
-# check if module can be deleted
+// check if module can be deleted
 function ExitIfCantDelete( $del, $db ) {
   $p_del = q_pack_id($del);
   $SQL = "SELECT deleted FROM module WHERE id='$p_del'";
   $db->query($SQL);
-  if( !$db->next_record() )
+  if ( !$db->next_record() )
     go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No such module."))));
-  if( $db->f(deleted) < 1 )
+  if ( $db->f(deleted) < 1 )
     go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No module flagged for deletion."))));
 }
 
-# delete module from module table
+// delete module from module table
 function DeleteModule( $del, $db ) {
   $p_del = q_pack_id($del);
   $SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_del'";

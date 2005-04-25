@@ -29,10 +29,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!defined("INCLUDE_STORABLE_CLASS_INCLUDED"))
-     define ("INCLUDE_STORABLE_CLASS_INCLUDED",1);
-else return;
-
 /**
  * storable_class - abstract class which implements methods for storing and
  * restoring class data (used in searchbar class, manager class, ...).
@@ -49,13 +45,15 @@ class storable_class {
      *                      you will get by getState() method.
      */
     function setFromState(&$state) {
-        if ( !isset($this->persistent_slots) OR !is_array($this->persistent_slots) )
+        if (!isset($this->persistent_slots) OR !is_array($this->persistent_slots)) {
             return false;
+        }
         foreach ($this->persistent_slots as $v) {
-            if( is_object( $this->$v ) )
+            if (is_object($this->$v)) {
                 $this->$v->setFromState($state[$v]);
-            else
+            } else {
                 $this->$v = $state[$v];
+            }
         }
     }
 
@@ -64,10 +62,12 @@ class storable_class {
      * restoring (by setFromState() method)
      */
     function getState() {
-        if ( !isset($this->persistent_slots) OR !is_array($this->persistent_slots) )
+        if (!isset($this->persistent_slots) OR !is_array($this->persistent_slots)) {
             return false;
-        foreach ( $this->persistent_slots as $v )
-            $ret[$v] = ( is_object( $this->$v ) ? $this->$v->getState() : $this->$v);
+        }
+        foreach ($this->persistent_slots as $v) {
+            $ret[$v] = (is_object($this->$v) ? $this->$v->getState() : $this->$v);
+        }
         return $ret;
     }
 }

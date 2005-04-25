@@ -27,9 +27,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-####################################
-# all functions require_once GD Library #
-####################################
+//###################################
+// all functions require_once GD Library //
+//###################################
 
 /**
  *  Check if GD lib is installed
@@ -64,26 +64,26 @@ function ResampleImage($simage,$dimage,$new_w,$new_h) {
     global $debugupload, $imageTable;
 
     if ($debugupload) huhl("Resample $simage at $new_w,$new_h to $dimage");
-    #determine type, width, height of image.
+    //determine type, width, height of image.
     $imginfo=GetImageSize($simage);
     $imagetype = $imageTable[$imginfo[2]][e];
 
     if ($debugupload) huhl("Type=$imagetype Size now=",$imginfo);
-    # if dimensions of new picture are not set, then do not resize
+    // if dimensions of new picture are not set, then do not resize
     if (!$new_w && !$new_h) return CopyImage2Destination($simage, $dimage);
 
-    #set ratio of width and height
+    //set ratio of width and height
     if ($new_w!=0) $x=$imginfo[0]/$new_w;
     if ($new_h!=0) $y=$imginfo[1]/$new_h;
 
-    #set for witch max dimension will be image resampled
-    if ($x>$y) $new_h="";   #use max width and calculate height
-    if ($y>$x) $new_w="";   #use max height and calculate width
+    //set for witch max dimension will be image resampled
+    if ($x>$y) $new_h="";   //use max width and calculate height
+    if ($y>$x) $new_w="";   //use max height and calculate width
 
-    #if image is smaller then limits, do not resample
+    //if image is smaller then limits, do not resample
     if ($x < 1 && $y < 1) return CopyImage2Destination($simage, $dimage);
 
-    #calculate second dimension of image with maintain aspect ratio
+    //calculate second dimension of image with maintain aspect ratio
     if ((!$new_w && $new_h) || (!$new_h && $new_w)) {
         if (!$new_w) $new_w=$imginfo[0]/$imginfo[1]*$new_h;
         if (!$new_h) $new_h=$imginfo[1]/$imginfo[0]*$new_w;
@@ -123,13 +123,13 @@ function ResampleImage($simage,$dimage,$new_w,$new_h) {
     }
 }
 
-# An array cross referencing different ways to refer to images
-# Other "x" types could be added from
-#http://www.php.cz/manual/en/function.exif-imagetype.php
-#but note none of these are supported by GD
-# m = mime type, e = extension for GD functions and files,  u = human readable
-# b = bitmask x = exif_imagetype or imageinfo[2]
-# t = true if should use truecolor
+// An array cross referencing different ways to refer to images
+// Other "x" types could be added from
+//http://www.php.cz/manual/en/function.exif-imagetype.php
+//but note none of these are supported by GD
+// m = mime type, e = extension for GD functions and files,  u = human readable
+// b = bitmask x = exif_imagetype or imageinfo[2]
+// t = true if should use truecolor
 $imageTable = array(
     1 => array("m" => "image/gif",  "e" => "gif",  "u" => "GIF",  "b" => IMG_GIF, " x" => IMAGETYPE_GIF,  "t" => false),
     2 => array("m" => "image/jpeg", "e" => "jpeg", "u" => "JPEG", "b" => IMG_JPG,  "x" => IMAGETYPE_JPEG, "t" => true),
@@ -137,18 +137,18 @@ $imageTable = array(
     6 => array("m" => "image/wbmp", "e" => "bmp",  "u" => "WBMP", "b" => IMG_WBMP, "x" => IMAGETYPE_BMP,  "t" => false)
 );
 
-# function checks type of images supported by GD library
-# if type is defined return true ro false,
-# if type is not defined return array of supported types
-######################################################
+// function checks type of images supported by GD library
+// if type is defined return true ro false,
+// if type is not defined return array of supported types
+//#####################################################
 
 function PrintSupportedTypes() {
-    global $imageTable;
-    reset($imageTable);
-    $it = ImageTypes();
-    while(list($k,$v) = each($imageTable)) {
-        print($v["u"].(($it & $v["b"]) ? " " : " Not ")."Supported \n");
-    }
+	global $imageTable;
+	reset($imageTable);
+	$it = ImageTypes();
+	while (list($k,$v) = each($imageTable)) {
+		print($v["u"].(($it & $v["b"]) ? " " : " Not ")."Supported \n");
+	}
 }
 
 function GetSupportedTypes($type) { //type 1-gif, 2-jpeg, 3-png;

@@ -21,7 +21,7 @@ http://www.apc.org/
 
 // used by the itemedit.php3 page, which calls getTrig ()
 
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
 
 $GLOBALS["js_triggers"] = array (
     "input" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
@@ -77,7 +77,7 @@ function getTriggers ($control, $unpacked_fieldid, $add="") {
     global $js_triggers;
     global $js_trig;
 
-    if (!is_array ($js_trig)) return;
+    if (!is_array($js_trig)) return;
     if (substr ($unpacked_fieldid, -2) == "[]")
         $unpacked_fieldid = substr ($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 2);
     if (substr ($unpacked_fieldid, -1) == "x")

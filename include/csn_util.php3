@@ -193,7 +193,7 @@ function updateFieldsMapping($feed_id, &$l_slice_fields, $l_slice_id, $r_slice_i
     // add new ones
     $db = getDB();
     if ( isset($field_refs) AND is_array($field_refs) ) {
-        foreach( $field_refs as $r_field_id => $val ) {
+        foreach ( $field_refs as $r_field_id => $val ) {
             if ($ext_map && $ext_map[$r_field_id]) {
                 // remote field is in the feedmap table => update name
                 $new_name = quote($fields[$r_field_id]['name']);
@@ -232,20 +232,19 @@ function updateFieldsMapping($feed_id, &$l_slice_fields, $l_slice_id, $r_slice_i
     freeDB($db);
 }
 
-/** Returns firs field id of specified type */
+/** Returns first field id of specified type */
 function GetBaseFieldId( &$fields, $ftype ) {
     $no = 10000;
-    if( isset($fields) AND is_array($fields) ) {
+    if ( isset($fields) AND is_array($fields) ) {
         foreach ( $fields as  $k => $val ) {
-            if(!strstr($val['id'],$ftype)) {
+            if (!strstr($val['id'],$ftype)) {
                 continue;
             }
             $last = GetFieldNo($val['id']);
-            $no   = min( $no, ( ($last=='') ? -1 : (integer)$last) );
+            $no   = min($no, (($last=='') ? -1 : (integer)$last));
         }
     }
-    return ($no == 10000) ? false :
-                            CreateFieldId($ftype, ($no==-1) ? '.' : (string)$no);
+    return ($no == 10000) ? false : CreateFieldId($ftype, ($no==-1) ? '.' : (string)$no);
 }
 
 
@@ -273,7 +272,7 @@ function MapDefaultCategory(&$categories, $value, $parent_id) {
 
   reset($categories);       // try to find the same category
   while (list($to_id,$v) = each($categories)) {
-    if ($v[value] == $value)
+    if ($v['value'] == $value)
       return $to_id;
   }
   reset($categories);       // try to find the same parent category
@@ -286,26 +285,31 @@ function MapDefaultCategory(&$categories, $value, $parent_id) {
   return key($categories);
 }
 
-function unixstamp_to_iso8601 ($t) {
-  $tz=date("Z", $t)/60;
-  $tm=$tz % 60;
-  $tz=$tz/60;
-  if ($tz<0) { $ts="-";
-    $tz=-$tz;
-  } else { $ts="+"; }
-  $tz=substr("0" . $tz, -2);
-  $tm=substr("0" . $tm, -2);
-  return date("Y-m-d\TH:i:s", $t). "${ts}${tz}:${tm}";
- }
+function unixstamp_to_iso8601($t) {
+    $tz=date("Z", $t)/60;
+    $tm=$tz % 60;
+    $tz=$tz/60;
+    if ($tz<0) { 
+        $ts="-";
+        $tz=-$tz;
+    } else { 
+        $ts="+"; 
+    }
+    $tz=substr("0" . $tz, -2);
+    $tm=substr("0" . $tm, -2);
+    return date("Y-m-d\TH:i:s", $t). "${ts}${tz}:${tm}";
+}
 
 function iso8601_to_unixstamp($t) {
- ereg ("([0-9]{4})-([0-9]{2})-([0-9]{2})[T ]([0-9]{2})\:([0-9]{2})\:([0-9]{2})(\+|\-)([0-9]{2})\:([0-9]{2})", $t, $r);
- $tz = (int)$r[8]*3600+$r[9]*60;
- if ($r[7] == "+")
-  $tz =-$tz;
- return gmmktime($r[4],$r[5],$r[6],$r[2],$r[3],$r[1])+$tz;
+    ereg ("([0-9]{4})-([0-9]{2})-([0-9]{2})[T ]([0-9]{2})\:([0-9]{2})\:([0-9]{2})(\+|\-)([0-9]{2})\:([0-9]{2})", $t, $r);
+    $tz = (int)$r[8]*3600+$r[9]*60;
+    if ($r[7] == "+") {
+        $tz =-$tz;
+    }
+    return gmmktime($r[4],$r[5],$r[6],$r[2],$r[3],$r[1])+$tz;
 }
-$default_rss_map = array (
+
+$DEFAULT_RSS_MAP = array (
     // Note this matches code in xml_rssparse.php3 for parsing DC fields
     // Can change the names without affecting anything
         "author.........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/creator","from_field_name"=>"DC:creator"),
@@ -317,7 +321,6 @@ $default_rss_map = array (
         "place..........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/coverage","from_field_name"=>"DC:coverage"),
         "headline........" => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/title|ITEM/title","from_field_name"=>"DC:title"),
         "full_text......." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"CONTENT","from_field_name"=>"Content"),
-//		"status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>1,"from_field_name"=>"Approved"),
         "status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,"from_field_name"=>"Approved"),
         "hl_href........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"ITEM/link|ITEM/guid","from_field_name"=>"ITEM:link"),
         "expiry_date....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),"from_field_name"=>"Expiry Date")

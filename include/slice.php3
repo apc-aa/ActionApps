@@ -27,7 +27,7 @@ function Page_HTML_Begin ($title="") {
     <BODY>';
 }
 
-# print closing HTML tags for page
+// print closing HTML tags for page
 function Page_HTML_End(){
     echo '
     </BODY>
@@ -49,7 +49,7 @@ function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps
  {
    echo "<form action=$url method=get>";
    echo "<input type=hidden name=$sess_name value=$sess_id>";
-   if( !$encaps )    // not encapsulated - need to send slice_id
+   if ( !$encaps )    // not encapsulated - need to send slice_id
    { echo "<input type=hidden name=slice_id value=$sli_id>";
      echo "<input type=hidden name=encap value=".($encaps ? "true":"false").">";
    }
@@ -77,9 +77,9 @@ function ExitPage() {
 }
 
 function StoreVariables( $vars ) {
-  if( isset($vars) AND is_array($vars) ) {
+  if ( isset($vars) AND is_array($vars) ) {
     reset($vars);
-    while( list(,$v) = each( $vars ) )
+    while ( list(,$v) = each( $vars ) )
       $state_vars[$v] = $GLOBALS[$v];
   }
   return $state_vars;
@@ -87,34 +87,34 @@ function StoreVariables( $vars ) {
 
 function RestoreVariables() {
   global $r_state_vars;
-  if( isset($r_state_vars) AND is_array($r_state_vars) ) {
+  if ( isset($r_state_vars) AND is_array($r_state_vars) ) {
     reset($r_state_vars);
-    while( list($k,$v) = each( $r_state_vars ) )
+    while ( list($k,$v) = each( $r_state_vars ) )
       $GLOBALS[$k] = $v;
   }
 }
 
-# two purpose function - it loggs item view and it translates short_id to id
+// two purpose function - it loggs item view and it translates short_id to id
 function LogItem($id, $column, $count_hit=true) {
   global $db;
 
   if ( $count_hit ) CountHit($id);
 
-  if( $column == "id" )
+  if ( $column == "id" )
     return $id;
 
   $SQL = "SELECT id, display_count FROM item WHERE short_id='$id'";
   $db->query($SQL);
-  if( $db->next_record() )
+  if ( $db->next_record() )
     return unpack_id128( $db->f('id') );
   return false;
 }
 
 function SubstituteAliases( $als, &$var ) {
-  if( !isset( $als ) OR !is_array( $als ) )  # substitute url aliases in cmd
+  if ( !isset( $als ) OR !is_array( $als ) )  // substitute url aliases in cmd
     return;
   reset( $als );
-  while( list($k,$v) = each( $als ) )
+  while ( list($k,$v) = each( $als ) )
     $var = str_replace ($k, $v, $var);
 }
 

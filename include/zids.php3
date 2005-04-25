@@ -52,7 +52,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // qq_packedids  p l   e.g. 'A!D\\ss\'qwertyuio'
 // shortids      s     e.g. 1234
 
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";  // quote
+require_once $GLOBALS['AA_INC_PATH']."util.php3";  // quote
 
 class zids {
     var $a;     // Array of ids of type specified in $t
@@ -62,7 +62,7 @@ class zids {
     var $s2l;   // array used for translation from 'short' to 'long' type
 
     // Constructor can be called with an array, or a zid
-    function zids($initial = null, $inittype = "z"){  # constructor
+    function zids($initial = null, $inittype = "z"){  // constructor
         $this->refill($initial, $inittype);
     }
 
@@ -72,7 +72,7 @@ class zids {
         // $inittype is for where type is known
         // Note it refers to the type of ELEMENTS if its an array
         $this->type = $inittype;
-        if ($initial and is_array($initial)) { # Array
+        if ($initial and is_array($initial)) { // Array
             $this->a = array();  // Make sure at least empty array
             if (is_array($initial[0])) { // Array of fields
                 foreach ( $initial as $field ) {
@@ -87,11 +87,11 @@ class zids {
                     }
                 }
             }
-        } elseif ($initial) {  # Single id
+        } elseif ($initial) {  // Single id
             $this->a[] = $initial;
         } else {
-            $this->$type=$inittype;    # Prepare for zids
-            return;                    # Empty $zids;
+            $this->$type=$inittype;    // Prepare for zids
+            return;                    // Empty $zids;
         }
 
         if ($this->type == "z") {
@@ -179,7 +179,7 @@ class zids {
 
     // Quick check to warn if item doesn't exist
     function warnid($i=null,$warnstr="") {
-        if( (isset($i) and !(isset($this->a[$i]))) ) {
+        if ( (isset($i) and !(isset($this->a[$i]))) ) {
             huhe("Warning: zids: $warnstr, item $i doesn't exist, returning null");
             return true;
         }
@@ -201,7 +201,7 @@ class zids {
             default:
                        print("ERROR - zids:longids(): can't handle type $this->type conversion to longids - ask mitra");
                        $this->printobj();
-            return false;  #TODO - handle other types
+            return false;  //TODO - handle other types
         }
     }
 
@@ -299,7 +299,7 @@ class zids {
         $tags = array();
         foreach ( $this->a as $v ) {
             if (preg_match('/^(.*?)([0-9a-f]{24,32})$/',$v,$parts)) {
-                $tags[$parts[2]] = $parts[1]; # Note can be empty
+                $tags[$parts[2]] = $parts[1]; // Note can be empty
             } else {
                 print("Cant parse tagged id '$v' - tell Mitra");
             }
@@ -312,7 +312,7 @@ class zids {
     // Reasonably efficent, only loops through each array once
     function retag($zids) {
         if ($debug) huhl("Retagging zids=",$zids);
-        if ($zids->type != "t") return $this;  # Array is fine
+        if ($zids->type != "t") return $this;  // Array is fine
         $tags = array();
         while ( list(,$v) = each($zids->a)) {
             switch ($this->type) {
@@ -365,7 +365,7 @@ class zids {
         $db = getDB();
         $SQL = "SELECT id, short_id FROM item WHERE ". $this->sqlin();
         $db->tquery($SQL);
-        while( $db->next_record() ) {
+        while ( $db->next_record() ) {
             $unpacked_id = unpack_id128($db->f('id'));
             $this->l2s[$unpacked_id] = $db->f('short_id');
             $this->s2l[$db->f('short_id')] = $unpacked_id;
@@ -408,7 +408,7 @@ function guesstype($str) {
     $s = strlen($str);
     if (($s >= 12) and ($s <= 16))              return 'p';
     if (preg_match("/[0-9a-f]{24,32}/i", $str)) return 'l';
-    if ($s > 32) return 't'; # Could also test last 32 hex
+    if ($s > 32) return 't'; // Could also test last 32 hex
     if ($s < 16) return 's';
     print("Error, unable to guess type of id '$str' - ask mitra");
     return ('z');
@@ -419,7 +419,7 @@ function guesstype($str) {
 // This version is ONLY for 128 bit ids.
 function pack_id128($unpacked_id){
     global $errcheck;
-    if ($errcheck && !preg_match("/^[0-9a-f]{24,32}$/", $unpacked_id)) # Note was + instead {32}
+    if ($errcheck && !preg_match("/^[0-9a-f]{24,32}$/", $unpacked_id)) // Note was + instead {32}
     huhe("Warning: trying to pack $unpacked_id.<br>\n");
     return ((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id)));
 }
@@ -429,7 +429,7 @@ function pack_id128($unpacked_id){
 function unpack_id128($packed_id){
     if ((string)$packed_id == "0")  return "0";
     $foo=bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
-    if ($errcheck && !preg_match("/^[0-9a-f]{24,32}$/", $foo)) { # Note was + instead {32}
+    if ($errcheck && !preg_match("/^[0-9a-f]{24,32}$/", $foo)) { // Note was + instead {32}
         huhe("Warning: unpacked id to $foo..<br>\n");
     }
     return (string)$foo;

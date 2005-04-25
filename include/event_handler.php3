@@ -28,8 +28,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS["AA_INC_PATH"]."auth.php3";
-require_once $GLOBALS["AA_INC_PATH"]."mailman.php3";
+require_once $GLOBALS['AA_INC_PATH']."auth.php3";
+require_once $GLOBALS['AA_INC_PATH']."mailman.php3";
 require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/event.php3";
 
 /** Called on updating an existing item.
