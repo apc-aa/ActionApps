@@ -316,17 +316,17 @@ function p_arr_m($arr, $level = 0) {
 
 // debug function, prints hash size,  keys and values of hash
 function p_arr($a,$name="given array") {
-  p_arr_m($a);
+    p_arr_m($a);
 }
 
 // returns new unpacked md5 unique id, except these which can  force unexpected end of string
 function new_id($seed="hugo"){
     do {
-       $foo=md5(uniqid($seed));
-    } while (ereg("(00|27)",$foo) || (substr($foo,30,2)=='20'));
+        $id = md5(uniqid($seed));
+    } while ((strpos($id, '00')!==false) OR (strpos($id, '27')!==false) OR (substr($id,30,2)=='20'));
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
-    return $foo;
+    return $id;
 }
 
 /** Returns a unique id from a string.
@@ -335,34 +335,35 @@ function new_id($seed="hugo"){
  *  item id of fed item and slice_id, for example - @see xml_fetch.php3)
  */
 function string2id($str) {
-    $trialstr = $str;
     do {
-        $foo=md5($trialstr);
-        $trialstr = $trialstr . " ";
-    } while (ereg("(00|27)",$foo));  // 00 is end of string, 27 is '
-    return $foo;
+        $id  = md5($str);
+        $str = $str . " ";
+    } while ((strpos($id, '00')!==false) OR (strpos($id, '27')!==false) OR (substr($id,30,2)=='20'));
+      // '00' is end of string, '27' is ' and packed '20' is space,
+      // which is removed by MySQL
+    return $id;
 }
 
 // returns packed md5 id, not quoted !!!
 // Note that pack_id is used in many places where it is NOT 128 bit ids.
-function pack_id($unpacked_id){
+function pack_id($unpacked_id) {
     global $errcheck;
     // Give up tracking this, too many errors in Honza's code!
     /*
     if ($errcheck && !preg_match("/^[0-9a-f]+$/", $unpacked_id)) // Note was + instead {32}
          huhe("Warning: trying to pack $unpacked_id.<br>\n");
     */
-  return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
+    return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
 }
 
 // returns unpacked md5 id
 function unpack_id($packed_id){
-  if ( (string)$packed_id == "0" )
-    return "0";
-  $foo=bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
-  return (string)$foo;
+    if ((string)$packed_id == "0") {
+        return "0";
+    }
+    $foo = bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
+    return (string)$foo;
 }
-
 
 /** returns current date/time as timestamp;
  *  $step - time could be returned in steps (good for database query speedup)
@@ -376,9 +377,10 @@ function now($step=false) {
 
 // returns number of second since 1970 from date in MySQL format
 function date2sec($dat) {
-  if ( Ereg("^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})", $dat, $d))
-    return MkTime($d[4], $d[5], $d[6], $d[2], $d[3], $d[1]);
-  return 0;
+    if ( Ereg("^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})", $dat, $d)) {
+        return MkTime($d[4], $d[5], $d[6], $d[2], $d[3], $d[1]);
+    }
+    return 0;
 }
 
 // function which detects the browser
@@ -459,20 +461,22 @@ function debug() {
 
 // debug function for printing debug messages
 function huh($msg, $name="") {
-//  if (! $GLOBALS['debug'] )
-//    return;
-  if ( @is_array($msg) OR @is_object($msg) ) {
-    echo "<br>\n$name";
-    print_r($msg);
-  } else
-    echo "<br>\n$name$msg";
+    //  if (! $GLOBALS['debug'] )
+    //    return;
+    if ( @is_array($msg) OR @is_object($msg) ) {
+        echo "<br>\n$name";
+        print_r($msg);
+    } else {
+        echo "<br>\n$name$msg";
+    }
 }
 
 // debug function for printing debug messages escaping HTML
 function huhw($msg) {
-  if (! $GLOBALS['debug'] )
-    return;
-  echo "<br>\n". HTMLspecialChars($msg);
+    if (!$GLOBALS['debug'] ) {
+        return;
+    }
+    echo "<br>\n". HTMLspecialChars($msg);
 }
 
 // Report only if errcheck is set, this is used to test for errors to speed debugging
@@ -1366,10 +1370,10 @@ function gensalt($saltlen)
     return $salt;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /** Moves uploaded file to given directory and (optionally) changes permissions
-*   @return string  error description or empty string */
-function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
+ *   @return string  error description or empty string
+ */
+function aa_move_uploaded_file($varname, $destdir, $perms = 0, $filename = null)
 {
     endslash($destdir);
     if (!$GLOBALS[$varname]) return "No $varname?";
@@ -1388,21 +1392,11 @@ function aa_move_uploaded_file ($varname, $destdir, $perms = 0, $filename = "")
 
     // copy the file from the temp directory to the upload directory, and test for success
 
-    // file uploads are handled differently in PHP >4.0.3
-    list($va,$vb,$vc) = explode(".",phpversion());   // this check work with all possibilities (I hope) -
-    if (($va*10000 + $vb *100 + $vc) >= 40003) {    // '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
-        if (is_uploaded_file($GLOBALS[$varname])) {
-            if (!move_uploaded_file($GLOBALS[$varname], "$destdir$filename")) {
-                return sprintf(_m("Can't move image  %s to %s"), $GLOBALS[$varname],"$destdir$filename");
-            } elseif ($perms) {
-                chmod ($destdir.$filename, $perms);
-            }
-        }
-    } else {   // for php 3.x and php <4.0.3
-        if (!copy($GLOBALS[$varname],"$destdir$filename")) {
-            return sprintf(_m("Can't copy image  %s to %s"), $GLOBALS[$varname],"$destdir$filename");
+    if (is_uploaded_file($GLOBALS[$varname])) {
+        if (!move_uploaded_file($GLOBALS[$varname], "$destdir$filename")) {
+            return sprintf(_m("Can't move image  %s to %s"), $GLOBALS[$varname],"$destdir$filename");
         } elseif ($perms) {
-            chmod($destdir.$filename, $perms);
+            chmod ($destdir.$filename, $perms);
         }
     }
     return "";
@@ -1756,7 +1750,7 @@ class contentcache {
     }
 
     // set new value for key $key
-    function set($access_code, $val) {
+    function set($access_code, &$val) {
         $this->content[md5($access_code)] = $val;
     }
 
@@ -1813,7 +1807,7 @@ class contentcache {
  *        $toexecute = new toexecute;
  *        $toexecute->later($object, array(param1, param2));
  *
- *        Then we create method $toexecute->toexecutelater(param1, param2)
+ *        Then we create method $object->toexecutelater(param1, param2)
  *        in which we will call $object->function_name(param1, param2);
  *
  *  The name of 'toexecutelater' method is fixed - This is because of security.
