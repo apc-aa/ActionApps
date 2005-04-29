@@ -36,7 +36,7 @@ $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require_once "../include/init_page.php3";
 require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once "./sliceexp_text.php3";
+require_once $GLOBALS['AA_BASE_PATH']."admin/sliceexp_text.php3";
 require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
 // Make sure you have permissions to do this

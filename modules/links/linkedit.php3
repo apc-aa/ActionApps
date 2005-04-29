@@ -19,11 +19,11 @@
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
-require_once $GLOBALS[AA_INC_PATH]."util.php3";
-require_once "./constants.php3";
-require_once "./cattree.php3";
-require_once "./util.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/constants.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/cattree.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";
 
 function printChange($field, $change_arr, $original_value="") {
     global $created_by_change; // used for display of initiator of the change
@@ -197,7 +197,7 @@ if ( $r_state['link_id'] ) {                  // not new link
               AND links_changes.changed_link_id=". $r_state['link_id'] ."
               AND links_changes.rejected='n'";
     $db->query($SQL);
-    $delimeter = "";
+    $delimiter = "";
     $change_no = 0;          // number of changes
     while ($db->next_record()) {
         $aa_name_change[]       = $db->f('name');
@@ -216,8 +216,8 @@ if ( $r_state['link_id'] ) {                  // not new link
 
         $created_by_change[]    = perm_username($db->f('created_by'));  // used for display of initiator of the change
 
-        $changeIds .= $delimeter.$db->f('id');   // set of link id's which holds requested changes
-        $delimeter = ',';
+        $changeIds .= $delimiter.$db->f('id');   // set of link id's which holds requested changes
+        $delimiter = ',';
         $change_no++;
     }
 

@@ -28,8 +28,9 @@ $LINKS_LANGUAGE_FILES = array( "en_links_lang.php3" => "en_links_lang.php3",
                                "cz_links_lang.php3" => "cz_links_lang.php3");
 
 
-if ( $template['Links'] )
-    $no_slice_id = true;;       // message for init_page.php3
+if ($template['Links']) {
+    $no_slice_id = true;       // message for init_page.php3
+}
 
 $directory_depth = "../";
 require_once "../../include/init_page.php3";
@@ -40,10 +41,11 @@ require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 require_once $GLOBALS['AA_INC_PATH']."date.php3";
 require_once $GLOBALS['AA_INC_PATH']."modutils.php3";
 require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
-require_once "./util.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
+if ($cancel) {
+    go_url( $sess->url(self_base() . "index.php3"));
+}
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset      = new CVarset();
@@ -168,13 +170,11 @@ list( $name, $slice_url, $lang_file, $owner, $deleted, $slice_owners ) =
 // load module specific data
 $SQL= " SELECT * FROM links WHERE id='$p_source_id'";
 
-$db->query($SQL);
 if ($db->next_record()) {
     while (list($key,$val,,) = each($db->Record)) {
-        if ( EReg("^[0-9]*$", $key)) {
-            continue;
+        if (!is_numeric($key)) {
+            $$key = $val; // variables and database fields have identical names
         }
-        $$key = $val; // variables and database fields have identical names
     }
 }
 $id = unpack_id($db->f("id"));  // correct ids
@@ -189,8 +189,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m('APC ActionApps - Links Admin')?></TITLE>
 </HEAD>
 <?php
-  require_once "./menu.php3";
-  showMenu ($aamenus, "modadmin", "main");
+  require_once $GLOBALS['AA_BASE_PATH']."modules/links/menu.php3";
+  showMenu($aamenus, "modadmin", "main");
 
   echo "<H1><B>" . ( $template['Links'] ? _m("Add Links module") : _m("Edit Links module")) . "</B></H1>";
   PrintArray($err);

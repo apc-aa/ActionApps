@@ -36,7 +36,7 @@ require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 require_once $GLOBALS['AA_INC_PATH']."date.php3";
 require_once $GLOBALS['AA_INC_PATH']."modutils.php3";
-require_once "./util.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/site/util.php3";
 
 if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
@@ -162,10 +162,9 @@ $SQL= " SELECT * FROM site WHERE id='$p_source_id'";
 $db->query($SQL);
 if ($db->next_record()) {
     while (list($key,$val,,) = each($db->Record)) {
-        if (EReg("^[0-9]*$", $key)) {
-            continue;
+        if (!is_numeric($key)) {
+            $$key = $val; // variables and database fields have identical names
         }
-        $$key = $val; // variables and database fields have identical names
     }
 }
 $id = unpack_id($db->f("id"));  // correct ids
@@ -179,7 +178,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m("Site Admin");?></TITLE>
 </HEAD>
 <?php
-    require_once "./menu.php3";
+    require_once $GLOBALS['AA_BASE_PATH']."modules/site/menu.php3";
     showMenu($aamenus, "modadmin", "main");
 
     echo "<H1><B>" . ( $template['W'] ? _m("Add Site") : _m("Edit Site")) . "</B></H1>";

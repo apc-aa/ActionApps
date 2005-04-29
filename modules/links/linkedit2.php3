@@ -4,12 +4,12 @@
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
-require_once $GLOBALS[AA_INC_PATH]."varset.php3";
-require_once "./constants.php3";
-require_once "./util.php3";           // module specific utils
-require_once "./cattree.php3";        // for event handler Event_LinkNew
-require_once "./link.class.php3";     // link object
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/constants.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";           // module specific utils
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/cattree.php3";        // for event handler Event_LinkNew
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/link.class.php3";     // link object
 
 unset($r_state['linkedit']);
 $r_state['linkedit']['old'] = $HTTP_POST_VARS;  // in case of bad input

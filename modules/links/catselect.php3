@@ -9,12 +9,13 @@
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS[AA_INC_PATH]."formutil.php3";
-require_once "./cattree.php3";
-require_once "./util.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/cattree.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";
 
-if ( !$cid )
+if (!$cid) {
     $cid = $r_state['cat_id'];
+}
 
 $cpath = GetCategoryPath( $cid );
 

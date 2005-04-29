@@ -29,12 +29,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once "./lang.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/alerts/lang.php3";
 require_once $GLOBALS['AA_INC_PATH']."item.php3";
 require_once $GLOBALS['AA_INC_PATH']."view.php3";
 require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
-require_once "alerts_sending.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/alerts/alerts_sending.php3";
 
 
 /** This script is possible to run from commandline (so also from cron). The

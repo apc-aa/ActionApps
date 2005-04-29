@@ -32,9 +32,9 @@ http://www.apc.org/
 */
 
 require_once "../../include/config.php3";
-require_once "./xmgettext.php3";
-require_once "./translate.php3";
-require_once "./createlogs.php3";
+require_once $GLOBALS['AA_BASE_PATH']."misc/mgettext/xmgettext.php3";
+require_once $GLOBALS['AA_BASE_PATH']."misc/mgettext/translate.php3";
+require_once $GLOBALS['AA_BASE_PATH']."misc/mgettext/createlogs.php3";
 
 // list of all languages. Useful if you want e.g. to update only one language file.
 $lang_list = array ("cz"     => 1,

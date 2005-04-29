@@ -55,7 +55,7 @@ if ( substr($site_info['state_file'],0,4) == 'http' ) {
     echo "TODO";
 } else {
     // in the following file we should define apc_state variable
-    require_once "./sites/site_".$site_info['state_file'];
+    require_once $GLOBALS['AA_BASE_PATH']."modules/site/sites/site_".$site_info['state_file'];
 }
 
 trace("=","site.php3","precachecheck");
@@ -87,8 +87,8 @@ if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($key_str,$noca
 }
 trace("=","site.php3","precachecheck");
 
-require_once "./util.php3";                      // module specific utils
-require_once "./sitetree.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/site/util.php3";                      // module specific utils
+require_once $GLOBALS['AA_BASE_PATH']."modules/site/sitetree.php3";
 require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
 require_once $GLOBALS['AA_INC_PATH']."easy_scroller.php3";
 require_once $GLOBALS['AA_INC_PATH']."view.php3";

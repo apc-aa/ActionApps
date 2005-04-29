@@ -27,8 +27,8 @@ require_once "../../include/init_page.php3";
 require_once $GLOBALS['AA_INC_PATH'] . "varset.php3";
 require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
 require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once "./util.php3";   // module specific utils
-require_once "./sitetree.php3";   // module specific utils
+require_once $GLOBALS['AA_BASE_PATH']."modules/site/util.php3";   // module specific utils
+require_once $GLOBALS['AA_BASE_PATH']."modules/site/sitetree.php3";   // module specific utils
 
 // ----------------- function definition end -----------------------------------
 
@@ -97,7 +97,7 @@ switch( $akce ) {
     case 'd': $tree->move( $r_spot_id, 'moveDown' );      break;  // Down
     case 'h':                                                     // Hide (Disable)
     case 'e': $flag = $tree->get('flag', $r_spot_id);
-              // this flag is "structural" one - stored in structure (not in 
+              // this flag is "structural" one - stored in structure (not in
               // site_spot table)
               if ($akce == 'h') {
                   $flag |= MODW_FLAG_DISABLE;
@@ -145,7 +145,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </head> <?php
 
 // module specific navigation bar
-require_once "./menu.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/site/menu.php3";
 showMenu($aamenus, "codemanager");
 
 echo '<br><table border=0 cellspacing=0 class=login width="95%"><TR><TD width=200> ';

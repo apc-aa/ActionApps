@@ -31,7 +31,7 @@ require_once menu_include();
 require_once $GLOBALS['AA_INC_PATH']."util.php3";
 require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 require_once $GLOBALS['AA_INC_PATH']."constedit_util.php3";
-require_once "./util.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/alerts/util.php3";
 
 // --------------------------------------------------------------
 

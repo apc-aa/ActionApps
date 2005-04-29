@@ -10,8 +10,8 @@ require_once "../../include/init_page.php3";
 require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 require_once $GLOBALS['AA_INC_PATH']."itemview.php3";
 require_once $GLOBALS['AA_INC_PATH']."item.php3";
-require_once "./util.php3";
-require_once "./linksearch.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/linksearch.php3";
 
 // HTML page start
 HtmlPageBegin();

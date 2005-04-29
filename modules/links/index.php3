@@ -25,17 +25,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "varset.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "itemview.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "item.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "pagecache.php3";
-require_once "./linksearch.php3";
-require_once "./constants.php3";
-require_once "./actions.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "manager.class.php3";
-require_once "./cattree.php3";
-require_once "./util.php3";      // module specific utils
+require_once $GLOBALS['AA_INC_PATH']. "varset.php3";
+require_once $GLOBALS['AA_INC_PATH']. "formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']. "itemview.php3";
+require_once $GLOBALS['AA_INC_PATH']. "item.php3";
+require_once $GLOBALS['AA_INC_PATH']. "pagecache.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/linksearch.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/constants.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/actions.php3";
+require_once $GLOBALS['AA_INC_PATH']. "manager.class.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/cattree.php3";
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";      // module specific utils
 
 
 // Check permissions for this page.
@@ -383,8 +383,8 @@ $bookmarks[1] = _m('All my links');
 $bookmarks[2] = _m('Links to check');
 $bookmarks[3] = _m('Last edited');
 
-require_once "./menu.php3";
-showMenu ($aamenus, "linkmanager", $r_state['bin'], $navbar!="0", $leftbar!="0");
+require_once $GLOBALS['AA_BASE_PATH']."modules/links/menu.php3";
+showMenu($aamenus, "linkmanager", $r_state['bin'], $navbar!="0", $leftbar!="0");
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
