@@ -70,7 +70,7 @@ function PrintUser($usr, $usr_id, $editor_perm) {
        "\" width=50 height=25 border=0></td>\n";
 
   $go_url_arr = array( 'User'        => "um_uedit.php3?usr_edit=1&selected_user=$usr_id",
-                       'Group'       => "um_gedit.php3?usr_edit=1&selected_user=$usr_id",
+                       'Group'       => "um_gedit.php3?grp_edit=1&selected_group=$usr_id",
                        'Reader'      => "#",
                        'ReaderGroup' => "index.php3?change_id=$usr_id" );
   // add link to user settings for superadmins
