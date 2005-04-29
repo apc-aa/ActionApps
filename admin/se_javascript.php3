@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -29,65 +29,57 @@ require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
-  
+if ($cancel) {
+    go_url( $sess->url(self_base() . "index.php3"));
+}
 
 if (!IfSlPerm(PS_FIELDS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
-  exit;
-}  
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
+    exit;
+}
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-//$s_fields = GetTable2Array($SQL);
 
 // update database or get the value
 
-if (get_magic_quotes_gpc() && $javascript) 
+if (get_magic_quotes_gpc() && $javascript) {
     $javascript = stripslashes ($javascript);
-    
-if ($p_slice_id && $update) 
-    tryQuery("UPDATE slice SET javascript=\"".myaddslashes($javascript)."\" 
+}
+
+if ($p_slice_id && $update) {
+    tryQuery("UPDATE slice SET javascript=\"".myaddslashes($javascript)."\"
         WHERE id='$p_slice_id'");
-else {
+} else {
     $db = getDB();
     $db->tquery("SELECT javascript FROM slice WHERE id='$p_slice_id'");
     if ($db->next_record())
         $javascript = $db->f("javascript");
     freeDB($db);
 }
-         
+
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <TITLE><?php echo _m("Field Triggers");?></TITLE>
 
 </HEAD>
-<?php 
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3"; 
-  showMenu ($aamenus, "sliceadmin","javascript");
-  
+<?php
+  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+  showMenu($aamenus, "sliceadmin","javascript");
+
   echo "<H1><B>" . _m("Field Triggers") . "</B></H1>";
   PrintArray($err);
-  echo $Msg;  
+  echo $Msg;
 ?>
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
   FrmTabCaption(_m("JavaScript for fields"));
-/*
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtxt><?php echo _m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3).") ?></td></tr>*/
 ?>
 <tr><td><?php FrmStaticText(_m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."),""); ?></td></tr>
 <tr><td class=tabtxt><hr></td></tr>
 <tr><td class=tabtxt><textarea name="javascript" cols=100 rows=20>
-<?php echo $javascript.'</textarea></td></tr>';
-/*
-    <tr><td class=tabtit colspan=2 align="center">
-    <input type=hidden name=\"update\" value=1>
-    <input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;
-    <input type=submit name=cancel value="'. _m("Cancel") .'">
-    </td></tr></table>*/
-FrmTabSeparator(_m("Available fields and triggers"),array("update", "update"=>array("type"=>"hidden", "value"=>"1"), 
+<?php
+echo $javascript.'</textarea></td></tr>';
+FrmTabSeparator(_m("Available fields and triggers"),array("update", "update"=>array("type"=>"hidden", "value"=>"1"),
                       "cancel"=>array("url"=>"se_fields.php3")),$sess, $slice_id);
 echo '
 </FORM>';
@@ -97,26 +89,27 @@ $SQL = "SELECT id FROM field
         ORDER BY id";
 $db = getDB();
 $db->query($SQL);
-//echo '<table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">';
 echo '
 <tr><td valign=top><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">
 <tr><td class=tabtit>'._m("Field IDs").':</td></tr>';
-while ($db->next_record()) 
+while ($db->next_record())
     echo "<tr><td class=tabtxt>".$db->f("id")."</td></tr>";
 freeDB($db);
 echo '</table>
 </td>
 <td valign=top><table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">
 <tr><td class=tabtit>'._m("Triggers").':</td></tr>
-<tr><td class=tabtxt>'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="http://apc-aa.sourceforge.net/faq/#triggers" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
+<tr><td class=tabtxt>'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="http://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
 <tr><td class=tabtxt><table border="1" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">';
 echo '<tr><td class=tabtit><b>'._m("Field Type").'</b></td><td class=tabtit><b>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</b></td></tr>';
-reset ($js_triggers);
-while (list ($control,$trigs) = each ($js_triggers)) 
+foreach ($js_triggers as $control => $trigs) {
     echo '<tr><td class=tabtxt>'.$control.'</td><td class=tabtxt>'.join($trigs,", ").'</td></tr>';
+}
 echo '
 </table></td></tr>
 </table></td>
 </tr></table>';
 HtmlPageEnd();
-page_close()?>
+page_close()
+
+?>
