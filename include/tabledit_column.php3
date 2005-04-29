@@ -39,7 +39,7 @@ http://www.apc.org/
 * @return nothing
 */
 
-function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false, $record="")
+function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, $record="")
 {
     global $err;
     // value to be shown if the requested value is not a part of the select box array
@@ -147,7 +147,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false,
         switch ($function) {
         case 'show':
             //echo "<INPUT type=\"checkbox\" name=\"$name\"".($val ? " checked" : "").">";
-            FrmSelectEasy ($name, array (0 => _m("no"), 1 => _m("yes")), $val ? 1 : 0);
+            FrmSelectEasy($name, array (0 => _m("no"), 1 => _m("yes")), $val ? 1 : 0);
             break;
         case 'show_ro':
             echo $val ? _m("yes") : _m("no");
@@ -161,8 +161,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false,
         switch ($function) {
         case 'show_ro':
             $fnc = $cview["function"];
-            ShowColumnValueReadOnly ($cview,
-                $fnc ($val), $val);
+            ShowColumnValueReadOnly($cview, $fnc($val), $val);
             break;
         default:
             $err[] = "Only readonly fields may be viewed by userdef function.";
@@ -176,8 +175,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false,
         switch ($function) {
         case 'show_ro':
             $fnc = $cview["function"];
-            ShowColumnValueReadOnly ($cview,
-                $fnc ($record), $val);
+            ShowColumnValueReadOnly($cview, $fnc($record), $val);
             break;
         default:
             $err[] = "Only readonly fields may be viewed by calculated function.";
@@ -197,7 +195,7 @@ function ColumnFunctions ($cview, &$val, $function, $name="", $new_record=false,
                 value=\"".$val."\">";
             break;
         case 'show_ro':
-            ShowColumnValueReadOnly ($cview, $val, $val, $name);
+            ShowColumnValueReadOnly($cview, $val, $val, $name);
             break;
         }
         return;

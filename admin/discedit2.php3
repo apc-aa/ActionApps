@@ -71,7 +71,7 @@ if ($update) {
       $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
       $db->query($SQL);
 
-      $GLOBALS[pagecache]->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
+      $GLOBALS['pagecache']->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
 
       go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
     }
@@ -81,10 +81,11 @@ if ($update) {
 $SQL= " SELECT * FROM discussion WHERE id='".q_pack_id($d_id)."'";
 $db->query($SQL);
 if ($db->next_record())
-  while (list($key,$val,,) = each($db->Record)) {
-     if ( EReg("^[0-9]*$", $key))
-      continue;
-    $$key = $val; // variables and database fields have identical names
+    while (list($key,$val,,) = each($db->Record)) {
+        if (!is_numeric($key)) {
+            $$key = $val; // variables and database fields have identical names
+        }
+    }
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

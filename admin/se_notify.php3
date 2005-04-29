@@ -150,12 +150,13 @@ SELECT notify_holding_item_s,      notify_holding_item_b,
        notify_active_item_edit_s,  notify_active_item_edit_b
  FROM slice WHERE id='".q_pack_id($slice_id)."'";
 $db->query($SQL);
-if ($db->next_record())
-  while (list($key,$val,,) = each($db->Record)) {
-    if ( EReg("^[0-9]*$", $key))
-      continue;
-    $$key = $val; // variables and database fields have identical names
-  }
+if ($db->next_record()) {
+    while (list($key,$val,,) = each($db->Record)) {
+        if (!is_numeric($key)) {
+            $$key = $val; // variables and database fields have identical names
+        }
+    }
+}
 
 // grab variables from email_notify
 $SQL= "SELECT uid, function FROM email_notify WHERE slice_id='".q_pack_id($slice_id)."'";

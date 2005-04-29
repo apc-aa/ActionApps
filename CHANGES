@@ -1,3 +1,20 @@
+04/29/05 - fixed onSubmit javascript trigger behavior - it is handled correctly
+(honzam)   even if the form is using "return BeforeSubmit()" - Thanks to Omar
+           Martinez @ Colnodo
+         - fixed some bugs "exact" mode interserver feeding
+         - feed_mode displayed in APC RSS feed test page
+         - itemview class prepared for row_delimiter parameter which will allow
+           to print code between items in view
+         - fixed include paths to be absolute and not relative. Relative paths
+           in require_once makes some problem on AA install on WinXP.
+           Thanks belongs to Omar Martinez @ Colnodo
+         - fixed link to javascript triggers documentation (FAQ)
+         - fixed link to group setting (from permissions setting page)
+         - fixed QueryZids()'s "ALL" parameter for searching all bins
+         - fix sql_update.php3 - removed config and d_expiry_limit fields
+           from slice table - was unused for a long time
+         - fix - Anonymous Form Wizard result is in correct encoding, now
+         - speed optimalizations and small fixes like typos delimeter->delimiter
 04/25/05 - new possibility of ceating exact copy of the remote slice through
 (honzam)   AARSS (XML exchange) (only short_id is changed)
          - ItemContent class used for grabbing data from form - newer

@@ -554,7 +554,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
       $itemview->parameter('start_cat',   $view_param['start_cat']);
 
       if ( !isset($zids) || $zids->count() <= 0) {
-          $ret = $itemview->unaliasWithScroller($noitem_msg);
+          $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
           return $ret;
       }
 
@@ -666,7 +666,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
 //    huhl("XYZZY:v578, msg=",$noitem_msg);
         $ret = new_unalias_recurent($noitem_msg,"",$level,$maxlevel,null,null,$aliases);
 */
-        $ret = $itemview->unaliasWithScroller($noitem_msg);
+        $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
       }
       // 	if ( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
       trace("-");

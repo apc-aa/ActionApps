@@ -782,7 +782,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         $reading_permitted = $ignore_reading_password
            || ($db->f("reading_password") == "")
            || ($db->f("reading_password") == $GLOBALS["slice_pwd"]);
-        $item_permitted [$db->f("id")] = $reading_permitted;
+        $item_permitted[$db->f("id")] = $reading_permitted;
 
         $n_items = $n_items+1;
         reset( $db->Record );
@@ -792,16 +792,16 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             // WHERE for query to content table
             $new_sel_in .= "$delim '". quote($db->f("id")) ."'";
             $delim = ",";
-        } else
+        } else {
             $foo_id = unpack_id128($db->f("id"));
+        }
         // Note that it stores into the $content[] array based on the id being used which
         // could be either shortid or longid, but is NOT tagged id.
-        while ( list( $key, $val ) = each( $db->Record )) {
-            if ( EReg("^[0-9]*$", $key))
-                continue;
-            $content[$foo_id][CreateFieldId($key)][] =
-               array("value" => $reading_permitted ? $val
-                     : _m("Error: Missing Reading Password"));
+        while (list($key, $val) = each($db->Record)) {
+            if (!is_numeric($key)) {
+                $content[$foo_id][CreateFieldId($key)][] = array(
+                     "value" => $reading_permitted ? $val : _m("Error: Missing Reading Password"));
+            }
         }
     }
 
@@ -818,8 +818,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
     // construct WHERE query to content table if used short_ids
     if ( $use_short_ids) {
-        $sel_in = (count($translate) > 1) ?
-                       " IN ( $new_sel_in ) " : " = $new_sel_in ";
+        $sel_in = (count($translate) > 1) ? " IN ( $new_sel_in ) " : " = $new_sel_in ";
     }
 
     if ( isset( $fields2get ) AND is_array( $fields2get ) AND (count($fields2get)>0 )) {

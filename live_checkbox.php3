@@ -47,10 +47,10 @@ require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
 
 $image_path = $AA_BASE_PATH."images/";
 
-reset ($live_checkbox);
-list ($short_id, $ar) = each ($live_checkbox);
-reset ($ar);
-list ($field_id, $action) = each ($ar);
+reset($live_checkbox);
+list($short_id, $ar) = each ($live_checkbox);
+reset($ar);
+list($field_id, $action) = each ($ar);
 
 $db = new DB_AA;
 $db->query("SELECT id, slice_id FROM item WHERE short_id = $short_id");
@@ -60,11 +60,12 @@ if ($db->next_record()) {
 }
 else failed();
 
-if (!IfSlPerm(PS_EDIT_ALL_ITEMS))
-    failed ();
+if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+    failed();
+}
 
 if (!$debug) {
-  header ("Content-Type: image/gif");
+    header ("Content-Type: image/gif");
 }
 $content4ids = GetItemContent($item_id);
 reset($content4ids);
