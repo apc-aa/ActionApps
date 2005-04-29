@@ -44,7 +44,6 @@ require_once $GLOBALS['AA_INC_PATH']."stringexpand.php3";
  * @see itemview
  */
 class itemview {
-  var $db;                  // not used anymore
   var $zids;               // zids to show
   var $from_record;        // from which index begin showing items
   var $num_records;        // number of shown records
@@ -66,13 +65,13 @@ class itemview {
   function itemview( $slice_info, $fields, $aliases, $zids, $from, $number,
                      $clean_url, $disc="", $get_content_funct='GetItemContent'){
     //constructor
-    //Not used anymore: $this->db = $db;
     $this->slice_info = $slice_info;  // $slice_info is array with this fields:
                                       //      - print_view() function:
                                       //   compact_top, category_sort,
                                       //   category_format, category_top,
                                       //   category_bottom, even_odd_differ,
                                       //   even_row_format, odd_row_format,
+                                      //   row_delimiter
                                       //   compact_remove, compact_bottom,
                                       //   vid - used for scroller
                                       //      - print_item() function:
@@ -219,7 +218,7 @@ class itemview {
     $out .= "<a name=\"disc\"></a><form name=discusform>";
     $cnt = 0;     // count of discussion comments
 
-    $out .= $this->unaliasWithScroller($this->slice_info['d_top']);           // top html code
+    $out .= $this->unaliasWithScrollerEasy($this->slice_info['d_top']);           // top html code
 
     if ($d_tree) {    // if not empty tree
       $CurItem->setformat( $this->slice_info['d_compact']);
@@ -249,8 +248,8 @@ class itemview {
 
     // buttons bar
      $CurItem->setformat($this->slice_info['d_bottom']);        // bottom html code
-     $col["d_buttons......."][0]['value'] = $this->unaliasWithScroller($this->get_disc_buttons($cnt==0));
-     $col["d_buttons......."][0]['flag'] = FLAG_HTML;
+     $col["d_buttons......."][0]['value'] = $this->unaliasWithScrollerEasy($this->get_disc_buttons($cnt==0));
+     $col["d_buttons......."][0]['flag']  = FLAG_HTML;
      $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
 
      // set $col["d_url_fulltext.."], $col["d_url_reply....."], $col["d_disc_url......"]
@@ -358,14 +357,22 @@ class itemview {
     return $out;
   }
 
-  function unaliasWithScroller($txt, $item=null) {
-    // get HTML code, unalias it and add scroller, if needed
-    $level = 0; $maxlevel = 0;
-    // If no item is specified, then still try and expand aliases using parameters
-    if (! $item) {
-        $item = new item(null,$this->aliases,null,null,null,$this->parameters);
-    }
-    return new_unalias_recurent($txt,"",$level,$maxlevel,$item,$this,null);
+  /** Just wrapper for unaliasWithScroller() without $item parameter */
+  function unaliasWithScrollerEasy(&$txt) {
+      // we just need to pass something as item parameter 
+      // in unaliasWithScroller (in order we can use reference, there)
+      $fooparameter = null;    
+      return $this->unaliasWithScroller($txt, $fooparameter);
+  }
+  
+  function unaliasWithScroller(&$txt, &$item) {
+      // get HTML code, unalias it and add scroller, if needed
+      $level = 0; $maxlevel = 0;
+      // If no item is specified, then still try and expand aliases using parameters
+      if (!$item) {
+          $item = new item(null,$this->aliases,null,null,null,$this->parameters);
+      }
+      return new_unalias_recurent($txt,"",$level,$maxlevel,$item,$this,null);
   }
 
   // set the aliases from the slice of the item ... used to view items from
@@ -554,6 +561,9 @@ class itemview {
                 $top_html_already_printed = true;
             }
 
+            // should we display row_delimiter (see category_top below!)
+            $print_delimiter = (($i > 0) AND isset($this->slice_info['row_delimiter']));
+
             // print category name if needed
             if ($this->group_fld AND strcasecmp($catname,$oldcat)) {
                 if ( $this->num_records >= 0 ) {
@@ -564,6 +574,9 @@ class itemview {
                     $out .= $this->unaliasWithScroller($this->slice_info['category_top'], $CurItem);
                     $out .= $this->unaliasWithScroller($this->slice_info['category_format'], $CurItem);
                     $category_top_html_printed = true;
+
+                    // do not print row_delimiter if we printed category top
+                    $print_delimiter           = false;
                 } else {
                     // used to display n-th group only
                     $group_n++;
@@ -575,10 +588,15 @@ class itemview {
                 continue;    // we have to display just -$this->num_records-th group
             }
 
+
             // print item
             $CurItem->setformat( (($i%2) AND $this->slice_info['even_odd_differ']) ?
                                  $this->slice_info['even_row_format'] : $this->slice_info['odd_row_format'],
                                  $this->slice_info['compact_remove'] );
+
+            if ($print_delimiter) {
+                $out .= $this->unaliasWithScroller($this->slice_info['row_delimiter'], $CurItem);
+            }
 
             $out .= $CurItem->get_item();
 
@@ -714,8 +732,7 @@ class itemview {
             $rowview = false;
         }
 
-        $out = $this->unaliasWithScroller(
-               $this->resolve_calendar_aliases ($this->slice_info['compact_top']), $CurItem);
+        $out = $this->unaliasWithScroller($this->resolve_calendar_aliases($this->slice_info['compact_top']), $CurItem);
 
         if (!$rowview) {
             for ($cell = $min_cell; $cell <= $max_cell; ++$cell) {
@@ -799,8 +816,7 @@ class itemview {
             }
         }
 
-        $out .= $this->unaliasWithScroller(
-               $this->resolve_calendar_aliases ($this->slice_info['compact_bottom']), $CurItem);
+        $out .= $this->unaliasWithScroller($this->resolve_calendar_aliases($this->slice_info['compact_bottom']), $CurItem);
         trace("-");
         return $out;
     }
