@@ -751,7 +751,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",    // gro
           case 'EXPIRED' : $numeric_type = AA_BIN_EXPIRED; break;  // 4
           case 'HOLDING' : $numeric_type = AA_BIN_HOLDING; break;  // 8
           case 'TRASH'   : $numeric_type = AA_BIN_TRASH;   break;  // 16
-          case 'ALL'     : $numeric_type = (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH);
+          case 'ALL'     : $numeric_type = (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH); break;
           default        : $numeric_type = AA_BIN_ACTIVE;  break;  // 1
       }
   } else { /* strange case, I think never possible :) */
