@@ -20,8 +20,8 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."tabledit.php3";
-require_once $GLOBALS['AA_INC_PATH']."tv_common.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
+require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
 require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------
@@ -111,11 +111,14 @@ function GetAARSS_tv($viewID, $processForm = false) {
                 "view" => array ("readonly" => true),
                 "caption" => _m('Remote slice')),
             "remote_slice_id" => array (
-                "view" => array ("readonly" => true),
-                "caption" => _m('Remote slice')),
+                "view" => array ("readonly" => true, "type"=>"userdef", "function" => 'unpack_id'),
+                "caption" => _m('Remote slice ID')),
             "slice_id" => array (
+                "view" => array ("readonly" => true, "type"=>"userdef", "function" => 'unpack_id'),
+                "caption" => _m('Local slice ID')),
+            "feed_mode" => array (
                 "view" => array ("readonly" => true),
-                "caption" => _m('Local slice')),
+                "caption" => _m('Feed mode')),
             "_server_url_" => array (
                 "table" => "nodes",
                 "field" => "server_url",
@@ -143,11 +146,11 @@ echo $Msg;
 
 $script = $sess->url("aarsstest.php3");
 
-$tabledit = new tabledit ('aarsstest', $script, $cmd, $aarss_tv, $AA_INSTAL_PATH."images/", $sess, $func);
+$tabledit = new tabledit('aarsstest', $script, $cmd, $aarss_tv, $AA_INSTAL_PATH."images/", $sess, $func);
 $err = $tabledit->view($where);
 if ($err) echo "<b>$err</b>";
 
 HTMLPageEnd();
-page_close ();
+page_close();
 
 ?>
