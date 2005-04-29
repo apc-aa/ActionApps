@@ -19,11 +19,16 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH']."itemview.php3";
+require_once $GLOBALS['AA_INC_PATH']."item.php3";
+
 define("HTML", 0);
 define("PLAIN",1);
 
-define("FEEDTYPE_RSS",1);
-define("FEEDTYPE_APC",0);
+define("FEEDTYPE_RSS",  1);
+define("FEEDTYPE_APC",  2);
+define("FEEDTYPE_EXACT",3);
 
 // server module's error message
 define("ERR_NO_SLICE","Error 1");
@@ -138,100 +143,6 @@ function GetCategoryIdFromValue($cat_group, $value) {
     return $ret;
 }
 
-/** Update the slice categories in the ef_categories table,
- *  that is, if the set of possible slice categories has changed
- */
-function updateCategories($feed_id, &$l_categs, &$ext_categs, &$cat_refs, &$categs) {
-    global $debugfeed;
-    $db = getDB();
-    // add new categories or update categories' fields
-    if (isset($cat_refs) && is_array($cat_refs)) {
-        foreach ($cat_refs as $r_cat_id => $v) {
-            $category = $categs[$r_cat_id];
-
-            if ($ext_categs[$r_cat_id])  {
-                // remote category is in the ef_categories table, so update name and value
-                $SQL = "UPDATE ef_categories SET category_name='".addslashes($category['name'])."', category='".addslashes($category['value'])."'
-                         WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
-                if ($debugfeed >= 8) print("\n<br>$SQL");
-                $db->query($SQL);
-            } else {
-                $l_cat_id = MapDefaultCategory($l_categs,$category['value'], $category['catparent']);
-                $SQL = "INSERT INTO ef_categories VALUES ('".addslashes($category['value'])."','".addslashes($category['name'])."',
-                           '".q_pack_id($category['id'])."','".$feed_id."','".q_pack_id($l_cat_id)."','0')";
-                if ($debugfeed >= 8) print("\n<br>$SQL");
-                $db->query($SQL);
-            }
-        }
-    }
-
-    // remove the categories from table, which were not sent
-    if (isset($ext_categs) && is_array($ext_categs)) {
-        foreach ( $ext_categs as $r_cat_id => $v ) {
-            // 'AA_Other_Categor' and 'AA_The_Same_Cate' are keywords - do not delete
-            if (isset($cat_refs[$r_cat_id]) OR (q_pack_id($r_cat_id)=='AA_Other_Categor')) {
-                continue;
-            }
-            $SQL = "DELETE FROM ef_categories WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
-            if ($debugfeed >= 8) print("\n<br>$SQL");
-            $db->query($SQL);
-        }
-    }
-    freeDB($db);
-}
-
-/** Update the fields mapping from the remote slice to the local slice
- *  Updates the field names and adds new fields
- */
-function updateFieldsMapping($feed_id, &$l_slice_fields, $l_slice_id, $r_slice_id, &$field_refs, &$fields) {
-    global $debugfeed;
-
-    list($ext_map,$field_map) = GetExternalMapping($l_slice_id, $r_slice_id);
-    $p_l_slice_id             = q_pack_id($l_slice_id);  // local slice id
-    $p_r_slice_id             = q_pack_id($r_slice_id);  // remote slice id
-
-    // add new ones
-    $db = getDB();
-    if ( isset($field_refs) AND is_array($field_refs) ) {
-        foreach ( $field_refs as $r_field_id => $val ) {
-            if ($ext_map && $ext_map[$r_field_id]) {
-                // remote field is in the feedmap table => update name
-                $new_name = quote($fields[$r_field_id]['name']);
-
-                // update if field name changed on remote AA
-                if ($ext_map[$r_field_id] != $new_name) {
-                    $SQL = "UPDATE feedmap SET from_field_name='".quote($fields[$r_field_id]['name'])."'
-                             WHERE from_slice_id='$p_r_slice_id'
-                               AND to_slice_id='$p_l_slice_id'
-                               AND from_field_id='$r_field_id'";
-                    if ($debugfeed >= 8) print("\n<br>$SQL");
-                    $db->query($SQL);
-                }
-            } else {
-                // add new ones
-                $SQL = "INSERT INTO feedmap VALUES('$p_r_slice_id','$r_field_id','$p_l_slice_id','$r_field_id',
-                           '".FEEDMAP_FLAG_EXTMAP ."','','".quote($fields[$r_field_id]['name'])."')";
-                if ($debugfeed >= 8) print("\n<br>$SQL");
-                $db->query($SQL);
-            }
-        }
-    }
-    if (!$ext_map) {
-        freeDB($db);
-        return;
-    }
-    foreach ( $ext_map as $r_field_id => $v ) {
-        if (!$field_refs[$r_field_id]) {
-            $SQL = "DELETE FROM feedmap WHERE from_slice_id='$p_r_slice_id'
-                       AND to_slice_id='$p_l_slice_id'
-                       AND from_field_id='$r_field_id'";
-            if ($debugfeed >= 8) print("\n<br>$SQL");
-            $db->query($SQL);
-        }
-    }
-    freeDB($db);
-}
-
 /** Returns first field id of specified type */
 function GetBaseFieldId( &$fields, $ftype ) {
     $no = 10000;
@@ -269,31 +180,32 @@ function GetGroupConstants($slice_id) {
 }
 
 function MapDefaultCategory(&$categories, $value, $parent_id) {
-
-  reset($categories);       // try to find the same category
-  while (list($to_id,$v) = each($categories)) {
-    if ($v['value'] == $value)
-      return $to_id;
-  }
-  reset($categories);       // try to find the same parent category
-  while (list($to_id,$v) = each($categories)) {
-    if ($v[parent_id] == $parent_id)
-      return $to_id;
-  }
-  // return the first category
-  reset($categories);
-  return key($categories);
+    // try to find the same category
+    foreach ( $categories as $to_id => $v) {
+        if ($v['value'] == $value) {
+            return $to_id;
+        }
+    }
+    // try to find the same parent category
+    foreach ($categories as $to_id => $v) {
+        if ($v['parent_id'] == $parent_id) {
+            return $to_id;
+        }
+    }
+    // return the first category
+    reset($categories);
+    return key($categories);
 }
 
 function unixstamp_to_iso8601($t) {
     $tz=date("Z", $t)/60;
     $tm=$tz % 60;
     $tz=$tz/60;
-    if ($tz<0) { 
+    if ($tz<0) {
         $ts="-";
         $tz=-$tz;
-    } else { 
-        $ts="+"; 
+    } else {
+        $ts="+";
     }
     $tz=substr("0" . $tz, -2);
     $tm=substr("0" . $tm, -2);
@@ -349,5 +261,56 @@ function name2rssfeed($slice_id,$name) {
     freeDB($db);
     return $res;
 }
+
+/** used as parameter for $itemview in generating item_id-lastedit pair */
+function GetXml_GetContent(&$zids) {
+    return GetItemContentMinimal($zids, array('id', 'last_edit'));
+}
+
+class LastEditList {
+    var $lastlist = null;
+
+    function LastEditList() {
+    }
+
+    /** return list of items with last_edit date (id-last_edit,) used for 'exact'
+     *  feeding between slices
+     */
+    function setFromSlice($conds, &$slice) {
+        ParseEasyConds($conds);
+        $zids    = QueryZIDs($slice->fields('record'), $slice->unpacked_id(), $conds, '', '', 'ALL');
+        $format  = array('odd_row_format' => '{id..............}-{last_edit.......}',
+                         'row_delimiter'  => ',');
+        $itemview = new itemview($format, '', '', $zids,
+                                           0,       // first item
+                                           $zids->count(), // item count
+                                           '',      // not necessary
+                                           '',      // no discussion settings
+                                           'GetXml_GetContent');
+        $this->lastlist = $itemview->get_output_cached("view");
+    }
+
+    function setList($list) {
+        $this->lastlist = $list;
+    }
+
+    function printList() {        // print() can't be name of the method :-( -
+        echo $this->lastlist;     // parse error, unexpected T_PRINT, expecting
+    }                             // T_STRING (php 4.3.10),
+                                  // so I postfixed all functions with *List :-(
+
+    function getList() {
+        return $this->lastlist;
+    }
+
+    function getPairs() {
+        foreach (explode(',', $this->lastlist) as $pair) {
+            list($id,$time) = explode('-', $pair);
+            $ret[$id]       = $time;
+        }
+        return $ret;
+    }
+}
+
 
 ?>

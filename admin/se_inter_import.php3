@@ -29,24 +29,24 @@ http://www.apc.org/
 require_once "../include/init_page.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
-  MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
-  exit;
+    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
+    exit;
 }
 require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
 
 $p_slice_id = q_pack_id($slice_id);
 
 if (isset($feed_id)) {
-  // delete mode
-
-  // delete mapping from feedmap table
-  $db->query("SELECT remote_slice_id FROM external_feeds WHERE feed_id='$feed_id' AND slice_id='$p_slice_id'");
-  if ($db->next_record()) {
-    $remote_slice_id = quote($db->f('remote_slice_id'));
-    $db->query("DELETE FROM feedmap WHERE from_slice_id='$remote_slice_id' AND to_slice_id='$p_slice_id'");
-  }
-  $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");      // delete categories
-  $db->query("DELETE FROM external_feeds WHERE feed_id='$feed_id'");     // delete feed
+    // delete mode
+    
+    // delete mapping from feedmap table
+    $db->query("SELECT remote_slice_id FROM external_feeds WHERE feed_id='$feed_id' AND slice_id='$p_slice_id'");
+    if ($db->next_record()) {
+        $remote_slice_id = quote($db->f('remote_slice_id'));
+        $db->query("DELETE FROM feedmap WHERE from_slice_id='$remote_slice_id' AND to_slice_id='$p_slice_id'");
+    }
+    $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");      // delete categories
+    $db->query("DELETE FROM external_feeds WHERE feed_id='$feed_id'");     // delete feed
 }
 
 
@@ -58,16 +58,16 @@ $ext_feeds = GetTable2Array($SQL, 'feed_id');
 if ($ext_feeds AND is_array($ext_feeds)) {
     foreach ($ext_feeds as $k => $v) {
         if ($v['feed_mode']=='exact') {
-            $text2show       = '(=)';
+            $text2show       = '(=) ';
             $show_exact_help = true;
         } else {
-            $text2show       = '   ';
+            $text2show       = '    ';
         }
         $text2show .= $v['node_name'];
         if ($v['node_name'] != $v['name']) {
-            $text2show .= ' - '. _m('Missing!!!');
+            $text2show .= ' -  '. _m('Missing!!!');
         }
-        $ext_feeds[$k] = str_pad($text2show,35)."  ".$v['remote_slice_name'];
+        $ext_feeds[$k] = str_pad($text2show,35)." ".$v['remote_slice_name'];
     }
 }
 
@@ -116,8 +116,8 @@ function Submit() {
 <?php
   $useOnLoad = true;
   require_once $GLOBALS['AA_INC_PATH']."menu.php3";
-  showMenu ($aamenus, "sliceadmin","n_import");
-
+  showMenu($aamenus, "sliceadmin","n_import");
+  
   echo "<H1><B>" . _m("Inter node import settings") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
@@ -127,8 +127,8 @@ function Submit() {
 <form method=post name="f" action="<?php echo $sess->url(self_base() ."se_inter_import2.php3") ?>" onSubmit="return Submit()" >
 <?php
   FrmTabCaption(_m("Existing remote imports into the slice") ." <b>$r_slice_headline</b>");
-  FrmInputMultiSelect('feed_id', _m('Imported slices'), $chan, '', 5, false, true, _m('feeds prefixed by (=) are "exact copy" feeds'));
-  FrmTabSeparator(_m("All remote nodes"), array('type'=>'button', 'add'=>'onClick="Delete()"'));
+  FrmInputMultiSelect('feed_id', _m('Imported slices'), $ext_feeds, '', 5, false, true, _m('feeds prefixed by (=) are "exact copy" feeds'));
+  FrmTabSeparator(_m("All remote nodes"), array("delete" => array('value'=>_m("Delete"),'type'=>'button', 'add'=>'onClick="Delete()"')));
   FrmInputMultiSelect('rem_nodes', _m('Remote node'), $nodes, $node, 5, false, true);
   FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>

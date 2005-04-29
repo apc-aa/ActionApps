@@ -62,6 +62,7 @@ require_once $GLOBALS['AA_INC_PATH']."util.php3";
 require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 require_once $GLOBALS['AA_INC_PATH']."csn_util.php3";
 require_once $GLOBALS['AA_INC_PATH']."convert_charset.class.php3";
+require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
 
 //-------------------------- Constants -----------------------------------------
 
@@ -155,7 +156,7 @@ function GetXMLFields( $slice_id, &$slice_fields, &$xml_fields_refs, &$xml_field
     $xml_fields_refs.="\t</rdf:Bag></aa:fields>\n";
 }
 
-function GetXMLCategories( $slice_id, &$slice_fields, &$xml_categories_refs, &$xml_categories ) {
+function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
     global $db;
 
     $group_id = GetCategoryGroup($slice_id);
@@ -177,12 +178,12 @@ function GetXMLCategories( $slice_id, &$slice_fields, &$xml_categories_refs, &$x
     $xml_categories_refs.="\t</rdf:Bag></aa:categories>\n";
 }
 
-function CreateXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$xml_items_refs,$time) {
+function GetXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$xml_items_refs,$time) {
     $sli = GetSliceInfo($slice_id);
     echo "\t<channel rdf:about=\"".AA_INSTAL_URL."slices/$slice_id\">\n".
-                   "\t\t<title>".code($sli[name])."</title>\n".
-                   "\t\t<description>".code($sli[description])."</description>\n".
-                   "\t\t<link>".code($sli[slice_url])."</link>\n".
+                   "\t\t<title>".code($sli['name'])."</title>\n".
+                   "\t\t<description>".code($sli['description'])."</description>\n".
+                   "\t\t<link>".code($sli['slice_url'])."</link>\n".
                    "\t\t<aa:newestitemtimestamp>$time</aa:newestitemtimestamp>\n".
                    "\t\t<dc:identifier>$slice_id</dc:identifier>\n".
                    $xml_fields_refs.
@@ -198,7 +199,7 @@ function GetBaseFieldContent(&$slice_fields, $ftype, &$content4id) {
     return ($cont['flag'] & HTML_FLAG) ? strip_tags($cont['value']) : $cont['value'];
 }
 
-function GetXMLFieldData($slice_id,&$slice_fields, $field_id, &$content4id) {
+function GetXMLFieldData($slice_id, $field_id, &$content4id) {
     global $FORMATS;
 
     $cont_vals = $content4id[$field_id];
@@ -309,7 +310,7 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
         if (isset($rss[$k])) {          // do not create rss elements
             continue;
         }
-        $xml_items .= GetXMLFieldData($slice_id,$slice_fields, $k, $content4id);
+        $xml_items .= GetXMLFieldData($slice_id, $k, $content4id);
 
     }
     $xml_items .="\t</rdf:Bag></aa:fielddatacont>\n".
@@ -371,20 +372,21 @@ function RestrictIdsByCategory( &$ids, &$categories, $slice_id, &$content, $cat_
     return $new_ids;
 }
 
-
 //------------------------------------------------------------------------------
 
 $db = new DB_AA;
 
 // check the node_name and password against the nodes table's data
-if ( !CheckNameAndPassword($node_name, $password ))
-Error(ERR_PASSWORD);
+if (!CheckNameAndPassword($node_name, $password)) {
+    Error(ERR_PASSWORD);
+}
 
 $xml_channel = $used_fields = $xml_items = "";
 
 if (!$slice_id) {
 
-    /**  feed establishing mode */
+    /**  feed establishing mode --------------------------- */
+
     $slice_ids = GetFeedingSlices( $node_name, $user );
     if (!$slice_ids) {
         Error(ERR_NO_SLICE);
@@ -393,27 +395,65 @@ if (!$slice_id) {
     foreach ($slice_ids as $sl_id) {
         $GLOBALS['g_slice_encoding'] = getSliceEncoding($sl_id);
         list( $slice_fields,) = GetSliceFields( $sl_id );
+        $xml_categories_refs = $xml_fields_refs = "";      // clear fields and categories for this channel
         GetXMLFields(     $sl_id, $slice_fields, $xml_fields_refs,  $xml_fields);   // get fields
-        GetXMLCategories( $sl_id, $slice_fields, $xml_categories_refs, $xml_categories ); //get categories
-        CreateXMLChannel( $sl_id, $xml_fields_refs, $xml_categories_refs,$xml_items_refs,$time); // echo channel
-        $xml_categories_refs= $xml_fields_refs = "";      // clear fields and categories for next channel
+        GetXMLCategories( $sl_id, $xml_categories_refs, $xml_categories ); //get categories
+        echo GetXMLChannel( $sl_id, $xml_fields_refs, $xml_categories_refs, $xml_items_refs, $time); // echo channel
     }
+    echo $xml_fields;
+    echo $xml_categories;
+    echo "</rdf:RDF>";
+
+    exit;
+}
+
+/**  item feeding mode -------------------------------- */
+if (!CheckFeedingPermissions($slice_id, $node_name, $user)) {
+    Error("Invalid permissions - slice_id: $slice_id, node_name: $node_name, user:$user");
+}
+$GLOBALS['g_slice_encoding'] = getSliceEncoding($slice_id);
+
+$slice = new slice($slice_id);
+
+if ($exact AND !$ids) {
+
+    /** newer - 'exact' feeding mode based on conditions
+     *
+     *  Initial stage - return list of items with last_edit date (id-last_edit,)
+     *  Caller side then decides, which items it wants and send us ids (see
+     *  below)
+     */
+    $list = new LastEditList();
+    $list->setFromSlice($conds, $slice);  // no conditions - all items
+    $list->printList();
+    exit;
+}
+
+if ($ids) {
+
+    /** newer - 'exact' feeding mode based on conditions - continue
+     *
+     *  Second step of feeding (see above) - Caller side selects ids it wants
+     *  we will send it as normal apc rss feed
+     */
+    $ids           = explode('-',$ids);
+    $restrict_zids = new zids($ids);
+    $zids          = QueryZIDs($slice->fields('record'), $slice_id, $conds, '', '', 'ALL', '', 0, $restrict_zids);
+    $ids           = $zids->longids();
+    if ($ids) {
+        $content = GetItemContent($ids);     // get the content of all items
+        $xml_items_refs = GetXMLItemsRefs($ids);
+    }
+
 } else {
 
-    /** feeding mode */
-    if (!CheckFeedingPermissions($slice_id, $node_name, $user)) {
-        Error("Invalid permissions - slice_id: $slice_id, node_name: $node_name, user:$user");
-    }
-    $GLOBALS['g_slice_encoding'] = getSliceEncoding($slice_id);
-
-    echo $XML_BEGIN;
-    list( $slice_fields,) = GetSliceFields( $slice_id );
+    /** old good apc item feeding mode */
 
     // fix date (sometimes start_timestamp contains space (wrongly) instead of
     // plus '+' sign (besause wrong url where + is translated to space)
     $start_timestamp      = str_replace(' ', '+', trim($start_timestamp));
     $start_timestamp      = iso8601_to_unixstamp($start_timestamp);
-    $cat_field            = GetCategoryFieldId($slice_fields);
+    $cat_field            = GetCategoryFieldId($slice->fields('record'));
 
     $p_slice_id           = q_pack_id($slice_id);
 
@@ -451,19 +491,21 @@ if (!$slice_id) {
         }
         $xml_items_refs = GetXMLItemsRefs($ids);
     }
-    GetXMLFields(     $slice_id, $slice_fields, $xml_fields_refs,  $xml_fields);   // get fields and fields refs
-    GetXMLCategories( $slice_id, $slice_fields, $xml_categories_refs, $xml_categories ); //get categories and cat refs
-    CreateXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs,$xml_items_refs,$time); // echo channel
 }
+
+echo $XML_BEGIN;
+GetXMLFields(     $slice_id, $slice->fields('record'), $xml_fields_refs,  $xml_fields);   // get fields and fields refs
+GetXMLCategories( $slice_id, $xml_categories_refs, $xml_categories ); //get categories and cat refs
+echo GetXMLChannel( $slice_id, $xml_fields_refs, $xml_categories_refs,$xml_items_refs,$time); // echo channel
 
 // Channel(s) was already printed, so print fields and categories and also items (feeding mode)
 echo $xml_fields;
 echo $xml_categories;
 
 if ($slice_id && $ids) {        // feeding mode
-    CreateXMLItems($slice_id, $ids, $content, $slice_fields);
+    CreateXMLItems($slice_id, $ids, $content, $slice->fields('record'));
 }
 
-echo "</rdf:RDF>"
+echo "</rdf:RDF>";
 
 ?>
