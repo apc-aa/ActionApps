@@ -134,7 +134,7 @@ function Defaults() {
   FrmTextarea("admin_format_bottom", _m("Bottom HTML"), $admin_format_bottom,
               4, 60, false, _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1);
   FrmInputText("admin_remove", _m("Remove strings"), $admin_remove, 254, 50, false,
-               _m("Removes empty brackets etc. Use ## as delimeter."), DOCUMENTATION_URL);
+               _m("Removes empty brackets etc. Use ## as delimiter."), DOCUMENTATION_URL);
   FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $admin_noitem_msg,
               4, 60, false, _m("Code to be printed when no item is filled (or user have no permission to any item in the slice)"), DOCUMENTATION_URL, 1);
   PrintAliasHelp(GetAliasesFromFields($fields), $fields, false, $form_buttons);

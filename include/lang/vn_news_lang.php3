@@ -632,7 +632,7 @@ $_m["HTML code which appears at the bottom of slice area"]
 # admin/se_admin.php3, row 137
 # admin/se_compact.php3, row 225
 # admin/se_fulltext.php3, row 153
-$_m["Removes empty brackets etc. Use ## as delimeter."]
+$_m["Removes empty brackets etc. Use ## as delimiter."]
  = "";
 
 # admin/se_admin.php3, row 139

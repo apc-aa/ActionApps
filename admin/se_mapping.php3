@@ -77,7 +77,7 @@ foreach ($g_modules as  $k => $v) {
         continue;
     }
     if ($first AND isset($impslices) AND is_array($impslices)) { 
-        $impslices[0] = '---------------';             // put delimeter there
+        $impslices[0] = '---------------';             // put delimiter there
     }
     $impslices[$k] = $v['name'];
     $first=false;

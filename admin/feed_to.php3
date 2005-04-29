@@ -87,7 +87,7 @@ if ( $i==1 ) {   // can't feed to any slice
         var retval='';
         var inputname;
         var radiovalue = '';
-        var delimeter = '';
+        var delimiter = '';
 
         // prepare returnvalue
         for ( var i=0; i<len; i++ ) {
@@ -95,8 +95,8 @@ if ( $i==1 ) {   // can't feed to any slice
             if ( inputname.substring(0,1) == 'x') {     // slices radiobuttons
                 radiovalue = document.incf.elements[i].value;
                 if ( (radiovalue > 0) && (document.incf.elements[i].checked)) {
-                    retval += delimeter + radiovalue + '-' + inputname.substring(1);
-                    delimeter=',';
+                    retval += delimiter + radiovalue + '-' + inputname.substring(1);
+                    delimiter=',';
                 }
             }
         }

@@ -507,7 +507,7 @@ class item {
   function f_0($col, $param="") { return ""; }
 
   // print due to html flag set (escape html special characters or just print)
-  // param: delimeter - used to separate values if the field is multi
+  // param: delimiter - used to separate values if the field is multi
   function f_h($col, $param="") {
       $values = $this->getvalues($col);
       if ( $param AND $values) {  // create list of values for multivalue fields
@@ -1168,12 +1168,12 @@ function RSS_restrict($txt, $len) {
   }
 
   /** Link module - print current path (or list of paths to categories specified
-   *       in $col (when <categs delimeter> is present)
-   *  @param <start_level>:<format>:<delimeter>:<categs delimeter>:<add url param>:<url_base>:<restrict>
+   *       in $col (when <categs delimiter> is present)
+   *  @param <start_level>:<format>:<delimiter>:<categs delimiter>:<add url param>:<url_base>:<restrict>
    *         <start_level> - display path from level ... (0 is root)
    *         <format>      - category link modification (not used, yet)
-   *         <delimeter>   - delimeter character (default is ' &gt; ')
-   *         <categs delimeter>   - delimeter character (<br> is good there)
+   *         <delimiter>   - delimiter character (default is ' &gt; ')
+   *         <categs delimiter>   - delimiter character (<br> is good there)
    *         <add url param>      - url parameter added to cat=xxx (id=links)
    *         <url_base>    - file to go (like: kormidlo.shtml)
    *         <restrict>    - display only categories matching <restrict> path
@@ -1204,16 +1204,16 @@ function RSS_restrict($txt, $len) {
         if ($ret ) $ret .= $catseparator;
         $way = explode(',', $path);
         $start_count = $start;
-        $delimeter = '';
+        $delimiter = '';
         if ( isset($way) AND is_array($way)) {
             $last = $linklast ? '' : end($way);
             foreach ( $way as $catid ) {
                 if ($start_count-- > 0)  continue;
                 $cat_url = con_url( $url_base, 'cat='.$catid.$urlprm);
                 $ret .= ( ( $catid == $last ) ?  // do not make link for last category
-                    $delimeter.$translate[$catid]['name'] :
-                    $delimeter."<a href=\"$cat_url\">".$translate[$catid]['name']."</a>" );
-                $delimeter = $separator;
+                    $delimiter.$translate[$catid]['name'] :
+                    $delimiter."<a href=\"$cat_url\">".$translate[$catid]['name']."</a>" );
+                $delimiter = $separator;
             }
         }
     }

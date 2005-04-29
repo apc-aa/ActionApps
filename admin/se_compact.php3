@@ -221,7 +221,7 @@ function EnableClick(cond,what) {
   FrmTextarea("category_bottom", _m("Category bottom HTML"), $category_bottom, 4, 50, false,
                _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1);
   FrmInputText("compact_remove", _m("Remove strings"), $compact_remove, 254, 50, false,
-               _m("Removes empty brackets etc. Use ## as delimeter."), DOCUMENTATION_URL);
+               _m("Removes empty brackets etc. Use ## as delimiter."), DOCUMENTATION_URL);
   FrmInputText("noitem_msg", _m("'No item found' message"), $noitem_msg, 254, 50, false,
                _m("message to show in place of slice.php3, if no item matches the query"), DOCUMENTATION_URL);
 

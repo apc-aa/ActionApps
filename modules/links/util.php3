@@ -123,17 +123,17 @@ function NamePath($skip, $path, $translate, $separator = " > ", $url="", $whole=
         if (--$skip >= 0)
           continue;
         if ( ($catid != $last) OR $whole )  // do not make link for last category
-          $name .= $delimeter."<a href=\"$url$catid\" $target_atrib>".$translate[$catid]."</a>";
+          $name .= $delimiter."<a href=\"$url$catid\" $target_atrib>".$translate[$catid]."</a>";
          else
-          $name .= $delimeter.$translate[$catid];
-        $delimeter = $separator;
+          $name .= $delimiter.$translate[$catid];
+        $delimiter = $separator;
       }
     }else{
       while (list(,$catid) = each($ids)) {
         if (--$skip >= 0)
           continue;
-        $name .= $delimeter.$translate[$catid];
-        $delimeter = $separator;
+        $name .= $delimiter.$translate[$catid];
+        $delimiter = $separator;
       }
     }
   }

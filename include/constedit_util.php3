@@ -146,7 +146,7 @@ function createConstsArray($group_id, $admin, &$consts)
     $data = array();
     $dbc->query("SELECT * FROM constant WHERE group_id = '$group_id'");
     while ($dbc->next_record()) {
-        // & in from _GET is taken as parameter delimeter, so we replace it
+        // & in from _GET is taken as parameter delimiter, so we replace it
         // with %26. We do not replace it, if it is called from editing form
         $value = ( $get_method ? str_replace ("&","%26",ff($dbc->f("value"))) :
                                                         ff($dbc->f("value")) );

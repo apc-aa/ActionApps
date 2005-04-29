@@ -59,7 +59,7 @@ class cattree {
     var $db;             // database handler
     var $treeStart;      // where to start - category root
     var $go_to_empty;    // boolean - should we go to the empty subcategories?
-    var $path_delimeter; // string to show between categories in path
+    var $path_delimiter; // string to show between categories in path
 
     var $catnames;       // asociative array with names of columns and values of current row
     var $catpaths;       // asociative array with paths to categories
@@ -70,11 +70,11 @@ class cattree {
     var $STATES_CODING = array('highlight'=>'!', 'visible'=>'-', 'hidden'=>'x');
 
     // constructor
-    function cattree($db="", $treeStart=-1, $go_to_empty=false, $path_delimeter=' > ') {
+    function cattree($db="", $treeStart=-1, $go_to_empty=false, $path_delimiter=' > ') {
         $this->db             = get_if( $db, getDB());  // not necessary to use global $db, now
         $this->treeStart      = $treeStart;
         $this->go_to_empty    = $go_to_empty;
-        $this->path_delimeter = $path_delimeter;
+        $this->path_delimiter = $path_delimiter;
     }
 
     /** "class function" obviously called as cattree::global_instance();
@@ -251,19 +251,19 @@ class cattree {
                         continue;
                     }
                     if ( ($catid != $last) OR $whole ) { // do not make link for last category
-                        $name .= $delimeter."<a href=\"$url$catid\" $target_atrib>".$this->getName($catid)."</a>";
+                        $name .= $delimiter."<a href=\"$url$catid\" $target_atrib>".$this->getName($catid)."</a>";
                     } else {
-                        $name .= $delimeter.$this->getName($catid);
+                        $name .= $delimiter.$this->getName($catid);
                     }
-                    $delimeter = $separator;
+                    $delimiter = $separator;
                 }
             } else {
                 foreach ($ids as $catid) {
                     if (--$skip >= 0) {
                         continue;
                     }
-                    $name .= $delimeter.$this->getName($catid);
-                    $delimeter = $separator;
+                    $name .= $delimiter.$this->getName($catid);
+                    $delimiter = $separator;
                 }
             }
         }
@@ -319,7 +319,7 @@ class cattree {
         var treeStart ='. $this->treeStart .'
         var select_depth ='. $select_depth .'
         var go_into_empty_cat = '. ($this->go_to_empty ? 'true' : 'false') .'
-        var path_delimeter    = "'. $this->path_delimeter .'"
+        var path_delimiter    = "'. $this->path_delimiter .'"
         a=new Array()'."\n";
 
         // cerate javascript category id->name translation table: a[334]=a[324]="Organizations"

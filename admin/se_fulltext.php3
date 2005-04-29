@@ -150,7 +150,7 @@ function Defaults() {
   FrmTextarea("fulltext_format_bottom", _m("Bottom HTML code"), $fulltext_format_bottom, 4, 60, false,
                _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1);
   FrmInputText("fulltext_remove", _m("Remove strings"), $fulltext_remove, 254, 50, false,
-               _m("Removes empty brackets etc. Use ## as delimeter."), DOCUMENTATION_URL);
+               _m("Removes empty brackets etc. Use ## as delimiter."), DOCUMENTATION_URL);
   FrmInputSelect("discus_sel", _m("Show discussion"), $discus_vids, $discus_vid, false);
   FrmInputChBox("discus_htmlf", _m("Use HTML tags"), $discus_htmlf);
 

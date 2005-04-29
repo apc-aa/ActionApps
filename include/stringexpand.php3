@@ -369,7 +369,7 @@ function getDictReplacePairs($dictionary, $format, &$delimiters, $conds='') {
     $kw_item  = GetFormatedItems( $dictionary, "{@keywords........:##}_AA_DeLiM_$format", false, AA_BIN_ACTIVE, $conds, $sort);
     // above is little hack - we need keyword pair, but we want to call
     // GetFormatedItems only once (for speedup), so we create one string with
-    // delimeter:
+    // delimiter:
     //   BIOM##Biom##biom_AA_DeLiM_<a href="http://biom.cz">_#KEYWORD_</a>
     foreach ( $kw_item as $kw_string ) {
         list($keywords, $link) = explode('_AA_DeLiM_', $kw_string,2);
