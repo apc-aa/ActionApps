@@ -30,34 +30,36 @@ require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
 function EditConstantURL() {
-  global $fld, $sess;
-  if ( substr($fld[id],0,8)== "category" )
-    return con_url($sess->url(self_base() . "se_constant.php3"), "categ=1");
-   else
-    return $sess->url(self_base() . "se_constant.php3");
+    global $fld, $sess;
+    if (substr($fld['id'],0,8)== "category") {
+        return con_url($sess->url(self_base(). "se_constant.php3"), "categ=1");
+    } else {
+        return $sess->url(self_base(). "se_constant.php3");
+    }
 }
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "./se_fields.php3"));
+if ($cancel) {
+    go_url($sess->url(self_base(). "./se_fields.php3"));
+}
 
 if (!IfSlPerm(PS_FIELDS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
-  exit;
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
+    exit;
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-if ( $del ) {
-  $SQL = "DELETE FROM field WHERE id='$fid' AND slice_id='$p_slice_id'";
-  if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-    $err["DB"] = MsgErr("Can't change field");
-    break;
-  }
-  $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+if ($del) {
+    $SQL = "DELETE FROM field WHERE id='$fid' AND slice_id='$p_slice_id'";
+    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+        $err["DB"] = MsgErr("Can't change field");
+        break;
+    }
+    $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-  $Msg = MsgOK(_m("Field delete OK"));
-  go_url( $sess->url("./se_fields.php3") );  // back to field page
+    $Msg = MsgOK(_m("Field delete OK"));
+    go_url($sess->url("./se_fields.php3"));  // back to field page
 }
 
 $INPUT_SHOW_FUNC_TYPES = inputShowFuncTypes();
@@ -86,98 +88,95 @@ function Qvarsetadd($varname, $type, $value) {
     }
 }
 
-if ( $update ) {
-  do {
-    QValidateInput("input_before", _m("Before HTML code"), $input_before, $err, false, "text");
-    QValidateInput("input_help", _m("Help for this field"), $input_help, $err, false, "text");
-    QValidateInput("input_morehlp", _m("More help"), $input_morehlp, $err, false, "text");
-    QValidateInput("input_default", _m("Default"), $input_default, $err, false, "text");
-    QValidateInput("input_show_func", _m("Input show function"), $input_show_func_f, $err, false, "text");
+if ($update) {
+    do {
+        QValidateInput("input_before", _m("Before HTML code"), $input_before, $err, false, "text");
+        QValidateInput("input_help", _m("Help for this field"), $input_help, $err, false, "text");
+        QValidateInput("input_morehlp", _m("More help"), $input_morehlp, $err, false, "text");
+        QValidateInput("input_default", _m("Default"), $input_default, $err, false, "text");
+        QValidateInput("input_show_func", _m("Input show function"), $input_show_func_f, $err, false, "text");
 
-    $alias_err = _m("Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING.");
-    for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
-        $alias_var = "alias".$iAlias;
-        if ($$alias_var == "_#") $$alias_var = "";
-        QValidateInput("alias".$iAlias, _m("Alias")." ".$iAlias, $$alias_var, $err, false, "alias");
-        $alias_var = "alias".$iAlias."_help";
-        QValidateInput("alias".$iAlias."_help", $alias_err.$iAlias, $$alias_var, $err, false, "text");
-        $alias_var = "alias".$iAlias."_func";
-        QValidateInput("alias".$iAlias."_func", _m("Function").$iAlias, $$alias_var, $err, false, "text");
-    }
+        $alias_err = _m("Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING.");
+        for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
+            $alias_var = "alias".$iAlias;
+            if ($$alias_var == "_#") $$alias_var = "";
+            QValidateInput("alias".$iAlias, _m("Alias")." ".$iAlias, $$alias_var, $err, false, "alias");
+            $alias_var = "alias".$iAlias."_help";
+            QValidateInput("alias".$iAlias."_help", $alias_err.$iAlias, $$alias_var, $err, false, "text");
+            $alias_var = "alias".$iAlias."_func";
+            QValidateInput("alias".$iAlias."_func", _m("Function").$iAlias, $$alias_var, $err, false, "text");
+        }
 
-    if ( count($err) > 1)
-      break;
-    // A group that only appear with onlyupdate, normally edited in se_fields
-    if ($onlyupdate) {
-        Qvarsetadd("name","quoted",$name);
-        Qvarsetadd("input_pri","number",$input_pri);
-        Qvarsetadd("input_show","number",$input_show);
-    }
-    Qvarsetadd("input_before", "quoted", $input_before);
-    Qvarsetadd("input_help", "quoted", $input_help);
-    Qvarsetadd("input_morehlp", "quoted", $input_morehlp);
-    Qvarsetadd("input_default", "quoted",
-        ($onlyupdate ? $input_default : "$input_default_f:$input_default"));
-    Qvarsetadd("multiple","quoted",                     // mark as multiple
-        ($onlyupdate ? $multiple :
-              ($INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['multiple'] ? 1 : 0)));
+        if (count($err) > 1) {
+            break;
+        }
+        // A group that only appear with onlyupdate, normally edited in se_fields
+        if ($onlyupdate) {
+            Qvarsetadd("name","quoted",$name);
+            Qvarsetadd("input_pri","number",$input_pri);
+            Qvarsetadd("input_show","number",$input_show);
+        }
+        Qvarsetadd("input_before", "quoted", $input_before);
+        Qvarsetadd("input_help", "quoted", $input_help);
+        Qvarsetadd("input_morehlp", "quoted", $input_morehlp);
+        Qvarsetadd("input_default", "quoted",
+            ($onlyupdate ? $input_default : "$input_default_f:$input_default"));
+        Qvarsetadd("multiple","quoted",                     // mark as multiple
+            ($onlyupdate ? $multiple :
+            ($INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['multiple'] ? 1 : 0)));
 
-    for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
-        Qvarsetadd("alias".$iAlias, "quoted", $GLOBALS["alias".$iAlias]);
-        Qvarsetadd("alias".$iAlias."_help", "quoted", $GLOBALS["alias".$iAlias."_help"]);
-        Qvarsetadd("alias".$iAlias."_func", "quoted",
-            ($onlyupdate ? $GLOBALS["alias".$iAlias."_func"]
-            : $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]));
-    }
+        for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
+            Qvarsetadd("alias".$iAlias, "quoted", $GLOBALS["alias".$iAlias]);
+            Qvarsetadd("alias".$iAlias."_help", "quoted", $GLOBALS["alias".$iAlias."_help"]);
+            Qvarsetadd("alias".$iAlias."_func", "quoted",
+                ($onlyupdate ? $GLOBALS["alias".$iAlias."_func"]
+                : $GLOBALS["alias".$iAlias."_func_f"].":".$GLOBALS["alias".$iAlias."_func"]));
+        }
 
-    // setting input show function
-    switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
-      case "fnc:param":
-        $isf = "$input_show_func_f:$input_show_func_p";
-         break;
-      case "fnc:const:param":
-        $isf = "$input_show_func_f:$input_show_func_c:$input_show_func_p";
-        break;
-      case "fnc":
-      default:
-        $isf = "$input_show_func_f";
-    }
+        // setting input show function
+        switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
+            case "fnc:param":
+                $isf = "$input_show_func_f:$input_show_func_p";
+                break;
+            case "fnc:const:param":
+                $isf = "$input_show_func_f:$input_show_func_c:$input_show_func_p";
+                break;
+            case "fnc":
+            default:
+                $isf = "$input_show_func_f";
+        }
 
-    // setting input insert function
-    $iif="$input_insert_func_f:$input_insert_func_p";
+        // setting input insert function
+        $iif="$input_insert_func_f:$input_insert_func_p";
 
-    Qvarsetadd("input_show_func", "quoted",
-        ($onlyupdate ? $input_show_func : "$isf"));
-    Qvarsetadd("input_validate", "quoted",
-        ($onlyupdate ? $input_validate : "$input_validate_f:$input_validate_p"));
-    if (! ($onlyupdate && is_null($feed)))
-        Qvarsetadd("feed", "quoted", "$feed");
-    Qvarsetadd("input_insert_func", "quoted",
-        ($onlyupdate ? $input_insert_func : "$iif") );
-    if (! ($onlyupdate && is_null($html_default)))
-        Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
-    Qvarsetadd("html_show", "number",
-        ($onlyupdate ? $html_show : ($html_show ? 1 : 0)));
-    Qvarsetadd("text_stored", "number",
-        ($onlyupdate ? $text_stored :
+        Qvarsetadd("input_show_func", "quoted", ($onlyupdate ? $input_show_func : "$isf"));
+        Qvarsetadd("input_validate", "quoted", ($onlyupdate ? $input_validate : "$input_validate_f:$input_validate_p"));
+        if (!($onlyupdate && is_null($feed))) {
+            Qvarsetadd("feed", "quoted", "$feed");
+        }
+        Qvarsetadd("input_insert_func", "quoted", ($onlyupdate ? $input_insert_func : "$iif"));
+        if (!($onlyupdate && is_null($html_default))) {
+            Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
+        }
+        Qvarsetadd("html_show", "number", ($onlyupdate ? $html_show : ($html_show ? 1 : 0)));
+        Qvarsetadd("text_stored", "number", ($onlyupdate ? $text_stored :
                                         ((($input_validate_f=="number")
                                          OR ($input_validate_f=="bool")
                                          OR ($input_validate_f=="date")) ? 0:1)));
-   $SQL = "UPDATE field SET ". $varset->makeUPDATE() .
-           " WHERE id='$fid' AND slice_id='$p_slice_id'";
-    //huhl($SQL); exit;
-    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-      $err["DB"] = MsgErr("Can't change field");
-      break;
-    }
-    $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+        $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$fid' AND slice_id='$p_slice_id'";
+        //huhl($SQL); exit;
+        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+            $err["DB"] = MsgErr("Can't change field");
+            break;
+        }
+        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-    if ( count($err) <= 1 ) {
-      $Msg = MsgOK(_m("Fields update successful"));
-    go_url( ($return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) :
-        $sess->url("./se_fields.php3") ));  // back to field page
-    }
-  } while ( 0 );           //in order we can use "break;" statement
+        if ( count($err) <= 1 ) {
+            $Msg = MsgOK(_m("Fields update successful"));
+            go_url( ($return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) :
+                $sess->url("./se_fields.php3") ));  // back to field page
+        }
+    } while (0);           //in order we can use "break;" statement
 }
 
   // lookup constants
@@ -188,28 +187,27 @@ $constants[] = "";
 $constants[] = "*** SLICES: ***";
 $constants[] = "";
 
-  // add slices to constant array (good for related stories, link to authors ...)
-reset($g_modules);
-while (list($k, $v) = each($g_modules)) {
-  if ( $v['type'] == 'S' )
-    $constants["#sLiCe-".$k] =  $v['name'];
+// add slices to constant array (good for related stories, link to authors ...)
+foreach ($g_modules as $k => $v) {
+    if ($v['type'] == 'S') {
+        $constants["#sLiCe-".$k] =  $v['name'];
+    }
 }
   // lookup fields
 $SQL = "SELECT * FROM field
          WHERE slice_id='$p_slice_id' AND id='$fid'
          ORDER BY input_pri";
 $db->query($SQL);
-if ( $db->next_record())
-  $fld = $db->Record;
-else {
-  $Msg = MsgErr(_m("No fields defined for this slice"));
-  go_url( ($return_url ? expand_return_url(1) :
-        $sess->url("./se_fields.php3") ));  // back to field page
+if ( $db->next_record()) {
+    $fld = $db->Record;
+} else {
+    $Msg = MsgErr(_m("No fields defined for this slice"));
+    go_url(($return_url ? expand_return_url(1) : $sess->url("./se_fields.php3") ));  // back to field page
 }
 
 /** Finds the first ":" and fills the part before ":" into $fnc, after ":" into $params.
 *   (c) Jakub, 28.1.2003 */
-function get_params ($src, &$fnc, &$params) {
+function get_params($src, &$fnc, &$params) {
     if (strchr ($src,":")) {
         $params = substr ($src, strpos ($src,":")+1);
         $fnc = substr ($src, 0, strpos ($src,":"));
@@ -221,31 +219,29 @@ function get_params ($src, &$fnc, &$params) {
 }
 
 if ( !$update ) {      // load defaults
-  $input_before = $fld[input_before];
-  $input_help = $fld[input_help];
-  $input_morehlp = $fld[input_morehlp];
+    $input_before  = $fld['input_before'];
+    $input_help    = $fld['input_help'];
+    $input_morehlp = $fld['input_morehlp'];
 
-  for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
-      $GLOBALS["alias".$iAlias] = $fld["alias".$iAlias];
-      $GLOBALS["alias".$iAlias."_help"] = $fld["alias".$iAlias."_help"];
-      get_params ($fld["alias".$iAlias."_func"],
-          $GLOBALS["alias".$iAlias."_func_f"],
-          $GLOBALS["alias".$iAlias."_func"]);
-  }
+    for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
+        $GLOBALS["alias".$iAlias] = $fld["alias".$iAlias];
+        $GLOBALS["alias".$iAlias."_help"] = $fld["alias".$iAlias."_help"];
+        get_params($fld["alias".$iAlias."_func"], $GLOBALS["alias".$iAlias."_func_f"], $GLOBALS["alias".$iAlias."_func"]);
+    }
 
-  get_params($fld["input_default"], $input_default_f, $input_default);
-  get_params($fld["input_insert_func"], $input_insert_func_f, $input_insert_func_p);
-  get_params($fld["input_validate"], $input_validate_f, $input_validate_p);
+    get_params($fld["input_default"], $input_default_f, $input_default);
+    get_params($fld["input_insert_func"], $input_insert_func_f, $input_insert_func_p);
+    get_params($fld["input_validate"], $input_validate_f, $input_validate_p);
 
-  // switching type of show
-  get_params ($fld["input_show_func"], $input_show_func_f, $input_show_func_p);
-  if ( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']
-    == "fnc:const:param")
-      get_params ($input_show_func_p, $input_show_func_c, $input_show_func_p);
+    // switching type of show
+    get_params($fld["input_show_func"], $input_show_func_f, $input_show_func_p);
+    if ( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']  == "fnc:const:param") {
+        get_params($input_show_func_p, $input_show_func_c, $input_show_func_p);
+    }
 
-  $html_default = $fld["html_default"];
-  $html_show = $fld["html_show"];
-  $feed = $fld["feed"];
+    $html_default = $fld["html_default"];
+    $html_show    = $fld["html_show"];
+    $feed         = $fld["feed"];
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -282,13 +278,13 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </script>
 </HEAD>
 <?php
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
-  showMenu ($aamenus, "sliceadmin");
+require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+showMenu($aamenus, "sliceadmin");
 
-  echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";
-  PrintArray($err);
-  echo $Msg;
-  echo _m("<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
+echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";
+PrintArray($err);
+echo $Msg;
+echo _m("<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
 
 $form_buttons = array("update"=>array("type"=>"hidden","value"=>"1"),
                       "fid"=>array("type"=>"hidden", "value"=>$fid),
@@ -297,12 +293,6 @@ $form_buttons = array("update"=>array("type"=>"hidden","value"=>"1"),
 
 echo "
 <form enctype=\"multipart/form-data\" method=post action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">";
-/*
- <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
-  <tr>
-   <td class=tabtit><b>&nbsp;"._m("Field properties")."</b></td>
-  </tr>
-*/
 FrmTabCaption(_m("Field properties"). ': '. safe($fld['name']. ' ('.$fld['id']. ')'),
               '','',$form_buttons, $sess, $slice_id);
 echo "
@@ -417,62 +407,31 @@ echo "
      </tr>";
 FrmTabSeparator(_m("ALIASES used in views to print field content"));
 
-  $myarray = $FIELD_FUNCTIONS['items'];
-  foreach ( $myarray as $key => $val ) {
-     $func_types[$key] = $key." - ".$val['name'];
-  }
-  asort($func_types);
+$myarray = $FIELD_FUNCTIONS['items'];
+foreach ($myarray as $key => $val) {
+    $func_types[$key] = $key." - ".$val['name'];
+}
+asort($func_types);
 
 for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
-        echo "
-     <tr>
-      <td class=tabtxt><a name='alias$iAlias'></a><b>";
-      echo _m("Alias")." ".$iAlias;
-      echo "</b></td>
-      <td class=tabtxt>
-      <div class=tabhlp><input type=\"Text\" name=\"alias$iAlias\" size=20 maxlength=10 value=\"";
-      $alias_name = "alias".$iAlias;
-      if ($$alias_name) echo safe($$alias_name);
-      else echo "_#";
-      echo "\"> ". _m("_# + 8 UPPERCASE letters or _") ."</div>
-      </td>
-     </tr>
-     <tr>
-       <td class=tabtxt><b>". _m("Function") ."</b></td>
-       <td class=tabtxt>";
-       $alias_func_f = "alias".$iAlias."_func_f";
-       FrmSelectEasy("alias$iAlias"."_func_f", $func_types, $$alias_func_f);
-       echo "
-       </td></tr>
-     <tr><td class=tabtxt>&nbsp;</td>
-       <td class=tabhlp><strong>
-            <a href='javascript:CallParamWizard  (\"FIELD_FUNCTIONS\", \"alias$iAlias"."_func_f\",
-                \"alias$iAlias"."_func\")'>"._m("Help: Parameter Wizard")."</a></strong>
-        </td></tr>
-     <tr><td class=tabtxt><b>". _m("Parameters") ."</b></td>
-       <td class=tabtxt>
-              <input type=\"Text\" name=\"alias$iAlias"."_func\" size=60 maxlength=250 value=\"";
-                $alias_func = "alias".$iAlias."_func";
-                echo safe($$alias_func);
-                echo "\">
-       </td></tr>
-     <tr>
-      <td class=tabtxt><b>". _m("Description") ."</b></td>
-      <td class=tabtxt><input type=\"Text\" name=\"alias".$iAlias."_help\" size=50 maxlength=254 value=\"";
-        $alias_help = "alias".$iAlias."_help";
-        echo safe($$alias_help);
-        echo "\">"
-      //<div class=tabhlp>". _m("Help text for the alias") ."</div>
-      ."</td>
-     </tr>";
-     if ( $iAlias != 3 ) echo "
-     <tr><td colspan=2><hr></td></tr>";
+    $alias_name    = "alias$iAlias";
+    $alias_func_f  = $alias_name. "_func_f";
+    $alias_func    = $alias_name. "_func";
+    $alias_help    = $alias_name. "_help";
+    $alias_value   = $$alias_name ? $$alias_name : '_#';
+    $alias_hlp     = "<strong><a href='javascript:CallParamWizard(\"FIELD_FUNCTIONS\", \"$alias_func_f\", \"$alias_func\")'>"._m("Help: Parameter Wizard")."</a></strong>";
+    FrmInputText($alias_name, _m("Alias")." $iAlias", $alias_value, 10, 20, false, _m("_# + 8 UPPERCASE letters or _"));
+    FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
+    FrmInputText($alias_func, _m("Parameters"), $$alias_func, 250, 60);
+    FrmInputText($alias_help, _m("Description"), $$alias_help, 254, 60);
+    if ($iAlias != 3) {
+        echo "\n    <tr><td colspan=2><hr></td></tr>";
+    }
 }
 
 FrmTabEnd($form_buttons, $sess, $slice_id);
 
-echo "
- </FORM>";
+echo "\n </form>";
 HtmlPageEnd();
 page_close();
 ?>
