@@ -93,12 +93,12 @@ function ModW_PrintSpotName($spot_id, $depth) {
    </table>";
 }
 
-function ModW_PrintVariables( $vars ) {
+function ModW_PrintVariables( $spot_id, $vars ) {
     global $sess;
     echo "<tr><td valign=top><b>"._m("Spot&nbsp;variables")."</b></td><td>";
     if (isset($vars) AND is_array($vars)) {
         foreach ($vars as $k => $v) {
-            echo "$v <span align=right><a href=\"". SiteAdminPage($r_spot_id, "delvar=$k") ."\">"._m("Delete")."</a></span><br>";
+            echo "$v <span align=right><a href=\"". SiteAdminPage($spot_id, "delvar=$k") ."\">"._m("Delete")."</a></span><br>";
         }
     }
     echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='20' maxlength='50'><span align=right><a href='javascript:document.fvar.submit()'>"._m("Add")."</a></span>";
@@ -107,14 +107,14 @@ function ModW_PrintVariables( $vars ) {
     echo "</form></td></tr>";
 }
 
-function ModW_PrintConditions($conds, $vars) {
+function ModW_PrintConditions($spot_id, $conds, $vars) {
     global $sess;
     echo "<tr><td valign=top><b>"._m("Spot&nbsp;conditions")."</b></td><td>";
     if ( isset($vars) AND is_array($vars) ) {
         $i=0;
         foreach ($vars as $k => $v) {
             if ($conds[$v]) {
-                echo "$v = $conds[$v] <span align=right><a href=\"". SiteAdminPage($r_spot_id, "delcond=$v") ."\">"._m("Delete")."</a></span><br>";
+                echo "$v = $conds[$v] <span align=right><a href=\"". SiteAdminPage($spot_id, "delcond=$v") ."\">"._m("Delete")."</a></span><br>";
             } else {
                 echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">$k = <input type='text' name='addcond' value='' size='20' maxlength='50'>
                      <input type='hidden' name='addcondvar' value='$v'>
@@ -138,9 +138,9 @@ function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
     $content = safe($db->next_record() ? $db->f('content') : "");
     freeDB($db);
     echo '<table align=left border=0 cellspacing=0 width="100%" class=tabtxt>';
-    ModW_PrintVariables($tree->get('variables',$spot_id));
+    ModW_PrintVariables($spot_id, $tree->get('variables',$spot_id));
     if (($vars=$tree->isOption($spot_id))) {
-        ModW_PrintConditions($tree->get('conditions',$spot_id), $vars);
+        ModW_PrintConditions($spot_id, $tree->get('conditions',$spot_id), $vars);
     }
 
     echo "<form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";

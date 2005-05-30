@@ -17,7 +17,7 @@ function BeforeSubmit() {
     for(var i = 0; i < listboxes.length; i++) {
         SelectAllInBox( listboxes[i] );
     }
-    return proove_fields ();
+    return proove_fields();
 }
 
 

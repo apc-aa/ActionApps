@@ -106,18 +106,22 @@ class aaevent {
     function get_handlers() {
         // TODO - read the events from database instead of this static definition
         $this->handlers   = array();
-        $this->handlers[] = new aahandler('Event_ItemsBeforeDelete',    array('type' => 'ITEMS_BEFORE_DELETE',   'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ItemsMoved',           array('type' => 'ITEMS_MOVED',           'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ItemBeforeUpdate',     array('type' => 'ITEM_BEFORE_UPDATE',    'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ItemBeforeInsert',     array('type' => 'ITEM_BEFORE_INSERT',    'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ItemAfterInsert',      array('type' => 'ITEM_NEW',              'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ItemAfterUpdate',      array('type' => 'ITEM_UPDATED',          'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ConstantBeforeUpdate', array('type' => 'CONSTANT_BEFORE_UPDATE','slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_ConstantUpdated',      array('type' => 'CONSTANT_UPDATED',      'slice_type' => 'S'));  // all slices
-        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',     array('type' => 'LINK_NEW',              'slice_type' => 'Links'));
-        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',     array('type' => 'LINK_UPDATED',          'slice_type' => 'Links'));
-        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',   array('type' => 'ITEM_UPDATED',     'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',   array('type' => 'ITEM_NEW',         'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
+        $this->handlers[] = new aahandler('Event_ItemsBeforeDelete',       array('type' => 'ITEMS_BEFORE_DELETE',   'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ItemsMoved',              array('type' => 'ITEMS_MOVED',           'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ItemBeforeUpdate',        array('type' => 'ITEM_BEFORE_UPDATE',    'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ItemBeforeInsert',        array('type' => 'ITEM_BEFORE_INSERT',    'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ItemAfterInsert',         array('type' => 'ITEM_NEW',              'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ItemAfterUpdate',         array('type' => 'ITEM_UPDATED',          'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ConstantBeforeUpdate',    array('type' => 'CONSTANT_BEFORE_UPDATE','slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_ConstantUpdated',         array('type' => 'CONSTANT_UPDATED',      'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        array('type' => 'LINK_NEW',              'slice_type' => 'Links'));
+        $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        array('type' => 'LINK_UPDATED',          'slice_type' => 'Links'));
+        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',      array('type' => 'ITEM_UPDATED',     'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_DropIn',      array('type' => 'ITEM_NEW',         'slice'        => 'c7a5b60cf82652549f518a2476d0d497'));  // dropin poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio',      array('type' => 'ITEM_UPDATED',     'slice'        => '22613f53fdaa6e092569b6021b23fee2'));  // Aperio - rodina (poradna)
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio',      array('type' => 'ITEM_NEW',         'slice'        => '22613f53fdaa6e092569b6021b23fee2'));  // Aperio - rodina (poradna)
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_UPDATED',     'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_NEW',         'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
     }
 }
 
@@ -336,20 +340,33 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 /** Send email with answer to Dropin staff with the answer (from item)
  *  @param object  &$ret_params  - ItemContent object with new values
  */
-function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
-    global $db;
-
+function SendFilledItem(&$ret_params, $email_template) {
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
     $email    = trim($ret_params->getValue('con_email......1'));
     $otazka   = trim($ret_params->getValue('abstract.......1'));
     $odpoved  = trim($ret_params->getValue('abstract.......2'));
     $send     = trim($ret_params->getValue('switch.........2'));
 
-    if ( $email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1')) ) {
+    if ($email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1'))) {
         $item = GetItemFromId(new zids($short_id, 's'));
-        return send_mail_from_table_inner (8, $email, $item) > 0 ;
+        return send_mail_from_table_inner($email_template, $email, $item) > 0;
     }
     return false;
+}
+
+/** Send email with answer to Dropin staff with the answer (from item) */
+function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+    return SendFilledItem($ret_params, 8);
+}
+
+/** Send email with answer to Aperio staff with the answer (from item) */
+function Event_ItemUpdated_Aperio( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+    return SendFilledItem($ret_params, 49);
+}
+
+/** Send email with answer to Aperio staff with the answer (from item) */
+function Event_ItemUpdated_Aperio_porod( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+    return SendFilledItem($ret_params, 50);
 }
 
 ?>
