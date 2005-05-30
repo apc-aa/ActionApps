@@ -26,6 +26,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
+
+
 /**
  *  ItemContent class is an abstract data structure, used mostly for storing
  *  an item. The item can contain many fields, and each field contains 1..n
@@ -240,6 +243,7 @@ class ItemContent {
      *    a) "update"    : update the item in DB
      *    b) or "new_id" : store the item with different (unique random) id
      *    c) otherwise   : do nothing
+     *  TODO - convert to grabber/saver API
      */
     function storeToDB($slice_id, &$fields, $actionIfItemExists=STORE_WITH_NEW_ID,
                        $invalidatecache = true) {
@@ -276,7 +280,10 @@ class ItemContent {
             }
         }
 
-        $added_to_db = StoreItem( $id, $slice_id, $this->content, $fields, $insert, $invalidatecache, false ); // invalidatecache, not feed
+        $this->setItemID($id);
+        $this->setSliceID($slice_id);
+        $added_to_db = $this->storeItem( $insert ? 'insert' : 'update', $invalidatecache, false);     // invalidatecache, feed
+
         return $added_to_db ? array(0=> ($insert ? INSERT : UPDATE) ,1=>$id) : false;
     }
 
@@ -296,7 +303,7 @@ class ItemContent {
         global $event, $itemvarset;
         $itemvarset = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
         $varset     = new CVarset();
-        
+
         $slice_id   = $this->getSliceID();
         $slice      = new slice($slice_id);
         $fields     = $slice->fields('record');
