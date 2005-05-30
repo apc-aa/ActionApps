@@ -43,10 +43,16 @@ function ChangeContent($zids, $field_id, $new_content) {
         }
 
         $content4id[$field_id][0]['value'] = addslashes($item->subst_alias($new_content));
-
-        $slice =& $allknownslices->addslice($item->getSliceID());
-        if ( StoreItem( $item->getItemID(), $slice->unpacked_id(), $content4id, $slice->fields('record'), false, true, false, $item->getContent() ) ) { // update, invalidate, notfeed
+        $slice_id = $item->getSliceID();
+        $slice    =& $allknownslices->addslice($slice_id);
+        $slices2invalidate[$slice_id] = $slice_id;
+        if ( StoreItem($item->getItemID(), $slice_id, $content4id, $slice->fields('record'), false, false, false, $item->getContent())) { // update, invalidate, notfeed
             $count++;
+        }
+    }
+    if (is_array($slices2invalidate)) {
+        foreach($slices2invalidate as $slice_id) {
+            $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");
         }
     }
     return $count;
