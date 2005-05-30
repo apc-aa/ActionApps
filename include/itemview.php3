@@ -215,7 +215,7 @@ class itemview {
     $d_content = GetDiscussionContent($this->disc['item_id'], "",$this->disc['vid'],true,$order,$this->disc['html_format'],$this->clean_url);
     $d_tree = GetDiscussionTree($d_content);
 
-    $out .= "<a name=\"disc\"></a><form name=discusform>";
+    $out .= '<a name="disc"></a><form name="discusform" action="">';
     $cnt = 0;     // count of discussion comments
 
     $out .= $this->unaliasWithScrollerEasy($this->slice_info['d_top']);           // top html code
@@ -263,7 +263,7 @@ class itemview {
     list($script_loc,) = explode('#',$col["d_disc_url......"][0]['value']); // remove #disc part
 
     $out .= "
-      <SCRIPT Language=\"JavaScript\"><!--
+      <SCRIPT Language=\"JavaScript\" type=\"text/javascript\"><!--
         function showSelectedComments() {
           var url = \"". $script_loc . "&sel_ids=1\"
           var done = 0;
