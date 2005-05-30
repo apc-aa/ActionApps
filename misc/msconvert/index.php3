@@ -42,7 +42,10 @@ if (!$userfile) {
     $file_name=gensalt (20);
     $realname=$HTTP_POST_FILES['userfile']['name'];
     $stringoutput='';
-    $error=aa_move_uploaded_file ("userfile", $uploadpath, $perms = 0, $file_name);
+    $dest_file = Files::uploadFile('userfile', $uploadpath, '', 'new', $file_name);
+    if ($dest_file === false) {   // error
+        $error = Files::lastErrMsg();
+    }
     if ($error) die($GLOBALS["IMG_UPLOAD_PATH"]);
     if (!$error) {
         if (preg_match("/.doc/i",$realname)) {
