@@ -75,6 +75,14 @@ array ("name" => _m("File = uploaded file"),
         array("name"=>_m("Other fields"),
               "desc"=>_m("List of other fields to receive this image, separated by ##"),
               "type"=>"STRID",
+              "example"=>"image..........2"),
+        array("name"=>_m("Upload policy"),
+              "desc"=>_m("new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:
+                       <br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)
+                       <br>overwrite - the old file of the same name is overwritten
+                       <br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.
+                       <br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore."),
+              "type"=>"STRID",
               "example"=>"image..........2")
        ));
 $INSERT_TYPES["items"]["uid"] =
