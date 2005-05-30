@@ -131,7 +131,7 @@ if ($add || $update) {
                 $varset->clear();
                 $varset->set("site_id", $module_id, "unpacked" );
                 $varset->set("spot_id", $db->f('spot_id'), "number" );
-                $varset->set("content ", $db->f('content'), "text" );
+                $varset->set("content", $db->f('content'), "text" );
                 $varset->set("flag", "", "number" );
                 $SQL = "INSERT INTO site_spot " . $varset->makeINSERT();
                 if ( !$db2->query($SQL)) {
