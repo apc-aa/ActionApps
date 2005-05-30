@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,31 +19,33 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once $GLOBALS['AA_INC_PATH']. 'files.class.php3';
+
 // array params: column header, default sort order
 $sortable_columns = array (
-    "name"=>array("label"=>_m("Name"),"sort"=>"a"), 
+    "name"=>array("label"=>_m("Name"),"sort"=>"a"),
     "size"=>array("label"=>_m("Size"),"sort"=>"a"),
     "type"=>array("label"=>_m("Type"),"sort"=>"a"),
     "lastm"=>array("label"=>_m("Last modified"),"sort"=>"d"));
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */    
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 function make_secure (&$filename) {
     $filename = str_replace ("..","",$filename);
 }
- 
+
 function set_directory ($dir) {
     global $directory;
     $directory = $dir;
     endslash ($directory);
     make_secure($directory);
-    if (substr ($directory,0,2) == "./") 
+    if (substr ($directory,0,2) == "./")
         $directory = substr ($directory, 2);
 }
 
 function compare_files ($f1, $f2) {
     global $sort_key, $sort_order;
-    
+
     if ($f1["name"]=="..") return -1;
     if ($f2["name"]=="..") return 1;
     if ($f1["dir"]) {
@@ -77,38 +79,38 @@ $filetypes = array (
     _m("Web file") => array ("img"=>"ie", "ext"=>array ("php","php3","asp")),
     _m("Image file") => array ("img"=>"image2", "ext"=>array("gif","jpg","jpeg","tiff","img")),
     _m("Text file") => array ("img"=>"txt", "ext"=>array("txt")),
-    _m("Directory") => array ("img"=>"folder"), 
+    _m("Directory") => array ("img"=>"folder"),
     _m("Parent") => array ("img"=>"parent"),
     _m("Other") => array ("img"=>"oth"));
-    
+
 function get_filetype($filepath) {
     global $filetypes;
 
     if ($filepath == ".." || substr($filepath,-3) == "/..")
         return _m("Parent");
-    else if (is_dir($filepath)) 
+    else if (is_dir($filepath))
         return _m("Directory");
     else {
         $ext = filesuffix($filepath);
         reset ($filetypes);
         while (list ($filetype, $val) = each ($filetypes)) {
             if (!$val["ext"]) continue;
-            if (my_in_array($ext, $val["ext"])) 
+            if (my_in_array($ext, $val["ext"]))
                 return $filetype;
         }
         return _m("Other");
     }
 }
-    
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*
-    Function: get_file_array() 
+    Function: get_file_array()
     independent of AA
-    
+
     creates a $files array, containing info about all files and directories in $path.$dirname,
     sorted by global $sort_key (from $sortable_columns) and $sort_order ('a' or 'd')
-    
+
     Array members:
         "name" filename (without path)
         "path" filename with path relative to $path
@@ -128,18 +130,18 @@ function get_file_array ($path, $dirname) {
 /*    $connid = ftp_connect ($path);
     $filesa = ftp_nlist ($connid, $dirname);
     print_r ($filesa);
-*/    
+*/
 
-    if (!is_dir ($path.$dirname)) 
+    if (!is_dir ($path.$dirname))
         return array ();
-    
+
     // fill the $files array
-    if (!($dir = opendir($path.$dirname))) 
+    if (!($dir = opendir($path.$dirname)))
         echo $path.$dirname;
-    else {      
-        while ($filename = readdir ($dir)) {           
+    else {
+        while ($filename = readdir ($dir)) {
             // don't allow to jump higher from base dir
-            if ($filename == "." || ($filename == ".." && !$dirname)) 
+            if ($filename == "." || ($filename == ".." && !$dirname))
                 continue;
 
             $filepath = $dirname.$filename;
@@ -148,8 +150,8 @@ function get_file_array ($path, $dirname) {
                 while ($i > 0 && $dirname[$i] != "/") $i --;
                 $filepath = substr ($dirname, 0, $i);
             }
-            
-            $filetype = get_filetype ($path.$dirname.$filename);                       
+
+            $filetype = get_filetype ($path.$dirname.$filename);
             $files[] = array (
                 "path"=>$filepath,
                 "dir"=>is_dir ($path.$filepath),
@@ -161,11 +163,11 @@ function get_file_array ($path, $dirname) {
             );
         }
         closedir ($dir);
-        
+
         // sort files
         global $sortable_columns;
         if (!$sortable_columns[$sort_key]) {
-            reset ($sortable_columns); 
+            reset ($sortable_columns);
             $sort_key = key ($sortable_columns);
         }
         if (is_array($files))
@@ -200,11 +202,11 @@ function file_table ($path, $dirname)
         }
     }
     return $retval;
-}       
-    
+}
+
 function is_dir_empty ($dirname) {
-    if ($dir = @opendir($dirname)) {      
-        while ($filename = readdir ($dir)) {           
+    if ($dir = @opendir($dirname)) {
+        while ($filename = readdir ($dir)) {
             if ($filename != "." && $filename != "..")
                 return false;
         }
@@ -223,13 +225,13 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         // used in copy template
         $fileman_dir,
         $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR;
-   
+
     if (!$cmd) return;
-    
+
     $arg = $arg[$cmd];
 
     // Click on directory
-    if ($cmd=='chdir') 
+    if ($cmd=='chdir')
         set_directory ($arg);
 
     else if ($cmd == 'edit')
@@ -253,7 +255,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         if ( !EReg("^[0-9a-zA-Z_]*$", $arg)) { $err[] = _m("Wrong directory name."); return; }
         $newdir = $basedir.$directory.$arg;
         mkdir ($newdir, $FILEMAN_MODE_DIR);
-        if (!is_dir ($newdir)) 
+        if (!is_dir ($newdir))
             $err[] = _m("Unable to create directory")." $newdirname.";
     }
 
@@ -274,10 +276,13 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         // Upload file
     else if ($cmd=='upload') {
         set_time_limit(FILEMAN_UPLOAD_TIME_LIMIT);
-        $uploaderr = aa_move_uploaded_file("uploadarg", $basedir.$directory, $FILEMAN_MODE_FILE);
-        if ($uploaderr) $err[] = _m("Error: ").": $uploaderr";
+
+        // $uploaderr = aa_move_uploaded_file("uploadarg", $basedir.$directory, $FILEMAN_MODE_FILE);
+        $dest_file = Files::uploadFile('uploadarg', $basedir.$directory);
+        if ($dest_file === false) {   // error
+            $err[] = Files::lastErrMsg();
+        }
     }
-    
     else if ($cmd=='copytmp') {
         $tmperr = fileman_copy_template (FILEMAN_BASE_DIR."templates/".$arg, FILEMAN_BASE_DIR.$fileman_dir);
         if ($tmperr) $err[] = _m("Error: ").": $tmperr";
@@ -292,8 +297,8 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
             $filedes = fopen ($f,"w");
             if (!$filedes) $err[] = _m("Unable to open file for writing")." ($filename).";
             else {
-                if (get_magic_quotes_gpc()) 
-                    $arg = stripslashes ($arg);                
+                if (get_magic_quotes_gpc())
+                    $arg = stripslashes ($arg);
                 $bytes = fwrite ($filedes, $arg);
                 if ($bytes == -1) $err[] = _m("Error writing to file")." $filename.";
                 fclose ($filedes);
@@ -302,7 +307,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
 
         // Rename
         else if ($cmd=='rename' && $filename) {
-            make_secure ($renamearg);    
+            make_secure ($renamearg);
             $newname = dirname ($basedir.$filename)."/".$arg;
             if (file_exists ($newname)) $err[] = _m("File with this name already exists")." ($arg).";
             else if (!rename ($basedir.$filename, $newname)) $err[] = _m("Unable to rename")." $filename.";
@@ -310,7 +315,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
     }
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /* returns a list of filenames including subdirectories' entries (like dir1/dir2/filename1.txt etc.) with path relative to $mydir */
 
@@ -322,12 +327,12 @@ function get_files_subtree ($mydir) {
     else {
         while ($filename = readdir ($dir)) {
             if ($filename != "." && $filename != "..") {
-                if (!is_dir ($mydir.$filename)) 
+                if (!is_dir ($mydir.$filename))
                     $retval[] = $filename;
                 else {
                     $sub = get_files_subtree ($mydir.$filename);
                     reset ($sub);
-                    while (list (,$subfn) = each ($sub)) 
+                    while (list (,$subfn) = each ($sub))
                         $retval[] = $filename."/".$subfn;
                 }
             }
@@ -338,22 +343,22 @@ function get_files_subtree ($mydir) {
 
 function fileman_copy_template ($srcdir, $dstdir) {
     global $slice_id, $FILEMAN_MODE_FILE;
-    
+
     $aliases = array (
         "_#SLICE_ID" => $slice_id);
-    
+
     $db = new DB_AA;
     $db->query("SELECT name FROM slice WHERE id = '".q_pack_id ($slice_id)."'");
     $db->next_record();
-    $aliases["_#SLICNAME"] = $db->f('name'); 
+    $aliases["_#SLICNAME"] = $db->f('name');
 
     if (!is_dir ($srcdir)) return _m("Wrong directory name")." ($srcdir)";
     $files = get_files_subtree ($srcdir);
     reset ($files);
-    while (list (,$file) = each ($files)) 
-        if (file_exists ($dstdir."/".$file)) 
+    while (list (,$file) = each ($files))
+        if (file_exists ($dstdir."/".$file))
             $errfiles[] = $file;
-    if (is_array($errfiles)) 
+    if (is_array($errfiles))
         return _m("Files with the same names as some in the template already exist. Please change the file names first.") . " (".join(", ",$errfiles).").";
     reset ($files);
     while (list (,$file) = each ($files)) {
@@ -365,7 +370,7 @@ function fileman_copy_template ($srcdir, $dstdir) {
             reset ($fcontent);
             while (list (,$frow) = each ($fcontent)) {
                 reset ($aliases);
-                while (list ($alias,$replace) = each ($aliases)) 
+                while (list ($alias,$replace) = each ($aliases))
                     $frow = str_replace ($alias, $replace, $frow);
                 //if (get_magic_quotes_gpc()) $frow = stripslashes ($frow);
                 fwrite ($fd, $frow);
@@ -373,12 +378,12 @@ function fileman_copy_template ($srcdir, $dstdir) {
         }
         else copy ($srcdir."/".$file, $dstdir."/".$file);
         chmod ($dstdir."/".$file, $FILEMAN_MODE_FILE);
-    }        
-}    
+    }
+}
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-// J A V A S C R I P T 
+// J A V A S C R I P T
 
 $fileman_js = "
     <script language=javascript>
@@ -387,20 +392,20 @@ $fileman_js = "
             var elem = document.forms[form].elements;
             for ( var i=0; i < elem.length; i++ )
                 if ( elem[i].name.substring(0,prefix.length) == prefix)
-                    elem[i].checked = state;    
+                    elem[i].checked = state;
         }
 
         function submitCommand (name) {
             document.forms[formname]['cmd'].value = name;
             document.forms[formname].submit();
         }
-        
+
         function command (name) {
             formname = 'fileman';
             switch (name) {
             case 'checkall':
                 SelectVis (formname,'chb',1); break;
-            case 'uncheckall': 
+            case 'uncheckall':
                 SelectVis (formname,'chb',0); break;
             case 'delete':
                 if (confirm('"._m("Are you sure you want to delete the selected files and folders?")."'))
@@ -409,7 +414,7 @@ $fileman_js = "
             case 'reset':
                 document.fileman.filecontent.value = filetext; break;
             default:
-                submitCommand (name); 
+                submitCommand (name);
                 break;
             }
         }
