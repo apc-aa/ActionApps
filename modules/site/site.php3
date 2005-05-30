@@ -69,7 +69,10 @@ trace("=","site.php3","precachecheck");
 //  25June03 - Mitra - added post2shtml into here, maybe should add all URL?
 //  25Sept03 - Honza - all apc_state is serialized instead of just
 //       $apc_state['state'] (we store browser agent in state in kormidlo.cz)
-$key_str = serialize($apc_state).":".$site_id.":".$post2shtml_id;
+//  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
+//                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
+//                      - it is in fact all global variables used in view.php3
+$key_str = serialize($apc_state).":$site_id:$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id:". serialize($ids). serialize($sel_ids). serialize($disc_ids);
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
