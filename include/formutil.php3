@@ -129,7 +129,7 @@ class inputform {
             echo '
                 <title>'. $this->page_title .'</title>
               </head>
-              <body onload="HTMLArea.init()">
+              <body>
                 <H1><B>' . $this->page_title .'</B></H1>';
             PrintArray( $this->messages['err'] );     // prints err or OK messages
 
@@ -152,6 +152,21 @@ class inputform {
             $remove_string =    $view_info['remove_string'];
         }
 
+        // create buttons array for top (and lately for bottom of the form)
+        if ( $this->form4update ) {
+            $buttons[]                  = 'update';
+            if ( $this->show_preview_button ) {
+                $buttons['upd_preview'] = array('type'=>'submit', 'value'=>_m("Update & View"));
+            }
+            $buttons['insert']          = array('type'=>'submit', 'value'=>_m("Insert as new"));
+            $buttons['reset']           = array('type'=>'reset',  'value'=>_m("Reset form"));
+        } else {
+            $buttons[]                  = 'insert';
+            $buttons['ins_preview']     = array('type'=>'submit', 'value'=>_m("Insert & View"));
+        }
+        $buttons['cancel']              = array('type'=>'button', 'value'=>_m("Cancel"),
+                                                'url'=> $this->cancel_url);
+
 //        debug( $form, $GLOBALS['contentcache']);
     //added for MLX
         // print the inputform
@@ -159,7 +174,7 @@ class inputform {
 
         $out = $CurItem->get_item();
 
-        FrmTabCaption( '', 'id="inputtab"', 'id="inputtabrows"' );
+        FrmTabCaption( '', 'id="inputtab"', 'id="inputtabrows"', $buttons);
         $parts = $GLOBALS['g_formpart'];
         if ( $parts ) {
             $idx = 0;
@@ -189,22 +204,12 @@ class inputform {
             }
         }
 
+        // add rest "hidden buttons" to the end of form
         $buttons['MAX_FILE_SIZE']       = array('value' => IMG_UPLOAD_MAX_SIZE );
-        $buttons['encap']               = array('value' => (($encap) ? "true" : "false"));
-        $buttons['vid']                 = array('value' => $vid);
-        if ( $this->form4update ) {
-            $buttons[]                  = 'update';
-            if ( $this->show_preview_button ) {
-                $buttons['upd_preview'] = array('type'=>'submit', 'value'=>_m("Update & View"));
-            }
-            $buttons['insert']          = array('type'=>'submit', 'value'=>_m("Insert as new"));
-            $buttons['reset']           = array('type'=>'reset',  'value'=>_m("Reset form"));
-        } else {
-            $buttons[]                  = 'insert';
-            $buttons['ins_preview']     = array('type'=>'submit', 'value'=>_m("Insert & View"));
-        }
-        $buttons['cancel']              = array('type'=>'button', 'value'=>_m("Cancel"),
-                                                'url'=> $this->cancel_url);
+        $buttons['encap']               = array('value' => "false");
+        $buttons['vid']                 = array('value' => $vid);   // ?? $vid is not defined here ?? - TODO
+
+
         FrmTabEnd( $buttons, $sess, $slice->unpacked_id() );
 
         if ( $GLOBALS['g_formpart'] ) {
@@ -912,9 +917,9 @@ class aainputfield {
         }
         $this->echoo("<td colspan=\"$colspan\">");
         $this->html_radio($showhtmlarea ? false : 'convertors');
-        $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']." cols=\"$cols\"".getTriggers("textarea",$name).">$val</textarea>\n";
+        $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']." cols=\"$cols\" style=\"width:100%\" ".getTriggers("textarea",$name).">$val</textarea>\n";
         if ($showhtmlarea) {
-            $tarea .= getFrmJavascript( 'htmlareas[htmlareas.length] = Array("'.$name.'", true, '.(AA_HTMLAREA_SPELL_CGISCRIPT ? "true" : "false").', "'.$rows.'", "'.$cols.'", "'.$sess->id.'");');
+            $tarea .= getFrmJavascript( "htmlareas[htmlareas.length] = '$name'");
         } elseif ( $showrich_href ) {
             $tarea .= getFrmJavascript( 'showHTMLAreaLink("'.$name.'");');
         }
@@ -2140,12 +2145,10 @@ function GetFormJavascript($show_func_used, $js_proove_fields) {
     }
     $retval .= getFrmJavascript( $jscode );
 
-
     // special includes for HTMLArea
     // we need to include some scripts
     // switchHTML(name) - switch radiobuttons from Plain text to HTML
     // showHTMLAreaLink(name) - displays "edit in htmarea" link
-    // generateArea(name, tableop, spell, rows, cols) - create HTMLArea from textarea
     // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
 
     $retval .= getFrmJavascript('
@@ -2153,39 +2156,31 @@ function GetFormJavascript($show_func_used, $js_proove_fields) {
                 var maxcount = '. MAX_RELATED_COUNT .';
                 var relmessage = "'._m("There are too many items.") .'";
 
-                // global variables used in HTMLArea
-                var _editor_url = "'.get_aa_url("misc/htmlarea/", false).'";
-                var long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", false).'";
-                var _editor_lang = "'.substr(get_mgettext_lang(),0,2).'";'
+                // global variables used in HTMLArea (xinha)
+                // You must set _editor_url to the URL (including trailing slash) where
+                // where xinha is installed, it\'s highly recommended to use an absolute URL
+                //  eg: _editor_url = "/path/to/xinha/";
+                // You may try a relative URL if you wish]
+                //  eg: _editor_url = "../";
+                _editor_url        = "'.get_aa_url("misc/htmlarea/", false).'";
+                _editor_lang       = "'.substr(get_mgettext_lang(),0,2).'";
+                aa_slice_id        = "'.$slice_id.'";
+                aa_session         = "'.$sess->id.'";
+                aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", false).'";'
                 );
+
     // HtmlArea scripts should be loaded allways - we use Dialog() function
     // from it ...
     $retval .= getFrmJavascriptFile('misc/htmlarea/htmlarea.js');
-    $retval .= getFrmJavascriptFile('misc/htmlarea/popups/popup.js');
+    //    $retval .= getFrmJavascriptFile('misc/htmlarea/popups/popup.js');
     $retval .= getFrmJavascriptFile('misc/htmlarea/aafunc.js');
     $retval .= getFrmJavascriptFile('javascript/constedit.js');
 
-
     if ($show_func_used['txt'] || $show_func_used['edt']) {
         $retval .= getFrmJavascript('
-                 // HTMLArea.loadPlugin("FullPage");
-                    HTMLArea.loadPlugin("TableOperations");
-                 // HTMLArea.loadPlugin("CSS");
-                 // HTMLArea.loadPlugin("ContextMenu");
-                 // HTMLArea.loadPlugin("HtmlTidy");
-                 // HTMLArea.loadPlugin("ListType");
-              //    HTMLArea.loadPlugin("ImageManager");
-                 // HTMLArea.loadPlugin("SpellChecker");
-              //    HTMLArea.loadPlugin("InsertFile");
-
-                    function initDocument() {
-                        for (var i = 0; i < htmlareas.length; i++) {
-                            generateArea(htmlareas[i][0], htmlareas[i][1], htmlareas[i][2], htmlareas[i][3], htmlareas[i][4], htmlareas[i][5]);
-                        }
-                    }
-
-                    HTMLArea.onload = initDocument;'
-                    );
+            window.onload   = xinha_init;
+            window.onunload = HTMLArea.flushEvents;'
+        );
     }
 
     if ($javascript) {
