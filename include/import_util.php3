@@ -144,7 +144,7 @@ class Actions {
                  $v = 'new id';
              }
              if ( isset($v) ) {   // $v is set in previous 'default' section
-                 $fieldVal[]['value'] = addslashes($v);
+                 $fieldVal[]['value'] = $v;
              } else {
                  // transform the input field to the output field according the action
                  $err = $action['action']->transform($itemContent,$action['from'],$this->globalParams,$fieldVal );
@@ -295,7 +295,6 @@ class Action {
             if ($this->html) {
                 $v['flag'] = $this->html;
             }
-            $v['value'] = addslashes($v['value']);
             $fvalues[$k] = $v;
         }
         return "";
@@ -310,36 +309,8 @@ function getActions() {
     return $actions;
 }
 
-/** Delete all files with the format : {ident}_{hash20}_mmddyyyy older than
- *  7 days (used as temporary upload files)
- */
-function DeleteOldFiles($ident,$upload_dir) {
-    if ($handle = opendir($upload_dir)) {
-        while (false !== ($file = readdir($handle))) {
-            if (strlen($ident)+42 != strlen($file) || (substr($file,0,strlen($file)-42) != $ident))
-                continue;
-            $date=mktime(0,0,0,date("m"),date("d")-7,date("Y")) ;
-            $filedate = mktime (0,0,0,substr($file,-8,2) ,substr($file,-6,2),substr($file,-4,4));
-            $fileName = $upload_dir . $file;
-            if ($filedate < $date) {
-                if (unlink($fileName)) {
-                    writeLog("FILE IMP.",_m("Ok : file deleted "). $fileName);
-                } else {
-                    writeLog("FILE IMP.",_m("Error: Cannot delete file"). $fileName);
-                }
-            }
-        }
-        closedir($handle);
-    } else {
-        writeLog("FILE IMP:",_m("Error: Invalid directory") .$upload_dir);
-    }
-}
-
 function GetUploadFileName($ident) {
     return $ident . "_" . md5(uniqid(rand(),1))  . "_" . date("mdY");
 }
 
-function GetUploadDir($slice_id) {
-    return IMG_UPLOAD_PATH . $slice_id . "/";
-}
 ?>
