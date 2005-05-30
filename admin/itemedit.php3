@@ -161,7 +161,7 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
     if (count($err) <= 1) {
         page_close();
         if ($preview) {
-            $preview_url = con_url(get_admin_url("preview.php3"), "slice_id=$slice_id&sh_itm=$id&return_url=$return_url");
+            $preview_url = get_url(get_admin_url("preview.php3"), "slice_id=$slice_id&sh_itm=$id&return_url=$return_url");
         }
         if ($anonymous) { // anonymous login
             go_url( $r_slice_view_url, '', $encap );

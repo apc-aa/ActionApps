@@ -53,7 +53,7 @@ while (list ($type,$module) = each ($MODULES)) {
     if ($create[$type]) {
         $url = $sess->url($AA_INSTAL_PATH.$module["directory"] . "modedit.php3?no_slice_id=1");
         if ( $template[$type] )
-            $url = con_url( $url, "template%5B$type%5D=". $template[$type]);
+            $url = get_url( $url, "template%5B$type%5D=". $template[$type]);
         go_url( $url );
     }
 }

@@ -67,7 +67,7 @@ function GetDiscussionContent($item_id, $ids="", $vid="",$state=true, $order='ti
 }
 
 function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
-    $tmp_disc_url = con_url($clean_url,"nocache=invalidate&sh_itm=$item_id");
+    $tmp_disc_url = get_url($clean_url,"nocache=invalidate&sh_itm=$item_id");
     $col["d_disc_url......"][0]['value'] = $tmp_disc_url."#disc";
     // in urls we do not need to replace & by &amp;
     $col["d_disc_url......"][0]['flag']  = FLAG_HTML;

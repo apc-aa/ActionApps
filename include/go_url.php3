@@ -28,14 +28,21 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/** Appends any number of QUERY_STRING (separated by & (&amp;)) parameters
-*   to given URL, using apropriate ? or &. */
+/** Escapes url for usage on HTML page
+ *  - it is better to use get_url() function and then escape the url before
+ *  printing */
 function con_url($url, $params) {
+    return htmlentities(get_url($url, $params));
+}
+
+/** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
+ *  using apropriate ? or &. */
+function get_url($url, $params) {
     list($path, $fragment) = explode( '#', $url, 2 );
     if (is_array($params)) {
-        $params = implode('&amp;', $params);
+        $params = implode('&', $params);
     }
-    return $path . (strstr($path, '?') ? "&amp;" : "?"). $params. ($fragment ? '#'.$fragment : '') ;
+    return $path . (strstr($path, '?') ? "&" : "?"). $params. ($fragment ? '#'.$fragment : '') ;
 }
 
 /// Move to another page (must be before any output from script)
@@ -45,10 +52,10 @@ function go_url($url, $add_param="", $usejs=false) {
         page_close();
     }
     if ($add_param != "") {
-        $url = con_url( $url, rawurlencode($add_param));
+        $url = get_url( $url, rawurlencode($add_param));
     }
     // special parameter for Netscape to reload page
-    $url = con_url($url,($rXn=="") ? "rXn=1" : "rXn=".++$rXn);
+    $url = get_url($url,($rXn=="") ? "rXn=1" : "rXn=".++$rXn);
     if ( $usejs OR headers_sent() ) {
        echo '
         <script language="JavaScript" type="text/javascript"> <!--
@@ -58,7 +65,7 @@ function go_url($url, $add_param="", $usejs=false) {
        ';
     } else {
         header("Status: 302 Moved Temporarily");
-        header("Location: ". con_url($url,$netscape));
+        header("Location: ". get_url($url,$netscape));
     }
     exit;
 }
