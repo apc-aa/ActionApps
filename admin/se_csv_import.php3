@@ -51,6 +51,7 @@ http://www.apc.org/
 
 require_once "../include/init_page.php3";
 require_once $GLOBALS['AA_INC_PATH']. 'import_util.php3';
+require_once $GLOBALS['AA_INC_PATH']. 'files.class.php3';
 
 $text      = stripslashes($text);
 $upfile    = stripslashes($upfile);
@@ -67,70 +68,52 @@ if (!isset($slice_id)) {
     exit;
 }
 
-if (!isset($dataType))	$dataType = "file";
+if (!isset($dataType)) $dataType = "file";
 
-/** Create file $uploadpath/$file_name according to the type $datatype.
- *  If $datatype == url  => get data from $url and copy it to the file
- *  If $datatype == text => copy $text to the file.
- */
-function createFile($dataType,$uploadpath,$file_name, $url,$text) {
-    if (!($out = fopen($uploadpath.$file_name,"wb+")))
-        return  _m("Cannot open output file:").$uploadpath.$file_name ;
-    if ($dataType == "url") {
-        if (!($in = fopen($url,"r")))
-            return _m("Cannot open input file:") . $url;
-        do {
-            $data = fread($in, 65536);
-            if (strlen($data) == 0) break;
-            if (!fwrite($out,$data)) {
-                return _m("Cannot write to file");
-            }
-        } while (true);
-        fclose($in);
-    } else {	// text
-        if (!fwrite($out,stripslashes($text))) {
-            return _m("Cannot write to file");
-        }
-    }
-    fclose($out);
-    return "";
-}
+$slice = new slice($slice_id);
 
 // Upload a data to the server. The file name is generated automaticly
 // by unique id function. The path is upload_directory/csv_data.
 // Delete old csv data in the upload_directory/csv_data.
 
 if ($upload OR $preview) {
+
     // create unique file name
     unset($err);
     $file_name  = GetUploadFileName(FILE_PREFIX);
-    $uploadpath = GetUploadDir($slice_id);
 
-    if (!is_dir( $uploadpath )) {
-        if ($debugupload) huhl("Creating directory ".$uploadpath);
-        if (!mkdir( $uploadpath, IMG_UPLOAD_DIR_MODE )) {
-            $err = _m("Can't create directory for image uploads");
-        }
-    } else {
-        if ( $dataType == "file") {
+    switch ($dataType) {
+        case 'file':
             if ( $_FILES['upfile']['name'] != '' ) {
                 // upload file - todo: error is not returned, if not exist
-                $err=aa_move_uploaded_file ("upfile", $uploadpath, 0, $file_name);
+                $dest_file = Files::uploadFile('upfile', Files::destinationDir($slice), '', 'overwrite', $file_name);
+                if ($dest_file === false) {   // error
+                    $err[] = Files::lastErrMsg();
+                }
             } else {
-                $file_name = $previous_upload;
+                $dest_file = $previous_upload;
             }
-        } else {
-            $err = createFile($dataType,$uploadpath,$file_name, $url,$text);
-        }
+            break;
+        case 'url':
+            if (($text = file_get_contents($url)) === false) {
+                $err[] = _m('Cannot read input file');
+                break;
+            }
+            // continue to next option - NO break!!!
+        default:
+            $dest_file = Files::createFileFromString($text, Files::destinationDir($slice), $file_name);
+            if ($dest_file === false) {   // error
+                $err[] = Files::lastErrMsg();
+            }
     }
     if ($err != "") {
          MsgPage($sess->url(self_base()."se_csv_import.php3"), $err);
     }
 }
 
-if ( $upload ) {
+if ($upload) {
     // delete files older than one week in the img_upload directory
-    DeleteOldFiles(FILE_PREFIX,$uploadpath);
+    Files::DeleteOldFiles(FILE_PREFIX, $slice);
 
     // create array of additional csv parameters
     $addParams['enclosure'] = $enclosure;
@@ -138,7 +121,7 @@ if ( $upload ) {
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
-    go_url($sess->url(self_base()."se_csv_import2.php3"). "&fileName=" . $uploadpath.$file_name . "&addParamsSerial=" .base64_encode(serialize($addParams)));
+    go_url($sess->url(self_base()."se_csv_import2.php3"). "&fileName=$dest_file&addParamsSerial=" .base64_encode(serialize($addParams)));
 }
 
 require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
@@ -161,7 +144,7 @@ function InitPage() {}
   unset($err);
 
   if ($preview) { // file preview
-      if (!($handle = fopen($uploadpath.$file_name, "r"))) {
+      if (!($handle = fopen($dest_file, "r"))) {
           $err = _m("Cannot open a file for preview");
       } else {
           FrmTabCaption(_m("File preview"));
@@ -239,7 +222,7 @@ function InitPage() {}
         </table>
     </td></tr>
     <tr><td align="center">
-        <input type=hidden name=previous_upload value="<?php echo $file_name ?>">
+        <input type=hidden name=previous_upload value="<?php echo $dest_file ?>">
         <input type=submit name=preview value="<?php echo _m("Preview")?>">
         <input type=submit name=upload value="<?php echo _m("Next") ?>" align=center>&nbsp;&nbsp;
     </td></tr>
