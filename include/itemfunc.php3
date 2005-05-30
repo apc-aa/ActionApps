@@ -28,6 +28,7 @@ require_once $GLOBALS['AA_INC_PATH']."date.php3";
 require_once $GLOBALS['AA_INC_PATH']."item_content.php3";
 require_once $GLOBALS['AA_INC_PATH']."event.class.php3";
 require_once $GLOBALS['AA_INC_PATH']."profile.class.php3";
+require_once $GLOBALS['AA_INC_PATH']."files.class.php3";
 
 if ( !is_object($event) ) $event = new aaevent;   // not defined in scripts which do not include init_page.php3 (like offline.php3)
 
@@ -185,7 +186,7 @@ function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
             $varset->add("number","null", "");
         }
     } else {
-        $varset->add("number", "number", $value['value']);
+        $varset->add("number", "number", (int)$value['value']);
         // clear "TEXT stored" flag
         $varset->add("flag",   "number", (int)$value['flag'] & ~FLAG_TEXT_STORED );
     }
@@ -305,53 +306,17 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
     $up_file = $_FILES[$filevarname];
 
     // look if the uploaded picture exists
-    if (is_uploaded_file($up_file['tmp_name']) AND ($context != "feed")) {
-
-        list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod, $pdestination, $purl) = ParamExplode($param);
-
-        // look if type of file is allowed
-        $file_type = (substr($ptype,-1)=='*') ? substr($ptype,0,strpos($ptype,'/')) : $ptype;
-
-        if (@strstr($up_file['type'],$file_type)==false && $ptype!="") {
-            $err[$field["id"]] = "type of uploaded file not allowed";
-            huhe($err);
-            return;
-        }
-
-        // get filename and replace bad characters
-        $dest_file = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$filevarname."_name"]);
-
-        // new behavior, added by Jakub on 2.8.2002 -- related to File Manager
-        // fill $dirname with the destination directory for storing uploaded files
+    if ($up_file['name'] AND ($up_file['name'] != 'none') AND ($context != 'feed')) {
         $slice = new slice($GLOBALS["slice_id"]);
 
-        $fileman_dir = $slice->getfield('fileman_dir');
-        if ($fileman_dir AND is_dir (FILEMAN_BASE_DIR.$fileman_dir)) {
-            $dirname = FILEMAN_BASE_DIR.$fileman_dir."/items";
-            $dirurl  = FILEMAN_BASE_URL.$fileman_dir."/items";
-            if (!is_dir($dirname)) {
-                mkdir($dirname, $FILEMAN_MODE_DIR);
-            }
-            $fileman_used = true;
-        }
+        // $pdestination and $purl is not used, yet - it should be used to allow
+        // slice administrators to store files to another directory
+        // list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod, $pdestination, $purl) = ParamExplode($param);
+        list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod) = ParamExplode($param);
 
-        // end of new behavior
-        if (!$dirname) {
-            // images are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
-            $dirname = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
-            $dirurl  = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
-            if (!is_dir($dirname)) {
-                if (!mkdir($dirname, IMG_UPLOAD_DIR_MODE)) {
-                    return _m("Can't create directory for image uploads");
-                }
-            }
-        }
-        $dest_file = GetDestinationFileName($dirname, $dest_file);
-
-        // copy the file from the temp directory to the upload directory, and test for success
-        $e = aa_move_uploaded_file($filevarname, $dirname, $fileman_used ? $FILEMAN_MODE_FILE : (int)IMG_UPLOAD_FILE_MODE, $dest_file);
-        if ($e) {
-            $err[$field["id"]] = $e;
+        $dest_file = Files::uploadFile($filevarname, Files::destinationDir($slice), $ptype, $preplacemethod);
+        if ($dest_file === false) {   // error
+            $err[$field["id"]] = Files::lastErrMsg();
             return;
         }
 
@@ -363,7 +328,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
         // return true for unsupported types IF they are already small enough
         // and also making ResampleImage copy the files if small enough
 
-        if ($e = ResampleImage("$dirname/$dest_file","$dirname/$dest_file", $pwidth, $pheight)) {
+        if ($e = ResampleImage($dest_file, $dest_file, $pwidth, $pheight)) {
             $err[$field["id"]] = $e;
             return;
         }
@@ -375,13 +340,13 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
                 $num++; // Note sets it initially to 1
 
                 //copy thumbnail
-                $f             = $fields[$thumb];       // Array from fields
-                $fncpar        = ParseFnc($f["input_insert_func"]);
-                $thumb_params  = explode(":",$fncpar['param']);  // (type, width, height)
-                $dest_file_tmb = substr($dest_file,0,strrpos($dest_file,".")).
-                                 "_thumb$num".substr($dest_file,strrpos($dest_file,".")); // xxx_thumb1.jpg
+                $f              = $fields[$thumb];       // Array from fields
+                $fncpar         = ParseFnc($f["input_insert_func"]);
+                $thumb_params   = explode(":",$fncpar['param']);  // (type, width, height)
 
-                if ($e = ResampleImage("$dirname/$dest_file","$dirname/$dest_file_tmb", $thumb_params[1],$thumb_params[2])) {
+                $dest_file_tmb  = Files::generateUnusedFilename($dest_file, '_thumb');  // xxx_thumb1.jpg
+
+                if ($e = ResampleImage($dest_file,$dest_file_tmb, $thumb_params[1],$thumb_params[2])) {
                     $err[$field["id"]] = $e;
                     return;
                 }
@@ -392,12 +357,12 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
                 $db = getDB(); $db->tquery($SQL); freeDB($db);
 
                 // store link to thumbnail
-                $val['value'] = "$dirurl/$dest_file_tmb";
+                $val['value'] = Files::getUrlFromPath($dest_file_tmb);
                 insert_fnc_qte( $item_id, $f, $val, "", $additional);
             }
         } // params[3]
 
-        $value['value'] = "$dirurl/$dest_file";
+        $value['value'] = Files::getUrlFromPath($dest_file);
     } // File uploaded
     // store link to uploaded file or specified file URL if nothing was uploaded
     insert_fnc_qte( $item_id, $field, $value, "", $additional);
@@ -534,7 +499,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert, $invalidateca
     $content4id = new ItemContent($content4id);
     $content4id->setItemID($id);
     $content4id->setSliceID($slice_id);
-    return $content4id->storeItem( $insert ? 'insert' : 'update', true, true, $context);     // invalidatecache, feed
+    return $content4id->storeItem( $insert ? 'insert' : 'update', $invalidatecache, $feed, $context);     // invalidatecache, feed
 } // end of StoreItem
 
 // -----------------------------------------------------------------------------
