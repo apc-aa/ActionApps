@@ -1,97 +1,126 @@
 // I18N constants
-
-// LANG: "fr", ENCODING: UTF-8 | ISO-8859-1
-// Author: Simon Richard, s.rich@sympatico.ca
-
-// FOR TRANSLATORS:
-//
-//   1. PLEASE PUT YOUR CONTACT INFO IN THE ABOVE LINE
-//      (at least a valid email address)
-//
-//   2. PLEASE TRY TO USE UTF-8 FOR ENCODING;
-//      (if this is not possible, please include a comment
-//       that states what encoding is necessary.)
-
-// All technical terms used in this document are the ones approved
-// by the Office québécois de la langue française.
-// Tous les termes techniques utilisés dans ce document sont ceux
-// approuvés par l'Office québécois de la langue française.
-// http://www.oqlf.gouv.qc.ca/
-
-HTMLArea.I18N = {
-
-	// the following should be the filename without .js extension
-	// it will be used for automatically load plugin language.
-	lang: "fr",
-
-	tooltips: {
-		bold:           "Gras",
-		italic:         "Italique",
-		underline:      "Souligné",
-		strikethrough:  "Barré",
-		subscript:      "Indice",
-		superscript:    "Exposant",
-		justifyleft:    "Aligné à gauche",
-		justifycenter:  "Centré",
-		justifyright:   "Aligné à droite",
-		justifyfull:    "Justifier",
-		orderedlist:    "Numérotation",
-		unorderedlist:  "Puces",
-		outdent:        "Diminuer le retrait",
-		indent:         "Augmenter le retrait",
-		forecolor:      "Couleur de police",
-		hilitecolor:    "Surlignage",
-		horizontalrule: "Ligne horizontale",
-		createlink:     "Insérer un hyperlien",
-		insertimage:    "Insérer/Modifier une image",
-		inserttable:    "Insérer un tableau",
-		htmlmode:       "Passer au code source",
-		popupeditor:    "Agrandir l'éditeur",
-		about:          "À propos de cet éditeur",
-		showhelp:       "Aide sur l'éditeur",
-		textindicator:  "Style courant",
-		undo:           "Annuler la dernière action",
-		redo:           "Répéter la dernière action",
-		cut:            "Couper la sélection",
-		copy:           "Copier la sélection",
-		paste:          "Coller depuis le presse-papier",
-		lefttoright:    "Direction de gauche à droite",
-		righttoleft:    "Direction de droite à gauche"
-	},
-
-	buttons: {
-		"ok":           "OK",
-		"cancel":       "Annuler"
-	},
-
-	msg: {
-		"Path":         "Chemin",
-		"TEXT_MODE":    "Vous êtes en MODE TEXTE.  Appuyez sur le bouton [<>] pour retourner au mode tel-tel.",
-
-		"IE-sucks-full-screen" :
-		// translate here
-		"Le mode plein écran peut causer des problèmes sous Internet Explorer, " +
-		"ceci dû à des bogues du navigateur qui ont été impossible à contourner.  " +
-		"Les différents symptômes peuvent être un affichage déficient, le manque de " +
-		"fonctions dans l'éditeur et/ou pannes aléatoires du navigateur.  Si votre " +
-		"système est Windows 9x, il est possible que vous subissiez une erreur de type " +
-		"«General Protection Fault» et que vous ayez à redémarrer votre ordinateur." +
-		"\n\nConsidérez-vous comme ayant été avisé.  Appuyez sur OK si vous désirez tout " +
-		"de même essayer le mode plein écran de l'éditeur."
-	},
-
-	dialogs: {
-		"Cancel"                                            : "Annuler",
-		"Insert/Modify Link"                                : "Insérer/Modifier Lien",
-		"New window (_blank)"                               : "Nouvelle fenêtre (_blank)",
-		"None (use implicit)"                               : "Aucun (par défaut)",
-		"OK"                                                : "OK",
-		"Other"                                             : "Autre",
-		"Same frame (_self)"                                : "Même cadre (_self)",
-		"Target:"                                           : "Cible:",
-		"Title (tooltip):"                                  : "Titre (infobulle):",
-		"Top frame (_top)"                                  : "Cadre du haut (_top)",
-		"URL:"                                              : "Adresse Web:",
-		"You must enter the URL where this link points to"  : "Vous devez entrer l'adresse Web du lien"
-	}
-};
+// LANG: "fr", ENCODING: UTF-8
+{
+  "Bold": "Gras",
+  "Italic": "Italique",
+  "Underline": "SoulignÃ©",
+  "Strikethrough": "BarrÃ©",
+  "Subscript": "Indice",
+  "Superscript": "Exposant",
+  "Justify Left": "Aligner Ã  gauche",
+  "Justify Center": "Centrer",
+  "Justify Right": "Aligner Ã  droite",
+  "Justify Full": "Justifier",
+  "Ordered List": "NumÃ©rotation",
+  "Bulleted List": "Puces",
+  "Decrease Indent": "Diminuer le retrait",
+  "Increase Indent": "Augmenter le retrait",
+  "Font Color": "Couleur de police",
+  "Background Color": "Surlignage",
+  "Horizontal Rule": "Ligne horizontale",
+  "Insert Web Link": "InsÃ©rer un lien",
+  "Insert/Modify Image": "InsÃ©rer / Modifier une image",
+  "Insert Table": "InsÃ©rer un tableau",
+  "Toggle HTML Source": "Afficher / Masquer code source",
+  "Enlarge Editor": "Agrandir l'Ã©diteur",
+  "About this editor": "A propos",
+  "Help using editor": "Aide",
+  "Current style": "Style courant",
+  "Undoes your last action": "Annuler la derniÃ¨re action",
+  "Redoes your last action": "RÃ©pÃ©ter la derniÃ¨re action",
+  "Cut selection": "Couper la sÃ©lection",
+  "Copy selection": "Copier la sÃ©lection",
+  "Paste from clipboard": "Coller depuis le presse-papier",
+  "Direction left to right": "Direction de gauche Ã  droite",
+  "Direction right to left": "Direction de droite Ã  gauche",
+  "Remove formatting": "Supprimer mise en forme",
+  "Select all": "Tout sÃ©lectionner",
+  "Print document": "Imprimer document",
+  "Clear MSOffice tags": "Effacer tags MSOffice",
+  "Clear Inline Font Specifications": "Supprimer paramÃ¨tres inline de la fonte",
+  "Split Block": "SÃ©parer les blocks",
+  "Toggle Borders": "Afficher / Masquer les bordures",
+  "Save as": "Enregistrer sous",
+  "Insert/Overwrite": "Insertion / Remplacement",
+  "&mdash; format &mdash;": "&mdash; Format &mdash;",
+  "Heading 1": "Titre 1",
+  "Heading 2": "Titre 2",
+  "Heading 3": "Titre 3",
+  "Heading 4": "Titre 4",
+  "Heading 5": "Titre 5",
+  "Heading 6": "Titre 6",
+  "Normal": "Normal",
+  "Address": "Adresse",
+  "Formatted": "FormatÃ©",
+  
+  //dialogs
+  "OK": "OK",
+  "Cancel": "Annuler",
+  "Path": "Chemin",
+  "You are in TEXT MODE.  Use the [<>] button to switch back to WYSIWYG.": "Vous Ãªtes en MODE TEXTE.  Appuyez sur le bouton [<>] pour retourner au mode WYSIWYG.",
+  "The Paste button does not work in Mozilla based web browsers (technical security reasons). Press CTRL-V on your keyboard to paste directly.": "Le bouton Coller ne fonctionne pas sur les navigateurs basÃ©s sur Mozilla (pour des raisons de sÃ©curitÃ©). Pressez simplement CTRL-V au clavier pour coller directement.",
+  "Your Document is not well formed. Check JavaScript console for details.": "Le document est mal formÃ©. VÃ©rifiez la console JavaScript pour plus de dÃ©tail.",
+  
+  "Alignment:": "Alignement",
+  "Not set": "IndÃ©fini",
+  "Left": "Gauche",
+  "Right": "Droite",
+  "Texttop": "Texttop",
+  "Absmiddle": "Absmiddle",
+  "Baseline": "Baseline",
+  "Absbottom": "Absbottom",
+  "Bottom": "Bas",
+  "Middle": "Milieu",
+  "Top": "Haut",
+  
+  "Layout": "Mise en page",
+  "Spacing": "Espacement",
+  "Horizontal:": "Horizontal",
+  "Horizontal padding": "Marge horizontale interne",
+  "Vertical:": "Vertical",
+  "Vertical padding": "Marge verticale interne",
+  "Border thickness:": "Epaisseur bordure",
+  "Leave empty for no border": "Laisser vide pour pas de bordure",
+  
+  //Insert Link
+  "Insert/Modify Link": "InsÃ©rer / Modifier un lien",
+  "None (use implicit)": "Aucune (implicite)",
+  "New window (_blank)": "Nouvelle fenÃªtre (_blank)",
+  "Same frame (_self)": "MÃªme frame (_self)",
+  "Top frame (_top)": "Frame principale (_top)",
+  "Other": "Autre",
+  "Target:": "Cible",
+  "Title (tooltip):": "Text alternatif",
+  "URL:": "URL:",
+  "You must enter the URL where this link points to": "Vous devez entrer l'URL de ce lien",
+  
+  // Insert Table
+  "Insert Table": "InsÃ©rer un tableau",
+  "Rows:": "Lignes",
+  "Number of rows": "Nombre de lignes",
+  "Cols:": "Colonnes",
+  "Number of columns": "Nombre de colonnes",
+  "Width:": "Largeur",
+  "Width of the table": "Largeur du tableau",
+  "Percent": "Pourcent",
+  "Pixels": "Pixels",
+  "Em": "Em",
+  "Width unit": "UnitÃ©s de largeur",
+  "Fixed width columns": "Colonnes Ã  taille fixe",
+  "Positioning of this table": "Position du tableau",
+  "Cell spacing:": "Espacement",
+  "Space between adjacent cells": "Espace entre les cellules adjacentes",
+  "Cell padding:": "Marge interne",
+  "Space between content and border in cell": "Espace entre le contenu et la bordure d'une cellule",
+  
+  // Insert Image
+  "Insert Image": "InsÃ©rer une image",
+  "Image URL:": "URL image",
+  "Enter the image URL here": "Entrer l'url de l'image ici",
+  "Preview": "PrÃ©visualiser",
+  "Preview the image in a new window": "PrÃ©visualiser l'image dans une nouvelle fenÃªtre",
+  "Alternate text:": "Text alternatif",
+  "For browsers that don't support images": "Pour les navigateurs qui ne supportent pas les images",
+  "Positioning of this image": "Position de l'image",
+  "Image Preview:": "PrÃ©visualisation"
+}
