@@ -1,153 +1,132 @@
 // APC-AA javascript functions for HTMLArea
 
+xinha_editors = null;
+xinha_config  = null;
+xinha_plugins = null;
 
-isIE = document.all && !window.opera;
-RecID = Array();
-function ConfirmRemove() {
-    if (confirm("Remove ?"))  return true;
-    return false;
+/** Start all the htmlareas, which are listed in htmlareas array */
+function xinha_init() {
+    // What are the plugins you will be using in the editors on this page.
+    // List all the plugins you will need, even if not all the editors will
+    // use all the plugins.
+    //
+    // FullScreen plugin is loaded automaticaly,
+    // EnterParagraphs   is loaded for all gecko based browsers
+    //                   (acordingly on mozParaHandler variable)
+    //
+
+    xinha_plugins = ['TableOperations', 'ImageManager'];
+
+    // THIS BIT OF JAVASCRIPT LOADS THE PLUGINS, NO TOUCHING  :)
+    if(!HTMLArea.loadPlugins(xinha_plugins, xinha_init)) return;
+
+    // The names of the textareas turning into editors
+
+    xinha_editors = htmlareas;    //  ['myTextArea'];
+
+    // Default configuration to be used by all the editors.
+    // (later you will be able to change the defaults for specified textareas
+    //
+    // If you want to modify the default config you might do something like this
+    //   xinha_config = new HTMLArea.Config();
+    //   xinha_config.width  = 640;
+    //   xinha_config.height = 420;
+
+    xinha_config = new HTMLArea.Config();
+
+    // Create editors for the textareas. You can do this in two ways, either:
+    //
+    //     xinha_editors   = HTMLArea.makeEditors(xinha_editors, xinha_config, xinha_plugins);
+    //
+    // if you want all the editors to use the same plugins, OR:
+    //
+    //   xinha_editors = HTMLArea.makeEditors(xinha_editors, xinha_config);
+    //   xinha_editors['myTextArea'].registerPlugins(['Stylist','FullScreen']);
+    //   xinha_editors['anotherOne'].registerPlugins(['CSS','SuperClean']);
+    //
+    // if you want to use a different plugins for editors
+
+    xinha_editors   = HTMLArea.makeEditors(xinha_editors, xinha_config, xinha_plugins);
+
+    // If you want to change the configuration variables of any of the editors,
+    // this is the place to do that. For example you might want to change
+    // the width and height of one of the editors, like this...
+    //
+    //   xinha_editors.myTextArea.config.width  = 640;
+    //   xinha_editors.myTextArea.config.height = 480;
+
+    // "start" the editors: turns the textareas into Xinha editors
+
+    HTMLArea.startEditors(xinha_editors);
+    window.onload = null;
 }
 
-function RemoveRecord(e) {
-    if (ConfirmRemove()) {
-        if (!e && window.event) e = window.event;
-        if (!e.target) e.target = e.srcElement;
-        if (isIE) {
-            e.returnValue = false;
-            var record = e.target.id;
-        } else {
-            e.preventDefault();
-            var record = this.id;
+function switchHTML(name) {
+    elem = document.getElementById(name+"html");
+    //elem = document.inputform.eval(name+"html");
+    if ( elem != null ) {
+        for (i=0; i<elem.length; i++) {
+            if (elem[i].value == "h") {
+                elem[i].checked = true;
+            }
         }
-        var brindex = record.lastIndexOf('_');
-        var tbid = record.slice(7,brindex);
-        var reciid = record.slice(brindex+1);
-        var tbody = document.getElementById('tbody_'+tbid);
-        var record = document.getElementById(tbid + '_' + reciid);
-        tbody.removeChild(record);
     }
-}
-
-function RemoveRecord2(record) {
-    if (ConfirmRemove()) {
-        var brindex = record.lastIndexOf('_');
-        var tbid = record.slice(7,brindex);
-        var reciid = record.slice(brindex+1);
-        var tbody = document.getElementById('tbody_'+tbid);
-        var record = document.getElementById(tbid + '_' + reciid);
-        tbody.removeChild(record);
-    }
-}
-
-// function replaces html code of a an HTML element (identified by id)
-// by another code
-function SetContent(id,txt) {
-  if (document.all) {                    // IE 4+
-    el = document.all[id];
-    if ( el != null ) {
-      el.innerHTML=txt;
-    }
-  } else if (document.layers) {            // NS 4
-    eval('document.ids.'+id).document.write(txt);
-    eval('document.ids.'+id).document.close();
-  } else if (document.getElementById){   // NS 6 (new DOM)
-    rng = document.createRange();
-    el = document.getElementById(id);
-    if ( el != null ) {  // in case the element do not exist => do nothing
-      rng.setStartBefore(el);
-      htmlFrag = rng.createContextualFragment(txt);
-      while (el.hasChildNodes())
-        el.removeChild(el.lastChild);
-      el.appendChild(htmlFrag);
-    }
-  }
-}
-
-
-function addRecord(name,f_text,f_value,f_additional) {
-    var ident = name + '_' + RecID[name];
-    var i_caption          = document.createElement('INPUT');
-        i_caption.type     = 'text';
-        i_caption.name     = name + '[' + RecID[name] + '][caption]';
-        i_caption.size     = '30';
-        i_caption.value    = f_value;
-    var i_comment          = document.createElement('TEXTAREA');
-        i_comment.name     = name + '[' + RecID[name] + '][comment]';
-        i_comment.cols     = '30';
-        i_comment.rows     = '4';
-        i_comment.value    = f_additional;
-    var newDelButton       = document.createElement('INPUT');
-        newDelButton.type  = 'button';
-        newDelButton.id    = 'delete-' + ident;
-        newDelButton.value = 'x';
-
-    var tbody              = document.getElementById('dynamic'+name);
-    var tr                 = tbody.insertRow(tbody.rows.length);
-        tr.id              = ident;
-    SetContent(ident,'<td><b>juuch</b>:'+f_text+'</td>');
-    RecID[name]++;
-}
-
-
-
-
-    function switchHTML(name) {
-        elem = document.getElementById(name+"html");
-        //elem = document.inputform.eval(name+"html");
+    if (HTMLArea.checkSupportedBrowser) {
+        elem = document.getElementById("htmlplainspan"+name);
         if ( elem != null ) {
-            for (i=0; i<elem.length; i++) {
-                if (elem[i].value == "h") {
-                    elem[i].checked = true;
-                }
-            }
-        }
-        if (HTMLArea.checkSupportedBrowser) {
-            elem = document.getElementById("htmlplainspan"+name);
-            if ( elem != null ) {
-                elem.style.display = "none";
-            }
+            elem.style.display = "none";
         }
     }
+}
 
-    function showHTMLAreaLink(name) {
-        if (HTMLArea.checkSupportedBrowser()) {
-            elem = document.getElementById("arealinkspan"+name);
-            if( elem && (elem != null) ) {
-                elem.style.display = "inline";
-            }
+function showHTMLAreaLink(name) {
+    if (HTMLArea.checkSupportedBrowser()) {
+        elem = document.getElementById("arealinkspan"+name);
+        if( elem && (elem != null) ) {
+            elem.style.display = "inline";
         }
     }
+}
 
-    function generateArea(name, tableop, spell, rows, cols, session) { // generate HTMLArea from textarea
-        area = new HTMLArea(name);
-        area.session = session;
-        var config = area.config;
-        config.height = eval(rows*16+100)+"px";
-        config.width = eval(cols*12)+"px";
-        if (tableop == true) area.registerPlugin("TableOperations");
-        if (spell == true) area.registerPlugin("SpellChecker");
-        area.registerPlugin("InsertFile");
-        area.registerPlugin("ImageManager");
-        area.generate();
-        switchHTML(name);
-        return false;
+function bak_openHTMLAreaFullscreen(name, session) { // open HTMLArea in popupwindow
+    ha = new HTMLArea(name); // create dummy HTMLArea object
+    HTMLArea.aa_session = session;
+    ha._textArea = document.getElementById(name); // set textarea name
+    HTMLArea._object = ha; // HTMLArea object is used in popupwindow
+    HTMLArea._object.isnormal = "1"; // parent area is normal textarea
+    if (HTMLArea.is_ie) { // different window opening for IE and other browsers
+        window.open(aa_long_editor_url+"popups/fullscreen.html", "ha_fullscreen",
+                    "toolbar=no,location=no,directories=no,status=no,menubar=no," +
+                    "scrollbars=no,resizable=yes,width=640,height=480");
+    } else {
+        window.open(aa_long_editor_url+"popups/fullscreen.html", "ha_fullscreen",
+                    "toolbar=no,menubar=no,personalbar=no,width=640,height=480," +
+                    "scrollbars=no,resizable=yes");
     }
+    switchHTML(name);
+}
 
-    function openHTMLAreaFullscreen(name, session) { // open HTMLArea in popupwindow
-        ha = new HTMLArea(name); // create dummy HTMLArea object
-        HTMLArea.session = session;
-        ha._textArea = document.getElementById(name); // set textarea name
-        HTMLArea._object = ha; // HTMLArea object is used in popupwindow
-        HTMLArea._object.isnormal = "1"; // parent area is normal textarea
-        if (HTMLArea.is_ie) { // different window opening for IE and other browsers
-            window.open(long_editor_url+"popups/fullscreen.html", "ha_fullscreen",
-                        "toolbar=no,location=no,directories=no,status=no,menubar=no," +
-                        "scrollbars=no,resizable=yes,width=640,height=480");
-        } else {
-            window.open(long_editor_url+"popups/fullscreen.html", "ha_fullscreen",
-                        "toolbar=no,menubar=no,personalbar=no,width=640,height=480," +
-                        "scrollbars=no,resizable=yes");
-        }
-        switchHTML(name);
-    }
+
+
+function openHTMLAreaFullscreen(name, session) { // open HTMLArea in popupwindow
+    var heditor = new HTMLArea(name, HTMLArea.cloneObject(new HTMLArea.Config()));
+    heditor.generate();
+    setTimeout(function() {
+        heditor.activateEditor();
+        heditor._fullScreen();
+        heditor._toolbarObjects[FullScreen].swapImage([_editor_url + cfg.imgURL + 'ed_buttons_main.gif',8,0]);
+    }, 500);
+    switchHTML(name);
+
+//    alert(xinha_editors);
+//    heditor.focusEditor();
+//    heditor._fullScreen();
+//    xinha_editors['v66756c6c5f746578742e2e2e2e2e2e2e'].focusEditor();
+//    FullScreen(editor);
+//    xinha_editors[name] = editor;
+//    xinha_editors[name].focusEditor();
+    //xinha_editors[name]._fullScreen();
+//    xinha_editors[name].tb_objects[FullScreen].swapImage([_editor_url + cfg.imgURL + 'ed_buttons_main.gif',9,0]);
+//    switchHTML(name);
+}
 
