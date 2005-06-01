@@ -88,26 +88,6 @@ function showHTMLAreaLink(name) {
     }
 }
 
-function bak_openHTMLAreaFullscreen(name, session) { // open HTMLArea in popupwindow
-    ha = new HTMLArea(name); // create dummy HTMLArea object
-    HTMLArea.aa_session = session;
-    ha._textArea = document.getElementById(name); // set textarea name
-    HTMLArea._object = ha; // HTMLArea object is used in popupwindow
-    HTMLArea._object.isnormal = "1"; // parent area is normal textarea
-    if (HTMLArea.is_ie) { // different window opening for IE and other browsers
-        window.open(aa_long_editor_url+"popups/fullscreen.html", "ha_fullscreen",
-                    "toolbar=no,location=no,directories=no,status=no,menubar=no," +
-                    "scrollbars=no,resizable=yes,width=640,height=480");
-    } else {
-        window.open(aa_long_editor_url+"popups/fullscreen.html", "ha_fullscreen",
-                    "toolbar=no,menubar=no,personalbar=no,width=640,height=480," +
-                    "scrollbars=no,resizable=yes");
-    }
-    switchHTML(name);
-}
-
-
-
 function openHTMLAreaFullscreen(name, session) { // open HTMLArea in popupwindow
     var heditor = new HTMLArea(name, HTMLArea.cloneObject(new HTMLArea.Config()));
     heditor.generate();

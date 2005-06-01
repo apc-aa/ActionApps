@@ -459,7 +459,7 @@ require_once $GLOBALS['AA_INC_PATH'] ."item_content.php3";  // for ItemContent c
 /** Looks into reader management slices whether the reader name is not yet used.
 *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
 */
-function IsReadernameFree ($username) {
+function IsReadernameFree($username) {
     $db = getDB();
     $SQL = "SELECT content.text FROM content
             INNER JOIN item ON content.item_id = item.id
@@ -467,9 +467,9 @@ function IsReadernameFree ($username) {
             WHERE content.field_id='".FIELDID_USERNAME."'
             AND slice.type='ReaderManagement'
             AND content.text='$username'";
-    $db->query ($SQL);
+    $db->query($SQL);
     $retval = ! $db->next_record();
-    freeDB ($db);
+    freeDB($db);
     return $retval;
 }
 
@@ -493,7 +493,7 @@ function getReaderSlices() {
     while ($db->next_record()) {
         $slices[] = unpack_id128($db->f('id'));
     }
-    freeDB ($db);
+    freeDB($db);
     return $slices;
 }
 
