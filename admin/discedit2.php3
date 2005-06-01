@@ -80,7 +80,7 @@ if ($update) {
 // set variables from table discussion
 $SQL= " SELECT * FROM discussion WHERE id='".q_pack_id($d_id)."'";
 $db->query($SQL);
-if ($db->next_record())
+if ($db->next_record()) {
     while (list($key,$val,,) = each($db->Record)) {
         if (!is_numeric($key)) {
             $$key = $val; // variables and database fields have identical names
