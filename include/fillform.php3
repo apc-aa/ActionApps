@@ -200,7 +200,7 @@ function fillFormWithContent($oldcontent4id) {
                         } else {
                             $first = false;
                         }
-                        $js .= "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','". $field["flag"] & FLAG_HTML ? "h" : "t")."',$timezone)";
+                        $js .= "\t\tnew Array ('$form','$control_id','$myvalue','tdctr_','". ($field["flag"] & FLAG_HTML ? "h" : "t")."',$timezone)";
                     }
                 }
             }

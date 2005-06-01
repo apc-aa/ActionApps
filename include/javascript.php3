@@ -32,10 +32,13 @@ $GLOBALS["js_triggers"] = array (
 $GLOBALS["js_trig"] = getTrig();
 
 function getJavascript($slice_id) {
+    $db = new DB_AA;
     if ($slice_id) {
-        $p_slice_id = q_pack_id($slice_id);
-        $SQL        = "SELECT javascript FROM slice WHERE id='$p_slice_id'";
-        $javascript = GetTable2Array($SQL, 'aa_first', 'javascript');
+        $p_slice_id = q_pack_id ($slice_id);
+        $db->query("SELECT javascript FROM slice WHERE id='$p_slice_id'");
+        if ($db->next_record()) {
+            $javascript = $db->f("javascript");
+        }
     }
     return $javascript;
 }
