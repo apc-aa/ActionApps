@@ -48,56 +48,62 @@ function RegisterItem( $id, $packet, $db ) {
 
 // gets one item stored in WDDX format and stored it in database
 function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
-  global $db, $itemvarset, $varset;
+    global $db, $itemvarset, $varset;
 
-  if ( IsDuplicated( $packet, $db ) )
-    return WDDX_DUPLICATED;
-
-  ($vals =  wddx_deserialize ($packet));
-  if ( !$vals )
-    return WDDX_BAD_PACKET;
-
-  // update database
-  $id = new_id();
-
-  // prepare content4id array before call StoreItem function
-  while (list($key,$val) = each($vals)) {
-    if ( isset($val) AND is_array($val) ) {
-      switch( $val[0] ) {   // field type - defines action to do with content
-        case "base64":
-          $content4id[$key][0]['value'] = quote( base64_decode($val[2]));
-                                           // $val[1] is filename - not used now
-          break;
-        default:                           // store multiple values
-          reset($val);
-          $i=0;
-          while (list(,$v) = each($val)) {
-            $content4id[$key][$i]['value'] = quote($v);
-            $content4id[$key][$i++]['flag'] |= FLAG_OFFLINE;  // mark as offline filled
-          }
-      }
+    if (IsDuplicated($packet, $db)) {
+        return WDDX_DUPLICATED;
     }
-    else                                   // if not array - just store content
-      $content4id[$key][0]['value'] = quote($val);
-    $content4id[$key][0]['flag'] |= FLAG_OFFLINE;      // mark as offline filled
-  }
+
+    $vals =  wddx_deserialize($packet);
+    if (!$vals) {
+        return WDDX_BAD_PACKET;
+    }
+
+    // update database
+    $id = new_id();
+
+    // prepare content4id array before call StoreItem function
+    while (list($key,$val) = each($vals)) {
+        if (isset($val) AND is_array($val)) {
+            switch( $val[0] ) {   // field type - defines action to do with content
+                case "base64":
+                    $content4id[$key][0]['value'] = base64_decode($val[2]);
+                    // $val[1] is filename - not used now
+                    break;
+                default:                           // store multiple values
+                    reset($val);
+                    $i=0;
+                    while (list(,$v) = each($val)) {
+                        $content4id[$key][$i]['value']   = $v;
+                        $content4id[$key][$i++]['flag'] |= FLAG_OFFLINE;  // mark as offline filled
+                    }
+            }
+        } else {                           // if not array - just store content
+            $content4id[$key][0]['value'] = $val;
+        }
+        $content4id[$key][0]['flag'] |= FLAG_OFFLINE;      // mark as offline filled
+    }
 
     // fill required fields if not set
-  $content4id["status_code....."][0]['value'] = ($bin2fill==1 ? 1 : 2);
-  if ( !$content4id["post_date......."] )
-    $content4id["post_date......."][0]['value'] = time();
-  if ( !$content4id["publish_date...."] )
-    $content4id["publish_date...."][0]['value'] = time();
-  if ( !$content4id["expiry_date....."] )
-    $content4id["expiry_date....."][0]['value'] = time()+157680000;
-  if ( !$content4id["last_edit......."] )
-    $content4id["last_edit......."][0]['value'] = time();
-  $content4id["flags..........."][0]['value'] = ITEM_FLAG_OFFLINE;
+    $content4id["status_code....."][0]['value'] = ($bin2fill==1 ? 1 : 2);
+    if (!$content4id["post_date......."]) {
+        $content4id["post_date......."][0]['value'] = time();
+    }
+    if (!$content4id["publish_date...."]) {
+        $content4id["publish_date...."][0]['value'] = time();
+    }
+    if (!$content4id["expiry_date....."]) {
+        $content4id["expiry_date....."][0]['value'] = time()+157680000;
+    }
+    if (!$content4id["last_edit......."]) {
+        $content4id["last_edit......."][0]['value'] = time();
+    }
+    $content4id["flags..........."][0]['value'] = ITEM_FLAG_OFFLINE;
 
-  StoreItem( $id, $slice_id, $content4id, $fields, true, true, true );
-                                        // insert, invalidatecache, feed
-  RegisterItem( q_pack_id($id), $packet, $db );
-  return WDDX_OK;
+    StoreItem($id, $slice_id, $content4id, $fields, true, true, true);
+                                      // insert, invalidatecache, feed
+    RegisterItem(q_pack_id($id), $packet, $db);
+    return WDDX_OK;
 }
 
 ?>
