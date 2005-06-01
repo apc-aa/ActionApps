@@ -79,6 +79,9 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
     }
     $js .= ($url2go ? "document.location = '$url2go';\n" : "window.close();\n");
 
+//    huhl($zid, $js, $item, $aliases);
+//    exit;
+
     FrmHtmlPage(array('body'=> getFrmJavascriptFile('javascript/inputform.js').  // for SelectRelations
                                getFrmJavascript($js)));
 }
@@ -156,6 +159,7 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
     }
     // end
 
+    // added_to_db contains id
     $added_to_db = $content4id->storeItem( $insert ? 'insert' : 'update', true, true, $oldcontent4id );     // invalidatecache, feed
 
     if (count($err) <= 1) {
@@ -167,7 +171,7 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
             go_url( $r_slice_view_url, '', $encap );
         } elseif ($return_url=='close_dialog') {
             // Used for adding item to another slice from itemedit's popup.
-            CloseDialog(new zids($id, 'l'), $openervar, $insert, $preview_url);
+            CloseDialog(new zids($added_to_db, 'l'), $openervar, $insert, $preview_url);
             page_close();
             exit;
         } elseif ($preview) {

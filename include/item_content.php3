@@ -449,7 +449,7 @@ class ItemContent {
             $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
         }
         if ($debugsi) huhl("StoreItem err=",$err);
-        return true;
+        return $id;
     } // end of storeItem()
 
 
