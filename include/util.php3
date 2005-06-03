@@ -753,7 +753,6 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
 */
 function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
-
     trace("+","GetItemContent",$zids);
 
     $db = getDB();
@@ -855,11 +854,14 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
                                                         "flag"  => $db->f("flag") );
     }
 
-    // slice_id... and id... is packed  - add unpacked variant now
-    $content[$fooid]['u_slice_id......'][] =
-        array('value' => unpack_id128($content[$fooid]['slice_id........'][0]['value']));
-    $content[$fooid]['unpacked_id.....'][] =
-        array('value' => unpack_id128($content[$fooid]['id..............'][0]['value']));
+    // add special fields to all items (zids)
+    foreach ($content as $iid => $foo ) { 
+        // slice_id... and id... is packed  - add unpacked variant now
+        $content[$iid]['u_slice_id......'][] =
+            array('value' => unpack_id128($content[$iid]['slice_id........'][0]['value']));
+        $content[$iid]['unpacked_id.....'][] =
+            array('value' => unpack_id128($content[$iid]['id..............'][0]['value']));
+    }
 
     freeDB($db);
     trace("-");
@@ -1919,7 +1921,7 @@ function get_if($value, $else, $else2='aa_NoNe') {
  *  file, for better version informations
  */
 function aa_version() {
-    return 'APC ActionApps 2.6.1 ($Date$, $Revision$)';
+    return 'ActionApps 2.8.0 ($Date$, $Revision$)';
 }
 
 // file_get_contents works in PHP >=4.3.0
