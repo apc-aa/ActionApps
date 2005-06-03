@@ -449,7 +449,7 @@ function GetContentFromForm( $slice, $oldcontent4id="", $insert=true ) {
 
         if ( $profile_value ) {
             $x = $profile->parseContentProperty($profile_value);
-            $GLOBALS[$varname]     = quote($x[0]);  // not quoted
+            $GLOBALS[$varname]     = $x[0];
             $GLOBALS[$htmlvarname] = $x[1];
         }
 
@@ -463,8 +463,8 @@ function GetContentFromForm( $slice, $oldcontent4id="", $insert=true ) {
         foreach ($var as $v) {
             $flag = $f["html_show"] ? ($GLOBALS[$htmlvarname]=="h" ? FLAG_HTML : 0)
                                     : ($f["html_default"] > 0      ? FLAG_HTML : 0);
-            // data in $content4id are already DB escaped (addslashes)
-            $content4id[$pri_field_id][]   = array('value'=>$v, 'flag'=>$flag);
+            // data in $content4id are not DB escaped (addslashes)
+            $content4id[$pri_field_id][]   = array('value'=>stripslashes($v), 'flag'=>$flag);
         }
     }
 

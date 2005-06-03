@@ -207,9 +207,8 @@ if (count($err_valid) > 1) {
 // prepare content4id array before calling StoreItem (content4id is QUOTED!)
 $content4id    = GetContentFromForm( $slice, $oldcontent4id, $insert );
 
-// just quote all $oldcontent4id values
-$foocontent4id = new ItemContent($oldcontent4id);
-$oldcontent4id = $foocontent4id->getContentQuoted();
+// create object
+$oldcontent4id = new ItemContent($oldcontent4id);
 
 // copy old values for fields not shown in the form
 if (! $insert && is_array($notshown)) {

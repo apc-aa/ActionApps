@@ -210,14 +210,6 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
             return false;
         }
         $cont = $content4id[$id];
-        reset($fields);
-        while (list($name,) = each($fields)) {
-          if (isset($cont[$name]))
-            while (list($k,) = each($cont[$name])) {
-                $cont[$name][$k]['value'] =
-                    addslashes($cont[$name][$k]['value']);
-            }
-        }
         $data_IDconflict = !proove_data_ID($id);
         if (($data_IDconflict)&&($GLOBALS["Submit"]!=_m("Insert with new ids"))) {
             $data_conflicts_ID[$id] = $cont["headline........"][0]['value'];
