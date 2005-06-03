@@ -363,7 +363,7 @@ $r_state['cat_id'] = get_if( $r_state['cat_id'], $_GET['cid'] );   // used for a
 
 // Print HTML start page (html begin, encoding, style sheet, no title)
 HtmlPageBegin();
-echo '<title>'. _m('APC ActionApps') ." - $pagename</title>";
+echo '<title>'. _m('ActionApps') ." - $pagename</title>";
 
 $tree = new cattree( $db, $select_start, false, ' > ');
 FrmJavascriptFile('javascript/js_lib.js');
@@ -373,8 +373,8 @@ $tree->printTreeData($links_info['tree_start']);
 if ( !$r_state['link_id'] ) {  // add new link
     $url = "http://";
     // select current caterory
-    $on_load = 'onLoad="GoToCategoryID('.$r_state['cat_id'].', eval(document.f.tree), \'patharea\', \'\');'.
-               'MoveCategoryTo('.$r_state['cat_id'].', \'selcat0\', \'document.f.selcatSelect0\');"';
+    $on_load = 'onLoad="GoToCategoryID(\''.$r_state['cat_id'].'\', eval(document.f.tree), \'patharea\', \'\');'.
+               'MoveCategoryTo(\''.$r_state['cat_id'].'\', \'selcat0\', \'document.f.selcatSelect0\');"';
 }
 
 echo '

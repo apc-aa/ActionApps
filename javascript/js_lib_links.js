@@ -48,11 +48,11 @@ function MoveCategoryTo(catid, totxt, toval)
   eval(toval).value = catid;
 }
 
-// Encodes all values from listbox to comma delimeted string
+// Encodes all values from listbox to comma delimited string
 // prepared for sending as url parameter
-function CrossDelimeted(listbox,valueVar,textVar,stateVar) {
-    var delimeter=''
-    var delimeter2=''
+function CrossDelimited(listbox,valueVar,textVar,stateVar) {
+    var delimiter=''
+    var delimiter2=''
 
     eval(valueVar).value = "";
     eval(textVar).value  = "";
@@ -63,20 +63,20 @@ function CrossDelimeted(listbox,valueVar,textVar,stateVar) {
             if (eval(listbox).options[i].text.length >=4) {
                 switch (eval(listbox).options[i].text.substring(0,4)) {
                     case "(!) ":
-                        eval(stateVar).value += delimeter + "highlight"
+                        eval(stateVar).value += delimiter + "highlight"
                         break
                     case "(-) ":
-                        eval(stateVar).value += delimeter + "visible"
+                        eval(stateVar).value += delimiter + "visible"
                         break
                 }
-                eval(textVar).value += delimeter + eval(listbox).options[i].text.substring(4)
+                eval(textVar).value += delimiter + eval(listbox).options[i].text.substring(4)
             } else {
-                eval(stateVar).value += delimeter + "visible"
-                eval(textVar).value += delimeter + eval(listbox).options[i].text
+                eval(stateVar).value += delimiter + "visible"
+                eval(textVar).value += delimiter + eval(listbox).options[i].text
             }
-            eval(valueVar).value += delimeter2 + eval(listbox).options[i].value
-            delimeter='#'
-            delimeter2=','
+            eval(valueVar).value += delimiter2 + eval(listbox).options[i].value
+            delimiter='#'
+            delimiter2=','
         }
     }
 }
@@ -191,13 +191,13 @@ function ChangeSelectedCat( catid, sbx, pathid, cat_id_fld) {
         // create path to the currently selected category
         for( var j=0; j<=level; j++) {
             curcat = downcat[j];
-            tmp += (j==0 ? '': path_delimeter) + '<a href="javascript:GoToCategoryID(' +curcat+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[curcat] + '</a>';  // path_delimeter - global javascript variable
+            tmp += (j==0 ? '': path_delimiter) + '<a href="javascript:GoToCategoryID(' +curcat+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[curcat] + '</a>';  // path_delimiter - global javascript variable
         }
         // if the catid is not currently selected category, we have to add
         // specified category (probably highlighted in selectbox for dblclicking
         // tree traveling)
         if( (catid != curcat) && (cattxt != '..') ) {
-            tmp += (j==0 ? '': path_delimeter) + '<a href="javascript:GoToCategoryID(' +catid+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[catid] + '</a>';  // path_delimeter - global javascript variable
+            tmp += (j==0 ? '': path_delimiter) + '<a href="javascript:GoToCategoryID(' +catid+ ', eval(document.'+sbx.form.name+'.'+sbx.name+'), \''+pathid+'\', \''+cat_id_fld+'\')">' + a[catid] + '</a>';  // path_delimiter - global javascript variable
         }
 //        tmp += eval(from).options[i].text
         SetContent(pathid,tmp);
@@ -250,7 +250,7 @@ function ChangeCategory(catid, sbx, pathid, cat_id_fld) {
 // Fills hidden fields and submit
 function UpdateCategory() {
   // fill subcatIds and subcatNames from selected category listbox
-  CrossDelimeted( 'document.f.selcat', 'document.f.subcatIds', 'document.f.subcatNames', 'document.f.subcatStates');
+  CrossDelimited( 'document.f.selcat', 'document.f.subcatIds', 'document.f.subcatNames', 'document.f.subcatStates');
   document.f.submit()
 }
 
