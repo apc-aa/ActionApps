@@ -59,7 +59,7 @@ $nb_view = (!$r_slice_view_url ?
   '<span class=nbenable>'. _m("View site") .'</span>' :
   " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". _m("View site") .'</span></a>');
 
-$nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. _m("APC ActionApps") .'"></a>';
+$nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. _m("ActionApps") .'"></a>';
 
 $nb_go = '<span class=nbenable>'. _m("Go") .'</span>';
 
@@ -90,6 +90,9 @@ echo "</TD></TR></TABLE>";
 
 /*
 $Log$
+Revision 1.7  2005/06/03 00:36:33  honzam
+strings in AA uses "ActionApps" name instead of "APC Action Apps"
+
 Revision 1.6  2005/04/25 11:46:22  honzam
 a bit more beauty code - some coding standards setting applied
 

@@ -323,7 +323,7 @@ $manager_settings = array(
          'GoBookmark'  => array('function'   => 'Links_GoBookmark')
                          ),
      'messages'  => array(
-         'title'            => _m('APC ActionApps - Links Manager'))
+         'title'            => _m('ActionApps - Links Manager'))
                          );
 
 // r_state array holds all configuration of Links Manager

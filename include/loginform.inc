@@ -4,7 +4,7 @@ require_once $GLOBALS["AA_INC_PATH"]."util.php3";
 
 HtmlPageBegin();
 
-echo '<title>APC ActionApps - '.ORG_NAME.'</title>';
+echo '<title>ActionApps - '.ORG_NAME.'</title>';
 ?>
 </head>
 <body bgcolor="<?php echo COLOR_TABTITBG ?>" link="#D20000" vlink="#D20000">

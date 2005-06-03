@@ -509,11 +509,11 @@ $_m["Send email"]
  = "";
 
 # admin/index.php3, row 194
-$_m["APC ActionApps - Reader Manager"]
+$_m["ActionApps - Reader Manager"]
  = "";
 
 # admin/index.php3, row 195
-$_m["APC ActionApps - Item Manager"]
+$_m["ActionApps - Item Manager"]
  = "";
 
 # admin/itemedit.php3, row 77
@@ -2782,7 +2782,7 @@ $_m["show"]
  = "";
 
 # admin/aarsstest.php3, row 81, 82
-$_m["APC ActionApps RSS Content Exchange"]
+$_m["ActionApps RSS Content Exchange"]
  = "";
 
 # admin/aarsstest.php3, row 83
@@ -2791,7 +2791,7 @@ $_m["RSS feeds testing page."]
  = "";
 
 # admin/aarsstest.php3, row 85
-$_m["No APC ActionApps RSS Exchange is set."]
+$_m["No ActionApps RSS Exchange is set."]
  = "";
 
 # admin/aarsstest.php3, row 94

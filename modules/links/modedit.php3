@@ -186,7 +186,7 @@ if ( $template['Links'] ) {           // set new name and owner for NEW module
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m('APC ActionApps - Links Admin')?></TITLE>
+ <TITLE><?php echo _m('ActionApps - Links Admin')?></TITLE>
 </HEAD>
 <?php
   require_once $GLOBALS['AA_BASE_PATH']."modules/links/menu.php3";

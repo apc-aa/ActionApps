@@ -47,7 +47,7 @@ license   : released GPL - see http://www.gnu.org/license.html
 =================================================
 Strategic usage: 
 
-  The APC Action Applications is an easy-to-use content-management system.
+  The ActionApps is an easy-to-use content-management system.
     http://www.apc.org/actionapps/
 
   Imagine a nonprofit wants to start using this system for the news section of 
@@ -141,6 +141,9 @@ if ( ( file_exists($target) ) and ( $age < $cache4secs ) ) {
 }
 /*
 $Log$
+Revision 1.7  2005/06/03 00:36:33  honzam
+strings in AA uses "ActionApps" name instead of "APC Action Apps"
+
 Revision 1.6  2005/04/25 11:46:21  honzam
 a bit more beauty code - some coding standards setting applied
 

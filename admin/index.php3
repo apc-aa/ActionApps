@@ -191,8 +191,8 @@ $manager_settings = array(
                          ),
      'messages'  => array(
          'title'       => ($slice->type() == 'ReaderManagement') ?
-                          _m('APC ActionApps - Reader Manager') :
-                          _m('APC ActionApps - Item Manager')
+                          _m('ActionApps - Reader Manager') :
+                          _m('ActionApps - Item Manager')
                          )
          );
 

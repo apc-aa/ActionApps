@@ -74,7 +74,7 @@ $_m["Proposal to del"]
  = "Ponuda za obrisati";
 
 # modules/links/linkedit.php3, row 366
-$_m["APC ActionApps"]
+$_m["ActionApps"]
  = "APC AA";
 
 # modules/links/linkedit.php3, row 388
@@ -269,7 +269,7 @@ $_m["No permission to edit category"]
  = "Nemate dozvolu za ureðivanje kategorija";
 
 # modules/links/catedit.php3, row 66
-$_m["APC ActionApps - Category Edit"]
+$_m["ActionApps - Category Edit"]
  = "APC AA - ureðivanje kategorija";
 
 # modules/links/catedit.php3, row 84
@@ -375,7 +375,7 @@ $_m["Foreign category assigned"]
  = "Dodijeljena strana kategorija";
 
 # modules/links/check_url.php3, row 18
-$_m["APC ActionApps - URL Check"]
+$_m["ActionApps - URL Check"]
  = "APC AA - provjera web adrese";
 
 # modules/links/check_url.php3, row 29
@@ -456,7 +456,7 @@ $_m["Move to category"]
  = "Preselite u kategoriju";
 
 # modules/links/index.php3, row 337
-$_m["APC ActionApps - Links Manager"]
+$_m["ActionApps - Links Manager"]
  = "APC - AA - Ureðivanje veza";
 
 # modules/links/index.php3, row 393
@@ -496,7 +496,7 @@ $_m["Continue"]
  = "";
 
 # modules/links/catselect.php3, row 25
-$_m["APC ActionApps - Select Category"]
+$_m["ActionApps - Select Category"]
  = "APC AA - Izaberite kategoriju";
 
 # modules/links/catselect.php3, row 44
@@ -524,7 +524,7 @@ $_m["Select start id"]
  = "Odaberite poèetnu oznaku";
 
 # modules/links/modedit.php3, row 189
-$_m["APC ActionApps - Links Admin"]
+$_m["ActionApps - Links Admin"]
  = "APC AA - administracija veza";
 
 # modules/links/modedit.php3, row 195

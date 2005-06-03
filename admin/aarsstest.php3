@@ -78,11 +78,11 @@ function GetAARSS_tv($viewID, $processForm = false) {
         "listlen" => 50,
         "cond" => IsSuperadmin(),
         "attrs" => $GLOBALS['attrs_browse'],
-        "title" => _m ("APC ActionApps RSS Content Exchange"),
-        "caption" => _m("APC ActionApps RSS Content Exchange"),
+        "title" => _m ("ActionApps RSS Content Exchange"),
+        "caption" => _m("ActionApps RSS Content Exchange"),
         "help" => _m("RSS feeds testing page."),
         "messages" => array (
-            "no_item" => _m("No APC ActionApps RSS Exchange is set.")),
+            "no_item" => _m("No ActionApps RSS Exchange is set.")),
         "buttons_down" => array( 'update_all'=> false, 'delete_all' => false ),
         "buttons_left" => array( 'edit'=> false, 'delete_checkbox' => false ),
         "fields" => array (

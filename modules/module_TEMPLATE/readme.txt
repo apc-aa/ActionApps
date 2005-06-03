@@ -1,4 +1,4 @@
-How to create new module in APC ActionApps?
+How to create new module in ActionApps?
 
 1) copy the module_TEMPLATE to the new directory and name it by the name of
    module (just for clarity).

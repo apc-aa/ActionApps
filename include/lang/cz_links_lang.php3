@@ -11,7 +11,7 @@
 $mgettext_lang = "cz";
 
 # Unused messages
-$_m["APC ActionApps - Link Edit"]
+$_m["ActionApps - Link Edit"]
  = "Editace odkazu";
 
 $_m["Changed"]
@@ -119,8 +119,8 @@ $_m["Proposal to del"]
  = "Návrh na zrušení";
 
 # modules/links/linkedit.php3, row 366
-$_m["APC ActionApps"]
- = "APC ActionApps (Toolkit)";
+$_m["ActionApps"]
+ = "ActionApps (Toolkit)";
 
 # modules/links/linkedit.php3, row 388
 $_m["<!--NewPublicLinkText-->"]
@@ -318,7 +318,7 @@ $_m["No permission to edit category"]
  = "Nemáte právo editovat tuto kategorii.";
 
 # modules/links/catedit.php3, row 66
-$_m["APC ActionApps - Category Edit"]
+$_m["ActionApps - Category Edit"]
  = "Editace kategorie";
 
 # modules/links/catedit.php3, row 84
@@ -424,7 +424,7 @@ $_m["Foreign category assigned"]
  = "Byla pøiøazena crossreferencovaná kategorie";
 
 # modules/links/check_url.php3, row 18
-$_m["APC ActionApps - URL Check"]
+$_m["ActionApps - URL Check"]
  = "Hledání URL v katalogu";
 
 # modules/links/check_url.php3, row 29
@@ -505,7 +505,7 @@ $_m["Move to category"]
  = "Pøesunout do kategorie";
 
 # modules/links/index.php3, row 337
-$_m["APC ActionApps - Links Manager"]
+$_m["ActionApps - Links Manager"]
  = "Správa odkazù";
 
 # modules/links/index.php3, row 393
@@ -545,7 +545,7 @@ $_m["Continue"]
  = "";
 
 # modules/links/catselect.php3, row 25
-$_m["APC ActionApps - Select Category"]
+$_m["ActionApps - Select Category"]
  = "Výbìr kategorie";
 
 # modules/links/catselect.php3, row 44
@@ -573,7 +573,7 @@ $_m["Select start id"]
  = "";
 
 # modules/links/modedit.php3, row 189
-$_m["APC ActionApps - Links Admin"]
+$_m["ActionApps - Links Admin"]
  = "Nastavení modulu odkazù";
 
 # modules/links/modedit.php3, row 195

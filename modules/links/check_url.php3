@@ -15,7 +15,7 @@ require_once $GLOBALS['AA_BASE_PATH']."modules/links/linksearch.php3";
 
 // HTML page start
 HtmlPageBegin();
-echo '<title>'. _m('APC ActionApps - URL Check'). '</title>';
+echo '<title>'. _m('ActionApps - URL Check'). '</title>';
 $js = 'function edit(lid) {
            window.opener.location="'. $sess->url("linkedit.php3") .'&lid="+lid;
            window.close();

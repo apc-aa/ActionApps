@@ -1,7 +1,7 @@
 <?
-/// MLX MultiLingual eXtension for APC ActionApps
+/// MLX MultiLingual eXtension for ActionApps
 //$Id$
-/// @brief MLX MultiLingual eXtension for APC ActionApps http://mimo.gn.apc.org/mlx
+/// @brief MLX MultiLingual eXtension for ActionApps http://mimo.gn.apc.org/mlx
 /// @author mimo/at/gn.apc.org for GreenNet
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * @global array $mlxScriptsTable

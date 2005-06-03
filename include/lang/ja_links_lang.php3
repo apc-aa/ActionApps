@@ -56,7 +56,7 @@ $_m["Proposal to del"]
  = "";
 
 # modules/links/linkedit.php3, row 366
-$_m["APC ActionApps"]
+$_m["ActionApps"]
  = "";
 
 # modules/links/linkedit.php3, row 388
@@ -251,7 +251,7 @@ $_m["No permission to edit category"]
  = "";
 
 # modules/links/catedit.php3, row 66
-$_m["APC ActionApps - Category Edit"]
+$_m["ActionApps - Category Edit"]
  = "";
 
 # modules/links/catedit.php3, row 84
@@ -357,7 +357,7 @@ $_m["Foreign category assigned"]
  = "";
 
 # modules/links/check_url.php3, row 18
-$_m["APC ActionApps - URL Check"]
+$_m["ActionApps - URL Check"]
  = "";
 
 # modules/links/check_url.php3, row 29
@@ -438,7 +438,7 @@ $_m["Move to category"]
  = "";
 
 # modules/links/index.php3, row 337
-$_m["APC ActionApps - Links Manager"]
+$_m["ActionApps - Links Manager"]
  = "";
 
 # modules/links/index.php3, row 393
@@ -478,7 +478,7 @@ $_m["Continue"]
  = "";
 
 # modules/links/catselect.php3, row 25
-$_m["APC ActionApps - Select Category"]
+$_m["ActionApps - Select Category"]
  = "";
 
 # modules/links/catselect.php3, row 44
@@ -506,7 +506,7 @@ $_m["Select start id"]
  = "";
 
 # modules/links/modedit.php3, row 189
-$_m["APC ActionApps - Links Admin"]
+$_m["ActionApps - Links Admin"]
  = "";
 
 # modules/links/modedit.php3, row 195

@@ -4829,7 +4829,7 @@ $_m["New slice"]
   = "";
 
 # include/menu_util.php3, row 156
-$_m["APC Action Applications"]
+$_m["ActionApps"]
   = "";
 
 # include/menu_util.php3, row 175

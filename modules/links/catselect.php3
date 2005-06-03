@@ -23,7 +23,7 @@ $cpath = GetCategoryPath( $cid );
 
 // Print HTML start page (html begin, encoding, style sheet, no title)
 HtmlPageBegin();
-echo '<title>'. _m('APC ActionApps - Select Category'). '</title>';
+echo '<title>'. _m('ActionApps - Select Category'). '</title>';
 
 $tree = new cattree( $db, $tree_start, true, ' > ');
 FrmJavascriptFile('javascript/js_lib.js');
@@ -31,7 +31,7 @@ FrmJavascriptFile('javascript/js_lib_links.js');   // js for category selection
 $tree->printTreeData($links_info['tree_start']);
 
 if ( !$cid ) {  // default category defined
-    $on_load = 'onLoad="GoToCategoryID('.$cid.', eval(document.f.tree), \'patharea\', \'\')"';
+    $on_load = 'onLoad="GoToCategoryID(\''.$cid.'\', eval(document.f.tree), \'patharea\', \'\')"';
 }
 
 echo '

@@ -59,7 +59,7 @@ $id = $r_state['cat_id'];
 
 // Print HTML start page (html begin, encoding, style sheet, no title)
 HtmlPageBegin();
-echo '<title>'. _m('APC ActionApps - Category Edit'). '</title>';
+echo '<title>'. _m('ActionApps - Category Edit'). '</title>';
 
 // find the lowest category we will need for admin interface
 $tree_to_begin = ($links_info['select_start'] ?

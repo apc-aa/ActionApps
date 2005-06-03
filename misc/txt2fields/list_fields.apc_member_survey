@@ -74,7 +74,7 @@ input_show_func rio:one2nine:
 field Face to face peer networking (e.g., BIC workshop)
 input_show_func rio:one2nine:
 
-field APC ActionApps content management tools that make it easier to maintain web sites				
+field ActionApps content management tools that make it easier to maintain web sites				
 input_before <TR bgcolor="#D8C8B0"><TD colspan=2><h2>5. L+P Teams</h2></TD></TR><TR><TD colspan=2>It is likely that the L+P network will create 'service teams' that will provide specific ICT services to INGOs and other large, international clients. Which of the following service teams would your organization be most interested in joining?  Please only choose 'Very interested' in one.</TD></TR>
 input_show_func rio:survey_interest
 

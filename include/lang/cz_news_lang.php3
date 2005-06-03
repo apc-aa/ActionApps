@@ -205,7 +205,7 @@ $_m["Close the wizard"]
 $_m["index of item within view"]
  = "poøadí èlánku v rámci pohledu";
 
-$_m["APC Action Applications"]
+$_m["ActionApps"]
  = "APC toolkit";
 
 $_m["Retype New Password"]
@@ -737,12 +737,12 @@ $_m["Send email"]
  = "Poslat e-mail";
 
 # admin/index.php3, row 194
-$_m["APC ActionApps - Reader Manager"]
- = "APC ActionApps - Správce ètenáøù";
+$_m["ActionApps - Reader Manager"]
+ = "ActionApps - Správce ètenáøù";
 
 # admin/index.php3, row 195
-$_m["APC ActionApps - Item Manager"]
- = "APC ActionApps - Správce zpráv";
+$_m["ActionApps - Item Manager"]
+ = "ActionApps - Správce zpráv";
 
 # admin/itemedit.php3, row 77
 # admin/related_sel.php3, row 172
@@ -775,7 +775,7 @@ $_m["OK"]
 
 # admin/related_sel.php3, row 125
 $_m["Editor window - item manager, related selection window"]
- = "APC ActionApps - Výbìr souvisejících èlánkù";
+ = "ActionApps - Výbìr souvisejících èlánkù";
 
 # admin/related_sel.php3, row 193
 # admin/se_users_add.php3, row 48
@@ -3021,7 +3021,7 @@ $_m["show"]
  = "";
 
 # admin/aarsstest.php3, row 81, 82
-$_m["APC ActionApps RSS Content Exchange"]
+$_m["ActionApps RSS Content Exchange"]
  = "";
 
 # admin/aarsstest.php3, row 83
@@ -3030,7 +3030,7 @@ $_m["RSS feeds testing page."]
  = "";
 
 # admin/aarsstest.php3, row 85
-$_m["No APC ActionApps RSS Exchange is set."]
+$_m["No ActionApps RSS Exchange is set."]
  = "";
 
 # admin/aarsstest.php3, row 94
