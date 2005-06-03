@@ -1,10 +1,15 @@
+06/02/05 - "selected" parameter of view.php3 now accepts short id as well as the long one 
+(honzam) - strings in AA uses "ActionApps" name instead of "APC Action Apps" 
+         - fixed filler.php3 (anonymous posting) so apostrophes are not prexixed by \ sign
+         - fixed problem, that unpacked_id..... was not filled correctly for all items of tghe view
+         - fixed category selection in Links module 
 06/01/05 - fixed syntax bug in discussion administration
 (honzam) - fixed problem of adding backslashes to offline filling items
          - fixed bug in htmlarea image manager - the message about unsupported
            gif is not fired, now
          - fixed bug with inserting items from second slice
          - fixed syntax error in fillform
-05/30/05 - Used Xinha (http://xinha.python-hosting.com/) insted of HTMLArea
+05/30/05 - Used Xinha (http://xinha.python-hosting.com/) instead of HTMLArea
 (honzam)   (Xinha is not new fork of HTMLArea - better maintained, ...)
          - New "store policy" could be applied to uploaded files - you can use
            new | overwrite | backup options - see parameter wizard
@@ -433,7 +438,7 @@
            records from pagecache table, now
          - fixed expansion of aliases, when contain colon character
 05/17/04 - anonymous form wizard works again
-(honzam) - added AA version info on title atribute of APC ActionApps logo
+(honzam) - added AA version info on title atribute of ActionApps logo
            in admin interface
          - added possibility to preview the view from admin interface
          - fixed "category top" and "category bottom" HTML for category grouped
