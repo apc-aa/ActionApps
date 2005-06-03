@@ -938,7 +938,9 @@ function RSS_restrict($txt, $len) {
         return sprintf("%02X%02X%02X",$red,255-$red,0);
       case 'selected':  // returns true, if current item is the selected one
                         // (given by set[]=selected-454343 view.php3 parameter)
-        return (( (integer)$p[1] == (integer)($this->getval('short_id........')) ) ? '1' : '0');
+        // we can compare short_ids as well as long ones        
+        $field2compare = (guesstype($p[1]) == 's') ? 'short_id........' : 'unpacked_id.....';
+        return (( (string)$p[1] == (string)($this->getval($field2compare)) ) ? '1' : '0');
       case 'username':    // prints user name form its id
         return perm_username( $this->getval($col) );
       case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)

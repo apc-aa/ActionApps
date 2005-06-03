@@ -306,7 +306,7 @@ function GetViewFormat($view_info, $selected_item='') {
   $format['even_odd_differ'] = $view_info['even_odd_differ'];
   $format['banner_position'] = $view_info['banner_position'];
   $format['banner_parameters'] = $view_info['banner_parameters'];
-  $format['selected_item'] = (integer)$selected_item;
+  $format['selected_item'] = $selected_item;
   $format['id'] = $view_info['slice_id'];
   $format['vid'] = $view_info['id'];
 
