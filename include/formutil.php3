@@ -291,6 +291,7 @@ class inputform {
 
             // do not return template for anonymous form wizard
             $ret .= $aainput->get($form4anonymous_wizard ? 'expand' : 'template');
+	    unset($aainput);
         }
         return $ret;
     }
@@ -476,7 +477,7 @@ class aainputfield {
         }
         if ( !isset($this->const_arr) OR !is_array($this->const_arr) ) {
             $this->const_arr = array();
-        }
+        } 
     }
 
     /** Modifies varname in case we need to display two (or more) inputs
@@ -662,7 +663,7 @@ class aainputfield {
                                break;
             case 'anonym_iso':
             case 'normal_iso':
-            case 'freeze_iso': list(, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw) = $this->param;
+            case 'freeze_iso': list(, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw, $slice_field) = $this->param;
                                $mode      = get_if($mode,'AMB');         // AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
                                $tp        = get_if($tp,  'AMB');         // Default to use the AMP table
                                $tagprefix = ( isset($GLOBALS['tps'][$tp])              ? $GLOBALS['tps'][$tp] :
@@ -672,7 +673,7 @@ class aainputfield {
                                    $this->msg[] = _m("Unable to find tagprefix table %1", array($tp));
                                }
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $sid = $this->fill_const_arr('', false, false, AA_BIN_ALL, $this->value, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
+                               $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
                                if ( $this->mode == 'freeze' ) {
                                    $this->value_modified = $this->implodaval('<br>');
                                    $this->staticText();
@@ -1080,7 +1081,7 @@ class aainputfield {
     *                     'A'dd text field (you can type the value - see mft)
     *                     'C'hange the value (by typing - see mft input type)
     */
-    function inputRelation($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
+    function inputRelation($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") { 
         list($name,$val,$add) = $this->prepareVars('multi');
         $rows                 = get_if($rows, 6);
         // backward compatibility - 0 means "not show move buttons", 1 - "show"

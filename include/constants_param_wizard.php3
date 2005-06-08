@@ -585,7 +585,11 @@ array("name"=>_m("Related Item Window"),
         array("name"=>_m("Filtering conditions - changeable"),
         "desc"=>_m("Conditions for filtering items in related items window. This conds user can change."),
         "type"=>"STR",
-        "example"=>"")
+        "example"=>""),
+        array("name"=>_m("Slice field"),
+        "desc"=>_m("field (or format string) that will be displayed in the boxes (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - {publish_date....})."),
+        "type"=>"STRID",
+        "example"=>_m("publish_date...."))
         ));
 
 $INPUT_TYPES["items"]["wi2"]=
