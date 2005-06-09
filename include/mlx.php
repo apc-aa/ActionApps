@@ -1,7 +1,7 @@
 <?
-/// MLX MultiLingual eXtension for ActionApps
+/// MLX MultiLingual eXtension for APC ActionApps
 //$Id$
-/// @brief MLX MultiLingual eXtension for ActionApps http://mimo.gn.apc.org/mlx
+/// @brief MLX MultiLingual eXtension for APC ActionApps http://mimo.gn.apc.org/mlx
 /// @author mimo/at/gn.apc.org for GreenNet
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * @global array $mlxScriptsTable
@@ -207,6 +207,7 @@ class MLX
 	}
 	function itemform($lang_control,$params,$content4id,$action,$lang,$mlxid)
 	{
+		return false;
 		global $DOCUMENT_URI;
 		global $PHP_SELF;
 		global $err;
@@ -582,91 +583,6 @@ class MLXView
 		}
 		return $o;
 	}
-	/*
-	// I am still unsure if the JOIN is correct -- use this one to compare results (And nocache!)
-	function postQueryZIDsEasy(&$zidsObj,$ctrlSliceID,$slice_id, $conds, $sort, 
-		$group_by,$type, $slices, $neverAllItems, $restrict_zids,
-		$defaultCondsOperator,$nocache) 
-	{
-		global $pagecache, $QueryIDsCount, $debug;
-		
-		if($this->mode != "MLX")
-			return;
-			
-		#create keystring from values, which exactly identifies resulting content
-		$keystr = $this->mode.serialize($this->language).$ctrlSliceID.$slice_id
-			. serialize($conds). serialize($sort)
-			. $group_by. $type. serialize($slices). $neverAllItems
-			. ((isset($restrict_zids) && is_object($restrict_zids)) ? 
-				serialize($restrict_zids) : "")
-			. $defaultCondsOperator;
-		
-		$cachestr = "slice_id=$ctrlSliceID";
-		if ( $res = CachedSearch( !$nocache, $keystr, $cachestr )) {
-			if(MLX_TRACE)
-				__mlx_trace("using cache");
-			$zidsObj->refill( $res->a );
-			return;
-		}
-		
-		$arr = array();
-		foreach($zidsObj->a as $packedid) {
-			$unpackedid = unpack_id128($packedid);
-			$arr[(string)$packedid] = $unpackedid; //TODO change this to 1
-		}
-		$translations = $this->getPrioTranslationFields($ctrlSliceID);
-		$db = getDB();
-		$db2 = getDB();
-		reset($arr);
-		while(list($upContId,$pContId) = each($arr)) {
-			if(MLX_TRACE)
-				__mlx_dbg(unpack_id128($upContId),"ContentID");
-			$sql = "SELECT `text` FROM `content`"
-				." WHERE ( `item_id`='".$upContId."'"
-				." AND `field_id`='".MLX_CTRLIDFIELD."')";
-			$db->tquery($sql);
-			while( $db->next_record() ) {
-				$ctrlId = $db->Record[0];
-				//__mlx_dbg(unpack_id128($ctrlId),"ctrlId");
-				$subsql = "SELECT `field_id`,`text` FROM `content`"
-					." WHERE ( `item_id`='".quote($ctrlId)."'"
-					." AND `field_id` RLIKE '".MLX_LANG2ID_TYPE."')";
-				$db2->tquery($subsql);
-				unset($aMlxCtrl);
-				while($db2->next_record()) { //get all translations
-				if(MLX_TRACE)
-						__mlx_dbg(array($db2->f('field_id'),unpack_id128($db2->f('text'))),"EASY translations");
-					$aMlxCtrl[(string)$db2->Record[0]] = $db2->Record[1];
-				}
-				//__mlx_dbg($aMlxCtrl,"aMlxCtrl");
-				$bFound = false;
-				foreach($translations as $tr) {
-					$fieldSearch = $aMlxCtrl[$tr];
-					if(!$fieldSearch)
-						continue;
-					if($bFound) {
-						if(MLX_TRACE)
-							__mlx_dbg(unpack_id128($fieldSearch),"EASY unset");
-						unset($arr[(string)$fieldSearch]);
-						//__mlx_dbg($arr,"arr");
-					} else
-						$bFound = true;
-				}
-				//__mlx_dbg($aMlxCtrl,"aMlxCtrl");
-				
-			}
-			
-		}
-		//__mlx_dbg($arr,"return");
-		freeDB($db2);
-		freeDB($db);
-		$QueryIDsCount = count($arr);
-		$zidsObj->a = array_keys($arr);
-		if( !$nocache )
-			$pagecache->store($keystr, serialize($zidsObj), $cachestr);
-		
-	}
-	*/
 	function getPrioTranslationFields($ctrlSliceID,$slice_id=0) {
 		if($GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID])
 			return $GLOBALS['MLX_TRANSLATIONS'][(string)$ctrlSliceID];
@@ -759,6 +675,7 @@ class MLXGetText
 //		__mlx_dbg($args,"translate args");
 //		__mlx_dbg($slice_id,"translate slice");
 		$retval = $this->currentDomainRef[$lang][$args[0]];
+		//__mlx_dbg("retval",$retval);
 		if(($this->currentDomainRef['mode'] && 1) 
 			&& ($lang == $this->currentDomainRef['defaultLang'])) {
 			if($retval == MLX_NOTRANSLATION)
@@ -882,6 +799,8 @@ class MLXGetText
 	/// this could also be used for manually adding items
 	function addtext(&$args,$slice_id=0) {
 		global $event;
+		__mlx_dbg($this->domains);
+		__mlx_dbg($args,__function__);
 		$old_varset = $GLOBALS[varset];
 		$old_itemvarset = $GLOBALS[itemvarset];
 		if(!is_callable('StoreItem')) {
@@ -926,23 +845,4 @@ function stringexpand_mlx() {
 	if($errcheck) huhl("mlxGetText initialised");
 	return $GLOBALS[mlxGetText]->command($arg_list);
 }
-
-/*
-    // mlx addition 
-    elseif( substr($out, 0, 4) == "mlx:" ) { // mlx commands
-    	//unpack_id128($itemview->slice_info['id']
-    	if(!$GLOBALS[mlxGetText])
-    		$GLOBALS[mlxGetText] = new MLXGetText;
-	if($errcheck) huhl("mlxGetText initialised");
-	$parts = ParamExplode(substr($out,4));
-    	return $GLOBALS[mlxGetText]->command($parts,($item?$item->f_n('slice_id........'):0));
-    } // do gettext like stuff
-    elseif( substr($out, 0, 2) == "_:" ) {
-    	if(!$GLOBALS[mlxGetText]) {
-    		if($errcheck) huhl("mlxGetText not initialised");
-    		return DeQuoteColons(substr($out,2));
-    	}
-    	return $GLOBALS[mlxGetText]->translate(substr($out,2),$item->columns);
-    }
-*/
 ?>
