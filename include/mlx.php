@@ -321,6 +321,7 @@ class MLX
 		//__mlx_dbg($mlxid,"mlxid");
 		if(empty($content4mlxid) && (isset($mlxid))) {
 			$content = GetItemContent($mlxid);
+			//var_dump($content);
 			if( !$content )
 				$this->fatal(_m("Bad item ID"));
 			$content4mlxid = $content[$mlxid];
