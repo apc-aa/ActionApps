@@ -55,6 +55,7 @@ http://www.apc.org/
 //$GLOBALS[debug]=0; $GLOBALS[errcheck] =1;
 
 $debugfill=$GLOBALS[debugfill];
+
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -96,6 +97,7 @@ require_once $GLOBALS['AA_INC_PATH']."date.php3";
 require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
 require_once $GLOBALS['AA_INC_PATH']."zids.php3";
 require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
+
 
 function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
@@ -207,9 +209,6 @@ if (count($err_valid) > 1) {
 // prepare content4id array before calling StoreItem (content4id is QUOTED!)
 $content4id    = GetContentFromForm( $slice, $oldcontent4id, $insert );
 
-// create object
-$oldcontent4id = new ItemContent($oldcontent4id);
-
 // copy old values for fields not shown in the form
 if (! $insert && is_array($notshown)) {
     foreach ( $notshown as $vfield_id => $foo) {
@@ -217,8 +216,8 @@ if (! $insert && is_array($notshown)) {
     }
     $zids = new zids($field_ids,'l');
     for ($i = 0; $i < $zids->count(); $i ++) {
-        $field_id = $zids->packedids ($i);
-        $content4id [$field_id] = $oldcontent4id [$field_id];
+        $field_id = $zids->packedids($i);
+        $content4id[$field_id] = $oldcontent4id[$field_id];
     }
 }
 
