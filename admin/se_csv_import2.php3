@@ -35,6 +35,7 @@ require_once $GLOBALS['AA_INC_PATH']."util.php3";
 require_once $GLOBALS['AA_INC_PATH']."import_util.php3";
 require_once $GLOBALS['AA_INC_PATH']."constants_param_wizard.php3";
 require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
 
 /** Returns key of the $array, which value is most similar to given $text */
 function findNearestText($text, $array) {
