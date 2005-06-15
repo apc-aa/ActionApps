@@ -29,6 +29,22 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if (!defined ("AA_ID")) {
+    require_once "../../include/config.php3";
+}
+require_once $GLOBALS['AA_INC_PATH']. ($encap ? "locsessi.php3" : "locsess.php3");
+require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+// mini gettext language environment (the _m() function)
+require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+
+if (!$lang) {
+    $lang = "en";
+}
+bind_mgettext_domain($GLOBALS["AA_INC_PATH"]."lang/".$lang."_alerts_lang.php3");
+require_once "util.php3";
+
+
 require_once $GLOBALS['AA_BASE_PATH']."modules/alerts/lang.php3";
 require_once $GLOBALS['AA_INC_PATH']."item.php3";
 require_once $GLOBALS['AA_INC_PATH']."view.php3";
