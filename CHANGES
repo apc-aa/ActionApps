@@ -1,9 +1,22 @@
-06/08/05 - Added support for slice_field to Realted Item Window (mimo)
-06/02/05 - "selected" parameter of view.php3 now accepts short id as well as the long one 
-(honzam) - strings in AA uses "ActionApps" name instead of "APC Action Apps" 
-         - fixed filler.php3 (anonymous posting) so apostrophes are not prexixed by \ sign
-         - fixed problem, that unpacked_id..... was not filled correctly for all items of tghe view
-         - fixed category selection in Links module 
+06/15/05 - pagecache now takes care about cookies as well - the page is not
+(honzam)   generated from cache if user have different cookie
+         - better handling of paragraph in HTMLArea (Xinha) - no javascript
+           generated for each <p> tag
+         - fixed HTMLArea (Xinha) initial size in IE (now it is bigger)
+         - fixed problem wiht anonymous form item editing
+         - fixed cross server feeding
+         - fixed CSV import
+         - fixed alerts sending bug - now it works, again
+06/08/05 - Added support for slice_field to Realted Item Window
+(mimo)
+06/02/05 - "selected" parameter of view.php3 now accepts short id as well as
+(honzam)   the long one
+         - strings in AA uses "ActionApps" name instead of "APC Action Apps"
+         - fixed filler.php3 (anonymous posting) so apostrophes are not prexixed
+           by \ sign
+         - fixed problem, that unpacked_id..... was not filled correctly for all
+           items of the view
+         - fixed category selection in Links module
 06/01/05 - fixed syntax bug in discussion administration
 (honzam) - fixed problem of adding backslashes to offline filling items
          - fixed bug in htmlarea image manager - the message about unsupported
