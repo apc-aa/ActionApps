@@ -48,10 +48,15 @@ function getSliceEncoding($slice_id) {
     $p_slice_id = q_pack_id($slice_id);
     $db->query("SELECT lang_file FROM module WHERE id='$p_slice_id'");
     $db->next_record();
-    $lang = substr($db->f("lang_file"),0,2);
+    if (strpos($db->f("lang_file"), 'utf8') !== false) {
+        $ret = 'utf-8';
+    } else {
+        $ret = $GLOBALS["LANGUAGE_CHARSETS"][substr($db->f("lang_file"),0,2)];
+    }
     freeDB($db);
-    return $GLOBALS["LANGUAGE_CHARSETS"][$lang];
+    return ($ret ? $ret : 'utf-8');
 }
+
 
 /** Get categories from table ef_categories
  *  ef_categories is used only for APC type of feedin (APC RSS) and the change
@@ -97,33 +102,33 @@ function UseAllCategoriesOption( &$ext_categs ) {
 }
 
 
-// get external mapping from remote slice to local slice = returns two array
-// map_to = from_field_id -> from_field_name  (but just for fields with flag = FEEDMAP_FLAG_MAP
-// map_from = to_field_id -> { feedmap_flag => flag, value => from_field_id|value, from_field_name
-function GetExternalMapping($l_slice_id, $r_slice_id) {
-  global $db;
+/** Get external mapping from remote slice to local slice = returns two array
+ *  map_to = from_field_id -> from_field_name  (but just for fields with flag = FEEDMAP_FLAG_MAP
+ *  map_from = to_field_id -> { feedmap_flag => flag, value => from_field_id|value, from_field_name
+ */
+ function GetExternalMapping($l_slice_id, $r_slice_id) {
+     global $db;
 
-  $db->query("SELECT * FROM feedmap WHERE from_slice_id='".q_pack_id($r_slice_id)."'
-                                      AND to_slice_id='".q_pack_id($l_slice_id)."'
-                                    ORDER BY from_field_name");
-  while ($db->next_record()) {
-    switch ($f = $db->f(flag)) {
-      case FEEDMAP_FLAG_EXTMAP :
-      case FEEDMAP_FLAG_MAP:
-        $v = $db->f(from_field_id);
-        $map_to[$v] = $db->f(from_field_name) ;
-        break;
-      case FEEDMAP_FLAG_JOIN:
-      case FEEDMAP_FLAG_RSS:
-      case FEEDMAP_FLAG_VALUE :  $v = $db->f(value); break;
-      case FEEDMAP_FLAG_EMPTY :  $v = ""; break;
-    }
-    $map_from[$db->f(to_field_id)] = array("feedmap_flag"=>$f,"value"=>$v,
-                                            "from_field_name"=>$db->f(from_field_name));
-  }
+     $db->query("SELECT * FROM feedmap WHERE from_slice_id='".q_pack_id($r_slice_id)."'
+                 AND to_slice_id='".q_pack_id($l_slice_id)."'
+                 ORDER BY from_field_name");
+     while ($db->next_record()) {
+         switch ($f = $db->f(flag)) {
+             case FEEDMAP_FLAG_EXTMAP :
+             case FEEDMAP_FLAG_MAP:
+                $v = $db->f(from_field_id);
+                $map_to[$v] = $db->f(from_field_name) ;
+                break;
+             case FEEDMAP_FLAG_JOIN:
+             case FEEDMAP_FLAG_RSS:
+             case FEEDMAP_FLAG_VALUE :  $v = $db->f(value); break;
+             case FEEDMAP_FLAG_EMPTY :  $v = ""; break;
+         }
+         $map_from[$db->f(to_field_id)] = array("feedmap_flag"=>$f,"value"=>$v,"from_field_name"=>$db->f(from_field_name));
+     }
 
-  return array($map_to,$map_from);
-}
+     return array($map_to,$map_from);
+ }
 
 /** Returns category_id of category with cat_group $cat_group and value $value
  */
@@ -304,9 +309,12 @@ class LastEditList {
     }
 
     function getPairs() {
+        $ret = array();
         foreach (explode(',', $this->lastlist) as $pair) {
             list($id,$time) = explode('-', $pair);
-            $ret[$id]       = $time;
+            if ($id) {
+                $ret[$id]   = $time;
+            }
         }
         return $ret;
     }

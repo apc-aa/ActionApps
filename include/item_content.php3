@@ -308,7 +308,21 @@ class ItemContent {
         $slice      = new slice($slice_id);
         $fields     = $slice->fields('record');
 
-        $id = ($mode=='insert') ? new_id() : $this->getItemID();
+        if ( ($mode != 'insert') AND ($mode != 'insert_if_new') AND ($mode != 'overwrite')) {
+            $mode = 'update';
+        }
+
+        switch ($mode) {
+            case 'insert':        $id = new_id();           break;
+            case 'insert_if_new': if (itemIsDuplicate($this->getItemID(), $slice_id)) {
+                                      if ($GLOBALS['debugfeed'] >= 4) print("\n<br>skipping duplicate: ".$this->getValue('headline........'));
+                                      return false;
+                                  }
+                                  // no break!
+            case 'overwrite':
+            default:              $id   = $this->getItemID();
+                                  break;
+        }
 
         if (!($id AND is_array($fields))) {
             if ($GLOBALS['errcheck']) huhl("Warning: StoreItem ". $slice->name() ." failed parameter check id='",$id);
@@ -320,10 +334,16 @@ class ItemContent {
         }
 
         // remove old content first (just in content table - item is updated)
-        if ($mode != 'insert') {
+        if (($mode == 'update') OR ($mode == 'overwrite')) {
             $oldItemContent = new ItemContent($id);
             $event->comes('ITEM_BEFORE_UPDATE', $slice_id, 'S', $this, $oldItemContent);
+        } else {
+            $event->comes('ITEM_BEFORE_INSERT', $slice_id, 'S', $this);
+        }
 
+        if ($mode == 'overwrite') {
+            $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "'");
+        } elseif ($mode == 'update') {
             // delete content of all fields, which are in new content array
             // (this means - all not redefined fields are unchanged)
             $delim = $in = "";
@@ -335,13 +355,9 @@ class ItemContent {
             }
             if ($in) {
                 // delete content just for displayed fields
-                $SQL = "DELETE FROM content WHERE item_id='". q_pack_id($id). "'
-                                AND field_id IN ($in)";
                 $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id IN ($in)");
                 // note extra images deleted in insert_fnc_fil if needed
             }
-        } else {
-            $event->comes('ITEM_BEFORE_INSERT', $slice_id, 'S', $this);
         }
 
         foreach ($this->content as $fid => $cont) {
@@ -405,7 +421,9 @@ class ItemContent {
 
         /* Alerts module uses moved2active as the time when
            an item was moved to the active bin */
-        if (($mode=='insert') || ( $itemvarset->get('status_code') != $oldItemContent->getStatusCode()
+        if (($mode=='insert') ||
+            ($mode=='insert_if_new') ||
+            ($itemvarset->get('status_code') != $oldItemContent->getStatusCode()
                                         && $itemvarset->get('status_code') >= 1)) {
             $itemvarset->add("moved2active", "number", $itemvarset->get('status_code') > 1 ? 0 : time());
         }
@@ -414,21 +432,31 @@ class ItemContent {
         // we can't redefine id or short_id for the field, so if it is set, unset it
         $itemvarset->remove("short_id");
         $itemvarset->addkey('id', 'unpacked', $id);
+        $itemvarset->add("slice_id",  "unpacked", $slice_id);
         // update item table
-        if ($mode != 'insert') {
-            $itemvarset->add("slice_id",  "unpacked", $slice_id);
-            $itemvarset->add("last_edit", "quoted",   default_fnc_now(""));
-            $itemvarset->add("edited_by", "quoted",   default_fnc_uid(""));
-            $itemvarset->doUpdate('item');
-        } else {
-            if ($itemvarset->get('status_code') < 1) {
-                $itemvarset->set('status_code', 1);
-            }
-            $itemvarset->set('display_count', (int)$this->getValue('display_count...'));
-            $itemvarset->add('slice_id', "unpacked", $slice_id);
-            $itemvarset->add('post_date', "quoted", default_fnc_now(""));
-            $itemvarset->add('posted_by', "quoted", default_fnc_uid(""));
-            $itemvarset->doInsert('item');
+        switch ($mode) {
+            case 'update':
+                $itemvarset->add("last_edit", "quoted",   default_fnc_now(""));
+                $itemvarset->add("edited_by", "quoted",   default_fnc_uid(""));
+                $itemvarset->doUpdate('item');
+                break;
+            case 'overwrite':
+                if ($itemvarset->get('status_code') < 1) {
+                    $itemvarset->set('status_code', 1);
+                }
+                $itemvarset->set('display_count', (int)$this->getValue('display_count...'));
+                $itemvarset->add("last_edit", "quoted",   default_fnc_now(""));
+                $itemvarset->add("edited_by", "quoted",   default_fnc_uid(""));
+                $itemvarset->doReplace('item');
+                break;
+            default:
+                if ($itemvarset->get('status_code') < 1) {
+                    $itemvarset->set('status_code', 1);
+                }
+                $itemvarset->set('display_count', (int)$this->getValue('display_count...'));
+                $itemvarset->add('post_date', "quoted", default_fnc_now(""));
+                $itemvarset->add('posted_by', "quoted", default_fnc_uid(""));
+                $itemvarset->doInsert('item');
         }
         if ($invalidatecache) {
             // invalidate old cached values
@@ -443,7 +471,7 @@ class ItemContent {
         $itemContent = new ItemContent();
         $itemContent->setByItemID($id,true); // ignore reading password
 
-        if ($mode == 'insert') {
+        if (($mode == 'insert') OR ($mode == 'insert_if_new')) {
             $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
         } else {
             $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
@@ -489,5 +517,21 @@ class ItemContent {
         }
         echo "</tr>";
     }
-
 }
+
+// Figure out if item alreaady imported into this slice
+// Id's are unpacked
+// Note that this could be replaced by feeding.php3:IsItemFed which is more complex and would use orig id
+function itemIsDuplicate($item_id,$slice_id) {
+    global $debugfeed, $db;
+      // Only store items that have an id which is not already contained in the items table for this slice
+//    $SQL="SELECT id FROM item WHERE id='".q_pack_id($item_id)."' AND slice_id='".q_pack_id($slice_id)."'" ;
+// oops - that doesn't work, the item_id is a key.
+    $SQL="SELECT id FROM item WHERE id='".q_pack_id($item_id)."'" ;
+    $db->query($SQL);
+    if ($db->next_record()) {
+        return true;
+    }
+    return false;
+}
+

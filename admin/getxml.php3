@@ -93,15 +93,16 @@ $XML_BEGIN = '<'.'?xml version="1.0" encoding="UTF-8"?'. ">\n".
   * form other than iso-8895-1 charsets to UTF-8, yet, so we have to use special
   * another conversion class for it
   */
-function code($v, $html=true) {
+function code($v, $cdata=false) {
     static $encoder;
     if ( !$encoder ) {
         $encoder = new ConvertCharset;
     }
-    if ( $html ) {
-        $v = htmlspecialchars($v);
+    if ( !$cdata ) {
+        return $encoder->Convert(htmlspecialchars($v), $GLOBALS['g_slice_encoding'], 'utf-8');
     }
-    return $encoder->Convert($v, $GLOBALS['g_slice_encoding'], 'utf-8');
+    // no htmlspecialchars, here
+    return '<![CDATA['.$encoder->Convert($v, $GLOBALS['g_slice_encoding'], 'utf-8').']]>';
 }
 
 function GetFlagFormat($flag) {
@@ -203,6 +204,12 @@ function GetXMLFieldData($slice_id, $field_id, &$content4id) {
     global $FORMATS;
 
     $cont_vals = $content4id[$field_id];
+
+    // the id should be unpacked for transmition
+    if ( ($field_id == 'id..............') AND (guesstype($cont_vals[0]['value']) == 'p')) {
+        $cont_vals[0]['value'] = unpack_id128($cont_vals[0]['value']);
+    }
+
     if (!$cont_vals || !is_array($cont_vals))  return;
 
     foreach ($cont_vals as $v) {
@@ -211,9 +218,7 @@ function GetXMLFieldData($slice_id, $field_id, &$content4id) {
                    "\t\t\t<aa:field rdf:resource=\"".AA_INSTAL_URL."field/$slice_id/$field_id\"/>\n".
                    "\t\t\t<aa:fieldflags>".$v['flag']."</aa:fieldflags>\n".
                    "\t\t\t<aa:format rdf:resource=\"".$FORMATS[$flag_format]."\"/>\n".
-                   "\t\t\t<rdf:value>". ($flag_format=="HTML" ? "<![CDATA[".code($v['value'], false)."]]>\n" :
-                                                                 code($v['value'])).
-                        "</rdf:value>\n".
+                   "\t\t\t<rdf:value>". code($v['value'], $flag_format=="HTML"). "</rdf:value>\n".
                 "\t\t</aa:fielddata></rdf:li>\n";
    }
    return $out;
@@ -256,10 +261,7 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
             $xml_items .="\t<content:items><rdf:Bag>\n".
                            "\t\t<rdf:li><content:item>\n".
                               "\t\t\t<content:format rdf:resource=\"".$FORMATS[$flag_format]."\"/>\n".
-                              "\t\t\t<rdf:value>".
-                          ($flag_format=="HTML" ? ("<![CDATA[".code($content4id[$f][0]['value'],false)."]]>\n") :
-                                                  code($content4id[$f][0]['value'])).
-                              "</rdf:value>\n".
+                              "\t\t\t<rdf:value>". code($content4id[$f][0]['value'], $flag_format=="HTML"). "</rdf:value>\n".
                            "\t\t</content:item></rdf:li>\n".
                          "\t</rdf:Bag></content:items>\n";
         }

@@ -371,16 +371,18 @@ class ConvertCharset {
     function Convert($StringToChange, $FromCharset, $ToCharset, $TurnOnEntities = false)
     {
         /** Check are there all variables **/
-         if ($StringToChange == "") {
-                print $this->DebugOutput(0, 3, "\$StringToChange");
-                return "";
-         }
-         elseif ($FromCharset == "") {
-                print $this->DebugOutput(0, 3, "\$FromCharset");
-         }
-         elseif ($ToCharset == "") {
-                print $this->DebugOutput(0, 3, "\$ToCharset");
-         }
+        if ($StringToChange == "") {
+            print $this->DebugOutput(0, 3, "\$StringToChange");
+            return "";
+        }
+        elseif ($FromCharset == "") {
+            print $this->DebugOutput(0, 3, "\$FromCharset");
+            $FromCharset = 'utf-8';
+        }
+        elseif ($ToCharset == "") {
+            print $this->DebugOutput(0, 3, "\$ToCharset");
+            $ToCharset = 'utf-8';
+        }
 
         /** Now a few variables need to be set. **/
         $NewString      = "";

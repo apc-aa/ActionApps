@@ -77,7 +77,7 @@ function http_fetch($url, $d=null) {
     */
     // Replacement only works php >4.3.0
     $data = file_get_contents($url);
-    if ($GLOBALS['debugfeed'] >= 8) huh('data obtained:', $data);
+    if ($GLOBALS['debugfeed'] >= 8) huhl('data obtained:', $data);
     return trim($data);
 }
 
@@ -201,17 +201,110 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
     return $return_approved;
 }
 
+/** Update the slice categories in the ef_categories table, that is, if the set
+ *  of possible slice categories has changed
+ */
+ function updateCategories($feed_id, &$l_categs, &$ext_categs,&$cat_refs, &$categs) {
+     global $debugfeed;
+     $db = getDB();
+     // add new categories or update categories' fields
+     if (isset($cat_refs) && is_array($cat_refs)) {
+         foreach ($cat_refs as $r_cat_id => $foo) {
+             $category = $categs[$r_cat_id];
+
+             if ($ext_categs[$r_cat_id])  {
+                 // remote category is in the ef_categories table, so update name and value
+                 $SQL = "UPDATE ef_categories SET category_name='".$category[name]."',
+                         category='".$category[value]."'
+                         WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
+                 if ($debugfeed >= 8) print("\n<br>$SQL");
+                 $db->query($SQL);
+             } else {
+                 $l_cat_id = MapDefaultCategory($l_categs,$category[value], $category[catparent]);
+                 $SQL = "INSERT INTO ef_categories VALUES ('".$category[value]."','".$category[name]."',
+                         '".q_pack_id($category[id])."','".$feed_id."','".q_pack_id($l_cat_id)."','0')";
+                 if ($debugfeed >= 8) print("\n<br>$SQL");
+                 $db->query($SQL);
+             }
+         }
+     }
+
+     // remove the categories from table, which were not sent
+     if (isset($ext_categs) AND is_array($ext_categs)) {
+         foreach ($ext_categs as $r_cat_id => $foo) {
+             if (isset($cat_refs[$r_cat_id])) {
+                 continue;
+             }
+             $SQL = "DELETE FROM ef_categories WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
+             if ($debugfeed >= 8) print("\n<br>$SQL");
+             $db->query($SQL);
+         }
+     }
+     freeDB($db);
+ }
+
+/** Update the fields mapping from the remote slice to the local slice */
+function updateFieldsMapping($feed_id, $l_slice_id, $r_slice_id, &$field_refs, &$fields) {
+    global $debugfeed;
+
+    list($ext_map,$field_map) = GetExternalMapping($l_slice_id, $r_slice_id);
+    $p_l_slice_id = q_pack_id($l_slice_id);
+    $p_r_slice_id = q_pack_id($r_slice_id);
+
+    // add new ones
+    $db = getDB();
+    if ( isset($field_refs) AND is_array($field_refs) ) {
+        foreach( $field_refs as $r_field_id => $val ) {
+            if ($ext_map && $ext_map[$r_field_id]) {
+                // remote field is in the feedmap table => update name
+                $new_name = quote($fields[$r_field_id][name]);
+                if ($ext_map[$r_field_id] != $new_name) { // update if field name changed on remote AA
+                    $SQL = "UPDATE feedmap SET from_field_name='".quote($fields[$r_field_id]['name'])."'
+                            WHERE from_slice_id='$p_r_slice_id'
+                            AND to_slice_id='$p_l_slice_id'
+                            AND from_field_id='$r_field_id'";
+                    if ($debugfeed >= 8) print("\n<br>$SQL");
+                    $db->query($SQL);
+                }
+            } else {
+                $SQL = "INSERT INTO feedmap VALUES('$p_r_slice_id','$r_field_id','$p_l_slice_id','$r_field_id',
+                       '".FEEDMAP_FLAG_EXTMAP ."','','".quote($fields[$r_field_id]['name'])."')";
+                if ($debugfeed >= 8) print("\n<br>$SQL");
+                $db->query($SQL);
+            }
+        }
+    }
+    freeDB($db);
+    if (!$ext_map) {
+        return;
+    }
+    $db = getDB();
+    foreach ($ext_map as $r_field_id => $foo) {
+        if (!$field_refs[$r_field_id]) {
+            $SQL = "DELETE FROM feedmap WHERE from_slice_id='$p_r_slice_id'
+                    AND to_slice_id='$p_l_slice_id'
+                    AND from_field_id='$r_field_id'";
+            if ($debugfeed >= 8) print("\n<br>$SQL");
+            $db->query($SQL);
+        }
+    }
+    freeDB($db);
+}
+
+
 class saver {
     var $grabber;            /** the object which deliveres the data */
     var $transformations;    /** describes, what to do with data before storing */
     var $slice_id;           /** id of destination slice */
-    var $mode;               /** store-policy - how to store - insert | update | ... */
+    var $store_mode;         /** store-policy - how to store - overwrite | insert_if_new */
+    var $id_mode;            /** id-policy    - how to construct id - old | new | combined */
 
-    function saver(&$grabber, &$transformations, $slice_id, $mode='insert') {
+    function saver(&$grabber, &$transformations, $slice_id, $store_mode='overwrite', $id_mode='old') {
         $this->grabber         = $grabber;
         $this->transformations = $transformations;
         $this->slice_id        = $slice_id;
-        $this->mode            = $mode;
+        $this->store_mode      = $store_mode;
+        $this->id_mode         = $id_mode;
     }
 
     /** Now import all items to the slice */
@@ -220,34 +313,39 @@ class saver {
 
         $this->grabber->prepare();    // maybe some initialization in grabber
         while ($content4id = $this->grabber->getItem()) {
-            if ($debugfeed >= 8) print("\n<br>saver->run(): we have item to store, hurray!");
 
-            $item_id = $content4id->getItemID();
+            if ($debugfeed >= 8) {
+                print("\n<br>saver->run(): we have item to store, hurray! -- ". $content4id->getItemID());
+            }
 
-            // Create new item id (always the same for item-slice pair)
-            $new_item_id = string2id($item_id . $this->slice_id);
+            switch ($this->id_mode) {
+                // Create new item id (always the same for item-slice pair)
+                case 'combined' : $new_item_id = string2id($content4id->getItemID(). $this->slice_id); break;
 
-            // Skip already fed items
-            if (itemIsDuplicate($new_item_id, $this->slice_id)) {
-                //if (ItemIsFed($item_id,$l_slice_id)) {     // Alternative more complex
-                    if ($debugfeed >= 4) print("\n<br>skipping duplicate: ".$content4id->getValue('headline........'));
-                    continue;
+                // Use id from source
+                case 'old'      : $new_item_id = $content4id->getItemID(); break;
+
+                // Generate completely new id
+                default         :
+                case 'new'      : $new_item_id = new_id();                 break;
             }
 
             // set the item to be recevied from remote node
             $content4id->setItemID($new_item_id);
 
             // TODO - move to translations
-            $content4id->setSliceID($$this->slice_id);
+            $content4id->setSliceID($this->slice_id);
 
             if ($debugfeed >= 3) print("\n<br>      ". $content4id->getValue('headline........'));
-            if ($debugfeed >= 8) { print("\n<br>xmlUpdateItems:content4id="); huh($content4id); }
+            if ($debugfeed >= 8) { print("\n<br>xmlUpdateItems:content4id="); huhl($content4id); }
 
-            if (!$content4id->storeItem('insert')) {     // invalidatecache, feed
-                print("\n<br>saver->run(): storeItem failed");
+            // id_mode - overwrite or insert_if_new
+            // (the $new_item_id should not be changed by storeItem)
+            if (!($new_item_id = $content4id->storeItem($this->store_mode))) {     // invalidatecache, feed
+                print("\n<br>saver->run(): storeItem failed or skiped duplicate");
             } else {
                 // Update relation table to show where came from
-                AddRelationFeed($new_item_id,$item_id);
+                AddRelationFeed($new_item_id, $content4id->getItemID());
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some initialization in grabber
@@ -338,7 +436,7 @@ class grabber_aarss extends grabber {
         $local_list->setFromSlice('', $slice);  // no conditions - all items
         $local_pairs = $local_list->getPairs();
 
-        if ($debugfeed > 8) { huh('_getExactData() - Local pairs:', $local_pairs); }
+        if ($debugfeed > 8) { huhl('_getExactData() - Local pairs:', $local_pairs); }
 
         $base["node_name"]       = ORG_NAME;
         $base["password"]        = $this->feed['password'];
@@ -356,18 +454,25 @@ class grabber_aarss extends grabber {
         $remote_list->setList(http_fetch($this->feed['server_url'], $init));
         $remote_pairs = $remote_list->getPairs();
 
-        if ($debugfeed > 8) { huh('_getExactData() - Remote pairs:', $remote_pairs); }
+        if ($debugfeed > 8) { huhl('_getExactData() - Remote pairs:', $remote_pairs); }
 
+        // Get all ids, which was updated later than items in local slice
+        $ids = array();   // initialize
         foreach ($remote_pairs as $id => $time) {
             if (!isset($local_pairs[$id]) OR ($local_pairs[$id] < $time)) {
                 $ids[] = $id;  // array of ids to ask for
             }
         }
 
+        // No items to fed?
+        if (count($ids) <= 0) {
+            return '';
+        }
+
         $finish        = $base;
         $finish['ids'] = implode('-',$ids);
 
-        if ($debugfeed > 8) { huh('_getExactData() - http_fetch:', $this->feed['server_url'], $finish); }
+        if ($debugfeed > 8) { huhl('_getExactData() - http_fetch:', $this->feed['server_url'], $finish); }
 
         return http_fetch($this->feed['server_url'], $finish);
     }
@@ -376,16 +481,19 @@ class grabber_aarss extends grabber {
     function prepare() {
         global $DEFAULT_RSS_MAP, $debugfeed;
 
+        // just shortcut
+        $feed_type = $this->feed['feed_type'];
+
         set_time_limit(240); // Allow 4 minutes per feed
 
         // Get XML Data
         if ($debugfeed >= 1) {
             $slice           = new slice($this->slice_id);
-            $feed_debug_name = $this->feed['feed_type']. ' Feed #'. $this->feed_id .': '. $this->feed['name'] .' : '. $this->feed['remote_slice_name']. ' -> '.$slice->name();
-            print("\n<br>$feed_debug_name");
+            $feed_debug_name = $feed_type. ' Feed #'. $this->feed_id .': '. $this->feed['name'] .' : '. $this->feed['remote_slice_name']. ' -> '.$slice->name();
+            print("\n<br>$feed_debug_name, $debugfeed");
         }
 
-        switch($this->feed['feed_type']) {
+        switch($feed_type) {
             case FEEDTYPE_RSS:   $xml_data = $this->_getRssData();   break;
             case FEEDTYPE_EXACT: $xml_data = $this->_getExactData(); break;
             case FEEDTYPE_APC:
@@ -413,7 +521,7 @@ class grabber_aarss extends grabber {
         }
 
         /** $g_slice_encoding is passed to aa_rss_parse() - it defines output character encoding */
-        $GLOBALS['g_slice_encoding'] = getSliceEncoding(unpack_id128($this->slice_id));
+        $GLOBALS['g_slice_encoding'] = getSliceEncoding($this->slice_id);
 
         if (!( $this->aa_rss = aa_rss_parse( $xml_data ))) {
             writeLog("CSN","Feeding mode: Unable to parse XML data");
@@ -428,11 +536,13 @@ class grabber_aarss extends grabber {
         $this->l_categs   = GetGroupConstants($this->slice_id);       // category definitions
                                                           // - used only for FEEDTYPE_APC
 
-        if ($this->feed['feed_type'] == FEEDTYPE_APC) {
+        if ($feed_type == FEEDTYPE_APC) {
             // Update the slice categories in the ef_categories table,
             // that is, if the set of possible slice categories has changed
             updateCategories($this->feed_id, $this->l_categs, $this->ext_categs, $this->aa_rss['channels'][$this->r_slice_id]['categories'], $this->aa_rss['categories']);
+        }
 
+        if (($feed_type == FEEDTYPE_APC) OR ($feed_type == FEEDTYPE_EXACT)) {
             //Update the field names and add new fields to feedmap table
             updateFieldsMapping($this->feed_id, $this->slice_id, $this->r_slice_id, $this->aa_rss['channels'][$this->r_slice_id]['fields'],$this->aa_rss['fields']);
         }
@@ -447,21 +557,28 @@ class grabber_aarss extends grabber {
         }
 
         list(,$map) = GetExternalMapping($this->slice_id,$this->r_slice_id);
-        if (!$map && ($this->feed['feed_type'] == FEEDTYPE_RSS)) {
+        if (!$map && ($feed_type == FEEDTYPE_RSS)) {
             $map = $DEFAULT_RSS_MAP;
         }
         $this->map = $map;
 
-        if ($this->feed['feed_type'] == FEEDTYPE_APC) { // Use the APC specific fields from the item
+        // Use the APC specific fields from the item
+        if ($feed_type == FEEDTYPE_APC) {
             $this->cat_field_id   = GetBaseFieldId( $this->aa_rss['fields'], "category" );
             $this->status_code_id = GetBaseFieldId( $this->aa_rss['fields'], "status_code" );
         }
 
-        reset($this->aa_rss['items']);
+        if (is_array($this->aa_rss['items'])) {
+            reset($this->aa_rss['items']);
+        }
 
     }
 
     function getItem() {
+        if (!is_array($this->aa_rss['items'])) {
+            return false;
+        }
+
         if (!($item = current($this->aa_rss['items']))) {
             return false;
         }
@@ -489,7 +606,7 @@ class grabber_aarss extends grabber {
         // create item from source data (in order we can unalias)
         $item2fed = new item($item['fields_content'], array());
 
-        while (list($to_field_id,$v) = each($this->map)) {
+        foreach ( $this->map as $to_field_id => $v) {
             switch ($v['feedmap_flag']) {
                 case FEEDMAP_FLAG_VALUE:
                             // value could contain {switch()} and other {constructs}
@@ -513,6 +630,7 @@ class grabber_aarss extends grabber {
 
         $ic = new ItemContent($content4id);
         $ic->setItemValue('externally_fed', $this->feed['name']);  // TODO - move one layer up - to saver transactions
+        $ic->setItemId($item_id);
         return $ic;
     }
 
@@ -547,22 +665,6 @@ function onefeed($feed_id, $feed, $debugfeed, $fire = 'write') {
         $saver->run();
     }
     if ($debugfeed >= 8) print("\n<br>onefeed: done");
-}
-
-// Figure out if item alreaady imported into this slice
-// Id's are unpacked
-// Note that this could be replaced by feeding.php3:IsItemFed which is more complex and would use orig id
-function itemIsDuplicate($item_id,$slice_id) {
-    global $debugfeed, $db;
-      // Only store items that have an id which is not already contained in the items table for this slice
-//    $SQL="SELECT id FROM item WHERE id='".q_pack_id($item_id)."' AND slice_id='".q_pack_id($slice_id)."'" ;
-// oops - that doesn't work, the item_id is a key.
-    $SQL="SELECT id FROM item WHERE id='".q_pack_id($item_id)."'" ;
-    $db->query($SQL);
-    if ($db->next_record()) {
-        return true;
-    }
-    return false;
 }
 
 // Consider value, and return array depending on whether it is HTML or not
@@ -600,14 +702,14 @@ function map1field($value,$item,$channel) {
         if ($debugfeed >= 9) huhl($try1);
         return $try1;
     } elseif ($value == "NOW") {
-        return array (0 => array ( value => time(), flag => 0, format => 1 ));
+        return array(0 => array('value' => time(), 'flag' => 0));
     } elseif (ereg("CHANNEL/(.*)",$value,$vals)) {
         return array ( 0 => field2arr($channel[$vals[1]]));
     } elseif (ereg("ITEM/(.*)",$value,$vals)) {
         return array ( 0 => field2arr($item[$vals[1]]));
     } elseif (ereg("DC/(.*)",$value,$vals)) {
         // Dont believe DC fields can be HTML
-        return array ( 0 => array ( value => $item['dc'][$vals[1]], flag => 0, format => 1 ));
+        return array(0 => array('value' => $item['dc'][$vals[1]], 'flag' => 0));
     } elseif ($value == "CONTENT") {
         // Note this code is repeated above in map1field
         return array (0 => contentvalue($item));
