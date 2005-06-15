@@ -776,7 +776,8 @@ function expandFilenameWithHttp($parturl) {
 function stringexpand_keystring() {
     $ks = "";
     if (isset($GLOBALS["apc_state"])) $ks .= serialize($GLOBALS["apc_state"]);
-    if (isset($GLOBALS["als"])) $ks .= serialize($GLOBALS["als"]);
+    if (isset($GLOBALS["als"]))       $ks .= serialize($GLOBALS["als"]);
+    if (isset($_COOKIE))              $ks .= serialize($_COOKIE);
     return $ks;
 }
 
