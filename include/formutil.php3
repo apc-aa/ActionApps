@@ -918,6 +918,12 @@ class aainputfield {
         }
         $this->echoo("<td colspan=\"$colspan\">");
         $this->html_radio($showhtmlarea ? false : 'convertors');
+
+        // fix for IE - where the textarea icons are too big so there is
+        // no space for the text
+        if ($showhtmlarea) {
+            $rows += 8;
+        }
         $tarea .= "<textarea id=\"$name\" name=\"$name\" rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']." cols=\"$cols\" style=\"width:100%\" ".getTriggers("textarea",$name).">$val</textarea>\n";
         if ($showhtmlarea) {
             $tarea .= getFrmJavascript( "htmlareas[htmlareas.length] = '$name'");
