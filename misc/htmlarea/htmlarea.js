@@ -204,7 +204,9 @@ HTMLArea.Config = function () {
   // If false, then passes ^V through to browser editor widget
   this.htmlareaPaste = false;
 
-  this.mozParaHandler = 'best'; // set to 'built-in', 'dirty' or 'best'
+  // we are using 'built-in' - best produces incredible long code for each <p>
+  // dirty seems to have some bugs - it sometimes do not create paragraph
+  this.mozParaHandler = 'built-in'; // set to 'built-in', 'dirty' or 'best'
                                 // built-in: will (may) use 'br' instead of 'p' tags
                                 // dirty   : will use p and work good enough for the majority of cases,
                                 // best    : works the best, but it's about 12kb worth of javascript
