@@ -299,7 +299,6 @@ class ItemContent {
     *   @return true on success, false otherwise
     */
     function storeItem( $mode, $invalidatecache=true, $feed=true, $context='direct' ) {
-
         global $event, $itemvarset;
         $itemvarset = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
         $varset     = new CVarset();
@@ -308,12 +307,16 @@ class ItemContent {
         $slice      = new slice($slice_id);
         $fields     = $slice->fields('record');
 
-        if ( ($mode != 'insert') AND ($mode != 'insert_if_new') AND ($mode != 'overwrite')) {
+        if ( ($mode != 'insert') AND ($mode != 'insert_if_new') AND ($mode != 'insert_as_new') AND ($mode != 'overwrite')) {
             $mode = 'update';
         }
 
         switch ($mode) {
-            case 'insert':        $id = new_id();           break;
+            case 'insert_as_new': $id = new_id();
+                                  $mode ='insert';
+                                  break;
+            case 'insert':        $id = get_if($this->getItemID(), new_id());
+                                  break;
             case 'insert_if_new': if (itemIsDuplicate($this->getItemID(), $slice_id)) {
                                       if ($GLOBALS['debugfeed'] >= 4) print("\n<br>skipping duplicate: ".$this->getValue('headline........'));
                                       return false;

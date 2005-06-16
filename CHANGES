@@ -1,3 +1,5 @@
+06/16/05 - fixed multilingual MLX extension - now works again
+(honzam+mimo)
 06/15/05 - pagecache now takes care about cookies as well - the page is not
 (honzam)   generated from cache if user have different cookie
          - better handling of paragraph in HTMLArea (Xinha) - no javascript

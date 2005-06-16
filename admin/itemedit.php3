@@ -79,9 +79,6 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
     }
     $js .= ($url2go ? "document.location = '$url2go';\n" : "window.close();\n");
 
-//    huhl($zid, $js, $item, $aliases);
-//    exit;
-
     FrmHtmlPage(array('body'=> getFrmJavascriptFile('javascript/inputform.js').  // for SelectRelations
                                getFrmJavascript($js)));
 }
@@ -151,11 +148,18 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
         // unset ITEM_FLAG_ANONYMOUS_EDITABLE bit in flag
         $content4id->setValue('flags...........', $content4id->getValue('flags...........') & ~ITEM_FLAG_ANONYMOUS_EDITABLE);
     }
+    
+    // we need to know the new id before mlx->update, since it is written 
+    // to the MLX control slice
+    if ($insert) {  
+        $id = new_id();
+        $content4id->setItemID($id);
+    }
 
     // mimo change
     if ($lang_control) {
         $mlx = new MLX($slice);
-        $mlx->update($content4id,$id,$action,$mlxl,$mlxid);
+        $mlx->update($content4id, $id, $action, $mlxl, $mlxid);
     }
     // end
 
@@ -221,7 +225,6 @@ if ($lang_control) {
         $content4id,$action,$mlxl,$mlxid);
 }
 // end mimo changes
-
 
 // print begin ---------------------------------------------------------------
 if ( !$encap ) {
