@@ -246,12 +246,9 @@ class MLX
         $content4mlxid["publish_date...."][0]['value'] = time();
         $content4mlxid["expiry_date....."][0]['value'] = time() + 200*365*24*60*60;
         $content4mlxid["status_code....."][0]['value'] = 1;
-        $mlxCtrl = new ItemContent($content4mlxid);
-        $mlxCtrl->setSliceID($this->langSlice);
-        $insert_id = $mlxCtrl->storeItem($insert, true, true, 'direct', $id);
-        //StoreItem($id,$this->langSlice,$content4mlxid, $this->ctrlFields,$insert,true,true);
+        StoreItem($id,$this->langSlice,$content4mlxid, $this->ctrlFields,$insert,true,true);
         $content4id->setValue(MLX_CTRLIDFIELD, q_pack_id($id));
-        $this->trace("done. id=$id ($insert_id)");
+        $this->trace("done. id=$id");
     }
     
     /** Returns array of: 
@@ -273,7 +270,6 @@ class MLX
             case "edit":
                 $lang  = $content4id['lang_code.......'][0][value];
                 $mlxid = unpack_id128($content4id[MLX_CTRLIDFIELD][0][value]);
-                $this->trace("edit: lang=$lang mlxid=$mlxid");
                 break;
             case "insert":
             case "add":
@@ -388,7 +384,7 @@ class MLX
             $content = GetItemContent($mlxid);
             //var_dump($content);
             if (!$content) {
-                $this->fatal(_m("MLX Bad item ID (returned empty content for mlxid=$mlxid"));
+                $this->fatal(_m("Bad item ID"));
             }
             $content4mlxid = $content[$mlxid];
         }
