@@ -164,8 +164,8 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
     // end
 
     // added_to_db contains id
-    // removed $oldcontent4id (see ItemContent::storeItem, pass the id which should only be set for MLX inserts)
-    $added_to_db = $content4id->storeItem( $insert ? 'insert' : 'update', true, true, 'direct', $insert_id);     // invalidatecache, feed
+    // removed $oldcontent4id (see ItemContent::storeItem)
+    $added_to_db = $content4id->storeItem( $insert ? 'insert' : 'update', true, true, 'direct');     // invalidatecache, feed
 
     if (count($err) <= 1) {
         page_close();
@@ -205,7 +205,7 @@ if ($edit) {
     // fill content array from item and content tables
     $content = GetItemContent($id);
     if ( !$content ) {
-        $err["DB"] = MsgErr(_m("Bad item ID"));
+        $err["DB"] = MsgErr(_m("Bad item ID id=$id"));
         MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
         exit;
     }
