@@ -152,19 +152,20 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
     // we need to know the new id before mlx->update, since it is written 
     // to the MLX control slice
     if ($insert) {  
-        $id = new_id();
-        $content4id->setItemID($id);
+        $insert_id = new_id();
+        $content4id->setItemID($insert_id);
     }
 
     // mimo change
     if ($lang_control) {
         $mlx = new MLX($slice);
-        $mlx->update($content4id, $id, $action, $mlxl, $mlxid);
+        $mlx->update($content4id, $insert_id, $action, $mlxl, $mlxid);
     }
     // end
 
     // added_to_db contains id
-    $added_to_db = $content4id->storeItem( $insert ? 'insert' : 'update', true, true, $oldcontent4id );     // invalidatecache, feed
+    // removed $oldcontent4id (see ItemContent::storeItem, pass the id which should only be set for MLX inserts)
+    $added_to_db = $content4id->storeItem( $insert ? 'insert' : 'update', true, true, 'direct', $insert_id);     // invalidatecache, feed
 
     if (count($err) <= 1) {
         page_close();
