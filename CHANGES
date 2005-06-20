@@ -1,3 +1,9 @@
+06/20/05 - fillform.php3 tries to set all the inputs, which was sent by $_GET
+(honzam)   (when fillConds=1 parameter used)
+         - fixed toexecute class - now works well even if the list of task
+           is BIG (=can't be loaded into memory)
+         - the id of the site module is marked automaticaly as cached (no need
+           to add it to $slices4cache array manualy in site control file)
 06/16/05 - fixed multilingual MLX extension - now works again
 (honzam+mimo)
 06/15/05 - pagecache now takes care about cookies as well - the page is not
