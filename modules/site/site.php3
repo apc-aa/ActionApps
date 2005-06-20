@@ -103,11 +103,18 @@ $res = ModW_GetSite( $apc_state, $site_id, $site_info );
 echo $res;
 
 // In $slices4cache array MUST be listed all (unpacked) slice ids (and other
-// modules including site module itself), which is used in the site. If you
-// mention the slice in this array, cache is cleared on any change of the slice
-// (item addition) - the page is regenerated, then.
+// modules), which is used in the site. If you mention the slice in this array,
+// cache is cleared on any change of the slice (item addition) - the page
+// is regenerated, then.
+// UPDATE: there is no need to add alse site module itself, since it
+// is added automaticaly - Honza 2005-06-16
 
 if ( $GLOBALS['debug'] ) huhl("<br>Site.php3 is_array(slices4cache):". is_array($slices4cache), '<br>Site.php3 nocache:'.$nocache);
+
+// the cache should be always cleared, if the site is changed
+if (!in_array($site_id, (array)$slices4cache)) {
+    $slices4cache[] = $site_id;
+}
 
 if (is_array($slices4cache) && !$site_nocache) {
     $str2find = new CacheStr2find($slices4cache, 'slice_id');
