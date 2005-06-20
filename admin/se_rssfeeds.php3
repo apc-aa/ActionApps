@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
 /*
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 /* Change Log:
-	Mitra 25 Nov 2002  Copied and edited from se_nodes.php3 
+    Mitra 25 Nov 2002  Copied and edited from se_nodes.php3
 */
 // se_rssfeeds.php3 - RSS Feed administration
 
@@ -75,12 +75,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
         $db->query("SELECT * FROM rssfeeds WHERE name='$rssfeed_name' AND slice_id = '$qp_slice_id'");
         if ($db->next_record()) {
           $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
-        } else {		
-		  $catVS = new Cvarset();
-		  $catVS->add("slice_id", "unpacked", $slice_id);
-		  $catVS->add("name", "quoted", $rssfeed_name);
-		  $catVS->add("server_url","quoted",$server_url);
-		  $SQL = "INSERT INTO rssfeeds" . $catVS->makeINSERT();
+        } else {
+          $catVS = new Cvarset();
+          $catVS->add("slice_id", "unpacked", $slice_id);
+          $catVS->add("name", "quoted", $rssfeed_name);
+          $catVS->add("server_url","quoted",$server_url);
+          $SQL = "INSERT INTO rssfeeds" . $catVS->makeINSERT();
           if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
             $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
           }
@@ -88,10 +88,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
         break;
 
       case "update" :
-		  $catVS = new Cvarset();
-		  $catVS->add("name", "quoted", $rssfeed_name);
-		  $catVS->add("server_url","quoted",$server_url);
-		  $SQL = "INSERT INTO rssfeeds" . $catVS->makeINSERT();
+          $catVS = new Cvarset();
+          $catVS->add("name", "quoted", $rssfeed_name);
+          $catVS->add("server_url","quoted",$server_url);
+          $SQL = "INSERT INTO rssfeeds" . $catVS->makeINSERT();
         $db->query("UPDATE rssfeeds SET ". $catVS->makeUPDATE()
             ." WHERE name='$old_rssfeed_name' AND slice_id = '$qp_slice_id'");
         break;
@@ -166,7 +166,7 @@ function checkData() {
 <?php
 
   FrmTabCaption(_m("Remote RSS Feed administration"));
-?>      
+?>
       <tr><td colspan=2><?php echo _m("Current remote rssfeeds") ?></td></tr>
       <tr><td align=center colspan=2>
       <SELECT name="rssfeeds" class=tabtxt size=5>
@@ -187,7 +187,7 @@ function checkData() {
      </td></tr>
 <?php
   FrmTabSeparator($new_mode=="insert" ? _m("Add new rssfeed") : _m("Edit rssfeed data"));
-?>    
+?>
     <tr><td><?php echo _m("RSS Feed name") ?></td>
         <td><input type="text" name="rssfeed_name" size=40 value="<?php echo safe($rssfeed_name)?>" ><br><?php echo _m("New rssfeed name")?></tr>
     <tr><td><?php echo _m("URL of the feed") ?></td>
@@ -200,12 +200,12 @@ function checkData() {
 
   FrmTabEnd(array("submit", "cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
 
-?>  
+?>
 </FORM>
 <?php
-    if ($mode == "test") {
-        onefeed($testfeed["feed_id"],$testfeed, 5, false);
-    }
+if ($mode == "test") {
+    onefeed($testfeed["feed_id"],$testfeed, 5, 'write');
+}
 HtmlPageEnd();
 page_close()
 ?>
