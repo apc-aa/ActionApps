@@ -59,7 +59,7 @@ function safeChars($str) {
 
 /** Finds the item content and calls fillFormWithContent.
 *   Prooves permissions to update an item.
-*   Returns stirng of HTML and Javascript for echoing
+*   Returns string of HTML and Javascript for echoing
 */
 function fillForm() {
     global $my_item_id, $slice_id, $oldcontent4id;
@@ -315,6 +315,20 @@ function fillConds() {
     global $form, $conds, $dateConds;
     $js = "function fillConds() {";
 
+    // First - try to fill all the values sent to the script
+    // Added by Honza 2005-06-17
+    // TODO - it takes no care about multivalues
+    //        (varname='jsjjs[]' and setControlArray())
+    foreach (explode('&',shtml_query_string()) as $pair) {
+        list($var,$val) = explode('=',$pair);
+        $val  = str_replace("\"", '\\"', urldecode($val));
+        $var  = urldecode($var);
+        $js  .= "setControl('$form','$var',\"$val\");\n";
+    }
+
+    // this part is specific for conds nad maybe we can remove it after we fix
+    // setControlArray() problem in previous foreach()
+    // most of setControl() functions are called twice, now
     if (is_array($conds)) {
         foreach ($conds as $i => $cond) {
             if (is_array($cond)) {
