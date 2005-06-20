@@ -855,7 +855,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     }
 
     // add special fields to all items (zids)
-    foreach ($content as $iid => $foo ) { 
+    foreach ($content as $iid => $foo ) {
         // slice_id... and id... is packed  - add unpacked variant now
         $content[$iid]['u_slice_id......'][] =
             array('value' => unpack_id128($content[$iid]['slice_id........'][0]['value']));
@@ -1652,12 +1652,12 @@ function tryQuery($SQL) {
 
 // Return an array of fields, skipping numeric ones
 // See also GetTable2Array
-function DBFields($db) {
+function DBFields(&$db) {
     $a = array();
-    while (list($key,$val,,) = each($db->Record)) {
-        if ( EReg("^[0-9]*$", $key))
-            continue;
-        $a[$key] = $val;
+    foreach ( $db->Record as $key => $val ) {
+        if ( !is_numeric($key) ) {
+            $a[$key] = $val;
+        }
     }
     return $a;
 }
@@ -1859,18 +1859,22 @@ class toexecute {
         $varset->doDeleteWhere('toexecute',"selector='".quote($selector)."'");
     }
 
-    function execute($allowed_time = 10.0) {  // standard run is 10 s
+    function execute($allowed_time = 16.0) {  // standard run is 10 s
 
         /** there we store the the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
          *  run one more such task or if we left it for next time */
         $execute_times = array();
 
-        $tasks = GetTable2Array("SELECT * FROM toexecute WHERE execute_after < ".now()." ORDER by priority", 'id', 'aa_fields');
+        // get just ids - the task itself we will grab later, since the objects
+        // in the database could be pretty big, so we want to grab it one by one
+        $tasks = GetTable2Array("SELECT id FROM toexecute WHERE execute_after < ".now()." ORDER by priority DESC", 'id', 'aa_mark');
 
         $execute_start = get_microtime();
         if (is_array($tasks)) {
-            foreach ($tasks as $task) {
+            foreach ($tasks as $task_id => $foo) {
+                $task = GetTable2Array("SELECT * FROM toexecute WHERE id='$task_id'", 'aa_first', 'aa_fields');
+
                 $task_type     = get_if($tasks['selector'],'aa_unspecified');
                 $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task if 1 second
                 $task_start    = get_microtime();
