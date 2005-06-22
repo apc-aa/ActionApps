@@ -220,8 +220,7 @@ class MLX
         } else {
             $this->fatal("MLX update: duno what to do");
         }
-        $qp_cntitemid = q_pack_id($cntitemid);
-
+        $qp_cntitemid = pack_id128($cntitemid);
         foreach ($this->ctrlFields as $k => $v) {
             if ($v['name'] == $lang) {
                 $content4mlxid[(string)$k] = array(array('value' => $qp_cntitemid));
@@ -230,8 +229,8 @@ class MLX
             }
         }
         
-        //huhl("update(", $content4mlxid, "$id, $lang, $qp_cntitemid");
-        
+        //huhl("update(", $content4mlxid, "$id, $lang, $qp_cntitemid, $cntitemid, ".unpack_id128($qp_cntitemid)." ".strlen($qp_cntitemid)." ".pack_id128($content4id->getItemID()));
+        //die;
         if (empty($content4mlxid)) {
             $this->fatal("Creating the Control Language Data failed. "
                 ."Maybe you have to select a Language Code, "
@@ -246,9 +245,14 @@ class MLX
         $content4mlxid["publish_date...."][0]['value'] = time();
         $content4mlxid["expiry_date....."][0]['value'] = time() + 200*365*24*60*60;
         $content4mlxid["status_code....."][0]['value'] = 1;
-        StoreItem($id,$this->langSlice,$content4mlxid, $this->ctrlFields,$insert,true,true);
-        $content4id->setValue(MLX_CTRLIDFIELD, q_pack_id($id));
-        $this->trace("done. id=$id");
+        $p_id = pack_id128($id);
+        if((strlen($id) != 32) || (strlen($p_id)!=16)) 
+        	$this->fatal("MLX update: mlxid corrupted: $id ".strlen($id).", $p_id");
+        
+        $added = StoreItem($id,$this->langSlice,$content4mlxid, $this->ctrlFields,$insert,true,true);
+        
+        $content4id->setValue(MLX_CTRLIDFIELD, $p_id);
+        $this->trace("done. id=$id ($added)");
     }
     
     /** Returns array of: 
@@ -329,6 +333,7 @@ class MLX
             } elseif ($mlxid) {
                 $langid = $this->getLangItem($v['name'], $mlxid, $content4mlxid);
             }
+            $this->trace($action." ".$v[id]." ".$langid);
             if ($lang != $v['name']) {
                 if ($langid) {
                     $href    = "id=$langid&edit=1&";
@@ -384,7 +389,7 @@ class MLX
             $content = GetItemContent($mlxid);
             //var_dump($content);
             if (!$content) {
-                $this->fatal(_m("Bad item ID"));
+                $this->fatal(_m("Bad item ID $mlxid").var_export($mlxid));
             }
             $content4mlxid = $content[$mlxid];
         }
