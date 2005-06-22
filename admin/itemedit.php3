@@ -152,14 +152,14 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
     // we need to know the new id before mlx->update, since it is written 
     // to the MLX control slice
     if ($insert) {  
-        $insert_id = new_id();
-        $content4id->setItemID($insert_id);
+        $id = new_id();
+        $content4id->setItemID($id);
     }
 
     // mimo change
     if ($lang_control) {
         $mlx = new MLX($slice);
-        $mlx->update($content4id, $insert_id, $action, $mlxl, $mlxid);
+        $mlx->update($content4id, $id, $action, $mlxl, $mlxid);
     }
     // end
 
