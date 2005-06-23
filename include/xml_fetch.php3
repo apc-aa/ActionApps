@@ -344,11 +344,21 @@ class saver {
             if (!($new_item_id = $content4id->storeItem($this->store_mode))) {     // invalidatecache, feed
                 print("\n<br>saver->run(): storeItem failed or skiped duplicate");
             } else {
+                if ($debugfeed >= 1) print("\n<br>  + stored OK: ". $content4id->getValue('headline........'));
                 // Update relation table to show where came from
                 AddRelationFeed($new_item_id, $content4id->getItemID());
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some initialization in grabber
+    }
+
+    /** Toexecutelater - special function called from toexecute class
+     *  - used for queued tasks (runed from cron)
+     *  You can use $toexecute->later($saver, array(), 'feed_external') instead
+     *  of calling $saver->run() - the saving will be planed for future
+     */
+    function toexecutelater() {
+        return $this->run();
     }
 }
 
@@ -432,7 +442,6 @@ class grabber_aarss extends grabber {
         // get local item list (with last edit times)
         $slice       = new slice($this->slice_id);
         $local_list  = new LastEditList();
-        $GLOBALS['debug']=1;
         $local_list->setFromSlice('', $slice);  // no conditions - all items
         $local_pairs = $local_list->getPairs();
 
@@ -464,6 +473,8 @@ class grabber_aarss extends grabber {
             }
         }
 
+        if ($debugfeed >= 2) { huhl(' Local items: ', count($local_pairs), ' Remote items: ', count($remote_pairs), ' Asked for update: ', count($ids)); }
+
         // No items to fed?
         if (count($ids) <= 0) {
             return '';
@@ -489,8 +500,10 @@ class grabber_aarss extends grabber {
         // Get XML Data
         if ($debugfeed >= 1) {
             $slice           = new slice($this->slice_id);
-            $feed_debug_name = $feed_type. ' Feed #'. $this->feed_id .': '. $this->feed['name'] .' : '. $this->feed['remote_slice_name']. ' -> '.$slice->name();
-            print("\n<br>$feed_debug_name, $debugfeed");
+            $feed_debug_name = 'Feed #'. $this->feed_id .' ('. getFeedTypeName($feed_type).'): '.
+                               $this->feed['name'] .' : ' .$this->feed['remote_slice_name'].
+                               ' -> '.$slice->name();
+            print("\n<br>$feed_debug_name");
         }
 
         switch($feed_type) {

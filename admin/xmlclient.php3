@@ -110,15 +110,25 @@ if ($feed_id) {          // just one specified APC feed
 
 } else {                 // all RSS and APC feeds
 
-    $apcfeeds = apcfeeds();
+    // we put the all teh feeds into an array and then we shuffle it
+    // that makes the feeding in random order, so broken feeds do not stale
+    // whole feeding
+    $todo_feed = array();
+    $apcfeeds  = apcfeeds();
     foreach ( $apcfeeds as $feed_id => $feed ) {
-        onefeed($feed_id, $feed, $debugfeed, $fire);
+        $todo_feed[] = array($feed_id, $feed);
     }
 
     $rssfeeds = rssfeeds();
     foreach ( $rssfeeds as $feed_id => $feed ) {
-        onefeed($feed_id, $feed, $debugfeed, $fire);
+        $todo_feed[] = array($feed_id, $feed);
     }
+
+    shuffle($todo_feed);
+    foreach ($todo_feed as $pair) {
+        onefeed($pair[0], $pair[1]);
+    }
+
 }
 
 

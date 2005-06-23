@@ -267,6 +267,11 @@ function name2rssfeed($slice_id,$name) {
     return $res;
 }
 
+/** Translates feed type number to human readable name (1 -> RSS, ...) */
+function getFeedTypeName($type) {
+    return (($type == 1) ? 'RSS' : (($type == 2) ? 'APC' : 'EXACT'));
+}
+
 /** used as parameter for $itemview in generating item_id-lastedit pair */
 function GetXml_GetContent(&$zids) {
     return GetItemContentMinimal($zids, array('id', 'last_edit'));
