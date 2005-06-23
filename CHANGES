@@ -1,3 +1,10 @@
+06/23/05 - feeds are taken in random order which leads to more fault tolerant
+(honzam)   feeding in xmlclient
+         - fixed script for generation of language files - now finds also text,
+           which is inside quotes (like in HTML abtibute hidden php code)
+         - language files updated
+         - PHP5 fixes
+         - changed strings to match new upcomming version 2.8 of AA
 06/20/05 - fillform.php3 tries to set all the inputs, which was sent by $_GET
 (honzam)   (when fillConds=1 parameter used)
          - fixed toexecute class - now works well even if the list of task
