@@ -339,7 +339,7 @@ $_m["Inter node import settings"]
 
 # admin/se_inter_import2.php3, row 85
 $_m["Choose slice"]
- = "";
+ = "Seleccione canal";
 
 # admin/se_inter_import2.php3, row 94
 $_m["List of available slices from the node "]
@@ -347,15 +347,15 @@ $_m["List of available slices from the node "]
 
 # admin/se_inter_import2.php3, row 95
 $_m["Slice to import"]
- = "";
+ = "Importar a canal";
 
 # admin/se_inter_import2.php3, row 96
 $_m["Exact copy"]
- = "";
+ = "Copia exacta";
 
 # admin/se_inter_import2.php3, row 97
 $_m["The slice will be exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on anychange in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It make no sence to change items in local copy - it will be overwriten from remote master."]
- = "";
+ = "El canal será una copia exacta del sitio remoto. Todos los ítems serán copiados incluyendo la carpeta Por Aprobar y la Papelera. También, cualquier cambio en el ítem remoto será copiado al ítem local. Los ítems tendrán los mismo id largos (no los cortos!). No tiene sentido realizar cambios en los ítems locales ya que serán sobreescribidos por el sitio remoto principal.";
 
 # admin/se_view.php3, row 58
 $_m["Group by selections"]
@@ -498,7 +498,7 @@ $_m["Admin - Content Pooling - Fields' Mapping"]
 
 # admin/discedit.php3, row 91
 $_m["Are you sure you want to delete selected comment?"]
- = "";
+ = "Está seguro de borrar el comentario seleccionado?";
 
 # admin/discedit.php3, row 102
 $_m["Discussion comments management"]
@@ -1203,7 +1203,7 @@ $_m["Admin - configure Fields"]
 
 # admin/se_fields.php3, row 180
 $_m["Do you really want to delete this field from this slice?"]
- = "";
+ = "Realmente desea borrar este campo del canal?";
 
 # admin/se_fields.php3, row 210
 $_m["Required"]
@@ -1235,7 +1235,7 @@ $_m["Admin - Content Pooling - Filters"]
 
 # admin/se_filters.php3, row 217
 $_m["No From category selected!"]
- = "";
+ = "No se ha seleccionado una categoria de origen!";
 
 # admin/se_filters.php3, row 256
 $_m["Content Pooling - Configure Filters"]
@@ -1387,11 +1387,11 @@ $_m["Inter node export settings"]
 
 # admin/se_inter_export.php3, row 78
 $_m["No selected export"]
- = "";
+ = "Ninguna exportación seleccionada";
 
 # admin/se_inter_export.php3, row 81
 $_m["Are you sure you want to delete the export?"]
- = "";
+ = "Esta seguro de borrar la exportación?";
 
 # admin/se_inter_export.php3, row 106
 $_m["Existing exports of the slice "]
@@ -1415,16 +1415,16 @@ $_m["Missing!!!"]
 
 # admin/se_inter_import.php3, row 93
 $_m["No selected import"]
- = "";
+ = "Ninguna importación seleccionada";
 
 # admin/se_inter_import.php3, row 96
 $_m["Are you sure you want to delete the import?"]
- = "";
+ = "Está seguro que desea borrar la importación?";
 
 # admin/se_inter_import.php3, row 106
 # admin/se_nodes.php3, row 109
 $_m["No selected node"]
- = "";
+ = "Ningún nodo seleccionado";
 
 # admin/se_inter_import.php3, row 124
 $_m["Create new feed from node"]
@@ -1432,15 +1432,15 @@ $_m["Create new feed from node"]
 
 # admin/se_inter_import.php3, row 129
 $_m["Existing remote imports into the slice"]
- = "";
+ = "Importaciones remotas existentes en el canal";
 
 # admin/se_inter_import.php3, row 130
 $_m["Imported slices"]
- = "";
+ = "Canales importados";
 
 # admin/se_inter_import.php3, row 130
 $_m["feeds prefixed by (=) are \"exact copy\" feeds"]
- = "";
+ = "alimentación precedida por (=) son \"copias exactas\" de alimentación";
 
 # admin/se_inter_import.php3, row 131
 $_m["All remote nodes"]
@@ -1448,7 +1448,7 @@ $_m["All remote nodes"]
 
 # admin/se_inter_import.php3, row 132
 $_m["Remote node"]
- = "";
+ = "Nodo remoto";
 
 # admin/se_profile.php3, row 36
 # admin/se_users.php3, row 34
@@ -1759,11 +1759,11 @@ $_m["Remote node administration"]
 
 # admin/se_nodes.php3, row 112
 $_m["Are you sure you want to delete the node?"]
- = "";
+ = "Está seguro de borrar este nodo?";
 
 # admin/se_nodes.php3, row 123
 $_m["Node empty"]
- = "";
+ = "Nodo vacio";
 
 # admin/se_nodes.php3, row 155
 $_m["Known remote nodes"]
@@ -1863,7 +1863,7 @@ $_m["Language (charset)"]
 # admin/write_mail.php3, row 61, 154
 # include/tv_email.php3, row 122
 $_m["Use HTML"]
- = "";
+ = "Utilice HTML";
 
 # admin/write_mail.php3, row 82
 $_m["No template set (which is strange - template was just written to the database"]
@@ -2166,7 +2166,7 @@ $_m["Admin - Delete Slice"]
 
 # admin/slicedel.php3, row 53
 $_m["Do you really want to delete this slice and all its fields and all its items?"]
- = "";
+ = "Realmente desea borrar este canal, todos sus campos y todos sus contenidos?";
 
 # admin/slicedel.php3, row 70
 $_m["<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>"]
@@ -2486,7 +2486,7 @@ $_m["1) If you have exported data in file, insert it's name here (eg. D:\\data\\
 
 # admin/sliceimp.php3, row 448
 $_m["Send file with slice structure and data"]
- = "";
+ = "Enviar archivo con la estructura del canal y datos";
 
 # admin/sliceimp.php3, row 454
 $_m["2) If you have exported data in browser's window, insert the exported text into the textarea below:"]
@@ -2605,7 +2605,7 @@ $_m["User management - Groups"]
 
 # admin/um_gedit.php3, row 110
 $_m["Are you sure you want to delete selected group from whole permission system?"]
- = "";
+ = "Está seguro que desea borrar el grupo seleccionado de todo el sistema de permisos?";
 
 # admin/um_gedit.php3, row 139
 # include/menu_aa.php3, row 44
@@ -2655,7 +2655,7 @@ $_m["User management - Users"]
 
 # admin/um_uedit.php3, row 134
 $_m["Are you sure you want to delete selected user from whole permission system?"]
- = "";
+ = "Está seguro de borrar el usuario seleccionado de todo el sistema de permisos?";
 
 # admin/um_uedit.php3, row 164
 # include/menu_aa.php3, row 40
@@ -2689,15 +2689,15 @@ $_m["Remote RSS Feed administration"]
 
 # admin/se_rssfeeds.php3, row 132
 $_m["No selected rssfeed"]
- = "";
+ = "Alimentación de RSS no seleccionada";
 
 # admin/se_rssfeeds.php3, row 135
 $_m["Are you sure you want to delete the rssfeed?"]
- = "";
+ = "Está seguro que desea borrar la alimentación de RSS?";
 
 # admin/se_rssfeeds.php3, row 146
 $_m["Error: RSS node empty"]
- = "";
+ = "Error: Nodo RSS vacio";
 
 # admin/se_rssfeeds.php3, row 170
 $_m["Current remote rssfeeds"]
@@ -2705,11 +2705,11 @@ $_m["Current remote rssfeeds"]
 
 # admin/se_rssfeeds.php3, row 185
 $_m["Test"]
- = "";
+ = "Prueba";
 
 # admin/se_rssfeeds.php3, row 186
 $_m["Map"]
- = "";
+ = "Mapeo";
 
 # admin/se_rssfeeds.php3, row 189
 $_m["Add new rssfeed"]
@@ -2765,7 +2765,7 @@ $_m["Alias"]
 
 # admin/se_inputform.php3, row 255
 $_m["You selected slice and not constant group. It is unpossible to change slice. Go up in the list."]
- = "";
+ = "Usted seleccionó un canal y no un grupo de constantes. No es posible cambiar el canal. Vaya arriba en la lista.";
 
 # admin/se_inputform.php3, row 287
 $_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]
@@ -2858,7 +2858,7 @@ $_m["Missing slice"]
 
 # admin/se_csv_import.php3, row 99
 $_m["Cannot read input file"]
- = "";
+ = "No es posible leer el archivo de entrada";
 
 # admin/se_csv_import.php3, row 130
 # admin/se_csv_import2.php3, row 180
@@ -3014,11 +3014,11 @@ $_m["Do not store the item"]
 
 # admin/anonym_wizard.php3, row 69
 $_m["ActionApps Anonymous form"]
- = "";
+ = "Formato anónimo AAs";
 
 # admin/anonym_wizard.php3, row 70
 $_m["Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->"]
- = "";
+ = "Nota: Si está utilizando el editor de Area de HTML en el formulario, Usted tiene que adicionar: %1 a su página. -->";
 
 # admin/anonym_wizard.php3, row 150
 $_m["WARNING: You did not permit anonymous posting in slice settings."]
@@ -3026,11 +3026,11 @@ $_m["WARNING: You did not permit anonymous posting in slice settings."]
 
 # admin/anonym_wizard.php3, row 153
 $_m["WARNING: You did not permit anonymous editing in slice settings. A form allowing only anonymous posting will be shown."]
- = "";
+ = "ATENCION: Usted no permite edición anónima en los parámetros del canal. Solamente se mostrará un formulario de publicación anónima.";
 
 # admin/anonym_wizard.php3, row 161
 $_m["WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing."]
- = "";
+ = "ATENCION: Usted desea mostrar una contraseña, pero no ha configurado 'Autorizado por campo clave (password)' en 'Permitir Edición Anónima de Items'";
 
 # admin/anonym_wizard.php3, row 179, 185
 $_m["Admin - Anonymous Form Wizard"]
@@ -3183,7 +3183,7 @@ $_m["Write"]
 # admin/aarsstest.php3, row 104
 # admin/rsstest.php3, row 95
 $_m["update database"]
- = "";
+ = "actualizar base de datos";
 
 # admin/aarsstest.php3, row 109
 # admin/rsstest.php3, row 103
@@ -3196,15 +3196,15 @@ $_m["Remote slice"]
 
 # admin/aarsstest.php3, row 115
 $_m["Remote slice ID"]
- = "";
+ = "ID de canal remoto";
 
 # admin/aarsstest.php3, row 118
 $_m["Local slice ID"]
- = "";
+ = "Id de canal local";
 
 # admin/aarsstest.php3, row 121
 $_m["Feed mode"]
- = "";
+ = "Modo de alimentación";
 
 # admin/aarsstest.php3, row 126
 # admin/rsstest.php3, row 100
@@ -4000,7 +4000,7 @@ $_m["Check to confirm deleting"]
 
 # include/constedit.php3, row 62
 $_m["Save all changes to database"]
- = "";
+ = "Salvar todos los cambios en la base de datos";
 
 # include/constedit.php3, row 63
 $_m["View settings"]
@@ -4332,7 +4332,7 @@ $_m["Password:"]
 # include/loginform.inc, row 34
 # include/constants.php3.bak, row 17
 $_m["Login now"]
- = "";
+ = "Ingresar";
 
 # include/loginform.inc, row 44
 # include/init_page.php3, row 114
@@ -5109,7 +5109,14 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            To run the script, you must have cron set up with a row running\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
    ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
- = "";
+ = "Esta tabla de configuración es solo para usuarios no confirmados. Solamente puede accederse por Superadministradores.\n"
+   ."            Usted no puede borrar usuarios confirmados después de un número de días y/o enviando a\n"
+   ."            ellos un correo solicitando su inscripción después de un número pequeño de días. Para apagar cualquiera\n"
+   ."            de estas funciones defina el número de días como cero (0). Los dos últimos campos so solamente\n"
+   ."            para información<br>\n"
+   ."            Para ejecutar el comando, Usted debe haber configurado el cron con una file ejecutando\n"
+   ."            misc/alerts/admin_mails.php3.<br>\n"
+   ."            Para mayor información consulte <a href='http://apc-aa.sourceforge.net/faq/#1389'>el FAQ</a>.";
 
 # include/tableviews.php3, row 116, 117
 $_m["Polls Design"]
@@ -5161,7 +5168,7 @@ $_m["Cannot copy %1 to %2"]
 
 # include/imagefunc.php3, row 105
 $_m["ResampleImage unable to %1"]
- = "";
+ = "No es posible de %1 a la Imagen de prueba";
 
 # include/imagefunc.php3, row 120
 $_m["Type not supported for resize"]
@@ -5181,27 +5188,27 @@ $_m["Can't create directory for image uploads"]
 
 # include/files.class.php3, row 130
 $_m["No destination file specified"]
- = "";
+ = "Archivo destino no especificado";
 
 # include/files.class.php3, row 144
 $_m["type of uploaded file not allowed"]
- = "";
+ = "tipo de archivo para copiado (upload) no permitido";
 
 # include/files.class.php3, row 166
 $_m["Can't move image  %1 to %2"]
- = "";
+ = "No es posible mover la imagen de %1 a %2";
 
 # include/files.class.php3, row 173
 $_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3"]
- = "";
+ = "No se puede cambiar los permisos del archivo copiado: %1 - %2. Vea el parámetro IMG_UPLOAD_FILE_MODE en el archivo de configuración config.php3";
 
 # include/files.class.php3, row 190
 $_m["Can't open file for writing: %1"]
- = "";
+ = "No se puede abrir el archivo para escritura: %1";
 
 # include/files.class.php3, row 196
 $_m["Can't write to file: %1"]
- = "";
+ = "No se puede escribir el archivo: %1";
 
 # include/files.class.php3, row 227
 $_m["Error: Invalid directory"]
@@ -5209,6 +5216,6 @@ $_m["Error: Invalid directory"]
 
 # include/files.class.php3, row 248
 $_m["can't create backup of the file"]
- = "";
+ = "No es posible crear la copia del archivo";
 
 ?>
