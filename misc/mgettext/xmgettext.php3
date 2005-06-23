@@ -401,27 +401,28 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
 
 /**  Parses the file to find all _m() calls. See more info in collect_messages.
 */
-function collect_messages_from_file ($base_dir, $filename, &$messages, &$warnings)
+function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings)
 {
-    $content = file ($base_dir.$filename);
+    $content = file($base_dir.$filename);
     $filetext = "";
     foreach ( $content as $irow => $row) {
-        $row_start [$irow+1] = strlen ($filetext);
+        $row_start[$irow+1] = strlen($filetext);
         $filetext .= $row;
     }
-    if (!strstr ($filetext, "_m")) {
+    if (!strstr($filetext, "_m")) {
         return;
     }
 
-    $quotes = "0";
-    $comment = "0";
-    $irow = 1;
+    $quotes        = "0";
+    $inner_quotes  = "0";   // count quotes only after _m
+    $comment       = "0";
+    $irow          = 1;
 
     if ($debug) echo "<br><br><hr>File $filename";
 
-    for ($pos = 0; $pos < strlen ($filetext); $pos ++) {
-        if ($row_start [$irow+1] && $row_start[$irow+1] <= $pos) {
-            $irow ++;
+    for ($pos = 0; $pos < strlen($filetext); $pos++) {
+        if ($row_start[$irow+1] && $row_start[$irow+1] <= $pos) {
+            $irow++;
         }
 
         // comments of all types (#, //, /*)
@@ -429,27 +430,28 @@ function collect_messages_from_file ($base_dir, $filename, &$messages, &$warning
         if ($comment == "0" && $quotes == "0") {
             if ($filetext[$pos] == "#") {
                 $comment = "#";
-            } elseif (substr ($filetext, $pos, 2) == "//") {
+            } elseif (substr($filetext, $pos, 2) == "//") {
                 $comment = "#";
-                $pos ++;
+                $pos++;
             } elseif (substr ($filetext, $pos, 2) == "/*") {
                 $comment = "/*";
-                $pos ++;
+                $pos++;
             }
         }
         elseif ($comment == "#" && $filetext[$pos] == "\n") {
             $comment = "0";
-        } elseif ($comment == "/*" && substr ($filetext, $pos, 2) == "*/") {
+        } elseif ($comment == "/*" && substr($filetext, $pos, 2) == "*/") {
             $comment = "0";
-            $pos ++;
+            $pos++;
         }
 
         // quotes of both types (", ')
 
-        if ($comment == "0" && strchr ("\"'", $filetext[$pos])) {
+        // added ($find != 0) by Honza - do not take care about outer
+        if ($comment == "0" && strchr("\"'", $filetext[$pos])) {
             if ($pos == 0 || $filetext[$pos-1] != "\\") {
                 if (!$quotes) {
-                    $quotes = $filetext[$pos];
+                    $quotes       = $filetext[$pos];
                 } elseif ($quotes == $filetext[$pos]) {
                     $quotes = "0";
                 }
@@ -457,9 +459,15 @@ function collect_messages_from_file ($base_dir, $filename, &$messages, &$warning
         }
 
         if ($find == 0) {
-            $message = "";
+            $message      = "";
+            $inner_quotes = '0';
         }
-
+/*         echo "<br>". (($pos == 0) ? '+' : '.').
+                     (!isidletter($filetext[$pos-1]) ? '+' : '.').
+                     (($filetext[$pos] == '_') ? '+' : '.').
+                     (($filetext[$pos+1] == 'm') ? '+' : '.').
+                     (!isidletter($filetext[$pos+2]) ? '+' : '.'). $filetext[$pos] .", $comment, $find, $quotes, $inner_quotes, $message_part";
+ */
         //if ($find) echo $find;
         //if ($quotes != $old_quotes) echo "row $irow: $quotes<br>";
         $old_quotes = $quotes;
@@ -468,55 +476,62 @@ function collect_messages_from_file ($base_dir, $filename, &$messages, &$warning
             switch ($find) {
             // outside _m()
             case 0:
-                if (($pos == 0 || !isidletter ($filetext[$pos-1]))
-                  && $filetext[$pos] == '_'
-                  && $filetext[$pos+1] == 'm'
-                  && !isidletter ($filetext[$pos+2])) {
-                    if ($quotes == "0") {
-                        // _m was the whole identifier
-                        $find = 1;
-                        $pos ++;
-                    }
-                    //else echo "<br>row $irow: _m inside quotes $quotes<br>";
+                if (($pos == 0 || !isidletter($filetext[$pos-1]))
+                  && ($filetext[$pos] == '_')
+                  && ($filetext[$pos+1] == 'm')
+                  && !isidletter($filetext[$pos+2])) {
+                    // _m was the whole identifier
+                    $find = 1;
+                    $pos++;
+
+                    // Following code prevents from looking into quoted string
+                    // for _m() strings, which I found as nonsence, because the
+                    //  code often looks like:
+                    // <input type="submit" value="< ?php echo _m("Login now") ? >">
+                    // Honzam 2005-22-06
+
+                    // if ($quotes == "0") {  $find = 1; $pos ++;
+                    // } else echo "<br>$base_dir.$filename row $irow: _m inside quotes $quotes". substr($filetext,$pos-10,40);
                 }
                 break;
             // after _m
             case 1:
-                if (isspace ($filetext[$pos]))
+                if (isspace($filetext[$pos]))
                     continue;
-                else if ($filetext[$pos] == '(') {
+                elseif ($filetext[$pos] == '(') {
                     $find = 2;
+                } else {
+                    $find = 0;
                 }
-                else $find = 0;
                 break;
             // after _m (
             case 2:
-                if ($quotes == "0") {
-                    if (isspace ($filetext[$pos]))
-                        continue;
-                    else {
-                        $warnings[] = "$filename, row $irow: bad syntax after _m (";
-                        $find = 0;
-                    }
+                if (isspace($filetext[$pos])) {
+                    continue;
                 }
-                else {
+                if (strchr("\"'", $filetext[$pos])) {
                     $find = 3;
-                    $quotes_start = $quotes;
+                    $quotes_start = $inner_quotes = $filetext[$pos];
+                } else {
+                    $warnings[] = "$filename, row $irow: bad syntax after _m (";
+                    $inner_quotes = '0';
+                    $find = 0;
                 }
                 break;
             // inside message, e.g. after _m ( " or after _m ( "Hello" . "
             case 3:
-                if ($quotes != "0") {
-                    $message_part .= $filetext[$pos];
-                    if ($filetext[$pos] == '$' && $quotes == '"'
-                     && $filetext[$pos-1] != "\\")
-                        $warnings[] = "$filename, row $irow: using variable in _m is not allowed";
-                }
-                else {
+                if (($filetext[$pos]==$inner_quotes) && ($filetext[$pos-1] != "\\") ) {
                     $to_be_evaled = "\$message .= ".$quotes_start.$message_part.$quotes_start.";";
                     $message_part = "";
                     eval($to_be_evaled);
                     $find = 4;
+                    $inner_quotes = '0';
+                }
+                else {
+                    $message_part .= $filetext[$pos];
+                    if ($filetext[$pos] == '$' && $inner_quotes == '"'
+                     && $filetext[$pos-1] != "\\")
+                        $warnings[] = "$filename, row $irow: using variable in _m is not allowed";
                 }
                 break;
             // after message, e.g. _m ( "Hello"
@@ -551,6 +566,11 @@ function isidletter($c)
 function isspace($c)
 { return strchr(" \t\r\n", $c); }
 
+
+
+
+
+
 /** strips path from file name */
 function filepath($filename) {
     if (!strstr($filename,"/")) return "./";
@@ -558,5 +578,9 @@ function filepath($filename) {
     while ($filename[$i] != "/") $i --;
     return substr($filename,0,$i+1);
 }
+
+
+
+
 
 ?>
