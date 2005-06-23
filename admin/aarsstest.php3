@@ -101,7 +101,7 @@ function GetAARSS_tv($viewID, $processForm = false) {
             "fire" => array (
                 "view" => array ( "type"=>"checkbox" ),
                 "caption" => _m('Write'),
-                "hint" => _m('update datadase'),
+                "hint" => _m('update database'),
                 "table" => 'aa_notable',
                 "default" => 1),
             "node_name" => array (

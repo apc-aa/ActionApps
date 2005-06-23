@@ -134,7 +134,7 @@ $messages['view_items']     = _m("View items");
 $messages['selected_items'] = _m('Selected items');
 FrmItemGroupSelect( $items, $searchbar, 'items', $messages, $additional);
 
-FrmTabSeparator( _m('Fill fileld') );
+FrmTabSeparator( _m('Fill field') );
 FrmInputSelect('field_id',       _m('Field'),             $field_select,       $field_id, true,
                _m('Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item\'s data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now).'));
 FrmTextarea(   'new_content', _m('New content'),       dequote($new_content),  12, 80, true,

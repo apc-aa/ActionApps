@@ -1828,7 +1828,7 @@ class toexecute {
 
     /** Stores the object and params to the database for later execution.
      *  Such task is called from cron (the order depends on priority)
-     *  selector is used foridentifying class of task - used for deletion
+     *  selector is used for identifying class of task - used for deletion
      *  of duplicated task
      *  Example: we need to recount all links in allcategories (Links module),
      *           so we need to cancel all older "recount" tasks, since it will
