@@ -2,7 +2,7 @@
 # $Id$
 # Language: FR
 # This file was created automatically by the Mini GetText environment
-# on 7.3.2005 15:48
+# on 23.6.2005 17:26
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -12,36 +12,44 @@ $mgettext_lang = "fr";
 
 # Unused messages
 # End of unused messages
-# modules/site/index.php3, row 47
+# modules/site/index.php3, row 46
 $_m["You do not have permission to edit items in this slice"]
  = "";
 
-# modules/site/index.php3, row 70
+# modules/site/index.php3, row 71
 $_m["Starting spot not found"]
  = "";
 
-# modules/site/index.php3, row 137
+# modules/site/index.php3, row 144
 $_m["Editor window - site code manager"]
  = "";
 
-# modules/site/index.php3, row 146
+# modules/site/index.php3, row 152
 $_m["Add&nbsp;spot"]
  = "";
 
-# modules/site/index.php3, row 147
+# modules/site/index.php3, row 153
 $_m["Add&nbsp;choice"]
  = "";
 
-# modules/site/index.php3, row 148
+# modules/site/index.php3, row 154
 $_m["Delete&nbsp;spot"]
  = "";
 
-# modules/site/index.php3, row 149
+# modules/site/index.php3, row 155
 $_m["Move&nbsp;up"]
  = "";
 
-# modules/site/index.php3, row 150
+# modules/site/index.php3, row 156
 $_m["Move&nbsp;down"]
+ = "";
+
+# modules/site/index.php3, row 158
+$_m["Enable"]
+ = "";
+
+# modules/site/index.php3, row 160
+$_m["Disable"]
  = "";
 
 # modules/site/menu.php3, row 51
@@ -76,87 +84,87 @@ $_m["Module not found."]
 $_m["Slice successfully deleted, tables are optimized"]
  = "";
 
-# modules/site/modedit.php3, row 51
+# modules/site/modedit.php3, row 53
 $_m["You have not permissions to add slice"]
  = "";
 
-# modules/site/modedit.php3, row 56
+# modules/site/modedit.php3, row 58
 $_m["You have not permissions to edit this slice"]
  = "";
 
-# modules/site/modedit.php3, row 72, 204
+# modules/site/modedit.php3, row 76, 211
 $_m["State file"]
  = "";
 
-# modules/site/modedit.php3, row 172
+# modules/site/modedit.php3, row 178
 $_m["Site Admin"]
  = "";
 
-# modules/site/modedit.php3, row 178
+# modules/site/modedit.php3, row 184
 $_m["Add Site"]
  = "";
 
-# modules/site/modedit.php3, row 178
+# modules/site/modedit.php3, row 184
 $_m["Edit Site"]
  = "";
 
-# modules/site/modedit.php3, row 184
+# modules/site/modedit.php3, row 190
 $_m["Site"]
  = "";
 
-# modules/site/modedit.php3, row 191
+# modules/site/modedit.php3, row 197
 $_m["Id"]
  = "";
 
-# modules/site/modedit.php3, row 192
+# modules/site/modedit.php3, row 198
 $_m["Name"]
  = "";
 
-# modules/site/modedit.php3, row 194
+# modules/site/modedit.php3, row 200
 $_m["URL"]
  = "";
 
-# modules/site/modedit.php3, row 195
+# modules/site/modedit.php3, row 201
 $_m["The file will probably contain just the following include:"]
  = "";
 
-# modules/site/modedit.php3, row 196
+# modules/site/modedit.php3, row 202
 $_m["Owner"]
  = "";
 
-# modules/site/modedit.php3, row 198
+# modules/site/modedit.php3, row 204
 $_m["New Owner"]
  = "";
 
-# modules/site/modedit.php3, row 199
+# modules/site/modedit.php3, row 205
 $_m["New Owner's E-mail"]
  = "";
 
-# modules/site/modedit.php3, row 202
+# modules/site/modedit.php3, row 208
 $_m["Deleted"]
  = "";
 
-# modules/site/modedit.php3, row 203
+# modules/site/modedit.php3, row 210
 $_m["Used Language File"]
  = "";
 
-# modules/site/modedit.php3, row 204
+# modules/site/modedit.php3, row 211
 $_m["Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."]
  = "";
 
-# modules/site/modedit.php3, row 213
+# modules/site/modedit.php3, row 219
 $_m["Insert"]
  = "";
 
-# modules/site/modedit.php3, row 216
+# modules/site/modedit.php3, row 222
 $_m["Update"]
  = "";
 
-# modules/site/modedit.php3, row 217
+# modules/site/modedit.php3, row 223
 $_m["Reset form"]
  = "";
 
-# modules/site/modedit.php3, row 218
+# modules/site/modedit.php3, row 224
 $_m["Cancel"]
  = "";
 
@@ -164,11 +172,11 @@ $_m["Cancel"]
 $_m["Spot&nbsp;variables"]
  = "";
 
-# modules/site/util.php3, row 102, 118
+# modules/site/util.php3, row 101, 117
 $_m["Delete"]
  = "";
 
-# modules/site/util.php3, row 104, 122
+# modules/site/util.php3, row 104, 121
 $_m["Add"]
  = "";
 
@@ -176,11 +184,11 @@ $_m["Add"]
 $_m["Spot&nbsp;conditions"]
  = "";
 
-# modules/site/util.php3, row 150
+# modules/site/util.php3, row 148
 $_m["Spot name"]
  = "";
 
-# modules/site/util.php3, row 152
+# modules/site/util.php3, row 150
 $_m["Submit"]
  = "";
 

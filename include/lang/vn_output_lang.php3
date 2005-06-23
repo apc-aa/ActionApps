@@ -2,7 +2,7 @@
 # $Id$
 # Language: VN
 # This file was created automatically by the Mini GetText environment
-# on 7.3.2005 15:48
+# on 23.6.2005 17:27
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -12,32 +12,32 @@ $mgettext_lang = "vn";
 
 # Unused messages
 # End of unused messages
-# ./slice.php3, row 187
+# ./slice.php3, row 177
 $_m["Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"]
  = "";
 
-# ./slice.php3, row 192
+# ./slice.php3, row 182
 $_m["No such file"]
  = "";
 
-# ./slice.php3, row 224
+# ./slice.php3, row 211
 $_m["Invalid slice number or slice was deleted"]
  = "";
 
-# ./slice.php3, row 280
+# ./slice.php3, row 273
 $_m["session id"]
  = "";
 
-# ./slice.php3, row 385
+# ./slice.php3, row 379
 $_m["number of current page (on pagescroller)"]
  = "";
 
-# ./slice.php3, row 386
+# ./slice.php3, row 380
 $_m["page length (number of items)"]
  = "";
 
-# ./slice.php3, row 565
-# include/view.php3, row 413
+# ./slice.php3, row 559
+# include/view.php3, row 423
 $_m["No item found"]
  = "";
 
@@ -244,36 +244,36 @@ $_m["Constant level (used for hierachical constants)"]
 $_m["Alias for %1"]
  = "";
 
-# include/item.php3, row 1106
+# include/item.php3, row 1108
 $_m["on"]
  = "";
 
-# include/item.php3, row 1106
+# include/item.php3, row 1108
 $_m["off"]
  = "";
 
-# include/item.php3, row 1228
+# include/item.php3, row 1230
 $_m["Back"]
  = "";
 
-# include/item.php3, row 1229
+# include/item.php3, row 1231
 $_m["Home"]
  = "";
 
 # include/scroller.php3, row 219
-# include/easy_scroller.php3, row 128
+# include/easy_scroller.php3, row 124
 $_m["All"]
  = "";
 
-# include/easy_scroller.php3, row 113, 202
+# include/easy_scroller.php3, row 109, 198
 $_m["Previous"]
  = "";
 
-# include/easy_scroller.php3, row 125, 212
+# include/easy_scroller.php3, row 121, 208
 $_m["Next"]
  = "";
 
-# include/itemview.php3, row 280
+# include/itemview.php3, row 279
 $_m["No comment was selected"]
  = "";
 

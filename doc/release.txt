@@ -1,0 +1,292 @@
+
+AA Input Form
+
+ - Used Xinha (http://xinha.python-hosting.com/) instead of HTMLArea
+   (Xinha is not new fork of HTMLArea - better maintained, ...)
+
+ - New "store policy" could be applied to uploaded files - you can use
+   new | overwrite | backup options - see parameter wizard
+   for "Insert function" on Fields setting page
+
+ - new possibility to define, how the Related Selection Window listing
+   should look - define view for it
+ - added 'integer' field type so searches and sorting can be done
+   numerically
+ - new Input type: Multiple Text Field - allows to enter more than one
+   (multiple) values into one field (just like when you select multiple
+   values from Multiple Selectbox). The new values are filled in popup
+ - new edit possibility for related items from itemedit
+
+ - new possibility to open inputform to popup window and fill item
+   to another slice during filling in another item in the current slice
+   (used in Related Item Window - enable it by 'show actions' parameter
+   of "Related Item Window" input type)
+
+ - any AA format-string could be used for displaying selects from
+   related slice (not only 1 field like headline........). You can place
+   the format-string in "slice field" parameter for the Input Type.
+   It works for all Input Types allowing displaying selections from
+   a slice, like Selectbox, Two windows, Multiple Selectboxes,
+   Radiobuttons, Multiple checkboxes...
+
+ - Two Boxes input type (as well as some others types) now are able to
+   display not only name of the constant, but any other field from
+   constant table (like value, priority, short id, ...).
+   You will do it by inserting const_name, const_value, const_pri, ...
+   keywords in "slice field" parameter (you will see the parameter
+   in the parameter wizard
+
+ - "Field to show" could be specified in Multiple Selectbox input type
+   for slices
+
+ - List of "related" items in inputform could be now filtered for most
+   input types. You can specify:
+     - Conditions in conds[] array
+     - Ordering of items in sort[] array
+     - Bins from which you want to display items
+     - Field to be shown (as option).
+   This works for: Selectbox, Multiple selectbox, Multiple checkboxes,
+   Two boxes, Radio buttons, and Text field with presets input types
+   (sponsored by Philip King, thanks)
+
+ - new "Form parts" feature - you can split the inputform to two or more
+   subforms, where you can switch from one to another by clicking
+   on the tab header. see {formbreak} alias in bottom HTML code
+   for field. (sponsored by GreenNet, thanks)
+
+ - improved all types of selectboxes and radio selections - if the
+   content of variable (in the database) is a bit broken so the value is
+   not listed in the array, which specifies the selectbox, then now
+   the value is also listed in selectbox and is displayed in red
+   (by CSS). This behavior make us sure, that we do not loose the value
+   if we commit the form with such selectbox. It also gives information
+   to user, that something is not right in the database.
+   Also the bug for multiple selections was fixed (when empty value was
+   selected, the number was written to the database. Now empty values
+   aren't written to the DB for text_stored fields in content table
+
+AA Admin Interface
+
+ - Changed ActionApps logo Thanks to Sarka Vasku
+ - new possibility to Enable/Disable specified spots in the site module
+   interface
+ - new logout functionality (logout from admin interface)
+ - new "Group Update" possibility, which is used for filling one field
+   of all (or selected) items in the slice with specified content.
+   Items could be selected manualy from Item Manager or by "Stored
+   Search" feature (just like in "Bulk e-mail" feature. New content
+   could be constant or could be combination of current items field.
+   Any AA construct and aliases could be used for there.
+ - new manager class used for 'Item manager' and 'Related items
+   selection window'. New manager allows much better searching (as many
+   conditions as you want also with constant selection) and new
+   possibility to save your query for future use
+ - added new "Stored query" (Bookmark) and "Inputform" property in user
+   profile
+
+ - 'related items selection window' now allows to define default filters
+   of items (hidden filters as well as the preset ones). Now you can
+   restrict from which items you want allow users to select related
+   items
+
+AA Output
+ - new possibility to specify "group limit". Group limit is used
+   for limiting number of items from one category. If you want to list
+   items grouped by category.......1, but you want to see just first
+   three items from each category, then you could use "group limit".
+   You can specify it as:
+     3category.......1-
+     (limit to three items from category.......1 - descending)
+     for "order" slice.php3 parameter, or "sort" view.php3 parameter.
+   Another usage is:
+     sort[0][category.......1]=d&sort[0][limit]=3
+     for slice.php3
+   (it is also good in case you want to list all categories header,
+   in which is at least one item - you can just set limit to 1)
+   You can use also new set[]=group_limit parameter usable for views
+ - HTML generated by AA on public pages (pagescroller, ...) is valid
+   (& in urls are replaced by &amp;)
+ - conditions (conds[]) now could contain also long (unpacked) ids
+   for id item field
+ - new modificator for f_t alias function - conds - allows you to call
+   view with conds, just like:
+      {view.php3?vid=9&cmd[9]=c-1-{alias::f_t:{_#VALUE___}:conds}}
+ - new {str_replace:search:replace:subject} aliase construct
+ - added new value for nocache slice.php3 and view.php3 url parameter -
+   nocache=invalidate. It not only create the page without cache,
+   it also clear the cache for all views used in generation of the page
+ - AA generates as short url as possible
+   (sometimes only parameters "?x=17232" - see f_b, f_f)
+ - new aliases for slice.php3:
+     _#SESSION_ - session id
+     _#PAGE_NO_ - number of current page (on pagescroller)
+     _#PAGE_LEN - page length (number of items)
+ - new dictionary feature
+   You can create "dictionary" slice, where each item will contain
+   a word (in keywords........ field!) and url in other field (and
+   possibly any other fields). Then you can use this "dictionary" slice
+   in your own slice to add links to "dictionary words". You can do it
+   by alias construct:
+     {dictionary:<dictionary_slice_id>:<output_text>:<format>:<conds>}
+   where - dictionary_slice_id is id of "dictionary slice"
+         - output_text is the text, where you want to search and replace
+                       for dictionary words,
+         - format specifies, how to replace the keyword
+         - conds is optional parameter, where you can filter only subset
+           of used keywords from "dictionary slice". The syntax is
+           normal conds[] array like:
+           conds[0][category........]='myDict'&conds[1]...
+           (simplified as well as extended syntax)
+   Example:
+     {dictionary:4394e6117a0d66fee7cb49ffab9015d2:{_#FULLTEXT}:
+     <a href="_#KEYW_URL">_#KEYWORD_</a>}
+   _#KEYWORD_ is special alias, which could not be defined in the
+   "dictionary slice". The reason, why we use it is, that you can use
+   Multi value field as keyword (in keywords........). It is good
+   to have only one dictionary item for one word (like APC) and then
+   define multivalue for keyword, where you can fill "APC", "apc",
+   "apc.org"... It is important for English, but it is crucial for such
+   languages as is Czech with different kinds of words.
+   Note: Use this feature mainly for fulltexts of item and not in
+         item-listing, since it is not so quick, at this moment.
+
+ - New {include:file:file:method1[:method2[:...]]}
+   This calls filter methods method1, method2,.. on global object
+   $GLOBALS[filter] after reading the file. Very nice with site module.
+   Member function is called like this: method1(&$fileout,&$args)
+ - new {str_replace:<search>,<replace>,<string>} alias function'
+ - dview parameter (discussion design switcher) for slice.php3 now
+   accepts "0":    dview=0 - no discussion printed
+
+ - new slice.php3 all_scr=1 url parameter - scroller show also "All"
+   option to show all items on one page.' slice.php3
+
+
+ - new _#PAGEINDX alias - index of item within a page (it begins from 0
+   on each page listed by pagescroller) as opposite to _#ITEMINDX which
+   contains index of item within whole listing
+ - new /misc/charset/convert.php3 script, which allows you to encode
+   a text to another character encoding. It is usable outside of AA.
+   The ussage on shtml page:
+   <!--#include
+     virtual="/apc-aa/misc/charset/convert.php3?from=iso-8859-1&
+     to=utf-8&source=http%3A%2F%2Fwww.apc.org%2Fpage.htm" -->
+ - new log viewer and searchlog viewer for superadministrators
+
+   - new parameters for i_s (image size) alias function
+     - html    - (default) - returns image size as HTML atributes
+                 (height='xxx' width='yyy')
+     - width   - returns width of image in pixes
+     - height  - returns height of image in pixels
+     - imgtype - returns flag indicating the type of the image: 1 = GIF,
+                 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF
+                 (intel byte order), 8 = TIFF (motorola byte order),
+                 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC,
+                 14 = IFF, 15 = WBMP, 16 = XBM
+     - mime    - returns mimetype of the image (like 'image/gif',
+                 'application/x-shockwave-flash', ...)
+
+ - new f_t alias function parameter asis {alias:<field_id>::asis} which
+   prints the field exactly as is in the database (regardless of
+   HTML/Plain text settings). It is well used in conjunction with new
+   "Group update" feature, where we often need the field as is.
+
+ - special field "all_fields" and "all_fields_numeric" which you can use
+   with slice conditions (search form, ...)
+      conds[0][all_fields]="hi"
+   will find ANY text field containing "hi"
+   You can use this syntax for simplified search conditions as well as
+   for extended condition syntax. It is also possible to use
+   "united field conditions" like
+      conds[0][headline........,abstract........]='Hi'
+   as equivalent to
+      conds[0][headline........]=1&conds[0][abstract........]=1&
+      conds[0][value]='Hi',conds[0][operator]=LIKE
+   Number of united field conds is unlimited and you can use it
+   in simplified condition syntax as well as in extended one
+
+ - new aliases
+     {cookie:<name>}
+   which prints content of the cookie of the <name> and
+     {item:<item_id_long_or_short>:<field_id_or_alias>}
+   which returns <field_id> or _#ALIAS___ substitution for item
+   of <short_id> or <long_id> - just like:
+     {item:8ebc541d3703e64042cc198e6d0b026c:short_id........}
+   or
+     {item:171055:_#HEADLINE}
+
+ - added stringexpand_sessurl to expand {sessurl:xxxx}
+
+ - added {urlencode:xxxxx}
+
+ - allowed c-OR-1-aaa-2-bbbb in param_conds and conds[0]
+
+ - f_t alias function now supports output modification:
+   csv / safe / javascript / urlencode / striptags
+   (ussage: {alias:<field_id........>:f_t:the text - possibly with
+   {some aliases}:urlencode(or another modifier)})
+
+
+
+New features
+
+ - Added new and great Multilingual Extension (MLX)
+ - Added MLX mini view to display list of alternative translations for
+   an article
+   {mlx_view:view format in html} mini view of translations available
+                                  for this article does substitutions
+                                  %lang, %itemid
+   e.g. {mlx_view:<a href='?x-_#SITEMID_-&mlx=%lang'>%lang</a>}
+     - mlx in URL to slice.php3
+ - Added MLX support for views and finetuning slice settings interface
+   Parameter for view.php3
+   - set[vid]=mlx-(lang)-(lang1)-..-(MODE) same as for slice.php3
+
+ - improved Cross Server Feeding
+    - new possibility of creating exact copy of the remote slice through
+      AARSS (XML exchange) (only short_id is changed)
+    - added APC RSS and RSS test pages with debug options (see AA menu),
+
+ - users from Reader slice could became Authors/Editors/Administrators
+   of any slice (just like any other users) - now works for perm_LDAP
+   only, but we can extend it to perm_sql as well
+
+ - bulk e-mail sending (to users from Reader slice)
+
+ Inner changes
+
+ - new implementation of pagecache - uses two tables - pagecache
+   (as the old one) and pagecache_str2find table. It should bring much
+   quicker pagecache invalidation, when the content must be updated.
+   Database update (sql_update.php3) for new table is needed.
+
+ - new "Toexecute" class used for e-mail sending - e-mails are not send
+   in one run of the script. It is rather send from AA cron, so the load
+   of the server is lowered
+
+ - MySQL - fixes for 4.1 (works without problems, now)
+
+ - alerts sending script (modules/alerts/alerts.php3) could be called
+   also from real - system cron (reads also commandline arguments, now).
+   The benefit is, that the script then can run as long as you want -
+   it is not stoped be Apache after 2 minutes or whatever is set
+   in TimeOut. The commandline could look like:
+       # php alert.php3 howoften=weekly
+   or with 'nice' and allowing safe_mode (for set_time_limit)
+   and skiping to right directory for example:
+       # cd /var/www/example.org/apc-aa/modules/alerts && nice php
+         -d safe_mode=Off alerts.php3 howoften=weekly
+   The command above could be used from cron.
+
+ - added a new utf-8 language file and a language def en-utf8 which
+     can be selected in the slice settings
+
+ - new French language support (submitted by Marek Tichy)
+
+ - new Croatian (Hrvatski) language translations. Thank to Igor Hrste
+   from Zamir.net
+
+ - new AA_USE_NON_PERSISTENT_CONNECT configuration option - use MySQL
+   persistent connections or not?
+
+

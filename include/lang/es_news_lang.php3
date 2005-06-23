@@ -2,7 +2,7 @@
 # $Id$
 # Language: ES
 # This file was created automatically by the Mini GetText environment
-# on 7.3.2005 15:48
+# on 23.6.2005 17:26
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -55,9 +55,6 @@ $_m["Boolean"]
 
 $_m["Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Inicializar</b>.<br>"]
  = "¡Bienvenido! Utilice este script para crear la cuenta de superadministrador.<p>Si usted está instalando una nueva copia de las ActionApps, pulse <b>Init</b>.<br>";
-
-$_m["Export to another ActionApps"]
- = "Exportar a otras ActionApps";
 
 $_m["Alias pro IP address of author's computer"]
  = "Alias para la dirección IP de envío del comentario";
@@ -159,7 +156,7 @@ $_m["Close the wizard"]
  = "Cerrar el asistente";
 
 $_m["index of item within view"]
- = "ínide del ítem en la vista";
+ = "índice del ítem en la vista";
 
 $_m["ActionApps"]
  = "Aplicaciones de Acción de APC";
@@ -212,33 +209,68 @@ $_m["errors to"]
 $_m["sender"]
  = "emisor";
 
+$_m["Existing remote imports into the slice "]
+ = "Impotaciones actuales a este canal";
+
+$_m["Cannot open output file:"]
+ = "No es posible abrir el archivo de salida:";
+
+$_m["Cannot open input file:"]
+ = "No es posible abrir el archivo de entrada:";
+
+$_m["Cannot write to file"]
+ = "No es posible escribir el archivo";
+
+$_m["Show Not So Nice"]
+ = "Mostrar (no tan bonito)";
+
+$_m["Settings"]
+ = "Configuración";
+
+$_m["You did not permit anonymous editing in slice settings. A form\n"
+   ."        allowing only anonymous posting will be shown."]
+ = "Ud. no habilitó la edición anónima de ítems en las propiedades del canal. Se mostrará un formulario que sólo permite publicación anónima.";
+
+$_m["Warning: You want to show password, but you did not set\n"
+   ."                    'Authorized by a password field' in Settings - Anonymous editing."]
+ = "Atención: quiere mostrar una clave (password), pero no seleccionó 'Autorizado por password' en las propiedades del canal para edición anónima.";
+
+$_m["Can't copy image  %s to %s"]
+ = "No se puede copiar %s a %s";
+
+$_m["Resample Image unable to %1"]
+ = "Imagen de ejemplo no es posible %1";
+
+$_m["update datadase"]
+ = "actualizar base de datos";
+
 # End of unused messages
-# ./filler.php3, row 164
+# ./filler.php3, row 166
 # ./offline.php3, row 82
 $_m["Slice ID not defined"]
  = "ID del Canal no definido";
 
-# ./filler.php3, row 171
+# ./filler.php3, row 173
 # ./offline.php3, row 94
 $_m["Bad slice ID"]
  = "ID del Canal inválido";
 
-# ./filler.php3, row 192
-# admin/se_inputform.php3, row 205
-# include/formutil.php3, row 238
-# include/itemfunc.php3, row 759
+# ./filler.php3, row 194
+# admin/se_inputform.php3, row 204
+# include/formutil.php3, row 239
+# include/itemfunc.php3, row 530
 $_m["No fields defined for this slice"]
  = "No hay campos definidos para este canal";
 
-# ./filler.php3, row 229
+# ./filler.php3, row 227
 $_m["Anonymous posting not admitted."]
  = "No está permitida la publiación anónima";
 
-# ./filler.php3, row 280
+# ./filler.php3, row 278
 $_m["You are not allowed to update this item."]
  = "Usted no tiene permiso para modificar este ítem.";
 
-# ./filler.php3, row 297
+# ./filler.php3, row 295
 $_m["Some error in store item."]
  = "Ocurrió un error al guardar el item.";
 
@@ -280,34 +312,50 @@ $_m[" Delete "]
 $_m["You have not permissions to change feeding setting"]
  = "Usted no tiene permisos para cambiar la configuración de alimentación";
 
-# admin/se_inter_import2.php3, row 45, 62
+# admin/se_inter_import2.php3, row 46, 63
 $_m["Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."]
  = "No fué posible conectar y/o recibir datos del nodo remoto. Por favor contacte con el administrador del nodo local.";
 
-# admin/se_inter_import2.php3, row 52
+# admin/se_inter_import2.php3, row 53
 $_m["No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."]
  = "No hay canales disponibles. Usted no tiene permisos para importar datos de este nodo. Contacte al administrador del nodo remoto para verificar su nombre de usuario.";
 
-# admin/se_inter_import2.php3, row 53
+# admin/se_inter_import2.php3, row 54
 $_m["Invalid password for the node name:"]
  = "Clave incorrecta para el nodo llamado: ";
 
-# admin/se_inter_import2.php3, row 53
+# admin/se_inter_import2.php3, row 54
 $_m["Contact the administrator of the local node."]
  = "Contacte con el administrador de su nodo local.";
 
-# admin/se_inter_import2.php3, row 54
+# admin/se_inter_import2.php3, row 55
 $_m["Remote server returns following error:"]
- = "";
+ = "El servidor remoto reporta el siguiente error:";
 
-# admin/se_inter_import2.php3, row 72, 95, 101
-# admin/se_inter_import.php3, row 61, 103, 112
+# admin/se_inter_import2.php3, row 73, 81
+# admin/se_inter_import.php3, row 79, 121
 $_m["Inter node import settings"]
  = "Importación de nodos externos";
 
-# admin/se_inter_import2.php3, row 104
+# admin/se_inter_import2.php3, row 85
+$_m["Choose slice"]
+ = "";
+
+# admin/se_inter_import2.php3, row 94
 $_m["List of available slices from the node "]
  = "Lista de los canales disponibles en el nodo ";
+
+# admin/se_inter_import2.php3, row 95
+$_m["Slice to import"]
+ = "";
+
+# admin/se_inter_import2.php3, row 96
+$_m["Exact copy"]
+ = "";
+
+# admin/se_inter_import2.php3, row 97
+$_m["The slice will be exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on anychange in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It make no sence to change items in local copy - it will be overwriten from remote master."]
+ = "";
 
 # admin/se_view.php3, row 58
 $_m["Group by selections"]
@@ -327,8 +375,8 @@ $_m["Alerts Selection"]
 
 # admin/se_view.php3, row 77
 # admin/um_gedit.php3, row 240
-# admin/se_inputform.php3, row 460
-# include/constants.php3, row 247
+# admin/se_inputform.php3, row 426
+# include/constants.php3, row 250
 # include/constedit.php3, row 51
 # include/tv_email.php3, row 95, 154
 # include/um_gedit.php3, row 26
@@ -348,25 +396,25 @@ $_m["Can't change slice settings"]
  = "No se puede cambiar configuración del canal";
 
 # admin/se_view.php3, row 136, 137
-# admin/se_compact.php3, row 213
+# admin/se_compact.php3, row 212
 # admin/se_profile.php3, row 130
 $_m["Ascending"]
  = "Ascendente";
 
 # admin/se_view.php3, row 136, 137
-# admin/se_compact.php3, row 213
+# admin/se_compact.php3, row 212
 # admin/se_profile.php3, row 130
-# include/searchbar.class.php3, row 403
+# include/searchbar.class.php3, row 413
 $_m["Descending"]
  = "Descendente";
 
 # admin/se_view.php3, row 137
-# admin/se_compact.php3, row 213
+# admin/se_compact.php3, row 212
 $_m["Ascending by Priority"]
  = "Ascendente por Prioridad";
 
 # admin/se_view.php3, row 137
-# admin/se_compact.php3, row 213
+# admin/se_compact.php3, row 212
 $_m["Descending by Priority"]
  = "Descendente por Prioridad";
 
@@ -397,16 +445,16 @@ $_m["Defined Views"]
 # admin/se_view.php3, row 354
 # admin/se_fieldid.php3, row 277
 # admin/se_fields.php3, row 208
-# admin/slicedit.php3, row 144
-# admin/anonym_wizard.php3, row 144
-# include/constants.php3, row 246
+# admin/slicedit.php3, row 145
+# admin/anonym_wizard.php3, row 209
+# include/constants.php3, row 249
 # include/tableviews.php3, row 121, 135
 $_m["Id"]
  = "";
 
 # admin/se_view.php3, row 417
 # admin/se_views.php3, row 196
-# admin/slicedit.php3, row 149
+# admin/slicedit.php3, row 150
 $_m["<br>To include slice in your webpage type next line \n"
    ."                         to your shtml code: "]
  = "<br>Para incluir el contenido publicado aquí \n"
@@ -423,7 +471,7 @@ $_m["You have not permissions to add slice"]
 $_m["AA finder"]
  = "Buscador AA";
 
-# admin/aafinder.php3, row 75, 110
+# admin/aafinder.php3, row 75, 109
 $_m["Jump"]
  = "Salto";
 
@@ -433,7 +481,7 @@ $_m["Find all VIEWS containing in any field the string:"]
 
 # admin/aafinder.php3, row 121, 127
 $_m["Go!"]
- = "Ir";
+ = "Ir!";
 
 # admin/aafinder.php3, row 125
 $_m["Find all SLICES containing in any field the string:"]
@@ -441,12 +489,16 @@ $_m["Find all SLICES containing in any field the string:"]
 
 # admin/discedit.php3, row 50
 $_m["You don't have permissions to edit all items."]
- = "Usted no tiene permisos para editar todos los items.";
+ = "Usted no tiene permisos para editar todos los ítems.";
 
 # admin/discedit.php3, row 86
-# admin/se_mapping.php3, row 138, 189
+# admin/se_mapping.php3, row 141, 194
 $_m["Admin - Content Pooling - Fields' Mapping"]
- = "Administración - Intercambio de Contenido - Correspondecia entre Campos";
+ = "Administración - Intercambio de Contenido - Correspondencia entre Campos";
+
+# admin/discedit.php3, row 91
+$_m["Are you sure you want to delete selected comment?"]
+ = "";
 
 # admin/discedit.php3, row 102
 $_m["Discussion comments management"]
@@ -454,35 +506,35 @@ $_m["Discussion comments management"]
 
 # admin/discedit.php3, row 112
 $_m["Item: "]
- = "";
+ = "Item";
 
 # admin/discedit.php3, row 118
-# admin/slicedit.php3, row 145
+# admin/slicedit.php3, row 146
 # include/modutils.php3, row 50
 # include/slicedit.php3, row 70
 $_m["Title"]
  = "Nombre";
 
 # admin/discedit.php3, row 120
-# admin/discedit2.php3, row 49, 114
+# admin/discedit2.php3, row 49, 115
 # admin/se_users.php3, row 85
 # admin/se_users_add.php3, row 36
 $_m["Author"]
  = "Autor";
 
 # admin/discedit.php3, row 122
-# admin/discedit2.php3, row 117
-# include/constants.php3, row 266
+# admin/discedit2.php3, row 118
+# include/constants.php3, row 269
 $_m["Date"]
  = "Fecha";
 
 # admin/discedit.php3, row 124
 # admin/aarsstest.php3, row 91
 # admin/rsstest.php3, row 86
-# include/formutil.php3, row 1156
+# include/formutil.php3, row 1173
 # include/manager.class.php3, row 168
 $_m["Actions"]
- = "Acción";
+ = "Acciones";
 
 # admin/discedit.php3, row 133
 $_m["No discussion comments"]
@@ -490,22 +542,36 @@ $_m["No discussion comments"]
 
 # admin/discedit.php3, row 159
 # admin/se_fields.php3, row 75, 77
+# admin/se_inter_export.php3, row 124
+# admin/se_inter_import.php3, row 131
+# admin/se_nodes.php3, row 168
 # admin/se_views.php3, row 69
 # admin/slicedel.php3, row 45
-# include/searchbar.class.php3, row 436
-# include/formutil.php3, row 1130, 1165, 1209
+# admin/um_gedit.php3, row 174
+# admin/um_uedit.php3, row 198
+# admin/se_rssfeeds.php3, row 183
+# include/searchbar.class.php3, row 446
+# include/formutil.php3, row 1147, 1182, 1226
 # include/profile.php3, row 33
 # include/menu_aa.php3, row 33
+# include/um_gsrch.php3, row 48
+# include/um_usrch.php3, row 83
 $_m["Delete"]
  = "Borrar";
 
 # admin/discedit.php3, row 161
 # admin/prev_navigation.php3, row 33
 # admin/se_fields.php3, row 73
+# admin/se_nodes.php3, row 167
 # admin/se_views.php3, row 67
-# include/formutil.php3, row 1119, 1164, 2337
+# admin/um_gedit.php3, row 172
+# admin/um_uedit.php3, row 196
+# admin/se_rssfeeds.php3, row 182
+# include/formutil.php3, row 1136, 1181, 2344
 # include/filedit.php3, row 115
-# include/mlx.php, row 278
+# include/um_gsrch.php3, row 47
+# include/um_usrch.php3, row 82
+# include/mlx.php, row 335
 $_m["Edit"]
  = "Editar";
 
@@ -517,17 +583,26 @@ $_m["Hide"]
 $_m["Approve"]
  = "Aprobar";
 
+# admin/discedit.php3, row 172
+# admin/related_sel.php3, row 201
+# admin/se_users_add.php3, row 48
+# include/item.php3, row 1230
+# include/util.php3, row 1170
+# include/msgpage.php3, row 72
+$_m["Back"]
+ = "Atrás";
+
 # admin/discedit2.php3, row 35
 $_m["You do not have permission to edit items in this slice"]
  = "Usted no tiene permisos para editar ítems en este canal";
 
-# admin/discedit2.php3, row 48, 113
+# admin/discedit2.php3, row 48, 114
 # admin/write_mail.php3, row 54, 147
 # include/tv_email.php3, row 102, 156
 $_m["Subject"]
  = "Asunto";
 
-# admin/discedit2.php3, row 50, 115
+# admin/discedit2.php3, row 50, 116
 # admin/se_newuser.php3, row 49, 107
 # admin/setup.php3, row 91, 226
 # admin/slicewiz.php3, row 79
@@ -536,56 +611,56 @@ $_m["Subject"]
 $_m["E-mail"]
  = "Correo electrónico";
 
-# admin/discedit2.php3, row 51, 116
+# admin/discedit2.php3, row 51, 117
 $_m["Text of discussion comment"]
  = "Texto del comentario";
 
-# admin/discedit2.php3, row 52, 118
+# admin/discedit2.php3, row 52, 119
 $_m["Authors's WWW  - URL"]
  = "URL de la página web del autor";
 
-# admin/discedit2.php3, row 53, 119
+# admin/discedit2.php3, row 53, 120
 $_m["Authors's WWW - description"]
  = "Descripción del URL";
 
-# admin/discedit2.php3, row 54, 120
+# admin/discedit2.php3, row 54, 121
 $_m["Remote address"]
  = "Dirección remota";
 
-# admin/discedit2.php3, row 92
+# admin/discedit2.php3, row 93
 $_m["Edit discussion"]
  = "Editar comentario";
 
-# admin/discedit2.php3, row 102
+# admin/discedit2.php3, row 103
 $_m["Items managment - Discussion comments managment - Edit comment"]
  = "Administrador de Items - Administración de comentarios - Editar Comentario";
 
-# admin/discedit2.php3, row 108
+# admin/discedit2.php3, row 109
 $_m["Edit comment"]
  = "Editar comentario";
 
-# admin/discedit2.php3, row 127
+# admin/discedit2.php3, row 128
 # admin/se_filters.php3, row 248
 # admin/se_import.php3, row 114
-# admin/se_mapping.php3, row 196
+# admin/se_mapping.php3, row 201
 # admin/se_search.php3, row 154
 # admin/um_gedit.php3, row 226
 # admin/um_uedit.php3, row 333
-# include/searchbar.class.php3, row 434
-# include/formutil.php3, row 1948
+# include/searchbar.class.php3, row 444
+# include/formutil.php3, row 1965
 $_m["Update"]
  = "Actualizar";
 
-# admin/discedit2.php3, row 128
-# include/formutil.php3, row 205, 1987
+# admin/discedit2.php3, row 129
+# include/formutil.php3, row 162, 2004
 $_m["Reset form"]
  = "Deshacer cambios";
 
-# admin/discedit2.php3, row 129
+# admin/discedit2.php3, row 130
 # admin/se_newuser.php3, row 117
 # admin/se_search.php3, row 155
-# admin/sliceimp.php3, row 481
-# include/formutil.php3, row 210, 1980
+# admin/sliceimp.php3, row 438, 473
+# include/formutil.php3, row 167, 1997
 $_m["Cancel"]
  = "Cancelar";
 
@@ -598,7 +673,7 @@ $_m["Export selected items to selected slice"]
  = "Exportar ítems seleccionados al canal seleccionado";
 
 # admin/feed_to.php3, row 57
-# admin/slicedit.php3, row 142
+# admin/slicedit.php3, row 143
 # include/constants.php3, row 56
 # include/menu_util.php3, row 60
 # include/menu.php3, row 119
@@ -608,7 +683,7 @@ $_m["Slice"]
 
 # admin/feed_to.php3, row 58
 $_m["Holding bin"]
- = "";
+ = "Por aprobar";
 
 # admin/feed_to.php3, row 59
 # admin/se_filters.php3, row 270
@@ -619,11 +694,17 @@ $_m["Active"]
 
 # admin/feed_to.php3, row 60
 $_m["Do not export to this slice"]
- = "";
+ = "No exporte a este canal";
 
 # admin/feed_to.php3, row 78
 $_m["No permission to set feeding for any slice"]
  = "Sin permisos para configurar opciones de alimentación para ningún canal";
+
+# admin/feed_to.php3, row 81
+# admin/index.php3, row 169
+# include/menu_aa.php3, row 47
+$_m["Export"]
+ = "Exportar";
 
 # admin/fileman.php3, row 51
 $_m["No permissions for file manager."]
@@ -648,7 +729,7 @@ $_m["File Manager"]
  = "Administrador de Archivos";
 
 # admin/fileman.php3, row 97
-# include/fileman.php3, row 80, 90
+# include/fileman.php3, row 82, 92
 $_m["Directory"]
  = "Carpeta";
 
@@ -692,52 +773,48 @@ $_m["Move to Holding bin"]
 $_m["Move to Trash"]
  = "Mover a Papelera";
 
-# admin/index.php3, row 169
-# include/menu_aa.php3, row 47
-$_m["Export"]
- = "Exportar";
-
 # admin/index.php3, row 173
-# admin/se_csv_import2.php3, row 239
+# admin/se_csv_import.php3, row 226
+# admin/se_csv_import2.php3, row 241
 $_m["Preview"]
  = "Vista preliminar";
 
 # admin/index.php3, row 177
 $_m["Modify content"]
- = "";
+ = "Modificar contenido";
 
 # admin/index.php3, row 181
 $_m["Send email"]
- = "";
+ = "Enviar correo electrónico";
 
 # admin/index.php3, row 194
 $_m["ActionApps - Reader Manager"]
- = "";
+ = "Gestor de Lectura - AAs";
 
 # admin/index.php3, row 195
 $_m["ActionApps - Item Manager"]
- = "";
+ = "Gestor de Items - AAs";
 
 # admin/itemedit.php3, row 77
 # admin/related_sel.php3, row 172
 $_m["There are too many related items. The number of related items is limited."]
- = "";
+ = "Existen demasiados ítems relacionados. El número de ítems relacionado es limitado.";
 
-# admin/itemedit.php3, row 196
+# admin/itemedit.php3, row 199
 $_m["Error: no fields."]
  = "Error: sin campos.";
 
-# admin/itemedit.php3, row 204
-# include/mlx.php, row 324
+# admin/itemedit.php3, row 207
+# include/mlx.php, row 387
 $_m["Bad item ID"]
  = "Identificador de ítem inválido";
 
-# admin/itemedit.php3, row 231
+# admin/itemedit.php3, row 233
 # include/menu.php3, row 65
 $_m["Add Item"]
  = "Añadir un ítem";
 
-# admin/itemedit.php3, row 231
+# admin/itemedit.php3, row 233
 $_m["Edit Item"]
  = "Editar un ítem";
 
@@ -749,23 +826,15 @@ $_m["OK"]
 
 # admin/related_sel.php3, row 125
 $_m["Editor window - item manager, related selection window"]
- = "";
-
-# admin/related_sel.php3, row 193
-# admin/se_users_add.php3, row 48
-# include/item.php3, row 1228
-# include/util.php3, row 1164
-# include/msgpage.php3, row 72
-$_m["Back"]
- = "Atrás";
+ = "Ventana de edición - Gestor de ítems, ventana de ítems relacionados";
 
 # admin/se_admin.php3, row 36
 $_m["You have no permission to set configuration parameters of this slice"]
  = "Usted no tiene permisos para configurar los parámetros de este canal";
 
 # admin/se_admin.php3, row 54, 130
-# admin/se_compact.php3, row 55, 198
-# include/constants.php3, row 398, 438, 455, 499, 528, 554, 576, 615, 639, 662, 691
+# admin/se_compact.php3, row 55, 197
+# include/constants.php3, row 401, 441, 458, 502, 531, 557, 579, 618, 642, 665, 694
 # include/tableviews.php3, row 151
 $_m["Top HTML"]
  = "Encabezado HTML";
@@ -775,23 +844,23 @@ $_m["Item format"]
  = "Formato ítem";
 
 # admin/se_admin.php3, row 56, 134
-# admin/se_compact.php3, row 56, 205
-# include/constants.php3, row 402, 440, 457, 502, 530, 556, 579, 619, 641, 666, 695
+# admin/se_compact.php3, row 56, 204
+# include/constants.php3, row 405, 443, 460, 505, 533, 559, 582, 622, 644, 669, 698
 # include/tableviews.php3, row 153
 $_m["Bottom HTML"]
  = "Pie HTML";
 
 # admin/se_admin.php3, row 57, 136
-# admin/se_compact.php3, row 57, 224
+# admin/se_compact.php3, row 57, 223
 # admin/se_fulltext.php3, row 57, 152
-# include/constants.php3, row 403, 441, 503, 580, 620, 642, 667, 696, 723
+# include/constants.php3, row 406, 444, 506, 583, 623, 645, 670, 699, 726
 $_m["Remove strings"]
  = "Borrar cadena";
 
 # admin/se_admin.php3, row 58, 138
-# include/constants.php3, row 431, 451, 523, 545, 571, 602, 630, 657, 686, 715
+# include/constants.php3, row 434, 454, 526, 548, 574, 605, 633, 660, 689, 718
 $_m["HTML code for \"No item found\" message"]
- = "Código HTML cuando no se encuentran items";
+ = "Código HTML cuando no se encuentran ítems";
 
 # admin/se_admin.php3, row 81
 $_m["Admin fields update successful"]
@@ -802,9 +871,9 @@ $_m["Admin - design Item Manager view"]
  = "Admininistración - diseño del Administrador de Items";
 
 # admin/se_admin.php3, row 123
-# admin/se_compact.php3, row 183
+# admin/se_compact.php3, row 182
 # admin/se_fulltext.php3, row 138
-# admin/se_inputform.php3, row 94, 343
+# admin/se_inputform.php3, row 96, 333
 $_m["Default"]
  = "Predeterminado";
 
@@ -813,13 +882,13 @@ $_m["Listing of items in Admin interface"]
  = "Listado de ítems en la interface de administración";
 
 # admin/se_admin.php3, row 131
-# admin/se_compact.php3, row 199, 219
+# admin/se_compact.php3, row 198, 218
 # admin/se_fulltext.php3, row 147
 $_m["HTML code which appears at the top of slice area"]
  = "Código HTML que aparece en el área de encabezado del canal";
 
 # admin/se_admin.php3, row 133
-# admin/se_compact.php3, row 201, 221
+# admin/se_compact.php3, row 200, 220
 # admin/se_fulltext.php3, row 149
 $_m["Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliase will be substituted by real values from database when it will be posted to page"]
@@ -827,119 +896,119 @@ $_m["Put here the HTML code combined with aliases form bottom of this page\n"
    ." <br> Los alias serán sustituidos por valores reales provenientes de la base de datos cuando se publiquen en la página";
 
 # admin/se_admin.php3, row 135
-# admin/se_compact.php3, row 206, 223
+# admin/se_compact.php3, row 205, 222
 # admin/se_fulltext.php3, row 151
 $_m["HTML code which appears at the bottom of slice area"]
  = "Código HTML que aparece en el área de pie de página del canal";
 
 # admin/se_admin.php3, row 137
-# admin/se_compact.php3, row 225
+# admin/se_compact.php3, row 224
 # admin/se_fulltext.php3, row 153
 $_m["Removes empty brackets etc. Use ## as delimiter."]
  = "Remueve brackets vacios etc. <b>Utilice ## como separador</b>.";
 
 # admin/se_admin.php3, row 139
 $_m["Code to be printed when no item is filled (or user have no permission to any item in the slice)"]
- = "";
+ = "Código a ser mostrado cuando el ítem no es llenado (o el usuario no tiene permisos a ningún ítem en el canal)";
 
 # admin/se_compact.php3, row 37
 $_m["You have not permissions to change compact view formatting"]
  = "Usted no tiene permisos para modificar el diseño del listado";
 
-# admin/se_compact.php3, row 54, 200
-# include/constants.php3, row 399, 439, 500, 529, 555, 616, 663, 692
+# admin/se_compact.php3, row 54, 199
+# include/constants.php3, row 402, 442, 503, 532, 558, 619, 666, 695
 $_m["Odd Rows"]
  = "Filas impares";
 
-# admin/se_compact.php3, row 58, 226
+# admin/se_compact.php3, row 58, 225
 $_m["'No item found' message"]
  = "Mensaje cuando no se encuentran ítems";
 
-# admin/se_compact.php3, row 60, 203
-# include/constants.php3, row 401, 501, 618, 665, 694
+# admin/se_compact.php3, row 60, 202
+# include/constants.php3, row 404, 504, 621, 668, 697
 $_m["Even Rows"]
  = "Filas pares";
 
-# admin/se_compact.php3, row 62, 218
+# admin/se_compact.php3, row 62, 217
 $_m["Category top HTML"]
  = "Código HTML antes de cada categoría";
 
-# admin/se_compact.php3, row 63, 220
+# admin/se_compact.php3, row 63, 219
 $_m["Category Headline"]
  = "Código HTML del Título categoría";
 
-# admin/se_compact.php3, row 64, 222
+# admin/se_compact.php3, row 64, 221
 $_m["Category bottom HTML"]
  = "Código HTML después de cada categoría";
 
-# admin/se_compact.php3, row 96
+# admin/se_compact.php3, row 95
 $_m["Design of compact design successfully changed"]
  = "Diseño del listado actualizado con éxito";
 
-# admin/se_compact.php3, row 136, 175
+# admin/se_compact.php3, row 135, 174
 # admin/se_newuser.php3, row 82
 $_m["Admin - design Index view"]
  = "Administración - formato del listado";
 
-# admin/se_compact.php3, row 175
+# admin/se_compact.php3, row 174
 $_m["Use these boxes ( and the tags listed below ) to control what appears on summary page"]
  = "Utilice estas casillas ( y los tags listados abajo ) para controlar lo que aparece en la página de listado";
 
-# admin/se_compact.php3, row 189
+# admin/se_compact.php3, row 188
 $_m["HTML code for index view"]
  = "Código HTML para el listado de ítems";
 
-# admin/se_compact.php3, row 202
-# include/constants.php3, row 400, 524, 617, 664, 693
+# admin/se_compact.php3, row 201
+# include/constants.php3, row 403, 527, 620, 667, 696
 $_m["Use different HTML code for even rows"]
  = "Utilice otro código HTML para filas pares";
 
-# admin/se_compact.php3, row 204
+# admin/se_compact.php3, row 203
 $_m["You can define different code for odd and ever rows\n"
    ."                         <br>first red, second black, for example"]
  = "Usted puede definir diferentes códigos para filas pares e impares\n"
    ."<br>Por ejemplo, primero rojo, segundo negro";
 
-# admin/se_compact.php3, row 207
-# include/constants.php3, row 414, 509, 625, 672, 701
+# admin/se_compact.php3, row 206
+# include/constants.php3, row 417, 512, 628, 675, 704
 $_m["Group by"]
  = "Agrupar por";
 
-# admin/se_compact.php3, row 212
+# admin/se_compact.php3, row 211
 $_m["Whole text"]
  = "Todo el texto";
 
-# admin/se_compact.php3, row 212
+# admin/se_compact.php3, row 211
 $_m["1st letter"]
  = "Primera letra";
 
-# admin/se_compact.php3, row 212, 212
+# admin/se_compact.php3, row 211, 211
 $_m["letters"]
  = "Letras";
 
-# admin/se_compact.php3, row 215
+# admin/se_compact.php3, row 214
 $_m["'by Priority' is usable just for fields using constants (like category)"]
  = "¡'Por Prioridad' sólo es válido para campos que usen constantes!";
 
-# admin/se_compact.php3, row 227
+# admin/se_compact.php3, row 226
 $_m["message to show in place of slice.php3, if no item matches the query"]
  = "Mensaje a mostrar cuando no se encuentran ítems";
 
-# admin/se_constant.php3, row 41
+# admin/se_constant.php3, row 42
 # admin/se_fieldid.php3, row 131
 # admin/se_fields.php3, row 34
 # admin/se_javascript.php3, row 37
-# admin/se_inputform.php3, row 44
-# admin/anonym_wizard.php3, row 41
+# admin/se_inputform.php3, row 46
+# admin/anonym_wizard.php3, row 133
 # admin/mailman_create_list.php3, row 51
 $_m["You have not permissions to change fields settings"]
  = "Usted no tiene permisos para cambiar la configuración de campos";
 
-# admin/se_constant.php3, row 47
+# admin/se_constant.php3, row 48
 $_m["You have not permissions to change category settings"]
  = "Usted no tiene permisos para cambiar la configuración de categoría";
 
-# admin/se_constant.php3, row 69
+# admin/se_constant.php3, row 70
 $_m["You have not permissions to change fields settings for the slice owning this group"]
  = "Usted no tiene permisos para cambiar la configuración de campos en el canal que es dueño de este grupo";
 
@@ -947,33 +1016,33 @@ $_m["You have not permissions to change fields settings for the slice owning thi
 $_m[" items changed to new value "]
  = " ítems fueron actualizados con el nuevo valor";
 
-# admin/se_constant.php3, row 157, 399
+# admin/se_constant.php3, row 157, 382
 # admin/um_gedit.php3, row 239
-# include/constants.php3, row 240
+# include/constants.php3, row 243
 # include/constedit.php3, row 40
-# include/fileman.php3, row 24
+# include/fileman.php3, row 26
 # include/um_gedit.php3, row 25
 # include/tableviews.php3, row 122, 138
 $_m["Name"]
  = "Nombre";
 
-# admin/se_constant.php3, row 158, 400
+# admin/se_constant.php3, row 158, 383
 # admin/se_profile.php3, row 195
-# admin/se_mapping.php3, row 218
-# include/constants.php3, row 241
+# admin/se_mapping.php3, row 222
+# include/constants.php3, row 244
 # include/constedit.php3, row 43
 $_m["Value"]
  = "Valor";
 
-# admin/se_constant.php3, row 159, 401
+# admin/se_constant.php3, row 159, 384
 # admin/se_fields.php3, row 96, 209
-# include/constants.php3, row 242
+# include/constants.php3, row 245
 # include/constedit.php3, row 49
 $_m["Priority"]
  = "Prioridad";
 
-# admin/se_constant.php3, row 166, 333
-# include/constants.php3, row 504
+# admin/se_constant.php3, row 165, 321
+# include/constants.php3, row 507
 $_m["Constant Group"]
  = "Grupo de Constantes";
 
@@ -981,7 +1050,7 @@ $_m["Constant Group"]
 $_m["This constant group already exists"]
  = "Este grupo de constantes ya existe";
 
-# admin/se_constant.php3, row 257
+# admin/se_constant.php3, row 256
 $_m["Constants update successful"]
  = "Constantes actualizadas con éxito";
 
@@ -989,7 +1058,7 @@ $_m["Constants update successful"]
 $_m["No category field defined in this slice.<br>Add category field to this slice first (see Field page)."]
  = "No se ha definido campo de categoría para este canal.<br>Añada un campo de categoria para el canal primero (vea página de campos)..";
 
-# admin/se_constant.php3, row 288, 294
+# admin/se_constant.php3, row 287, 294
 $_m["Admin - Constants Setting"]
  = "Administración - Configuración de constantes";
 
@@ -997,68 +1066,68 @@ $_m["Admin - Constants Setting"]
 $_m["Delete whole group"]
  = "Borrar el grupo entero";
 
-# admin/se_constant.php3, row 331
-# admin/se_inputform.php3, row 319
+# admin/se_constant.php3, row 319
+# admin/se_inputform.php3, row 309
 $_m["Constants"]
  = "Constantes";
 
-# admin/se_constant.php3, row 354
+# admin/se_constant.php3, row 339
 $_m["Constants used in slice"]
- = "Constantes usdadas en los canales:";
+ = "Constantes usadas en los canales:";
 
-# admin/se_constant.php3, row 368
+# admin/se_constant.php3, row 353
 $_m["Constant group owner - slice"]
  = "Propietario del grupo - canal";
 
-# admin/se_constant.php3, row 372
+# admin/se_constant.php3, row 357
 $_m["Whoever first updates values becomes owner."]
  = "El primero en actualizar es el propietario.";
 
-# admin/se_constant.php3, row 387
+# admin/se_constant.php3, row 369
 $_m["Change owner"]
  = "Cambiar propietario";
 
-# admin/se_constant.php3, row 393
+# admin/se_constant.php3, row 375
 $_m["Propagate changes into current items"]
  = "Propagar los cambios a los items existentes";
 
-# admin/se_constant.php3, row 395
+# admin/se_constant.php3, row 377
 $_m["Where are these constants used?"]
  = "¿Dónde se usan estas constantes?";
 
-# admin/se_constant.php3, row 397
+# admin/se_constant.php3, row 380
 $_m["Edit in Hierarchical editor (allows to create constant hierarchy)"]
  = "Editar en editor jerárquico (permite crear jerarquías de constantes)";
 
-# admin/se_constant.php3, row 399
+# admin/se_constant.php3, row 382
 # include/constedit.php3, row 40
 $_m["shown&nbsp;on&nbsp;inputpage"]
  = "mostrado&nbsp;en&nbsp;formato&nbsp;de&nbsp;entrada";
 
-# admin/se_constant.php3, row 400
+# admin/se_constant.php3, row 383
 # include/constedit.php3, row 43
 $_m["stored&nbsp;in&nbsp;database"]
  = "almacenado&nbsp;en&nbsp;la&nbsp;base&nbsp;de&nbsp;datos";
 
-# admin/se_constant.php3, row 401
+# admin/se_constant.php3, row 384
 # include/constedit.php3, row 49
 $_m["constant&nbsp;order"]
  = "orden&nbsp;constantes";
 
-# admin/se_constant.php3, row 402
-# include/fileman.php3, row 81, 88
+# admin/se_constant.php3, row 385
+# include/fileman.php3, row 83, 90
 $_m["Parent"]
  = "Padre";
 
-# admin/se_constant.php3, row 402
+# admin/se_constant.php3, row 385
 $_m["categories&nbsp;only"]
  = "solamente&nbsp;categorias";
 
-# admin/se_constant.php3, row 438
+# admin/se_constant.php3, row 417
 $_m["Are you sure you want to PERMANENTLY DELETE this group? Type yes or no."]
  = "¿Está seguro que quiere BORRAR PERMANENTEMENTE este grupo? Escriba sí o no.";
 
-# admin/se_constant.php3, row 438
+# admin/se_constant.php3, row 417
 # admin/write_mail.php3, row 154
 # admin/slicewiz.php3, row 58
 # include/tabledit_column.php3, row 150, 153
@@ -1066,7 +1135,7 @@ $_m["Are you sure you want to PERMANENTLY DELETE this group? Type yes or no."]
 $_m["no"]
  = "";
 
-# admin/se_constant.php3, row 438
+# admin/se_constant.php3, row 417
 # admin/write_mail.php3, row 154
 # admin/slicewiz.php3, row 58
 # include/tabledit_column.php3, row 150, 153
@@ -1108,7 +1177,7 @@ $_m["to"]
 
 # admin/se_fieldid.php3, row 263
 # admin/se_fields.php3, row 204
-# admin/anonym_wizard.php3, row 136
+# admin/anonym_wizard.php3, row 204
 # include/menu.php3, row 123
 $_m["Fields"]
  = "Campos";
@@ -1117,20 +1186,24 @@ $_m["Fields"]
 # admin/se_fields.php3, row 95, 207
 # admin/se_profile.php3, row 193
 # admin/se_search.php3, row 121, 138
-# admin/anonym_wizard.php3, row 143
-# admin/search_replace.php3, row 70, 133
+# admin/anonym_wizard.php3, row 208
+# admin/search_replace.php3, row 75, 138
 $_m["Field"]
  = "Campo";
 
 # admin/se_fields.php3, row 162
-# admin/se_inputform.php3, row 176
+# admin/se_inputform.php3, row 175
 $_m["Fields update successful"]
  = "Campos actualizados con éxito";
 
 # admin/se_fields.php3, row 177, 193
-# admin/se_inputform.php3, row 253, 288
+# admin/se_inputform.php3, row 249, 284
 $_m["Admin - configure Fields"]
  = "Administración - campos";
+
+# admin/se_fields.php3, row 180
+$_m["Do you really want to delete this field from this slice?"]
+ = "";
 
 # admin/se_fields.php3, row 210
 $_m["Required"]
@@ -1139,7 +1212,7 @@ $_m["Required"]
 # admin/se_fields.php3, row 211
 # admin/se_search.php3, row 121, 139
 # admin/se_views.php3, row 68
-# admin/anonym_wizard.php3, row 145
+# admin/anonym_wizard.php3, row 210
 $_m["Show"]
  = "Mostrar";
 
@@ -1148,7 +1221,7 @@ $_m["Aliases"]
  = "Alias";
 
 # admin/se_filters.php3, row 67
-# admin/se_mapping.php3, row 85
+# admin/se_mapping.php3, row 87
 $_m["There are no imported slices"]
  = "No hay canales importados";
 
@@ -1159,6 +1232,10 @@ $_m["-- The same --"]
 # admin/se_filters.php3, row 144, 243
 $_m["Admin - Content Pooling - Filters"]
  = "Administración - contenido compartido - filtros";
+
+# admin/se_filters.php3, row 217
+$_m["No From category selected!"]
+ = "";
 
 # admin/se_filters.php3, row 256
 $_m["Content Pooling - Configure Filters"]
@@ -1173,21 +1250,21 @@ $_m["Categories"]
  = "Categorías";
 
 # admin/se_filters.php3, row 268
-# admin/se_mapping.php3, row 217
-# admin/se_csv_import2.php3, row 255
+# admin/se_mapping.php3, row 221
+# admin/se_csv_import2.php3, row 257
 # include/tv_email.php3, row 164
 $_m["From"]
  = "De";
 
 # admin/se_filters.php3, row 269
-# admin/se_mapping.php3, row 216
-# admin/se_csv_import2.php3, row 254
+# admin/se_mapping.php3, row 220
+# admin/se_csv_import2.php3, row 256
 $_m["To"]
  = "A";
 
 # admin/se_filters.php3, row 281
 $_m["All Categories"]
- = "Todas categorías";
+ = "Todas las categorías";
 
 # admin/se_filters.php3, row 288, 306
 $_m["No category defined"]
@@ -1199,9 +1276,9 @@ $_m["Select all"]
  = "Marcar visibles";
 
 # admin/se_filters2.php3, row 81
-# include/csn_util.php3, row 74
+# include/csn_util.php3, row 84
 $_m["Other categories"]
- = "";
+ = "Otras categorias";
 
 # admin/se_filters2.php3, row 155
 # admin/se_import2.php3, row 129, 131
@@ -1250,7 +1327,7 @@ $_m["Use HTML tags"]
 
 # admin/se_import.php3, row 74
 # admin/sliceadd.php3, row 49
-# admin/slicedit.php3, row 117
+# admin/slicedit.php3, row 118
 # include/menu.php3, row 78
 $_m["Slice Administration"]
  = "Adminstración de Canal";
@@ -1277,7 +1354,7 @@ $_m["Enable export to any slice"]
 
 # admin/se_import.php3, row 159
 $_m["Currently exported to"]
- = "";
+ = "Actualmente exportando a";
 
 # admin/se_import.php3, row 164
 $_m["Import from slice:"]
@@ -1298,15 +1375,23 @@ $_m["Editor window - item manager"]
 
 # admin/constants_sel.php3, row 47
 $_m["select constants window"]
- = "";
+ = "ventana de selección de constantes";
 
 # admin/constants_sel.php3, row 124
 $_m["Select constants"]
- = "";
+ = "Seleccione constantes";
 
 # admin/se_inter_export.php3, row 64, 96, 104
 $_m["Inter node export settings"]
  = "Configuración de exportación a nodos externos";
+
+# admin/se_inter_export.php3, row 78
+$_m["No selected export"]
+ = "";
+
+# admin/se_inter_export.php3, row 81
+$_m["Are you sure you want to delete the export?"]
+ = "";
 
 # admin/se_inter_export.php3, row 106
 $_m["Existing exports of the slice "]
@@ -1324,21 +1409,46 @@ $_m["Remote Nodes"]
 $_m["User name"]
  = "Nombre de usuario";
 
-# admin/se_inter_import.php3, row 106
-$_m["Create new feed from node"]
- = "";
-
-# admin/se_inter_import.php3, row 119
-$_m["Existing remote imports into the slice "]
- = "Impotaciones actuales a este canal";
-
-# admin/se_inter_import.php3, row 127
+# admin/se_inter_import.php3, row 68
 $_m["Missing!!!"]
+ = "Faltan!!!";
+
+# admin/se_inter_import.php3, row 93
+$_m["No selected import"]
  = "";
 
-# admin/se_inter_import.php3, row 140
+# admin/se_inter_import.php3, row 96
+$_m["Are you sure you want to delete the import?"]
+ = "";
+
+# admin/se_inter_import.php3, row 106
+# admin/se_nodes.php3, row 109
+$_m["No selected node"]
+ = "";
+
+# admin/se_inter_import.php3, row 124
+$_m["Create new feed from node"]
+ = "Crear nueva alimentación desde nodo";
+
+# admin/se_inter_import.php3, row 129
+$_m["Existing remote imports into the slice"]
+ = "";
+
+# admin/se_inter_import.php3, row 130
+$_m["Imported slices"]
+ = "";
+
+# admin/se_inter_import.php3, row 130
+$_m["feeds prefixed by (=) are \"exact copy\" feeds"]
+ = "";
+
+# admin/se_inter_import.php3, row 131
 $_m["All remote nodes"]
  = "Todos los nodos remotos";
+
+# admin/se_inter_import.php3, row 132
+$_m["Remote node"]
+ = "";
 
 # admin/se_profile.php3, row 36
 # admin/se_users.php3, row 34
@@ -1364,7 +1474,7 @@ $_m["Item number"]
 
 # admin/se_profile.php3, row 120
 $_m["Input view ID"]
- = "";
+ = "Entrar ID de vista";
 
 # admin/se_profile.php3, row 121
 $_m["Item filter"]
@@ -1383,8 +1493,9 @@ $_m["Hide and Fill"]
  = "Ocultar y Rellenar";
 
 # admin/se_profile.php3, row 125
+# admin/search_replace.php3, row 137
 $_m["Fill field"]
- = "Rellenar con";
+ = "Llenar campos";
 
 # admin/se_profile.php3, row 126
 $_m["Predefine field"]
@@ -1392,7 +1503,7 @@ $_m["Predefine field"]
 
 # admin/se_profile.php3, row 127
 $_m["Stored query"]
- = "";
+ = "Búsqueda ordenada";
 
 # admin/se_profile.php3, row 134, 163
 $_m["Admin - user Profiles"]
@@ -1415,12 +1526,12 @@ $_m["Rule"]
  = "Regla";
 
 # admin/se_profile.php3, row 194
-# admin/se_inputform.php3, row 105, 441
+# admin/se_inputform.php3, row 107, 424
 $_m["Function"]
  = "Función";
 
 # admin/se_profile.php3, row 196
-# include/formutil.php3, row 760, 777
+# include/formutil.php3, row 762, 779
 $_m["HTML"]
  = "";
 
@@ -1430,7 +1541,7 @@ $_m["number of item displayed in Item Manager"]
 
 # admin/se_profile.php3, row 203
 $_m["id of view used for item input"]
- = "";
+ = "id de vista utilizada para el ítem de entrada";
 
 # admin/se_profile.php3, row 204
 $_m["preset \"Search\" in Itme Manager"]
@@ -1460,7 +1571,7 @@ $_m["predefine value of the field in inputform"]
 $_m["The import was already created"]
  = "La importación ya estaba creada";
 
-# admin/se_inter_import3.php3, row 111
+# admin/se_inter_import3.php3, row 112
 $_m["The import was successfully created"]
  = "La importación se creó con éxito";
 
@@ -1471,69 +1582,69 @@ $_m["Field Triggers"]
 
 # admin/se_javascript.php3, row 75
 $_m["JavaScript for fields"]
- = "";
+ = "JavaScript para campos";
 
-# admin/se_javascript.php3, row 80
+# admin/se_javascript.php3, row 77
 $_m["Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php3)."]
  = "Escriba aquí el código en JavaScript para incluir en la página de Añadir/Editar un ítem.";
 
-# admin/se_javascript.php3, row 90
+# admin/se_javascript.php3, row 82
 $_m["Available fields and triggers"]
- = "";
+ = "Verificadores de campos disponibles";
 
-# admin/se_javascript.php3, row 103
+# admin/se_javascript.php3, row 94
 $_m["Field IDs"]
  = "IDs Campos";
 
-# admin/se_javascript.php3, row 110
+# admin/se_javascript.php3, row 101
 $_m["Triggers"]
  = "Verificadores";
 
-# admin/se_javascript.php3, row 111
+# admin/se_javascript.php3, row 102
 $_m["Write trigger functions like"]
  = "Escriba funciones de verificación como";
 
-# admin/se_javascript.php3, row 111
+# admin/se_javascript.php3, row 102
 $_m["see FAQ</a> for more details and examples"]
  = "vea el FAQ</a> para más detalles y ejemplos";
 
-# admin/se_javascript.php3, row 113
+# admin/se_javascript.php3, row 104
 $_m["Field Type"]
  = "Tipo de campo";
 
-# admin/se_javascript.php3, row 113
+# admin/se_javascript.php3, row 104
 $_m["Triggers Available -- see some JavaScript help for when a trigger is run"]
  = "Verificadores Disponibles -- ver un poco de ayuda JavaScript cuando se ejecute un verificador";
 
-# admin/se_mapping.php3, row 110, 110, 234
+# admin/se_mapping.php3, row 113, 113, 238
 # admin/se_mapping2.php3, row 60
 $_m["-- Not map --"]
  = "-- Sin correspondencia --";
 
-# admin/se_mapping.php3, row 111, 111, 229
+# admin/se_mapping.php3, row 114, 114, 232
 # admin/se_mapping2.php3, row 63
 $_m["-- Value --"]
  = "-- Valor --";
 
-# admin/se_mapping.php3, row 112, 112, 232
+# admin/se_mapping.php3, row 115, 115, 235
 # admin/se_mapping2.php3, row 66
 $_m["-- Joined fields --"]
  = "-- Campos unidos --";
 
-# admin/se_mapping.php3, row 113, 113, 242
+# admin/se_mapping.php3, row 116, 116, 246
 # admin/se_mapping2.php3, row 69
 $_m["-- RSS field or expr --"]
- = "";
+ = "-- Campo RSS o expr --";
 
-# admin/se_mapping.php3, row 204
+# admin/se_mapping.php3, row 208
 $_m["Content Pooling - Fields' mapping"]
  = "Compartir Contenido - Correspondencia entre Campos";
 
-# admin/se_mapping.php3, row 207
+# admin/se_mapping.php3, row 211
 $_m["Mapping from slice"]
  = "Correspondencia con campos del canal";
 
-# admin/se_mapping.php3, row 211
+# admin/se_mapping.php3, row 215
 $_m["Fields' mapping"]
  = "Correspondencia de campos";
 
@@ -1560,7 +1671,7 @@ $_m["Login name"]
 # admin/setup.php3, row 87, 220
 # admin/slicewiz.php3, row 75
 # admin/um_uedit.php3, row 263
-# admin/aarsstest.php3, row 128
+# admin/aarsstest.php3, row 131
 # include/um_uedit.php3, row 30
 $_m["Password"]
  = "Clave";
@@ -1607,10 +1718,12 @@ $_m["User successfully added to permission system"]
 
 # admin/se_newuser.php3, row 74
 # admin/se_users_add.php3, row 63, 68
-# admin/um_gedit.php3, row 257
-# admin/um_uedit.php3, row 287
-# include/searchbar.class.php3, row 343, 410
+# admin/um_gedit.php3, row 156, 257
+# admin/um_uedit.php3, row 179, 287
+# include/searchbar.class.php3, row 346, 420
 # include/tabledit.php3, row 523
+# include/um_gsrch.php3, row 42
+# include/um_usrch.php3, row 77
 $_m["Search"]
  = "Buscar";
 
@@ -1624,13 +1737,15 @@ $_m["New user"]
  = "Nuevo usuario";
 
 # admin/se_newuser.php3, row 116
+# admin/se_nodes.php3, row 169
 # admin/sliceadd.php3, row 79
 # admin/um_gedit.php3, row 222
 # admin/um_uedit.php3, row 327
-# include/formutil.php3, row 58, 1113, 1175, 1207
+# admin/se_rssfeeds.php3, row 184
+# include/formutil.php3, row 58, 1130, 1192, 1224
 # include/profile.php3, row 95
 # include/sliceadd.php3, row 74, 96
-# include/mlx.php, row 282
+# include/mlx.php, row 339
 $_m["Add"]
  = "Añadir";
 
@@ -1641,6 +1756,14 @@ $_m["You have not permissions to manage nodes"]
 # admin/se_nodes.php3, row 90, 142, 153
 $_m["Remote node administration"]
  = "Administración de nodos remotos";
+
+# admin/se_nodes.php3, row 112
+$_m["Are you sure you want to delete the node?"]
+ = "";
+
+# admin/se_nodes.php3, row 123
+$_m["Node empty"]
+ = "";
 
 # admin/se_nodes.php3, row 155
 $_m["Known remote nodes"]
@@ -1675,67 +1798,67 @@ $_m["Your getxml is"]
 $_m["You have not permissions to edit this slice"]
  = "Usted no tiene permisos para editar este canal";
 
-# admin/se_notify.php3, row 180, 184, 197
+# admin/se_notify.php3, row 181, 185, 198
 $_m["Email Notifications of Events"]
  = "Notificación por Email";
 
-# admin/se_notify.php3, row 210
+# admin/se_notify.php3, row 211
 $_m["<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
  = "<h4>Nuevo ítem en la carpeta de Por Aprobar</h4> Los administradores pueden ser notificados cuando un ítem ha sido publicado y colocado en la carpeta por Aprobar. Si Usted desea utilizar esta característica, coloque las direcciones de correo electrónico abajo. En los siguientes campos Usted puede personalizar el formato del mensaje de correo que ellos recibirán.";
 
-# admin/se_notify.php3, row 211, 216, 221, 226
+# admin/se_notify.php3, row 212, 217, 222, 227
 $_m["Email addresses, one per line"]
  = "Direcciones de correo, una por línea";
 
-# admin/se_notify.php3, row 212, 217, 222, 227
+# admin/se_notify.php3, row 213, 218, 223, 228
 $_m["Subject of the Email message"]
  = "Asunto del correo electrónico";
 
-# admin/se_notify.php3, row 213, 218, 223, 228
+# admin/se_notify.php3, row 214, 219, 224, 229
 $_m["Body of the Email message"]
  = "Cuerpo del mensaje de correo";
 
-# admin/se_notify.php3, row 215
+# admin/se_notify.php3, row 216
 $_m["<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
  = "<h4>Item cambiado en la carpeta Por Aprobar</h4>  Los administradores pueden ser notificados por correo electrónico cuando un ítem en la carpeta de Por Aprobar es modificado. Si Usted desea utilizar esta característica, coloque las direcciones de correo electrónico abajo. En los siguientes campos Usted puede personalizar el formato del mensaje de correo que ellos recibirán.";
 
-# admin/se_notify.php3, row 220
+# admin/se_notify.php3, row 221
 $_m["<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
  = "<h4>Nuevo ítem en la carpeta Aprobados</h4>  Los administradores pueden ser notificados cuando un ítem ha sido creado y colocado en la carpeta de Aprobados. Si Usted desea utilizar esta característica, coloque las direcciones de correo electrónico abajo. En los siguientes campos Usted puede personalizar el formato del mensaje de correo que ellos recibirán.";
 
-# admin/se_notify.php3, row 225
+# admin/se_notify.php3, row 226
 $_m["<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
  = "<h4>Item modificado en la carpeta de Aprobados</h4>  Los administradores pueden ser notificados cuando un ítem ha sido modificado en la carpeta de aprobados. Si Usted desea utilizar esta característica, coloque las direcciones de correo electrónico abajo. En los siguientes campos Usted puede personalizar el formato del mensaje de correo que ellos recibirán.";
 
 # admin/write_mail.php3, row 55, 148
 # include/tv_email.php3, row 106, 158
 $_m["Body"]
- = "";
+ = "Mensaje";
 
 # admin/write_mail.php3, row 56, 149
 # include/tv_email.php3, row 110
 $_m["From (email)"]
- = "";
+ = "Desde";
 
 # admin/write_mail.php3, row 57, 150
 # include/tv_email.php3, row 112
 $_m["Reply to (email)"]
- = "";
+ = "Responder a (correo-e)";
 
 # admin/write_mail.php3, row 58, 151
 # include/tv_email.php3, row 114
 $_m["Errors to (email)"]
- = "";
+ = "Errores a (correo-e)";
 
 # admin/write_mail.php3, row 59, 152
 # include/tv_email.php3, row 116
 $_m["Sender (email)"]
- = "";
+ = "Remitente (correo-e)";
 
 # admin/write_mail.php3, row 60, 153
 # include/tv_email.php3, row 118
 $_m["Language (charset)"]
- = "";
+ = "Lenguaje (charset)";
 
 # admin/write_mail.php3, row 61, 154
 # include/tv_email.php3, row 122
@@ -1744,59 +1867,59 @@ $_m["Use HTML"]
 
 # admin/write_mail.php3, row 82
 $_m["No template set (which is strange - template was just written to the database"]
- = "";
+ = "No hay formato seleccionado (lo cual es extraño - el formato acaba de escribirse en la base de datos";
 
 # admin/write_mail.php3, row 98
 $_m["Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2)"]
- = "";
+ = "Correo enviado con éxito (Usuarios: %1, Correos enviados (correos válidos...): %2)";
 
 # admin/write_mail.php3, row 113
 $_m["Can't delete email template"]
- = "";
+ = "No se puede borrar el correo formato";
 
 # admin/write_mail.php3, row 124
 $_m["Write email to users"]
- = "";
+ = "Escribir correo a usuarios";
 
 # admin/write_mail.php3, row 129
 $_m["Bulk Email Wizard"]
- = "";
+ = "Asistente de correo masivo";
 
 # admin/write_mail.php3, row 137
 $_m["Recipients"]
- = "";
+ = "Destinatarios";
 
 # admin/write_mail.php3, row 137
-# admin/search_replace.php3, row 126
+# admin/search_replace.php3, row 131
 $_m["Stored searches for "]
- = "";
+ = "Búsquedas almacenadas para ";
 
 # admin/write_mail.php3, row 139
 $_m["View Recipients"]
- = "";
+ = "Ver destinatarios";
 
 # admin/write_mail.php3, row 140
 $_m["Selected users"]
- = "";
+ = "Usuarios seleccionados";
 
 # admin/write_mail.php3, row 141
 $_m["Test email address"]
- = "";
+ = "Dirección de correo de prueba";
 
 # admin/write_mail.php3, row 145
 $_m["Write the email"]
- = "";
+ = "Escribir correo";
 
 # admin/write_mail.php3, row 156
-# admin/anonym_wizard2.php3, row 135
+# admin/anonym_wizard.php3, row 114
 $_m["Send"]
  = "Enviar";
 
 # admin/write_mail.php3, row 157
 # admin/usershow.php3, row 148
-# admin/search_replace.php3, row 139
+# admin/search_replace.php3, row 144
 $_m["Close"]
- = "";
+ = "Cerrar";
 
 # admin/se_search.php3, row 33
 $_m["You have not permissions to change search settings"]
@@ -1848,7 +1971,7 @@ $_m["Admin - Permissions"]
 
 # admin/se_users.php3, row 121
 $_m["Change current permisions"]
- = "";
+ = "Cambiar permisos actuales";
 
 # admin/se_users.php3, row 158
 $_m["Default user profile"]
@@ -1910,11 +2033,11 @@ $_m["View successfully deleted"]
 
 # admin/se_views.php3, row 68
 $_m["show this view"]
- = "";
+ = "Mostrar esta vista";
 
 # admin/se_views.php3, row 84
 $_m["Are you sure you want to delete selected view?"]
- = "";
+ = "Está seguro de borrar la vista seleccionada?";
 
 # admin/se_views.php3, row 146
 $_m["Create new view"]
@@ -1925,7 +2048,7 @@ $_m["by&nbsp;type:"]
  = "por&nbsp;tipo:";
 
 # admin/se_views.php3, row 157, 177
-# include/formutil.php3, row 1116, 1123
+# include/formutil.php3, row 1133, 1140
 $_m["New"]
  = "Nueva";
 
@@ -1947,7 +2070,7 @@ $_m["Superadmin account"]
  = "Cuenta de superadministrador";
 
 # admin/setup.php3, row 88, 222
-# include/formutil.php3, row 1384
+# include/formutil.php3, row 1401
 $_m["Retype Password"]
  = "Reescriba la Clave";
 
@@ -1955,13 +2078,26 @@ $_m["Retype Password"]
 $_m["Last name"]
  = "Apellido";
 
+# admin/setup.php3, row 96, 212
+# admin/mailman_create_list.php3, row 140
+$_m["Create"]
+ = "Crear";
+
 # admin/setup.php3, row 105
 $_m["Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>"]
- = "";
+ = "Bienvenido! Utilice este programa para crear la cuenta de super-administrador.<p>Si Usted está instalando una nueva copia de las AA, pulse <b>Init</b>.<br>";
 
 # admin/setup.php3, row 106
 $_m["If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>"]
  = "Si usted borró su cuenta de superadministrador por error, pulse <b>Recuperar</b>.<br>";
+
+# admin/setup.php3, row 110, 173
+$_m[" Init "]
+ = "Inicializar";
+
+# admin/setup.php3, row 111, 187
+$_m["Recover"]
+ = "Recuperar";
 
 # admin/setup.php3, row 135
 $_m["Database is not configured correctly or the database is empty.<br>\n"
@@ -1975,24 +2111,16 @@ $_m["Database is not configured correctly or the database is empty.<br>\n"
 
 # admin/setup.php3, row 149
 # admin/um_uedit.php3, row 193
-# admin/aarsstest.php3, row 131
-# include/perm_sql.php3, row 170, 540
+# admin/aarsstest.php3, row 134
+# include/perm_sql.php3, row 167, 537
 # include/perm_emailsql.php3, row 164, 327, 334, 586
 # include/um_usrch.php3, row 80
 $_m["User"]
  = "Usuario";
 
-# admin/setup.php3, row 173
-$_m[" Init "]
- = "Inicializar";
-
 # admin/setup.php3, row 182
 $_m["Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>"]
  = "No se pudo añadir el objeto básico de permisos.<br>Por favor verifique el acceso a su sistema de permisos.<br>Si usted borró su cuenta de superadministrador, utilice <b>Recuperar</b>";
-
-# admin/setup.php3, row 187
-$_m["Recover"]
- = "Recuperar";
 
 # admin/setup.php3, row 197
 $_m["Can't delete invalid permission."]
@@ -2001,11 +2129,6 @@ $_m["Can't delete invalid permission."]
 # admin/setup.php3, row 199
 $_m["Invalid permission deleted (no such user/group): "]
  = "Borrado permiso inválido (usuario/grupo inexistente): ";
-
-# admin/setup.php3, row 212
-# admin/mailman_create_list.php3, row 140
-$_m["Create"]
- = "Crear";
 
 # admin/setup.php3, row 268
 $_m["Congratulations! The account was created."]
@@ -2016,7 +2139,7 @@ $_m["Use this account to login and add your first slice:"]
  = "A continuación, puede usar esta cuenta para crear su primer canal:";
 
 # admin/setup.php3, row 271
-# admin/slicedit.php3, row 126
+# admin/slicedit.php3, row 127
 $_m["Add Slice"]
  = "Añadir canal";
 
@@ -2030,7 +2153,7 @@ $_m["Create New Slice / Module"]
 
 # admin/sliceadd.php3, row 68
 $_m["Modules"]
- = "";
+ = "Módulos";
 
 # admin/slicedel.php3, row 34
 # admin/slicedel2.php3, row 34, 38
@@ -2040,6 +2163,10 @@ $_m["You don't have permissions to delete slice."]
 # admin/slicedel.php3, row 50, 68
 $_m["Admin - Delete Slice"]
  = "Administración - Borrar Canal";
+
+# admin/slicedel.php3, row 53
+$_m["Do you really want to delete this slice and all its fields and all its items?"]
+ = "";
 
 # admin/slicedel.php3, row 70
 $_m["<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>"]
@@ -2086,101 +2213,101 @@ $_m["Authorized by a password field"]
 $_m["Readers, authorized by HTTP auth"]
  = "Suscriptores, autorizados por HTTPauth";
 
-# admin/slicedit.php3, row 103
+# admin/slicedit.php3, row 104
 # include/modutils.php3, row 107
 $_m["Select owner"]
  = "Seleccione propietario";
 
-# admin/slicedit.php3, row 126
+# admin/slicedit.php3, row 127
 $_m["Admin - Slice settings"]
  = "Administración - Propiedades canal";
 
-# admin/slicedit.php3, row 147
+# admin/slicedit.php3, row 148
 # include/modutils.php3, row 52
 # include/slicedit.php3, row 72
 $_m["URL of .shtml page (often leave blank)"]
  = "URL para la página .shtml (normalmente deje en blanco)";
 
-# admin/slicedit.php3, row 153
+# admin/slicedit.php3, row 154
 # include/tv_email.php3, row 126
 # include/modutils.php3, row 51
 # include/slicedit.php3, row 71
 $_m["Owner"]
  = "Dueño";
 
-# admin/slicedit.php3, row 155
+# admin/slicedit.php3, row 156
 # include/modutils.php3, row 28
 # include/slicedit.php3, row 51
 $_m["New Owner"]
  = "Nuevo dueño";
 
-# admin/slicedit.php3, row 156
+# admin/slicedit.php3, row 157
 # include/modutils.php3, row 29
 # include/slicedit.php3, row 52
 $_m["New Owner's E-mail"]
  = "Correo nuevo dueño";
 
-# admin/slicedit.php3, row 158
-# include/constants.php3, row 430, 522, 544, 570, 601, 656, 685, 714
+# admin/slicedit.php3, row 159
+# include/constants.php3, row 433, 525, 547, 573, 604, 659, 688, 717
 # include/slicedit.php3, row 73
 $_m["Listing length"]
  = "Longitud listado";
 
-# admin/slicedit.php3, row 160
+# admin/slicedit.php3, row 161
 # include/sliceadd.php3, row 64
 $_m["Template"]
  = "Plantilla";
 
-# admin/slicedit.php3, row 161
+# admin/slicedit.php3, row 162
 $_m["Deleted"]
  = "Borrar";
 
-# admin/slicedit.php3, row 163
+# admin/slicedit.php3, row 164
 # include/slicedit.php3, row 74
 $_m["Allow anonymous posting of items"]
  = "Permitir publicación anónima de ítems";
 
-# admin/slicedit.php3, row 165
+# admin/slicedit.php3, row 166
 # include/slicedit.php3, row 75
 $_m["Allow anonymous editing of items"]
  = "Permitir edición anónima de ítems";
 
-# admin/slicedit.php3, row 167
+# admin/slicedit.php3, row 168
 # include/slicedit.php3, row 76
 $_m["Allow off-line item filling"]
  = "Permitir alimentación de ítems fuera de línea";
 
-# admin/slicedit.php3, row 169
+# admin/slicedit.php3, row 170
 $_m["Language"]
  = "Idioma";
 
-# admin/slicedit.php3, row 174
+# admin/slicedit.php3, row 175
 $_m["MLX Control Slice for"]
- = "";
+ = "Control MLX de canal para";
 
-# admin/slicedit.php3, row 176
+# admin/slicedit.php3, row 177
 $_m["MLX: Language Control Slice"]
- = "";
+ = "MLX: Lenguaje de Control de Canal";
 
-# admin/slicedit.php3, row 181
+# admin/slicedit.php3, row 182
 # include/slicedit.php3, row 81
 $_m["File Manager Access"]
  = "Acceso al administrador de archivos";
 
-# admin/slicedit.php3, row 182
+# admin/slicedit.php3, row 183
 # include/slicedit.php3, row 82
 $_m["File Manager Directory"]
  = "Carpeta del administrador de archivos";
 
-# admin/slicedit.php3, row 196
+# admin/slicedit.php3, row 197
 $_m["Auth Group Field"]
  = "Campo para autorización grupo";
 
-# admin/slicedit.php3, row 198
+# admin/slicedit.php3, row 199
 $_m["Mailman Lists Field"]
  = "Campo para listas Mailman";
 
-# admin/slicedit.php3, row 202
+# admin/slicedit.php3, row 203
 $_m["Password for Reading"]
  = "Clave (password) para lectura";
 
@@ -2261,9 +2388,14 @@ $_m["When exporting \"to another ActionApps\" only the current slice will be exp
 $_m["Choose a new slice identificator exactly 16 characters long: "]
  = "Escriba el nuevo identificador para el canal (16 caracteres exactamente): ";
 
+# admin/sliceexp.php3, row 212
 # admin/sliceexp_text.php3, row 65, 174, 183, 198, 207
 $_m["Export to Backup"]
  = "Hacer Copia de Seguridad";
+
+# admin/sliceexp.php3, row 213
+$_m["Export to another ActionApps"]
+ = "Exportar a otras ActionApps";
 
 # admin/sliceexp_text.php3, row 67
 $_m["Wrong slice ID length: "]
@@ -2281,94 +2413,104 @@ $_m["Save this text. You may use it to import the slices into any ActionApps:"]
 $_m["Slice_ID (%1) has wrong length (%2, should be 32)"]
  = "ID_Canal (%1) tiene una longitud equivocada (%2, debe ser 32)";
 
-# admin/sliceimp.php3, row 88, 128
+# admin/sliceimp.php3, row 88, 128, 435
 # admin/sliceimp_xml.php3, row 262
 $_m["Overwrite"]
  = "Sobreescribir";
 
-# admin/sliceimp.php3, row 157, 162, 222, 228
+# admin/sliceimp.php3, row 157, 162, 214, 220, 437
 $_m["Insert with new ids"]
  = "Insertar con nuevos identificadores";
 
-# admin/sliceimp.php3, row 277, 283
+# admin/sliceimp.php3, row 269, 275
 $_m["Can't upload Import file"]
  = "No se pudo obtener el archivo de importación";
 
-# admin/sliceimp.php3, row 328, 340
+# admin/sliceimp.php3, row 320, 332
 $_m["Import exported data (slice structure and content)"]
  = "Importar la información (estructura y contenidos del canal)";
 
-# admin/sliceimp.php3, row 342
+# admin/sliceimp.php3, row 334
 $_m["Import exported data"]
- = "";
+ = "Importar datos exportados";
 
-# admin/sliceimp.php3, row 347
+# admin/sliceimp.php3, row 339
 $_m["Count of imported slices: %d."]
  = "Número de canales importados: %d.";
 
-# admin/sliceimp.php3, row 349, 364
+# admin/sliceimp.php3, row 341, 356
 $_m["Added were:"]
  = "Los nuevos fueron:";
 
-# admin/sliceimp.php3, row 355, 370
+# admin/sliceimp.php3, row 347, 362
 $_m["Overwritten were:"]
  = "Los sobreescritos fueron:";
 
-# admin/sliceimp.php3, row 361
+# admin/sliceimp.php3, row 353
 $_m["Count of imported stories: %d."]
  = "Número de items importados: %d.";
 
-# admin/sliceimp.php3, row 376
+# admin/sliceimp.php3, row 368
 $_m["Failed were:"]
  = "Fallaron:";
 
-# admin/sliceimp.php3, row 389
+# admin/sliceimp.php3, row 381
 $_m["Here you can import exported data to toolkit. You can use two types of import:"]
  = "Aquí puede importar información previamente exportada. Hay dos formas de importar información:";
 
-# admin/sliceimp.php3, row 394
+# admin/sliceimp.php3, row 386
 $_m["Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"]
  = "Ya existen canales con alguno de los IDs. Modifique los IDs al lado derecho de la flecha.<br>Utilice únicamente caracteres exadecimales (números del 0 al 9 y letras de la 'a' a la 'f'). Si comete algún error (caracteres incorrectos, número incorrecto de caracteres, o si modifica el ID a la izquierda de la flecha) ese ID se considerará no modificado.</p>";
 
-# admin/sliceimp.php3, row 408
+# admin/sliceimp.php3, row 400
 $_m["<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>"]
  = "<p>Ya existen vistas con algunos de los IDs a importar. Por favor, modifique los identificadores al lado derecho de la flecha</p>";
 
-# admin/sliceimp.php3, row 422
+# admin/sliceimp.php3, row 414
 $_m["<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>"]
  = "<p>Ya existen algunos items con los IDs que se pretende importar. Por favor, modifique los IDs del lado derecho de la flecha. Use tan sólo caracteres hexadecimales (números del 0 al 9 y letras de la 'a' a la 'f').</p>";
 
-# admin/sliceimp.php3, row 435
+# admin/sliceimp.php3, row 427
 $_m["<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>"]
  = "<p>Si selecciona SOBREESCRIBIR, los canales e ítems con ID no modificados serán reemplazados con los que se importen.<br>Si selecciona INSERTAR, los canales y datos con IDs en conflicto serán ignorados.<br>Finalmente, si selecciona \"Insertar con nuevos IDs\", los canales e ítems en conflicto se añadirán con IDs nuevos.</p>";
 
-# admin/sliceimp.php3, row 454
+# admin/sliceimp.php3, row 436
+# admin/se_inputform.php3, row 360
+# include/formutil.php3, row 1979
+$_m["Insert"]
+ = "Publicar";
+
+# admin/sliceimp.php3, row 446
 $_m["1) If you have exported data in file, insert it's name here (eg. D:\\data\\apc_aa_slice.aaxml):"]
  = "1) Si ud ha guardado la información exportada en un archivo, seleccione aquí su nombre:";
 
-# admin/sliceimp.php3, row 462
+# admin/sliceimp.php3, row 448
+$_m["Send file with slice structure and data"]
+ = "";
+
+# admin/sliceimp.php3, row 454
 $_m["2) If you have exported data in browser's window, insert the exported text into the textarea below:"]
  = "2) Si tiene la información exportada en una ventana de navegador, copie y pegue el texto de la exportación en esta area:";
 
-# admin/sliceimp.php3, row 475
+# admin/sliceimp.php3, row 467
 $_m["Here specify, what do you want to import:"]
  = "Especifique qué quiere importar:";
 
-# admin/sliceimp.php3, row 476
+# admin/sliceimp.php3, row 468
 $_m["Import slice definition"]
  = "Importar la estructura del canal";
 
-# admin/sliceimp.php3, row 477
+# admin/sliceimp.php3, row 469
 $_m["Import slice items"]
  = "Importar los ítems del canal";
 
-# admin/sliceimp.php3, row 478
+# admin/sliceimp.php3, row 470
 $_m["Import into this slice - whatever file says"]
  = "Importar al canal seleccionado actualmente - ignorar lo que especifique el archivo";
 
-# admin/sliceimp.php3, row 480
+# admin/sliceimp.php3, row 472
 $_m["Send the slice structure and data"]
- = "";
+ = "Enviar la estructura del canal y datos";
 
 # admin/sliceimp_xml.php3, row 117
 $_m["\n"
@@ -2417,7 +2559,8 @@ $_m["Level of Access"]
  = "Nivel de acceso";
 
 # admin/slicewiz.php3, row 73
-# include/constants.php3, row 830
+# include/constants.php3, row 833
+# include/constants.php3.bak, row 13
 $_m["Slice Administrator"]
  = "Administrador";
 
@@ -2437,7 +2580,7 @@ $_m["Go: Add Slice"]
 # admin/aarsstest.php3, row 31
 # admin/rsstest.php3, row 31
 $_m["You have not permissions to this page"]
- = "";
+ = "Usted no tiene permisos a esta página";
 
 # admin/um_gedit.php3, row 60
 # admin/um_uedit.php3, row 68, 71, 85
@@ -2460,6 +2603,10 @@ $_m["Group successfully added to permission system"]
 $_m["User management - Groups"]
  = "Gestión usuarios - grupos";
 
+# admin/um_gedit.php3, row 110
+$_m["Are you sure you want to delete selected group from whole permission system?"]
+ = "";
+
 # admin/um_gedit.php3, row 139
 # include/menu_aa.php3, row 44
 $_m["New Group"]
@@ -2471,8 +2618,8 @@ $_m["Edit Group"]
  = "Editar Grupo";
 
 # admin/um_gedit.php3, row 169
-# include/constants.php3, row 243
-# include/perm_sql.php3, row 138, 414
+# include/constants.php3, row 246
+# include/perm_sql.php3, row 135, 411
 # include/perm_emailsql.php3, row 142, 457
 # include/um_gsrch.php3, row 45
 $_m["Group"]
@@ -2506,6 +2653,10 @@ $_m["Group's Users"]
 $_m["User management - Users"]
  = "Gestión usuarios - usuarios";
 
+# admin/um_uedit.php3, row 134
+$_m["Are you sure you want to delete selected user from whole permission system?"]
+ = "";
+
 # admin/um_uedit.php3, row 164
 # include/menu_aa.php3, row 40
 $_m["New User"]
@@ -2518,7 +2669,7 @@ $_m["Edit User"]
 
 # admin/um_uedit.php3, row 259
 $_m["User Id"]
- = "";
+ = "Id Usuario";
 
 # admin/um_uedit.php3, row 283
 $_m["All Groups"]
@@ -2536,9 +2687,29 @@ $_m["Admin - User Management"]
 $_m["Remote RSS Feed administration"]
  = "Administración de Canales RSS";
 
+# admin/se_rssfeeds.php3, row 132
+$_m["No selected rssfeed"]
+ = "";
+
+# admin/se_rssfeeds.php3, row 135
+$_m["Are you sure you want to delete the rssfeed?"]
+ = "";
+
+# admin/se_rssfeeds.php3, row 146
+$_m["Error: RSS node empty"]
+ = "";
+
 # admin/se_rssfeeds.php3, row 170
 $_m["Current remote rssfeeds"]
  = "Canales RSS que alimentan actualmente:";
+
+# admin/se_rssfeeds.php3, row 185
+$_m["Test"]
+ = "";
+
+# admin/se_rssfeeds.php3, row 186
+$_m["Map"]
+ = "";
 
 # admin/se_rssfeeds.php3, row 189
 $_m["Add new rssfeed"]
@@ -2562,360 +2733,349 @@ $_m["URL of the feed"]
 
 # admin/se_rssfeeds.php3, row 194
 $_m["e.g. http://www.someplace.com/rss/index.xml"]
- = "";
+ = "p.e.  http://www.someplace.com/rss/index.xml";
 
-# admin/se_inputform.php3, row 59
+# admin/se_inputform.php3, row 61
 $_m["Field delete OK"]
  = "Campo borrado con éxito";
 
-# admin/se_inputform.php3, row 91, 405
+# admin/se_inputform.php3, row 93, 395
 $_m["Before HTML code"]
  = "Código HTML antes del campo en el formulario entrada";
 
-# admin/se_inputform.php3, row 92, 393
+# admin/se_inputform.php3, row 94, 383
 $_m["Help for this field"]
  = "Ayuda para este campo";
 
-# admin/se_inputform.php3, row 93, 399
+# admin/se_inputform.php3, row 95, 389
 $_m["More help"]
  = "URL para más ayuda";
 
-# admin/se_inputform.php3, row 95
-$_m["Input show function"]
- = "";
-
 # admin/se_inputform.php3, row 97
+$_m["Input show function"]
+ = "Función mostrar entrada";
+
+# admin/se_inputform.php3, row 99
 $_m["Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING."]
  = "Debe comenzar con _#.<br>El alias debe ser de exactamente diez caracteres de longitud incluyendo  \"_#\" y en MAYUSCULAS. P.e. _#MIALIAS_";
 
-# admin/se_inputform.php3, row 101, 430
+# admin/se_inputform.php3, row 103, 423
 $_m["Alias"]
  = "";
 
-# admin/se_inputform.php3, row 291
+# admin/se_inputform.php3, row 255
+$_m["You selected slice and not constant group. It is unpossible to change slice. Go up in the list."]
+ = "";
+
+# admin/se_inputform.php3, row 287
 $_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]
  = "<p>ATENCION: No cambie estos parámetros a menos que esté seguro!</p>";
 
-# admin/se_inputform.php3, row 306
+# admin/se_inputform.php3, row 296
 $_m["Field properties"]
  = "Propiedades del campo";
 
-# admin/se_inputform.php3, row 312
+# admin/se_inputform.php3, row 302
 $_m["Input type"]
  = "Tipo de entrada";
 
-# admin/se_inputform.php3, row 316
+# admin/se_inputform.php3, row 306
 $_m["Input field type in Add / Edit item."]
  = "Tipo de entrada en Añadir / Editar item.";
 
-# admin/se_inputform.php3, row 321
+# admin/se_inputform.php3, row 311
 $_m["Edit|Use as new|New"]
  = "Editar|Usar como nuevo|Nuevo";
 
-# admin/se_inputform.php3, row 322
+# admin/se_inputform.php3, row 312
 $_m["Choose a Constant Group or a Slice."]
  = "Seleccione un grupo de Constantes o un Canal.";
 
-# admin/se_inputform.php3, row 335, 348, 361, 376, 452
+# admin/se_inputform.php3, row 325, 338, 351, 366, 425
 $_m["Parameters"]
  = "Parámetros";
 
-# admin/se_inputform.php3, row 337, 350, 363, 378, 450
-# admin/se_csv_import2.php3, row 276
+# admin/se_inputform.php3, row 327, 340, 353, 368, 422
+# admin/se_csv_import2.php3, row 278
 $_m["Help: Parameter Wizard"]
  = "Ayuda: Asistente Parámetros";
 
-# admin/se_inputform.php3, row 346
+# admin/se_inputform.php3, row 336
 $_m["How to generate the default value"]
  = "Cómo generar el valor por defecto";
 
-# admin/se_inputform.php3, row 356
+# admin/se_inputform.php3, row 346
 $_m["Validate"]
  = "Validar";
 
-# admin/se_inputform.php3, row 370
-# include/formutil.php3, row 1962
-$_m["Insert"]
- = "Publicar";
-
-# admin/se_inputform.php3, row 374
+# admin/se_inputform.php3, row 364
 $_m["Defines how value is stored in database."]
  = "Determina cómo se almacena el campo en la base de datos.";
 
-# admin/se_inputform.php3, row 387
+# admin/se_inputform.php3, row 377
 $_m["Show 'HTML' / 'plain text' option"]
  = "Mostrar 'HTML' / 'texto plano'";
 
-# admin/se_inputform.php3, row 389
+# admin/se_inputform.php3, row 379
 $_m["'HTML' as default"]
  = "por defecto 'HTML'";
 
-# admin/se_inputform.php3, row 395
+# admin/se_inputform.php3, row 385
 $_m["Shown help for this field"]
  = "Ayuda mostrada para este campo";
 
-# admin/se_inputform.php3, row 401
+# admin/se_inputform.php3, row 391
 $_m["Text shown after user click on '?' in input form"]
  = "Texto mostrado después que el usuario selecciona '?' en el formato de entrada";
 
-# admin/se_inputform.php3, row 407
+# admin/se_inputform.php3, row 397
 $_m["Code shown in input form before this field"]
  = "Código HTML mostrado en formato de entrada antes de este campo";
 
-# admin/se_inputform.php3, row 412
+# admin/se_inputform.php3, row 402
 $_m["Feeding mode"]
  = "Modo de alimentación";
 
-# admin/se_inputform.php3, row 415
+# admin/se_inputform.php3, row 405
 $_m["Should the content of this field be copied to another slice if it is fed?"]
  = "¿Debe el contenido de este campo ser copiado a otro canal si es alimentado?";
 
-# admin/se_inputform.php3, row 418
+# admin/se_inputform.php3, row 408
 $_m["ALIASES used in views to print field content"]
  = "ALIAS utilizados para mostrar el contenido de este campo";
 
-# admin/se_inputform.php3, row 437
+# admin/se_inputform.php3, row 423
 $_m["_# + 8 UPPERCASE letters or _"]
  = "_# + 8 caracteres (MAYSCULAS o _)";
 
-# admin/se_csv_import.php3, row 61
+# admin/se_csv_import.php3, row 62
 $_m["You have not permissions to import files"]
- = "";
+ = "Usted no tiene permisos para importar archivos";
 
-# admin/se_csv_import.php3, row 66
+# admin/se_csv_import.php3, row 67
 $_m["Missing slice"]
+ = "Falta el canal ";
+
+# admin/se_csv_import.php3, row 99
+$_m["Cannot read input file"]
  = "";
 
-# admin/se_csv_import.php3, row 78
-$_m["Cannot open output file:"]
- = "";
-
-# admin/se_csv_import.php3, row 81
-$_m["Cannot open input file:"]
- = "";
-
-# admin/se_csv_import.php3, row 86, 92
-$_m["Cannot write to file"]
- = "";
-
-# admin/se_csv_import.php3, row 112
-# include/itemfunc.php3, row 367
-$_m["Can't create directory for image uploads"]
- = "No se puede crear el directorio para copiado de imágenes";
-
-# admin/se_csv_import.php3, row 147
-# admin/se_csv_import2.php3, row 178
+# admin/se_csv_import.php3, row 130
+# admin/se_csv_import2.php3, row 180
 $_m["Admin - Import .CSV file"]
- = "";
+ = "Admin - Importar archivo . CSV";
 
-# admin/se_csv_import.php3, row 159
+# admin/se_csv_import.php3, row 142
 $_m["Admin - Import CSV (1/2) - Source data"]
- = "";
+ = "Admin - Importar CSV (1/2) - Fuente de datos";
 
-# admin/se_csv_import.php3, row 165
+# admin/se_csv_import.php3, row 148
 $_m["Cannot open a file for preview"]
- = "";
+ = "No es posible abrir el archivo para previsualización";
 
-# admin/se_csv_import.php3, row 167
+# admin/se_csv_import.php3, row 150
 $_m["File preview"]
- = "";
+ = "Previsualizar archivo";
 
-# admin/se_csv_import.php3, row 197
+# admin/se_csv_import.php3, row 180
 $_m["CSV format settings"]
- = "";
+ = "Configuración de formato CSV";
 
-# admin/se_csv_import.php3, row 221
+# admin/se_csv_import.php3, row 204
 $_m["Source of CSV data"]
- = "";
+ = "Fuente de datos CSV";
 
-# admin/se_csv_import2.php3, row 57
+# admin/se_csv_import.php3, row 227
+# include/easy_scroller.php3, row 121, 208
+$_m["Next"]
+ = "Siguiente";
+
+# admin/se_csv_import2.php3, row 58
 $_m["You have not permissions to setting "]
- = "";
+ = "Usted no tiene permisos de configuración ";
 
-# admin/se_csv_import2.php3, row 65
+# admin/se_csv_import2.php3, row 66
 $_m["File for import does not exists:"]
- = "";
+ = "El archivo a importar no existe:";
 
-# admin/se_csv_import2.php3, row 69
+# admin/se_csv_import2.php3, row 71
 $_m["Invalid additional parameters for import"]
- = "";
-
-# admin/se_csv_import2.php3, row 127
-$_m["Cannot store item to DB"]
- = "";
+ = "Parámetros adicionales para importación inválidos";
 
 # admin/se_csv_import2.php3, row 129
+$_m["Cannot store item to DB"]
+ = "No se puede almacenar el ítem en la base de datos";
+
+# admin/se_csv_import2.php3, row 131
 $_m["Item:"]
  = "";
 
-# admin/se_csv_import2.php3, row 132
+# admin/se_csv_import2.php3, row 134
 $_m["Transformation error:"]
- = "";
-
-# admin/se_csv_import2.php3, row 135
-$_m["inserted"]
- = "";
-
-# admin/se_csv_import2.php3, row 136
-$_m["updated"]
- = "";
+ = "Error de transformación:";
 
 # admin/se_csv_import2.php3, row 137
-$_m["not stored"]
- = "";
+$_m["inserted"]
+ = "insertado";
+
+# admin/se_csv_import2.php3, row 138
+$_m["updated"]
+ = "actualizado";
 
 # admin/se_csv_import2.php3, row 139
+$_m["not stored"]
+ = "no almacenado";
+
+# admin/se_csv_import2.php3, row 141
 $_m["Ok: Item "]
  = "";
 
-# admin/se_csv_import2.php3, row 154
-# include/import_util.php3, row 326
-$_m["Ok : file deleted "]
- = "";
-
 # admin/se_csv_import2.php3, row 156
-# include/import_util.php3, row 328
+# include/files.class.php3, row 219
+$_m["Ok : file deleted "]
+ = "Ok : archivo borrado ";
+
+# admin/se_csv_import2.php3, row 158
+# include/files.class.php3, row 221
 $_m["Error: Cannot delete file"]
- = "";
+ = "Error: No se puede borrar el archivo";
 
-# admin/se_csv_import2.php3, row 159
+# admin/se_csv_import2.php3, row 161
 $_m["Added to slice"]
- = "";
+ = "Añadido al canal";
 
-# admin/se_csv_import2.php3, row 206
+# admin/se_csv_import2.php3, row 208
 $_m["Admin - Import CSV (2/2) - Mapping and Actions"]
- = "";
+ = "Admin - Importar CSV (2/2) - Relacionamiento y Acciones";
 
-# admin/se_csv_import2.php3, row 216
+# admin/se_csv_import2.php3, row 218
 $_m["Mapping preview"]
- = "";
+ = "Previsualización de relacionamiento";
 
-# admin/se_csv_import2.php3, row 242
+# admin/se_csv_import2.php3, row 244
 $_m["Finish"]
- = "";
+ = "Terminar";
 
-# admin/se_csv_import2.php3, row 251
+# admin/se_csv_import2.php3, row 253
 $_m["Mapping settings"]
- = "";
+ = "Configuración relacionamiento";
 
-# admin/se_csv_import2.php3, row 256
+# admin/se_csv_import2.php3, row 258
 $_m["Action"]
- = "";
+ = "Acción";
 
-# admin/se_csv_import2.php3, row 257
+# admin/se_csv_import2.php3, row 259
 $_m["Html"]
  = "";
 
-# admin/se_csv_import2.php3, row 258
+# admin/se_csv_import2.php3, row 260
 $_m["Action parameters"]
- = "";
+ = "Parámetros acción";
 
-# admin/se_csv_import2.php3, row 259
+# admin/se_csv_import2.php3, row 261
 $_m["Parameter wizard"]
- = "";
+ = "Asistente de parámetros";
 
-# admin/se_csv_import2.php3, row 279
+# admin/se_csv_import2.php3, row 281
 $_m["Import options"]
- = "";
+ = "Opciones de importación";
 
-# admin/se_csv_import2.php3, row 290
+# admin/se_csv_import2.php3, row 292
 $_m["Map item id from"]
- = "";
-
-# admin/se_csv_import2.php3, row 293
-$_m["unpacked long id (pack_id)"]
- = "";
-
-# admin/se_csv_import2.php3, row 294
-$_m["packed long id (store)"]
- = "";
+ = "Relacionar id ítem desde";
 
 # admin/se_csv_import2.php3, row 295
+$_m["unpacked long id (pack_id)"]
+ = "longitud id descompactado (pack_id)";
+
+# admin/se_csv_import2.php3, row 296
+$_m["packed long id (store)"]
+ = "longitud id compactado (store)";
+
+# admin/se_csv_import2.php3, row 297
 $_m["string to be converted (string2id) - with param:"]
- = "";
+ = "cadena a ser convertida (string2id) - con param:";
 
-# admin/se_csv_import2.php3, row 304
+# admin/se_csv_import2.php3, row 306
 $_m["If the item id is already in the slice:"]
- = "";
+ = "Si el id del ítem ya está en el canal:";
 
-# admin/se_csv_import2.php3, row 307
+# admin/se_csv_import2.php3, row 309
 $_m["Update the item"]
- = "";
+ = "Actualizar el ítem";
 
-# admin/se_csv_import2.php3, row 311
+# admin/se_csv_import2.php3, row 313
 $_m["Store the item with new id"]
- = "";
+ = "Almacenar el ítem con nuevo id";
 
-# admin/se_csv_import2.php3, row 315
+# admin/se_csv_import2.php3, row 317
 $_m["Do not store the item"]
+ = "No almacene el ítem";
+
+# admin/anonym_wizard.php3, row 69
+$_m["ActionApps Anonymous form"]
  = "";
 
-# admin/anonym_wizard.php3, row 65, 71
-$_m["Admin - Anonymous Form Wizard"]
- = "Administración - Asistente Publicación Anónima";
+# admin/anonym_wizard.php3, row 70
+$_m["Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->"]
+ = "";
 
-# admin/anonym_wizard.php3, row 76
-$_m["Show Form"]
- = "Mostrar formulario";
-
-# admin/anonym_wizard.php3, row 78
-$_m["Show Not So Nice"]
- = "Mostrar (no tan bonito)";
-
-# admin/anonym_wizard.php3, row 90
-$_m["Settings"]
- = "Configuración";
-
-# admin/anonym_wizard.php3, row 95
+# admin/anonym_wizard.php3, row 150
 $_m["WARNING: You did not permit anonymous posting in slice settings."]
  = "ATENCION: ud. no habilitó la publicación anónima en las propieadades del canal.";
 
-# admin/anonym_wizard.php3, row 98
-$_m["You did not permit anonymous editing in slice settings. A form\n"
-   ."        allowing only anonymous posting will be shown."]
- = "Ud. no habilitó la edición anónima de ítems en las propiedades del canal. Se mostrará un formulario que sólo permite publicación anónima.";
+# admin/anonym_wizard.php3, row 153
+$_m["WARNING: You did not permit anonymous editing in slice settings. A form allowing only anonymous posting will be shown."]
+ = "";
 
-# admin/anonym_wizard.php3, row 113
-$_m["Warning: You want to show password, but you did not set\n"
-   ."                    'Authorized by a password field' in Settings - Anonymous editing."]
- = "Atención: quiere mostrar una clave (password), pero no seleccionó 'Autorizado por password' en las propiedades del canal para edición anónima.";
+# admin/anonym_wizard.php3, row 161
+$_m["WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing."]
+ = "";
 
-# admin/anonym_wizard.php3, row 121
+# admin/anonym_wizard.php3, row 179, 185
+$_m["Admin - Anonymous Form Wizard"]
+ = "Administración - Asistente Publicación Anónima";
+
+# admin/anonym_wizard.php3, row 191
+$_m["Show Form"]
+ = "Mostrar formulario";
+
+# admin/anonym_wizard.php3, row 198
 $_m["Help"]
  = "Ayuda ";
 
-# admin/anonym_wizard.php3, row 122
+# admin/anonym_wizard.php3, row 198
 $_m["Help - Documentation"]
  = "Documentación";
 
-# admin/anonym_wizard.php3, row 123
+# admin/anonym_wizard.php3, row 199
 $_m["URLs shown after the form was sent"]
  = "URLs que se muestran una vez enviado el formulario";
 
-# admin/anonym_wizard.php3, row 125
+# admin/anonym_wizard.php3, row 200
 $_m["OK page"]
  = "Página 'OK'";
 
-# admin/anonym_wizard.php3, row 127
+# admin/anonym_wizard.php3, row 201
 $_m["Error page"]
  = "Página ERROR";
 
-# admin/anonym_wizard.php3, row 132
+# admin/anonym_wizard.php3, row 202
 $_m["Use a PHP script to show the result on the OK and Error pages:"]
  = "Usar un script PHP para interpretar los resultados del formulario";
 
-# admin/anonym_wizard.php3, row 146
+# admin/anonym_wizard.php3, row 211
 $_m["Field Id in Form"]
  = "Campo en el formulario";
 
-# admin/anonym_wizard.php3, row 170
+# admin/anonym_wizard.php3, row 235
 $_m["Only fields marked as \"Show\" on the \"Fields\" page\n"
    ."         are offered on this page."]
  = "Sólo se listan aquí los campos que están marcados como 'Mostrar' en la configuración de campos del canal";
 
 # admin/usershow.php3, row 86
 $_m["Show selected users"]
- = "";
+ = "Mostrar usuarios seleccionados";
 
 # admin/mailman_create_list.php3, row 57, 63
 $_m["Admin - Create Mailman List"]
@@ -2968,202 +3128,209 @@ $_m["AA - Summarize"]
 
 # admin/console.php3, row 47
 $_m["Console"]
- = "";
+ = "Consola";
 
 # admin/console.php3, row 54
 $_m["AA - Administration Console"]
- = "";
+ = "AA - Consola de administración";
 
 # admin/aarsstest.php3, row 51
 # admin/rsstest.php3, row 51
 $_m["feed"]
- = "";
+ = "alimentar";
 
 # admin/aarsstest.php3, row 52
 # admin/rsstest.php3, row 52
 $_m["validate"]
- = "";
+ = "validar";
 
 # admin/aarsstest.php3, row 53
 # admin/rsstest.php3, row 53
 $_m["show"]
- = "";
+ = "mostrar";
 
 # admin/aarsstest.php3, row 81, 82
 $_m["ActionApps RSS Content Exchange"]
- = "";
+ = "AAs Intercambio de Contenido RSS";
 
 # admin/aarsstest.php3, row 83
 # admin/rsstest.php3, row 78
 $_m["RSS feeds testing page."]
- = "";
+ = "Página de pruebas para alimentación RSS";
 
 # admin/aarsstest.php3, row 85
 $_m["No ActionApps RSS Exchange is set."]
- = "";
+ = "No se ha configurado Intercambio RSS en las AAs";
 
 # admin/aarsstest.php3, row 94
 $_m["Newest Item"]
- = "";
+ = "Item más reciente";
 
 # admin/aarsstest.php3, row 95
 $_m["change this value if you want to get older items"]
- = "";
+ = "cambiar este valor si Usted desea obtener ítems más viejos";
 
 # admin/aarsstest.php3, row 98
 # admin/rsstest.php3, row 89
 $_m["Messages"]
- = "";
+ = "Mensajes";
 
 # admin/aarsstest.php3, row 103
 # admin/rsstest.php3, row 94
 $_m["Write"]
- = "";
+ = "Escribir";
 
 # admin/aarsstest.php3, row 104
 # admin/rsstest.php3, row 95
-$_m["update datadase"]
+$_m["update database"]
  = "";
 
 # admin/aarsstest.php3, row 109
 # admin/rsstest.php3, row 103
 $_m["Node"]
- = "";
+ = "Nodo";
 
-# admin/aarsstest.php3, row 112, 115
+# admin/aarsstest.php3, row 112
 $_m["Remote slice"]
+ = "Canal remoto";
+
+# admin/aarsstest.php3, row 115
+$_m["Remote slice ID"]
  = "";
 
 # admin/aarsstest.php3, row 118
-# admin/rsstest.php3, row 106
-$_m["Local slice"]
+$_m["Local slice ID"]
  = "";
 
-# admin/aarsstest.php3, row 123
+# admin/aarsstest.php3, row 121
+$_m["Feed mode"]
+ = "";
+
+# admin/aarsstest.php3, row 126
 # admin/rsstest.php3, row 100
 $_m["Feed url"]
- = "";
+ = "Url alimentación";
 
 # admin/view.php3, row 37
 $_m["Administrative view"]
- = "";
+ = "Vista de administración";
 
-# admin/search_replace.php3, row 71, 135
+# admin/search_replace.php3, row 76, 140
 $_m["New content"]
- = "";
+ = "Nuevo contenido";
 
-# admin/search_replace.php3, row 79
+# admin/search_replace.php3, row 84
 $_m["Items selected: %1, Items sucessfully updated: %2"]
- = "";
+ = "Items seleccionados: %1, Items actualizados con éxito: %2";
 
-# admin/search_replace.php3, row 97, 102
+# admin/search_replace.php3, row 102, 107
 $_m["Modify items"]
- = "";
+ = "Items modificados";
 
-# admin/search_replace.php3, row 126
+# admin/search_replace.php3, row 131
 $_m["Items"]
  = "";
 
-# admin/search_replace.php3, row 128
+# admin/search_replace.php3, row 133
 $_m["View items"]
- = "";
+ = "Ver ítems";
 
-# admin/search_replace.php3, row 129
+# admin/search_replace.php3, row 134
 # include/manager.class.php3, row 415
 $_m["Selected items"]
  = "Items marcados";
 
-# admin/search_replace.php3, row 132
-$_m["Fill fileld"]
- = "";
-
-# admin/search_replace.php3, row 134
+# admin/search_replace.php3, row 139
 $_m["Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)."]
- = "";
+ = "Sea muy cuidadoso con esta función. Cambios en algunos campos (Código de estado, Fecha de publicación, ID del canal, ....) pueden ser cruciales para los datos de un ítem. No se realiza validación de la información - lo que Usted teclee será escrito a la base de datos.<br> Tenga en cuenta que no existe una función de DESHACER (al menos por ahora).";
 
-# admin/search_replace.php3, row 136
+# admin/search_replace.php3, row 141
 $_m["You can use also aliases, so the content \"&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}\" is perfectly OK"]
- = "";
+ = "Usted puede utilizar también aliases, de tal manera que el contenido \"&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}\" está bien";
 
-# admin/search_replace.php3, row 138
+# admin/search_replace.php3, row 143
 $_m["Fill"]
- = "";
+ = "Llenar";
 
 # admin/rsstest.php3, row 76, 77
 $_m["RSS Feed import test"]
- = "";
+ = "Prueba de importación de RSS";
 
 # admin/rsstest.php3, row 80
 $_m["No RSS Feeds set."]
- = "";
+ = "No se ha configurado una alimentación RSS";
 
-# include/searchbar.class.php3, row 348
+# admin/rsstest.php3, row 106
+$_m["Local slice"]
+ = "Canal local";
+
+# include/searchbar.class.php3, row 351
 $_m["And"]
  = "Y";
 
-# include/searchbar.class.php3, row 357, 484, 493
+# include/searchbar.class.php3, row 360, 494, 503
 $_m["contains"]
  = "contiene";
 
-# include/searchbar.class.php3, row 358, 484, 493
+# include/searchbar.class.php3, row 361, 494, 503
 $_m["begins with"]
  = "empieza por";
 
-# include/searchbar.class.php3, row 359, 484, 493
+# include/searchbar.class.php3, row 362, 494, 503
 $_m["is"]
  = "es";
 
-# include/searchbar.class.php3, row 395
+# include/searchbar.class.php3, row 405
 $_m["Order"]
  = "Orden";
 
-# include/searchbar.class.php3, row 411
+# include/searchbar.class.php3, row 421
 $_m["Clear"]
- = "";
+ = "Borrar";
 
-# include/searchbar.class.php3, row 414
+# include/searchbar.class.php3, row 424
 $_m["Stored search name"]
- = "";
+ = "Nombre de búsqueda";
 
-# include/searchbar.class.php3, row 415
+# include/searchbar.class.php3, row 425
 $_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
- = "";
+ = "Usted tiene permisos para añadir búsquedas guardadas globalmente. Desea añadir esta consulta como global (común a los usuarios del canal)?";
 
-# include/searchbar.class.php3, row 415
+# include/searchbar.class.php3, row 425
 $_m["Store"]
- = "";
+ = "Almacenar";
 
-# include/searchbar.class.php3, row 428
+# include/searchbar.class.php3, row 438
 $_m["Stored searches"]
- = "";
+ = "Búsquedas almacenadas";
 
-# include/searchbar.class.php3, row 431
+# include/searchbar.class.php3, row 441
 $_m["View"]
- = "";
+ = "Ver";
 
-# include/searchbar.class.php3, row 434
+# include/searchbar.class.php3, row 444
 $_m["Are you sure to refine current search?"]
- = "";
+ = "Está seguro de refinar esta búsqueda?";
 
-# include/searchbar.class.php3, row 435
+# include/searchbar.class.php3, row 445
 $_m["Enter new name"]
- = "";
+ = "Entre nuevo nombre";
 
-# include/searchbar.class.php3, row 435
+# include/searchbar.class.php3, row 445
 $_m["Rename"]
- = "";
+ = "Renombrar";
 
-# include/searchbar.class.php3, row 436
+# include/searchbar.class.php3, row 446
 $_m["Are you sure to delete selected search?"]
- = "";
+ = "Está seguro de borrar la búsqueda seleccionada?";
 
-# include/searchbar.class.php3, row 493
+# include/searchbar.class.php3, row 503
 $_m["select ..."]
- = "";
+ = "seleccionar ...";
 
-# include/searchbar.class.php3, row 673
+# include/searchbar.class.php3, row 683
 $_m["Select one..."]
- = "";
+ = "Selecionar uno...";
 
 # include/constants.php3, row 70
 $_m["MySQL Auth"]
@@ -3171,11 +3338,11 @@ $_m["MySQL Auth"]
 
 # include/constants.php3, row 75
 $_m["Jump inside AA control panel"]
- = "";
+ = "Entrar al panel de control de las AAs";
 
 # include/constants.php3, row 79
 $_m["Polls for AA"]
- = "";
+ = "Encuestas para AAs ";
 
 # include/constants.php3, row 84
 # include/menu_util.php3, row 54, 148
@@ -3188,389 +3355,392 @@ $_m["Alerts"]
 $_m["Links"]
  = "Enlaces";
 
-# include/constants.php3, row 239
+# include/constants.php3, row 242
 $_m["Short Id"]
  = "Id corto";
 
-# include/constants.php3, row 244
+# include/constants.php3, row 247
 $_m["Class"]
  = "Clase";
 
-# include/constants.php3, row 248
+# include/constants.php3, row 251
 # include/constedit_util.php3, row 87
 $_m["Level"]
  = "Nivel";
 
-# include/constants.php3, row 258
+# include/constants.php3, row 261
 $_m["Text Area"]
  = "Area texto";
 
-# include/constants.php3, row 259
+# include/constants.php3, row 262
 $_m["Textarea with Presets"]
  = "Area de texto con Preselección";
 
-# include/constants.php3, row 260
+# include/constants.php3, row 263
 $_m["Rich Edit Text Area"]
  = "Area de texto enriquecida";
 
-# include/constants.php3, row 261
+# include/constants.php3, row 264
 $_m["Text Field"]
  = "Campo texto";
 
-# include/constants.php3, row 262
+# include/constants.php3, row 265
 $_m["Multiple Text Field"]
- = "";
+ = "Campo de Texto Múltiple";
 
-# include/constants.php3, row 263
+# include/constants.php3, row 266
 $_m["Text Field with Presets"]
- = "";
+ = "Campo de Texto con Preselección";
 
-# include/constants.php3, row 264
+# include/constants.php3, row 267
 $_m["Select Box"]
  = "Caja Selección";
 
-# include/constants.php3, row 265
+# include/constants.php3, row 268
 $_m["Radio Button"]
  = "Botón selección";
 
-# include/constants.php3, row 267
+# include/constants.php3, row 270
 $_m["Check Box"]
  = "Selección";
 
-# include/constants.php3, row 268
+# include/constants.php3, row 271
 $_m["Multiple Checkboxes"]
  = "Selección múltiple";
 
-# include/constants.php3, row 269
+# include/constants.php3, row 272
 $_m["Multiple Selectbox"]
  = "Caja selección múltiple";
 
-# include/constants.php3, row 270
+# include/constants.php3, row 273
 $_m["Two Boxes"]
  = "Dos Cajas";
 
-# include/constants.php3, row 271
+# include/constants.php3, row 274
 $_m["File Upload"]
  = "Archivo para subir";
 
-# include/constants.php3, row 273
+# include/constants.php3, row 276
 $_m["Related Item Window"]
  = "Ventana con Items relacionados";
 
-# include/constants.php3, row 274
+# include/constants.php3, row 277
 $_m["Do not show"]
  = "No muestre";
 
-# include/constants.php3, row 275
+# include/constants.php3, row 278
 $_m["Hierachical constants"]
  = "Constantes Jerárquicas";
 
-# include/constants.php3, row 276
+# include/constants.php3, row 279
 $_m["Password and Change password"]
  = "Clave y Cambiar Clave";
 
-# include/constants.php3, row 277
+# include/constants.php3, row 280
 $_m["Hidden field"]
  = "Campo Oculto";
 
-# include/constants.php3, row 315
+# include/constants.php3, row 318
 $_m["Feed"]
  = "Alimentar";
 
-# include/constants.php3, row 316
+# include/constants.php3, row 319
 $_m["Do not feed"]
  = "No alimentar";
 
-# include/constants.php3, row 317
+# include/constants.php3, row 320
 $_m["Feed locked"]
  = "Alimentación bloqueada";
 
-# include/constants.php3, row 318
+# include/constants.php3, row 321
 $_m["Feed & update"]
  = "Alimentar y Actualizar";
 
-# include/constants.php3, row 319
+# include/constants.php3, row 322
 $_m["Feed & update & lock"]
  = "Alimentar, Actualizar y Bloquear";
 
-# include/constants.php3, row 379
+# include/constants.php3, row 382
 $_m["Month List"]
  = "Lista Mensual";
 
-# include/constants.php3, row 379
+# include/constants.php3, row 382
 $_m["Month Table"]
  = "Tabla del mes";
 
-# include/constants.php3, row 397
+# include/constants.php3, row 400
 $_m["Item listing"]
  = "Lista de items";
 
-# include/constants.php3, row 410, 505, 531, 557, 581, 621, 643, 668, 697
+# include/constants.php3, row 413, 508, 534, 560, 584, 624, 646, 671, 700
 $_m["Sort primary"]
  = "Orden principal";
 
-# include/constants.php3, row 412, 507, 533, 559, 583, 623, 645, 670, 699
+# include/constants.php3, row 415, 510, 536, 562, 586, 626, 648, 673, 702
 $_m["Sort secondary"]
  = "Orden secundario";
 
-# include/constants.php3, row 418, 511, 627, 674, 703
+# include/constants.php3, row 421, 514, 630, 677, 706
 $_m["Group title format"]
  = "Formato del Título del Grupo";
 
-# include/constants.php3, row 419, 512, 628, 675, 704
+# include/constants.php3, row 422, 515, 631, 678, 707
 $_m["Group bottom format"]
  = "Formato del Final del Grupo";
 
-# include/constants.php3, row 421, 442, 513, 535, 561, 592, 647, 676, 705
+# include/constants.php3, row 424, 445, 516, 538, 564, 595, 650, 679, 708
 $_m["Condition 1"]
  = "Condición 1";
 
-# include/constants.php3, row 424, 445, 516, 538, 564, 595, 650, 679, 708
+# include/constants.php3, row 427, 448, 519, 541, 567, 598, 653, 682, 711
 $_m["Condition 2"]
  = "Condición 2";
 
-# include/constants.php3, row 427, 448, 519, 541, 567, 598, 653, 682, 711
+# include/constants.php3, row 430, 451, 522, 544, 570, 601, 656, 685, 714
 $_m["Condition 3"]
  = "Condición 3";
 
-# include/constants.php3, row 437
+# include/constants.php3, row 440
 $_m["Fulltext view"]
  = "Texto Completo";
 
-# include/constants.php3, row 454
+# include/constants.php3, row 457
 $_m["Discussion"]
  = "Comentarios";
 
-# include/constants.php3, row 456
+# include/constants.php3, row 459
 $_m["HTML code for index view of the comment"]
  = "Código HTML para la lista de comentarios";
 
-# include/constants.php3, row 458
+# include/constants.php3, row 461
 $_m["HTML code for \"Show selected\" button"]
  = "Código HTML para el botón \"Mostrar seleccionados\"";
 
-# include/constants.php3, row 459
+# include/constants.php3, row 462
 $_m["HTML code for \"Show all\" button"]
  = "Código HTML para el botón \"Mostrar todos\"";
 
-# include/constants.php3, row 460
+# include/constants.php3, row 463
 $_m["HTML code for \"Add\" button"]
  = "Código HTML para el botón \"Añadir\"";
 
-# include/constants.php3, row 461
+# include/constants.php3, row 464
 $_m["Show images"]
  = "Mostrar imágenes";
 
-# include/constants.php3, row 462
+# include/constants.php3, row 465
 $_m["Order by"]
  = "Ordenar por";
 
-# include/constants.php3, row 463
+# include/constants.php3, row 466
 $_m["View image 1"]
  = "Imágen 1";
 
-# include/constants.php3, row 464
+# include/constants.php3, row 467
 $_m["View image 2"]
  = "Imágen 2";
 
-# include/constants.php3, row 465
+# include/constants.php3, row 468
 $_m["View image 3"]
  = "Imágen 3";
 
-# include/constants.php3, row 466
+# include/constants.php3, row 469
 $_m["View image 4"]
  = "Imágen 4";
 
-# include/constants.php3, row 467
+# include/constants.php3, row 470
 $_m["HTML code for fulltext view of the comment"]
  = "Código HTML para la visualización de un comentario";
 
-# include/constants.php3, row 468
+# include/constants.php3, row 471
 $_m["HTML code for space before comment"]
  = "Código HTML para el espacio antes de un comentario";
 
-# include/constants.php3, row 469
+# include/constants.php3, row 472
 $_m["HTML code of the form for posting comment"]
  = "Código HTML para el formulario para enviar un comentario";
 
-# include/constants.php3, row 473
+# include/constants.php3, row 476
 $_m["Discussion To Mail"]
  = "Comentarios con Email";
 
-# include/constants.php3, row 474
+# include/constants.php3, row 477
 $_m["From: (email header)"]
  = "De: (cabecera email)";
 
-# include/constants.php3, row 475
+# include/constants.php3, row 478
 $_m["Reply-To:"]
  = "Responder-A:";
 
-# include/constants.php3, row 476
+# include/constants.php3, row 479
 $_m["Errors-To:"]
  = "Errores-A";
 
-# include/constants.php3, row 477
+# include/constants.php3, row 480
 $_m["Sender:"]
  = "Enviado-Por";
 
-# include/constants.php3, row 478
+# include/constants.php3, row 481
 $_m["Mail Subject:"]
  = "Asunto del mensaje";
 
-# include/constants.php3, row 479
+# include/constants.php3, row 482
 $_m["Mail Body:"]
  = "Cuerpo del mensaje";
 
-# include/constants.php3, row 498
+# include/constants.php3, row 501
 $_m["View of Constants"]
  = "Lista de Constantes";
 
-# include/constants.php3, row 527
+# include/constants.php3, row 530
 $_m["RSS exchange"]
  = "Intercambio RSS";
 
-# include/constants.php3, row 548
+# include/constants.php3, row 551
 $_m["Static page"]
  = "Página estática";
 
-# include/constants.php3, row 549
+# include/constants.php3, row 552
 $_m["HTML code"]
  = "Código HTML";
 
-# include/constants.php3, row 553
+# include/constants.php3, row 556
 $_m["Javascript item exchange"]
  = "Intercambio con JavaScript";
 
-# include/constants.php3, row 574
+# include/constants.php3, row 577
 $_m["Calendar"]
  = "Calendario";
 
-# include/constants.php3, row 575
+# include/constants.php3, row 578
 $_m["Calendar Type"]
  = "Tipo de Calendario";
 
-# include/constants.php3, row 577
+# include/constants.php3, row 580
 $_m["Additional attribs to the TD event tag"]
  = "Atributos adicionales al tag TD del evento";
 
-# include/constants.php3, row 578
+# include/constants.php3, row 581
 $_m["Event format"]
  = "Formato del evento";
 
-# include/constants.php3, row 585
+# include/constants.php3, row 588
 $_m["Start date field"]
  = "Campo para la fecha de inicio";
 
-# include/constants.php3, row 586
+# include/constants.php3, row 589
 $_m["End date field"]
  = "Campo para la fecha de finalización";
 
-# include/constants.php3, row 587
+# include/constants.php3, row 590
 $_m["Day cell top format"]
  = "Formato inicial celda de día";
 
-# include/constants.php3, row 588
+# include/constants.php3, row 591
 $_m["Day cell bottom format"]
  = "Formato final celda de día";
 
-# include/constants.php3, row 589
+# include/constants.php3, row 592
 $_m["Use other header for empty cells"]
  = "Usar otra cabecera para las celdas vacías";
 
-# include/constants.php3, row 590
+# include/constants.php3, row 593
 $_m["Empty day cell top format"]
  = "Formato inicial celda vacía";
 
-# include/constants.php3, row 591
+# include/constants.php3, row 594
 $_m["Empty day cell bottom format"]
  = "Formato final celda vacía";
 
-# include/constants.php3, row 608
+# include/constants.php3, row 611
 $_m["Alerts Selection Set"]
  = "Conjunto de Selección de Alertas";
 
-# include/constants.php3, row 611
+# include/constants.php3, row 614
 $_m["Fulltext URL"]
  = "URL del Texto Completo";
 
-# include/constants.php3, row 614
+# include/constants.php3, row 617
 $_m["Link to the .shtml page used\n"
    ."                                 to create headline links."]
  = "Enlace a la página .shtml usado para crear los enlaces.";
 
-# include/constants.php3, row 629
+# include/constants.php3, row 632
 $_m["Max number of items"]
  = "Número máximo de items";
 
-# include/constants.php3, row 638
+# include/constants.php3, row 641
 $_m["URL listing"]
  = "Listado URLs";
 
-# include/constants.php3, row 640
+# include/constants.php3, row 643
 $_m["Row HTML"]
  = "Fila HTML";
 
-# include/constants.php3, row 661
+# include/constants.php3, row 664
 $_m["Link listing"]
  = "Lista de enlaces";
 
-# include/constants.php3, row 690
+# include/constants.php3, row 693
 $_m["Category listing"]
  = "Lista de categorías";
 
-# include/constants.php3, row 718
-$_m["Input Form"]
- = "";
-
-# include/constants.php3, row 720
-$_m["New item form template"]
- = "";
-
 # include/constants.php3, row 721
+$_m["Input Form"]
+ = "Formato de Entrada";
+
+# include/constants.php3, row 723
+$_m["New item form template"]
+ = "Nuevo formato para ítem ";
+
+# include/constants.php3, row 724
 $_m["Use different template for editing"]
- = "";
+ = "Utilice un formato diferente para edición";
 
-# include/constants.php3, row 722
+# include/constants.php3, row 725
 $_m["Edit item form template"]
- = "";
+ = "Editar formato de ítem";
 
-# include/constants.php3, row 751
+# include/constants.php3, row 754
 # include/discussion.php3, row 135, 180
 $_m["Show selected"]
  = "Mostrar marcados";
 
-# include/constants.php3, row 752
+# include/constants.php3, row 755
 # include/discussion.php3, row 136, 182
 $_m["Show all"]
  = "Mostrar todos";
 
-# include/constants.php3, row 753
+# include/constants.php3, row 756
 # include/constedit_util.php3, row 79
 # include/discussion.php3, row 138, 184
+# include/constants.php3.bak, row 3
 $_m["Add new"]
  = "Añadir";
 
-# include/constants.php3, row 773
+# include/constants.php3, row 776
 $_m["Calendar: Time stamp at 0:00 of processed cell"]
  = "Calendario: tiempo a las 0:00 de la celda en proceso";
 
-# include/constants.php3, row 774
+# include/constants.php3, row 777
 $_m["Calendar: Time stamp at 24:00 of processed cell"]
  = "Calendario: tiempo a las 24:00 de la celda en proceso";
 
-# include/constants.php3, row 775
+# include/constants.php3, row 778
 $_m["Calendar: Day in month of processed cell"]
  = "Calendario: día del mes de la celda en proceso";
 
-# include/constants.php3, row 776
+# include/constants.php3, row 779
 $_m["Calendar: Month number of processed cell"]
  = "Calendario: número del mes de la celda en proceso";
 
-# include/constants.php3, row 777
+# include/constants.php3, row 780
+# include/constants.php3.bak, row 7
 $_m["Calendar: Year number of processed cell"]
  = "Calendario: año de la celda en proceso";
 
-# include/constants.php3, row 828
+# include/constants.php3, row 831
+# include/constants.php3.bak, row 11
 $_m["Superadmin"]
  = "";
 
@@ -3580,11 +3750,11 @@ $_m["number of found items"]
 
 # include/item.php3, row 67
 $_m["index of item within whole listing (begins with 0)"]
- = "";
+ = "Indice del ítem dentro del listado completo (comienza con 0) ";
 
 # include/item.php3, row 68
 $_m["index of item within a page (it begins from 0 on each page listed by pagescroller)"]
- = "";
+ = "Indice del ítem dentro de la página (comienza con 0 en cada página listada por scroll de página";
 
 # include/item.php3, row 69
 $_m["alias for Item ID"]
@@ -3625,11 +3795,11 @@ $_m["Slice name"]
 
 # include/item.php3, row 86
 $_m["Current MLX language"]
- = "";
+ = "Lenguaje MLX actual";
 
 # include/item.php3, row 87
 $_m["HTML markup direction tag (e.g. DIR=RTL)"]
- = "";
+ = "Tag de dirección de marca HTML (p.e. DIR=RTL)";
 
 # include/item.php3, row 120
 $_m["Constant name"]
@@ -3673,116 +3843,112 @@ $_m["Constant level (used for hierachical constants)"]
 
 # include/item.php3, row 161
 $_m["Alias for %1"]
- = "";
+ = "Alias para %1";
 
-# include/item.php3, row 1106
+# include/item.php3, row 1108
 $_m["on"]
  = "activo";
 
-# include/item.php3, row 1106
+# include/item.php3, row 1108
 $_m["off"]
  = "inactivo";
 
-# include/item.php3, row 1229
+# include/item.php3, row 1231
 $_m["Home"]
  = "Inicio";
 
-# include/util.php3, row 799, 844
+# include/util.php3, row 802, 847
 $_m["Error: Missing Reading Password"]
  = "Error: Falta clave de lectura";
 
-# include/util.php3, row 1156
+# include/util.php3, row 1162
 # include/msgpage.php3, row 52
 $_m["Toolkit news message"]
  = "Mensaje de las aa";
 
-# include/util.php3, row 1382
+# include/util.php3, row 1387
 $_m["Internal error. File upload: Dir does not exist?!"]
  = "Error interno. Subir archivo: ¿la carpeta no existe?";
 
-# include/util.php3, row 1386
+# include/util.php3, row 1391
 $_m["File with this name already exists."]
  = "Ya existe un archivo con este nombre.";
 
-# include/util.php3, row 1396
+# include/util.php3, row 1398
 $_m["Can't move image  %s to %s"]
  = "No se puede mover %s a %s";
 
-# include/util.php3, row 1403
-$_m["Can't copy image  %s to %s"]
- = "No se puede copiar %s a %s";
-
-# include/util.php3, row 1610
+# include/util.php3, row 1605
 $_m["alerts alert"]
- = "";
+ = "alerta de alertas";
 
-# include/util.php3, row 1611
+# include/util.php3, row 1606
 $_m["alerts welcome"]
  = "bienvenida alertas";
 
-# include/util.php3, row 1612
+# include/util.php3, row 1607
 $_m["slice wizard welcome"]
  = "bienvenida asistente canal";
 
-# include/util.php3, row 1613
+# include/util.php3, row 1608
 $_m["other"]
  = "otro";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["January"]
  = "Enero";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["February"]
  = "Febrero";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["March"]
  = "Marzo";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["April"]
  = "Abril";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["May"]
  = "Mayo";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["June"]
  = "Junio";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["July"]
  = "Julio";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["August"]
  = "Agosto";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["September"]
  = "Septiembre";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["October"]
  = "Octubre";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["November"]
  = "Noviembre";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["December"]
  = "Diciembre";
 
 # include/menu_util.php3, row 55
 $_m["Jump inside control panel"]
- = "";
+ = "Ir al panel de control";
 
 # include/menu_util.php3, row 57
 $_m["MySQL Auth (old version)"]
- = "";
+ = "MySQL Auth (versión vieja)";
 
 # include/menu_util.php3, row 58
 $_m["Polls"]
@@ -3806,7 +3972,7 @@ $_m["Reader management"]
 
 # include/menu_util.php3, row 175
 $_m["logout"]
- = "";
+ = "Salir";
 
 # include/menu_util.php3, row 212
 $_m["Switch to:"]
@@ -3814,7 +3980,7 @@ $_m["Switch to:"]
 
 # include/menu_util.php3, row 306
 $_m["Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>"]
- = "";
+ = "(C) Todos los derechos reservados <a href=\"http://www.apc.org\">Asociación para el Progreso de las Comunicaciones - APC</a> ";
 
 # include/constedit.php3, row 26
 $_m["Constants - Hiearchical editor"]
@@ -3831,6 +3997,10 @@ $_m["Copy value from name"]
 # include/constedit.php3, row 59
 $_m["Check to confirm deleting"]
  = "Seleccione para confirmar borrado";
+
+# include/constedit.php3, row 62
+$_m["Save all changes to database"]
+ = "";
 
 # include/constedit.php3, row 63
 $_m["View settings"]
@@ -3858,7 +4028,7 @@ $_m["Add&nbsp;Mutual"]
 
 # include/formutil.php3, row 60
 $_m["Backward"]
- = "";
+ = "Regresar";
 
 # include/formutil.php3, row 62
 $_m["Good"]
@@ -3868,177 +4038,177 @@ $_m["Good"]
 $_m["Bad"]
  = "Malo";
 
-# include/formutil.php3, row 171
-$_m["Part"]
- = "";
-
-# include/formutil.php3, row 202
+# include/formutil.php3, row 159
 $_m["Update & View"]
  = "Publicar y vista preliminar";
 
-# include/formutil.php3, row 204
+# include/formutil.php3, row 161
 $_m["Insert as new"]
  = "Publicar como Nuevo";
 
-# include/formutil.php3, row 208
+# include/formutil.php3, row 165
 $_m["Insert & View"]
  = "Publicar y vista preliminar";
 
-# include/formutil.php3, row 562
+# include/formutil.php3, row 182
+$_m["Part"]
+ = "Parte";
+
+# include/formutil.php3, row 564
 $_m["set"]
  = "activo";
 
-# include/formutil.php3, row 562
+# include/formutil.php3, row 564
 $_m["unset"]
  = "inactivo";
 
-# include/formutil.php3, row 671
+# include/formutil.php3, row 673
 $_m["Unable to find tagprefix table %1"]
- = "";
+ = "No se encontró la tabla (tagprefix) %1";
 
-# include/formutil.php3, row 740
+# include/formutil.php3, row 742
 $_m["import"]
  = "importar";
 
-# include/formutil.php3, row 753
+# include/formutil.php3, row 755
 $_m["Edit in HTMLArea"]
- = "";
+ = "Editar en área HTML";
 
-# include/formutil.php3, row 762, 779
+# include/formutil.php3, row 764, 781
 $_m["Plain text"]
  = "Texto plano";
 
-# include/formutil.php3, row 1123, 1127
+# include/formutil.php3, row 1140, 1144
 $_m["Enter the value"]
- = "";
+ = "Entre el valor";
 
-# include/formutil.php3, row 1127
+# include/formutil.php3, row 1144
 # include/menu.php3, row 129
 $_m["Change"]
  = "Cambiar";
 
-# include/formutil.php3, row 1155
+# include/formutil.php3, row 1172
 $_m["Item"]
  = "";
 
-# include/formutil.php3, row 1166
+# include/formutil.php3, row 1183
 $_m["Move up"]
- = "";
+ = "Mover arriba";
 
-# include/formutil.php3, row 1167
+# include/formutil.php3, row 1184
 $_m["Move down"]
- = "";
+ = "Mover abajo";
 
-# include/formutil.php3, row 1349
+# include/formutil.php3, row 1366
 $_m["Offer"]
  = "Ofrecer";
 
-# include/formutil.php3, row 1350
+# include/formutil.php3, row 1367
 $_m["Selected"]
  = "Marcados";
 
-# include/formutil.php3, row 1383
+# include/formutil.php3, row 1400
 $_m["Change Password"]
  = "Cambiar Clave";
 
-# include/formutil.php3, row 1385
+# include/formutil.php3, row 1402
 $_m["Delete Password"]
  = "Borrar Clave";
 
-# include/formutil.php3, row 1393
+# include/formutil.php3, row 1410
 $_m["not set"]
  = "no asignado";
 
-# include/formutil.php3, row 1787
+# include/formutil.php3, row 1804
 $_m["Remove"]
  = "Remover";
 
-# include/formutil.php3, row 1994
+# include/formutil.php3, row 2011
 $_m["Submit"]
  = "Enviar";
 
-# include/formutil.php3, row 2149
+# include/formutil.php3, row 2164
 $_m["There are too many items."]
- = "";
+ = "Demasiados ítems";
 
-# include/formutil.php3, row 2247
+# include/formutil.php3, row 2254
 $_m["Not used, yet"]
- = "";
+ = "No utilizado, aun";
 
-# include/formutil.php3, row 2277
+# include/formutil.php3, row 2284
 $_m["Group Name"]
- = "";
+ = "Nombre de grupo";
 
-# include/formutil.php3, row 2277
+# include/formutil.php3, row 2284
 $_m["Created by"]
- = "";
+ = "Creado por";
 
-# include/formutil.php3, row 2278
+# include/formutil.php3, row 2285
 $_m["Created on"]
- = "";
+ = "Creado en";
 
-# include/formutil.php3, row 2278
+# include/formutil.php3, row 2285
 $_m["Last updated"]
- = "";
+ = "Ultima actualización";
 
-# include/formutil.php3, row 2278
+# include/formutil.php3, row 2285
 $_m["Last used"]
- = "";
+ = "Usado por última vez";
 
-# include/formutil.php3, row 2325
+# include/formutil.php3, row 2332
 $_m["Use these aliases for database fields"]
  = "Utilice estos alias para los campos de la base de datos";
 
-# include/formutil.php3, row 2358, 2372, 2379, 2384, 2389, 2394, 2402, 2407, 2414, 2418, 2425, 2465
+# include/formutil.php3, row 2365, 2379, 2386, 2391, 2396, 2401, 2409, 2414, 2421, 2425, 2432, 2472
 # include/date.php3, row 116
 $_m["Error in"]
  = "Error en";
 
-# include/formutil.php3, row 2358
+# include/formutil.php3, row 2365
 $_m["it must be filled"]
  = "debe ser llenado";
 
-# include/formutil.php3, row 2402
+# include/formutil.php3, row 2409
 $_m["you should use a-z, A-Z and 0-9 characters"]
  = "Utilice los caracteres a-z, A-Z o 0-9";
 
-# include/formutil.php3, row 2407, 2414
+# include/formutil.php3, row 2414, 2421
 $_m["it must by 5 - 32 characters long"]
  = "debe ser de 5 a 32 caracteres de longitud";
 
-# include/formutil.php3, row 2418
+# include/formutil.php3, row 2425
 $_m["only 0-9 A-Z a-z . _ and - are allowed"]
  = "solo se permite: 0-9 A-Z a-z . _ -";
 
-# include/formutil.php3, row 2444
+# include/formutil.php3, row 2451
 $_m["Error in parameters for UNIQUE validation: field ID is not 16 but %1 chars long: "]
- = "";
+ = "Error en los parámetros para validación UNICA: el ID del campo no es 16 sino %1 caracteres de longitud: ";
 
-# include/formutil.php3, row 2466
+# include/formutil.php3, row 2473
 $_m["this value is already used, choose another one"]
- = "";
+ = "este valor ya está en uso, seleccione otro";
 
-# include/formutil.php3, row 2508
+# include/formutil.php3, row 2515
 $_m["This field is required."]
  = "Este campo es obligatorio.";
 
-# include/formutil.php3, row 2509
+# include/formutil.php3, row 2516
 $_m["This field is required (marked by *)."]
  = "Este campo es obligatorio (marcado con *).";
 
-# include/formutil.php3, row 2518
+# include/formutil.php3, row 2525
 $_m["Not a valid integer number."]
  = "No es un número válido";
 
-# include/formutil.php3, row 2522
+# include/formutil.php3, row 2529
 $_m["Not a valid file name."]
  = "No es un archivo válido";
 
-# include/formutil.php3, row 2526
+# include/formutil.php3, row 2533
 $_m["Not a valid email address."]
  = "No es una dirección válida";
 
-# include/formutil.php3, row 2530
+# include/formutil.php3, row 2537
 $_m["The two password copies differ."]
  = "Las dos claves son distintas.";
 
@@ -4048,7 +4218,7 @@ $_m["Select"]
 
 # include/sliceobj.php3, row 54
 $_m["WARNING: slice: %s doesn't look like an unpacked id"]
- = "";
+ = "ATENCION: canal: %s no se presenta como un id descompactado";
 
 # include/slice.php3, row 56
 $_m["Select Category "]
@@ -4060,11 +4230,11 @@ $_m["All categories"]
 
 # include/tv_email.php3, row 29
 $_m["Aliases for Alerts Alert"]
- = "";
+ = "Aliases para alerta de alertas";
 
 # include/tv_email.php3, row 31
 $_m["complete filter text"]
- = "";
+ = "complete el texto de filtrado";
 
 # include/tv_email.php3, row 32, 40
 $_m["howoften"]
@@ -4112,32 +4282,32 @@ $_m["My name"]
 
 # include/tv_email.php3, row 54
 $_m["My email"]
- = "Mi email";
+ = "Mi correo-e";
 
 # include/tv_email.php3, row 85
 $_m["Email template"]
- = "Plantilla email";
+ = "Plantilla correo-e";
 
 # include/tv_email.php3, row 98
 $_m["Email type"]
- = "";
+ = "Tipo correo-e";
 
 # include/tv_email.php3, row 146
 # include/menu.php3, row 152
 $_m["Email templates"]
- = "Plantillas Email";
+ = "Plantillas Correo-e";
 
 # include/tv_email.php3, row 166
 $_m["Reply to"]
- = "";
+ = "Responder a";
 
 # include/tv_email.php3, row 168
 $_m["Errors to"]
- = "";
+ = "Errores a";
 
 # include/tv_email.php3, row 170
 $_m["Sender"]
- = "";
+ = "Remitente";
 
 # include/loginform.inc, row 12
 $_m["Welcome!"]
@@ -4159,6 +4329,11 @@ $_m["Type your username or mail"]
 $_m["Password:"]
  = "Clave";
 
+# include/loginform.inc, row 34
+# include/constants.php3.bak, row 17
+$_m["Login now"]
+ = "";
+
 # include/loginform.inc, row 44
 # include/init_page.php3, row 114
 $_m["Either your username or your password is not valid."]
@@ -4170,7 +4345,7 @@ $_m["Please try again!"]
 
 # include/loginform.inc, row 50
 $_m["If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>."]
- = "";
+ = "Si Usted está seguro que tecleó bien su clave de acceso, por favor contacte a <a href=mailto:%1>%1</a>.";
 
 # include/discussion.php3, row 144
 $_m["Alias for subject of the discussion comment"]
@@ -4202,7 +4377,7 @@ $_m["Alias for publish date"]
 
 # include/discussion.php3, row 151
 $_m["Alias for IP address of author's computer"]
- = "";
+ = "Alias para la dirección IP del computador del autor";
 
 # include/discussion.php3, row 152
 $_m["Alias for checkbox used for choosing discussion comment"]
@@ -4265,22 +4440,18 @@ $_m["3rd parameter filled in DiscussionMailList field"]
 $_m["%1th parameter filled in DiscussionMailList field"]
  = "%1o parámetro rellenado en el campo DiscussionMailList";
 
-# include/easy_scroller.php3, row 113, 202
+# include/easy_scroller.php3, row 109, 198
 $_m["Previous"]
  = "Anterior";
 
-# include/easy_scroller.php3, row 125, 212
-$_m["Next"]
- = "Siguiente";
-
-# include/easy_scroller.php3, row 128
+# include/easy_scroller.php3, row 124
 # include/scroller.php3, row 219
 $_m["All"]
  = "Todos";
 
 # include/actions.php3, row 76, 100
 $_m["No slice selected"]
- = "";
+ = "Canal no seleccionado";
 
 # include/actions.php3, row 104, 143
 $_m["You have not permissions to remove items"]
@@ -4377,7 +4548,7 @@ $_m["Mapping"]
 
 # include/menu.php3, row 145
 $_m["Import CSV"]
- = "";
+ = "Importar CSV";
 
 # include/menu.php3, row 147, 178
 # include/menu_aa.php3, row 59
@@ -4414,7 +4585,7 @@ $_m["Trash bin"]
 
 # include/menu.php3, row 180
 $_m["Are You sure to empty trash?"]
- = "";
+ = "Está seguro de vaciar la papelera?";
 
 # include/menu.php3, row 182
 $_m["Empty trash"]
@@ -4422,23 +4593,23 @@ $_m["Empty trash"]
 
 # include/menu.php3, row 186
 $_m["Set Debug OFF"]
- = "";
+ = "Apagar Debug";
 
 # include/menu.php3, row 186
 $_m["Set Debug ON"]
- = "";
+ = "Prender Debug";
 
 # include/menu.php3, row 201
 $_m["List of Alerts modules using this slice as Reader Management."]
- = "";
+ = "Lista de módulos de alertas utilizando este canal como Gestor de Lectura.";
 
 # include/menu.php3, row 203
 $_m["Bulk Emails"]
- = "";
+ = "Correos Masivos";
 
 # include/menu.php3, row 203
 $_m["Send bulk email to selected users or to users in Stored searches"]
- = "";
+ = "Enviar correo masivo a los usuarios seleccionados o a usuarios en búsquedas almacenadas";
 
 # include/menu.php3, row 206
 $_m["Send emails"]
@@ -4458,11 +4629,11 @@ $_m["No item found"]
 
 # include/manager.class.php3, row 168
 $_m["Publish date"]
- = "";
+ = "Fecha de publicación";
 
 # include/manager.class.php3, row 168
 $_m["Headline"]
- = "";
+ = "Encabezado";
 
 # include/manager.class.php3, row 422
 $_m["Go"]
@@ -4489,17 +4660,17 @@ $_m["Rename to"]
  = "Renombrar";
 
 # include/filedit.php3, row 90
-# include/fileman.php3, row 79, 361
+# include/fileman.php3, row 81, 367
 $_m["Text file"]
  = "Archivo de texto";
 
 # include/filedit.php3, row 90
-# include/fileman.php3, row 77
+# include/fileman.php3, row 79
 $_m["Web file"]
  = "Archivo web";
 
 # include/filedit.php3, row 90
-# include/fileman.php3, row 76, 361
+# include/fileman.php3, row 78, 367
 $_m["HTML file"]
  = "Archivo HTML";
 
@@ -4516,7 +4687,7 @@ $_m["File content"]
  = "Contenido del archivo";
 
 # include/filedit.php3, row 144
-# include/fileman.php3, row 78
+# include/fileman.php3, row 80
 $_m["Image file"]
  = "Archivo de imágen";
 
@@ -4528,89 +4699,89 @@ $_m["This is a file of type"]
 $_m["I can't view it. If you want to view or edit it, change it's extension."]
  = "No lo puedo ver. Si quiere verlo o editaro, modifique la extensión.";
 
-# include/fileman.php3, row 25
+# include/fileman.php3, row 27
 $_m["Size"]
  = "Tamaño";
 
-# include/fileman.php3, row 26
+# include/fileman.php3, row 28
 $_m["Type"]
  = "Tipo";
 
-# include/fileman.php3, row 27
+# include/fileman.php3, row 29
 $_m["Last modified"]
  = "Ultima modificación";
 
-# include/fileman.php3, row 82, 99
+# include/fileman.php3, row 84, 101
 $_m["Other"]
  = "Otro";
 
-# include/fileman.php3, row 241
+# include/fileman.php3, row 243
 $_m["Wrong file name."]
  = "Nombre de archivo erroneo";
 
-# include/fileman.php3, row 244
+# include/fileman.php3, row 246
 $_m["File already exists"]
  = "El archivo ya existe";
 
-# include/fileman.php3, row 245, 363
+# include/fileman.php3, row 247, 369
 $_m["Unable to create file"]
  = "No se pudo crear el archivo";
 
-# include/fileman.php3, row 253
+# include/fileman.php3, row 255
 $_m["Wrong directory name."]
  = "Nombre de carpeta erroneo";
 
-# include/fileman.php3, row 257
+# include/fileman.php3, row 259
 $_m["Unable to create directory"]
  = "No se pudo crear la carpeta";
 
-# include/fileman.php3, row 266
+# include/fileman.php3, row 268
 $_m["First delete all files from directory"]
  = "Primero tiene que borrar todos los archivos en la carpeta";
 
-# include/fileman.php3, row 267
+# include/fileman.php3, row 269
 $_m["Unable to delete directory"]
  = "No se pudo borrar la carpeta";
 
-# include/fileman.php3, row 270
+# include/fileman.php3, row 272
 $_m["Unable to delete file"]
  = "No se pudo borrar el archivo";
 
-# include/fileman.php3, row 278, 283
+# include/fileman.php3, row 289
 $_m["Error: "]
  = "";
 
-# include/fileman.php3, row 293
+# include/fileman.php3, row 299
 $_m["Unable to open file for writing"]
  = "No se pudo acceder al archivo para escribir";
 
-# include/fileman.php3, row 298
+# include/fileman.php3, row 304
 $_m["Error writing to file"]
  = "Error al escribir en el archivo";
 
-# include/fileman.php3, row 307
+# include/fileman.php3, row 313
 $_m["File with this name already exists"]
  = "Ya existe un archivo con este nombre";
 
-# include/fileman.php3, row 308
+# include/fileman.php3, row 314
 $_m["Unable to rename"]
  = "No se pudo renombrar";
 
-# include/fileman.php3, row 350
+# include/fileman.php3, row 356
 $_m["Wrong directory name"]
  = "Nombre de carpeta erroneo";
 
-# include/fileman.php3, row 357
+# include/fileman.php3, row 363
 $_m["Files with the same names as some in the template already exist. Please change the file names first."]
- = "";
+ = "Archivos con el mismos nombres en el formato ya existen. Por favor cambie los nombres de archivo primero.";
 
-# include/fileman.php3, row 406
+# include/fileman.php3, row 412
 $_m["Are you sure you want to delete the selected files and folders?"]
  = "¿Está seguro/a que quiere borrar los archivos y carpetas seleccionados?";
 
-# include/itemview.php3, row 280
+# include/itemview.php3, row 279
 $_m["No comment was selected"]
- = "";
+ = "No se seleccionó un comentario";
 
 # include/menu_aa.php3, row 30
 $_m["Slices / Modules"]
@@ -4646,19 +4817,19 @@ $_m["Templates"]
 
 # include/menu_aa.php3, row 54
 $_m["Feeds"]
- = "";
+ = "Alimentación";
 
 # include/menu_aa.php3, row 55
 $_m["RSS test"]
- = "";
+ = "Prueba RSS";
 
 # include/menu_aa.php3, row 56
 $_m["AA RSS test"]
- = "";
+ = "Prueba RSS AAs";
 
 # include/menu_aa.php3, row 57
 $_m["Run feeding"]
- = "";
+ = "Ejecutar alimentación";
 
 # include/menu_aa.php3, row 60
 # include/tv_misc.php3, row 116, 117
@@ -4667,11 +4838,11 @@ $_m["Cron"]
 
 # include/menu_aa.php3, row 61
 $_m["View Log"]
- = "";
+ = "Ver Log";
 
 # include/menu_aa.php3, row 62
 $_m["View SearchLog"]
- = "";
+ = "Ver Log de búsquedas";
 
 # include/menu_aa.php3, row 64
 $_m["Mgettext"]
@@ -4721,7 +4892,7 @@ $_m["No slices"]
 
 # include/slicedit.php3, row 79
 $_m["Language Control Slice"]
- = "";
+ = "Canal de Control de Lenguaje";
 
 # include/slicedit.php3, row 86
 $_m["This File Manager Directory is already used by another slice."]
@@ -4749,7 +4920,7 @@ $_m["Slice not found."]
 
 # include/slicewiz.php3, row 41
 $_m["Error mailing"]
- = "";
+ = "Error enviando correo";
 
 # include/tabledit.php3, row 241
 $_m["No record matches your search condition."]
@@ -4845,39 +5016,35 @@ $_m["For help see FAQ: "]
 
 # include/tv_misc.php3, row 139
 $_m["COUNT_HIT events will be used for counting item hits. After a while it will be automaticaly deleted."]
- = "";
+ = "Los eventos COUNT_HIT se utilizarán para contar consultas a ítems. Después de un tiempo serán borrados automáticamente";
 
 # include/tv_misc.php3, row 147, 148
 $_m["Log view"]
- = "";
+ = "Ver Log";
 
 # include/tv_misc.php3, row 170
 $_m["See searchlog=1 parameter for slice.php3 in FAQ: "]
- = "";
+ = "Ver el parámetro searchlog=1 para slice.php3 en el FAQ: ";
 
 # include/tv_misc.php3, row 178, 179
 $_m["SearchLog view"]
- = "";
+ = "Ver Log de búsqueda";
 
 # include/tv_misc.php3, row 183
 $_m["items found"]
- = "";
+ = "ítems encontrados";
 
 # include/tv_misc.php3, row 184
 $_m["search time"]
- = "";
+ = "hora de búsqueda";
 
 # include/tv_misc.php3, row 185
 $_m["addition"]
- = "";
+ = "adición";
 
 # include/tv_misc.php3, row 206, 207
 $_m["Configure Fields"]
- = "";
-
-# include/import_util.php3, row 334
-$_m["Error: Invalid directory"]
- = "";
+ = "Configurar Campos";
 
 # include/tabledit_util.php3, row 64, 378
 $_m["Insert was successfull."]
@@ -4897,7 +5064,7 @@ $_m["Value of %1 should be between %2 and %3."]
 
 # include/tabledit_util.php3, row 472
 $_m["Table do not have set primary key on single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit"]
- = "";
+ = "La tabla no tiene configurada la llave primaria en una columna sencilla. Usted puede especificar la llave primaria => arreglo (campo1, campo2, ...) en el parámetro para tableedit";
 
 # include/tabledit_util.php3, row 552
 $_m["Wrong value: a number between %1 and %2 is expected."]
@@ -4925,11 +5092,11 @@ $_m["delete not confirmed"]
 
 # include/tableviews.php3, row 77
 $_m["last confirm mail"]
- = "";
+ = "ultimo correo confirmado";
 
 # include/tableviews.php3, row 84
 $_m["last delete not confirmed"]
- = "";
+ = "ultimo borrado no confirmado";
 
 # include/tableviews.php3, row 100
 $_m["This table sets handling of not confirmed users. It's accessible only\n"
@@ -4946,51 +5113,51 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
 
 # include/tableviews.php3, row 116, 117
 $_m["Polls Design"]
- = "";
+ = "Diseño Encuesta";
 
 # include/tableviews.php3, row 123, 141
 $_m["Comment"]
- = "";
+ = "Comentario";
 
 # include/tableviews.php3, row 143
 $_m["design description (for administrators only)"]
- = "";
+ = "descripción del diseño (administradores solamente)";
 
 # include/tableviews.php3, row 144
 $_m["Bar image"]
- = "";
+ = "Imagen de barra";
 
 # include/tableviews.php3, row 146
 $_m["url of image for bar"]
- = "";
+ = "Url de la imagen de barra";
 
 # include/tableviews.php3, row 147
 $_m["Bar width"]
- = "";
+ = "Ancho barra";
 
 # include/tableviews.php3, row 148
 $_m["width of poll bar"]
- = "";
+ = "Ancho de barra de encuesta";
 
 # include/tableviews.php3, row 149
 $_m["Bar height"]
- = "";
+ = "Altura de barra";
 
 # include/tableviews.php3, row 150
 $_m["height of poll bar"]
- = "";
+ = "Altura de la barra de encuesta ";
 
 # include/tableviews.php3, row 152
 $_m["Answer HTML"]
- = "";
+ = "Respuesta HTML";
 
 # include/tableviews.php3, row 154
 $_m["Params"]
- = "";
+ = "Parámetros";
 
 # include/imagefunc.php3, row 54
 $_m["Cannot copy %1 to %2"]
- = "";
+ = "No se puede copiar %1 a %2";
 
 # include/imagefunc.php3, row 105
 $_m["ResampleImage unable to %1"]
@@ -4998,14 +5165,50 @@ $_m["ResampleImage unable to %1"]
 
 # include/imagefunc.php3, row 120
 $_m["Type not supported for resize"]
- = "";
+ = "Tipo no soportado para cambiar tamaño";
 
-# include/mlx.php, row 291
+# include/mlx.php, row 349
 $_m["view"]
+ = "ver";
+
+# include/mlx.php, row 392
+$_m["No ID for MLX"]
+ = "No ID para MLX";
+
+# include/files.class.php3, row 80
+$_m["Can't create directory for image uploads"]
+ = "No se puede crear el directorio para copiado de imágenes";
+
+# include/files.class.php3, row 130
+$_m["No destination file specified"]
  = "";
 
-# include/mlx.php, row 328
-$_m["No ID for MLX"]
+# include/files.class.php3, row 144
+$_m["type of uploaded file not allowed"]
+ = "";
+
+# include/files.class.php3, row 166
+$_m["Can't move image  %1 to %2"]
+ = "";
+
+# include/files.class.php3, row 173
+$_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3"]
+ = "";
+
+# include/files.class.php3, row 190
+$_m["Can't open file for writing: %1"]
+ = "";
+
+# include/files.class.php3, row 196
+$_m["Can't write to file: %1"]
+ = "";
+
+# include/files.class.php3, row 227
+$_m["Error: Invalid directory"]
+ = "Error: Directorio inválido";
+
+# include/files.class.php3, row 248
+$_m["can't create backup of the file"]
  = "";
 
 ?>

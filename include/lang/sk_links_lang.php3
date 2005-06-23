@@ -2,7 +2,7 @@
 # $Id$
 # Language: SK
 # This file was created automatically by the Mini GetText environment
-# on 7.3.2005 15:48
+# on 23.6.2005 17:27
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -68,7 +68,7 @@ $_m["Link"]
  = "";
 
 # modules/links/linkedit.php3, row 410
-# modules/links/catedit.php3, row 92
+# modules/links/catedit.php3, row 93
 # modules/links/constants.php3, row 53, 156
 $_m["Id"]
  = "";
@@ -76,6 +76,7 @@ $_m["Id"]
 # modules/links/linkedit.php3, row 415
 # modules/links/constants.php3, row 67
 # modules/links/link.class.php3, row 645
+# modules/links/linkedit2.bak.php3, row 31
 $_m["Url"]
  = "";
 
@@ -85,7 +86,7 @@ $_m["Check url"]
 
 # modules/links/linkedit.php3, row 419
 # modules/links/menu.php3, row 72
-# include/searchbar.class.php3, row 431
+# include/searchbar.class.php3, row 441
 $_m["View"]
  = "";
 
@@ -95,6 +96,7 @@ $_m["You can check, if the page is not in database already"]
 
 # modules/links/linkedit.php3, row 424
 # modules/links/link.class.php3, row 641
+# modules/links/linkedit2.bak.php3, row 27
 $_m["Page name"]
  = "";
 
@@ -104,6 +106,7 @@ $_m["English name of the page"]
 
 # modules/links/linkedit.php3, row 427
 # modules/links/link.class.php3, row 642
+# modules/links/linkedit2.bak.php3, row 28
 $_m["Original page name"]
  = "";
 
@@ -114,6 +117,7 @@ $_m["Name of the page in original language"]
 # modules/links/linkedit.php3, row 430
 # modules/links/constants.php3, row 56, 160
 # modules/links/link.class.php3, row 643
+# modules/links/linkedit2.bak.php3, row 29
 $_m["Description"]
  = "";
 
@@ -124,6 +128,7 @@ $_m["Do not use HTML tags and do not write words like \"best page\", ... The max
 # modules/links/linkedit.php3, row 437
 # modules/links/constants.php3, row 57, 110
 # modules/links/link.class.php3, row 647
+# modules/links/linkedit2.bak.php3, row 33
 $_m["Link type"]
  = "";
 
@@ -136,10 +141,11 @@ $_m["Author's e-mail"]
  = "";
 
 # modules/links/linkedit.php3, row 450
-# modules/links/catedit.php3, row 96
+# modules/links/catedit.php3, row 97
 # modules/links/catedit2.php3, row 212
 # modules/links/constants.php3, row 70
 # modules/links/link.class.php3, row 654
+# modules/links/linkedit2.bak.php3, row 40
 $_m["Editor's note"]
  = "";
 
@@ -173,7 +179,7 @@ $_m["Show in category"]
  = "";
 
 # modules/links/linkedit.php3, row 472
-# modules/links/catedit.php3, row 102
+# modules/links/catedit.php3, row 103
 $_m["Category tree"]
  = "";
 
@@ -195,32 +201,38 @@ $_m["Organization"]
 
 # modules/links/linkedit.php3, row 513
 # modules/links/link.class.php3, row 648
+# modules/links/linkedit2.bak.php3, row 34
 $_m["City"]
  = "";
 
 # modules/links/linkedit.php3, row 515
 # modules/links/link.class.php3, row 649
+# modules/links/linkedit2.bak.php3, row 35
 $_m["Street"]
  = "";
 
 # modules/links/linkedit.php3, row 517
 # modules/links/link.class.php3, row 650
+# modules/links/linkedit2.bak.php3, row 36
 $_m["Post code"]
  = "";
 
 # modules/links/linkedit.php3, row 519
 # modules/links/link.class.php3, row 651
+# modules/links/linkedit2.bak.php3, row 37
 $_m["Phone"]
  = "";
 
 # modules/links/linkedit.php3, row 521
 # modules/links/link.class.php3, row 652
+# modules/links/linkedit2.bak.php3, row 38
 $_m["Fax"]
  = "";
 
 # modules/links/linkedit.php3, row 523
 # modules/links/constants.php3, row 66
 # modules/links/link.class.php3, row 653
+# modules/links/linkedit2.bak.php3, row 39
 $_m["E-mail"]
  = "";
 
@@ -250,81 +262,81 @@ $_m["select pege's languages"]
 $_m["No permission to edit category"]
  = "";
 
-# modules/links/catedit.php3, row 66
+# modules/links/catedit.php3, row 62
 $_m["ActionApps - Category Edit"]
  = "";
 
-# modules/links/catedit.php3, row 84
+# modules/links/catedit.php3, row 85
 # modules/links/tabledit.php3, row 68, 69
 $_m["Category Edit"]
  = "";
 
-# modules/links/catedit.php3, row 90
+# modules/links/catedit.php3, row 91
 $_m["Category"]
  = "";
 
-# modules/links/catedit.php3, row 92
+# modules/links/catedit.php3, row 93
 $_m["Links in subtree"]
  = "";
 
-# modules/links/catedit.php3, row 93
+# modules/links/catedit.php3, row 94
 # modules/links/catedit2.php3, row 207
 # modules/links/constants.php3, row 88, 171
 $_m["Category name"]
  = "";
 
-# modules/links/catedit.php3, row 94
+# modules/links/catedit.php3, row 95
 # modules/links/catedit2.php3, row 208
 # modules/links/constants.php3, row 92, 173
 $_m["Category description"]
  = "";
 
-# modules/links/catedit.php3, row 95
+# modules/links/catedit.php3, row 96
 $_m["No links"]
  = "";
 
-# modules/links/catedit.php3, row 95
+# modules/links/catedit.php3, row 96
 $_m["Disalow storing of the links to this category?"]
  = "";
 
-# modules/links/catedit.php3, row 98
+# modules/links/catedit.php3, row 99
 $_m["Subcategories"]
  = "";
 
-# modules/links/catedit.php3, row 102
+# modules/links/catedit.php3, row 103
 $_m["select the category for crossreference"]
  = "";
 
-# modules/links/catedit.php3, row 104
+# modules/links/catedit.php3, row 105
 $_m["Selected subcategories"]
  = "";
 
-# modules/links/catedit.php3, row 104
+# modules/links/catedit.php3, row 105
 $_m["subcategories of this category"]
  = "";
 
-# modules/links/catedit.php3, row 124
+# modules/links/catedit.php3, row 125
 $_m["New subcategory"]
  = "";
 
-# modules/links/catedit.php3, row 124
+# modules/links/catedit.php3, row 125
 $_m["Add"]
  = "";
 
-# modules/links/catedit.php3, row 126
+# modules/links/catedit.php3, row 127
 $_m["Remove selected subcategory?"]
  = "";
 
-# modules/links/catedit.php3, row 126
+# modules/links/catedit.php3, row 127
 $_m["Del"]
  = "";
 
-# modules/links/catedit.php3, row 127
+# modules/links/catedit.php3, row 128
 $_m["Change state"]
  = "";
 
-# modules/links/catedit.php3, row 130
-# modules/links/catselect.php3, row 56
+# modules/links/catedit.php3, row 131
+# modules/links/catselect.php3, row 57
 $_m["OK"]
  = "";
 
@@ -385,7 +397,7 @@ $_m["Page with the specified Url is not in database, yet"]
  = "";
 
 # modules/links/check_url.php3, row 39
-# include/util.php3, row 1164
+# include/util.php3, row 1170
 $_m["Back"]
  = "";
 
@@ -393,83 +405,85 @@ $_m["Back"]
 $_m["No permissions to edit links"]
  = "";
 
-# modules/links/index.php3, row 250
+# modules/links/index.php3, row 239
 $_m["HINT: \"social ecology\" AND environment"]
  = "";
 
-# modules/links/index.php3, row 277
+# modules/links/index.php3, row 266
 $_m["Perform action on selected items"]
  = "";
 
-# modules/links/index.php3, row 281
+# modules/links/index.php3, row 270
 $_m["Check Link"]
  = "";
 
-# modules/links/index.php3, row 284
+# modules/links/index.php3, row 273
 $_m["Highlight Link"]
  = "";
 
-# modules/links/index.php3, row 287
+# modules/links/index.php3, row 276
 $_m["Dehighlight Link"]
  = "";
 
-# modules/links/index.php3, row 290
+# modules/links/index.php3, row 279
 $_m["Remove from category"]
  = "";
 
-# modules/links/index.php3, row 293
+# modules/links/index.php3, row 282
 $_m["Move to Active"]
  = "";
 
-# modules/links/index.php3, row 297
+# modules/links/index.php3, row 286
 $_m["Move to Holding bin"]
  = "";
 
-# modules/links/index.php3, row 301
+# modules/links/index.php3, row 290
 $_m["Move to Trash"]
  = "";
 
-# modules/links/index.php3, row 304
+# modules/links/index.php3, row 293
 $_m["Add to category"]
  = "";
 
-# modules/links/index.php3, row 308
+# modules/links/index.php3, row 297
 $_m["Move to category"]
  = "";
 
-# modules/links/index.php3, row 337
+# modules/links/index.php3, row 326
 $_m["ActionApps - Links Manager"]
  = "";
 
-# modules/links/index.php3, row 393
+# modules/links/index.php3, row 382
 $_m["All my links"]
  = "";
 
-# modules/links/index.php3, row 394
+# modules/links/index.php3, row 383
 $_m["Links to check"]
  = "";
 
-# modules/links/index.php3, row 395
+# modules/links/index.php3, row 384
 $_m["Last edited"]
  = "";
 
-# modules/links/index.php3, row 423
+# modules/links/index.php3, row 412
 $_m["Show Links"]
  = "";
 
-# modules/links/index.php3, row 427
+# modules/links/index.php3, row 416
 $_m["Edit Category"]
  = "";
 
-# modules/links/index.php3, row 436
+# modules/links/index.php3, row 425
 $_m["Show subtree links"]
  = "";
 
 # modules/links/linkedit2.php3, row 54
+# modules/links/linkedit2.bak.php3, row 349
 $_m["Link change proposal inserted"]
  = "";
 
 # modules/links/linkedit2.php3, row 54, 58
+# modules/links/linkedit2.bak.php3, row 359
 $_m["Link inserted"]
  = "";
 
@@ -477,31 +491,31 @@ $_m["Link inserted"]
 $_m["Continue"]
  = "";
 
-# modules/links/catselect.php3, row 25
+# modules/links/catselect.php3, row 26
 $_m["ActionApps - Select Category"]
  = "";
 
-# modules/links/catselect.php3, row 44
+# modules/links/catselect.php3, row 45
 $_m["Select Category"]
  = "";
 
-# modules/links/modedit.php3, row 56
+# modules/links/modedit.php3, row 58
 $_m["No permission to add module"]
  = "";
 
-# modules/links/modedit.php3, row 61
+# modules/links/modedit.php3, row 63
 $_m["No permission to edit module"]
  = "";
 
-# modules/links/modedit.php3, row 79, 219, 222
+# modules/links/modedit.php3, row 81, 219, 222
 $_m["Start category id"]
  = "";
 
-# modules/links/modedit.php3, row 80, 225, 228
+# modules/links/modedit.php3, row 82, 225, 228
 $_m["Tree start id"]
  = "";
 
-# modules/links/modedit.php3, row 81, 226, 229
+# modules/links/modedit.php3, row 83, 226, 229
 $_m["Select start id"]
  = "";
 
@@ -598,6 +612,7 @@ $_m["Original name"]
  = "";
 
 # modules/links/constants.php3, row 58
+# modules/links/linkedit2.bak.php3, row 32
 $_m["Rate"]
  = "";
 
@@ -607,6 +622,7 @@ $_m["Votes"]
 
 # modules/links/constants.php3, row 60
 # modules/links/link.class.php3, row 644
+# modules/links/linkedit2.bak.php3, row 30
 $_m["Author"]
  = "";
 
@@ -926,15 +942,15 @@ $_m["Is this category general one? (1/0)"]
 $_m["Print category priority, if category is general one."]
  = "";
 
-# modules/links/cattree.php3, row 406
+# modules/links/cattree.php3, row 399
 $_m["Switch to category"]
  = "";
 
-# modules/links/info.php3, row 59
+# modules/links/info.php3, row 60
 $_m["No permissions to manage links"]
  = "";
 
-# modules/links/info.php3, row 147
+# modules/links/info.php3, row 148
 $_m["No permissions to info page"]
  = "";
 
@@ -975,6 +991,7 @@ $_m["Folders with links, sorted by their status (active, changed, new, ...)"]
  = "";
 
 # modules/links/menu.php3, row 114
+# modules/links/linkedit2.bak.php3, row 49
 $_m["Active"]
  = "";
 
@@ -987,10 +1004,12 @@ $_m["New Links"]
  = "";
 
 # modules/links/menu.php3, row 123
+# modules/links/linkedit2.bak.php3, row 49
 $_m["Holding bin"]
  = "";
 
 # modules/links/menu.php3, row 126
+# modules/links/linkedit2.bak.php3, row 49
 $_m["Trash"]
  = "";
 
@@ -1058,6 +1077,18 @@ $_m["Module not found."]
 $_m["Links module successfully deleted"]
  = "";
 
+# modules/links/linkedit2.bak.php3, row 48
+$_m["Link have the same url as:"]
+ = "";
+
+# modules/links/linkedit2.bak.php3, row 400
+$_m["Link changed"]
+ = "";
+
+# modules/links/linkedit2.bak.php3, row 416
+$_m["Link assigned to category"]
+ = "";
+
 # include/manager.class.php3, row 122
 $_m["No item found"]
  = "";
@@ -1090,171 +1121,167 @@ $_m["Go"]
 $_m["Items Page"]
  = "";
 
-# include/searchbar.class.php3, row 343, 410
+# include/searchbar.class.php3, row 346, 420
 $_m["Search"]
  = "";
 
-# include/searchbar.class.php3, row 348
+# include/searchbar.class.php3, row 351
 $_m["And"]
  = "";
 
-# include/searchbar.class.php3, row 357, 484, 493
+# include/searchbar.class.php3, row 360, 494, 503
 $_m["contains"]
  = "";
 
-# include/searchbar.class.php3, row 358, 484, 493
+# include/searchbar.class.php3, row 361, 494, 503
 $_m["begins with"]
  = "";
 
-# include/searchbar.class.php3, row 359, 484, 493
+# include/searchbar.class.php3, row 362, 494, 503
 $_m["is"]
  = "";
 
-# include/searchbar.class.php3, row 395
+# include/searchbar.class.php3, row 405
 $_m["Order"]
  = "";
 
-# include/searchbar.class.php3, row 403
+# include/searchbar.class.php3, row 413
 $_m["Descending"]
  = "";
 
-# include/searchbar.class.php3, row 411
+# include/searchbar.class.php3, row 421
 $_m["Clear"]
  = "";
 
-# include/searchbar.class.php3, row 414
+# include/searchbar.class.php3, row 424
 $_m["Stored search name"]
  = "";
 
-# include/searchbar.class.php3, row 415
+# include/searchbar.class.php3, row 425
 $_m["You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?"]
  = "";
 
-# include/searchbar.class.php3, row 415
+# include/searchbar.class.php3, row 425
 $_m["Store"]
  = "";
 
-# include/searchbar.class.php3, row 428
+# include/searchbar.class.php3, row 438
 $_m["Stored searches"]
  = "";
 
-# include/searchbar.class.php3, row 434
+# include/searchbar.class.php3, row 444
 $_m["Are you sure to refine current search?"]
  = "";
 
-# include/searchbar.class.php3, row 434
+# include/searchbar.class.php3, row 444
 $_m["Update"]
  = "";
 
-# include/searchbar.class.php3, row 435
+# include/searchbar.class.php3, row 445
 $_m["Enter new name"]
  = "";
 
-# include/searchbar.class.php3, row 435
+# include/searchbar.class.php3, row 445
 $_m["Rename"]
  = "";
 
-# include/searchbar.class.php3, row 436
+# include/searchbar.class.php3, row 446
 $_m["Are you sure to delete selected search?"]
  = "";
 
-# include/searchbar.class.php3, row 436
+# include/searchbar.class.php3, row 446
 $_m["Delete"]
  = "";
 
-# include/searchbar.class.php3, row 493
+# include/searchbar.class.php3, row 503
 $_m["select ..."]
  = "";
 
-# include/searchbar.class.php3, row 673
+# include/searchbar.class.php3, row 683
 $_m["Select one..."]
  = "";
 
-# include/util.php3, row 799, 844
+# include/util.php3, row 802, 847
 $_m["Error: Missing Reading Password"]
  = "";
 
-# include/util.php3, row 1156
+# include/util.php3, row 1162
 $_m["Toolkit news message"]
  = "";
 
-# include/util.php3, row 1382
+# include/util.php3, row 1387
 $_m["Internal error. File upload: Dir does not exist?!"]
  = "";
 
-# include/util.php3, row 1386
+# include/util.php3, row 1391
 $_m["File with this name already exists."]
  = "";
 
-# include/util.php3, row 1396
+# include/util.php3, row 1398
 $_m["Can't move image  %s to %s"]
  = "";
 
-# include/util.php3, row 1403
-$_m["Can't copy image  %s to %s"]
- = "";
-
-# include/util.php3, row 1610
+# include/util.php3, row 1605
 $_m["alerts alert"]
  = "";
 
-# include/util.php3, row 1611
+# include/util.php3, row 1606
 $_m["alerts welcome"]
  = "";
 
-# include/util.php3, row 1612
+# include/util.php3, row 1607
 $_m["slice wizard welcome"]
  = "";
 
-# include/util.php3, row 1613
+# include/util.php3, row 1608
 $_m["other"]
  = "";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["January"]
  = "";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["February"]
  = "";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["March"]
  = "";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["April"]
  = "";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["May"]
  = "";
 
-# include/util.php3, row 1620
+# include/util.php3, row 1615
 $_m["June"]
  = "";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["July"]
  = "";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["August"]
  = "";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["September"]
  = "";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["October"]
  = "";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["November"]
  = "";
 
-# include/util.php3, row 1621
+# include/util.php3, row 1616
 $_m["December"]
  = "";
 

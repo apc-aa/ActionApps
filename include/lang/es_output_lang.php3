@@ -2,7 +2,7 @@
 # $Id$
 # Language: ES
 # This file was created automatically by the Mini GetText environment
-# on 7.3.2005 15:48
+# on 23.6.2005 17:27
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -12,32 +12,32 @@ $mgettext_lang = "es";
 
 # Unused messages
 # End of unused messages
-# ./slice.php3, row 187
+# ./slice.php3, row 177
 $_m["Bad inc parameter - included file must be in the same directory as this .shtml file and must contain only alphanumeric characters"]
  = "Error en parámetro - el archivo a incluir debe estar en la misma carpeta que este .shtml y debe contener únicamente caracteres alfanuméricos";
 
-# ./slice.php3, row 192
+# ./slice.php3, row 182
 $_m["No such file"]
  = "No se encontró el archivo";
 
-# ./slice.php3, row 224
+# ./slice.php3, row 211
 $_m["Invalid slice number or slice was deleted"]
  = "Identificador de canal no válido, o el canal fué borrado";
 
-# ./slice.php3, row 280
+# ./slice.php3, row 273
 $_m["session id"]
- = "";
+ = "id de sesión";
 
-# ./slice.php3, row 385
+# ./slice.php3, row 379
 $_m["number of current page (on pagescroller)"]
- = "";
+ = "número de página actual (en numerador de página)";
 
-# ./slice.php3, row 386
+# ./slice.php3, row 380
 $_m["page length (number of items)"]
- = "";
+ = "longitud de la página (número de ítems)";
 
-# ./slice.php3, row 565
-# include/view.php3, row 413
+# ./slice.php3, row 559
+# include/view.php3, row 423
 $_m["No item found"]
  = "No se encontraron items";
 
@@ -79,82 +79,93 @@ $_m["Alias for author's e-mail"]
 
 # include/discussion.php3, row 148
 $_m["Alias for url address of author's www site"]
- = "";
+ = "Alias para url del autor del sitio";
 
 # include/discussion.php3, row 149
 $_m["Alias for description of author's www site"]
- = "";
+ = "Alias para la descripción del sitio del autor";
 
 # include/discussion.php3, row 150
 $_m["Alias for publish date"]
- = "";
+ = "Alias para la fecha de publicación";
 
 # include/discussion.php3, row 151
 $_m["Alias for IP address of author's computer"]
- = "";
+ = "Alias para la dirección IP del computador del autor";
 
 # include/discussion.php3, row 152
 $_m["Alias for checkbox used for choosing discussion comment"]
- = "";
+ = "Alias para la caja de selección utilizada para seleccionar un comentario de la discusión";
 
 # include/discussion.php3, row 153
 $_m["Alias for images"]
- = "";
+ = "Alias para imágenes";
 
 # include/discussion.php3, row 154, 155
 $_m["Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"]
- = "";
+ = "Alias para el Id de comentario<br>\n"
+   ."                             <i>Uso: </i>código de entrada en formulario<br>\n"
+   ."                             <i>Ejemplo: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">";
 
 # include/discussion.php3, row 156
 $_m["Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"]
- = "";
+ = "Alias para Id del ítem<br>\n"
+   ."                             <i>Uso: </i>código de entrada en formulario<br>\n"
+   ."                             <i>Ejemplo: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">";
 
 # include/discussion.php3, row 157
 $_m["Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"]
- = "";
+ = "Alias para enlazar el texto del comentario de discusión<br>\n"
+   ."                             <i>Uso: </i>en código HTML para indexar la vista del comentario<br>\n"
+   ."                             <i>Ejemplo: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>";
 
 # include/discussion.php3, row 158
 $_m["Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"]
- = "";
+ = "Alias para el vínculo del formulario<br>\n"
+   ."                             <i>Uso: </i>en código HTML para la vista de texto completo del comentario<br>\n"
+   ."                             <i>Ejemplo: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;";
 
 # include/discussion.php3, row 159
 $_m["Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"]
- = "";
+ = "Alias para enlazar la discusión<br>\n"
+   ."                             <i>Uso: </i>código de entrada en formulario<br>\n"
+   ."                             <i>Ejemplo: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">";
 
 # include/discussion.php3, row 160
 $_m["Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"]
- = "";
+ = "Alias para botones de Mostrar todo, Mostrar seleccionados, Añadir nuevo<br>\n"
+   ."                             <i>Uso: </i> al final del código HMTL";
 
 # include/discussion.php3, row 302
 $_m["3rd parameter filled in DiscussionMailList field"]
- = "";
+ = "Tercer parámetro llenado en el campo DiscussionMailList";
 
 # include/discussion.php3, row 304
 $_m["%1th parameter filled in DiscussionMailList field"]
- = "";
+ = "%1 parámetro llenado en el campo DiscussionMailList";
 
 # include/item.php3, row 66
 $_m["number of found items"]
- = "";
+ = "número de registros encontrados";
 
 # include/item.php3, row 67
 $_m["index of item within whole listing (begins with 0)"]
- = "";
+ = "índice del ítem dentro de toda la lista (empezando con 0)";
 
 # include/item.php3, row 68
 $_m["index of item within a page (it begins from 0 on each page listed by pagescroller)"]
- = "";
+ = "índice del item dentro de la página (si comienza desde 0 en cada página listada por el numerador de página -pagescroller-";
 
 # include/item.php3, row 69
 $_m["alias for Item ID"]
@@ -170,23 +181,23 @@ $_m["alias used on admin page index.php3 for itemedit url"]
 
 # include/item.php3, row 79
 $_m["Alias used on admin page index.php3 for edit discussion url"]
- = "";
+ = "Alias utilizado en la página de administración index.php3 para el url de editar discusión";
 
 # include/item.php3, row 80
 $_m["Title of Slice for RSS"]
- = "";
+ = "Título del canal para RSS";
 
 # include/item.php3, row 81
 $_m["Link to the Slice for RSS"]
- = "";
+ = "Enlace al canal para RSS";
 
 # include/item.php3, row 82
 $_m["Short description (owner and name) of slice for RSS"]
- = "";
+ = "Descripción corta (dueño y nombre del canal para RSS";
 
 # include/item.php3, row 83
 $_m["Date RSS information is generated, in RSS date format"]
- = "";
+ = "Fecha en que la información RSS es generada, en formato de fecha RSS";
 
 # include/item.php3, row 84
 $_m["Slice name"]
@@ -194,11 +205,11 @@ $_m["Slice name"]
 
 # include/item.php3, row 86
 $_m["Current MLX language"]
- = "";
+ = "Lenguaje actual MLX";
 
 # include/item.php3, row 87
 $_m["HTML markup direction tag (e.g. DIR=RTL)"]
- = "";
+ = "Dirección del tag HTML (p.e. DIR=RTL";
 
 # include/item.php3, row 120
 $_m["Constant name"]
@@ -242,38 +253,38 @@ $_m["Constant level (used for hierachical constants)"]
 
 # include/item.php3, row 161
 $_m["Alias for %1"]
- = "";
+ = "Alias para %1";
 
-# include/item.php3, row 1106
+# include/item.php3, row 1108
 $_m["on"]
  = "activo";
 
-# include/item.php3, row 1106
+# include/item.php3, row 1108
 $_m["off"]
  = "inactivo";
 
-# include/item.php3, row 1228
+# include/item.php3, row 1230
 $_m["Back"]
  = "Atrás";
 
-# include/item.php3, row 1229
+# include/item.php3, row 1231
 $_m["Home"]
  = "Inicio";
 
 # include/scroller.php3, row 219
-# include/easy_scroller.php3, row 128
+# include/easy_scroller.php3, row 124
 $_m["All"]
  = "Todo";
 
-# include/easy_scroller.php3, row 113, 202
+# include/easy_scroller.php3, row 109, 198
 $_m["Previous"]
  = "Anterior";
 
-# include/easy_scroller.php3, row 125, 212
+# include/easy_scroller.php3, row 121, 208
 $_m["Next"]
  = "Siguiente";
 
-# include/itemview.php3, row 280
+# include/itemview.php3, row 279
 $_m["No comment was selected"]
  = "No hay ningún comentario seleccionado";
 
