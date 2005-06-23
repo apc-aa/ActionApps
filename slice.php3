@@ -487,7 +487,7 @@ if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($
         echo "<BR>Group by: -$group_by- <br>Slice_info[category_sort] -$slice_info[category_sort]-<br>slice_info[group_by] -$slice_info[group_by]-";
     }
 
-
+    $sort_tmp = array();
     if ($group_by) {
         $foo                    = GetSortArray( $group_by );
         $sort_tmp[]             = $foo;

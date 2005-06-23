@@ -114,6 +114,9 @@ class searchbar extends storable_class{
         $this->order_row_count_min  = $orcm;
         $this->add_empty_search_row = $aesr;
         $this->bookmarks            = new bookmarks;   // stores bookmarks (stored queries)
+        $this->search_row           = array();         // internal array - stores current state of search rows
+        $this->order_row            = array();         // internal array - stores current state of order rows
+
     }
 
     /**
@@ -173,7 +176,7 @@ class searchbar extends storable_class{
     function resetSearchAndOrder() {
         unset($this->order_row);
         for ( $i=0; $i<count($this->search_row); $i++ ) {
-            if ($this->search_row[$i]['readonly'] != true) {
+            if (!$this->getSearchBarReadonly($i)) {
                 unset($this->search_row[$i]);
             }
         }
@@ -182,11 +185,11 @@ class searchbar extends storable_class{
 
     /** Set searchbar state from form */
     function setFromForm() {
-        unset($srchbar);
+        $srchbar = array();
         if ($this->show & MGR_SB_SEARCHROWS) {
             // cleaning all searchrows except 'readonly' searches
             for ( $i=0; $i<count($this->search_row); $i++ ) {
-                if ($this->search_row[$i]['readonly'] == true) {
+                if ($this->getSearchBarReadonly($i)) {
                     $srchbar[] = $this->search_row[$i];
                 }
             }
@@ -287,12 +290,12 @@ class searchbar extends storable_class{
      * Returns conds[] array to use with QueryIDs() (or Links_QueryIDs(), ...)
      */
     function getConds() {
-        if ( !isset($this->search_row) OR !is_array($this->search_row) )
+        if ( !isset($this->search_row) OR !is_array($this->search_row) ) {
             return false;
+        }
 
         $fields = $this->fields;
-        reset( $this->search_row );
-        while ( list( , $c ) = each( $this->search_row ) ) {
+        foreach ($this->search_row as $c) {
             $conds[]=array( 'operator' => $c['oper'],
                             'value' => $c['value'],
                             $c['field'] => 1 );
@@ -377,7 +380,14 @@ class searchbar extends storable_class{
      * Access function to searchba operator
      */
     function getSearchBarOperator($bar) {
-        return $this->search_row[$bar]['oper'];
+        return is_array($this->search_row) AND is_array($this->search_row[$bar]) AND $this->search_row[$bar]['oper'];
+    }
+
+    /**
+     * Returns, if the search row is marked as readonly
+     */
+    function getSearchBarReadonly($bar) {
+        return is_array($this->search_row) AND is_array($this->search_row[$bar]) AND $this->search_row[$bar]['readonly'];
     }
 
     /**
@@ -498,14 +508,14 @@ class searchbar extends storable_class{
         // print string like "120021020010" which defines field type (charAt())
         $oper_translate = array( 'text' => 0, 'numeric' => 1, 'date' => 2, 'constants' => 3);
         if ( isset($this->search_operators) AND is_array($this->search_operators) ) {
-            reset($this->search_operators);
-            while ( list(,$v) = each($this->search_operators) ) {
+            foreach ($this->search_operators as $v) {
                 echo $oper_translate[$v];
             }
         }
         echo "\";\n";
+
         for ( $i=0; $i<$count_sb; $i++ ) {
-            if ($this->search_row[$i]['readonly'] != true) {
+            if (!$this->getSearchBarReadonly($i)) {
                 echo "   ChangeOperators('".$this->form_name."','$i','".$this->getSearchBarOperator($i)."');\n";
             }
         }
