@@ -103,6 +103,7 @@ function CheckConditionCommand($field, $value) {
 /** Converts a query string into a data view_params data structure */
 function ParseViewParameters($query_string="") {
   global $cmd, $set, $vid, $als, $slice_id, $debug;
+  global $x;   // url parameter - used for cmd[]=x-111-url view parameter
 
   // Parse parameters
   // if view in cmd[] or set[] is not specified - fill it from vid
