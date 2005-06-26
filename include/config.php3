@@ -71,6 +71,17 @@ define("ORG_NAME","An APC Member");
   define("DB_NAME",    "aadb");       // Name of database
   define("DB_USER",    "aadbuser");   // User name for database access
   define("DB_PASSWORD","test.pw");    // Database password
+  define("DB_TYPE", "db_mysql");      // you can (in theory) use also another 
+                                      // databases like db_odbc, db_mssql, ...
+
+/** Use MySQL non-persistent database connect (mysql_connect())
+ *  or the persistent one?
+ *  Persistent connection should be better for most servers, but if you have
+ *  experience troubles in MySQL connection, use non-persistent connections
+ *  see http://cz.php.net/manual/en/function.mysql-pconnect.php
+ *  Default value: true
+ */
+define('AA_USE_NON_PERSISTENT_CONNECT', false);
 
 /** Permissions system settings
  *  Select permission system (exactly one of "dummy", "ldap", "sql")
@@ -182,8 +193,6 @@ define("SCROLLER_LENGTH", 3);
    *  makes for faster serving */
   define("CACHE_TTL", 600 );
 
-  /** The frequency in which the cache is checked for old values (in seconds) */
-  define("CACHE_PURGE_FREQ", 1000);
 
 /** Convertors - you can install it and then use
  *  Just uncomment and fill the right path and convert option will be shown
@@ -243,7 +252,7 @@ define("AA_INSTAL_URL", $AA_HTTP_DOMAIN. substr($AA_INSTAL_PATH,1));    // do no
 $AA_INSTAL_EDIT_PATH = AA_INSTAL_URL;           // do not change
 
 /** URL of index of help files for AA */
-define("DOCUMENTATION_URL", "http://apc-aa.sourceforge.net/apc-aa/doc");
+define("DOCUMENTATION_URL", "http://actionapps.org/aa/doc");
 
 /** developer SITE_CONFIG
  *  Note: developers can put their site-specific config in SITE_CONFIG
