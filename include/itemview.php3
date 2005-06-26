@@ -365,13 +365,15 @@ class itemview {
       return $this->unaliasWithScroller($txt, $fooparameter);
   }
   
-  function unaliasWithScroller(&$txt, &$item) {
+  function unaliasWithScroller($txt, &$item) {
       // get HTML code, unalias it and add scroller, if needed
       $level = 0; $maxlevel = 0;
       // If no item is specified, then still try and expand aliases using parameters
       if (!$item) {
           $item = new item(null,$this->aliases,null,null,null,$this->parameters);
       }
+      // new_unalias_recurent modifies also $txt - that's why we do not use 
+      // &$txt in function definition
       return new_unalias_recurent($txt,"",$level,$maxlevel,$item,$this,null);
   }
 

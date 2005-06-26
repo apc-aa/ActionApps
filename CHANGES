@@ -1,8 +1,10 @@
+06/26/05 - new possibility to define Row Delimiter in view
+(honzam)   updated config file - removed unused options
 06/23/05 - feeds are taken in random order which leads to more fault tolerant
 (honzam)   feeding in xmlclient
          - fixed script for generation of language files - now finds also text,
            which is inside quotes (like in HTML abtibute hidden php code)
-         - language files updated
+         - language files updated (thanks to Julian Casasbuenas and others)
          - PHP5 fixes
          - changed strings to match new upcomming version 2.8 of AA
 06/20/05 - fillform.php3 tries to set all the inputs, which was sent by $_GET

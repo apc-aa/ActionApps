@@ -304,6 +304,7 @@ function GetViewFormat($view_info, $selected_item='') {
   $format['compact_remove'] = $view_info['remove_string'];
   $format['even_row_format'] = $view_info['even'];
   $format['odd_row_format'] = $view_info['odd'];
+  $format['row_delimiter'] = $view_info['row_delimiter'];
   $format['even_odd_differ'] = $view_info['even_odd_differ'];
   $format['banner_position'] = $view_info['banner_position'];
   $format['banner_parameters'] = $view_info['banner_parameters'];

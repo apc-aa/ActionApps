@@ -338,6 +338,7 @@ function getViewFields() {
     $VIEW_FIELDS["even"]            = GetViewFieldDef("text",  "quoted", "text",  "area"   );
     $VIEW_FIELDS["even_odd_differ"] = GetViewFieldDef("",      "quoted", "bool",  "chbox"  );
     $VIEW_FIELDS["odd"]             = GetViewFieldDef("text",  "quoted", "text",  "areabig");
+    $VIEW_FIELDS["row_delimiter"]   = GetViewFieldDef("text",  "quoted", "text",  "area");
     $VIEW_FIELDS["after"]           = GetViewFieldDef("text",  "quoted", "text",  "area"   );
     $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text",  "quoted", "text",  "order"  );
     $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
@@ -402,6 +403,7 @@ function getViewTypes () {
                          "odd" => _m("Odd Rows") ,
                          "even_odd_differ" => _m("Use different HTML code for even rows") ,
                          "even" => _m("Even Rows") ,
+                         "row_delimiter" => _m("Row Delimiter") ,
                          "after" => _m("Bottom HTML") ,
                          "remove_string" => _m("Remove strings") ,
     // TODO                     "modification" => _m("Type") ,
@@ -502,6 +504,7 @@ function getViewTypes () {
                           "before" => _m("Top HTML") ,
                           "odd" => _m("Odd Rows") ,
                           "even" => _m("Even Rows") ,
+                          "row_delimiter" => _m("Row Delimiter") ,
                           "after" => _m("Bottom HTML") ,
                           "remove_string" => _m("Remove strings") ,
                           "parameter" => _m("Constant Group") ,
@@ -619,6 +622,7 @@ function getViewTypes () {
                            "odd" => _m("Odd Rows") ,
                            "even_odd_differ" => _m("Use different HTML code for even rows") ,
                            "even" => _m("Even Rows") ,
+                           "row_delimiter" => _m("Row Delimiter") ,
                            "after" => _m("Bottom HTML") ,
                            "remove_string" => _m("Remove strings") ,
                            "order1" => _m("Sort primary") ,
@@ -666,6 +670,7 @@ function getViewTypes () {
                           "odd" => _m("Odd Rows") ,
                           "even_odd_differ" => _m("Use different HTML code for even rows") ,
                           "even" => _m("Even Rows") ,
+                          "row_delimiter" => _m("Row Delimiter") ,
                           "after" => _m("Bottom HTML") ,
                           "remove_string" => _m("Remove strings") ,
                           "order1" => _m("Sort primary") ,
@@ -695,6 +700,7 @@ function getViewTypes () {
                                "odd" => _m("Odd Rows") ,
                                "even_odd_differ" => _m("Use different HTML code for even rows") ,
                                "even" => _m("Even Rows") ,
+                               "row_delimiter" => _m("Row Delimiter") ,
                                "after" => _m("Bottom HTML") ,
                                "remove_string" => _m("Remove strings") ,
                                "order1" => _m("Sort primary") ,
