@@ -10,7 +10,7 @@
   * @copyright (c) 2002-3 Association for Progressive Communications
 */
 
-define('APC_AA_VERSION','2.8.0-stable');
+define('APC_AA_VERSION','2.8.1-stable');
 
 @session_start();
 /* Register a session. */
