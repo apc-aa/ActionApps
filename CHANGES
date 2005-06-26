@@ -1,3 +1,6 @@
+--------------------
+06/26/05 - v2.8.0 - stable release
+--------------------
 06/26/05 - new possibility to define Row Delimiter in view
 (honzam)   updated config file - removed unused options
 06/23/05 - feeds are taken in random order which leads to more fault tolerant
