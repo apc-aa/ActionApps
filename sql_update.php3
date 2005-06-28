@@ -816,7 +816,7 @@ $tablelist = array(   'active_sessions' => "(
                           object longtext NOT NULL,
                           params longtext NOT NULL,
                           PRIMARY KEY  (id),
-                          KEY time (execute_after,priority)
+                          KEY time (execute_after,priority),
                           KEY priority (priority),
                           KEY selector (selector)
                       )",
