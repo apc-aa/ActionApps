@@ -73,8 +73,7 @@ function varname4form($fid, $type='normal') {
 function GetInputFormTemplate() {
      global $slice_id;
      $slice = new slice($slice_id);
-     list($fields, $prifields) = $slice->fields();
-     $form = new inputform($inputform_settings);
+     $form  = new inputform($inputform_settings);
      $content4id = null;  // in getForm we have to pass it by reference
      return $form->getForm($content4id, $slice, false, $slice_id);
 }
@@ -121,7 +120,11 @@ class inputform {
         $this->hidden               = $settings['hidden'];      // array of hidden fields to be added to the form
     }
 
-    function printForm($content4id, &$slice, $edit) {
+    /** Displays the form
+     *  @param $slice_fields - true, if we want to edit "slice setting fields"
+     *                         which are stored in content table
+     */
+    function printForm($content4id, &$slice, $edit, $slice_fields=false) {
         global $sess;
         if ( $this->display_aa_begin_end ) {
             HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -139,10 +142,10 @@ class inputform {
         }
         echo "<form name=inputform $html_form_type method=post
                     action=\"" . $this->form_action .'"'.
-                    getTriggers ("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>';
+                    getTriggers("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>';
 
         // get the default form and FILL CONTENTCACHE with fields
-        $form = $this->getForm($content4id, $slice, $edit);
+        $form = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
 
         // design of form could be customized by view
         if ( $this->template AND ($view_info = GetViewInfo($this->template))) {
@@ -158,8 +161,11 @@ class inputform {
             if ( $this->show_preview_button ) {
                 $buttons['upd_preview'] = array('type'=>'submit', 'value'=>_m("Update & View"));
             }
-            $buttons['insert']          = array('type'=>'submit', 'value'=>_m("Insert as new"));
-            $buttons['reset']           = array('type'=>'reset',  'value'=>_m("Reset form"));
+            // if we edit dynamic slice setting fields, we do not need such buttons
+            if (!$slice_fields) { 
+                $buttons['insert']      = array('type'=>'submit', 'value'=>_m("Insert as new"));
+                $buttons['reset']       = array('type'=>'reset',  'value'=>_m("Reset form"));
+            }
         } else {
             $buttons[]                  = 'insert';
             $buttons['ins_preview']     = array('type'=>'submit', 'value'=>_m("Insert & View"));
@@ -227,14 +233,15 @@ class inputform {
     *   @param $show is used by the Anonymous Form Wizard, it is an array
     *                (packed field id => 1) of fields to show
     */
-    function getForm(&$content4id, &$slice, $edit, $show="") {
+    function getForm(&$content4id, &$slice, $edit, $show="", $slice_fields=false) {
         global $auth, $profile;
 
         if ( !is_object( $profile ) ) {
             $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());  // current user settings
         }
 
-        list($fields, $prifields) = $slice->fields();
+        list($fields, $prifields) = $slice->fields(null, $slice_fields);
+        
         if ( !isset($prifields) OR !is_array($prifields) ) {
             return MsgErr(_m("No fields defined for this slice"));
         }
@@ -291,7 +298,7 @@ class inputform {
 
             // do not return template for anonymous form wizard
             $ret .= $aainput->get($form4anonymous_wizard ? 'expand' : 'template');
-	    unset($aainput);
+        unset($aainput);
         }
         return $ret;
     }
@@ -477,7 +484,7 @@ class aainputfield {
         }
         if ( !isset($this->const_arr) OR !is_array($this->const_arr) ) {
             $this->const_arr = array();
-        } 
+        }
     }
 
     /** Modifies varname in case we need to display two (or more) inputs
@@ -1087,7 +1094,7 @@ class aainputfield {
     *                     'A'dd text field (you can type the value - see mft)
     *                     'C'hange the value (by typing - see mft input type)
     */
-    function inputRelation($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") { 
+    function inputRelation($rows=6, $sid='', $minrows=0, $mode='AMB', $design=false, $actions='MDR', $whichitems=AA_BIN_ACT_PEND, $conds="", $condsrw="") {
         list($name,$val,$add) = $this->prepareVars('multi');
         $rows                 = get_if($rows, 6);
         // backward compatibility - 0 means "not show move buttons", 1 - "show"
@@ -1825,38 +1832,42 @@ function getRadioButtonTag(&$k, &$v, &$name, &$selected) {
 * Prints html tag <select ..
 */
 function FrmSelectEasy($name, $arr, $selected="", $add="") {
-  echo FrmSelectEasyCode ($name, $arr, $selected, $add);
+    echo FrmSelectEasyCode($name, $arr, $selected, $add);
 }
 
 function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
-  $name=safe($name); // safe($add) - NO! - do not safe it
+    $name=safe($name); // safe($add) - NO! - do not safe it
 
-  $retval = "<select name=\"$name\" $add>\n";
-  reset($arr);
-  while (list($k, $v) = each($arr)) {
-    $retval .= "  <option value=\"". htmlspecialchars($k)."\"";
-    if ((string)$selected == (string)$k)
-      $retval .= ' selected class="sel_on"';
-    $retval .= ">". htmlspecialchars( is_array($v) ? $v['name'] : $v ) ."</option>\n";
-  }
-  $retval .= "</select>\n";
-  return $retval;
+    $retval = "<select name=\"$name\" $add>\n";
+    foreach ($arr as $k => $v) {
+        $retval .= "  <option value=\"". htmlspecialchars($k)."\"";
+        if ((string)$selected == (string)$k) {
+            $retval .= ' selected class="sel_on"';
+        }
+        $retval .= ">". htmlspecialchars( is_array($v) ? $v['name'] : $v ) ."</option>\n";
+    }
+    $retval .= "</select>\n";
+    return $retval;
 }
 
 function FrmRadioEasy($name, $arr, $selected="", $new_line=false) {
-  $name=safe($name); // safe($add) - NO! - do not safe it
+    $name=safe($name); // safe($add) - NO! - do not safe it
 
-  reset($arr);
-  while (list($k, $v) = each($arr)) {
-    $retval .= "<input type=radio name=\"$name\" value=\"". htmlspecialchars($k)."\"";
-    if (!$selected) $selected = $k;
-    if ((string)$selected == (string)$k)
-        $retval .= " selected";
-    $retval .= "> ". htmlspecialchars( is_array($v) ? $v['name'] : $v );
-    if ($new_line) $retval .= "<br>";
-    $retval .= "\n";
-  }
-  echo $retval;
+    foreach ($arr as $k => $v) {
+        $retval .= "<input type=radio name=\"$name\" value=\"". htmlspecialchars($k)."\"";
+        if (!$selected) {
+            $selected = $k;
+        }
+        if ((string)$selected == (string)$k) {
+            $retval .= " selected";
+        }
+        $retval .= "> ". htmlspecialchars( is_array($v) ? $v['name'] : $v );
+        if ($new_line) {
+            $retval .= "<br>";
+        }
+        $retval .= "\n";
+    }
+    echo $retval;
 }
 
 /**

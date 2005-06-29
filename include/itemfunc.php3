@@ -634,9 +634,12 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
     if (!is_array($err)) {
         $err["Init"] = "";
     }
+    
+    // Are we editing dynamic slice setting fields?
+    $slice_fields = ($id == $slice->unpacked_id());
 
     // get slice fields and its priorities in inputform
-    list($fields, $prifields) = $slice->fields();
+    list($fields, $prifields) = $slice->fields(null, $slice_fields);
 
     if (!is_array($prifields)) {
         return;
@@ -644,8 +647,15 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
 
     // it is needed to call IsEditable() function and GetContentFromForm()
     if ( $action == "update" ) {
-        $oldcontent = GetItemContent($id);
-        $oldcontent4id = $oldcontent[$id];   // shortcut
+        // if we are editing dynamic slice setting fields (stored in content 
+        // table), we need to get values from slice's fields
+        if ($slice_fields) {
+            $oldcontent    = $slice->get_dynamic_setting_content(true);            
+            $oldcontent4id = $oldcontent->getContent();   // shortcut
+        } else {
+            $oldcontent = GetItemContent($id);
+            $oldcontent4id = $oldcontent[$id];   // shortcut
+        }
     }
 
     foreach ($prifields as $pri_field_id) {

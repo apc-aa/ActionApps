@@ -44,13 +44,15 @@ define("SC_HOLDING_BIN", 2);
 function MailmanCreateSynchroFiles ($slice_id) {
     global $db, $MAILMAN_SYNCHRO_DIR;
 
-    if (! @is_dir ($MAILMAN_SYNCHRO_DIR))
+    if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
         return;
+    }
 
-    $slice_info = GetSliceInfo ($slice_id);
-    $field = $slice_info["mailman_field_lists"];
-    if ($slice_info["type"] != "ReaderManagement" || ! $field)
+    $slice_info = GetSliceInfo($slice_id);
+    $field      = $slice_info["mailman_field_lists"];
+    if ($slice_info["type"] != "ReaderManagement" || ! $field) {
         return;
+    }
 
     $db->tquery("SELECT email.text AS email, maillist.text AS maillist,
         mailconf.text AS mailconf
@@ -65,34 +67,39 @@ function MailmanCreateSynchroFiles ($slice_id) {
         AND item.publish_date <= ".time()."
         AND item.expiry_date >= ".time());
 
-    while ($db->next_record())
-        if ($db->f("mailconf") && $db->f("mailconf") != "off")
+    while ($db->next_record()) {
+        if ($db->f("mailconf") && $db->f("mailconf") != "off") {
             $maillist[$db->f("maillist")][] = $db->f("email");
+        }
+    }
 
     // Add empty mailing lists
-    $db->query ("SELECT input_show_func FROM field
-        WHERE slice_id='".q_pack_id($slice_id)."' AND id='$field'");
-    if (! $db->next_record())
+    $db->query("SELECT input_show_func FROM field WHERE slice_id='".q_pack_id($slice_id)."' AND id='$field'");
+    if (!$db->next_record()) {
         return;
+    }
     list(,$group_id) = explode(":", $db->f("input_show_func"));
-    $db->query ("SELECT value FROM constant WHERE group_id='".addslashes($group_id)."'");
-    while ($db->next_record())
-        if (! $maillist[$db->f("value")])
-            $maillist[$db->f("value")] = array ();
+    $db->query("SELECT value FROM constant WHERE group_id='".addslashes($group_id)."'");
+    while ($db->next_record()) {
+        if (! $maillist[$db->f("value")]) {
+            $maillist[$db->f("value")] = array();
+        }
+    }
 
-    endslash ($MAILMAN_SYNCHRO_DIR);
+    endslash($MAILMAN_SYNCHRO_DIR);
 
-    if (!is_array($maillist))
+    if (!is_array($maillist)) {
         return;
+    }
 
     // Write files
-    reset ($maillist);
-    while (list ($listname, $emails) = each ($maillist)) {
+    foreach ($maillist as $listname => $emails) {
         // I don't want to use @fopen because I believe it is better to know
         // that an error occured
         if ($listname && $fd = fopen ($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
-            foreach ($emails as $email)
+            foreach ($emails as $email) {
                 fwrite ($fd, $email."\n");
+            }
             fclose ($fd);
         }
     }
@@ -102,20 +109,23 @@ function MailmanCreateSynchroFiles ($slice_id) {
 
 function MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue ) {
     global $db;
-    $db->query ("SELECT group_id FROM constant WHERE id='".q_pack_id($constant_id)."'");
-    if (! $db->next_record())
+    $db->query("SELECT group_id FROM constant WHERE id='".q_pack_id($constant_id)."'");
+    if (!$db->next_record()) {
         return;
+    }
     $group_id = $db->f("group_id");
-    $db->query ("SELECT slice.id FROM slice
+    $db->query("SELECT slice.id FROM slice
         INNER JOIN field ON field.slice_id = slice.id
         WHERE slice.type = 'ReaderManagement'
         AND (field.input_show_func LIKE '___:$group_id:%'
         OR  field.input_show_func LIKE '___:$group_id')");
     $slices = array();
-    while ($db->next_record())
-        $slices[] = unpack_id ($db->f("id"));
-    foreach ($slices as $slice_id)
-        MailmanCreateSynchroFiles ($slice_id);
+    while ($db->next_record()) {
+        $slices[] = unpack_id($db->f("id"));
+    }
+    foreach ($slices as $slice_id) {
+        MailmanCreateSynchroFiles($slice_id);
+    }
 }
 
 ?>

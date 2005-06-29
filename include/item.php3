@@ -878,7 +878,7 @@ function RSS_restrict($txt, $len) {
   // _#EDITITEM used on admin page index.php3 for itemedit url
   // param: 0
   function f_e($col, $param="") {
-    global $sess, $slice_info;
+    global $sess, $slice_info, $allknownslices;
 
     $p = ParamExplode($param);  // 0 = disc|itemcount|safe|slice_info  //2 = return_url
     switch( $p[0]) {
@@ -901,10 +901,8 @@ function RSS_restrict($txt, $len) {
       case "csv":
         return $this->f_t($col,":".$p[0]);
       case "slice_info":
-        if (!is_array($slice_info)) {
-          $slice_info = GetSliceInfo( $this->getSliceID());
-        }
-        return $slice_info[$col];
+        $slice    =& $allknownslices->addslice($this->getSliceID());
+        return $slice->getfield($col);
       case "link_edit":
         return (($p[1]=='anonym') ?
             get_aa_url('modules/links/linkedit.php3?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :

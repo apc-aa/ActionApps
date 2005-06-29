@@ -107,7 +107,7 @@ function get_alerts_specific_fields($collectionid) {
 *   Skips fields which already are in the slice.
 *   @param string $slice_id	packed ID of Reader Management Slice
 *	@return string Message about the number of field added. */
-function add_fields_2_slice ($collectionid, $slice_id) {
+function add_fields_2_slice($collectionid, $slice_id) {
     global $db, $field_defaults;
     $alerts_specific_fields = get_alerts_specific_fields ($collectionid);
 
@@ -120,36 +120,36 @@ function add_fields_2_slice ($collectionid, $slice_id) {
     $alerts_name = $db->f ("name");
 
     // find filters to fill into the Filters constant group
-    $db->query ("
+    $db->query("
         SELECT AF.description, AF.id FROM alerts_filter AF
         INNER JOIN alerts_collection_filter ACF ON AF.id = ACF.filterid
         WHERE ACF.collectionid = '$collectionid'
         ORDER BY ACF.myindex");
-    while ($db->next_record())
+    while ($db->next_record()) {
         $filters["f".$db->f("id")] = $db->f("description");
+    }
 
     // find priority: find gap beginning by 2000 with step 200
     $input_pri = 1800;
     do {
         $input_pri += 200;
-        $db->query ("SELECT * FROM field
-            WHERE slice_id = '".addslashes($slice_id)."' AND input_pri = $input_pri");
+        $db->query("SELECT id FROM field
+            WHERE slice_id = '".addslashes($slice_id)."' AND id NOT LIKE '\_%' AND input_pri = $input_pri");
     } while ($db->next_record());
 
     $varset = new CVarset;
-    reset ($alerts_specific_fields);
     // count of added fields
     $nadded = 0;
-    while (list ($field_id) = each ($alerts_specific_fields)) {
-        $fprop = &$alerts_specific_fields [$field_id];
+    foreach ($alerts_specific_fields as $field_id => $foo) {
+        $fprop = &$alerts_specific_fields[$field_id];
 
         $varset->clear();
-        $varset->addkey ("slice_id", "text", $slice_id);
-        $varset->addkey ("id", "text", $field_id);
+        $varset->addkey("slice_id", "text", $slice_id);
+        $varset->addkey("id",       "text", $field_id);
 
         // don't add fields twice
-        $db->query ($varset->makeSELECT ("field"));
-        $exists = $db->next_record();
+        $db->query($varset->makeSELECT ("field"));
+        $exists     = $db->next_record();
         $field_info = $db->Record;
         if (! $exists ) {
             $nadded ++;
@@ -158,32 +158,30 @@ function add_fields_2_slice ($collectionid, $slice_id) {
             $input_pri += 10;
         }
 
-        if ($fprop ["constants"]["items"] == "{FILTERS}")
+        if ($fprop ["constants"]["items"] == "{FILTERS}") {
             $fprop ["constants"]["items"] = $filters;
+        }
         if ($fprop ["constants"]) {
             if ($exists) {
-                list (,$groupname) = explode(":", $field_info["input_show_func"]);
-                refresh_constant_group ($groupname, $fprop["constants"]["items"]);
+                list(,$groupname) = explode(":", $field_info["input_show_func"]);
+                refresh_constant_group($groupname, $fprop["constants"]["items"]);
                 $fprop["input_show_func"] = $field_info["input_show_func"];
-            }
-            else {
-                $groupname = add_constant_group
-                    ($fprop["constants"]["group"], $fprop["constants"]["items"]);
-                $fprop["input_show_func"] =
-                    str_replace ("{CONSTGROUP}", $groupname, $fprop["input_show_func"]);
+            } else {
+                $groupname = add_constant_group($fprop["constants"]["group"], $fprop["constants"]["items"]);
+                $fprop["input_show_func"] = str_replace("{CONSTGROUP}", $groupname, $fprop["input_show_func"]);
             }
         }
-        reset ($fprop);
-        while (list ($name, $value) = each ($fprop))
+        foreach ($fprop as $name => $value) {
             if (!is_array($value)) {
                 $value = str_replace ("{ALERNAME}", $alerts_name, $value);
                 $varset->add ($name, "text", $value);
             }
+        }
 
-        reset ($field_defaults);
-        while (list ($name, $value) = each ($field_defaults))
+        foreach ($field_defaults as $name => $value) {
             $varset->add ($name, "text", $value);
-        $db->query ($varset->makeINSERTorUPDATE ("field"));
+        }
+        $db->query($varset->makeINSERTorUPDATE("field"));
     }
     return _m("%1 field(s) added", array ($nadded));
 }

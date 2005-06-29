@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -22,12 +22,12 @@ http://www.apc.org/
 /* (c) Jakub Adamek, May 2002
 
    This script allows to change a field ID in hopefully all tables where it occurs.
-   
+
    The array maintain_fields contains database fields to be checked. All such fields
    are downloaded from database, the old ID occuring anywhere in them is changed to the
-   new one and the fields are uploaded back. 
-       
-   Some texts cannot be described in this easy way, so maintain_sql may contain other 
+   new one and the fields are uploaded back.
+
+   Some texts cannot be described in this easy way, so maintain_sql may contain other
    SQL commands. You may use the :old_id: and :new_id: strings which will be replaced by the old / new ids.
 */
 
@@ -42,8 +42,8 @@ set_time_limit(600);
 
 //$debug = 1;
 
-$reserved_ids = array ( 
-  "disc_app........", 
+$reserved_ids = array (
+  "disc_app........",
   "disc_count......",
   "display_count...",
   "edited_by.......",
@@ -81,7 +81,7 @@ $maintain_fields = array (
                 "javascript")),
     "field" => array (
             "primary_part" => "id", // the whole key is (id,slice_id)
-            "primary_type" => "text", 
+            "primary_type" => "text",
             "slice_id" => "slice_id",
             "fields" => array (
                 "id",
@@ -89,8 +89,8 @@ $maintain_fields = array (
                 "alias2_func",
                 "alias3_func")),
     "view" => array (
-            "primary" => "id", 
-            "primary_type" => "number", 
+            "primary" => "id",
+            "primary_type" => "number",
             "slice_id" => "slice_id",
             "fields" => array (
                 "before",
@@ -117,91 +117,94 @@ $maintain_fields = array (
                 "field3")));
 
 $maintain_sql = array (
-    "UPDATE feedmap SET to_field_id=':new_id:' 
+    "UPDATE feedmap SET to_field_id=':new_id:'
      WHERE to_field_id=':old_id:' AND to_slice_id = '$p_slice_id'" ,
-    "UPDATE feedmap SET from_field_id=':new_id:' 
+    "UPDATE feedmap SET from_field_id=':new_id:'
      WHERE from_field_id=':old_id:' AND from_slice_id = '$p_slice_id'");
-        
- 
+
+
 if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
-  
+
 
 if (!IfSlPerm(PS_FIELDS)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
   exit;
-}  
+}
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-function ChangeFieldID ($old_id, $new_id)
+function ChangeFieldID($old_id, $new_id)
 {
     global $maintain_fields, $maintain_sql, $p_slice_id;
-    
+
     $varset = new Cvarset();
     foreach ( $maintain_fields as $table => $settings) {
         $keyfield = $settings[primary];
         if (!$keyfield) $keyfield = $settings[primary_part];
-        $SQL = "SELECT `$keyfield`, `".join($settings['fields'],"`, `")."` FROM `$table` 
+        $SQL = "SELECT `$keyfield`, `".join($settings['fields'],"`, `")."` FROM `$table`
                 WHERE $settings[slice_id] = '$p_slice_id'";
         $rows = GetTable2Array ($SQL);
         if (is_array($rows)) {
-            reset ($rows);
             $i = 0;
-            while (list (,$row) = each ($rows)) {
-    //            echo "Table $table, record ".$i++;
+            foreach ($rows as $row) {
                 $varset->clear();
-                reset ($settings[fields]);
-                while (list (,$field) = each ($settings[fields])) {
+                foreach ($settings['fields'] as $field) {
                     $cont = $row[$field];
-    //                echo $cont." ";
-                    if (strstr ($cont, $old_id)) {
-                        $cont = str_replace ($old_id, $new_id, $cont);
-                        $varset->set ($field, $cont, "text");
+                    if (strstr($cont, $old_id)) {
+                        $cont = str_replace($old_id, $new_id, $cont);
+                        $varset->set($field, $cont, "text");
                     }
                 }
                 if ($varset->vars) {
                     $SQL = "UPDATE $table SET ".$varset->makeUPDATE();
                     $SQL .= " WHERE $keyfield = ";
-                    if ($settings[primary_type] == "text")
-                         $SQL .= "'".$row[$keyfield]."'";
-                    else $SQL .= $row[$keyfield];
-                    if ($settings[primary_part])
-                         $SQL .= " AND $settings[slice_id] = '$p_slice_id'";
+                    if ($settings['primary_type'] == "text") {
+                        $SQL .= "'".$row[$keyfield]."'";
+                    } else {
+                        $SQL .= $row[$keyfield];
+                    }
+                    if ($settings['primary_part']) {
+                        $SQL .= " AND $settings[slice_id] = '$p_slice_id'";
+                    }
                     tryQuery($SQL);
-                }           
+                }
             }
         }
     }
 
-    reset ($maintain_sql);
-    while (list (,$sql) = each ($maintain_sql)) {
-        $sql = str_replace (":old_id:", $old_id, $sql);
-        $sql = str_replace (":new_id:", $new_id, $sql);
+    foreach ($maintain_sql as $sql) {
+        $sql = str_replace(":old_id:", $old_id, $sql);
+        $sql = str_replace(":new_id:", $new_id, $sql);
         tryQuery($sql);
     }
-        
+
     // replace the field id in table content
     $db = getDB();
     $db->query("SELECT id FROM item WHERE slice_id='$p_slice_id'");
-    while ($db->next_record()) 
-        $item_ids[] = myaddslashes ($db->f("id"));
+    while ($db->next_record()) {
+        $item_ids[] = myaddslashes($db->f("id"));
+    }
     freeDB($db);
-    if (count ($item_ids)) tryQuery("UPDATE content SET field_id='$new_id'
+    if (count($item_ids)) {
+        tryQuery("UPDATE content SET field_id='$new_id'
          WHERE item_id IN ('".join($item_ids,"','")."') AND field_id='$old_id'");
+    }
 }
-    
+
 if ($update && $new_id_text && $p_slice_id) {
     $nchanges = 0;
-    if (strlen ($new_id_text) + strlen ($new_id_number) <= 16) {
+    if (strlen($new_id_text) + strlen($new_id_number) <= 16) {
         $new_id = $new_id_text;
-        for ($i = 0; $i < 16 - strlen($new_id_text) - strlen($new_id_number); ++$i)
+        for ($i = 0; $i < 16 - strlen($new_id_text) - strlen($new_id_number); ++$i) {
             $new_id .= ".";
+        }
         $new_id .= $new_id_number;
-        if ($old_id != $new_id && strlen ($new_id) == 16) {      
-            if (my_in_array ($new_id, $reserved_ids)) $err[] = _m("This ID is reserved")." ($new_id).";
-            else {
+        if ($old_id != $new_id && strlen ($new_id) == 16) {
+            if (my_in_array($new_id, $reserved_ids)) {
+                $err[] = _m("This ID is reserved")." ($new_id).";
+            } else {
                 // proove the field does not exist
                 $db = getDB();
                 $db->query("SELECT id FROM field WHERE slice_id='$p_slice_id' AND id='$new_id'");
@@ -210,30 +213,29 @@ if ($update && $new_id_text && $p_slice_id) {
             }
             if (count($err) <= 1 ) {
                 $nchanges ++;
-                ChangeFieldID ($old_id, $new_id);
+                ChangeFieldID($old_id, $new_id);
             }
         }
     }
 }
 
-  // lookup fields
-$SQL = "SELECT id, name FROM field
-        WHERE slice_id='$p_slice_id'
-        ORDER BY id";
-$s_fields = GetTable2Array($SQL);
-         
+// lookup source fields
+$s_fields = GetFields4Select($slice_id, 'all', 'id');
+// lookup destination fields
+$d_fields = GetFields4Select(unpack_id('AA_Core_Fields..'), 'all', 'id');
+
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <TITLE><?php echo _m("Admin - change Field IDs");?></TITLE>
 
 </HEAD>
-<?php 
+<?php
   require_once $GLOBALS['AA_INC_PATH']."menu.php3";
-  showMenu ($aamenus, "sliceadmin", "field_ids");  
-  
+  showMenu($aamenus, "sliceadmin", "field_ids");
+
   echo "<H1><B>" . _m("Admin - change Field IDs") . "</B></H1>";
   PrintArray($err);
-  echo $Msg;  
+  echo $Msg;
   if ($update) echo "$nchanges "._m("field IDs were changed").".<br>";
 
 echo "
@@ -242,28 +244,40 @@ FrmTabCaption(_m("Admin - change Field IDs"));
 
 echo"<tr><td class=tabtxt>"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
 <tr><td class=tabtxt align=center><br>"._m("Change from").": <select name='old_id'>";
-reset ($s_fields);
-while (list (,$field) = each ($s_fields)) 
-    if (!my_in_array ($field["id"], $reserved_ids))
-        echo "<option value='$field[id]'>$field[id]";
-echo "</select> "._m("to")." <select name='new_id_text'>";
-$db = getDB();
-$db->query("SELECT id FROM field 
-             WHERE slice_id='AA_Core_Fields..'");
-while ($db->next_record()) {
-    $id_text = $db->f("id");
-    echo "<option value='$id_text'>$id_text";
+$slice_fields = false;
+foreach ($s_fields as $fid => $fname) {
+    if (!my_in_array($fid, $reserved_ids)) {
+        if ( isSliceField($fid)) {
+            $slice_fields = true;
+        }
+        echo "<option value='$fid'>$fid";
+    }
 }
-freeDB($db);
+echo "</select> ";
+
+echo _m("to")." <select name='new_id_text'>";
+foreach ($d_fields as $fid => $fname) {
+    echo "<option value=\"$fid\">$fid</option>";
+}
+// if we use also slice setting fields in this slice, then we should generate
+// it also as proposal for renaming
+if ($slice_fields) {
+    // once again, but with underscore before field - so it is "slice field"
+    foreach ($d_fields as $fid => $fname) {
+        echo "<option value=\"_$fid\">_$fid</option>";
+    }
+}
+
 echo "</select> <select name='new_id_number'>
 <option value='.'>.";
-for ($i = 1; $i < 100; ++$i)
-    echo "<option value='$i'>$i";
+for ($i = 1; $i < 100; ++$i) {
+    echo "<option value='$i'>$i</option>";
+}
 echo "</select><br><br>";
-FrmTabSeparator(_m("Fields"), 
+FrmTabSeparator(_m("Fields"),
                 array("update"=>array("type"=>"hidden","value"=>"1"),
                       "update","cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
-/*                      
+/*
     <input type=hidden name=\"update\" value=1>
     <input type=submit name=update value='". _m("Update") ."'>&nbsp;&nbsp;
     <input type=submit name=cancel value='". _m("Cancel") ."'>
@@ -278,15 +292,16 @@ FrmTabSeparator(_m("Fields"),
  <td class=tabtxt align=left><b>&nbsp;&nbsp;<?php echo _m("Field") ?></b></td>
 </tr>
 <tr><td colspan=2 class=tabtxt><hr></td></tr>
-<?php 
-    reset ($s_fields);
-    while (list (,$field) = each ($s_fields)) {
-        if (!my_in_array ($field["id"], $reserved_ids)) echo "
-        <tr>
-        <td class=tabtxt align=left>&nbsp;&nbsp;$field[id]&nbsp;&nbsp;</td>
-        <td class=tabtxt>&nbsp;&nbsp;<b>$field[name]&nbsp;&nbsp;</b></td></tr>";
+<?php
+    foreach ($s_fields as $fid => $fname) {
+        if (!my_in_array($fid, $reserved_ids)) {
+            echo "
+            <tr>
+            <td class=tabtxt align=left>&nbsp;&nbsp;$fid&nbsp;&nbsp;</td>
+            <td class=tabtxt>&nbsp;&nbsp;<b>$fname&nbsp;&nbsp;</b></td></tr>";
+        }
     }
-FrmTabEnd();    
+FrmTabEnd();
 echo "
 </FORM>";
 HtmlPageEnd();

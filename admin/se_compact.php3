@@ -188,11 +188,7 @@ function EnableClick(cond,what) {
   FrmTabCaption(_m("HTML code for index view"), '','', $form_buttons, $sess, $slice_id);
 
   // lookup slice fields
-  $db->query("SELECT id, name FROM field
-               WHERE slice_id='$p_slice_id' ORDER BY name");
-  $lookup_fields[''] = " ";  // default - none
-  while ($db->next_record())
-    $lookup_fields[$db->f(id)] = $db->f(name);
+  $lookup_fields = GetFields4Select($slice_id, false, 'name', true);
 
   FrmTextarea("compact_top", _m("Top HTML"), $compact_top, 4, 50, false,
                _m("HTML code which appears at the top of slice area"), DOCUMENTATION_URL, 1);
@@ -204,11 +200,11 @@ function EnableClick(cond,what) {
   FrmTextarea("compact_bottom", _m("Bottom HTML"), $compact_bottom, 4, 50, false,
                _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1);
   echo "<tr><td class=tabtxt><b>"._m("Group by")."</b></td><td>";
-  FrmSelectEasy ("group_by", $lookup_fields, $group_by);
+  FrmSelectEasy("group_by", $lookup_fields, $group_by);
   echo "<br>"."";
   echo "</td></tr>
   <tr><td>&nbsp;</td><td>";
-  FrmSelectEasy ("gb_header", array (_m("Whole text"),_m("1st letter"),"2 "._m("letters"),"3 "._m("letters")), $gb_header);
+  FrmSelectEasy("gb_header", array (_m("Whole text"),_m("1st letter"),"2 "._m("letters"),"3 "._m("letters")), $gb_header);
   FrmSelectEasy("gb_direction", array( '2'=>_m("Ascending"), '8' => _m("Descending"), '1' => _m("Ascending by Priority"), '9' => _m("Descending by Priority")  ),
                 $gb_direction);
   PrintHelp( _m("'by Priority' is usable just for fields using constants (like category)") );

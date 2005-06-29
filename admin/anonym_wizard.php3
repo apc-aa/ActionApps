@@ -134,17 +134,17 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-// lookup fields
-$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
-        FROM field
-        WHERE slice_id='$p_slice_id'
-        ORDER BY input_pri";
-$s_fields = GetTable2Array($SQL);
-
-
 // get all warnings
 $warning = array();
 $slice   = new slice($slice_id);
+
+
+// lookup fields
+$SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
+        FROM field
+        WHERE slice_id='$p_slice_id' AND id NOT LIKE '\_%'
+        ORDER BY input_pri";
+$s_fields = GetTable2Array($SQL);
 
 if ($slice->getfield('permit_anonymous_post') == 0) {
     $warning[] = _m("WARNING: You did not permit anonymous posting in slice settings.");

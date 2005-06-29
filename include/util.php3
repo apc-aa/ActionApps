@@ -691,38 +691,82 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
     return isset($arr) ? $arr : false;
 }
 
-// function returns two arrays - SliceFields (key is field_id)
-//                               Priorities  (field_id sorted by priority
-// See also sliceobj:slice->fields()
-function GetSliceFields($slice_id) {
-  $p_slice_id = q_pack_id($slice_id);
-  $db = getDB();
-  $SQL = "SELECT * FROM field WHERE slice_id='$p_slice_id' ORDER BY input_pri";
-  $db->query($SQL);
-  while ($db->next_record()) {
-    $fields[$db->f("id")] = $db->Record;
-    $prifields[]=$db->f("id");
-  }
-  freeDB($db);
-  return array($fields, $prifields);
+/** Returns list of fields which belongs to the slice
+ *  The result is in two arrays - $fields    (key is field_id)
+ *                              - $prifields (just field_id sorted by priority)
+ *  @param $slice_id       - id of slice for which you want to get fields array
+ *  @param $slice_fields   - if true, the result contains only "slice fields"
+ *                           which are not used for items, but rather for slice
+ *                           setting
+ *  @see sliceobj:slice->fields()
+ */
+function GetSliceFields($slice_id, $slice_fields = false) {
+    $p_slice_id = q_pack_id($slice_id);
+    $db = getDB();
+    // slice_fields are begins with underscore
+    // slice fields are the fields, which we do not use for items in the slice,
+    // but rather for setting parameters of the slice
+    $slice_fields_where = ($slice_fields) ? "AND id LIKE '\_%'" : "AND id NOT LIKE '\_%'";
+    $SQL = "SELECT * FROM field WHERE slice_id='$p_slice_id' $slice_fields_where ORDER BY input_pri";
+    $db->query($SQL);
+    while ($db->next_record()) {
+        $fid          = $db->f("id");
+        $fields[$fid] = $db->Record;
+        $prifields[]  = $fid;
+    }
+    freeDB($db);
+    return array($fields, $prifields);
 }
 
-// create field id from type and number
-function CreateFieldId ($ftype, $no="0") {
-  if ( (string)$no == "0" )
-    $no="";    // id for 0 is "xxxxx..........."
-  return $ftype. substr("................$no", -(16-strlen($ftype)));
+function GetFields4Select($slice_id, $slice_fields = false, $order = 'name', $add_empty = false) {
+    $p_slice_id = q_pack_id($slice_id);
+    $db = getDB();
+    if ($slice_fields == 'all') {
+        // all fields (item as well as slice fields)
+        $slice_fields_where = '';
+    } elseif (!$slice_fields) {
+        // only item fields (not begins with underscore)
+        $slice_fields_where = "AND id NOT LIKE '\_%'";
+    } else {
+        // only slice fields (begins with underscore)
+        $slice_fields_where = "AND id LIKE '\_%'";
+    }
+    $db->query("SELECT id, name FROM field WHERE slice_id='$p_slice_id' $slice_fields_where ORDER BY $order");
+    $lookup_fields = array();
+    if ($add_empty) {
+        $lookup_fields[''] = " ";  // default - none
+    }
+    while ($db->next_record()) {
+        $lookup_fields[$db->f('id')] = $db->f(name);
+    }
+    return $lookup_fields;
+}
+
+/** Returns true, if the passed field id looks like slice setting field
+ *  "slice fields" are not used for items, but rather for slice setting.
+ *  Such fields are destinguished by underscore on first letter of field_id
+ */
+function isSliceField($field_id) {
+    return $field_id AND ($field_id{0} == '_');
+}
+
+/** Create field id from type and number */
+function CreateFieldId($ftype, $no="0") {
+    if ((string)$no == "0") {
+        $no = "";    // id for 0 is "xxxxx..........."
+    }
+    return $ftype. substr("................$no", -(16-strlen($ftype)));
 }
 
 /** get field type from id (works also for AA_Core_Fields (without dots)) */
 function GetFieldType($id) {
     $dot_pos = strpos($id, ".");
-    return ( $dot_pos === false ) ? $id : substr($id, 0, $dot_pos);
+    return ($dot_pos === false) ? $id : substr($id, 0, $dot_pos);
 }
 
-// get field number from id ('.', '0', '1', '12', ...)
+/** get field number from id ('.', '0', '1', '12', ... ) */
 function GetFieldNo($id) {
-  return (string) substr( strrchr($id,'.'), 1 );
+    return (string)substr(strrchr($id,'.'), 1);
 }
 
 // -------------------------------------------------------------------------------

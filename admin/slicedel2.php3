@@ -50,7 +50,7 @@ DeleteModule( $del, $db );
 
 // delete slice from permission system -----------------------------------------
 DelPermObject($del, "slice");
-    
+
 switch ($g_modules[$del]['type']) {
     case 'Alerts': DeleteAlerts ($del); break;
     case 'S': DeleteSlice ($del); break;
@@ -59,14 +59,14 @@ switch ($g_modules[$del]['type']) {
 }
 
 page_close();                                // to save session variables
-// There is a bug in here, that typically if you go SliceAdmin->delete->AA->delete it 
+// There is a bug in here, that typically if you go SliceAdmin->delete->AA->delete it
 // will delete your current slice, and leave you nowhere to go to, you have to login again (mitra)
 go_url(con_url($sess->url("slicedel.php3"),
                                           "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
 function DeleteAlerts ($module_id) {
     global $db;
-    
+
     $db->query("SELECT id FROM alerts_collection WHERE moduleid='".q_pack_id($module_id)."'");
     if (!$db->next_record())
         return;
@@ -77,20 +77,20 @@ function DeleteAlerts ($module_id) {
     $db->query("DELETE LOW_PRIORITY FROM module WHERE id='".q_pack_id($module_id)."'");
 }
 
-function DeleteSlice ($del) {
+function DeleteSlice($del) {
     global $db;
     $p_del = q_pack_id($del);
     // delete all module specific tables
     $SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_del'";
     $db->query($SQL);
-    
+
     $SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_del'";
     $db->query($SQL);
-    
+
     // delete fields
     $SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_del'";
     $db->query($SQL);
-    
+
     // delete items
     $db2  = new DB_AA;
     $SQL = "SELECT id FROM item WHERE slice_id='$p_del'";
@@ -98,21 +98,21 @@ function DeleteSlice ($del) {
     while ( $db->next_record() )
       DeleteItem($db2, unpack_id128($db->f(id))); // deletes from content, offline and
                                                // relation tables
-    
+
     // delete items
     $SQL = "DELETE LOW_PRIORITY FROM item WHERE slice_id='$p_del'";
     $db->query($SQL);
-    
+
     // delete feedmap
     $SQL = "DELETE LOW_PRIORITY FROM feedmap WHERE from_slice_id='$p_del'
                                                 OR to_slice_id='$p_del'";
     $db->query($SQL);
-    
+
     // delete feedprms
     $SQL = "DELETE LOW_PRIORITY FROM feedperms WHERE from_id='$p_del'
                                                 OR to_id='$p_del'";
     $db->query($SQL);
-    
+
     // delete email_notify
     $SQL = "DELETE LOW_PRIORITY FROM email_notify WHERE slice_id='$p_del'";
     $db->query($SQL);

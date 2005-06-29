@@ -37,13 +37,13 @@ $PERMS_STATE = array( "0" => _m("Not allowed"),
                       "2" => _m("Hold bin") );
 
 $PERMS_ANONYMOUS_EDIT = array(
-    ANONYMOUS_EDIT_NOT_ALLOWED => _m("Not allowed"),
-    ANONYMOUS_EDIT_ALL => _m("All items"),
-    ANONYMOUS_EDIT_ONLY_ANONYMOUS => _m("Only items posted anonymously"),
+    ANONYMOUS_EDIT_NOT_ALLOWED      => _m("Not allowed"),
+    ANONYMOUS_EDIT_ALL              => _m("All items"),
+    ANONYMOUS_EDIT_ONLY_ANONYMOUS   => _m("Only items posted anonymously"),
     ANONYMOUS_EDIT_NOT_EDITED_IN_AA => _m("-\"- and not edited in AA"),
-    ANONYMOUS_EDIT_PASSWORD => _m("Authorized by a password field"),
-    ANONYMOUS_EDIT_HTTP_AUTH => _m("Readers, authorized by HTTP auth"),
-    );
+    ANONYMOUS_EDIT_PASSWORD         => _m("Authorized by a password field"),
+    ANONYMOUS_EDIT_HTTP_AUTH        => _m("Readers, authorized by HTTP auth"),
+);
 
 if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -186,14 +186,10 @@ if ($slice_id == "") {
 
     // Reader Management specific settings (Jakub, 7.2.2003)
 
-    $slice_info = GetSliceInfo ($slice_id);
+    $slice_info = GetSliceInfo($slice_id);
     $slicetype = $slice_info["type"];
     if ($slicetype == 'ReaderManagement') {
-        $db->query ("SELECT id, name FROM field WHERE slice_id='"
-            .q_pack_id($slice_id)."' ORDER BY input_pri");
-        $slicefields[] = "";
-        while ($db->next_record())
-            $slicefields[$db->f("id")] = $db->f("name");
+        $slicefields = GetFields4Select($slice_id, false, 'input_pri');
         FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields,
             $auth_field_group, false, "", "../doc/reader.html#auth_field_group");
         FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields,

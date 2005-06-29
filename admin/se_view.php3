@@ -306,9 +306,7 @@ if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
     $field_func = $VIEW_TYPES_INFO[$view_type]['fields'];
     $lookup_fields += $field_func();
 } else {
-    $db->tquery("SELECT id, name FROM field WHERE slice_id='$p_slice_id' ORDER BY name");
-    while ($db->next_record())
-        $lookup_fields[$db->f('id')] = $db->f('name');
+    $lookup_fields = GetFields4Select($slice_id, false, 'name', true);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

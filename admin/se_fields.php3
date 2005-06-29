@@ -20,6 +20,7 @@ http://www.apc.org/
 */
 
 // expected $slice_id for edit slice, nothing for adding slice
+// optional slice_fields = 1 (for slice fields)
 
 require_once "../include/init_page.php3";
 require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
@@ -82,94 +83,104 @@ function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $sep
     echo "</tr>\n";
 }
 
-if ( $update )
-{
-  do {
-    if ( !(isset($name) AND is_array($name) ))
-      break;
-    reset($name);
-    while ( list($key,$val) = each($name) ) {
-      if ( $key == "New_Field" )
-        continue;
-      $prior = $pri[$key];
-      ValidateInput("val", _m("Field"), $val, $err, false, "text");
-      ValidateInput("prior", _m("Priority"), $prior, $err, true, "number");
-    }
-
-    if ( count($err) > 1)
-      break;
-
-    $db = getDB();
-    reset($name);
-    while ( list($key,$val) = each($name) ) {
-      if ( $key == "New_Field" ){   // add new field
-        if ( $val == "" )           // if not filled - don't add the field
-          continue;
-
-          // copy fields
-          // use the same setting for new field as template in AA_Core_Fields..
-        $varset->clear();
-        $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
-        $varset->setFromArray($field_types[$ftype]);   // from template for this field
-
-        // in AA_Core_Fields.. are fields identified by 'switch' or 'text'
-        // identifiers (without dots!) by default. However if yser add new
-        // "template" field to the AA_Core_Fields.. slice, then the identifier
-        // is full (it contains dots). We need base identifier, for now.
-        $ftype_base = GetFieldType($ftype);
-
-        // get new field id
-        $SQL = "SELECT id FROM field
-                 WHERE slice_id='$p_slice_id' AND id like '". $ftype_base ."%'";
-        $max=-1;  // Was 0
-        $db->query($SQL);   // get all fields with the same type in this slice
-        while ( $db->next_record() ) {
-          $max = max( $max, GetFieldNo($db->f('id')), 0);
+if ($update) {
+    do {
+        if (!(isset($name) AND is_array($name))) {
+            break;
         }
-        $max++;
-           //create name like "time...........2"
-        $fieldid = CreateFieldId ($ftype_base, $max);
+        foreach ($name as $key => $val) {
+            if ($key == "New_Field") {
+                continue;
+            }
+            $prior = $pri[$key];
+            ValidateInput("val", _m("Field"), $val, $err, false, "text");
+            ValidateInput("prior", _m("Priority"), $prior, $err, true, "number");
+        }
 
-        $varset->set("slice_id", $slice_id, "unpacked" );
-        $varset->set("id", $fieldid, "quoted" );
-        $varset->set("name",  $val, "quoted");
-        $varset->set("input_pri", $pri[$key], "number");
-        $varset->set("required", ($req[$key] ? 1 : 0), "number");
-        $varset->set("input_show", ($shw[$key] ? 1 : 0), "number");
-        if ( !$db->query("INSERT INTO field " . $varset->makeINSERT() )) {
-          $err["DB"] .= MsgErr("Can't copy field");
+        if (count($err) > 1) {
           break;
         }
-      } else { // current field
-        $varset->clear();
-        $varset->add("name", "quoted", $val);
-        $varset->add("input_pri", "number", $pri[$key]);
-        $varset->add("required", "number", ($req[$key] ? 1 : 0));
-        $varset->add("input_show", "number", ($shw[$key] ? 1 : 0));
-        $SQL = "UPDATE field SET ". $varset->makeUPDATE() .
-               " WHERE id='$key' AND slice_id='$p_slice_id'";
-        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-          $err["DB"] = MsgErr("Can't change field");
-          break;
-        }
-      }
-      $r_filelds = "";   // unset the r_fields array to be load again
-    }
-    freeDB($db);
-    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-    if ( count($err) <= 1 ) {
-      $Msg = MsgOK(_m("Fields update successful"));
-      if ( $name["New_Field"] )
-        go_url( $sess->url($PHP_SELF) );  // reload to incorporate new field
-    }
-  } while ( 0 );           //in order we can use "break;" statement
+        $db = getDB();
+        foreach ($name as $key => $val) {
+            if ($key == "New_Field") {   // add new field
+                if ($val == '') {        // if not filled - don't add the field
+                    continue;
+                }
+
+                // copy fields
+                // use the same setting for new field as template in AA_Core_Fields..
+                $varset->clear();
+                $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
+                $varset->setFromArray($field_types[$ftype]);   // from template for this field
+
+                // in AA_Core_Fields.. are fields identified by 'switch' or 'text'
+                // identifiers (without dots!) by default. However if user add new
+                // "template" field to the AA_Core_Fields.. slice, then the identifier
+                // is full (it contains dots). We need base identifier, for now.
+                // Also we will add underscore for all "slice fields" - the ones
+                // which are not set for items, but rather for slice (settings)
+                $ftype_base = ($slice_fields ? '_' : '') . GetFieldType($ftype);
+
+                // get new field id
+                $SQL = "SELECT id FROM field
+                        WHERE slice_id='$p_slice_id' AND id like '". $ftype_base ."%'";
+                $max = -1;  // Was 0
+                $db->query($SQL);   // get all fields with the same type in this slice
+                while ( $db->next_record() ) {
+                    $max = max( $max, GetFieldNo($db->f('id')), 0);
+                }
+                $max++;
+                //create name like "time...........2"
+                $fieldid = CreateFieldId($ftype_base, $max);
+
+                $varset->set("slice_id", $slice_id, "unpacked" );
+                $varset->set("id", $fieldid, "quoted" );
+                $varset->set("name",  $val, "quoted");
+                $varset->set("input_pri", $pri[$key], "number");
+                $varset->set("required", ($req[$key] ? 1 : 0), "number");
+                $varset->set("input_show", ($shw[$key] ? 1 : 0), "number");
+                if (!$varset->doInsert('field')) {
+                    $err["DB"] .= MsgErr("Can't copy field");
+                    break;
+                }
+            } else { // current field
+                $varset->clear();
+                $varset->add("name", "quoted", $val);
+                $varset->add("input_pri", "number", $pri[$key]);
+                $varset->add("required", "number", ($req[$key] ? 1 : 0));
+                $varset->add("input_show", "number", ($shw[$key] ? 1 : 0));
+                $SQL = "UPDATE field SET ". $varset->makeUPDATE() .
+                      " WHERE id='$key' AND slice_id='$p_slice_id'";
+                if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+                    $err["DB"] = MsgErr("Can't change field");
+                    break;
+                }
+            }
+            $r_filelds = "";   // unset the r_fields array to be load again
+        }
+        freeDB($db);
+        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+
+        if (count($err) <= 1) {
+            $Msg = MsgOK(_m("Fields update successful"));
+            if ($name["New_Field"]) {
+                $url2go = $slice_fields ? get_url($PHP_SELF,'slice_fields=1') : $PHP_SELF;
+                go_url($sess->url($url2go));  // reload to incorporate new field
+            }
+        }
+    } while (false);           //in order we can use "break;" statement
 }
 
-  // lookup fields
+// slice_fields are begins with underscore
+// slice fields are the fields, which we do not use for items in the slice, but
+// rather for setting parameters of the slice
+$slice_fields_where = ($slice_fields) ? "AND id LIKE '\_%'" : "AND id NOT LIKE '\_%'";
+
+// lookup fields
 $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, alias2, alias3, input_before
         FROM field
-        WHERE slice_id='$p_slice_id' ORDER BY input_pri";
+        WHERE slice_id='$p_slice_id' $slice_fields_where ORDER BY input_pri";
 $s_fields = GetTable2Array($SQL);
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -188,7 +199,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php
   require_once $GLOBALS['AA_INC_PATH']."menu.php3";
-  showMenu ($aamenus, "sliceadmin", "fields");
+  showMenu($aamenus, "sliceadmin", $slice_fields ? 'slice_fields' : 'fields');
 
   echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";
   PrintArray($err);
@@ -201,7 +212,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
 $form_buttons = array("update", "cancel"=>array("url"=>"se_fields.php3"));
-  FrmTabCaption(_m("Fields"), '','', $form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("Fields"), '','', $form_buttons, $sess, $slice_id);
 ?>
 <tr>
  <td class=tabtxt align=center><b><?php echo _m("Field") ?></b></td>
@@ -225,6 +236,7 @@ if ( isset($s_fields) and is_array($s_fields)) {
         }
     }
 }
+$form_buttons['slice_fields'] = array('value' => ($slice_fields ? 1 : 0));
 
 // one row for possible new field
 ShowField("New_Field", "", "1000", false, true, "new", "", true);

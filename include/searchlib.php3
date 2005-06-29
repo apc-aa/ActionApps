@@ -149,25 +149,29 @@ function GetWhereExp( $field, $operator, $querystring ) {
 // show info about non-existing fields in all given slices
 function ProoveFieldNames($slices, $conds) {
 
-    if ( ! (isset($slices) AND is_array($slices) AND isset($conds) AND is_array($conds)) )
-      return;
+    if (!(isset($slices) AND is_array($slices) AND isset($conds) AND is_array($conds))) {
+        return;
+    }
 
     global $CONDS_NOT_FIELD_NAMES;
-    if (!is_array($slices) || !is_array($conds)) return;
+    if (!is_array($slices) || !is_array($conds)) {
+        return;
+    }
     $db = new DB_AA;
-    reset ($slices);
-    while (list(,$slice_id) = each ($slices)) {
+    foreach ($slices as $slice_id) {
         $db->query("SELECT * FROM field WHERE slice_id='".q_pack_id($slice_id)."'");
-        while ($db->next_record())
+        while ($db->next_record()) {
             $slicefields[$db->f("id")] = 1;
-        reset ($conds);
-        while (list (,$cond) = each ($conds)) {
-            if ( ! (isset($cond) AND is_array($cond)) )
-              continue;
-            reset ($cond);
-            while (list ($key) = each ($cond))
-                if (!$CONDS_NOT_FIELD_NAMES [$key] && !isset ($slicefields[$key]))
+        }
+        foreach ($conds as $cond) {
+            if (!(isset($cond) AND is_array($cond))) {
+                continue;
+            }
+            foreach ($cond as $key => $foo) {
+                if (!$CONDS_NOT_FIELD_NAMES[$key] && !isset($slicefields[$key])) {
                     echo "Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").<br>";
+                }
+            }
         }
     }
 }

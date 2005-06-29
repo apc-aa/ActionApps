@@ -1,3 +1,11 @@
+06/28/05 - new dynamic "slice setting fields" implemented - now you have 
+(honzam)   the possibility to add "slice fields" (just like you do with normal 
+           item fields). Such fields then can be used for slice setting common
+           to all items. Such fields are prefixed by underscore (automaticaly) 
+           and you can access it through {alias:_field_id.......:f_e:slice_info} 
+06/27/05 - fixed problem with sql_update.php3 - creating toexecute table syntax 
+(honzam)   error. The download files on sourceforge are updated.
+
 --------------------
 06/26/05 - v2.8.1 - stable release
 --------------------

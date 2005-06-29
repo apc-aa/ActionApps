@@ -70,17 +70,19 @@ class ItemContent {
         $this->content = is_array($content) ? reset($content) : null;
     }
 
-    /** Fills content4id - values in content4id are NOT quoted (addslashes)
-     *  (new version of previous GetContentFromForm() function)
-     */
-    function setFromForm( &$slice, $oldcontent4id="", $insert=true ) {
-        global $profile, $auth, $id;
 
-        list($fields, $prifields) = $slice->fields();
+    /** Functions tries to fill all the fields from the form. It do not add any 
+     *  item specific fields (like status_code), so it could be used also for 
+     *  dynamic "slice setting fields"
+     */
+    function setFieldsFromForm(&$slice, $oldcontent4id="", $insert=true, $slice_fields=false) {
+        global $profile, $auth;
+
+        list($fields, $prifields) = $slice->fields(null, $slice_fields);
         if (!isset($prifields) OR !is_array($prifields)) {
             return false;
         }
-
+        
         if (!is_object($profile)) {
             $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());  // current user settings
         }
@@ -125,7 +127,20 @@ class ItemContent {
                 $this->content[$pri_field_id][]   = array('value'=> stripslashes($v), 'flag'=>$flag);
             }
         }
+        return true;
+    }
+        
+    
+    /** Fills content4id - values in content4id are NOT quoted (addslashes)
+     *  (new version of previous GetContentFromForm() function)
+     */
+    function setFromForm( &$slice, $oldcontent4id="", $insert=true) {
+        global $id;
 
+        if (!$this->setFieldsFromForm($slice, $oldcontent4id, $insert)) {
+            return false;
+        }
+        
         // the status_code must be set in order we can use email_notify()
         // in StoreItem() function.
         if (!$insert AND !$this->getStatusCode()) {
@@ -301,7 +316,6 @@ class ItemContent {
     function storeItem( $mode, $invalidatecache=true, $feed=true, $context='direct' ) {
         global $event, $itemvarset;
         $itemvarset = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
-        $varset     = new CVarset();
 
         $slice_id   = $this->getSliceID();
         $slice      = new slice($slice_id);
@@ -345,83 +359,17 @@ class ItemContent {
         }
 
         if ($mode == 'overwrite') {
+            $varset     = new CVarset();
             $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "'");
         } elseif ($mode == 'update') {
             // delete content of all fields, which are in new content array
             // (this means - all not redefined fields are unchanged)
-            $delim = $in = "";
-            foreach ($this->content as $fid => $fooo) {
-                if (!$fields[$fid]['in_item_tbl']) {
-                    $in .= $delim."'". addslashes($fid) ."'";
-                    $delim = ",";
-                }
-            }
-            if ($in) {
-                // delete content just for displayed fields
-                $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id IN ($in)");
-                // note extra images deleted in insert_fnc_fil if needed
-            }
+            $this->_clean_updated_fields($id, $fields);
         }
 
-        foreach ($this->content as $fid => $cont) {
-            $f = $fields[$fid];
-
-            // input insert function
-            $fnc = ParseFnc($f["input_insert_func"]);
-            // input insert function parameters of field
-            $fncpar = ParseFnc($f["input_insert_func"]);
-            if ($fnc) {
-                $fncname = 'insert_fnc_' . $fnc["fnc"];
-                // update content table or fill $itemvarset
-                if (!is_array($cont)) {
-                    continue;
-                }
-                // serve multiple values for one field
-                $order    = 0;
-                $numbered = (count($cont) > 1);
-                unset($parameters);
-                foreach ( $cont as $v) {
-                    // file upload needs the $fields array, because it stores
-                    // some other fields as thumbnails
-                    if ($fnc["fnc"]=="fil") {
-                        if ($debugsi >= 5) huhl("StoreItem: fil");
-                        if ($debugsi >= 5) { $GLOBALS[debug] = 1; $GLOBALS[debugupload] = 1; }
-                        //Note $thumbnails is undefined the first time in this loop
-                        if (is_array($thumbnails)) {
-                            foreach ($thumbnails as $v_stop) {
-                                if ($v_stop==$fid) {
-                                    $stop=true;
-                                }
-                            }
-                        }
-
-                        if (!$stop) {
-                            if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fncpar["param"],")");
-                            if ($numbered) {
-                                $parameters["order"] = $order;
-                            }
-                            $parameters["fields"]    = $fields;
-                            $parameters["context"]   = $context;
-                            $thumbnails = $fncname($id, $f, $v, $fncpar["param"], $parameters);
-                        }
-                    } else {
-                        if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fncpar["param"],")");
-                        if ($numbered) {
-                            $parameters["order"] = $order;
-                            $fncname($id, $f, $v, $fncpar["param"], $parameters);
-                        } else {
-                            $fncname($id, $f, $v, $fncpar["param"]);
-                        }
-                    }
-                    // do not store multiple values if field is not marked as multiple
-                    // ERRORNOUS
-                    //if( !$f["multiple"]!=1 )
-                        //continue;
-                    $order++;
-                }
-            }
-        }
-
+        // and NOW - store the fields and prepare itemvarset
+        $this->_store_fields($id, $fields);
+        
         /* Alerts module uses moved2active as the time when
            an item was moved to the active bin */
         if (($mode=='insert') ||
@@ -482,6 +430,101 @@ class ItemContent {
         if ($debugsi) huhl("StoreItem err=",$err);
         return $id;
     } // end of storeItem()
+    
+    /** Stores the fields into content table for dynamic "slice setting fields"
+     */
+    function storeSliceFields($slice_id, &$fields) {
+        // delete content of all fields, which are in new content array
+        // (this means - all not redefined fields are unchanged)
+        $this->_clean_updated_fields($slice_id, $fields);
+        
+        // we use slice_id as item id here
+        $this->_store_fields($slice_id, $fields);
+    }
+
+    /** delete content of all fields, which are in new content array
+     *  (this means - all not redefined fields are unchanged)
+     */
+    function _clean_updated_fields($id, &$fields) {
+        $varset     = new CVarset();
+        $delim = $in = "";
+        foreach ($this->content as $fid => $fooo) {
+            if (!$fields[$fid]['in_item_tbl']) {
+                $in .= $delim."'". addslashes($fid) ."'";
+                $delim = ",";
+            }
+        }
+        if ($in) {
+            // delete content just for displayed fields
+            $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id IN ($in)");
+            // note extra images deleted in insert_fnc_fil if needed
+        }
+    }
+    
+    /** private function - goes through content and runs all insert functions 
+     *  on each field in content array. The content is stored in the database
+     *  of in itemvarset
+     */
+    function _store_fields($id, &$fields) {
+        foreach ($this->content as $fid => $cont) {
+            $f = $fields[$fid];
+
+            // input insert function
+            $fnc = ParseFnc($f["input_insert_func"]);
+            // input insert function parameters of field
+            $fncpar = ParseFnc($f["input_insert_func"]);
+            if ($fnc) {
+                $fncname = 'insert_fnc_' . $fnc["fnc"];
+                // update content table or fill $itemvarset
+                if (!is_array($cont)) {
+                    continue;
+                }
+                // serve multiple values for one field
+                $order    = 0;
+                $numbered = (count($cont) > 1);
+                unset($parameters);
+                foreach ( $cont as $v) {
+                    // file upload needs the $fields array, because it stores
+                    // some other fields as thumbnails
+                    if ($fnc["fnc"]=="fil") {
+                        if ($debugsi >= 5) huhl("StoreItem: fil");
+                        if ($debugsi >= 5) { $GLOBALS[debug] = 1; $GLOBALS[debugupload] = 1; }
+                        //Note $thumbnails is undefined the first time in this loop
+                        if (is_array($thumbnails)) {
+                            foreach ($thumbnails as $v_stop) {
+                                if ($v_stop==$fid) {
+                                    $stop=true;
+                                }
+                            }
+                        }
+
+                        if (!$stop) {
+                            if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fncpar["param"],")");
+                            if ($numbered) {
+                                $parameters["order"] = $order;
+                            }
+                            $parameters["fields"]    = $fields;
+                            $parameters["context"]   = $context;
+                            $thumbnails = $fncname($id, $f, $v, $fncpar["param"], $parameters);
+                        }
+                    } else {
+                        if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fncpar["param"],")");
+                        if ($numbered) {
+                            $parameters["order"] = $order;
+                            $fncname($id, $f, $v, $fncpar["param"], $parameters);
+                        } else {
+                            $fncname($id, $f, $v, $fncpar["param"]);
+                        }
+                    }
+                    // do not store multiple values if field is not marked as multiple
+                    // ERRORNOUS
+                    //if( !$f["multiple"]!=1 )
+                        //continue;
+                    $order++;
+                }
+            }
+        }
+    }
 
 
     /**

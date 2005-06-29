@@ -1,6 +1,6 @@
-<?php 
+<?php
 /*
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ while ($db->next_record()) {
     $remote_slices[unpack_id128($db->f(remote_slice_id))] = 1;       // mark slice as external
 }
 // lookup RSS feeds
-$SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds 
+$SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds
        WHERE slice_id='$p_slice_id'";
 $db->query($SQL);
 while ($db->next_record()) {
@@ -69,20 +69,20 @@ while ($db->next_record()) {
     $remote_slices[$u_remote_slice_id] = 2;       // mark slice as RSS
 }
 
-// add all slices where I have permission to (for setting of mapping for slices, 
+// add all slices where I have permission to (for setting of mapping for slices,
 // which is only manualy fed)
 $first=true;
 foreach ($g_modules as  $k => $v) {
     if ($impslices[$k] OR $v['type']!='S' OR $k==$slice_id) {
         continue;
     }
-    if ($first AND isset($impslices) AND is_array($impslices)) { 
+    if ($first AND isset($impslices) AND is_array($impslices)) {
         $impslices[0] = '---------------';             // put delimiter there
     }
     $impslices[$k] = $v['name'];
     $first=false;
-}  
-  
+}
+
 if (!isset($impslices) OR !is_array($impslices)){
     MsgPage(con_url($sess->url(self_base()."se_import.php3"), "slice_id=$slice_id"), _m("There are no imported slices"));
     exit;
@@ -103,11 +103,7 @@ if (is_null($field_map) && ($remote_slices[$from_slice_id] == 2)) {
 }
 
 // find out list of "to fields"
-$SQL= "SELECT id, name FROM field WHERE slice_id='$p_slice_id' ORDER BY name";
-$db->query($SQL);
-while ($db->next_record()) {
-    $to_fields[$db->f(id)] = $db->f(name);
-}
+$to_fields = GetFields4Select($slice_id);
 
 // find out list of "from fields"
 $from_fields[_m("-- Not map --")]           = _m("-- Not map --");
@@ -116,11 +112,7 @@ $from_fields[_m("-- Joined fields --")]     = _m("-- Joined fields --");
 $from_fields[_m("-- RSS field or expr --")] = _m("-- RSS field or expr --");
 
 if (!$remote_slices[$from_slice_id]) {      // local fields : from slice fields
-    $SQL= "SELECT id, name FROM field WHERE slice_id='$p_from_slice_id' ORDER BY name";
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $from_fields[$db->f(id)] = $db->f(name);
-    }
+    $from_fields = GetFields4Select($from_slice_id);
 } else {                                     // remote fields : from feedmap table
     if (isset($map_to) && is_array($map_to)) {
         while (list($k,$v) = each($map_to)) {
@@ -206,14 +198,14 @@ $form_buttons = array("ext_slice"=>array("type"=>"hidden",
 <form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url(self_base() . "se_mapping2.php3")?>">
 <?php
 FrmTabCaption(_m("Content Pooling - Fields' mapping"),'','',$form_buttons, $sess, $slice_id);
-?>      
+?>
         <tr>
           <td align=left class=tabtxt align=center><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>
           <?php FrmSelectEasy("from_slice_id", $impslices, $from_slice_id, "OnChange=\"ChangeFromSlice()\""); ?></td>
          </tr>
 <?php
 FrmTabSeparator(_m("Fields' mapping"));
-?>    
+?>
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
         <tr>
@@ -226,7 +218,7 @@ foreach ($to_fields as $f_id => $f_name) {
     echo "<tr><td class=tabtxt><b>$f_name</b></td>\n";
     echo "<td>";
     $val = "";
-    
+
     switch ($field_map[$f_id]['feedmap_flag']) {
         case FEEDMAP_FLAG_VALUE :
             $sel = _m("-- Value --");
@@ -234,12 +226,12 @@ foreach ($to_fields as $f_id => $f_name) {
         case FEEDMAP_FLAG_JOIN :
             $sel = _m("-- Joined fields --");
             $val = htmlspecialchars($field_map[$f_id]['value']); break;
-        case FEEDMAP_FLAG_EMPTY: 
-            $sel =  _m("-- Not map --"); 
+        case FEEDMAP_FLAG_EMPTY:
+            $sel =  _m("-- Not map --");
             break;
         case FEEDMAP_FLAG_MAP :
         case FEEDMAP_FLAG_EXTMAP :
-            $sel = $field_map[$f_id]['value']; 
+            $sel = $field_map[$f_id]['value'];
             break;
         case FEEDMAP_FLAG_RSS :
             $v = $field_map[$f_id]['value'];
@@ -253,8 +245,8 @@ foreach ($to_fields as $f_id => $f_name) {
 }
 FrmTabEnd($form_buttons, $sess, $slice_id);
 
-?>  
+?>
 </FORM>
-<?php 
+<?php
 HtmlPageEnd();
 page_close()?>

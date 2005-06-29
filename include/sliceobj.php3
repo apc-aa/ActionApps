@@ -39,10 +39,12 @@ require_once $GLOBALS['AA_INC_PATH']."zids.php3"; // Pack and unpack ids
 require_once $GLOBALS['AA_INC_PATH']."viewobj.php3"; //GetViewsWhere
 
 class slice {
-    var $name;           // The name of the slice
-    var $unpackedid;     // The unpacked id of the slice i.e. 32 chars
-    var $fields;         // 2 member array( $slice_fields, $prifields)
-    var $setting;        // slice setting - Record form slice table
+    var $name;            // The name of the slice
+    var $unpackedid;      // The unpacked id of the slice i.e. 32 chars
+    var $fields;          // 2 member array( $fields, $prifields)
+    var $dynamic_fields;  // 2 member array( $fields, $prifields)
+    var $setting;         // slice setting - Record form slice table
+    var $dynamic_setting; // dynamic slice setting fields stored in content table
 
     // computed values form slice fields
     var $js_validation;  // javascript form validation code
@@ -73,9 +75,32 @@ class slice {
         freeDB($db);
     }
 
+    // Load $this from the DB for any of $fields not already loaded
+    function loadsettingfields($force=false) {
+        if ( !$force AND isset($this->dynamic_setting) AND is_array($this->dynamic_setting) ) {
+            return;
+        }
+        $db = getDB();
+        $SQL = "SELECT * FROM content WHERE item_id = '".$this->sql_id()."' ORDER BY content.number"; 
+        $db->tquery($SQL);
+        while ($db->next_record()) {
+            // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
+            $db_field = ( ($db->f("text")!="") OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
+            $content4id[$db->f("field_id")][] = array( "value" => $db->f($db_field),
+                                                       "flag"  => $db->f("flag") );
+        }
+        freeDB($db);
+        $this->dynamic_setting = new ItemContent($content4id);
+    }
+    
     function getfield($fname) {
-        $this->loadsettings();
-        return $this->setting[$fname];
+        if (isSliceField($fname)) {
+            $this->loadsettingfields();
+            return $this->dynamic_setting->getValue($fname);
+        } else { 
+            $this->loadsettings();
+            return $this->setting[$fname];
+        }
     }
 
     function name()        { return $this->getfield('name');         }
@@ -91,18 +116,26 @@ class slice {
     // fetch the fields
     // returns an array with two elements [0] is array in form
     // wanted by Storeitem etc, [1] is array of fields in priority order
-    function fields( $return_type = null ) {
-        if (!isset($this->fields)) {
-            $this->fields = GetSliceFields($this->unpacked_id());
+    function fields( $return_type = null, $slice_fields = false ) {
+        if ($slice_fields) {
+            if (!isset($this->dynamic_fields)) {
+                $this->dynamic_fields = GetSliceFields($this->unpacked_id(), true);
+            }
+            $fields = &$this->dynamic_fields;
+        } else {
+            if (!isset($this->fields)) {
+                $this->fields = GetSliceFields($this->unpacked_id());
+            }
+            $fields = &$this->fields;
         }
-        //echo "<pre>"; print_r($this); echo "</pre>";
+
         switch ( $return_type ) {
             case 'fill':    return true;              // just make sure $this->fields is filled
-            case 'record':  return $this->fields[0];  // array of field definitions where field_id is key
-            case 'pri':     return $this->fields[1];  // array of field definitions sorted by priority - integer key
+            case 'record':  return $fields[0];  // array of field definitions where field_id is key
+            case 'pri':     return $fields[1];  // array of field definitions sorted by priority - integer key
             case 'search':
-                $fields = &$this->fields[0];    // in order we can use it in foreach
-                foreach ( $fields as $fld ) { // in priority order
+                $fields_list = &$fields[0];    // in order we can use it in foreach
+                foreach ( $fields_list as $fld ) { // in priority order
                     $showfunc = ParseFnc($fld['input_show_func']);
                     $field_type = 'numeric';
                     if ($fld['text_stored']) { $field_type = 'text'; }
@@ -120,9 +153,23 @@ class slice {
                 }
                 return $ret;
         }
-        return $this->fields;                         // two member array ('record' array, 'pri' array)
+        return $fields;                         // two member array ('record' array, 'pri' array)
     }
+    
 
+    /** Returns slice setting field content in ItemContent object */
+    function get_dynamic_setting_content($ignore_reading_password = false) {
+        if ($ignore_reading_password || ($this->getfield('reading_password') == '') || ($this->getfield('reading_password') == $GLOBALS["slice_pwd"])) {
+            $this->loadsettingfields();
+            return $this->dynamic_setting;
+        } else {
+            if ($GLOBALS['errcheck'] OR $GLOBALS['debug']) {
+                huhe(_m("Error: Missing Reading Password"));
+            }
+            return false;
+        }
+    }
+    
     // Get all the views for this slice
     function views() {
         $SQL = "slice_id = '".$this->sql_id()."'";
