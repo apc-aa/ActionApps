@@ -878,7 +878,7 @@ function RSS_restrict($txt, $len) {
   // _#EDITITEM used on admin page index.php3 for itemedit url
   // param: 0
   function f_e($col, $param="") {
-    global $sess, $slice_info, $allknownslices;
+    global $sess, $allknownslices;
 
     $p = ParamExplode($param);  // 0 = disc|itemcount|safe|slice_info  //2 = return_url
     switch( $p[0]) {
@@ -901,7 +901,9 @@ function RSS_restrict($txt, $len) {
       case "csv":
         return $this->f_t($col,":".$p[0]);
       case "slice_info":
-        $slice    =& $allknownslices->addslice($this->getSliceID());
+        // get slice_id from item, but sometimes the item is not filled (like
+        // on "Add Item" in itemedit.php3, so we use global slice_id here
+        $slice    =& $allknownslices->addslice(get_if($this->getSliceID(),$GLOBALS['slice_id']));
         return $slice->getfield($col);
       case "link_edit":
         return (($p[1]=='anonym') ?
@@ -936,7 +938,7 @@ function RSS_restrict($txt, $len) {
         return sprintf("%02X%02X%02X",$red,255-$red,0);
       case 'selected':  // returns true, if current item is the selected one
                         // (given by set[]=selected-454343 view.php3 parameter)
-        // we can compare short_ids as well as long ones        
+        // we can compare short_ids as well as long ones
         $field2compare = (guesstype($p[1]) == 's') ? 'short_id........' : 'unpacked_id.....';
         return (( (string)$p[1] == (string)($this->getval($field2compare)) ) ? '1' : '0');
       case 'username':    // prints user name form its id
