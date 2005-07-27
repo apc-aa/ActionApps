@@ -87,9 +87,10 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
     $db->tquery($SQL);
     while ($db->next_record()) {
         $last                                  = $db->f("last");
-        $slices[$db->f("slice_id")]["name"]    = $db->f("slicename");
-        $slices[$db->f("slice_id")]["lang"]    = substr($db->f("lang_file"),0,2);
-        $myview                                = &$slices[$db->f("slice_id")]["views"][$db->f("vid")];
+        $sid                                   = unpack_id128($db->f("slice_id")); 
+        $slices[$sid]["name"]                  = $db->f("slicename");
+        $slices[$sid]["lang"]                  = substr($db->f("lang_file"),0,2);
+        $myview                                = &$slices[$sid]["views"][$db->f("vid")];
         $myview["filters"][$db->f("filterid")] = array ("conds"=>$db->f("conds"));
         // Group by selections?
         $myview["group"] = $db->f("aditional");
@@ -109,8 +110,8 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
 
     $now = time();
 
-    foreach ( $slices as $p_slice_id => $slice ) {
-        $slice_id     = unpack_id128($p_slice_id);
+    foreach ( $slices as $slice_id => $slice ) {
+        $p_slice_id   = q_pack_id($slice_id);
         list($fields) = GetSliceFields($slice_id);
 
         /*
