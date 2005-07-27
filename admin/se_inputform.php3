@@ -332,6 +332,10 @@ echo "
      <tr>
       <td class=tabtxt><b>". _m("Default") ."</b></td>
       <td class=tabtxt colspan=3>";
+        // txt and qte is the same, so it is better to use the only one
+        if ($input_default_f == 'qte') {
+            $input_default_f = 'txt';
+        }
         FrmSelectEasy("input_default_f", getSelectBoxFromParamWizard ($DEFAULT_VALUE_TYPES), $input_default_f);
       echo "<div class=tabhlp>". _m("How to generate the default value") ."</div>
             <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
