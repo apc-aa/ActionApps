@@ -21,7 +21,7 @@ http://www.apc.org/
 
 // this allows to require_once this script any number of times - it will be read only once
 if (!defined ("DATE_INCLUDED"))
-	define ("DATE_INCLUDED",1);
+    define ("DATE_INCLUDED",1);
 else return;
 
 // javascript.php3 defines getTriggers, which is used by Add / Edit item page
@@ -34,67 +34,67 @@ require_once $GLOBALS['AA_INC_PATH']."javascript.php3";
 //
 
 class datectrl {
-	var $name;
-	var $time;
-	var $day;
-	var $month;
-	var $year;
-	var $y_range_plus;    // how many years + display in year select list
-	var $y_range_minus;   // how many years + display in year select list
+    var $name;
+    var $time;
+    var $day;
+    var $month;
+    var $year;
+    var $y_range_plus;    // how many years + display in year select list
+    var $y_range_minus;   // how many years + display in year select list
   var $from_now;        // year range is in relation to today's date/selected date
   var $display_time;    // display time too
 
-	// constructor
-	// name identifies control on a form
-	function datectrl($name, $y_range_minus=5, $y_range_plus=5, $from_now=false,
+    // constructor
+    // name identifies control on a form
+    function datectrl($name, $y_range_minus=5, $y_range_plus=5, $from_now=false,
                     $display_time=false) {
-		$this->name = $name;
-		$this->y_range_plus  = $y_range_plus;
-		$this->y_range_minus = $y_range_minus;
-		$this->from_now = $from_now;
-		$this->display_time = $display_time;
-		$this->update();
-	}
+        $this->name = $name;
+        $this->y_range_plus  = $y_range_plus;
+        $this->y_range_minus = $y_range_minus;
+        $this->from_now = $from_now;
+        $this->display_time = $display_time;
+        $this->update();
+    }
 
-	// process form data
-	function update() {
+    // process form data
+    function update() {
         $timevar  = chop($GLOBALS["tdctr_" . $this->name . "_time"]);
         $dayvar   = chop($GLOBALS["tdctr_" . $this->name . "_day"]);
         $monthvar = chop($GLOBALS["tdctr_" . $this->name . "_month"]);
         $yearvar  = chop($GLOBALS["tdctr_" . $this->name . "_year"]);
-		if ( $timevar )
-			$this->time = $timevar;
-		if ( $dayvar)
-			$this->day = $dayvar;
-		if ( $monthvar )
-			$this->month = $monthvar;
-		if ( $yearvar )
-			$this->year = $yearvar;
+        if ( $timevar )
+            $this->time = $timevar;
+        if ( $dayvar)
+            $this->day = $dayvar;
+        if ( $monthvar )
+            $this->month = $monthvar;
+        if ( $yearvar )
+            $this->year = $yearvar;
         return ( $timevar OR $dayvar OR $monthvar OR $yearvar );
-	}
-
-	// set date, format form db
-	function setdate($date) {
-		if (ereg("([[:digit:]]{4}) *- *([[:digit:]]{1,2}) *- *([[:digit:]]{1,2}) *(.*$)",
-				$date, $regs)) {
-			$this->year = $regs[1];
-			$this->month = $regs[2];
-			$this->day = $regs[3];
-			$this->time = $regs[4];
     }
-		if (checkdate($this->month, $this->day, $this->year))
-			return "$this->year-$this->month-$this->day";
-		return "";
-	}
 
-	// set date, format form integer
-	function setdate_int($date) {
+    // set date, format form db
+    function setdate($date) {
+        if (ereg("([[:digit:]]{4}) *- *([[:digit:]]{1,2}) *- *([[:digit:]]{1,2}) *(.*$)",
+                $date, $regs)) {
+            $this->year = $regs[1];
+            $this->month = $regs[2];
+            $this->day = $regs[3];
+            $this->time = $regs[4];
+    }
+        if (checkdate($this->month, $this->day, $this->year))
+            return "$this->year-$this->month-$this->day";
+        return "";
+    }
+
+    // set date, format form integer
+    function setdate_int($date) {
         $d = getdate($date);
         $this->year = $d["year"];
-		$this->month = $d["mon"];
-		$this->day = $d["mday"];
-		$this->time = $d["hours"].":".$d["minutes"].":".$d["seconds"] ;
-	}
+        $this->month = $d["mon"];
+        $this->day = $d["mday"];
+        $this->time = $d["hours"].":".$d["minutes"].":".$d["seconds"] ;
+    }
 
     // get stored date as integer
     function get_date() {
@@ -120,44 +120,55 @@ class datectrl {
         return (( $this->get_date() > 0  ) OR ($this->get_date()==-3600));
     }
 
-	// print select box for day
-	function getdayselect() {
-		$at = getdate(time());
-		$sel =  ($this->day != 0 ? $this->day : $at["mday"]);
-		for ($i = 1; $i <= 31; $i++)
-			$ret .= "<option value=\"$i\"".
+    // print select box for day
+    function getdayselect() {
+        $at = getdate(time());
+        $sel =  ($this->day != 0 ? $this->day : $at["mday"]);
+        for ($i = 1; $i <= 31; $i++)
+            $ret .= "<option value=\"$i\"".
               (($i == $sel) ? ' selected class="sel_on"' : "") . ">$i</option>";
-		return "<select name=\"tdctr_" . $this->name . "_day\"".getTriggers("select",$this->name).">$ret</select>";
-	}
+        return "<select name=\"tdctr_" . $this->name . "_day\"".getTriggers("select",$this->name).">$ret</select>";
+    }
 
-	// print select box for month
-	function getmonthselect() {
-		$L_MONTH = monthNames();
-		$at = getdate(time());
-		$sel =  ($this->month != 0 ? $this->month : $at["mon"]);
-		for ($i = 1; $i <= 12; $i++) {
-			$ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">".
+    // print select box for month
+    function getmonthselect() {
+        $L_MONTH = monthNames();
+        $at = getdate(time());
+        $sel =  ($this->month != 0 ? $this->month : $at["mon"]);
+        for ($i = 1; $i <= 12; $i++) {
+            $ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">".
              $L_MONTH[$i] ."</option>";
-		}
-		return "<select name=\"tdctr_" . $this->name . "_month\"".getTriggers("select",$this->name).">$ret</select>";
-	}
+        }
+        return "<select name=\"tdctr_" . $this->name . "_month\"".getTriggers("select",$this->name).">$ret</select>";
+    }
 
-	// print select box for year
-	function getyearselect() {
-		$at = getdate(time());
+    // print select box for year
+    function getyearselect() {
+        $at = getdate(time());
         $from = ( $this->from_now ? $at["year"] - $this->y_range_minus :
                                 $this->y_range_minus );
         $to   = ( $this->from_now ? $at["year"] + $this->y_range_plus :
                                 $this->y_range_plus );
-		for ($i = $from; $i <= $to; $i++) {
-			$ret .= "<option value=\"$i\"" . (($i == $this->year) ? ' selected class="sel_on"':"").
-			       ">$i</option>";
-		}
-    return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">$ret</select>";
-	}
+        $selectedused = false;
+        for ($i = $from; $i <= $to; $i++) {
+            $ret .= "<option value=\"$i\"";
+            if ($i == $this->year) {
+                $ret .= ' selected class="sel_on"';
+                $selectedused = true;
+            }
+            $ret .= ">$i</option>";
+        }
 
-	// print select box for time
-	function gettimeselect() {
+        // now add all values, which is not in the array, but field has this value
+        if ($this->year AND !$selectedused) {
+            $ret .= "<option value=\"". htmlspecialchars($this->year) ."\" selected class=\"sel_missing\">".htmlspecialchars($this->year)."</option>";
+        }
+
+        return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">$ret</select>";
+    }
+
+    // print select box for time
+    function gettimeselect() {
     switch( $this->display_time ) {
       case 2:   //display time as is - hour:minutes:seconds
               return "<input type=text name=\"tdctr_". $this->name ."_time\"
@@ -177,17 +188,17 @@ class datectrl {
                      value=\"". safe($timestr). "\" size=8 maxlength=8".getTriggers("input",$this->name).">";
     }
     return "";
-	}
+    }
 
-	// print complete date control
-	function getselect () {
-		return $this->get_datestring().$this->getdayselect(). $this->getmonthselect(). $this->getyearselect(). $this->gettimeselect();
-	}
+    // print complete date control
+    function getselect () {
+        return $this->get_datestring().$this->getdayselect(). $this->getmonthselect(). $this->getyearselect(). $this->gettimeselect();
+    }
 
-	// print complete date control
-	function pselect () {
-		echo $this->getselect();
-	}
+    // print complete date control
+    function pselect () {
+        echo $this->getselect();
+    }
 }
 
 function datum($name, $val, $y_range_minus=5, $y_range_plus=5, $from_now=false,
@@ -195,7 +206,7 @@ function datum($name, $val, $y_range_minus=5, $y_range_plus=5, $from_now=false,
     $dc = new datectrl($name, $y_range_minus, $y_range_plus, $from_now, $display_time);
     $dc->setdate_int($val);
     return $dc->getselect();
-}    
+}
 
 
 ?>
