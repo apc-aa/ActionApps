@@ -112,7 +112,7 @@ $from_fields[_m("-- Joined fields --")]     = _m("-- Joined fields --");
 $from_fields[_m("-- RSS field or expr --")] = _m("-- RSS field or expr --");
 
 if (!$remote_slices[$from_slice_id]) {      // local fields : from slice fields
-    $from_fields = GetFields4Select($from_slice_id);
+    $from_fields += GetFields4Select($from_slice_id);
 } else {                                     // remote fields : from feedmap table
     if (isset($map_to) && is_array($map_to)) {
         while (list($k,$v) = each($map_to)) {
