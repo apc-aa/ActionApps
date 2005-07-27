@@ -380,7 +380,7 @@ class searchbar extends storable_class{
      * Access function to searchba operator
      */
     function getSearchBarOperator($bar) {
-        return is_array($this->search_row) AND is_array($this->search_row[$bar]) AND $this->search_row[$bar]['oper'];
+        return (is_array($this->search_row) AND is_array($this->search_row[$bar])) ? $this->search_row[$bar]['oper'] : '';
     }
 
     /**
