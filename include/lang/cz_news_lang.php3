@@ -266,6 +266,10 @@ $_m["Warning: You want to show password, but you did not set\n"
 $_m["Can't copy image  %s to %s"]
  = "Nelze zkopírovat obrázek %s na %s";
 
+$_m["Setting"]
+ = "&nbsp;";
+
+
 # End of unused messages
 # ./filler.php3, row 166
 # ./offline.php3, row 82
