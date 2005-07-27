@@ -24,9 +24,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 $directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "varset.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH'] ."varset.php3";
+require_once $GLOBALS['AA_INC_PATH'] ."formutil.php3";
+require_once $GLOBALS['AA_INC_PATH'] ."pagecache.php3";
 require_once $GLOBALS['AA_BASE_PATH']."modules/site/util.php3";   // module specific utils
 require_once $GLOBALS['AA_BASE_PATH']."modules/site/sitetree.php3";   // module specific utils
 
@@ -95,17 +95,14 @@ switch( $akce ) {
               break;
     case 'u': $tree->move( $r_spot_id, 'moveUp' );        break;  // Up
     case 'd': $tree->move( $r_spot_id, 'moveDown' );      break;  // Down
-    case 'h':                                                     // Hide (Disable)
-    case 'e': $flag = $tree->get('flag', $r_spot_id);
-              // this flag is "structural" one - stored in structure (not in
-              // site_spot table)
-              if ($akce == 'h') {
-                  $flag |= MODW_FLAG_DISABLE;
-              } else {
-                  $flag &= ~MODW_FLAG_DISABLE;
-              }
-              $tree->set('flag', $r_spot_id, $flag); // wite the state also to the structure
-              break;
+    case 'l': $tree->move( $r_spot_id, 'moveLeft' );      break;  // Left
+    case 'a': $tree->move( $r_spot_id, 'moveRight' );     break;  // Right
+
+    case 'h': $tree->setFlag($r_spot_id, MODW_FLAG_DISABLE);   break;  // Hide
+    case 'e': $tree->clearFlag($r_spot_id, MODW_FLAG_DISABLE); break;  // Disable
+
+    case 'p': $tree->setFlag($r_spot_id, MODW_FLAG_COLLAPSE);   break;  // Collapse
+    case 'm': $tree->clearFlag($r_spot_id, MODW_FLAG_COLLAPSE); break;  // Expand
 }
 
 if ($addcond) {
@@ -148,22 +145,30 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 require_once $GLOBALS['AA_BASE_PATH']."modules/site/menu.php3";
 showMenu($aamenus, "codemanager");
 
-echo '<br><table border=0 cellspacing=0 class=login width="95%"><TR><TD width=200> ';
+echo '<br><table border=0 cellspacing=0 class=login width="95%"><tr><td id="sitetree"> ';
 echo '<a href="'. SiteAdminPage($r_spot_id, "akce=s").'">'. _m("Add&nbsp;spot") .'</a> ';
-echo '<a href="'. SiteAdminPage($r_spot_id, "akce=c").'">'. _m("Add&nbsp;choice") .'</a> ';
-echo '<a href="'. SiteAdminPage($r_spot_id, "akce=r").'">'. _m("Delete&nbsp;spot") .'</a> ';
+echo '<a href="'. SiteAdminPage($r_spot_id, "akce=c").'">'. _m("Add&nbsp;choice") .'</a><br> ';
 echo '<a href="'. SiteAdminPage($r_spot_id, "akce=u").'">'. _m("Move&nbsp;up") .'</a> ';
-echo '<a href="'. SiteAdminPage($r_spot_id, "akce=d").'">'. _m("Move&nbsp;down") .'</a> ';
+echo '<a href="'. SiteAdminPage($r_spot_id, "akce=d").'">'. _m("Move&nbsp;down") .'</a><br> ';
+echo '<a href="'. SiteAdminPage($r_spot_id, "akce=l").'">'. _m("Move&nbsp;left") .'</a> ';
+echo '<a href="'. SiteAdminPage($r_spot_id, "akce=a").'">'. _m("Move&nbsp;right") .'</a><br> ';
+echo '<a href="'. SiteAdminPage($r_spot_id, "akce=r").'">'. _m("Delete&nbsp;spot") .'</a> ';
 if ($tree->get('flag', $r_spot_id) & MODW_FLAG_DISABLE) {
     echo '<a href="'. SiteAdminPage($r_spot_id, "akce=e").'">'. _m("Enable") .'</a> ';
 } else {
     echo '<a href="'. SiteAdminPage($r_spot_id, "akce=h").'">'. _m("Disable") .'</a> ';
 }
-echo '<br>';
+echo '<br><br>';
 
 // show tree
 if ($debugsite) huhl("XYZZY:SiteIndex tree=",$tree);
-$tree->walkTree($apc_state, 1, 'ModW_PrintSpotName', 'all');
+
+// callback functions
+$functions = array ('spot'          => 'ModW_PrintSpotName_Start',
+                    'before_choice' => 'ModW_PrintChoice_Start',
+                    'after_choice'  => 'ModW_PrintChoice_End');
+
+$tree->walkTree($apc_state, 1, $functions, 'collapsed', 0, 'ModW_PrintSpotName_End');
 
 echo '</td><td valign="top">';
 

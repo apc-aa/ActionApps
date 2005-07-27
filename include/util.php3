@@ -1732,15 +1732,21 @@ function ShowRefreshWizardJavaScript() {
     FrmJavascript( 'if (top.wizardFrame != null) top.wizardFrame.wizard_form.submit();' );
 }
 
-function GetAAImage($filename, $alt='', $width=0, $height=0) {
-    $title = ($alt ? "title=\"$alt\" " : '');
+function GetAAImage($filename, $alt='', $width=0, $height=0, $add='', $add_path='') {
+    $image_path = $GLOBALS['AA_BASE_PATH'].   $add_path. "images/$filename";
+    $image_url  = $GLOBALS['AA_INSTAL_PATH']. $add_path. "images/$filename";
+    $title      = ($alt ? "title=\"$alt\"" : '');
     if ( $width ) {
         $size = "width=\"$width\" height=\"$height\"";
     } else {
-        $im_size = @GetImageSize($GLOBALS["AA_BASE_PATH"]."images/$filename");
+        $im_size = @GetImageSize($image_path);
         $size = $im_size[3];
     }
-    return '<img border=0 src="'. $GLOBALS['AA_INSTAL_PATH'] ."images/$filename\" alt=\"$alt\" $title $size>";
+    return "<img border=\"0\" src=\"$image_url\" alt=\"$alt\" $title $size $add>";
+}
+
+function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='') {
+    return GetAAImage($filename, $alt, $width, $height, $add, "modules/$module/");
 }
 
 /// On many places in Admin panel, it is secure to read sensitive data => use this function

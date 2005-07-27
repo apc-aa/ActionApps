@@ -21,9 +21,11 @@ http://www.apc.org/
 
 // Miscellaneous utility functions for "site" module
 
-define ('MODW_FLAG_DISABLE',      1);   // deactivated spot
+define ('MODW_FLAG_DISABLE',   1);   // deactivated spot
 define ('MODW_FLAG_JUST_TEXT', 2);   // not used - planed for site speedup
                                      // (= flag means "don't stringexpand text)"
+define ('MODW_FLAG_COLLAPSE',  4);   // (visualy) Collapsed spot
+
 
 function SiteAdminPage($spot_id, $add = null) {
     global $sess;
@@ -63,18 +65,50 @@ function ModW_DoNothing($spot_id,$depth) {
     return;
 }
 
-function ModW_PrintSpotName($spot_id, $depth) {
+function ModW_SpotHtml($spot_id, $spot_name, $selected, $disabled) {
+    // get class for this spot div
+    $class  = ($selected) ? ' class="selected"' : '';
+
+    // get actions (eye for disable/enable, at this moment
+    $action = $disabled ?
+        '<a href="'. SiteAdminPage($spot_id, 'akce=e'). '">' .GetModuleImage('site', 'disabled.gif', '', 16, 12, 'class="eye"') .'</a>' :
+        '<a href="'. SiteAdminPage($spot_id, 'akce=h'). '">' .GetModuleImage('site', 'enabled.gif',  '', 16, 12, 'class="eye"') .'</a>';
+
+    // print the spot <div>
+    echo "<div$class>${action}<a href=\"". SiteAdminPage($spot_id, "go_sid=$spot_id"). "\" class=\"spot\">$spot_name</a></div>";
+}
+
+function ModW_PrintSpotName_Start($spot_id, $depth) {
     global $r_spot_id, $tree;
-    $width     = 10 * ($depth+1);
-    $spotclass = ( $spot_id == $r_spot_id ) ? 'tabtit' : 'tabtxt';
-    if ( $tree->isSequenceStart($spot_id) ) {
-        $add = @str_repeat('&nbsp;',$depth*2). '-';
-    }
 
-    if ($vars = $tree->get('variables', $spot_id)) {
-        $variables = "(". implode( $vars, ',' ) .")";
-    }
+    // print the spot itself
+    ModW_SpotHtml($spot_id, $tree->getName($spot_id), $spot_id == $r_spot_id, ($tree->get('flag', $spot_id) & MODW_FLAG_DISABLE));
 
+    // variables defined? - print it
+    if (!$tree->isFlag($spot_id, MODW_FLAG_COLLAPSE) AND ($vars = $tree->get('variables', $spot_id))) {
+        echo "\n  <div class=\"variables\">(". implode($vars, ',') .')</div>';
+    }
+}
+
+function ModW_PrintChoice_Start($spot_id, $depth, $choices_index, $choices_count) {
+    global $tree;
+    // begin of the choice (open <div>)
+
+    // last choice in the list is special
+    $last  = ($choices_index == $choices_count-1);    // just shortcut variable
+    $class = $last ? 'lastchoice' : 'choice';
+
+    if ($tree->isLeaf($spot_id)) {
+        $colaps = GetModuleImage('site', $last ? 'l.gif' : 't.gif', '', 21, 13);
+    } elseif ($tree->get('flag', $spot_id) & MODW_FLAG_COLLAPSE) {
+        $colaps = '<a href="'. SiteAdminPage($spot_id, "akce=m").'">'. GetModuleImage('site', 'plus.gif', '', 21, 13) .'</a> ';
+    } else {
+        $colaps = '<a href="'. SiteAdminPage($spot_id, "akce=p").'">'. GetModuleImage('site', 'minus.gif', '', 21, 13) .'</a> ';
+    }
+    echo "\n<div class=\"$class\">$colaps";
+
+    // print conditions
+    $conditions = '';
     if ($conds = $tree->get('conditions', $spot_id)) {
         $delim = ' ';
         foreach ($conds as $k => $v) {
@@ -82,15 +116,15 @@ function ModW_PrintSpotName($spot_id, $depth) {
             $delim = ', ';
         }
     }
+    if ($conditions == '') {
+        $conditions = '&nbsp;';
+    }
+    echo "\n  <div class=\"conditions\"><a href=\"". SiteAdminPage($spot_id, "go_sid=$spot_id'"). "\">$conditions</a></div>";
+}
 
-    $disabled = ($tree->get('flag', $spot_id) & MODW_FLAG_DISABLE) ? 'style="text-decoration: line-through;"' : '';
-    echo "<table border=0 cellspacing=0 class=$spotclass width=200>
-    <tr class=$spotclass>
-     <td width=$width> &nbsp;$add</td>
-     <td><a href=\"". SiteAdminPage($r_spot_id, "go_sid=$spot_id"). "\" class=$spotclass $disabled>".
-        $tree->getName($spot_id)."</a>$conditions $variables</td>
-    </tr>
-   </table>";
+function ModW_PrintChoice_End($spot_id, $depth, $choices_index, $choices_count) {
+    // close previously opened <div class="choice">
+    echo "\n</div>";
 }
 
 function ModW_PrintVariables( $spot_id, $vars ) {

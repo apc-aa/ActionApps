@@ -306,3 +306,97 @@ TD.sel_title {
     background-color: #F5F0E7;
 }
 
+/* -------------------- Sitemodule CSS - begin --------------------------- */
+#sitetree {
+    font-size: 8pt;
+    color: #000000;
+    width: 200px;
+    padding-right: 12px;
+}
+
+#sitetree div {
+    border-right: 1px solid #EBDABE;
+    border-left: 1px solid #EBDABE;
+    background-repeat: repeat-y;
+    background-image: url(modules/site/images/i_bg.gif);
+}
+
+#sitetree .spot  {
+    color: #000000;
+    text-decoration: none;
+    margin: 0px 0px 0px 0px;
+    background-color: #F5F0E7;
+    border-top: none;
+    border-bottom:  1px solid #EBDABE;
+    padding-left: 2px;
+    display: block;
+}
+
+#sitetree div.choice, #sitetree div.lastchoice {
+    padding: 0px 5px 5px 21px;
+}
+
+#sitetree div.lastchoice {
+    background-image: url(modules/site/images/s_bg.gif);
+    border-bottom: 1px solid #EBDABE;
+}
+
+#sitetree div.conditions {
+    border-top: 1px solid #EBDABE;
+    border-left: 1px solid #EBDABE;
+    background-color: #EBDABE;
+    background-image: none;
+    padding-left: 1px;
+}
+
+#sitetree div.conditions a, #sitetree div.variables {
+    color: #000;
+    text-decoration: none;
+}
+
+#sitetree div.conditions a {
+    color: #584011;
+}
+
+#sitetree div.variables {
+    padding-bottom: 8px;
+    padding-left:   15px;
+    color: #584011;
+}
+
+.choice img, .lastchoice img {
+    margin: 0px 0px 0px -21px;
+    padding: 0px;
+    float: left;
+    border: none;
+}
+
+img.eye {
+    margin: 0px;
+    padding: 0px;
+    float: right;
+    border: none;
+}
+
+#sitetree a.spot:hover {
+    background-color: #584011;
+    color: #FFF;
+}
+
+#sitetree div .selected {
+    margin: 0px 1px 0px 0px;
+    padding: 0px;
+    border: none;
+}
+
+#sitetree div .selected a {
+    background-color: #584011;
+    color: #FFF;
+}
+
+/* -------------------- Sitemodule CSS - end ----------------------------- */
+
+
+
+
+

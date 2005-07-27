@@ -101,14 +101,14 @@ class spot {
 
     /** Check the positions (po) array and choices (ch) array,
     *  and fixes possible problems
-    *     - removes empty positions (where they comwe from?)
+    *     - removes empty positions (where they come from?)
     *     - normalizes keys to be from 0 to .. with step of 1
     */
     function normalize() {
         $this->po = normalize_arr($this->po);
         $this->ch = normalize_arr($this->ch);
     }
-
+    
     function removeSpot( $spot_id ) {
         // search in options
         $priorsib = $this->id;
@@ -136,66 +136,56 @@ class spot {
 
     function moveUp( $spot_id ) {
         $this->normalize();  // just check, if there are no problems in this spot
+
         // search in options
-        if ( isset($this->ch) AND is_array($this->ch) ) {
-            foreach ($this->ch as $k => $v) {
-                if ($v == $spot_id) {
-                    if ( $k==0 ) {
-                        return false;
-                    }
-                    $this->ch[$k]   = $this->ch[$k-1];
-                    $this->ch[$k-1] = $v;
-                    return true;
-                }
+        if (false !== ($k = array_search($spot_id, (array)$this->ch))) {
+            if ( $k == 0 ) {
+                return false;
             }
+            $this->ch[$k]   = $this->ch[$k-1];
+            $this->ch[$k-1] = $spot_id;
+            return true;
         }
         //search in sequence
-        if ( isset($this->po) AND is_array($this->po) ) {
-            foreach ($this->po as $k => $v) {
-                if ($v == $spot_id) {
-                    if ( $k<=1 ) {   // can't move to the first position in sequence
-                        return false;
-                    }
-                    $this->po[$k]   = $this->po[$k-1];
-                    $this->po[$k-1] = $v;
-                    return true;
-                }
+        if (false !== ($k = array_search($spot_id, (array)$this->po))) {
+            if ( $k<=1 ) {   // can't move to the first position in sequence
+                return false;
             }
+            $this->po[$k]   = $this->po[$k-1];
+            $this->po[$k-1] = $spot_id;
+            return true;
         }
         return false;
     }
 
     function moveDown( $spot_id ) {
         $this->normalize();  // just check, if there are no problems in this spot
+
         // search in options
-        if (isset($this->ch) AND is_array($this->ch)) {
-            $last = count($this->ch)-1;
-            foreach ($this->ch as $k => $v) {
-                if ($v == $spot_id) {
-                    if ($k == $last) {
-                        return false;
-                    }
-                    $this->ch[$k]   = $this->ch[$k+1];
-                    $this->ch[$k+1] = $v;
-                    return true;
-                }
+        if (false !== ($k = array_search($spot_id, (array)$this->ch))) {
+            if ($k == count($this->ch)-1) { // last
+                return false;
             }
+            $this->ch[$k]   = $this->ch[$k+1];
+            $this->ch[$k+1] = $spot_id;
+            return true;
         }
         //search in sequence
-        if (isset($this->po) AND is_array($this->po)) {
-            $last = count($this->po)-1;
-            foreach ($this->po as $k => $v) {
-                if ($v == $spot_id) {
-                    if (($k==0) OR ($k==$last)) {    // can't move to the first position in sequence
-                        return false;
-                    }
-                    $this->po[$k]   = $this->po[$k+1];
-                    $this->po[$k+1] = $v;
-                    return true;
-                }
+        if (false !== ($k = array_search($spot_id, (array)$this->po))) {
+            if (($k==0) OR ($k==count($this->po)-1)) {    // can't move to the first position in sequence
+                return false;
             }
+            $this->po[$k]   = $this->po[$k+1];
+            $this->po[$k+1] = $spot_id;
+            return true;
         }
         return false;
+    }
+    
+    function moveLeft( $spot_id ) {
+    }
+
+    function moveRight( $spot_id ) {
     }
 
     function Name()                        { return $this->n; }
@@ -208,6 +198,7 @@ class spot {
 
     function set_translated($what, $value) { $this->$what = $value; }
     function set($what,$value)             { $this->set_translated($GLOBALS['SPOT_VAR_NAMES'][$what], $value); }
+
 
     function conditionMatches(&$state) {
         $i=0;
@@ -337,6 +328,26 @@ class sitetree {
         return true;
     }
 
+    function setFlag($spot_id, $flag) {
+        $current_flag = $this->get('flag', $spot_id);
+
+        // set "structural" flag - stored in structure (not in site_spot table)
+        $current_flag |= $flag;
+        $this->set('flag', $spot_id, $current_flag); // wite the state also to the structure
+    }
+
+    function clearFlag($spot_id, $flag) {
+        $current_flag = $this->get('flag', $spot_id);
+
+        // set "structural" flag - stored in structure (not in site_spot table)
+        $current_flag &= ~$flag;
+        $this->set('flag', $spot_id, $current_flag); // wite the state also to the structure
+    }
+
+    function isFlag($spot_id, $flag) {
+        return $this->get('flag', $spot_id) & $flag;
+    }
+
     function isChoice($spot_id) {
         $spot =& $this->tree[$spot_id];
         if (!$spot) {
@@ -392,14 +403,26 @@ class sitetree {
         return $this->get('positions', $id) ? true : false;
     }
 
+    function isLeaf($id)  {
+        $s =& $this->tree[$id];
+        return $s->isLeaf();
+    }
+
     function conditionMatches( $id, &$state ) {
         $s =& $this->tree[$id];
         return $s ? $s->conditionMatches($state) : false;
     }
 
-    //Walk the tree, starting at $id, calling $function
-    function walkTree(&$state, $id, $function, $method='cond', $depth=0) {
+    /** Walk the tree, starting at $id, calling $functions for each spot
+     *
+     *
+     */
+    function walkTree(&$state, $id, $functions, $method='cond', $depth=0) {
         global $debugsite;
+        // $functions could be array which defines the callback functions,
+        // or nonarray - just main - spot -  function
+        $function_spot          = is_array($functions) ? $functions['spot'] : $functions;
+
         if ($debugsite) huhl("state=",$state,"id=",$id,"function=$function method=$method depth=$depth");
         $current =& $this->tree[$id];
         $positions = $current->get("positions");
@@ -412,10 +435,17 @@ class sitetree {
             if ($pos) {
                 // There is a bug that introduced empty positions
                 // this is to skip them.
-                if (($method=='all') OR !($this->get("flag",$pos) & MODW_FLAG_DISABLE)) { 
-                    $function($pos, $depth);
+                if (($method=='all') OR ($method=='collapsed') OR (($method=='cond') AND !$this->isFlag($pos, MODW_FLAG_DISABLE))) {
+                    $function_spot($pos, $depth);
                 }
-                if ( $this->haveBranches($pos) AND (($method == 'cond') OR !($current->get("flag") & MODW_FLAG_HIDE))) {  // MODW_FLAG_HIDE -  prepared for collapsed branches. Not used, yet
+
+                // if this position is collapsed, then print only first position
+                // and skip the others as well as all the choices
+                if (($method == 'collapsed') AND $this->isFlag($pos, MODW_FLAG_COLLAPSE)) {  // MODW_FLAG_COLLAPSE - collapsed branches.
+                    break;
+                }
+
+                if ($this->haveBranches($pos)) {
                     $chcurrent =& $this->tree[$pos];
                     $choices = $chcurrent->get("choices");
                     if ( !$choices ) {
@@ -423,11 +453,28 @@ class sitetree {
                         exit;
                     }
                     ksort($choices); // might not be in key order
+                    $choices_count = count($choices);
+                    $choices_index = 0;
                     foreach ($choices as $k => $cho) {
                         if ($debugsite) huhl("Choice: $cho");
                         if ($cho) { // skip buggy empty choices
-                            if (($method=='all') OR ($this->conditionMatches($cho, $state) AND !($this->get("flag",$cho) & MODW_FLAG_DISABLE))) {
-                                $this->walkTree($state, $cho, $function, $method, $depth+1);
+                            if (($method=='all') OR ($method=='collapsed') OR ($this->conditionMatches($cho, $state) AND !$current->isFlag($cho, MODW_FLAG_DISABLE))) {
+
+                                // sometimes it is usefull to call a function before the choice
+                                if ($functions['before_choice']) {
+                                    $functions_before_choice = $functions['before_choice'];
+                                    $functions_before_choice($cho, $depth, $choices_index, $choices_count);
+                                }
+
+                                $this->walkTree($state, $cho, $functions, $method, $depth+1);
+
+                                // and sometimes it is usefull to call a function after the choice
+                                if ($functions['after_choice']) {
+                                    $functions_after_choice = $functions['after_choice'];
+                                    $functions_after_choice($cho, $depth, $choices_index, $choices_count);
+                                }
+                                $choices_index++;
+
                                 if ($method=='cond') {
                                     break;                 // one matching spot is enough
                                 }
