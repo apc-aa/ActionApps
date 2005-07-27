@@ -89,7 +89,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 
   if (count($err) <= 1) {
     $Msg = MsgOK(_m("Group successfully added to permission system"));
-    go_url( con_url($sess->url($PHP_SELF), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
+    go_url( get_url($sess->url($PHP_SELF), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
   }
 }
 

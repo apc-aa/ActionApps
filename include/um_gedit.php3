@@ -41,7 +41,7 @@ do  {
                 AddPerm($newgroupid, AA_ID, "aa", $perms_roles["SUPER"]['id']);
             }
             $Msg = MsgOK(_m("Group successfully added to permission system"));
-            go_url( con_url($sess->url($PHP_SELF), 'GrpSrch=1&grp='. urlencode($group_name)), $Msg);
+            go_url( get_url($sess->url($PHP_SELF), 'GrpSrch=1&grp='. urlencode($group_name)), $Msg);
         }
     } else {
         $grouprecord["uid"] = $selected_group;

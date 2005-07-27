@@ -59,7 +59,7 @@ require_once $GLOBALS['AA_INC_PATH']."um_util.php3";
         }
         $Msg = MsgOK(_m("User successfully added to permission system"));
         if (!$um_uedit_no_go_url)
-          go_url( con_url($sess->url($PHP_SELF), 'UsrSrch=1&usr='. urlencode($user_login)), $Msg);
+          go_url( get_url($sess->url($PHP_SELF), 'UsrSrch=1&usr='. urlencode($user_login)), $Msg);
       }
     } else {                 // ----------------- update user ------------------
       $userrecord["uid"] = $selected_user;

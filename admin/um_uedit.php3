@@ -112,7 +112,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 
   if ( count($err) <= 1 ) {
     $Msg = MsgOK(_m("User successfully added to permission system"));
-    go_url( con_url($sess->url($PHP_SELF), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
+    go_url( get_url($sess->url($PHP_SELF), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
   }
 }
 
