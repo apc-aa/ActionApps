@@ -246,7 +246,6 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
       if ( (string)$tocategory != "0" )    // if 0 - don't change category
         $new4id[$newfld][0]['value'] = $destinationcat;
     }
-    $new4id[$newfld][0]['value']=quote($new4id[$newfld][0]['value']);
   }
 
   // --- fill required fields if not set ---
@@ -347,11 +346,9 @@ function Update($item_id, $slice_id, $dest_id, $destination) {
     // Current setting is, that if source slice admin sets status_code
     // as update&change, then status_code is changed also in destination slice
     // - Source admin APPROVE OR TRASHES items in destiation slice !!!
-    if (($fval[0][flag] & FLAG_UPDATE) || $fields[$val][feed]==STATE_FEEDABLE_UPDATE )
-       $oldcontent4id[$key][0]['value'] = quote($content4id[$val][0]['value']);
-     else
-       $oldcontent4id[$key][0]['value'] = quote($oldcontent4id[$key][0]['value']);
-       // we have to quote - data is from database
+    if (($fval[0][flag] & FLAG_UPDATE) || $fields[$val][feed]==STATE_FEEDABLE_UPDATE ) {
+       $oldcontent4id[$key][0]['value'] = $content4id[$val][0]['value'];
+    }
   }
   StoreItem( $dest_id, $destination, $oldcontent4id, $fields_to, false, true, false, $backup_oldcontent4id, 'feed' );
                                         // update, invalidatecache, not feed

@@ -255,11 +255,11 @@ function updateFieldsMapping($feed_id, $l_slice_id, $r_slice_id, &$field_refs, &
     $db = getDB();
     if ( isset($field_refs) AND is_array($field_refs) ) {
         foreach( $field_refs as $r_field_id => $val ) {
+            $new_name = $fields[$r_field_id]['name'];
             if ($ext_map && $ext_map[$r_field_id]) {
                 // remote field is in the feedmap table => update name
-                $new_name = quote($fields[$r_field_id][name]);
                 if ($ext_map[$r_field_id] != $new_name) { // update if field name changed on remote AA
-                    $SQL = "UPDATE feedmap SET from_field_name='".quote($fields[$r_field_id]['name'])."'
+                    $SQL = "UPDATE feedmap SET from_field_name='".quote($new_name)."'
                             WHERE from_slice_id='$p_r_slice_id'
                             AND to_slice_id='$p_l_slice_id'
                             AND from_field_id='$r_field_id'";
@@ -268,7 +268,7 @@ function updateFieldsMapping($feed_id, $l_slice_id, $r_slice_id, &$field_refs, &
                 }
             } else {
                 $SQL = "INSERT INTO feedmap VALUES('$p_r_slice_id','$r_field_id','$p_l_slice_id','$r_field_id',
-                       '".FEEDMAP_FLAG_EXTMAP ."','','".quote($fields[$r_field_id]['name'])."')";
+                       '".FEEDMAP_FLAG_EXTMAP ."','','".quote($new_name)."')";
                 if ($debugfeed >= 8) print("\n<br>$SQL");
                 $db->query($SQL);
             }
@@ -623,15 +623,14 @@ class grabber_aarss extends grabber {
             switch ($v['feedmap_flag']) {
                 case FEEDMAP_FLAG_VALUE:
                             // value could contain {switch()} and other {constructs}
-                            $content4id[$to_field_id][0]['value'] = quote($item2fed->unalias($v['value']));
+                            $content4id[$to_field_id][0]['value'] = $item2fed->unalias($v['value']);
                             break;
                 case FEEDMAP_FLAG_EXTMAP:   // Check this really works when val in from_field_id
                 case FEEDMAP_FLAG_RSS:
                             $values = map1field($v['value'],$item,$this->channel);
                             if (isset($values) && is_array($values)) {
-                                // quote all values
                                 while (list($k,$v2) = each($values)) {
-                                    $values[$k]['value'] = quote($v2['value']);
+                                    $values[$k]['value'] = $v2['value'];
                                 }
                                 $content4id[$to_field_id] = $values;
                             }
