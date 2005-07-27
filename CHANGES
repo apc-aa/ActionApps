@@ -1,3 +1,20 @@
+07/26/05 - new site module admin interface design (thanks to Colnodo)
+(honzam) - year selectbox always show the year of the filled date 
+           (so the previously filled years are never lost)
+         - all selectboxes should always show the filled value, even if 
+           the value in not in the list
+         - fixed return url from Slice Field Setting page
+         - fixed feeding mapping setting - the special option (like "--Value--")
+           is shown again
+         - fixed alerts sending problem - it did not work for some slices 
+           (the one with backslash in packed_id, for instance)
+         - fixed problem with Edit used/Add user, the right user is displayed 
+           after update
+         - fixed searchbar - the operator in the condition is not lost
+         - fixed field default function - qte is no longer used, since it is 
+           the same as txt
+         - fixed link to AA general documentation in doc/index.html
+         - fixed quoting problem in feeding (\") appears for some feeds data
 06/28/05 - new dynamic "slice setting fields" implemented - now you have 
 (honzam)   the possibility to add "slice fields" (just like you do with normal 
            item fields). Such fields then can be used for slice setting common
