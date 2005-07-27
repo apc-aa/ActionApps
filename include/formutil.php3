@@ -162,7 +162,7 @@ class inputform {
                 $buttons['upd_preview'] = array('type'=>'submit', 'value'=>_m("Update & View"));
             }
             // if we edit dynamic slice setting fields, we do not need such buttons
-            if (!$slice_fields) { 
+            if (!$slice_fields) {
                 $buttons['insert']      = array('type'=>'submit', 'value'=>_m("Insert as new"));
                 $buttons['reset']       = array('type'=>'reset',  'value'=>_m("Reset form"));
             }
@@ -241,7 +241,7 @@ class inputform {
         }
 
         list($fields, $prifields) = $slice->fields(null, $slice_fields);
-        
+
         if ( !isset($prifields) OR !is_array($prifields) ) {
             return MsgErr(_m("No fields defined for this slice"));
         }
@@ -1838,14 +1838,22 @@ function FrmSelectEasy($name, $arr, $selected="", $add="") {
 function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
     $name=safe($name); // safe($add) - NO! - do not safe it
 
-    $retval = "<select name=\"$name\" $add>\n";
+    $retval       = "<select name=\"$name\" $add>\n";
+    $selectedused = false;
     foreach ($arr as $k => $v) {
         $retval .= "  <option value=\"". htmlspecialchars($k)."\"";
         if ((string)$selected == (string)$k) {
             $retval .= ' selected class="sel_on"';
+            $selectedused = true;
         }
         $retval .= ">". htmlspecialchars( is_array($v) ? $v['name'] : $v ) ."</option>\n";
     }
+
+    // now add all values, which is not in the array, but field has this value
+    if ($selected AND !$selectedused) {
+        $retval .= "<option value=\"". htmlspecialchars($selected) ."\" selected class=\"sel_missing\">".htmlspecialchars($selected)."</option>";
+    }
+
     $retval .= "</select>\n";
     return $retval;
 }
