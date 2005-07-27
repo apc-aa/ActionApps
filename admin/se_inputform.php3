@@ -38,8 +38,10 @@ function EditConstantURL() {
     }
 }
 
+$back_admin_url = $sess->url(self_base(). "./se_fields.php3" .(isSliceField($fid) ? '?slice_fields=1': ''));
+
 if ($cancel) {
-    go_url($sess->url(self_base(). "./se_fields.php3"));
+    go_url($back_admin_url);
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
@@ -59,7 +61,7 @@ if ($del) {
     $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
     $Msg = MsgOK(_m("Field delete OK"));
-    go_url($sess->url("./se_fields.php3"));  // back to field page
+    go_url($back_admin_url);  // back to field page
 }
 
 $INPUT_SHOW_FUNC_TYPES = inputShowFuncTypes();
@@ -173,8 +175,7 @@ if ($update) {
 
         if ( count($err) <= 1 ) {
             $Msg = MsgOK(_m("Fields update successful"));
-            go_url( ($return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) :
-                $sess->url("./se_fields.php3") ));  // back to field page
+            go_url( $return_url ? (expand_return_url(1) . "&msg=".urlencode($Msg)) : $back_admin_url );  // back to field page
         }
     } while (0);           //in order we can use "break;" statement
 }
@@ -202,7 +203,7 @@ if ( $db->next_record()) {
     $fld = $db->Record;
 } else {
     $Msg = MsgErr(_m("No fields defined for this slice"));
-    go_url(($return_url ? expand_return_url(1) : $sess->url("./se_fields.php3") ));  // back to field page
+    go_url($return_url ? expand_return_url(1) : $back_admin_url);  // back to field page
 }
 
 /** Finds the first ":" and fills the part before ":" into $fnc, after ":" into $params.
@@ -289,7 +290,8 @@ echo _m("<p>WARNING: Do not change this setting if you are not sure what you're 
 $form_buttons = array("update"=>array("type"=>"hidden","value"=>"1"),
                       "fid"=>array("type"=>"hidden", "value"=>$fid),
                       "update",
-                      "cancel"=>array("url"=>"se_fields.php3"));
+                      "cancel"=>array("url"=>"se_fields.php3" .(isSliceField($fid) ? '?slice_fields=1':''))
+                     );
 
 echo "
 <form enctype=\"multipart/form-data\" method=post action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">";
