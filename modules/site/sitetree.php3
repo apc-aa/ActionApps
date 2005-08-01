@@ -108,7 +108,7 @@ class spot {
         $this->po = normalize_arr($this->po);
         $this->ch = normalize_arr($this->ch);
     }
-    
+
     function removeSpot( $spot_id ) {
         // search in options
         $priorsib = $this->id;
@@ -181,7 +181,7 @@ class spot {
         }
         return false;
     }
-    
+
     function moveLeft( $spot_id ) {
     }
 
@@ -421,7 +421,12 @@ class sitetree {
         global $debugsite;
         // $functions could be array which defines the callback functions,
         // or nonarray - just main - spot -  function
-        $function_spot          = is_array($functions) ? $functions['spot'] : $functions;
+        if (!is_array($functions)) {
+            $foo['spot'] = $functions;
+            // functions are array now
+            $functions = $foo;
+        }
+        $function_spot = $functions['spot'];
 
         if ($debugsite) huhl("state=",$state,"id=",$id,"function=$function method=$method depth=$depth");
         $current =& $this->tree[$id];
@@ -458,7 +463,7 @@ class sitetree {
                     foreach ($choices as $k => $cho) {
                         if ($debugsite) huhl("Choice: $cho");
                         if ($cho) { // skip buggy empty choices
-                            if (($method=='all') OR ($method=='collapsed') OR ($this->conditionMatches($cho, $state) AND !$current->isFlag($cho, MODW_FLAG_DISABLE))) {
+                            if (($method=='all') OR ($method=='collapsed') OR ($this->conditionMatches($cho, $state) AND !$this->isFlag($cho, MODW_FLAG_DISABLE))) {
 
                                 // sometimes it is usefull to call a function before the choice
                                 if ($functions['before_choice']) {
