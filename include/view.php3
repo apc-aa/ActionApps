@@ -526,7 +526,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
     case 'const':              // constants
       if ( !$category_id )
           $category_id = Links_SliceID2Category($slice_id);             // get default category for the view
-      $format    = GetViewFormat($view_info);
+      $format    = GetViewFormat($view_info, $selected_item);
       $aliases   = GetAliases4Type($view_info['type'],$als);
       if (!$conds) {          // conds could be defined via cmd[]=d command
           $conds = GetViewConds($view_info, $param_conds);

@@ -939,8 +939,17 @@ function RSS_restrict($txt, $len) {
       case 'selected':  // returns true, if current item is the selected one
                         // (given by set[]=selected-454343 view.php3 parameter)
         // we can compare short_ids as well as long ones
-        $field2compare = (guesstype($p[1]) == 's') ? 'short_id........' : 'unpacked_id.....';
-        return (( (string)$p[1] == (string)($this->getval($field2compare)) ) ? '1' : '0');
+        $data2compare = false;
+        if (($guesstype = guesstype($p[1])) == 's') {
+            $data2compare = $this->getval('short_id........');
+        } elseif ($guesstype == 'l') {
+            $data2compare = $this->getval('unpacked_id.....');
+        }
+        // no short_id or long_id - it must be a constant
+        if ( !$data2compare ) {
+            $data2compare = $this->getval('const_value');
+        }
+        return (( (string)$p[1] == (string)$data2compare ) ? '1' : '0');
       case 'username':    // prints user name form its id
         return perm_username( $this->getval($col) );
       case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)
