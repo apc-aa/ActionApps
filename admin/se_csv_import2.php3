@@ -290,7 +290,7 @@ FrmTabCaption(_m("Mapping settings"));
        <td class=tabtxt align=center><input type="radio" <?php if ($itemId == "old") echo "CHECKED"; ?> NAME="itemId" value="old"></td>
        <td class=tabtxt ><?php
          echo _m("Map item id from"). '&nbsp';
-         FrmSelectEasy("itemIdMappedFrom",$inFields,$preview ? $idFrom : $inFields[0]);
+         FrmSelectEasy("itemIdMappedFrom",$inFields, $itemIdMappedFrom ? $itemIdMappedFrom : ( $preview ? $idFrom : $inFields[0]));
          echo '<br>';
          $mapping_options = array ( 'pack_id'   => _m('unpacked long id (pack_id)'),
                                     'store'     => _m('packed long id (store)'),
