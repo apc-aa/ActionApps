@@ -480,54 +480,83 @@ function CopyConstants($slice_id)
     return true;
 }
 
+// Looks into database if the group already exists. If yes, it returns modified,
+// but unique group name
+function get_unique_group_id($group_id) {
+    $db = getDB();
+
+    $group_id = str_replace(':','-',$group_id);  // we don't need ':'
+
+    $db->query("SELECT value FROM constant WHERE group_id = 'lt_groupNames'
+                AND value LIKE '".quote($group_id)."%'");
+    while ($db->next_record()) {
+        $gnames[$db->f("value")] = 1;
+    }
+    $unique_name = $group_id;
+    if (is_array($gnames)) {
+        $i = 1;
+        while ($gnames[$unique_name]) {
+            $unique_name = $group_id." ".($i++);
+        }
+    }
+    freeDB($db);
+    return $unique_name;
+}
+
+
 // -------------------------------------------------------------------
 /** Adds a new constant group. Sets priority increasingly in the same
 *   order as are the constants in @c $items.
 *
 *   @author Jakub Adamek, Econnect, January 2003
-*   @param string $group_id Desired group name, may be changed if conflicts
-*   @param array $items (constant name => constant value)
-*   @return string The name of the new group. This will be the given @c $name
-*           followed by a number if necessary in order that the group name
-*			is not yet in database.
+*   @param string $group_id Desired group name, may be changed on conflicts
+*                           and $unique is set
+*   @param array $constants2import array('name'=>.., 'value'=>.., 'pri'=>.., 'group'=>..)
+*   @return true on succes or error string if it fail
 */
-function add_constant_group ($group_id, $items)
+function add_constant_group($group_id, $constants2import)
 {
     $db = getDB();
 
-    $db->query ("SELECT value FROM constant WHERE group_id = 'lt_groupNames'
-        AND value LIKE '".$group_id."%'");
-    while ($db->next_record())
-        $gnames[$db->f("value")] = 1;
-    $unique_name = $group_id;
-    if (is_array($gnames)) {
-        $i = 1;
-        while ($gnames [$unique_name])
-            $unique_name = $group_id." ".($i++);
+    if ( strlen($group_id) < 1 ) {
+        return _m("No group id specified");
     }
-    $varset = new CVarset;
-    $varset->add ("group_id", "text", "lt_groupNames");
-    $varset->add ("value","text",$unique_name);
-    $varset->add ("name","text",$unique_name);
-    $varset->add ("id", "unpacked", new_id());
-    $db->query ($varset->makeINSERT ("constant"));
 
-    $priority = 100;
-    if (is_array($items)) {
-        reset ($items);
-        while (list ($value, $name) = each ($items)) {
-            $varset->clear();
-            $varset->add ("value", "text", $value);
-            $varset->add ("name", "text", $name);
-            $varset->add ("pri", "number", $priority);
-            $priority += 100;
-            $varset->add ("id", "unpacked", new_id());
-            $varset->add ("group_id", "text", $unique_name);
-            $db->query ($varset->makeINSERT ("constant"));
-        }
+    $SQL = "SELECT * FROM constant WHERE group_id = '$group_id'";
+    $db->tquery($SQL);
+    if ($db->next_record()) {
+        return _m("This constant group already exists");
+    }
+
+    if (!is_array($constants2import) OR (count($constants2import) < 1)) {
+        return _m('No constants specified');
+    }
+
+    // set in seconds - allows the script to work so long
+    set_time_limit(600);
+
+    $varset = new CVarset;
+    $varset->add("group_id", "text",     "lt_groupNames");
+    $varset->add("value",    "text",     $group_id);
+    $varset->add("name",     "text",     $group_id);
+    $varset->add("id",       "unpacked", new_id());
+    $varset->doINSERT("constant");
+
+    $priority_step = 10;
+    $priority      = 0;
+    foreach ($constants2import as $constant) {
+        $priority = isset($constant['pri']) ? $constant['pri'] : $priority + $priority_step;
+        $varset->clear();
+        $varset->add("value",    "text",     $constant['value']);
+        $varset->add("name",     "text",     $constant['name']);
+        $varset->add("pri",      "number",   $priority);
+        $varset->add("class",    "text",     $constant['class']);
+        $varset->add("id",       "unpacked", new_id());
+        $varset->add("group_id", "text",     $group_id);
+        $varset->doINSERT("constant");
     }
     freeDB($db);
-    return $unique_name;
+    return true;
 }
 
 // -------------------------------------------------------------------
@@ -538,16 +567,18 @@ function add_constant_group ($group_id, $items)
 *   @author Jakub Adamek, Econnect, January 2003
 *   @param string $slice_id  unpacked slice ID
 *   @return bool  @c true if group was deleted, @c false otherwise	*/
-function delete_constant_group ($group_id, $slice_id = "") {
+function delete_constant_group($group_id, $slice_id = "") {
     $db = getDB();
+
     $delete = true;
     if ($slice_id) {
-        $db -> query ("
+        $db->query("
             SELECT * FROM slice INNER JOIN field ON slice.id = field.slice_id
             WHERE field.input_show_func LIKE '%$group_id%'
             AND slice.id <> '".q_pack_id($slice_id)."'");
-        if ($db->next_record())
+        if ($db->next_record()) {
             $delete = false;
+        }
     }
     if ($delete) {
         // delete group name and constants

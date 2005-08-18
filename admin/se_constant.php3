@@ -32,8 +32,6 @@ require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 require_once $GLOBALS['AA_INC_PATH']."constedit_util.php3";
 require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
-$where_used = true;
-
 if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
 }
@@ -50,9 +48,11 @@ if ($categ OR $category) {
     }
 }
 
+$back_url = ($return_url ? ($fid ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php3");
+
 if ($deleteGroup && $group_id && !$category) {
     delete_constant_group($group_id);
-    go_url( $sess->url(self_base() . "se_fields.php3"));
+    go_url($sess->url($back_url));
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -295,15 +295,12 @@ echo "<H1><B>" . _m("Admin - Constants Setting") . "</B></H1>";
 PrintArray($err);
 echo $Msg;
 
-$form_buttons = array("update" => array( "type"=>"hidden", "value"=>"1"),
-                      "update",
-                      "cancel"=>array("url"=> ($return_url ? ($fid ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php3")),
-                      "delgroup" => array ("type" => "button",
-                                           "value" => _m("Delete whole group"),
-                                           "add" => 'onclick="deleteWholeGroup();"'),
-                      "deleteGroup" => array("value" => "0"),
-                      "return_url"=>array("value"=>$return_url),
-                      "fid"=>array("value"=>$fid));
+$form_buttons = array("update",
+                      "cancel"   => array("url"=> $back_url),
+                      "delgroup" => array("type"  => "button",
+                                          "value" => _m("Delete whole group"),
+                                          "add"   => 'onclick="deleteWholeGroup();"')
+                      );
 ?>
 <form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
  <input type=hidden name="group_id" value="<?php echo $group_id; /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
@@ -318,14 +315,26 @@ if ($hierarch) {
 
 FrmTabCaption(_m("Constants"), '', '', $form_buttons, $sess, $slice_id);
 
+// this must be just once on the page
+$form_buttons["deleteGroup"] = array("value" => "0");
+$form_buttons["return_url"]  = array("value" => $return_url);
+$form_buttons["fid"]         = array("value" => $fid);
+
+
 echo "<td class=tabtxt><b>"._m("Constant Group") ."</b></td>
   <td class=tabtxt colspan=3>";
 
-echo ($group_id ? safe($group_id) : "<input type=\"Text\" name=\"new_group_id\" size=16 maxlength=16 value=\"".safe($new_group_id)."\">");
+if ( $group_id ) {
+    echo safe($group_id);
+} else {
+    echo '<input type="text" name="new_group_id" size=16 maxlength=16 value="'.safe($new_group_id).'">
+          <a href="'.get_admin_url('se_constant_import.php3?return_url=se_inputform.php3&amp;fid='. urlencode($fid)).
+          '">'._m('Import Constants...').'</a>';
+}
 echo "\n     </td>\n</tr>";
 
 // Find slices, where the constant group is used
-if ($group_id AND $where_used) {
+if ($group_id) {
     $delim = '';
     $db->tquery("
         SELECT slice.name FROM slice, field
@@ -340,7 +349,6 @@ if ($group_id AND $where_used) {
         <td colspan=3>$using_slices</td>
       </tr>";
 }
-
 
 // Find the slice owner of this group
 $db->tquery("
@@ -373,9 +381,6 @@ $propagate_ch = ( $group_id ? $db->f("propagate") : 1);   // default is checked 
 
 echo "</td></tr>
 <tr><td colspan=4><input type=checkbox name='propagate_changes'".($propagate_ch ? " checked" : "").">"._m("Propagate changes into current items");
-if (!$where_used) {
-    echo "&nbsp;&nbsp;<input type=submit name='where_used' value='"._m("Where are these constants used?");
-}
 echo "'</td></tr>
 <tr><td colspan=4><input type=submit name='hierarch' value='"._m("Edit in Hierarchical editor (allows to create constant hierarchy)")."'></td></tr>
 <tr>
@@ -414,8 +419,8 @@ echo '
 <SCRIPT language=javascript>
 <!--
     function deleteWholeGroup() {
-        if (prompt ("'._m("Are you sure you want to PERMANENTLY DELETE this group? Type yes or no.").'","'._m("no").'") == "'._m("yes").'") {
-            document.f.deleteGroup.value = 1;
+        if (confirm("'._m("Are you sure you want to PERMANENTLY DELETE this group?"). '")) {
+            document.f.elements[\'deleteGroup\'].value = 1;
             document.f.submit();
         }
     }
