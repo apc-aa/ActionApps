@@ -148,10 +148,10 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
         // unset ITEM_FLAG_ANONYMOUS_EDITABLE bit in flag
         $content4id->setValue('flags...........', $content4id->getValue('flags...........') & ~ITEM_FLAG_ANONYMOUS_EDITABLE);
     }
-    
-    // we need to know the new id before mlx->update, since it is written 
+
+    // we need to know the new id before mlx->update, since it is written
     // to the MLX control slice
-    if ($insert) {  
+    if ($insert) {
         $id = new_id();
         $content4id->setItemID($id);
     }
@@ -165,7 +165,7 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
 
     // added_to_db contains id
     // removed $oldcontent4id (see ItemContent::storeItem)
-    $added_to_db = $content4id->storeItem( $insert ? 'insert' : 'update', true, true, 'direct');     // invalidatecache, feed
+    $added_to_db = $content4id->storeItem($insert ? 'insert' : 'update');     // invalidatecache, feed
 
     if (count($err) <= 1) {
         page_close();
@@ -227,17 +227,13 @@ if ($lang_control) {
 }
 // end mimo changes
 
+if ($GLOBALS['debug']) huhl($content4id);
+
 // print begin ---------------------------------------------------------------
 if ( !$encap ) {
     $inputform_settings = array(
         'display_aa_begin_end' => true,
         'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim($r_slice_headline).")",
-
-        // next two variables are used for GetFormJavascript() function - javascript
-        // validation when display_aa_begin_end is true
-        'show_func_used'       => $slice->get_show_func_used($action, $id),
-        'js_proove_fields'     => $slice->get_js_validation($action, $id),
-
         'formheading'          => $mlx_formheading ); //added MLX
 }
 $inputform_settings['messages']            = array('err' => $err);

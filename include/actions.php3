@@ -55,7 +55,7 @@ function Item_MoveItem($status, $item_arr, $akce_param) {
         $SQL .= ", moved2active = $moved2active";
 
         $SQL .= " WHERE id IN ('".join_and_quote("','",$item_ids)."')";
-        $db->tquery ($SQL);
+        $db->tquery($SQL);
         $event->comes('ITEMS_MOVED', $slice_id, 'S', $item_ids, $status );
     }
     $pagecache->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
@@ -170,13 +170,11 @@ function Item_Tab($value, $param) {
 
 
 function FeedAllItems($chb, $fields) {    // Feed all checked items
-  global $db;
-  if ( isset($chb) AND is_array($chb) ) {
-    reset( $chb );
-    while ( list($it_id,) = each( $chb ) ) {
-      FeedItem( substr($it_id,1), $fields );       // substr removes first 'x'
+    if ( isset($chb) AND is_array($chb) ) {
+        foreach ($chb as $it_id => $foo) {
+            FeedItem( substr($it_id,1), $fields );       // substr removes first 'x'
+        }
     }
-  }
 }
 
 ?>

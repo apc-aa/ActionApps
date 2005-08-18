@@ -167,7 +167,16 @@ function add_fields_2_slice($collectionid, $slice_id) {
                 refresh_constant_group($groupname, $fprop["constants"]["items"]);
                 $fprop["input_show_func"] = $field_info["input_show_func"];
             } else {
-                $groupname = add_constant_group($fprop["constants"]["group"], $fprop["constants"]["items"]);
+                $groupname = get_unique_group_id($fprop["constants"]["group"]);
+
+                // prepare array for adding to constants
+                $constants = array();
+                if (isset($fprop["constants"]["items"]) AND is_array($fprop["constants"]["items"])) {
+                    foreach ( $fprop["constants"]["items"] as $value => $name ) {
+                        $constants[] = array('name'=>$name, 'value'=>$value);
+                    }
+                }
+                add_constant_group($groupname, $constants);
                 $fprop["input_show_func"] = str_replace("{CONSTGROUP}", $groupname, $fprop["input_show_func"]);
             }
         }

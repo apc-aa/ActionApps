@@ -59,54 +59,42 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
         $ret .= "<!--#include virtual=\"$fillform_url\" -->";
     }
 
-    $show_func_used = $slice->get_show_func_used('edit', 0, $notshown);
-    if ( $show_func_used['fil']) { // uses fileupload?
-        $html_form_type = ' enctype="multipart/form-data"';
-    }
-
-
     $ret .= '
     <!-- '. _m('ActionApps Anonymous form') .'-->
     <!-- '. _m('Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->', array("     <body onload=\"HTMLArea.init()\">   ")) .'
-
-    <FORM name="inputform"'.$html_form_type.' method="post" '
-    .'action="'.AA_INSTAL_URL.'filler.php3"'
-    .getTriggers("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()"))
-    .'>
-
-    <input type="hidden" name="err_url" value="'.$err_url.'">
-    <input type="hidden" name="ok_url" value="'.$ok_url.'">
+    <TABLE border="0" cellspacing="0" cellpadding="4" align="center" class="tabtxt">
     ';
 
-    if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
-        $ret .= '
-    <input type="hidden" name="my_item_id" value="">';
-    }
-
-    $ret .= '
+    // additional form fields
+    $additional = '
+    <input type="hidden" name="err_url" value="'.$err_url.'">
+    <input type="hidden" name="ok_url" value="'.$ok_url.'">
     <input type="hidden" name="slice_id" value="'.$slice_id.'">
     <input type="hidden" name="use_post2shtml" value="1">
     ';
 
+    if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
+        $additional .= '
+    <input type="hidden" name="my_item_id" value="">';
+    }
+
+
     foreach ($s_fields as $field) {
         if ($field["input_show"] && !$show[$field["id"]]) {
-            $ret .= '
+            $additional .= '
     <input type="hidden" name="notshown[v'.unpack_id($field["id"]).']" value="1"> <!--'.$field["name"].'-->';
         }
     }
 
-    $ret .= "\n";
+    $additional .= "\n";
 
     $ret .= GetFormJavascript($show_func_used, $slice->get_js_validation('edit', 0, $notshown));
 
     // Show all fields
-    $ret .=
-    '<TABLE border="0" cellspacing="0" cellpadding="4" align="center" class="tabtxt">
-    ';
 
-    $inputform_settings = array();
-    $form = new inputform($inputform_settings);
+    $inputform_settings['form_action'] = AA_INSTAL_URL.'filler.php3';
     $content4id = null;  // in getForm we have to pass it by reference
+    $form = new inputform($inputform_settings);
     $ret .= $form->getForm($content4id, $slice, false, $show);
 
     $ret .= '

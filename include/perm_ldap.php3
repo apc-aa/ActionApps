@@ -54,415 +54,442 @@ $aa_ldap_servers = array(
 // API functions
 //#############################################################################
 
-// returns uid if user is authentificied, else false.
+/** Returns uid if user is authentificied, else false. */
 function AuthenticateUsername($username, $password, $flags = 0) {
 
     // try to authenticate user in LDAP
     $ldapuseruid = AuthenticateLDAPUsername($username, $password);
-    if ( $ldapuseruid ) return $ldapuseruid;
-
-    return AuthenticateReaderUsername($username, $password);
+    return  $ldapuseruid ? $ldapuseruid : AuthenticateReaderUsername($username, $password);
 }
 
 //############### User functions //#############################################
 
-// creates new person in LDAP permission system
+/** Creates new person in LDAP permission system */
 function AddUser($user, $flags = 0) {
-  if (! IsUsernameFree ($user["uid"]))
-    return false;
+    if (! IsUsernameFree($user["uid"])) {
+        return false;
+    }
 
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
+    global $aa_default_ldap;
+    if ( !($ds=InitLDAP()) ) {
+        return false;
+    }
 
-  $record["objectclass"][0]   = "top";
-  $record["objectclass"][1]   = "person";
-  $record["objectclass"][2]   = "organizationalperson";
-  $record["objectclass"][3]   = "inetorgperson";
-  $record["cn"] = $user["givenname"] . "  " . $user["sn"];
-  $record["sn"] = $user["sn"];
-  $record["givenname"] = $user["givenname"];
-  if ($user["mail"]) { $record["mail"] = $user["mail"]; }  // can be an array
-  $record["uid"] = $user["uid"];
-  $record["userPassword"] = "{md5}"
-                  . base64_encode(pack("H*",md5($user["userpassword"])));
-  if ($user["phone"]) { $record["telephoneNumber"] = $user["phone"]; };
+    $record["objectclass"][0]   = "top";
+    $record["objectclass"][1]   = "person";
+    $record["objectclass"][2]   = "organizationalperson";
+    $record["objectclass"][3]   = "inetorgperson";
+    $record["cn"]               = $user["givenname"]. "  ". $user["sn"];
+    $record["sn"]               = $user["sn"];
+    $record["givenname"]        = $user["givenname"];
+    if ($user["mail"]) {
+        $record["mail"]         = $user["mail"];   // can be an array
+    }
+    $record["uid"]              = $user["uid"];
+    $record["userPassword"]     = "{md5}". base64_encode(pack("H*",md5($user["userpassword"])));
+    if ($user["phone"]) {
+        $record["telephoneNumber"] = $user["phone"];
+    }
 
-  // add data to directory
-  $user_dn = "uid=$user[uid]," . $aa_default_ldap[people];
-  $r=@ldap_add($ds, $user_dn, $record);
-  ldap_close($ds);
-  if ($r) {
-     return $user_dn;
-  } else {
-     return false;
-  }
+    // add data to directory
+    $user_dn = "uid=$user[uid]," . $aa_default_ldap['people'];
+    $r       = @ldap_add($ds, $user_dn, $record);
+    ldap_close($ds);
+    return ($r ? $user_dn : false);
 }
 
-// deletes an user in LDAP permission system
-// $user_id is DN
-function DelUser ($user_id, $flags = 3) {
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
+/** Deletes an user in LDAP permission system
+ *  @param $user_id is DN
+ */
+function DelUser($user_id, $flags = 3) {
+    global $aa_default_ldap;
+    if ( !($ds=InitLDAP()) ) {
+        return false;
+    }
 
-  // To keep integrity of LDAP DB, we should also delete all references
-  // to this user in other LDAP entries (e.g. member=.., apcaci=..).
-  // But this requires explicit knowledge of the schema!
+    // To keep integrity of LDAP DB, we should also delete all references
+    // to this user in other LDAP entries (e.g. member=.., apcaci=..).
+    // But this requires explicit knowledge of the schema!
+    if ($flags & 1) {            // cancel membership in groups
+        $filter = "(&(objectclass=groupOfNames)(member=$user_id))";
+        $r      = ldap_search($ds, $aa_default_ldap['groups'], $filter, array(""));
+        $arr    = ldap_get_entries($ds,$r);
+        for ($i=0; $i < $arr["count"]; $i++) {
+            DelGroupMember($arr[$i]["dn"], $user_id);
+        }
+        ldap_free_result($r);
+    }
 
-  if ($flags & 1) {            // cancel membership in groups
-     $filter = "(&(objectclass=groupOfNames)(member=$user_id))";
-     $r = ldap_search($ds, $aa_default_ldap[groups], $filter, array(""));
-     $arr = ldap_get_entries($ds,$r);
-     for ($i=0; $i < $arr["count"]; $i++) {
-        DelGroupMember($arr[$i]["dn"], $user_id);
-     }
-     ldap_free_result($r);
-  }
+    if ($flags & 2) {            // cancel asssigned permissions
+        $filter = "(&(objectclass=apcacl)(apcaci=$user_id:*))";
+        $r      = ldap_search($ds, $aa_default_ldap['acls'], $filter, array("apcObjectType","apcaci","apcObjectID"));
+        $arr    = ldap_get_entries($ds,$r);
+        for ($i=0; $i < $arr["count"]; $i++) {
+            // indexes in lowercase !!!
+            DelPerm($user_id, $arr[$i]["apcobjectid"][0], $arr[$i]["apcobjecttype"][0]);
+        }
+        ldap_free_result($r);
+    }
 
-  if ($flags & 2) {            // cancel asssigned permissions
-     $filter = "(&(objectclass=apcacl)(apcaci=$user_id:*))";
-     $r = ldap_search($ds, $aa_default_ldap['acls'], $filter,
-                      array("apcObjectType","apcaci","apcObjectID"));
-     $arr = ldap_get_entries($ds,$r);
-     for ($i=0; $i < $arr["count"]; $i++) {
-        DelPerm($user_id, $arr[$i]["apcobjectid"][0],
-                $arr[$i]["apcobjecttype"][0]);   // indexes in lowercase !!!
-     }
-     ldap_free_result($r);
-  }
+    $r = @ldap_delete($ds, $user_id);
 
-  $r=@ldap_delete($ds, $user_id);
-
-  ldap_close($ds);
-  return $r;
+    ldap_close($ds);
+    return $r;
 }
 
-// changes user entry in LDAP permission system
-function ChangeUser ($user, $flags = 0) {
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
+/** Changes user entry in LDAP permission system */
+function ChangeUser($user, $flags = 0) {
+    global $aa_default_ldap;
+    if ( !($ds = InitLDAP()) ) {
+        return false;
+    }
 
-  $record["cn"] = $user["givenname"]." ".$user["sn"];
-  $record["sn"] = $user["sn"];
-  $record["givenname"] = $user["givenname"];
-  $record["mail"] = $user["mail"];                // can be an array
-  if ($user["userpassword"])
-    $record["userPassword"] = "{md5}"
-                  . base64_encode(pack("H*",md5($user["userpassword"])));
-  if ($user["phone"])
-    $record["telephoneNumber"] = $user["phone"];
+    $record["cn"]        = $user["givenname"]." ".$user["sn"];
+    $record["sn"]        = $user["sn"];
+    $record["givenname"] = $user["givenname"];
+    $record["mail"]      = $user["mail"];                // can be an array
+    if ($user["userpassword"]) {
+        $record["userPassword"]    = "{md5}". base64_encode(pack("H*",md5($user["userpassword"])));
+    }
+    if ($user["phone"]) {
+        $record["telephoneNumber"] = $user["phone"];
+    }
 
-  // add data to directory
-//p_arr_m($record);
-//huh("Uid:".$user[uid].":");
-  $r=@ldap_mod_replace($ds, $user[uid], $record);
-  ldap_close($ds);
-  return $r;
+    // add data to directory
+    $r = @ldap_mod_replace($ds, $user['uid'], $record);
+    ldap_close($ds);
+    return $r;
 }
 
-// returns array(cn, sn, givenname, array(mail), array(phone))
-function GetUser ($user_id, $flags = 0) {
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
+/** returns array(cn, sn, givenname, array(mail), array(phone)) */
+function GetUser($user_id, $flags = 0) {
+    global $aa_default_ldap;
+    if ( !($ds=InitLDAP()) ) {
+        return false;
+    }
 
-  $filter = "objectclass=inetOrgPerson";
-  $result = @ldap_read($ds, $user_id, $filter,
-               array("uid","cn","sn","givenname","mail","telephonenumber"));
-  if (!$result) return false;
-  $entry = ldap_first_entry ($ds, $result);
-  $arr = ldap_get_attributes($ds, $entry);
+    $filter = "objectclass=inetOrgPerson";
+    $result = @ldap_read($ds, $user_id, $filter, array("uid","cn","sn","givenname","mail","telephonenumber"));
+    if (!$result) {
+        return false;
+    }
+    $entry  = ldap_first_entry($ds, $result);
+    $arr    = ldap_get_attributes($ds, $entry);
 
-  $res["uid"] = $user_id;
-  $res["login"] = $arr["uid"][0];
-  $gname = ( is_array($arr["givenname"]) ? $arr["givenname"] : $arr["givenName"] );
-  if ( is_array($gname) )
-    $res["givenname"] = $gname[0];
-  if ( is_array($arr["sn"]) )
-    $res["sn"] = $arr["sn"][0];
-  if ( is_array($arr["cn"]) )
-    $res["cn"] = $arr["cn"][0];
-  if ( is_array($arr["mail"]) )
-    for ($i=0; $i < $arr["mail"]["count"]; $i++)
-      $res["mail"][$i] = $arr["mail"][$i];
-  if ( is_array($arr["telephonenumber"]) )
-    for ($i=0; $i < $arr["telephonenumber"]["count"]; $i++)
-      $res["phone"][$i] = $arr["telephonenumber"][$i];
-
-  ldap_close($ds);
-  return $res;
+    $res["uid"]   = $user_id;
+    $res["login"] = $arr["uid"][0];
+    $gname = ( is_array($arr["givenname"]) ? $arr["givenname"] : $arr["givenName"] );
+    if ( is_array($gname) ) {
+        $res["givenname"] = $gname[0];
+    }
+    if ( is_array($arr["sn"]) ) {
+        $res["sn"] = $arr["sn"][0];
+    }
+    if ( is_array($arr["cn"]) ) {
+        $res["cn"] = $arr["cn"][0];
+    }
+    if ( is_array($arr["mail"]) ) {
+        for ($i=0; $i < $arr["mail"]["count"]; $i++) {
+            $res["mail"][$i] = $arr["mail"][$i];
+        }
+    }
+    if ( is_array($arr["telephonenumber"]) ) {
+        for ($i=0; $i < $arr["telephonenumber"]["count"]; $i++) {
+            $res["phone"][$i] = $arr["telephonenumber"][$i];
+        }
+    }
+    ldap_close($ds);
+    return $res;
 }
 
 //############### Group functions //############################################
 
-// creates new group in LDAP permission system
-// $group is an array ("name", "description", ...)
-function AddGroup ($group, $flags = 0) {
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
+/** Creates new group in LDAP permission system
+ *  @param $group array ("name", "description", ...)
+ */
+function AddGroup($group, $flags = 0) {
+    global $aa_default_ldap;
+    if ( !($ds=InitLDAP()) ) {
+        return false;
+    }
 
-  $record["objectclass"][0]   = "top";
-  $record["objectclass"][1]   = "groupOfNames";
-  $record["cn"] = $group["name"];
-  $record["member"] = LDAP_BINDDN;     // in order to be compatible with LDAP
-                                       // schema where member is required
+    $record["objectclass"][0] = "top";
+    $record["objectclass"][1] = "groupOfNames";
+    $record["cn"]             = $group["name"];
+    $record["member"]         = LDAP_BINDDN;  // in order to be compatible with LDAP
+                                              // schema where member is required
 
-  if ($group["description"]) $record["description"] = $group["description"];
+    if ($group["description"]) {
+        $record["description"] = $group["description"];
+    }
 
-  // add data to directory
-  $group_dn = "cn=$group[name]," . $aa_default_ldap[groups];
-  $r=@ldap_add($ds, $group_dn, $record);
-  ldap_close($ds);
-  if ($r) {
-     return $group_dn;
-  } else {
-     return false;
-  }
+    // add data to directory
+    $group_dn = "cn=$group[name]," . $aa_default_ldap['groups'];
+    $r = @ldap_add($ds, $group_dn, $record);
+    ldap_close($ds);
+
+    return ($r ? $group_dn : false);
 }
 
-// deletes a group in LDAP permission system
-// $group_id is DN
-function DelGroup($group_id, $flags = 3) {
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
-
-  // To keep integrity of LDAP DB, we should also delete all references
-  // to this group in other LDAP entries (e.g. member=.., apcaci=..).
-  // But this requires explicit knowledge of the schema.
-
-  if ($flags & 1) {            // cancel membership in other groups
-     $filter = "(&(objectclass=groupOfNames)(member=$group_id))";
-     $r = ldap_search($ds, $aa_default_ldap[groups], $filter, array(""));
-     $arr = ldap_get_entries($ds,$r);
-     for ($i=0; $i < $arr["count"]; $i++) {
-        DelGroupMember($arr[$i]["dn"], $group_id);
+/** Deletes a group in LDAP permission system
+ * $group_id is DN
+ */
+ function DelGroup($group_id, $flags = 3) {
+     global $aa_default_ldap;
+     if ( !($ds=InitLDAP()) ) {
+         return false;
      }
-     ldap_free_result($r);
-  }
 
-  if ($flags & 2) {            // cancel asssigned permissions
-     $filter = "(&(objectclass=apcacl)(apcaci=$group_id:*))";
-     $r = ldap_search($ds, $aa_default_ldap[acls], $filter,
-                      array("apcObjectType","apcaci","apcObjectID"));
-     $arr = ldap_get_entries($ds,$r);
-     for ($i=0; $i < $arr["count"]; $i++) {
-        DelPerm($group_id, $arr[$i]["apcobjectid"][0],
-                $arr[$i]["apcobjecttype"][0]);   // indexes in lowercase !!!
+     // To keep integrity of LDAP DB, we should also delete all references
+     // to this group in other LDAP entries (e.g. member=.., apcaci=..).
+     // But this requires explicit knowledge of the schema.
+
+     if ($flags & 1) {            // cancel membership in other groups
+         $filter = "(&(objectclass=groupOfNames)(member=$group_id))";
+         $r      = ldap_search($ds, $aa_default_ldap['groups'], $filter, array(""));
+         $arr    = ldap_get_entries($ds,$r);
+         for ($i=0; $i < $arr["count"]; $i++) {
+             DelGroupMember($arr[$i]["dn"], $group_id);
+         }
+         ldap_free_result($r);
      }
-     ldap_free_result($r);
-  }
 
-  $r=@ldap_delete($ds, $group_id);
+     if ($flags & 2) {            // cancel asssigned permissions
+         $filter = "(&(objectclass=apcacl)(apcaci=$group_id:*))";
+         $r      = ldap_search($ds, $aa_default_ldap['acls'], $filter, array("apcObjectType","apcaci","apcObjectID"));
+         $arr    = ldap_get_entries($ds,$r);
+         for ($i=0; $i < $arr["count"]; $i++) {
+             // indexes in lowercase !!!
+             DelPerm($group_id, $arr[$i]["apcobjectid"][0],  $arr[$i]["apcobjecttype"][0]);
+         }
+         ldap_free_result($r);
+     }
 
-  ldap_close($ds);
-  return $r;
+     $r = @ldap_delete($ds, $group_id);
+
+     ldap_close($ds);
+     return $r;
 }
 
-// changes group entry in LDAP permission system
-function ChangeGroup ($group, $flags = 0) {
-  global $aa_default_ldap;
+/** changes group entry in LDAP permission system */
+function ChangeGroup($group, $flags = 0) {
+    global $aa_default_ldap;
 
-  if ( !($ds=InitLDAP()) )
-    return false;
+    if ( !($ds=InitLDAP()) ) {
+        return false;
+    }
 
-  $record["description"] = $group["description"];
-  if ($group["name"])
-    $record["cn"] = $group["name"];
+    $record["description"] = $group["description"];
+    if ($group["name"]) {
+        $record["cn"] = $group["name"];
+    }
 
-  // add data to directory
-//p_arr_m($record);
-//huh("Uid:".$user[uid].":");
-  $r=@ldap_mod_replace($ds, $group[uid], $record);
-  ldap_close($ds);
-  return $r;
+    // add data to directory
+    $r = @ldap_mod_replace($ds, $group['uid'], $record);
+    ldap_close($ds);
+    return $r;
 }
 
-// returns array(uid, name, description)
-function GetGroup ($user_id, $flags = 0) {
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
+/** @returns array(uid, name, description) */
+function GetGroup($user_id, $flags = 0) {
+    global $aa_default_ldap;
+    if ( !($ds=InitLDAP()) ) {
+        return false;
+    }
 
-  $filter = "objectclass=groupofnames";
-  $result = @ldap_read($ds, $user_id, $filter, array("cn","description"));
-  if (!$result) return false;
-  $entry = ldap_first_entry ($ds, $result);
-  $arr = ldap_get_attributes($ds, $entry);
+    $filter = "objectclass=groupofnames";
+    $result = @ldap_read($ds, $user_id, $filter, array("cn","description"));
+    if (!$result) {
+        return false;
+    }
+    $entry  = ldap_first_entry ($ds, $result);
+    $arr    = ldap_get_attributes($ds, $entry);
 
-  $res["uid"] = $user_id;
-  if ( is_array($arr["cn"]) )
-    $res["name"] = $arr["cn"][0];
-  if ( is_array($arr["description"]) )
-    $res["description"] = $arr["description"][0];
+    $res["uid"] = $user_id;
+    if ( is_array($arr["cn"]) ) {
+        $res["name"] = $arr["cn"][0];
+    }
+    if ( is_array($arr["description"]) ) {
+        $res["description"] = $arr["description"][0];
+    }
 
-  ldap_close($ds);
-  return $res;
+    ldap_close($ds);
+    return $res;
 }
 
-// function returns list of groups which corresponds to mask $pattern
+/** @returns list of groups which corresponds to mask $pattern */
 function FindGroups($pattern, $flags = 0) {
-  global $aa_default_ldap;
+    global $aa_default_ldap;
 
-  $result = FindReaderGroups($pattern);
+    $result = FindReaderGroups($pattern);
 
-  if ( !($ds=InitLDAP()) )
-    return false;
+    if ( !($ds=InitLDAP()) ) {
+        return false;
+    }
 
-  $filter = "(&(objectclass=groupofnames)(cn=$pattern*))";
-  $res = @ldap_search($ds,$aa_default_ldap[groups],$filter,array("cn"));
-  if (!$res) {
-    if (ldap_errno($ds)==4)    // LDAP sizelimit exceed
-      return "too much";
-     else
-      return false;
-  }
-  $arr = LDAP_get_entries($ds,$res);
+    $filter = "(&(objectclass=groupofnames)(cn=$pattern*))";
+    $res    = @ldap_search($ds,$aa_default_ldap['groups'],$filter,array("cn"));
+    if (!$res) {
+        // LDAP sizelimit exceed
+        return ((ldap_errno($ds)==4) ? "too much" : false);
+    }
+    $arr = LDAP_get_entries($ds,$res);
 
-  for ($i=0; $i<$arr[count]; $i++)
-    $result[$arr[$i][dn]] = array("name"=>$arr[$i][cn][0]);
+    for ($i=0; $i<$arr['count']; $i++) {
+        $result[$arr[$i]['dn']] = array("name"=>$arr[$i]['cn'][0]);
+    }
 
-  ldap_close($ds);
-  return $result;
+    ldap_close($ds);
+    return $result;
 }
 
-function find_user_by_login ($login) {
-    $users = FindUsers ($login);
+function find_user_by_login($login) {
+    $users = FindUsers($login);
     if (is_array($users)) {
-        reset ($users);
-        while (list ($userid,$user) = each ($users)) {
-            list ($user_login) = explode(",", $userid);
+        foreach ($users as $userid => $user) {
+            list ($user_login)  = explode(",", $userid);
             list (,$user_login) = explode("=", $user_login);
-            if ($user_login == $login)
-                return array ($userid=>$user);
+            if ($user_login == $login) {
+                return array($userid=>$user);
+            }
         }
     }
     return false;
 }
 
-// function returns list of users which corresponds to mask $pattern
-function FindUsers ($pattern, $flags = 0) {
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
-
-  $filter = "(&(objectclass=inetOrgPerson)(|(uid=$pattern*)(cn=$pattern*)(mail=$pattern*)))";
-  $res = @ldap_search($ds,$aa_default_ldap[people],$filter,array("mail","cn"));
-  if (!$res) {
-    if (ldap_errno($ds)==4)    // LDAP sizelimit exceed
-      return "too much";
-     else
-      return false;
-  }
-  $arr = LDAP_get_entries($ds,$res);
-
-  for ($i=0; $i<$arr[count]; $i++)
-    $result[$arr[$i][dn]] = array("name"=>$arr[$i][cn][0], "mail"=>$arr[$i][mail][0]);
-
-  ldap_close($ds);
-  return $result;
-}
-
-function AddGroupMember ($group_id, $id, $flags = 0) {
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
-
-  $r=@ldap_mod_add($ds, $group_id, array("member" => "$id"));
-  ldap_close($ds);
-  return $r;
-}
-
-function DelGroupMember ($group_id, $id, $flags = 0) {
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
-
-  // immediate ldap_mod_del fails, if there is only one member attribute (=$id)
-  $filter = "objectclass=groupOfNames";
-  $result = @ldap_read($ds, $group_id, $filter, array("member"));
-  if (!$result) return false;
-  $entry = ldap_first_entry ($ds, $result);
-  $arr = ldap_get_attributes($ds, $entry);
-
-  for ($i=0; $i < $arr["member"]["count"]; $i++) {
-    if (!stristr($arr["member"][$i], $id)) {
-      $new["member"][] = $arr["member"][$i];
-    }
-  }
-
-  if (sizeof($new["member"]) == 0) {
-     $new["member"][] = LDAP_BINDDN;   // in order to be compatible with LDAP
-  }                                    // schema where member is required
-
-  $r=ldap_mod_replace($ds, $group_id, $new);
-  ldap_close($ds);
-  return $r;
-}
-
-function GetGroupMembers ($group_id, $flags = 0) {
-  global $aa_default_ldap;
-  if ( !($ds=InitLDAP()) )
-    return false;
-
-  $filter = "objectclass=groupOfNames";
-  $result = @ldap_read($ds, $group_id, $filter, array("member"));
-  if (!$result) return false;
-  $entry = ldap_first_entry ($ds, $result);
-  $arr = ldap_get_attributes($ds, $entry);
-
-  for ($i=0; $i < $arr["member"]["count"]; $i++) {
-    if ($info = GetIDsInfo ($arr["member"][$i], $ds)) {
-       $res[$arr["member"][$i]] = $info;
-    }
-  }
-
-  ldap_close($ds);
-  return $res;
-}
-
-// returns list of group_ids, where id (group or user) is a member
-// $flags - use to obey group in groups?
-function GetMembership ($id, $flags = 0) {
-  global $aa_default_ldap;
-
-  if ( GetUserType($id) == 'Reader' ) return GetReaderMembership($id);
-
-  if ( !($ds=InitLDAP()) )
-    return false;
-  $last_groups[] = $id;
-  $deep_counter = 0;
-  do{
-    if ($deep_counter++ > MAX_GROUPS_DEEP)
-      break;
-    $search = "(&(objectclass=groupofnames)(|";
-    reset($last_groups); // make search string
-    while ( list(,$member) = each($last_groups))
-      $search .= "(member=$member)";
-    $search .= "))";
-    $res = @ldap_search($ds,$aa_default_ldap[groups],$search,array("member"));
-    if (!$res) {
-      if (ldap_errno($ds)==4)    // LDAP sizelimit exceed
-        return "too much";
-       else
+/** @returns list of users which corresponds to mask $pattern */
+function FindUsers($pattern, $flags = 0) {
+    global $aa_default_ldap;
+    if ( !($ds=InitLDAP()) ) {
         return false;
     }
-    $array = ldap_get_entries($ds,$res);
-    unset($last_groups);  //get deeper groups to last_groups and groups
-    for ($i=0; $i<$array["count"]; $i++) {
-      $last_groups[] = $array[$i]["dn"];
-      $groups[$array[$i]["dn"]] = TRUE;
+
+    $filter = "(&(objectclass=inetOrgPerson)(|(uid=$pattern*)(cn=$pattern*)(mail=$pattern*)))";
+    $res    = @ldap_search($ds,$aa_default_ldap['people'],$filter,array("mail","cn"));
+    if (!$res) {
+        // LDAP sizelimit exceed
+        return ((ldap_errno($ds)==4) ? "too much" : false);
     }
+    $arr = LDAP_get_entries($ds,$res);
+
+    for ($i=0; $i<$arr['count']; $i++) {
+        $result[$arr[$i]['dn']] = array("name"=>$arr[$i]['cn'][0], "mail"=>$arr[$i]['mail'][0]);
+    }
+
+    ldap_close($ds);
+    return $result;
+}
+
+function AddGroupMember($group_id, $id, $flags = 0) {
+    global $aa_default_ldap;
+    if ( !($ds=InitLDAP()) ) {
+        return false;
+    }
+
+    $r = @ldap_mod_add($ds, $group_id, array("member" => "$id"));
+    ldap_close($ds);
+    return $r;
+}
+
+function DelGroupMember($group_id, $id, $flags = 0) {
+    global $aa_default_ldap;
+    if ( !($ds=InitLDAP()) ) {
+        return false;
+    }
+
+    // immediate ldap_mod_del fails, if there is only one member attribute (=$id)
+    $filter = "objectclass=groupOfNames";
+    $result = @ldap_read($ds, $group_id, $filter, array("member"));
+    if (!$result) {
+        return false;
+    }
+    $entry  = ldap_first_entry ($ds, $result);
+    $arr    = ldap_get_attributes($ds, $entry);
+
+    for ($i=0; $i < $arr["member"]["count"]; $i++) {
+        if (!stristr($arr["member"][$i], $id)) {
+            $new["member"][] = $arr["member"][$i];
+        }
+    }
+
+    if (sizeof($new["member"]) == 0) {
+        $new["member"][] = LDAP_BINDDN;   // in order to be compatible with LDAP
+    }                                     // schema where member is required
+
+    $r = ldap_mod_replace($ds, $group_id, $new);
+    ldap_close($ds);
+    return $r;
+}
+
+function GetGroupMembers($group_id, $flags = 0) {
+    global $aa_default_ldap;
+    if ( !($ds=InitLDAP()) ) {
+        return false;
+    }
+
+    $filter = "objectclass=groupOfNames";
+    $result = @ldap_read($ds, $group_id, $filter, array("member"));
+    if (!$result) {
+        return false;
+    }
+    $entry  = ldap_first_entry ($ds, $result);
+    $arr    = ldap_get_attributes($ds, $entry);
+
+    for ($i=0; $i < $arr["member"]["count"]; $i++) {
+        if ($info = GetIDsInfo($arr["member"][$i], $ds)) {
+            $res[$arr["member"][$i]] = $info;
+        }
+    }
+
+    ldap_close($ds);
+    return $res;
+}
+
+/** @returns list of group_ids, where id (group or user) is a member
+ * $flags - use to obey group in groups?
+ */
+function GetMembership($id, $flags = 0) {
+  global $aa_default_ldap;
+
+  if ( GetUserType($id) == 'Reader' ) {
+      return GetReaderMembership($id);
+  }
+
+  if ( !($ds=InitLDAP()) ) {
+      return false;
+  }
+  $last_groups[] = $id;
+  $deep_counter = 0;
+  do {
+      if ($deep_counter++ > MAX_GROUPS_DEEP) {
+          break;
+      }
+      $search = "(&(objectclass=groupofnames)(|";
+      // make search string
+      reset($last_groups);
+      while (list(,$member) = each($last_groups))
+      $search .= "(member=$member)";
+      $search .= "))";
+      $res = @ldap_search($ds,$aa_default_ldap[groups],$search,array("member"));
+      if (!$res) {
+          if (ldap_errno($ds)==4)    // LDAP sizelimit exceed
+          return "too much";
+          else
+          return false;
+      }
+      $array = ldap_get_entries($ds,$res);
+      unset($last_groups);  //get deeper groups to last_groups and groups
+      for ($i=0; $i<$array["count"]; $i++) {
+          $last_groups[] = $array[$i]["dn"];
+          $groups[$array[$i]["dn"]] = TRUE;
+      }
   } while ( is_array($last_groups) AND ($flags==0) );
 
   ldap_close($ds);
   if (is_array($groups)) {
-     while (list($key,) = each($groups)) {
-        $result[] = $key;                   // transform to a numbered array
-     }
+      while (list($key,) = each($groups)) {
+          $result[] = $key;                   // transform to a numbered array
+      }
   }
   return $result;
 }

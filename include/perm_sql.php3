@@ -222,7 +222,7 @@ function GetMembership($id, $flags = 0) {
                 $all_groups[]  = $db->f('id');
             }
         }
-    } while( is_array($last_groups) );
+    } while (is_array($last_groups));
 
     // I _think_ this is a list of groupids.
     return $all_groups;
@@ -270,7 +270,7 @@ function GetObjectsPerms($objectID, $objectType, $flags = 0) {
 // returns an array of sliceids and their permissions (for user $userid).
 // granted on all objects of type $objectType
 // flags & 1 -> do not involve membership in groups
-function GetIDPerms ($id, $objectType, $flags = 0) {
+function GetIDPerms($id, $objectType, $flags = 0) {
 
     $db  = new DB_AA;
 
@@ -339,7 +339,7 @@ function AddUser($user, $flags = 0) {
 
 // deletes an user in permission system
 // $user_id is DN
-function DelUser ($user_id, $flags = 3) {
+function DelUser($user_id, $flags = 3) {
     $db  = new DB_AA;
 
     // To keep integrity of AA we should also delete all references
@@ -361,7 +361,7 @@ function DelUser ($user_id, $flags = 3) {
 }
 
 // changes user entry in permission system
-function ChangeUser ($user, $flags = 0) {
+function ChangeUser($user, $flags = 0) {
     $db  = new DB_AA;
     // do a little bit of QA on the $user array
     $array["id"]        = $user["uid"];
@@ -422,7 +422,7 @@ function AddGroup($group, $flags = 0) {
 
 // deletes an group in permission system
 // $group_id is DN
-function DelGroup ($group_id, $flags = 3) {
+function DelGroup($group_id, $flags = 3) {
   $db  = new DB_AA;
 
   // cancel other people's membership in this group
@@ -445,7 +445,7 @@ function DelGroup ($group_id, $flags = 3) {
 
 // changes fields about group
 // $group is an array ("name", "description", ...)
-function ChangeGroup ($group, $flags = 0) {
+function ChangeGroup($group, $flags = 0) {
     $db  = new DB_AA;
     // do a little bit of QA on the $user array
     $array["id"]          = $group["uid"];
@@ -486,7 +486,7 @@ function AddPermObject($objectID, $objectType, $flags = 0) {
 }
 
 // deletes an ACL object in permission system
-function DelPermObject ($objectID, $objectType, $flags = 0) {
+function DelPermObject($objectID, $objectType, $flags = 0) {
     // we don't need to do that in mysql
     return true;
 }
@@ -525,7 +525,7 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
 // returns an array containing basic information on $id (user DN or group DN)
 // or false if ID does not exist
 // array("mail => $mail", "name => $cn", "type => "User" : "Group"")
-function GetIDsInfo ($id, $ds = "") {
+function GetIDsInfo($id, $ds = "") {
     $db  = new DB_AA;
     $sql = sprintf( "SELECT name, givenname, sn, mail, type
                        FROM users
@@ -599,7 +599,7 @@ function A2sql_update($table, $keyField, $aData) {
     return " UPDATE $table SET $set WHERE $where";
 }
 
-function IsUsernameFree ($username) {
+function IsUsernameFree($username) {
     $db = getDB();
     $db->query("SELECT uid FROM users WHERE uid='".addslashes($username)."'");
     $free = ! $db->next_record();

@@ -84,8 +84,6 @@ function GetInputFormTemplate() {
 class inputform {
     var $display_aa_begin_end;
     var $page_title;
-    var $show_func_used;
-    var $js_proove_fields;
     var $form_action;
     var $form4update;
     var $show_preview_button;
@@ -99,6 +97,10 @@ class inputform {
     var $formheading;     // add extra form heading here (default none, used by MLX)
     var $msg;             // stores return code from functions
 
+    // computed values form form fields
+    var $show_func_used;    // used show functions in the input form
+    var $js_proove_fields;  // javascript form validation code
+
 
     // required - class name (just for PHPLib sessions)
     var $classname = "inputform";
@@ -107,8 +109,6 @@ class inputform {
     function inputform($settings) {
         $this->display_aa_begin_end = $settings['display_aa_begin_end'];
         $this->page_title           = $settings['page_title'];
-        $this->show_func_used       = $settings['show_func_used'];
-        $this->js_proove_fields     = $settings['js_proove_fields'];
         $this->form_action          = $settings['form_action'];
         $this->form4update          = $settings['form4update'];
         $this->show_preview_button  = $settings['show_preview_button'];
@@ -126,6 +126,12 @@ class inputform {
      */
     function printForm($content4id, &$slice, $edit, $slice_fields=false) {
         global $sess;
+
+        // Get the default form and FILL CONTENTCACHE with fields
+        // This function also fills the $this->show_func_used and
+        // $this->js_proove_fields
+        $form = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
+
         if ( $this->display_aa_begin_end ) {
             HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
             echo GetFormJavascript($this->show_func_used, $this->js_proove_fields);
@@ -135,17 +141,15 @@ class inputform {
               <body>
                 <H1><B>' . $this->page_title .'</B></H1>';
             PrintArray( $this->messages['err'] );     // prints err or OK messages
+        }
 
-            if ( $this->show_func_used['fil']) { // uses fileupload?
-                  $html_form_type = 'enctype="multipart/form-data"';
-            }
+        if ( $this->show_func_used['fil']) { // uses fileupload?
+              $html_form_type = 'enctype="multipart/form-data"';
         }
         echo "<form name=inputform $html_form_type method=post
                     action=\"" . $this->form_action .'"'.
                     getTriggers("form","v".unpack_id("inputform"),array("onSubmit"=>"return BeforeSubmit()")).'>';
 
-        // get the default form and FILL CONTENTCACHE with fields
-        $form = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
 
         // design of form could be customized by view
         if ( $this->template AND ($view_info = GetViewInfo($this->template))) {
@@ -247,6 +251,7 @@ class inputform {
         }
 
         $form4anonymous_wizard = is_array($show);
+        $js_proove_fields = 'true';
 
         foreach ($prifields as $pri_field_id) {
             $f           = $fields[$pri_field_id];
@@ -267,7 +272,38 @@ class inputform {
             $field_mode = !IsEditable($content4id[$pri_field_id], $f, $profile) ?
                           'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
 
-            // $field_value and $field_html_flag
+
+            // prepare show_func_used and javascript function for validation
+            // of the form (js_proove_fields)
+            if ( $field_mode != 'freeze' ) {
+
+                // fill show_func_used array - used on several places
+                // to destinguish, which javascripts we should include and
+                // if we have to use form multipart or not
+                list($show_func) = explode(":", $f["input_show_func"], 2);
+                $this->show_func_used[$show_func] = true;
+
+
+                //
+                $js_proove_password_filled = !$edit && $f["required"] && !$content4id[$pri_field_id][0]['value'];
+                list($validate) = explode(":", $f["input_validate"]);
+                if ($validate == 'e-unique') {
+                    $validate = "email";
+                }
+                switch( $validate ) {
+                    case 'text':
+                    case 'url':
+                    case 'email':
+                    case 'number':
+                    case 'id':
+                    case 'pwd':
+                        $js_proove_fields .= "\n && validate (myform, '$varname', '$validate', "
+                            .($f["required"] ? "1" : "0").", "
+                            .($js_proove_password_filled ? "1" : "0").")";
+                    break;
+                }
+            }
+
 
             if ( $edit ) {
                 $field_value     = $content4id[$pri_field_id];
@@ -292,15 +328,33 @@ class inputform {
                 $field_html_flag = (((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
             }            // Display the field
             $aainput = new aainputfield($field_value, $field_html_flag, $field_mode);
-        //fix -- otherwise $field_value keeps array
-        unset($field_value);
+            //fix -- otherwise $field_value keeps array
+            unset($field_value);
             $aainput->setFromField($f);
 
             // do not return template for anonymous form wizard
             $ret .= $aainput->get($form4anonymous_wizard ? 'expand' : 'template');
-        unset($aainput);
+            unset($aainput);
         }
+        $this->js_proove_fields = get_javascript_field_validation(). "\n
+            function proove_fields () {
+                var myform = document.inputform;
+                return $js_proove_fields;
+            }\n";
+
         return $ret;
+    }
+
+    /** Returns javascript code for inputform validation */
+    function get_js_proove_fields($action, $id=0, $notshown="") {
+        $this->_compute_field_stats($action, $id, $notshown);
+        return $this->js_proove_fields;
+    }
+
+    /** Returns array of inputform function used the in inputform */
+    function get_show_func_used($action, $id=0, $notshown="") {
+        $this->_compute_field_stats($action, $id, $notshown);
+        return $this->show_func_used;
     }
 }
 
@@ -2307,6 +2361,7 @@ function FrmItemGroupSelect( &$items, &$searchbar, $list_type, $messages, $addit
                 $out .= getRadioBookmarkRow( $v, $k, $list_type, $messages['view_items'], true, is_array($bookparams) ? $bookparams['id'] : null);
             }
         }
+        $out .= getRadioBookmarkRow( _m('All active items'), '', $list_type, $messages['view_items']);
     }
     // aditional group (test one, for examle)
     if ( isset($additional) AND is_array($additional) ) {
@@ -2325,9 +2380,14 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
         $zids->set_from_item_arr($items);
     } else {                   // user defined by bookmark
         $slice = new slice($slice_id);
-        $searchbar->setFromBookmark($group);
-        $conds = $searchbar->getConds();
-        $zids=QueryZIDs($slice->fields('record'), $slice_id, $conds, "", "", 'ACTIVE');
+        if ( $group == '' ) {
+            // all active items in the slice
+            $conds = false;
+        } else {
+            $searchbar->setFromBookmark($group);
+            $conds = $searchbar->getConds();
+        }
+        $zids  = QueryZIDs($slice->fields('record'), $slice_id, $conds, "", "", 'ACTIVE');
     }
     return $zids;
 }

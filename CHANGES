@@ -1,26 +1,47 @@
+08/18/05 - improved CSV import of data. Now you can not only 
+(honzam)       - "Store the item with new id"
+               - "Do not store the item" or 
+               - "Update the item (overwrite)" 
+           with already existing items, but you can also select 
+               - "Rewrite only the fields, for which the action is defined"
+               - "Add the values in paralel to current values (the multivalues 
+                  are stored, where possible)" 
+         - view parameters now could be combined. You can use 
+             cmd[65][]=v-66&cmd[65][]=c-1-Cars 
+           or if you want to display only items from the set which passes the 
+           condition, you can write 
+             cmd[65][]=x-82763-82344-82352&cmd[65][]=c-1-Cars
+         - new possibility to upload constants from admin interface - see 
+           "Import constants" on constants editing page
+         - fixing moveLeft and moveRight in sitemodule administration
+         - added new field types based on suggestion of Philip King and Antonin
+           Slejska:
+           (name, phone, fax, address, location, city, country, range, real)
+         - some cleanup  
+08/01/05 - fixed bug in site display (honzam)
 07/26/05 - new site module admin interface design (thanks to Colnodo)
-(honzam) - year selectbox always show the year of the filled date 
+(honzam) - year selectbox always show the year of the filled date
            (so the previously filled years are never lost)
-         - all selectboxes should always show the filled value, even if 
+         - all selectboxes should always show the filled value, even if
            the value in not in the list
          - fixed return url from Slice Field Setting page
          - fixed feeding mapping setting - the special option (like "--Value--")
            is shown again
-         - fixed alerts sending problem - it did not work for some slices 
+         - fixed alerts sending problem - it did not work for some slices
            (the one with backslash in packed_id, for instance)
-         - fixed problem with Edit used/Add user, the right user is displayed 
+         - fixed problem with Edit used/Add user, the right user is displayed
            after update
          - fixed searchbar - the operator in the condition is not lost
-         - fixed field default function - qte is no longer used, since it is 
+         - fixed field default function - qte is no longer used, since it is
            the same as txt
          - fixed link to AA general documentation in doc/index.html
          - fixed quoting problem in feeding (\") appears for some feeds data
-06/28/05 - new dynamic "slice setting fields" implemented - now you have 
-(honzam)   the possibility to add "slice fields" (just like you do with normal 
+06/28/05 - new dynamic "slice setting fields" implemented - now you have
+(honzam)   the possibility to add "slice fields" (just like you do with normal
            item fields). Such fields then can be used for slice setting common
-           to all items. Such fields are prefixed by underscore (automaticaly) 
-           and you can access it through {alias:_field_id.......:f_e:slice_info} 
-06/27/05 - fixed problem with sql_update.php3 - creating toexecute table syntax 
+           to all items. Such fields are prefixed by underscore (automaticaly)
+           and you can access it through {alias:_field_id.......:f_e:slice_info}
+06/27/05 - fixed problem with sql_update.php3 - creating toexecute table syntax
 (honzam)   error. The download files on sourceforge are updated.
 
 --------------------

@@ -90,7 +90,7 @@ if ( $update AND (count($err)<=1) AND is_array($prifields) ) {
 
     // prepare content4id array before call StoreItem function
     $content4id = new ItemContent;
-    $content4id->setFieldsFromForm( $slice, $oldcontent4id, false, true ); 
+    $content4id->setFieldsFromForm( $slice, $oldcontent4id, false, true );
 
     // added_to_db contains id
     // removed $oldcontent4id (see ItemContent::storeItem)
@@ -138,12 +138,7 @@ if (!$encap) {
     $inputform_settings = array(
         'display_aa_begin_end' => true,
         'page_title'           => _m("Slice Setting"). " (". trim($r_slice_headline).")",
-
-        // next two variables are used for GetFormJavascript() function - javascript
-        // validation when display_aa_begin_end is true
-        'show_func_used'       => $slice->get_show_func_used($action, $id),
-        'js_proove_fields'     => $slice->get_js_validation($action, $id),
-    ); //added MLX
+    );
 }
 
 $inputform_settings['messages']            = array('err' => $err);
