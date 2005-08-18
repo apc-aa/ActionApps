@@ -19,20 +19,20 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-define("SHOW_FILE_SIZE",65536);
-define("CSVFILE_LINE_MAXSIZE",65536);
+define("SHOW_FILE_SIZE",         65536);
+define("CSVFILE_LINE_MAXSIZE",   65536);
 define("IMPORTFILE_PREVIEW_ROWS",5);
-define("IMPORTFILE_TIME_LIMIT",2000);
+define("IMPORTFILE_TIME_LIMIT",  6000);
 
-define("FILE_PREFIX",'csvdata');
-define("CSV_DIRECTORY",'csvdata');
+define("FILE_PREFIX",   'csvdata');
+define("CSV_DIRECTORY", 'csvdata');
 
-define("NOT_STORE",0);
+define("NOT_STORE",        0);
 define("STORE_WITH_NEW_ID",1);
-define("UPDATE",2);
+define("UPDATE",           2);
 
-define("INSERT",1);
-define("UPDATE",2);
+define("INSERT", 1);
+define("UPDATE", 2);
 
 /** compare version  phpversion() to $ver (format major.minor.build)
  *  returns -1,0,1 :  if php version is less,equal,greater than $ver
@@ -116,43 +116,47 @@ class Actions {
          foreach ( $slice_fields as $field_id => $foo ) {
              $action = &$this->actions[$field_id];
              unset( $fieldVal, $v);
+             $done = false;
 
              // fill up the output field with default value, if the action does not exist for the output field, or the action is "default"
              if (!$action || $action['action']->getAction() == "default") {
                  switch ($field_id) {
                      // case "display_count..." : $v = 0; break;
-                     case "status_code....." : $v = 1; break; // todo
-                     case "flags..........." : $v = ITEM_FLAG_OFFLINE; break;
-                     case "publish_date...." : $v =  time(); break;
-                     case "post_date......." : $v =  time(); break;
-                     case "last_edit......." : $v =  time(); break;
-                     case "expiry_date....." : $v =  mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
-                     case "posted_by......." : $v = $auth->auth['uid']; break;	// todo
-                     case "edited_by......." : $v = $auth->auth['uid']; break;	// todo
-                     case "id.............." : $v = $auth->auth['uid']; break;
+                     case "status_code....." : $done = 1; $fieldVal[]['value'] = 1; break; // todo
+                     case "flags..........." : $done = 1; $fieldVal[]['value'] = ITEM_FLAG_OFFLINE; break;
+                     case "publish_date...." : $done = 1; $fieldVal[]['value'] =  time(); break;
+                     case "post_date......." : $done = 1; $fieldVal[]['value'] =  time(); break;
+                     case "last_edit......." : $done = 1; $fieldVal[]['value'] =  time(); break;
+                     case "expiry_date....." : $done = 1; $fieldVal[]['value'] =  mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
+                     case "posted_by......." : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
+                     case "edited_by......." : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
+                     case "id.............." : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;
                      default :
                          if ( $action['from'] && ($action['from'] != '__empty__')) {
                              $action['action']->setAction('store');
                          } elseif ( $action['action']->getParams() ) {
                              $action['action']->setAction('value');
                          } else {
-                             $v = "";
+                             $done = 1;
                          }
                          break;
                  }
              } elseif ($action['action']->getAction() == "new") {
-                 $v = 'new id';
+                  $done = 1;
+                  $fieldVal[]['value'] = 'new id';
              }
-             if ( isset($v) ) {   // $v is set in previous 'default' section
-                 $fieldVal[]['value'] = $v;
-             } else {
+             if ( !$done ) {
+
                  // transform the input field to the output field according the action
                  $err = $action['action']->transform($itemContent,$action['from'],$this->globalParams,$fieldVal );
-                 if ($err)
+                 if ($err) {
                      return $err;
+                 }
              }
-             // store the output field to the output item content
-             $outputItemContent->setFieldValue($field_id,$fieldVal);
+             if (isset($fieldVal) and is_array($fieldVal)) {
+                 // store the output field to the output item content
+                 $outputItemContent->setFieldValue($field_id,$fieldVal);
+             }
         }
     }
 
@@ -286,24 +290,144 @@ class Action {
                 $fvalues[0]['value'] = $this->params;
                 break;
             }
+            case "nszmciselnik": {
+                $from = array('podoblast1','podoblast2','podoblast3');
+                foreach ( $from as $tostore ) {
+                    $save = $GLOBALS['nszmciselnik'][(string)trim($itemContent->GetValue($tostore))];
+                    if ( $save ) {
+                        $fvalues[]['value'] = $save;
+                    }
+                }
+                break;
+            }
+            case "nszmmesta": {
+                $save = $GLOBALS['nszmmesta'][(string)trim($itemContent->GetValue($from))];
+                if ( $save ) {
+                    $fvalues[]['value'] = $save;
+                }
+                break;
+            }
+            case "nszmstav": {
+                $fvalues[]['value'] = get_if($itemContent->GetValue($from), 1);
+                break;
+            }
             default: {
                   return "Unknown function: $this->action";
             }
         }
         // set HTML flag and add slashes because of SQL syntax
-        foreach ( $fvalues as $k => $v ) {
-            if ($this->html) {
-                $v['flag'] = $this->html;
+        if (isset($fvalues) AND is_array($fvalues)) {
+            foreach ( $fvalues as $k => $v ) {
+                if ($this->html) {
+                    $v['flag'] = $this->html;
+                }
+                $fvalues[$k] = $v;
             }
-            $fvalues[$k] = $v;
         }
         return "";
     }
 }
 
+$nszmciselnik = array (
+'1'=>'1.',
+'11'=>'1.1',
+'12'=>'1.2',
+'13'=>'1.3',
+'14'=>'1.4',
+'15'=>'1.5',
+'16'=>'1.6',
+'17'=>'1.7',
+'18'=>'1.8',
+'2'=>'2.',
+'21'=>'2.1',
+'22'=>'2.2',
+'23'=>'2.3',
+'24'=>'2.4',
+'25'=>'2.5',
+'26'=>'2.6',
+'27'=>'2.7',
+'28'=>'2.8',
+'3'=>'3.',
+'31'=>'3.1',
+'32'=>'3.2',
+'33'=>'3.3',
+'34'=>'3.4',
+'35'=>'3.5',
+'36'=>'3.6',
+'37'=>'3.7',
+'38'=>'3.8',
+'39'=>'3.9',
+'4'=>'4.',
+'41'=>'4.1',
+'42'=>'4.2',
+'43'=>'4.3',
+'44'=>'4.4',
+'45'=>'4.5',
+'46'=>'4.6',
+'5'=>'5.',
+'51'=>'5.1',
+'52'=>'5.2',
+'53'=>'5.3',
+'54'=>'5.4',
+'55'=>'5.5',
+'56'=>'5.6',
+'6'=>'6.',
+'61'=>'6.1',
+'62'=>'6.2',
+'63'=>'6.3',
+'64'=>'6.4',
+'65'=>'6.5',
+'66'=>'6.6',
+'67'=>'6.7',
+'68'=>'6.8',
+'69'=>'6.9',
+'7'=>'7.',
+'71'=>'7.1',
+'72'=>'7.2',
+'73'=>'7.3',
+'74'=>'7.4',
+'75'=>'7.5',
+'76'=>'7.6',
+'8'=>'8.',
+'81'=>'8.1',
+'82'=>'8.2',
+'83'=>'8.3',
+'84'=>'8.4',
+'85'=>'8.5',
+'86'=>'8.6',
+'87'=>'8.7',
+'9'=>'9.',
+'91'=>'9.1',
+'92'=>'9.2',
+'93'=>'9.3',
+'94'=>'9.4',
+'95'=>'9.5',
+'96'=>'9.6',
+'97'=>'9.7',
+'98'=>'9.8'
+);
+
+$nszmmesta = array(
+    'Žïár nad Sázavou' => '4cbe4c9f495659db69aba35fbbe85e75',
+    'Velké Meziøíèí' => '6bfe94a7be75cba6bf4d382d2cfa56c3',
+    'Tøebíè' => '14f758c5c201e56b0ea1ad4ec0419b6e',
+    'Telè' => 'c1843ecad65dff9c85bb208429e87bb8',
+    'Svìtlá nad Sázavou' => '5129aa53e4cf252b2a12b82090c5f839',
+    'Pelhøimov' => '0e7bdd6bfad9a1218c22f54b5f48168c',
+    'Pacov' => '50e8c206869659e6fda872aaff285b8c',
+    'Nové Mìsto na Moravì' => '7971bd8fd5a3235c149b2fe3bafd675e',
+    'Námìš nad Oslavou' => '7f1ae6154b41558936845d2103578696',
+    'Moravské Budìjovice' => '8a5ba7e453725107797b6e1e80c8ab8e',
+    'Jihlava' => '2acc8da86106cee2f93692f309f46b92',
+    'Humpolec' => '05dc3562487ab1299409aa28edf58d49',
+    'Havlíèkùv Brod' => 'a116f13755011872fbd7b2829466a340',
+    'Chotìboø' => '09599b24d01f70502928a2b9e0779a05',
+    'Bystøice nad Pernštejnem' => 'a05eb1555aa9b5f74e1f24786b5b6899');
+
+
 /** Get List of actions */
 function getActions() {
-    $a = array("store","removestring","formatdate", "web", "storeparsemulti","value","string2id","default");
+    $a = array("store","removestring","formatdate", "web", "storeparsemulti","value","string2id", 'nszmstav', 'nszmciselnik', 'nszmmesta', "default");
     // not used:  "convertvalue","storemultiasone", "storeasmulti", "not map"
     foreach ( $a as $v ) { $actions[$v] = $v; }
     return $actions;

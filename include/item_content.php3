@@ -260,14 +260,11 @@ class ItemContent {
      *    c) otherwise   : do nothing
      *  TODO - convert to grabber/saver API
      */
-    function storeToDB($slice_id, &$fields, $actionIfItemExists=STORE_WITH_NEW_ID,
-                       $invalidatecache = true) {
+    function storeToDB($slice_id, $actionIfItemExists=STORE_WITH_NEW_ID, $invalidatecache = true) {
         require_once $GLOBALS['AA_INC_PATH']."varset.php3";
         require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
         global $db, $err, $varset, $itemvarset, $error, $ok;
 
-        $varset     = new Cvarset();
-        $itemvarset = new Cvarset();
         $db         = new DB_AA;
 
         $id = $this->getItemValue("id");
@@ -308,10 +305,36 @@ class ItemContent {
     *   $GLOBALS[err][field_id] should be set on error in function
     *   It looks like it will return true even if inset_fnc_xxx fails
     *
-    *   @param array $content4id   array (field_id => array of values
-    *						      (usually just a single value, but still an array))
-    *   @param array $oldcontent4id if not sent, StoreItem finds it
-    *   @return true on success, false otherwise
+    *   @param string $mode   how to deal with the stored item. 
+    *      update        - the fields defined in $this object are cleared and
+    *                      then overwriten by values from $this object 
+    *                      - other fields of the item are untouched. The id 
+    *                      of the item must be set before calling this 
+    *                      function ($this->setItemID($id))
+    *      add           - do not clear the current content - the values are 
+    *                      added in paralel to curent values (stored 
+    *                      as multivalues for all fields stored in content 
+    *                      table). The id of the item must be set before 
+    *                      calling this function ($this->setItemID($id))
+    *      overwrite     - the whole item is cleared and then filed by the 
+    *                      content of $this object
+    *      insert_as_new - the item is stored as new item - new id is always 
+    *                      generated ($this->getItemID() is not taken into 
+    *                      account)
+    *      insert_new    - if the id is not defined or the id is duplicated then
+    *                      the item is stored with new id (as new item) 
+    *      insert        - the same as insert_as_new, but "this id" is 
+    *                      accepted - if the id is defined, it is stored 
+    *                      under specified id, otherwise the new id is 
+    *                      generated. The id MUST be new - the id must not be
+    *                      in the database  
+    *      insert_if_new - the item is stored only if the item with this id 
+    *                      ($this->getItemID()) is not in the database. 
+    *                      Otherwise it is skiped (not stored)
+    *    @param bool   $invalidatecache   should we invalidate the cache for the 
+    *                                     slice?
+    *    @param bool   $feed     procces feeding (as in in the slice setting)?
+    *    @param string $context  special parameter used for thumbnails
     */
     function storeItem( $mode, $invalidatecache=true, $feed=true, $context='direct' ) {
         global $event, $itemvarset;
@@ -321,7 +344,12 @@ class ItemContent {
         $slice      = new slice($slice_id);
         $fields     = $slice->fields('record');
 
-        if ( ($mode != 'insert') AND ($mode != 'insert_if_new') AND ($mode != 'insert_as_new') AND ($mode != 'overwrite')) {
+        if ( ($mode != 'insert') AND 
+             ($mode != 'insert_new') AND 
+             ($mode != 'insert_if_new') AND 
+             ($mode != 'insert_as_new') AND 
+             ($mode != 'overwrite') AND 
+             ($mode != 'add')) {
             $mode = 'update';
         }
 
@@ -329,14 +357,20 @@ class ItemContent {
             case 'insert_as_new': $id = new_id();
                                   $mode ='insert';
                                   break;
+            case 'insert_new':    // if item is duplicate or id is not defined, store it as new item
+                                  $id = (!$this->getItemID() OR itemIsDuplicate($this->getItemID())) ? new_id() : $this->getItemID();
+                                  $mode ='insert';
+                                  break;
             case 'insert':        $id = get_if($this->getItemID(), new_id());
                                   break;
-            case 'insert_if_new': if (itemIsDuplicate($this->getItemID(), $slice_id)) {
+            case 'insert_if_new': if (!$this->getItemID() OR itemIsDuplicate($this->getItemID())) {
                                       if ($GLOBALS['debugfeed'] >= 4) print("\n<br>skipping duplicate: ".$this->getValue('headline........'));
                                       return false;
                                   }
+                                  $mode ='insert';
                                   // no break!
             case 'overwrite':
+            case 'add':
             default:              $id   = $this->getItemID();
                                   break;
         }
@@ -351,7 +385,7 @@ class ItemContent {
         }
 
         // remove old content first (just in content table - item is updated)
-        if (($mode == 'update') OR ($mode == 'overwrite')) {
+        if (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add')) {
             $oldItemContent = new ItemContent($id);
             $event->comes('ITEM_BEFORE_UPDATE', $slice_id, 'S', $this, $oldItemContent);
         } else {
@@ -366,14 +400,16 @@ class ItemContent {
             // (this means - all not redefined fields are unchanged)
             $this->_clean_updated_fields($id, $fields);
         }
+        // else 'add' do not clear the current content - the values are added 
+        // in paralel to curent values (stored as multivalues for all fields 
+        // stored in content table)
 
         // and NOW - store the fields and prepare itemvarset
-        $this->_store_fields($id, $fields);
+        $this->_store_fields($id, $fields, $context);
         
         /* Alerts module uses moved2active as the time when
            an item was moved to the active bin */
         if (($mode=='insert') ||
-            ($mode=='insert_if_new') ||
             ($itemvarset->get('status_code') != $oldItemContent->getStatusCode()
                                         && $itemvarset->get('status_code') >= 1)) {
             $itemvarset->add("moved2active", "number", $itemvarset->get('status_code') > 1 ? 0 : time());
@@ -387,6 +423,7 @@ class ItemContent {
         // update item table
         switch ($mode) {
             case 'update':
+            case 'add':
                 $itemvarset->add("last_edit", "quoted",   default_fnc_now(""));
                 $itemvarset->add("edited_by", "quoted",   default_fnc_uid(""));
                 $itemvarset->doUpdate('item');
@@ -422,7 +459,7 @@ class ItemContent {
         $itemContent = new ItemContent();
         $itemContent->setByItemID($id,true); // ignore reading password
 
-        if (($mode == 'insert') OR ($mode == 'insert_if_new')) {
+        if ($mode == 'insert') {
             $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
         } else {
             $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
@@ -465,7 +502,7 @@ class ItemContent {
      *  on each field in content array. The content is stored in the database
      *  of in itemvarset
      */
-    function _store_fields($id, &$fields) {
+    function _store_fields($id, &$fields, $context='direct') {
         foreach ($this->content as $fid => $cont) {
             $f = $fields[$fid];
 
@@ -568,16 +605,12 @@ class ItemContent {
 // Figure out if item alreaady imported into this slice
 // Id's are unpacked
 // Note that this could be replaced by feeding.php3:IsItemFed which is more complex and would use orig id
-function itemIsDuplicate($item_id,$slice_id) {
-    global $debugfeed, $db;
-      // Only store items that have an id which is not already contained in the items table for this slice
-//    $SQL="SELECT id FROM item WHERE id='".q_pack_id($item_id)."' AND slice_id='".q_pack_id($slice_id)."'" ;
-// oops - that doesn't work, the item_id is a key.
+function itemIsDuplicate($item_id) {
+    $db = getDB();
     $SQL="SELECT id FROM item WHERE id='".q_pack_id($item_id)."'" ;
     $db->query($SQL);
-    if ($db->next_record()) {
-        return true;
-    }
-    return false;
+    $ret = $db->next_record();
+    freeDB($db);
+    return $ret ? true : false;
 }
 

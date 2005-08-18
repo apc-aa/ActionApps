@@ -110,9 +110,6 @@ if ($upload) {
 
     $handle       = fopen($fileName,"r");
     $numProcessed = 0;
-    $numInserted  = 0;
-    $numUpdated   = 0;
-    $numNotStored = 0;
     $numError     = 0;
 
     // if first row is used for field names, skip it
@@ -122,28 +119,27 @@ if ($upload) {
     while ($csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$addParams['delimiter'],$addParams['enclosure'])) {
         $err = convertCSV2Items($csvRec,$fieldNames,$trans_actions,$slice_fields,$itemContent);
         $numProcessed++;
+        $msg .= _m("Item:").$numProcessed .":";
 
         if (!$err) {
-            $res = $itemContent->StoreToDB($slice_id, $slice_fields, $actionIfItemExists, false); // not invalidate cache
-            if ($res == false)
+            $itemContent->setSliceID($slice_id);
+//            huh($itemContent);
+//            exit;
+            $added_to_db = $itemContent->storeItem($actionIfItemExists, false);     // not invalidate cache
+            if ($added_to_db == false) {
                 $err = _m("Cannot store item to DB");
+            }
         }
-        $msg .= _m("Item:").$numProcessed .":";
         if ($err) {
             $numError++;
             $msg.= _m("Transformation error:"). $err . "not inserted";
         } else {
-            switch ($res[0]) {
-                case INSERT :    $numInserted++;   $m = " ". _m("inserted");   break;
-                case UPDATE :    $numUpdated ++;   $m = " ". _m("updated");    break;
-                case NOT_STORE : $numNotStored ++; $m = " ". _m("not stored"); break;
-            }
-            $msg.= _m("Ok: Item ").$res[1]. $m;
+            $msg.= _m('Ok: Item %1 stored', array($added_to_db));
         }
         $msg .= "<br>\n";
     }
     // log
-    $logMsg = "Slice " .$slice_id. ": Processed ". $numProcessed. ", Inserted ". $numInserted. ", Updated:". $numUpdated. ", Error: ". $numError. " items";
+    $logMsg = "Slice " .$slice_id. ": Processed ". $numProcessed. ", Stored ". ($numProcessed-$numError) .", Error: ". $numError. " items";
     writeLog("CSV_IMPORT",$logMsg);
 
     // invalidate cache;
@@ -299,25 +295,17 @@ FrmTabCaption(_m("Mapping settings"));
          FrmSelectEasy("itemIdMappedActions",$mapping_options, $preview ? $itemIdMappedActions : 'pack_id');
          echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. ($preview ? $itemIdMappedParams : '').'"></input>';
        ?></td>
-
     </tr>
 
-    <tr><td  colspan = 2><b>&nbsp;</b></td></tr>
-    <tr><td class=tabtxt colspan=2><?php echo _m("If the item id is already in the slice:"); ?></td><tr>
-    <tr>
-        <td class=tabtxt align=center><input type="radio" <?php if ($actionIfItemExists == UPDATE) echo "CHECKED"; ?> NAME="actionIfItemExists" value=<?php echo UPDATE;?> ></td>
-        <td class=tabtxt ><?php echo _m("Update the item"); ?></td>
-        </tr>
-    <tr>
-        <td class=tabtxt align=center><input type="radio" <?php if ($actionIfItemExists == STORE_WITH_NEW_ID) echo "CHECKED"; ?> NAME="actionIfItemExists" value=<?php echo STORE_WITH_NEW_ID;?> ></td>
-        <td class=tabtxt ><?php echo _m("Store the item with new id"); ?></td>
-           </tr>
-    <tr>
-            <td class=tabtxt align=center><input type="radio" <?php if ($actionIfItemExists== NOT_STORE) echo "CHECKED"; ?> NAME="actionIfItemExists" value=<?php echo NOT_STORE;?> </td>
-        <td class=tabtxt ><?php echo _m("Do not store the item"); ?></td>
-    </tr>
     <?php
-
+    FrmTabSeparator(_m("Select, how to store the items"));
+    $storage_mode = array('overwrite'     => _m('Update the item (overwrite)'),
+                          'insert_new'    => _m('Store the item with new id'),
+                          'insert_if_new' => _m('Do not store the item'),
+                          'add'           => _m('Add the values in paralel to current values (the multivalues are stored, where possible)'),
+                          'update'        => _m('Rewrite only the fields, for which the action is defined')
+                          );
+    FrmInputRadio('actionIfItemExists', _m('If the item id is already in the slice'), $storage_mode, $actionIfItemExists, true, '', '', 1);
     FrmTabEnd($form_buttons, $sess, $slice_id);
     echo "</FORM>";
     HtmlPageEnd();
