@@ -35,7 +35,7 @@ function normalize_arr(&$arr) {
 
 
 // SiteTree and Spot class definition
-$SPOT_VAR_NAMES = array ('id'         => 'id',        // translation from long variable
+$SPOT_VAR_NAMES = array ('id'         => 'id',      // translation from long variable
                          'name'       => 'n',       // names to the current - shorter
                          'conditions' => 'c',
                          'variables'  => 'v',
@@ -71,12 +71,14 @@ class spot {
         $this->f  = $flag;
     }
 
-    function addInSequence($new_id) {
-        $this->po[] = $new_id;
+    function addInSequence(&$spot) {
+        $this->po[] = $spot->Id();
+        $spot->set('parent', $this->Id());  // set/repair parent of inserted spot
     }
 
-    function addChoice($new_id) {
-        $this->ch[] = $new_id;
+    function addChoice(&$spot) {
+        $this->ch[] = $spot->Id();
+        $spot->set('parent', $this->Id());  // set/repair parent of inserted spot
     }
 
     function addVariable($name) {
@@ -97,6 +99,16 @@ class spot {
 
     function isLeaf() {
         return ((!is_array($this->ch) OR (count($this->ch)<1)) AND (count($this->po)<2));
+    }
+
+    /** Returns true, if the $spot_id is in sequence of this spot (position) */
+    function isSequence($spot_id) {
+        return (false !== ($k = array_search($spot_id, (array)$this->po)));
+    }
+
+    /** Returns true, if the $spot_id is choice of this spot */
+    function isChoice($spot_id) {
+        return (false !== ($k = array_search($spot_id, (array)$this->ch)));
     }
 
     /** Check the positions (po) array and choices (ch) array,
@@ -182,12 +194,6 @@ class spot {
         return false;
     }
 
-    function moveLeft( $spot_id ) {
-    }
-
-    function moveRight( $spot_id ) {
-    }
-
     function Name()                        { return $this->n; }
     function Id()                          { return $this->id; }
     function Conditions()                  { return $this->c; }
@@ -222,21 +228,33 @@ class sitetree {
         $this->start_id = $spot['spot_id'];
     }
 
+    /** Creates the spot object and adds it in the sequence (positions) */
     function addInSequence($where, $name, $content=false, $conditions=false, $variables=false, $flag=false) {
-        $new_id = $this->new_id();
-
+        // parent is not set yet (set by addInSequence() in next step);
+        $spot = new spot( $this->new_id(), $name, $conditions, $variables, false, $flag );
+        if ($this->_addInSequence($spot, $where)) {
+            $this->tree[$spot->Id()] = $spot;
+            return true;
+        }
+        return false;
+    }
+    
+    /** Adds already created spot object into sequence (positions array) */
+    function _addInSequence(&$spot, $where) {
         //get real parent
         $parent_spot =& $this->tree[$where];
-        if ( !$parent_spot->get('positions') ) {   //real parent must have positions set
-            $parent = $parent_spot->get('parent');
-            $parent_spot =& $this->tree[$parent];
-        } else {
-            $parent = $where;
+
+        // this is true for simple spot, which is normal member of any sequence
+        // real parent must have positions set
+        if ( !$parent_spot->get('positions') ) {
+            // if we want to add spot to simple spot in sequence, then we have
+           // to add it its parent (the first in the sequence
+            $parent_spot =& $this->tree[$parent_spot->get('parent')];
         }
 
-        $parent_spot->addInSequence($new_id);  // Note this is going to the spot, not recursing
+        // parent is set by addInSequence() in next step;
+        $parent_spot->addInSequence($spot);  // Note this is going to the spot, not recursing
 
-        $this->tree[$new_id] = new spot( $new_id, $name, $conditions, $variables, $parent, $flag );
         return true;
     }
 
@@ -244,17 +262,27 @@ class sitetree {
         return max(array_keys($this->tree))+1;
     }
 
+    /** Creates the spot object and adds it in the choices array */
     function addChoice($where, $name, $content=false, $conditions=false, $variables=false, $flag=false) {
+        // parent is not set yet (set by addChoice() in next step);
         $new_id = $this->new_id();
+        $spot = new spot( $new_id, $name, $conditions, $variables, false, array($new_id), $flag );
+        if ($this->_addChoice($spot, $where)) {
+            $this->tree[$spot->Id()] = $spot;
+            return true;
+        }
+        return false;
+    }
 
+    /** Adds already created spot object in the choices array */
+    function _addChoice(&$spot, $where) {
         //get real parent
         $where_spot =& $this->tree[$where];
         if (!$where_spot->get('variables')) {  // before creating choice must be defined the list of dependency variables
             return false;
         }
-
-        $where_spot->addChoice($new_id);
-        $this->tree[$new_id] = new spot( $new_id, $name, $conditions, $variables, $where, array($new_id), $flag );
+        // parent is set by addChoice() in next step;
+        $where_spot->addChoice($spot);
         return true;
     }
 
@@ -275,6 +303,11 @@ class sitetree {
         return false;
     }
 
+    /** Moves the spot up or down within the sitetree. The move is done only
+     *  within the same parent.
+     *  @param $spot_id int - id of spot to be moved
+     *  @param $direction string - 'moveDown' or 'moveLeft'
+     */
     function move($spot_id, $direction) {
         $spot =& $this->tree[$spot_id];
         if (!$spot) {
@@ -286,6 +319,111 @@ class sitetree {
             return false;
         }
         return $parent->$direction($spot_id);
+    }
+
+
+    /** Moves the spot left (to the parent) or right (to first child) within 
+     *  the sitetree.
+     *  @param string $direction - 'moveLeft' or 'moveRight'
+     */
+    function moveLeftRight($spot_id, $direction) {
+        $spot =& $this->tree[$spot_id];
+        if (!$spot) {
+            return false;
+        }
+        $parent_id = $spot->get('parent');
+        $parent =& $this->tree[$parent_id];
+        if (!$parent) {
+            return false;
+        }
+
+        $spot_type = $parent->isChoice($spot_id) ? 'choice' : 'sequence';
+
+        $destination_parent_id = false;
+        if ($direction == 'moveLeft') {
+            // destination_parent - parent of our parent (where we are going to move the spot)
+            $destination_parent_id = $parent->get('parent');
+        } else {       // 'moveRight'
+            // fing next spot in the current spot-set (positions/choices)
+            $sibling_id = $spot_id;
+            while (false !== ($sibling_id = $this->getNextSibling($sibling_id))) {
+                echo "\n<br>sibling: $sibling_id";
+                if ( $this->haveBranches($sibling_id) ) {
+                    if ($spot_type == 'choice') {
+                        // if the moved spot is choice, then we just add it to choices
+                        $destination_parent_id = $sibling_id;
+                    } else {
+                        // in case the spot is normal sequence spot, then we 
+                        // have to add it to first option
+                        $choices = $this->get('choices', $sibling_id);
+                        $destination_parent_id = ((is_array($choices) AND isset($choices[0])) ? $choices[0] : false);
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (false === $destination_parent_id) {  // destination_parent not found
+            return false;
+        }
+
+        $destination_parent =& $this->tree[$destination_parent_id];
+        if (!$destination_parent) {
+            return false;
+        }
+        $parent->normalize();
+        $destination_parent->normalize();
+
+        if (!$parent->removeSpot($spot_id)) {
+            return false;
+        }
+
+        if ($spot_type == 'choice') {
+            $this->_addChoice($spot, $destination_parent_id);
+        } else {
+            $this->_addInSequence($spot, $destination_parent_id);
+        }
+        return true;
+    }
+
+    /** Returns id of next sibling - the next spot in the set
+     *  (positions or choices) of the given $spot_id
+     */
+    function getNextSibling($spot_id) {
+        $spot =& $this->tree[$spot_id];
+        if (!$spot) {
+            return false;
+        }
+        $parent_id = $spot->get('parent');
+        $parent =& $this->tree[$parent_id];
+        if (!$parent) {
+            return false;
+        }
+
+        // get id of the destination spot for Right movement (tree admin)
+        $spot_set = $this->isOption($spot_id) ? $parent->get("choices") : $parent->get("positions");
+        if (!$spot_set) {
+            echo 'something is wrong - no "positions" or "choices" for parent';
+            return false;
+        }
+        // now we are looking for the spot which is on the same level under
+        $found = false;
+        foreach ($spot_set as $poskey => $pos) {
+            if (!$pos) {     // There was a bug that introduced empty
+                continue;    // positions - this is to skip them.
+            }
+            if (!$found AND ($pos == $spot_id)) {
+                $found = true;
+                continue;
+            }
+            if ($found) {
+                return $pos;
+            }
+        }
+        if (!$found) {
+            echo 'something is wrong - spot is not found in the spot-set of its parent';
+        }
+        return false;
     }
 
     function addVariable($where, $var) {

@@ -93,10 +93,10 @@ switch( $akce ) {
                   $r_spot_id = $priorsib; // was set to $parent;
               }
               break;
-    case 'u': $tree->move( $r_spot_id, 'moveUp' );        break;  // Up
-    case 'd': $tree->move( $r_spot_id, 'moveDown' );      break;  // Down
-    case 'l': $tree->move( $r_spot_id, 'moveLeft' );      break;  // Left
-    case 'a': $tree->move( $r_spot_id, 'moveRight' );     break;  // Right
+    case 'u': $tree->move(          $r_spot_id, 'moveUp' );    break;  // Up
+    case 'd': $tree->move(          $r_spot_id, 'moveDown' );  break;  // Down
+    case 'l': $tree->moveLeftRight( $r_spot_id, 'moveLeft' );  break;  // Left
+    case 'a': $tree->moveLeftRight( $r_spot_id, 'moveRight' ); break;  // Right
 
     case 'h': $tree->setFlag($r_spot_id, MODW_FLAG_DISABLE);   break;  // Hide
     case 'e': $tree->clearFlag($r_spot_id, MODW_FLAG_DISABLE); break;  // Disable

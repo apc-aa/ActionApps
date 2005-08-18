@@ -132,7 +132,7 @@ function ModW_PrintVariables( $spot_id, $vars ) {
     echo "<tr><td valign=top><b>"._m("Spot&nbsp;variables")."</b></td><td>";
     if (isset($vars) AND is_array($vars)) {
         foreach ($vars as $k => $v) {
-            echo "$v <span align=right><a href=\"". SiteAdminPage($spot_id, "delvar=$k") ."\">"._m("Delete")."</a></span><br>";
+            echo "$v <span align=right><a href=\"". SiteAdminPage($spot_id, "delvar=". urlencode($k)) ."\">"._m("Delete")."</a></span><br>";
         }
     }
     echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='20' maxlength='50'><span align=right><a href='javascript:document.fvar.submit()'>"._m("Add")."</a></span>";
@@ -171,6 +171,7 @@ function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
     $db->query($SQL);
     $content = safe($db->next_record() ? $db->f('content') : "");
     freeDB($db);
+    
     echo '<table align=left border=0 cellspacing=0 width="100%" class=tabtxt>';
     ModW_PrintVariables($spot_id, $tree->get('variables',$spot_id));
     if (($vars=$tree->isOption($spot_id))) {

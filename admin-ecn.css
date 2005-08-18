@@ -383,13 +383,13 @@ img.eye {
     color: #FFF;
 }
 
-#sitetree div .selected {
+#sitetree div.selected {
     margin: 0px 1px 0px 0px;
     padding: 0px;
     border: none;
 }
 
-#sitetree div .selected a {
+#sitetree div.selected a {
     background-color: #584011;
     color: #FFF;
 }
