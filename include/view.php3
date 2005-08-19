@@ -1,4 +1,4 @@
-<b></b><b></b><?php
+<?php
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
