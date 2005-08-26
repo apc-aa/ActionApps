@@ -14,7 +14,7 @@ if ( !$convert_tables_path ) {
     $convert_tables_path = $GLOBALS['AA_INC_PATH']."ConvertTables/";
 }
 
-define (CONVERT_TABLES_DIR, $GLOBALS['AA_INC_PATH']."ConvertTables/");
+define (CONVERT_TABLES_DIR, $convert_tables_path);
 define (DEBUG_MODE, -1);
 
 /**
