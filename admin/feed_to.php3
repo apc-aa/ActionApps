@@ -66,9 +66,7 @@ if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
             ((string)$slice_id != (string)$sid) AND
             // we must have autor or editor perms in destination slices
             CheckPerms( $auth->auth["uid"], "slice", $sid, PS_EDIT_SELF_ITEMS) ) {
-            if (gettype($i/2) == "integer") {
-                $odd = true;
-            } else {$odd=false;}
+            $odd = (gettype($i/2) == 'integer');
             PrintExportRow($v['name'], $sid, $odd);
             $i++;
         }
@@ -81,7 +79,6 @@ if ( $i==1 ) {   // can't feed to any slice
    <tr><td colspan=4 class="tabtit" align=center><br /><input type=button name=sendfeeded value="<?php echo _m("Export") ?>" onclick="SendFeed();"><br />&nbsp;</td></tr>
    </table>
    <SCRIPT Language="JavaScript" type="text/javascript"><!--
-      // do not move this script up - it uses php3 variables
     function SendFeed() {
         var len = document.incf.elements.length;
         var retval='';

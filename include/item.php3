@@ -57,9 +57,9 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
   }
   //add additional aliases
   if ( is_array( $additional ) ) {
-      reset ($additional);
-      while (list($k,$v) = each($additional))
+      foreach ( $additional as $k => $v) {
           $aliases[$k] = $v;
+      }
   }
 
   //  Standard aliases
@@ -87,24 +87,17 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
   $aliases["_#MLX_DIR_"] = GetAliasDef(  "f_e:mlx_dir",   MLX_CTRLIDFIELD,             _m("HTML markup direction tag (e.g. DIR=RTL)"));
 
   // database stored aliases
-  while ( list($k,$val) = each($fields) ) {
-    if ( $val[alias1] )
-      $aliases[$val[alias1]] = array("fce" =>  $val[alias1_func],
-                                     "param" => ( $val[id] ),
-                                     "hlp" => $val[alias1_help],
-                                     "fld" => $k);                 // fld used
-                           // in PrintAliasHelp to point to alias editing page
-
-    if ( $val[alias2] )
-      $aliases[$val[alias2]] = array("fce" =>  $val[alias2_func],
-                                     "param" => ( $val[id] ),
-                                     "hlp" => $val[alias2_help],
-                                     "fld" => $k);
-    if ( $val[alias3] )
-      $aliases[$val[alias3]] = array("fce" => $val[alias3_func],
-                                     "param" => ( $val[id] ),
-                                     "hlp" => $val[alias3_help],
-                                     "fld" => $k);
+  foreach ($fields as $k => $val) {
+      if ($val['alias1']) {
+          // fld used in PrintAliasHelp to point to alias editing page
+          $aliases[$val['alias1']] = array("fce" =>  $val['alias1_func'], "param" => $val['id'], "hlp" => $val['alias1_help'], "fld" => $k);
+      }
+      if ($val['alias2']) {
+          $aliases[$val['alias2']] = array("fce" =>  $val['alias2_func'], "param" => $val['id'], "hlp" => $val['alias2_help'], "fld" => $k);
+      }
+      if ($val['alias3']) {
+          $aliases[$val['alias3']] = array("fce" =>  $val['alias3_func'], "param" => $val['id'], "hlp" => $val['alias3_help'], "fld" => $k);
+      }
   }
   trace("-");
   return($aliases);
@@ -169,13 +162,10 @@ function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML)
 // global function to get return_url
 // this function may replaced by extension of $sess as a method $sess->return_url().
 function sess_return_url($url) {
-  global $sess;
-  global $return_url;
-
-  if (!$return_url)   // return for standard APC-AA behavier
-    return $sess->url($url);
-  else                // decode and return $return_url
-    return expand_return_url(1);
+    global $sess, $return_url;
+    
+    // decode and return $return_url OR return for standard APC-AA behavier
+    return $return_url ? expand_return_url(1) : $sess->url($url);
 }
 
 

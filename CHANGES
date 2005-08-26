@@ -1,23 +1,36 @@
-08/18/05 - improved CSV import of data. Now you can not only 
+08/26/05 - new possibility to create "Computed field". It is good solution for
+(honzam)   all values, which could be precomputed, since its evaluation
+           on item-show-time would be slow. Any of your field could be changed
+           to "computed" - you just change "Insert" function for the field
+           on "Slice Admin" -> "Fields" page. In such case the other setting
+           of the field (like Default, Input type, ...) are irrelevant,
+           of course. Two prepared field templates (computed_num....
+           and computed_txt....) was added to sql_update.php3. Yes, you can use
+           any {view...}, {include...}, {switch...} in the computed string
+           (in Parameter)
+         - fixed /misc/charset/convert.php3 script (which is able to convert any
+           text from one encoding to another one) - now works when called
+           externaly
+08/18/05 - improved CSV import of data. Now you can not only
 (honzam)       - "Store the item with new id"
-               - "Do not store the item" or 
-               - "Update the item (overwrite)" 
-           with already existing items, but you can also select 
+               - "Do not store the item" or
+               - "Update the item (overwrite)"
+           with already existing items, but you can also select
                - "Rewrite only the fields, for which the action is defined"
-               - "Add the values in paralel to current values (the multivalues 
-                  are stored, where possible)" 
-         - view parameters now could be combined. You can use 
-             cmd[65][]=v-66&cmd[65][]=c-1-Cars 
-           or if you want to display only items from the set which passes the 
-           condition, you can write 
+               - "Add the values in paralel to current values (the multivalues
+                  are stored, where possible)"
+         - view parameters now could be combined. You can use
+             cmd[65][]=v-66&cmd[65][]=c-1-Cars
+           or if you want to display only items from the set which passes the
+           condition, you can write
              cmd[65][]=x-82763-82344-82352&cmd[65][]=c-1-Cars
-         - new possibility to upload constants from admin interface - see 
+         - new possibility to upload constants from admin interface - see
            "Import constants" on constants editing page
          - fixing moveLeft and moveRight in sitemodule administration
          - added new field types based on suggestion of Philip King and Antonin
            Slejska:
            (name, phone, fax, address, location, city, country, range, real)
-         - some cleanup  
+         - some cleanup
 08/01/05 - fixed bug in site display (honzam)
 07/26/05 - new site module admin interface design (thanks to Colnodo)
 (honzam) - year selectbox always show the year of the filled date

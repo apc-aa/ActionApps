@@ -139,7 +139,7 @@ $LANGUAGE_NAMES = array ("cz" => "Èeština",
                          "en" => "English",
                          "es" => "Español",
                          "de" => "Deutsch",
-			 "hu" => "Magyar", 
+			             "hu" => "Magyar", 
                          "ro" => "Romanian",
                          "ru" => "Russian",
                          "vn" => "Vietnamese",
@@ -256,7 +256,7 @@ function GetInputShowFuncTypesDef( $name, $multiple, $paramformat) {
 }
 
     /// @return array input show function types
-function inputShowFuncTypes () {
+function inputShowFuncTypes() {
     return array (                   //        $name,                    $multiple,   $paramformat
         "txt" => GetInputShowFuncTypesDef( _m("Text Area"),                   false, 'fnc:param' ),
         "tpr" => GetInputShowFuncTypesDef( _m("Textarea with Presets"),       false, 'fnc:const:param' ),
