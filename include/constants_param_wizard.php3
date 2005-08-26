@@ -83,7 +83,12 @@ array ("name" => _m("File = uploaded file"),
                        <br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.
                        <br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore."),
               "type"=>"STRID",
-              "example"=>"image..........2")
+              "example"=>"new"),
+        array("name"=>_m("Exact dimensions"),
+              "desc"=>_m("If set to 1 the image will be resized exactly to the specified dimensions (and croped if needed).
+                       Default is 0 or empty: Maintain aspect ratio while resizing the image."),
+              "type"=>"INT",
+              "example"=>"1")
        ));
 $INSERT_TYPES["items"]["uid"] =
 array ("name" => _m("User ID = always store current user ID"),

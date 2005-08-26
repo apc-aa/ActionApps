@@ -319,7 +319,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
         // $pdestination and $purl is not used, yet - it should be used to allow
         // slice administrators to store files to another directory
         // list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod, $pdestination, $purl) = ParamExplode($param);
-        list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod) = ParamExplode($param);
+        list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod, $pexact) = ParamExplode($param);
 
         $dest_file = Files::uploadFile($filevarname, Files::destinationDir($slice), $ptype, $preplacemethod);
         if ($dest_file === false) {   // error
@@ -335,7 +335,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
         // return true for unsupported types IF they are already small enough
         // and also making ResampleImage copy the files if small enough
 
-        if ($e = ResampleImage($dest_file, $dest_file, $pwidth, $pheight)) {
+        if ($e = ResampleImage($dest_file, $dest_file, $pwidth, $pheight, $pexact)) {
             $err[$field["id"]] = $e;
             return;
         }
@@ -353,7 +353,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
 
                 $dest_file_tmb  = Files::generateUnusedFilename($dest_file, '_thumb');  // xxx_thumb1.jpg
 
-                if ($e = ResampleImage($dest_file,$dest_file_tmb, $thumb_params[1],$thumb_params[2])) {
+                if ($e = ResampleImage($dest_file,$dest_file_tmb, $thumb_params[1],$thumb_params[2],$thumb_params[5])) {
                     $err[$field["id"]] = $e;
                     return;
                 }

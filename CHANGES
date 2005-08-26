@@ -1,3 +1,7 @@
+08/26/05 - uploaded images can now be resized also exactly to specified
+(brazda)   size (e.g. square). Image is resized and croped if needed from
+           the center of original image. It can be set-up in parameters of 
+           "Insert" function for the field on "Slice Admin" -> "Fields" page.
 08/26/05 - new possibility to create "Computed field". It is good solution for
 (honzam)   all values, which could be precomputed, since its evaluation
            on item-show-time would be slow. Any of your field could be changed
