@@ -451,14 +451,20 @@ class ItemContent {
             $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");
         }
 
+        // get the content back from database
+        $itemContent = new ItemContent();
+        $itemContent->setByItemID($id,true);     // ignore reading password
+        
+        // look for computed fields and update it (based on the stored item)
+        if ( $itemContent->updateComputedFields($id, $fields) ) {
+            // if computed fields are updated, reread the content
+            $itemContent->setByItemID($id,true); // ignore reading password
+        }
+
         if ($feed) {
             FeedItem($id, $fields);
         }
-
-        // get the content back from database
-        $itemContent = new ItemContent();
-        $itemContent->setByItemID($id,true); // ignore reading password
-
+        
         if ($mode == 'insert') {
             $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
         } else {
@@ -467,6 +473,30 @@ class ItemContent {
         if ($debugsi) huhl("StoreItem err=",$err);
         return $id;
     } // end of storeItem()
+    
+    function updateComputedFields($id, &$fields) {
+        $computed_field_exist = false;
+        foreach ($fields as $fid => $f) {
+            // input insert function parameters of field
+            $fnc = ParseFnc($f["input_insert_func"]);
+            
+            // computed field?
+            if ($fnc AND ($fnc["fnc"]=='com') AND (strlen($fnc["param"])>0)) {
+                
+                // the code, which (unaliased!) should be stored in the field
+                // is in parameter
+                if ($computed_field_exist === false) {
+                    $computed_field_exist = true;
+                    // prepare item for computing
+                    $slice = new slice($this->getSliceID());
+                    $item  = new item($this->getContent(),$slice->aliases());
+                }
+                // now store the comuted value for this field               
+                insert_fnc_qte($id, $f, array('value' => $item->unalias($fnc["param"])), '');
+            }
+        }
+        return $computed_field_exist;
+    }
     
     /** Stores the fields into content table for dynamic "slice setting fields"
      */
@@ -506,10 +536,8 @@ class ItemContent {
         foreach ($this->content as $fid => $cont) {
             $f = $fields[$fid];
 
-            // input insert function
-            $fnc = ParseFnc($f["input_insert_func"]);
             // input insert function parameters of field
-            $fncpar = ParseFnc($f["input_insert_func"]);
+            $fnc = ParseFnc($f["input_insert_func"]);
             if ($fnc) {
                 $fncname = 'insert_fnc_' . $fnc["fnc"];
                 // update content table or fill $itemvarset
@@ -536,21 +564,21 @@ class ItemContent {
                         }
 
                         if (!$stop) {
-                            if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fncpar["param"],")");
+                            if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fnc["param"],")");
                             if ($numbered) {
                                 $parameters["order"] = $order;
                             }
                             $parameters["fields"]    = $fields;
                             $parameters["context"]   = $context;
-                            $thumbnails = $fncname($id, $f, $v, $fncpar["param"], $parameters);
+                            $thumbnails = $fncname($id, $f, $v, $fnc["param"], $parameters);
                         }
                     } else {
-                        if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fncpar["param"],")");
+                        if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fnc["param"],")");
                         if ($numbered) {
                             $parameters["order"] = $order;
-                            $fncname($id, $f, $v, $fncpar["param"], $parameters);
+                            $fncname($id, $f, $v, $fnc["param"], $parameters);
                         } else {
-                            $fncname($id, $f, $v, $fncpar["param"]);
+                            $fncname($id, $f, $v, $fnc["param"]);
                         }
                     }
                     // do not store multiple values if field is not marked as multiple

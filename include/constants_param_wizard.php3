@@ -100,11 +100,14 @@ array ("name" => _m("Password and Change Password"),
        "desc" => _m("Stores value from a 'Password and Change Password' field type.
            First prooves the new password matches the retyped new password,
            and if so, MD5-encrypts the new password and stores it."));
-
-/*"dte" => _m("Date"),
- "cns" => _m("Constant"),
- "num" => _m("Number"),
- "nul" => _m("None")*/
+$INSERT_TYPES["items"]["com"] =
+array ("name" => _m("Computed field"),
+"desc" => _m("The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here"),
+       "params"=>array(
+        array("name"=>_m("Code for unaliasing"),
+        "desc"=>_m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"),
+        "type"=>"STR",
+        "example"=>"({publish_date....}) {headline........}")));
 
 // --------------------------------------------------------------------------------
 

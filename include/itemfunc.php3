@@ -282,6 +282,13 @@ function insert_fnc_now($item_id, $field, $value, $param, $additional='') {
     insert_fnc_qte($item_id, $field, array("value"=>now()), $param, $additional);
 }
 
+function insert_fnc_com($item_id, $field, $value, $param, $additional='') {
+    // not insert anything at this time. We will do it later, after we store 
+    // all of the fields to the database. Then we can compute the content 
+    // of this field. See updateComputedFields() method in item_content.php3
+    return;
+}
+
 // -----------------------------------------------------------------------------
 /** Insert function for File Upload.
 *   @return Array of fields stored inside this function as thumbnails.
