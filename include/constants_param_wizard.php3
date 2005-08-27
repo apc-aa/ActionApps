@@ -85,7 +85,7 @@ array ("name" => _m("File = uploaded file"),
               "type"=>"STRID",
               "example"=>"new"),
         array("name"=>_m("Exact dimensions"),
-              "desc"=>_m("If set to 1 the image will be resized exactly to the specified dimensions (and croped if needed).
+              "desc"=>_m("If set to 1 the image will be downsized exactly to the specified dimensions (and croped if needed).
                        Default is 0 or empty: Maintain aspect ratio while resizing the image."),
               "type"=>"INT",
               "example"=>"1")
