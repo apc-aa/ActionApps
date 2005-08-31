@@ -35,15 +35,15 @@ function translateString( $string, $translation ) {
     $twos = ParamExplode( $translation );
     $i=0;
     while ( $i < count($twos) ) {
-      if ( $i == (count($twos)-1)) {                // default option
-        return $twos[$i];
-      }
-      $val = trim($twos[$i]);
-      // Note you can't use !$val, since this will match a pattern of exactly "0"
-      if ( ($val=="") OR ereg($val, $string) ) {    // Note that $string, might be expanded {headline.......} or {m}
-        return $twos[$i+1];
-      }
-      $i+=2;
+        if ( $i == (count($twos)-1)) {                // default option
+            return $twos[$i];
+        }
+        $val = trim($twos[$i]);
+        // Note you can't use !$val, since this will match a pattern of exactly "0"
+        if ( ($val=="") OR ereg($val, $string) ) {    // Note that $string, might be expanded {headline.......} or {m}
+            return $twos[$i+1];
+        }
+        $i+=2;
     }
     return "";
 }
@@ -77,11 +77,11 @@ function stringexpand_user($field='') {
         case 'permission' :
                 if ( IfSlPerm($perms_roles['SUPER']['perm']) ) {
                     return 'super';
-                } elseif( IfSlPerm($perms_roles['ADMINISTRATOR']['perm'] ) ) {
+                } elseif ( IfSlPerm($perms_roles['ADMINISTRATOR']['perm'] ) ) {
                     return 'administrator';
-                } elseif( IfSlPerm($perms_roles['EDITOR']['perm'] ) ) {
+                } elseif ( IfSlPerm($perms_roles['EDITOR']['perm'] ) ) {
                     return 'editor';
-                } elseif( IfSlPerm($perms_roles['AUTHOR']['perm'] ) ) {
+                } elseif ( IfSlPerm($perms_roles['AUTHOR']['perm'] ) ) {
                     return 'author';
                 } else {
                     return 'undefined';
@@ -141,7 +141,7 @@ function parseMath($text) {
         }
         else {	//$val=str_replace ("{", "", $val);
             //$val=str_replace ("}", "", $val);
-            $val = calculate ($val); // defined in math.php3
+            $val = calculate($val); // defined in math.php3
             if ($variable) {
                 $format=explode("#",$variable);
                 $val = number_format($val, $format[0], $format[1], $format[2]);
@@ -349,6 +349,14 @@ function stringexpand_sessurl($url) {
     }
 }
 
+/** Compares two values -
+ *  returns:  'L' if val1 is less than val2
+ *            'G' if val1 is greater than val2
+ *            'E' if they are equal
+ */
+function stringexpand_compare($val1, $val2) {
+    return ( $val1 == $val2 ) ? 'E' : (($val1 > $val2) ? 'G' : 'L' );
+}
 
 /** Return array of substitution pairs for dictionary, based on given dictionary
  *  slice, format string which defines the format and possible slice codnitions.
