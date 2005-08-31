@@ -194,4 +194,53 @@ class aaprofile {
         return $last_id;
     }
 }
+
+function AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html) {
+    $profile = new aaprofile($uid, $slice_id);      // user settings
+    switch($property) {
+        case 'listlen':
+        case 'input_view':
+            if ( $param > 0 ) {
+                $profile->deleteProperty($property);
+                $profile->insertProperty($property, '0', $param);
+                $Msg = MsgOK(_m("Rule added"));
+            } else {
+                $profile->deleteProperty($property);
+                $Msg = MsgOK(_m("Rule deleted"));
+            }
+            break;
+        case 'admin_order':
+            if ( $field_id ) {
+                $profile->deleteProperty($property);
+                $profile->insertProperty($property, '0', $field_id.$fnction);
+                $Msg = MsgOK(_m("Rule added"));
+            }
+            break;
+        case 'admin_search':
+            if ( $field_id ) {
+                $profile->deleteProperty($property);
+                $profile->insertProperty($property, '0', "$field_id:$param");
+                $Msg = MsgOK(_m("Rule added"));
+            }
+            break;
+        case 'hide':
+            if ( $field_id ) {
+                $profile->deleteProperty($property, $field_id);
+                $profile->insertProperty($property, $field_id, '1');
+                $Msg = MsgOK(_m("Rule added"));
+            }
+            break;
+        case 'fill':
+        case 'hide&fill':
+        case 'predefine':
+            if ( $field_id ) {
+                $profile->deleteProperty($property,$field_id);
+                $profile->insertProperty($property, $field_id, "$html:$fnction:$param");
+                $Msg = MsgOK(_m("Rule added"));
+            }
+            break;
+    }
+    return $Msg;
+}
+
 ?>

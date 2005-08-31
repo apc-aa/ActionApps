@@ -29,71 +29,84 @@ require_once $GLOBALS['AA_INC_PATH']."item.php3";     // GetAliasesFromField fun
 require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
+if ($cancel) {
+    go_url( $sess->url(self_base() . "index.php3"));
+}
 
 if (!IfSlPerm(PS_CONFIG)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have no permission to set configuration parameters of this slice"), "admin");
-  exit;
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have no permission to set configuration parameters of this slice"), "admin");
+    exit;
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$varset = new Cvarset();
-$p_slice_id = q_pack_id($slice_id);
+$varset      = new Cvarset();
+$p_slice_id  = q_pack_id($slice_id);
 
-if ( $r_fields )
-  $fields = $r_fields;
-else
-  list($fields,) = GetSliceFields($slice_id);
+if ( $r_fields ) {
+    $fields = $r_fields;
+} else {
+    list($fields,) = GetSliceFields($slice_id);
+}
 
 
-if ( $update )
-{
-  do
-  {
-    ValidateInput("admin_format_top",    _m("Top HTML"),                                $admin_format_top,    $err, false, "text");
-    ValidateInput("admin_format",        _m("Item format"),                             $admin_format,        $err, true,  "text");
-    ValidateInput("admin_format_bottom", _m("Bottom HTML"),                             $admin_format_bottom, $err, false, "text");
-    ValidateInput("admin_remove",        _m("Remove strings"),                          $admin_remove,        $err, false, "text");
-    ValidateInput("admin_noitem_msg",    _m("HTML code for \"No item found\" message"), $admin_noitem_msg,    $err, false, "text");
+if ($update) {
+    do {
+        ValidateInput("admin_format_top",    _m("Top HTML"),                                $admin_format_top,    $err, false, "text");
+        ValidateInput("admin_format",        _m("Item format"),                             $admin_format,        $err, true,  "text");
+        ValidateInput("admin_format_bottom", _m("Bottom HTML"),                             $admin_format_bottom, $err, false, "text");
+        ValidateInput("admin_remove",        _m("Remove strings"),                          $admin_remove,        $err, false, "text");
+        ValidateInput("admin_noitem_msg",    _m("HTML code for \"No item found\" message"), $admin_noitem_msg,    $err, false, "text");
+        ValidateInput("inputform_sel",       _m("Show discussion"),                         $inputform_sel,       $err, false,  "text");
 
-    if ( count($err) > 1)
-      break;
+        if ( count($err) > 1) {
+            break;
+        }
 
-    $varset->add("admin_format_top",    "quoted", $admin_format_top);
-    $varset->add("admin_format",        "quoted", $admin_format);
-    $varset->add("admin_format_bottom", "quoted", $admin_format_bottom);
-    $varset->add("admin_remove",        "quoted", $admin_remove);
-    $varset->add("admin_noitem_msg",    "quoted", $admin_noitem_msg);
-    if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() .
-                     "WHERE id='".q_pack_id($slice_id)."'")) {
-      $err["DB"] = MsgErr( _m("Can't change slice settings") );
-      break;    // not necessary - we have set the halt_on_error
+        $varset->add("admin_format_top",    "quoted", $admin_format_top);
+        $varset->add("admin_format",        "quoted", $admin_format);
+        $varset->add("admin_format_bottom", "quoted", $admin_format_bottom);
+        $varset->add("admin_remove",        "quoted", $admin_remove);
+        $varset->add("admin_noitem_msg",    "quoted", $admin_noitem_msg);
+        if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() .
+                         "WHERE id='".q_pack_id($slice_id)."'")) {
+            $err["DB"] = MsgErr( _m("Can't change slice settings") );
+            break;    // not necessary - we have set the halt_on_error
+        }
+
+        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+
+        // set the
+        AddProfileProperty('*', $slice_id, 'input_view', '', '', $inputform_sel, '');
+
+        $admin_format_top    = dequote($admin_format_top);
+        $admin_format        = dequote($admin_format);
+        $admin_format_bottom = dequote($admin_format_bottom);
+    } while(false);
+
+    if ( count($err) <= 1 ) {
+        $Msg = MsgOK(_m("Admin fields update successful"));
     }
-
-    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
-
-    $admin_format_top = dequote($admin_format_top);
-    $admin_format = dequote($admin_format);
-    $admin_format_bottom = dequote($admin_format_bottom);
-  }while(false);
-  if ( count($err) <= 1 )
-    $Msg = MsgOK(_m("Admin fields update successful"));
 }
 
 if ( $slice_id!="" ) {  // set variables from database
-  $SQL= " SELECT admin_format, admin_format_top, admin_format_bottom,
-                 admin_remove, admin_noitem_msg
+    $SQL = "SELECT admin_format, admin_format_top, admin_format_bottom,
+                   admin_remove, admin_noitem_msg
             FROM slice WHERE id='". q_pack_id($slice_id)."'";
-  $db->query($SQL);
-  if ($db->next_record()) {
-    $admin_format_top    = $db->f('admin_format_top');
-    $admin_format        = $db->f('admin_format');
-    $admin_format_bottom = $db->f('admin_format_bottom');
-    $admin_remove        = $db->f('admin_remove');
-    $admin_noitem_msg    = $db->f('admin_noitem_msg');
-  }
+    $db->query($SQL);
+    if ($db->next_record()) {
+        $admin_format_top    = $db->f('admin_format_top');
+        $admin_format        = $db->f('admin_format');
+        $admin_format_bottom = $db->f('admin_format_bottom');
+        $admin_remove        = $db->f('admin_remove');
+        $admin_noitem_msg    = $db->f('admin_noitem_msg');
+    }
+
+    $default_profile = new aaprofile('*', $slice_id); // current user settings
+    $inputform_vid   = $default_profile->getProperty('input_view');
 }
+
+// lookup inputform views
+$inputform_vids = GetTable2Array("SELECT id, name FROM view WHERE slice_id ='$p_slice_id' AND type='inputform'", 'id', 'name');
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -111,36 +124,40 @@ function Defaults() {
 </HEAD>
 
 <?php
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
-  showMenu ($aamenus, "sliceadmin", "config");
+require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+showMenu($aamenus, "sliceadmin", "config");
 
-  echo "<H1><B>" . _m("Admin - design Item Manager view") . "</B></H1>";
-  PrintArray($err);
-  echo $Msg;
+echo "<H1><B>" . _m("Admin - design Item Manager view") . "</B></H1>";
+PrintArray($err);
+echo $Msg;
 
-  $form_buttons = array("update" => array("type"=>"hidden", "value"=>"1"),
-                        "update", "cancel"=>array("url"=>"se_fields.php3"),
-                        "defaults" => array("type"=>"button", "value"=> _m("Default"), "add"=>'onclick="Defaults()"'));
+$form_buttons = array("update" => array("type"=>"hidden", "value"=>"1"),
+                      "update", "cancel"=>array("url"=>"se_fields.php3"),
+                      "defaults" => array("type"=>"button", "value"=> _m("Default"), "add"=>'onclick="Defaults()"'));
 
 ?>
 <form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
-  FrmTabCaption(_m("Listing of items in Admin interface"),'','',$form_buttons, $sess, $slice_id);
+FrmTabCaption(_m("Listing of items in Admin interface"),'','',$form_buttons, $sess, $slice_id);
 
-  FrmTextarea("admin_format_top", _m("Top HTML"), $admin_format_top, 4, 60,
-              false, _m("HTML code which appears at the top of slice area"), DOCUMENTATION_URL, 1);
-  FrmTextarea("admin_format", _m("Item format"), $admin_format, 12, 60, true,
-                     _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliase will be substituted by real values from database when it will be posted to page"), DOCUMENTATION_URL, 1);
-  FrmTextarea("admin_format_bottom", _m("Bottom HTML"), $admin_format_bottom,
-              4, 60, false, _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1);
-  FrmInputText("admin_remove", _m("Remove strings"), $admin_remove, 254, 50, false,
-               _m("Removes empty brackets etc. Use ## as delimiter."), DOCUMENTATION_URL);
-  FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $admin_noitem_msg,
-              4, 60, false, _m("Code to be printed when no item is filled (or user have no permission to any item in the slice)"), DOCUMENTATION_URL, 1);
-  PrintAliasHelp(GetAliasesFromFields($fields), $fields, false, $form_buttons);
-  FrmTabEnd("", false, true);
+FrmTextarea("admin_format_top", _m("Top HTML"), $admin_format_top, 4, 60,
+            false, _m("HTML code which appears at the top of slice area"), DOCUMENTATION_URL, 1);
+FrmTextarea("admin_format", _m("Item format"), $admin_format, 12, 60, true,
+                   _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliase will be substituted by real values from database when it will be posted to page"), DOCUMENTATION_URL, 1);
+FrmTextarea("admin_format_bottom", _m("Bottom HTML"), $admin_format_bottom,
+            4, 60, false, _m("HTML code which appears at the bottom of slice area"), DOCUMENTATION_URL, 1);
+FrmInputText("admin_remove", _m("Remove strings"), $admin_remove, 254, 50, false,
+             _m("Removes empty brackets etc. Use ## as delimiter."), DOCUMENTATION_URL);
+FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $admin_noitem_msg,
+            4, 60, false, _m("Code to be printed when no item is filled (or user have no permission to any item in the slice)"), DOCUMENTATION_URL, 1);
+FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputform_vid, false,
+             _m("You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"));
+PrintAliasHelp(GetAliasesFromFields($fields), $fields, false, $form_buttons);
+FrmTabEnd("", false, true);
 ?>
 </FORM>
-<?php HtmlPageEnd();
-page_close()?>
+<?php
+HtmlPageEnd();
+page_close()
+?>
 

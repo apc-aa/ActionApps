@@ -29,91 +29,49 @@ require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 require_once $GLOBALS['AA_INC_PATH']."profile.php3";
 require_once $GLOBALS['AA_INC_PATH']."constants_param_wizard.php3";
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "./se_users.php3"));
+if ($cancel) {
+    go_url( $sess->url(self_base() . "./se_users.php3"));
+}
 
 if (!IfSlPerm(PS_USERS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
-  exit;
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");
+    exit;
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if ( $del ) {
-  $SQL = "DELETE FROM profile WHERE id='$del'
-             AND slice_id='$p_slice_id'"; //slice identification is not neccessry
-  if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-    $err["DB"] = MsgErr("Can't delete profile");
-    break;
-  }
+    // slice identification is not neccessry
+    $SQL = "DELETE FROM profile WHERE id='$del' AND slice_id='$p_slice_id'";
+    if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+        $err["DB"] = MsgErr("Can't delete profile");
+        break;
+    }
 
-  $Msg = MsgOK(_m("Rule deleted"));
+    $Msg = MsgOK(_m("Rule deleted"));
 }
 
 if ( $add ) {
-  $profile = new aaprofile($uid, $slice_id);      // user settings
-  do {
-    switch($property) {
-      case 'listlen':
-      case 'input_view':
-        if ( $param > 0 ) {
-          $profile->deleteProperty($property);
-          $profile->insertProperty($property, '0', $param);
-          $Msg = MsgOK(_m("Rule added"));
-        }
-        break;
-      case 'admin_order':
-        if ( $field_id ) {
-          $profile->deleteProperty($property);
-          $profile->insertProperty($property, '0', $field_id.$fnction);
-          $Msg = MsgOK(_m("Rule added"));
-        }
-        break;
-      case 'admin_search':
-        if ( $field_id ) {
-          $profile->deleteProperty($property);
-          $profile->insertProperty($property, '0', "$field_id:$param");
-          $Msg = MsgOK(_m("Rule added"));
-        }
-        break;
-      case 'hide':
-        if ( $field_id ) {
-          $profile->deleteProperty($property, $field_id);
-          $profile->insertProperty($property, $field_id, '1');
-          $Msg = MsgOK(_m("Rule added"));
-        }
-        break;
-      case 'fill':
-      case 'hide&fill':
-      case 'predefine':
-        if ( $field_id ) {
-          $profile->deleteProperty($property,$field_id);
-          $profile->insertProperty($property, $field_id, "$html:$fnction:$param");
-          $Msg = MsgOK(_m("Rule added"));
-        }
-        break;
-   }
-  } while ( 0 );           //in order we can use "break;" statement
-  if ( count($err) > 1)
-    $Msg = MsgOK(_m("Error: Can't add rule"));
+    if (!AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html)) {
+        $Msg = MsgOK(_m("Error: Can't add rule"));
+    }
 }
 
 // prepare forms ---------------------------------------------------------------
 
 // get current profiles
-$SQL= "SELECT * FROM profile WHERE slice_id='$p_slice_id' AND (uid='$uid')
-        ORDER BY property, selector";
+$SQL= "SELECT * FROM profile WHERE slice_id='$p_slice_id' AND (uid='$uid') ORDER BY property, selector";
 $db->query($SQL);
-while ($db->next_record())
-  $rules[] = $db->Record;
+while ($db->next_record()) {
+    $rules[] = $db->Record;
+}
 
 // get fields for this slice
 list($fields,) = GetSliceFields($slice_id);
-reset( $fields );
-while ( list($k, $v) = each($fields) )
-  $lookup_fields[$k] = $v[name];
-
+foreach ($fields as $k => $v) {
+    $lookup_fields[$k] = $v['name'];
+}
 
 // set property names array
 $PROPERTY_TYPES = array( 'listlen'     =>_m("Item number"),
@@ -135,8 +93,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <script language="JavaScript"><!--
   function addrule(n) {
     var si;
-//    alert( eval('document.fr.prop'+n ).value );
-//    alert( eval('document.fr.prop'+n+'.value'));
     document.sf.property.value = eval('document.fr.prop'+n+'.value');
     if ( eval('document.fr.param'+n) != null )
       document.sf.param.value = eval('document.fr.param'+n+'.value');
@@ -148,7 +104,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     }
     if ( eval('document.fr.fld'+n) != null ) {
       si = eval('document.fr.fld'+n+'.options.selectedIndex');
-//      alert( si );
       document.sf.field_id.value = eval('document.fr.fld'+n+'.options['+si+'].value');
     }
     document.sf.submit();
@@ -158,7 +113,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php
 require_once $GLOBALS['AA_INC_PATH']."menu.php3";
-showMenu ($aamenus, "sliceadmin","");
+showMenu($aamenus, "sliceadmin","");
 
 echo "<H1><B>" . _m("Admin - user Profiles") . "</B></H1>";
 PrintArray($err);
@@ -174,11 +129,12 @@ echo "
     <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">";
 
 if ( isset($rules) AND is_array($rules) ) {
-  reset($rules);
-  while ( list(,$v) = each($rules))
-    PrintRule($v);
-} else
-  echo "<tr><td>"._m("No rule is set")."</td></tr>";
+    foreach ($rules as $v) {
+        PrintRule($v);
+    }
+} else {
+    echo "<tr><td>"._m("No rule is set")."</td></tr>";
+}
 
 echo "</table>
   <tr>
@@ -197,7 +153,7 @@ echo "</table>
        <td>&nbsp;</td>
       </tr>";
 
-$inputDefaultTypes = getSelectBoxFromParamWizard ($DEFAULT_VALUE_TYPES);
+$inputDefaultTypes = getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES);
 
 PrintSetRule(1,'listlen',     0,0,                  1,0,_m("number of item displayed in Item Manager") );
 PrintSetRule(2,'input_view',  0,0,                  1,0,_m("id of view used for item input") );

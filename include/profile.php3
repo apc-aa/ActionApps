@@ -35,64 +35,78 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
 }
 
 function PrintRule($rule) {
-  global $PROPERTY_TYPES, $SORTORDER_TYPES, $fields, $DEFAULT_VALUE_TYPES;
-  $INPUT_DEFAULT_TYPES = getSelectBoxFromParamWizard ($DEFAULT_VALUE_TYPES);
+    global $PROPERTY_TYPES, $SORTORDER_TYPES, $fields, $DEFAULT_VALUE_TYPES;
+    $INPUT_DEFAULT_TYPES = getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES);
 
-  $prop = $rule['property'];
-  $rid  = $rule['id'];
+    $prop = $rule['property'];
+    $rid  = $rule['id'];
 
-  switch($prop) {
-    case 'input_view':
-    case 'listlen':
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], "", $rule['value']);
-      break;
-    case 'bookmark':
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector']);
-      break;
-    case 'admin_order':
-      $fid = substr( $rule['value'], 0, -1 );
-      $ord = substr( $rule['value'], -1 );
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $SORTORDER_TYPES[$ord]);
-      break;
-    case 'admin_search':
-      $pos = strpos($rule['value'],':');
-      $fid = substr($rule['value'], 0, $pos);
-      $val = substr($rule['value'], $pos+1);
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $val);
-      break;
-    case 'hide':
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name']);
-      break;
-    case 'fill':
-    case 'hide&fill':
-    case 'predefine':
-      $fnc = ParseFnc(substr($rule['value'],2));  // all default should have fnc:param format
-      PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name'],
-                   $INPUT_DEFAULT_TYPES[$fnc['fnc']], $fnc['param'],
-                   ($rule['value'][0] == '1')? 'HTML' : "" );
-      break;
-  }
+    switch($prop) {
+        case 'input_view':
+        case 'listlen':
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], "", $rule['value']);
+            break;
+        case 'bookmark':
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector']);
+            break;
+        case 'admin_order':
+            $fid = substr( $rule['value'], 0, -1 );
+            $ord = substr( $rule['value'], -1 );
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $SORTORDER_TYPES[$ord]);
+            break;
+        case 'admin_search':
+            $pos = strpos($rule['value'],':');
+            $fid = substr($rule['value'], 0, $pos);
+            $val = substr($rule['value'], $pos+1);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $val);
+            break;
+        case 'hide':
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name']);
+            break;
+        case 'fill':
+        case 'hide&fill':
+        case 'predefine':
+            $fnc = ParseFnc(substr($rule['value'],2));  // all default should have fnc:param format
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$rule['selector']]['name'],
+                $INPUT_DEFAULT_TYPES[$fnc['fnc']], $fnc['param'],
+                ($rule['value'][0] == '1')? 'HTML' : "" );
+            break;
+    }
 }
 
+/** Prints one Rule
+ *  @param $n       rule row number
+ *  @param $rule    id of rule as in $PROPERTY_TYPES
+ *  @param $sfld    bool - should we show field selectbox?
+ *  @param $func    bool - should we show function selectbox?
+ *  @param $func    bool - should we show function parameter input field?
+ *  @param $func    bool - should we show html chackbox?
+ */
 function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
-  global $PROPERTY_TYPES, $lookup_fields, $SORTORDER_TYPES, $fields;
-  echo "<tr class=tabtxt>
-         <td>". $PROPERTY_TYPES[$rule]. "<input type=hidden name=prop$n value=$rule></td>
-         <td>";
-  if ($sfld)
-    FrmSelectEasy("fld$n", $lookup_fields, "");
-   else
-    echo "&nbsp;";
-  echo " </td>
-         <td>";
-  if ($func)
-    FrmSelectEasy("fnc$n", $func, "");
-   else
-    echo "&nbsp;";
-  echo " </td>
-         <td>". ($sparam ? "<input type=text name=param$n size=20>" : "&nbsp;"). "</td>
-         <td>". ($shtml  ? "<input type=checkbox name=html$n>" : "&nbsp;"). "</td>
-         <td><a href=\"javascript:addrule($n)\">". _m("Add") ."</a></td></tr>";
+    global $PROPERTY_TYPES, $lookup_fields, $SORTORDER_TYPES, $fields;
+    echo "<tr class=tabtxt>
+           <td>". $PROPERTY_TYPES[$rule]. "<input type=hidden name=prop$n value=$rule></td>
+           <td>";
+    if ($sfld) {
+        FrmSelectEasy("fld$n", $lookup_fields, "");
+    } else {
+        echo "&nbsp;";
+    }
+    echo " </td>
+           <td>";
+    if ($func) {
+        FrmSelectEasy("fnc$n", $func, "");
+    } else {
+        echo "&nbsp;";
+    }
+    echo " </td>
+    <td>". ($sparam ? "<input type=text name=param$n size=20>" : "&nbsp;"). "</td>
+    <td>". ($shtml  ? "<input type=checkbox name=html$n>" : "&nbsp;"). "</td>
+    <td><a href=\"javascript:addrule($n)\">". _m("Add") ."</a></td></tr>
+    <tr>
+      <td class=\"tabhlp\">&nbsp;</td>
+      <td class=\"tabhlp\" colspan=\"5\">$desc</td>
+    </tr>";
 }
 
 ?>
