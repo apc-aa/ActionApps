@@ -13,6 +13,12 @@
 08/29/05 - Readers from Reader Management slice could became AA users (now also
 (honzam)   on SQL permissions perm_sql.php3 - for LDAP permissions it worked
            from 02/16/04)
+           Database structure for SQL permissions is slightly modified in order
+           we can store Reader Slice permissions as well. You can run
+           sql_update.php3 script or you just change definition of two columns
+           in the database:
+               membership.memberid change from INT(11) to CHAR(32)
+               perms.userid        change from INT(11) to CHAR(32)
 08/26/05 - uploaded images can now be resized also exactly to specified
 (brazda)   size (e.g. square). Image is resized and croped if needed from
            the center of original image. It can be set-up in parameters of

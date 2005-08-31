@@ -529,7 +529,7 @@ $tablelist = array(   'active_sessions' => "(
                       )",
                       'membership' => "(
                           groupid int(11) NOT NULL default '0',
-                          memberid int(11) NOT NULL default '0',
+                          memberid char(32) NOT NULL default '0',
                           last_mod timestamp(14) NOT NULL,
                           PRIMARY KEY  (groupid,memberid),
                           KEY memberid (memberid)
@@ -618,7 +618,7 @@ $tablelist = array(   'active_sessions' => "(
                       'perms' => "(
                           object_type char(30) NOT NULL default '',
                           objectid char(32) NOT NULL default '',
-                          userid int(11) NOT NULL default '0',
+                          userid char(32) NOT NULL default '0',
                           perm char(32) NOT NULL default '',
                           last_mod timestamp(14) NOT NULL,
                           PRIMARY KEY  (objectid,userid,object_type),
