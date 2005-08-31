@@ -146,123 +146,128 @@ $perms_roles_modules = array(
 
 
 
-// replaces roles with apropriate perms
-// substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
+/** Replaces roles with apropriate perms
+ *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
+ */
 function ResolvePerms($perms) {
-  global $perms_roles;
+    global $perms_roles;
 
-  reset($perms_roles);
-  while ( list(, $arr) = each($perms_roles))
-    $perms = str_replace($arr['id'], $arr['perm'], $perms);
-  return $perms;
+    foreach ($perms_roles as $arr) {
+        $perms = str_replace($arr['id'], $arr['perm'], $perms);
+    }
+    return $perms;
 }
 
-// save all permissions for specified user to session variable
+/** Save all permissions for specified user to session variable */
 function CachePermissions($user_id) {
-  global $permission_uid, $permission_to, $sess,
-         $perms_roles, $r_superuser;
+    global $permission_uid, $permission_to, $sess, $perms_roles, $r_superuser;
 
-  $sess->register(permission_uid);
-  $sess->register(permission_to);
-  $sess->register(r_superuser);
+    $sess->register('permission_uid');
+    $sess->register('permission_to');
+    $sess->register('r_superuser');
 
-  $permission_uid = $user_id;
-  $permission_to["slice"] = GetIDPerms ($permission_uid, "slice");
-  $permission_to["aa"] = GetIDPerms ($permission_uid, "aa");     // aa is parent of all slices
-  if ( !is_array($permission_to["slice"]) )  //convert to arrays
-    $permission_to["slice"] = array();
-  if ( !is_array($permission_to["aa"]) )
-    $permission_to["aa"] = array();
+    $permission_uid         = $user_id;
+    $permission_to["slice"] = GetIDPerms($permission_uid, "slice");
+    $permission_to["aa"]    = GetIDPerms($permission_uid, "aa");     // aa is parent of all slices
 
-  // Resolve all permission (convert roles into perms)
-  reset($permission_to["slice"]);
-  while ( list($key,$val) = each($permission_to["slice"]) )
-    $permission_to["slice"][$key] = ResolvePerms($val);
+    if (!is_array($permission_to["slice"])) { // convert to arrays
+        $permission_to["slice"] = array();
+    }
+    if (!is_array($permission_to["aa"])) {
+        $permission_to["aa"] = array();
+    }
 
-  reset($permission_to["aa"]);
-  while ( list($key,$val) = each($permission_to["aa"]) ) {
-    if ( IsPerm($val, $perms_roles['SUPER']['id']) )
-      $r_superuser[$key] = true;
-    $permission_to["aa"][$key] = ResolvePerms($val);
-  }
+    // Resolve all permission (convert roles into perms)
+    foreach ($permission_to["slice"] as $key => $val) {
+        $permission_to["slice"][$key] = ResolvePerms($val);
+    }
+
+    foreach ($permission_to["aa"] as $key => $val) {
+        if ( IsPerm($val, $perms_roles['SUPER']['id']) ) {
+            $r_superuser[$key] = true;
+        }
+        $permission_to["aa"][$key] = ResolvePerms($val);
+    }
 }
 
-// function check, if specified $perm is in $perms list
+/** Check, if specified $perm is in $perms list */
 function IsPerm($perms, $perm){
-  if ( !$perms || !$perm )
-    return false;
-  return strstr($perms,$perm);
+    return ( !$perms || !$perm ) ? false : strstr($perms,$perm);
 }
 
-// Check if user has specified permissions
+/** Check if user has specified permissions */
 function CheckPerms( $user_id, $objType, $objID, $perm) {
-  global $permission_uid, $permission_to;
-  trace("+","CheckPerms");
-  if ($permission_uid != $user_id)
-    CachePermissions($user_id);
+    global $permission_uid, $permission_to;
+    trace("+","CheckPerms");
+    if ($permission_uid != $user_id) {
+        CachePermissions($user_id);
+    }
 
-  switch($objType) {
-    case "aa":
-      $ret = IsPerm($permission_to["aa"][$objID], $perm);
-      trace("-");
-      return($ret);
-    case "slice":
-//huhl("XYZZY","pc209",$permission_to,$perm); exit;
-      $ret = IsPerm(JoinAA_SlicePerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
-      trace("-");
-      return($ret);
-    default: trace("-"); return false;
-  }
+    switch($objType) {
+        case "aa":
+            $ret = IsPerm($permission_to["aa"][$objID], $perm);
+            trace("-");
+            return($ret);
+        case "slice":
+            $ret = IsPerm(JoinAA_SlicePerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
+            trace("-");
+            return($ret);
+        default: trace("-"); return false;
+    }
 }
 
-// Returns users's permissions to specified slice
-// if $whole is true, then consider membership in groups
+/** Returns users's permissions to specified slice
+ *  if $whole is true, then consider membership in groups
+ */
 function GetSlicePerms( $user_id, $objID, $whole=true) {
-  $slice_perms = GetIDPerms ($user_id, "slice", ($whole ? 0 : 1));
-  $aa_perms = GetIDPerms ($user_id, "aa", ($whole ? 0 : 1));
-  return JoinAA_SlicePerm($slice_perms[$objID], $aa_perms[AA_ID]);
+    $slice_perms = GetIDPerms($user_id, "slice", ($whole ? 0 : 1));
+    $aa_perms    = GetIDPerms($user_id, "aa",    ($whole ? 0 : 1));
+    return JoinAA_SlicePerm($slice_perms[$objID], $aa_perms[AA_ID]);
 }
 
-// function returns "E" if both permission are equal, "G" if perms1
-//  are more powerfull than perm2, "L" if perm2 are more powerful than perm1
+/** Returns "E" if both permission are equal, "G" if perms1
+ *  are more powerfull than perm2, "L" if perm2 are more powerful than perm1
+ */
 function ComparePerms($perms1, $perms2) {
-  $perms1 = ResolvePerms($perms1);
-  $perms2 = ResolvePerms($perms2);
+    $perms1 = ResolvePerms($perms1);
+    $perms2 = ResolvePerms($perms2);
 
-  if ( strlen($perms1) == strspn($perms1, $perms2) ) {
-    if ( strlen($perms2) == strspn($perms2, $perms1) )
-      return "E";       // perms are equal
-     else
-      return "L";
-  } else
-    return "G";
+    if (strlen($perms1) == strspn($perms1, $perms2)) {
+        // perms are equal ?
+        return (strlen($perms2) == strspn($perms2, $perms1)) ? 'E' : 'L';
+    }
+    return 'G';
 }
 
-// Resolves precedence issues between slice-specific permissions
-// and global access rigths (rights to object aa).
-// Slice-specific perms take precedence except the SUPER access level
+/** Resolves precedence issues between slice-specific permissions
+ * and global access rigths (rights to object aa).
+ * Slice-specific perms take precedence except the SUPER access level
+ */
 function JoinAA_SlicePerm($slice_perm, $aa_perm) {
-  global $perms_roles;
-  if (ComparePerms($aa_perm, $perms_roles["SUPER"]['perm'])=="E") {
-    return $aa_perm;
-  } else {
-    return ($slice_perm ? $slice_perm : $aa_perm);
-  }
+    global $perms_roles;
+    if (ComparePerms($aa_perm, $perms_roles["SUPER"]['perm']) == "E") {
+        return $aa_perm;
+    } else {
+        return ($slice_perm ? $slice_perm : $aa_perm);
+    }
 }
 
 function GetUserSlices( $user_id = "current") {
-  global $permission_uid, $permission_to, $auth;
-  if ($GLOBALS[debugpermissions]) huhl("GetUserSlices:pu=",$permission_uid," pt=",$permission_to);
-  if ($user_id == "current")
-    $user_id = $auth->auth ["uid"];
+    global $permission_uid, $permission_to, $auth;
+    if ($GLOBALS['debugpermissions']) huhl("GetUserSlices:pu=",$permission_uid," pt=",$permission_to);
+    if ($user_id == "current") {
+        $user_id = $auth->auth["uid"];
+    }
 
-  if ($permission_uid != $user_id)
-    CachePermissions($user_id);
-  if ($GLOBALS[debugpermissions] && !$permission_to["aa"][AA_ID]) huhe("Warning: No global permission on this system",AA_ID);
-  if ( IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) )
-    return "all";
+    if ($permission_uid != $user_id) {
+        CachePermissions($user_id);
+    }
+    if ($GLOBALS['debugpermissions'] && !$permission_to["aa"][AA_ID]) huhe("Warning: No global permission on this system",AA_ID);
+    if (IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) ) {
+        return "all";
+    }
 
-  return  $permission_to["slice"];
+    return  $permission_to["slice"];
 }
 
 // shortcut for slice permission checking
@@ -349,16 +354,16 @@ function ChangeCatPermAsIn($category, $template) {
 
     // Delete all old perms
     if ( isset($oldPerms) AND is_array($oldPerms)) {
-        reset($oldPerms);
-        while ( list( $uid, ) = each($oldPerms))
-        DelPerm ($uid, $category_perm_id, 'slice');
+        foreach ($oldPerms as  $uid => $foo ) {
+            DelPerm($uid, $category_perm_id, 'slice');
+        }
     }
 
     // Copy template's permissions
     if ( isset($newPerms) AND is_array($newPerms)) {
-        reset($newPerms);
-        while ( list( $uid, $arr) = each($newPerms))
-        AddPerm ($uid, $category_perm_id, 'slice', $arr['perm']);
+        foreach ($newPerms as  $uid => $arr) {
+            AddPerm($uid, $category_perm_id, 'slice', $arr['perm']);
+        }
     }
 }
 
@@ -366,7 +371,7 @@ function ChangeCatPermAsIn($category, $template) {
 /** Permissions for the on-line file manager
 * (c) Jakub Adamek, Econnect, +-July 2002
 */
-function FilemanPerms ($auth, $slice_id) {
+function FilemanPerms($auth, $slice_id) {
     global $sess, $errcheck;
     // Sets the fileman_dir var:
     global $fileman_dir;
@@ -376,27 +381,28 @@ function FilemanPerms ($auth, $slice_id) {
         if ($errcheck)  huhl("Warning: Calling perm_core without a slice-id defined");
         $perms_ok = false;
     } else {
-      $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
+        $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id='".q_pack_id($slice_id)."'");
 
-      if ($db->num_rows() != 1) { $perms_ok = false; }
-      else {
-        $db->next_record();
-        $fileman_dir = $db->f("fileman_dir");
-        if (IsSuperadmin()) { $perms_ok = true; }
-        else {
-          if (!$fileman_dir) {
-              $perms_ok = false;
-          } else {
+        if ($db->num_rows() != 1) {
             $perms_ok = false;
-            if ($db->f("fileman_access") == "EDITOR"
-              && IfSlPerm(PS_EDIT_ALL_ITEMS))
-              $perms_ok = true;
-            else if ($db->f("fileman_access") == "ADMINISTRATOR"
-              && IfSlPerm(PS_FULLTEXT))
-              $perms_ok = true;
-          }
+        } else {
+            $db->next_record();
+            $fileman_dir = $db->f("fileman_dir");
+            if (IsSuperadmin()) {
+                $perms_ok = true;
+            } else {
+                if (!$fileman_dir) {
+                    $perms_ok = false;
+                } else {
+                    $perms_ok = false;
+                    if ($db->f("fileman_access") == "EDITOR" && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+                        $perms_ok = true;
+                    } elseif ($db->f("fileman_access") == "ADMINISTRATOR" && IfSlPerm(PS_FULLTEXT)) {
+                        $perms_ok = true;
+                    }
+                }
+            }
         }
-      }
     }
     freeDB($db);
     trace("-");
@@ -411,27 +417,27 @@ function FilemanPerms ($auth, $slice_id) {
 * @param $user_id   OPTIONAL, default is current user
 * @return array (email id => description)
 */
-function GetUserEmails ($type = "", $user_id = "current") {
-    global $auth, $db;
-    if ($user_id == "current")
+function GetUserEmails($type = "", $user_id = "current") {
+    global $auth;
+    if ($user_id == "current") {
         $user_id = $auth->auth["uid"];
-    $slices = GetUserSlices ($user_id);
-    $where = "WHERE (1=1)";
-    if ($type) $where .= " AND type='$type'";
-    if ($slices == "all")
+    }
+    $slices = GetUserSlices($user_id);
+    $where  = "WHERE (1=1)";
+    if ($type) {
+        $where .= " AND type='$type'";
+    }
+    if ($slices == "all") {
         ;
-    else if (!is_array($slices) || count ($slices) == 0)
-        return array ();
-    else {
-        reset ($slices);
-        while (list ($slice) = each ($slices))
-            $slice_ids[] = q_pack_id ($slice);
+    } elseif (!is_array($slices) || count ($slices) == 0) {
+        return array();
+    } else {
+        foreach ($slices as $slice => $foo) {
+            $slice_ids[] = q_pack_id($slice);
+        }
         $where .= " AND owner_module_id IN ('".join ("','", $slice_ids)."')";
     }
-    $db->query("SELECT * FROM email ".$where);
-    while ($db->next_record())
-        $retval[$db->f("id")] = $db->f("description");
-    return $retval;
+    return GetTable2Array("SELECT id, description FROM email $where", 'id', 'description');
 }
 
 /**
@@ -443,8 +449,9 @@ function GetUserEmails ($type = "", $user_id = "current") {
  *  to database)
  */
 function perm_username( $username ) {
-    if ( PERM_LIB != 'ldap' )
+    if ( PERM_LIB != 'ldap' ) {
         return $username;
+    }
     $begin = strpos($username, '=');
     $end   = strpos($username, ',');
     if ( $username == '9999999999' ) return "anonym";
@@ -460,41 +467,49 @@ require_once $GLOBALS['AA_INC_PATH'] ."item_content.php3";  // for ItemContent c
 *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
 */
 function IsReadernameFree($username) {
-    $db = getDB();
-    $SQL = "SELECT content.text FROM content
-            INNER JOIN item ON content.item_id = item.id
-            INNER JOIN slice ON item.slice_id = slice.id
-            WHERE content.field_id='".FIELDID_USERNAME."'
-            AND slice.type='ReaderManagement'
-            AND content.text='$username'";
-    $db->query($SQL);
-    $retval = ! $db->next_record();
-    freeDB($db);
-    return $retval;
+    // search not only Active bin, but also Holding bin, Pending, ...
+    return ReaderName2Id($username, 'ALL') ? false : true;
 }
 
+/** Search all Reader slices for $username and check if tha password is correct
+ *  Returns ID of the user (item ID of the user in Reader slice, in this case)
+ */
 function AuthenticateReaderUsername($username, $password) {
-    if ( !$username ) return false;
-    $user_info = GetAuthData( $username );
-    if (  !$user_info->is_empty() AND
-          ($user_info->getValue(FIELDID_PASSWORD) == crypt($password, 'xx'))) {
-         return $username;   // user_id is the same as username for Readers
+    if ( !$username ) {
+        return false;
+    }
+    $user_id   = ReaderName2Id($username);
+    $user_info = GetAuthData( $user_id );
+    if ( !$user_info->is_empty() AND ($user_info->getValue(FIELDID_PASSWORD) == crypt($password, 'xx'))) {
+        // user id is the id of the item in the Reader Management slice
+        return $user_id;
     }
     return false;
 }
 
+/** Tries to find item id for the username in the Reader slices
+ *  You can search all users or just the active (default)
+ */
+function ReaderName2Id($username, $restrict = 'ACTIVE') {
+    // Prepare for calling QueryZIDs()
+
+    // create fields array - USERNAME field is enough
+    $fields[FIELDID_USERNAME] = array( 'in_item_tbl' => false, 'text_stored' => true );
+    $conds[] = array( FIELDID_USERNAME => $username );
+    $slices  = getReaderSlices();
+
+    // get item id of current user
+    $zid = QueryZIDs($fields, '', $conds, '', '', 'ACTIVE', $slices, 0, false, '=' );
+    return $zid->longids(0);
+}
+
 /** Returns array of all - not deleted - Reader slices */
 function getReaderSlices() {
-    $db = getDB();
-    $db->tquery("SELECT module.id FROM slice,module
-                  WHERE slice.type = 'ReaderManagement'
-                    AND slice.id   = module.id
-                    AND module.deleted < '1'");
-    while ($db->next_record()) {
-        $slices[] = unpack_id128($db->f('id'));
-    }
-    freeDB($db);
-    return $slices;
+    $SQL = "SELECT module.id FROM slice, module
+             WHERE slice.type = 'ReaderManagement'
+               AND slice.id   = module.id
+               AND module.deleted < '1'";
+    return GetTable2Array($SQL, '', 'unpack:id');
 }
 
 /** return list of RM slices which matches the pattern */
@@ -512,27 +527,27 @@ function FindReaderGroups($pattern) {
 }
 
 /** Fills content array for current loged user or specified user */
-function GetAuthData( $username = false ) {
+function GetAuthData( $user_id = false ) {
     global $auth;
-    if ( !$username ) {
-        $username = get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uid"]);
+    if ( !$user_id ) {
+        if ( $_SERVER['PHP_AUTH_USER'] ) {
+           $user_id = ReaderName2Id($_SERVER['PHP_AUTH_USER']);
+        } else {
+           $user_id = (guesstype($auth->auth["uid"], true) == 'l') ? $auth->auth["uid"] : false;
+        }
     }
-    // create fields array - USERNAME field is enough
-    $fields[FIELDID_USERNAME] = array( 'in_item_tbl' => false,
-                                       'text_stored' => true );
-    $conds[] = array( FIELDID_USERNAME => $username );
-    $slices = getReaderSlices();
-
-    // get item id of current user
-    $zid = QueryZIDs($fields, '', $conds, '', '', 'ACTIVE', $slices, 0, false, '=' );
-    return new ItemContent($zid);
+    return new ItemContent($user_id);
 }
 
 /** returns basic information on user grabed from any Reader Management slice */
 function GetReaderIDsInfo($user_id) {
-    if ( !$user_id ) return false;
-    $user_info = GetAuthData( $user_id );
-    if ( $user_info->is_empty() ) return false;
+    if ( !$user_id ) {
+        return false;
+    }
+    $user_info = GetAuthData($user_id);
+    if ($user_info->is_empty()) {
+        return false;
+    }
     $res['type'] = 'Reader';
     $res['name'] = $user_info->getValue(FIELDID_FIRST_NAME)." ".$user_info->getValue(FIELDID_LAST_NAME);
     $res['mail'] = $user_info->getValue(FIELDID_EMAIL);
@@ -541,8 +556,10 @@ function GetReaderIDsInfo($user_id) {
 
 /** returns basic information on user grabed from any Reader Management slice */
 function GetReaderGroupIDsInfo($rm_id) {
-    if ( !$rm_id ) return false;
-    $slice = new slice($rm_id);
+    if ( !$rm_id ) {
+        return false;
+    }
+    $slice       = new slice($rm_id);
     $res['type'] = 'ReaderGroup';
     $res['name'] = $slice->getfield('name');
     return $res;
@@ -550,15 +567,16 @@ function GetReaderGroupIDsInfo($rm_id) {
 
 /** return id of group (=Reader Management slice) in which is the user member */
 function GetReaderMembership($user_id) {
-    if ( !$user_id ) return false;
+    if (!$user_id) {
+        return false;
+    }
     $user_info = GetAuthData( $user_id );
-    if ( $user_info->is_empty() ) return false;
+    if ($user_info->is_empty()) {
+        return false;
+    }
+
     // we use unpacked slice id as id of group for RM slices
     return array($user_info->getSliceID());
 }
-
-
-
-
 
 ?>
