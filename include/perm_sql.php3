@@ -39,9 +39,17 @@ users        membership     perms
 
 // ----------------------------- QUERY -----------------------------------
 
-// returns uid if user is authenticated, else false.
+/** Returns uid if user is authentificied, else false. */
 function AuthenticateUsername($username, $password, $flags = 0) {
-    $db  = new DB_AA;
+
+    // try to authenticate user in LDAP
+    $sqluseruid = AuthenticateSqlUsername($username, $password);
+    return  $sqluseruid ? $sqluseruid : AuthenticateReaderUsername($username, $password);
+}
+
+// returns uid if user is authenticated, else false.
+function AuthenticateSqlUsername($username, $password, $flags = 0) {
+    $db = new DB_AA;
     $id = false; $i = 0;
     // build and execute a query for $username
 
@@ -49,11 +57,11 @@ function AuthenticateUsername($username, $password, $flags = 0) {
     // in the future, if it is like @igc.org, it should query an external
     // authentication source, like an LDAP server for @igc.org
     if ( $num = strstr($username, "@") ){
-        $sql=sprintf("SELECT id, uid, password FROM users WHERE mail ='%s'", $username);
+        $SQL = sprintf("SELECT id, uid, password FROM users WHERE mail ='%s'", $username);
     } else {
-        $sql=sprintf("SELECT id, uid, password FROM users WHERE uid ='%s'", $username);
+        $SQL = sprintf("SELECT id, uid, password FROM users WHERE uid ='%s'", $username);
     }
-    $db->query( $sql );
+    $db->query( $SQL );
     $db->next_record();
     $db_id  = $db->f('id');
     $bd_uid = $db->f('uid');
@@ -110,10 +118,10 @@ function AuthenticateUsername($username, $password, $flags = 0) {
 }
 
 // returns array(uid, name, description, owner)
-function GetGroup ($user_id, $flags = 0) {
+function GetGroup($user_id, $flags = 0) {
     $db  = new DB_AA;
-    $sql = sprintf( "SELECT id, name, description FROM users WHERE id = '%s'", $user_id);
-    $db->query( $sql );
+    $SQL = sprintf( "SELECT id, name, description FROM users WHERE id = '%s'", $user_id);
+    $db->query( $SQL );
 
     // TODO: something about a sizelimit??
     if ($db->next_record()) {
@@ -125,16 +133,18 @@ function GetGroup ($user_id, $flags = 0) {
 }
 
 // function returns list of groups which corresponds to mask $pattern
-function FindGroups ($pattern, $flags = 0) {
+function FindGroups($pattern, $flags = 0) {
+
     $db  = new DB_AA;
+    $by_id = FindReaderGroups($pattern);
 
     // older code uses _m("Group"), the new one uses 'Group' or 'User' as keyword
-    $sql = sprintf( "SELECT id, name
+    $SQL = sprintf( "SELECT id, name
                        FROM users
                       WHERE name LIKE '%s%%' AND (type = '%s' OR type = '%s')",
                     addslashes($pattern), _m("Group"), "Group");
 
-    $db->query( $sql );
+    $db->query( $SQL );
     // TODO: something about a sizelimit??
     $db->query($SQL);
     while ($db->next_record()) {
@@ -159,15 +169,15 @@ function FindUsers($pattern, $flags = 0) {
     $db  = new DB_AA;
     $pattern = addslashes($pattern);
 
-    $sql = sprintf( "
+    $SQL = sprintf( "
        SELECT id, mail, givenname, sn
          FROM users
         WHERE ( name  LIKE '%s%%' OR mail LIKE '%s%%' OR uid LIKE '%s%%') AND
               ( type = '%s' OR type = '%s')",
               $pattern, $pattern, $pattern, _m("User"), "User");
-    $db->query( $sql );
+    $db->query( $SQL );
     // TODO: something about a sizelimit??
-    $db->query($sql);
+    $db->query($SQL);
     while ($db->next_record()) {
         $by_id[$db->f("id")] = array("name"=>($db->f("givenname")." ".$db->f("sn")),
                                      "mail"=>$db->f("mail"));
@@ -177,19 +187,18 @@ function FindUsers($pattern, $flags = 0) {
 
 // TODO : make this recursive friendly?
 
-function GetGroupMembers ($group_id, $flags = 0) {
+function GetGroupMembers($group_id, $flags = 0) {
     $db  = new DB_AA;
 
     settype($group_id,"integer");
-    $sql = sprintf("SELECT memberid as id
+    $SQL = sprintf("SELECT memberid as id
                       FROM membership
                      WHERE groupid = %s", $group_id);
-    $db->query( $sql );
+    $db->query( $SQL );
     // TODO: something about a sizelimit??
     while($db->next_record()){
-        $id   = $db->f('id');
-        $info = GetIDsInfo($id);
-        $by_id[$id] = $info;
+        $id         = $db->f('id');
+        $by_id[$id] = GetIDsInfo($id);
     }
 
     return $by_id;
@@ -199,6 +208,8 @@ function GetGroupMembers ($group_id, $flags = 0) {
 // $flags - use to obey group in groups?
 function GetMembership($id, $flags = 0) {
     $db  = new DB_AA;
+
+    $all_groups = IsUserReader($id) ? GetReaderMembership($id) : array();
 
     $last_groups[] = $id;
     //  $all_groups = $last_groups;
@@ -210,9 +221,9 @@ function GetMembership($id, $flags = 0) {
         }
 
         // generate and execute search query
-        $where = "memberid in (" . join (",", $last_groups) . ")";
-        $sql   = "select groupid as id from membership WHERE $where";
-        $db->query( $sql );
+        $where = "memberid in ('" . join ("','", $last_groups) . "')";
+        $SQL   = "select groupid as id from membership WHERE $where";
+        $db->query( $SQL );
 
         unset($last_groups);  //get deeper groups to last_groups and groups
         while($db->next_record()) {
@@ -226,6 +237,10 @@ function GetMembership($id, $flags = 0) {
 
     // I _think_ this is a list of groupids.
     return $all_groups;
+}
+
+function IsUserReader($user_id) {
+    return (guesstype($user_id, true) == 'l');
 }
 
 
@@ -242,7 +257,7 @@ $arr["uid=honzam,dc=ecn,dc=apc,dc=org"][perm] == 2
 function GetObjectsPerms($objectID, $objectType, $flags = 0) {
     $db  = new DB_AA;
 
-    $sql= sprintf(
+    $SQL = sprintf(
           "SELECT id, type, name, mail, perm
              FROM perms, users
             WHERE object_type = '%s' AND
@@ -250,7 +265,7 @@ function GetObjectsPerms($objectID, $objectType, $flags = 0) {
                   userid      = id",
            $objectType, $objectID);
 
-    $db->query( $sql );
+    $db->query( $SQL );
 
     while ( $db->next_record() ) {
         $by_id[$db->f('id')] = array( 'id'   => $db->f('id'),
@@ -282,11 +297,11 @@ function GetIDPerms($id, $objectType, $flags = 0) {
         $gsql .= sprintf("OR userid = '%s' ", $groups[$i]);
     }
 
-    $sql=sprintf("SELECT objectid as id, perm from perms
+    $SQL=sprintf("SELECT objectid as id, perm from perms
                   WHERE object_type = '%s' AND (userid = '%s' %s)",
                   $objectType, $id, $gsql);
 
-    $sth = $db->query( $sql );
+    $sth = $db->query( $SQL );
     if (!$sth) return false;
 
     $user_perms = array();
@@ -330,8 +345,8 @@ function AddUser($user, $flags = 0) {
 
     // insert into users
 
-    $sql = A2sql_insert('users',$array);
-    $db->query($sql);
+    $SQL = A2sql_insert('users',$array);
+    $db->query($SQL);
     $id = get_last_insert_id($db, 'users');
 
     return $id;
@@ -375,18 +390,18 @@ function ChangeUser($user, $flags = 0) {
     }
 
     # alter users
-    $sql = A2sql_update('users','id', $array);
-    $db->query($sql);
+    $SQL = A2sql_update('users','id', $array);
+    $db->query($SQL);
     return true;
 }
 
 // returns array(uid, login, cn, sn, givenname, array(mail), array(phone))
 function GetUser($user_id, $flags = 0) {
     $db  = new DB_AA;
-    $sql = sprintf( "SELECT uid, sn, givenname, mail
+    $SQL = sprintf( "SELECT uid, sn, givenname, mail
                        FROM users
                       WHERE id = '%s'", $user_id);
-    $db->query( $sql );
+    $db->query( $SQL );
 
     // TODO: something about a sizelimit??
     if ($db->next_record()) {
@@ -413,8 +428,8 @@ function AddGroup($group, $flags = 0) {
     $array["description"] = $group["description"];
     $array["password"]    = 'crypt will never return this';
 
-    $sql = A2sql_insert('users',$array);
-    $db->query($sql);
+    $SQL = A2sql_insert('users',$array);
+    $db->query($SQL);
     $id = get_last_insert_id($db, 'users');
 
     return $id;
@@ -452,8 +467,8 @@ function ChangeGroup($group, $flags = 0) {
     $array["name"]        = $group["name"];
     $array["description"] = $group["description"];
 
-    $sql = A2sql_update('users','id',$array);
-    $db->query($sql);
+    $SQL = A2sql_update('users','id',$array);
+    $db->query($SQL);
     return true;
 }
 
@@ -461,20 +476,20 @@ function ChangeGroup($group, $flags = 0) {
 
 function AddGroupMember($group_id, $id, $flags = 0) {
     $db  = new DB_AA;
-    $sql = sprintf( "DELETE FROM membership WHERE groupid = '%s' AND memberid = '%s'",
+    $SQL = sprintf( "DELETE FROM membership WHERE groupid = '%s' AND memberid = '%s'",
                      $group_id, $id);
-    $db->query( $sql );
-    $sql = sprintf( "INSERT INTO membership (groupid, memberid)
+    $db->query( $SQL );
+    $SQL = sprintf( "INSERT INTO membership (groupid, memberid)
                       VALUES ('%s','%s')", $group_id, $id);
-    $db->query( $sql );
+    $db->query( $SQL );
 }
 
 function DelGroupMember($group_id, $id, $flags = 0) {
     $db  = new DB_AA;
-    $sql = sprintf( "DELETE from membership
+    $SQL = sprintf( "DELETE from membership
                       WHERE groupid = '%s' AND
                             memberid = '%s'", $group_id, $id);
-    $db->query( $sql );
+    $db->query( $SQL );
 }
 
 // ----------------------------- PERMS -----------------------------------
@@ -494,23 +509,23 @@ function DelPermObject($objectID, $objectType, $flags = 0) {
 // append permission to existing object
 function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
     $db  = new DB_AA;
-    $sql = sprintf( "DELETE FROM perms WHERE object_type = '%s' AND objectid = '%s' AND userid = '%s'",
+    $SQL = sprintf( "DELETE FROM perms WHERE object_type = '%s' AND objectid = '%s' AND userid = '%s'",
                     $object_type, $objectID, $id);
-    $db->query( $sql );
-    $sql = sprintf( "INSERT INTO perms (object_type, objectid, userid, perm)
+    $db->query( $SQL );
+    $SQL = sprintf( "INSERT INTO perms (object_type, objectid, userid, perm)
                       VALUES ('%s','%s','%s','%s')",
                     $object_type, $objectID, $id, $perm);
-    $db->query( $sql );
+    $db->query( $SQL );
 }
 
 function DelPerm($id, $objectID, $object_type, $flags = 0) {
     $db  = new DB_AA;
-    $sql = sprintf( "DELETE FROM perms
+    $SQL = sprintf( "DELETE FROM perms
                       WHERE userid = '%s'     AND
                             objectid = '%s'   AND
                             object_type = '%s'",
                     $id, $objectID, $object_type);
-    $db->query( $sql );
+    $db->query( $SQL );
 }
 
 function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
@@ -526,11 +541,15 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
 // or false if ID does not exist
 // array("mail => $mail", "name => $cn", "type => "User" : "Group"")
 function GetIDsInfo($id, $ds = "") {
+
+    if ( !$id )              return false;
+    if ( IsUserReader($id) ) return GetReaderIDsInfo($id);
+
     $db  = new DB_AA;
-    $sql = sprintf( "SELECT name, givenname, sn, mail, type
+    $SQL = sprintf( "SELECT name, givenname, sn, mail, type
                        FROM users
                       WHERE id = '%s'", $id);
-    $db->query( $sql );
+    $db->query( $SQL );
     // TODO: something about a sizelimit??
     if ($db->next_record()) {
         $res['type'] = $db->f("type");
