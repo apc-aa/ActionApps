@@ -660,6 +660,7 @@ function GetViewInfo($vid) {
  *                                 'aa_mark' |
  *                                 'aa_fields' |
  *                                 <database_column> |
+ *                                 'unpack:<database_column>' |
  *                                 true
  */
 function GetTable2Array($SQL, $key="id", $values='aa_all') {
@@ -670,6 +671,8 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
             $val = $db->Record;
         } elseif ($values == 'aa_mark') {
             $val = true;
+        } elseif (substr($values,0,7) == 'unpack:') {
+            $val = unpack_id128($db->f(substr($values,7)));
         } elseif (is_string($values) AND isset( $db->Record[$values] )) {
             $val = $db->Record[$values];
         } else {  // true or 'aa_fields'

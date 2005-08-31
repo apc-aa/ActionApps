@@ -37,60 +37,66 @@ require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 require_once $GLOBALS['AA_INC_PATH']."um_util.php3";
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
+if ($cancel) {
+    go_url( $sess->url(self_base() . "index.php3"));
+}
 
 if (!IfSlPerm(PS_NEW_USER)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to create new user"), "admin");
-  exit;
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("No permission to create new user"), "admin");
+    exit;
 }
 
 if ( ($submit_action == "grp_del") AND $selected_group ) {
-  DelGroup( $selected_group );     // default is to delete any references as well
-  go_url( $sess->url($PHP_SELF) );
+    DelGroup( $selected_group );     // default is to delete any references as well
+    go_url( $sess->url($PHP_SELF) );
 }
 
 $sess->register("rgrp");
-if ( $grp OR $GrpSrch )
-  $rgrp = $grp;
+if ( $grp OR $GrpSrch ) {
+    $rgrp = $grp;
+}
 
-if ( $grp_new )
-  $rgrp = $selected_group = "";
+if ( $grp_new ) {
+    $rgrp = $selected_group = "";
+}
 
 $groups  = GetFiltered("G", $rgrp, _m("Too much groups found."), _m("No groups found"));   // get list of users
 if ( $GrpSrch ) {
-  reset( $groups );
-  $selected_group = key($groups);
-  $grp_edit = true;
+    reset( $groups );
+    $selected_group = key($groups);
+    $grp_edit       = true;
 }
 
 $all_users = GetFiltered("U", $usr1_flt, _m("Too many users or groups found."), _m("No user (group) found"));
 
 if ( $selected_group ) {
-  if ( $selected_group != "n" )  // none group selected
-    $group_users = GetGroupMembers($selected_group);   // get list of users and groups right under $selected_group
-  if ( !is_array($group_users) )
-    $sel_users["n"][name] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
-   else
-    $sel_users = $group_users;
+    if ( $selected_group != "n" ) { // none group selected
+        // get list of users and groups right under $selected_group
+        $group_users = GetGroupMembers($selected_group);
+    }
+    if ( !is_array($group_users) ) {
+        $sel_users["n"]['name'] = (( $group_users == "too much" ) ? _m("Too many users or groups found.") : "");
+    } else {
+        $sel_users = $group_users;
+    }
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$varset = new Cvarset();
+$varset      = new Cvarset();
 
 
 // Process submited form -------------------------------------------------------
 
 if ( $add_submit OR ($submit_action == "update_submit")) {
 
-  // all the actions are in following require_once (we reuse this part of code for
-  // slice wizard ...
-  require_once $GLOBALS['AA_INC_PATH']."um_gedit.php3";
+    // all the actions are in following require_once (we reuse this part of code for
+    // slice wizard ...
+    require_once $GLOBALS['AA_INC_PATH']."um_gedit.php3";
 
-  if (count($err) <= 1) {
-    $Msg = MsgOK(_m("Group successfully added to permission system"));
-    go_url( get_url($sess->url($PHP_SELF), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
-  }
+    if (count($err) <= 1) {
+        $Msg = MsgOK(_m("Group successfully added to permission system"));
+        go_url( get_url($sess->url($PHP_SELF), 'grp_edit=1&selected_group='. urlencode($selected_group)), $Msg);
+    }
 }
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -113,8 +119,8 @@ function RealyDelete() {
   }
 }
 
-  // function changes content of role listbox for new module, when user selects another module to be added
-  function SetRole(no) {
+// function changes content of role listbox for new module, when user selects another module to be added
+function SetRole(no) {
     var idx=document.f.elements['new_module['+no+']'].selectedIndex;
     var roles;
     // which roles is defined for the module
@@ -127,25 +133,21 @@ function RealyDelete() {
     for ( i=0; i<roles.length ; i++) {
       document.f.elements['new_module_role['+no+']'].options[i] = new Option(roles[i], roles[i])
     }
-  }
+}
 // -->
 </SCRIPT>
 </HEAD>
 
 <?php
-  require_once menu_include();   //show navigation column depending on $show
-  showMenu ($aamenus, "aaadmin",$usr_new? "g_new" : "g_edit");
+require_once menu_include();   //show navigation column depending on $show
+showMenu($aamenus, "aaadmin",$usr_new? "g_new" : "g_edit");
 
-  echo "<H1><B>". ( $grp_new ? _m("New Group") : _m("Edit Group") )."</B></H1>";
-  PrintArray($err);
-  echo $Msg;
+echo "<H1><B>". ( $grp_new ? _m("New Group") : _m("Edit Group") )."</B></H1>";
+PrintArray($err);
+echo $Msg;
 
-  FrmTabCaption(_m("Groups"));
+FrmTabCaption(_m("Groups"));
 
-  /*
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align=center>
- <tr><td class=tabtit><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
- */
 ?>
  <tr><td>
    <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
@@ -180,32 +182,32 @@ FrmTabSeparator("");
 FrmTabEnd();
 
 do {
-  if ( $grp_new OR ($grp_edit AND ($selected_group!="n")) ) {
-    if ($grp_edit AND !($submit_action == "update_submit")) {
-      if ( !is_array($group_data = GetGroup($selected_group)))
-        break;
-      $group_name = $group_data[name];
-      $group_description = $group_data[description];
-      $aa_users = GetObjectsPerms(AA_ID, "aa");
-      if (strstr($aa_users[$selected_group]["perm"], $perms_roles["SUPER"]['id'])) {
-    $group_super = true;
-      }
+    if ( $grp_new OR ($grp_edit AND ($selected_group!="n")) ) {
+        if ($grp_edit AND !($submit_action == "update_submit")) {
+            if ( !is_array($group_data = GetGroup($selected_group))) {
+                break;
+            }
+            $group_name        = $group_data['name'];
+            $group_description = $group_data['description'];
+            $aa_users          = GetObjectsPerms(AA_ID, "aa");
+            if (strstr($aa_users[$selected_group]["perm"], $perms_roles["SUPER"]['id'])) {
+                $group_super   = true;
+            }
+        }
+    } else {
+        HtmlPageEnd();
+        page_close();
+        exit;
     }
-  } else {
-    HtmlPageEnd();
-    page_close();
-    exit;
-  }
 } while (false);
 
-echo "
-<form name=f method=post action=\"".$sess->url($PHP_SELF) ."\">";
+echo "\n<form name=f method=post action=\"".$sess->url($PHP_SELF) ."\">";
 
 echo "<br />";
 if ( $grp_edit OR ($submit_action == "update_submit") ) {
-  FrmTabCaption(_m("Edit group"));
+    FrmTabCaption(_m("Edit group"));
 } else {
-  FrmTabCaption(_m("New group"));
+    FrmTabCaption(_m("New group"));
 }
 ?></b>
 </td>
@@ -234,23 +236,24 @@ $form_buttons["selected_group"] = array("value"=>$selected_group);
 $form_buttons["posted_users"]   = array("value"=>"0");
 $form_buttons["submit_action"]  = array("value"=>"0");
 
-  if ( $grp_edit OR ($submit_action == "update_submit") )
+if ( $grp_edit OR ($submit_action == "update_submit") ) {
     FrmStaticText( _m("Group Id"), $group_data[uid]);
-  FrmInputText("group_name", _m("Name"), $group_name, 50, 50, true);
-  FrmInputText("group_description", _m("Description"), $group_description, 50, 50, false);
-  FrmInputChBox("group_super", _m("Superadmin group"), $group_super, false, "", 1, false);
+}
+FrmInputText("group_name", _m("Name"), $group_name, 50, 50, true);
+FrmInputText("group_description", _m("Description"), $group_description, 50, 50, false);
+FrmInputChBox("group_super", _m("Superadmin group"), $group_super, false, "", 1, false);
 echo '</table></td></tr>';
 
 if ( !$add_submit AND !$grp_new) {
-   FrmTabSeparator(_m("Users"));
+    FrmTabSeparator(_m("Users"));
 
-  echo "
+    echo "
   <tr><td>
   <table width=\"440\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"".COLOR_TABBG."\">";
 
   // User - group membership -----------------------------------------
 
-  echo '<tr><td width=190 align=center>'. _m("All Users") .'</td>
+    echo '<tr><td width=190 align=center>'. _m("All Users") .'</td>
                   <td width=60>&nbsp;</td>
                   <td width=190 align=center>'. _m("Group's Users") .'</td></tr>
         <tr><td><input type=Text name=usr1_flt value="'. safe($usr1_flt) .'">
@@ -259,20 +262,18 @@ if ( !$add_submit AND !$grp_new) {
                   <td>&nbsp;</td></tr>
         <tr><td align="CENTER" valign="TOP">';
               SelectGU_ID("all_users_sel", $all_users, $all_users_sel, "long", $sel_users);
-  echo '    </td>
+    echo '    </td>
             <td><input type="button" VALUE="  >>  " onClick = "MoveSelected(\'document.f.all_users_sel\',\'document.f.sel_users_sel\')" align=center><br><br>
                 <input type="button" VALUE="  <<  " onClick = "MoveSelected(\'document.f.sel_users_sel\',\'document.f.all_users_sel\')" align=center></td>
                   <td align="CENTER" valign="TOP">';
               SelectGU_ID("sel_users_sel", $sel_users, $sel_users_sel, "long");
-  echo '    </td>
+    echo '    </td>
         </tr></table></td></tr>
         ';
-//      </table></td></tr>';
 
   // User - permissions -----------------------------------------
 
   $mod_types = PrintModulePermModificator($selected_group, $form_buttons, $sess, $slice_id);   // shared with um_gedit.php3
-
 }
 
 FrmTabEnd($form_buttons, $sess, $slice_id);
@@ -280,7 +281,7 @@ FrmTabEnd($form_buttons, $sess, $slice_id);
 echo '</FORM>';
 
 if ( !$add_submit AND !$grp_new) {
-  PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
+    PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules);
 }
 
 HtmlPageEnd();

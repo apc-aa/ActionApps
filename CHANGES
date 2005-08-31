@@ -1,3 +1,15 @@
+08/30/05 - new function {compare:<number1>:<number2>} for comparing numbers
+(honzam)   (aka dates): Returns:    'L' if number1 is less than number2,
+                                    'G' if number1 is greater than number2,
+                                    'E' if the numbers are equal.
+           Usage example:
+            {switch({compare:{last_edit.......}:1125481998})L:less:G:more:equal}
+         - some cleanup of the permissions core
+         - user_id for users authenticated from Reader slice is changed
+           from login to more logical and more powerfull item_id
+         - fixes in Reader Management permissions combination with SQL
+           (perm_sql) permissions
+         - some cleanup of the permissions core
 08/29/05 - Readers from Reader Management slice could became AA users (now also
 (honzam)   on SQL permissions perm_sql.php3 - for LDAP permissions it worked
            from 02/16/04)

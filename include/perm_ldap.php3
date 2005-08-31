@@ -452,9 +452,7 @@ function GetGroupMembers($group_id, $flags = 0) {
 function GetMembership($id, $flags = 0) {
     global $aa_default_ldap;
 
-    if ( GetUserType($id) == 'Reader' ) {
-        return GetReaderMembership($id);
-    }
+    $result = IsUserReader($id) ? GetReaderMembership($id) : array();
 
     if ( !($ds=InitLDAP()) ) {
         return false;
@@ -698,97 +696,110 @@ function GetApcAciPerm($str) {
 // or false if ID does not exist
 // array("mail => $mail", "name => $cn", "type => "User" : "Group"")
 function GetIDsInfo($id, $ds = "") {
-  global $aa_default_ldap;
+    global $aa_default_ldap;
 
-  if ( !$id )                              return false;
-  if ( GetUserType($id) == 'Reader' )      return GetReaderIDsInfo($id);
-  if ( GetUserType($id) == 'ReaderGroup' ) return GetReaderGroupIDsInfo($id);
+    if ( !$id )                              return false;
+    if ( IsUserReader($id) )                 return GetReaderIDsInfo($id);
 
-  if ( $ds=="" ) {
-    if ( !($ds=InitLDAP()) )
-      return false;
-  }else
-    $no_ldap_close=true;
+//  Not used right now. This would be used if we allow groups in groups
+//  if ( GetUserType($id) == 'ReaderGroup' ) return GetReaderGroupIDsInfo($id);
 
-  $filter = "(|(objectclass=groupOfNames)(objectclass=inetOrgPerson))";
-  $result = @ldap_read($ds, $id, $filter, array("objectclass","mail","cn"));
-  if (!$result) return false;
-  $entry = ldap_first_entry($ds, $result);
-  $arr   = $entry ? ldap_get_attributes($ds, $entry) : array();
-
-  if ( !is_array($arr["objectclass"]) )   // new LDAP is case sensitive (v3)
-      $arr["objectclass"] = $arr["objectClass"];
-  for ($i=0; $i < $arr["objectclass"]["count"]; $i++) {
-    if (stristr($arr["objectclass"][$i], "groupofnames")) {
-       $res["type"] = "Group";
+    if ( $ds=="" ) {
+        if ( !($ds=InitLDAP()) ) {
+            return false;
+        }
+    } else {
+        $no_ldap_close = true;
     }
-  }
 
-  if (!$res["type"])
-    $res["type"] = "User";
-  $res["name"] = $arr["cn"][0];
-  $res["mail"] = $arr["mail"][0];
+    $filter = "(|(objectclass=groupOfNames)(objectclass=inetOrgPerson))";
+    $result = @ldap_read($ds, $id, $filter, array("objectclass","mail","cn"));
+    if (!$result) {
+        return false;
+    }
+    $entry = ldap_first_entry($ds, $result);
+    $arr   = $entry ? ldap_get_attributes($ds, $entry) : array();
 
-  if ( !$no_ldap_close )
-    ldap_close($ds);
-  return $res;
+    if ( !is_array($arr["objectclass"]) ) {  // new LDAP is case sensitive (v3)
+        $arr["objectclass"] = $arr["objectClass"];
+    }
+    for ($i=0; $i < $arr["objectclass"]["count"]; $i++) {
+        if (stristr($arr["objectclass"][$i], "groupofnames")) {
+            $res["type"] = "Group";
+        }
+    }
+
+    if (!$res["type"]) {
+        $res["type"] = "User";
+    }
+    $res["name"] = $arr["cn"][0];
+    $res["mail"] = $arr["mail"][0];
+
+    if ( !$no_ldap_close ) {
+        ldap_close($ds);
+    }
+    return $res;
+}
+
+/* Not used right now. This would be used if we allow groups in groups
+function GetUserType( $user_id ) {
+    if (substr($user_id,0,4)      == 'uid=') return 'User';
+    if (substr($user_id,0,3)      == 'cn=')  return 'Group';
+    if (guesstype($user_id, true) == 'l')    return 'ReaderGroup';
+    return 'Reader';
+}
+*/
+
+function IsUserReader($user_id) {
+    return ((guesstype($user_id, true) == 'l') AND (substr($user_id,0,4) != 'uid='));
 }
 
 function IsUsernameFree($username) {
-    return ! GetUser("uid=$username,".$LDAPserver['people'])
-        && IsReadernameFree($username);
+    return ! GetUser("uid=$username,".$LDAPserver['people']) && IsReadernameFree($username);
 }
-
-function GetUserType( $user_id ) {
-    if (substr($user_id,0,4) == 'uid=') return 'User';
-    if (substr($user_id,0,3) == 'cn=')  return 'Group';
-    if (guesstype($user_id)  == 'l')    return 'ReaderGroup';
-    return 'Reader';
-}
-
-
 
 /** Try to authenticate user from LDAP
  *  Returns uid if user is authentificied, else false.
  */
 function AuthenticateLDAPUsername($username, $password) {
-  global $aa_ldap_servers, $aa_default_ldap;
-  if (!$username or !$password) {         // no password => anonymous in LDAP
-     return false;
-  }
-
-  $return_val=false;
-  if ($org = strstr($username, "@")) {      // user tries to auth. via e-mail
-    $LDAPserver = WhereToSearch( substr($org,"@"));  // get ldap server for this address
-  } else {
-    $LDAPserver = $aa_default_ldap;
-  }
-
-  $ds = LDAP_Connect($LDAPserver['host'], $LDAPserver['port']);	// connect LDAP server
-  if (!$ds)                  			// not connected
-    return false;
-
-  if ($org = strstr($username, "@")) { // user typed e-mail -> search to get DN
-    $search = "(&(objectclass=inetOrgPerson)(mail=$username))";
-    if (@LDAP_Bind($ds, $LDAPserver['binddn'], $LDAPserver['bindpw'] )) {
-      $r = LDAP_search($ds, $LDAPserver['people'], $search, array(""));
-      $arr = LDAP_get_entries($ds,$r);
-      if ( $arr["count"] > 0 ) {
-        $userdn = $arr[0]["dn"];
-      } else {
-        @LDAP_Close($ds);
+    global $aa_ldap_servers, $aa_default_ldap;
+    if (!$username or !$password) {         // no password => anonymous in LDAP
         return false;
-      }
     }
-  } else {                                    // build DN
-    $userdn = "uid=$username,".$LDAPserver['people'];
-  }
 
-  if (@LDAP_Bind($ds, $userdn, $password)) {  // try to authenticate
-      $return_val = $userdn;
-  }
-  @LDAP_Close($ds);
-  return $return_val;
+    $return_val=false;
+    if ($org = strstr($username, "@")) {      // user tries to auth. via e-mail
+        $LDAPserver = WhereToSearch( substr($org,"@"));  // get ldap server for this address
+    } else {
+        $LDAPserver = $aa_default_ldap;
+    }
+
+    $ds = LDAP_Connect($LDAPserver['host'], $LDAPserver['port']);	// connect LDAP server
+    if (!$ds) {                 			// not connected
+        return false;
+    }
+
+    if ($org = strstr($username, "@")) { // user typed e-mail -> search to get DN
+        $search = "(&(objectclass=inetOrgPerson)(mail=$username))";
+        if (@LDAP_Bind($ds, $LDAPserver['binddn'], $LDAPserver['bindpw'] )) {
+            $r = LDAP_search($ds, $LDAPserver['people'], $search, array(""));
+            $arr = LDAP_get_entries($ds,$r);
+            if ( $arr["count"] > 0 ) {
+                $userdn = $arr[0]["dn"];
+            } else {
+                @LDAP_Close($ds);
+                return false;
+            }
+        }
+    } else {                                    // build DN
+        $userdn = "uid=$username,".$LDAPserver['people'];
+    }
+
+    if (@LDAP_Bind($ds, $userdn, $password)) {  // try to authenticate
+        $return_val = $userdn;
+    }
+    @LDAP_Close($ds);
+    return $return_val;
 }
 
 
