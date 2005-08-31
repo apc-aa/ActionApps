@@ -359,12 +359,12 @@ class itemview {
 
   /** Just wrapper for unaliasWithScroller() without $item parameter */
   function unaliasWithScrollerEasy(&$txt) {
-      // we just need to pass something as item parameter 
+      // we just need to pass something as item parameter
       // in unaliasWithScroller (in order we can use reference, there)
-      $fooparameter = null;    
+      $fooparameter = null;
       return $this->unaliasWithScroller($txt, $fooparameter);
   }
-  
+
   function unaliasWithScroller($txt, &$item) {
       // get HTML code, unalias it and add scroller, if needed
       $level = 0; $maxlevel = 0;
@@ -372,7 +372,7 @@ class itemview {
       if (!$item) {
           $item = new item(null,$this->aliases,null,null,null,$this->parameters);
       }
-      // new_unalias_recurent modifies also $txt - that's why we do not use 
+      // new_unalias_recurent modifies also $txt - that's why we do not use
       // &$txt in function definition
       return new_unalias_recurent($txt,"",$level,$maxlevel,$item,$this,null);
   }

@@ -424,7 +424,6 @@ $nszmmesta = array(
     'Chotìboø' => '09599b24d01f70502928a2b9e0779a05',
     'Bystøice nad Pernštejnem' => 'a05eb1555aa9b5f74e1f24786b5b6899');
 
-
 /** Get List of actions */
 function getActions() {
     $a = array("store","removestring","formatdate", "web", "storeparsemulti","value","string2id", 'nszmstav', 'nszmciselnik', 'nszmmesta', "default");

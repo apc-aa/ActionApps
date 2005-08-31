@@ -2183,7 +2183,7 @@ function getFrmJavascript( $jscode ) {
  *  better to store the js code in the database, assign an ID to this record
  *  (=keystr) and then call it as external file with this ID as parameter
  */
-function getFrmJavacrtiptCached( $jscode, $name ) {
+function getFrmJavascriptCached( $jscode, $name ) {
     global $pagecache;
     $keystr = serialize($jscode);
 
@@ -2207,7 +2207,7 @@ function getFrmCSS( $stylecode ) {
 
 function FrmJavascript( $jscode )  { echo getFrmJavascript( $jscode );  }
 function FrmJavascriptFile( $src ) { echo getFrmJavascriptFile( $src ); }
-function FrmJavacrtiptCached( $jscode, $name ) { echo getFrmJavacrtiptCached( $jscode, $name ); }
+function FrmJavascriptCached( $jscode, $name ) { echo getFrmJavascriptCached( $jscode, $name ); }
 function FrmCSS( $stylecode )      { echo getFrmCSS( $stylecode );      }
 
 /** Returns Javascript for Add / Edit item */

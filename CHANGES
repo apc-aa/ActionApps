@@ -1,3 +1,11 @@
+08/31/05 - fix of no item message - works correctly if you fill 0 in it (zero)
+(honzam) - default inputform view for the slice now could be set not only
+           from default Profile setting page, but also
+           from "Slice Admin" -> "Design - Item Manager" -> "Use special view",
+           which is easier to find for users. Both options are equal (stores it
+           to the profile)
+         - added more description text to discussion view selectbox on
+           "Design - Fulltext" page
 08/30/05 - new function {compare:<number1>:<number2>} for comparing numbers
 (honzam)   (aka dates): Returns:    'L' if number1 is less than number2,
                                     'G' if number1 is greater than number2,

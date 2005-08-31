@@ -333,7 +333,7 @@ class cattree {
         $js .=  '
         downcat = new Array()
         downcat[level] = treeStart // stores path form root to current category';
-        FrmJavacrtiptCached( $js, 'cattree' );
+        FrmJavascriptCached( $js, 'cattree' );
     }
 
 
