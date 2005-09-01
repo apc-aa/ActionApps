@@ -48,6 +48,9 @@ if ($categ OR $category) {
     }
 }
 
+// as_new and $group_id is varname4form()-ed (for easier parameter passing)
+$as_new   = (strlen($as_new) > 1) ? pack_id(substr($as_new,1)) : null;
+$group_id = (strlen($group_id) > 1) ? pack_id(substr($group_id,1)) : null;
 $back_url = ($return_url ? ($fid ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php3");
 
 if ($deleteGroup && $group_id && !$category) {

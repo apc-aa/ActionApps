@@ -136,12 +136,16 @@ if ($update) {
         }
 
         // setting input show function
+
+        // the constants are packed in order it could be easily passed
+        // to another script
+        $input_show_func_c_real = ($input_show_func_c{0} == 'v') ? pack_id(substr($input_show_func_c,1)) : $input_show_func_c;
         switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
             case "fnc:param":
                 $isf = "$input_show_func_f:$input_show_func_p";
                 break;
             case "fnc:const:param":
-                $isf = "$input_show_func_f:$input_show_func_c:$input_show_func_p";
+                $isf = "$input_show_func_f:$input_show_func_c_real:$input_show_func_p";
                 break;
             case "fnc":
             default:
@@ -182,7 +186,13 @@ if ($update) {
 
   // lookup constants
 $constants[] = "";   // add blank constant as the first option
-$constants += GetConstants('lt_groupNames', 'name');
+
+// we encode the value so it could be passed to another script easily
+// (javascript escape is not good solution - it is incompatible with php
+// urldecode()
+foreach ( GetConstants('lt_groupNames', 'name') as $val => $name ) {
+    $constants[varname4form($val)] = $name;
+}
 
 $constants[] = "";
 $constants[] = "*** SLICES: ***";
@@ -237,7 +247,8 @@ if ( !$update ) {      // load defaults
     // switching type of show
     get_params($fld["input_show_func"], $input_show_func_f, $input_show_func_p);
     if ( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']  == "fnc:const:param") {
-        get_params($input_show_func_p, $input_show_func_c, $input_show_func_p);
+        get_params($input_show_func_p, $input_show_func_c_real, $input_show_func_p);
+        $input_show_func_c = (substr($input_show_func_c_real,0,7) == '#sLiCe-') ? $input_show_func_c_real : varname4form($input_show_func_c_real);
     }
 
     $html_default = $fld["html_default"];
@@ -338,7 +349,7 @@ echo "
         if ($input_default_f == 'qte') {
             $input_default_f = 'txt';
         }
-        FrmSelectEasy("input_default_f", getSelectBoxFromParamWizard ($DEFAULT_VALUE_TYPES), $input_default_f);
+        FrmSelectEasy("input_default_f", getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES), $input_default_f);
       echo "<div class=tabhlp>". _m("How to generate the default value") ."</div>
             <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
                 <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
@@ -351,7 +362,7 @@ echo "
      <tr>
          <td class=tabtxt><b>". _m("Validate") ."</b></td>
          <td class=tabtxt colspan=3>";
-         FrmSelectEasy("input_validate_f", getSelectBoxFromParamWizard ($VALIDATE_TYPES),
+         FrmSelectEasy("input_validate_f", getSelectBoxFromParamWizard($VALIDATE_TYPES),
             $input_validate_f);
          echo "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
              <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
