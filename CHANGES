@@ -1,3 +1,6 @@
+09/01/05 - addes action icons to spot actions in site manager
+(honzam) - fixed constant editing - the category groups with accents and similar
+           strange characters works correctly, now
 08/31/05 - fix of no item message - works correctly if you fill 0 in it (zero)
 (honzam) - default inputform view for the slice now could be set not only
            from default Profile setting page, but also
@@ -12,7 +15,6 @@
                                     'E' if the numbers are equal.
            Usage example:
             {switch({compare:{last_edit.......}:1125481998})L:less:G:more:equal}
-         - some cleanup of the permissions core
          - user_id for users authenticated from Reader slice is changed
            from login to more logical and more powerfull item_id
          - fixes in Reader Management permissions combination with SQL

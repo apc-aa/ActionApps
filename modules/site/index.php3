@@ -145,20 +145,37 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 require_once $GLOBALS['AA_BASE_PATH']."modules/site/menu.php3";
 showMenu($aamenus, "codemanager");
 
-echo '<br><table border=0 cellspacing=0 class=login width="95%"><tr><td id="sitetree"> ';
-echo '<a href="'. SiteAdminPage($r_spot_id, "akce=s").'">'. _m("Add&nbsp;spot") .'</a> ';
-echo '<a href="'. SiteAdminPage($r_spot_id, "akce=c").'">'. _m("Add&nbsp;choice") .'</a><br> ';
-echo '<a href="'. SiteAdminPage($r_spot_id, "akce=u").'">'. _m("Move&nbsp;up") .'</a> ';
-echo '<a href="'. SiteAdminPage($r_spot_id, "akce=d").'">'. _m("Move&nbsp;down") .'</a><br> ';
-echo '<a href="'. SiteAdminPage($r_spot_id, "akce=l").'">'. _m("Move&nbsp;left") .'</a> ';
-echo '<a href="'. SiteAdminPage($r_spot_id, "akce=a").'">'. _m("Move&nbsp;right") .'</a><br> ';
-echo '<a href="'. SiteAdminPage($r_spot_id, "akce=r").'">'. _m("Delete&nbsp;spot") .'</a> ';
-if ($tree->get('flag', $r_spot_id) & MODW_FLAG_DISABLE) {
-    echo '<a href="'. SiteAdminPage($r_spot_id, "akce=e").'">'. _m("Enable") .'</a> ';
-} else {
-    echo '<a href="'. SiteAdminPage($r_spot_id, "akce=h").'">'. _m("Disable") .'</a> ';
+function Links_PrintActionLink($r_spot_id, $action, $text, $img) {
+    $link  = SiteAdminPage($r_spot_id, "akce=$action");
+    $image = GetModuleImage('site', $img, '', 16, 12);
+    return "<a href=\"$link\">$image</a>&nbsp;<a href=\"$link\">$text</a>";
 }
-echo '<br><br>';
+
+echo '<table border=0 cellspacing=0 class=login width="95%"><tr><td id="sitetree">
+      <br>
+      <table border=0 cellspacing=0 align="center">
+        <tr>
+          <td>'. Links_PrintActionLink($r_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif') .'</td>
+          <td>&nbsp;'. Links_PrintActionLink($r_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif') .'</td>
+        </tr>
+        <tr>
+          <td>'. Links_PrintActionLink($r_spot_id, 'u', _m("Move&nbsp;up"), 'up.gif') .'</td>
+          <td>&nbsp;'. Links_PrintActionLink($r_spot_id, 'd', _m("Move&nbsp;down"), 'down.gif') .'</td>
+        </tr>
+        <tr>
+          <td>'. Links_PrintActionLink($r_spot_id, 'l', _m("Move&nbsp;left"), 'left.gif') .'</td>
+          <td>&nbsp;'. Links_PrintActionLink($r_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') .'</td>
+        </tr>
+        <tr>
+          <td>'. Links_PrintActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif') .'</td>
+          <td>&nbsp;'.
+          (($tree->get('flag', $r_spot_id) & MODW_FLAG_DISABLE) ?
+              Links_PrintActionLink($r_spot_id, 'e', _m("Enable"), 'enabled.gif') :
+              Links_PrintActionLink($r_spot_id, 'h', _m("Disable"), 'disabled.gif'))
+              .'</td>
+        </tr>
+      </table>
+      <br>';
 
 // show tree
 if ($debugsite) huhl("XYZZY:SiteIndex tree=",$tree);
