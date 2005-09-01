@@ -856,6 +856,14 @@
 09/30/03 - loop through multivalues in stringexpand:
 (honzam)   {@category.......1},
            {@category.......1(const_name,const_value,_#MY_ALIAS):,:_#1 _#2 _#3}
+           As you see, you can also use aliases here. The Ussage is following:
+               {@relation........(_#GET_HEAD): ,:_#1}
+           where _#GET_HEAD is alias defined somewhere in current slice using
+           f_t (for example):
+               {item:{loop............}:headline}
+           This displays all the related headlines delimeted by comma (since
+           special field {loop............} contain one value from
+           relation........ field
          - new {user:role} alias - returns
            author/editor/administrator/super/undefined
          - view setting for Links module (links, categories) allows to define
