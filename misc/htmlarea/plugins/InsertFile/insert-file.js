@@ -12,11 +12,11 @@ function InsertFile(editor) {
         var cfg = editor.config;
 	var toolbar = cfg.toolbar;
 	var self = this;
-	var i18n = InsertFile.I18N;
-        
+//	var i18n = InsertFile.I18N;
+
 	cfg.registerButton({
                 id       : "insertfile",
-                tooltip  : i18n["InsertFileTooltip"],
+                tooltip  : "Insert File", // i18n["InsertFileTooltip"],
                 image    : editor.imgURL("insert-file.gif", "InsertFile"),
                 textMode : false,
                 action   : function(editor) {
@@ -76,7 +76,7 @@ InsertFile.prototype.buttonPress = function(editor) {
 		f_height  : image.height
 	};
 */
-	var manager = _editor_url + 'plugins/InsertFile/insert_file.php';
+	var manager = _editor_url + 'plugins/InsertFile/insert_file.php?AA_CP_Session=' + aa_session;
 
 	Dialog(manager, function(param) {
 		if (!param) {	// user must have pressed Cancel
