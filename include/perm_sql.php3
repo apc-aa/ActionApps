@@ -167,6 +167,7 @@ function find_user_by_login($login) {
 function FindUsers($pattern, $flags = 0) {
 
     $db  = new DB_AA;
+    $by_id = FindReaderUsers($pattern);
     $pattern = addslashes($pattern);
 
     $SQL = sprintf( "
@@ -258,21 +259,26 @@ function GetObjectsPerms($objectID, $objectType, $flags = 0) {
     $db  = new DB_AA;
 
     $SQL = sprintf(
-          "SELECT id, type, name, mail, perm
-             FROM perms, users
+          "SELECT userid, perm
+             FROM perms
             WHERE object_type = '%s' AND
-                  objectid    = '%s'   AND
-                  userid      = id",
+                  objectid    = '%s'",
            $objectType, $objectID);
 
     $db->query( $SQL );
 
     while ( $db->next_record() ) {
-        $by_id[$db->f('id')] = array( 'id'   => $db->f('id'),
-                                      'type' => $db->f('type'),
-                                      'name' => $db->f('name'),
-                                      'mail' => $db->f('mail'),
-                                      'perm' => $db->f('perm') );
+        $tmp = GetIDsInfo($db->f('userid'));
+        $tmp['id'] = $db->f('userid');
+        $tmp['perm'] = $db->f('perm');
+
+        $by_id[$db->f('userid')] = $tmp;
+
+//        $by_id[$db->f('id')] = array( 'id'   => $db->f('id'),
+//                                      'type' => $db->f('type'),
+//                                      'name' => $db->f('name'),
+//                                      'mail' => $db->f('mail'),
+//                                      'perm' => $db->f('perm') );
     }
 
     // I am not sure if I perm should be transformed from role->action here
@@ -552,6 +558,7 @@ function GetIDsInfo($id, $ds = "") {
     $db->query( $SQL );
     // TODO: something about a sizelimit??
     if ($db->next_record()) {
+        $res['id']   = $id;
         $res['type'] = $db->f("type");
         $res['name'] = ( ($res['type'] == _m("User") OR ($res['type'] == "User")) ?
                        $db->f("givenname")." ".$db->f("sn") : $db->f("name"));

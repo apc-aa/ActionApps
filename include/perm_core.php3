@@ -25,7 +25,7 @@ http://www.apc.org/
 //
 
 define("MAX_GROUPS_DEEP", 16);   // Maximum number of nested groups (user belongs to group1, group1 to group2 ...)
-define("MAX_ENTRIES_SHOWN",5);   // Maximum number of shown users in search for users/groups
+define("MAX_ENTRIES_SHOWN",10);   // Maximum number of shown users in search for users/groups
 
 // permission letter definition
 //---------- Slice -----------------
@@ -524,6 +524,23 @@ function FindReaderGroups($pattern) {
         $slices[unpack_id128($db->f('id'))] = array('name' => $db->f('name'));
     }
     return $slices;
+}
+
+/** return list of RM users which matches the pattern */
+function FindReaderUsers($pattern) {
+    global $db;
+    $db->tquery("SELECT content.text AS name, content.item_id AS id
+                   FROM slice 
+             INNER JOIN field ON slice.id=field.slice_id
+             INNER JOIN item ON slice.id = item.slice_id
+             INNER JOIN content ON item.id=content.item_id AND content.field_id = field.id
+                  WHERE slice.type = 'ReaderManagement'
+                    AND field.id = '".FIELDID_USERNAME."'
+                    AND content.text LIKE '%$pattern%'");
+    while ($db->next_record()) {
+        $users[unpack_id128($db->f('id'))] = array('name' => $db->f('name'));
+    }
+    return $users;
 }
 
 /** Fills content array for current loged user or specified user */

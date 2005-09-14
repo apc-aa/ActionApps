@@ -1,3 +1,5 @@
+09/14/05 - fix to allow admins to assign slice permissions also to users from 
+(brazda)   Reader Management slice(s)
 09/01/05 - addes action icons to spot actions in site manager
 (honzam) - fixed constant editing - the category groups with accents and similar
            strange characters works correctly, now
