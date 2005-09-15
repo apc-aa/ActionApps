@@ -25,7 +25,7 @@ function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, relwi
     if ((relatedwindow != null) && (!relatedwindow.closed)) {
         relatedwindow.close()    // in order to preview go on top after open
     }
-    relatedwindow = open( relwind_url + "&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design + "&frombins=" + frombins + "&showcondsro=" + conds + "&showcondsrw=" + condsrw, "relatedwindow", "scrollbars=1, resizable=1, width=500");
+    relatedwindow = open( relwind_url + "&sid=" + sid + "&var_id=" + varname + "&mode=" + mode + "&design=" + design + "&frombins=" + frombins + "&showcondsro=" + conds + "&showcondsrw=" + condsrw, "relatedwindow", "scrollbars=1, resizable=1, width=570");
 }
 
 function sb_RemoveItem(selectbox) {
