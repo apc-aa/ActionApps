@@ -63,7 +63,6 @@ function drawFiles($list, &$manager)
 
 		<?php _ddt( __FILE__, __LINE__, "drawFiles(): relative is '" . $file['relative'] . "' thumbnail '" . $manager->getThumbnail($file['relative']) . "'" ); ?>
 
-		<table width="100" cellpadding="0" cellspacing="0"><tr><td class="block">
         <table width="100" cellpadding="0" cellspacing="0"><tr><td class="block" style="cursor: pointer;" onclick="selectImage('<? echo $file['relative'];?>', '<? echo $entry; ?>', <? echo $file['image'][0];?>, <? echo $file['image'][1]; ?>);" title="<?php echo $entry; ?> - <?php echo Files::formatSize($file['stat']['size']); ?>">
 
 		<img src="<?php print $manager->getThumbnail($file['relative']); ?>" alt="<?php echo $entry; ?> - <?php echo Files::formatSize($file['stat']['size']); ?>"/>
