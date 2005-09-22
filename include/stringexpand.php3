@@ -109,13 +109,22 @@ function stringexpand_inputvar($field) {
 }
 
 
-/** Expands {formbreak:xxxxxx} alias - split of inputform into parts
+/** Expands {formbreak:xxxxxx:yyyy:....} alias - split of inputform into parts
  *  @param $part_name - name of the part (like 'Related Articles').
  */
-function stringexpand_formbreak($part_name='') {
+function stringexpand_formbreak($part_names='') {
     $GLOBALS['g_formpart']++;  // Nothing to print, it just increments part counter
-    if ( $part_name ) { // remember part name
-        $GLOBALS['g_formpart_names'][$GLOBALS['g_formpart']] = $part_name;
+
+    // You can specify also the names for next tabs (separated by ':'), which is
+    // usefull mainly for last tab (for which you do not have formbrake, of course
+    $part_names = func_get_args();
+    $i = 0;
+    foreach ($part_names as $name) {  // remember part name
+        // the formparts are numbered backward
+        $index = ($GLOBALS['g_formpart'] - $i++);
+        if ($name != '' AND ($index >= 0)) {
+            $GLOBALS['g_formpart_names'][$index] = $name;
+        }
     }
 }
 
@@ -831,4 +840,9 @@ function stringexpand_slice_comments($slice_id) {
 // Use this inside URLs e.g. {urlencode:_#EDITITEM}
 function stringexpand_urlencode($raw) {
     return urlencode($raw);
+}
+
+function stringexpand_preg_match($pattern, $subject) {
+    preg_match($pattern, $subject, $matches);
+    return $matches[0];
 }
