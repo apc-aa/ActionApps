@@ -29,6 +29,10 @@ http://www.apc.org/
 require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
 
 
+define('ITEMCONTENT_ERROR_BAD_PARAM', 200);
+define('ITEMCONTENT_ERROR_DUPLICATE', 201);
+define('ITEMCONTENT_ERROR_NO_ID',     202);
+
 /**
  *  ItemContent class is an abstract data structure, used mostly for storing
  *  an item. The item can contain many fields, and each field contains 1..n
@@ -48,6 +52,24 @@ class ItemContent {
 
     // PRIVATE:
     var $content;
+
+    /** Method returns or sets last itemContent error
+     *  The trick for static class variables is used */
+    function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
+        static $lastErr;
+        static $lastErrMsg;
+        if (!is_null($err_id)) {
+            $lastErr    = $err_id;
+            $lastErrMsg = $err_msg;
+        }
+        return $getmsg ? $lastErrMsg : $lastErr;
+    }
+
+    /** Return last error message - it is grabbed from static variable
+     *  of lastErr() method */
+    function lastErrMsg() {
+        return ItemContent::lastErr(null, null, true);
+    }
 
     /// Constructor which takes content for ID or item_id (unpacked).
     function ItemContent($content4id = "") {
@@ -70,9 +92,8 @@ class ItemContent {
         $this->content = is_array($content) ? reset($content) : null;
     }
 
-
-    /** Functions tries to fill all the fields from the form. It do not add any 
-     *  item specific fields (like status_code), so it could be used also for 
+    /** Functions tries to fill all the fields from the form. It do not add any
+     *  item specific fields (like status_code), so it could be used also for
      *  dynamic "slice setting fields"
      */
     function setFieldsFromForm(&$slice, $oldcontent4id="", $insert=true, $slice_fields=false) {
@@ -82,7 +103,7 @@ class ItemContent {
         if (!isset($prifields) OR !is_array($prifields)) {
             return false;
         }
-        
+
         if (!is_object($profile)) {
             $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());  // current user settings
         }
@@ -129,8 +150,8 @@ class ItemContent {
         }
         return true;
     }
-        
-    
+
+
     /** Fills content4id - values in content4id are NOT quoted (addslashes)
      *  (new version of previous GetContentFromForm() function)
      */
@@ -140,7 +161,7 @@ class ItemContent {
         if (!$this->setFieldsFromForm($slice, $oldcontent4id, $insert)) {
             return false;
         }
-        
+
         // the status_code must be set in order we can use email_notify()
         // in StoreItem() function.
         if (!$insert AND !$this->getStatusCode()) {
@@ -305,33 +326,33 @@ class ItemContent {
     *   $GLOBALS[err][field_id] should be set on error in function
     *   It looks like it will return true even if inset_fnc_xxx fails
     *
-    *   @param string $mode   how to deal with the stored item. 
+    *   @param string $mode   how to deal with the stored item.
     *      update        - the fields defined in $this object are cleared and
-    *                      then overwriten by values from $this object 
-    *                      - other fields of the item are untouched. The id 
-    *                      of the item must be set before calling this 
+    *                      then overwriten by values from $this object
+    *                      - other fields of the item are untouched. The id
+    *                      of the item must be set before calling this
     *                      function ($this->setItemID($id))
-    *      add           - do not clear the current content - the values are 
-    *                      added in paralel to curent values (stored 
-    *                      as multivalues for all fields stored in content 
-    *                      table). The id of the item must be set before 
+    *      add           - do not clear the current content - the values are
+    *                      added in paralel to curent values (stored
+    *                      as multivalues for all fields stored in content
+    *                      table). The id of the item must be set before
     *                      calling this function ($this->setItemID($id))
-    *      overwrite     - the whole item is cleared and then filed by the 
+    *      overwrite     - the whole item is cleared and then filed by the
     *                      content of $this object
-    *      insert_as_new - the item is stored as new item - new id is always 
-    *                      generated ($this->getItemID() is not taken into 
+    *      insert_as_new - the item is stored as new item - new id is always
+    *                      generated ($this->getItemID() is not taken into
     *                      account)
     *      insert_new    - if the id is not defined or the id is duplicated then
-    *                      the item is stored with new id (as new item) 
-    *      insert        - the same as insert_as_new, but "this id" is 
-    *                      accepted - if the id is defined, it is stored 
-    *                      under specified id, otherwise the new id is 
+    *                      the item is stored with new id (as new item)
+    *      insert        - the same as insert_as_new, but "this id" is
+    *                      accepted - if the id is defined, it is stored
+    *                      under specified id, otherwise the new id is
     *                      generated. The id MUST be new - the id must not be
-    *                      in the database  
-    *      insert_if_new - the item is stored only if the item with this id 
-    *                      ($this->getItemID()) is not in the database. 
+    *                      in the database
+    *      insert_if_new - the item is stored only if the item with this id
+    *                      ($this->getItemID()) is not in the database.
     *                      Otherwise it is skiped (not stored)
-    *    @param bool   $invalidatecache   should we invalidate the cache for the 
+    *    @param bool   $invalidatecache   should we invalidate the cache for the
     *                                     slice?
     *    @param bool   $feed     procces feeding (as in in the slice setting)?
     *    @param string $context  special parameter used for thumbnails
@@ -344,11 +365,11 @@ class ItemContent {
         $slice      = new slice($slice_id);
         $fields     = $slice->fields('record');
 
-        if ( ($mode != 'insert') AND 
-             ($mode != 'insert_new') AND 
-             ($mode != 'insert_if_new') AND 
-             ($mode != 'insert_as_new') AND 
-             ($mode != 'overwrite') AND 
+        if ( ($mode != 'insert') AND
+             ($mode != 'insert_new') AND
+             ($mode != 'insert_if_new') AND
+             ($mode != 'insert_as_new') AND
+             ($mode != 'overwrite') AND
              ($mode != 'add')) {
             $mode = 'update';
         }
@@ -363,7 +384,14 @@ class ItemContent {
                                   break;
             case 'insert':        $id = get_if($this->getItemID(), new_id());
                                   break;
-            case 'insert_if_new': if (!$this->getItemID() OR itemIsDuplicate($this->getItemID())) {
+            case 'insert_if_new': if (!$this->getItemID()) {
+                                      ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("No Id specified (%1 - %2)", array($this->getItemID(), $this->getValue('headline........'))));  // set error code
+                                      if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
+                                      return false;
+                                  }
+                                  if (itemIsDuplicate($this->getItemID())) {
+                                      ItemContent::lastErr(ITEMCONTENT_ERROR_DUPLICATE, _m("Duplicated ID - skiped (%1 - %2)", array($this->getItemID(), $this->getValue('headline........'))));  // set error code
+                                      if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
                                       if ($GLOBALS['debugfeed'] >= 4) print("\n<br>skipping duplicate: ".$this->getValue('headline........'));
                                       return false;
                                   }
@@ -376,9 +404,11 @@ class ItemContent {
         }
 
         if (!($id AND is_array($fields))) {
-            if ($GLOBALS['errcheck']) huhl("Warning: StoreItem ". $slice->name() ." failed parameter check id='",$id);
+            ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", array($slice->name(),$id)));  // set error code
+            if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
             return false;
         }
+
         // do not store item, if status_code==4
         if ((int)$this->getStatusCode() == 4) {
             return false;
@@ -400,13 +430,13 @@ class ItemContent {
             // (this means - all not redefined fields are unchanged)
             $this->_clean_updated_fields($id, $fields);
         }
-        // else 'add' do not clear the current content - the values are added 
-        // in paralel to curent values (stored as multivalues for all fields 
+        // else 'add' do not clear the current content - the values are added
+        // in paralel to curent values (stored as multivalues for all fields
         // stored in content table)
 
         // and NOW - store the fields and prepare itemvarset
         $this->_store_fields($id, $fields, $context);
-        
+
         /* Alerts module uses moved2active as the time when
            an item was moved to the active bin */
         if (($mode=='insert') ||
@@ -454,7 +484,7 @@ class ItemContent {
         // get the content back from database
         $itemContent = new ItemContent();
         $itemContent->setByItemID($id,true);     // ignore reading password
-        
+
         // look for computed fields and update it (based on the stored item)
         if ( $itemContent->updateComputedFields($id, $fields) ) {
             // if computed fields are updated, reread the content
@@ -464,7 +494,7 @@ class ItemContent {
         if ($feed) {
             FeedItem($id, $fields);
         }
-        
+
         if ($mode == 'insert') {
             $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
         } else {
@@ -473,16 +503,18 @@ class ItemContent {
         if ($debugsi) huhl("StoreItem err=",$err);
         return $id;
     } // end of storeItem()
-    
+
     function updateComputedFields($id, &$fields) {
+        $varset     = new CVarset();
+
         $computed_field_exist = false;
         foreach ($fields as $fid => $f) {
             // input insert function parameters of field
             $fnc = ParseFnc($f["input_insert_func"]);
-            
+
             // computed field?
             if ($fnc AND ($fnc["fnc"]=='com') AND (strlen($fnc["param"])>0)) {
-                
+
                 // the code, which (unaliased!) should be stored in the field
                 // is in parameter
                 if ($computed_field_exist === false) {
@@ -491,20 +523,22 @@ class ItemContent {
                     $slice = new slice($this->getSliceID());
                     $item  = new item($this->getContent(),$slice->aliases());
                 }
-                // now store the comuted value for this field               
+                // delete content just for this computed field
+                $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id='$fid'");
+                // now store the comuted value for this field
                 insert_fnc_qte($id, $f, array('value' => $item->unalias($fnc["param"])), '');
             }
         }
         return $computed_field_exist;
     }
-    
+
     /** Stores the fields into content table for dynamic "slice setting fields"
      */
     function storeSliceFields($slice_id, &$fields) {
         // delete content of all fields, which are in new content array
         // (this means - all not redefined fields are unchanged)
         $this->_clean_updated_fields($slice_id, $fields);
-        
+
         // we use slice_id as item id here
         $this->_store_fields($slice_id, $fields);
     }
@@ -527,8 +561,8 @@ class ItemContent {
             // note extra images deleted in insert_fnc_fil if needed
         }
     }
-    
-    /** private function - goes through content and runs all insert functions 
+
+    /** private function - goes through content and runs all insert functions
      *  on each field in content array. The content is stored in the database
      *  of in itemvarset
      */
@@ -635,7 +669,7 @@ class ItemContent {
 // Note that this could be replaced by feeding.php3:IsItemFed which is more complex and would use orig id
 function itemIsDuplicate($item_id) {
     $db = getDB();
-    $SQL="SELECT id FROM item WHERE id='".q_pack_id($item_id)."'" ;
+    $SQL="SELECT * FROM item WHERE id='".q_pack_id($item_id)."'" ;
     $db->query($SQL);
     $ret = $db->next_record();
     freeDB($db);
