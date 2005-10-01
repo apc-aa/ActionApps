@@ -124,13 +124,13 @@ class Actions {
                      // case "display_count..." : $v = 0; break;
                      case "status_code....." : $done = 1; $fieldVal[]['value'] = 1; break; // todo
                      case "flags..........." : $done = 1; $fieldVal[]['value'] = ITEM_FLAG_OFFLINE; break;
-                     case "publish_date...." : $done = 1; $fieldVal[]['value'] =  time(); break;
-                     case "post_date......." : $done = 1; $fieldVal[]['value'] =  time(); break;
-                     case "last_edit......." : $done = 1; $fieldVal[]['value'] =  time(); break;
-                     case "expiry_date....." : $done = 1; $fieldVal[]['value'] =  mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
+                     case "publish_date...." : $done = 1; $fieldVal[]['value'] = time(); break;
+                     case "post_date......." : $done = 1; $fieldVal[]['value'] = time(); break;
+                     case "last_edit......." : $done = 1; $fieldVal[]['value'] = time(); break;
+                     case "expiry_date....." : $done = 1; $fieldVal[]['value'] = mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
                      case "posted_by......." : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
                      case "edited_by......." : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
-                     case "id.............." : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;
+                     case "id.............." : $done = 1; $fieldVal[]['value'] = pack_id(new_id()); break;
                      default :
                          if ( $action['from'] && ($action['from'] != '__empty__')) {
                              $action['action']->setAction('store');
@@ -143,7 +143,7 @@ class Actions {
                  }
              } elseif ($action['action']->getAction() == "new") {
                   $done = 1;
-                  $fieldVal[]['value'] = 'new id';
+                  $fieldVal[]['value'] = pack_id(new_id());
              }
              if ( !$done ) {
 
@@ -408,21 +408,21 @@ $nszmciselnik = array (
 );
 
 $nszmmesta = array(
-    'Žïár nad Sázavou' => '4cbe4c9f495659db69aba35fbbe85e75',
-    'Velké Meziøíèí' => '6bfe94a7be75cba6bf4d382d2cfa56c3',
-    'Tøebíè' => '14f758c5c201e56b0ea1ad4ec0419b6e',
-    'Telè' => 'c1843ecad65dff9c85bb208429e87bb8',
-    'Svìtlá nad Sázavou' => '5129aa53e4cf252b2a12b82090c5f839',
-    'Pelhøimov' => '0e7bdd6bfad9a1218c22f54b5f48168c',
-    'Pacov' => '50e8c206869659e6fda872aaff285b8c',
-    'Nové Mìsto na Moravì' => '7971bd8fd5a3235c149b2fe3bafd675e',
-    'Námìš nad Oslavou' => '7f1ae6154b41558936845d2103578696',
-    'Moravské Budìjovice' => '8a5ba7e453725107797b6e1e80c8ab8e',
-    'Jihlava' => '2acc8da86106cee2f93692f309f46b92',
-    'Humpolec' => '05dc3562487ab1299409aa28edf58d49',
-    'Havlíèkùv Brod' => 'a116f13755011872fbd7b2829466a340',
-    'Chotìboø' => '09599b24d01f70502928a2b9e0779a05',
-    'Bystøice nad Pernštejnem' => 'a05eb1555aa9b5f74e1f24786b5b6899');
+    'Žïár nad Sázavou'      => '5f3e1d8a5654bcbec5aebc18802cc3ab',
+    'Velké Meziøíèí'        => '6bfe94a7be75cba6bf4d382d2cfa56c3',
+    'Tøebíè'                => 'f2fab2ff86ab58626148f7b7d8141f92',
+    'Telè'                  => 'fb0c96998a51b0d4865a8bf3681f89f2',
+    'Svìtlá nad Sázavou'    => '3ea61bd532190e35b145c6dfe0d33075',
+    'Pelhøimov'             => '88eb421653b38c4bdd4ea3e1b94253da',
+    'Pacov'                 => 'ff46f6e1b2999a09ddbf4776d4d985e7',
+    'Nové Mìsto na Moravì'  => '0e51a3726c152f17a6b18f81adfa85a3',
+    'Námìš nad Oslavou'    => '57c4724b65aa8a9c191a4bc069b6b0e5',
+    'Moravské Budìjovice'   => 'dd35b973320dcb5ee70ea1dfd566465c',
+    'Jihlava'               => 'da4dcfdf17cb9b5a0e3ba37e7a9799e6',
+    'Humpolec'              => '358bd219028e31e6612d607bc79cd058',
+    'Havlíèkùv Brod'        => 'ede15d796d90d4c6ce6180d48a7aecbd',
+    'Chotìboø'              => '135e12ccfa199f24e3ce9e9d7a6e46aa',
+    'Bystøice nad Pernštejnem' => '7723d9023b66ad5a950fb2d945fadfcb');
 
 /** Get List of actions */
 function getActions() {

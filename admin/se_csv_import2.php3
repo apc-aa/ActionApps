@@ -54,7 +54,7 @@ function findNearestText($text, $array) {
 }
 
 
-if (!IfSlPerm(PS_FEEDING)) {
+if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to setting "));
     exit;
 }
@@ -95,6 +95,8 @@ if ($upload || $preview) {
         $mapping['id..............'] = $itemIdMappedFrom;
         $actions['id..............'] = $itemIdMappedActions;
         $params['id..............']  = $itemIdMappedParams;
+    } elseif ( $itemId == 'new' ) {
+        $actions['id..............'] = 'new';  // new_id
     }
 
     $trans_actions = new Actions($actions,$mapping, $html, $params);
@@ -113,8 +115,9 @@ if ($upload) {
     $numError     = 0;
 
     // if first row is used for field names, skip it
-    if ($addParams['caption'])
+    if ($addParams['caption']) {
         getCSV($handle,CSVFILE_LINE_MAXSIZE,$addParams['delimiter'],$addParams['enclosure']);
+    }
 
     while ($csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$addParams['delimiter'],$addParams['enclosure'])) {
         $err = convertCSV2Items($csvRec,$fieldNames,$trans_actions,$slice_fields,$itemContent);
@@ -123,11 +126,9 @@ if ($upload) {
 
         if (!$err) {
             $itemContent->setSliceID($slice_id);
-//            huh($itemContent);
-//            exit;
             $added_to_db = $itemContent->storeItem($actionIfItemExists, false);     // not invalidate cache
             if ($added_to_db == false) {
-                $err = _m("Cannot store item to DB");
+                $err = _m("Cannot store item to DB"). ' '. ItemContent::LastErrMsg();
             }
         }
         if ($err) {
@@ -299,13 +300,13 @@ FrmTabCaption(_m("Mapping settings"));
 
     <?php
     FrmTabSeparator(_m("Select, how to store the items"));
-    $storage_mode = array('overwrite'     => _m('Update the item (overwrite)'),
+    $storage_mode = array('insert_if_new' => _m('Do not store the item'),
                           'insert_new'    => _m('Store the item with new id'),
-                          'insert_if_new' => _m('Do not store the item'),
+                          'overwrite'     => _m('Update the item (overwrite)'),
                           'add'           => _m('Add the values in paralel to current values (the multivalues are stored, where possible)'),
                           'update'        => _m('Rewrite only the fields, for which the action is defined')
                           );
-    FrmInputRadio('actionIfItemExists', _m('If the item id is already in the slice'), $storage_mode, $actionIfItemExists, true, '', '', 1);
+    FrmInputRadio('actionIfItemExists', _m('If the item id is already in the slice'), $storage_mode, $preview ? $actionIfItemExists : "insert_if_new", true, '', '', 1);
     FrmTabEnd($form_buttons, $sess, $slice_id);
     echo "</FORM>";
     HtmlPageEnd();

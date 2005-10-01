@@ -163,7 +163,7 @@ function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML)
 // this function may replaced by extension of $sess as a method $sess->return_url().
 function sess_return_url($url) {
     global $sess, $return_url;
-    
+
     // decode and return $return_url OR return for standard APC-AA behavier
     return $return_url ? expand_return_url(1) : $sess->url($url);
 }
@@ -197,17 +197,17 @@ function make_return_url($prifix,$r1="") {
 
 // helper function for f_e:link_*  (links module admin page link) - honzam
 function Links_admin_url($script, $add) {
-    global $sess, $AA_INSTAL_EDIT_PATH;
-    return $sess->url($AA_INSTAL_EDIT_PATH. "modules/link/$script?$add");
+    global $sess;
+    return $sess->url(AA_INSTAL_URL. "modules/link/$script?$add");
 }
 
 /** helper function which create link to inputform from item manager
   * (_#EDITITEM, f_e:add, ...)  */
 function Inputform_url($add, $iid, $sid, $ret_url, $vid = null, $var = null) {
-    global $sess, $AA_INSTAL_EDIT_PATH, $AA_CP_Session;
+    global $sess, $AA_CP_Session;
     // code to keep compatibility with older version
     // which was working without $AA_INSTAL_EDIT_PATH
-    $admin_path = ($AA_INSTAL_EDIT_PATH ? $AA_INSTAL_EDIT_PATH . "admin/itemedit.php3" : "itemedit.php3");
+    $admin_path = "itemedit.php3";
     // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
     $url2go = isset($sess) ?
                      $sess->url($admin_path)	:
@@ -829,7 +829,7 @@ function RSS_restrict($txt, $len) {
       if ( isset($p[1]) ) {
           $text = get_if( $p[0], $this->getval($col) );
           switch ( $p[1] ) {
-              case 'csv':         return !ereg("[,\"\n\r]", $text) ? $text :
+              case 'csv':         return (strcspn($text,",\"\n\r") == strlen($text)) ? $text :
                                          '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
               case 'safe':        return htmlspecialchars($text);
                                   // In javascript we need escape apostroph

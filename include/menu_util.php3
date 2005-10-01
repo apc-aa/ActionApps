@@ -292,7 +292,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
 // ----------------------------------------------------------------------------------------
 //                                SHOW SUBMENU
 
-function showSubmenu (&$aamenu, $active)
+function showSubmenu(&$aamenu, $active)
 {
     global $debug;
     if ($debug) { echo "<p><font color=purple>showSubmenu:active=$active</font></p>\n"; }
@@ -307,6 +307,6 @@ function showSubmenu (&$aamenu, $active)
           </table>'."\n";
 }
 
-function CreateMetuItem( $label, $href, $cond = true ) {
-    return array( 'label' => $label, 'href' => $href, 'cond' => $cond );
+function CreateMenuItem( $label, $href, $cond = true ) {
+    return array('label' => $label, 'href' => $href, 'cond' => $cond);
 }

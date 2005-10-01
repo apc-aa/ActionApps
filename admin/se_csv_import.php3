@@ -58,7 +58,7 @@ $upfile    = stripslashes($upfile);
 $url       = stripslashes($url);
 $enclosure = stripslashes($enclosure);
 
-if (!IfSlPerm(PS_FEEDING)) {
+if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to import files"));
     exit;
 }
