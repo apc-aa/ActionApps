@@ -137,16 +137,18 @@ if ($sitefix) {
 ModW_StoreTree($tree, $module_id);
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-?>
-<title><?php echo _m("Editor window - site code manager") ?></title>
-</head> <?php
+echo '<title>'. _m("Editor window - site code manager") .'</title>';
+FrmJavascriptFile('javascript/js_lib.js');
+echo '</head>';
 
 // module specific navigation bar
 require_once $GLOBALS['AA_BASE_PATH']."modules/site/menu.php3";
 showMenu($aamenus, "codemanager");
-
-function Links_PrintActionLink($r_spot_id, $action, $text, $img) {
-    $link  = SiteAdminPage($r_spot_id, "akce=$action");
+                                          
+function Links_PrintActionLink($r_spot_id, $action, $text, $img, $link=null) {
+    if (!$link) {
+        $link  = SiteAdminPage($r_spot_id, "akce=$action");
+    }
     $image = GetModuleImage('site', $img, '', 16, 12);
     return "<a href=\"$link\">$image</a>&nbsp;<a href=\"$link\">$text</a>";
 }
@@ -167,7 +169,8 @@ echo '<table border=0 cellspacing=0 class=login width="95%"><tr><td id="sitetree
           <td>&nbsp;'. Links_PrintActionLink($r_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') .'</td>
         </tr>
         <tr>
-          <td>'. Links_PrintActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif') .'</td>
+          <td>'. Links_PrintActionLink($r_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''. SiteAdminPage($r_spot_id, "akce=r").'\', \''.
+                                            _m("Are you sure you want to delete the spot?") .'\')') .'</td>
           <td>&nbsp;'.
           (($tree->get('flag', $r_spot_id) & MODW_FLAG_DISABLE) ?
               Links_PrintActionLink($r_spot_id, 'e', _m("Enable"), 'enabled.gif') :

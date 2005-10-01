@@ -258,3 +258,9 @@ function CommaDelimeted(listbox) {
   return foo
 }
 
+function GoIfConfirmed(url, text) {
+  if (confirm(text)) {
+    document.location = url;
+  }
+}
+
