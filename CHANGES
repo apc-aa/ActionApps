@@ -1,3 +1,22 @@
+09/01/05 - CSV import is allowed also for editors (see left menu in ItemManager)
+(honzam)   and small fixes in CSV imports
+         - confirmation of spot delete is now required (in site module)
+         - limit group name length in bulk constatnt import to 16 characters 
+           (which is the only correct value)
+         - fix for computed field - the value is updated corectly, if you are 
+           editing the item, now
+         - fixed category tree display (Links module) in Firefox, which did not 
+           work correctly for huge category trees
+         - improved site manager - looks better in IE (but not perfect, yet)
+09/27/05 - fixed bug in constant edit (pack_id() error)
+(honzam)
+09/22/05 - you are able to specify the name for all tabs, when you are using
+(honzam)   inputform formbreaks:
+              {formbreak:<current_tab_name>:<next_tab_name>:...}
+           The names are separated by ":" and are applied to current and then
+           other tabs. It is useful mainly for the last tab.
+         - new function {preg_match:[0-9]*:some text with number 25452 in it},
+           which returns 25452 (based on specified regular expression)
 09/21/05 - removed not closed html table tag from images.php in ImageManager
 (brazda)
 09/14/05 - fix to allow admins to assign slice permissions also to users from 

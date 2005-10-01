@@ -318,7 +318,6 @@ TD.leftmenuy {
 
 #sitetree div {
     border-right: 1px solid #CEE0D3;
-    border-left: 1px solid #CEE0D3;
     background-repeat: repeat-y;
     background-image: url(modules/site/images/i_bg.gif);
 }
@@ -347,7 +346,6 @@ TD.leftmenuy {
     border-top: 1px solid #D8E7DC;
     border-left: 1px solid #D8E7DC;
     background-image: none;
-    padding-left: 1px;
 }
 
 #sitetree div.conditions a, #sitetree div.variables {

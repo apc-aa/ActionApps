@@ -316,7 +316,6 @@ TD.sel_title {
 
 #sitetree div {
     border-right: 1px solid #EBDABE;
-    border-left: 1px solid #EBDABE;
     background-repeat: repeat-y;
     background-image: url(modules/site/images/i_bg.gif);
 }
@@ -346,7 +345,6 @@ TD.sel_title {
     border-left: 1px solid #EBDABE;
     background-color: #EBDABE;
     background-image: none;
-    padding-left: 1px;
 }
 
 #sitetree div.conditions a, #sitetree div.variables {
