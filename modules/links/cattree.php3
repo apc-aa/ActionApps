@@ -322,12 +322,35 @@ class cattree {
         var path_delimiter    = "'. $this->path_delimiter .'"
         a=new Array()'."\n";
 
-        // cerate javascript category id->name translation table: a[334]=a[324]="Organizations"
+        // This part is not cached - There was some problems in Firefox, when
+        // treeStart was undefined, then
+
+        FrmJavascript( $js );
+        $js = '';
+
+        // create javascript category id->name translation table:
+        // a[334]=a[324]="Organizations"
+        // We collect more than one asignment to one row in order the resulting
+        // js code is as short as possible (see example above)
+        // It is not possible however to put ALL asignments for one name to one
+        // row since Firefox (at least 1.0.6) say "too much recursion", so we
+        // the asignments to group of max 100 categories
+        $names_count = array();
+        define('MAX_JS_NODES_AT_LINE',100);
         foreach ( $this->catnames as $allId => $allName) {
-            $js_arr[$allName] .= "a[$allId]=";
+            if (!$names_count[$allName]) {
+                $names_count[$allName] =1;
+            } else {
+                $names_count[$allName];
+            }
+
+            $names_count[$allName]++;
+            $index_name = (string)floor($names_count[$allName] / MAX_JS_NODES_AT_LINE) . "~$allName";
+            $js_arr[$index_name] .= "a[$allId]=";
         }
         foreach ( $js_arr as $allName => $allIds) {
-            $js .= $allIds."\"$allName\"\n";
+            list(,$name) = explode('~', $allName, 2);
+            $js .= $allIds."\"$name\"\n";
         }
 
         $js .=  '
@@ -435,7 +458,7 @@ class cattree {
         $ret .=  '</select>';
         return $ret;
     }
-    
+
     /**
     * Walks category tree and calls specified function
     *
@@ -446,21 +469,21 @@ class cattree {
         if (!isset($this->ancesors_idx) OR !is_array($this->ancesors_idx[$start_id])) {
             return false;
         }
-        
+
         foreach( $this->ancesors_idx[$start_id] as $idx ) {
             $assig = $this->assignments[$idx];
             call_user_func_array($function, array( $assig->getTo(),
                         $this->catnames[$assig->getTo()], $assig->getBase(),
                         $assig->getState(), $assig->getFrom(), $level));
-            
+
             // not crossreferenced and never ending cycles protection
             if (($assig->getBase() != '@') AND ($level <= 100)) {
                 $this->walkTree($assig->getTo(), $function, $level+1);
             }
         }
     }
-    
-    
+
+
     function count_all_links() {
         $this->updateIfNeeded();
         $toexecute   = new toexecute;
