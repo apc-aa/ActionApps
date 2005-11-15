@@ -525,7 +525,7 @@ class ItemContent {
                 }
                 // delete content just for this computed field
                 $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id='$fid'");
-                // now store the comuted value for this field
+                // now store the computed value for this field
                 insert_fnc_qte($id, $f, array('value' => $item->unalias($fnc["param"])), '');
             }
         }
@@ -581,8 +581,10 @@ class ItemContent {
                 // serve multiple values for one field
                 $order    = 0;
                 $numbered = (count($cont) > 1);
+                $set      = false;
                 unset($parameters);
-                foreach ( $cont as $v) {
+                unset($thumbnails);
+                foreach ($cont as $v) {
                     // file upload needs the $fields array, because it stores
                     // some other fields as thumbnails
                     if ($fnc["fnc"]=="fil") {
@@ -591,8 +593,8 @@ class ItemContent {
                         //Note $thumbnails is undefined the first time in this loop
                         if (is_array($thumbnails)) {
                             foreach ($thumbnails as $v_stop) {
-                                if ($v_stop==$fid) {
-                                    $stop=true;
+                                if ($v_stop == $fid) {
+                                    $stop = true;
                                 }
                             }
                         }
