@@ -135,10 +135,14 @@ class easy_scroller {
         }
         $i   = 0;
         $arr = $this->navarray();
-        while (list($k, $v) = each($arr)) {
-            if ($i++) { echo " | ";}
-            if ($v)   { echo "<a href=\"". $url. "scrl=1&amp;". $v. "\" class=\"scroller\">$k</a>"; }
-            else      { echo "<span class=\"scroller_actual\">$k</span>"; }
+        if ( count($arr) > 0 ) {
+            echo "\n<div class=\"enclose-scroller\" id=\"scroller-{$this->id}\">";
+            while (list($k, $v) = each($arr)) {
+                if ($i++) { echo " | ";}
+                if ($v)   { echo "<a href=\"". $url. "scrl=1&amp;". $v. "\" class=\"scroller\">$k</a>"; }
+                else      { echo "<span class=\"scroller_actual\">$k</span>"; }
+            }
+            echo "\n<!--/scroller-{$this->id}--></div>";
         }
     }
 }
