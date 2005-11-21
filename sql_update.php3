@@ -85,7 +85,7 @@ set_time_limit(360);
 
 function IsPaired($field, $fld_array) {
     // copy all tables
-    foreach ($fld_array as  ,$fld_info) {
+    foreach ($fld_array as $fld_info) {
         if ( $fld_info['name'] == $field ) {
             return true;
         }
