@@ -2,7 +2,7 @@
 # $Id$
 # Language: SK
 # This file was created automatically by the Mini GetText environment
-# on 22.11.2005 13:35
+# on 22.11.2005 17:38
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -193,14 +193,34 @@ $_m["Now you can dalete local file. "]
 $_m[" Delete "]
  = "";
 
-# ./diff.diff, row 263
+# ./diff.diff, row 284
 # admin/index.php3, row 176
 $_m["Move to Slice"]
  = "";
 
-# ./diff.diff, row 270
+# ./diff.diff, row 291
 # admin/index.php3, row 194
 $_m["Remove (delete from database)"]
+ = "";
+
+# ./diff.diff, row 304, 333
+$_m["Bad item ID id="]
+ = "";
+
+# ./diff.diff, row 306, 335
+# admin/itemedit.php3, row 208
+# admin/slicefieldsedit.php3, row 127
+$_m["Bad item ID id=%1"]
+ = "";
+
+# ./diff.diff, row 632, 634
+# include/menu.php3, row 177
+$_m["Empty trash"]
+ = "Vysypaù kÙö";
+
+# ./diff.diff, row 632, 634
+# include/menu.php3, row 177
+$_m["Are You sure to empty trash?"]
  = "";
 
 # admin/se_inter_import2.php3, row 30
@@ -279,7 +299,7 @@ $_m["Alerts Selection"]
  = "";
 
 # admin/se_view.php3, row 77
-# admin/um_gedit.php3, row 243
+# admin/um_gedit.php3, row 251
 # admin/se_inputform.php3, row 443
 # include/constants.php3, row 250
 # include/constedit.php3, row 51
@@ -452,8 +472,8 @@ $_m["No discussion comments"]
 # admin/se_nodes.php3, row 168
 # admin/se_views.php3, row 70
 # admin/slicedel.php3, row 45
-# admin/um_gedit.php3, row 176
-# admin/um_uedit.php3, row 205
+# admin/um_gedit.php3, row 184
+# admin/um_uedit.php3, row 212
 # admin/se_rssfeeds.php3, row 183
 # include/searchbar.class.php3, row 446
 # include/formutil.php3, row 1158, 1193, 1237
@@ -468,8 +488,8 @@ $_m["Delete"]
 # admin/se_fields.php3, row 74
 # admin/se_nodes.php3, row 167
 # admin/se_views.php3, row 68
-# admin/um_gedit.php3, row 174
-# admin/um_uedit.php3, row 203
+# admin/um_gedit.php3, row 182
+# admin/um_uedit.php3, row 210
 # admin/se_rssfeeds.php3, row 182
 # include/formutil.php3, row 1147, 1192, 2373
 # include/filedit.php3, row 115
@@ -509,7 +529,7 @@ $_m["Subject"]
 # admin/se_newuser.php3, row 49, 107
 # admin/setup.php3, row 91, 226
 # admin/slicewiz.php3, row 79
-# admin/um_uedit.php3, row 264
+# admin/um_uedit.php3, row 271
 # include/um_uedit.php3, row 33, 34, 35
 $_m["E-mail"]
  = "";
@@ -547,8 +567,8 @@ $_m["Edit comment"]
 # admin/se_import.php3, row 114
 # admin/se_mapping.php3, row 193
 # admin/se_search.php3, row 154
-# admin/um_gedit.php3, row 228
-# admin/um_uedit.php3, row 305
+# admin/um_gedit.php3, row 236
+# admin/um_uedit.php3, row 312
 # include/searchbar.class.php3, row 444
 # include/formutil.php3, row 1988
 $_m["Update"]
@@ -706,11 +726,6 @@ $_m["There are too many related items. The number of related items is limited."]
 # admin/itemedit.php3, row 200
 # admin/slicefieldsedit.php3, row 119
 $_m["Error: no fields."]
- = "";
-
-# admin/itemedit.php3, row 208
-# admin/slicefieldsedit.php3, row 127
-$_m["Bad item ID id=%1"]
  = "";
 
 # admin/itemedit.php3, row 239
@@ -1487,7 +1502,7 @@ $_m["No permission to create new user"]
 # admin/se_newuser.php3, row 46, 102
 # admin/setup.php3, row 86, 219
 # admin/slicewiz.php3, row 74
-# admin/um_uedit.php3, row 255, 258
+# admin/um_uedit.php3, row 262, 265
 # include/um_uedit.php3, row 28
 $_m["Login name"]
  = "UûivateæskÈ meno";
@@ -1497,21 +1512,21 @@ $_m["Login name"]
 # admin/setup.php3, row 87, 220
 # admin/aarsstest.php3, row 131
 # admin/slicewiz.php3, row 75
-# admin/um_uedit.php3, row 260
+# admin/um_uedit.php3, row 267
 # include/um_uedit.php3, row 30
 $_m["Password"]
  = "Heslo";
 
 # admin/se_newuser.php3, row 48, 104
 # admin/slicewiz.php3, row 76
-# admin/um_uedit.php3, row 261
+# admin/um_uedit.php3, row 268
 # include/um_uedit.php3, row 31
 $_m["Retype password"]
  = "Potvrdiù heslo";
 
 # admin/se_newuser.php3, row 52, 106
 # admin/slicewiz.php3, row 78
-# admin/um_uedit.php3, row 263
+# admin/um_uedit.php3, row 270
 # include/um_uedit.php3, row 36
 $_m["Surname"]
  = "Priezvisko";
@@ -1519,7 +1534,7 @@ $_m["Surname"]
 # admin/se_newuser.php3, row 53, 105
 # admin/setup.php3, row 89, 224
 # admin/slicewiz.php3, row 77
-# admin/um_uedit.php3, row 262
+# admin/um_uedit.php3, row 269
 # include/um_uedit.php3, row 37
 $_m["First name"]
  = "Meno";
@@ -1544,8 +1559,8 @@ $_m["User successfully added to permission system"]
 
 # admin/se_newuser.php3, row 74
 # admin/se_users_add.php3, row 63, 68
-# admin/um_gedit.php3, row 158, 260
-# admin/um_uedit.php3, row 186, 280
+# admin/um_gedit.php3, row 166, 268
+# admin/um_uedit.php3, row 193, 287
 # include/searchbar.class.php3, row 346, 420
 # include/tabledit.php3, row 523
 # include/um_gsrch.php3, row 42
@@ -1557,15 +1572,15 @@ $_m["New user in permission system"]
  = "Nov˝ uûivateæ v systÈme";
 
 # admin/se_newuser.php3, row 96
-# admin/um_uedit.php3, row 249
+# admin/um_uedit.php3, row 256
 $_m["New user"]
  = "Nov˝ uûivateæ";
 
 # admin/se_newuser.php3, row 116
 # admin/se_nodes.php3, row 169
 # admin/sliceadd.php3, row 79
-# admin/um_gedit.php3, row 224
-# admin/um_uedit.php3, row 299
+# admin/um_gedit.php3, row 232
+# admin/um_uedit.php3, row 306
 # admin/se_rssfeeds.php3, row 184
 # include/formutil.php3, row 58, 1141, 1203, 1235
 # include/mlx.php, row 344
@@ -1867,7 +1882,7 @@ $_m["Administrator"]
  = "Administr·tor";
 
 # admin/se_users.php3, row 91
-# include/um_util.php3, row 74, 128
+# include/um_util.php3, row 74, 127
 $_m["Revoke"]
  = "Odstr·niù";
 
@@ -1892,15 +1907,15 @@ $_m["Search user or group"]
  = "Hæadej uûivateæa alebo skupinu";
 
 # admin/se_users_add.php3, row 61
-# admin/um_gedit.php3, row 248
-# admin/um_uedit.php3, row 178
+# admin/um_gedit.php3, row 256
+# admin/um_uedit.php3, row 185
 # include/menu_aa.php3, row 38
 $_m["Users"]
  = "Uûivatelia";
 
 # admin/se_users_add.php3, row 66
-# admin/um_gedit.php3, row 149
-# admin/um_uedit.php3, row 274
+# admin/um_gedit.php3, row 157
+# admin/um_uedit.php3, row 281
 # include/menu_aa.php3, row 42
 # include/um_gsrch.php3, row 36
 $_m["Groups"]
@@ -1971,7 +1986,7 @@ $_m["This script can't be used on a configured system."]
  = "";
 
 # admin/setup.php3, row 81
-# admin/um_uedit.php3, row 267
+# admin/um_uedit.php3, row 274
 $_m["Superadmin account"]
  = "AdministratÌvny ˙Ëet";
 
@@ -2014,7 +2029,7 @@ $_m["Database is not configured correctly or the database is empty.<br>\n"
 
 # admin/setup.php3, row 149
 # admin/aarsstest.php3, row 134
-# admin/um_uedit.php3, row 200
+# admin/um_uedit.php3, row 207
 # include/perm_emailsql.php3, row 164, 327, 334, 586
 # include/perm_sql.php3, row 178, 563
 $_m["User"]
@@ -2474,17 +2489,17 @@ $_m["User management - Groups"]
 $_m["Are you sure you want to delete selected group from whole permission system?"]
  = "";
 
-# admin/um_gedit.php3, row 145
+# admin/um_gedit.php3, row 153
 # include/menu_aa.php3, row 44
 $_m["New Group"]
  = "";
 
-# admin/um_gedit.php3, row 145
+# admin/um_gedit.php3, row 153
 # include/menu_aa.php3, row 43
 $_m["Edit Group"]
  = "";
 
-# admin/um_gedit.php3, row 171
+# admin/um_gedit.php3, row 179
 # include/constants.php3, row 246
 # include/perm_emailsql.php3, row 142, 457
 # include/um_gsrch.php3, row 45
@@ -2492,19 +2507,19 @@ $_m["Edit Group"]
 $_m["Group"]
  = "";
 
-# admin/um_gedit.php3, row 208
+# admin/um_gedit.php3, row 216
 $_m["Edit group"]
  = "Edit·cia skupiny";
 
-# admin/um_gedit.php3, row 210
+# admin/um_gedit.php3, row 218
 $_m["New group"]
  = "Nov· skupina";
 
-# admin/um_gedit.php3, row 240
+# admin/um_gedit.php3, row 248
 $_m["Group Id"]
  = "ID skupiny";
 
-# admin/um_gedit.php3, row 242
+# admin/um_gedit.php3, row 250
 # admin/se_constant.php3, row 160, 390
 # include/constants.php3, row 243
 # include/constedit.php3, row 40
@@ -2514,15 +2529,15 @@ $_m["Group Id"]
 $_m["Name"]
  = "Meno";
 
-# admin/um_gedit.php3, row 244
+# admin/um_gedit.php3, row 252
 $_m["Superadmin group"]
  = "AdministratÌvna skupina";
 
-# admin/um_gedit.php3, row 256
+# admin/um_gedit.php3, row 264
 $_m["All Users"]
  = "Vöetci uûivatelia";
 
-# admin/um_gedit.php3, row 258
+# admin/um_gedit.php3, row 266
 $_m["Group's Users"]
  = "Uûivatelia v skupine";
 
@@ -2534,25 +2549,25 @@ $_m["User management - Users"]
 $_m["Are you sure you want to delete selected user from whole permission system?"]
  = "";
 
-# admin/um_uedit.php3, row 171
+# admin/um_uedit.php3, row 178
 # include/menu_aa.php3, row 40
 $_m["New User"]
  = "Nov˝ uûivateæ";
 
-# admin/um_uedit.php3, row 171, 247
+# admin/um_uedit.php3, row 178, 254
 # include/menu_aa.php3, row 39
 $_m["Edit User"]
  = "Edit·cia uûivateæa";
 
-# admin/um_uedit.php3, row 256
+# admin/um_uedit.php3, row 263
 $_m["User Id"]
  = "";
 
-# admin/um_uedit.php3, row 276
+# admin/um_uedit.php3, row 283
 $_m["All Groups"]
  = "Vöetky skupiny";
 
-# admin/um_uedit.php3, row 278
+# admin/um_uedit.php3, row 285
 $_m["User's Groups"]
  = "Uûivateæove skupiny";
 
@@ -2769,7 +2784,7 @@ $_m["Source of CSV data"]
  = "";
 
 # admin/se_csv_import.php3, row 227
-# include/easy_scroller.php3, row 121, 208
+# include/easy_scroller.php3, row 121, 212
 $_m["Next"]
  = "";
 
@@ -4007,14 +4022,6 @@ $_m["Trash bin"]
 $_m["Setting"]
  = "";
 
-# include/menu.php3, row 177
-$_m["Empty trash"]
- = "Vysypaù kÙö";
-
-# include/menu.php3, row 177
-$_m["Are You sure to empty trash?"]
- = "";
-
 # include/menu.php3, row 179
 $_m["Set Debug OFF"]
  = "";
@@ -4539,7 +4546,7 @@ $_m["3rd parameter filled in DiscussionMailList field"]
 $_m["%1th parameter filled in DiscussionMailList field"]
  = "";
 
-# include/easy_scroller.php3, row 109, 198
+# include/easy_scroller.php3, row 109, 202
 $_m["Previous"]
  = "";
 
@@ -4939,6 +4946,18 @@ $_m["Internal error when changing user role."]
 
 # include/um_util.php3, row 72
 $_m["Object"]
+ = "";
+
+# include/um_util.php3, row 123, 141
+$_m["ADMINISTRATOR"]
+ = "";
+
+# include/um_util.php3, row 139
+$_m["AUTHOR"]
+ = "";
+
+# include/um_util.php3, row 140
+$_m["EDITOR"]
  = "";
 
 # include/slicewiz.php3, row 13

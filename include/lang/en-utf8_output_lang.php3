@@ -2,7 +2,7 @@
 # $Id$
 # Language: EN-UTF8
 # This file was created automatically by the Mini GetText environment
-# on 22.11.2005 13:35
+# on 22.11.2005 17:38
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -265,11 +265,11 @@ $_m["Home"]
 $_m["All"]
  = "";
 
-# include/easy_scroller.php3, row 109, 198
+# include/easy_scroller.php3, row 109, 202
 $_m["Previous"]
  = "";
 
-# include/easy_scroller.php3, row 121, 208
+# include/easy_scroller.php3, row 121, 212
 $_m["Next"]
  = "";
 
