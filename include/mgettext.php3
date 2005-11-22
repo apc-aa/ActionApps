@@ -29,11 +29,9 @@ http://www.apc.org/
 */
 
 /** Returns current language (two-letter acronym, e.g. "es", "cz"). */
-function get_mgettext_lang () {
+function get_mgettext_lang() {
     global $mgettext_lang;
-    if (!isset ($mgettext_lang))
-        return "en";
-    else return $mgettext_lang;
+    return isset($mgettext_lang) ? $mgettext_lang : 'en';
 }
 
 /** Reads language constants from given file/
@@ -47,18 +45,21 @@ function get_mgettext_lang () {
 *                     translations from the previous lang file. You do so by
 *                     sending the language shortcut.
 */
-function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
+function bind_mgettext_domain($filename, $cache = false, $lang = "") {
     global $_m, $mgettext_lang, $mgettext_domain;
 
-    if ( $mgettext_domain == $filename )
+    if ( $mgettext_domain == $filename ) {
         return;                             // allready loaded
+    }
 
     // store strings into backup and look for new strings in backup
-    if (!$_m_backup[$mgettext_domain] && $cache)
+    if (!$_m_backup[$mgettext_domain] && $cache) {
         $_m_backup[$mgettext_domain] = $_m;
+    }
 
-    if ( $mgettext_domain == $filename )
+    if ( $mgettext_domain == $filename ) {
         return;                             // allready loaded
+    }
 
     $mgettext_domain = $filename;
     if ($cache) {
@@ -69,10 +70,10 @@ function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
     if ( !is_file($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
 //        exit;
-    }
-    else {
-        if ($lang != get_mgettext_lang())
+    } else {
+        if ($lang != get_mgettext_lang()) {
             $_m = "";
+        }
         include $filename;
     }
 }
@@ -86,18 +87,20 @@ function bind_mgettext_domain ($filename, $cache = false, $lang = "") {
 *   @return  if translation in the active language (get_mgettext_lang()) does not yet exist,
 *                 returns $id, i.e. the English version
 */
-function _m ($id, $params = 0) {
+function _m($id, $params = 0) {
     global $_m;
 
     $retval = $_m[$id];
-    if (!$retval)
+    if (!$retval) {
         $retval = $id;
+    }
 
     if (is_array($params)) {
         $foo = "#$&*-";
         $retval = str_replace ('\%', $foo, $retval);
-        for ($i = 0; $i < count ($params); $i ++)
+        for ($i = 0; $i < count ($params); $i ++) {
             $retval = str_replace ("%".($i+1), $params[$i], $retval);
+        }
         $retval = str_replace ($foo, "%", $retval);
     }
 
@@ -106,7 +109,7 @@ function _m ($id, $params = 0) {
 
 /** Works the same as _m() but is not parsed by xmgettext. This way it is
 *   useful to translate a non constant message, counted at run-time. */
-function _mdelayed ($id, $params = 0) {
-    return _m ($id, $params);
+function _mdelayed($id, $params = 0) {
+    return _m($id, $params);
 }
 ?>

@@ -530,7 +530,7 @@ function FindReaderGroups($pattern) {
 function FindReaderUsers($pattern) {
     global $db;
     $db->tquery("SELECT content.text AS name, content.item_id AS id
-                   FROM slice 
+                   FROM slice
              INNER JOIN field ON slice.id=field.slice_id
              INNER JOIN item ON slice.id = item.slice_id
              INNER JOIN content ON item.id=content.item_id AND content.field_id = field.id

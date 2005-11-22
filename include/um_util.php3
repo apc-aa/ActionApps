@@ -107,26 +107,25 @@ function PrintModulePermModificator($selected_user, $form_buttons='', $sess='', 
 
 
 function PrintModulePermRow($mid, $type, $name, $perm, $odd=false) {
-  global $MODULES, $perms_roles_modules, $perms_roles;
-  echo "<tr>
-         <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." align='top'>".$MODULES[$type]['name'] .":&nbsp;$name<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
-         <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>";
-  if ( isset($perms_roles_modules[$type]) AND is_array($perms_roles_modules[$type]) ) {
-    reset($perms_roles_modules[$type]);
-    while ( list( ,$role) = each( $perms_roles_modules[$type] ) ) {
-      echo "<input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"$role\"";
-      echo ( ComparePerms($perm,$perms_roles[$role]['id'])=='E' ) ?
-                                                             ' checked>' : '>';
-      echo "$role ";
+    global $MODULES, $perms_roles_modules, $perms_roles;
+    echo "<tr>
+        <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." align='top'>".$MODULES[$type]['name'] .":&nbsp;$name<br>&nbsp;&nbsp;&nbsp;&nbsp;($mid)</td>
+        <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>";
+    if ( isset($perms_roles_modules[$type]) AND is_array($perms_roles_modules[$type]) ) {
+        foreach ($perms_roles_modules[$type] as $role) {
+            echo "<input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"$role\"";
+            echo ( ComparePerms($perm,$perms_roles[$role]['id'])=='E' ) ?
+            ' checked>' : '>';
+            echo _mdelayed($role). ' ';
+        }
+    } else {
+        echo "<input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"ADMINISTRATOR\"
+        checked>" . _m('ADMINISTRATOR');
     }
-  } else {
-    echo "<input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"ADMINISTRATOR\"
-          checked>ADMINISTRATOR";
-  }
-  echo "  </td>
-          <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>
-            <input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"REVOKE\">". _m("Revoke") ."</td>
-        </tr>";
+    echo "  </td>
+    <td ".($odd ? " bgcolor=\"".COLOR_BACKGROUND."\"" : "")." nowrap align='top'>
+    <input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"REVOKE\">". _m("Revoke") ."</td>
+    </tr>";
 }
 
 
@@ -136,11 +135,11 @@ function PrintModuleAddRow($mod_options, $no) {
                <option> </option>
                $mod_options</select></td>
          <td><select name=\"new_module_role[$no]\">
-               <option> </option>
-<option>AUTHOR</option>
-<option>EDITOR</option>
-<option>ADMINISTRATOR</option>
-</select></td>
+                <option> </option>
+                <option value=\"AUTHOR\">". _m('AUTHOR'). "</option>
+                <option value=\"EDITOR\">". _m('EDITOR'). "</option>
+                <option value=\"ADMINISTRATOR\">". _m('ADMINISTRATOR'). "</option>
+             </select></td>
         </tr>";
 }
 
@@ -190,15 +189,18 @@ function GetModuleLetter($type) {
 
 function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
   <script language="JavaScript"><!--
-    var mod = new Array();
+    var mod       = new Array();
+    var mod_names = new Array();
     <?php
       // tell javascript, which module uses which permission roles
       echo "\n var mod_types='$mod_types';\n";
       reset($MODULES);
       while ( list($k,$v) = each($MODULES) ) {
         $letter = GetModuleLetter($k);             // get 'letter' or first letter of MODULE type
-        if ( isset($perms_roles_modules[$k]) AND is_array($perms_roles_modules[$k]) )
+        if ( isset($perms_roles_modules[$k]) AND is_array($perms_roles_modules[$k]) ) {
           echo " mod[".ord($letter)."] = new Array('". join("','", $perms_roles_modules[$k]) ."');  // module type $k\n";
+          echo " mod_names[".ord($letter)."] = new Array('". join("','", array_map( '_mdelayed', $perms_roles_modules[$k])) ."');\n";
+        }
       }
     ?>
     // set right roles for modules listed in 'Add rows'

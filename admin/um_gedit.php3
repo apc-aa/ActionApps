@@ -123,17 +123,25 @@ function RealyDelete() {
 function SetRole(no) {
     var idx=document.f.elements['new_module['+no+']'].selectedIndex;
     var roles;
+    var roles_names;
     // which roles is defined for the module
-      roles = ( idx > 0 ) ? mod[mod_types.charCodeAt(idx-1)] : new Array('                     ');
+    if ( idx > 0 ) {
+        roles       = mod[mod_types.charCodeAt(idx-1)];
+        roles_names = mod_names[mod_types.charCodeAt(idx-1)];
+    } else {
+        roles       = new Array('                     ');
+        roles_names = new Array('                     ');
+    }
     // clear selectbox
     for ( i=(document.f.elements['new_module_role['+no+']'].options.length-1); i>=0; i--){
-      document.f.elements['new_module_role['+no+']'].options[i] = null
+        document.f.elements['new_module_role['+no+']'].options[i] = null
     }
     // fill selectbox from the right slice
     for ( i=0; i<roles.length ; i++) {
-      document.f.elements['new_module_role['+no+']'].options[i] = new Option(roles[i], roles[i])
+        document.f.elements['new_module_role['+no+']'].options[i] = new Option(roles_names[i], roles[i])
     }
 }
+
 // -->
 </SCRIPT>
 </HEAD>
