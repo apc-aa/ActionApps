@@ -2,7 +2,7 @@
 # $Id$
 # Language: RO
 # This file was created automatically by the Mini GetText environment
-# on 23.6.2005 17:27
+# on 22.11.2005 13:35
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -62,8 +62,8 @@ $_m["number of current page (on pagescroller)"]
 $_m["page length (number of items)"]
  = "";
 
-# ./slice.php3, row 559
-# include/view.php3, row 423
+# ./slice.php3, row 560
+# include/view.php3, row 496
 $_m["No item found"]
  = "";
 
@@ -233,63 +233,63 @@ $_m["Current MLX language"]
 $_m["HTML markup direction tag (e.g. DIR=RTL)"]
  = "";
 
-# include/item.php3, row 120
+# include/item.php3, row 113
 $_m["Constant name"]
  = "Nume constantã";
 
-# include/item.php3, row 121
+# include/item.php3, row 114
 $_m["Constant value"]
  = "Valoare constantã";
 
-# include/item.php3, row 122
+# include/item.php3, row 115
 $_m["Constant priority"]
  = "Prioritate constantã";
 
-# include/item.php3, row 123
+# include/item.php3, row 116
 $_m["Constant group id"]
  = "grup id al constantei";
 
-# include/item.php3, row 124
+# include/item.php3, row 117
 $_m["Category class (for categories only)"]
  = "Clasã categorie (numai pentru categorii)";
 
-# include/item.php3, row 125
+# include/item.php3, row 118
 $_m["Constant number"]
  = "Numãr constante";
 
-# include/item.php3, row 126
+# include/item.php3, row 119
 $_m["Constant unique id (32-haxadecimal characters)"]
  = "";
 
-# include/item.php3, row 127
+# include/item.php3, row 120
 $_m["Constant unique short id (autoincremented from '1' for each constant in the system)"]
  = "";
 
-# include/item.php3, row 128
+# include/item.php3, row 121
 $_m["Constant description"]
  = "";
 
-# include/item.php3, row 129
+# include/item.php3, row 122
 $_m["Constant level (used for hierachical constants)"]
  = "";
 
-# include/item.php3, row 161
+# include/item.php3, row 154
 $_m["Alias for %1"]
  = "";
 
-# include/item.php3, row 1108
+# include/item.php3, row 1107
 $_m["on"]
  = "";
 
-# include/item.php3, row 1108
+# include/item.php3, row 1107
 $_m["off"]
  = "";
 
-# include/item.php3, row 1230
+# include/item.php3, row 1229
 $_m["Back"]
  = "";
 
-# include/item.php3, row 1231
+# include/item.php3, row 1230
 $_m["Home"]
  = "";
 

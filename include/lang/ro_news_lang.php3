@@ -2,7 +2,7 @@
 # $Id$
 # Language: RO
 # This file was created automatically by the Mini GetText environment
-# on 23.6.2005 17:26
+# on 22.11.2005 13:35
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -166,6 +166,18 @@ $_m[" -- Empty -- "]
 $_m["Existing remote imports into the slice "]
  = "Importuri distante existente cãtre secþiune ";
 
+$_m["Bad item ID"]
+ = "ID articol greºit";
+
+$_m["Where are these constants used?"]
+ = "Unde sunt aceste constante folosite?";
+
+$_m["Are you sure you want to PERMANENTLY DELETE this group? Type yes or no."]
+ = "Sunteþi sigur cã doriþi sã ªTERGEÞI IREVOCABIL acest grup? Tastaþi da sau nu.";
+
+$_m["Admin - User Management"]
+ = "Admin - Administrare utilizatori";
+
 # End of unused messages
 # ./filler.php3, row 166
 # ./offline.php3, row 82
@@ -178,9 +190,9 @@ $_m["Bad slice ID"]
  = "ID secþiune greºit";
 
 # ./filler.php3, row 194
-# admin/se_inputform.php3, row 204
-# include/formutil.php3, row 239
-# include/itemfunc.php3, row 530
+# admin/se_inputform.php3, row 215
+# include/formutil.php3, row 250
+# include/itemfunc.php3, row 537
 $_m["No fields defined for this slice"]
  = "Nici un cîmp definit pentru aceastã secþiune";
 
@@ -219,6 +231,16 @@ $_m["Now you can dalete local file. "]
 # ./offline.php3, row 129
 $_m[" Delete "]
  = " ªterge ";
+
+# ./diff.diff, row 263
+# admin/index.php3, row 176
+$_m["Move to Slice"]
+ = "";
+
+# ./diff.diff, row 270
+# admin/index.php3, row 194
+$_m["Remove (delete from database)"]
+ = "";
 
 # admin/se_inter_import2.php3, row 30
 # admin/se_filters.php3, row 36
@@ -296,8 +318,8 @@ $_m["Alerts Selection"]
  = "";
 
 # admin/se_view.php3, row 77
-# admin/um_gedit.php3, row 240
-# admin/se_inputform.php3, row 426
+# admin/um_gedit.php3, row 243
+# admin/se_inputform.php3, row 443
 # include/constants.php3, row 250
 # include/constedit.php3, row 51
 # include/tv_email.php3, row 95, 154
@@ -310,38 +332,38 @@ $_m["If you need more selections, use 'Update' and on next Edit two empty boxes 
  = "";
 
 # admin/se_view.php3, row 122, 230
-# admin/se_admin.php3, row 70
+# admin/se_admin.php3, row 72
 # admin/se_compact.php3, row 88
-# admin/se_fulltext.php3, row 75
+# admin/se_fulltext.php3, row 76
 # admin/write_mail.php3, row 73
 $_m["Can't change slice settings"]
  = "Nu pot schimba setãrile secþiunii";
 
 # admin/se_view.php3, row 136, 137
-# admin/se_compact.php3, row 212
-# admin/se_profile.php3, row 130
+# admin/se_compact.php3, row 208
+# admin/se_profile.php3, row 88
 $_m["Ascending"]
  = "Crescãtor";
 
 # admin/se_view.php3, row 136, 137
-# admin/se_compact.php3, row 212
-# admin/se_profile.php3, row 130
+# admin/se_compact.php3, row 208
+# admin/se_profile.php3, row 88
 # include/searchbar.class.php3, row 413
 $_m["Descending"]
  = "Descrescãtor";
 
 # admin/se_view.php3, row 137
-# admin/se_compact.php3, row 212
+# admin/se_compact.php3, row 208
 $_m["Ascending by Priority"]
  = "Crescãtor în funcþie de prioritate";
 
 # admin/se_view.php3, row 137
-# admin/se_compact.php3, row 212
+# admin/se_compact.php3, row 208
 $_m["Descending by Priority"]
  = "Descrescãtor în funcþie de prioritate";
 
 # admin/se_view.php3, row 184
-# admin/se_views.php3, row 35
+# admin/se_views.php3, row 36
 $_m["You do not have permission to change views"]
  = "Nu aveþi dreptul sã schimbaþi  vederi";
 
@@ -354,28 +376,28 @@ $_m["Can't insert into view."]
 $_m["View successfully changed"]
  = "Vedere schimbatã cu succes";
 
-# admin/se_view.php3, row 315, 341
-# admin/se_views.php3, row 80, 114
+# admin/se_view.php3, row 313, 339
+# admin/se_views.php3, row 81, 115
 $_m["Admin - design View"]
  = "Admin - design Vedere";
 
-# admin/se_view.php3, row 353
-# admin/se_views.php3, row 127
+# admin/se_view.php3, row 351
+# admin/se_views.php3, row 121
 $_m["Defined Views"]
  = "Vederi definite";
 
-# admin/se_view.php3, row 354
-# admin/se_fieldid.php3, row 277
-# admin/se_fields.php3, row 208
+# admin/se_view.php3, row 352
+# admin/se_fieldid.php3, row 291
+# admin/se_fields.php3, row 219
 # admin/slicedit.php3, row 145
-# admin/anonym_wizard.php3, row 209
+# admin/anonym_wizard.php3, row 196
 # include/constants.php3, row 249
 # include/tableviews.php3, row 121, 135
 $_m["Id"]
  = "";
 
-# admin/se_view.php3, row 417
-# admin/se_views.php3, row 196
+# admin/se_view.php3, row 415
+# admin/se_views.php3, row 189
 # admin/slicedit.php3, row 150
 $_m["<br>To include slice in your webpage type next line \n"
    ."                         to your shtml code: "]
@@ -414,7 +436,7 @@ $_m["You don't have permissions to edit all items."]
  = "";
 
 # admin/discedit.php3, row 86
-# admin/se_mapping.php3, row 141, 194
+# admin/se_mapping.php3, row 133, 186
 $_m["Admin - Content Pooling - Fields' Mapping"]
  = "Admin - Transfer conþinut - Mapare cîmpuri";
 
@@ -453,7 +475,7 @@ $_m["Date"]
 # admin/discedit.php3, row 124
 # admin/aarsstest.php3, row 91
 # admin/rsstest.php3, row 86
-# include/formutil.php3, row 1173
+# include/formutil.php3, row 1184
 # include/manager.class.php3, row 168
 $_m["Actions"]
  = "Acþiuni";
@@ -463,37 +485,35 @@ $_m["No discussion comments"]
  = "Fãrã comentarii discuþie";
 
 # admin/discedit.php3, row 159
-# admin/se_fields.php3, row 75, 77
+# admin/se_fields.php3, row 76, 78
 # admin/se_inter_export.php3, row 124
 # admin/se_inter_import.php3, row 131
 # admin/se_nodes.php3, row 168
-# admin/se_views.php3, row 69
+# admin/se_views.php3, row 70
 # admin/slicedel.php3, row 45
-# admin/um_gedit.php3, row 174
-# admin/um_uedit.php3, row 198
+# admin/um_gedit.php3, row 176
+# admin/um_uedit.php3, row 205
 # admin/se_rssfeeds.php3, row 183
 # include/searchbar.class.php3, row 446
-# include/formutil.php3, row 1147, 1182, 1226
+# include/formutil.php3, row 1158, 1193, 1237
 # include/profile.php3, row 33
 # include/menu_aa.php3, row 33
 # include/um_gsrch.php3, row 48
-# include/um_usrch.php3, row 83
 $_m["Delete"]
  = "ªterge";
 
 # admin/discedit.php3, row 161
 # admin/prev_navigation.php3, row 33
-# admin/se_fields.php3, row 73
+# admin/se_fields.php3, row 74
 # admin/se_nodes.php3, row 167
-# admin/se_views.php3, row 67
-# admin/um_gedit.php3, row 172
-# admin/um_uedit.php3, row 196
+# admin/se_views.php3, row 68
+# admin/um_gedit.php3, row 174
+# admin/um_uedit.php3, row 203
 # admin/se_rssfeeds.php3, row 182
-# include/formutil.php3, row 1136, 1181, 2344
+# include/formutil.php3, row 1147, 1192, 2373
 # include/filedit.php3, row 115
+# include/mlx.php, row 340
 # include/um_gsrch.php3, row 47
-# include/um_usrch.php3, row 82
-# include/mlx.php, row 335
 $_m["Edit"]
  = "Editare";
 
@@ -508,8 +528,8 @@ $_m["Approve"]
 # admin/discedit.php3, row 172
 # admin/related_sel.php3, row 201
 # admin/se_users_add.php3, row 48
-# include/item.php3, row 1230
-# include/util.php3, row 1170
+# include/item.php3, row 1229
+# include/util.php3, row 1217
 # include/msgpage.php3, row 72
 $_m["Back"]
  = "Înapoi";
@@ -528,7 +548,7 @@ $_m["Subject"]
 # admin/se_newuser.php3, row 49, 107
 # admin/setup.php3, row 91, 226
 # admin/slicewiz.php3, row 79
-# admin/um_uedit.php3, row 267
+# admin/um_uedit.php3, row 264
 # include/um_uedit.php3, row 33, 34, 35
 $_m["E-mail"]
  = "";
@@ -564,25 +584,25 @@ $_m["Edit comment"]
 # admin/discedit2.php3, row 128
 # admin/se_filters.php3, row 248
 # admin/se_import.php3, row 114
-# admin/se_mapping.php3, row 201
+# admin/se_mapping.php3, row 193
 # admin/se_search.php3, row 154
-# admin/um_gedit.php3, row 226
-# admin/um_uedit.php3, row 333
+# admin/um_gedit.php3, row 228
+# admin/um_uedit.php3, row 305
 # include/searchbar.class.php3, row 444
-# include/formutil.php3, row 1965
+# include/formutil.php3, row 1988
 $_m["Update"]
  = "Actualizare";
 
 # admin/discedit2.php3, row 129
-# include/formutil.php3, row 162, 2004
+# include/formutil.php3, row 171, 2027
 $_m["Reset form"]
  = "Resetare formular";
 
 # admin/discedit2.php3, row 130
 # admin/se_newuser.php3, row 117
-# admin/se_search.php3, row 155
 # admin/sliceimp.php3, row 438, 473
-# include/formutil.php3, row 167, 1997
+# admin/se_search.php3, row 155
+# include/formutil.php3, row 177, 2020
 $_m["Cancel"]
  = "Anulare";
 
@@ -597,8 +617,8 @@ $_m["Export selected items to selected slice"]
 # admin/feed_to.php3, row 57
 # admin/slicedit.php3, row 143
 # include/constants.php3, row 56
-# include/menu_util.php3, row 60
 # include/menu.php3, row 119
+# include/menu_util.php3, row 60
 # include/sliceadd.php3, row 54, 82
 $_m["Slice"]
  = "Sectiune";
@@ -618,12 +638,12 @@ $_m["Active"]
 $_m["Do not export to this slice"]
  = "";
 
-# admin/feed_to.php3, row 78
+# admin/feed_to.php3, row 76
 $_m["No permission to set feeding for any slice"]
  = "Setarea alimentãrii altor secþiuni nepermis";
 
-# admin/feed_to.php3, row 81
-# admin/index.php3, row 169
+# admin/feed_to.php3, row 79
+# admin/index.php3, row 171
 # include/menu_aa.php3, row 47
 $_m["Export"]
  = "Exportã";
@@ -645,7 +665,7 @@ $_m["Unable to mkdir"]
  = "";
 
 # admin/fileman.php3, row 90, 96
-# include/menu.php3, row 150
+# include/menu.php3, row 149
 # include/filedit.php3, row 63, 69
 $_m["File Manager"]
  = "Administrator fiºiere";
@@ -679,41 +699,41 @@ $_m["Copy template dir"]
 $_m["Create new directory"]
  = "Creare director nou";
 
-# admin/index.php3, row 129
+# admin/index.php3, row 131
 $_m["You do not have permission to edit items in the slice:"]
  = "";
 
-# admin/index.php3, row 157
+# admin/index.php3, row 159
 $_m["Move to Active"]
  = "Mutã în Activ";
 
-# admin/index.php3, row 161
+# admin/index.php3, row 163
 $_m["Move to Holding bin"]
  = "Mutã în Reþinut";
 
-# admin/index.php3, row 165
+# admin/index.php3, row 167
 $_m["Move to Trash"]
  = "Mutã în Coº";
 
-# admin/index.php3, row 173
+# admin/index.php3, row 180
 # admin/se_csv_import.php3, row 226
-# admin/se_csv_import2.php3, row 241
+# admin/se_csv_import2.php3, row 238
 $_m["Preview"]
  = "Vizualizare";
 
-# admin/index.php3, row 177
+# admin/index.php3, row 184
 $_m["Modify content"]
  = "";
 
-# admin/index.php3, row 181
+# admin/index.php3, row 188
 $_m["Send email"]
  = "";
 
-# admin/index.php3, row 194
+# admin/index.php3, row 204
 $_m["ActionApps - Reader Manager"]
  = "";
 
-# admin/index.php3, row 195
+# admin/index.php3, row 205
 $_m["ActionApps - Item Manager"]
  = "";
 
@@ -722,21 +742,22 @@ $_m["ActionApps - Item Manager"]
 $_m["There are too many related items. The number of related items is limited."]
  = "Sunt prea multe articole înrudite. Numãrul articolelor înrudite este limitatã.";
 
-# admin/itemedit.php3, row 199
+# admin/itemedit.php3, row 200
+# admin/slicefieldsedit.php3, row 119
 $_m["Error: no fields."]
  = "";
 
-# admin/itemedit.php3, row 207
-# include/mlx.php, row 387
-$_m["Bad item ID"]
- = "ID articol greºit";
+# admin/itemedit.php3, row 208
+# admin/slicefieldsedit.php3, row 127
+$_m["Bad item ID id=%1"]
+ = "";
 
-# admin/itemedit.php3, row 233
-# include/menu.php3, row 65
+# admin/itemedit.php3, row 239
+# include/menu.php3, row 64
 $_m["Add Item"]
  = "Adãugare articol";
 
-# admin/itemedit.php3, row 233
+# admin/itemedit.php3, row 239
 $_m["Edit Item"]
  = "Editare articol";
 
@@ -750,116 +771,129 @@ $_m["OK"]
 $_m["Editor window - item manager, related selection window"]
  = "";
 
-# admin/se_admin.php3, row 36
+# admin/se_admin.php3, row 37
 $_m["You have no permission to set configuration parameters of this slice"]
  = "Nu aveþi dreptul sã setaþi parametrii de configuraþie pentru aceastã secþiune";
 
-# admin/se_admin.php3, row 54, 130
-# admin/se_compact.php3, row 55, 197
-# include/constants.php3, row 401, 441, 458, 502, 531, 557, 579, 618, 642, 665, 694
+# admin/se_admin.php3, row 54, 143
+# admin/se_compact.php3, row 55, 193
+# include/constants.php3, row 402, 443, 460, 504, 534, 560, 582, 621, 646, 669, 699
 # include/tableviews.php3, row 151
 $_m["Top HTML"]
  = "Cap HTML";
 
-# admin/se_admin.php3, row 55, 132
+# admin/se_admin.php3, row 55, 145
 $_m["Item format"]
  = "Format articol";
 
-# admin/se_admin.php3, row 56, 134
-# admin/se_compact.php3, row 56, 204
-# include/constants.php3, row 405, 443, 460, 505, 533, 559, 582, 622, 644, 669, 698
+# admin/se_admin.php3, row 56, 147
+# admin/se_compact.php3, row 56, 200
+# include/constants.php3, row 407, 445, 462, 508, 536, 562, 585, 626, 648, 674, 704
 # include/tableviews.php3, row 153
 $_m["Bottom HTML"]
  = "Sfîrºit HTML";
 
-# admin/se_admin.php3, row 57, 136
-# admin/se_compact.php3, row 57, 223
-# admin/se_fulltext.php3, row 57, 152
-# include/constants.php3, row 406, 444, 506, 583, 623, 645, 670, 699, 726
+# admin/se_admin.php3, row 57, 149
+# admin/se_compact.php3, row 57, 219
+# admin/se_fulltext.php3, row 57, 149
+# include/constants.php3, row 408, 446, 509, 586, 627, 649, 675, 705, 732
 $_m["Remove strings"]
  = "ªterge ºiruri";
 
-# admin/se_admin.php3, row 58, 138
-# include/constants.php3, row 434, 454, 526, 548, 574, 605, 633, 660, 689, 718
+# admin/se_admin.php3, row 58, 151
+# include/constants.php3, row 436, 456, 529, 551, 577, 608, 637, 664, 694, 724
 $_m["HTML code for \"No item found\" message"]
  = "Cod HTML în locul mesajului \"Nu am gãsit articole\"";
 
-# admin/se_admin.php3, row 81
+# admin/se_admin.php3, row 59
+# admin/se_fulltext.php3, row 58, 151
+$_m["Show discussion"]
+ = "Afiºeazã discuþia";
+
+# admin/se_admin.php3, row 87
 $_m["Admin fields update successful"]
  = "Actualizare cîmpuri Admin reuºit";
 
-# admin/se_admin.php3, row 100, 117
+# admin/se_admin.php3, row 113, 130
 $_m["Admin - design Item Manager view"]
  = "Admin - design vedere manager articole";
 
-# admin/se_admin.php3, row 123
+# admin/se_admin.php3, row 136
 # admin/se_compact.php3, row 182
-# admin/se_fulltext.php3, row 138
-# admin/se_inputform.php3, row 96, 333
+# admin/se_fulltext.php3, row 135
+# admin/se_inputform.php3, row 98, 346
 $_m["Default"]
  = "Implicit";
 
-# admin/se_admin.php3, row 128
+# admin/se_admin.php3, row 141
 $_m["Listing of items in Admin interface"]
  = "Lista articole în interfaþa Admin";
 
-# admin/se_admin.php3, row 131
-# admin/se_compact.php3, row 198, 218
-# admin/se_fulltext.php3, row 147
+# admin/se_admin.php3, row 144
+# admin/se_compact.php3, row 194, 214
+# admin/se_fulltext.php3, row 144
 $_m["HTML code which appears at the top of slice area"]
  = "Cod HTML care apare în partea de sus a ariei secþiunii";
 
-# admin/se_admin.php3, row 133
-# admin/se_compact.php3, row 200, 220
-# admin/se_fulltext.php3, row 149
+# admin/se_admin.php3, row 146
+# admin/se_compact.php3, row 196, 216
+# admin/se_fulltext.php3, row 146
 $_m["Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliase will be substituted by real values from database when it will be posted to page"]
  = "Puneþi aici codul HTML combinat cu aliasuri, pentru a forma partea de jos a paginii\n"
    ."                     <br>Aliasurile vor fi înlocuite cu valori reale din baza de date cînd vor fi trimise cãtre paginã";
 
-# admin/se_admin.php3, row 135
-# admin/se_compact.php3, row 205, 222
-# admin/se_fulltext.php3, row 151
+# admin/se_admin.php3, row 148
+# admin/se_compact.php3, row 201, 218
+# admin/se_fulltext.php3, row 148
 $_m["HTML code which appears at the bottom of slice area"]
  = "Cod HTML care apare în partea de jos a ariei secþiunii";
 
-# admin/se_admin.php3, row 137
-# admin/se_compact.php3, row 224
-# admin/se_fulltext.php3, row 153
+# admin/se_admin.php3, row 150
+# admin/se_compact.php3, row 220
+# admin/se_fulltext.php3, row 150
 $_m["Removes empty brackets etc. Use ## as delimiter."]
  = "Înlãturã paranteze goale etc. Folosiþi ## ca delimitator.";
 
-# admin/se_admin.php3, row 139
+# admin/se_admin.php3, row 152
 $_m["Code to be printed when no item is filled (or user have no permission to any item in the slice)"]
+ = "";
+
+# admin/se_admin.php3, row 153
+$_m["Use special view"]
+ = "";
+
+# admin/se_admin.php3, row 154
+$_m["You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"]
  = "";
 
 # admin/se_compact.php3, row 37
 $_m["You have not permissions to change compact view formatting"]
  = "Nu aveþi dreptul sã schimbaþi formatarea vederii compact";
 
-# admin/se_compact.php3, row 54, 199
-# include/constants.php3, row 402, 442, 503, 532, 558, 619, 666, 695
+# admin/se_compact.php3, row 54, 195
+# include/constants.php3, row 403, 444, 505, 535, 561, 622, 670, 700
 $_m["Odd Rows"]
  = "Rînduri impare";
 
-# admin/se_compact.php3, row 58, 225
+# admin/se_compact.php3, row 58, 221
 $_m["'No item found' message"]
  = "";
 
-# admin/se_compact.php3, row 60, 202
-# include/constants.php3, row 404, 504, 621, 668, 697
+# admin/se_compact.php3, row 60, 198
+# include/constants.php3, row 405, 506, 624, 672, 702
 $_m["Even Rows"]
  = "Rînduri pare";
 
-# admin/se_compact.php3, row 62, 217
+# admin/se_compact.php3, row 62, 213
 $_m["Category top HTML"]
  = "Cap HTML categorie";
 
-# admin/se_compact.php3, row 63, 219
+# admin/se_compact.php3, row 63, 215
 $_m["Category Headline"]
  = "Titlu categorie";
 
-# admin/se_compact.php3, row 64, 221
+# admin/se_compact.php3, row 64, 217
 $_m["Category bottom HTML"]
  = "Sfîrºit HTML categorie";
 
@@ -880,208 +914,107 @@ $_m["Use these boxes ( and the tags listed below ) to control what appears on su
 $_m["HTML code for index view"]
  = "Cod HTML pentru vedere sumar";
 
-# admin/se_compact.php3, row 201
-# include/constants.php3, row 403, 527, 620, 667, 696
+# admin/se_compact.php3, row 197
+# include/constants.php3, row 404, 530, 623, 671, 701
 $_m["Use different HTML code for even rows"]
  = "Foloseºte cod HTML diferit pentru rînduri pare";
 
-# admin/se_compact.php3, row 203
+# admin/se_compact.php3, row 199
 $_m["You can define different code for odd and ever rows\n"
    ."                         <br>first red, second black, for example"]
  = "Puteþi defini cod diferit pentru rînduri pare sau impare\n"
    ."                         <br>primul roºu, al doilea negru, de exemplu";
 
-# admin/se_compact.php3, row 206
-# include/constants.php3, row 417, 512, 628, 675, 704
+# admin/se_compact.php3, row 202
+# include/constants.php3, row 419, 515, 632, 680, 710
 $_m["Group by"]
  = "Grupat în funcþie de";
 
-# admin/se_compact.php3, row 211
+# admin/se_compact.php3, row 207
 $_m["Whole text"]
  = "Text întreg";
 
-# admin/se_compact.php3, row 211
+# admin/se_compact.php3, row 207
 $_m["1st letter"]
  = "Prima literã";
 
-# admin/se_compact.php3, row 211, 211
+# admin/se_compact.php3, row 207, 207
 $_m["letters"]
  = "litere";
 
-# admin/se_compact.php3, row 214
+# admin/se_compact.php3, row 210
 $_m["'by Priority' is usable just for fields using constants (like category)"]
  = "în funcþie de prioritate se poate folosi numai pentru cîmpuri cu constante (ca la categorie)";
 
-# admin/se_compact.php3, row 226
+# admin/se_compact.php3, row 222
 $_m["message to show in place of slice.php3, if no item matches the query"]
  = "mesaj de afiºat în loc de slice.php3, dacã nici un articol nu este selectat în urma interogãrii";
 
-# admin/se_constant.php3, row 42
+# admin/se_notify.php3, row 78
+# include/slicedit.php3, row 29
+$_m["You have not permissions to edit this slice"]
+ = "Nu aveþi dreptul sã editaþi aceastã secþiune";
+
+# admin/se_notify.php3, row 181, 185, 198
+$_m["Email Notifications of Events"]
+ = "Notificãri e-mail al evenimentelor";
+
+# admin/se_notify.php3, row 211
+$_m["<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
+ = "<h4>Articol nou în Reþinut</h4> Se poate trimite notificare prin e-mail la persoanele interesate cînd se creazã un articol nou ºi se introduce în Reþinut. Dacã doriþi sã folosiþi aceastã opþiune, introduceþi adresele de e-mail corespunzãtoare mai jos. În cîmpurile urmãtoare puteþi personaliza formatul e-mail-ului care se va trimite";
+
+# admin/se_notify.php3, row 212, 217, 222, 227
+$_m["Email addresses, one per line"]
+ = "Adrese de e-mail, cîte una în fiecare rînd";
+
+# admin/se_notify.php3, row 213, 218, 223, 228
+$_m["Subject of the Email message"]
+ = "Subiectul mesajului";
+
+# admin/se_notify.php3, row 214, 219, 224, 229
+$_m["Body of the Email message"]
+ = "Textul mesajului";
+
+# admin/se_notify.php3, row 216
+$_m["<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
+ = "<h4>Articol schimbat în Reþinut</h4> Se poate trimite notificare prin e-mail la persoanele interesate cînd se modificã un articol în Reþinut. Dacã doriþi sã folosiþi aceastã opþiune, introduceþi adresele de e-mail corespunzãtoare mai jos. În cîmpurile urmãtoare puteþi personaliza formatul e-mail-ului care se va trimite";
+
+# admin/se_notify.php3, row 221
+$_m["<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
+ = "<h4>Articol nou în Aprobat</h4> Se poate trimite notificare prin e-mail la persoanele interesate cînd se creazã un articol nou ºi se introduce în Aprobat. Dacã doriþi sã folosiþi aceastã opþiune, introduceþi adresele de e-mail corespunzãtoare mai jos. În cîmpurile urmãtoare puteþi personaliza formatul e-mail-ului care se va trimite";
+
+# admin/se_notify.php3, row 226
+$_m["<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
+ = "Articol schimbat în Aprobat</h4> Se poate trimite notificare prin e-mail la persoanele interesate cînd se modificã un articol în Aprobat. Dacã doriþi sã folosiþi aceastã opþiune, introduceþi adresele de e-mail corespunzãtoare mai jos. În cîmpurile urmãtoare puteþi personaliza formatul e-mail-ului care se va trimite";
+
 # admin/se_fieldid.php3, row 131
-# admin/se_fields.php3, row 34
+# admin/se_fields.php3, row 35
 # admin/se_javascript.php3, row 37
-# admin/se_inputform.php3, row 46
-# admin/anonym_wizard.php3, row 133
+# admin/se_inputform.php3, row 48
+# admin/anonym_wizard.php3, row 120
+# admin/se_constant.php3, row 40
 # admin/mailman_create_list.php3, row 51
+# admin/se_constant_import.php3, row 40
 $_m["You have not permissions to change fields settings"]
  = "Nu aveþi dreptul sã schimbaþi setãrile de cîmpuri";
 
-# admin/se_constant.php3, row 48
-$_m["You have not permissions to change category settings"]
- = "Nu aveþi dreptul sã schimbaþi setãrile de categorie";
-
-# admin/se_constant.php3, row 70
-$_m["You have not permissions to change fields settings for the slice owning this group"]
- = "Nu aveþi dreptul sã schimbaþi setãrile cîmpurilor pentru secþiunea care deþine acest grup";
-
-# admin/se_constant.php3, row 141
-$_m[" items changed to new value "]
- = "articole actualizate cu valoarea nouã ";
-
-# admin/se_constant.php3, row 157, 382
-# admin/um_gedit.php3, row 239
-# include/constants.php3, row 243
-# include/constedit.php3, row 40
-# include/fileman.php3, row 26
-# include/um_gedit.php3, row 25
-# include/tableviews.php3, row 122, 138
-$_m["Name"]
- = "Nume";
-
-# admin/se_constant.php3, row 158, 383
-# admin/se_profile.php3, row 195
-# admin/se_mapping.php3, row 222
-# include/constants.php3, row 244
-# include/constedit.php3, row 43
-$_m["Value"]
- = "Valoare";
-
-# admin/se_constant.php3, row 159, 384
-# admin/se_fields.php3, row 96, 209
-# include/constants.php3, row 245
-# include/constedit.php3, row 49
-$_m["Priority"]
- = "Prioritate";
-
-# admin/se_constant.php3, row 165, 321
-# include/constants.php3, row 507
-$_m["Constant Group"]
- = "Grup constante";
-
-# admin/se_constant.php3, row 172
-$_m["This constant group already exists"]
- = "Acest grup de constante deja existã";
-
-# admin/se_constant.php3, row 256
-$_m["Constants update successful"]
- = "Actualizare constante reuºit";
-
-# admin/se_constant.php3, row 267
-$_m["No category field defined in this slice.<br>Add category field to this slice first (see Field page)."]
- = "Nu sunt cîmpuri de categorie definite în aceastã secþiune.<br>Prima datã adãugaþi cîmpuri de categorie la aceastã secþiune (vezi pagina Cîmpuri).";
-
-# admin/se_constant.php3, row 287, 294
-$_m["Admin - Constants Setting"]
- = "Admin - Setare constante";
-
-# admin/se_constant.php3, row 302
-$_m["Delete whole group"]
- = "ªterge grup întreg";
-
-# admin/se_constant.php3, row 319
-# admin/se_inputform.php3, row 309
-$_m["Constants"]
- = "Constante";
-
-# admin/se_constant.php3, row 339
-$_m["Constants used in slice"]
- = "Constante folosite în secþiune";
-
-# admin/se_constant.php3, row 353
-$_m["Constant group owner - slice"]
- = "Deþinãtor grup constante - secþiune";
-
-# admin/se_constant.php3, row 357
-$_m["Whoever first updates values becomes owner."]
- = "Cine actualizeazã prima datã, devine proprietar.";
-
-# admin/se_constant.php3, row 369
-$_m["Change owner"]
- = "Schimbã proprietar";
-
-# admin/se_constant.php3, row 375
-$_m["Propagate changes into current items"]
- = "Propagare schimbãri ºi pentru articolele curente";
-
-# admin/se_constant.php3, row 377
-$_m["Where are these constants used?"]
- = "Unde sunt aceste constante folosite?";
-
-# admin/se_constant.php3, row 380
-$_m["Edit in Hierarchical editor (allows to create constant hierarchy)"]
- = "Editare în Editorul ierarhic (permite creare ierarhie de constante)";
-
-# admin/se_constant.php3, row 382
-# include/constedit.php3, row 40
-$_m["shown&nbsp;on&nbsp;inputpage"]
- = "afiºat&nbsp;în&nbsp;pagina&nbsp;de&nbsp;introducere";
-
-# admin/se_constant.php3, row 383
-# include/constedit.php3, row 43
-$_m["stored&nbsp;in&nbsp;database"]
- = "stocat&nbsp;în&nbsp;baza&nbsp;de&nbsp;date";
-
-# admin/se_constant.php3, row 384
-# include/constedit.php3, row 49
-$_m["constant&nbsp;order"]
- = "ordine&nbsp;constante";
-
-# admin/se_constant.php3, row 385
-# include/fileman.php3, row 83, 90
-$_m["Parent"]
- = "Pãrinte";
-
-# admin/se_constant.php3, row 385
-$_m["categories&nbsp;only"]
- = "categorii&nbsp;numai";
-
-# admin/se_constant.php3, row 417
-$_m["Are you sure you want to PERMANENTLY DELETE this group? Type yes or no."]
- = "Sunteþi sigur cã doriþi sã ªTERGEÞI IREVOCABIL acest grup? Tastaþi da sau nu.";
-
-# admin/se_constant.php3, row 417
-# admin/write_mail.php3, row 154
-# admin/slicewiz.php3, row 58
-# include/tabledit_column.php3, row 150, 153
-# include/tableviews.php3, row 164
-$_m["no"]
- = "nu";
-
-# admin/se_constant.php3, row 417
-# admin/write_mail.php3, row 154
-# admin/slicewiz.php3, row 58
-# include/tabledit_column.php3, row 150, 153
-# include/tableviews.php3, row 164
-$_m["yes"]
- = "da";
-
-# admin/se_fieldid.php3, row 203
+# admin/se_fieldid.php3, row 206
 $_m["This ID is reserved"]
  = "Acest ID este rezervat";
 
-# admin/se_fieldid.php3, row 208
+# admin/se_fieldid.php3, row 211
 $_m["This ID is already used"]
  = "Acest ID este deja utilizat";
 
-# admin/se_fieldid.php3, row 227, 234, 241
+# admin/se_fieldid.php3, row 229, 236, 243
 $_m["Admin - change Field IDs"]
  = "Admin - schimbare ID cîmpuri";
 
-# admin/se_fieldid.php3, row 237
+# admin/se_fieldid.php3, row 239
 $_m["field IDs were changed"]
  = "ID-urile de cîmp s-au schimbat";
 
-# admin/se_fieldid.php3, row 243
+# admin/se_fieldid.php3, row 245
 $_m["This page allows to change field IDs. It is a bit dangerous operation and may last long.\n"
    ."    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n"
    ."    Choose a field ID to be changed and the new name and number, the dots ..... will be\n"
@@ -1091,57 +1024,64 @@ $_m["This page allows to change field IDs. It is a bit dangerous operation and m
    ."    Alegeþi un ID de cîmp pentru a fi schimbat ºi un nou nume ºi numãr, punctele ..... se vor\n"
    ."    adãuga automat.<br>";
 
-# admin/se_fieldid.php3, row 244
+# admin/se_fieldid.php3, row 246
 $_m["Change from"]
  = "Schimbã din";
 
-# admin/se_fieldid.php3, row 249
+# admin/se_fieldid.php3, row 258
 # admin/sliceexp.php3, row 176
 $_m["to"]
  = "în";
 
-# admin/se_fieldid.php3, row 263
-# admin/se_fields.php3, row 204
-# admin/anonym_wizard.php3, row 204
-# include/menu.php3, row 123
+# admin/se_fieldid.php3, row 277
+# admin/se_fields.php3, row 215
+# admin/anonym_wizard.php3, row 191
+# include/menu.php3, row 121
 $_m["Fields"]
  = "Cîmpuri";
 
-# admin/se_fieldid.php3, row 278
-# admin/se_fields.php3, row 95, 207
-# admin/se_profile.php3, row 193
+# admin/se_fieldid.php3, row 292
+# admin/se_fields.php3, row 96, 218
+# admin/se_profile.php3, row 149
 # admin/se_search.php3, row 121, 138
-# admin/anonym_wizard.php3, row 208
+# admin/anonym_wizard.php3, row 195
 # admin/search_replace.php3, row 75, 138
 $_m["Field"]
  = "Cîmp";
 
-# admin/se_fields.php3, row 162
-# admin/se_inputform.php3, row 175
+# admin/se_fields.php3, row 97, 220
+# admin/se_constant.php3, row 162, 392
+# include/constants.php3, row 245
+# include/constedit.php3, row 49
+$_m["Priority"]
+ = "Prioritate";
+
+# admin/se_fields.php3, row 166
+# admin/se_inputform.php3, row 181
 $_m["Fields update successful"]
  = "Actualizare cîmpuri reuºit";
 
-# admin/se_fields.php3, row 177, 193
-# admin/se_inputform.php3, row 249, 284
+# admin/se_fields.php3, row 188, 204
+# admin/se_inputform.php3, row 261, 296
 $_m["Admin - configure Fields"]
  = "Admin - configurare Cîmpuri";
 
-# admin/se_fields.php3, row 180
+# admin/se_fields.php3, row 191
 $_m["Do you really want to delete this field from this slice?"]
  = "";
 
-# admin/se_fields.php3, row 210
+# admin/se_fields.php3, row 221
 $_m["Required"]
  = "Necesar";
 
-# admin/se_fields.php3, row 211
+# admin/se_fields.php3, row 222
 # admin/se_search.php3, row 121, 139
-# admin/se_views.php3, row 68
-# admin/anonym_wizard.php3, row 210
+# admin/se_views.php3, row 69
+# admin/anonym_wizard.php3, row 197
 $_m["Show"]
  = "Aratã";
 
-# admin/se_fields.php3, row 213
+# admin/se_fields.php3, row 224
 $_m["Aliases"]
  = "";
 
@@ -1175,15 +1115,15 @@ $_m["Categories"]
  = "Categorii";
 
 # admin/se_filters.php3, row 268
-# admin/se_mapping.php3, row 221
-# admin/se_csv_import2.php3, row 257
+# admin/se_mapping.php3, row 213
+# admin/se_csv_import2.php3, row 254
 # include/tv_email.php3, row 164
 $_m["From"]
  = "De la";
 
 # admin/se_filters.php3, row 269
-# admin/se_mapping.php3, row 220
-# admin/se_csv_import2.php3, row 256
+# admin/se_mapping.php3, row 212
+# admin/se_csv_import2.php3, row 253
 $_m["To"]
  = "Cãtre";
 
@@ -1210,50 +1150,50 @@ $_m["Other categories"]
 $_m["Content Pooling update successful"]
  = "Actualizare Transfer Conþinut reuºit";
 
-# admin/se_fulltext.php3, row 37
+# admin/se_fulltext.php3, row 38
 $_m["You have not permissions to change fulltext formatting"]
  = "Nu aveþi dreptul sã schimbaþi formatarea vederii text întreg";
 
-# admin/se_fulltext.php3, row 54, 146
+# admin/se_fulltext.php3, row 54, 143
 $_m["Top HTML code"]
  = "Cod HTML cap paginã";
 
-# admin/se_fulltext.php3, row 55, 148
+# admin/se_fulltext.php3, row 55, 145
 $_m["Fulltext HTML code"]
  = "Cod HTML text întreg";
 
-# admin/se_fulltext.php3, row 56, 150
+# admin/se_fulltext.php3, row 56, 147
 $_m["Bottom HTML code"]
  = "Cod HTML sfîrºit paginã";
 
-# admin/se_fulltext.php3, row 58, 154
-$_m["Show discussion"]
- = "Afiºeazã discuþia";
-
-# admin/se_fulltext.php3, row 86
+# admin/se_fulltext.php3, row 87
 $_m["Fulltext format update successful"]
  = "Actualizare format text întreg reuºit";
 
-# admin/se_fulltext.php3, row 114, 130
+# admin/se_fulltext.php3, row 111, 127
 $_m["Admin - design Fulltext view"]
  = "Admin - design vedere text întreg";
 
-# admin/se_fulltext.php3, row 130
+# admin/se_fulltext.php3, row 127
 $_m["Use these boxes ( with the tags listed below ) to control what appears on full text view of each item"]
  = "Utilizaþi aceste spaþii ( cu expresiile afiºate mai jos ) pentru a controla ce apare în vederea de text întreg";
 
-# admin/se_fulltext.php3, row 144
+# admin/se_fulltext.php3, row 141
 $_m["HTML code for fulltext view"]
  = "Cod HTML pentru vedere text întreg";
 
-# admin/se_fulltext.php3, row 155
+# admin/se_fulltext.php3, row 152
+$_m["The template for dicsussion you can set on \"Design\" -> \"View\" page"]
+ = "";
+
+# admin/se_fulltext.php3, row 153
 $_m["Use HTML tags"]
  = "Folosiþi tag-uri HTML";
 
 # admin/se_import.php3, row 74
 # admin/sliceadd.php3, row 49
 # admin/slicedit.php3, row 118
-# include/menu.php3, row 78
+# include/menu.php3, row 77
 $_m["Slice Administration"]
  = "Administrare secþiune";
 
@@ -1375,120 +1315,124 @@ $_m["All remote nodes"]
 $_m["Remote node"]
  = "";
 
-# admin/se_profile.php3, row 36
+# admin/se_profile.php3, row 37
 # admin/se_users.php3, row 34
-# admin/usermng.php3, row 35
 $_m["You have not permissions to manage users"]
  = "Nu aveþi dreptul sã administraþi utilizatori";
 
-# admin/se_profile.php3, row 51
+# admin/se_profile.php3, row 52
+# include/profile.class.php3, row 209
 $_m["Rule deleted"]
  = "Regulã ºtearsã";
 
-# admin/se_profile.php3, row 63, 70, 77, 84, 93
-$_m["Rule added"]
- = "Regulã adãugatã";
-
-# admin/se_profile.php3, row 99
+# admin/se_profile.php3, row 57
 $_m["Error: Can't add rule"]
  = "Eroare: Nu pot adãuga regula";
 
-# admin/se_profile.php3, row 119
+# admin/se_profile.php3, row 77
 $_m["Item number"]
  = "Numãr articol";
 
-# admin/se_profile.php3, row 120
+# admin/se_profile.php3, row 78
 $_m["Input view ID"]
  = "";
 
-# admin/se_profile.php3, row 121
+# admin/se_profile.php3, row 79
 $_m["Item filter"]
  = "Filtru articol";
 
-# admin/se_profile.php3, row 122
+# admin/se_profile.php3, row 80
 $_m["Item order"]
  = "Ordine articol";
 
-# admin/se_profile.php3, row 123
+# admin/se_profile.php3, row 81
 $_m["Hide field"]
  = "Ascunde cîmp";
 
-# admin/se_profile.php3, row 124
+# admin/se_profile.php3, row 82
 $_m["Hide and Fill"]
  = "Ascunde ºi Completeazã";
 
-# admin/se_profile.php3, row 125
+# admin/se_profile.php3, row 83
 # admin/search_replace.php3, row 137
 $_m["Fill field"]
  = "Completeazã cîmp";
 
-# admin/se_profile.php3, row 126
+# admin/se_profile.php3, row 84
 $_m["Predefine field"]
  = "Predefineºte cîmp";
 
-# admin/se_profile.php3, row 127
+# admin/se_profile.php3, row 85
 $_m["Stored query"]
  = "";
 
-# admin/se_profile.php3, row 134, 163
+# admin/se_profile.php3, row 92, 118
 $_m["Admin - user Profiles"]
  = "Admin - Profil utilizatori";
 
-# admin/se_profile.php3, row 170
+# admin/se_profile.php3, row 125
 $_m["Rules"]
  = "Reguli";
 
-# admin/se_profile.php3, row 181
+# admin/se_profile.php3, row 136
 $_m["No rule is set"]
  = "Nici o regulã setatã";
 
-# admin/se_profile.php3, row 185
+# admin/se_profile.php3, row 141
 $_m["Add Rule"]
  = "Adaugã regulã";
 
-# admin/se_profile.php3, row 192
+# admin/se_profile.php3, row 148
 $_m["Rule"]
  = "Regulã";
 
-# admin/se_profile.php3, row 194
-# admin/se_inputform.php3, row 107, 424
+# admin/se_profile.php3, row 150
+# admin/se_inputform.php3, row 109, 441
 $_m["Function"]
  = "Funcþie";
 
-# admin/se_profile.php3, row 196
-# include/formutil.php3, row 762, 779
+# admin/se_profile.php3, row 151
+# admin/se_mapping.php3, row 214
+# admin/se_constant.php3, row 161, 391
+# include/constants.php3, row 244
+# include/constedit.php3, row 43
+$_m["Value"]
+ = "Valoare";
+
+# admin/se_profile.php3, row 152
+# include/formutil.php3, row 773, 790
 $_m["HTML"]
  = "";
 
-# admin/se_profile.php3, row 202
+# admin/se_profile.php3, row 158
 $_m["number of item displayed in Item Manager"]
  = "numãr de articole afiºate în Administrator articole";
 
-# admin/se_profile.php3, row 203
+# admin/se_profile.php3, row 159
 $_m["id of view used for item input"]
  = "";
 
-# admin/se_profile.php3, row 204
+# admin/se_profile.php3, row 160
 $_m["preset \"Search\" in Itme Manager"]
  = "presetare \"Cãutare\" în Administrator articole";
 
-# admin/se_profile.php3, row 205
+# admin/se_profile.php3, row 161
 $_m["preset \"Order\" in Itme Manager"]
  = "presetare \"Ordine\" în Administrator articole";
 
-# admin/se_profile.php3, row 206
+# admin/se_profile.php3, row 162
 $_m["hide the field in inputform"]
  = "ascunde cîmpul în formularul de introducere";
 
-# admin/se_profile.php3, row 207
+# admin/se_profile.php3, row 163
 $_m["hide the field in inputform and fill it by the value"]
  = "ascunde cîmpul în formularul de introducere ºi completeazã cu valoarea";
 
-# admin/se_profile.php3, row 208
+# admin/se_profile.php3, row 164
 $_m["fill the field in inputform by the value"]
  = "completeazã cîmpul în formularul de introducere cu valoarea";
 
-# admin/se_profile.php3, row 209
+# admin/se_profile.php3, row 165
 $_m["predefine value of the field in inputform"]
  = "predefineºte conþinutul cîmpului în formularul de introducere";
 
@@ -1501,7 +1445,7 @@ $_m["The import was successfully created"]
  = "Importul a fost creat cu succes";
 
 # admin/se_javascript.php3, row 62, 69
-# include/menu.php3, row 149
+# include/menu.php3, row 148
 $_m["Field Triggers"]
  = "Trigger cîmp";
 
@@ -1541,35 +1485,35 @@ $_m["Field Type"]
 $_m["Triggers Available -- see some JavaScript help for when a trigger is run"]
  = "Triggere accesibile -- consultaþi o documentaþie JavaScript pentru a vedea ce se întîmplã cînd un trigger ruleazã";
 
-# admin/se_mapping.php3, row 113, 113, 238
+# admin/se_mapping.php3, row 109, 109, 230
 # admin/se_mapping2.php3, row 60
 $_m["-- Not map --"]
  = "-- Nemapat --";
 
-# admin/se_mapping.php3, row 114, 114, 232
+# admin/se_mapping.php3, row 110, 110, 224
 # admin/se_mapping2.php3, row 63
 $_m["-- Value --"]
  = "-- Valoare --";
 
-# admin/se_mapping.php3, row 115, 115, 235
+# admin/se_mapping.php3, row 111, 111, 227
 # admin/se_mapping2.php3, row 66
 $_m["-- Joined fields --"]
  = "-- Cîmpuri legate --";
 
-# admin/se_mapping.php3, row 116, 116, 246
+# admin/se_mapping.php3, row 112, 112, 238
 # admin/se_mapping2.php3, row 69
 $_m["-- RSS field or expr --"]
  = "";
 
-# admin/se_mapping.php3, row 208
+# admin/se_mapping.php3, row 200
 $_m["Content Pooling - Fields' mapping"]
  = "Transfer conþinut - Mapare cîmpuri";
 
-# admin/se_mapping.php3, row 211
+# admin/se_mapping.php3, row 203
 $_m["Mapping from slice"]
  = "Mapare din secþiune";
 
-# admin/se_mapping.php3, row 215
+# admin/se_mapping.php3, row 207
 $_m["Fields' mapping"]
  = "Mapare cîmpuri";
 
@@ -1578,15 +1522,15 @@ $_m["Fields' mapping update succesful"]
  = "Actualizare mapare cîmpuri reuºit";
 
 # admin/se_newuser.php3, row 35
-# admin/um_gedit.php3, row 44
-# admin/um_uedit.php3, row 46
+# admin/um_gedit.php3, row 45
+# admin/um_uedit.php3, row 47
 $_m["No permission to create new user"]
  = "Nu aveþi dreptul sã creaþi utilizator nou";
 
 # admin/se_newuser.php3, row 46, 102
 # admin/setup.php3, row 86, 219
 # admin/slicewiz.php3, row 74
-# admin/um_uedit.php3, row 258, 261
+# admin/um_uedit.php3, row 255, 258
 # include/um_uedit.php3, row 28
 $_m["Login name"]
  = "Nume utilizator";
@@ -1594,23 +1538,23 @@ $_m["Login name"]
 # admin/se_newuser.php3, row 47, 103
 # admin/se_nodes.php3, row 181
 # admin/setup.php3, row 87, 220
-# admin/slicewiz.php3, row 75
-# admin/um_uedit.php3, row 263
 # admin/aarsstest.php3, row 131
+# admin/slicewiz.php3, row 75
+# admin/um_uedit.php3, row 260
 # include/um_uedit.php3, row 30
 $_m["Password"]
  = "Parola";
 
 # admin/se_newuser.php3, row 48, 104
 # admin/slicewiz.php3, row 76
-# admin/um_uedit.php3, row 264
+# admin/um_uedit.php3, row 261
 # include/um_uedit.php3, row 31
 $_m["Retype password"]
  = "Retastaþi parola";
 
 # admin/se_newuser.php3, row 52, 106
 # admin/slicewiz.php3, row 78
-# admin/um_uedit.php3, row 266
+# admin/um_uedit.php3, row 263
 # include/um_uedit.php3, row 36
 $_m["Surname"]
  = "Numele";
@@ -1618,7 +1562,7 @@ $_m["Surname"]
 # admin/se_newuser.php3, row 53, 105
 # admin/setup.php3, row 89, 224
 # admin/slicewiz.php3, row 77
-# admin/um_uedit.php3, row 265
+# admin/um_uedit.php3, row 262
 # include/um_uedit.php3, row 37
 $_m["First name"]
  = "Prenumele";
@@ -1636,19 +1580,18 @@ $_m["It is impossible to add user to permission system"]
  = "Adãugarea de utilizatori la sistemul de permisiuni este imposibilã";
 
 # admin/se_newuser.php3, row 72
-# admin/um_uedit.php3, row 114
+# admin/um_uedit.php3, row 121
 # include/um_uedit.php3, row 60
 $_m["User successfully added to permission system"]
  = "Utilizator adãugat cu succes la sistemul de permisiuni";
 
 # admin/se_newuser.php3, row 74
 # admin/se_users_add.php3, row 63, 68
-# admin/um_gedit.php3, row 156, 257
-# admin/um_uedit.php3, row 179, 287
+# admin/um_gedit.php3, row 158, 260
+# admin/um_uedit.php3, row 186, 280
 # include/searchbar.class.php3, row 346, 420
 # include/tabledit.php3, row 523
 # include/um_gsrch.php3, row 42
-# include/um_usrch.php3, row 77
 $_m["Search"]
  = "Cãutare";
 
@@ -1657,20 +1600,20 @@ $_m["New user in permission system"]
  = "Utilizator nou in permission system";
 
 # admin/se_newuser.php3, row 96
-# admin/um_uedit.php3, row 247
+# admin/um_uedit.php3, row 249
 $_m["New user"]
  = "Utilizator nou";
 
 # admin/se_newuser.php3, row 116
 # admin/se_nodes.php3, row 169
 # admin/sliceadd.php3, row 79
-# admin/um_gedit.php3, row 222
-# admin/um_uedit.php3, row 327
+# admin/um_gedit.php3, row 224
+# admin/um_uedit.php3, row 299
 # admin/se_rssfeeds.php3, row 184
-# include/formutil.php3, row 58, 1130, 1192, 1224
-# include/profile.php3, row 95
+# include/formutil.php3, row 58, 1141, 1203, 1235
+# include/mlx.php, row 344
+# include/profile.php3, row 105
 # include/sliceadd.php3, row 74, 96
-# include/mlx.php, row 339
 $_m["Add"]
  = "Adaugã";
 
@@ -1718,42 +1661,113 @@ $_m["URL of the getxml.php3"]
 $_m["Your getxml is"]
  = "getxml al dvs. este";
 
-# admin/se_notify.php3, row 78
-# include/slicedit.php3, row 29
-$_m["You have not permissions to edit this slice"]
- = "Nu aveþi dreptul sã editaþi aceastã secþiune";
+# admin/sliceimp.php3, row 41
+# admin/sliceexp.php3, row 44
+$_m["You are not allowed to export / import slices"]
+ = "Nu aveþi dreptul sã exportaþi / importaþi secþiuni";
 
-# admin/se_notify.php3, row 181, 185, 198
-$_m["Email Notifications of Events"]
- = "Notificãri e-mail al evenimentelor";
+# admin/sliceimp.php3, row 64
+$_m["Slice_ID (%1) has wrong length (%2, should be 32)"]
+ = "Slice_ID (%1) are lungime eronatã (%2, trebuie sã fie 32)";
 
-# admin/se_notify.php3, row 211
-$_m["<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
- = "<h4>Articol nou în Reþinut</h4> Se poate trimite notificare prin e-mail la persoanele interesate cînd se creazã un articol nou ºi se introduce în Reþinut. Dacã doriþi sã folosiþi aceastã opþiune, introduceþi adresele de e-mail corespunzãtoare mai jos. În cîmpurile urmãtoare puteþi personaliza formatul e-mail-ului care se va trimite";
+# admin/sliceimp.php3, row 88, 128, 435
+# admin/sliceimp_xml.php3, row 262
+$_m["Overwrite"]
+ = "Suprascrie";
 
-# admin/se_notify.php3, row 212, 217, 222, 227
-$_m["Email addresses, one per line"]
- = "Adrese de e-mail, cîte una în fiecare rînd";
+# admin/sliceimp.php3, row 157, 162, 214, 220, 437
+$_m["Insert with new ids"]
+ = "Insereazã cu id nou";
 
-# admin/se_notify.php3, row 213, 218, 223, 228
-$_m["Subject of the Email message"]
- = "Subiectul mesajului";
+# admin/sliceimp.php3, row 269, 275
+$_m["Can't upload Import file"]
+ = "";
 
-# admin/se_notify.php3, row 214, 219, 224, 229
-$_m["Body of the Email message"]
- = "Textul mesajului";
+# admin/sliceimp.php3, row 320, 332
+$_m["Import exported data (slice structure and content)"]
+ = "Importã date exportate (structurã ºi conþinut secþiune)";
 
-# admin/se_notify.php3, row 216
-$_m["<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
- = "<h4>Articol schimbat în Reþinut</h4> Se poate trimite notificare prin e-mail la persoanele interesate cînd se modificã un articol în Reþinut. Dacã doriþi sã folosiþi aceastã opþiune, introduceþi adresele de e-mail corespunzãtoare mai jos. În cîmpurile urmãtoare puteþi personaliza formatul e-mail-ului care se va trimite";
+# admin/sliceimp.php3, row 334
+$_m["Import exported data"]
+ = "";
 
-# admin/se_notify.php3, row 221
-$_m["<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
- = "<h4>Articol nou în Aprobat</h4> Se poate trimite notificare prin e-mail la persoanele interesate cînd se creazã un articol nou ºi se introduce în Aprobat. Dacã doriþi sã folosiþi aceastã opþiune, introduceþi adresele de e-mail corespunzãtoare mai jos. În cîmpurile urmãtoare puteþi personaliza formatul e-mail-ului care se va trimite";
+# admin/sliceimp.php3, row 339
+$_m["Count of imported slices: %d."]
+ = "Numãr secþiuni importate: %d.";
 
-# admin/se_notify.php3, row 226
-$_m["<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive."]
- = "Articol schimbat în Aprobat</h4> Se poate trimite notificare prin e-mail la persoanele interesate cînd se modificã un articol în Aprobat. Dacã doriþi sã folosiþi aceastã opþiune, introduceþi adresele de e-mail corespunzãtoare mai jos. În cîmpurile urmãtoare puteþi personaliza formatul e-mail-ului care se va trimite";
+# admin/sliceimp.php3, row 341, 356
+$_m["Added were:"]
+ = "Au fost adãugate:";
+
+# admin/sliceimp.php3, row 347, 362
+$_m["Overwritten were:"]
+ = "Au fost suprascrise:";
+
+# admin/sliceimp.php3, row 353
+$_m["Count of imported stories: %d."]
+ = "Numãr articole importate: %d.";
+
+# admin/sliceimp.php3, row 368
+$_m["Failed were:"]
+ = "";
+
+# admin/sliceimp.php3, row 381
+$_m["Here you can import exported data to toolkit. You can use two types of import:"]
+ = "Aici puteþi importa datele exportate în toolkit. Puteþi utiliza douã tipuri de import:";
+
+# admin/sliceimp.php3, row 386
+$_m["Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"]
+ = "<p>Existã cîteva secþiuni cu aceste ID-uri. Schimbaþi ID-urile în partea dreaptã a sãgeþii.<br> Folosiþi numai caractere hexadecimale 0-9,a-f. Dacã faceþi ceva greºit (numãr caractere greºite, caractere greºite, sau dacã schimbaþi ID-ul din partea stîngã a sãgeþii), acel ID va fi considerat neschimbat.</p>";
+
+# admin/sliceimp.php3, row 400
+$_m["<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>"]
+ = "";
+
+# admin/sliceimp.php3, row 414
+$_m["<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>"]
+ = "<p>Existã cîteva secþiuni cu aceste ID-uri. Schimbaþi ID-urile în partea dreaptã a sãgeþii.<br> Folosiþi numai caractere hexadecimale 0-9,a-f. </p>";
+
+# admin/sliceimp.php3, row 427
+$_m["<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>"]
+ = "<p>Dacã alegeþi SUPRASCRIE, secþiunile ºi datele cu ID neschimbat vor fi suprascrise ºi cele noi adãugate. <br>Dacã alegeþi INSERARE, secþiunile ºi datele cu conflict ID vor fi ignorate ºi cele noi adãugate. <br>Dacã alegeþi \"Insereazã cu id nou\", structurile de secþiune vor primi ID-uri noi ºi conþinulul lor la fel.</p>";
+
+# admin/sliceimp.php3, row 436
+# admin/se_inputform.php3, row 377
+# include/formutil.php3, row 2002
+$_m["Insert"]
+ = "Inserare";
+
+# admin/sliceimp.php3, row 446
+$_m["1) If you have exported data in file, insert it's name here (eg. D:\\data\\apc_aa_slice.aaxml):"]
+ = "1) Dacã aþi exportat datele în fiºier, introduceþi numele fiºierului aici (ex. D:\\data\\apc_aa_slice.aaxml):";
+
+# admin/sliceimp.php3, row 448
+$_m["Send file with slice structure and data"]
+ = "";
+
+# admin/sliceimp.php3, row 454
+$_m["2) If you have exported data in browser's window, insert the exported text into the textarea below:"]
+ = "2) Dacã aþi exportat datele în fereastra browser-ului, introduceþi textul exportat în fereastra text de mai jos:";
+
+# admin/sliceimp.php3, row 467
+$_m["Here specify, what do you want to import:"]
+ = "Specificaþi aici ce doriþi sã importaþi:";
+
+# admin/sliceimp.php3, row 468
+$_m["Import slice definition"]
+ = "Import definiþie secþiune";
+
+# admin/sliceimp.php3, row 469
+$_m["Import slice items"]
+ = "Import articole secþiune";
+
+# admin/sliceimp.php3, row 470
+$_m["Import into this slice - whatever file says"]
+ = "";
+
+# admin/sliceimp.php3, row 472
+$_m["Send the slice structure and data"]
+ = "";
 
 # admin/write_mail.php3, row 55, 148
 # include/tv_email.php3, row 106, 158
@@ -1835,8 +1849,22 @@ $_m["Test email address"]
 $_m["Write the email"]
  = "";
 
+# admin/write_mail.php3, row 154
+# admin/slicewiz.php3, row 58
+# include/tabledit_column.php3, row 150, 153
+# include/tableviews.php3, row 164
+$_m["no"]
+ = "nu";
+
+# admin/write_mail.php3, row 154
+# admin/slicewiz.php3, row 58
+# include/tabledit_column.php3, row 150, 153
+# include/tableviews.php3, row 164
+$_m["yes"]
+ = "da";
+
 # admin/write_mail.php3, row 156
-# admin/anonym_wizard.php3, row 114
+# admin/anonym_wizard.php3, row 101
 $_m["Send"]
  = "";
 
@@ -1907,17 +1935,15 @@ $_m["Search user or group"]
  = "Cautã utilizator sau grup";
 
 # admin/se_users_add.php3, row 61
-# admin/um_gedit.php3, row 245
-# admin/um_uedit.php3, row 171
-# admin/usermng.php3, row 61
+# admin/um_gedit.php3, row 248
+# admin/um_uedit.php3, row 178
 # include/menu_aa.php3, row 38
-# include/um_usrch.php3, row 71
 $_m["Users"]
  = "Utilizatori";
 
 # admin/se_users_add.php3, row 66
-# admin/um_gedit.php3, row 143
-# admin/um_uedit.php3, row 277
+# admin/um_gedit.php3, row 149
+# admin/um_uedit.php3, row 274
 # include/menu_aa.php3, row 42
 # include/um_gsrch.php3, row 36
 $_m["Groups"]
@@ -1929,10 +1955,9 @@ $_m["Assign new permissions"]
  = "Asigneazã drepturi noi";
 
 # admin/se_users_add.php3, row 114
-# admin/um_gedit.php3, row 67, 73
-# admin/um_uedit.php3, row 62, 76, 97
+# admin/um_gedit.php3, row 70, 78
+# admin/um_uedit.php3, row 65, 80, 103
 # include/um_gsrch.php3, row 26
-# include/um_usrch.php3, row 35, 44, 62
 $_m["Too many users or groups found."]
  = "Prea multi utilizatori sau grupuri gãsite.";
 
@@ -1941,10 +1966,9 @@ $_m["Try to be more specific."]
  = "Fiþi mai specific.";
 
 # admin/se_users_add.php3, row 116
-# admin/um_gedit.php3, row 67
-# admin/um_uedit.php3, row 62, 76
+# admin/um_gedit.php3, row 70
+# admin/um_uedit.php3, row 65, 80
 # include/um_gsrch.php3, row 29
-# include/um_usrch.php3, row 35, 44
 $_m["No user (group) found"]
  = "Nu am gãsit nici un utilizator (grup)";
 
@@ -1952,32 +1976,32 @@ $_m["No user (group) found"]
 $_m["List is limitted to 5 users.<br>If some user is not in list, try to be more specific in your query"]
  = "Lista este limitatã la 5 utilizatori.<br>Dacã cineva nu apare în listã, încercaþi o interogare mai specificã.";
 
-# admin/se_views.php3, row 52
+# admin/se_views.php3, row 53
 $_m["View successfully deleted"]
  = "Vedere ºtearsã cu succes";
 
-# admin/se_views.php3, row 68
+# admin/se_views.php3, row 69
 $_m["show this view"]
  = "";
 
-# admin/se_views.php3, row 84
+# admin/se_views.php3, row 85
 $_m["Are you sure you want to delete selected view?"]
  = "";
 
-# admin/se_views.php3, row 146
+# admin/se_views.php3, row 140
 $_m["Create new view"]
  = "Creare vedere nouã";
 
-# admin/se_views.php3, row 149
+# admin/se_views.php3, row 143
 $_m["by&nbsp;type:"]
  = "dupã&nbsp;tip";
 
-# admin/se_views.php3, row 157, 177
-# include/formutil.php3, row 1133, 1140
+# admin/se_views.php3, row 150, 170
+# include/formutil.php3, row 1144, 1151
 $_m["New"]
  = "Nou";
 
-# admin/se_views.php3, row 162
+# admin/se_views.php3, row 155
 $_m["by&nbsp;template:"]
  = "dupã&nbsp;ºablon";
 
@@ -1990,12 +2014,12 @@ $_m["This script can't be used on a configured system."]
  = "Acest program nu se poate folosi pe un sistem configurat.";
 
 # admin/setup.php3, row 81
-# admin/um_uedit.php3, row 270
+# admin/um_uedit.php3, row 267
 $_m["Superadmin account"]
  = "Cont de superadmin";
 
 # admin/setup.php3, row 88, 222
-# include/formutil.php3, row 1401
+# include/formutil.php3, row 1412
 $_m["Retype Password"]
  = "";
 
@@ -2032,11 +2056,10 @@ $_m["Database is not configured correctly or the database is empty.<br>\n"
  = "";
 
 # admin/setup.php3, row 149
-# admin/um_uedit.php3, row 193
 # admin/aarsstest.php3, row 134
-# include/perm_sql.php3, row 167, 537
+# admin/um_uedit.php3, row 200
 # include/perm_emailsql.php3, row 164, 327, 334, 586
-# include/um_usrch.php3, row 80
+# include/perm_sql.php3, row 178, 563
 $_m["User"]
  = "Utilizator";
 
@@ -2111,7 +2134,7 @@ $_m["Not allowed"]
  = "Nepermis";
 
 # admin/slicedit.php3, row 37
-# include/menu.php3, row 175
+# include/menu.php3, row 172
 $_m["Hold bin"]
  = "Reþinut";
 
@@ -2170,7 +2193,7 @@ $_m["New Owner's E-mail"]
  = "E-mail al proprietarului nou";
 
 # admin/slicedit.php3, row 159
-# include/constants.php3, row 433, 525, 547, 573, 604, 659, 688, 717
+# include/constants.php3, row 435, 528, 550, 576, 607, 663, 693, 723
 # include/slicedit.php3, row 73
 $_m["Listing length"]
  = "Lungime text";
@@ -2221,22 +2244,17 @@ $_m["File Manager Access"]
 $_m["File Manager Directory"]
  = "Director Administrare fiºiere";
 
-# admin/slicedit.php3, row 197
+# admin/slicedit.php3, row 193
 $_m["Auth Group Field"]
  = "";
 
-# admin/slicedit.php3, row 199
+# admin/slicedit.php3, row 195
 $_m["Mailman Lists Field"]
  = "";
 
-# admin/slicedit.php3, row 203
+# admin/slicedit.php3, row 199
 $_m["Password for Reading"]
  = "";
-
-# admin/sliceexp.php3, row 44
-# admin/sliceimp.php3, row 41
-$_m["You are not allowed to export / import slices"]
- = "Nu aveþi dreptul sã exportaþi / importaþi secþiuni";
 
 # admin/sliceexp.php3, row 64, 141, 145
 $_m["Export slice structure"]
@@ -2331,109 +2349,6 @@ $_m["Wrong slice ID length:"]
 $_m["Save this text. You may use it to import the slices into any ActionApps:"]
  = "Salvaþi acest text. Îl ve-þi putea utiliza sã importaþi secþiunile în orice ActionApps:";
 
-# admin/sliceimp.php3, row 64
-$_m["Slice_ID (%1) has wrong length (%2, should be 32)"]
- = "Slice_ID (%1) are lungime eronatã (%2, trebuie sã fie 32)";
-
-# admin/sliceimp.php3, row 88, 128, 435
-# admin/sliceimp_xml.php3, row 262
-$_m["Overwrite"]
- = "Suprascrie";
-
-# admin/sliceimp.php3, row 157, 162, 214, 220, 437
-$_m["Insert with new ids"]
- = "Insereazã cu id nou";
-
-# admin/sliceimp.php3, row 269, 275
-$_m["Can't upload Import file"]
- = "";
-
-# admin/sliceimp.php3, row 320, 332
-$_m["Import exported data (slice structure and content)"]
- = "Importã date exportate (structurã ºi conþinut secþiune)";
-
-# admin/sliceimp.php3, row 334
-$_m["Import exported data"]
- = "";
-
-# admin/sliceimp.php3, row 339
-$_m["Count of imported slices: %d."]
- = "Numãr secþiuni importate: %d.";
-
-# admin/sliceimp.php3, row 341, 356
-$_m["Added were:"]
- = "Au fost adãugate:";
-
-# admin/sliceimp.php3, row 347, 362
-$_m["Overwritten were:"]
- = "Au fost suprascrise:";
-
-# admin/sliceimp.php3, row 353
-$_m["Count of imported stories: %d."]
- = "Numãr articole importate: %d.";
-
-# admin/sliceimp.php3, row 368
-$_m["Failed were:"]
- = "";
-
-# admin/sliceimp.php3, row 381
-$_m["Here you can import exported data to toolkit. You can use two types of import:"]
- = "Aici puteþi importa datele exportate în toolkit. Puteþi utiliza douã tipuri de import:";
-
-# admin/sliceimp.php3, row 386
-$_m["Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"]
- = "<p>Existã cîteva secþiuni cu aceste ID-uri. Schimbaþi ID-urile în partea dreaptã a sãgeþii.<br> Folosiþi numai caractere hexadecimale 0-9,a-f. Dacã faceþi ceva greºit (numãr caractere greºite, caractere greºite, sau dacã schimbaþi ID-ul din partea stîngã a sãgeþii), acel ID va fi considerat neschimbat.</p>";
-
-# admin/sliceimp.php3, row 400
-$_m["<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>"]
- = "";
-
-# admin/sliceimp.php3, row 414
-$_m["<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>"]
- = "<p>Existã cîteva secþiuni cu aceste ID-uri. Schimbaþi ID-urile în partea dreaptã a sãgeþii.<br> Folosiþi numai caractere hexadecimale 0-9,a-f. </p>";
-
-# admin/sliceimp.php3, row 427
-$_m["<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>"]
- = "<p>Dacã alegeþi SUPRASCRIE, secþiunile ºi datele cu ID neschimbat vor fi suprascrise ºi cele noi adãugate. <br>Dacã alegeþi INSERARE, secþiunile ºi datele cu conflict ID vor fi ignorate ºi cele noi adãugate. <br>Dacã alegeþi \"Insereazã cu id nou\", structurile de secþiune vor primi ID-uri noi ºi conþinulul lor la fel.</p>";
-
-# admin/sliceimp.php3, row 436
-# admin/se_inputform.php3, row 360
-# include/formutil.php3, row 1979
-$_m["Insert"]
- = "Inserare";
-
-# admin/sliceimp.php3, row 446
-$_m["1) If you have exported data in file, insert it's name here (eg. D:\\data\\apc_aa_slice.aaxml):"]
- = "1) Dacã aþi exportat datele în fiºier, introduceþi numele fiºierului aici (ex. D:\\data\\apc_aa_slice.aaxml):";
-
-# admin/sliceimp.php3, row 448
-$_m["Send file with slice structure and data"]
- = "";
-
-# admin/sliceimp.php3, row 454
-$_m["2) If you have exported data in browser's window, insert the exported text into the textarea below:"]
- = "2) Dacã aþi exportat datele în fereastra browser-ului, introduceþi textul exportat în fereastra text de mai jos:";
-
-# admin/sliceimp.php3, row 467
-$_m["Here specify, what do you want to import:"]
- = "Specificaþi aici ce doriþi sã importaþi:";
-
-# admin/sliceimp.php3, row 468
-$_m["Import slice definition"]
- = "Import definiþie secþiune";
-
-# admin/sliceimp.php3, row 469
-$_m["Import slice items"]
- = "Import articole secþiune";
-
-# admin/sliceimp.php3, row 470
-$_m["Import into this slice - whatever file says"]
- = "";
-
-# admin/sliceimp.php3, row 472
-$_m["Send the slice structure and data"]
- = "";
-
 # admin/sliceimp_xml.php3, row 117
 $_m["\n"
    ."ERROR: File doesn't contain SLICEEXPORT"]
@@ -2451,608 +2366,10 @@ $_m["ERROR: Unsupported version for import"]
 $_m["<br>Overwriting view %1"]
  = "";
 
-# admin/slicewiz.php3, row 45, 48
-$_m["Add Slice Wizard"]
- = "Vrãjitor Adãugare secþiune";
-
-# admin/slicewiz.php3, row 58
-$_m["Copy Views"]
- = "Copiere vederi";
-
-# admin/slicewiz.php3, row 59
-$_m["Categories/Constants"]
- = "Categorii/Constante";
-
-# admin/slicewiz.php3, row 60
-$_m["Share with Template"]
- = "Împarte cu ºablonul";
-
-# admin/slicewiz.php3, row 60
-$_m["Copy from Template"]
- = "Copiazã din ºablon";
-
-# admin/slicewiz.php3, row 69
-$_m["[Optional] Create New User"]
- = "[Opþional] Creazã utilizator nou";
-
-# admin/slicewiz.php3, row 72
-$_m["Level of Access"]
- = "Nivel de acces";
-
-# admin/slicewiz.php3, row 73
-# include/constants.php3, row 833
-# include/constants.php3.bak, row 13
-$_m["Slice Administrator"]
- = "Administrator secþiune";
-
-# admin/slicewiz.php3, row 84
-$_m["Do Not Email Welcome"]
- = "Nu trimite e-mail de întîmpinare";
-
-# admin/slicewiz.php3, row 86
-$_m["Email Welcome"]
- = "Trimite e-mail de întîmpinare";
-
-# admin/slicewiz.php3, row 96
-$_m["Go: Add Slice"]
- = "";
-
-# admin/tabledit.php3, row 56
 # admin/aarsstest.php3, row 31
+# admin/tabledit.php3, row 56
 # admin/rsstest.php3, row 31
 $_m["You have not permissions to this page"]
- = "";
-
-# admin/um_gedit.php3, row 60
-# admin/um_uedit.php3, row 68, 71, 85
-# include/um_usrch.php3, row 36, 39, 51
-$_m["Too much groups found."]
- = "Prea multe grupuri gãsite.";
-
-# admin/um_gedit.php3, row 60
-# admin/um_uedit.php3, row 68, 71
-# include/um_usrch.php3, row 36, 39
-$_m["No groups found"]
- = "Nici un grup gãsit";
-
-# admin/um_gedit.php3, row 91
-# include/um_gedit.php3, row 43
-$_m["Group successfully added to permission system"]
- = "Grup adãugat cu succes la sistemul de permisiuni";
-
-# admin/um_gedit.php3, row 100
-$_m["User management - Groups"]
- = "Administrare utilizatori - Grupuri";
-
-# admin/um_gedit.php3, row 110
-$_m["Are you sure you want to delete selected group from whole permission system?"]
- = "";
-
-# admin/um_gedit.php3, row 139
-# include/menu_aa.php3, row 44
-$_m["New Group"]
- = "Grup nou";
-
-# admin/um_gedit.php3, row 139
-# include/menu_aa.php3, row 43
-$_m["Edit Group"]
- = "Editare grup";
-
-# admin/um_gedit.php3, row 169
-# include/constants.php3, row 246
-# include/perm_sql.php3, row 135, 411
-# include/perm_emailsql.php3, row 142, 457
-# include/um_gsrch.php3, row 45
-$_m["Group"]
- = "Grup";
-
-# admin/um_gedit.php3, row 206
-$_m["Edit group"]
- = "Editare grup";
-
-# admin/um_gedit.php3, row 208
-$_m["New group"]
- = "Grup nou";
-
-# admin/um_gedit.php3, row 238
-$_m["Group Id"]
- = "Id Grup";
-
-# admin/um_gedit.php3, row 241
-$_m["Superadmin group"]
- = "Grup superadmin";
-
-# admin/um_gedit.php3, row 253
-$_m["All Users"]
- = "Toþi utilizatorii";
-
-# admin/um_gedit.php3, row 255
-$_m["Group's Users"]
- = "Utilizatorii grupului";
-
-# admin/um_uedit.php3, row 124
-$_m["User management - Users"]
- = "Administrare utilizatori - Utilizatori";
-
-# admin/um_uedit.php3, row 134
-$_m["Are you sure you want to delete selected user from whole permission system?"]
- = "";
-
-# admin/um_uedit.php3, row 164
-# include/menu_aa.php3, row 40
-$_m["New User"]
- = "Utilizator nou";
-
-# admin/um_uedit.php3, row 164, 245
-# include/menu_aa.php3, row 39
-$_m["Edit User"]
- = "Editare utilizator";
-
-# admin/um_uedit.php3, row 259
-$_m["User Id"]
- = "";
-
-# admin/um_uedit.php3, row 283
-$_m["All Groups"]
- = "Toate grupurile";
-
-# admin/um_uedit.php3, row 285
-$_m["User's Groups"]
- = "Grupurile utilizatorului";
-
-# admin/usermng.php3, row 54
-$_m["Admin - User Management"]
- = "Admin - Administrare utilizatori";
-
-# admin/se_rssfeeds.php3, row 113, 161, 168
-$_m["Remote RSS Feed administration"]
- = "Administrare alimentare RSS distant";
-
-# admin/se_rssfeeds.php3, row 132
-$_m["No selected rssfeed"]
- = "";
-
-# admin/se_rssfeeds.php3, row 135
-$_m["Are you sure you want to delete the rssfeed?"]
- = "";
-
-# admin/se_rssfeeds.php3, row 146
-$_m["Error: RSS node empty"]
- = "";
-
-# admin/se_rssfeeds.php3, row 170
-$_m["Current remote rssfeeds"]
- = "alimentãri rss distante curente";
-
-# admin/se_rssfeeds.php3, row 185
-$_m["Test"]
- = "";
-
-# admin/se_rssfeeds.php3, row 186
-$_m["Map"]
- = "";
-
-# admin/se_rssfeeds.php3, row 189
-$_m["Add new rssfeed"]
- = "Adãugare alimentare rss nou";
-
-# admin/se_rssfeeds.php3, row 189
-$_m["Edit rssfeed data"]
- = "Editare date alimentare rss";
-
-# admin/se_rssfeeds.php3, row 191
-$_m["RSS Feed name"]
- = "Nume Alimentare RSS";
-
-# admin/se_rssfeeds.php3, row 192
-$_m["New rssfeed name"]
- = "Nume alimentare rss nou";
-
-# admin/se_rssfeeds.php3, row 193
-$_m["URL of the feed"]
- = "URL alimentare rss";
-
-# admin/se_rssfeeds.php3, row 194
-$_m["e.g. http://www.someplace.com/rss/index.xml"]
- = "";
-
-# admin/se_inputform.php3, row 61
-$_m["Field delete OK"]
- = "ªtergere cîmp reuºit";
-
-# admin/se_inputform.php3, row 93, 395
-$_m["Before HTML code"]
- = "Înaintea codului HTML";
-
-# admin/se_inputform.php3, row 94, 383
-$_m["Help for this field"]
- = "Ajutor pentru acest cîmp";
-
-# admin/se_inputform.php3, row 95, 389
-$_m["More help"]
- = "Ajutor mai detaliat";
-
-# admin/se_inputform.php3, row 97
-$_m["Input show function"]
- = "";
-
-# admin/se_inputform.php3, row 99
-$_m["Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING."]
- = "";
-
-# admin/se_inputform.php3, row 103, 423
-$_m["Alias"]
- = "";
-
-# admin/se_inputform.php3, row 255
-$_m["You selected slice and not constant group. It is unpossible to change slice. Go up in the list."]
- = "";
-
-# admin/se_inputform.php3, row 287
-$_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]
- = "<p>ATENÞIUNE: Nu schimbaþi aceste setãri dacã nu sunteþi siguri în ceea ce faceþi!</p>";
-
-# admin/se_inputform.php3, row 296
-$_m["Field properties"]
- = "";
-
-# admin/se_inputform.php3, row 302
-$_m["Input type"]
- = "Tip introducere";
-
-# admin/se_inputform.php3, row 306
-$_m["Input field type in Add / Edit item."]
- = "";
-
-# admin/se_inputform.php3, row 311
-$_m["Edit|Use as new|New"]
- = "";
-
-# admin/se_inputform.php3, row 312
-$_m["Choose a Constant Group or a Slice."]
- = "Alegeþi un Grup de Constante sau o Secþiune.";
-
-# admin/se_inputform.php3, row 325, 338, 351, 366, 425
-$_m["Parameters"]
- = "Parametrii";
-
-# admin/se_inputform.php3, row 327, 340, 353, 368, 422
-# admin/se_csv_import2.php3, row 278
-$_m["Help: Parameter Wizard"]
- = "";
-
-# admin/se_inputform.php3, row 336
-$_m["How to generate the default value"]
- = "";
-
-# admin/se_inputform.php3, row 346
-$_m["Validate"]
- = "Valideazã";
-
-# admin/se_inputform.php3, row 364
-$_m["Defines how value is stored in database."]
- = "";
-
-# admin/se_inputform.php3, row 377
-$_m["Show 'HTML' / 'plain text' option"]
- = "Aratã opþiunea 'HTML' / 'text simplu'";
-
-# admin/se_inputform.php3, row 379
-$_m["'HTML' as default"]
- = "";
-
-# admin/se_inputform.php3, row 385
-$_m["Shown help for this field"]
- = "Afiºeazã ajutor pentru acest cîmp";
-
-# admin/se_inputform.php3, row 391
-$_m["Text shown after user click on '?' in input form"]
- = "Text afiºat dupã ce utilizatorul face click pe '?' în formularul de introducere";
-
-# admin/se_inputform.php3, row 397
-$_m["Code shown in input form before this field"]
- = "Cod afiºat în formularul de introducere înaintea acestui cîmp";
-
-# admin/se_inputform.php3, row 402
-$_m["Feeding mode"]
- = "Mod alimentare";
-
-# admin/se_inputform.php3, row 405
-$_m["Should the content of this field be copied to another slice if it is fed?"]
- = "Se poate copia conþinutul acestui cîmp în altã secþiune dacã este alimentat?";
-
-# admin/se_inputform.php3, row 408
-$_m["ALIASES used in views to print field content"]
- = "";
-
-# admin/se_inputform.php3, row 423
-$_m["_# + 8 UPPERCASE letters or _"]
- = "";
-
-# admin/se_csv_import.php3, row 62
-$_m["You have not permissions to import files"]
- = "";
-
-# admin/se_csv_import.php3, row 67
-$_m["Missing slice"]
- = "";
-
-# admin/se_csv_import.php3, row 99
-$_m["Cannot read input file"]
- = "";
-
-# admin/se_csv_import.php3, row 130
-# admin/se_csv_import2.php3, row 180
-$_m["Admin - Import .CSV file"]
- = "";
-
-# admin/se_csv_import.php3, row 142
-$_m["Admin - Import CSV (1/2) - Source data"]
- = "";
-
-# admin/se_csv_import.php3, row 148
-$_m["Cannot open a file for preview"]
- = "";
-
-# admin/se_csv_import.php3, row 150
-$_m["File preview"]
- = "";
-
-# admin/se_csv_import.php3, row 180
-$_m["CSV format settings"]
- = "";
-
-# admin/se_csv_import.php3, row 204
-$_m["Source of CSV data"]
- = "";
-
-# admin/se_csv_import.php3, row 227
-# include/easy_scroller.php3, row 121, 208
-$_m["Next"]
- = "Urmãtor";
-
-# admin/se_csv_import2.php3, row 58
-$_m["You have not permissions to setting "]
- = "";
-
-# admin/se_csv_import2.php3, row 66
-$_m["File for import does not exists:"]
- = "";
-
-# admin/se_csv_import2.php3, row 71
-$_m["Invalid additional parameters for import"]
- = "";
-
-# admin/se_csv_import2.php3, row 129
-$_m["Cannot store item to DB"]
- = "";
-
-# admin/se_csv_import2.php3, row 131
-$_m["Item:"]
- = "";
-
-# admin/se_csv_import2.php3, row 134
-$_m["Transformation error:"]
- = "";
-
-# admin/se_csv_import2.php3, row 137
-$_m["inserted"]
- = "";
-
-# admin/se_csv_import2.php3, row 138
-$_m["updated"]
- = "";
-
-# admin/se_csv_import2.php3, row 139
-$_m["not stored"]
- = "";
-
-# admin/se_csv_import2.php3, row 141
-$_m["Ok: Item "]
- = "";
-
-# admin/se_csv_import2.php3, row 156
-# include/files.class.php3, row 219
-$_m["Ok : file deleted "]
- = "";
-
-# admin/se_csv_import2.php3, row 158
-# include/files.class.php3, row 221
-$_m["Error: Cannot delete file"]
- = "";
-
-# admin/se_csv_import2.php3, row 161
-$_m["Added to slice"]
- = "";
-
-# admin/se_csv_import2.php3, row 208
-$_m["Admin - Import CSV (2/2) - Mapping and Actions"]
- = "";
-
-# admin/se_csv_import2.php3, row 218
-$_m["Mapping preview"]
- = "";
-
-# admin/se_csv_import2.php3, row 244
-$_m["Finish"]
- = "";
-
-# admin/se_csv_import2.php3, row 253
-$_m["Mapping settings"]
- = "";
-
-# admin/se_csv_import2.php3, row 258
-$_m["Action"]
- = "";
-
-# admin/se_csv_import2.php3, row 259
-$_m["Html"]
- = "";
-
-# admin/se_csv_import2.php3, row 260
-$_m["Action parameters"]
- = "";
-
-# admin/se_csv_import2.php3, row 261
-$_m["Parameter wizard"]
- = "";
-
-# admin/se_csv_import2.php3, row 281
-$_m["Import options"]
- = "";
-
-# admin/se_csv_import2.php3, row 292
-$_m["Map item id from"]
- = "";
-
-# admin/se_csv_import2.php3, row 295
-$_m["unpacked long id (pack_id)"]
- = "";
-
-# admin/se_csv_import2.php3, row 296
-$_m["packed long id (store)"]
- = "";
-
-# admin/se_csv_import2.php3, row 297
-$_m["string to be converted (string2id) - with param:"]
- = "";
-
-# admin/se_csv_import2.php3, row 306
-$_m["If the item id is already in the slice:"]
- = "";
-
-# admin/se_csv_import2.php3, row 309
-$_m["Update the item"]
- = "";
-
-# admin/se_csv_import2.php3, row 313
-$_m["Store the item with new id"]
- = "";
-
-# admin/se_csv_import2.php3, row 317
-$_m["Do not store the item"]
- = "";
-
-# admin/anonym_wizard.php3, row 69
-$_m["ActionApps Anonymous form"]
- = "";
-
-# admin/anonym_wizard.php3, row 70
-$_m["Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->"]
- = "";
-
-# admin/anonym_wizard.php3, row 150
-$_m["WARNING: You did not permit anonymous posting in slice settings."]
- = "";
-
-# admin/anonym_wizard.php3, row 153
-$_m["WARNING: You did not permit anonymous editing in slice settings. A form allowing only anonymous posting will be shown."]
- = "";
-
-# admin/anonym_wizard.php3, row 161
-$_m["WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing."]
- = "";
-
-# admin/anonym_wizard.php3, row 179, 185
-$_m["Admin - Anonymous Form Wizard"]
- = "";
-
-# admin/anonym_wizard.php3, row 191
-$_m["Show Form"]
- = "";
-
-# admin/anonym_wizard.php3, row 198
-$_m["Help"]
- = "";
-
-# admin/anonym_wizard.php3, row 198
-$_m["Help - Documentation"]
- = "";
-
-# admin/anonym_wizard.php3, row 199
-$_m["URLs shown after the form was sent"]
- = "";
-
-# admin/anonym_wizard.php3, row 200
-$_m["OK page"]
- = "";
-
-# admin/anonym_wizard.php3, row 201
-$_m["Error page"]
- = "";
-
-# admin/anonym_wizard.php3, row 202
-$_m["Use a PHP script to show the result on the OK and Error pages:"]
- = "";
-
-# admin/anonym_wizard.php3, row 211
-$_m["Field Id in Form"]
- = "";
-
-# admin/anonym_wizard.php3, row 235
-$_m["Only fields marked as \"Show\" on the \"Fields\" page\n"
-   ."         are offered on this page."]
- = "";
-
-# admin/usershow.php3, row 86
-$_m["Show selected users"]
- = "";
-
-# admin/mailman_create_list.php3, row 57, 63
-$_m["Admin - Create Mailman List"]
- = "";
-
-# admin/mailman_create_list.php3, row 70
-$_m["First set Mailman Lists Field in Slice Settings."]
- = "";
-
-# admin/mailman_create_list.php3, row 89
-$_m["Error: This list name is already used."]
- = "";
-
-# admin/mailman_create_list.php3, row 113
-$_m["The list was successfully created."]
- = "";
-
-# admin/mailman_create_list.php3, row 128
-$_m["List Settings"]
- = "";
-
-# admin/mailman_create_list.php3, row 130
-$_m["The list will be added to mailman and also\n"
-   ."    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings."]
- = "";
-
-# admin/mailman_create_list.php3, row 131
-$_m["All the fields are required."]
- = "";
-
-# admin/mailman_create_list.php3, row 132
-$_m["List name"]
- = "";
-
-# admin/mailman_create_list.php3, row 134
-$_m["Admin email"]
- = "";
-
-# admin/mailman_create_list.php3, row 136
-$_m["Admin password"]
- = "";
-
-# admin/summarize.php3, row 50
-$_m["Summarize slice differences"]
- = "";
-
-# admin/summarize.php3, row 57
-$_m["AA - Summarize"]
- = "";
-
-# admin/console.php3, row 47
-$_m["Console"]
- = "";
-
-# admin/console.php3, row 54
-$_m["AA - Administration Console"]
  = "";
 
 # admin/aarsstest.php3, row 51
@@ -3132,8 +2449,570 @@ $_m["Feed mode"]
 $_m["Feed url"]
  = "";
 
+# admin/slicewiz.php3, row 45, 48
+$_m["Add Slice Wizard"]
+ = "Vrãjitor Adãugare secþiune";
+
+# admin/slicewiz.php3, row 58
+$_m["Copy Views"]
+ = "Copiere vederi";
+
+# admin/slicewiz.php3, row 59
+$_m["Categories/Constants"]
+ = "Categorii/Constante";
+
+# admin/slicewiz.php3, row 60
+$_m["Share with Template"]
+ = "Împarte cu ºablonul";
+
+# admin/slicewiz.php3, row 60
+$_m["Copy from Template"]
+ = "Copiazã din ºablon";
+
+# admin/slicewiz.php3, row 69
+$_m["[Optional] Create New User"]
+ = "[Opþional] Creazã utilizator nou";
+
+# admin/slicewiz.php3, row 72
+$_m["Level of Access"]
+ = "Nivel de acces";
+
+# admin/slicewiz.php3, row 73
+# include/constants.php3, row 839
+$_m["Slice Administrator"]
+ = "Administrator secþiune";
+
+# admin/slicewiz.php3, row 84
+$_m["Do Not Email Welcome"]
+ = "Nu trimite e-mail de întîmpinare";
+
+# admin/slicewiz.php3, row 86
+$_m["Email Welcome"]
+ = "Trimite e-mail de întîmpinare";
+
+# admin/slicewiz.php3, row 96
+$_m["Go: Add Slice"]
+ = "";
+
+# admin/um_gedit.php3, row 63
+# admin/um_uedit.php3, row 71, 74, 90
+$_m["Too much groups found."]
+ = "Prea multe grupuri gãsite.";
+
+# admin/um_gedit.php3, row 63
+# admin/um_uedit.php3, row 71, 74
+$_m["No groups found"]
+ = "Nici un grup gãsit";
+
+# admin/um_gedit.php3, row 97
+# include/um_gedit.php3, row 43
+$_m["Group successfully added to permission system"]
+ = "Grup adãugat cu succes la sistemul de permisiuni";
+
+# admin/um_gedit.php3, row 106
+$_m["User management - Groups"]
+ = "Administrare utilizatori - Grupuri";
+
+# admin/um_gedit.php3, row 116
+$_m["Are you sure you want to delete selected group from whole permission system?"]
+ = "";
+
+# admin/um_gedit.php3, row 145
+# include/menu_aa.php3, row 44
+$_m["New Group"]
+ = "Grup nou";
+
+# admin/um_gedit.php3, row 145
+# include/menu_aa.php3, row 43
+$_m["Edit Group"]
+ = "Editare grup";
+
+# admin/um_gedit.php3, row 171
+# include/constants.php3, row 246
+# include/perm_emailsql.php3, row 142, 457
+# include/um_gsrch.php3, row 45
+# include/perm_sql.php3, row 145, 432
+$_m["Group"]
+ = "Grup";
+
+# admin/um_gedit.php3, row 208
+$_m["Edit group"]
+ = "Editare grup";
+
+# admin/um_gedit.php3, row 210
+$_m["New group"]
+ = "Grup nou";
+
+# admin/um_gedit.php3, row 240
+$_m["Group Id"]
+ = "Id Grup";
+
+# admin/um_gedit.php3, row 242
+# admin/se_constant.php3, row 160, 390
+# include/constants.php3, row 243
+# include/constedit.php3, row 40
+# include/fileman.php3, row 26
+# include/um_gedit.php3, row 25
+# include/tableviews.php3, row 122, 138
+$_m["Name"]
+ = "Nume";
+
+# admin/um_gedit.php3, row 244
+$_m["Superadmin group"]
+ = "Grup superadmin";
+
+# admin/um_gedit.php3, row 256
+$_m["All Users"]
+ = "Toþi utilizatorii";
+
+# admin/um_gedit.php3, row 258
+$_m["Group's Users"]
+ = "Utilizatorii grupului";
+
+# admin/um_uedit.php3, row 131
+$_m["User management - Users"]
+ = "Administrare utilizatori - Utilizatori";
+
+# admin/um_uedit.php3, row 141
+$_m["Are you sure you want to delete selected user from whole permission system?"]
+ = "";
+
+# admin/um_uedit.php3, row 171
+# include/menu_aa.php3, row 40
+$_m["New User"]
+ = "Utilizator nou";
+
+# admin/um_uedit.php3, row 171, 247
+# include/menu_aa.php3, row 39
+$_m["Edit User"]
+ = "Editare utilizator";
+
+# admin/um_uedit.php3, row 256
+$_m["User Id"]
+ = "";
+
+# admin/um_uedit.php3, row 276
+$_m["All Groups"]
+ = "Toate grupurile";
+
+# admin/um_uedit.php3, row 278
+$_m["User's Groups"]
+ = "Grupurile utilizatorului";
+
+# admin/se_rssfeeds.php3, row 113, 161, 168
+$_m["Remote RSS Feed administration"]
+ = "Administrare alimentare RSS distant";
+
+# admin/se_rssfeeds.php3, row 132
+$_m["No selected rssfeed"]
+ = "";
+
+# admin/se_rssfeeds.php3, row 135
+$_m["Are you sure you want to delete the rssfeed?"]
+ = "";
+
+# admin/se_rssfeeds.php3, row 146
+$_m["Error: RSS node empty"]
+ = "";
+
+# admin/se_rssfeeds.php3, row 170
+$_m["Current remote rssfeeds"]
+ = "alimentãri rss distante curente";
+
+# admin/se_rssfeeds.php3, row 185
+$_m["Test"]
+ = "";
+
+# admin/se_rssfeeds.php3, row 186
+$_m["Map"]
+ = "";
+
+# admin/se_rssfeeds.php3, row 189
+$_m["Add new rssfeed"]
+ = "Adãugare alimentare rss nou";
+
+# admin/se_rssfeeds.php3, row 189
+$_m["Edit rssfeed data"]
+ = "Editare date alimentare rss";
+
+# admin/se_rssfeeds.php3, row 191
+$_m["RSS Feed name"]
+ = "Nume Alimentare RSS";
+
+# admin/se_rssfeeds.php3, row 192
+$_m["New rssfeed name"]
+ = "Nume alimentare rss nou";
+
+# admin/se_rssfeeds.php3, row 193
+$_m["URL of the feed"]
+ = "URL alimentare rss";
+
+# admin/se_rssfeeds.php3, row 194
+$_m["e.g. http://www.someplace.com/rss/index.xml"]
+ = "";
+
+# admin/se_inputform.php3, row 63
+$_m["Field delete OK"]
+ = "ªtergere cîmp reuºit";
+
+# admin/se_inputform.php3, row 95, 412
+$_m["Before HTML code"]
+ = "Înaintea codului HTML";
+
+# admin/se_inputform.php3, row 96, 400
+$_m["Help for this field"]
+ = "Ajutor pentru acest cîmp";
+
+# admin/se_inputform.php3, row 97, 406
+$_m["More help"]
+ = "Ajutor mai detaliat";
+
+# admin/se_inputform.php3, row 99
+$_m["Input show function"]
+ = "";
+
+# admin/se_inputform.php3, row 101
+$_m["Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING."]
+ = "";
+
+# admin/se_inputform.php3, row 105, 440
+$_m["Alias"]
+ = "";
+
+# admin/se_inputform.php3, row 267
+$_m["You selected slice and not constant group. It is unpossible to change slice. Go up in the list."]
+ = "";
+
+# admin/se_inputform.php3, row 299
+$_m["<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>"]
+ = "<p>ATENÞIUNE: Nu schimbaþi aceste setãri dacã nu sunteþi siguri în ceea ce faceþi!</p>";
+
+# admin/se_inputform.php3, row 309
+$_m["Field properties"]
+ = "";
+
+# admin/se_inputform.php3, row 315
+$_m["Input type"]
+ = "Tip introducere";
+
+# admin/se_inputform.php3, row 319
+$_m["Input field type in Add / Edit item."]
+ = "";
+
+# admin/se_inputform.php3, row 322
+# admin/se_constant.php3, row 319
+# admin/se_constant_import.php3, row 52, 107, 116
+$_m["Constants"]
+ = "Constante";
+
+# admin/se_inputform.php3, row 324
+$_m["Edit|Use as new|New"]
+ = "";
+
+# admin/se_inputform.php3, row 325
+$_m["Choose a Constant Group or a Slice."]
+ = "Alegeþi un Grup de Constante sau o Secþiune.";
+
+# admin/se_inputform.php3, row 338, 355, 368, 383, 442
+$_m["Parameters"]
+ = "Parametrii";
+
+# admin/se_inputform.php3, row 340, 357, 370, 385, 439
+# admin/se_csv_import2.php3, row 275
+$_m["Help: Parameter Wizard"]
+ = "";
+
+# admin/se_inputform.php3, row 353
+$_m["How to generate the default value"]
+ = "";
+
+# admin/se_inputform.php3, row 363
+$_m["Validate"]
+ = "Valideazã";
+
+# admin/se_inputform.php3, row 381
+$_m["Defines how value is stored in database."]
+ = "";
+
+# admin/se_inputform.php3, row 394
+$_m["Show 'HTML' / 'plain text' option"]
+ = "Aratã opþiunea 'HTML' / 'text simplu'";
+
+# admin/se_inputform.php3, row 396
+$_m["'HTML' as default"]
+ = "";
+
+# admin/se_inputform.php3, row 402
+$_m["Shown help for this field"]
+ = "Afiºeazã ajutor pentru acest cîmp";
+
+# admin/se_inputform.php3, row 408
+$_m["Text shown after user click on '?' in input form"]
+ = "Text afiºat dupã ce utilizatorul face click pe '?' în formularul de introducere";
+
+# admin/se_inputform.php3, row 414
+$_m["Code shown in input form before this field"]
+ = "Cod afiºat în formularul de introducere înaintea acestui cîmp";
+
+# admin/se_inputform.php3, row 419
+$_m["Feeding mode"]
+ = "Mod alimentare";
+
+# admin/se_inputform.php3, row 422
+$_m["Should the content of this field be copied to another slice if it is fed?"]
+ = "Se poate copia conþinutul acestui cîmp în altã secþiune dacã este alimentat?";
+
+# admin/se_inputform.php3, row 425
+$_m["ALIASES used in views to print field content"]
+ = "";
+
+# admin/se_inputform.php3, row 440
+$_m["_# + 8 UPPERCASE letters or _"]
+ = "";
+
+# admin/usershow.php3, row 86
+$_m["Show selected users"]
+ = "";
+
+# admin/se_csv_import.php3, row 62
+$_m["You have not permissions to import files"]
+ = "";
+
+# admin/se_csv_import.php3, row 67
+$_m["Missing slice"]
+ = "";
+
+# admin/se_csv_import.php3, row 99
+$_m["Cannot read input file"]
+ = "";
+
+# admin/se_csv_import.php3, row 130
+# admin/se_csv_import2.php3, row 177
+$_m["Admin - Import .CSV file"]
+ = "";
+
+# admin/se_csv_import.php3, row 142
+$_m["Admin - Import CSV (1/2) - Source data"]
+ = "";
+
+# admin/se_csv_import.php3, row 148
+$_m["Cannot open a file for preview"]
+ = "";
+
+# admin/se_csv_import.php3, row 150
+$_m["File preview"]
+ = "";
+
+# admin/se_csv_import.php3, row 180
+$_m["CSV format settings"]
+ = "";
+
+# admin/se_csv_import.php3, row 204
+$_m["Source of CSV data"]
+ = "";
+
+# admin/se_csv_import.php3, row 227
+# include/easy_scroller.php3, row 121, 208
+$_m["Next"]
+ = "Urmãtor";
+
+# admin/se_csv_import2.php3, row 58
+$_m["You have not permissions to setting "]
+ = "";
+
+# admin/se_csv_import2.php3, row 66
+$_m["File for import does not exists:"]
+ = "";
+
+# admin/se_csv_import2.php3, row 71
+$_m["Invalid additional parameters for import"]
+ = "";
+
+# admin/se_csv_import2.php3, row 125
+$_m["Item:"]
+ = "";
+
+# admin/se_csv_import2.php3, row 131
+$_m["Cannot store item to DB"]
+ = "";
+
+# admin/se_csv_import2.php3, row 136
+$_m["Transformation error:"]
+ = "";
+
+# admin/se_csv_import2.php3, row 138
+$_m["Ok: Item %1 stored"]
+ = "";
+
+# admin/se_csv_import2.php3, row 153
+# include/files.class.php3, row 219
+$_m["Ok : file deleted "]
+ = "";
+
+# admin/se_csv_import2.php3, row 155
+# include/files.class.php3, row 221
+$_m["Error: Cannot delete file"]
+ = "";
+
+# admin/se_csv_import2.php3, row 158
+$_m["Added to slice"]
+ = "";
+
+# admin/se_csv_import2.php3, row 205
+$_m["Admin - Import CSV (2/2) - Mapping and Actions"]
+ = "";
+
+# admin/se_csv_import2.php3, row 215
+$_m["Mapping preview"]
+ = "";
+
+# admin/se_csv_import2.php3, row 241
+$_m["Finish"]
+ = "";
+
+# admin/se_csv_import2.php3, row 250
+$_m["Mapping settings"]
+ = "";
+
+# admin/se_csv_import2.php3, row 255
+$_m["Action"]
+ = "";
+
+# admin/se_csv_import2.php3, row 256
+$_m["Html"]
+ = "";
+
+# admin/se_csv_import2.php3, row 257
+$_m["Action parameters"]
+ = "";
+
+# admin/se_csv_import2.php3, row 258
+$_m["Parameter wizard"]
+ = "";
+
+# admin/se_csv_import2.php3, row 278
+$_m["Import options"]
+ = "";
+
+# admin/se_csv_import2.php3, row 289
+$_m["Map item id from"]
+ = "";
+
+# admin/se_csv_import2.php3, row 292
+$_m["unpacked long id (pack_id)"]
+ = "";
+
+# admin/se_csv_import2.php3, row 293
+$_m["packed long id (store)"]
+ = "";
+
+# admin/se_csv_import2.php3, row 294
+$_m["string to be converted (string2id) - with param:"]
+ = "";
+
+# admin/se_csv_import2.php3, row 302
+$_m["Select, how to store the items"]
+ = "";
+
+# admin/se_csv_import2.php3, row 303
+$_m["Do not store the item"]
+ = "";
+
+# admin/se_csv_import2.php3, row 304
+$_m["Store the item with new id"]
+ = "";
+
+# admin/se_csv_import2.php3, row 305
+$_m["Update the item (overwrite)"]
+ = "";
+
+# admin/se_csv_import2.php3, row 306
+$_m["Add the values in paralel to current values (the multivalues are stored, where possible)"]
+ = "";
+
+# admin/se_csv_import2.php3, row 307
+$_m["Rewrite only the fields, for which the action is defined"]
+ = "";
+
+# admin/se_csv_import2.php3, row 309
+$_m["If the item id is already in the slice"]
+ = "";
+
 # admin/view.php3, row 37
 $_m["Administrative view"]
+ = "";
+
+# admin/rsstest.php3, row 76, 77
+$_m["RSS Feed import test"]
+ = "";
+
+# admin/rsstest.php3, row 80
+$_m["No RSS Feeds set."]
+ = "";
+
+# admin/rsstest.php3, row 106
+$_m["Local slice"]
+ = "";
+
+# admin/anonym_wizard.php3, row 63
+$_m["ActionApps Anonymous form"]
+ = "";
+
+# admin/anonym_wizard.php3, row 64
+$_m["Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->"]
+ = "";
+
+# admin/anonym_wizard.php3, row 137
+$_m["WARNING: You did not permit anonymous posting in slice settings."]
+ = "";
+
+# admin/anonym_wizard.php3, row 140
+$_m["WARNING: You did not permit anonymous editing in slice settings. A form allowing only anonymous posting will be shown."]
+ = "";
+
+# admin/anonym_wizard.php3, row 148
+$_m["WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing."]
+ = "";
+
+# admin/anonym_wizard.php3, row 166, 172
+$_m["Admin - Anonymous Form Wizard"]
+ = "";
+
+# admin/anonym_wizard.php3, row 178
+$_m["Show Form"]
+ = "";
+
+# admin/anonym_wizard.php3, row 185
+$_m["Help"]
+ = "";
+
+# admin/anonym_wizard.php3, row 185
+$_m["Help - Documentation"]
+ = "";
+
+# admin/anonym_wizard.php3, row 186
+$_m["URLs shown after the form was sent"]
+ = "";
+
+# admin/anonym_wizard.php3, row 187
+$_m["OK page"]
+ = "";
+
+# admin/anonym_wizard.php3, row 188
+$_m["Error page"]
+ = "";
+
+# admin/anonym_wizard.php3, row 189
+$_m["Use a PHP script to show the result on the OK and Error pages:"]
+ = "";
+
+# admin/anonym_wizard.php3, row 198
+$_m["Field Id in Form"]
+ = "";
+
+# admin/anonym_wizard.php3, row 222
+$_m["Only fields marked as \"Show\" on the \"Fields\" page\n"
+   ."         are offered on this page."]
  = "";
 
 # admin/search_replace.php3, row 76, 140
@@ -3173,16 +3052,178 @@ $_m["You can use also aliases, so the content \"&lt;i&gt;{abstract........}&lt;/
 $_m["Fill"]
  = "";
 
-# admin/rsstest.php3, row 76, 77
-$_m["RSS Feed import test"]
+# admin/se_constant.php3, row 46
+$_m["You have not permissions to change category settings"]
+ = "Nu aveþi dreptul sã schimbaþi setãrile de categorie";
+
+# admin/se_constant.php3, row 73
+$_m["You have not permissions to change fields settings for the slice owning this group"]
+ = "Nu aveþi dreptul sã schimbaþi setãrile cîmpurilor pentru secþiunea care deþine acest grup";
+
+# admin/se_constant.php3, row 144
+$_m[" items changed to new value "]
+ = "articole actualizate cu valoarea nouã ";
+
+# admin/se_constant.php3, row 168, 327
+# admin/se_constant_import.php3, row 51, 108
+# include/constants.php3, row 510
+$_m["Constant Group"]
+ = "Grup constante";
+
+# admin/se_constant.php3, row 175
+# include/constedit_util.php3, row 528
+$_m["This constant group already exists"]
+ = "Acest grup de constante deja existã";
+
+# admin/se_constant.php3, row 259
+# admin/se_constant_import.php3, row 80
+$_m["Constants update successful"]
+ = "Actualizare constante reuºit";
+
+# admin/se_constant.php3, row 270
+$_m["No category field defined in this slice.<br>Add category field to this slice first (see Field page)."]
+ = "Nu sunt cîmpuri de categorie definite în aceastã secþiune.<br>Prima datã adãugaþi cîmpuri de categorie la aceastã secþiune (vezi pagina Cîmpuri).";
+
+# admin/se_constant.php3, row 290, 297
+$_m["Admin - Constants Setting"]
+ = "Admin - Setare constante";
+
+# admin/se_constant.php3, row 304
+$_m["Delete whole group"]
+ = "ªterge grup întreg";
+
+# admin/se_constant.php3, row 335
+$_m["Import Constants..."]
  = "";
 
-# admin/rsstest.php3, row 80
-$_m["No RSS Feeds set."]
+# admin/se_constant.php3, row 351
+$_m["Constants used in slice"]
+ = "Constante folosite în secþiune";
+
+# admin/se_constant.php3, row 364
+$_m["Constant group owner - slice"]
+ = "Deþinãtor grup constante - secþiune";
+
+# admin/se_constant.php3, row 368
+$_m["Whoever first updates values becomes owner."]
+ = "Cine actualizeazã prima datã, devine proprietar.";
+
+# admin/se_constant.php3, row 380
+$_m["Change owner"]
+ = "Schimbã proprietar";
+
+# admin/se_constant.php3, row 386
+$_m["Propagate changes into current items"]
+ = "Propagare schimbãri ºi pentru articolele curente";
+
+# admin/se_constant.php3, row 388
+$_m["Edit in Hierarchical editor (allows to create constant hierarchy)"]
+ = "Editare în Editorul ierarhic (permite creare ierarhie de constante)";
+
+# admin/se_constant.php3, row 390
+# include/constedit.php3, row 40
+$_m["shown&nbsp;on&nbsp;inputpage"]
+ = "afiºat&nbsp;în&nbsp;pagina&nbsp;de&nbsp;introducere";
+
+# admin/se_constant.php3, row 391
+# include/constedit.php3, row 43
+$_m["stored&nbsp;in&nbsp;database"]
+ = "stocat&nbsp;în&nbsp;baza&nbsp;de&nbsp;date";
+
+# admin/se_constant.php3, row 392
+# include/constedit.php3, row 49
+$_m["constant&nbsp;order"]
+ = "ordine&nbsp;constante";
+
+# admin/se_constant.php3, row 393
+# include/fileman.php3, row 83, 90
+$_m["Parent"]
+ = "Pãrinte";
+
+# admin/se_constant.php3, row 393
+$_m["categories&nbsp;only"]
+ = "categorii&nbsp;numai";
+
+# admin/se_constant.php3, row 425
+$_m["Are you sure you want to PERMANENTLY DELETE this group?"]
  = "";
 
-# admin/rsstest.php3, row 106
-$_m["Local slice"]
+# admin/mailman_create_list.php3, row 57, 63
+$_m["Admin - Create Mailman List"]
+ = "";
+
+# admin/mailman_create_list.php3, row 70
+$_m["First set Mailman Lists Field in Slice Settings."]
+ = "";
+
+# admin/mailman_create_list.php3, row 89
+$_m["Error: This list name is already used."]
+ = "";
+
+# admin/mailman_create_list.php3, row 113
+$_m["The list was successfully created."]
+ = "";
+
+# admin/mailman_create_list.php3, row 128
+$_m["List Settings"]
+ = "";
+
+# admin/mailman_create_list.php3, row 130
+$_m["The list will be added to mailman and also\n"
+   ."    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings."]
+ = "";
+
+# admin/mailman_create_list.php3, row 131
+$_m["All the fields are required."]
+ = "";
+
+# admin/mailman_create_list.php3, row 132
+$_m["List name"]
+ = "";
+
+# admin/mailman_create_list.php3, row 134
+$_m["Admin email"]
+ = "";
+
+# admin/mailman_create_list.php3, row 136
+$_m["Admin password"]
+ = "";
+
+# admin/summarize.php3, row 50
+$_m["Summarize slice differences"]
+ = "";
+
+# admin/summarize.php3, row 57
+$_m["AA - Summarize"]
+ = "";
+
+# admin/console.php3, row 47
+$_m["Console"]
+ = "";
+
+# admin/console.php3, row 54
+$_m["AA - Administration Console"]
+ = "";
+
+# admin/slicefieldsedit.php3, row 140
+$_m["Slice Setting"]
+ = "";
+
+# admin/se_constant_import.php3, row 59
+# include/constedit_util.php3, row 532
+$_m["No constants specified"]
+ = "";
+
+# admin/se_constant_import.php3, row 89, 96
+$_m["Admin - Constants Import"]
+ = "";
+
+# admin/se_constant_import.php3, row 115
+$_m["Name - Value delimiter"]
+ = "";
+
+# admin/se_constant_import.php3, row 116
+$_m["write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)"]
  = "";
 
 # include/searchbar.class.php3, row 351
@@ -3266,8 +3307,8 @@ $_m["Polls for AA"]
  = "";
 
 # include/constants.php3, row 84
+# include/menu.php3, row 195
 # include/menu_util.php3, row 54, 148
-# include/menu.php3, row 200
 $_m["Alerts"]
  = "";
 
@@ -3381,287 +3422,288 @@ $_m["Feed & update"]
 $_m["Feed & update & lock"]
  = "Alimentare & actualizare & blocare";
 
-# include/constants.php3, row 382
+# include/constants.php3, row 383
 $_m["Month List"]
  = "Listã luni";
 
-# include/constants.php3, row 382
+# include/constants.php3, row 383
 $_m["Month Table"]
  = "Tabel luni";
 
-# include/constants.php3, row 400
+# include/constants.php3, row 401
 $_m["Item listing"]
  = "Afiºare articol";
 
-# include/constants.php3, row 413, 508, 534, 560, 584, 624, 646, 671, 700
+# include/constants.php3, row 406, 507, 625, 673, 703
+$_m["Row Delimiter"]
+ = "";
+
+# include/constants.php3, row 415, 511, 537, 563, 587, 628, 650, 676, 706
 $_m["Sort primary"]
  = "Sortare primarã";
 
-# include/constants.php3, row 415, 510, 536, 562, 586, 626, 648, 673, 702
+# include/constants.php3, row 417, 513, 539, 565, 589, 630, 652, 678, 708
 $_m["Sort secondary"]
  = "Sortare secundarã";
 
-# include/constants.php3, row 421, 514, 630, 677, 706
+# include/constants.php3, row 423, 517, 634, 682, 712
 $_m["Group title format"]
  = "Format titlu grup";
 
-# include/constants.php3, row 422, 515, 631, 678, 707
+# include/constants.php3, row 424, 518, 635, 683, 713
 $_m["Group bottom format"]
  = "Format text terminal grup";
 
-# include/constants.php3, row 424, 445, 516, 538, 564, 595, 650, 679, 708
+# include/constants.php3, row 426, 447, 519, 541, 567, 598, 654, 684, 714
 $_m["Condition 1"]
  = "Condiþie 1";
 
-# include/constants.php3, row 427, 448, 519, 541, 567, 598, 653, 682, 711
+# include/constants.php3, row 429, 450, 522, 544, 570, 601, 657, 687, 717
 $_m["Condition 2"]
  = "Condiþie 2";
 
-# include/constants.php3, row 430, 451, 522, 544, 570, 601, 656, 685, 714
+# include/constants.php3, row 432, 453, 525, 547, 573, 604, 660, 690, 720
 $_m["Condition 3"]
  = "Condiþie 3";
 
-# include/constants.php3, row 440
+# include/constants.php3, row 442
 $_m["Fulltext view"]
  = "Vedere text întreg";
 
-# include/constants.php3, row 457
+# include/constants.php3, row 459
 $_m["Discussion"]
  = "Discuþie";
 
-# include/constants.php3, row 459
+# include/constants.php3, row 461
 $_m["HTML code for index view of the comment"]
  = "Cod HTML pentru vederea sumar al comentariului";
 
-# include/constants.php3, row 461
+# include/constants.php3, row 463
 $_m["HTML code for \"Show selected\" button"]
  = "Cod HTML pentru butonul \"Show selected\"";
 
-# include/constants.php3, row 462
+# include/constants.php3, row 464
 $_m["HTML code for \"Show all\" button"]
  = "Cod HTML pentru butonul \"Show all\"";
 
-# include/constants.php3, row 463
+# include/constants.php3, row 465
 $_m["HTML code for \"Add\" button"]
  = "Cod HTML pentru butonul \"Add\"";
 
-# include/constants.php3, row 464
+# include/constants.php3, row 466
 $_m["Show images"]
  = "Afiºeazã imaginile";
 
-# include/constants.php3, row 465
+# include/constants.php3, row 467
 $_m["Order by"]
  = "Ordoneazã în funcþie de";
 
-# include/constants.php3, row 466
+# include/constants.php3, row 468
 $_m["View image 1"]
  = "Aspect Vedere 1";
 
-# include/constants.php3, row 467
+# include/constants.php3, row 469
 $_m["View image 2"]
  = "Aspect Vedere 2";
 
-# include/constants.php3, row 468
+# include/constants.php3, row 470
 $_m["View image 3"]
  = "Aspect Vedere 3";
 
-# include/constants.php3, row 469
+# include/constants.php3, row 471
 $_m["View image 4"]
  = "Aspect Vedere 4";
 
-# include/constants.php3, row 470
+# include/constants.php3, row 472
 $_m["HTML code for fulltext view of the comment"]
  = "Cod HTML pentru vederea text întreg al comentariului";
 
-# include/constants.php3, row 471
+# include/constants.php3, row 473
 $_m["HTML code for space before comment"]
  = "Cod HTML pentru spaþiul dinaintea comentariului";
 
-# include/constants.php3, row 472
+# include/constants.php3, row 474
 $_m["HTML code of the form for posting comment"]
  = "Codul HTML al formularului pentru trimitere comentarii";
 
-# include/constants.php3, row 476
+# include/constants.php3, row 478
 $_m["Discussion To Mail"]
  = "Discuþie cãtre mail";
 
-# include/constants.php3, row 477
+# include/constants.php3, row 479
 $_m["From: (email header)"]
  = "";
 
-# include/constants.php3, row 478
+# include/constants.php3, row 480
 $_m["Reply-To:"]
  = "";
 
-# include/constants.php3, row 479
+# include/constants.php3, row 481
 $_m["Errors-To:"]
  = "";
 
-# include/constants.php3, row 480
+# include/constants.php3, row 482
 $_m["Sender:"]
  = "";
 
-# include/constants.php3, row 481
+# include/constants.php3, row 483
 $_m["Mail Subject:"]
  = "";
 
-# include/constants.php3, row 482
+# include/constants.php3, row 484
 $_m["Mail Body:"]
  = "";
 
-# include/constants.php3, row 501
+# include/constants.php3, row 503
 $_m["View of Constants"]
  = "Vedere Constante";
 
-# include/constants.php3, row 530
+# include/constants.php3, row 533
 $_m["RSS exchange"]
  = "Schimb RSS";
 
-# include/constants.php3, row 551
+# include/constants.php3, row 554
 $_m["Static page"]
  = "Paginã staticã";
 
-# include/constants.php3, row 552
+# include/constants.php3, row 555
 $_m["HTML code"]
  = "";
 
-# include/constants.php3, row 556
+# include/constants.php3, row 559
 $_m["Javascript item exchange"]
  = "Schimb articol Javascript";
 
-# include/constants.php3, row 577
+# include/constants.php3, row 580
 $_m["Calendar"]
  = "";
 
-# include/constants.php3, row 578
+# include/constants.php3, row 581
 $_m["Calendar Type"]
  = "Tip calendar";
 
-# include/constants.php3, row 580
+# include/constants.php3, row 583
 $_m["Additional attribs to the TD event tag"]
  = "Atributuri adiþionale pentru tag-ul de eveniment TD";
 
-# include/constants.php3, row 581
+# include/constants.php3, row 584
 $_m["Event format"]
  = "Format eveniment";
 
-# include/constants.php3, row 588
+# include/constants.php3, row 591
 $_m["Start date field"]
  = "Cîmp datã începere";
 
-# include/constants.php3, row 589
+# include/constants.php3, row 592
 $_m["End date field"]
  = "Cîmp datã terminare";
 
-# include/constants.php3, row 590
+# include/constants.php3, row 593
 $_m["Day cell top format"]
  = "Format celulã Zi / sus";
 
-# include/constants.php3, row 591
+# include/constants.php3, row 594
 $_m["Day cell bottom format"]
  = "Format celulã Zi / jos";
 
-# include/constants.php3, row 592
+# include/constants.php3, row 595
 $_m["Use other header for empty cells"]
  = "Foloseºte alt cap pentru celule goale";
 
-# include/constants.php3, row 593
+# include/constants.php3, row 596
 $_m["Empty day cell top format"]
  = "Format celulã Zi / sus vid";
 
-# include/constants.php3, row 594
+# include/constants.php3, row 597
 $_m["Empty day cell bottom format"]
  = "Format celulã Zi / jos vid";
 
-# include/constants.php3, row 611
+# include/constants.php3, row 614
 $_m["Alerts Selection Set"]
  = "";
 
-# include/constants.php3, row 614
+# include/constants.php3, row 617
 $_m["Fulltext URL"]
  = "";
 
-# include/constants.php3, row 617
+# include/constants.php3, row 620
 $_m["Link to the .shtml page used\n"
    ."                                 to create headline links."]
  = "";
 
-# include/constants.php3, row 632
+# include/constants.php3, row 636
 $_m["Max number of items"]
  = "Numãr maxim de articole";
 
-# include/constants.php3, row 641
+# include/constants.php3, row 645
 $_m["URL listing"]
  = "";
 
-# include/constants.php3, row 643
+# include/constants.php3, row 647
 $_m["Row HTML"]
  = "";
 
-# include/constants.php3, row 664
+# include/constants.php3, row 668
 $_m["Link listing"]
  = "";
 
-# include/constants.php3, row 693
+# include/constants.php3, row 698
 $_m["Category listing"]
  = "";
 
-# include/constants.php3, row 721
+# include/constants.php3, row 727
 $_m["Input Form"]
  = "";
 
-# include/constants.php3, row 723
+# include/constants.php3, row 729
 $_m["New item form template"]
  = "";
 
-# include/constants.php3, row 724
+# include/constants.php3, row 730
 $_m["Use different template for editing"]
  = "";
 
-# include/constants.php3, row 725
+# include/constants.php3, row 731
 $_m["Edit item form template"]
  = "";
 
-# include/constants.php3, row 754
+# include/constants.php3, row 760
 # include/discussion.php3, row 135, 180
 $_m["Show selected"]
  = "Afiºeazã selectat";
 
-# include/constants.php3, row 755
+# include/constants.php3, row 761
 # include/discussion.php3, row 136, 182
 $_m["Show all"]
  = "Afiºeazã tot";
 
-# include/constants.php3, row 756
+# include/constants.php3, row 762
 # include/constedit_util.php3, row 79
 # include/discussion.php3, row 138, 184
-# include/constants.php3.bak, row 3
 $_m["Add new"]
  = "Adaugã nou";
 
-# include/constants.php3, row 776
+# include/constants.php3, row 782
 $_m["Calendar: Time stamp at 0:00 of processed cell"]
  = "Calendar: Amprenta de timp la ora 0:00 al celulei procesate";
 
-# include/constants.php3, row 777
+# include/constants.php3, row 783
 $_m["Calendar: Time stamp at 24:00 of processed cell"]
  = "Calendar: Amprenta de timp la ora 24:00 al celulei procesate";
 
-# include/constants.php3, row 778
+# include/constants.php3, row 784
 $_m["Calendar: Day in month of processed cell"]
  = "Calendar: Zi a lunii al celulei procesate";
 
-# include/constants.php3, row 779
+# include/constants.php3, row 785
 $_m["Calendar: Month number of processed cell"]
  = "Calendar: Numãrul lunii al celulei procesate";
 
-# include/constants.php3, row 780
-# include/constants.php3.bak, row 7
+# include/constants.php3, row 786
 $_m["Calendar: Year number of processed cell"]
  = "Calendar: Numãrul anului al celulei procesate";
 
-# include/constants.php3, row 831
-# include/constants.php3.bak, row 11
+# include/constants.php3, row 837
 $_m["Superadmin"]
  = "";
 
@@ -3722,146 +3764,331 @@ $_m["Current MLX language"]
 $_m["HTML markup direction tag (e.g. DIR=RTL)"]
  = "";
 
-# include/item.php3, row 120
+# include/item.php3, row 113
 $_m["Constant name"]
  = "Nume constantã";
 
-# include/item.php3, row 121
+# include/item.php3, row 114
 $_m["Constant value"]
  = "Valoare constantã";
 
-# include/item.php3, row 122
+# include/item.php3, row 115
 $_m["Constant priority"]
  = "Prioritate constantã";
 
-# include/item.php3, row 123
+# include/item.php3, row 116
 $_m["Constant group id"]
  = "grup id al constantei";
 
-# include/item.php3, row 124
+# include/item.php3, row 117
 $_m["Category class (for categories only)"]
  = "Clasã categorie (numai pentru categorii)";
 
-# include/item.php3, row 125
+# include/item.php3, row 118
 $_m["Constant number"]
  = "Numãr constante";
 
-# include/item.php3, row 126
+# include/item.php3, row 119
 $_m["Constant unique id (32-haxadecimal characters)"]
  = "";
 
-# include/item.php3, row 127
+# include/item.php3, row 120
 $_m["Constant unique short id (autoincremented from '1' for each constant in the system)"]
  = "";
 
-# include/item.php3, row 128
+# include/item.php3, row 121
 $_m["Constant description"]
  = "";
 
-# include/item.php3, row 129
+# include/item.php3, row 122
 $_m["Constant level (used for hierachical constants)"]
  = "";
 
-# include/item.php3, row 161
+# include/item.php3, row 154
 $_m["Alias for %1"]
  = "";
 
-# include/item.php3, row 1108
+# include/item.php3, row 1107
 $_m["on"]
  = "";
 
-# include/item.php3, row 1108
+# include/item.php3, row 1107
 $_m["off"]
  = "";
 
-# include/item.php3, row 1231
+# include/item.php3, row 1230
 $_m["Home"]
  = "";
 
-# include/util.php3, row 802, 847
+# include/util.php3, row 849, 894
+# include/sliceobj.php3, row 167
 $_m["Error: Missing Reading Password"]
  = "";
 
-# include/util.php3, row 1162
+# include/util.php3, row 1209
 # include/msgpage.php3, row 52
 $_m["Toolkit news message"]
  = "Mesaj stiri toolkit";
 
-# include/util.php3, row 1387
+# include/util.php3, row 1434
 $_m["Internal error. File upload: Dir does not exist?!"]
  = "Eroare internã. Încãrcare fiºier: Directorul nu existã?!";
 
-# include/util.php3, row 1391
+# include/util.php3, row 1438
 $_m["File with this name already exists."]
  = "Fiºierul cu acest nume deja existã.";
 
-# include/util.php3, row 1398
+# include/util.php3, row 1445
 $_m["Can't move image  %s to %s"]
  = "";
 
-# include/util.php3, row 1605
+# include/util.php3, row 1652
 $_m["alerts alert"]
  = "";
 
-# include/util.php3, row 1606
+# include/util.php3, row 1653
 $_m["alerts welcome"]
  = "";
 
-# include/util.php3, row 1607
+# include/util.php3, row 1654
 $_m["slice wizard welcome"]
  = "";
 
-# include/util.php3, row 1608
+# include/util.php3, row 1655
 $_m["other"]
  = "";
 
-# include/util.php3, row 1615
+# include/util.php3, row 1662
 $_m["January"]
  = "Ianuarie";
 
-# include/util.php3, row 1615
+# include/util.php3, row 1662
 $_m["February"]
  = "Februarie";
 
-# include/util.php3, row 1615
+# include/util.php3, row 1662
 $_m["March"]
  = "Martie";
 
-# include/util.php3, row 1615
+# include/util.php3, row 1662
 $_m["April"]
  = "Aprilie";
 
-# include/util.php3, row 1615
+# include/util.php3, row 1662
 $_m["May"]
  = "Mai";
 
-# include/util.php3, row 1615
+# include/util.php3, row 1662
 $_m["June"]
  = "Iunie";
 
-# include/util.php3, row 1616
+# include/util.php3, row 1663
 $_m["July"]
  = "Iulie";
 
-# include/util.php3, row 1616
+# include/util.php3, row 1663
 $_m["August"]
  = "";
 
-# include/util.php3, row 1616
+# include/util.php3, row 1663
 $_m["September"]
  = "Septembrie";
 
-# include/util.php3, row 1616
+# include/util.php3, row 1663
 $_m["October"]
  = "Octombrie";
 
-# include/util.php3, row 1616
+# include/util.php3, row 1663
 $_m["November"]
  = "Noiembrie";
 
-# include/util.php3, row 1616
+# include/util.php3, row 1663
 $_m["December"]
  = "Decembrie";
+
+# include/menu.php3, row 55
+$_m["View site"]
+ = "Vizualizare sit";
+
+# include/menu.php3, row 69, 70, 134
+$_m["Item Manager"]
+ = "Admin articole";
+
+# include/menu.php3, row 76
+$_m["Slice Admin"]
+ = "Admin secþiune";
+
+# include/menu.php3, row 85
+$_m["AA"]
+ = "";
+
+# include/menu.php3, row 86
+$_m["AA Administration"]
+ = "Administrare AA";
+
+# include/menu.php3, row 118
+$_m["Main settings"]
+ = "Setãri principale";
+
+# include/menu.php3, row 120
+$_m["Category"]
+ = "Categorie";
+
+# include/menu.php3, row 122
+$_m["Slice Fields"]
+ = "";
+
+# include/menu.php3, row 123
+$_m["Email Notification"]
+ = "Notificare e-mail";
+
+# include/menu.php3, row 126
+# include/um_util.php3, row 65, 73
+$_m["Permissions"]
+ = "Drepturi";
+
+# include/menu.php3, row 127
+$_m["Assign"]
+ = "Asigneazã";
+
+# include/menu.php3, row 128
+# include/formutil.php3, row 1155
+$_m["Change"]
+ = "Schimbã";
+
+# include/menu.php3, row 130
+$_m["Design"]
+ = "";
+
+# include/menu.php3, row 131
+$_m["Index"]
+ = "";
+
+# include/menu.php3, row 132
+$_m["Fulltext"]
+ = "Text întreg";
+
+# include/menu.php3, row 133
+$_m["Views"]
+ = "Vederi";
+
+# include/menu.php3, row 136
+$_m["Content Pooling"]
+ = "Transfer conþinut";
+
+# include/menu.php3, row 137
+$_m["Nodes"]
+ = "Noduri";
+
+# include/menu.php3, row 138
+$_m["Inner Node Feeding"]
+ = "Alimentare în nod";
+
+# include/menu.php3, row 139
+$_m["Inter Node Import"]
+ = "Import între noduri";
+
+# include/menu.php3, row 140
+$_m["Inter Node Export"]
+ = "Export între noduri";
+
+# include/menu.php3, row 141
+$_m["RSS Feeds"]
+ = "Alimentare RSS";
+
+# include/menu.php3, row 142
+$_m["Filters"]
+ = "Filtre";
+
+# include/menu.php3, row 143
+$_m["Mapping"]
+ = "Mapare";
+
+# include/menu.php3, row 144, 178
+$_m["Import CSV"]
+ = "";
+
+# include/menu.php3, row 146, 175
+# include/menu_aa.php3, row 59
+$_m["Misc"]
+ = "Altele";
+
+# include/menu.php3, row 147
+$_m["Change field IDs"]
+ = "Schimbare ID cîmpuri";
+
+# include/menu.php3, row 150
+$_m["Anonymous Form Wizard"]
+ = "";
+
+# include/menu.php3, row 151
+# include/tv_email.php3, row 146
+$_m["Email templates"]
+ = "";
+
+# include/menu.php3, row 161
+$_m["Mailman: create list"]
+ = "";
+
+# include/menu.php3, row 168
+$_m["Folders"]
+ = "Dosare";
+
+# include/menu.php3, row 170
+$_m["... pending"]
+ = "De rezolvat";
+
+# include/menu.php3, row 171
+$_m["... expired"]
+ = "Expirat";
+
+# include/menu.php3, row 173
+$_m["Trash bin"]
+ = "Coº";
+
+# include/menu.php3, row 176
+$_m["Setting"]
+ = "";
+
+# include/menu.php3, row 177
+$_m["Empty trash"]
+ = "Goleºte coº";
+
+# include/menu.php3, row 177
+$_m["Are You sure to empty trash?"]
+ = "";
+
+# include/menu.php3, row 179
+$_m["Set Debug OFF"]
+ = "";
+
+# include/menu.php3, row 179
+$_m["Set Debug ON"]
+ = "";
+
+# include/menu.php3, row 196
+$_m["List of Alerts modules using this slice as Reader Management."]
+ = "";
+
+# include/menu.php3, row 198
+$_m["Bulk Emails"]
+ = "";
+
+# include/menu.php3, row 198
+$_m["Send bulk email to selected users or to users in Stored searches"]
+ = "";
+
+# include/menu.php3, row 201
+$_m["Send emails"]
+ = "";
+
+# include/menu.php3, row 211
+$_m["Alerts Sent"]
+ = "";
+
+# include/menu.php3, row 211
+$_m["List of Alerts modules sending items from this slice."]
+ = "";
 
 # include/menu_util.php3, row 55
 $_m["Jump inside control panel"]
@@ -3959,177 +4186,176 @@ $_m["Good"]
 $_m["Bad"]
  = "";
 
-# include/formutil.php3, row 159
+# include/formutil.php3, row 166
 $_m["Update & View"]
  = "Trimite & Vizualizeazã";
 
-# include/formutil.php3, row 161
+# include/formutil.php3, row 170
 $_m["Insert as new"]
  = "";
 
-# include/formutil.php3, row 165
+# include/formutil.php3, row 175
 $_m["Insert & View"]
  = "";
 
-# include/formutil.php3, row 182
+# include/formutil.php3, row 192
 $_m["Part"]
  = "";
 
-# include/formutil.php3, row 564
+# include/formutil.php3, row 575
 $_m["set"]
  = "";
 
-# include/formutil.php3, row 564
+# include/formutil.php3, row 575
 $_m["unset"]
  = "";
 
-# include/formutil.php3, row 673
+# include/formutil.php3, row 684
 $_m["Unable to find tagprefix table %1"]
  = "";
 
-# include/formutil.php3, row 742
+# include/formutil.php3, row 753
 $_m["import"]
  = "";
 
-# include/formutil.php3, row 755
+# include/formutil.php3, row 766
 $_m["Edit in HTMLArea"]
  = "";
 
-# include/formutil.php3, row 764, 781
+# include/formutil.php3, row 775, 792
 $_m["Plain text"]
  = "Text simplu";
 
-# include/formutil.php3, row 1140, 1144
+# include/formutil.php3, row 1151, 1155
 $_m["Enter the value"]
  = "";
 
-# include/formutil.php3, row 1144
-# include/menu.php3, row 129
-$_m["Change"]
- = "Schimbã";
-
-# include/formutil.php3, row 1172
+# include/formutil.php3, row 1183
 $_m["Item"]
  = "";
 
-# include/formutil.php3, row 1183
+# include/formutil.php3, row 1194
 $_m["Move up"]
  = "";
 
-# include/formutil.php3, row 1184
+# include/formutil.php3, row 1195
 $_m["Move down"]
  = "";
 
-# include/formutil.php3, row 1366
+# include/formutil.php3, row 1377
 $_m["Offer"]
  = "Oferã";
 
-# include/formutil.php3, row 1367
+# include/formutil.php3, row 1378
 $_m["Selected"]
  = "Selectat";
 
-# include/formutil.php3, row 1400
+# include/formutil.php3, row 1411
 $_m["Change Password"]
  = "";
 
-# include/formutil.php3, row 1402
+# include/formutil.php3, row 1413
 $_m["Delete Password"]
  = "";
 
-# include/formutil.php3, row 1410
+# include/formutil.php3, row 1421
 $_m["not set"]
  = "";
 
-# include/formutil.php3, row 1804
+# include/formutil.php3, row 1815
 $_m["Remove"]
  = "ªterge";
 
-# include/formutil.php3, row 2011
+# include/formutil.php3, row 2034
 $_m["Submit"]
  = "Trimite";
 
-# include/formutil.php3, row 2164
+# include/formutil.php3, row 2187
 $_m["There are too many items."]
  = "";
 
-# include/formutil.php3, row 2254
+# include/formutil.php3, row 2277
 $_m["Not used, yet"]
  = "";
 
-# include/formutil.php3, row 2284
+# include/formutil.php3, row 2307
 $_m["Group Name"]
  = "";
 
-# include/formutil.php3, row 2284
+# include/formutil.php3, row 2307
 $_m["Created by"]
  = "";
 
-# include/formutil.php3, row 2285
+# include/formutil.php3, row 2308
 $_m["Created on"]
  = "";
 
-# include/formutil.php3, row 2285
+# include/formutil.php3, row 2308
 $_m["Last updated"]
  = "";
 
-# include/formutil.php3, row 2285
+# include/formutil.php3, row 2308
 $_m["Last used"]
  = "";
 
-# include/formutil.php3, row 2332
+# include/formutil.php3, row 2314
+$_m["All active items"]
+ = "";
+
+# include/formutil.php3, row 2361
 $_m["Use these aliases for database fields"]
  = "Folosiþi aceste denumiri pentru cîmpuri de bazã de date";
 
-# include/formutil.php3, row 2365, 2379, 2386, 2391, 2396, 2401, 2409, 2414, 2421, 2425, 2432, 2472
+# include/formutil.php3, row 2394, 2408, 2415, 2420, 2425, 2430, 2438, 2443, 2450, 2454, 2461, 2501
 # include/date.php3, row 116
 $_m["Error in"]
  = "Eroare introducere";
 
-# include/formutil.php3, row 2365
+# include/formutil.php3, row 2394
 $_m["it must be filled"]
  = "trebuie completat";
 
-# include/formutil.php3, row 2409
+# include/formutil.php3, row 2438
 $_m["you should use a-z, A-Z and 0-9 characters"]
  = "folosiþi caracterele a-z, A-Z ºi 0-9";
 
-# include/formutil.php3, row 2414, 2421
+# include/formutil.php3, row 2443, 2450
 $_m["it must by 5 - 32 characters long"]
  = "trebuie sã fie de lungimea 5 - 32 caractere";
 
-# include/formutil.php3, row 2425
+# include/formutil.php3, row 2454
 $_m["only 0-9 A-Z a-z . _ and - are allowed"]
  = "numai 0-9 A-Z a-z . _ ºi - sunt permise";
 
-# include/formutil.php3, row 2451
+# include/formutil.php3, row 2480
 $_m["Error in parameters for UNIQUE validation: field ID is not 16 but %1 chars long: "]
  = "";
 
-# include/formutil.php3, row 2473
+# include/formutil.php3, row 2502
 $_m["this value is already used, choose another one"]
  = "";
 
-# include/formutil.php3, row 2515
+# include/formutil.php3, row 2544
 $_m["This field is required."]
  = "";
 
-# include/formutil.php3, row 2516
+# include/formutil.php3, row 2545
 $_m["This field is required (marked by *)."]
  = "Acest cîmp este obligatoriu (marcat cu *).";
 
-# include/formutil.php3, row 2525
+# include/formutil.php3, row 2554
 $_m["Not a valid integer number."]
  = "Nu este un numãr întreg valid.";
 
-# include/formutil.php3, row 2529
+# include/formutil.php3, row 2558
 $_m["Not a valid file name."]
  = "Nu este un nume fiºier valid.";
 
-# include/formutil.php3, row 2533
+# include/formutil.php3, row 2562
 $_m["Not a valid email address."]
  = "Nu este o adresã e-mail validã.";
 
-# include/formutil.php3, row 2537
+# include/formutil.php3, row 2566
 $_m["The two password copies differ."]
  = "";
 
@@ -4137,7 +4363,11 @@ $_m["The two password copies differ."]
 $_m["Select"]
  = "Selectare";
 
-# include/sliceobj.php3, row 54
+# include/constedit_util.php3, row 522
+$_m["No group id specified"]
+ = "";
+
+# include/sliceobj.php3, row 56
 $_m["WARNING: slice: %s doesn't look like an unpacked id"]
  = "";
 
@@ -4213,11 +4443,6 @@ $_m["Email template"]
 $_m["Email type"]
  = "";
 
-# include/tv_email.php3, row 146
-# include/menu.php3, row 152
-$_m["Email templates"]
- = "";
-
 # include/tv_email.php3, row 166
 $_m["Reply to"]
  = "";
@@ -4251,7 +4476,6 @@ $_m["Password:"]
  = "Parolã:";
 
 # include/loginform.inc, row 34
-# include/constants.php3.bak, row 17
 $_m["Login now"]
  = "";
 
@@ -4371,175 +4595,9 @@ $_m["All"]
 $_m["No slice selected"]
  = "";
 
-# include/actions.php3, row 104, 143
+# include/actions.php3, row 104, 145
 $_m["You have not permissions to remove items"]
  = "Nu aveþi dreptul sã ºtergeþi articole";
-
-# include/menu.php3, row 56
-$_m["View site"]
- = "Vizualizare sit";
-
-# include/menu.php3, row 70, 71, 135
-$_m["Item Manager"]
- = "Admin articole";
-
-# include/menu.php3, row 77
-$_m["Slice Admin"]
- = "Admin secþiune";
-
-# include/menu.php3, row 86
-$_m["AA"]
- = "";
-
-# include/menu.php3, row 87
-$_m["AA Administration"]
- = "Administrare AA";
-
-# include/menu.php3, row 118
-$_m["Main settings"]
- = "Setãri principale";
-
-# include/menu.php3, row 122
-$_m["Category"]
- = "Categorie";
-
-# include/menu.php3, row 124
-$_m["Email Notification"]
- = "Notificare e-mail";
-
-# include/menu.php3, row 127
-# include/um_util.php3, row 65, 73
-$_m["Permissions"]
- = "Drepturi";
-
-# include/menu.php3, row 128
-$_m["Assign"]
- = "Asigneazã";
-
-# include/menu.php3, row 131
-$_m["Design"]
- = "";
-
-# include/menu.php3, row 132
-$_m["Index"]
- = "";
-
-# include/menu.php3, row 133
-$_m["Fulltext"]
- = "Text întreg";
-
-# include/menu.php3, row 134
-$_m["Views"]
- = "Vederi";
-
-# include/menu.php3, row 137
-$_m["Content Pooling"]
- = "Transfer conþinut";
-
-# include/menu.php3, row 138
-$_m["Nodes"]
- = "Noduri";
-
-# include/menu.php3, row 139
-$_m["Inner Node Feeding"]
- = "Alimentare în nod";
-
-# include/menu.php3, row 140
-$_m["Inter Node Import"]
- = "Import între noduri";
-
-# include/menu.php3, row 141
-$_m["Inter Node Export"]
- = "Export între noduri";
-
-# include/menu.php3, row 142
-$_m["RSS Feeds"]
- = "Alimentare RSS";
-
-# include/menu.php3, row 143
-$_m["Filters"]
- = "Filtre";
-
-# include/menu.php3, row 144
-$_m["Mapping"]
- = "Mapare";
-
-# include/menu.php3, row 145
-$_m["Import CSV"]
- = "";
-
-# include/menu.php3, row 147, 178
-# include/menu_aa.php3, row 59
-$_m["Misc"]
- = "Altele";
-
-# include/menu.php3, row 148
-$_m["Change field IDs"]
- = "Schimbare ID cîmpuri";
-
-# include/menu.php3, row 151
-$_m["Anonymous Form Wizard"]
- = "";
-
-# include/menu.php3, row 161
-$_m["Mailman: create list"]
- = "";
-
-# include/menu.php3, row 167
-$_m["Folders"]
- = "Dosare";
-
-# include/menu.php3, row 171
-$_m["... pending"]
- = "De rezolvat";
-
-# include/menu.php3, row 173
-$_m["... expired"]
- = "Expirat";
-
-# include/menu.php3, row 177
-$_m["Trash bin"]
- = "Coº";
-
-# include/menu.php3, row 180
-$_m["Are You sure to empty trash?"]
- = "";
-
-# include/menu.php3, row 182
-$_m["Empty trash"]
- = "Goleºte coº";
-
-# include/menu.php3, row 186
-$_m["Set Debug OFF"]
- = "";
-
-# include/menu.php3, row 186
-$_m["Set Debug ON"]
- = "";
-
-# include/menu.php3, row 201
-$_m["List of Alerts modules using this slice as Reader Management."]
- = "";
-
-# include/menu.php3, row 203
-$_m["Bulk Emails"]
- = "";
-
-# include/menu.php3, row 203
-$_m["Send bulk email to selected users or to users in Stored searches"]
- = "";
-
-# include/menu.php3, row 206
-$_m["Send emails"]
- = "";
-
-# include/menu.php3, row 217
-$_m["Alerts Sent"]
- = "";
-
-# include/menu.php3, row 218
-$_m["List of Alerts modules sending items from this slice."]
- = "";
 
 # include/manager.class.php3, row 122
 $_m["No item found"]
@@ -4560,6 +4618,30 @@ $_m["Go"]
 # include/manager.class.php3, row 438
 $_m["Items Page"]
  = "Paginã articole";
+
+# include/item_content.php3, row 388
+$_m["No Id specified (%1 - %2)"]
+ = "";
+
+# include/item_content.php3, row 393
+$_m["Duplicated ID - skiped (%1 - %2)"]
+ = "";
+
+# include/item_content.php3, row 407
+$_m["StoreItem for slice %1 - failed parameter check for id = '%2'"]
+ = "";
+
+# include/imagefunc.php3, row 54
+$_m["Cannot copy %1 to %2"]
+ = "";
+
+# include/imagefunc.php3, row 138
+$_m["ResampleImage unable to %1"]
+ = "";
+
+# include/imagefunc.php3, row 152
+$_m["Type not supported for resize"]
+ = "";
 
 # include/filedit.php3, row 69
 $_m["File"]
@@ -4701,6 +4783,22 @@ $_m["Are you sure you want to delete the selected files and folders?"]
 $_m["No comment was selected"]
  = "Nu a fost selectat nici un comentariu";
 
+# include/mlx.php, row 354
+$_m["view"]
+ = "";
+
+# include/mlx.php, row 392
+$_m["Bad item ID %1"]
+ = "";
+
+# include/mlx.php, row 397
+$_m["No ID for MLX"]
+ = "";
+
+# include/profile.class.php3, row 206, 216, 223, 230, 239
+$_m["Rule added"]
+ = "Regulã adãugatã";
+
 # include/menu_aa.php3, row 30
 $_m["Slices / Modules"]
  = "Secþiuni / Module";
@@ -4783,64 +4881,6 @@ $_m["No such module."]
 $_m["No module flagged for deletion."]
  = "";
 
-# include/init_page.php3, row 153
-$_m["You do not have permission to edit items in the slice"]
- = "";
-
-# include/init_page.php3, row 178
-$_m["No slice found for you"]
- = "Nu am gãsit nici o secþiune";
-
-# include/sliceadd.php3, row 59
-$_m["To create the new Slice, please choose a template.\n"
-   ."        The new slice will inherit the template's default fields.  \n"
-   ."        You can also choose a non-template slice to base the new slice on, \n"
-   ."        if it has the fields you want."]
- = "Pentru a crea secþiunea nouã, alegeþi un ºablon.\n"
-   ."        Secþiunea nouã va moºteni cîmpurile implicite din ºablon.  \n"
-   ."        puteþi alege ºi o secþiune non-ºablon ca bazã pentru noua secþiune, \n"
-   ."        dacã are cîmpurile de care aveþi nevoie.";
-
-# include/sliceadd.php3, row 77
-$_m["No templates"]
- = "Nu sunt ºabloane";
-
-# include/sliceadd.php3, row 100
-$_m["No slices"]
- = "Nu sunt secþiuni";
-
-# include/slicedit.php3, row 79
-$_m["Language Control Slice"]
- = "";
-
-# include/slicedit.php3, row 86
-$_m["This File Manager Directory is already used by another slice."]
- = "Acest director de administrare fiºiere este folosit de altã secþiune.";
-
-# include/slicedit.php3, row 215
-$_m["Error when copying constants."]
- = "Eroare la copiere constante.";
-
-# include/slicedit.php3, row 225
-$_m["Error when copying views."]
- = "Eroare la copiere vederi.";
-
-# include/slicedit.php3, row 232
-$_m["Internal error when changing user role."]
- = "Eroare internã la schimbare rol utilizator";
-
-# include/slicewiz.php3, row 13
-$_m["User not found"]
- = "Nu am gãsit utilizatorul";
-
-# include/slicewiz.php3, row 27
-$_m["Slice not found."]
- = "";
-
-# include/slicewiz.php3, row 41
-$_m["Error mailing"]
- = "Eroare trimitere mail";
-
 # include/tabledit.php3, row 241
 $_m["No record matches your search condition."]
  = "Nici o înregistrare nu corespunde condiþiei de cãutare.";
@@ -4897,6 +4937,68 @@ $_m["browse"]
 $_m["Are you sure you want to permanently DELETE all the checked records?"]
  = "Sunteþi sigur cã vreþi sã ªTERGEÞI irevocabil toate înregistrãrile marcate?";
 
+# include/init_page.php3, row 153
+$_m["You do not have permission to edit items in the slice"]
+ = "";
+
+# include/init_page.php3, row 178
+$_m["No slice found for you"]
+ = "Nu am gãsit nici o secþiune";
+
+# include/sliceadd.php3, row 59
+$_m["To create the new Slice, please choose a template.\n"
+   ."        The new slice will inherit the template's default fields.  \n"
+   ."        You can also choose a non-template slice to base the new slice on, \n"
+   ."        if it has the fields you want."]
+ = "Pentru a crea secþiunea nouã, alegeþi un ºablon.\n"
+   ."        Secþiunea nouã va moºteni cîmpurile implicite din ºablon.  \n"
+   ."        puteþi alege ºi o secþiune non-ºablon ca bazã pentru noua secþiune, \n"
+   ."        dacã are cîmpurile de care aveþi nevoie.";
+
+# include/sliceadd.php3, row 77
+$_m["No templates"]
+ = "Nu sunt ºabloane";
+
+# include/sliceadd.php3, row 100
+$_m["No slices"]
+ = "Nu sunt secþiuni";
+
+# include/slicedit.php3, row 79
+$_m["Language Control Slice"]
+ = "";
+
+# include/slicedit.php3, row 86
+$_m["This File Manager Directory is already used by another slice."]
+ = "Acest director de administrare fiºiere este folosit de altã secþiune.";
+
+# include/slicedit.php3, row 215
+$_m["Error when copying constants."]
+ = "Eroare la copiere constante.";
+
+# include/slicedit.php3, row 225
+$_m["Error when copying views."]
+ = "Eroare la copiere vederi.";
+
+# include/slicedit.php3, row 232
+$_m["Internal error when changing user role."]
+ = "Eroare internã la schimbare rol utilizator";
+
+# include/um_util.php3, row 72
+$_m["Object"]
+ = "Obiect";
+
+# include/slicewiz.php3, row 13
+$_m["User not found"]
+ = "Nu am gãsit utilizatorul";
+
+# include/slicewiz.php3, row 27
+$_m["Slice not found."]
+ = "";
+
+# include/slicewiz.php3, row 41
+$_m["Error mailing"]
+ = "Eroare trimitere mail";
+
 # include/um_gedit.php3, row 37
 $_m["It is impossible to add group to permission system"]
  = "Este imposibil de adãugat grupul la sistemul de permisiuni";
@@ -4908,10 +5010,6 @@ $_m["Can't change group"]
 # include/um_uedit.php3, row 67
 $_m["Can't change user"]
  = "Nu pot schimba utilizatorul";
-
-# include/um_util.php3, row 72
-$_m["Object"]
- = "Obiect";
 
 # include/tv_misc.php3, row 56, 57
 $_m["Wizard Welcomes"]
@@ -4993,6 +5091,42 @@ $_m["Wrong value: a number between %1 and %2 is expected."]
 $_m["Are you sure you want to permanently DELETE this record?"]
  = "Sunteþi sigur cã vreþi sã ªTERGEÞI irevocabil aceastã înregistrare?";
 
+# include/files.class.php3, row 80
+$_m["Can't create directory for image uploads"]
+ = "Nu pot crea directorul pentru încãrcare imagini";
+
+# include/files.class.php3, row 130
+$_m["No destination file specified"]
+ = "";
+
+# include/files.class.php3, row 144
+$_m["type of uploaded file not allowed"]
+ = "";
+
+# include/files.class.php3, row 166
+$_m["Can't move image  %1 to %2"]
+ = "";
+
+# include/files.class.php3, row 173
+$_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3"]
+ = "";
+
+# include/files.class.php3, row 190
+$_m["Can't open file for writing: %1"]
+ = "";
+
+# include/files.class.php3, row 196
+$_m["Can't write to file: %1"]
+ = "";
+
+# include/files.class.php3, row 227
+$_m["Error: Invalid directory"]
+ = "";
+
+# include/files.class.php3, row 248
+$_m["can't create backup of the file"]
+ = "";
+
 # include/tableviews.php3, row 50, 51
 $_m["Alerts Admin"]
  = "";
@@ -5072,62 +5206,6 @@ $_m["Answer HTML"]
 
 # include/tableviews.php3, row 154
 $_m["Params"]
- = "";
-
-# include/imagefunc.php3, row 54
-$_m["Cannot copy %1 to %2"]
- = "";
-
-# include/imagefunc.php3, row 105
-$_m["ResampleImage unable to %1"]
- = "";
-
-# include/imagefunc.php3, row 120
-$_m["Type not supported for resize"]
- = "";
-
-# include/mlx.php, row 349
-$_m["view"]
- = "";
-
-# include/mlx.php, row 392
-$_m["No ID for MLX"]
- = "";
-
-# include/files.class.php3, row 80
-$_m["Can't create directory for image uploads"]
- = "Nu pot crea directorul pentru încãrcare imagini";
-
-# include/files.class.php3, row 130
-$_m["No destination file specified"]
- = "";
-
-# include/files.class.php3, row 144
-$_m["type of uploaded file not allowed"]
- = "";
-
-# include/files.class.php3, row 166
-$_m["Can't move image  %1 to %2"]
- = "";
-
-# include/files.class.php3, row 173
-$_m["Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3"]
- = "";
-
-# include/files.class.php3, row 190
-$_m["Can't open file for writing: %1"]
- = "";
-
-# include/files.class.php3, row 196
-$_m["Can't write to file: %1"]
- = "";
-
-# include/files.class.php3, row 227
-$_m["Error: Invalid directory"]
- = "";
-
-# include/files.class.php3, row 248
-$_m["can't create backup of the file"]
  = "";
 
 ?>

@@ -2,7 +2,7 @@
 # $Id$
 # Language: ES
 # This file was created automatically by the Mini GetText environment
-# on 23.6.2005 17:26
+# on 22.11.2005 13:33
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -41,15 +41,15 @@ $_m["Selections for {ALERNAME}"]
 $_m["Selecetion IDs for {ALERNAME}"]
  = "IDs selecciones para {ALERNAME}";
 
-# modules/alerts/synchro2.php3, row 188
+# modules/alerts/synchro2.php3, row 195
 $_m["%1 field(s) added"]
  = "%1 campo(s) añadido(s)";
 
-# modules/alerts/synchro2.php3, row 214
+# modules/alerts/synchro2.php3, row 221
 $_m["%1 field(s) and %2 constant group(s) deleted"]
  = "%1 campo(s) y %2 grupo(s) de constantes borrado(s)";
 
-# modules/alerts/synchro2.php3, row 241
+# modules/alerts/synchro2.php3, row 248
 $_m["not set"]
  = "no activado";
 

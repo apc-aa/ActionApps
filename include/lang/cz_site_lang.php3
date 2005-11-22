@@ -2,7 +2,7 @@
 # $Id$
 # Language: CZ
 # This file was created automatically by the Mini GetText environment
-# on 23.6.2005 17:26
+# on 22.11.2005 13:35
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -20,35 +20,48 @@ $_m["You do not have permission to edit items in this slice"]
 $_m["Starting spot not found"]
  = "";
 
-# modules/site/index.php3, row 144
+# modules/site/index.php3, row 140
 $_m["Editor window - site code manager"]
  = "";
 
-# modules/site/index.php3, row 152
+# modules/site/index.php3, row 160
 $_m["Add&nbsp;spot"]
  = "";
 
-# modules/site/index.php3, row 153
+# modules/site/index.php3, row 161
 $_m["Add&nbsp;choice"]
  = "";
 
-# modules/site/index.php3, row 154
-$_m["Delete&nbsp;spot"]
- = "";
-
-# modules/site/index.php3, row 155
+# modules/site/index.php3, row 164
 $_m["Move&nbsp;up"]
  = "";
 
-# modules/site/index.php3, row 156
+# modules/site/index.php3, row 165
 $_m["Move&nbsp;down"]
  = "";
 
-# modules/site/index.php3, row 158
+# modules/site/index.php3, row 168
+$_m["Move&nbsp;left"]
+ = "";
+
+# modules/site/index.php3, row 169
+$_m["Move&nbsp;right"]
+ = "";
+
+# modules/site/index.php3, row 172
+# modules/site/util.php3, row 135, 151
+$_m["Delete"]
+ = "";
+
+# modules/site/index.php3, row 173
+$_m["Are you sure you want to delete the spot?"]
+ = "";
+
+# modules/site/index.php3, row 176
 $_m["Enable"]
  = "";
 
-# modules/site/index.php3, row 160
+# modules/site/index.php3, row 177
 $_m["Disable"]
  = "";
 
@@ -168,27 +181,23 @@ $_m["Reset form"]
 $_m["Cancel"]
  = "";
 
-# modules/site/util.php3, row 98
+# modules/site/util.php3, row 132
 $_m["Spot&nbsp;variables"]
  = "";
 
-# modules/site/util.php3, row 101, 117
-$_m["Delete"]
- = "";
-
-# modules/site/util.php3, row 104, 121
+# modules/site/util.php3, row 138, 155
 $_m["Add"]
  = "";
 
-# modules/site/util.php3, row 112
+# modules/site/util.php3, row 146
 $_m["Spot&nbsp;conditions"]
  = "";
 
-# modules/site/util.php3, row 148
+# modules/site/util.php3, row 183
 $_m["Spot name"]
  = "";
 
-# modules/site/util.php3, row 150
+# modules/site/util.php3, row 185
 $_m["Submit"]
  = "";
 

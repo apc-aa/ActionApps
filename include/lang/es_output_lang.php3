@@ -2,7 +2,7 @@
 # $Id$
 # Language: ES
 # This file was created automatically by the Mini GetText environment
-# on 23.6.2005 17:27
+# on 22.11.2005 13:35
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -36,8 +36,8 @@ $_m["number of current page (on pagescroller)"]
 $_m["page length (number of items)"]
  = "longitud de la página (número de ítems)";
 
-# ./slice.php3, row 559
-# include/view.php3, row 423
+# ./slice.php3, row 560
+# include/view.php3, row 496
 $_m["No item found"]
  = "No se encontraron items";
 
@@ -211,63 +211,63 @@ $_m["Current MLX language"]
 $_m["HTML markup direction tag (e.g. DIR=RTL)"]
  = "Dirección del tag HTML (p.e. DIR=RTL";
 
-# include/item.php3, row 120
+# include/item.php3, row 113
 $_m["Constant name"]
  = "Nombre de constante";
 
-# include/item.php3, row 121
+# include/item.php3, row 114
 $_m["Constant value"]
  = "Valor de constante";
 
-# include/item.php3, row 122
+# include/item.php3, row 115
 $_m["Constant priority"]
  = "Prioridad de constante";
 
-# include/item.php3, row 123
+# include/item.php3, row 116
 $_m["Constant group id"]
  = "ID grupo de constante";
 
-# include/item.php3, row 124
+# include/item.php3, row 117
 $_m["Category class (for categories only)"]
  = "Clase de constante (solo para categorías)";
 
-# include/item.php3, row 125
+# include/item.php3, row 118
 $_m["Constant number"]
  = "Número de constante";
 
-# include/item.php3, row 126
+# include/item.php3, row 119
 $_m["Constant unique id (32-haxadecimal characters)"]
  = "ID único de constante (32 caracteres hexadecimales)";
 
-# include/item.php3, row 127
+# include/item.php3, row 120
 $_m["Constant unique short id (autoincremented from '1' for each constant in the system)"]
  = "ID único de constante (autoincrementa desde 1 para cada constante en el sistema)";
 
-# include/item.php3, row 128
+# include/item.php3, row 121
 $_m["Constant description"]
  = "Descripción de constante";
 
-# include/item.php3, row 129
+# include/item.php3, row 122
 $_m["Constant level (used for hierachical constants)"]
  = "Nivel jerárquico (para constantes jerárquicas)";
 
-# include/item.php3, row 161
+# include/item.php3, row 154
 $_m["Alias for %1"]
  = "Alias para %1";
 
-# include/item.php3, row 1108
+# include/item.php3, row 1107
 $_m["on"]
  = "activo";
 
-# include/item.php3, row 1108
+# include/item.php3, row 1107
 $_m["off"]
  = "inactivo";
 
-# include/item.php3, row 1230
+# include/item.php3, row 1229
 $_m["Back"]
  = "Atrás";
 
-# include/item.php3, row 1231
+# include/item.php3, row 1230
 $_m["Home"]
  = "Inicio";
 
