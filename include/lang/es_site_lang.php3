@@ -44,12 +44,12 @@ $_m["Move&nbsp;down"]
  = "Mover&nbsp;abajo";
 
 # modules/site/index.php3, row 168
-$_m["Move&nbsp;left"]
- = "";
+$_m["Move&nbsp;right"]
+ = "Mover&nbsp;Izquierda";
 
 # modules/site/index.php3, row 169
-$_m["Move&nbsp;right"]
- = "";
+$_m["Move&nbsp;left"]
+ = "Mover&nbsp;Derecha";
 
 # modules/site/index.php3, row 172
 # modules/site/util.php3, row 135, 151
@@ -58,15 +58,15 @@ $_m["Delete"]
 
 # modules/site/index.php3, row 173
 $_m["Are you sure you want to delete the spot?"]
- = "";
+ = "Está seguro de borrar este nodo?";
 
 # modules/site/index.php3, row 176
 $_m["Enable"]
- = "";
+ = "Activar";
 
 # modules/site/index.php3, row 177
 $_m["Disable"]
- = "";
+ = "Desactivar";
 
 # modules/site/menu.php3, row 51
 $_m["View site"]

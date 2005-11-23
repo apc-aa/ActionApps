@@ -328,22 +328,22 @@ $_m[" Delete "]
 # ./diff.diff, row 284
 # admin/index.php3, row 176
 $_m["Move to Slice"]
- = "";
+ = "Mover a Canal";
 
 # ./diff.diff, row 291
 # admin/index.php3, row 194
 $_m["Remove (delete from database)"]
- = "";
+ = "Borrar (borrar de la base de datos)";
 
 # ./diff.diff, row 304, 333
 $_m["Bad item ID id="]
- = "";
+ = "ID del ítem errado id=";
 
 # ./diff.diff, row 306, 335
 # admin/itemedit.php3, row 208
 # admin/slicefieldsedit.php3, row 127
 $_m["Bad item ID id=%1"]
- = "";
+ = "ID del ítem errado id=%1";
 
 # ./diff.diff, row 632, 634
 # include/menu.php3, row 177
@@ -969,11 +969,11 @@ $_m["Code to be printed when no item is filled (or user have no permission to an
 
 # admin/se_admin.php3, row 153
 $_m["Use special view"]
- = "";
+ = "Utilizar vista especial";
 
 # admin/se_admin.php3, row 154
 $_m["You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)"]
- = "";
+ = "Usted puede seleccionar una vista especial - plantilla para el formato de entrada de la página \"Diseño\" -> \"Vista\" (vista de formato de entrada)";
 
 # admin/se_compact.php3, row 37
 $_m["You have not permissions to change compact view formatting"]
@@ -1289,7 +1289,7 @@ $_m["HTML code for fulltext view"]
 
 # admin/se_fulltext.php3, row 152
 $_m["The template for dicsussion you can set on \"Design\" -> \"View\" page"]
- = "";
+ = "La plantilla para discusión puede ser seleccionada en la página \"Diseño\" -> \"Vista\"";
 
 # admin/se_fulltext.php3, row 153
 $_m["Use HTML tags"]
@@ -2951,7 +2951,7 @@ $_m["Transformation error:"]
 
 # admin/se_csv_import2.php3, row 138
 $_m["Ok: Item %1 stored"]
- = "";
+ = "Ok: Item %1 almacenado";
 
 # admin/se_csv_import2.php3, row 153
 # include/files.class.php3, row 219
@@ -3021,7 +3021,7 @@ $_m["string to be converted (string2id) - with param:"]
 
 # admin/se_csv_import2.php3, row 302
 $_m["Select, how to store the items"]
- = "";
+ = "Seleccione cómo almacenar los ítems";
 
 # admin/se_csv_import2.php3, row 303
 $_m["Do not store the item"]
@@ -3033,19 +3033,19 @@ $_m["Store the item with new id"]
 
 # admin/se_csv_import2.php3, row 305
 $_m["Update the item (overwrite)"]
- = "";
+ = "Actualizar los ítems (sobre-escribir)";
 
 # admin/se_csv_import2.php3, row 306
 $_m["Add the values in paralel to current values (the multivalues are stored, where possible)"]
- = "";
+ = "Añadir los valores en paralelo a los valores actuales (los multivalores son almacenados cuando sea posible)";
 
 # admin/se_csv_import2.php3, row 307
 $_m["Rewrite only the fields, for which the action is defined"]
- = "";
+ = "Re-escribir solamente los campos para los cuales la acción es definida";
 
 # admin/se_csv_import2.php3, row 309
 $_m["If the item id is already in the slice"]
- = "";
+ = "Si el id del ítem está actualmente en el canal";
 
 # admin/view.php3, row 37
 $_m["Administrative view"]
@@ -3203,7 +3203,7 @@ $_m["Delete whole group"]
 
 # admin/se_constant.php3, row 335
 $_m["Import Constants..."]
- = "";
+ = "Importar Constantes...";
 
 # admin/se_constant.php3, row 351
 $_m["Constants used in slice"]
@@ -3255,7 +3255,7 @@ $_m["categories&nbsp;only"]
 
 # admin/se_constant.php3, row 425
 $_m["Are you sure you want to PERMANENTLY DELETE this group?"]
- = "";
+ = "Está seguro de borrar PERMANENTEMENTE este grupo?";
 
 # admin/mailman_create_list.php3, row 57, 63
 $_m["Admin - Create Mailman List"]
@@ -3316,24 +3316,24 @@ $_m["AA - Administration Console"]
 
 # admin/slicefieldsedit.php3, row 140
 $_m["Slice Setting"]
- = "";
+ = "Propiedades Canal";
 
 # admin/se_constant_import.php3, row 59
 # include/constedit_util.php3, row 532
 $_m["No constants specified"]
- = "";
+ = "Constantes no especificadas";
 
 # admin/se_constant_import.php3, row 89, 96
 $_m["Admin - Constants Import"]
- = "";
+ = "Admin - Importar Constantes";
 
 # admin/se_constant_import.php3, row 115
 $_m["Name - Value delimiter"]
- = "";
+ = "Nombre - Valor del delimitador";
 
 # admin/se_constant_import.php3, row 116
 $_m["write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)"]
- = "";
+ = "escribir cada constante en una nueva fila en la forma <nombre><delimitador><valor> (o solamente <nombre> si los valores deben ser los mismos que los nombres)";
 
 # include/searchbar.class.php3, row 351
 $_m["And"]
@@ -3545,7 +3545,7 @@ $_m["Item listing"]
 
 # include/constants.php3, row 406, 507, 625, 673, 703
 $_m["Row Delimiter"]
- = "";
+ = "Delimitador de Fila";
 
 # include/constants.php3, row 415, 511, 537, 563, 587, 628, 650, 676, 706
 $_m["Sort primary"]
@@ -4045,7 +4045,7 @@ $_m["Category"]
 
 # include/menu.php3, row 122
 $_m["Slice Fields"]
- = "";
+ = "Campos del Canal";
 
 # include/menu.php3, row 123
 $_m["Email Notification"]
@@ -4157,7 +4157,7 @@ $_m["Trash bin"]
 
 # include/menu.php3, row 176
 $_m["Setting"]
- = "";
+ = "Propiedad";
 
 # include/menu.php3, row 179
 $_m["Set Debug OFF"]
@@ -4401,7 +4401,7 @@ $_m["Last used"]
 
 # include/formutil.php3, row 2314
 $_m["All active items"]
- = "";
+ = "Todos los ítems activos";
 
 # include/formutil.php3, row 2361
 $_m["Use these aliases for database fields"]
@@ -4466,7 +4466,7 @@ $_m["Select"]
 
 # include/constedit_util.php3, row 522
 $_m["No group id specified"]
- = "";
+ = "No id de grupo especificado";
 
 # include/sliceobj.php3, row 56
 $_m["WARNING: slice: %s doesn't look like an unpacked id"]
@@ -4725,15 +4725,15 @@ $_m["Items Page"]
 
 # include/item_content.php3, row 388
 $_m["No Id specified (%1 - %2)"]
- = "";
+ = "No id especificado (%1 - %2)";
 
 # include/item_content.php3, row 393
 $_m["Duplicated ID - skiped (%1 - %2)"]
- = "";
+ = "Id duplicado - saltado (%1 - %2)";
 
 # include/item_content.php3, row 407
 $_m["StoreItem for slice %1 - failed parameter check for id = '%2'"]
- = "";
+ = "Almacenar ítem para el canal %1 - parámetro falló. Revise el id = '%2'";
 
 # include/imagefunc.php3, row 54
 $_m["Cannot copy %1 to %2"]
@@ -4893,7 +4893,7 @@ $_m["view"]
 
 # include/mlx.php, row 392
 $_m["Bad item ID %1"]
- = "";
+ = "Id %1 del ítem errado";
 
 # include/mlx.php, row 397
 $_m["No ID for MLX"]
@@ -5092,11 +5092,11 @@ $_m["Object"]
 
 # include/um_util.php3, row 123, 141
 $_m["ADMINISTRATOR"]
- = "";
+ = "ADMINISTRADOR";
 
 # include/um_util.php3, row 139
 $_m["AUTHOR"]
- = "";
+ = "AUTOR";
 
 # include/um_util.php3, row 140
 $_m["EDITOR"]

@@ -1,11 +1,21 @@
-09/01/05 - CSV import is allowed also for editors (see left menu in ItemManager)
+11/24/05 - anonymous wizard refactored a bit, generate better code and is 
+(honzam)   functional, now (thanks goes to Norbert Brazda for bugfixing)
+         - Spanish language transation updated (thans to Julian Casasbuenas from
+           Colnodo)
+         - new possibility to remove selected items from database (see "Remove 
+           (remove from database)" bottom action on Item Manager - Trash page)
+         - fixed language constants 
+11/21/05 - fixed typo in sql_update.php3 - Thanks to Omar Martinez and Misi Bako
+11/15/05 - fixed not functional image upload, when we want upload multiple
+(honzam)   images and create multiple thumbnails in one inputform
+10/01/05 - CSV import is allowed also for editors (see left menu in ItemManager)
 (honzam)   and small fixes in CSV imports
          - confirmation of spot delete is now required (in site module)
-         - limit group name length in bulk constatnt import to 16 characters 
+         - limit group name length in bulk constatnt import to 16 characters
            (which is the only correct value)
-         - fix for computed field - the value is updated corectly, if you are 
+         - fix for computed field - the value is updated corectly, if you are
            editing the item, now
-         - fixed category tree display (Links module) in Firefox, which did not 
+         - fixed category tree display (Links module) in Firefox, which did not
            work correctly for huge category trees
          - improved site manager - looks better in IE (but not perfect, yet)
 09/27/05 - fixed bug in constant edit (pack_id() error)
@@ -19,7 +29,7 @@
            which returns 25452 (based on specified regular expression)
 09/21/05 - removed not closed html table tag from images.php in ImageManager
 (brazda)
-09/14/05 - fix to allow admins to assign slice permissions also to users from 
+09/14/05 - fix to allow admins to assign slice permissions also to users from
 (brazda)   Reader Management slice(s)
 09/01/05 - addes action icons to spot actions in site manager
 (honzam) - fixed constant editing - the category groups with accents and similar
