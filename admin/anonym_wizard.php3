@@ -34,7 +34,6 @@ require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
 
-
 function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_show_result, $show_result) {
 
     // we do not want anonymous form to use sessions at all
@@ -44,12 +43,6 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     $ret       = '';   // resulting HTML code
     $slice_id  = $slice->unpacked_id();
     $form_type = $slice->getfield('permit_anonymous_edit');
-
-    foreach ($s_fields as $field) {
-        if ($field["input_show"] && !$show[$field["id"]]) {
-            $notshown["v".unpack_id($field["id"])] = 1;
-        }
-    }
 
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
         $fillform_url = $GLOBALS["AA_INSTAL_PATH"] .'fillform.php3?form=inputform&notrun=1&slice_id='.$slice_id;
@@ -61,10 +54,16 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
 
     $ret .= '
     <!-- '. _m('ActionApps Anonymous form') .'-->
-    <!-- '. _m('Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->', array("     <body onload=\"HTMLArea.init()\">   ")) .'
-    <TABLE border="0" cellspacing="0" cellpadding="4" align="center" class="tabtxt">
-    ';
+    <!-- '. _m('Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->', array("     <body onload=\"HTMLArea.init()\">   ")) ."\n\n";
 
+    // get form - we need to call $form->getForm() before we call 
+    // $form->getFormStart(), $form->getFormJavascript
+    $inputform_settings['form_action'] = AA_INSTAL_URL.'filler.php3';
+    $form      = new inputform($inputform_settings);
+    $form_code = $form->getForm(new ItemContent, $slice, false, $show);
+
+    $ret .= $form->getFormStart();
+            
     // additional form fields
     $additional = '
     <input type="hidden" name="err_url" value="'.$err_url.'">
@@ -78,7 +77,6 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     <input type="hidden" name="my_item_id" value="">';
     }
 
-
     foreach ($s_fields as $field) {
         if ($field["input_show"] && !$show[$field["id"]]) {
             $additional .= '
@@ -86,21 +84,20 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
         }
     }
 
-    $additional .= "\n";
-
-    $ret .= GetFormJavascript($show_func_used, $slice->get_js_validation('edit', 0, $notshown));
-
-    // Show all fields
-
-    $inputform_settings['form_action'] = AA_INSTAL_URL.'filler.php3';
-    $content4id = null;  // in getForm we have to pass it by reference
-    $form = new inputform($inputform_settings);
-    $ret .= $form->getForm($content4id, $slice, false, $show);
+    $ret .= $additional. "\n";
+    $ret .= $form->getFormJavascript();
+    $ret .= "\n    <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" align=\"center\" class=\"tabtxt\">\n";
+    $ret .= $form_code;   // show all fields
 
     $ret .= '
-    <tr><td colspan="10" align="center" class="tabtit">
-        <input type="submit" name="send" value="'._m("Send").'"></td></tr>
-    </TABLE></FORM>';
+      <tr>
+       <td colspan="10" align="center" class="tabtit">
+        <input type="submit" name="send" value="'._m("Send").'">
+       </td>
+      </tr>
+    </table>
+  </form>
+    ';
 
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
         $ret .= getFrmJavascript( 'if (typeof(fillform_fields) != "undefined")  fillForm();');
@@ -110,7 +107,6 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     $GLOBALS['sess'] = $sess_bck;
     return $ret;
 }
-
 
 
 if ($cancel) {
@@ -226,7 +222,7 @@ echo '
 FrmTabEnd($form_buttons, $sess, $slice_id);
 
 if ($show_form) {
-    echo '<tr><td><a id="form_content"></a><textarea cols="70" rows="30">';
+    echo '<tr><td><a id="form_content"></a><textarea cols="70" rows="40" style="width:100%" >';
     $form_content = GetAnonymousForm($slice, $s_fields, $show, $ok_url, $err_url, $use_show_result, $show_result);
     echo htmlspecialchars($form_content);
     echo "\n</textarea></td></tr>\n";
