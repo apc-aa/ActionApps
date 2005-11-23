@@ -1,4 +1,4 @@
-<?php  #slice_id expected
+<?php  //slice_id expected
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -20,20 +20,20 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "varset.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "view.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "pagecache.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "item.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "feeding.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "profile.class.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "itemfunc.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "notify.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "searchlib.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "formutil.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "sliceobj.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "msgpage.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "manager.class.php3";
-require_once $GLOBALS["AA_INC_PATH"] . "actions.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "varset.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "view.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "pagecache.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "item.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "feeding.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "profile.class.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "notify.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "searchlib.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "sliceobj.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "msgpage.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "manager.class.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "actions.php3";
 
 FetchSliceReadingPassword();
 
@@ -48,8 +48,8 @@ FetchSliceReadingPassword();
 function IsActionPerm($action) {
     global $slice;
     $display_actions = ($GLOBALS['r_state']['action_selected'] != "0");
-    $subtree = $GLOBALS['r_state']['show_subtree'];
-    $current_bin = $GLOBALS['r_state']['bin'];
+    $subtree         =  $GLOBALS['r_state']['show_subtree'];
+    $current_bin     =  $GLOBALS['r_state']['bin'];
 
     switch($action) {
         case 'Activate':    return  $display_actions &&
@@ -64,12 +64,14 @@ function IsActionPerm($action) {
                                     IfSlPerm(PS_ITEMS2TRASH) &&
                                     ($current_bin != 'trash');
         case 'Feed':        return  ($GLOBALS['r_state']['feed_selected'] != "0");
+//        case 'Move2Slice':  return  IfSlPerm(PS_DELETE_ITEMS);
         case 'Preview':     return  ($GLOBALS['r_state']['view_selected'] != "0");
         case 'FillField':   return  IfSlPerm(PS_EDIT_ALL_ITEMS);
         case 'Email':       return  ($slice->type() == 'ReaderManagement');
+        case 'Delete':      return  IfSlPerm(PS_DELETE_ITEMS) &&
+                                    ($current_bin == 'trash');
         //--  switches      ------
         case 'DeleteTrash': return  IfSlPerm(PS_DELETE_ITEMS);
-        case 'Delete':      return  IfSlPerm(PS_DELETE_ITEMS);
         case 'Tab':         return  true;
         case 'GoBookmark':  return  true;
         case 'SendEmail':   return  ($slice->type() == 'ReaderManagement');
@@ -86,21 +88,21 @@ function CountItemsInBins() {
     $db->tquery("SELECT status_code, count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                  GROUP BY status_code");
-    while( $db->next_record() )
+    while ( $db->next_record() )
         $ret[ 'folder'. $db->f('status_code') ] = $db->f('cnt');
 
     $db->tquery("SELECT count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                    AND status_code=1
                    AND expiry_date <= '$now' ");
-    if( $db->next_record() )
+    if ( $db->next_record() )
         $ret['expired'] = $db->f('cnt');
 
     $db->tquery("SELECT count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                    AND status_code=1
                    AND publish_date > '$now' ");
-    if( $db->next_record() )
+    if ( $db->next_record() )
         $ret['pending'] = $db->f('cnt');
 
     $ret['app'] = $ret['folder1']-$ret['pending']-$ret['expired'];
@@ -113,7 +115,7 @@ $module_id = $slice_id;
 // modules. Now it is better to use module_id, because in other modules
 // (like Links, ...) it is not so confusing
 
-$p_module_id = q_pack_id($module_id); # packed to 16-digit as stored in database
+$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice = new slice($module_id);
 $bin_def = array( 'app'    => array('cond'=>'ACTIVE'),
                   'appb'   => array('cond'=>'PENDING'),
@@ -125,7 +127,7 @@ $bin_def = array( 'app'    => array('cond'=>'ACTIVE'),
 $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
-if( !$perm_edit_all && !$perm_edit_self) {
+if ( !$perm_edit_all && !$perm_edit_self) {
   MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").sliceid2name($slice_id));
   exit;
 }
@@ -169,6 +171,11 @@ $manager_settings = array(
                                 'name'       => _m('Export'),
                                 'open_url'   => $sess->url("feed_to.php3"),
                                ),
+//         'Move2Slice'  => array('function'   => 'Item_Move2Slice',
+//                                'func_param' => &$slice,
+//                                'name'       => _m('Move to Slice'),
+//                                'open_url'   => $sess->url("move_to.php3"),
+//                               ),
                           // no function - this function just opens preview
          'Preview'     => array('name'       => _m('Preview'),
                                 'open_url'   => con_url($slice->getfield('slice_url'),'rXn=1'), // rXn=1 is foo parameter to make sure, we can use '&' to join items[] parameter (see open_url_add below)
@@ -181,11 +188,14 @@ $manager_settings = array(
          'Email'       => array('name'       => _m('Send email'),
                                 'open_url'   => $sess->url("write_mail.php3"),
                                 'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
+                               ),
+         'Delete'      => array('function'   => 'Item_DeleteTrash',
+                                'func_param' => 'selected',
+                                'name'       => _m('Remove (delete from database)'),
                                )
                          ),
      'switches'  => array(
          'DeleteTrash' => array('function'   => 'Item_DeleteTrash'),
-         'Delete'      => array('function'   => 'Item_DeleteTrash'),
          'Tab'         => array('function'   => 'Item_Tab'),
          'GoBookmark'  => array('function'   => 'Item_GoBookmark')
                          ),
@@ -222,7 +232,7 @@ $r_state['bin_cnt'] = CountItemsInBins();
 
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
 
-require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+require_once $GLOBALS['AA_INC_PATH']."menu.php3";
 showMenu($aamenus, "itemmanager", $r_state['bin'], $navbar != "0", $leftbar != "0");
 
 $conds = $manager->getConds();

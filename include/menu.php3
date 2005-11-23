@@ -174,7 +174,7 @@ function get_aamenus() {
 
             "header2"   => _m("Misc"),
             "slice_fld" => array("cond"=>IfSlPerm(PS_EDIT_ALL_ITEMS), "href"=>"admin/slicefieldsedit.php3?edit=1&encap=false&id=$slice_id", "label"=> _m("Setting")),
-            "item6"     => array("cond"=>IfSlPerm(PS_DELETE_ITEMS),   "href"=>"admin/index.php3?Delete=trash",                              "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"),
+            "item6"     => array("cond"=>IfSlPerm(PS_DELETE_ITEMS),   "href"=>"admin/index.php3?DeleteTrash=1",                              "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"),
             "CSVimport" => array("cond"=>IfSlPerm(PS_EDIT_ALL_ITEMS), "href"=>"admin/se_csv_import.php3",                                   "label"=>_m("Import CSV")),
             "debug"     => array("cond"=>IsSuperadmin(),              "js"  =>"ToggleCookie('aa_debug','1')", "hide"=>!IsSuperadmin(),      "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))),
             "line"      => ""

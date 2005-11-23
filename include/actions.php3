@@ -132,8 +132,10 @@ function Item_Move2Slice($slice, $item_arr, $akce_param) {
 
 /**
  *  Handler for DeleteTrash switch - Delete all items in the trash bin
- *  @param $value      Not used in this handler
- *  @param $param      Not used in this handler
+ *  @param $param       'selected' if we have to delete only items specified
+ *                      in $item_arr - otherwise delete all items in Trash
+ *  @param $item_arr    Items to delete (if 'selected' is $param)
+ *  @param $akce_param  Not used
  */
 function Item_DeleteTrash($param, $item_arr, $akce_param) {
     global $pagecache, $slice_id, $event;
@@ -142,13 +144,37 @@ function Item_DeleteTrash($param, $item_arr, $akce_param) {
     if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
         return _m("You have not permissions to remove items");
     }
-    $db->query("SELECT id FROM item
-               WHERE status_code=3 AND slice_id = '". q_pack_id($slice_id) ."'");
-    $items_to_delete = "";
-    while ( $db->next_record() )
-        $items_to_delete[] = $db->f("id");
 
-//mimo enabled -- problem?
+    $wherein = '';
+
+    // restrict the deletion only to selected items
+    if ($param == 'selected') {
+        $items_to_delete = array();
+        foreach ( $item_arr as $it_id => $foo ) {
+            $items_to_delete[] = pack_id(substr($it_id,1));      // remove initial 'x'
+        }
+        if (count($items_to_delete) < 1) {
+            freeDB($db);
+            return;
+        }
+        $wherein = " AND id IN ('".join_and_quote("','", $items_to_delete)."')";
+    }
+
+    // now we ask, which items we have to delete. We are checking the items even
+    // it is specified in $item_arr - for security reasons - we can delete only
+    // items in current slice and in trash
+    $db->query("SELECT id FROM item
+               WHERE status_code=3 AND slice_id = '". q_pack_id($slice_id) ."' $wherein");
+    $items_to_delete = array();
+    while ( $db->next_record() ) {
+        $items_to_delete[] = $db->f("id");
+    }
+    if (count($items_to_delete) < 1) {
+        freeDB($db);
+        return;
+    }
+
+    // mimo enabled -- problem?
     $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete);
 
     // delete content of all fields
