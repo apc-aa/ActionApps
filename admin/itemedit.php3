@@ -205,12 +205,15 @@ if ($edit) {
     // fill content array from item and content tables
     $content = GetItemContent($id);
     if ( !$content ) {
-        $err["DB"] = MsgErr(_m("Bad item ID id=$id"));
+        $err["DB"] = MsgErr(_m("Bad item ID id=%1", array($id)));
         MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
         exit;
     }
 
-    $content4id = $content[$id];
+    $content4id = new ItemContent($content[$id]);
+} else {
+    // we need the $content4id to be object (for getForm, at least)
+    $content4id = new ItemContent;
 }
 
 // mimo changes
@@ -223,7 +226,7 @@ if ($lang_control) {
     }
     list($mlx_formheading,$mlxl,$mlxid) = $mlx->itemform($lang_control,
         array('AA_CP_Session'=>$AA_CP_Session,'slice_id'=>$slice_id,'encap'=>$encap),
-        $content4id,$action,$mlxl,$mlxid);
+        $content4id->getContent(),$action,$mlxl,$mlxid);
 }
 // end mimo changes
 

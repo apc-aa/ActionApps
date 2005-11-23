@@ -121,7 +121,7 @@ function isMLXSlice($sliceobj)
     return (is_object($sliceobj) ? $sliceobj->getfield(MLX_SLICEDB_COLUMN) : $sliceobj[MLX_SLICEDB_COLUMN]);
 }
 
-/** Stores information about translations (= ids of translations items) 
+/** Stores information about translations (= ids of translations items)
  *  of current item (itemid)
  */
 class MLXCtrl
@@ -140,9 +140,9 @@ class MLXCtrl
             }
         }
     }
-    
+
     function getDefLangName() { return key($this->translations[0]); }
-    
+
     function &getFirstNonEmpty() {
         foreach ($this->translations as $v) {
             if ((list($itemid,)=array_values($v)) && $itemid) {
@@ -155,20 +155,20 @@ class MLXCtrl
 
 /** MLX - MultiLingual eXtension
  *  How it works:
- *     There are two slices - "Content" and "MLX Control Slice". The Content 
- *     slice stores all items and its translations, "MLX Control Silce" stores 
- *     relations - stores, which item in "Content" slice is translation 
- *     of another item. 
+ *     There are two slices - "Content" and "MLX Control Slice". The Content
+ *     slice stores all items and its translations, "MLX Control Silce" stores
+ *     relations - stores, which item in "Content" slice is translation
+ *     of another item.
  *
  *  There is an example, how it should look in database:
- * 
+ *
  *  "MLX Control Slice"
  *    field name: ID                  EN                  CZ
  *    field id:   id..............    mlxctrl.........    mlxctrl.........
  *    -----------------------------------------------------------------------------------------------
  *    content:    mlxid_packed_id_    content_pack_id1    content_pack_id2
- *    
- *  "Content slice"   
+ *
+ *  "Content slice"
  *    field name: ID                  Language            MLX control         Headline          [...]
  *    field id:   id..............    lang_code.......    mlxctrl.........    headline........  [...]
  *    -----------------------------------------------------------------------------------------------
@@ -192,16 +192,16 @@ class MLX
 
     function &getCtrlFields() { return $this->ctrlFields; }
 
-    /** Stores translations ids to MXL control slice and also sets value of 
+    /** Stores translations ids to MXL control slice and also sets value of
      *  mlxctrl......... field in content4id
-     *   @param content4id  - currently stored item 
+     *   @param content4id  - currently stored item
      *   @param cntitemid   - id of currently stored item (it must be known also
-     *                        for new (= inserted) items 
+     *                        for new (= inserted) items
      *   @param mlxl        - language of current item
      *   @param mlxid       - id of control item in MLX control slice
      */
     function update(&$content4id, $cntitemid, $action, $mlxl, $mlxid) {
-        
+
         $content4mlxid    = array();
         $oldcontent4mlxid = array();
         $insert = false;
@@ -228,7 +228,7 @@ class MLX
                 $content4mlxid[(string)$k] = 0;
             }
         }
-        
+
         //huhl("update(", $content4mlxid, "$id, $lang, $qp_cntitemid, $cntitemid, ".unpack_id128($qp_cntitemid)." ".strlen($qp_cntitemid)." ".pack_id128($content4id->getItemID()));
         //die;
         if (empty($content4mlxid)) {
@@ -246,17 +246,17 @@ class MLX
         $content4mlxid["expiry_date....."][0]['value'] = time() + 200*365*24*60*60;
         $content4mlxid["status_code....."][0]['value'] = 1;
         $p_id = pack_id128($id);
-        if((strlen($id) != 32) || (strlen($p_id)!=16)) 
-        	$this->fatal("MLX update: mlxid corrupted: $id ".strlen($id).", $p_id");
-        
+        if((strlen($id) != 32) || (strlen($p_id)!=16))
+            $this->fatal("MLX update: mlxid corrupted: $id ".strlen($id).", $p_id");
+
         $added = StoreItem($id,$this->langSlice,$content4mlxid, $this->ctrlFields,$insert,true,true);
-        
+
         $content4id->setValue(MLX_CTRLIDFIELD, $p_id);
         $this->trace("done. id=$id ($added)");
     }
-    
-    /** Returns array of: 
-     *     - HTML code which will be displayed at the top of the form with 
+
+    /** Returns array of:
+     *     - HTML code which will be displayed at the top of the form with
      *       language selections,
      *     - language
      *     - mlxid - id of the main mlx artice (where other items are joined)
@@ -369,7 +369,7 @@ class MLX
         }
         return array($mlxout.MLX_HTML_TABFT, (string)$lang, (string)$mlxid);//"\n</tr>\n</tbody>\n</table>\n<br>\n";
     }
-    
+
     // helper functions
     //protected:
     function getLangItem($lang, &$content4id, &$content4mlxid)
@@ -389,7 +389,7 @@ class MLX
             $content = GetItemContent($mlxid);
             //var_dump($content);
             if (!$content) {
-                $this->fatal(_m("Bad item ID $mlxid").var_export($mlxid));
+                $this->fatal(_m("Bad item ID %1", array($mlxid)).var_export($mlxid));
             }
             $content4mlxid = $content[$mlxid];
         }
@@ -403,7 +403,7 @@ class MLX
         }
         return false;
     }
-    
+
     function getparamstring(&$params)
     {
         foreach($params as $k => $v) {

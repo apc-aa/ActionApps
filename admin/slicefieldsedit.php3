@@ -124,14 +124,14 @@ if ($edit) {
     // fill content array from item and content tables
     $content4id = $slice->get_dynamic_setting_content(true);
     if ( !$content4id ) {
-        $err["DB"] = MsgErr(_m("Bad item ID id=$id"));
+        $err["DB"] = MsgErr(_m("Bad item ID id=%1", array($id)));
         MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
         exit;
     }
+} else {
+    // we need the $content4id to be object (for getForm, at least)
+    $content4id = new ItemContent;
 }
-
-
-
 
 // print begin ---------------------------------------------------------------
 if (!$encap) {
@@ -164,7 +164,7 @@ if ($vid) {
 
 //AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
 $form = new inputform($inputform_settings);
-$form->printForm($content4id->getContent(), $slice, $edit, true);
+$form->printForm($content4id, $slice, $edit, true);
 
 page_close();
 ?>
