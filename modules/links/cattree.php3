@@ -316,8 +316,8 @@ class cattree {
 
         var assignno = s.length    // number of category assignments
         var level = 0              // current depth of tree path
-        var treeStart ='. $this->treeStart .'
-        var select_depth ='. $select_depth .'
+        var treeStart = '. $this->treeStart .'
+        var select_depth = '. $select_depth .'
         var go_into_empty_cat = '. ($this->go_to_empty ? 'true' : 'false') .'
         var path_delimiter    = "'. $this->path_delimiter .'"
         a=new Array()'."\n";

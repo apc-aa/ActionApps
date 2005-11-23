@@ -776,8 +776,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",    // gro
           $SQL2 .= " ( item.status_code=1 AND (item.publish_date <= '$now') ";
             /* condition can specify expiry date (good for archives) */
             if ( !( $ignore_expiry_date &&
-                   defined("ALLOW_DISPLAY_EXPIRED_ITEMS") &&
-                   ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
+                   defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
 //              $SQL2 .= " AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
               $SQL2 .= " AND (item.expiry_date > '$now') ";
             }

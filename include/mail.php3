@@ -27,7 +27,7 @@ require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
 require_once $GLOBALS['AA_INC_PATH']."stringexpand.php3";
 require_once $GLOBALS['AA_INC_PATH']."htmlMimeMail/htmlMimeMail.php";
 
-class HtmlMail extends HtmlMimeMail {
+class HtmlMail extends htmlMimeMail {
 
     /// This function fits a record from the @c email table.
     function setBasicHeaders($record, $default) {

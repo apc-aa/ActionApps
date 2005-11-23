@@ -56,7 +56,7 @@ if ($del) {
     $SQL = "DELETE FROM field WHERE id='$fid' AND slice_id='$p_slice_id'";
     if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
         $err["DB"] = MsgErr("Can't change field");
-        break;
+        exit;
     }
     $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
