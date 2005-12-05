@@ -102,15 +102,12 @@ function default_fnc_($param) {
     return "";
 }
 
-/*
-//Originally used by Mitra/Setu/Ram in PTS, but Commented out because of
-//security risk, if required should be rewritten with a list of variables
-//permitted
-
+// Expands parameter string (e.g. {user})
 function default_fnc_variable($param) {
-  return ($GLOBALS[$param]);
+  $maxlevel = 0;
+  return new_unalias_recurent($param, '', 0, $maxlevel);
 }
-*/
+
 // ----------------------- insert functions ------------------------------------
 
 // What are the parameters to this function - $field must be an array with values [input_show_func] etc
