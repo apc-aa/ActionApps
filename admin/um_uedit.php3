@@ -113,12 +113,36 @@ $varset = new Cvarset();
 
 if ( $add_submit OR ($submit_action == "update_submit")) {
 
-    // all the actions are in following require_once (we reuse this part of code for
-    // slice wizard ...
-    require_once $GLOBALS['AA_INC_PATH']."um_uedit.php3";
+    // following code (in do {}) is used also in slice wizard
+    do  {
+        // Procces user data -------------------------------------------------------
+        $userrecord = FillUserRecord($err, ($add_submit ? $user_login : 'nOnEwlOgiN'), $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3);
+
+        if ( count($err) > 1) {
+            break;
+        }
+
+        if ( $add_submit ) {      // -------------------- new user ------------------
+            NewUserData(&$err, $user_login, &$userrecord, $user_super, &$perms_roles, $um_uedit_no_go_url);
+        } else {                 // ----------------- update user ------------------
+            ChangeUserData(&$err, $selected_user, &$userrecord, $user_super, &$perms_roles);
+        }
+
+        // Procces group data ------------------------------------------------------
+        ChangeUserGroups($posted_groups, $sel_groups, $selected_user);
+
+        // Procces module permissions ----------------------------------------------
+
+        // Change module permissions if user wants
+        ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles );
+
+        // Add new modules for this user
+        AddUserModulePerms( $new_module, $new_module_role, $selected_user, $perms_roles);
+
+    } while (false);
 
     if ( count($err) <= 1 ) {
-        $Msg = MsgOK(_m("User successfully added to permission system"));
+        $Msg = MsgOK( $add_submit ? _m("User successfully added to permission system") : _m("User data modified"));
         go_url( get_url($sess->url($PHP_SELF), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
     }
 }
@@ -223,23 +247,25 @@ if ( !($usr_new OR ($usr_edit AND ($selected_user!="n"))) ) {
 }
 
 do {
-    if ($usr_edit AND !($submit_action == "update_submit")) {
+    if ($usr_edit ) {
         if ( !is_array($user_data = GetUser($selected_user))) {
             break;
         }
         $user_login     = $user_data['login'];
-        $user_firstname = $user_data['givenname'];
-        $user_surname   = $user_data['sn'];
-        $user_password1 = "nOnEwpAsswD";    // unchanged password
-        $user_password2 = "nOnEwpAsswD";    // unchanged password
-        if ( is_array($user_data['mail'])) {
-            $user_mail1 = $user_data['mail'][0];
-            $user_mail2 = $user_data['mail'][1];
-            $user_mail3 = $user_data['mail'][2];
-        }
-        $aa_users = GetObjectsPerms(AA_ID, "aa");
-        if (IsPerm($aa_users[$selected_user]["perm"], $perms_roles["SUPER"]['id'])) {
-            $user_super = true;
+        if ( $submit_action != "update_submit") {
+            $user_firstname = $user_data['givenname'];
+            $user_surname   = $user_data['sn'];
+            $user_password1 = "nOnEwpAsswD";    // unchanged password
+            $user_password2 = "nOnEwpAsswD";    // unchanged password
+            if ( is_array($user_data['mail'])) {
+                $user_mail1 = $user_data['mail'][0];
+                $user_mail2 = $user_data['mail'][1];
+                $user_mail3 = $user_data['mail'][2];
+            }
+            $aa_users = GetObjectsPerms(AA_ID, "aa");
+            if (IsPerm($aa_users[$selected_user]["perm"], $perms_roles["SUPER"]['id'])) {
+                $user_super = true;
+            }
         }
     }
 } while (false);
@@ -250,18 +276,14 @@ do {
 <form name=fx method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
 
-if ( $usr_edit OR ($submit_action == "update_submit") ) {
-  FrmTabCaption(_m("Edit User"));
-} else {
-  FrmTabCaption(_m("New user"));
-}
-
 // User data ---------------------------------------------------
 
 if ( $usr_edit OR ($submit_action == "update_submit") ) {
+    FrmTabCaption(_m("Edit User"));
     FrmStaticText( _m("Login name"), $user_data['login']);
     FrmStaticText( _m("User Id"),    $user_data['uid']);
 } else {
+    FrmTabCaption(_m("New user"));
     FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);
 }
 FrmInputPwd("user_password1", _m("Password"),       $user_password1, 50, 50, true);
@@ -272,7 +294,6 @@ FrmInputText("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
 //  FrmInputText("user_mail2",_m("E-mail")." 2",    $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php3
 //  FrmInputText("user_mail3",_m("E-mail")." 3",    $user_mail3, 50, 50, false);
 FrmInputChBox("user_super",   _m("Superadmin account"), $user_super, false, "", 1, false);
-//echo '</table></td></tr>';
 
 if ( !$add_submit AND !$usr_new) {
 

@@ -171,8 +171,10 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
                   $title_img .'&nbsp;'. $smmenus[$activeMain]['title']. "  -  $r_slice_headline".
               '</td>
               <td width="20%" align="right" class="navbar">
-                <form name="logoutform" method="post" action="'. get_admin_url('logout.php3').'">'.
-                  $auth->auth['uname'] .' <input type="submit" name="logout" value="'._m('logout').'">&nbsp;
+                <form name="logoutform" method="post" action="'. get_admin_url('logout.php3').'">';
+        showMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3', false, $slice_id);
+        echo '
+                   <input type="submit" name="logout" value="'._m('logout').'">&nbsp;
                 </form>
               </td>
             </tr>
@@ -184,22 +186,12 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
             if ($aamenuprop["level"] == "main") {
                 echo $delim;
                 $delim = ' | ';
-                if (!isset($aamenuprop["cond"])) {
-                    $aamenuprop["cond"] = 1;
-                }
-                if ($aamenu == $activeMain) {
-                    echo "<span class=nbactive>$aamenuprop[label]</span>\n";
-                }
-                elseif ($slice_id AND $aamenuprop["cond"]) {
-                     $href = $aamenuprop["exact_href"];
-                     if (!$href) {
-                         $href = get_aa_url($aamenuprop["href"]);
-                     }
-                     $href = con_url($href, "slice_id=$slice_id");
-                     echo a_href($href, "<span class=nbenable>$aamenuprop[label]</span>");
-                } else {
-                    echo "<span class=nbdisable>$aamenuprop[label]</span>";
-                }
+                showMenuLink($aamenu == $activeMain,
+                             $aamenuprop['label'],
+                             isset($aamenuprop["cond"]) ? $aamenuprop["cond"] : true,
+                             $aamenuprop["href"],
+                             $aamenuprop["exact_href"],
+                             $slice_id);
             }
         }
 
@@ -241,6 +233,22 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
     trace("-");
 }
 
+function showMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) {
+    if ($active) {
+        echo "<span class=nbactive>$label</span>\n";
+    }
+    elseif ($slice_id AND $cond) {
+        $href = $exact_href;
+        if (!$href) {
+            $href = get_aa_url($aa_href);
+        }
+        $href = con_url($href, "slice_id=$slice_id");
+        echo a_href($href, "<span class=nbenable>$label</span>");
+    } else {
+        echo "<span class=nbdisable>$label</span>";
+    }
+}
+
 function showSubMenuRows( $aamenuitems, $active ) {
     global $AA_INSTAL_PATH, $slice_id,$debug;
 
@@ -271,14 +279,14 @@ function showSubMenuRows( $aamenuitems, $active ) {
             if ($itemshow == $active) {
                 echo "<span class=leftmenua>".$item["label"]."</span>\n";
             } elseif (($slice_id || $item["show_always"]) && $item["cond"]) {
-                $href = ($item["exact_href"] ?
-                              $item["exact_href"] : get_aa_url($item["href"]));
-                if ($slice_id && !$item["no_slice_id"])
-                    $href = con_url ($href, "slice_id=$slice_id");
+                $href = ($item["exact_href"] ? $item["exact_href"] : get_aa_url($item["href"]));
+                if ($slice_id && !$item["no_slice_id"]) {
+                    $href = con_url($href, "slice_id=$slice_id");
+                }
                 if ($item['js']) {
                     $item['js'] = str_replace("{href}",$href,$item['js']);
                     $item['js'] = str_replace("{exact_href}",$href,$item['js']);
-                    $href = "javascript:".$item['js'];
+                    $href       = "javascript:".$item['js'];
                 }
                 echo '<a href="'.$href.'" class=leftmenuy>'.$item["label"]."</a>\n";
             } elseif ( !$item["hide"] ) {

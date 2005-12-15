@@ -31,6 +31,7 @@ define("MAX_ENTRIES_SHOWN",10);   // Maximum number of shown users in search for
 //---------- Slice -----------------
 // author        - possibly letters 'abcdefg'
 define("PS_EDIT_SELF_ITEMS",      "a");   // slice | change self-written items
+define("PS_EDIT_SELF_USER_DATA",  "b");   // slice | change data for current userself-written items
 // editor        - possibly letters 'hijklmnopqrs'
 define("PS_ITEMS2ACT",            "h");   // slice | move item to approved bin
 define("PS_ITEMS2HOLD",           "i");   // slice | move item to holding bin

@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ http://www.apc.org/
 require_once "../include/slicedit2.php3";
 
 // messages for init_page:
-$no_slice_id = true;  
+$no_slice_id = true;
 $require_default_lang = true;
 
 require_once "../include/init_page.php3";
@@ -35,8 +35,9 @@ if ($cancel)
 
 $wizard = 1;
 
-if ($add)
+if ($add) {
     require_once $GLOBALS['AA_INC_PATH']."slicedit.php3";
+}
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
@@ -56,7 +57,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     require_once $GLOBALS['AA_INC_PATH']."sliceadd.php3";
 
     FrmInputRadio ("wiz[copyviews]", _m("Copy Views"), array (1=>_m("yes"),0=>_m("no")), 1);
-    FrmInputRadio ("wiz[constants]", _m("Categories/Constants"), 
+    FrmInputRadio ("wiz[constants]", _m("Categories/Constants"),
         array ('share'=>_m("Share with Template"),'copy'=>_m("Copy from Template")),'copy');
 ?>
 
@@ -69,7 +70,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 FrmTabCaption(_m("[Optional] Create New User"));
 
 // User data ---------------------------------------------------
-    FrmInputRadio("user_role", _m("Level of Access"), 
+    FrmInputRadio("user_role", _m("Level of Access"),
         array ("EDITOR"=>_m("Editor"), "ADMINISTRATOR"=>_m("Slice Administrator")), "EDITOR");
     FrmInputText("user_login", _m("Login name"), "", 50, 50, true);
     FrmInputPwd("user_password1", _m("Password"), "", 50, 50, true);
@@ -78,13 +79,13 @@ FrmTabCaption(_m("[Optional] Create New User"));
     FrmInputText("user_surname", _m("Surname"), "", 50, 50, true);
     FrmInputText("user_mail1", _m("E-mail")." 1", "", 50, 50, false);
     echo '<input type=hidden name=add_submit value="1">
-    <input type=hidden name=um_uedit_no_go_url value=1>';  
-    
+    <input type=hidden name=um_uedit_no_go_url value=1>';
+
     $email_welcomes = GetUserEmails ("slice wizard welcome");
     $email_welcomes [NOT_EMAIL_WELCOME] = _m("Do Not Email Welcome");
-  
+
     FrmInputSelect("wiz[welcome]", _m("Email Welcome"), $email_welcomes, NOT_EMAIL_WELCOME);
-    
+
     FrmTabEnd();
 ?>
 
