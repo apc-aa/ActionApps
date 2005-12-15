@@ -106,7 +106,7 @@ class AA_SL_Session extends Session {
 
     //rewriten to return URL of shtml page that includes this script instead to return self url of this script. If noquery parameter is true, session id is not added
     function MyUrl($SliceID=0, $Encap=true, $noquery=false){  //SliceID is here just for compatibility with MyUrl function in extsess.php3
-        global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REDIRECT_DOCUMENT_URI, $SCRIPT_URL, $scr_url;
+        global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REQUEST_URI, $REDIRECT_DOCUMENT_URI, $SCRIPT_URL, $scr_url;
         if (isset($HTTPS) && $HTTPS == 'on') {
             // You will need to fix suexec as well, if you use Apache and CGI PHP
             $PROTOCOL='https';
@@ -120,6 +120,9 @@ class AA_SL_Session extends Session {
             $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_DOCUMENT_URI;
         } elseif (isset($DOCUMENT_URI)) {
             $foo = $PROTOCOL. "://". $HTTP_HOST.$DOCUMENT_URI;
+        } elseif (isset($REQUEST_URI)) {
+         $url_parsed = parse_url($REQUEST_URI);
+         $foo = $PROTOCOL. "://". $HTTP_HOST.$url_parsed['path'];
         } else {
             $foo = $PROTOCOL. "://". $HTTP_HOST.$SCRIPT_URL;
         }
@@ -139,13 +142,16 @@ class AA_SL_Session extends Session {
     // adds variables passesd by QUERY_STRING_UNESCAPED to HTTP_GET_VARS
     // SSI patch - passes variables to SSIed script
     function expand_getvars() {
-        global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $HTTP_GET_VARS;
+        global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $HTTP_GET_VARS, $REQUEST_URI;
         if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
             $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
             // $REDIRECT_QUERY_STRING_UNESCAPED
             //  - necessary for cgi version compiled with --enable-force-cgi-redirect
+        } elseif ( isset($QUERY_STRING_UNESCAPED) ) {
+          $varstring = $QUERY_STRING_UNESCAPED;
         } else {
-            $varstring = $QUERY_STRING_UNESCAPED;
+          $url_parsed = parse_url($REQUEST_URI);
+          $varstring = $url_parsed['query'];
         }
 
         $a = explode("&",$varstring);
