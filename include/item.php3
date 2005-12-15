@@ -347,7 +347,8 @@ class item {
   /** shortcut for ItemContent->getValues() */
   function getvalues($column) { return $this->columns->getValues($column); }
 
-  function getContent()       { return $this->columns->getContent();  }
+  function getContent()       { return $this->columns->getContent(); }
+  function getItemContent()   { return $this->columns;               }
   function getItemID()        { return $this->columns->getItemID();  }
   function getSliceID()       { return $this->columns->getSliceID(); }
 

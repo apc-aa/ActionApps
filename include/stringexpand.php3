@@ -192,8 +192,24 @@ function parseLoop($out, &$item) {
             $group_id = getConstantsGroupID($item->getval("slice_id........"), $field);
         }
     }
-    $val = $item->getvalues($field);
-    if (!is_array($val)) {
+
+    // get itemcontent object
+    $itemcontent = $item->getItemContent();
+
+    $val = array();
+    // special - {@fieldlist...} - lists all the fields
+    // (good for authomatic CSV generation, for example)
+    if ( $field == 'fieldlist' ) {
+        foreach ($itemcontent->getFields() as $fld) {
+            // make the array of fields compatible with content array in order
+            // we can use the same syntax ...
+            $val[] = array('value' => $fld);
+        }
+    } else {
+        $val = $itemcontent->getvalues($field);
+    }
+
+    if (!is_array($val) OR (count($val)==0)) {
         return '';
     }
 

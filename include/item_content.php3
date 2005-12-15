@@ -226,6 +226,16 @@ class ItemContent {
         return ( is_array($this->content[$field_id]) ? $this->content[$field_id] : false );
     }
 
+    function getFields() {
+        $fields = array();
+        if ( isset( $this->content ) AND is_array( $this->content ) ) {
+            foreach ( $this->content as $field => $foo ) {
+                $fields[] = $field;
+            }
+        }
+        return $fields;
+    }
+
     /** Fills the name with dots to the standard 16 characters,
     *   returns the value for the field. You can use field names
     *   from the <i>item</i> table with this function. */
