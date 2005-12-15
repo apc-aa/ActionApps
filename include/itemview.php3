@@ -191,7 +191,7 @@ class itemview {
               $ids_sql .= '"'.addslashes(q_pack_id($id)).'"';
           }
           $SQL = "SELECT * FROM discussion WHERE id IN ($ids_sql)";
-          $d_content = GetDiscussionContentSQL($SQL, "", "",$this->disc['vid'],true,$this->disc['html_format'],$this->clean_url);
+          $d_content = GetDiscussionContentSQL($SQL, "", true, $this->disc['html_format'],$this->clean_url);
           if (is_array($d_content)) {
               foreach ( $d_content as $id => $disc) {
                   $CurItem->set_data($disc);
@@ -223,7 +223,7 @@ class itemview {
           $order =  $this->slice_info['d_order'];
       //    }
 
-      $d_content = GetDiscussionContent($this->disc['item_id'], "",$this->disc['vid'],true,$order,$this->disc['html_format'],$this->clean_url);
+      $d_content = GetDiscussionContent($this->disc['item_id'], "", true,$order,$this->disc['html_format'],$this->clean_url);
       $d_tree    = GetDiscussionTree($d_content);
 
       $out .= '<a name="disc"></a><form name="discusform" action="">';
@@ -324,7 +324,7 @@ class itemview {
 
     $CurItem->setformat( $this->slice_info['d_fulltext']);      // set fulltext format
     $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],
-                                      $this->disc['vid'], true, 'timeorder',
+                                      true, 'timeorder',
                                       $this->disc['html_format'], $this->clean_url);
     $d_tree = GetDiscussionTree($d_content);
     if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array($d_content)) {  // show selected cooments
@@ -369,7 +369,7 @@ class itemview {
     // if parent_id is set => show discussion comment
     $out.= '<a name="disc"></a>';
     if ($this->disc['parent_id']) {
-      $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],$this->disc['vid'],true,'timeorder',$this->disc['html_format'],$this->clean_url);
+      $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],true,'timeorder',$this->disc['html_format'],$this->clean_url);
       $CurItem->setformat( $this->slice_info['d_fulltext']);
       $this->set_columns($CurItem, $d_content, $this->disc['parent_id']);
       $out .= $CurItem->get_item();

@@ -47,13 +47,15 @@ http://www.apc.org/
  * @param mixed $val the variable or array to quote (add slashes)
  * @return mixed the quoted variables (with added slashes)
  */
+
 function Myaddslashes($val, $n=1) {
-  if (!is_array($val)) {
-    return addslashes($val);
-  }
-  for (reset($val); list($k, $v) = each($val); )
-    $ret[$k] = Myaddslashes($v, $n+1);
-  return $ret;
+    if (!is_array($val)) {
+        return addslashes($val);
+    }
+    for (reset($val); list($k, $v) = each($val); ) {
+        $ret[$k] = Myaddslashes($v, $n+1);
+    }
+    return $ret;
 }
 
 if (!get_magic_quotes_gpc()) {
@@ -91,26 +93,26 @@ $err["Init"] = "";       // error array (Init - just for initializing variable)
 $new_id = new_id();
 
 $catVS = new Cvarset();
-$catVS->add("id", "unpacked", $new_id);
-$catVS->add("parent", "unpacked", $d_parent);
-$catVS->add("item_id", "unpacked", $d_item_id);
-$catVS->add("subject", "quoted", $d_subject);
-$catVS->add("author", "quoted", $d_author);
-$catVS->add("e_mail", "quoted", $d_e_mail);
-$catVS->add("body", "quoted", $d_body);
-$catVS->add("state", "quoted", $d_state);
-$catVS->add("flag", "quoted", $d_flag);
-$catVS->add("free1", "quoted", $d_free1);
-$catVS->add("free2", "quoted", $d_free2);
-$catVS->add("url_address", "quoted", $d_url_address);
-$catVS->add("url_description", "quoted", $d_url_description);
-$catVS->add("date", "quoted", time());
-$catVS->add("remote_addr", "quoted", $GLOBALS[REMOTE_ADDR]);
+$catVS->add("id",              "unpacked", $new_id);
+$catVS->add("parent",          "unpacked", $d_parent);
+$catVS->add("item_id",         "unpacked", $d_item_id);
+$catVS->add("subject",         "quoted",   $d_subject);
+$catVS->add("author",          "quoted",   $d_author);
+$catVS->add("e_mail",          "quoted",   $d_e_mail);
+$catVS->add("body",            "quoted",   $d_body);
+$catVS->add("state",           "quoted",   $d_state);
+$catVS->add("flag",            "quoted",   $d_flag);
+$catVS->add("free1",           "quoted",   $d_free1);
+$catVS->add("free2",           "quoted",   $d_free2);
+$catVS->add("url_address",     "quoted",   $d_url_address);
+$catVS->add("url_description", "quoted",   $d_url_description);
+$catVS->add("date",            "quoted",   time());
+$catVS->add("remote_addr",     "quoted",   $GLOBALS['REMOTE_ADDR']);
 
 $SQL = "INSERT INTO discussion" . $catVS->makeINSERT();
 $db = new DB_AA;
 if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-  $err["DB"] .= MsgErr("Can't add discussion comment");
+    $err["DB"] .= MsgErr("Can't add discussion comment");
 }
 send2mailList($d_item_id, $new_id);
 
@@ -122,8 +124,9 @@ writeLog('PAGECACHE', "slice_id=$slice_id", "filldisc" );
 updateDiscussionCount($d_item_id);        // update a count of the comments belong to the item
 
 // special discussion setting
-if ( $_REQUEST['all_ids'] )
+if ( $_REQUEST['all_ids'] ) {
     $url = str_replace('&sh_itm', "&all_ids=".$_REQUEST['all_ids'].'&sh_itm', $url);
+}
 go_url( $url);
 
 ?>

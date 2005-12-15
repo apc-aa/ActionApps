@@ -30,6 +30,7 @@
            of specifis events (UI needed)
          - searchform in ItemManager and LinksManager uses GET mathod,
            which is more user friendly
+         - discussions code a bit cleaned
          - fixed problem with session on for some special Apache configuration,
            when some server variables are not filled (Bluelink case)
          - fixed all_ids parameter in discussions - now works also for GET,

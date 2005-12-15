@@ -58,7 +58,7 @@ if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 // get discussion content and tree
-$dcontent = GetDiscussionContent($item_id, "", "", false);
+$dcontent = GetDiscussionContent($item_id, "", false);
 $tree     = GetDiscussionTree($dcontent);
 
 if ($mode == "hide" || $mode=="delete") {
@@ -77,7 +77,7 @@ if ($mode == "hide" || $mode=="delete") {
 
     $GLOBALS['pagecache']->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
 
-    $dcontent = GetDiscussionContent($item_id, "", "", false);       // refresh the content and the tree because of delete node
+    $dcontent = GetDiscussionContent($item_id, "", false);       // refresh the content and the tree because of delete node
     $tree     = GetDiscussionTree($dcontent);
 
 }
