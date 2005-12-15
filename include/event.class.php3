@@ -122,6 +122,8 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio',      array('type' => 'ITEM_NEW',         'slice'        => '22613f53fdaa6e092569b6021b23fee2'));  // Aperio - rodina (poradna)
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_UPDATED',     'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_NEW',         'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_UPDATED',     'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',         'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
     }
 }
 
@@ -369,4 +371,8 @@ function Event_ItemUpdated_Aperio_porod( $type, $slice, $slice_type, &$ret_param
     return SendFilledItem($ret_params, 50);
 }
 
+/** Send email with answer to Aperio staff with the answer (from item) */
+function Event_ItemUpdated_Ekoinfocentrum( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+    return SendFilledItem($ret_params, 53);
+}
 ?>
