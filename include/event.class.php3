@@ -52,14 +52,21 @@ class aahandler {
     }
 
     function matches( $type, $slice, $slice_type ) {
-        if ( !(isset($this->conds) AND is_array($this->conds)) )
+        if ( !(isset($this->conds) AND is_array($this->conds)) ) {
             return true;   // no conditions are set for handler - do it allways
+        }
         foreach ( $this->conds as $condition => $value ) {
             if ( $$condition != $value ) {
                 return false;
             }
         }
-        return $this->funct;       // all defined conditions matches
+        return true;       // all defined conditions matches
+    }
+
+    /** Process the event - it is the time of event */
+    function process($type, $slice, $slice_type, &$ret_params, $params, $params2) {
+        $function = $this->funct;
+        return $function($type, $slice, $slice_type, $ret_params, $params, $params2);
     }
 }
 
@@ -88,22 +95,21 @@ class aaevent {
      */
     function comes($type, $slice, $slice_type, &$ret_params, $params='', $params2='') {
         unset($this->returns);
-        if ( $this->handlers == 'not_filled' )
-            $this->get_handlers();
-        if ( !(isset($this->handlers) AND is_array($this->handlers)) )
+        if ( $this->handlers == 'not_filled' ) {
+            $this->get_handlers($type, $slice, $slice_type);
+        }
+        if ( !(isset($this->handlers) AND is_array($this->handlers)) ) {
             return false;
+        }
         foreach ( $this->handlers as $handler ) {
-            $function = $handler->matches($type, $slice, $slice_type);
-
-            // matches and function begins with 'Event_' - security check
-            if ( $function AND (substr($function, 0, 6) == 'Event_') ) {
-                $this->returns[] = $function($type, $slice, $slice_type, $ret_params, $params, $params2);
+            if ( $handler->matches($type, $slice, $slice_type) ) {
+                $this->returns[] = $handler->process($type, $slice, $slice_type, $ret_params, $params, $params2);
             }
         }
     }
 
     /** Fills the handlers array from database */
-    function get_handlers() {
+    function get_handlers($type, $class, $selector) {
         // TODO - read the events from database instead of this static definition
         $this->handlers   = array();
         $this->handlers[] = new aahandler('Event_ItemsBeforeDelete',       array('type' => 'ITEMS_BEFORE_DELETE',   'slice_type' => 'S'));  // all slices
@@ -112,6 +118,7 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemBeforeInsert',        array('type' => 'ITEM_BEFORE_INSERT',    'slice_type' => 'S'));  // all slices
         $this->handlers[] = new aahandler('Event_ItemAfterInsert',         array('type' => 'ITEM_NEW',              'slice_type' => 'S'));  // all slices
         $this->handlers[] = new aahandler('Event_ItemAfterUpdate',         array('type' => 'ITEM_UPDATED',          'slice_type' => 'S'));  // all slices
+        $this->handlers[] = new aahandler('Event_CommentAfterInsert',      array('type' => 'COMMENT_UPDATED',       'slice_type' => 'S'));  // all slices
         $this->handlers[] = new aahandler('Event_ConstantBeforeUpdate',    array('type' => 'CONSTANT_BEFORE_UPDATE','slice_type' => 'S'));  // all slices
         $this->handlers[] = new aahandler('Event_ConstantUpdated',         array('type' => 'CONSTANT_UPDATED',      'slice_type' => 'S'));  // all slices
         $this->handlers[] = new aahandler('Event_AddLinkGlobalCat',        array('type' => 'LINK_NEW',              'slice_type' => 'Links'));
@@ -124,6 +131,73 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_NEW',         'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_UPDATED',     'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',         'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
+    }
+
+    /** Fills the handlers array from database */
+    function get_handlers_newwwwww($type, $class, $selector) {
+        $db = getDB();
+        $SQL = "SELECT reaction, params FROM event WHERE type='".quote($type)."'";
+        if ($class) {
+            $SQL .= " AND class='".quote($class)."'";
+        }
+        if ($selector) {
+            $SQL .= " AND selector='".quote($selector)."'";
+        }
+        $db->query($SQL);
+        while ($db->next_record()) {
+            $reaction_class = $db->f('reaction');
+            // security check - class must end with "Event"
+            if ( substr($reaction_class, -5) == 'Event' ) {
+                $this->handlers[] = new $reaction_class( $db->f('params'), $type, $class, $selector);
+            }
+        }
+    }
+}
+
+/** Newest approach - events are stored in the database (table event) - no need
+ *  for match method - it is already implemented in database layer - see
+ *  get_handlers() method above
+ */
+class NewDiscussionCommentEvent {
+    var $email;
+    function NewDiscussionCommentEvent( $params, $type, $class, $selector ) {
+        $email = unserialize($params);
+    }
+
+    /** not necessary - implemented in get_handlers method in database layer */
+    function matches( $type, $slice, $slice_type ) {
+        return true;
+    }
+
+    /** Process the event - it is the time of event */
+    function process($type, $slice, $slice_type, &$ret_params, $params, $params2) {
+
+
+//todo
+        // get discussion item content
+        $columns = GetDiscussionContentSQL(
+           "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
+           $d_item_id, "", true, $html, "");
+        $columns = reset($columns);  // get first element
+
+        // get aliases
+        $aliases = GetDiscussionAliases();
+        for ($i=2; $i < count($item_params); $i++) {
+            FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
+        }
+
+        $CurItem = new item($columns, $aliases);
+
+        // newer version based on email templates
+        if ( $vid{0} == 't' ) {   // email template
+            $mail_id = substr($vid,1);
+            send_mail_from_table_inner($mail_id, $maillist, $CurItem);
+            return;
+        }
+
+
+        $function = $this->funct;
+        return $function($type, $slice, $slice_type, $ret_params, $params, $params2);
     }
 }
 
@@ -155,7 +229,7 @@ function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $o
     $item_id = $itemContent->getItemID();
     AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
 //    AlertsSendInstantAlert( $item_id, $slice_id );
-    MailmanCreateSynchroFiles ($slice_id);
+    MailmanCreateSynchroFiles($slice_id);
 
     // notifications
     switch ($itemContent->getStatusCode()) {
@@ -163,6 +237,14 @@ function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $o
         case SC_HOLDING_BIN: email_notify($slice_id, 2, $item_id); break;
     }
     return true;
+}
+
+
+/** Called after inserting of new discussion comment
+*   $itemContent is sent by reference but for better performance only.
+*/
+function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
+
 }
 
 /** Called on updating an existing item.
@@ -217,7 +299,7 @@ function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, 
 *   @param string $constant_id Unpacked ID of constant from the constant table.
 */
 function Event_ConstantUpdated( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ) {
-    AuthChangeGroups ($constant_id, $oldvalue, $newvalue);
+    AuthChangeGroups($constant_id, $oldvalue, $newvalue);
     MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue );
 }
 

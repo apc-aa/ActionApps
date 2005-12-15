@@ -90,7 +90,7 @@ class zids {
         } elseif ($initial) {  // Single id
             $this->a[] = $initial;
         } else {
-            $this->$type=$inittype;    // Prepare for zids
+            $this->type = $inittype;    // Prepare for zids
             return;                    // Empty $zids;
         }
 
