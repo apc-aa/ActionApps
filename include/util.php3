@@ -1912,8 +1912,11 @@ class toexecute {
         $varset->doDeleteWhere('toexecute',"selector='".quote($selector)."'");
     }
 
-    function execute($allowed_time = 16.0) {  // standard run is 10 s
+    function execute($allowed_time = 0) {  // standard run is 10 s
 
+        if ( !$allowed_time ) {
+            $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : 16.0);
+        }
         /** there we store the the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
          *  run one more such task or if we left it for next time */
@@ -1978,7 +1981,7 @@ function get_if($value, $else, $else2='aa_NoNe') {
  *  file, for better version informations
  */
 function aa_version() {
-    return 'ActionApps 2.8.0 ($Date$, $Revision$)';
+    return 'ActionApps 2.8.1 ($Date$, $Revision$)';
 }
 
 // file_get_contents works in PHP >=4.3.0
