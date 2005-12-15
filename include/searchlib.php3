@@ -238,7 +238,7 @@ function ParseMultiSelectConds(&$conds)
  * @param array $defaultCondsOperator - could be scalar (default), but also
  *              array: field_id => array('operator'=>'LIKE')
  */
-function ParseEasyConds(&$conds,$defaultCondsOperator = "LIKE") {
+function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
     if (is_array($conds)) {
         // In first step we remove conds with wrong syntax (like conds[xx]=yy)
         // and replace easy conds with extended syntax conds
@@ -261,8 +261,13 @@ function ParseEasyConds(&$conds,$defaultCondsOperator = "LIKE") {
                     $conds[$k]['operator'] = $defaultCondsOperator;
                 }
             }
-            if (!isset($conds[$k]['value']) OR ($conds[$k]['value']==""))
-            unset ($conds[$k]);
+            if (!($cond['operator'] == 'ISNULL') AND !($cond['operator'] == 'NOTNULL')) {
+                // The value could be empty for ISNULL or NOTNULL operators
+                if (!isset($conds[$k]['value']) OR ($conds[$k]['value']=="")) {
+                    // For other operators we should remove all conditions without value
+                    unset ($conds[$k]);
+                }
+            }
         }
         // and now replace all united conds (like conds[0][headline........,abstract........]=1)
         // with its equivalents
@@ -560,7 +565,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",    // gro
   }
 
   if ($GLOBALS[debugfields] || $debug) {
-      if ($slices) ProoveFieldNames ($slices, $conds);
+      if ($slices) ProoveFieldNames($slices, $conds);
   }
 
   ParseMultiSelectConds($conds);
