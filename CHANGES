@@ -1,10 +1,48 @@
-11/24/05 - anonymous wizard refactored a bit, generate better code and is 
+12/15/05 - user data (like password, name, e-mail) is now editable by users
+(honzam)   itself (just click on your login name in upper right corner
+           of the page - near the "Logout")
+         - new {@fieldlist} syntax construct, which lists all field names
+           in the item. The syntax is exactly the same as you already know from
+           {@category.......1} syntax, so you can use also:
+              {@fieldlist:-},
+              {@fieldlist:,:<b>_#1</b>}
+              as well as {@fieldlist(_#CSV_FMTD):,:_#1}.
+           For more info see {@category.......1} or {list:category.......1}
+           syntax in the manual.
+           Could be used for example to create general CSV export from the slice
+              Odd HTML is: {@fieldlist(_#CSV_FMTD):,:_#1}, where
+              _#CSV_FMTD is defined as f_t and with parameter:
+                  {alias:{loop............}:f_t::csv}.
+         - new operators added to searchbar (in ItemManager):
+             "not set" (= ISNULL),
+             "is set" (= NOTNULL)
+           so you can search for items, where specified field is (not) set
+         - changed behavior of unary operators ISNULL and NOTNULL - Those
+           operators did not work without "value" specified, which was quite
+           strange, for unary operators. Now it works without any value
+           specified.
+         - top HTML for discussions now can contain aliases (and other
+           constructs), just like for any other view
+         - new configuration option TOEXECUTE_ALLOWED_TIME which defines, how
+           long should be processed tasks from "toexecute" queue
+         - added better support for bulgarian language translation
+         - log class prepared for the possibility to turn off logging
+           of specifis events (UI needed)
+         - searchform in ItemManager and LinksManager uses GET mathod,
+           which is more user friendly
+         - fixed problem with session on for some special Apache configuration,
+           when some server variables are not filled (Bluelink case)
+         - fixed all_ids parameter in discussions - now works also for GET,
+           not only for POST forms
+         - fixed problem with "break;" outside of the loop (APC PHP cache had
+           problems with this)
+11/24/05 - anonymous wizard refactored a bit, generate better code and is
 (honzam)   functional, now (thanks goes to Norbert Brazda for bugfixing)
-         - Spanish language transation updated (thans to Julian Casasbuenas from
-           Colnodo)
-         - new possibility to remove selected items from database (see "Remove 
+         - Spanish language translation updated (thanks to Julian Casasbuenas
+           from Colnodo)
+         - new possibility to remove selected items from database (see "Remove
            (remove from database)" bottom action on Item Manager - Trash page)
-         - fixed language constants 
+         - fixed language constants
 11/21/05 - fixed typo in sql_update.php3 - Thanks to Omar Martinez and Misi Bako
 11/15/05 - fixed not functional image upload, when we want upload multiple
 (honzam)   images and create multiple thumbnails in one inputform
