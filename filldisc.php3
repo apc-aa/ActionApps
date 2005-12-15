@@ -122,8 +122,8 @@ writeLog('PAGECACHE', "slice_id=$slice_id", "filldisc" );
 updateDiscussionCount($d_item_id);        // update a count of the comments belong to the item
 
 // special discussion setting
-if ( $_POST['all_ids'] )
-    $url = str_replace('&sh_itm', "&all_ids=".$_POST['all_ids'].'&sh_itm', $url);
+if ( $_REQUEST['all_ids'] )
+    $url = str_replace('&sh_itm', "&all_ids=".$_REQUEST['all_ids'].'&sh_itm', $url);
 go_url( $url);
 
 ?>

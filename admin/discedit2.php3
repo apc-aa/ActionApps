@@ -28,12 +28,13 @@ require_once "../include/init_page.php3";
 require_once $GLOBALS['AA_INC_PATH']."varset.php3";
 require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 
-if ($cancel)
-  go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
+if ($cancel) {
+    go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
+}
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-  MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
-  exit;
+    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
+    exit;
 }
 
 require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
@@ -59,21 +60,21 @@ if ($update) {
 
 
     if (count($err)<=1) {
-      $varset->add("subject", "quoted", $subject);
-      $varset->add("author", "quoted", $author);
-      $varset->add("e_mail", "quoted", $e_mail);
-      $varset->add("body", "quoted", $body);
-      $varset->add("date", "quoted", $date);
-      $varset->add("url_address", "quoted", $url_address);
-      $varset->add("url_description", "quoted", $url_description);
-      $varset->add("remote_addr", "quoted", $remote_addr);
+        $varset->add("subject", "quoted", $subject);
+        $varset->add("author", "quoted", $author);
+        $varset->add("e_mail", "quoted", $e_mail);
+        $varset->add("body", "quoted", $body);
+        $varset->add("date", "quoted", $date);
+        $varset->add("url_address", "quoted", $url_address);
+        $varset->add("url_description", "quoted", $url_description);
+        $varset->add("remote_addr", "quoted", $remote_addr);
 
-      $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
-      $db->query($SQL);
+        $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
+        $db->query($SQL);
 
-      $GLOBALS['pagecache']->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
+        $GLOBALS['pagecache']->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
 
-      go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
+        go_url($sess->url(self_base() . "discedit.php3?item_id=".$item_id));
     }
 }
 
@@ -100,9 +101,9 @@ function InitPage() {}
 </HEAD>
 <BODY>
 <?php
-  echo "<H1><B>" . _m("Items managment - Discussion comments managment - Edit comment") . "</B></H1>";
-  PrintArray($err);
-  echo $Msg;
+echo "<H1><B>" . _m("Items managment - Discussion comments managment - Edit comment") . "</B></H1>";
+PrintArray($err);
+echo $Msg;
 ?>
   <form method=post action="<?php echo $sess->url($PHP_SELF . "?d_id=".$d_id) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
@@ -110,24 +111,24 @@ function InitPage() {}
 <tr><td>
 <table width="540" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
-  FrmStaticText("id", $d_id);
-  FrmInputText("subject",_m("Subject"), $subject, 99, 50, true);
-  FrmInputText("author",_m("Author"), $author, 60, 25, true);
-  FrmInputText("e_mail",_m("E-mail"), $e_mail, 60, 25, false);
-  FrmTextArea("body", _m("Text of discussion comment"), $body, 10, 40, false);
-  FrmDate("date", _m('Date'), $date, false, '', '', true);
-  FrmInputText("url_address",_m("Authors's WWW  - URL"), $url_address, 99, 50, false);
-  FrmInputText("url_description", _m("Authors's WWW - description"), $url_description, 60, 25, false);
-  FrmInputText("remote_addr",_m("Remote address"), $remote_addr, 60, 25, false);
+    FrmStaticText("id", $d_id);
+    FrmInputText("subject",_m("Subject"), $subject, 99, 50, true);
+    FrmInputText("author",_m("Author"), $author, 60, 25, true);
+    FrmInputText("e_mail",_m("E-mail"), $e_mail, 60, 25, false);
+    FrmTextArea("body", _m("Text of discussion comment"), $body, 10, 40, false);
+    FrmDate("date", _m('Date'), $date, false, '', '', true);
+    FrmInputText("url_address",_m("Authors's WWW  - URL"), $url_address, 99, 50, false);
+    FrmInputText("url_description", _m("Authors's WWW - description"), $url_description, 60, 25, false);
+    FrmInputText("remote_addr",_m("Remote address"), $remote_addr, 60, 25, false);
 ?>
 </table>
 <tr><td align="center">
 <?php
-  echo "<input type=hidden name=d_id value=".$d_id.">";
-  echo "<input type=hidden name=item_id value=".unpack_id128($item_id).">";
-  echo "<input type=submit name=update value=". _m("Update") .">&nbsp;&nbsp;";
-  echo "<input type=reset value=". _m("Reset form") .">&nbsp;&nbsp;";
-  echo "<input type=submit name=cancel value=". _m("Cancel") .">";
+    echo "<input type=hidden name=d_id value=".$d_id.">";
+    echo "<input type=hidden name=item_id value=".unpack_id128($item_id).">";
+    echo "<input type=submit name=update value=". _m("Update") .">&nbsp;&nbsp;";
+    echo "<input type=reset value=". _m("Reset form") .">&nbsp;&nbsp;";
+    echo "<input type=submit name=cancel value=". _m("Cancel") .">";
 ?>
 </td></tr></table>
 </FORM>

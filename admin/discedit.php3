@@ -35,46 +35,50 @@ require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
 // get a headline of the item
 function getHeadline($content4id) {
-  if (!$content4id)
-    return;
-  if ($content4id["headline........"])
-    return $content4id["headline........"][0]['value'];
+    if (!$content4id) {
+        return;
+    }
+    if ($content4id["headline........"]) {
+        return $content4id["headline........"][0]['value'];
+    }
 
-  for ($i=1; $i<10; $i++)
-    if ($content4id["headline.......".$i])
-      return $content4id["headline.......".$i][0]['value'];
+    for ($i=1; $i<10; $i++) {
+        if ($content4id["headline.......".$i]) {
+            return $content4id["headline.......".$i][0]['value'];
+        }
+    }
 }
 
 // check permission to edit discussion - you must be Editor, at least
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to edit all items."), "items");
-  exit;
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to edit all items."), "items");
+    exit;
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
 // get discussion content and tree
 $dcontent = GetDiscussionContent($item_id, "", "", false);
-$tree = GetDiscussionTree($dcontent);
+$tree     = GetDiscussionTree($dcontent);
 
 if ($mode == "hide" || $mode=="delete") {
-  switch ($mode) {
-    case "hide" :
-      $h = ( $h ? 1 : 0 );
-      $dcontent[$d_id]["d_state........."][0]['value'] = $h;
+    switch ($mode) {
+        case "hide" :
+            $h = ( $h ? 1 : 0 );
+            $dcontent[$d_id]["d_state........."][0]['value'] = $h;
 
-      $db->query("UPDATE discussion SET state='$h' WHERE id='".q_pack_id($d_id)."'");
-      break;
-    case "delete":
-      DeleteNode($tree, $dcontent, $d_id);
-      break;
-  }
-  updateDiscussionCount($item_id);        // update a count of the comments belong to the item
+            $db->query("UPDATE discussion SET state='$h' WHERE id='".q_pack_id($d_id)."'");
+            break;
+        case "delete":
+            DeleteNode($tree, $dcontent, $d_id);
+            break;
+    }
+    updateDiscussionCount($item_id);        // update a count of the comments belong to the item
 
-  $GLOBALS[pagecache]->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
+    $GLOBALS['pagecache']->invalidateFor("slice_id=".$slice_id);  // invalidate old cached values
 
-  $dcontent = GetDiscussionContent($item_id, "", "", false);       // refresh the content and the tree because of delete node
-  $tree = GetDiscussionTree($dcontent);
+    $dcontent = GetDiscussionContent($item_id, "", "", false);       // refresh the content and the tree because of delete node
+    $tree     = GetDiscussionTree($dcontent);
 
 }
 
@@ -83,7 +87,7 @@ GetDiscussionThread($tree, "0", 0, $outcome);         // get array of images
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo _m("Admin - Content Pooling - Fields' Mapping");?></TITLE>
+<TITLE><?php echo _m("Admin - Discussion comments management");?></TITLE>
 
 <SCRIPT Language="JavaScript"><!--
   function InitPage() {}
@@ -98,14 +102,14 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <BODY>
 <?php
-  echo "<center>
-        <H1><B>" . _m("Discussion comments management") . "</B></H1>";
-  PrintArray($err);
-  echo $Msg;
+echo "<center>
+    <H1><B>" . _m("Discussion comments management") . "</B></H1>";
+PrintArray($err);
+echo $Msg;
 
-  $content = GetItemContent($item_id);
-  $headline = getHeadline($content[$item_id]);
-  ?>
+$content  = GetItemContent($item_id);
+$headline = getHeadline($content[$item_id]);
+?>
   <form method="post" action=<?php echo sess_return_url(self_base()."index.php3") ?> >
   <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
   <tr><td class=tabtit><b>&nbsp;<?php
@@ -126,47 +130,44 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     </tr>
       <tr><td colspan=9>&nbsp;</td></tr>
 
- <?php
-  $item = new item("",$aliases);
-  $i=0;
-  if (!$outcome)
+<?php
+$item = new item("",$aliases);
+$i = 0;
+if (!$outcome) {
     echo "<tr><td colspan=9 align=center class=tabtxt>". _m("No discussion comments") ."<br><br></td></tr>";
-  else {
-    reset( $outcome );
-    while (list($d_id, $images) = each($outcome)) {
-//      echo ($i++ % 2) ? "<tr>" : "<tr bgcolor=".COLOR_BACKGROUND.">";
-
-      $im="";
-      while (list(,$img) = each($images)) {
-        $im .= GetImageSrc($img);
-      }
-       $im2 = "<tr><td>&nbsp;</td>
-                <td><table cellspacing=0 cellpadding=0 border=0>
+} else {
+    foreach ($outcome as $d_id => $images) {
+        $im = "";
+        while (list(,$img) = each($images)) {
+            $im .= GetImageSrc($img);
+        }
+        $im2 = "<tr><td>&nbsp;</td>
+                 <td><table cellspacing=0 cellpadding=0 border=0>
                     <tr><td>".$im. PrintImg("blank.gif",2,21)."</td>
                         <td nowrap>_#SUBJECT#&nbsp;</td>
                     </tr>
                     </table>
-                </td>
-               <td>&nbsp;</td>
-               <td nowrap>_#AUTHOR##</td>
-               <td>&nbsp;</td>
-               <td nowrap>_#DATE####</td>
-               <td>&nbsp;</td>";
-       $item->setformat($im2);
-       $item->set_data($dcontent[$d_id]);
-       echo $item->get_item();
+                 </td>
+                 <td>&nbsp;</td>
+                 <td nowrap>_#AUTHOR##</td>
+                 <td>&nbsp;</td>
+                 <td nowrap>_#DATE####</td>
+                 <td>&nbsp;</td>";
+        $item->setformat($im2);
+        $item->set_data($dcontent[$d_id]);
+        echo $item->get_item();
 
-       echo "<td align=center>&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><SMALL>". _m("Delete") ."</SMALL></a>";
-       echo "&nbsp;<a href=". con_url($sess->url("discedit2.php3"),"d_id=".
-            $d_id."&item_id=".$item_id) ."><SMALL>". _m("Edit") ."</SMALL></a>";
-       $s = ($h = !$dcontent[$d_id]["d_state........."][0]['value']) ? _m("Hide") : _m("Approve");
-       echo "&nbsp;<a href=" . con_url($sess->url("discedit.php3"), "mode=hide&h=".$h.
+        echo "<td align=center>&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><SMALL>". _m("Delete") ."</SMALL></a>";
+        echo "&nbsp;<a href=". con_url($sess->url("discedit2.php3"),"d_id=".
+             $d_id."&item_id=".$item_id) ."><SMALL>". _m("Edit") ."</SMALL></a>";
+        $s = ($h = !$dcontent[$d_id]["d_state........."][0]['value']) ? _m("Hide") : _m("Approve");
+        echo "&nbsp;<a href=" . con_url($sess->url("discedit.php3"), "mode=hide&h=".$h.
             "&d_id=".$d_id. "&item_id=".$item_id) ."><SMALL>". $s. "</SMALL></a></td>
             <td>&nbsp;</td>";
-       echo "</tr>\n";
+        echo "</tr>\n";
     }
-  }
- ?>
+}
+?>
   </table>
   </td></tr>
   <tr><td class=tabtit  align=center><input type="submit" value="<?php echo _m("Back") ?>"></td></tr>
