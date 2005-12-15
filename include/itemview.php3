@@ -180,87 +180,115 @@ class itemview {
   // show list of discussion items --- useful as search form return value
 
   function get_disc_list(&$CurItem) {
-    $CurItem->setformat($this->slice_info['d_top']);
-    $out = $CurItem->get_item();
-    if (is_array($this->disc['disc_ids'])) {
-        $ids = $this->disc['disc_ids'];
-        $ids_sql = "";
-        foreach ( $ids as $id) {
-            if ($ids_sql != "") {
-                $ids_sql .= ",";
-            }
-            $ids_sql .= '"'.addslashes(q_pack_id($id)).'"';
-        }
-        $SQL = "SELECT * FROM discussion WHERE id IN ($ids_sql)";
-        $d_content = GetDiscussionContentSQL($SQL, "", "",$this->disc['vid'],true,$this->disc['html_format'],$this->clean_url);
-        if (is_array($d_content)) {
-            foreach ( $d_content as $id => $disc) {
-                $CurItem->set_data($disc);
-                $CurItem->setformat ($this->slice_info['d_compact']);
-                $out .= $CurItem->get_item();
-            }
-        }
-    }
-    $CurItem->setformat ($this->slice_info['d_bottom']);
-    $out .= $CurItem->get_item();
-    return $out;
+      $top_html_already_printed = false;
+      if (is_array($this->disc['disc_ids'])) {
+          $ids = $this->disc['disc_ids'];
+          $ids_sql = "";
+          foreach ( $ids as $id) {
+              if ($ids_sql != "") {
+                  $ids_sql .= ",";
+              }
+              $ids_sql .= '"'.addslashes(q_pack_id($id)).'"';
+          }
+          $SQL = "SELECT * FROM discussion WHERE id IN ($ids_sql)";
+          $d_content = GetDiscussionContentSQL($SQL, "", "",$this->disc['vid'],true,$this->disc['html_format'],$this->clean_url);
+          if (is_array($d_content)) {
+              foreach ( $d_content as $id => $disc) {
+                  $CurItem->set_data($disc);
+                  // print top HTML with aliases
+                  if ( !$top_html_already_printed ) {
+                      $CurItem->setformat($this->slice_info['d_top']);
+                      $out = $CurItem->get_item();
+                      $top_html_already_printed = true;
+                  }
+                  $CurItem->setformat($this->slice_info['d_compact']);
+                  $out .= $CurItem->get_item();
+              }
+          }
+      }
+      if ( !$top_html_already_printed ) {  // print top HTML even no item found
+          $CurItem->setformat($this->slice_info['d_top']);
+          $out = $CurItem->get_item();
+      }
+      $CurItem->setformat($this->slice_info['d_bottom']);
+      $out .= $CurItem->get_item();
+      return $out;
   }
 
   // show discussion comments in the thread mode
   function get_disc_thread(&$CurItem) {
-//    if (!$this->slice_info['d_showimages']) {
-       $order =  $this->slice_info['d_order'];
-//    }
+      $top_html_already_printed = false;
 
-    $d_content = GetDiscussionContent($this->disc['item_id'], "",$this->disc['vid'],true,$order,$this->disc['html_format'],$this->clean_url);
-    $d_tree = GetDiscussionTree($d_content);
+      //    if (!$this->slice_info['d_showimages']) {
+          $order =  $this->slice_info['d_order'];
+      //    }
 
-    $out .= '<a name="disc"></a><form name="discusform" action="">';
-    $cnt = 0;     // count of discussion comments
+      $d_content = GetDiscussionContent($this->disc['item_id'], "",$this->disc['vid'],true,$order,$this->disc['html_format'],$this->clean_url);
+      $d_tree    = GetDiscussionTree($d_content);
 
-    $out .= $this->unaliasWithScrollerEasy($this->slice_info['d_top']);           // top html code
+      $out .= '<a name="disc"></a><form name="discusform" action="">';
+      $cnt = 0;     // count of discussion comments
 
-    if ($d_tree) {    // if not empty tree
-      $CurItem->setformat( $this->slice_info['d_compact']);
+      if ($d_tree) {    // if not empty tree
+          $CurItem->setformat( $this->slice_info['d_compact']);
 
-      if ($this->slice_info['d_showimages'] || $this->slice_info['d_order'] == 'thread') {  // show discussion in the thread mode
-         GetDiscussionThread($d_tree, "0", 0, $outcome);
-         if ( $outcome ) {
-             while ( list( $d_id, $images ) = each( $outcome )) {
-                SetCheckboxContent( $d_content, $d_id, $cnt++ );
-                SetImagesContent( $d_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
-                $this->set_columns ($CurItem, $d_content, $d_id);
-                $out.= $CurItem->get_item();
-             }
-         }
+          if ($this->slice_info['d_showimages'] || $this->slice_info['d_order'] == 'thread') {
+              // show discussion in the thread mode
+              GetDiscussionThread($d_tree, "0", 0, $outcome);
+              if ( $outcome ) {
+                  while ( list( $d_id, $images ) = each( $outcome )) {
+                      SetCheckboxContent( $d_content, $d_id, $cnt++ );
+                      SetImagesContent( $d_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
+                      $this->set_columns($CurItem, $d_content, $d_id);
+                      // print top HTML with aliases
+                      if ( !$top_html_already_printed ) {
+                          $CurItem->setformat( $this->slice_info['d_top']);
+                          $out .= $CurItem->get_item();    // top html code
+                          $CurItem->setformat( $this->slice_info['d_compact']); // back
+                          $top_html_already_printed = true;
+                      }
+                      $out.= $CurItem->get_item();
+                  }
+              }
+          } else {                      // show discussion sorted by date
+              foreach ($d_content as $d_id => $foo ) {
+                  if ( $d_content[$d_id]["hide"] ) {
+                      continue;
+                  }
+                  SetCheckboxContent( $d_content, $d_id, $cnt++ );
+                  $this->set_columns($CurItem, $d_content, $d_id);
+                  // print top HTML with aliases
+                  if ( !$top_html_already_printed ) {
+                      $CurItem->setformat( $this->slice_info['d_top']);
+                      $out .= $CurItem->get_item();    // top html code
+                      $CurItem->setformat( $this->slice_info['d_compact']); // back
+                      $top_html_already_printed = true;
+                  }
+                  $out.= $CurItem->get_item();
+              }
+          }
       }
-      else {                      // show discussion sorted by date
-        reset($d_content);
-         while ( list( $d_id, ) = each( $d_content )) {
-          if ( $d_content[$d_id]["hide"] )
-            continue;
-          SetCheckboxContent( $d_content, $d_id, $cnt++ );
-          $this->set_columns ($CurItem, $d_content, $d_id);
-          $out.= $CurItem->get_item();
-        }
+      if ( !$top_html_already_printed ) {  // print top HTML even no item found
+          $CurItem->setformat( $this->slice_info['d_top']);
+          $out .= $CurItem->get_item();    // top html code
+          $top_html_already_printed = true;
       }
-    }
 
-    // buttons bar
-     $CurItem->setformat($this->slice_info['d_bottom']);        // bottom html code
-     $col["d_buttons......."][0]['value'] = $this->unaliasWithScrollerEasy($this->get_disc_buttons($cnt==0));
-     $col["d_buttons......."][0]['flag']  = FLAG_HTML;
-     $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
+      // buttons bar
+      $CurItem->setformat($this->slice_info['d_bottom']);        // bottom html code
+      $col["d_buttons......."][0]['value'] = $this->unaliasWithScrollerEasy($this->get_disc_buttons($cnt==0));
+      $col["d_buttons......."][0]['flag']  = FLAG_HTML;
+      $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
 
-     // set $col["d_url_fulltext.."], $col["d_url_reply....."], $col["d_disc_url......"]
-     setDiscUrls($col, $this->clean_url, $this->disc['item_id']);
-     $CurItem->set_data($col);
-     $out.= $CurItem->get_item() ;
+      // set $col["d_url_fulltext.."], $col["d_url_reply....."], $col["d_disc_url......"]
+      setDiscUrls($col, $this->clean_url, $this->disc['item_id']);
+      $CurItem->set_data($col);
+      $out.= $CurItem->get_item() ;
 
-     $out.= "</form>";
+      $out.= "</form>";
 
-    // create a javascript code for getting selected ids and sending them to a script
-    list($script_loc,) = explode('#',$col["d_disc_url......"][0]['value']); // remove #disc part
+      // create a javascript code for getting selected ids and sending them to a script
+      list($script_loc,) = explode('#',$col["d_disc_url......"][0]['value']); // remove #disc part
 
     $out .= "
       <SCRIPT Language=\"JavaScript\" type=\"text/javascript\"><!--
