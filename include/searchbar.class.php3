@@ -124,8 +124,8 @@ class searchbar extends storable_class{
      * form (in $_POST[])
      */
     function update() {
-        $srchbr_akce     = $_POST['srchbr_akce'];
-        $srchbr_bookmark = $_POST['srchbr_bookmark'];
+        $srchbr_akce     = $_GET['srchbr_akce'];
+        $srchbr_bookmark = $_GET['srchbr_bookmark'];
         if ( !$srchbr_akce )     // no searchbar action
             return;
         list( $akce, $answer, $confirm ) = ParamExplode($srchbr_akce);
@@ -197,15 +197,15 @@ class searchbar extends storable_class{
             $this->search_row = $srchbar;
         }
         if ($this->show & MGR_SB_ORDERROWS)  unset($this->order_row);   // reset only if visible
-        if (is_array($_POST['srchbr_order']))
-        foreach ( $_POST['srchbr_order'] as $k => $fld )
-            $this->addOrder( array( 0 => array( $fld => $_POST["srchbr_order_dir"][$k])));
+        if (is_array($_GET['srchbr_order']))
+        foreach ( $_GET['srchbr_order'] as $k => $fld )
+            $this->addOrder( array( 0 => array( $fld => $_GET["srchbr_order_dir"][$k])));
 
-        if (is_array($_POST['srchbr_field'])) {
-            foreach ( $_POST['srchbr_field'] as $k => $fld ) {
+        if (is_array($_GET['srchbr_field'])) {
+            foreach ( $_GET['srchbr_field'] as $k => $fld ) {
                 $this->addSearch( array( 0 => array( $fld       => 1,
-                                                 'operator' => $_POST["srchbr_oper"][$k],
-                                                 'value'    => $_POST["srchbr_value"][$k])));
+                                                 'operator' => $_GET["srchbr_oper"][$k],
+                                                 'value'    => $_GET["srchbr_value"][$k])));
             }
         }
     }
@@ -491,17 +491,17 @@ class searchbar extends storable_class{
                 var operator_names  = new Array();
                 var operator_values = new Array();
                 // text
-                operator_names[0]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ");
-                operator_values[0] = new Array(       "LIKE"         ,       "RLIKE"           ,        "=");
+                operator_names[0]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ");
+                operator_values[0] = new Array(       "LIKE"         ,       "RLIKE"           ,        "=",              "ISNULL",              "NOTNULL");
                 // numeric
-                operator_names[1]  = new Array(" = "," < "," > ", " <> ");
-                operator_values[1] = new Array( "=" , "<" , ">" ,  "<>");
+                operator_names[1]  = new Array(" = "," < "," > ", " <> ", " '._m('not set').' ", " '._m('is set').' ");
+                operator_values[1] = new Array( "=" , "<" , ">" ,  "<>",          "ISNULL",             "NOTNULL");
                 // date
-                operator_names[2]  = new Array(" < "," > ");
-                operator_values[2] = new Array("d:<","d:>");
+                operator_names[2]  = new Array(" < "," > ", " '._m('not set').' ", " '._m('is set').' ");
+                operator_values[2] = new Array("d:<","d:>",         "ISNULL",             "NOTNULL");
                 // constants
-                operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m("select ...").' ");
-                operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,        "select");
+                operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ", " '._m("select ...").' ");
+                operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,         "ISNULL"     ,        "NOTNULL",            "select");
 
                 var field_types    = "';
 
@@ -574,11 +574,11 @@ class bookmarks {
     }
 
     function setLastUsed($last_used="none") {
-        $this->$active_bookmark = $last_used;
+        $this->active_bookmark = $last_used;
     }
 
     function getLastUsed() {
-        return $this->$active_bookmark;
+        return $this->active_bookmark;
     }
 
 
