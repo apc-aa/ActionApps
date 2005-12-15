@@ -250,8 +250,8 @@ class manager extends storable_class {
      */
     function performActions() {
 
-        $akce = $_POST['akce'];
-        $chb  = $_POST['chb'];
+        $akce = $_REQUEST['akce'];
+        $chb  = $_REQUEST['chb'];
 /*
         if (!isset($akce)) {
             $akce = $_GET['akce'];
@@ -267,14 +267,14 @@ class manager extends storable_class {
                 $this->setListlen($_GET['listlen']);
             }
             // new search - go to first page
-            if ( $_POST['srchbr_akce']) {
+            if ( $_REQUEST['srchbr_akce']) {
                 $this->go2page(1);
             }
         }
 
         // call custom searchbar function (if searchbar action invoked)
         // used for additional search functions like 'category search' in Links
-        if ( $this->searchbar_funct AND $_POST['srchbr_akce'] ) {
+        if ( $this->searchbar_funct AND $_REQUEST['srchbr_akce'] ) {
             $function2call = $this->searchbar_funct;
             $function2call();
         }
@@ -293,11 +293,11 @@ class manager extends storable_class {
                 if ( $action2do['type'] == 'one_by_one' ) {
                     // call action-function for each checked item
                     foreach ( $chb as $item_id => $foo ) {
-                        $this->msg[] = $function($func_param, $item_id, $_POST['akce_param']);
+                        $this->msg[] = $function($func_param, $item_id, $_REQUEST['akce_param']);
                     }
                 } else {
                     // call action-function for whole list of checked items
-                    $this->msg[] = $function($func_param, $chb, $_POST['akce_param']);
+                    $this->msg[] = $function($func_param, $chb, $_REQUEST['akce_param']);
                 }
             }
         }
@@ -338,7 +338,7 @@ class manager extends storable_class {
      */
     function printSearchbarBegin() {
         global $sess;
-        echo '<form name=filterform method=post action="'.$_SERVER['PHP_SELF'].'">';
+        echo '<form name="filterform" action="'.$_SERVER['PHP_SELF'].'">';
         $sess->hidden_session();
         if ( isset($this->searchbar) )
             $this->searchbar->printBar();

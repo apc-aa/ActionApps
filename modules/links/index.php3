@@ -50,8 +50,8 @@ if ( !IfSlPerm(PS_LINKS_EDIT_LINKS) ) {
 /** Special function used for setting of additional searchbar properties */
 function Links_UpdateStateFromFilter() {
     global $r_state;
-    $r_state["show_subtree"] = ($_POST['show_subtree'] ? true : false);
-    $r_state['cat_id']       = $_POST['cat_id'];
+    $r_state["show_subtree"] = ($_REQUEST['show_subtree'] ? true : false);
+    $r_state['cat_id']       = $_REQUEST['cat_id'];
     $r_state['cat_path']     = GetCategoryPath( $r_state['cat_id'] );
 }
 
