@@ -19,12 +19,40 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-//
-// Logging functions
-//
+/** Logging functions
+ *
+ *  @TODO Convert all loging into some class
+ *        Enable setting of log level online
+ */
+
+
+/** By $DO_NOT_LOG array you are able to specify, which events you don't want
+ *  to log - it's just like filter
+ *  This should be list of all logable events (at least now - 2005-11-9)
+ */
+$DO_NOT_LOG = array(
+   // 'ALERTS',
+   // 'BM_CREATE',
+   // 'BM_DELETE',
+   // 'BM_RENAME',
+   // 'BM_UPDATE',
+   // 'COUNT_HIT',   // if you stop loging COUNT_HIT, AA will stop count hits itself!!!
+   // 'CSN',
+   // 'CSV_IMPORT',
+   // 'EMAIL_SENT',
+   // 'FEED2ALL_0',
+   // 'FEED2ALL_1',
+   // 'FEED_ADD',
+   // 'FEED_DEL',
+   // 'FEED_DSBLE',
+   // 'FEED_ENBLE',
+   // 'FILE IMP:',
+   // 'ITEM_FIELD_FILLED',
+   // 'PAGECACHE',
+      'TOEXECUTE'
+);
 
 /*
-
 Events logged into AA log
 type            selector                        parameters
 -------------------------------------------------------------------------------
@@ -39,7 +67,12 @@ ALERTS          howoften                        Start/email sent
 
 /** Write log entry */
 function writeLog($event, $params="", $selector="" ) {
-    global $auth;
+    global $auth, $DO_NOT_LOG;
+
+    if ( isset($DO_NOT_LOG[$event]) ) {
+        return false;
+    }
+
     $db = getDB();
 
     if (is_array($params)) {
@@ -54,6 +87,8 @@ function writeLog($event, $params="", $selector="" ) {
                      VALUES ('', '". time() ."','". $auth->auth["uid"] ."','$event','$selector','$params')";
     $db->query($SQL);
     freeDB($db);
+
+    return true;
 }
 
 /** Get events from log
