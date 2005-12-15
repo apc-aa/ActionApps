@@ -46,10 +46,10 @@ if ( $del ) {
     $SQL = "DELETE FROM view WHERE id='$vid' AND slice_id='$p_slice_id'";
     if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
         $err["DB"] = MsgErr("Can't delete view");
-        break;
+        exit;
     }
     $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
-    
+
     $Msg = MsgOK(_m("View successfully deleted"));
 }
 
@@ -57,7 +57,7 @@ function PrintViewRow($id, $name, $type) {
     global $sess;
     $VIEW_TYPES = getViewTypes();
     $name = safe($name); $id = safe($id);
-    
+
     $edit_url = con_url($sess->url("./se_view.php3"), "view_id=$id&view_type=$type");
     $view_url = AA_INSTAL_URL. "view.php3?vid=$id&rXn=1";
 
@@ -67,7 +67,9 @@ function PrintViewRow($id, $name, $type) {
             <td class=tabtxt>$name</td>
             <td class=tabtxt><a href=\"$edit_url\">". _m("Edit") . "</a></td>
             <td class=tabtxt><a href=\"javascript:OpenWindowTop('$view_url')\" title=\"". _m('show this view') ."\">". _m("Show") . "</a></td>
-            <td class=tabtxt><a href=\"javascript:DeleteView('$id')\">". _m("Delete") ."</a></td>
+            <td class=tabtxt><a href=\"javascript:GoIfConfirmed('".
+                          $sess->url(con_url("./se_views.php3", "del=1&vid=". urlencode($id))) ."','".
+                          _m("Are you sure you want to delete selected view?") ."')\">". _m("Delete") ."</a></td>
            </tr>";
 }
 
@@ -81,13 +83,6 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo "<TITLE>". _m("Admin - design View") ."</TITLE>";
 FrmJavascriptFile('javascript/js_lib.js');
 $js = '
-     function DeleteView(id) {
-       if ( !confirm("'. _m("Are you sure you want to delete selected view?") .'"))
-         return
-       var url="'. $sess->url(con_url("./se_views.php3", "del=1")) .'"
-       document.location=url + "&vid=" + escape(id);
-     }
-
      function SelectViewSlice() {
        var i,j;
        var xsid=document.fvtype.view_slice.options[document.fvtype.view_slice.selectedIndex].value;

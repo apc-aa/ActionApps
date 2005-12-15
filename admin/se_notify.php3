@@ -97,7 +97,7 @@ if ( $update ) {
 
   // check to make sure we passed our validation cleanly
   if ( count($err) > 1)
-      break;
+      exit;
 
   // if we passed our validation, change the slice records
   $up  = "notify_holding_item_s = '" .     addslashes($notify_holding_item_s) . "',\n ";
