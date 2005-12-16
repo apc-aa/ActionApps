@@ -200,7 +200,7 @@ $constants[] = "";
 
 // add slices to constant array (good for related stories, link to authors ...)
 foreach ($g_modules as $k => $v) {
-    if ($v['type'] == 'S') {
+    if (($v['type'] == 'S') || ($v['type'] == 'Alerts')) {
         $constants["#sLiCe-".$k] =  $v['name'];
     }
 }
