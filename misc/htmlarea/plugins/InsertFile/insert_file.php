@@ -9,7 +9,23 @@
 ** Last changed..:    23 July 2004
 ***********************************************************************/
 
-require('config.php');
+$directory_depth = "../../../";
+// require_once $directory_depth."../include/init_page.php3";     # This pays attention to $change_id
+// require_once $directory_depth."../include/util.php3";
+
+include 'config.php';
+
+
+// $MY_DOCUMENT_ROOT
+// IMG_UPLOAD_PATH
+// $GLOBALS["slice_id"]
+
+if (!(is_dir($MY_DOCUMENT_ROOT)) && (is_dir(IMG_UPLOAD_PATH))) {
+$newFolder = $MY_DOCUMENT_ROOT;
+   if (!(@mkdir($newFolder,0755))) return ($MY_MESSAGES['mkdirfailed']);
+   chmod($newFolder,0666);
+};
+                
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -259,7 +275,7 @@ require('config.php');
 			if ((folderItemsLength == 0) && (fileItemsLength == 0)) return false;
 			if (!confirm('<?php echo $MY_MESSAGES['renamewarning']; ?>')) return false;
 			var postForm2 = fileManager.document.getElementById('form2');
-			Dialog("move.php", function(param) {
+			Dialog("move.php?AA_CP_Session=<?php echo $AA_CP_Session ?>&", function(param) {
 				if (!param) // user must have pressed Cancel
 					return false;
 				else {
@@ -368,7 +384,7 @@ require('config.php');
 		}
 		
 		function selectFolder() {
-			Dialog("move.php", function(param) {
+			Dialog("move.php?AA_CP_Session=<?php echo $AA_CP_Session ?>&", function(param) {
 				if (!param) // user must have pressed Cancel
 					return false;
 				else {
@@ -440,7 +456,7 @@ require('config.php');
 		<div class="title">
 			<?php echo $MY_MESSAGES['insertfile']; ?>
 		</div>
-		<form action="files.php?dialogname=<?php echo $MY_NAME; ?>" name="form1" method="post" target="fileManager" enctype="multipart/form-data">
+		<form action="files.php?AA_CP_Session=<?php echo $AA_CP_Session ?>&dialogname=<?php echo $MY_NAME; ?>" name="form1" method="post" target="fileManager" enctype="multipart/form-data">
 			<div id="loading" style="position:absolute; left:200px; top:130px; width:184px; height:48px; z-index:1" class="statusLayer">
 				<div id= "loadingStatus" align="center" style="font-size:large;font-weight:bold;color:#CCCCCC;font-family: Helvetica, sans-serif; z-index:2;  ">
 			        <?php echo $MY_MESSAGES['loading']; ?>
@@ -484,9 +500,9 @@ require('config.php');
 
 				<div style="margin:5px;">
 		        	<!--
-					<iframe src="files.php?dialogname=<?php echo $MY_NAME; ?>&amp;refresh=1" name="fileManager" id="fileManager" background: Window;" marginwidth="0" marginheight="0" align="top" scrolling="no" frameborder="0" hspace="0" vspace="0" width="100%"></iframe>
+					<iframe src="files.php?AA_CP_Session=<?php echo $AA_CP_Session ?>&dialogname=<?php echo $MY_NAME; ?>&amp;refresh=1" name="fileManager" id="fileManager" background: Window;" marginwidth="0" marginheight="0" align="top" scrolling="no" frameborder="0" hspace="0" vspace="0" width="100%"></iframe>
 					-->
-           			<iframe src="files.php?dialogname=<?php echo $MY_NAME; ?>&amp;refresh=1" name="fileManager" id="fileManager" background="Window" marginwidth="0" marginheight="0" valign:"top" scrolling="no" frameborder="0" hspace="0" vspace="0" width="100%" style="background-color: Window; margin:0px; padding:0px; border:0px; vertical-align:top;"></iframe>
+           			<iframe src="files.php?AA_CP_Session=<?php echo $AA_CP_Session ?>&dialogname=<?php echo $MY_NAME; ?>&amp;refresh=1" name="fileManager" id="fileManager" background="Window" marginwidth="0" marginheight="0" valign:"top" scrolling="no" frameborder="0" hspace="0" vspace="0" width="100%" style="background-color: Window; margin:0px; padding:0px; border:0px; vertical-align:top;"></iframe>
 				</div>
 				<div style="text-align:center; padding:2px;">
 		    <?php

@@ -9,6 +9,11 @@
 ** Last changed..:    23 July 2004
 ***********************************************************************/
 
+$directory_depth = "../../../";
+require_once $directory_depth."../include/init_page.php3";     # This pays attention to $change_id
+require_once $directory_depth."../include/util.php3";
+ 
+ 
 // Error reporting should be set to E_NONE in production environment
 // error_reporting( E_NONE );
 error_reporting(E_ALL);
@@ -21,14 +26,13 @@ error_reporting(E_ALL);
  NOTE2: without trailing slash
 */
 //$MY_DOCUMENT_ROOT = 'C:\Apache\www\gul\insFile\data';
-$MY_DOCUMENT_ROOT = '/data/www/htdocs/aa.ecn.cz/img_upload';
-
+$MY_DOCUMENT_ROOT = IMG_UPLOAD_PATH.$GLOBALS["slice_id"];
 
 /*
  MY_BASE_URL
  Not used in htmlarea3-plugin version
 */
-$MY_BASE_URL = '';
+$MY_BASE_URL = $GLOBALS["slice_id"];
 
 /*
  MY_URL_TO_OPEN_FILE
@@ -40,8 +44,8 @@ $MY_BASE_URL = '';
  in this directory and its subdirectories.
  NOTE: without trailing slash
 */
-$MY_URL_TO_OPEN_FILE 	= 'http://aa.ecn.cz/img_upload';
 //$MY_URL_TO_OPEN_FILE 	= 'http://gul.net/insFile/data';
+$MY_URL_TO_OPEN_FILE  = IMG_UPLOAD_URL.$GLOBALS["slice_id"];
 
 /*
  MY_ALLOW_EXTENSIONS
@@ -57,15 +61,15 @@ $MY_URL_TO_OPEN_FILE 	= 'http://aa.ecn.cz/img_upload';
         You should always include server side executable file types in MY_DENY_EXTENSIONS !!!
 */
 
-$MY_ALLOW_EXTENSIONS	= array('html', 'doc', 'xls', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf');
-$MY_DENY_EXTENSIONS		= array('php', 'php3', 'php4', 'phtml', 'shtml', 'cgi', 'pl');
+$MY_ALLOW_EXTENSIONS	= array('html', 'htm', 'doc', 'xls', 'rtf', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf', 'eps', 'zip', 'rar');
+$MY_DENY_EXTENSIONS		= array('php', 'php3', 'php4', 'phtml', 'shtml', 'stm', 'cgi', 'pl');
 
 /*
  MY_LIST_EXTENSIONS
  This array specifies which files are listed in dialog. Setting to null causes that all files are listed.
  NOTE: File extensions arrays are case insensitive.
 */
-$MY_LIST_EXTENSIONS		= array('html', 'doc', 'xls', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf');
+$MY_LIST_EXTENSIONS		= array('html', 'htm', 'doc', 'xls', 'rtf', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf', 'eps', 'zip', 'rar');
 
 /*
  MY_ALLOW_CREATE
@@ -103,7 +107,7 @@ $MY_ALLOW_UPLOAD		= true;
  NOTE2: see also upload_max_filesize setting in your php.ini file
  NOTE: 2*1024*1024 means 2 MB (megabytes) which is the default php.ini setting
 */
-$MY_MAX_FILE_SIZE 		= 2*1024*1024;
+$MY_MAX_FILE_SIZE 		= 10*1024*1024;
 
 /*
  $MY_LANG
@@ -151,7 +155,7 @@ $MY_DATETIME_FORMAT		= "d.m.Y H:i";
  IF_DATE
     last modification time acording to $MY_DATETIME_FORMAT format
 */
-$MY_LINK_FORMAT         = '<span class="filelink"><img src="_editor_urlplugins/InsertFile/IF_ICON" alt="IF_URL" border="0">&nbsp;<a href="IF_URL">IF_CAPTION</a> &nbsp;<span style="font-size:70%">IF_SIZE &nbsp;IF_DATE</span></span>&nbsp;';
+$MY_LINK_FORMAT         = '<img src="_editor_urlplugins/InsertFile/IF_ICON" alt="IF_URL" border="0">&nbsp;<a href="' . $MY_URL_TO_OPEN_FILE . 'IF_URL">IF_CAPTION</a> &nbsp;[IF_SIZE &nbsp;IF_DATE]';
 
 
 /*

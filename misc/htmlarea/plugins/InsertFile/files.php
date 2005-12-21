@@ -458,6 +458,7 @@ if ($err) {
 <body onload="updateDir();">
 <form action="files.php?dialogname=<?php echo $MY_NAME; ?>&refresh=1" id="form2" name="form2" method="post" enctype="multipart/form-data">
  <input type="hidden" name="action" id="action" value="" />
+ <input type="hidden" name="AA_CP_Session" id="AA_CP_Session" value="<?php echo $AA_CP_Session; ?>" />
  <input type="hidden" name="path" id="path" value="<?php echo $MY_PATH; ?>" />
  <input type="hidden" name="uppath" id="uppath" value="<?php echo $MY_UP_PATH; ?>" />
  <input type="hidden" name="newpath" id="newpath" value="" />
