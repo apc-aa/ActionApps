@@ -15,7 +15,8 @@ function xinha_init() {
     //                   (acordingly on mozParaHandler variable)
     //
 
-    xinha_plugins = ['TableOperations', 'ImageManager'];
+//    xinha_plugins = ['TableOperations', 'ImageManager', 'InsertFile', 'CSS', 'InsertAnchor', 'EditTag', 'ContextMenu', 'FindReplace', 'InsertWords', 'Stylist'];
+    xinha_plugins = ['TableOperations', 'ImageManager', 'InsertFile', 'InsertAnchor'];
 
     // THIS BIT OF JAVASCRIPT LOADS THE PLUGINS, NO TOUCHING  :)
     if(!HTMLArea.loadPlugins(xinha_plugins, xinha_init)) return;
