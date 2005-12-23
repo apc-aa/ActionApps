@@ -1,3 +1,7 @@
+         - hardcoded table for fulltext of discussion do not have width=100%
+           now, because it makes troubles in IE on pages with CSS layout
+12/23/05 - fixed security problem, when readers was able to read slice_pwd
+(honzam)
 12/21/05 - HTMLarea/Xinha updated to work with Firefox 1.5 and some small
 (brazda)   changes in the plugins (InsertFile)
 12/16/05 - now also Reader Management modules are shown in Input type selecbox
