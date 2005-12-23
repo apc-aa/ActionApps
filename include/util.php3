@@ -624,18 +624,20 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
 
 // gets fields from main table of the module
 function GetModuleInfo($module_id, $type) {
-  global $MODULES;
-  if (! $module_id ) return false;
-  trace("+","GetModuleInfo id=".$module_id);
-  $p_module_id = q_pack_id($module_id);
+    global $MODULES;
+    if (!$module_id) {
+        return false;
+    }
+    $p_module_id = q_pack_id($module_id);
 
-  $db = getDB();
-  $db->tquery("SELECT * FROM " . $MODULES[$type]['table'] ."
-               WHERE id = '$p_module_id'");
-  $ret = ($db->next_record() ? $db->Record : false);
-  freeDB($db);
-  trace("-");
-  return $ret;
+    $SQL = "SELECT * FROM " .$MODULES[$type]['table']. " WHERE id = '$p_module_id'";
+    $ret = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+    if ( $ret AND $ret['reading_password'] ) {
+        // do it more secure and do not store it plain
+        // (we should be carefull - mainly with debug outputs)
+        $ret['reading_password'] = md5($ret['reading_password']);
+    }
+    return $ret;
 }
 
 // gets slice fields
@@ -844,7 +846,8 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         // Note that it stores into the $content[] array based on the id being used which
         // could be either shortid or longid, but is NOT tagged id.
         while (list($key, $val) = each($db->Record)) {
-            if (!is_numeric($key)) {
+            // we need only item fields
+            if (!is_numeric($key) AND ($key != 'reading_password')) {
                 $content[$foo_id][CreateFieldId($key)][] = array(
                      "value" => $reading_permitted ? $val : _m("Error: Missing Reading Password"));
             }
@@ -1756,8 +1759,9 @@ function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='
 function FetchSliceReadingPassword() {
     global $slice_id, $slice_pwd, $db;
     $db->query ("SELECT reading_password FROM slice WHERE id='".q_pack_id($slice_id)."'");
-    if ($db->next_record())
+    if ($db->next_record()) {
         $slice_pwd = $db->f("reading_password");
+    }
 }
 
 $tracearr = array();

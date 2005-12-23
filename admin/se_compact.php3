@@ -103,21 +103,23 @@ if ( $slice_id!="" ) {  // set variables from database - allways
           FROM slice WHERE id='". q_pack_id($slice_id)."'";
   $db->query($SQL);
   if ($db->next_record()) {
-    $odd_row_format = $db->f(odd_row_format);
-    $even_row_format = $db->f(even_row_format);
-    $category_top = $db->f(category_top);
-    $category_format = $db->f(category_format);
-    $category_bottom = $db->f(category_bottom);
-    $compact_top = $db->f(compact_top);
-    $compact_bottom = $db->f(compact_bottom);
-    $compact_remove = $db->f(compact_remove);
-    $even_odd_differ = $db->f(even_odd_differ);
-    $group_by = $db->f(group_by);
-    $gb_direction = $db->f(gb_direction);
-    $gb_header = $db->f(gb_header);
-    $category_sort = $db->f(category_sort);
-    if ($group_by) $category_sort = 0;
-    $noitem_msg = $db->f(noitem_msg);
+    $odd_row_format  = $db->f('odd_row_format');
+    $even_row_format = $db->f('even_row_format');
+    $category_top    = $db->f('category_top');
+    $category_format = $db->f('category_format');
+    $category_bottom = $db->f('category_bottom');
+    $compact_top     = $db->f('compact_top');
+    $compact_bottom  = $db->f('compact_bottom');
+    $compact_remove  = $db->f('compact_remove');
+    $even_odd_differ = $db->f('even_odd_differ');
+    $group_by        = $db->f('group_by');
+    $gb_direction    = $db->f('gb_direction');
+    $gb_header       = $db->f('gb_header');
+    $category_sort   = $db->f('category_sort');
+    if ($group_by) {
+        $category_sort = 0;
+    }
+    $noitem_msg      = $db->f('noitem_msg');
     if (!$group_by && $category_sort) {
       $db->query("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='".q_pack_id($slice_id)."'");
       if ($db->next_record()) {

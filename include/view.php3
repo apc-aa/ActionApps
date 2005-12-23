@@ -183,10 +183,12 @@ function ParseViewParameters($query_string="") {
     //  }
     //  $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
 
-
-    if ( $debug ) huhl("ParseViewParameters: vid=$vid, query_string=$query_string", "cmd:", $cmd, "set:", $set, "als:", $als);
-
     add_vars($query_string);       // adds values from url (it's not automatical in SSIed script)
+
+    if ( $debug ) {
+        $query_string = str_replace("slice_pwd=". $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string );
+        huhl("ParseViewParameters: vid=$vid, query_string=$query_string", "cmd:", $cmd, "set:", $set, "als:", $als);
+    }
 
     // Splits on "-" and subsitutes aliases
     $commands = new ViewCommands($cmd[$vid], $GLOBALS['als']);

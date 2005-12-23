@@ -65,10 +65,11 @@ class slice {
             return;
         }
         $SQL = "SELECT * FROM slice WHERE id = '".$this->sql_id(). "'";
-        $db = getDB();
-        $db->tquery($SQL);
-        if ( $db->next_record()) {
-            $this->setting = DBFields($db);
+        $this->setting = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+        if ( $this->setting ) {
+            // do it more secure and do not store it plain
+            // (we should be carefull - mainly with debug outputs)
+            $this->setting['reading_password'] = md5($this->setting['reading_password']);
         } elseif ($GLOBALS[errcheck]) {
             huhl("Slice ".$this->unpacked_id()." is not a valid slice");
         }
@@ -159,7 +160,7 @@ class slice {
 
     /** Returns slice setting field content in ItemContent object */
     function get_dynamic_setting_content($ignore_reading_password = false) {
-        if ($ignore_reading_password || ($this->getfield('reading_password') == '') || ($this->getfield('reading_password') == $GLOBALS["slice_pwd"])) {
+        if ($ignore_reading_password || ($this->getfield('reading_password') == '') || ($this->getfield('reading_password') == md5($GLOBALS["slice_pwd"]))) {
             $this->loadsettingfields();
             return $this->dynamic_setting;
         } else {
@@ -218,8 +219,8 @@ class slice {
     /** Computes js_validation code and show_func_used
      *  $action       - 'update' | 'edit'
      *  $id           - id of item to edit
-     *  $shown_fields - array of field ids which we will use in the output 
-     *                  (inputform)(we have to count with them). 
+     *  $shown_fields - array of field ids which we will use in the output
+     *                  (inputform)(we have to count with them).
      *                  If false, then we use all the fields
      */
     function _compute_field_stats($action, $id=0, $shown_fields=false) {

@@ -79,7 +79,7 @@ function proove_ID($slice)
 
     $slice_id = addslashes(pack_id128($slice["id"]));
     //echo "$slice_id";
-    $SQL = "SELECT * FROM slice WHERE id=\"$slice_id\"";
+    $SQL = "SELECT id FROM slice WHERE id=\"$slice_id\"";
 
     global $db;
     $db->query($SQL);

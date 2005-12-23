@@ -775,7 +775,7 @@ function RSS_restrict($txt, $len) {
       if ($slice_id==""){ echo "Error: slice_id not defined"; exit; }
 
       // RSS chanel (= slice) info
-      $SQL= "SELECT * FROM slice WHERE id='$p_slice_id'";
+      $SQL= "SELECT name, slice_url, owner FROM slice WHERE id='$p_slice_id'";
 
       $db = getDB(); $db->query($SQL);
       if (!$db->next_record()){ echo "Can't get slice info"; exit;  }

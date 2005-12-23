@@ -146,7 +146,7 @@ if ( $update ) {
 $SQL= "
 SELECT notify_holding_item_s,      notify_holding_item_b,
        notify_holding_item_edit_s, notify_holding_item_edit_b,
-       notify_active_item_s,  notify_active_item_b,
+       notify_active_item_s,       notify_active_item_b,
        notify_active_item_edit_s,  notify_active_item_edit_b
  FROM slice WHERE id='".q_pack_id($slice_id)."'";
 $db->query($SQL);
