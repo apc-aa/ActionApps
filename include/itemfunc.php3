@@ -280,9 +280,12 @@ function insert_fnc_now($item_id, $field, $value, $param, $additional='') {
 }
 
 function insert_fnc_com($item_id, $field, $value, $param, $additional='') {
-    // not insert anything at this time. We will do it later, after we store 
-    // all of the fields to the database. Then we can compute the content 
-    // of this field. See updateComputedFields() method in item_content.php3
+    // we store it to the database at this time, even if it is probably
+    // not final value for this field - we probably recompute this value later
+    // in storeItem method, but we should compute with this new value there,
+    // so we need to store it, right now
+    // (this is the only case for computed field SHOWN IN INPUTFORM)
+    insert_fnc_qte($item_id, $field, $value, $param, $additional);
     return;
 }
 

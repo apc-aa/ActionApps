@@ -369,11 +369,13 @@ class ItemContent {
     */
     function storeItem( $mode, $invalidatecache=true, $feed=true, $context='direct' ) {
         global $event, $itemvarset;
+
         $itemvarset = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
 
         $slice_id   = $this->getSliceID();
         $slice      = new slice($slice_id);
         $fields     = $slice->fields('record');
+
 
         if ( ($mode != 'insert') AND
              ($mode != 'insert_new') AND
@@ -491,6 +493,7 @@ class ItemContent {
             $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");
         }
 
+
         // get the content back from database
         $itemContent = new ItemContent();
         $itemContent->setByItemID($id,true);     // ignore reading password
@@ -533,10 +536,16 @@ class ItemContent {
                     $slice = new slice($this->getSliceID());
                     $item  = new item($this->getContent(),$slice->aliases());
                 }
+
                 // delete content just for this computed field
                 $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id='$fid'");
-                // now store the computed value for this field
-                insert_fnc_qte($id, $f, array('value' => $item->unalias($fnc["param"])), '');
+                // compute new value for this computed field
+                $new_computed_value = $item->unalias($fnc["param"]);
+                // set this value also to $item in order we can count with it
+                // in next computed field
+                $item->set_field_value($fid, $new_computed_value);
+                //  store the computed value for this field to database
+                insert_fnc_qte($id, $f, array('value' => $new_computed_value), '');
             }
         }
         return $computed_field_exist;
