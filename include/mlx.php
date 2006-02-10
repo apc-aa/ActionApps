@@ -437,6 +437,8 @@ class MLXView
     ///@param mlx is the thing set in the URL
     ///@param slice_id is a fallback in case mlx is missing
     function MLXView($mlx,$slice_id=0) {
+    	if($slice_id)
+   		unset($GLOBALS['MLX_TRANSLATIONS'][(string)$slice_id]);
         $supported_modes = array("MLX","ONLY","ALL");
         if($mlx) {
             $arr = explode("-",$mlx);

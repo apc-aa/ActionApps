@@ -1,3 +1,7 @@
+10/02/06 - fixed a bug in mlx.php which messed up sharing one MLX Control Slice 
+           between multiple content slice
+#
+#        (incomplete)
          - hardcoded table for fulltext of discussion do not have width=100%
            now, because it makes troubles in IE on pages with CSS layout
 12/30/05 - computed fields can compute also with self content as well as with
