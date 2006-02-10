@@ -1,19 +1,30 @@
 #!/bin/sh
 
 # This script should be run from cron for example by this crontab entry:
-# 1,16,31,46 * * * * /usr/local/myscripts/aa-http-request > /dev/null
+# 1,16,31,46 * * * * /usr/local/myscripts/aa-http-request [HOST] [AADIR] > /dev/null
 # For security reasons it is better to move it to some directory, where 
 # webserver don't have access to. For example to the directory 
 # /usr/local/myscripts/aa-http-request
 # In order to run this script from cron, it must have executable privileges 
 # ( chmod 755 aa-http-request )
 
+# mimo 2006/02/10 support for passing HOST and AADIR as parameters
+# usage: aa-http-request <HOST> <AADIR>
+
 TMPFILE=/tmp/aa.$$
 
 #HOST=localhost.localdomain
 HOST=work.ecn.cz
+HOST=webservice.greennet.org.uk
+if [ "x$1" != "x" ] ; then
+        HOST="$1"
+fi
 
 AADIR=/apc-aa
+if [ "x$2" != "x" ] ; then
+        AADIR="$2"
+fi
+
 
 #Set LYNX or PERL to absolute path of lynx or perl if you have either
 #of them.  If neither are set, then it will try telnet, which will not
