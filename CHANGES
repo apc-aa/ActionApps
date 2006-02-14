@@ -1,5 +1,7 @@
+14/02/06 - fixed a bug in MLXGetText - setlang should be used to set the lang forcefully
+(mimo)   - &errcheck=1 now works for MLXGetText
 10/02/06 - fixed a bug in mlx.php which messed up sharing one MLX Control Slice 
-           between multiple content slice
+(mimo)     between multiple content slice
 #
 #        (incomplete)
          - hardcoded table for fulltext of discussion do not have width=100%

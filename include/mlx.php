@@ -900,19 +900,25 @@ class MLXGetText
     }
 };
 function stringexpand__m() { //the second _ is not pretty here, but is in {_:
+    global $errcheck;
     $arg_list = func_get_args();
     if(!$GLOBALS[mlxGetText]) {
         if($errcheck) huhl("mlxGetText not initialised");
         return DeQuoteColons($arg_list[0]);
     }
-    if(!$GLOBALS[mlxView]) {
-        if($errcheck)
-            huhl("MLX no global mlxView set: this shouldnt happen in: ".__FILE__.",".__LINE__);
-        return  DeQuoteColons($arg_list[0]);
+    $lang = $GLOBALS[mlxGetText]->currentLang; 
+    if(!$lang) {
+    	if(!$GLOBALS[mlxView]) {
+        	if($errcheck)
+            	huhl("MLX no global mlxView set: this shouldnt happen in: ".__FILE__.",".__LINE__);
+        	return  DeQuoteColons($arg_list[0]);
+    	}
+    	$lang = $GLOBALS[mlxView]->getLangByIdx(0);
     }
-    return $GLOBALS[mlxGetText]->translate($arg_list,$GLOBALS[mlxView]->getLangByIdx(0));
+    return $GLOBALS[mlxGetText]->translate($arg_list,$lang);
 }
 function stringexpand_mlx() {
+    global $errcheck;
     $arg_list = func_get_args();
     if(!$GLOBALS[mlxGetText])
         $GLOBALS[mlxGetText] = new MLXGetText;
