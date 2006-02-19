@@ -79,7 +79,7 @@ class DB_Sql {
 
         // Jirkare hack
         if ( defined('DB_CHARACTER_SET') ) {
-            @mysql_query('SET CHARACTER SET ' DB_CHARACTER_SET, $this->Link_ID);
+            @mysql_query('SET CHARACTER SET '. DB_CHARACTER_SET, $this->Link_ID);
         }
         if ( defined('DB_COLLATION_CONNECTION') ) {
             @mysql_query('SET COLLATION_CONNECTION=\''. DB_COLLATION_CONNECTION.'\'', $this->Link_ID);
