@@ -19,11 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// this allows to require_once this script any number of times - it will be read only once
-if (!defined ("DATE_INCLUDED"))
-    define ("DATE_INCLUDED",1);
-else return;
-
 // javascript.php3 defines getTriggers, which is used by Add / Edit item page
 require_once $GLOBALS['AA_INC_PATH']."javascript.php3";
 
@@ -98,8 +93,8 @@ class datectrl {
 
     // get stored date as integer
     function get_date() {
-        $t = explode( ':', $this->time );
-        return  mktime ($t[0],$t[1],$t[2],$this->month,$this->day,$this->year);
+        $t = explode( ':', $this->time ?  $this->time : "0:0:0");
+        return mktime ($t[0],$t[1],$t[2],$this->month,$this->day,$this->year);
     }
 
     // get stored date as integer
