@@ -175,24 +175,17 @@ function sess_return_url($url) {
 //
 // make_return_url
 //function make_return_url($prifix="&return_url=")
-function make_return_url($prifix,$r1="") {
-  // prifix will be "&return_url=" or "?return_url=",
-  // if null, it uses "&return_url="
-  if (!$prifix) $prifix = "&return_url=";
-
-  global $return_url, $REQUEST_URI, $sess;
-  if ($r1)
-    return $prifix . urlencode($r1);
-  elseif ($return_url)
-    return $prifix . urlencode($return_url);
-  elseif (!$sess) {   // If there is no $sess, then we need a return url, default to self, including parameters
-            // but remove any left over AA_CP_Session, it will be re-added if needed
-        if (ereg("(.*)([?&])AA_CP_Session=[0-9a-f]{32}(.*)",$REQUEST_URI,$parts))
-          return $prifix . urlencode($parts[1].$parts[2].$parts[3]);
-        return($prifix . urlencode($REQUEST_URI));
-  }
-  else
-    return "";
+function make_return_url($r1="") {
+    global $return_url, $REQUEST_URI, $sess;
+    if ($r1) {
+        return $r1;
+    } elseif ($return_url) {
+        return $return_url;
+    } elseif (!$sess) {   // If there is no $sess, then we need a return url, default to self, including parameters
+        // but remove any left over AA_CP_Session, it will be re-added if needed
+        return ereg("(.*)([?&])AA_CP_Session=[0-9a-f]{32}(.*)",$REQUEST_URI,$parts) ? ($parts[1]. $parts[2]. $parts[3]) : $REQUEST_URI;
+    }
+    return '';
 }
 
 // helper function for f_e:link_*  (links module admin page link) - honzam
@@ -204,26 +197,27 @@ function Links_admin_url($script, $add) {
 /** helper function which create link to inputform from item manager
   * (_#EDITITEM, f_e:add, ...)  */
 function Inputform_url($add, $iid, $sid, $ret_url, $vid = null, $var = null) {
-    global $sess, $AA_CP_Session;
-    // code to keep compatibility with older version
-    // which was working without $AA_INSTAL_EDIT_PATH
+    global $sess, $AA_CP_Session, $profile;
+
     $admin_path = "itemedit.php3";
     // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
     $url2go = isset($sess) ?
                      $sess->url($admin_path)	:
                      ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
-    global $profile;
-    $param[]           = ($add ? 'add=1' : 'edit=1');
-    $param[]           = "encap=false";
-    $param[]           = "id=$iid";
-    $param[]           = "slice_id=$sid";
-    $param[]           = make_return_url("return_url=",$ret_url);
-    if ($iid) $param[] = "id=$iid";
-    if ($var) $param[] = "openervar=$var";  // id of variable in parent window (used for popup inputform)
+    // return_url is used for non AA Admin interface filling - writen by Settu
+    // Not sure, if it is functional. Honza 2006-01-07
+    $return_url = make_return_url($ret_url);
+
+    if ($iid)        $param[] = "id=$iid";
+                     $param[] = ($add ? 'add=1' : 'edit=1');
+                     $param[] = "encap=false";
+                     $param[] = "slice_id=$sid";
+    if ($return_url) $param[] = 'return_url='. urlencode($return_url);
+    if ($var)        $param[] = "openervar=$var";  // id of variable in parent window (used for popup inputform)
     if ($vid) {
-        $param[]       = "vid=$vid";
+                     $param[] = "vid=$vid";
     } elseif (isset($profile) AND $profile->getProperty('input_view')) {
-        $param[]       = 'vid='.$profile->getProperty('input_view');
+                     $param[] = 'vid='.$profile->getProperty('input_view');
     }
     return con_url($url2go,$param);
 }
@@ -287,7 +281,8 @@ function GetFormatedItems( $sid, $format="",  $restrict_zids=false, $frombins=AA
 function GetItemFromId($zid) {
     if (isset($zid) && ($zid != "-")) {
         $content = new ItemContent($zid);
-        $slice   = new slice($content->getSliceID());
+        // reuse slice, if possible
+        $slice   = $GLOBALS['allknownslices']->addslice($content->getSliceID());
         return new item($content->getContent(),$slice->aliases());
     }
     return false;
@@ -518,7 +513,7 @@ class item {
       if ( $param=="" ) {
           $param = "m/d/Y";
       }
-      $dstr = date($param, $this->getval($col));
+      $dstr = date($param, (int)$this->getval($col));
       return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
   }
 
