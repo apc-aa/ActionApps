@@ -310,7 +310,6 @@ class itemview {
 
   // show discussion comments in the fulltext mode
   function get_disc_fulltext(&$CurItem) {
-
       $CurItem->setformat( $this->slice_info['d_fulltext']);      // set fulltext format
       $zids      = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
       $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
@@ -377,11 +376,10 @@ class itemview {
       // preset the for values from cookies
       $cookie = new CookieManager();
       $js     = '';
-      if ( $d_author = $cookie->get('d_author') ) {
-          $js .= "setControl('f','d_author',\"$d_author\");\n";
-      }
-      if ( $d_e_mail = $cookie->get('d_e_mail') ) {
-          $js .= "setControl('f','d_e_mail',\"$d_e_mail\");\n";
+      foreach (array('d_author', 'd_e_mail', 'd_url_address', 'd_url_description') as $form_field) {
+          if ( $value = $cookie->get($form_field) ) {
+              $js .= "setControl('f','$form_field',\"$value\");\n";
+          }
       }
       if ( $js ) {
           $out .= "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". get_aa_url('javascript/fillform.js', false) . "\"></script>";

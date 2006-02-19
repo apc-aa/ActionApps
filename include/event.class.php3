@@ -131,6 +131,7 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_NEW',         'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_UPDATED',     'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',         'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
+        $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));  // Ekoinfocentrum poradna
     }
 
     /** Fills the handlers array from database */
@@ -202,7 +203,84 @@ class NewDiscussionCommentEvent {
 }
 
 
+function GetNotifications($type, $class, $selector, $reaction=null, $params=null) {
+    $type     = quote($type);
+    $class    = quote($class);
+    $selector = quote($selector);
+
+    $SQL = "SELECT params FROM event WHERE type='$type' AND class='$class' AND selector = '$selector'";
+
+    if ( isset($reaction) ) {
+       $SQL .= ' AND reaction =\''.quote($reaction).'\'';
+    }
+    if ( isset($params) ) {
+       $SQL .= ' AND params =\''.quote($params).'\'';
+    }
+    $notifications = GetTable2Array($SQL, 'NoCoLuMn', 'params');
+    return $notifications ? array_unique((array)$notifications) : array();
+}
+
+function AddNotification($type, $class, $selector, $reaction, $params) {
+
+    // check if user already is not set for this item
+    if ( count(GetNotifications($type, $class, $selector, $reaction, $params)) > 0 ) {
+        return false;
+    }
+    $notification_id = new_id();
+    $notificationVS  = new Cvarset();
+    $notificationVS->add("id",        "text",   $notification_id);
+    $notificationVS->add("type",      "text",   $type);
+    $notificationVS->add("class",     "text",   $class);
+    $notificationVS->add("selector",  "text",   $selector);
+    $notificationVS->add("reaction",  "text",   $reaction);
+    $notificationVS->add("params",    "quoted", $params);
+    $notificationVS->doInsert('event');
+}
+
+
 /** ------------- Handlers --------------*/
+
+
+function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $foo2 ) {
+
+    $emails = GetNotifications($type, $slice_type, $item_id);
+
+    $item_zid    = new zids($item_id, 'l');
+    $content4ids = GetItemContent($item_zid, false, false, array('id..............','slice_id........','e_posted_by.....'));
+    $content4id  = reset($content4ids);  // get first element
+
+    // send e-mail also to author of the item
+    if ( valid_email($content4id['e_posted_by.....'][0]['value']) ) {
+        $emails[] = $content4id['e_posted_by.....'][0]['value'];
+    }
+    if ( count($emails) < 1 ) {
+        return true;
+    }
+
+    // get e-mail template - quite comlicated, isn't?
+    $view_id     = sliceid2field(unpack_id($content4id['slice_id........'][0]['value']), 'vid');
+    if ( $view_id < 1 ) {
+        return true;
+    }
+
+    // get id of e-mail template (stored in aditional6 field of view definition
+    $mail_id = GetViewInfo($view_id, 'aditional6');
+    if ( $mail_id < 1 ) {
+        return true;
+    }
+
+    // get discussion item content
+    $zids      = new zids($disc_id, 'l');
+    $d_content = GetDiscussionContent($zids);
+    $columns   = reset($d_content);  // get first element
+    $CurItem   = new item($columns, GetDiscussionAliases());
+
+    $mail = new HtmlMail;
+    $mail->setFromTemplate($mail_id, $CurItem);
+    $mail->sendLater($emails);
+    return true;
+}
+
 
 /** Called after inserting a new item.
 *   $itemContent is sent by reference but for better performance only.

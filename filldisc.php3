@@ -87,14 +87,17 @@ require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 require_once $GLOBALS['AA_INC_PATH']."itemview.php3";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
 require_once $GLOBALS['AA_INC_PATH']."item.php3";
+require_once $GLOBALS['AA_INC_PATH']."event.class.php3";
 
 $err["Init"] = "";       // error array (Init - just for initializing variable)
 
 $new_id = new_id();
 
 $cookie = new CookieManager();
-$cookie->set('d_author', $d_author, 60*60*24*30);   // 30 days
-$cookie->set('d_e_mail', $d_e_mail, 60*60*24*30);   // 30 days
+$cookie->set('d_author',          $d_author,          60*60*24*90);   // 90 days
+$cookie->set('d_e_mail',          $d_e_mail,          60*60*24*90);   // 90 days
+$cookie->set('d_url_address',     $d_url_address,     60*60*24*90);   // 90 days
+$cookie->set('d_url_description', $d_url_description, 60*60*24*90);   // 90 days
 
 $catVS = new Cvarset();
 $catVS->add("id",              "unpacked", $new_id);
@@ -113,12 +116,18 @@ $catVS->add("url_description", "quoted",   $d_url_description);
 $catVS->add("date",            "quoted",   time());
 $catVS->add("remote_addr",     "quoted",   $GLOBALS['REMOTE_ADDR']);
 
-$SQL = "INSERT INTO discussion" . $catVS->makeINSERT();
-$db = new DB_AA;
-if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+if (!$catVS->doInsert('discussion')) {  // not necessary - we have set the halt_on_error
     $err["DB"] .= MsgErr("Can't add discussion comment");
 }
+
+if ( !is_object($event) ) $event = new aaevent;   // not defined in scripts which do not include init
+$event->comes('ITEM_NEW_COMMENT', $d_item_id, 'Item', $new_id );
+
 send2mailList($d_item_id, $new_id);
+
+if ($_REQUEST['send_reactions'] AND valid_email($d_e_mail)) {
+    AddNotification('ITEM_NEW_COMMENT', 'Item', $d_item_id, 'email', $d_e_mail);
+}
 
 // invalidate cache
 $slice_id = unpack_id128(GetTable2Array("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'", 'aa_first', 'slice_id'));

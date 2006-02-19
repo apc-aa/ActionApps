@@ -642,7 +642,7 @@ function GetModuleInfo($module_id, $type) {
 
 // gets slice fields
 function GetSliceInfo($slice_id) {
-  return  GetModuleInfo($slice_id,'S');
+    return GetModuleInfo($slice_id,'S');
 }
 
 /*Obsoleted - see viewobj.php3 (mitra)
@@ -789,6 +789,39 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
     return array( $sel_in, $settags );
 }
 
+/** @todo convert to static class variables after move to PHP5 */
+class DbStructure {
+    var $tables;
+    var $item_translations;
+
+    function DbStructure() {
+        $this->tables            = array('item' => array('id', 'short_id', 'slice_id', 'status_code', 'post_date', 'publish_date', 'expiry_date', 'highlight', 'posted_by', 'edited_by', 'last_edit', 'display_count', 'flags', 'disc_count', 'disc_app', 'externally_fed', 'moved2active'));
+        $this->item_translations = array();
+        foreach ($this->tables['item'] as $column) {
+            $this->item_translations[CreateFieldId($column)] = $column;
+        }
+    }
+
+    function itemTableField($field_id) {
+        return get_if($this->item_translations[$field_id], false);
+    }
+
+    function itemFields4Sql($fields2get) {
+        $fields = array();
+        if ( is_array($fields2get) ) {
+            foreach ( $fields2get as $field_name ) {
+                if ($this->item_translations[$field_name]) {
+                    $fields[] = 'item.'. $this->item_translations[$field_name];
+                }
+            }
+        }
+        return ( count($fields) < 1 ) ? 'item.*' : join(',', $fields);
+    }
+}
+
+
+
+
 /** Basic function to get item content. Use this function, not direct SQL queries.
 *
 *   @param bool  $ignore_reading_password
@@ -818,8 +851,16 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             $use_short_ids = true;
     }
 
+    // if the output fields are restricted, restrict also item fields
+    if ( $fields2get ) {
+        $dbstructure = new DbStructure();
+        $item_fields = $dbstructure->itemFields4Sql($fields2get);
+    } else {
+        $item_fields = 'item.*';
+    }
+
     $id_column = ($use_short_ids ? "short_id" : "id");
-    $SQL = "SELECT item.*, slice.reading_password
+    $SQL = "SELECT $item_fields, slice.reading_password
             FROM item INNER JOIN slice ON item.slice_id = slice.id
             WHERE item.$id_column $sel_in";
     $db->tquery($SQL);
@@ -1115,7 +1156,7 @@ function ParseFnc($s) {
 
 // returns html safe code (used for preparing variable to print in form)
 function safe( $var ) {
-  return htmlspecialchars( stripslashes($var) );  // stripslashes function added because of quote varibles sended to form before
+  return htmlspecialchars( magic_strip($var) );  // stripslashes function added because of quote varibles sended to form before
 }
 
 // is the browser able to show rich edit box? (using triedit.dll)
@@ -2008,5 +2049,16 @@ if (!function_exists("file_get_contents")) {
     }
 }
 
+class CookieManager {
+    //  we are adding prefix AA_ - at least it prevents conflicts between GET
+    //  and COOKIES variables of the same name
+    function set($name, $value, $time=null) {
+        setcookie('AA_'.$name, $value, $time ? time() + $time : 0, '/', $_SERVER['HTTP_HOST']);
+    }
+
+    function get($name) {
+        return $_COOKIE['AA_'.$name];
+    }
+}
 
 ?>

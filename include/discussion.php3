@@ -63,6 +63,7 @@ function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
     if ($order == 'reverse timeorder') {
         $SQL .=" DESC";
     }
+
     $d_ids = GetTable2Array($SQL, 'NoCoLuMn', 'id');
     if (!$ids) {
         return new zids($d_ids, 'p');
@@ -85,8 +86,9 @@ function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='
     $SQL = 'SELECT * FROM discussion WHERE '. $zids->sqlin('id');
     $db->tquery( $SQL );
     $i=1;
-    $col = array();
-    $d_content = array();
+    $col              = array();
+    $d_content        = array();
+    $unsorted_content = array();
     while ($db->next_record()) {
         $d_id = unpack_id128($db->f('id'));
         $col["d_id............"][0]['value'] = $d_id;
@@ -111,10 +113,18 @@ function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='
         $col["d_treeimages...."][0]['flag'] = FLAG_HTML;
 
         $col["hide"] = ($db->f('state') == '1' && $state);     //mark hidden comment.
-        $d_content[$d_id] = $col;
+        $unsorted_content[$d_id] = $col;
+    }
+
+    // MySQL returns the items in random order - we have to sort it as is in zids
+    $longids = $zids->longids();
+    if (is_array($longids)) {
+        foreach ($longids as $d_id) {
+            $d_content[$d_id] = $unsorted_content[$d_id];
+        }
     }
     freeDB($db);
-    return $content;
+    return $d_content;
 }
 
 function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
