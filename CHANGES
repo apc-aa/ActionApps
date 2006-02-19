@@ -1,6 +1,29 @@
-14/02/06 - fixed a bug in MLXGetText - setlang should be used to set the lang forcefully
-(mimo)   - &errcheck=1 now works for MLXGetText
-10/02/06 - fixed a bug in mlx.php which messed up sharing one MLX Control Slice 
+02/19/06 - Discussions updated
+(honzam)   - author/email is stored in cookies, so readers do not need to fill
+               it twice. No new setting of discussion is needed -it works as is.
+             - Authors of the article as well as authors of the comment could
+               be notified about new posted comment by email
+               see: http://actionapps.org/en/Interacting_With_Your_Audience#Tip_2:_New_comment_notification
+         - {item:<ids>:<aa_expression>[:<delimiter>]} code now allows to specify
+           more than one ID in <ids>. <ids> should be dash "-" separated
+           and could be in short as well as long form. You can specify also
+           record delimiter as fourth parameter. If not present no delimiter is
+           used. Example: {item:53443-54322-53553:_HEADLINE:, }
+         - You can display all informations about specified item
+           on "AA -> AA Finder" page, now
+         - Slice name with link is now displayed on "Admin -> RSS Feeds" page
+         - Fixed PHP5 related bugs - "30 Nov 1999" date bug, ...
+         - Fixed problem with uploads to the "Slice Setting Fields"
+         - Fixed some problems with setting permissions to users from Reader
+           Management slice (bugs introduced by changing identification of users
+           from login name to item_id some time ago (08/30/05))
+         - Fixed site caching - now invalidated after spot move...
+         - New internal API for views which allows to cache views definition
+           within one php script call
+02/14/06 - fixed a bug in MLXGetText - setlang should be used to set the lang
+(mimo)     forcefully
+         - &errcheck=1 now works for MLXGetText
+02/10/06 - fixed a bug in mlx.php which messed up sharing one MLX Control Slice
 (mimo)     between multiple content slice
 #
 #        (incomplete)
