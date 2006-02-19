@@ -257,6 +257,13 @@ function ParseViewParameters($query_string="") {
 
     $arr = ParseSettings($set[$vid]);
 
+    // Following line is here just for caching purposes - we are creating cache
+    // keystring from view parameters and we need to add all set[] and cmd[]
+    // in the keystring, because of cases like:
+    //     view.php3?vid=1781&set[997]=selected-759644
+    // (view 997 is called inside 1781)
+    $arr['forcache'] = array($set, $cmd);
+
     if ($arr['slices']) {
         $arr['slices'] = explode('-', $arr['slices']);
     }
