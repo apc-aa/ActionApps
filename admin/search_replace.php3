@@ -32,7 +32,7 @@ require_once $GLOBALS['AA_INC_PATH']. "formutil.php3";
 require_once $GLOBALS['AA_INC_PATH']. "searchbar.class.php3";
 require_once $GLOBALS['AA_INC_PATH']. "varset.php3";
 
-function ChangeContent($zids, $field_id, $new_content) {
+function ChangeContent($zids, $field_id, $new_content, $new_flag, $field2copy) {
     global $allknownslices;
 
     $count = 0;  // number of updated items
@@ -41,12 +41,31 @@ function ChangeContent($zids, $field_id, $new_content) {
         if ( !$item ) {
             continue;
         }
+        if ($field2copy == 'no_field') {
+            // get the content from the textarea
+            if ($field_id == 'no_field') {
+                return 0;
+            }
+            $content4id[$field_id][0]['value'] = $item->subst_alias($new_content);
 
-        $content4id[$field_id][0]['value'] = addslashes($item->subst_alias($new_content));
+            switch ($new_flag) {
+                case 'u': $flag = $item->getval($field_id, 'flag'); break;
+                case 'h': $flag = $item->getval($field_id, 'flag') | FLAG_HTML; break;
+                case 't': $flag = $item->getval($field_id, 'flag') & ~FLAG_HTML; break;
+            }
+            $content4id[$field_id][0]['flag']  = $flag;
+        } else {
+            // get content from $field2copy field of current item
+            $content4id[$field_id] = $item->getvalues($field2copy);
+        }
         $slice_id = $item->getSliceID();
         $slice    =& $allknownslices->addslice($slice_id);
         $slices2invalidate[$slice_id] = $slice_id;
-        if ( StoreItem($item->getItemID(), $slice_id, $content4id, $slice->fields('record'), false, false, false, $item->getContent())) { // update, invalidate, notfeed
+
+        $c4id = new ItemContent($content4id);
+        $c4id->setItemID($item->getItemID());
+        $c4id->setSliceID($slice_id);
+        if ($c4id->storeItem( 'update', false, false)) {    // not invalidatecache, not feed
             $count++;
         }
     }
@@ -72,15 +91,19 @@ if ( !$fill ) {               // for the first time - directly from item manager
     $items     = $r_sr_state['items'];  // session variable holds selected items fmom item manager
     if ( $fill ) {    // we really want to fill fields
         do {
+            // we do not need the content quoted
+            $new_content = magic_strip($new_content);
             ValidateInput("field_id",    _m("Field"),       $field_id,    $err, true,  "text");
             ValidateInput("new_content", _m("New content"), $new_content, $err, false, "text");
+            ValidateInput("new_flag",    _m("Mark as"),     $new_flag,    $err, false, "text");
+            ValidateInput("field2copy",  _m("Copy field"),  $field2copy,  $err, false, "text");
 
             if ( count($err) > 1) break;
 
             // --- fill the fileds
             $zids    = ( ($group == 'testitemgroup') ?
                         new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
-            $changed = ChangeContent($zids, $field_id, $new_content);
+            $changed = ChangeContent($zids, $field_id, $new_content, $new_flag, $field2copy);
             $Msg     = MsgOK(_m("Items selected: %1, Items sucessfully updated: %2",
                                                array($zids->count(), $changed)));
             if ((string)$group == (string)"sel_item") {
@@ -120,13 +143,22 @@ if ( !IsSuperadmin() ) {
     $restricted_fields = array( 'short_id........' => true );
 }
 
-// create filed_select array for field selection
+// create field_select array for field selection
+$field_select['no_field'] = _m('Select field...');
 $fields = $slice->fields('record');
 foreach ($fields as $fld_id => $fld) {
     if ( !$restricted_fields[$fld_id] ) {
         $field_select[$fld_id] = $fld['name']. ' ('. $fld_id. ')';
     }
 }
+
+// create field_copy_arr array for field selection
+$field_copy_arr['no_field'] = _m('Ignore "Copy field"');
+foreach ($fields as $fld_id => $fld) {
+    $field_copy_arr[$fld_id] = $fld['name']. ' ('. $fld_id. ')';
+}
+
+
 
 FrmTabCaption( (is_array($items) ? _m("Items") : ( _m("Stored searches for ").$slice->name()) ));
 
@@ -137,8 +169,15 @@ FrmItemGroupSelect( $items, $searchbar, 'items', $messages, $additional);
 FrmTabSeparator( _m('Fill field') );
 FrmInputSelect('field_id',       _m('Field'),             $field_select,       $field_id, true,
                _m('Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item\'s data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now).'));
+$flag_options = array('h' => _m('HTML'),
+                      't' => _m('Plain text'),
+                      'u' => _m('Unchanged'));
+FrmInputRadio('new_flag', _m('Mark as'), $flag_options, get_if($new_flag,'u'));
+
 FrmTextarea(   'new_content', _m('New content'),       dequote($new_content),  12, 80, true,
                _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
+FrmInputSelect('field2copy',     _m('Copy field'),         $field_copy_arr,    $field2copy, true,
+               _m('If you select the field here, the "New content" text is not used. Selected field will be copied to the "Field" (including multivalues)'));
 
 FrmTabEnd(array( 'fill' =>array('type'=>'submit', 'value'=>_m('Fill')),
                  'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')),
