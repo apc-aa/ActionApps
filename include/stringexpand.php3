@@ -354,10 +354,23 @@ function stringexpand_str_replace($search, $replace, $subject) {
     return str_replace($search, $replace, $subject);
 }
 
-function stringexpand_item($item_id,$field) {
-    $zid  = new zids($item_id);
-    $item = GetItemFromId($zid);
-    return ( $item ? $item->subst_alias($field) : '');
+/** ids_string - ids (long or short (or mixed) separated by dash '-') */
+function stringexpand_item($ids_string, $expression, $delimiter='') {
+    $ids   = explode('-', $ids_string);
+    $ret   = '';
+    $delim = '';
+    if ( is_array($ids) ) {
+        foreach ( $ids as $item_id ) {
+            $item  = GetItemFromId(new zids($item_id));
+            $ret  .= ($item ? ($delim . $item->subst_alias($expression)) : '');
+            $delim = $delimiter;
+        }
+    }
+    return $ret;
+}
+
+/** */
+function stringexpand_ids($slice, $conds) {
 }
 
 /** Expand URL by adding session,
