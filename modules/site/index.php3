@@ -121,11 +121,13 @@ if ($addcond) {
            "INSERT INTO site_spot (site_id, spot_id, content) VALUES ('$p_module_id', '$r_spot_id', '$content')");
     $db->query($SQL);
 
-    $GLOBALS['pagecache']->invalidate("slice_id=".site_id);  // invalidate old cached values
-
     if ($name) {  // do not change to empty
         $tree->set('name', $r_spot_id, $name);
     }
+}
+
+if ($addcond OR $delcond OR $content OR $name OR $akce) {
+    $GLOBALS['pagecache']->invalidate("slice_id=".site_id);  // invalidate old cached values
 }
 
 // This is only run with a hand-coded URL to clean out the site
@@ -144,7 +146,7 @@ echo '</head>';
 // module specific navigation bar
 require_once $GLOBALS['AA_BASE_PATH']."modules/site/menu.php3";
 showMenu($aamenus, "codemanager");
-                                          
+
 function Links_PrintActionLink($r_spot_id, $action, $text, $img, $link=null) {
     if (!$link) {
         $link  = SiteAdminPage($r_spot_id, "akce=$action");
