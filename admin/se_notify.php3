@@ -100,14 +100,14 @@ if ( $update ) {
       exit;
 
   // if we passed our validation, change the slice records
-  $up  = "notify_holding_item_s = '" .     addslashes($notify_holding_item_s) . "',\n ";
-  $up .= "notify_holding_item_b = '" .     addslashes($notify_holding_item_b) . "',\n";
-  $up .= "notify_holding_item_edit_s = '". addslashes($notify_holding_item_edit_s) . "',\n";
-  $up .= "notify_holding_item_edit_b = '". addslashes($notify_holding_item_edit_b) . "',\n";
-  $up .= "notify_active_item_s = '" .      addslashes($notify_active_item_s) . "',\n";
-  $up .= "notify_active_item_b = '" .      addslashes($notify_active_item_b) . "',\n";
-  $up .= "notify_active_item_edit_s = '" . addslashes($notify_active_item_edit_s) . "',\n";
-  $up .= "notify_active_item_edit_b = '" . addslashes($notify_active_item_edit_b) ."' ";
+  $up  = "notify_holding_item_s = '" .     $notify_holding_item_s . "',\n ";
+  $up .= "notify_holding_item_b = '" .     $notify_holding_item_b . "',\n";
+  $up .= "notify_holding_item_edit_s = '". $notify_holding_item_edit_s . "',\n";
+  $up .= "notify_holding_item_edit_b = '". $notify_holding_item_edit_b . "',\n";
+  $up .= "notify_active_item_s = '" .      $notify_active_item_s . "',\n";
+  $up .= "notify_active_item_b = '" .      $notify_active_item_b . "',\n";
+  $up .= "notify_active_item_edit_s = '" . $notify_active_item_edit_s . "',\n";
+  $up .= "notify_active_item_edit_b = '" . $notify_active_item_edit_b ."' ";
 
   $SQL= "UPDATE slice set $up WHERE id = '$p_slice_id'";
   $result = $db->query($SQL);
