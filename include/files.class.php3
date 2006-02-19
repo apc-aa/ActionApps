@@ -15,6 +15,7 @@ define('FILE_ERROR_DIR_CREATE', 106);       // can't create directory for image 
 define('FILE_ERROR_CHMOD', 107);
 define('FILE_ERROR_WRITE', 108);
 define('FILE_ERROR_NO_DESTINATION', 109);
+define('FILE_ERROR_READ', 110);
 define('FILE_COPY_OK', 199);
 
 
@@ -71,10 +72,25 @@ class Files {
         return $filename;
     }
 
-    /** Prepares directories for uploaded file and returns destination dir name
+    /** Prepares slice directories for uploaded file and returns destination
+     *  dir name
      */
     function destinationDir(&$slice) {
-        $dest_dir  = Files::getUploadBase($slice);
+        return Files::_destinationDirCreate(Files::getUploadBase($slice));
+    }
+
+    /** Prepares global AA directory for uploaded file and returns destination
+     *  dir name
+     */
+    function aadestinationDir() {
+        $dest_dir['path']  = IMG_UPLOAD_PATH. AA_ID;
+        $dest_dir['perms'] = (int)IMG_UPLOAD_DIR_MODE;
+        return Files::_destinationDirCreate($dest_dir);
+    }
+
+    /** Prepares directory for uploaded file and returns destination dir name
+     */
+    function _destinationDirCreate($dest_dir) {
         if (!$dest_dir['path'] OR !is_dir($dest_dir['path'])) {
             if (!Files::CreateFolder($dest_dir['path'], $dest_dir['perms'])) {
                 Files::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));  // set error code
@@ -106,6 +122,30 @@ class Files {
             $add = '_'. (++$i);
         }
         return $dest_file;
+    }
+
+    /** Returns all content of the uploaded file as the string.
+     *  The file is deleted after read
+     *  @param string $filevarname - name of form variable, where the file is stored
+     */
+    function getUploadedFile($filevarname) {
+        $file_name  = Files::getTmpFilename('tmp');
+
+        // upload file - todo: error is not returned, if not exist
+
+        if (($dest_file = Files::uploadFile($filevarname, Files::aaDestinationDir(), '', 'overwrite', $file_name)) === false) {
+            return false;  // error code is already set from Files::uploadFile()
+        }
+
+        if (($text = file_get_contents($dest_file)) === false) {
+            Files::lastErr(FILE_ERROR_READ, _m("Can't read the file %1", array($dest_file)));  // set error code
+            return false;
+        }
+
+        // delete files older than one week in the img_upload directory
+        Files::deleteTmpFiles('tmp');
+
+        return $text;
     }
 
     /** Uploads file to slice's directory
@@ -201,12 +241,20 @@ class Files {
         return $dest_file;
     }
 
+    function getTmpFilename($ident) {
+        return $ident . "_" . md5(uniqid(rand(),1))  . "_" . date("mdY");
+    }
+
     /** Delete all files with the format : {ident}_{hash20}_mmddyyyy older than
      *  7 days (used as temporary upload files)
      */
-    function DeleteOldFiles($ident, &$slice) {
-        $upload_dir = Files::getUploadBase($slice);
-
+    function deleteTmpFiles($ident, $slice=null) {
+        if ( !$slice ) {
+            $upload_dir = IMG_UPLOAD_PATH. AA_ID;
+        } else {
+            $dir = Files::getUploadBase($slice);
+            $upload_dir = $dir['path'];
+        }
         if ($handle = opendir($upload_dir)) {
             while (false !== ($file = readdir($handle))) {
                 if (strlen($ident)+42 != strlen($file) || (substr($file,0,strlen($file)-42) != $ident))

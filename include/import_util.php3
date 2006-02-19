@@ -24,9 +24,6 @@ define("CSVFILE_LINE_MAXSIZE",   65536);
 define("IMPORTFILE_PREVIEW_ROWS",5);
 define("IMPORTFILE_TIME_LIMIT",  6000);
 
-define("FILE_PREFIX",   'csvdata');
-define("CSV_DIRECTORY", 'csvdata');
-
 define("NOT_STORE",        0);
 define("STORE_WITH_NEW_ID",1);
 define("UPDATE",           2);
@@ -48,6 +45,9 @@ function comparePHPVersion($ver) {
 }
 
 function getCSV($handle,$maxsize = 65536,$delimiter = ";",$enclosure = '"') {
+    if ($delimiter == '\t') {
+        $delimiter = chr(9);  // tabulator ascii
+    }
     if (comparePHPVersion("4.3.0") == -1) {
         return fgetcsv($handle,$maxsize,$delimiter);
     } else {
@@ -291,7 +291,7 @@ class Action {
                 break;
             }
             case "nszmciselnik": {
-                $from = array('podoblast1','podoblast2','podoblast3');
+                $from = array('ciselnik1','ciselnik2','ciselnik3');
                 foreach ( $from as $tostore ) {
                     $save = $GLOBALS['nszmciselnik'][(string)trim($itemContent->GetValue($tostore))];
                     if ( $save ) {
@@ -430,10 +430,6 @@ function getActions() {
     // not used:  "convertvalue","storemultiasone", "storeasmulti", "not map"
     foreach ( $a as $v ) { $actions[$v] = $v; }
     return $actions;
-}
-
-function GetUploadFileName($ident) {
-    return $ident . "_" . md5(uniqid(rand(),1))  . "_" . date("mdY");
 }
 
 ?>

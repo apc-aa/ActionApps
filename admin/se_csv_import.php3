@@ -53,10 +53,13 @@ require_once "../include/init_page.php3";
 require_once $GLOBALS['AA_INC_PATH']. 'import_util.php3';
 require_once $GLOBALS['AA_INC_PATH']. 'files.class.php3';
 
-$text      = stripslashes($text);
-$upfile    = stripslashes($upfile);
-$url       = stripslashes($url);
-$enclosure = stripslashes($enclosure);
+define("FILE_PREFIX",   'csvdata');
+
+$text      = magic_strip($text);
+$upfile    = magic_strip($upfile);
+$url       = magic_strip($url);
+$enclosure = magic_strip($enclosure);
+$delimiter = magic_strip($delimiter);
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to import files"));
@@ -80,7 +83,7 @@ if ($upload OR $preview) {
 
     // create unique file name
     unset($err);
-    $file_name  = GetUploadFileName(FILE_PREFIX);
+    $file_name  = Files::getTmpFilename(FILE_PREFIX);
 
     switch ($dataType) {
         case 'file':
@@ -113,11 +116,11 @@ if ($upload OR $preview) {
 
 if ($upload) {
     // delete files older than one week in the img_upload directory
-    Files::DeleteOldFiles(FILE_PREFIX, $slice);
+    Files::deleteTmpFiles(FILE_PREFIX, $slice);
 
     // create array of additional csv parameters
     $addParams['enclosure'] = $enclosure;
-    $addParams['delimiter'] = $delimiter;
+    $addParams['delimiter'] = $delimiter == '\t' ? chr(9) : $delimiter;
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
@@ -137,7 +140,7 @@ function InitPage() {}
 <?php
   $useOnLoad = true;
   require_once $GLOBALS['AA_INC_PATH']."menu.php3";
-  showMenu ($aamenus, "sliceadmin","CSVimport");
+  showMenu($aamenus, "sliceadmin","CSVimport");
 
   echo "<H1><B>" . _m("Admin - Import CSV (1/2) - Source data") . "</B></H1>";
   echo stripslashes($Msg);
