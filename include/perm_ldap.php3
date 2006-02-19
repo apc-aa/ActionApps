@@ -698,11 +698,9 @@ function GetApcAciPerm($str) {
 function GetIDsInfo($id, $ds = "") {
     global $aa_default_ldap;
 
-    if ( !$id )                              return false;
-    if ( IsUserReader($id) )                 return GetReaderIDsInfo($id);
-
-//  Not used right now. This would be used if we allow groups in groups
-//  if ( GetUserType($id) == 'ReaderGroup' ) return GetReaderGroupIDsInfo($id);
+    if ( !$id )               return false;
+    if ( IsGroupReader($id) ) return GetReaderGroupIDsInfo($id);
+    if ( IsUserReader($id) )  return GetReaderIDsInfo($id);
 
     if ( $ds=="" ) {
         if ( !($ds=InitLDAP()) ) {
@@ -752,6 +750,10 @@ function GetUserType( $user_id ) {
 
 function IsUserReader($user_id) {
     return ((guesstype($user_id, true) == 'l') AND (substr($user_id,0,4) != 'uid='));
+}
+
+function IsGroupReader($group_id) {
+    return ((guesstype($group_id, true) == 'l') AND (sliceid2field($group_id, 'type')=='ReaderManagement'));
 }
 
 function IsUsernameFree($username) {
