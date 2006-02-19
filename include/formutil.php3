@@ -134,9 +134,9 @@ class inputform {
 
         if ( $this->display_aa_begin_end ) {
             HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-            
+
             // get validation and gui javascripts for used fields
-            // getFormJavascript must be called after getForm since 
+            // getFormJavascript must be called after getForm since
             // $this->show_func_used, $this->js_proove_fields must be already filled
             echo $this->getFormJavascript();
             echo '
@@ -148,7 +148,7 @@ class inputform {
         }
 
         echo $this->getFormStart();
-        
+
         // design of form could be customized by view
         if ( $this->template AND ($view_info = GetViewInfo($this->template))) {
             // we can use different forms for 'EDIT' and 'ADD' item => (even/odd)
@@ -249,9 +249,9 @@ class inputform {
         }
 
         $form4anonymous_wizard = is_array($show);
-        
-        // holds array of fields, which we will use on the form, so we have 
-        // to count with them for javascript and show_sunc_used  
+
+        // holds array of fields, which we will use on the form, so we have
+        // to count with them for javascript and show_sunc_used
         $shown_fields = array();
 
         foreach ($prifields as $pri_field_id) {
@@ -266,7 +266,7 @@ class inputform {
                 // do not show this field
                 continue;
             }
-            
+
             $shown_fields[$pri_field_id] = true;  // used => generate js for it
 
             // ----- collect all field_* parameters in order we can call display function
@@ -306,41 +306,41 @@ class inputform {
             $ret .= $aainput->get($form4anonymous_wizard ? 'expand' : 'template');
             unset($aainput);
         }
-        $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields);
-        $this->show_func_used   = $slice->get_show_func_used($edit ? 'edit' : '', $content4id->getItemID(), $shown_fields);
+        $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
+        $this->show_func_used   = $slice->get_show_func_used($edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
         return $ret;
     }
-    
-    /** Get validation, triggers and gui javascript for used fields on Add/Edit Form 
-     *  Must be called after getForm since $this->show_func_used and 
+
+    /** Get validation, triggers and gui javascript for used fields on Add/Edit Form
+     *  Must be called after getForm since $this->show_func_used and
      *  $this->js_proove_fields must be already filled
      */
     function getFormJavascript() {
         global $slice_id, $sess;
-    
+
         $retval  = getFrmJavascriptFile( 'javascript/inputform.js' );
         $retval .= getFrmJavascriptFile( 'javascript/js_lib.js' );
-    
+
         $jscode .= $this->js_proove_fields;
-        
+
         // field javascript feature - triggers (see /include/javascript.php3)
         $javascript = getJavascript($GLOBALS["slice_id"]);
         if ($javascript) {
             $jscode .= $javascript;
         }
         $retval .= getFrmJavascript( $jscode );
-    
+
         // special includes for HTMLArea
         // we need to include some scripts
         // switchHTML(name) - switch radiobuttons from Plain text to HTML
         // showHTMLAreaLink(name) - displays "edit in htmarea" link
         // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
-    
+
         $retval .= getFrmJavascript('
                     // global variables used by multi-value selectboxes
                     var maxcount = '. MAX_RELATED_COUNT .';
                     var relmessage = "'._m("There are too many items.") .'";
-    
+
                     // global variables used in HTMLArea (xinha)
                     // You must set _editor_url to the URL (including trailing slash) where
                     // where xinha is installed, it\'s highly recommended to use an absolute URL
@@ -353,30 +353,30 @@ class inputform {
                     aa_session         = "'.$sess->id.'";
                     aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", false).'";'
                     );
-    
+
         // HtmlArea scripts should be loaded allways - we use Dialog() function
         // from it ...
         $retval .= getFrmJavascriptFile('misc/htmlarea/htmlarea.js');
         //    $retval .= getFrmJavascriptFile('misc/htmlarea/popups/popup.js');
         $retval .= getFrmJavascriptFile('misc/htmlarea/aafunc.js');
         $retval .= getFrmJavascriptFile('javascript/constedit.js');
-    
+
         if ($this->show_func_used['txt'] || $this->show_func_used['edt']) {
             $retval .= getFrmJavascript('
                 window.onload   = xinha_init;
                 window.onunload = HTMLArea.flushEvents;'
             );
         }
-    
+
         if ($javascript) {
             $retval .= getFrmJavascriptFile('javascript/fillform.js' );
         }
-    
+
         return $retval;
     }
-    
-    /** Get form tag with right enctype and triggers 
-     *  Must be called after getForm since $this->show_func_used and 
+
+    /** Get form tag with right enctype and triggers
+     *  Must be called after getForm since $this->show_func_used and
      *  $this->js_proove_fields must be already filled
      */
     function getFormStart() {

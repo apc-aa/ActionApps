@@ -105,6 +105,7 @@ class slice {
     }
 
     function name()        { return $this->getfield('name');         }
+    function jumpLink()    { return "<a href=\"".get_admin_url("index.php3?change_id=".$this->unpacked_id()) ."\">".$this->name()."</a>"; }
     function deleted()     { return $this->getfield('deleted');      }
     function fileman_dir() { return $this->getfield('fileman_dir');  }
     function type()        { return $this->getfield('type');         }
@@ -205,14 +206,14 @@ class slice {
     }
 
     /** Returns javascript code for inputform validation */
-    function get_js_validation($action, $id=0, $shown_fields=false) {
-        $this->_compute_field_stats($action, $id, $shown_fields);
+    function get_js_validation($action, $id=0, $shown_fields=false, $slice_fields=false) {
+        $this->_compute_field_stats($action, $id, $shown_fields, $slice_fields);
         return $this->js_validation;
     }
 
     /** Returns array of inputform function used the in inputform */
-    function get_show_func_used($action, $id=0, $shown_fields=false) {
-        $this->_compute_field_stats($action, $id, $shown_fields);
+    function get_show_func_used($action, $id=0, $shown_fields=false, $slice_fields=false) {
+        $this->_compute_field_stats($action, $id, $shown_fields, $slice_fields);
         return $this->show_func_used;
     }
 
@@ -223,7 +224,7 @@ class slice {
      *                  (inputform)(we have to count with them).
      *                  If false, then we use all the fields
      */
-    function _compute_field_stats($action, $id=0, $shown_fields=false) {
+    function _compute_field_stats($action, $id=0, $shown_fields=false, $slice_fields=false) {
         if (isset($this->js_validation)) {
             return;                                // already computed
         }
@@ -235,7 +236,7 @@ class slice {
         $this->loadsettings();
 
         // get slice fields and its priorities in inputform
-        list( $fields, $prifields) = $this->fields();
+        list( $fields, $prifields) = $this->fields(null, $slice_fields);
         if (!is_array($prifields)) {
             return '';
         }
