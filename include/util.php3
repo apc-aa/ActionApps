@@ -1807,6 +1807,28 @@ class contentcache {
         }
     }
 
+    /** Calls $function with $params and returns its return value. The result
+     *  value is then stored into cache, so next call of the $function with the
+     *  same parameters is returned from cache - function is not performed.
+     *  Use this feature mainly for repeating, time consuming functions!
+     *  You could use also object methods - then the $function parameter should
+     *  be array (see http://php.net/manual/en/function.call-user-func.php)
+     *  For static class methods:
+     *     $result = $contentcache->get_result(array('Classname', 'function_name'), array(param1, param2));
+     *  For instance methods:
+     *     $result = $contentcache->get_result(array($this, 'function_name'), array(param1, param2));
+     */
+    function get_result( $function, $params=array() ) {
+        $key = md5(serialize($function).serialize($params));
+        if ( isset( $this->content[$key]) ) {
+            return $this->content[$key];
+        }
+        $val = call_user_func_array($function, $params);
+        $this->content[$key] = $val;
+        return $val;
+    }
+
+
     // set new value for key $key
     function set($access_code, &$val) {
         $this->content[md5($access_code)] = $val;
@@ -1819,23 +1841,6 @@ class contentcache {
         $key = md5($access_code);
         if ( isset($this->content[$key]) )  return $this->content[$key];
         return false;
-    }
-
-    /** Calls $function with $params and returns its return value. The result
-     *  value is then stored into cache, so next call of the $function with the
-     *  same parameters is returned from cache - function is not performed.
-     *  Use this feature mainly for repeating, time consuming functions!
-     *  You could use also object methods - then the $function parameter should
-     *  be array (see http://php.net/manual/en/function.call-user-func.php)
-     */
-    function get_result( $function, $params=array() ) {
-        $key = md5(serialize($function).serialize($params));
-        if ( isset( $this->content[$key]) ) {
-            return $this->content[$key];
-        }
-        $val = call_user_func_array($function, $params);
-        $this->content[$key] = $val;
-        return $val;
     }
 
     // clear key or all content from contentcache

@@ -139,28 +139,21 @@ H1, .tablename {
 }
 
 TD.leftmenu {
-    font-weight : bold;
+  font-weight : bold;
 }
 
-.leftmenuy  {
+.leftmenuy, .leftmenua, .leftmenun  {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 8pt;
-  font-weigth: normal;
-  color: #000000;
+  font-weight: normal;
+  color: #000;
 }
 
 .leftmenua  {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-  font-size: 8pt;
-  font-weigth: normal;
-  color: black;
   background: white;
 }
 
 .leftmenun  {
-  font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
-  font-size: 8pt;
-  font-weigth: normal;
   color: #4A4A4A;
 }
 
