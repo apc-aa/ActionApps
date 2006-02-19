@@ -140,7 +140,7 @@ if ($add || $update) {
                 }
             }
         }
-        $GLOBALS['pagecache']->invalidate();  // invalidate old cached values - all
+        $GLOBALS['pagecache']->invalidateFor("slice_id=$module_id");  // invalidate old cached values for this slice
     } while(false);
 
     if ( count($err) <= 1 ) {
