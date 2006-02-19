@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,8 @@ http://www.apc.org/
 //
 
 require_once $GLOBALS['AA_INC_PATH']."item.php3";
-require_once $GLOBALS['AA_INC_PATH']."view.php3"; 
-require_once $GLOBALS['AA_INC_PATH']."mail.php3"; 
+require_once $GLOBALS['AA_INC_PATH']."view.php3";
+require_once $GLOBALS['AA_INC_PATH']."mail.php3";
 
 // notify users of an event
 function email_notify($slice_id, $event, $item_id, $extra = ""){
@@ -51,7 +51,7 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
     case 2: $prefix = 'notify_holding_item_edit'; break;
     case 3: $prefix = 'notify_active_item'; break;
     case 4: $prefix = 'notify_active_item_edit'; break;
-  }  
+  }
 
   $SQL = "SELECT ${prefix}_s as s, ${prefix}_b as b from slice where id = '$p_slice_id'";
   $db->query($SQL);
@@ -71,7 +71,7 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
 
   // determine body of message
   $format['odd_row_format'] = $b;
-  //$item_ids[] = $item_id;   // Ick, this would have put two ids in! 
+  //$item_ids[] = $item_id;   // Ick, this would have put two ids in!
 
   $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, '');
   $body = $itemview->get_output_cached("view");
@@ -80,21 +80,15 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
   $SQL = "SELECT uid from email_notify where slice_id = '$p_slice_id' AND function = '$event'";
   $db->query($SQL);
 
-/* Jakub replaced by mail_html_text (see mail.php3)
-  $headers = "";
-  // Comment this out to send text mail
-  $headers = "Content-Type: text/html; charset=iso-8859-1\n";
-*/
-
   $emails = "";
   // loop through the users for the event
   while ( $db->next_record() )
      $emails[] = $db->f('uid');
 
   $mail = new HtmlMail();
-  $mail->setSubject ($subject);
-  $mail->setHtml ($body, html2text ($body));
-  $mail->setCharset ($LANGUAGE_CHARSETS[get_mgettext_lang()]);
-  $mail->send ($emails);
+  $mail->setSubject($subject);
+  $mail->setHtml($body, html2text($body));
+  $mail->setCharset($LANGUAGE_CHARSETS[get_mgettext_lang()]);
+  $mail->send($emails);
 }
 ?>

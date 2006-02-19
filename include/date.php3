@@ -93,8 +93,14 @@ class datectrl {
 
     // get stored date as integer
     function get_date() {
+        // time is not set ?
+        if (!$this->year) {
+            // we have to return 0, beacause mktime(0,0,0,0,0,0) == 943916400
+            // (at least from php 5.1.2)
+            return 0;
+        }
         $t = explode( ':', $this->time ?  $this->time : "0:0:0");
-        return mktime ($t[0],$t[1],$t[2],$this->month,$this->day,$this->year);
+        return mktime ($t[0],$t[1],$t[2],(int)$this->month,(int)$this->day,(int)$this->year);
     }
 
     // get stored date as integer

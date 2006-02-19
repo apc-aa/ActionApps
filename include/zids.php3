@@ -88,10 +88,10 @@ class zids {
                 }
             }
         } elseif ($initial) {  // Single id
-            $this->a[] = $initial;
+            $this->a[]  = $initial;
         } else {
             $this->type = $inittype;    // Prepare for zids
-            return;                    // Empty $zids;
+            return;                     // Empty $zids;
         }
 
         if ($this->type == "z") {
@@ -124,12 +124,12 @@ class zids {
     function add($ids) {
         if ( isset($ids) AND is_object($ids) ) {           // zids
             if ($ids->onetype() == $this->onetype()) {
-                $this->a = array_merge($this->a, $ids->a);
+                $this->a = array_merge((array)$this->a, (array)$ids->a);
             } else {
                 return false;
             }
         } elseif ( isset($ids) AND is_array($ids) ) {      // array of ids
-            $this->a = array_merge($this->a, $ids);
+            $this->a = array_merge((array)$this->a, $ids);
         } elseif ( $ids ) {                                // id
             $this->a[] = $ids;
         } else {

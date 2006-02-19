@@ -76,4 +76,17 @@ $db->query("OPTIMIZE TABLE polls_designs");
 $db->query("OPTIMIZE TABLE site");
 $db->query("OPTIMIZE TABLE site_spot");
 
+class Test_db_relation_dups {
+    function test() {
+        $SQL = 'SELECT count(*) as err_count FROM `relation` WHERE `source_id`=`destination_id`';
+        return GetTable2Array($SQL, "aa_first", 'err_count') > 0;
+    }
+
+    function repaire() {
+        $SQL = 'DELETE FROM `relation` WHERE `source_id`=`destination_id`';
+        // @todo database query
+    }
+}
+
+
 ?>

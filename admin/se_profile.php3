@@ -46,7 +46,7 @@ if ( $del ) {
     $SQL = "DELETE FROM profile WHERE id='$del' AND slice_id='$p_slice_id'";
     if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
         $err["DB"] = MsgErr("Can't delete profile");
-        break;
+        exit;
     }
 
     $Msg = MsgOK(_m("Rule deleted"));

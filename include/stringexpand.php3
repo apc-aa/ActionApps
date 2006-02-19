@@ -361,17 +361,19 @@ function stringexpand_item($ids_string, $expression, $delimiter='') {
     $delim = '';
     if ( is_array($ids) ) {
         foreach ( $ids as $item_id ) {
-            $item  = GetItemFromId(new zids($item_id));
-            $ret  .= ($item ? ($delim . $item->subst_alias($expression)) : '');
-            $delim = $delimiter;
+            if ( $item_id ) {
+                $item  = GetItemFromId(new zids($item_id));
+                $ret  .= ($item ? ($delim . $item->subst_alias($expression)) : '');
+                $delim = $delimiter;
+            }
         }
     }
     return $ret;
 }
 
-/** */
-function stringexpand_ids($slice, $conds) {
-}
+/** @todo - returns ids of items based on conds d-...*/
+//function stringexpand_ids($slice, $conds) {
+//}
 
 /** Expand URL by adding session,
  *  also handle special cases like {sessurl:hidden}

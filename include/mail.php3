@@ -62,7 +62,7 @@ class HtmlMail extends htmlMimeMail {
     function sendLater($to) {
         $toexecute = new toexecute;
 
-        $tos  = (is_array($to) ? $to : array($to));
+        $tos  = array_unique(is_array($to) ? $to : array($to));
         $sent = 0;
         foreach ($tos as $to) {
             if (!$to OR !valid_email($to)) {

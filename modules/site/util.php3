@@ -119,7 +119,7 @@ function ModW_PrintChoice_Start($spot_id, $depth, $choices_index, $choices_count
     if ($conditions == '') {
         $conditions = '&nbsp;';
     }
-    echo "\n  <div class=\"conditions\"><a href=\"". SiteAdminPage($spot_id, "go_sid=$spot_id'"). "\">$conditions</a></div>";
+    echo "\n  <div class=\"conditions\"><a href=\"". SiteAdminPage($spot_id, "go_sid=$spot_id"). "\">$conditions</a></div>";
 }
 
 function ModW_PrintChoice_End($spot_id, $depth, $choices_index, $choices_count) {
@@ -171,7 +171,7 @@ function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
     $db->query($SQL);
     $content = safe($db->next_record() ? $db->f('content') : "");
     freeDB($db);
-    
+
     echo '<table align=left border=0 cellspacing=0 width="100%" class=tabtxt>';
     ModW_PrintVariables($spot_id, $tree->get('variables',$spot_id));
     if (($vars=$tree->isOption($spot_id))) {

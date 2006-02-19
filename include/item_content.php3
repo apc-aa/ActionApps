@@ -36,7 +36,7 @@ define('ITEMCONTENT_ERROR_NO_ID',     202);
 /**
  *  ItemContent class is an abstract data structure, used mostly for storing
  *  an item. The item can contain many fields, and each field contains 1..n
- *  valueincluding the value attribute (now attribute may be only html flag).
+ *  value including the value attribute (now attribute may be only html flag).
  */
 
 /** Stores all info about an item. Uses both info from the <em>item</em> and

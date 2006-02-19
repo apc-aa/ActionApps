@@ -148,7 +148,7 @@ function SetRole(no) {
 
 <?php
 require_once menu_include();   //show navigation column depending on $show
-showMenu($aamenus, "aaadmin",$usr_new ? "g_new" : "g_edit");
+showMenu($aamenus, "aaadmin", $grp_new ? "g_new" : "g_edit");
 
 echo "<H1><B>". ( $grp_new ? _m("New Group") : _m("Edit Group") )."</B></H1>";
 PrintArray($err);

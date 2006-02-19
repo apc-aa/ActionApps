@@ -51,6 +51,7 @@ if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 3: Neither, display a form
 */
 
+set_time_limit( 120 );
 if (isset($b_export_to_file)) {
     exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views);
     exit;
