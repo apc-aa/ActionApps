@@ -54,6 +54,12 @@ function showRSSFeedActions($feed_id) {
     return $out;
 }
 
+function displaySliceName($slice_id) {
+    global $allknownslices;
+    $slice    =& $allknownslices->addslice(unpack_id128($slice_id));
+    return $slice->jumpLink();
+}
+
 $sess->register("tview");
 $tview = 'rss_tv';
 
@@ -102,7 +108,7 @@ function GetRSS_tv($viewID, $processForm = false) {
                 "view" => array ("readonly" => true),
                 "caption" => _m('Node')),
             "slice_id" => array (
-                "view" => array ("readonly" => true),
+                "view" => array ( "type"=>"userdef", "function" => 'displaySliceName', "html" => true ),
                 "caption" => _m('Local slice'))
         ));
 }
