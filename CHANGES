@@ -1,6 +1,7 @@
 02/19/06 - Discussions updated
-(honzam)   - author/email is stored in cookies, so readers do not need to fill
-               it twice. No new setting of discussion is needed -it works as is.
+(honzam)     - author/email/url is stored in cookies, so readers do not need to
+               fill it twice. No new setting of discussion is needed -it works
+               as is.
              - Authors of the article as well as authors of the comment could
                be notified about new posted comment by email
                see: http://actionapps.org/en/Interacting_With_Your_Audience#Tip_2:_New_comment_notification
@@ -9,15 +10,40 @@
            and could be in short as well as long form. You can specify also
            record delimiter as fourth parameter. If not present no delimiter is
            used. Example: {item:53443-54322-53553:_HEADLINE:, }
+         - "Modify content" function of AA admin interface improved:
+              - now is able to set/unset also HTML/text flag
+              - now also able to copy content of another field
+                (exactly as is - including multivalues!)
          - You can display all informations about specified item
            on "AA -> AA Finder" page, now
+         - CSV import improved
+             - fixed problem with tabelator as delimiter,
+             - code converted to standard Files::upload functions
          - Slice name with link is now displayed on "Admin -> RSS Feeds" page
-         - Fixed PHP5 related bugs - "30 Nov 1999" date bug, ...
+         - Fixed PHP5 related bugs
+             - New configuration variables DB_CHARACTER_SET and
+               DB_COLLATION_CONNECTION which is needed by MySQL 4.1 and PHP5
+               when you do not want to comunicate with database in UTF
+             - Offline filing now do not crash on WDDX_unserialize (php5 bug).
+             - "30 Nov 1999" date bug
+         - The data for offline filling could be submited not only in offline
+           parameter, but you can send it also as uploaded file
+           (in offline.php3)
          - Fixed problem with uploads to the "Slice Setting Fields"
          - Fixed some problems with setting permissions to users from Reader
            Management slice (bugs introduced by changing identification of users
            from login name to item_id some time ago (08/30/05))
-         - Fixed site caching - now invalidated after spot move...
+         - Fixed site/slice caching
+             - now invalidated after spot move...
+             - the cache is not cleared completely after slice setting change,
+               but only for current slice (and all related views and sites,
+               of course)
+             - view cache now count with all set[] parameters, so the view is
+               generated well even if you use set[] command for nested view
+               (just like in view.php3?vid=1781&set[997]=selected-759644)
+         - Fixed e-mail notify setting page - no wrong slashes added to the text
+         - Fixed bug in cross server feeding, which causes relation table
+           is filled with the rows where both values are the same
          - New internal API for views which allows to cache views definition
            within one php script call
 02/14/06 - fixed a bug in MLXGetText - setlang should be used to set the lang
