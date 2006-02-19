@@ -110,6 +110,13 @@ if ($go_findslice && $findslice) {
     }
 }
 
+if ($go_finditem && $finditem) {
+    $item = GetItemFromId($finditem);
+    echo "<pre>";
+    print_r($item);
+    echo "</pre>";
+}
+
 // ------------------------------------------------------------------------------------------
 // SHOW THE PAGE
 
@@ -125,6 +132,12 @@ echo '<FORM name="f_findslice" action="'.$sess->url("aafinder.php3").'" method="
 echo '<b>'._m("Find all SLICES containing in any field the string:").'</b><br>
     <input type="text" name="findslice" value="'.$findslice.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findslice" value="'._m("Go!").'">';
+echo '</FORM>';
+echo '</td></tr><tr><td>';
+echo '<FORM name="f_finditem" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<b>'._m("Get all informations about the item").'</b><br>
+    <input type="text" name="finditem" value="'.$finditem.'" size="30">&nbsp;&nbsp;
+    <input type="submit" name="go_finditem" value="'._m("Go!").'">';
 echo '</FORM></td></tr>';
 FrmTabEnd();
 
