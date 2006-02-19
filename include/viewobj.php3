@@ -19,22 +19,17 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Classes for manipulating views,
-// viewobj has static info about views, not anything dependent on parameters
-//
-// Author and Maintainer: Mitra mitra@mitra.biz
-//
-// And yes, I'll move the docs to phpDocumentor as soon as someone explains how
-// to use it!
-//
-// It is intended - and you are welcome - to extend this to bring into
-// one place the functions for working with views.
-//
-// A design goal is to use lazy-evaluation wherever possible, i.e. to only
-// go to the database when something is needed.
-
-//require_once "../include/config.php3";
-//require_once $GLOBALS['AA_INC_PATH']."locsess.php3"; //DB_AA etc
+/** Classes for manipulating views,
+ * viewobj has static info about views, not anything dependent on parameters
+ *
+ * Author and Maintainer: Mitra mitra@mitra.biz
+ *
+ * It is intended - and you are welcome - to extend this to bring into
+ * one place the functions for working with views.
+ *
+ * A design goal is to use lazy-evaluation wherever possible, i.e. to only
+ * go to the database when something is needed.
+ */
 
 class view {
     var $id;
@@ -42,29 +37,25 @@ class view {
 
     function view($id,$rec=null) {
         $this->id = $id;
-        if (isset($rec)) $this->fields = $rec;
+        if (isset($rec)) {
+            $this->fields = $rec;
+        }
     }
 
-    function f($k=null) {
+    function f( $k=null ) {
         if (!isset($this->fields)) {
-          $db = getDB();
-          $db->tquery("SELECT view.*, module.deleted, module.lang_file FROM view, module
-                        WHERE module.id=view.slice_id
-                          AND view.id='".$this->id."'");
-          if ($db->next_record())
-            $this->fields = DBFields($db);
-          else $this->fields = null;
-          freeDB($db);
+            $this->fields = GetTable2Array("SELECT view.*, module.deleted, module.lang_file
+                                              FROM view, module
+                                             WHERE module.id=view.slice_id
+                                               AND view.id='".$this->id."'", 'aa_first', 'aa_fields');
         }
-        if (isset($k))
-            return $this->fields[$k];
-        else
-            return $this->fields;
+        return isset($k) ? $this->fields[$k] : $this->fields;
     }
 
     function setfields($rec) {
         $this->fields = $rec;
     }
+
     function xml_serialize($t,$i,$ii,$a) {
         $f = $this->f();
         return xml_serialize("view",$f,$i.$ii,$ii,"tname=\"$t\" ".$a);
@@ -80,58 +71,59 @@ function VIEW_xml_unserialize($n,$a) {
 class views {
     var $a = array();
 
-    function views() {
+    function views() {}
+
+    /** "class function" obviously called as views::global_instance();
+     *  This function makes sure, there is global instance of the class
+     *  @todo  convert to static class variable (after migration to PHP5)
+     */
+    function global_instance() {
+        if ( !isset($GLOBALS['allknownviews']) ) {
+            $GLOBALS['allknownviews'] = new views;
+        }
     }
 
     function xml_serialize($t,$i,$ii,$a) {
-        return xml_serialize("views",$this->a,$i.$ii,$ii,
-            "tname=\"$t\" ".$a);
+        return xml_serialize("views",$this->a,$i.$ii,$ii,"tname=\"$t\" ".$a);
     }
 
-    function GetViewInfo($vid) {
-        if (!isset($this->a[$vid]))
+    function getViewInfo($vid, $field=null) {
+        if (!isset($this->a[$vid])) {
             $this->a[$vid] = new view($vid);
-        if (! $this->a[$vid])
-            return null;
-        return $this->a[$vid]->f();
+        }
+        return $this->a[$vid] ? $this->a[$vid]->f($field) : null;
     }
 }
-$allviews = new views();
 
 function VIEWS_xml_unserialize($n,$a) {
     $vs = new views();
     $vs->a = $a;
-    //huhl("created VIEWS ",$vs);
     return $vs;
 }
-function GetViewInfo($vid) {
-    global $allviews;
-    return $allviews->GetViewInfo($vid);
+
+function GetViewInfo($vid, $field=null) {
+    views::global_instance();  // creates global allknownviews variable
+    return $GLOBALS['allknownviews']->getViewInfo($vid, $field);
 }
 
-// Return an array of views matching the sql, caching results in allviews
+// Return an array of views matching the sql, caching results in allknownviews
 // this does not return views from deleted slices
 function GetViewsWhere($sql="") {
-    global $allviews;
+    global $allknownviews;
     $db = getDB();
     $db->tquery("SELECT view.*,slice.deleted FROM view, slice WHERE slice.id=view.slice_id AND slice.deleted != 1" . ($sql ? (" AND ".$sql) : ""));
     $a = array();
     while ($db->next_record()) {
         $id = $db->f("id");
-        if (!isset($allviews->a[$id]))
-            $allviews->a[$id] = new view($id,DBFields($db));
-        else
-            $allviews->a[$id]->setfields(DBFields($db));
-        $a["$id"] = &$allviews->a[$id];
+        if (!isset($allknownviews->a[$id])) {
+            $allknownviews->a[$id] = new view($id,DBFields($db));
+        } else {
+            $allknownviews->a[$id]->setfields(DBFields($db));
+        }
+        $a["$id"] = &$allknownviews->a[$id];
     }
     freeDB($db);
-    //huhl("VO:GVW:",$a);
     return $a;
 }
-
-
-
-//$foo = GetViewInfo(18);
-//huhl("VO:GVI:",$foo,$allviews);
 
 ?>
