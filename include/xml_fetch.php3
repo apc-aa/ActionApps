@@ -330,6 +330,8 @@ class saver {
                 case 'new'      : $new_item_id = new_id();                 break;
             }
 
+            $old_item_id = $content4id->getItemID();
+
             // set the item to be recevied from remote node
             $content4id->setItemID($new_item_id);
 
@@ -346,7 +348,9 @@ class saver {
             } else {
                 if ($debugfeed >= 1) print("\n<br>  + stored OK: ". $content4id->getValue('headline........'));
                 // Update relation table to show where came from
-                AddRelationFeed($new_item_id, $content4id->getItemID());
+                if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
+                    AddRelationFeed($new_item_id, $content4id->getItemID());
+                }
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some initialization in grabber
