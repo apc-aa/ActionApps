@@ -71,8 +71,22 @@ define("ORG_NAME","An APC Member");
   define("DB_NAME",    "aadb");       // Name of database
   define("DB_USER",    "aadbuser");   // User name for database access
   define("DB_PASSWORD","test.pw");    // Database password
-  define("DB_TYPE", "db_mysql");      // you can (in theory) use also another 
+  define("DB_TYPE", "db_mysql");      // you can (in theory) use also another
                                       // databases like db_odbc, db_mssql, ...
+
+/** MySQL 4.1 is able to use different character sets for the communication.
+ *  Standard for the communication in PHP5 is UTF, but if you are using
+ *  another character sets (maybe for historical reason), then you need to
+ *  specify it by "SET CHARACTER SET" and "SET COLLATION_CONNECTION" SQL
+ *  commands. Just set the right values to following variables.
+ *  We use (for czech character set "Windows 1250"):
+ *     define("DB_CHARACTER_SET", "cp1250");
+ *     define("DB_COLLATION_CONNECTION", "cp1250_czech_cs");
+ *  Default is: commented out
+ */
+  define("DB_CHARACTER_SET", "cp1250");
+  define("DB_COLLATION_CONNECTION", "cp1250_czech_cs");
+
 
 /** Use MySQL non-persistent database connect (mysql_connect())
  *  or the persistent one?
@@ -116,6 +130,12 @@ define("ERROR_REPORTING_EMAIL", "webmaster@my.domain.org");
 /** e-mail for Alerts management */
 define("ALERTS_EMAIL", "aaadmin@somewhere.com");
 
+/** Queue script run duration (in seconds)
+ *  How long could run the script, which goes through queued tasks and executes
+ *  them (toexecute class - used for Alerts mail sending, ...).
+ *  Default value is 16.0 [second] */
+define('TOEXECUTE_ALLOWED_TIME', 59.0);
+
 /** File uploads settings
  *  The directory for file uploads should be webserver writeable and it
  *  shouldn't be inside AA directory (for security reasons - PHP script upload)
@@ -132,6 +152,10 @@ define("ALERTS_EMAIL", "aaadmin@somewhere.com");
    *  directory specified above. Each slice then have its own subdirectory.
    *  Default is 774 */
   define("IMG_UPLOAD_DIR_MODE",  octdec('0774'));
+  /** perms for uploaded file. If not specified, the permissions are left, as
+   *  is after the upload (based on configuration of your server
+   *  Default is: commented out */
+  // define('IMG_UPLOAD_FILE_MODE', octdec('0664'));
 
 /** Maximum size of files included by {include(file)} inline alias */
 define("INCLUDE_FILE_MAX_SIZE", "400000");
@@ -190,7 +214,9 @@ define("SCROLLER_LENGTH", 3);
    *  (Time To Live) - in fact it can be infinity because of automatic cache
    *  flushing on page change (but then there will be problem with item
    *  expiration). Typically this is 600, i.e. 10 minutes, but 1 day (86400)
-   *  makes for faster serving */
+   *  makes for faster serving
+   *  See: http://actionapps.org/en/Troubleshooting_and_Optimization#Caching
+   */
   define("CACHE_TTL", 600 );
 
 
@@ -244,12 +270,6 @@ $_PHPLIB["libdir"] = $AA_INC_PATH.'phplib/';    // do not change
 
 /** URL of aa instalation */
 define("AA_INSTAL_URL", $AA_HTTP_DOMAIN. substr($AA_INSTAL_PATH,1));    // do not change
-
-/** URL or URL path to call admin/edititem.php etc.
- *  This is the variable to make _#EDITITEM alias, etc.
- *  If your site has problem set...
- *       $AA_INSTAL_EDIT_PATH = "/".$AA_BASE_DIR;       */
-$AA_INSTAL_EDIT_PATH = AA_INSTAL_URL;           // do not change
 
 /** URL of index of help files for AA */
 define("DOCUMENTATION_URL", "http://actionapps.org/aa/doc");

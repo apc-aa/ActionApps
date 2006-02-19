@@ -69,21 +69,24 @@ class DB_Sql {
 
     /* establish connection, select database */
     if ( 0 == $this->Link_ID ) {
-        if ( defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT ) {
-            $method = 'connect';
-            $this->Link_ID = mysql_connect($Host, $User, $Password);
-        } else {
-            $method = 'pconnect';
-            $this->Link_ID = mysql_pconnect($Host, $User, $Password);
-        }
+        $method = ( defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT ) ? 'mysql_connect' : 'mysql_pconnect';
+        $this->Link_ID = $method($Host, $User, $Password);
 
         if (!$this->Link_ID) {
             $this->halt("$method($Host, $User, \$Password) failed.");
             return 0;
         }
 
+        // Jirkare hack
+        if ( defined('DB_CHARACTER_SET') ) {
+            @mysql_query('SET CHARACTER SET ' DB_CHARACTER_SET, $this->Link_ID);
+        }
+        if ( defined('DB_COLLATION_CONNECTION') ) {
+            @mysql_query('SET COLLATION_CONNECTION=\''. DB_COLLATION_CONNECTION.'\'', $this->Link_ID);
+        }
+
         if (!@mysql_select_db($Database,$this->Link_ID)) {
-            $this->halt("cannot use database ".$this->Database);
+            $this->halt("cannot use database $Database");
             return 0;
         }
     }
