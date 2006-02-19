@@ -54,16 +54,67 @@ function GetImageSrc($img) {
 }
 
 /** Get discussion content from database belong to item_id */
-function GetDiscussionContent($item_id, $ids="", $state=true, $order='timeorder', $html_flag=true, $clean_url="") {
+function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
     if ( !$item_id ) {
         return false;
     }
     $p_item_id = q_pack_id($item_id);
-    $SQL = "SELECT * FROM discussion WHERE item_id='$p_item_id' ORDER BY date";
+    $SQL = "SELECT id FROM discussion WHERE item_id='$p_item_id' ORDER BY date";
     if ($order == 'reverse timeorder') {
         $SQL .=" DESC";
     }
-    return GetDiscussionContentSQL($SQL, $item_id, $ids, $state, $html_flag, $clean_url);
+    $d_ids = GetTable2Array($SQL, 'NoCoLuMn', 'id');
+    if (!$ids) {
+        return new zids($d_ids, 'p');
+    }
+    // filter for ids
+    $ret = array();
+    foreach ( $d_ids as $p_d_id ) {
+        if ( $ids["x".unpack_id128($p_d_id)] ) {
+            $ret[] = $p_d_id;
+        }
+    }
+    return new zids($ret, 'p');
+}
+
+function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='') {
+    /** Fills Abstract data srtructure for Constants */
+    if ( !$zids ) return false;
+    $db = getDB();
+
+    $SQL = 'SELECT * FROM discussion WHERE '. $zids->sqlin('id');
+    $db->tquery( $SQL );
+    $i=1;
+    $col = array();
+    $d_content = array();
+    while ($db->next_record()) {
+        $d_id = unpack_id128($db->f('id'));
+        $col["d_id............"][0]['value'] = $d_id;
+        $col["d_parent........"][0]['value'] = $db->f('parent') ? unpack_id($db->f('parent')) : "0";
+        $col["d_item_id......."][0]['value'] = unpack_id128($db->f('item_id'));
+        $col["d_subject......."][0]['value'] = $db->f('subject');
+        $col["d_body.........."][0]['value'] = $db->f('body');
+        $col["d_author........"][0]['value'] = $db->f('author');
+        $col["d_e_mail........"][0]['value'] = $db->f('e_mail');
+        $col["d_url_address..."][0]['value'] = $db->f('url_address');
+        $col["d_url_descript.."][0]['value'] = $db->f('url_description');
+        $col["d_date.........."][0]['value'] = $db->f('date');
+        $col["d_remote_addr..."][0]['value'] = $db->f('remote_addr');
+        $col["d_state........."][0]['value'] = $db->f('state');
+        setDiscUrls($col, $clean_url,unpack_id128($db->f('item_id')),$d_id);
+
+        // set html flag
+        if ($html_flag) {
+            $col["d_body.........."][0]['flag'] = FLAG_HTML;
+        }
+        $col["d_checkbox......"][0]['flag'] = FLAG_HTML;
+        $col["d_treeimages...."][0]['flag'] = FLAG_HTML;
+
+        $col["hide"] = ($db->f('state') == '1' && $state);     //mark hidden comment.
+        $d_content[$d_id] = $col;
+    }
+    freeDB($db);
+    return $content;
 }
 
 function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
@@ -76,6 +127,7 @@ function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
         $col["d_url_reply....."][0]['value'] = $tmp_disc_url."&add_disc=1&parent_id=".$d_id."#disc";
     }
 }
+
 
 function GetDiscussionContentSQL($SQL, $item_id, $ids, $state, $html_flag, $clean_url) {
     global $db;
@@ -337,10 +389,10 @@ function send2mailList($d_item_id, $new_id) {
         // Don't do this if there is a field, but no vid in it
         if ($vid) {
             // get discussion item content
-            $columns = GetDiscussionContentSQL(
-               "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
-               $d_item_id, "", true, $html, "");
-            $columns = reset($columns);  // get first element
+
+            $zids      = new zids($new_id, 'l');
+            $d_content = GetDiscussionContent($zids);
+            $columns   = reset($d_content);  // get first element
 
             // get aliases
             $aliases = GetDiscussionAliases();

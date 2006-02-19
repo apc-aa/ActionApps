@@ -29,6 +29,60 @@ require_once $GLOBALS['AA_INC_PATH']."htmlMimeMail/htmlMimeMail.php";
 
 class HtmlMail extends htmlMimeMail {
 
+    /** Prepares the mail for sending
+     *  The e-mail template is taken from database and all aliases
+     *  in the template are expanded acording tho $item
+     */
+    function setFromTemplate($mail_id, $item) {
+        global  $LANGUAGE_CHARSETS;
+        // email has the templates in it
+        $record = GetTable2Array("SELECT subject, body, header_from, reply_to, errors_to, sender, lang, html
+                                  FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
+        if (!$record) {
+            return false;
+        }
+        // unalias all the template fields including errors_to ...
+        foreach ( $record as $key => $value) {
+            $level = 0; $maxlevel = 0;
+            $record[$key] = new_unalias_recurent($value, "", $level, $maxlevel, $item);
+        }
+        if ($record["html"]) {
+            $this->setHtml( $record["body"], html2text($record["body"]));
+        } else {
+            $this->setText( html2text( nl2br($record["body"])));
+        }
+        $this->setSubject($record["subject"]);
+        $this->setBasicHeaders($record, "");
+        $this->setCharset($LANGUAGE_CHARSETS[$record["lang"]]);
+    }
+
+    /** Send prepared e-mail to adresses specified in the $to array.
+     *  The e-mail is queued it toexecute queue before sending (not imediate)
+     */
+    function sendLater($to) {
+        $toexecute = new toexecute;
+
+        $tos  = (is_array($to) ? $to : array($to));
+        $sent = 0;
+        foreach ($tos as $to) {
+            if (!$to OR !valid_email($to)) {
+                continue;
+            }
+
+            // 2 minutes for each 20 e-mails
+            if ( ($sent % 20) == 0 ) {
+                set_time_limit( 120 );
+            }
+
+            // Yes, two nested arrays - mail->send() accepts array($to) and
+            // all parameters to later must be in another only one array
+            if ( $toexecute->later($this, array(array($to)), 'send_mail') ) {
+                $sent++;
+            }
+        }
+        return $sent;
+    }
+
     /// This function fits a record from the @c email table.
     function setBasicHeaders($record, $default) {
         $headers = array (
@@ -165,7 +219,7 @@ function send_mail_from_table($mail_id, $to, $aliases="")
             "value" => $translate,
             "flag"  => FLAG_HTML);
         // and "aliases"
-        $als [$alias] = array ("fce"=>"f_h", "param"=>$alias);
+        $als[$alias] = array ("fce"=>"f_h", "param"=>$alias);
     }
     $item = new item($cols, $als);
     return send_mail_from_table_inner($mail_id, $to, $item);
@@ -186,65 +240,13 @@ function send_mail_to_reader($mail_id, $zids, $recipient='aa_field_email') {
 }
 
 /** Sends mail defined in e-mail template id $mail_id to all e-mails listed
- *  in $to (array ir string) and ulalias aliases according to $item and possibly
- *  additional $aliases
+ *  in $to (array or string) and unalias aliases according to $item
  */
-function send_mail_from_table_inner($mail_id, $to, $item, $aliases = null) {
-    global $db, $LANGUAGE_CHARSETS, $err;
+function send_mail_from_table_inner($mail_id, $to, $item) {
     // email has the templates in it
-    $record = GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
-
-    if ($GLOBALS['debug_email']) { huhl("\n-------\n",$mail_id, $to, $item, $aliases, $record); }
-    if (!$record) return false;
-
-    /* Old version - Jakub's
-    while (list ($key, $value) = each ($record))
-        $record[$key] = $item->unalias ($value);
-    */
-    // Mitra's version, - should be working now
-    foreach ( $record as $key => $value) {
-        $level = 0; $maxlevel = 0;
-        $record[$key] = new_unalias_recurent($value, "", $level, $maxlevel, $item, null, $aliases);
-    }
-
-    $tos  = (is_array($to) ? $to : array ($to));
-    $sent = 0;
-
-    /*
-    if ($tos[0] == "jakubadamek@ecn.cz")
-        $record["body"] .= "<br>Text version is:<hr>". nl2br(HtmlEntities(html2text ($record["body"])));
-    */
-
     $mail = new HtmlMail;
-    if ($record["html"]) {
-        $mail->setHtml( $record["body"], html2text($record["body"]));
-    } else {
-        $mail->setText( html2text( nl2br($record["body"])));
-    }
-    $mail->setSubject($record["subject"]);
-    $mail->setBasicHeaders($record, "");
-    $mail->setTextCharset($LANGUAGE_CHARSETS [$record["lang"]]);
-    $mail->setHtmlCharset($LANGUAGE_CHARSETS [$record["lang"]]);
-
-    $toexecute = new toexecute;
-
-    foreach ($tos as $to) {
-        if (!$to OR !valid_email($to)) {
-            continue;
-        }
-
-        // 2 minutes for each 20 e-mails
-        if ( ($sent % 20) == 0 ) {
-            set_time_limit( 120 );
-        }
-
-        // Yes, two nested arrays - mail->send() accepts array($to) and
-        // all parameters to later must be in another only one array
-        if ( $toexecute->later($mail, array(array($to)), 'send_mail') ) {
-            $sent++;
-        }
-    }
-    return $sent;
+    $mail->setFromTemplate($mail_id, $item);
+    return $mail->sendLater($to);
 }
 
 // -----------------------------------------------------------------------------

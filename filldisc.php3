@@ -92,6 +92,10 @@ $err["Init"] = "";       // error array (Init - just for initializing variable)
 
 $new_id = new_id();
 
+$cookie = new CookieManager();
+$cookie->set('d_author', $d_author, 60*60*24*30);   // 30 days
+$cookie->set('d_e_mail', $d_e_mail, 60*60*24*30);   // 30 days
+
 $catVS = new Cvarset();
 $catVS->add("id",              "unpacked", $new_id);
 $catVS->add("parent",          "unpacked", $d_parent);

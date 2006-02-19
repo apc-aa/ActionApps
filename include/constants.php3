@@ -474,7 +474,11 @@ function getViewTypes () {
                            "img4" => _m("View image 4") ,
                            "even" => _m("HTML code for fulltext view of the comment"),
                            "aditional" => _m("HTML code for space before comment") ,
-                           "remove_string" => _m("HTML code of the form for posting comment")
+                           "remove_string" => _m("HTML code of the form for posting comment"),
+                           "aditional6" => array (
+                               "label" => _m("E-mail template"),
+                               "input" => "field",
+                               "help" => _m("Number of e-mail template used for posting new comments to users"))
                          ),
 
         // discussion to mail

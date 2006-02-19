@@ -182,16 +182,8 @@ class itemview {
   function get_disc_list(&$CurItem) {
       $top_html_already_printed = false;
       if (is_array($this->disc['disc_ids'])) {
-          $ids = $this->disc['disc_ids'];
-          $ids_sql = "";
-          foreach ( $ids as $id) {
-              if ($ids_sql != "") {
-                  $ids_sql .= ",";
-              }
-              $ids_sql .= '"'.addslashes(q_pack_id($id)).'"';
-          }
-          $SQL = "SELECT * FROM discussion WHERE id IN ($ids_sql)";
-          $d_content = GetDiscussionContentSQL($SQL, "", true, $this->disc['html_format'],$this->clean_url);
+          $zids = new zids($this->disc['disc_ids'], 'l');
+          $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
           if (is_array($d_content)) {
               foreach ( $d_content as $id => $disc) {
                   $CurItem->set_data($disc);
@@ -219,11 +211,8 @@ class itemview {
   function get_disc_thread(&$CurItem) {
       $top_html_already_printed = false;
 
-      //    if (!$this->slice_info['d_showimages']) {
-          $order =  $this->slice_info['d_order'];
-      //    }
-
-      $d_content = GetDiscussionContent($this->disc['item_id'], "", true,$order,$this->disc['html_format'],$this->clean_url);
+      $zids      = QueryDiscussionZIDs($this->disc['item_id'], "", $this->slice_info['d_order']);
+      $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
       $d_tree    = GetDiscussionTree($d_content);
 
       $out .= '<a name="disc"></a><form name="discusform" action="">';
@@ -322,67 +311,89 @@ class itemview {
   // show discussion comments in the fulltext mode
   function get_disc_fulltext(&$CurItem) {
 
-    $CurItem->setformat( $this->slice_info['d_fulltext']);      // set fulltext format
-    $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],
-                                      true, 'timeorder',
-                                      $this->disc['html_format'], $this->clean_url);
-    $d_tree = GetDiscussionTree($d_content);
-    if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array($d_content)) {  // show selected cooments
-      reset($d_content);
-      while (list ($id,) = each($d_content)) {
-        if ($outcome[$id])            // if the comment is already in the outcome => skip
-          continue;
-        GetDiscussionThread($d_tree, $id, 1, $outcome);
+      $CurItem->setformat( $this->slice_info['d_fulltext']);      // set fulltext format
+      $zids      = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
+      $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
+      $d_tree    = GetDiscussionTree($d_content);
+      if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array($d_content)) {  // show selected cooments
+          foreach ($d_content as $id => $foo) {
+              if ($outcome[$id]) {           // if the comment is already in the outcome => skip
+                  continue;
+              }
+              GetDiscussionThread($d_tree, $id, 1, $outcome);
+          }
+      } else {     // show all comments
+          GetDiscussionThread($d_tree, "0", 0, $outcome);
       }
-    }
-    else     // show all comments
-      GetDiscussionThread($d_tree, "0", 0, $outcome);
 
-    $out.= '<a name="disc"></a>';
-    if ( isset($outcome) AND is_array($outcome) ) {
-      while ( list( $d_id, $images ) = each( $outcome )) {
-        $this->set_columns ($CurItem, $d_content, $d_id);
-        $depth = count($images)-1;
-        $spacer = "";
-        $out.= '
-          <table width="100%" border="0" cellspacing="0" cellpadding="0">
-            <tr>';
-        for ( $i=0; $i<$depth; $i++)
-          $spacer .= $this->slice_info['d_spacer'];
-        if ($spacer)
-          $out .= "
-              <td valign=top>$spacer</td>";
-        $out .= "
-              <td width=\"99%\">".$CurItem->get_item()."
-              </td>
-            </tr>
-                  </table>
-          <br>";
+      $out.= '<a name="disc"></a>';
+      if ( isset($outcome) AND is_array($outcome) ) {
+          while ( list( $d_id, $images ) = each( $outcome )) {
+              $this->set_columns($CurItem, $d_content, $d_id);
+              $depth = count($images)-1;
+              $spacer = "";
+              $out.= '
+              <table border="0" cellspacing="0" cellpadding="0">
+                <tr>';
+              for ( $i=0; $i<$depth; $i++)
+              $spacer .= $this->slice_info['d_spacer'];
+              if ($spacer) {
+                  $out .= "
+                      <td valign=top>$spacer</td>";
+              }
+              $out .= "
+                  <td width=\"99%\">".$CurItem->get_item()."
+                  </td>
+                </tr>
+              </table>
+              <br>";
+          }
       }
-    }
-    return $out;
+      return $out;
   }
 
   // show the form for adding discussion comments
   function get_disc_add(&$CurItem) {
-    trace("+","get_disc_add","Parent=".$this->disc['parent_id']);
-    // if parent_id is set => show discussion comment
-    $out.= '<a name="disc"></a>';
-    if ($this->disc['parent_id']) {
-      $d_content = GetDiscussionContent($this->disc['item_id'], $this->disc['ids'],true,'timeorder',$this->disc['html_format'],$this->clean_url);
-      $CurItem->setformat( $this->slice_info['d_fulltext']);
-      $this->set_columns($CurItem, $d_content, $this->disc['parent_id']);
+      trace("+","get_disc_add","Parent=".$this->disc['parent_id']);
+      // if parent_id is set => show discussion comment
+      $out.= '<a name="disc"></a>';
+      if ($this->disc['parent_id']) {
+
+          $zids      = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
+          $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
+
+          $CurItem->setformat( $this->slice_info['d_fulltext']);
+          $this->set_columns($CurItem, $d_content, $this->disc['parent_id']);
+          $out .= $CurItem->get_item();
+      } else {
+          $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
+          setDiscUrls($col, $this->clean_url, $this->disc['item_id']);
+          $CurItem->set_data($col);
+      }
+      // show a form for posting a comment
+      $CurItem->setformat( $this->slice_info['d_form']);
       $out .= $CurItem->get_item();
-    } else {
-      $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
-      setDiscUrls($col, $this->clean_url, $this->disc['item_id']);
-      $CurItem->set_data($col);
-    }
-    // show a form for posting a comment
-    $CurItem->setformat( $this->slice_info['d_form']);
-    $out .= $CurItem->get_item();
-    trace("-");
-    return $out;
+
+      // preset the for values from cookies
+      $cookie = new CookieManager();
+      $js     = '';
+      if ( $d_author = $cookie->get('d_author') ) {
+          $js .= "setControl('f','d_author',\"$d_author\");\n";
+      }
+      if ( $d_e_mail = $cookie->get('d_e_mail') ) {
+          $js .= "setControl('f','d_e_mail',\"$d_e_mail\");\n";
+      }
+      if ( $js ) {
+          $out .= "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". get_aa_url('javascript/fillform.js', false) . "\"></script>";
+          $out .= '
+          <script language="JavaScript" type="text/javascript"> <!--
+          '.$js.'
+          //-->
+          </script>
+          ';
+      }
+      trace("-");
+      return $out;
   }
 
   /** Just wrapper for unaliasWithScroller() without $item parameter */
