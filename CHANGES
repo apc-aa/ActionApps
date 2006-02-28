@@ -1,3 +1,17 @@
+02/28/06 - New test environment. Created new abstract class Otimize (test.php3),
+           from which you (as programmer) can create new testing and possibly
+           repair scripts. For now we have two tests/repairs
+             - finding unnecessary duplicate records in relation table
+             - conversion of permissions for items, which was filled by some
+               reader from Reader slice.
+           Run /test.php3 for more details.
+         - HTMLArea generates shorter <p> tags (instead of javascript nonsence)
+         - Fixed deletion of temporary uploaded files
+         - SQL query optimalization in perm_core.php3
+         - Fixed bug with Links module - in some specific cases the link was
+           not updated
+         - Fixed caching problem - the cache is not invalidated as whole after
+           site update
 02/19/06 - Discussions updated
 (honzam)     - author/email/url is stored in cookies, so readers do not need to
                fill it twice. No new setting of discussion is needed -it works
