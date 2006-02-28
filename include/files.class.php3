@@ -257,13 +257,14 @@ class Files {
         }
         if ($handle = opendir($upload_dir)) {
             while (false !== ($file = readdir($handle))) {
-                if (strlen($ident)+42 != strlen($file) || (substr($file,0,strlen($file)-42) != $ident))
+                if (strlen($ident)+42 != strlen($file) || (substr($file,0,strlen($file)-42) != $ident)) {
                     continue;
+                }
                 $date=mktime(0,0,0,date("m"),date("d")-7,date("Y")) ;
                 $filedate = mktime (0,0,0,substr($file,-8,2) ,substr($file,-6,2),substr($file,-4,4));
-                $fileName = $upload_dir . $file;
+                $fileName = Files::makeFile($upload_dir, $file);
                 if ($filedate < $date) {
-                    if (unlink($fileName)) {
+                    if (Files::delFile($fileName)) {
                         writeLog("FILE IMP.",_m("Ok : file deleted "). $fileName);
                     } else {
                         writeLog("FILE IMP.",_m("Error: Cannot delete file"). $fileName);
