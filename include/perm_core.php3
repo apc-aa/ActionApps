@@ -532,11 +532,10 @@ function FindReaderUsers($pattern) {
     global $db;
     $db->tquery("SELECT content.text AS name, content.item_id AS id
                    FROM slice
-             INNER JOIN field ON slice.id=field.slice_id
              INNER JOIN item ON slice.id = item.slice_id
-             INNER JOIN content ON item.id=content.item_id AND content.field_id = field.id
+             INNER JOIN content ON item.id=content.item_id
                   WHERE slice.type = 'ReaderManagement'
-                    AND field.id = '".FIELDID_USERNAME."'
+                    AND content.field_id = '".FIELDID_USERNAME."'
                     AND content.text LIKE '%$pattern%'");
     while ($db->next_record()) {
         $users[unpack_id128($db->f('id'))] = array('name' => $db->f('name'));
