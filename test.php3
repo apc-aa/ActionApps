@@ -10,7 +10,189 @@
   * @copyright (c) 2002-3 Association for Progressive Communications
 */
 
-define('APC_AA_VERSION','2.8.1-stable');
+/** APC-AA configuration file */
+require_once "include/config.php3";
+/** Main include file for using session management function on a page */
+require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+/** Set of useful functions used on most pages */
+require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+
+/** Components (plugins) manipulation class */
+class Components {
+    function getClassNames($type) {
+        $right_classes = array();
+        $type_lenght   = strlen($type);
+        foreach (get_declared_classes() as $classname) {
+            if ( substr($classname,0,$type_lenght) == $type ) {
+                $right_classes[] = $classname;
+            }
+        }
+        return $right_classes;
+    }
+
+    function factory($classname) {
+        return new $classname;
+    }
+}
+
+/** @todo this class should be abstract after we switch to PHP5 */
+class Optimize {
+    var $messages = array();
+    function name()         {}
+    function description()  {}
+    function test()         {}
+    function repair()      {}
+    function report()       {
+        return join('<br>', $this->messages);
+    }
+    function clear_report() {
+        unset($this->messages);
+        $this->messages = array();
+    }
+}
+
+
+/** Testing if relation table contain records, where values in both columns are
+ *  identical (which was bug fixed in Jan 2006)
+ */
+class Optimize_db_relation_dups extends Optimize {
+
+    function name() {
+        return _m("Relation table duplicate records");
+    }
+
+    function description() {
+        return _m("Testing if relation table contain records, where values in both columns are identical (which was bug fixed in Jan 2006)");
+    }
+
+    function test() {
+        $SQL = 'SELECT count(*) as err_count FROM `relation` WHERE `source_id`=`destination_id`';
+        $err_count = GetTable2Array($SQL, "aa_first", 'err_count');
+        if ($err_count > 0) {
+            $this->messages[] = _m('%1 duplicates found', array($err_count));
+            return false;
+        }
+        $this->messages[] = _m('No duplicates found');
+        return true;
+    }
+
+    function repair() {
+        $db  = getDb();
+        $SQL = 'DELETE FROM `relation` WHERE `source_id`=`destination_id`';
+        $db->query($SQL);
+        freeDb($db);
+        return true;
+    }
+}
+
+/** There was change in Reader management functionality in AA v2.8.1 */
+class Optimize_readers_login2id extends Optimize{
+
+    function name() {
+        return _m("Convert Readers login to reader id");
+    }
+
+    function description() {
+        return _m("There was change in Reader management functionality in AA v2.8.1, so readers are not internaly identified by its login, but by reader ID (item ID of reader in Reader slice). This is much more powerfull - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by readers login instead of reader id. You can fix it by \"Repair\".");
+    }
+
+    function test() {
+        $this->clear_report();
+        $ret = true;  // which means OK
+
+        // get all readers in array: id => arrary( name => ...)
+        $readers = FindReaderUsers('');
+        $posted_by_found = $this->_test_field($readers, 'posted_by');
+        if (count($posted_by_found) > 0) {
+            $this->messages[] = _m('%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', array(count($posted_by_found)));
+            $ret = false;
+        }
+        $edited_by_found = $this->_test_field($readers, 'edited_by');
+        if (count($edited_by_found) > 0) {
+            $this->messages[] = _m('%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', array(count($edited_by_found)));
+            $ret = false;
+        }
+        return $ret;
+    }
+
+    /** test if we can find an item which was edited by reader and is idetified
+     *  by login name (instead of item_id)
+     *  @returns array of such users
+     */
+    function _test_field(&$readers, $item_field) {
+        // get posted_by, edit_by, ... array:  posted_by => 1
+        $SQL     = "SELECT DISTINCT $item_field FROM item";
+        $editors = GetTable2Array($SQL, $item_field, 'aa_mark');
+        $ret     = array();
+        foreach ( $readers as $r_id => $reader ) {
+            if ($reader['name'] AND isset($editors[$reader['name']])) {
+                $ret[$r_id] = $reader['name'];
+            }
+        }
+        return $ret;
+    }
+
+    function repair() {
+        $this->clear_report();
+
+        // get all readers in array: id => arrary( name => ...)
+        $readers = FindReaderUsers('');
+        $posted_by_found = $this->_test_field($readers, 'posted_by');
+        $db = getDb();
+        if (count($posted_by_found) > 0) {
+            foreach ($posted_by_found as $r_id => $r_login ) {
+                $SQL = "UPDATE item SET posted_by = '$r_id' WHERE posted_by = '$r_login'";
+                $db->query($SQL);
+                $this->messages[] = _m('Column item.posted_by updated for %1 (id: %2).', array($r_login, $r_id));
+            }
+        }
+        if (count($edited_by_found) > 0) {
+            foreach ($edited_by_found as $r_id => $r_login ) {
+                $SQL = "UPDATE item SET edited_by = '$r_id' WHERE edited_by = '$r_login'";
+                $db->query($SQL);
+                $this->messages[] = _m('Column item.edited_by updated for %1 (id: %2).', array($r_login, $r_id));
+            }
+        }
+        return true;
+    }
+}
+
+if ($_GET['test'] AND (strpos($_GET['test'], 'Optimize_')===0)) {
+    $optimizer = Components::factory($_GET['test']);
+    $optimizer->test();
+    $body .= $optimizer->report();
+}
+
+if ($_GET['repair'] AND (strpos($_GET['repair'], 'Optimize_')===0)) {
+    $optimizer = Components::factory($_GET['repair']);
+    $optimizer->repair();
+    $body .= $optimizer->report();
+}
+
+foreach (Components::getClassNames('Optimize_') as $optimize_class) {
+    // call static class methods
+    $name        = call_user_func(array($optimize_class, 'name'));
+    $description = call_user_func(array($optimize_class, 'description'));
+    $body .= "
+    <div>
+      <div style=\"float: right;\">
+        <a href=\"?test=$optimize_class\">Test</a>
+        <a href=\"?repair=$optimize_class\">Repair</a>
+      </div>
+      <div>$name<br><small>$description</small></div>
+    </div>";
+}
+
+$page_setting = array(
+    'title' => 'apcaa: System Capabilities Test',
+    'body'  => $body );
+
+FrmHtmlPage($page_setting);
+
+exit;
+
+
 
 @session_start();
 /* Register a session. */
