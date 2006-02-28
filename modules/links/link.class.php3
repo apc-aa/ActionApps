@@ -114,7 +114,6 @@ class linkassignment {
             $this->state    = 'visible';
             $this->proposal = true;
         }
-//        huhl('-a-',$problem);
         return $problem;
     }
 
@@ -144,7 +143,6 @@ class linkassignment {
             $problem[] = problem_report('hidden_and_base',$this->category);
             DoSQL("UPDATE links_link_cat SET state='visible', proposal='y' WHERE a_id='".$this->id."'");
         }
-//        huhl('-a-',$problem);
         return $problem;
     }
 
@@ -678,7 +676,6 @@ class linkobj {
         unset($this->language);
         unset($this->changes);
         $this->assignments->clear();
-        unset($this->assignments);
     }
 
     function numberOfAssignments() {
@@ -774,7 +771,6 @@ class linkobj {
         // check link for errors -
         // - remove duplicity, downgrade general (if present), define base, ...
         $this->normalize();
-
         return $ret;
     }
 
@@ -797,7 +793,7 @@ class linkobj {
     }
 
     function addProposal($proposal) {
-        unset($proposal->assignments);   // proposal can't have assignments
+        $proposal->assignments->clear(); // proposal can't have assignments
         unset($proposal->lid);           // proposal will have new id
         $proposal->data['folder']=1;     // proposal are not in trash/holding or so
 
@@ -865,7 +861,6 @@ class linkobj {
             $ret = 'PROPOSAL';
         }
 
-        debug('TryChange() - data done (this,new)',$this, $new_link);
         if (!$this->assignments) { $this->assignments = new assignmentset(); }
 
         $this->assignments->change($new_link->assignments);
@@ -1064,11 +1059,9 @@ debug("SAVE (loaded): ", $this);
 
     function check_general_categories() {
         $this->load();
-        huhl('+');
 
         // TODO - next row is wrong - assignments is not array
         if ( !isset($this->assignments) OR !is_array($this->assignments) ) return;
-        huhl('-');
         cattree::global_instance();  // makes sure $cattree instance is created
         global $cattree;
         $names    = array();
@@ -1090,7 +1083,6 @@ debug("SAVE (loaded): ", $this);
                 $other++;
             }
         }
-        huhl('<br>$names: ', $names, ' $thematic: ',$thematic,' $other: ', $other);
         if ( count($names)>1 ) {
             $this->problem[] = problem_report('category_assigned_to_more_general_categories',$names,$thematic);
         }
@@ -1159,6 +1151,4 @@ debug("SAVE (loaded): ", $this);
         $this->dbDeleteData();
     }
 }
-
-
 ?>
