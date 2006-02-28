@@ -91,7 +91,7 @@ function HTMLArea(textarea, config)
       textarea = HTMLArea.getElementById('textarea', textarea);
     }
     this._textArea = textarea;
-       
+
     // Before we modify anything, get the initial textarea size
     this._initial_ta_size =
     {
@@ -148,7 +148,7 @@ function HTMLArea(textarea, config)
       panels[i].div = panels[i].container; // legacy
       panels[i].container.className = 'panels ' + i;
       HTMLArea.freeLater(panels[i], 'container');
-      HTMLArea.freeLater(panels[i], 'div');      
+      HTMLArea.freeLater(panels[i], 'div');
     }
     HTMLArea.freeLater(this, '_textArea');
   }
@@ -213,7 +213,9 @@ HTMLArea.Config = function () {
   // If false, then passes ^V through to browser editor widget
   this.htmlareaPaste = false;
 
-  this.mozParaHandler = 'best'; // set to 'built-in', 'dirty' or 'best'
+  // we are using 'built-in' - best produces incredible long code for each <p>
+  // dirty seems to have some bugs - it sometimes do not create paragraph
+  this.mozParaHandler = 'built-in'; // set to 'built-in', 'dirty' or 'best'
                                 // built-in: will (may) use 'br' instead of 'p' tags
                                 // dirty   : will use p and work good enough for the majority of cases,
                                 // best    : works the best, but it's about 12kb worth of javascript
@@ -613,7 +615,7 @@ HTMLArea.Config.prototype.addToolbarElement = function(id, where, position) {
   if ((where && typeof where == "object") && (where.constructor == Array)) {
     whereIsArray = true;
     whereLength = where.length;
-	}
+  }
 
   if (idIsArray) { //find the button/select box in input array
     for (i = 0; i < id.length; ++i) {
@@ -725,24 +727,24 @@ HTMLArea.prototype._createToolbar = function () {
 
   HTMLArea.freeLater(this, '_toolBar');
   HTMLArea.freeLater(this, '_toolbar');
-  
+
   var tb_row = null;
   var tb_objects = new Object();
   this._toolbarObjects = tb_objects;
 
-	this._createToolbar1(editor, toolbar, tb_objects);
-	this._htmlArea.appendChild(toolbar);      
-  
+  this._createToolbar1(editor, toolbar, tb_objects);
+  this._htmlArea.appendChild(toolbar);
+
   return toolbar;
 };
 
 
 HTMLArea.prototype._setConfig = function(config) {
-	this.config = config;
+  this.config = config;
 };
 
 HTMLArea.prototype._addToolbar = function() {
-	this._createToolbar1(this, this._toolbar, this._toolbarObjects);
+  this._createToolbar1(this, this._toolbar, this._toolbarObjects);
 };
 
 // separate from previous createToolBar to allow dynamic change of toolbar
@@ -877,11 +879,11 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
         state	: setButtonStatus, // for changing state
         context : context
       };
-      
+
       HTMLArea.freeLater(obj);
-      
+
       tb_objects[txt] = obj;
-      
+
       for (var i in options) {
         if (typeof(options[i]) != 'string') continue;  // prevent iterating over wrong type
         var op = document.createElement("option");
@@ -928,9 +930,9 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
         cmd	: "textindicator", // the command ID
         state	: setButtonStatus // for changing state
       };
-      
+
       HTMLArea.freeLater(obj);
-      
+
       tb_objects[txt] = obj;
       break;
         default:
@@ -955,9 +957,9 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
         state	: setButtonStatus, // for changing state
         context : btn[4] || null // enabled in a certain context?
       };
-      
+
       HTMLArea.freeLater(obj);
-      
+
       tb_objects[txt] = obj;
       // handlers to emulate nice flat toolbar buttons
       HTMLArea._addEvent(el, "mouseout", function () {
@@ -993,7 +995,7 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
       var img = i_contain.firstChild;
       el.appendChild(i_contain);
 
-      obj.imgel = img;      
+      obj.imgel = img;
       obj.swapImage = function(newimg)
       {
         if(typeof newimg != 'string')
@@ -1010,7 +1012,7 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
           img.style.left = '0px';
         }
       };
-      
+
     } else if (!el) {
       el = createSelect(txt);
     }
@@ -1037,7 +1039,7 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
         var l7ed = RegExp.$1 == "I"; // localized?
         var label = RegExp.$2;
         if (l7ed) {
-	  label = HTMLArea._lc(label);
+    label = HTMLArea._lc(label);
         }
         var tb_cell = document.createElement("td");
         tb_row.appendChild(tb_cell);
@@ -1147,7 +1149,7 @@ HTMLArea.prototype._createStatusBar = function() {
   statusbar.className = "statusBar";
   this._statusBar = statusbar;
   HTMLArea.freeLater(this, '_statusBar');
-  
+
   // statusbar.appendChild(document.createTextNode(HTMLArea._lc("Path") + ": "));
   // creates a holder for the path view
   div = document.createElement("span");
@@ -1283,7 +1285,7 @@ HTMLArea.prototype.generate = function ()
   };
 
   HTMLArea.freeLater(this._framework);
-  
+
   var fw = this._framework;
   fw.table.border="0";
   fw.table.cellPadding="0";
@@ -1339,7 +1341,7 @@ HTMLArea.prototype.generate = function ()
   this._iframe = iframe;
   this._iframe.className = 'xinha_iframe';
   HTMLArea.freeLater(this, '_iframe');
-  
+
     // creates & appends the status bar
   var statusbar = this._createStatusBar();
   this._framework.sb_cell.appendChild(statusbar);
@@ -1569,7 +1571,7 @@ HTMLArea.prototype.generate = function ()
 
     if(panel_is_alive('left'))
     {
-      col_span += 1;      
+      col_span += 1;
     }
 
     if(panel_is_alive('top'))
@@ -1848,13 +1850,13 @@ HTMLArea.prototype.generate = function ()
     {
       if (editor._iframe.contentDocument)
       {
-        this._doc = editor._iframe.contentDocument;        
+        this._doc = editor._iframe.contentDocument;
       }
       else
       {
         this._doc = editor._iframe.contentWindow.document;
       }
-      doc = this._doc;      
+      doc = this._doc;
       if (!doc) { // try later
         if (HTMLArea.is_gecko) {
           setTimeout(function() { editor.initIframe()}, 50);
@@ -1868,9 +1870,9 @@ HTMLArea.prototype.generate = function ()
     { // try later
       setTimeout(function() { editor.initIframe()}, 50);
     }
-    
+
     HTMLArea.freeLater(this, '_doc');
-    
+
     doc.open();
     if (!editor.config.fullPage) {
       var html = "<html>\n";
@@ -1919,15 +1921,15 @@ HTMLArea.prototype.generate = function ()
 
     this.setEditorEvents();
   };
-  
+
 /** Delay a function until the document is ready for operations.  See ticket:547 */
 HTMLArea.prototype.whenDocReady = function(doFunction)
 {
-  var editor = this;  
-  
+  var editor = this;
+
   if(!this._doc.body)
   {
-    setTimeout(function() {editor.whenDocReady(doFunction)}, 50); 
+    setTimeout(function() {editor.whenDocReady(doFunction)}, 50);
   }
   else
   {
@@ -2054,7 +2056,7 @@ HTMLArea.prototype.setEditorEvents = function() {
     }
   );
 };
-  
+
 /***************************************************
  *  Category: PLUGINS
  ***************************************************/
@@ -2816,9 +2818,9 @@ HTMLArea.prototype.getParentElement = function(sel) {
   var range = this._createRange(sel);
   if (HTMLArea.is_ie) {
     switch (sel.type) {
-        case "Text":         
+        case "Text":
       // try to circumvent a bug in IE:
-      // the parent returned is not always the real parent element    
+      // the parent returned is not always the real parent element
       var parent = range.parentElement();
       while (true)
       {
@@ -3369,7 +3371,7 @@ HTMLArea.prototype._insertImage = function(image) {
       return false;
     }
     var img = image;
-    if (!img) {      
+    if (!img) {
       if (HTMLArea.is_ie) {
         var sel = editor._getSelection();
         var range = editor._createRange(sel);
@@ -4144,7 +4146,7 @@ HTMLArea.prototype.outwardHtml = function(html)
   html = html.replace(/<(\/?)b(\s|>|\/)/ig, "<$1strong$2");
   html = html.replace(/<(\/?)i(\s|>|\/)/ig, "<$1em$2");
   html = html.replace(/<(\/?)strike(\s|>|\/)/ig, "<$1del$2");
-  
+
   // replace window.open to that any clicks won't open a popup in designMode
   html = html.replace("onclick=\"try{if(document.designMode &amp;&amp; document.designMode == 'on') return false;}catch(e){} window.open(", "onclick=\"window.open(");
 
@@ -4185,12 +4187,12 @@ HTMLArea.prototype.inwardHtml = function(html)
   // mozilla, this is the 21st century calling!
   if (HTMLArea.is_gecko) {
     html = html.replace(/<(\/?)strong(\s|>|\/)/ig, "<$1b$2");
-    html = html.replace(/<(\/?)em(\s|>|\/)/ig, "<$1i$2");    
+    html = html.replace(/<(\/?)em(\s|>|\/)/ig, "<$1i$2");
   }
-  
+
   // Both IE and Gecko use strike instead of del (#523)
   html = html.replace(/<(\/?)del(\s|>|\/)/ig, "<$1strike$2");
- 
+
 
   // replace window.open to that any clicks won't open a popup in designMode
   html = html.replace("onclick=\"window.open(", "onclick=\"try{if(document.designMode &amp;&amp; document.designMode == 'on') return false;}catch(e){} window.open(");
@@ -4212,7 +4214,7 @@ HTMLArea.prototype.outwardSpecialReplacements = function(html)
   {
     var from = this.config.specialReplacements[i];
     var to   = i;
-    if (typeof(from.replace) != 'function' || typeof(to.replace) != 'function') continue;  // prevent iterating over wrong type    
+    if (typeof(from.replace) != 'function' || typeof(to.replace) != 'function') continue;  // prevent iterating over wrong type
     // alert('out : ' + from + '=>' + to);
     var reg = new RegExp(from.replace(HTMLArea.RE_Specials, '\\$1'), 'g');
     html = html.replace(reg, to.replace(/\$/g, '$$$$'));
@@ -4427,10 +4429,10 @@ HTMLArea.flushEvents = function()
       // Do Nothing
     }
   }
-  
-  /* 
+
+  /*
     // This code is very agressive, and incredibly slow in IE, so I've disabled it.
-    
+
     if(document.all)
     {
       for(var i = 0; i < document.all.length; i++)
@@ -4446,7 +4448,7 @@ HTMLArea.flushEvents = function()
       }
     }
   */
-  
+
   // alert('Flushed ' + x + ' events.');
 };
 
@@ -4646,7 +4648,7 @@ HTMLArea.isParaContainer = function(el)
   return el && el.nodeType == 1 && (HTMLArea._paraContainerTags.indexOf(" " + el.tagName.toLowerCase() + " ") != -1);
 };
 
-// These are all the tags for which the end tag is not optional or 
+// These are all the tags for which the end tag is not optional or
 // forbidden, taken from the list at:
 //   http://www.w3.org/TR/REC-html40/index/elements.html
 HTMLArea._closingTags = " a abbr acronym address applet b bdo big blockquote button caption center cite code del dfn dir div dl em fieldset font form frameset h1 h2 h3 h4 h5 h6 i iframe ins kbd label legend map menu noframes noscript object ol optgroup pre q s samp script select small span strike strong style sub sup table textarea title tt u ul var ";
@@ -5569,13 +5571,13 @@ HTMLArea.free = function(obj, prop)
   }
 };
 
-/** IE's Garbage Collector is broken very badly.  We will do our best to 
+/** IE's Garbage Collector is broken very badly.  We will do our best to
  *   do it's job for it, but we can't be perfect.
  */
 
-HTMLArea.collectGarbageForIE = function() 
-{  
-  HTMLArea.flushEvents();   
+HTMLArea.collectGarbageForIE = function()
+{
+  HTMLArea.flushEvents();
   for(var x = 0; x < HTMLArea.toFree.length; x++)
   {
     if(!HTMLArea.toFree[x].o) alert("What is " + x + ' ' + HTMLArea.toFree[x].o);
