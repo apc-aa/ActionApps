@@ -127,7 +127,7 @@ if ($addcond) {
 }
 
 if ($addcond OR $delcond OR $content OR $name OR $akce) {
-    $GLOBALS['pagecache']->invalidate("slice_id=".$module_id);  // invalidate old cached values
+    $GLOBALS['pagecache']->invalidateFor("slice_id=".$module_id);  // invalidate old cached values
 }
 
 // This is only run with a hand-coded URL to clean out the site
