@@ -273,11 +273,13 @@ class searchbar extends storable_class{
     /** */
     function setFromProfile(&$profile) {
         // admin_order is in 'publish_date....+' format
-        $foo_order = GetSortArray( $profile->getProperty('admin_order') );
+        $order    = new Sortorder;
+        $order->addFromString($profile->getProperty('admin_order'));
+        $foo_order = $order->getOrder();
         if ( count($foo_order) < 1 ) {
             $this->setDefaultOrder();
         } else {
-            $this->addOrder( array( 0=>$foo_order ));
+            $this->addOrder($foo_order);
         }
         list($fld,$search_str) = explode(':', $profile->getProperty('admin_search'));
         if ( $fld ) {

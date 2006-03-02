@@ -23,29 +23,107 @@ require_once $GLOBALS['AA_INC_PATH']."sql_parser.php3";
 require_once $GLOBALS['AA_INC_PATH']."zids.php3";
 require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
 
-/** Transforms 'publish_date....-' like sort definition (used in prifiles, ...)
- *  to $arr['publish_date....'] = 'd' as used in sort[] array
- *  It is also possible to specify "group limit" by the number at the begin
- *  of the string (like 4category........-), which means that we want maximum
- *  4 items of each category. In such case we returned something like:
- *  array( 'limit' => 4, 'category........' => d )
- *  @todo create a class for conds and sort parameters
- */
-function GetSortArray( $sort ) {
-    $ret = array();
-    if ($sort) {
-        if (($limit_len = strspn($sort,'0123456789')) > 0) {  // is defined group limit?
-            $ret['limit'] = (int)substr($sort,0,$limit_len);
-            $sort  = substr($sort,$limit_len);         // rest of the string
+class Conditions {
+    /** clasic conds array - array('operator'  => ..,
+     *                             'value'     => ..,
+     *                             <field_1>   => 1
+     *                             [,<field_n> => 1])
+     */
+    var $conds;
+
+    function Conditions() {
+        $this->clear();
+    }
+
+    function clear() {
+        $this->conds = array();
+    }
+
+    /** Creates conditions from d-<fields>-<operator>-<value>-<fields>-<op....
+     *  string ie:   d-headline........,category.......1-RLIKE-Bio
+     */
+    function addFromString($string) {
+        $commands = new ViewCommands($string);
+        $command  = $commands->get('d');
+        if (!$command) {
+            return false;
         }
-        switch ( substr($sort,-1) ) {    // last character
-            case '-':  $ret[substr($sort,0,-1)] = 'd'; break;
-            case '+':  $ret[substr($sort,0,-1)] = 'a'; break;
-            default:   $ret[$sort]              = 'a';
+        return $this->addFromCommand($command);
+    }
+
+    function addFromCommand($command) {
+        if ($command->getCommand() != 'd') {
+            return false;
+        }
+        $i=0;
+        $command_params = $command->getParameterArray();
+        while ( $command_params[$i] ) {
+             if ( Conditions::check($command_params[$i], $command_params[$i+2]) ) {
+                 $field_arr = array();
+                 foreach (explode(',',$command_params[$i]) as $cond_field) {
+                     $field_arr[$cond_field] = 1;
+                 }
+                 $this->conds[]= array_merge($field_arr, array('operator' => $command_params[$i+1],
+                                                               'value'    => stripslashes($command_params[$i+2])));
+             }
+             $i += 3;
+         }
+         return true;
+    }
+
+    /** retruns $conds[] array - mainny for backward compatibility */
+    function getConds() {
+        return $this->conds;
+    }
+
+    /** static - Checks if the condition is in right format - is valid */
+    function check($field, $value) {
+        return ($field && ($value != 'AAnoCONDITION'));
+    }
+}
+
+class Sortorder {
+    var $order;
+
+    function Sortorder() {
+        $this->clear();
+    }
+
+    function clear() {
+        $this->order = array();
+    }
+
+    /** Transforms 'publish_date....-' like sort definition (used in prifiles, ...)
+     *  to $arr['publish_date....'] = 'd' as used in sort[] array
+     *  It is also possible to specify "group limit" by the number at the begin
+     *  of the string (like 4category........-), which means that we want maximum
+     *  4 items of each category. In such case we returned something like:
+     *  array( 'limit' => 4, 'category........' => d )
+     */
+    function addFromString( $sort ) {
+        $ret = array();
+        if ($sort) {
+            // is defined group limit?
+            if (($limit_len = strspn($sort,'0123456789')) > 0) {
+                $ret['limit'] = (int)substr($sort,0,$limit_len);
+                $sort  = substr($sort,$limit_len);        // rest of the string
+            }
+            switch ( substr($sort,-1) ) {    // last character
+                case '-':  $ret[substr($sort,0,-1)] = 'd'; break;
+                case '+':  $ret[substr($sort,0,-1)] = 'a'; break;
+                default:   $ret[$sort]              = 'a';
+            }
+        }
+        if ( count($ret) > 0 ) {
+            $this->order[] = $ret;
         }
     }
-    return $ret;
+
+    function getOrder() {
+        return $this->order;
+    }
 }
+
 
 /** Returns sort[] array used by QueryZids functions
  *  $sort - sort definition in varios formats:
@@ -55,9 +133,11 @@ function GetSortArray( $sort ) {
  */
 function getSortFromUrl( $sort ) {
     $ret_sort = array();
+    $order    = new Sortorder;
     if ( isset($sort) ) {
         if ( !is_array($sort) ) {
-            $ret_sort[] = GetSortArray( $sort );
+            $order->addFromString($sort);
+            $ret_sort = $order->getOrder();
         } else {
             ksort( $sort, SORT_NUMERIC); // it is not sorted and the order is important
             foreach ( $sort as $k => $srt) {
@@ -65,7 +145,8 @@ function getSortFromUrl( $sort ) {
                     if ( is_array($srt) ) {
                         $ret_sort[] = array( key($srt) => (strtolower(current($srt)) == "d" ? 'd' : 'a'));
                     } else {
-                        $ret_sort[] = GetSortArray( $srt );
+                        $order->addFromString($srt);
+                        $ret_sort = array_merge($ret_sort, $order->getOrder());
                     }
                 }
             }
@@ -882,7 +963,7 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
 
     // construct query --------------------------
     $SQL  = "SELECT DISTINCT constant.short_id FROM constant
-             WHERE group_id='$group_id' ".
+             WHERE group_id='$group_id' ";
     $SQL .=  $where_sql . $order_by_sql;
 
     if (is_object($restrict_zids)) {

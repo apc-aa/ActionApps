@@ -22,6 +22,7 @@ http://www.apc.org/
 require_once $GLOBALS['AA_INC_PATH'] . "mgettext.php3";
 require_once $GLOBALS['AA_INC_PATH'] . "itemview.php3";
 require_once $GLOBALS['AA_INC_PATH'] . "viewobj.php3";
+require_once $GLOBALS['AA_INC_PATH'] . "searchlib.php3";
 require_once $GLOBALS['AA_BASE_PATH']. "modules/links/util.php3";
 require_once $GLOBALS['AA_BASE_PATH']. "modules/links/linksearch.php3";
 // add mlx functions
@@ -79,9 +80,9 @@ class ViewCommands {
         $this->parseCommand($cmd, $als);
     }
 
-    /** returns 1 command given by index (counted from 0) */
-    function get($index) {
-        return $this->comands[$index];
+    /** returns command given by command letter (say 'd') */
+    function get($command) {
+        return $this->commands[$command];
     }
 
     /** returns number of commands in the set */
@@ -160,11 +161,6 @@ function ParseSettings($set) {
     return $ret;
 }
 
-/** Checks if the condition is in right format - is valid */
-function CheckConditionCommand($field, $value) {
-    return ($field && ($value != 'AAnoCONDITION'));
-}
-
 /** Converts a query string into a data view_params data structure */
 function ParseViewParameters($query_string="") {
     global $cmd, $set, $vid, $als, $slice_id, $debug;
@@ -192,6 +188,7 @@ function ParseViewParameters($query_string="") {
 
     // Splits on "-" and subsitutes aliases
     $commands = new ViewCommands($cmd[$vid], $GLOBALS['als']);
+    $v_conds  = new Conditions;
 
     if ( $GLOBALS['debug'] ) huhl("<br>ParseViewParameters - command:", $command);
 
@@ -227,31 +224,19 @@ function ParseViewParameters($query_string="") {
                        }
 
 
-                       if (CheckConditionCommand($command_params[0], $command_params[1])) {
+                       if (Conditions::check($command_params[0], $command_params[1])) {
                            $param_conds[$command_params[0]] = stripslashes($command_params[1]);
                        }
-                       if (CheckConditionCommand($command_params[2], $command_params[3])) {
+                       if (Conditions::check($command_params[2], $command_params[3])) {
                            $param_conds[$command_params[2]] = stripslashes($command_params[3]);
                        }
-                       if (CheckConditionCommand($command_params[4], $command_params[5])) {
+                       if (Conditions::check($command_params[4], $command_params[5])) {
                            $param_conds[$command_params[4]] = stripslashes($command_params[5]);
                        }
                        break;
 
-            case 'd':  $i=0;
-                       $command_params = $command->getParameterArray();
-                       while ( $command_params[$i] ) {
-                            if ( CheckConditionCommand($command_params[$i], $command_params[$i+2]) ) {
-                                $field_arr = array();
-                                foreach (explode(',',$command_params[$i]) as $cond_field) {
-                                    $field_arr[$cond_field] = 1;
-                                }
-                                $v_conds[]= array_merge($field_arr, array('operator' => $command_params[$i+1],
-                                                                          'value'    => stripslashes($command_params[$i+2])));
-                            }
-                            $i += 3;
-                        }
-                        break;
+            case 'd':  $v_conds->addFromCommand($command);
+                       break;
         }
     }
 
@@ -289,7 +274,7 @@ function ParseViewParameters($query_string="") {
 
     $arr['als']         = GetAliasesFromUrl($GLOBALS['als']);
     $arr['vid']         = $vid;
-    $arr['conds']       = $v_conds;
+    $arr['conds']       = $v_conds->getConds();
     $arr['param_conds'] = $param_conds;
     //  $arr['item_ids'] = $item_ids;
     $arr['zids']        = $zids;
@@ -344,9 +329,9 @@ function GetViewSort(&$view_info, $param_sort=null) {
 
     $sort = false;
     if ($param_sort['sort']) {
-        if (count($new_sort=GetSortArray($param_sort['sort']))>0) {
-            $sort[] = $new_sort;
-        }
+        $order    = new Sortorder;
+        $order->addFromString($param_sort['sort']);
+        $sort = $order->getOrder();
     }
     // grouping
     if ($view_info['group_by1']) {

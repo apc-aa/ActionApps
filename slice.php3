@@ -478,8 +478,9 @@ if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($
     *  (add number before the field if you want to group limit (limit number of items of the same value))
     */
     if ($order) {
-        $order = GetSortArray($order);
-        reset($order);
+        $sortorder = new Sortorder;
+        $sortorder->addFromString($order);
+        $order = reset($sortorder->getOrder());  // get the first from array
         list($order, $orderdirection) = each($order);
     }
 
@@ -489,9 +490,10 @@ if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($
 
     $sort_tmp = array();
     if ($group_by) {
-        $foo                    = GetSortArray( $group_by );
-        $sort_tmp[]             = $foo;
-        $slice_info["group_by"] = key($foo);
+        $sortorder = new Sortorder;
+        $sortorder->addFromString($group_by);
+        $sort_tmp = $sortorder->getOrder();
+        $slice_info["group_by"] = key($sort_tmp[0]);
     }
     elseif ($slice_info['category_sort']) {
         $group_field = GetCategoryFieldId( $fields );
