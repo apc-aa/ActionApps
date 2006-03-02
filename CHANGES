@@ -1,5 +1,14 @@
+03/02/06 - new {ids:<slice>:<conds>[:<sort>[:<delimiter>]]} syntax, which
+(honzam)   returns long item ids based on on conditions  d-... (like in views)
+           Example:
+              {ids:6a435236626262738348478463536272:d-category.......1-RLIKE-Bio-switch.........1-=-1:headine........-}
+           returns dash separated long ids of items in selected slice where
+           category begins with Bio and switch is (=) 1 ordered by headline
+           descending. The main usage is with {item..} syntax - just like:
+               {item:{ids:...}:_#HEADLINE}
+         - new Conditions and Sortorder classes (used for conditions...)
 02/28/06 - New test environment. Created new abstract class Otimize (test.php3),
-           from which you (as programmer) can create new testing and possibly
+(honzam)   from which you (as programmer) can create new testing and possibly
            repair scripts. For now we have two tests/repairs
              - finding unnecessary duplicate records in relation table
              - conversion of permissions for items, which was filled by some

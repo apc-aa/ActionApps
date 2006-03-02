@@ -101,7 +101,7 @@ function stringexpand_user($field='') {
  *  stored already in the pagecache
  *  @param $parameters - field id and other modifiers to the field
  */
-function stringexpand_inputvar($field) {
+function stringexpand_inputvar() {
     global $contentcache;
     $arg_list = func_get_args();   // must be asssigned to the variable
     // replace inputform field
@@ -129,7 +129,7 @@ function stringexpand_formbreak($part_names='') {
 }
 
 /** Expands {formpart:} alias - prints number of current form part */
-function stringexpand_formpart($part_name='') {
+function stringexpand_formpart() {
     return get_if($GLOBALS['g_formpart'],'0');  // Just print part counter
 }
 
@@ -354,6 +354,8 @@ function stringexpand_str_replace($search, $replace, $subject) {
     return str_replace($search, $replace, $subject);
 }
 
+
+
 /** ids_string - ids (long or short (or mixed) separated by dash '-') */
 function stringexpand_item($ids_string, $expression, $delimiter='') {
     $ids   = explode('-', $ids_string);
@@ -371,9 +373,25 @@ function stringexpand_item($ids_string, $expression, $delimiter='') {
     return $ret;
 }
 
-/** @todo - returns ids of items based on conds d-...*/
-//function stringexpand_ids($slice, $conds) {
-//}
+/** returns ids of items based on conds d-...
+ *  {ids:<slice>:<conds>[:<sort>[:<delimiter>]]}
+ *  {ids:6a435236626262738348478463536272:d-category.......1-RLIKE-Bio-switch.........1-=-1:headine........-}
+ *  returns dash separated long ids of items in selected slice where category
+ *  begins with Bio and switch is 1 ordered by headline - descending
+ *  @todo allow specify more than one slice. this also means rewriting
+ *        QueryZids() - the fields should not be parameter - it should be
+ *        grabbed from slice(s)
+ */
+function stringexpand_ids($slice_id, $conds=null, $sort=null, $delimiter=null) {
+    $conditions = new Conditions;
+    $conditions->addFromString($conds);
+    $order      = new Sortorder;
+    $order->addFromString($sort);
+
+    list($fields,) = GetSliceFields($slice_id);
+    $zids = QueryZIDs($fields, $slice_id, $conditions->getConds(), $order->getOrder());
+    return join($zids->longids(), '-');
+}
 
 /** Expand URL by adding session,
  *  also handle special cases like {sessurl:hidden}
@@ -877,3 +895,4 @@ function stringexpand_preg_match($pattern, $subject) {
     preg_match($pattern, $subject, $matches);
     return $matches[0];
 }
+?>
