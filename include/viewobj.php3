@@ -52,8 +52,37 @@ class view {
         return isset($k) ? $this->fields[$k] : $this->fields;
     }
 
+    /** Generates link to view edit */
+    function jumpLink($name = null) {
+        return "<a href=\"".$this->jumpUrl(). "\">".($name ? $name: $this->id)."</a>";
+    }
+
+    /** Returns Url of view edit */
+    function jumpUrl() {
+        return get_admin_url("se_view.php3?change_id=".unpack_id($this->f('slice_id')). "&view_id=". $this->id);
+    }
+
     function setfields($rec) {
         $this->fields = $rec;
+    }
+
+    /** Returns html code which will list links to all views contained
+     *  in the template code
+     *  static method
+     */
+    function getViewJumpLinks($text) {
+        $ret = '';
+        $matches = array();
+        if ($text AND (preg_match_all("/view\.php3?\?vid=(\d+)/",$text, $matches)>0)) {
+            $ret = _m('Jump to view:');
+            foreach($matches[1] as $vid) {
+                $view = views::getView($vid);
+                if ($view) {                  // probably will be set
+                    $ret .= ' '. $view->jumpLink();
+                }
+            }
+        }
+        return $ret;
     }
 
     function xml_serialize($t,$i,$ii,$a) {
@@ -88,10 +117,21 @@ class views {
     }
 
     function getViewInfo($vid, $field=null) {
+        $view = $this->_getView($vid);
+        return $view ? $view->f($field) : null;
+    }
+
+    /** main factory static method */
+    function getView($vid) {
+        views::global_instance();
+        return $GLOBALS['allknownviews']->_getView($vid);
+    }
+
+    function _getView($vid) {
         if (!isset($this->a[$vid])) {
             $this->a[$vid] = new view($vid);
         }
-        return $this->a[$vid] ? $this->a[$vid]->f($field) : null;
+        return $this->a[$vid];
     }
 }
 

@@ -62,17 +62,16 @@ if ($go_findview && $findview) {
 
     $SQL = "SELECT view.id, view.type, view.slice_id, slice.name
         FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
-    reset ($fields);
-    while (list (,$field) = each ($fields))
+    foreach ($fields as $field) {
         $SQL .= "view.$field LIKE \"%". magic_add($findview)."%\" OR ";
+    }
     $SQL .= "0";
     $db->query($SQL);
     echo $db->num_rows()." matching views found:<br>";
-    while ($db->next_record())
-        echo $db->f("id")." (".$db->f("name").") "
-                ."<a href=\"".$sess->url("se_view.php3?view_id=".$db->f("id")."&view_type=".$db->f("type")
-                ."&change_id=".unpack_id128($db->f("slice_id")))
-                ."\">"._m("Jump")."</a><br>";
+    while ($db->next_record()) {
+        $view = views::getView($db->f("id"));
+        echo $view->jumpLink($db->f("id")." (".$db->f("name").") "). "<br>\n";
+    }
 }
 
 if ($go_findslice && $findslice) {

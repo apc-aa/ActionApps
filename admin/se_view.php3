@@ -32,27 +32,24 @@ require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
 
 // ----------------------------------------------------------------------------
 
-function get_row_count ($s, $cols, $maxrows) {
+function get_row_count($s, $cols, $maxrows) {
     $retval = 1 + strlen ($s) / $cols;
-    if ($retval > $maxrows)
-        return $maxrows;
-    else return $retval;
+    return ($retval > $maxrows) ?  $maxrows : $retval;
 }
 
 /// Shows the top part of the Alerts Selection Set view
-function show_digest_filters ()
-{
+function show_digest_filters() {
     global $view_id;
     $db = getDB();
 
     // Show the radio buttons "Group by selection"
-    $db->query ("SELECT aditional, aditional3 FROM view WHERE id=".
-        ($view_id ? $view_id : 0));
+    $db->query("SELECT aditional, aditional3 FROM view WHERE id=". ($view_id ? $view_id : 0));
     if ($db->next_record()) {
         $group = $db->f("aditional");
         $sort = $db->f("aditional3");
+    } else {
+        $group = 0;
     }
-    else $group = 0;
 
     $sortrows = 1 + strlen ($sort) / 50;
     echo "<tr><td class=tabtxt><b>"._m("Group by selections")."</b></td>
@@ -73,20 +70,21 @@ function show_digest_filters ()
     for ($irow = 0; $irow < $rows+2; $irow ++) {
         if ($irow <= $db->num_rows()) $db->next_record();
         $rowid = $db->f("id");
-        if (!$rowid) $rowid = "new$irow";
+        if (!$rowid) {
+            $rowid = "new$irow";
+        }
         FrmInputText("filters[$rowid][description]", _m("Alerts Selection")." ".($irow+1)." "._m("Description"), $db->f("description"), 100, 50, false);
         FrmTextarea("filters[$rowid][conds]", "conds[]", $db->f("conds"),
-            get_row_count ($db->f("conds"), 50, 4), 50, false,
+            get_row_count($db->f("conds"), 50, 4), 50, false,
             "", "http://apc-aa.sourceforge.net/faq/#215");
     }
-    FrmStaticText ("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
-    freeDB ($db);
+    FrmStaticText("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
+    freeDB($db);
 }
 
 // ----------------------------------------------------------------------------
 /// Stores info from the top part of the Alerts Selection Set view
-function store_digest_filters ()
-{
+function store_digest_filters() {
     global $view_id, $filters, $err;
     $db = getDB ();
     if (!$view_id) {
@@ -98,16 +96,16 @@ function store_digest_filters ()
 
     global $aditional, $aditional3;
     $varset->clear();
-    $varset->addkey ("id", "number", $view_id);
+    $varset->addkey("id", "number", $view_id);
     $varset->add("aditional", "number", $aditional);
     $varset->add("aditional3", "quoted", $aditional3);
-    $db->query ($varset->makeUPDATE ("view"));
+    $db->query($varset->makeUPDATE ("view"));
 
-    reset ($filters);
-    while (list ($rowid, $filter) = each ($filters)) {
+    foreach ($filters as $rowid => $filter) {
         if (!$filter["description"]) {
-            if (substr ($rowid,0,3) != "new")
+            if (substr ($rowid,0,3) != "new") {
                 $db->query("DELETE FROM alerts_filter WHERE id=$rowid");
+            }
             continue;
         }
         $varset->clear();
@@ -115,74 +113,86 @@ function store_digest_filters ()
         $varset->add("conds", "quoted", $filter["conds"]);
         $varset->add("vid", "number", $view_id);
 
-        if (substr ($rowid,0,3) != "new")
+        if (substr ($rowid,0,3) != "new") {
             $SQL = "UPDATE alerts_filter SET ". $varset->makeUPDATE() ." WHERE id='$rowid'";
-        else $SQL = "INSERT INTO alerts_filter ".$varset->makeINSERT();
+        } else {
+            $SQL = "INSERT INTO alerts_filter ".$varset->makeINSERT();
+        }
         if ( !$db->query($SQL)) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;   // not necessary - we have set the halt_on_error
         }
     }
-    freeDB ($db);
+    freeDB($db);
 }
 
 // ----------------------------------------------------------------------------
 
 function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false) {
-  global $vw_data;
-  $name=safe($name); $txt=safe($txt);
+    global $vw_data;
+    $name=safe($name); $txt=safe($txt);
 
-  $order_type = $easy_order ?
-                     array( '0'=>_m("Ascending"), '1' => _m("Descending")) :
-                     array( '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority"));
-  echo "<tr><td class=tabtxt><b>$txt</b> ";
-  if (!SINGLE_COLUMN_FORM)
-    echo "</td>\n<td>";
-  FrmSelectEasy($name, $order_fields, $val);
-     // direction variable name - construct from $name
-  $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
-  FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
-
-  PrintMoreHelp(DOCUMENTATION_URL);
-//  PrintHelp($hlp);
-  echo "</td></tr>\n";
+    $order_type = $easy_order ?
+        array( '0'=>_m("Ascending"), '1' => _m("Descending")) :
+        array( '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority"));
+    echo "<tr><td class=tabtxt><b>$txt</b> ";
+    if (!SINGLE_COLUMN_FORM) {
+        echo "</td>\n<td>";
+    }
+    FrmSelectEasy($name, $order_fields, $val);
+    // direction variable name - construct from $name
+    $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
+    FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
+    PrintMoreHelp(DOCUMENTATION_URL);
+    //  PrintHelp($hlp);
+    echo "</td></tr>\n";
 }
 
 function ConditionFrm($name, $txt, $val) {
-  global $lookup_fields, $lookup_op, $vw_data;
-  $name=safe($name); $txt=safe($txt);
-  echo "<tr><td class=tabtxt><b>$txt</b> ";
-  if (!SINGLE_COLUMN_FORM)
-    echo "</td>\n<td>";
-  FrmSelectEasy($name, $lookup_fields, $val);
-     // direction variable name - construct from $name
-  $opvarname = substr($name,0,5)."op";
-  FrmSelectEasy($opvarname, $lookup_op, $vw_data[$opvarname]);
-     // direction variable name - construct from $name
-  if (!SINGLE_COLUMN_FORM)
-    echo "</td></tr>\n<tr><td>&nbsp;</td><td>";
-   else
-    echo "</td></tr>\n<tr><td>&nbsp; &nbsp;";
+    global $lookup_fields, $lookup_op, $vw_data;
+    $name=safe($name); $txt=safe($txt);
+    echo "<tr><td class=tabtxt><b>$txt</b> ";
+    if (!SINGLE_COLUMN_FORM) {
+        echo "</td>\n<td>";
+    }
+    FrmSelectEasy($name, $lookup_fields, $val);
+    // direction variable name - construct from $name
+    $opvarname = substr($name,0,5)."op";
+    FrmSelectEasy($opvarname, $lookup_op, $vw_data[$opvarname]);
+    // direction variable name - construct from $name
+    if (!SINGLE_COLUMN_FORM) {
+        echo "</td></tr>\n<tr><td>&nbsp;</td><td>";
+    } else {
+        echo "</td></tr>\n<tr><td>&nbsp; &nbsp;";
+    }
 
-  $condvarname = substr($name,0,5)."cond";
-  echo "<input type=\"Text\" name=\"$condvarname\" size=50
-          maxlength=254 value=\"". safe($vw_data[$condvarname]) ."\">";
+    $condvarname = substr($name,0,5)."cond";
+    echo "<input type=\"Text\" name=\"$condvarname\" size=50 maxlength=254 value=\"". safe($vw_data[$condvarname]) ."\">";
 
-  PrintMoreHelp(DOCUMENTATION_URL);
-//  PrintHelp($hlp);
-  echo "</td></tr>\n";
+    PrintMoreHelp(DOCUMENTATION_URL);
+    //  PrintHelp($hlp);
+    echo "</td></tr>\n";
 }
 
 $back_url = ( (($view_type == 'categories') OR ($view_type == 'links')) ?
                 get_aa_url('modules/links/modedit.php3') :
                 get_admin_url('se_views.php3') );
 
-if ($cancel)
-  go_url( $back_url );
+if ($cancel) {
+    go_url( $back_url );
+}
+
+// If you try to edit a view in different slice, you should jump there
+if ($view_id) {
+    $view = views::getView($view_id);
+    if (unpack_id128($view->f('slice_id')) != $slice_id) {
+        go_url($view->jumpUrl());
+    }
+}
 
 if (!IfSlPerm(PS_FULLTEXT)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
-  exit;
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You do not have permission to change views"), "admin");
+    exit;
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -194,8 +204,8 @@ $p_slice_id = q_pack_id($slice_id);
 // the $view_type from $_POST array
 $view_type = $HTTP_POST_VARS['view_type'] ? $HTTP_POST_VARS['view_type'] : $HTTP_GET_VARS['view_type'];
 
-$VIEW_FIELDS = getViewFields();
-$VIEW_TYPES = getViewTypes();
+$VIEW_FIELDS     = getViewFields();
+$VIEW_TYPES      = getViewTypes();
 $VIEW_TYPES_INFO = getViewTypesInfo();
 
 // fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
@@ -203,84 +213,88 @@ $VIEW_TYPES_INFO = getViewTypesInfo();
 // the $view_type from $_POST array
 $view_type = $HTTP_POST_VARS['view_type'] ? $HTTP_POST_VARS['view_type'] : $HTTP_GET_VARS['view_type'];
 
-if ( $update )
-{
-  do
-  {
-    foreach ($VIEW_FIELDS as $k => $v) {
-      if ( $v["validate"] AND $VIEW_TYPES[$view_type][$k] )
-        ValidateInput($k, $VIEW_TYPES[$view_type][$k], $$k, $err, false, $v["validate"]);
+if ( $update ) {
+    do {
+        foreach ($VIEW_FIELDS as $k => $v) {
+            if ( $v["validate"] AND $VIEW_TYPES[$view_type][$k] ) {
+                ValidateInput($k, $VIEW_TYPES[$view_type][$k], $$k, $err, false, $v["validate"]);
+            }
+        }
+        if (count($err) > 1) {
+            break;
+        }
+
+        $varset->add("slice_id", "unpacked", $slice_id);
+        $varset->add("name", "quoted", $name);
+        $varset->add("type", "quoted", $view_type);
+
+        foreach ($VIEW_FIELDS as $k => $v) {
+            if ( $VIEW_TYPES[$view_type][$k] ) {
+                $varset->add($k, $v["insert"], (($v["type"]=="bool") ? ($$k ? 1 : 0) : $$k));
+            }
+        }
+        if ( $view_id ) {
+            $SQL = "UPDATE view SET ". $varset->makeUPDATE() ." WHERE id='$view_id'";
+            if ( !$db->query($SQL)) {
+                $err["DB"] = MsgErr( _m("Can't change slice settings") );
+                break;   // not necessary - we have set the halt_on_error
+            }
+        } else {
+            if ( !$db->query("INSERT INTO view ". $varset->makeINSERT())) {
+                $err["DB"] = MsgErr( _m("Can't insert into view.") );
+                break;   // not necessary - we have set the halt_on_error
+            }
+        }
+        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+
+        foreach ($VIEW_TYPES[$view_type] as $k => $v) {
+            if (substr ($k,0,strlen("function:")) == "function:") {
+                $show_fn = "store_".substr($k,strlen("function:"));
+                $show_fn();
+            }
+        }
+        go_url( $back_url );
+    } while(false);
+
+    if ( count($err) <= 1 ) {
+        $Msg = MsgOK(_m("View successfully changed"));
     }
-    if ( count($err) > 1)
-      break;
-
-    $varset->add("slice_id", "unpacked", $slice_id);
-    $varset->add("name", "quoted", $name);
-    $varset->add("type", "quoted", $view_type);
-
-    foreach ($VIEW_FIELDS as $k => $v) {
-      if ( $VIEW_TYPES[$view_type][$k] ) {
-        $varset->add($k, $v["insert"], (($v["type"]=="bool") ? ($$k ? 1 : 0)
-                                                                      : $$k));
-      }
-    }
-    if ( $view_id ) {
-      $SQL = "UPDATE view SET ". $varset->makeUPDATE() ." WHERE id='$view_id'";
-      if ( !$db->query($SQL)) {
-        $err["DB"] = MsgErr( _m("Can't change slice settings") );
-        break;   // not necessary - we have set the halt_on_error
-      }
-    } else {
-      if ( !$db->query("INSERT INTO view ". $varset->makeINSERT())) {
-        $err["DB"] = MsgErr( _m("Can't insert into view.") );
-        break;   // not necessary - we have set the halt_on_error
-      }
-    }
-    $GLOBALS[pagecache]->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
-
-    foreach ($VIEW_TYPES[$view_type] as $k => $v) {
-      if (substr ($k,0,strlen("function:")) == "function:") {
-        $show_fn = "store_".substr($k,strlen("function:"));
-        $show_fn ();
-      }
-    }
-
-    go_url( $back_url );
-  }while(false);
-
-  if ( count($err) <= 1 )
-    $Msg = MsgOK(_m("View successfully changed"));
 }
 
 if ( !$update ) {  // set variables from database
-  if ( $view_id )  // edit specified view data
-    $SQL= " SELECT * FROM view WHERE id='$view_id'";
-  elseif( $new_templ AND $view_view)   // new view from template
-    $SQL= " SELECT * FROM view WHERE id='$view_view'";
-  elseif( $view_type == 'inputform') {         // new view - inputform
-    $vw_data['odd'] = GetInputFormTemplate(); // get current input form template
-    $SQL = false;
-  }
-  elseif( $view_type )         // new view - get default values from view table -
-                               //            take first view of the same type
-    $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
-  else         // error - someone swith the slice or so
-    go_url($back_url);
+    if ( $view_id ) {
+        // edit specified view data
+        $SQL= " SELECT * FROM view WHERE id='$view_id'";
+    } elseif( $new_templ AND $view_view) {
+        // new view from template
+        $SQL= " SELECT * FROM view WHERE id='$view_view'";
+    } elseif( $view_type == 'inputform') {
+        // new view - inputform
+        $vw_data['odd'] = GetInputFormTemplate(); // get current input form template
+        $SQL = false;
+    } elseif( $view_type ) {
+        // new view - get default values from view table -
+        //            take first view of the same type
+        $SQL= " SELECT * FROM view WHERE type='$view_type' ORDER by id";
+    } else {        // error - someone swith the slice or so
+        go_url($back_url);
+    }
 
-  if ( $SQL ) {
-      $db->query($SQL);
-      if ($db->next_record()) {
-        $vw_data = $db->Record;
-        if ( $new_templ )           // if we create view from template - get view type
-          $view_type = $db->f(type);
-      } else
-        $vw_data = array( "listlen" => 10 );   // default values
-  }
+    if ( $SQL ) {
+        $db->query($SQL);
+        if ($db->next_record()) {
+            $vw_data = $db->Record;
+            $view_type = $db->f('type');
+        } else {
+            $vw_data = array( "listlen" => 10 );   // default values
+        }
+    }
 } else {        // updating - load data into vw_data array
-  foreach ($VIEW_FIELDS as $k => $v) {
-    if ( $VIEW_TYPES[$view_type][$k] )
-      $vw_data[$k] = $$k;
-  }
+    foreach ($VIEW_FIELDS as $k => $v) {
+        if ( $VIEW_TYPES[$view_type][$k] ) {
+            $vw_data[$k] = $$k;
+        }
+    }
 }
 
 // operators array
@@ -331,9 +345,9 @@ require_once (($view_type == 'categories') OR ($view_type == 'links')) ?
                        $GLOBALS['AA_INC_PATH']."menu.php3";
 
 switch ( $view_type ) {
-    case 'categories': showMenu ($aamenus, "modadmin", $view_id ? "view$view_id" : "newcatview"); break;
-    case 'links':      showMenu ($aamenus, "modadmin", $view_id ? "view$view_id" : "newlinkview"); break;
-    default:           showMenu ($aamenus, "sliceadmin",""); break;
+    case 'categories': showMenu($aamenus, "modadmin", $view_id ? "view$view_id" : "newcatview"); break;
+    case 'links':      showMenu($aamenus, "modadmin", $view_id ? "view$view_id" : "newlinkview"); break;
+    default:           showMenu($aamenus, "sliceadmin",""); break;
 }
 
 echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";
@@ -341,9 +355,9 @@ PrintArray($err);
 echo $Msg;
 
 $form_buttons = array( 'update',
-                        'cancel'=>array("url"=>"se_views.php3"),
-                        'view_id'   => array('value'=> $view_id),
-                        'view_type' => array('value'=> $view_type),
+                       'cancel'    => array("url"=>"se_views.php3"),
+                       'view_id'   => array('value'=> $view_id),
+                       'view_type' => array('value'=> $view_type),
                       );
 
 // Print View Form ----------
@@ -354,28 +368,36 @@ FrmStaticText(_m("Id"), $view_id );
 foreach ($VIEW_TYPES[$view_type] as $k => $v) {
     if (substr ($k,0,strlen("function:")) == "function:") {
         $show_fn = "show_".substr($k,strlen("function:"));
-        $show_fn ();
+        $show_fn();
     }
-    if ( !($value = $vw_data[$k]) && $VIEW_TYPES_INFO[$view_type][$k]['default'] )  // we can define default values for fields (see constants.php3)
+    // we can define default values for fields (see constants.php3)
+    if ( !($value = $vw_data[$k]) && $VIEW_TYPES_INFO[$view_type][$k]['default'] ) {
         $value = $VIEW_TYPES_INFO[$view_type][$k]['default'];
+    }
 
     $input = $VIEW_FIELDS[$k]["input"];
 
     if (is_array($v)) {
         $label = $v["label"];
-        $help = $v["help"];
-        if ($v["input"])  $input = $v["input"];
-    }
-    else {
+        $help  = $v["help"];
+        if ($v["input"]) {
+            $input = $v["input"];
+        }
+    } else {
         $label = $v;
-        $help = "";
+        $help  = "";
+    }
+
+    // Create quick link to views
+    if ( !$help ) {
+        $help = view::getViewJumpLinks($value);
     }
 
     switch( $input ) {
         case "field":   FrmInputText(  $k, $label, $value, 254, 50, false, $help); break;
         case "area":    FrmTextarea(   $k, $label, $value,   4, 50, false, $help); break;
         case "areabig": FrmTextarea(   $k, $label, $value,  15, 80, false, $help); break;
-        case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type][modification], $value, false, $help); break;
+        case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type]['modification'], $value, false, $help); break;
         case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help); break;
         case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help); break;
         case "op":      FrmInputSelect($k, $label, $lookup_op, $value, false, $help); break;
@@ -391,10 +413,11 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
     case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases(), false, false , $form_buttons, $sess, $slice_id);
     case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons, $sess, $slice_id);    break;
-    case 'field':       if ( $r_fields )
+    case 'field':       if ( $r_fields ) {
                             $fields = $r_fields;
-                        else
+                        } else {
                             list($fields,) = GetSliceFields($slice_id);
+                        }
                         PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']),$fields, false, $form_buttons, $sess, $slice_id);
                         break;
     case 'justids':     PrintAliasHelp(GetAliasesFromFields('','','justids'), false, false, $form_buttons, $sess, $slice_id);
@@ -408,7 +431,6 @@ switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
 
 FrmTabEnd();
 echo "</FORM><br>";
-
 
 if ( $view_id ) {
   $ssiuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF);
