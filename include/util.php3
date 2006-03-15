@@ -645,17 +645,6 @@ function GetSliceInfo($slice_id) {
     return GetModuleInfo($slice_id,'S');
 }
 
-/*Obsoleted - see viewobj.php3 (mitra)
-// gets view fields
-function GetViewInfo($vid) {
-  global $db;
-  $db->query("SELECT view.*, slice.deleted FROM view, slice
-               WHERE slice.id=view.slice_id
-                 AND view.id='$vid'");
-  return  ($db->next_record() ? $db->Record : false);
-}
-*/
-
 /** function converts table from SQL query to array
  *  $key    - return array's key - 'NoCoLuMn' | '' | 'aa_first' | <database_column> | 'unpack:<database_column>'
  *  $values - return array's val - 'aa_all' |

@@ -1964,7 +1964,7 @@ function FrmRadioEasy($name, $arr, $selected="", $new_line=false) {
 /**
 * Prints start of form table with caption and possibly additional tags (classes) to tables
 */
-function FrmTabCaption( $caption, $outer_add='', $inner_add='', $buttons='', $sess='', $slice_id='', $valign='middle') {
+function FrmTabCaption( $caption='', $outer_add='', $inner_add='', $buttons='', $sess='', $slice_id='', $valign='middle') {
     echo '
     <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\" $outer_add>";
     if ($buttons) {
@@ -2136,10 +2136,12 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
         }
     }
 
-    if ( $sess )
-    $sess->hidden_session();
-    if ( $slice_id )
-    echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';
+    if ( $sess ) {
+        $sess->hidden_session();
+    }
+    if ( $slice_id ) {
+        echo '<input type="hidden" name="slice_id" value="'. $slice_id .'">';
+    }
 
     echo "</td>";
     if ($tr) { echo "</tr>"; }

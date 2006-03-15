@@ -80,6 +80,10 @@ require_once $GLOBALS['AA_INC_PATH']."locsessi.php3";    // DB_AA object definit
 
 add_vars();
 
+if (is_numeric($time_limit)) {
+    set_time_limit((int)$time_limit);
+}
+
 if (isset($slice_id)) $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 	   	 // open BD
 $db2 = new DB_AA; 		 // open BD
