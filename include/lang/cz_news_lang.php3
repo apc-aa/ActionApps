@@ -972,7 +972,7 @@ $_m["HTML code which appears at the top of slice area"]
 # admin/se_compact.php3, row 196, 216
 # admin/se_fulltext.php3, row 146
 $_m["Put here the HTML code combined with aliases form bottom of this page\n"
-   ."                     <br>The aliase will be substituted by real values from database when it will be posted to page"]
+   ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"]
  = "Sem patøí HTML kód v kombinaci s aliasy uvedenými dole na stránce\n"
    ."                     <br>Aliasy budou v okamžiku zobrazování na web nahrazeny skuteènými hodnotami z databáze";
 
