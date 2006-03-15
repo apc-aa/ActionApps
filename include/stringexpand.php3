@@ -390,7 +390,15 @@ function stringexpand_ids($slice_id, $conds=null, $sort=null, $delimiter=null) {
 
     list($fields,) = GetSliceFields($slice_id);
     $zids = QueryZIDs($fields, $slice_id, $conditions->getConds(), $order->getOrder());
-    return join($zids->longids(), '-');
+    return join($zids->longids(), $delimiter ? $delimiter : '-');
+}
+
+/** If $condition is filled by some text, then print $text. $text could contain
+ *  _#1 alias for the condition, but you can use any {} AA expression.
+ *  Example: {ifset:{img_height.....2}: height="_#1"}
+ */
+function stringexpand_ifset($condition, $text) {
+    return (strlen($condition)<1) ? '' : str_replace('_#1', $condition, $text);
 }
 
 /** Expand URL by adding session,
