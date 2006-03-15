@@ -1,3 +1,12 @@
+03/15/06 - new {ifset:<aa_expression>:<aa_output>}
+(honzam)   If <aa_expression> is filled by some text, then print <aa_output>.
+           <aa_output> could contain _#1 alias as shortcut for <aa_expression>
+           condition, but you can use any {} AA expression. Example:
+              {ifset:{img_height.....2}: height="_#1"}
+         - There are new links to View-edit page under each textarea, which
+           contain {view.php3?vid=...} so you can easily navigate between view
+           settings
+         - Fixed some language constants
 03/02/06 - new {ids:<slice>:<conds>[:<sort>[:<delimiter>]]} syntax, which
 (honzam)   returns long item ids based on on conditions  d-... (like in views)
            Example:
