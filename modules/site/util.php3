@@ -129,6 +129,7 @@ function ModW_PrintChoice_End($spot_id, $depth, $choices_index, $choices_count) 
 
 function ModW_PrintVariables( $spot_id, $vars ) {
     global $sess;
+    FrmTabCaption();
     echo "<tr><td valign=top><b>"._m("Spot&nbsp;variables")."</b></td><td>";
     if (isset($vars) AND is_array($vars)) {
         foreach ($vars as $k => $v) {
@@ -139,10 +140,12 @@ function ModW_PrintVariables( $spot_id, $vars ) {
     ModW_HiddenRSpotId();
     $sess->hidden_session();
     echo "</form></td></tr>";
+    FrmTabEnd();
 }
 
 function ModW_PrintConditions($spot_id, $conds, $vars) {
     global $sess;
+    FrmTabCaption();
     echo "<tr><td valign=top><b>"._m("Spot&nbsp;conditions")."</b></td><td>";
     if ( isset($vars) AND is_array($vars) ) {
         $i=0;
@@ -161,6 +164,7 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
         }
     }
     echo "</td></tr>";
+    FrmTabEnd();
 }
 
 function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
@@ -169,23 +173,20 @@ function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
     $db  = getDB();
     $SQL = "SELECT * FROM site_spot WHERE site_id = '". q_pack_id($site_id). "' AND spot_id = '$spot_id'";
     $db->query($SQL);
-    $content = safe($db->next_record() ? $db->f('content') : "");
+    $content = $db->next_record() ? $db->f('content') : "";
     freeDB($db);
 
-    echo '<table align=left border=0 cellspacing=0 width="100%" class=tabtxt>';
     ModW_PrintVariables($spot_id, $tree->get('variables',$spot_id));
     if (($vars=$tree->isOption($spot_id))) {
         ModW_PrintConditions($spot_id, $tree->get('conditions',$spot_id), $vars);
     }
 
     echo "<form method='post' name=fs action=\"". $_SERVER['PHP_SELF'] ."\">";
+    FrmTabCaption();
     ModW_HiddenRSpotId();
     FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false, false);
-    echo "<tr><td align=center colspan=2><textarea name='content' rows=20 cols=80>$content</textarea><br><br>
-          <input type=submit name='". _m("Submit") ."'>";
-    $sess->hidden_session();
-    echo "</td></tr>
-    </form>
-    </table>";
+    FrmTextarea('content', '', $content, 20, 80, false, view::getViewJumpLinks($content), "", true);
+    FrmTabEnd(array('submit'), $sess);
+    echo "</form>";
 }
 ?>

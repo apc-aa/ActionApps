@@ -105,7 +105,7 @@ class slice {
     }
 
     function name()        { return $this->getfield('name');         }
-    function jumpLink()    { return "<a href=\"".get_admin_url("index.php3?change_id=".$this->unpacked_id()) ."\">".$this->name()."</a>"; }
+    function jumpLink()    { return "<a href=\"".get_admin_url("index.php3?change_id=".$this->unpacked_id()). "\">".$this->name()."</a>"; }
     function deleted()     { return $this->getfield('deleted');      }
     function fileman_dir() { return $this->getfield('fileman_dir');  }
     function type()        { return $this->getfield('type');         }
