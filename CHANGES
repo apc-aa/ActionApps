@@ -1,3 +1,5 @@
+03/16/06 - small improvement of sitemodule UI - standard widgets used, where
+(honzam)   possible
 03/15/06 - new {ifset:<aa_expression>:<aa_output>}
 (honzam)   If <aa_expression> is filled by some text, then print <aa_output>.
            <aa_output> could contain _#1 alias as shortcut for <aa_expression>
