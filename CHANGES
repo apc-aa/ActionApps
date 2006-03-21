@@ -1,3 +1,7 @@
+03/21/06 - Added support for unaliasing of parameters of field input
+(brazda)   functions. Now you can use any {} AA expressions in parameters
+           (e.g. conds[0][switch..........]={user:switch..........} in 
+           combination with user settings from ReaderManagement module).
 03/16/06 - small improvement of sitemodule UI - standard widgets used, where
 (honzam)   possible
 03/15/06 - new {ifset:<aa_expression>:<aa_output>}
