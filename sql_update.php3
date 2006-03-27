@@ -112,7 +112,7 @@ $tablelist = array(   'active_sessions' => "(
                           val text,
                           `changed` varchar(14) NOT NULL default '',
                           PRIMARY KEY  (name,sid),
-                          KEY changed (changed)
+                          KEY `changed` (`changed`)
                       )",
                       'alerts_admin' => "(
                           id int(10) NOT NULL auto_increment,
@@ -192,13 +192,13 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (group_id)
                       )",
                       'content' => "(
-                         item_id varchar(16) NOT NULL default '',
-                         field_id varchar(16) NOT NULL default '',
-                         number bigint(20) default NULL,
-                         text mediumtext,
-                         flag smallint(6) default NULL,
-                         KEY item_id (item_id,field_id,text(16)),
-                         KEY text (text(10))
+                          item_id varbinary(16) NOT NULL default '',
+                          field_id varbinary(16) NOT NULL default '',
+                          number bigint(20) default NULL,
+                          `text` mediumtext,
+                          flag smallint(6) default NULL,
+                          KEY `text` (`text`(10)),
+                          KEY item_id (item_id,field_id,`text`(16))
                      )",
                      'cron' => "(
                           id bigint(30) NOT NULL auto_increment,
@@ -278,8 +278,18 @@ $tablelist = array(   'active_sessions' => "(
                           slice_id char(16) NOT NULL default '',
                           uid char(60) NOT NULL default '',
                           `function` smallint(5) NOT NULL default '0',
-                          PRIMARY KEY  (slice_id,uid,function),
-                          KEY slice_id (slice_id)
+                          PRIMARY KEY  (slice_id,uid,`function`)
+                      )",
+                      'event' => "(
+                          id varchar(32) NOT NULL default '' COMMENT 'record id',
+                          `type` varchar(32) NOT NULL default '' COMMENT 'type of event',
+                          class varchar(32) default NULL COMMENT 'used for event condition',
+                          selector varchar(255) default NULL COMMENT 'used for event condition - mostly id of changed item, ...',
+                          reaction varchar(50) NOT NULL default '' COMMENT 'name of php class which is invoked when the event come',
+                          params text COMMENT 'parameters for reaction object',
+                          PRIMARY KEY  (id),
+                          KEY type_class (`type`,class),
+                          KEY type_selector (`type`,selector(32))
                       )",
                       'external_feeds' => "(
                           feed_id int(11) NOT NULL auto_increment,
@@ -365,9 +375,9 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (name)
                       )",
                       'item' => "(
-                          id char(16) NOT NULL default '',
+                          id binary(16) NOT NULL default '',
                           short_id int(11) NOT NULL auto_increment,
-                          slice_id char(16) NOT NULL default '',
+                          slice_id binary(16) NOT NULL default '',
                           status_code smallint(5) NOT NULL default '0',
                           post_date bigint(20) NOT NULL default '0',
                           publish_date bigint(20) default NULL,
@@ -503,7 +513,7 @@ $tablelist = array(   'active_sessions' => "(
                           valid_rank int(11) NOT NULL default '0',
                           PRIMARY KEY  (id),
                           KEY checked (checked),
-                          KEY type (type),
+                          KEY `type` (`type`),
                           KEY validated (validated),
                           KEY valid_rank (valid_rank),
                           KEY name (name),
@@ -525,7 +535,7 @@ $tablelist = array(   'active_sessions' => "(
                           selector varchar(255) default NULL,
                           params varchar(128) default NULL,
                           PRIMARY KEY  (id),
-                          KEY time (time)
+                          KEY `time` (`time`)
                       )",
                       'membership' => "(
                           groupid int(11) NOT NULL default '0',
@@ -544,6 +554,8 @@ $tablelist = array(   'active_sessions' => "(
                           created_at bigint(20) NOT NULL default '0',
                           created_by char(255) NOT NULL default '',
                           owner char(16) NOT NULL default '',
+                          app_id char(16) default NULL,
+                          priority smallint(6) NOT NULL default '0',
                           flag int(11) default '0',
                           PRIMARY KEY  (id)
                       )",
@@ -910,7 +922,7 @@ $tablelist = array(   'active_sessions' => "(
                           id int(11) NOT NULL auto_increment,
                           description varchar(200) NOT NULL default '',
                           email longtext,
-                          subject varchar(255) NOT NULL default '',
+                          `subject` varchar(255) NOT NULL default '',
                           mail_from varchar(255) NOT NULL default '_#ME_MAIL_',
                           PRIMARY KEY  (id)
                       )"
