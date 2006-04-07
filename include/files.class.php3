@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * File Utilities.
  * @author $Author$
@@ -6,17 +6,17 @@
  * @package ImageManager
  */
 
-define('FILE_ERROR_NO_SOURCE', 100);
-define('FILE_ERROR_COPY_FAILED', 101);
-define('FILE_ERROR_DST_DIR_FAILED', 102);
-define('FILE_ERROR_NOT_UPLOADED', 104);
+define('FILE_ERROR_NO_SOURCE',        100);
+define('FILE_ERROR_COPY_FAILED',      101);
+define('FILE_ERROR_DST_DIR_FAILED',   102);
+define('FILE_ERROR_NOT_UPLOADED',     104);
 define('FILE_ERROR_TYPE_NOT_ALLOWED', 105); // type of uploaded file not allowed
-define('FILE_ERROR_DIR_CREATE', 106);       // can't create directory for image uploads
-define('FILE_ERROR_CHMOD', 107);
-define('FILE_ERROR_WRITE', 108);
-define('FILE_ERROR_NO_DESTINATION', 109);
-define('FILE_ERROR_READ', 110);
-define('FILE_COPY_OK', 199);
+define('FILE_ERROR_DIR_CREATE',       106); // can't create directory for image uploads
+define('FILE_ERROR_CHMOD',            107);
+define('FILE_ERROR_WRITE',            108);
+define('FILE_ERROR_NO_DESTINATION',   109);
+define('FILE_ERROR_READ',             110);
+define('FILE_COPY_OK',                199);
 
 
 /**
@@ -45,59 +45,31 @@ class Files {
         return Files::lastErr(null, null, true);
     }
 
-    /** Get the base for the uploads */
-    function getUploadBase(&$slice) {
-        $ret = array();
-        $fileman_dir = $slice->getfield('fileman_dir');
-        if ($fileman_dir AND is_dir(FILEMAN_BASE_DIR.$fileman_dir)) {
-            $ret['path']  = FILEMAN_BASE_DIR.$fileman_dir."/items";
-            $ret['perms'] = $GLOBALS['FILEMAN_MODE_DIR'];
-        } else {
-            // files are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
-            $ret['path']  = IMG_UPLOAD_PATH. $slice->unpacked_id();
-            $ret['perms'] = (int)IMG_UPLOAD_DIR_MODE;
-        }
-        return $ret;
-    }
-
-    /** Try to transform file path to file url - based on setting of file
-     *  uploads or filemanager */
-    function getUrlFromPath($filename) {
-        if (strpos($filename, IMG_UPLOAD_PATH) === 0) {
-            return IMG_UPLOAD_URL. substr($filename,strlen(IMG_UPLOAD_PATH));
-        }
-        if (strpos($filename, FILEMAN_BASE_DIR) === 0) {
-            return FILEMAN_BASE_URL. substr($filename,strlen(FILEMAN_BASE_DIR));
-        }
-        return $filename;
-    }
-
     /** Prepares slice directories for uploaded file and returns destination
      *  dir name
      */
     function destinationDir(&$slice) {
-        return Files::_destinationDirCreate(Files::getUploadBase($slice));
+        $upload = $slice->getUploadBase();
+        return Files::_destinationDirCreate($upload['path'], $upload['perms']);
     }
 
     /** Prepares global AA directory for uploaded file and returns destination
      *  dir name
      */
     function aadestinationDir() {
-        $dest_dir['path']  = IMG_UPLOAD_PATH. AA_ID;
-        $dest_dir['perms'] = (int)IMG_UPLOAD_DIR_MODE;
-        return Files::_destinationDirCreate($dest_dir);
+        return Files::_destinationDirCreate(IMG_UPLOAD_PATH. AA_ID, (int)IMG_UPLOAD_DIR_MODE);
     }
 
     /** Prepares directory for uploaded file and returns destination dir name
      */
-    function _destinationDirCreate($dest_dir) {
-        if (!$dest_dir['path'] OR !is_dir($dest_dir['path'])) {
-            if (!Files::CreateFolder($dest_dir['path'], $dest_dir['perms'])) {
+    function _destinationDirCreate($path, $perms) {
+        if (!$path OR !is_dir($path)) {
+            if (!Files::CreateFolder($path, $perms)) {
                 Files::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));  // set error code
                 return false;
             }
         }
-        return $dest_dir['path'];
+        return $path;
     }
 
     /** checks, if the file is not exist and in case it exist, it finds similar
@@ -203,12 +175,12 @@ class Files {
         // copy the file from the temp directory to the upload directory, and test for success
         // (if the file already exists, move_uploaded_file will overwrite it!)
         if (!move_uploaded_file($up_file['tmp_name'], $dest_file)) {
-            Files::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m("Can't move image  %1 to %2", $up_file['tmp_name'], $dest_file));  // set error code
+            Files::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m("Can't move image  %1 to %2", array($up_file['tmp_name'], $dest_file)));  // set error code
             return false;
         }
 
         // now change permissions (if we have to)
-        $parms = (int)IMG_UPLOAD_FILE_MODE;
+        $perms = (int)IMG_UPLOAD_FILE_MODE;
         if ($perms AND !chmod($dest_file, $perms)) {
             Files::lastErr(FILE_ERROR_CHMOD, _m("Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php3", $dest_file, (int)IMG_UPLOAD_FILE_MODE));  // set error code
             return false;
@@ -252,7 +224,7 @@ class Files {
         if ( !$slice ) {
             $upload_dir = IMG_UPLOAD_PATH. AA_ID;
         } else {
-            $dir = Files::getUploadBase($slice);
+            $dir = $slice->getUploadBase();
             $upload_dir = $dir['path'];
         }
         if ($handle = opendir($upload_dir)) {
@@ -311,8 +283,7 @@ class Files {
      * @param boolean $unique create unique destination file if true.
      * @return string the new copied filename, else error if anything goes bad.
      */
-    function copyFile($source, $destination_dir, $destination_file, $unique=true)
-    {
+    function copyFile($source, $destination_dir, $destination_file, $unique=true) {
         if (!(file_exists($source) && is_file($source))) {
             return FILE_ERROR_NO_SOURCE;
         }
@@ -343,10 +314,9 @@ class Files {
      * @param string $newFolder specifiy the full path of the new folder.
      * @return boolean true if the new folder is created, false otherwise.
      */
-    function createFolder($newFolder, $perm=0777)
-    {
-        mkdir ($newFolder, $perm);
-        return chmod($newFolder, $perm);
+    function createFolder($newFolder, $perms=0777) {
+        mkdir($newFolder, $perms);
+        return chmod($newFolder, $perms);
     }
 
 
@@ -356,8 +326,7 @@ class Files {
      * @param string $filename the orginal filename
      * @return string the escaped safe filename
      */
-    function escape($filename)
-    {
+    function escape($filename) {
         return preg_replace('/[^\w\._]/', '_', $filename);
     }
 
@@ -366,8 +335,7 @@ class Files {
      * @param string $file file to be deleted
      * @return boolean true if deleted, false otherwise.
      */
-    function delFile($file)
-    {
+    function delFile($file) {
         return is_file($file) ? unlink($file) : false;
     }
 
@@ -379,8 +347,7 @@ class Files {
      * error if the directory is not empty.
      * @return boolean true if deleted.
      */
-    function delFolder($folder, $recursive=false)
-    {
+    function delFolder($folder, $recursive=false) {
         $deleted = true;
         if ($recursive) {
             $d = dir($folder);
@@ -407,8 +374,7 @@ class Files {
      * @param string $path the path
      * @return string path with trailing /
      */
-    function fixPath($path)
-    {
+    function fixPath($path) {
         //append a slash to the path if it doesn't exists.
         if (!(substr($path,-1) == '/')) {
             $path .= '/';
@@ -422,8 +388,7 @@ class Files {
      * @param string $pathB path two
      * @return string a trailing slash combinded path.
      */
-    function makePath($pathA, $pathB)
-    {
+    function makePath($pathA, $pathB) {
         $pathA = Files::fixPath($pathA);
         if (substr($pathB,0,1)=='/') {
             $pathB = substr($pathB,1);
@@ -438,8 +403,7 @@ class Files {
      * @param string $pathB the ending path with file
      * @return string combined file path.
      */
-    function makeFile($pathA, $pathB)
-    {
+    function makeFile($pathA, $pathB) {
         $pathA = Files::fixPath($pathA);
         if (substr($pathB,0,1)=='/') {
             $pathB = substr($pathB,1);
@@ -453,8 +417,7 @@ class Files {
      * @param int $size the raw filesize
      * @return string formated file size.
      */
-    function formatSize($size)
-    {
+    function formatSize($size) {
         if ($size < 1024) {
             return $size.' bytes';
         } elseif ($size >= 1024 && $size < 1024*1024) {

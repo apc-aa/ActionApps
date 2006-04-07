@@ -364,12 +364,12 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
                 $db = getDB(); $db->tquery($SQL); freeDB($db);
 
                 // store link to thumbnail
-                $val['value'] = Files::getUrlFromPath($dest_file_tmb);
+                $val['value'] = $slice->getUrlFromPath($dest_file_tmb);
                 insert_fnc_qte( $item_id, $f, $val, "", $additional);
             }
         } // params[3]
 
-        $value['value'] = Files::getUrlFromPath($dest_file);
+        $value['value'] = $slice->getUrlFromPath($dest_file);
     } // File uploaded
     // store link to uploaded file or specified file URL if nothing was uploaded
     insert_fnc_qte( $item_id, $field, $value, "", $additional);

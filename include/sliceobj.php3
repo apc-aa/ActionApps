@@ -172,6 +172,33 @@ class slice {
         }
     }
 
+    /** Get the base for the file uploads */
+    function getUploadBase() {
+        $ret = array();
+        $fileman_dir = $this->getfield('fileman_dir');
+        if ($fileman_dir AND is_dir(FILEMAN_BASE_DIR.$fileman_dir)) {
+            $ret['path']  = FILEMAN_BASE_DIR.$fileman_dir."/items";
+            $ret['url']   = FILEMAN_BASE_URL.$fileman_dir."/items";
+            $ret['perms'] = $GLOBALS['FILEMAN_MODE_DIR'];
+        } else {
+            // files are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
+            $ret['path']  = IMG_UPLOAD_PATH. $this->unpacked_id();
+            $ret['url']   = get_if($this->getfield('_upload_url.....'), IMG_UPLOAD_URL. $this->unpacked_id());
+            $ret['perms'] = (int)IMG_UPLOAD_DIR_MODE;
+        }
+        return $ret;
+    }
+
+    /** Try to transform file path to file url - based on setting of file
+     *  uploads or filemanager */
+    function getUrlFromPath($filename) {
+        $upload = $this->getUploadBase();
+        if (strpos($filename, $upload['path']) === 0) {
+            return $upload['url']. substr($filename,strlen($upload['path']));
+        }
+        return $filename;
+    }
+
     // Get all the views for this slice
     function views() {
         $SQL = "slice_id = '".$this->sql_id()."'";
