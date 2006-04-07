@@ -99,6 +99,7 @@ if ( $add || $update ) {
         ValidateInput("name", _m("Title"), $name, $err, true, "text");
         ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
         ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
+        ValidateInput("priority", _m("Priority (order in slice-menu)"), $priority, $err, false, "number");
         ValidateInput("d_listlen", _m("Listing length"), $d_listlen, $err, true, "number");
         ValidateInput("permit_anonymous_post", _m("Allow anonymous posting of items"), $permit_anonymous_post, $err, false, "number");
         ValidateInput("permit_anonymous_edit", _m("Allow anonymous editing of items"), $permit_anonymous_edit, $err, false, "number");
@@ -126,6 +127,7 @@ if ( $add || $update ) {
             $varset->add("name", "quoted", $name);
             $varset->add("owner", "unpacked", $owner);
             $varset->add("slice_url", "quoted", $slice_url);
+            $varset->add("priority", "number", $priority);
             if ( $superadmin ) {
                 $varset->add("deleted", "number", $deleted);
             }
@@ -137,6 +139,8 @@ if ( $add || $update ) {
                 $err["DB"] = MsgErr("Can't change slice");
                 break;
             }
+
+            $varset->remove('priority');  // is not in slice table (which is OK)
 
             $varset->add("d_listlen", "number", $d_listlen);
             if ( $superadmin ) {
@@ -171,6 +175,7 @@ if ( $add || $update ) {
             $varset->set("name", $name, "quoted");
             $varset->set("owner", $owner, "unpacked");
             $varset->set("slice_url", $slice_url, "quoted");
+            $varset->set("priority", $priority, "number");
             $varset->set("deleted", $deleted, "number");
             $varset->set("lang_file", $lang_file, "quoted");
             $varset->set("type","S","quoted");

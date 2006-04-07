@@ -66,7 +66,7 @@ require_once $GLOBALS['AA_INC_PATH']."slicedit.php3";
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
   // set variables from database - allways
 $db = getDB();
-$SQL= " SELECT * FROM slice WHERE id='".q_pack_id($foo_source)."'";
+$SQL= " SELECT *, module.priority FROM slice, module WHERE slice.id = module.id AND module.id='".q_pack_id($foo_source)."'";
 $db->query($SQL);
 if ($db->next_record()) {
     while (list($key,$val,,) = each($db->Record)) {
@@ -146,6 +146,7 @@ if ($slice_id == "") {
   FrmInputText("name", _m("Title"), $name, 99, 25, true);
 //echo "****************************************";
   FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, 254, 25, false);
+  FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5, false);
   $ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
   echo "<TR><TD colspan=2>" . _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") . "<BR><pre>" .
        "&lt;!--#include virtual=&quot;" . $ssiuri .
