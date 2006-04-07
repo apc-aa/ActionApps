@@ -30,75 +30,76 @@ http://www.apc.org/
     without reprinting all the options */
 
 function PrintModuleSelection() {
-  global $slice_id, $g_modules, $sess, $PHP_SELF, $db, $MODULES;
+    global $slice_id, $g_modules, $sess, $PHP_SELF, $db, $MODULES;
 
-  if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
+    if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
 
-    // create the modulesOptions content:
-    $permitted = GetUserSlices();
-    if ($GLOBALS[debugpermissions]) huhl("Slice permissions=",$permissions);
-    if ($permitted != "all") {
-        reset ($permitted);
-        while (list ($perm_slice_id) = each ($permitted))
-            $slice_ids .= ",'" . q_pack_id ($perm_slice_id) ."'";
-        $slice_ids = "WHERE module.id IN (".substr($slice_ids,1).") ";
-    }
-    echo "
-    <SCRIPT language=\"javascript\" type=\"text/javascript\"><!--
-        var modulesOptions = ''\n";
-    $db->query("SELECT module.id, module.type, slice.type AS slice_type, module.name
-        FROM module LEFT JOIN slice ON module.id=slice.id "
-        .$slice_ids);
-
-    $module_types = array (
-        "Alerts" => array (5, _m("Alerts")),
-        "J" => array (6, _m("Jump inside control panel")),
-        "Links" => array (7, _m("Links")),
-        "A" => array (8, _m("MySQL Auth (old version)")),
-        "P" => array (9, _m("Polls")),
-        "W" => array (10,_m("Site")),
-        "S" => array (0, _m("Slice")),
-        "RM"=> array (1, _m("Reader Management Slice")));
-
-    while ($db->next_record()) {
-        if ($db->f("type") == "S")
-            $order = $db->f("slice_type") == "ReaderManagement" ? 1 : 0;
-        else $order = $module_types[$db->f("type")][0];
-        //if (! $module_types[$db->f("type")]) { echo $db->f("type")."!!"; exit; }
-        $modules[$order][$db->f("id")] = $db->f("name");
-    }
-    // count($modules) - count of module types
-    $display_modtypes = ( count($modules) > 1 ); // display types in selectbox?
-
-    $option_begin = "\t+'<option value=\"";
-    ksort ($modules);
-    reset ($modules);
-    while (list ($order, $mods) = each ($modules)) {  // for all module types
-        if ( $display_modtypes ) {
-            foreach ($module_types as $module_type)
-                if ($module_type[0] == $order)
-                     echo $option_begin . '" class="sel_title">*** '.$module_type[1]." ***'\n";
+        // create the modulesOptions content:
+        $permitted = GetUserSlices();
+        if ($permitted != "all") {
+            $slice_ids = "'". implode("','", array_map( 'q_pack_id', array_keys($permitted))) . "'";
+            $slice_ids = "WHERE module.id IN ($slice_ids) ";
         }
-        asort ($mods);
-        reset ($mods);
-        while (list ($id, $name) = each ($mods)) {
-            echo $option_begin . htmlspecialchars(unpack_id ($id))."\"";
-            if ($slice_id == unpack_id ($id))
-                echo " selected";
-            echo ">". str_replace("'","`",safe($name)) . "'\n";
-        }
-    }
 
-    if ( !$slice_id )   // new slice
-      echo "\t+'<option value=\"new\" selected>". _m("New slice") + "'";
-    echo ";
+        $js = "
+            var modulesOptions = ''\n";
+        $db->query("SELECT module.id, module.type, slice.type AS slice_type, module.name
+                      FROM module LEFT JOIN slice ON module.id=slice.id $slice_ids
+                      ORDER BY module.priority, module.name");
+
+        $module_types = array (
+            "Alerts" => array (5, _m("Alerts")),
+            "J" => array (6, _m("Jump inside control panel")),
+            "Links" => array (7, _m("Links")),
+            "A" => array (8, _m("MySQL Auth (old version)")),
+            "P" => array (9, _m("Polls")),
+            "W" => array (10,_m("Site")),
+            "S" => array (0, _m("Slice")),
+            "RM"=> array (1, _m("Reader Management Slice")));
+
+        while ($db->next_record()) {
+            if ($db->f("type") == "S") {
+                $order = $db->f("slice_type") == "ReaderManagement" ? 1 : 0;
+            } else {
+                $order = $module_types[$db->f("type")][0];
+            }
+            //if (! $module_types[$db->f("type")]) { echo $db->f("type")."!!"; exit; }
+            $modules[$order][$db->f("id")] = $db->f("name");
+        }
+        // count($modules) - count of module types
+        $display_modtypes = ( count($modules) > 1 ); // display types in selectbox?
+
+        $option_begin = "\t+'<option value=\"";
+        ksort ($modules);
+        foreach ($modules as $order => $mods) {
+            if ( $display_modtypes ) {
+                foreach ($module_types as $module_type) {
+                    if ($module_type[0] == $order) {
+                        $js .= $option_begin . '" class="sel_title">*** '.$module_type[1]." ***'\n";
+                    }
+                }
+            }
+            //        asort ($mods);
+            foreach ($mods as $id => $name) {
+                $js .= $option_begin . htmlspecialchars(unpack_id($id))."\"";
+                if ($slice_id == unpack_id($id)) {
+                    $js .= " selected";
+                }
+                $js .= ">". str_replace("'","`",safe($name)) . "'\n";
+            }
+        }
+
+        if ( !$slice_id ) {   // new slice
+            $js .= "\t+'<option value=\"new\" selected>". _m("New slice") + "'";
+        }
+        $js .= ";
         document.write('<select name=slice_id onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
         document.write(modulesOptions);
-        document.write('</select>');
-    //-->
-    </SCRIPT>\n";
-} else
-    echo "&nbsp;";
+        document.write('</select>');\n";
+        FrmJavascriptCached($js, 'modules');
+    } else {
+        echo "&nbsp;";
+    }
 }
 
 // ----------------------------------------------------------------------------------------
