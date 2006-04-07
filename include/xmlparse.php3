@@ -81,6 +81,10 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
         } else {                           // if not array - just store content
             $content4id[$key][0]['value'] = $val;
         }
+        // set html flag from field default
+        if ( $fields[$key]["html_default"] > 0 ) {
+            $content4id[$key][0]['flag'] |= FLAG_HTML;
+        }
         $content4id[$key][0]['flag'] |= FLAG_OFFLINE;      // mark as offline filled
     }
 
