@@ -346,6 +346,11 @@ function stringexpand_testexpfnctn($var) { return "Just testing it".$var; }
 function stringexpand_fmod($x,$y)        { return fmod($x,$y); }
 function stringexpand_cookie($name)      { return $_COOKIE[$name]; }
 
+function stringexpand_now() {
+    return time();
+}
+
+
 function stringexpand_substr($string,$start,$length=999999999) {
     return substr($string,$start,$length);
 }
