@@ -908,4 +908,28 @@ function stringexpand_preg_match($pattern, $subject) {
     preg_match($pattern, $subject, $matches);
     return $matches[0];
 }
+
+/** @todo - convert whole stringexpand to the new class approach
+ *        - this is just begin
+ */
+class AA_Stringexpand {
+
+    /** static function */
+    function unalias(&$text, $remove="", $item=null) {
+        // just create variables and set initial values
+        $maxlevel = 0;
+        $level    = 0;
+        $GLOBALS['g_formpart'] = 0;  // used for splited inputform into parts
+        return new_unalias_recurent($text, $remove, $level, $maxlevel, $item ); // Note no itemview param
+    }
+
+    function unaliasArray(&$arr, $remove="", $item=null) {
+        if (is_array( $arr )) {
+            foreach ( $arr as $k => $text ) {
+                $arr[$k] = AA_Stringexpand::unalias($text, $remove, $item);
+            }
+        }
+    }
+}
+
 ?>

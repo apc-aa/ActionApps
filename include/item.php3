@@ -481,7 +481,7 @@ class item {
           return $this->subst_alias( $var );
       }
       foreach ( $var as $k => $v ) {
-         $ret[$k] = $this->subst_alias( $v );
+          $ret[$k] = $this->subst_alias( $v );
       }
       return $ret;
   }

@@ -37,6 +37,7 @@ require_once $GLOBALS['AA_INC_PATH']."constedit_util.php3";
 require_once $GLOBALS['AA_INC_PATH']."javascript.php3";
 require_once $GLOBALS['AA_INC_PATH']."profile.class.php3";
 require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+require_once $GLOBALS['AA_INC_PATH']."stringexpand.php3";
 require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
 
 // IsUserNameFree() function deffinition here
@@ -508,6 +509,7 @@ class aainputfield {
             $this->input_help    = $field['input_help'];
             $this->input_morehlp = $field['input_morehlp'];
             $funct = ParamExplode($field["input_show_func"]);
+            AA_Stringexpand::unaliasArray($funct);
             $this->input_type    = $funct[0];
             $this->param         = array_slice( $funct, 1 );
             $this->html_rb_show  = $field["html_show"];

@@ -1,6 +1,17 @@
+04/07/06 - added priority field for slices (modules), so you can reorder
+(honzam)   the modules in top-right selectbox
+         - top-right slice/module selecbox is now generated as external
+           javascript file (cached), so the admin pages are loaded more quicker
+         - new {now} alias (returns current time as timestamp, so you can use
+           it in compare functions)
+         - new "clear pagecache" option in test.php3
+         - fixed problem with fileuploads - new directory for slice is created
+           with the right permissions, again
+         - fixed bug in offline filling - the HTML falg was not accepted
+         - fixed bug in the unaliasing of parameters of field input functions
 03/21/06 - Added support for unaliasing of parameters of field input
 (brazda)   functions. Now you can use any {} AA expressions in parameters
-           (e.g. conds[0][switch..........]={user:switch..........} in 
+           (e.g. conds[0][switch..........]={user:switch..........} in
            combination with user settings from ReaderManagement module).
 03/16/06 - small improvement of sitemodule UI - standard widgets used, where
 (honzam)   possible

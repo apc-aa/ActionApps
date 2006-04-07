@@ -179,10 +179,7 @@ function ParamExplode($param) {
   $c = str_replace(":", "##Sx",$b);            // Separation string is //#Sx
   $d = str_replace("__-__.", ":", $c);         // change "#:" to ":"
   $e = str_replace("__-__2", "://", $d);       // change back "://"
-  // Unalias parameters
-  $maxlevel = 0;
-  $f = new_unalias_recurent($e, '', 0, $maxlevell);
-  return explode("##Sx", $f);
+  return explode("##Sx", $e);
 }
 
 function ParamImplode_replaceneeded($string) {

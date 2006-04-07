@@ -163,7 +163,7 @@ $contentcache = new contentcache;
 srand((double)microtime()*1000000);
 
 // Create g_modules: a global array which holds user editable modules
-$db->query("SELECT id, name, type, deleted FROM module ORDER BY name");
+$db->query("SELECT id, name, type, deleted FROM module ORDER BY priority, name");
 while ($db->next_record()) {
     $my_slice_id = unpack_id128($db->f('id'));
     if (IsSuperadmin() OR ( !$db->f('deleted') AND $perm_slices[$my_slice_id] )) {
