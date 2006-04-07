@@ -158,6 +158,46 @@ class Optimize_readers_login2id extends Optimize{
     }
 }
 
+/** Testing if relation table contain records, where values in both columns are
+ *  identical (which was bug fixed in Jan 2006)
+ */
+class Optimize_clear_pagecache extends Optimize {
+
+    function name() {
+        return _m("Clear Pagecache");
+    }
+
+    function description() {
+        return _m("Whole pagecache will be invalidated and deleted");
+    }
+
+    function test() {
+        $this->messages[] = _m('There is nothing to test.');
+        return true;
+    }
+
+    /** Deletes the pagecache - the renaming and deleting is much, much quicker,
+     *  than easy DELETE FROM ...
+     */
+    function repair() {
+        $db  = getDb();
+        $db->query('CREATE TABLE pagecache_new LIKE pagecache');
+        $this->messages[] = _m('Table pagecache_new created');
+        $db->query('CREATE TABLE pagecache_str2find_new LIKE pagecache_str2find');
+        $this->messages[] = _m('Table pagecache_str2find_new created');
+        $db->query('RENAME TABLE pagecache_str2find TO pagecache_str2find_bak, pagecache TO pagecache_bak');
+        $this->messages[] = _m('Renamed tables pagecache_* to pagecache_*_bak');
+        $db->query('RENAME TABLE pagecache_str2find_new TO pagecache_str2find, pagecache_new TO pagecache');
+        $this->messages[] = _m('Renamed tables pagecache_*_new to pagecache_*');
+        $db->query('DROP TABLE pagecache_str2find_bak, pagecache_bak');
+        $this->messages[] = _m('Old pagecache_*_bak tables dropped');
+        freeDb($db);
+        return true;
+    }
+}
+
+
+
 if ($_GET['test'] AND (strpos($_GET['test'], 'Optimize_')===0)) {
     $optimizer = Components::factory($_GET['test']);
     $optimizer->test();
