@@ -1,3 +1,5 @@
+04/19/06 - authors can now see all items in related item window but they 
+(brazda)   can edit only their own items
 04/07/06 - added priority field for slices (modules), so you can reorder
 (honzam)   the modules in top-right selectbox
          - top-right slice/module selecbox is now generated as external
