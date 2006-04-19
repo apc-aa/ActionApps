@@ -175,14 +175,6 @@ FrmJavascript("
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
 
-// authors have only permission to edit their own items
-$perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
-if (!$perm_edit_all ) {
-    $conds[] = array('operator'         => '=',
-                     'value'            => $auth->auth['uid'],
-                     'posted_by.......' => 1 );
-}
-
 $zids=QueryZIDs($slice->fields('record'), $module_id, $conds, $sort, "", $frombins);
 
 $manager->printSearchbarBegin();
