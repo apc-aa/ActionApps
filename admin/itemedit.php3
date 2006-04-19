@@ -211,6 +211,17 @@ if ($edit) {
     }
 
     $content4id = new ItemContent($content[$id]);
+
+    // authors have only permission to edit their own items
+    $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
+    $item_user = $content4id->getValue('posted_by.......');
+    $real_user = $auth->auth['uid'];
+    if (!( $perm_edit_all || ( $item_user == $real_user ) )) {
+        $err["DB"] = MsgErr(_m("Error: You have no rights to edit item."));
+        MsgPage(con_url($sess->url(self_base() ."index.php3"), "slice_id=$slice_id"), $err, "standalone");
+        exit;
+    }
+
 } else {
     // we need the $content4id to be object (for getForm, at least)
     $content4id = new ItemContent;
