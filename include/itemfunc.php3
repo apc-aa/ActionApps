@@ -722,6 +722,14 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
 
         // Run the validation which really only validates
         if ($do_validate && ($action == "insert" || $action == "update")) {
+            // special setting for file upload - there we solve the problem
+            // of required fileupload field, but which is empty at this moment
+            if ( $f["required"] AND (substr($f["input_show_func"], 0,3) === 'fil')) {
+                ValidateInput($varname, $f["name"], $$varname. $GLOBALS[$varname.'x'] , $err, // status code is never required
+                    $f["required"] ? 1 : 0, $f["input_validate"]);
+                continue;
+            }
+
             switch( $validate ) {
                 case 'text':
                 case 'url':

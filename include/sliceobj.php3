@@ -305,6 +305,9 @@ class slice {
                 // if we have to use form multipart or not
                 list($show_func) = explode(":", $f["input_show_func"], 2);
                 $this->show_func_used[$show_func] = true;
+                if ($show_func == 'fil') {
+                    continue;
+                }
 
                 switch( $validate ) {
                     case 'text':
