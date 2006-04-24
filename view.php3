@@ -96,7 +96,16 @@ if ($debug) huhl("Starting view");
 if ($contenttype) {
     header("Content-type: $contenttype");
 }
-echo GetView(ParseViewParameters());
+
+$text = GetView(ParseViewParameters());
+
+if ($convertto AND $convertfrom) {
+    require_once $GLOBALS["AA_INC_PATH"]."convert_charset.class.php3";
+    $encoder = new ConvertCharset;
+    $text = $encoder->Convert($text, $convertfrom, $convertto);
+}
+
+echo $text;
 
 if ($debug) huhl("Completed view");
 
