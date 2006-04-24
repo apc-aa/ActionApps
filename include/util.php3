@@ -1690,18 +1690,16 @@ function get_email_types() {
 }
 
 /// @return array month names
-function monthNames()
-{
+function monthNames() {
     return array( 1 => _m('January'), _m('February'), _m('March'), _m('April'), _m('May'), _m('June'),
         _m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December'));
 }
 
 /** Creates values for a select box showing some param wizard section. */
-function getSelectBoxFromParamWizard($var)
-{
-    reset ($var["items"]);
-    while (list ($value, $prop) = each ($var["items"]))
+function getSelectBoxFromParamWizard($var) {
+    foreach ($var["items"] as $value => $prop) {
         $retval[$value] = $prop["name"];
+    }
     return $retval;
 }
 

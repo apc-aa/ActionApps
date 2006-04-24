@@ -1,4 +1,17 @@
-04/19/06 - authors can now see all items in related item window but they 
+04/24/06 - new parameter convertto and convertfrom for view.php3 which changes
+(honzam)   character encoding
+           (http://examle.org/aa/view.php3?vid=22&convertfrom=windows-1250&convertto=utf-8)
+         - fixed bug in synchronization with Apache auth module -
+           tables auth_user and auth_group are not cleaned after Reader
+           Management Slice is updated, but they are filled with correct values,
+           now
+         - new insert type Date (just logically saparates text and date inputs;
+           internaly it bahaves just like text field
+         - better behavior of File upload field when checked as Required. There
+           is no longer need to fill upper field in the inputform. However, it
+           is still not perfect since the content is checked before we move
+           the file to destination directory, which might sometimes fail
+04/19/06 - authors can now see all items in related item window but they
 (brazda)   can edit only their own items
 04/07/06 - added priority field for slices (modules), so you can reorder
 (honzam)   the modules in top-right selectbox
@@ -11,6 +24,7 @@
            with the right permissions, again
          - fixed bug in offline filling - the HTML falg was not accepted
          - fixed bug in the unaliasing of parameters of field input functions
+03/27/06 - Updated database structure (sql_update.php3)
 03/21/06 - Added support for unaliasing of parameters of field input
 (brazda)   functions. Now you can use any {} AA expressions in parameters
            (e.g. conds[0][switch..........]={user:switch..........} in
