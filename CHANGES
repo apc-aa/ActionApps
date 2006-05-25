@@ -1,3 +1,5 @@
+05/25/06 - added new rss option to f_t function
+(brazda)
 04/24/06 - new parameter convertto and convertfrom for view.php3 which changes
 (honzam)   character encoding
            (http://examle.org/aa/view.php3?vid=22&convertfrom=windows-1250&convertto=utf-8)

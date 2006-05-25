@@ -834,6 +834,10 @@ function RSS_restrict($txt, $len) {
               case 'striptags':   return strip_tags($text);
                                   // do not DeHtml - good for search & replace in fields
               case 'asis':        return $text;
+                                  // remove forbiden entities from text
+              case 'rss':         $entities_old = array("&nbsp;");
+                                  $entities_new = array(" ");
+                                  return str_replace($entities_old, $entities_new, strip_tags($text));
                                   // allows you to call view with conds:
                                   // {view.php3?vid=9&cmd[9]=c-1-{alias::f_t:{_#VALUE___}:conds}}
               case 'conds':       return '%22'. str_replace('-','--',$text) .'%22';
