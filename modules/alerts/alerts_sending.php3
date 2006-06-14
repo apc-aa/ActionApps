@@ -4,7 +4,7 @@
  *
  * @package Alerts
  * @version $Id$
- * @author Jakub Ad·mek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @author Jakub Ad√°mek <jakubadamek@ecn.cz>, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
 /*
@@ -26,13 +26,13 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS['AA_INC_PATH']."item.php3";
-require_once $GLOBALS['AA_INC_PATH']."view.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
-require_once $GLOBALS['AA_INC_PATH']."mail.php3";
-require_once $GLOBALS['AA_INC_PATH']."item_content.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
+require_once AA_INC_PATH."item.php3";
+require_once AA_INC_PATH."view.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."searchlib.php3";
+require_once AA_INC_PATH."mail.php3";
+require_once AA_INC_PATH."item_content.php3";
+require_once AA_BASE_PATH."modules/alerts/util.php3";
 
 //$debug = 1;
 
@@ -87,7 +87,7 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
     $db->tquery($SQL);
     while ($db->next_record()) {
         $last                                  = $db->f("last");
-        $sid                                   = unpack_id128($db->f("slice_id")); 
+        $sid                                   = unpack_id128($db->f("slice_id"));
         $slices[$sid]["name"]                  = $db->f("slicename");
         $slices[$sid]["lang"]                  = substr($db->f("lang_file"),0,2);
         $myview                                = &$slices[$sid]["views"][$db->f("vid")];
@@ -156,7 +156,7 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
                 parse_str( $filter["conds"], $dbconds_arr);
                 $conds = $dbconds_arr['conds'];
                 $sort  = $dbconds_arr['sort'];
-                $zids  = new zids (null, "p");
+                $zids  = new zids(null, "p");
                 if (is_array($all_ids)) {
                     // find items for the given filter
                     if ($debug_alerts) { print_r ($conds); echo "----<br>"; $GLOBALS['debug']=1; }
@@ -187,6 +187,75 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
     return $retval;
 }
 
+
+class AA_Collection {
+
+    var $id;                 /** Collection ID   */
+    var $reader_slice_id;    /** Slice id of Reder slice */
+    var $alerts_module_id;   /** Module id of Alerts */
+    var $email_id_welcome;   /** Id of welcome email template */
+    var $email_id_alert;     /** Id of alert email template */
+    var $slice_url;          /** Used for caching of slice_url */
+
+    function AA_Collection($collection_id) {
+        $this->id               = $collection_id;
+        $this->reader_slice_id  = null;
+        $this->alerts_module_id = null;
+        $this->email_id_welcome = null;
+        $this->email_id_alert   = null;
+        $this->slice_url        = null;
+    }
+
+    function _get( $property ) {
+        if ( is_null($this->reader_slice_id) ) {
+            $data = GetTable2Array('SELECT * FROM alerts_collection WHERE id = \''. $this->id .'\'', 'aa_first', 'aa_fields');
+            $this->reader_slice_id  = unpack_id128($data['slice_id']);
+            $this->alerts_module_id = unpack_id128($data['module_id']);
+            $this->email_id_welcome = $data['emailid_welcome'];
+            $this->email_id_alert   = $data['emailid_alert'];
+        }
+        return $this->$property;
+    }
+
+    function getReaderSlice()    { return new slice($this->_get('reader_slice_id'));  }
+    function getAlertsModuleId() { return $this->_get('alerts_module_id');   }
+    function getEmailIdWelcome() { return $this->_get('email_id_welcome'); }
+    function getEmailIdAlert()   { return $this->_get('email_id_alert');   }
+
+    function getSliceUrl()       {
+        if ( is_null($this->slice_url) ) {
+            $alerts_id = $this->getAlertsModuleId();
+            $this->slice_url =  GetTable2Array('SELECT slice_url FROM module WHERE id=\''.q_pack_id($alerts_id).'\'', 'aa_first', 'slice_url');
+        }
+        return $this->slice_url;
+    }
+
+    function getReaders($how_often = null) {
+        $slice          = $this->getReaderSlice();
+        $field_howoften = getAlertsField(FIELDID_HOWOFTEN, $this->id);
+
+        $conds   = array();
+        $conds[] = array(    'operator' => '=', 'value' => 1, FIELDID_MAIL_CONFIRMED => 1 );
+
+        if ( !is_null( $how_often ) ) {
+            $conds[] = array('operator' => '=', 'value' => $how_often, $field_howoften => 1 );
+        }
+
+
+        $zids  = QueryZIDs($slice->fields('record'), $slice->unpacked_id(), $conds);
+        return $zids;
+    }
+
+    function getReadersSelectArray($how_often = null) {
+        $ret = array();
+        $content4ids = GetItemContent($this->getReaders($how_often), false, false, array(FIELDID_USERNAME, FIELDID_EMAIL));
+        foreach ($content4ids as $reader_id => $content4id ) {
+            $ret[$reader_id] = $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')';
+        }
+        return $ret;
+    }
+}
+
 // -------------------------------------------------------------------------------------
 /** Sends emails to all or chosen users, from all or chosen collections.
 *
@@ -197,47 +266,33 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
 *            If set to "all", all Alerts users are processed.
 *   @return count of emails sent
 */
-function send_emails($ho, $collection_ids, $emails, $update, $item_id)
-{
+function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_id = null) {
     global $debug_alerts;
 
     /* get all (or just some, if $collection_ids specified) collections and put
        the infop into $colls array */
-    $db = getDB();
-    if (is_array($collection_ids)) {
-        $where = " WHERE AC.id IN ('".join ("','", $collection_ids)."')";
-    }
-    $db->tquery("
-            SELECT module.slice_url, AC.id AS collectionid, AC.*, email.*
-            FROM alerts_collection AC
-            INNER JOIN email ON AC.emailid_alert = email.id
-            INNER JOIN module ON AC.module_id = module.id
-            $where");
-    while ($db->next_record()) {
-        $colls[$db->f("collectionid")] = $db->Record;
-    }
-    if (!is_array($colls)) {
-        freeDB($db);
-        return;
+    if (!is_array($collection_ids)) {
+        $collection_ids = GetTable2Array('SELECT id FROM alerts_collection', 'NoCoLuMn', 'id');
     }
 
     $readerContent = new ItemContent();
 
-    foreach ($colls as $cid => $collection) {
-        // get array of all filters of current collection ($cid)
+    foreach ( $collection_ids as $collection_id ) {
+        $collection = new AA_Collection($collection_id);
+
+        // get array of all filters of current collection ($collection_id)
         // !if $update is set (default), then it updates date for lastsent - for
         // collections
-        $unordered_filters = create_filter_text($ho, $cid, $update, $item_id);
+        $unordered_filters = create_filter_text($ho, $collection_id, $update, $item_id);
 
         // find filters for this collection
-        $db->tquery("SELECT CF.filterid
-            FROM alerts_collection_filter CF
-            WHERE CF.collectionid = '$cid'
-            ORDER BY CF.myindex");
+        $filter_ids = GetTable2Array("SELECT filterid FROM alerts_collection_filter WHERE collectionid = '$collection_id' ORDER BY myindex", 'NoCoLuMn', 'filterid');
 
-        $filters = "";
-        while ($db->next_record()) {
-            $filters[$db->f("filterid")] = &$unordered_filters[$db->f("filterid")];
+        $filters = array();
+        if ( is_array($filter_ids) ) {
+            foreach ($filter_ids as $filter_id) {
+                $filters[$filter_id] = &$unordered_filters[$filter_id];
+            }
         }
 
         if ($GLOBALS['debug_email']) { huhl("\n-------\n send_emails\n",$collection); }
@@ -246,60 +301,57 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id)
         if (! is_array($emails)) {
 
             // get all confirmed users for this collection and frequency
-            $slice = new slice(unpack_id128($collection["slice_id"]));
-            $field_howoften = getAlertsField(FIELDID_HOWOFTEN, $cid);
-            $conds = array( array('operator'             => '=',
-                                  'value'                => $ho,
-                                  $field_howoften        => 1 ),
-                            array('operator'             => '=',
-                                  'value'                => 1,
-                                  FIELDID_MAIL_CONFIRMED => 1 ));
-            $zids  = QueryZIDs($slice->fields('record'), $slice->unpacked_id(), $conds);
-            writeLog("ALERTS", "Users for collection $cid: ". ((int)$zids->count()), $ho);
+            $zids = is_null($reader_id) ? $collection->getReaders($ho) : new zids($reader_id, 'l');
+            writeLog("ALERTS", "Users for collection $collection_id: ". ((int)$zids->count()), $ho);
 
             // loop through readers might want to send
             for ( $i=0, $zcount=$zids->count(); $i<$zcount; $i++) {
                 $readerContent->setByItemID( $zids->longids($i), true);
 
-                $user_text = get_filter_text_4_reader($readerContent, $filters, $cid);
+                $user_text = get_filter_text_4_reader($readerContent, $filters, $collection_id);
 
                 // Don't send if nothing new emerged
                 if ($user_text) {
-                    $alias["_#FILTERS_"] = $user_text;
-                    $alias["_#HOWOFTEN"] = $ho;
-                    $alias["_#COLLFORM"] = alerts_con_url($collection["slice_url"],
-                                           "ac=".$readerContent->getValue(FIELDID_ACCESS_CODE));
-                    $alias["_#UNSBFORM"] = alerts_con_url($collection["slice_url"],
-                                           "au=".$readerContent->getValue(FIELDID_ACCESS_CODE).
-                                           "&c=".$cid);
+
+                    $als = new AA_Aliases();
+                    $als->addTextAlias("_#FILTERS_",$user_text);
+                    $als->addTextAlias("_#HOWOFTEN",$ho);
+                    $als->addTextAlias("_#COLLFORM",alerts_con_url($collection->getSliceUrl(), "ac=".$readerContent->getValue(FIELDID_ACCESS_CODE)));
+                    $als->addTextAlias("_#UNSBFORM",alerts_con_url($collection->getSliceUrl(), "au=".$readerContent->getValue(FIELDID_ACCESS_CODE). "&c=".$collection_id));
+
+                    $reader_slice = $collection->getReaderSlice();
+                    $aliases      = array_merge($reader_slice->aliases(), $als->getArray());
+                    $item         = new item($readerContent, $aliases);
 
                     if ($GLOBALS['debug_email']) {
-                        huhl("\n<br>send_mail_from_table(".$collection["emailid_alert"].", ".$readerContent->getValue(FIELDID_EMAIL).", $alias)");
-                        $email_count[$cid]++;
-                    } elseif (send_mail_from_table($collection["emailid_alert"], $readerContent->getValue(FIELDID_EMAIL), $alias)) {
-                        writeLog("ALERTS", "$cid: ". $readerContent->getValue(FIELDID_EMAIL), $ho);
-                        $email_count[$cid]++;
+                        huhl("\n<br>send_mail_from_table_inner(".$collection->getEmailIdAlert().", ".$readerContent->getValue(FIELDID_EMAIL).", ...)");
+                        $email_count[$collection_id]++;
+                    } elseif (send_mail_from_table_inner($collection->getEmailIdAlert(), $readerContent->getValue(FIELDID_EMAIL), $item)) {
+                        writeLog("ALERTS", "$collection_id: ". $readerContent->getValue(FIELDID_EMAIL), $ho);
+                        $email_count[$collection_id]++;
                     }
                 }
             }
 
         // Use the emails sent as param
         } else {
-            writeLog("ALERTS", "Emails for collection $cid: ". ((int)count($emails)), $ho);
-            foreach ( (array)$emails as $email ) {
-                $alias["_#FILTERS_"] = get_filter_text_4_reader(null, $filters, $cid);
-                $alias["_#HOWOFTEN"] = $ho;
-                $alias["_#COLLFORM"] = alerts_con_url($collection["slice_url"], "ac=ABCDE");
-                $alias["_#UNSBFORM"] = alerts_con_url($collection["slice_url"], "au=ABCDE&c=".$cid);
+            writeLog("ALERTS", "Emails for collection $collection_id: ". ((int)count($emails)), $ho);
+            $als = new AA_Aliases();
+//          $als->addAlias(new AA_Alias("_#FILTERS_", "id..............", 'f_t', array(get_filter_text_4_reader(null, $filters, $collection_id))));
+            $als->addTextAlias("_#FILTERS_", get_filter_text_4_reader(null, $filters, $collection_id));
+            $als->addTextAlias("_#HOWOFTEN", $ho);
+            $als->addTextAlias("_#COLLFORM", alerts_con_url($collection->getSliceUrl(), "ac=ABCDE"));
+            $als->addTextAlias("_#UNSBFORM", alerts_con_url($collection->getSliceUrl(), "au=ABCDE&c=".$collection_id));
+            $aliases = $als->getArray();
 
-                if (send_mail_from_table($collection["emailid_alert"], $email, $alias)) {
-                    $email_count[$cid]++;
+            foreach ( (array)$emails as $email ) {
+                if (send_mail_from_table($collection->getEmailIdAlert(), $email, $aliases)) {
+                    $email_count[$collection_id]++;
                 }
             }
         }
-        writeLog("ALERTS", "Sent for collection $cid: ". ((int)$email_count[$cid]), $ho);
+        writeLog("ALERTS", "Sent for collection $collection_id: ". ((int)$email_count[$collection_id]), $ho);
     }
-    freeDB($db);
     foreach ( (array)$email_count as $num ) {
         $total_emails += $num;
     }
@@ -311,8 +363,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id)
 *   for all unfilled filter / howoften combinations
 *   to a value depending on howoften, i.e. to one week ago for weekly etc.
 */
-function initialize_last ()
-{
+function initialize_last() {
     $now = getdate ();
 
     $init["instant"] = time();
@@ -333,17 +384,19 @@ function initialize_last ()
         $db->tquery("SELECT C.id FROM alerts_collection C LEFT JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id AND howoften='$ho'
             WHERE last IS NULL");
-        while ($db->next_record())
+        while ($db->next_record()) {
             $db2->tquery("INSERT INTO alerts_collection_howoften (collectionid, howoften, last)
                 VALUES ('".$db->f("id")."', '$ho', ".$init[$ho].")");
+        }
 
         // the same as above, but for rows, which exist but with last=0
         $db->tquery("SELECT C.id FROM alerts_collection C INNER JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id
             WHERE last=0 AND howoften='$ho'");
-        while ($db->next_record())
+        while ($db->next_record()) {
             $db2->tquery("UPDATE alerts_collection_howoften SET last=".$init[$ho]
                 ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
+        }
     }
     freeDB($db);
     freeDB($db2);
@@ -351,7 +404,7 @@ function initialize_last ()
 
 // -------------------------------------------------------------------------------------
 
-function get_view_settings_cached ($vid) {
+function get_view_settings_cached($vid) {
     global $cached_view_settings;
     if (!$vid) {
         return "";
@@ -379,9 +432,8 @@ function get_view_settings_cached ($vid) {
 *
 *   @param string $filter_settings  One or more filter IDs separted by comma ",".
 */
-function get_filter_output_cached ($vid, $filter_settings, $zids) {
-    global $cached_view_settings,
-           $cached_filter_outputs;
+function get_filter_output_cached($vid, $filter_settings, $zids) {
+    global $cached_view_settings, $cached_filter_outputs;
 
     //echo "zids"; print_r ($zids);
     if ($zids->count() == 0) {
@@ -390,7 +442,7 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
     if ( !isset($cached_filter_settings[$filter_settings])) {
         $set = &get_view_settings_cached($vid);
         // set language
-        bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/". $set["lang"]."_alerts_lang.php3", true);
+        bind_mgettext_domain(AA_INC_PATH."lang/". $set["lang"]."_alerts_lang.php3", true);
         // $set["info"]["aditional2"] stores item URL
         $item_url = $set["info"]["aditional2"];
         if (! $item_url) {
@@ -400,7 +452,7 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
         $items_text = $itemview->get_output ("view");
     //echo "<h1>items $items_text</h1>"; print_r ($set["format"]); exit;
         //if (! strstr ($filter_settings, ","))
-        $cached_filter_settings [$filter_settings] = $items_text;
+        $cached_filter_settings[$filter_settings] = $items_text;
     } else {
         $items_text = $cached_filter_settings[$filter_settings];
     }
@@ -413,8 +465,7 @@ function get_filter_output_cached ($vid, $filter_settings, $zids) {
 *   second one is more difficult.
 *   @param object $readerContent  if null, use all filters
 */
-function get_filter_text_4_reader($readerContent, $filters, $cid)
-{
+function get_filter_text_4_reader($readerContent, $filters, $cid) {
     if ($readerContent) {
         $user_filters_value = $readerContent->getValues( getAlertsField(FIELDID_FILTERS, $cid));
 
@@ -424,7 +475,7 @@ function get_filter_text_4_reader($readerContent, $filters, $cid)
 
         foreach ($user_filters_value as $user_filter) {
             // filter numbers are stored with "f" added to the beginning
-            $user_filters [substr ($user_filter ['value'], 1)] = 1;
+            $user_filters[substr($user_filter['value'], 1)] = 1;
         }
     }
 
@@ -442,11 +493,9 @@ function get_filter_text_4_reader($readerContent, $filters, $cid)
             // sort[]: we use the same global trick as in create_filter_text
             if ($last_fprop["sort"]) {
                 parse_str( $last_fprop["sort"], $dbconds_arr);
-                $sort = $dbconds_arr['sort'];
-                $set  = &get_view_settings_cached ($last_fprop["vid"]);
-                $user_zids = QueryZIDs ($set["fields"],
-                    unpack_id ($set["info"]["slice_id"]),
-                    "", $sort, "", "ACTIVE", "", 0, $user_zids);
+                $sort      = $dbconds_arr['sort'];
+                $set       = &get_view_settings_cached($last_fprop["vid"]);
+                $user_zids = QueryZIDs($set["fields"], unpack_id($set["info"]["slice_id"]), "", $sort, "", "ACTIVE", "", 0, $user_zids);
             }
 
             $user_text .= get_filter_output_cached($last_fprop["vid"], join (",",$filter_ids), $user_zids);
