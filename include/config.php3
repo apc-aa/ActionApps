@@ -15,9 +15,9 @@
  *  path from the root. Make sure to terminate this path with a slash!
  *  Fill in the correct value between the quotes.
  *  It normaly looks like:
- * $AA_SITE_PATH = "/home/httpd/html/";
+ *  define('AA_SITE_PATH', "/home/httpd/html/");
  */
-$AA_SITE_PATH = "/home/httpd/html/";
+define('AA_SITE_PATH', "/home/httpd/html/");
 
 
 /** AA_BASE_DIR defines AA directory under AA_SITE_PATH where is AA installed.
@@ -25,11 +25,11 @@ $AA_SITE_PATH = "/home/httpd/html/";
  *  path from root to AA directory (where file slice.php3 is in).
  *  Make sure to terminate this path with a slash!
  *  Example:
- * $AA_BASE_DIR = "apc-aa/";
+ *  define('AA_BASE_DIR', "apc-aa/");
  */
-$AA_BASE_DIR = "apc-aa/";      // AA_BASE_DIR is only used in this file so that
-                               // a single change is required for multiple AA
-                               // versions
+define('AA_BASE_DIR', "apc-aa/"); // AA_BASE_DIR is only used in this file so that
+                                  // a single change is required for multiple AA
+                                  // versions
 
 
 /** AA_INSTAL_PATH is server url relative path to base AA directory
@@ -37,17 +37,16 @@ $AA_BASE_DIR = "apc-aa/";      // AA_BASE_DIR is only used in this file so that
  *  Apache webserver differ from AA_BASE_DIR (for example if you install AA to
  *  apc-aa-2.6.0 directory and then create defgine aa -> apc-aa-2.6.0 in Apache.
  */
-$AA_INSTAL_PATH = "/".$AA_BASE_DIR;  // you can left it as it is
+define('AA_INSTAL_PATH', "/".AA_BASE_DIR);  // you can left it as it is
 
 
 /** Domain in which you want to run AA admin interface - in which domain we can
  *  find AA directory
  *  Make sure to terminate this path with a slash!
  *  Example:
- * $AA_HTTP_DOMAIN = "http://aa.apc.org/";
+ *  define('AA_HTTP_DOMAIN', "http://aa.apc.org/");
  */
-$AA_HTTP_DOMAIN = "http://my.domain.org/";
-
+define('AA_HTTP_DOMAIN', "http://my.domain.org/");
 
 
 /** ID of AA (any unique 32chars long hexadecimal number)
@@ -75,9 +74,9 @@ define("ORG_NAME","An APC Member");
                                       // databases like db_odbc, db_mssql, ...
 
 /** MySQL 4.1 is able to use different character sets for the communication.
- *  Standard for the communication in PHP5 is UTF, but if you are using
- *  another character sets (maybe for historical reason), then you need to
- *  specify it by "SET CHARACTER SET" and "SET COLLATION_CONNECTION" SQL
+ *  Standard for MySQL client communication in PHP5 is UTF (probably), but if
+ *  you are using another character sets (maybe for historical reason), then you
+ *  need to specify it by "SET CHARACTER SET" and "SET COLLATION_CONNECTION" SQL
  *  commands. Just set the right values to following variables.
  *  We use (for czech character set "Windows 1250"):
  *     define("DB_CHARACTER_SET", "cp1250");
@@ -145,9 +144,9 @@ define('TOEXECUTE_ALLOWED_TIME', 59.0);
   /**  max size of file in file/picture uploading */
   define("IMG_UPLOAD_MAX_SIZE", "400000");
   /** url to image/file directory */
-  define("IMG_UPLOAD_URL", $AA_HTTP_DOMAIN."img_upload/");
+  define("IMG_UPLOAD_URL", AA_HTTP_DOMAIN."img_upload/");
   /** path from server root to image/file directory */
-  define("IMG_UPLOAD_PATH", $AA_SITE_PATH."img_upload/");
+  define("IMG_UPLOAD_PATH", AA_SITE_PATH."img_upload/");
   /** mkdir perms - AA creates new directory for each slice in image/file upload
    *  directory specified above. Each slice then have its own subdirectory.
    *  Default is 774 */
@@ -251,12 +250,13 @@ $USE_SHORT_URL = true;
 // Following section just prepares some constants
 // You probably do not need to change this
 
-$AA_BASE_PATH = $AA_SITE_PATH.$AA_BASE_DIR;     // do not change
-$AA_INC_PATH = $AA_BASE_PATH."include/";        // do not change
+define('AA_BASE_PATH', AA_SITE_PATH. AA_BASE_DIR);     // do not change
+define('AA_INC_PATH' , AA_BASE_PATH. "include/");         // do not change
 
-if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
-  echo "you must set AA_INC_PATH and other variables in config.php3 !";
-};
+
+if ( !defined('AA_BASE_PATH') OR (strlen(AA_BASE_PATH) < 1)) {
+    echo "you must set AA_INC_PATH and other variables in config.php3 !";
+}
 
 
 /** set this directive to true, if your php already auto-includes phplib
@@ -266,10 +266,10 @@ if (!isset($AA_INC_PATH) || $AA_INC_PATH == ""){
 define("PHPLIB_ALREADY_LOADED", false);
 
 /** PHPLib is the part of AA since v >2.2.0. Do not need to care about PHPLib */
-$_PHPLIB["libdir"] = $AA_INC_PATH.'phplib/';    // do not change
+define('PHPLIB_LIBDIR', AA_INC_PATH.'phplib/');    // do not change
 
 /** URL of aa instalation */
-define("AA_INSTAL_URL", $AA_HTTP_DOMAIN. substr($AA_INSTAL_PATH,1));    // do not change
+define("AA_INSTAL_URL", AA_HTTP_DOMAIN. substr(AA_INSTAL_PATH,1));    // do not change
 
 /** URL of index of help files for AA */
 define("DOCUMENTATION_URL", "http://actionapps.org/aa/doc");
@@ -284,15 +284,14 @@ define("DOCUMENTATION_URL", "http://actionapps.org/aa/doc");
  *  can be configured in one place
  */
   switch ($SERVER_ADDR) {
-    case "209.220.30.175";
-    case "209.220.30.171";
-      //$AA_INC_PATH = "/home/httpd/html/apc-aa/include/";
+    case "209.220.30.175":
+    case "209.220.30.171":
       define (SITE_CONFIG, "config-cyborganic.inc"); break;
   }
 
   if (defined ("SITE_CONFIG")) {
     // require does not work as expected inside control structures!
-    include ($AA_INC_PATH . SITE_CONFIG);
+    include (AA_INC_PATH . SITE_CONFIG);
   }
 
 
@@ -304,14 +303,14 @@ define("DOCUMENTATION_URL", "http://actionapps.org/aa/doc");
  */
   /** mkdir perms, set by variable because constants don't work with octal
    *  values */
-  $FILEMAN_MODE_DIR = 0770;
+  define('FILEMAN_MODE_DIR', octdec('0770'));
   /** create file perms */
-  $FILEMAN_MODE_FILE = 0664;
+  define('FILEMAN_MODE_FILE', octdec('0664'));
   /** in this directory individual slice directories and directory "templates"
    *  are created  */
-  define("FILEMAN_BASE_DIR",$AA_SITE_PATH."apc-aa-files/");
+  define("FILEMAN_BASE_DIR",AA_SITE_PATH."apc-aa-files/");
   /** URL path to the base directory */
-  define("FILEMAN_BASE_URL",$AA_HTTP_DOMAIN."apc-aa-files/");
+  define("FILEMAN_BASE_URL",AA_HTTP_DOMAIN."apc-aa-files/");
   /** time in seconds to allow to upload big files */
   define("FILEMAN_UPLOAD_TIME_LIMIT", 600);
 
