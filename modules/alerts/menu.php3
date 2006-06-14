@@ -33,10 +33,10 @@ http://www.apc.org/
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
-require_once $GLOBALS['AA_INC_PATH']."menu_util.php3";
-require_once $GLOBALS['AA_INC_PATH']."perm_core.php3";
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
+require_once AA_INC_PATH."menu_util.php3";
+require_once AA_INC_PATH."perm_core.php3";
+require_once AA_INC_PATH."mgettext.php3";
+require_once AA_BASE_PATH."modules/alerts/util.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
@@ -45,25 +45,16 @@ $menu_function = 'get_aamenus_alerts';
 set_collectionid();
 
 
-function get_aamenus_alerts()
-{
+function get_aamenus_alerts() {
     global $r_slice_view_url,
-           $auth,
-           $AA_INSTAL_PATH;
-/*
-    $aamenus["addusers"] = array (
-        "label" => _m("Add Users"),
-        "title" => _m("Alerts - Add Users"),
-        "href" => "modules/alerts/addusers.php3",
-        "cond" => IfSlPerm (PS_USERS),
-        "level" => "main");
-*/
+           $auth;
+
     $aamenus["admin"] = array (
         "label" => _m("Alerts Settings"),
         "title" => _m("Alerts Settings"),
         "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
             .urlencode ($GLOBALS["slice_id"])."]=1",
-        "cond" => IfSlPerm (PS_USERS),
+        "cond" => IfSlPerm(PS_USERS),
         "level" => "main",
         "submenu" => "admin_submenu");
 /*
@@ -101,7 +92,7 @@ function get_aamenus_alerts()
         "submenu"=>"aaadmin_submenu");
 
     // left menu for aaadmin is common to all modules, so it is shared
-    require_once $GLOBALS['AA_INC_PATH']."menu_aa.php3";
+    require_once AA_INC_PATH."menu_aa.php3";
 
     $aamenus["admin_submenu"] = array (
         "bottom_td"=>200,

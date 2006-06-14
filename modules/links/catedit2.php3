@@ -1,13 +1,11 @@
 <?php  //catedit2.php3 - proceeds submitted data from catedit.php3
 //$Id$
 
-$directory_depth = '../';
-
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/constants.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";           // module specific utils
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_BASE_PATH."modules/links/constants.php3";
+require_once AA_BASE_PATH."modules/links/util.php3";           // module specific utils
 
 $r_state['linkedit']['old'] = $HTTP_POST_VARS;  // in case of bad input
 unset($r_msg);

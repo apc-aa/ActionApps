@@ -63,9 +63,9 @@ if (!get_magic_quotes_gpc()) {
 /** APC-AA configuration file */
 require_once "./include/config.php3";
 /** Set of useful functions used on most pages */
-require_once $GLOBALS['AA_INC_PATH']. "util.php3";
+require_once AA_INC_PATH. "util.php3";
 /** Main include file for using session management function on a page */
-require_once $GLOBALS['AA_INC_PATH']. "locsess.php3";
+require_once AA_INC_PATH. "locsess.php3";
 
 if ( !$sh_itm )
   exit;
@@ -112,6 +112,9 @@ go_url(con_url($url,"sh_itm=$item"));
 
 /*
 $Log$
+Revision 1.8  2006/06/14 13:30:31  honzam
+fixed security problem require (see http://secunia.com/advisories/20299/). Requires no longer use variables
+
 Revision 1.7  2005/04/24 21:48:11  honzam
 a bit more beauty code - some coding standards setting applied
 

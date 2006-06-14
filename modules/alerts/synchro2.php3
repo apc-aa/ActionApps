@@ -25,13 +25,12 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-$directory_depth = "../";
-require_once "$directory_depth../include/init_page.php3";
+require_once dirname(__FILE__). "/../../include/init_page.php3";
 require_once menu_include();
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."constedit_util.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/alerts/util.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."constedit_util.php3";
+require_once AA_BASE_PATH."modules/alerts/util.php3";
 
 // --------------------------------------------------------------
 

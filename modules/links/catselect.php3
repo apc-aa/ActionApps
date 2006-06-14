@@ -6,12 +6,11 @@
 // $tree_start - root categoruy for the tree
 
 // Edit Link Page
-$directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/cattree.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_BASE_PATH."modules/links/cattree.php3";
+require_once AA_BASE_PATH."modules/links/util.php3";
 
 if (!$cid) {
     $cid = $r_state['cat_id'];

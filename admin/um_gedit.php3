@@ -32,10 +32,10 @@ http://www.apc.org/
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
-require_once $GLOBALS['AA_INC_PATH']."um_util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."msgpage.php3";
+require_once AA_INC_PATH."um_util.php3";
 
 if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
@@ -91,7 +91,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 
     // all the actions are in following require_once (we reuse this part of code for
     // slice wizard ...
-    require_once $GLOBALS['AA_INC_PATH']."um_gedit.php3";
+    require_once AA_INC_PATH."um_gedit.php3";
 
     if (count($err) <= 1) {
         $Msg = MsgOK(_m("Group successfully added to permission system"));

@@ -460,9 +460,9 @@ function perm_username( $username ) {
     return substr($username, $begin+1, $end-$begin-1);
 }
 
-require_once $GLOBALS['AA_INC_PATH'] ."util.php3";          // for getDB()
-require_once $GLOBALS['AA_INC_PATH'] ."searchlib.php3";     // for queryzids()
-require_once $GLOBALS['AA_INC_PATH'] ."item_content.php3";  // for ItemContent class
+require_once AA_INC_PATH ."util.php3";          // for getDB()
+require_once AA_INC_PATH ."searchlib.php3";     // for queryzids()
+require_once AA_INC_PATH ."item_content.php3";  // for ItemContent class
 
 /** Looks into reader management slices whether the reader name is not yet used.
 *   This function is used in perm_ldap and perm_sql in IsUsernameFree().

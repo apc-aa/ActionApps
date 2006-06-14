@@ -28,7 +28,7 @@ http://www.mitra.biz
 
 
 require_once "../include/init_page.php3"; // Loads variables etc
-require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";  // for slices
+require_once AA_INC_PATH."sliceobj.php3";  // for slices
 
 //$debug = 1;
 
@@ -51,7 +51,7 @@ HtmlPageBegin();
 </HEAD>
 
 <?php
-    require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+    require_once AA_INC_PATH."menu.php3";
     showMenu($aamenus, "aaadmin","summarize");
   
     echo "<H1><B>" . _m("AA - Summarize") . "</B></H1>";

@@ -25,122 +25,120 @@ http://www.apc.org/
     There are several import functions available - see importer.inc.php3.
 */
 
-if ( !$AA_INC_PATH ) {   // isn't config.php3 already included? (some import
+if ( !defined('AA_INC_PATH') ) {   // isn't config.php3 already included? (some import
     require_once "../../include/config.php3";    // scripts do so (/misc/x.php3)
 }
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
-require_once $GLOBALS['AA_INC_PATH']."notify.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."date.php3";
-require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
+require_once AA_INC_PATH."locsess.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."itemfunc.php3";
+require_once AA_INC_PATH."notify.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."date.php3";
+require_once AA_INC_PATH."feeding.php3";
 
-function processDataArray($data, $actions)
-{
+function processDataArray($data, $actions) {
   global $err;
-  reset($actions);
-  while (list($fid, $arr) = each($actions)) {
-    switch ($arr["action"]) {
+  foreach ($actions as $fid => $arr) {
+      switch ($arr["action"]) {
       // copy value
       case "store":
-        if ( $data[$arr["from"]] )
-          $retval[$fid][]['value'] = addslashes($data[$arr["from"]]);
+        if( $data[$arr["from"]] )
+          $retval[$fid][][value] = addslashes($data[$arr["from"]]);
         elseif ($arr["default"])  {
              $deffnc = "default_fnc_" . ($arr["deffnc"] ? $arr["deffnc"] : "qte");
             if (!is_callable($deffnc))
                 print("Can't call default function $deffnc");
-             $retval[$fid][]['value'] = $deffnc($arr["default"]);
+             $retval[$fid][][value] = $deffnc($arr["default"]);
         }
         break;
       case "random":
-        $retval[$fid][]['value'] = default_fnc_rnd($arr["param"]);
+        $retval[$fid][][value] = default_fnc_rnd($arr["param"]);
         break;
       case "storetrans":
-        if ( $data[$arr["from"]] )
-          $retval[$fid][]['value'] = addslashes($arr["trans"][$data[$arr["from"]]]);
+        if( $data[$arr["from"]] )
+          $retval[$fid][][value] = addslashes($arr["trans"][$data[$arr["from"]]]);
         break;
       // removes from string substring, defined in what
       case "removestring":
         if ($arr["what"]) {
-            $retval[$fid][]['value'] = addslashes(ereg_replace($arr["what"], "", $data[$arr["from"]]));
+            $retval[$fid][][value] = addslashes(ereg_replace($arr["what"], "", $data[$arr["from"]]));
         }
         break;
       // format date to timestamp
       case "formatdate":
-            $retval[$fid][]['value'] = strtotime($data[$arr["from"]]);
+            $retval[$fid][][value] = strtotime($data[$arr["from"]]);
            break;
       // convert value over table
       case "convertvalue":
             $table = $arr["table"];
-            $retval[$fid][]['value'] = $table[$data[$arr["from"]]]["return"];
+            $retval[$fid][][value] = $table[$data[$arr["from"]]]["return"];
             break;
       case "bool":
         if ($data[$arr["from"]]) {
             if ($data[$arr["from"]] == 1)
-              $retval[$fid][]['value'] = 1;
+              $retval[$fid][][value] = 1;
         } elseif  ($arr["default"]) {
-            $retval[$fid][]['value'] = $arr["default"];
+            $retval[$fid][][value] = $arr["default"];
         }
         break;
       case "web":
         $value = $data[$arr["from"]];
-        if ( $value ) {
+        if( $value ) {
             if (strtolower(substr($value, 0, 4)) != "http")
               $value = "http://". $value;
-            $retval[$fid][]['value'] = addslashes($value);
+            $retval[$fid][][value] = addslashes($value);
         }
         break;
       case "storeboolarray":
         $pole = $arr["from"];
         reset($pole);
-        while ( list($fld,$tostore) = each($pole)) {
+        while( list($fld,$tostore) = each($pole)) {
            if ($data[$fld] == 1)
-              $retval[$fid][]['value'] = addslashes($tostore);
+              $retval[$fid][][value] = addslashes($tostore);
         }
         break;
       case "storemultiasone":
         $pole = $arr["from"];
         reset($pole);
         $save = "";
-            while ( list(,$tostore) = each($pole)) {
+            while( list(,$tostore) = each($pole)) {
                 $savenext = trim($data[$tostore]);
             if ($savenext != "") {
                 if ($save != "") { $save = $save . $arr["delimiter"]; }
                 $save = $save . $savenext;
             }
         }
-            $retval[$fid][]['value'] = addslashes($save);
+            $retval[$fid][][value] = addslashes($save);
         break;
       case "storeasmulti":
         $pole = $arr["from"];
         reset($pole);
-        while ( list(,$tostore) = each($pole)) {
+        while( list(,$tostore) = each($pole)) {
           $save = trim($data[$tostore]);
           if ($save != "")
-              $retval[$fid][]['value'] = addslashes($save);
+              $retval[$fid][][value] = addslashes($save);
         }
         break;
       case "storestring":
         $str = $arr["what"];
-        $retval[$fid][]['value'] = addslashes($str);
+        $retval[$fid][][value] = addslashes($str);
         break;
 
       case "storeparsemulti":
-        $items = split ($arr["delimiter"],trim($data[$arr["from"]]));
+        $items = split($arr["delimiter"],trim($data[$arr["from"]]));
         reset ($items);
         while (list (,$save) = each($items)) {
           if ($save != "")
-              $retval[$fid][]['value'] = addslashes($save);
+              $retval[$fid][][value] = addslashes($save);
         }
         break;
       default:
         $err[] = "Field "+$arr["from"]+" has a wrong function: "+$arr["action"];
     }
     if ($arr["flag"] != "") {
-        if (is_array($retval[$fid])) {
+        if (is_array ($retval[$fid])) {
             for ($i=0; $i < count($retval[$fid]);++$i)
                 $retval[$fid][$i]["flag"] = $arr["flag"];
         }
@@ -150,11 +148,11 @@ function processDataArray($data, $actions)
 }
 
 function Importer_SendErrorPage($txt) {
-  if ( $GLOBALS["err_url"] )
+  if( $GLOBALS["err_url"] )
     go_url($GLOBALS["err_url"]);
   HTMLPageBegin();
   echo "</head><body>";
-  if ( isset( $txt ) AND is_array( $txt ) )
+  if( isset( $txt ) AND is_array( $txt ) )
     PrintArray($txt);
    else
     echo $txt;
@@ -178,13 +176,13 @@ function Importer ($sliceID, $fileName, $separator, $actions, $postedBy, $fire=f
   if ($publishDate == 0) $publishDate = time();
   // expire in 200 years
   if ($expiryDate == 0) $expiryDate = time() + 200*365*24*60*60;
-  $defaults["display_count..."][0]['value'] = 0;
-  $defaults["status_code....."][0]['value'] = $statusCode;
-  $defaults["flags..........."][0]['value'] = ITEM_FLAG_OFFLINE;
-  $defaults["posted_by......."][0]['value'] = $postedBy;
-  $defaults["edited_by......."][0]['value'] = $postedBy;
-  $defaults["publish_date...."][0]['value'] = $publishDate;
-  $defaults["expiry_date....."][0]['value'] = $expiryDate;
+  $defaults["display_count..."][0][value] = 0;
+  $defaults["status_code....."][0][value] = $statusCode;
+  $defaults["flags..........."][0][value] = ITEM_FLAG_OFFLINE;
+  $defaults["posted_by......."][0][value] = $postedBy;
+  $defaults["edited_by......."][0][value] = $postedBy;
+  $defaults["publish_date...."][0][value] = $publishDate;
+  $defaults["expiry_date....."][0][value] = $expiryDate;
 
   $fd = fopen($fileName,"r");
   $buffer = fgets($fd, $maxRowLength);
@@ -211,7 +209,7 @@ function Importer ($sliceID, $fileName, $separator, $actions, $postedBy, $fire=f
 
     $buffer = ereg_replace ("[\n\r]*$","",$buffer);   // Only change at end of line
     $arr = split($separator, $buffer);
-    for ( $i=0; $i< count($sourceFields); $i++) {
+    for( $i=0; $i< count($sourceFields); $i++) {
     // Strip quotes around fields
       $data[ $sourceFields[$i] ] = ereg_replace('^"(.*)"$',"\\1",$arr[$i]);
     }
@@ -219,13 +217,13 @@ function Importer ($sliceID, $fileName, $separator, $actions, $postedBy, $fire=f
             print_r($data);
     echo "</pre>";
     $content4id_part = processDataArray($data, $actions);
-    if ( !(isset($content4id_part) AND is_array($content4id_part)) )
+    if( !(isset($content4id_part) AND is_array($content4id_part)) )
       continue;
 
     $content4id = $content4id_part + $defaults;
 
     if ($fire) {
-        $added_to_db=StoreItem( new_id(), $sliceID, $content4id, $fields, true, true, false ); // insert, invalidatecache, feed
+        $added_to_db=StoreItem( new_id(), $sliceID, $content4id, $fields, true, true, false ); # insert, invalidatecache, feed
         echo "Added to db: $added_to_db<br>\n";
     }
     else {
@@ -266,10 +264,10 @@ global $OddelovacStart,$PrvniPolozka,$OddelovacStop;
     $content4id_part = processDataArray($val);
     $content4id = $content4id_part + $val1;    // add defaults
 
-    print("Story with headline <b>".$content4id["text...........1"][0]['value']."</b> added!<br>\n");
+    print("Story with headline <b>".$content4id["text...........1"][0][value]."</b> added!<br>\n");
 
     if ($fire)
-        $added_to_db=StoreItem( new_id(), $slice_id, $content4id, $data, true, true, false ); // insert, invalidatecache, feed
+        $added_to_db=StoreItem( new_id(), $slice_id, $content4id, $data, true, true, false ); # insert, invalidatecache, feed
      else {
         print_r($content4id);
         echo "<hr>";
@@ -290,9 +288,9 @@ global $fieldsfile, $val1, $data, $slice_id;
 
     $content4id=$myfile + $val1;  // $content4id contains values from file and constants
     if ($fire) {
-        $added_to_db=StoreItem( new_id(), $slice_id, $content4id, $data, true, true, false ); // insert, invalidatecache, feed
+        $added_to_db=StoreItem( new_id(), $slice_id, $content4id, $data, true, true, false ); # insert, invalidatecache, feed
     }
-    print("Story with headline <b>".$content4id["headline........"][0]['value']."</b> added!<br>\n");
+    print("Story with headline <b>".$content4id["headline........"][0][value]."</b> added!<br>\n");
   }
 }
 
@@ -335,7 +333,7 @@ function ScanDirforDataFiles($directory) {
 }
 
 // czech names of months
-$ceske_mesice = array( "ledna","února","bøezna","dubna","kvìtna","èervna","èervence","srpna","záøí","øíjna","listopadu","prosince");
+$ceske_mesice = array( "ledna","nora","bezna","dubna","kv?na","?rvna","?rvence","srpna","z??,"?na","listopadu","prosince");
 
 // convertor from czech long date to unix timestamp
 function CZDateToTimestamp($string) {
@@ -347,13 +345,13 @@ global $ceske_mesice;
     $mesic++;
   } while ($czmesic!=$ceske_mesice[$mesic-1]);
   $den = ereg_replace("\.", "", $den);
-  list($hodiny, $minuty) = split (":", $cas);
+  list($hodiny, $minuty) = split(":", $cas);
   $timestamp = mktime($hodiny, $minuty, 0, $mesic, $den, $rok);
   return $timestamp;
 }
 
 // czech names of months
-$ceske_mesice = array( "ledna","února","bøezna","dubna","kvìtna","èervna","èervence","srpna","záøí","øíjna","listopadu","prosince");
+$ceske_mesice = array( "ledna","nora","bezna","dubna","kv?na","?rvna","?rvence","srpna","z??,"?na","listopadu","prosince");
 
 // convertor from czech long date to unix timestamp
 function CZDateToTimestamp($string) {
@@ -365,7 +363,7 @@ global $ceske_mesice;
     $mesic++;
   } while ($czmesic!=$ceske_mesice[$mesic-1]);
   $den = ereg_replace("\.", "", $den);
-  list($hodiny, $minuty) = split (":", $cas);
+  list($hodiny, $minuty) = split(":", $cas);
   $timestamp = mktime($hodiny, $minuty, 0, $mesic, $den, $rok);
   return $timestamp;
 }
@@ -388,11 +386,11 @@ function processDataFile($data) {
            if ($polozka == "publish_date") {
              $text = trim($text);
              $text =  CZDateToTimestamp($text); // convert to timestamp
-             $val["post_date......."][0]['value']=$text;
-             $val["publish_date...."][0]['value']=$text;
-             $val["last_edit......."][0]['value']=$text;
+             $val["post_date......."][0][value]=$text;
+             $val["publish_date...."][0][value]=$text;
+             $val["last_edit......."][0][value]=$text;
            } else {
-             $val[$polozka][0]['value']=addslashes($text); // put value to array
+             $val[$polozka][0][value]=addslashes($text); // put value to array
              $val[$polozka][0][flag]=$vlajka;
            }
            $polozka=""; $text="";
@@ -437,3 +435,4 @@ function get_line ($file) {
 */
 
 ?>
+

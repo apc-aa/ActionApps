@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -26,47 +26,47 @@ http://www.apc.org/
     arg[] .. command arguments
     fmset[directory] .. active dir
     fmset[filename] .. active file (only in the one file page)
-    
-    The code is divided into 
+
+    The code is divided into
         admin/fileman.php3 -- basic file table page interface
         include/fileman.php3 -- file table creation, all file actions (commands)
         include/filedit.php3 -- single file part of the manager (another page)
-        
-    The variable $basedir is the base directory to the parent of which the user can't go. 
+
+    The variable $basedir is the base directory to the parent of which the user can't go.
     All paths are relative to this directory. It is set in the slices settings and if it does
     not exist, it is created.
-    AA admins may go to the upper level. 
+    AA admins may go to the upper level.
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."date.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."fileman.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."date.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."fileman.php3";
+require_once AA_INC_PATH."msgpage.php3";
 
 // FilemanPerms() is defined in perm_core.php3, it sets $fileman_dir
-if (!FilemanPerms($auth, $slice_id)) 
+if (!FilemanPerms($auth, $slice_id))
     MsgPageMenu ("index.php3", _m("No permissions for file manager."), "admin:fileman");
 
 // FILEMAN_BASE_DIR defined in config.php3
 if (!is_dir (FILEMAN_BASE_DIR))
-    MsgPageMenu ("index.php3", 
+    MsgPageMenu ("index.php3",
     _m("Unable to run File Manager")." '" . FILEMAN_BASE_DIR . "' "
     ._m("doesn't exist"), "admin:fileman");
 
 $basedir = FILEMAN_BASE_DIR.$fileman_dir;
 
 if (!is_dir ($basedir) && !file_exists ($basedir))
-    if (!mkdir ($basedir, $FILEMAN_MODE_DIR))
-        MsgPageMenu("index.php3", 
+    if (!mkdir ($basedir, FILEMAN_MODE_DIR))
+        MsgPageMenu("index.php3",
         _m("Unable to mkdir")." '".$basedir."'", "admin:fileman");
 
-  
+
 if (IsSuperadmin()) {
     $basedir = FILEMAN_BASE_DIR;
-    if (!isset($fmset['directory']) && is_dir ($basedir.$fileman_dir)) 
+    if (!isset($fmset['directory']) && is_dir ($basedir.$fileman_dir))
         $fmset['directory'] = $fileman_dir;
 }
 
@@ -80,7 +80,7 @@ if ($cmd == 'edit' || $cmd == 'createfile') {
     $fe_script = $sess->url("fileman.php3");
     $fe_wwwpath = FILEMAN_BASE_URL;
     // NOTE require_once outputs text, its not just defining functions
-    require_once $GLOBALS['AA_INC_PATH']."filedit.php3";
+    require_once AA_INC_PATH."filedit.php3";
     page_close ();
     exit;
 }
@@ -90,7 +90,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m("File Manager");?></TITLE>
 </HEAD>
 <?php
-require_once $GLOBALS['AA_INC_PATH']."menu.php3"; 
+require_once AA_INC_PATH."menu.php3";
 showMenu ($aamenus, "sliceadmin","fileman");
 
 echo "<H1><B>" . _m("File Manager");
@@ -100,7 +100,7 @@ echo "</B></H1>";
 PrintArray($err);
 echo $Msg;
 
-// J A V A S C R I P T 
+// J A V A S C R I P T
 
 echo $fileman_js;
 
@@ -120,7 +120,7 @@ function formatAction ($value) {
 */
 function fileAction ($name,$value) {
     // Old style uses a link mostly to left of input field
-    // this is BAD UI design, should be a button to the right. 
+    // this is BAD UI design, should be a button to the right.
     // switch the comments, if you disagree with me!  (mitra)
 // OLD - links
 /*
@@ -155,8 +155,8 @@ function inputplusaction($name,$value) {
 
 echo $jsSender;
 echo "<tr><td class=tabtit align=left>";
-echo //fileAction ("checkall",_m("Select All")) . 
-     fileAction ("uncheckall",_m("Unselect all")) . 
+echo //fileAction ("checkall",_m("Select All")) .
+     fileAction ("uncheckall",_m("Unselect all")) .
      fileAction ("delete",_m("Delete selected"));
 echo "</td></tr>
 <tr><td class=tabtxt align=center>";
@@ -164,14 +164,14 @@ echo '<table border="1" cellspacing="0" cellpadding="5" bgcolor="'.COLOR_TABTITB
 
 // Show column headers
 echo '<tr><td>&nbsp;</td><td>&nbsp;</td>';
-if (!$sortable_columns[$sort_key]) 
+if (!$sortable_columns[$sort_key])
     $sort_key = "name";
 reset ($sortable_columns);
 while (list ($sortk,$col) = each ($sortable_columns)) {
     if ($sort_key == $sortk) {
         if ($sort_order) $so = $sort_order;
         else $so = $col["sort"];
-        $img = "&nbsp;<img src='../images/".($so == 'd' ? 'up' : 'down').".gif' border=0>";   
+        $img = "&nbsp;<img src='../images/".($so == 'd' ? 'up' : 'down').".gif' border=0>";
         $so = $so == 'a' ? 'd' : 'a';
         $so = "&sort_order=$so";
     }
@@ -179,12 +179,12 @@ while (list ($sortk,$col) = each ($sortable_columns)) {
         $so = "";
         $img = "";
     }
-        
+
     echo "<td><a href='".$sess->url("fileman.php3?sort_key=$sortk$so&fmset[directory]=$directory")."'>" . formatAction($col[label].$img) . "</a></td>";
 }
 if (!$sort_order)
     $sort_order = $sortable_columns[$sort_key]["sort"];
-    
+
 // * * * * * * * * Show the file table * * * * * * * *
 echo file_table ($basedir, $directory);
 echo "</table>
@@ -205,9 +205,9 @@ echo "<tr height=$space><td class=tabtxt colspan=2></td></tr>";
 $db->query("SELECT * FROM wizard_template");
 if ($db->num_rows()) {
     $i = "<select name='arg[copytmp]'>";
-    while ($db->next_record()) 
+    while ($db->next_record())
         $i.="<option value='".$db->f("dir")."'>".$db->f("dir")." (".$db->f("description").")";
-    $i .= "</select>";    
+    $i .= "</select>";
     echo uilr($i,fileAction("copytmp",_m("Copy template dir")));
 }
 

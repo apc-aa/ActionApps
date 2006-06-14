@@ -1,4 +1,4 @@
-<?
+<?php
 /// MLX MultiLingual eXtension for APC ActionApps
 //$Id$
 /// @brief MLX MultiLingual eXtension for ActionApps http://mimo.gn.apc.org/mlx
@@ -437,8 +437,8 @@ class MLXView
     ///@param mlx is the thing set in the URL
     ///@param slice_id is a fallback in case mlx is missing
     function MLXView($mlx,$slice_id=0) {
-    	if($slice_id)
-   		unset($GLOBALS['MLX_TRANSLATIONS'][(string)$slice_id]);
+        if($slice_id)
+        unset($GLOBALS['MLX_TRANSLATIONS'][(string)$slice_id]);
         $supported_modes = array("MLX","ONLY","ALL");
         if($mlx) {
             $arr = explode("-",$mlx);
@@ -906,14 +906,14 @@ function stringexpand__m() { //the second _ is not pretty here, but is in {_:
         if($errcheck) huhl("mlxGetText not initialised");
         return DeQuoteColons($arg_list[0]);
     }
-    $lang = $GLOBALS[mlxGetText]->currentLang; 
+    $lang = $GLOBALS[mlxGetText]->currentLang;
     if(!$lang) {
-    	if(!$GLOBALS[mlxView]) {
-        	if($errcheck)
-            	huhl("MLX no global mlxView set: this shouldnt happen in: ".__FILE__.",".__LINE__);
-        	return  DeQuoteColons($arg_list[0]);
-    	}
-    	$lang = $GLOBALS[mlxView]->getLangByIdx(0);
+        if(!$GLOBALS[mlxView]) {
+            if($errcheck)
+                huhl("MLX no global mlxView set: this shouldnt happen in: ".__FILE__.",".__LINE__);
+            return  DeQuoteColons($arg_list[0]);
+        }
+        $lang = $GLOBALS[mlxView]->getLangByIdx(0);
     }
     return $GLOBALS[mlxGetText]->translate($arg_list,$lang);
 }

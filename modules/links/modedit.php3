@@ -32,16 +32,15 @@ if ($template['Links']) {
     $no_slice_id = true;       // message for init_page.php3
 }
 
-$directory_depth = "../";
 require_once "../../include/init_page.php3";
-//require_once $GLOBALS$GLOBALS['AA_INC_PATH']."en_links_lang.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."date.php3";
-require_once $GLOBALS['AA_INC_PATH']."modutils.php3";
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";
+//require_once AA_INC_PATH."en_links_lang.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."date.php3";
+require_once AA_INC_PATH."modutils.php3";
+require_once AA_INC_PATH."mgettext.php3";
+require_once AA_BASE_PATH."modules/links/util.php3";
 
 if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
@@ -189,7 +188,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m('ActionApps - Links Admin')?></TITLE>
 </HEAD>
 <?php
-  require_once $GLOBALS['AA_BASE_PATH']."modules/links/menu.php3";
+  require_once AA_BASE_PATH."modules/links/menu.php3";
   showMenu($aamenus, "modadmin", "main");
 
   echo "<H1><B>" . ( $template['Links'] ? _m("Add Links module") : _m("Edit Links module")) . "</B></H1>";
@@ -199,7 +198,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   echo '<form method=post action="'. $sess->url($PHP_SELF) .'">';
 
   FrmTabCaption( _m('Module Links data') );
-  $include_cmd = "<!--#include virtual=\"${AA_INSTAL_PATH}modules/links/links.php3?link_id=$module_id\"-->";
+  $include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/links/links.php3?link_id=$module_id\"-->";
   FrmStaticText(_m('ID'), $module_id);
   FrmInputText("name", _m('Title'), $name, 99, 25, true);
   FrmInputText("slice_url", _m('URL of .shtml page'), $slice_url, 254, 25, false,

@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -22,15 +22,15 @@ http://www.apc.org/
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tableview.html
 
-// Settings for Alerts-related table views 
+// Settings for Alerts-related table views
 
 require_once "util.php3";
-require_once $GLOBALS['AA_INC_PATH']."tv_email.php3";
-require_once $GLOBALS['AA_INC_PATH']."perm_core.php3";
-require_once $GLOBALS['AA_INC_PATH']."extauth.php3";
+require_once AA_INC_PATH."tv_email.php3";
+require_once AA_INC_PATH."perm_core.php3";
+require_once AA_INC_PATH."extauth.php3";
 
-/** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */                        
-function GetAlertsTableView ($viewID, $processForm = false) {        
+/** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */
+function GetAlertsTableView ($viewID, $processForm = false) {
 
     if ($viewID == "email_edit") {
         $tableview = GetEmailTableView ($viewID);
@@ -44,17 +44,17 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         $tableview["submenu"] = "email";
         return $tableview;
     }
-	
+
     global $auth, $slice_id, $db, $collectionid;
     global $attrs_edit, $attrs_browse, $format, $langs;
-    
+
     // ------------------------------------------------------------------------------------
 
     if ($viewID == "acf") {
         global $collectionid;
         $db->query("SELECT AF.description, AF.id FROM alerts_filter AF");
         if ($db->num_rows()) {
-            while ($db->next_record()) 
+            while ($db->next_record())
                 $collection_filters [$db->f("id")] = $db->f("description");
             $no_filters = false;
         }
@@ -63,28 +63,28 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             $no_filters = true;
         }
 
-        // filter select box        
-        $SQL = "SELECT slice.name, DF.description as fdesc, DF.id AS filterid, 
+        // filter select box
+        $SQL = "SELECT slice.name, DF.description as fdesc, DF.id AS filterid,
                        view.id AS view_id, view.type as view_type, view.slice_id FROM
                         slice INNER JOIN
                         view ON slice.id = view.slice_id INNER JOIN
                         alerts_filter DF ON DF.vid = view.id";
-        $SQL .= " ORDER BY DF.description";  
+        $SQL .= " ORDER BY DF.description";
         $db->tquery ($SQL);
         global $sess;
-        $myslices = GetUserSlices();    
+        $myslices = GetUserSlices();
         while ($db->next_record()) {
             $txt = HTMLSpecialChars ($db->f("fdesc"));
             if (IsSuperadmin() || strchr ($myslices [unpack_id128($db->f("slice_id"))], PS_FULLTEXT)) {
                 $new_filters[$db->f("filterid")] = $txt;
-                $txt = "<a href='".$sess->url($GLOBALS["AA_INSTAL_PATH"]
+                $txt = "<a href='".$sess->url(AA_INSTAL_PATH
                     ."admin/se_view.php3?slice_id=".unpack_id128($db->f("slice_id"))
                     ."&view_id=".$db->f("view_id")
                     ."&view_type=".$db->f("view_type"))
                     ."'>".$txt." ("."f".$db->f("filterid").")"."</a>";
             }
             $filters[$db->f("filterid")] = $txt;
-        }        
+        }
 
         return  array (
         "table" => "alerts_collection_filter",
@@ -108,7 +108,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                 "view" => array ("type" => "hide"),
                 "default" => $collectionid),
             "filterid" => array (
-				"caption" => _m("selection"),
+                "caption" => _m("selection"),
                 "view" => array (
                     "readonly" => true,
                     "type" => "select",
@@ -122,36 +122,36 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                 "default" => 1)),
         "attrs" => $attrs_browse);
     }
-         
+
     /* ------------------------------------------------------------------------------------
-       modedit 
-       Alerts collection setting 
-       
+       modedit
+       Alerts collection setting
+
        modedit_insert
        Processing form data on Alerts module addition.
-    */    
-    
+    */
+
     if ($viewID == "modedit") {
         global $LANGUAGE_NAMES;
-        reset ($LANGUAGE_NAMES);
-        while (list ($l, $langname) = each ($LANGUAGE_NAMES)) 
+        foreach ($LANGUAGE_NAMES as $l => $langname) {
             $alertslangs[$l."_alerts_lang.php3"] = $langname;
+        }
         return array (
         "table" => "module",
         "join" => array (
             "alerts_collection" => array (
                 "joinfields" => array (
                     "id" => "module_id"),
-                "jointype" => "1 to 1")),                    
+                "jointype" => "1 to 1")),
         "type" => "edit",
         "readonly" => false,
         "cond" => 1,
-        "title" => _m("Alerts Settings"), 
+        "title" => _m("Alerts Settings"),
         "caption" => _m("Alerts Settings"),
         "mainmenu" => "admin",
         "submenu" => "settings",
         "help" => _m("Core settings for the Alerts."),
-        "triggers" => array ( 
+        "triggers" => array (
             "AfterInsert" => "AlertsModeditAfterInsert"),
         "fields" => array (
             "_alerts_collection_id_" => array (
@@ -166,7 +166,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                 "caption" => _m("reader management slice")),*/
             "name" => array (
                 "view" => array ("type" => "text", "size" => array("cols"=>60)),
-				"caption" => _m("name"),
+                "caption" => _m("name"),
                 "required" => true),
             "slice_url" => array ("caption" => _m("form URL"), "required"=>true),
             "lang_file" => array (
@@ -196,24 +196,24 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                 "view" => array("type"=>"text", "unpacked" => true, "readonly" => true)),
             "created_at" => array (
                 "caption" => _m("created at"),
-                "default"=>time(), 
+                "default"=>time(),
                 "view"=>array (
                     "type"=>"date",
                     "format" => "j.m.y",
                     "readonly" => 1)),
             "created_by" => array (
                 "caption" => _m("created by"),
-                "default"=>$auth->auth["uid"], 
+                "default"=>$auth->auth["uid"],
                 "view"=>array(
                     "type"=>"text",
                     "readonly" => 1))
-        ),    
+        ),
         "attrs" => $attrs_edit,
-		"messages" => array (
-	        "no_item" => _m("You don't have permissions to edit any collection or no collection exists.")
-		));        
-    }       
-    
+        "messages" => array (
+            "no_item" => _m("You don't have permissions to edit any collection or no collection exists.")
+        ));
+    }
+
     /* ------------------------------------------------------------------------------------
        send_emails
     */
@@ -223,13 +223,13 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "type" => "edit",
         "readonly" => false,
         "cond" => 1,
-        "title" => _m("Send Emails"), 
+        "title" => _m("Send Emails"),
         "caption" => _m("Send Emails"),
         "mainmenu" => "admin",
         "submenu" => "send_emails",
         "attrs" => $attrs_edit,
-		"messages" => array (
-	        "no_item" => _m("You don't have permissions to edit any collection or no collection exists.")),
+        "messages" => array (
+            "no_item" => _m("You don't have permissions to edit any collection or no collection exists.")),
         "help" => _m("Here you send the Alert emails manually."),
         "fields" => array (
             "emailid_alert" => array (
@@ -256,7 +256,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         "mainmenu" => "sliceadmin",
         "submenu" => "te_alerts_admin",
         "buttons_down" => array ("update"=>1),
-        "attrs" => array ("table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"),    
+        "attrs" => array ("table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"),
         "type" => "edit",
         "readonly" => false,
         "addrecord" => false,
@@ -282,19 +282,19 @@ function GetAlertsTableView ($viewID, $processForm = false) {
                 "view" => array (
                     "readonly" => true,
                     "type" => "date",
-                    "size" => array ("cols" => 6), 
+                    "size" => array ("cols" => 6),
                     "format" => "j.m.y G:i")),
             "last_delete" => array (
                 "caption" => _m ("last delete not confirmed"),
                 "view" => array (
                     "readonly" => true,
                     "type" => "date",
-                    "size" => array ("cols" => 6), 
+                    "size" => array ("cols" => 6),
                     "format" => "j.m.y G:i"))),
         "help" => _m (
             "This table sets handling of not confirmed users. It's accessible only
             to superadmins.
-            You can delete not confirmed users after a number of days and / or send them an email 
+            You can delete not confirmed users after a number of days and / or send them an email
             demanding them to do confirmation
             after a smaller number of days. To switch either of the actions off,
             set number of days to 0. The two last fields are for your information only.<br>
@@ -302,74 +302,75 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             To run the script, you must have cron set up with a row running
             misc/alerts/admin_mails.php3.<br>
             For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."));
-    }            
+    }
 } // end of GetTableView
-            
-// ----------------------------------------------------------------------------------        
 
-function FindAlertsFilterPermissions() {   
+// ----------------------------------------------------------------------------------
+
+function FindAlertsFilterPermissions() {
     global $auth, $_filter_permissions;
     $db = new DB_AA;
-    
+
     // work only once
     if (isset ($_filter_permissions))
         return $_filter_permissions;
-        
-    if (IsSuperadmin()) 
+
+    if (IsSuperadmin())
         return 0;
-    
+
     $myslices = GetUserSlices();
     reset ($myslices);
-    while (list ($my_slice_id, $perms) = each ($myslices)) 
+    while (list ($my_slice_id, $perms) = each ($myslices))
         if (strchr ($perms, PS_FULLTEXT))
             $restrict_slices[] = q_pack_id($my_slice_id);
     $_filter_permissions = array ();
     if (is_array($restrict_slices)) {
-        $db->query("SELECT DISTINCT ADF.id FROM alerts_filter ADF 
+        $db->query("SELECT DISTINCT ADF.id FROM alerts_filter ADF
                      INNER JOIN view ON view.id = ADF.vid
                      INNER JOIN slice ON slice.id = view.slice_id
                      WHERE slice_id IN ('".join("','",$restrict_slices)."')");
-        $_filter_permissions = array ();             
+        $_filter_permissions = array ();
         while ($db->next_record())
             $_filter_permissions[] = $db->f("id");
     }
     return $_filter_permissions;
 }
 
-// ----------------------------------------------------------------------------------        
+// ----------------------------------------------------------------------------------
 
-function FindAlertsUserPermissions () {
+function FindAlertsUserPermissions() {
     global $Tab, $db, $collectionid, $sess, $setTab;
     $now = time();
     switch ($Tab) {
         case 'appb': $where = "status_code = 1 AND start_date > $now"; break;
         case 'appc': $where = "status_code = 1 AND start_date <= $now AND expiry_date < $now"; break;
         case 'hold': $where = "status_code = 2"; break;
-        case 'trash':$where = "status_code = 3"; break;        
-        case 'app': 
+        case 'trash':$where = "status_code = 3"; break;
+        case 'app':
         default: $where = "status_code = 1 AND start_date <= $now
             AND expiry_date >= $now"; break;
     }
-    
-    $db->query("SELECT userid 
-        FROM alerts_user_collection 
+
+    $db->query("SELECT userid
+        FROM alerts_user_collection
         WHERE collectionid='$collectionid' AND $where");
     $retval = array ();
-    while ($db->next_record()) 
+    while ($db->next_record()) {
         $retval[] = $db->f("userid");
+    }
     return $retval;
 }
 
-// ----------------------------------------------------------------------------------        
+// ----------------------------------------------------------------------------------
 
 // user function for confirmed
-function te_au_confirm ($val) {
+function te_au_confirm($val) {
     return $val ? _m("no") : _m("yes");
 }
 
-function AlertsModeditAfterInsert ($varset) {
+function AlertsModeditAfterInsert($varset) {
     global $change_id;
-    $change_id = unpack_id128($varset->get ("id"));    
+    $change_id = unpack_id128($varset->get ("id"));
     AddPermObject($change_id, "slice");
 }
 ?>

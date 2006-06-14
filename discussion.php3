@@ -77,23 +77,23 @@ function PutSearchLog ()
 /** APC-AA configuration file */
 require_once "./include/config.php3";
 /** Defines simplified class for page scroller */
-require_once $GLOBALS['AA_INC_PATH']."easy_scroller.php3";
+require_once AA_INC_PATH."easy_scroller.php3";
 /** Set of usefull functions used on most pages */
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once AA_INC_PATH."util.php3";
 /** Mail sending functions */
-require_once $GLOBALS['AA_INC_PATH']."mail.php3";
+require_once AA_INC_PATH."mail.php3";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
-require_once $GLOBALS['AA_INC_PATH']."item.php3";
+require_once AA_INC_PATH."item.php3";
 /** parses view settings, gets view data and other functions */
-require_once $GLOBALS['AA_INC_PATH']."view.php3";
+require_once AA_INC_PATH."view.php3";
 /** discussion utility functions */
-require_once $GLOBALS['AA_INC_PATH']."discussion.php3";
+require_once AA_INC_PATH."discussion.php3";
 /** defines PageCache class used for caching informations into database */
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once AA_INC_PATH."pagecache.php3";
 /** functions for searching and filtering items */
-require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
+require_once AA_INC_PATH."searchlib.php3";
 /** Main include file for using session management function on page */
-require_once $GLOBALS['AA_INC_PATH']."locsessi.php3";    // DB_AA object definition
+require_once AA_INC_PATH."locsessi.php3";    // DB_AA object definition
 
 add_vars();
 

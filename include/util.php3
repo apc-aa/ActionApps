@@ -23,16 +23,15 @@ http://www.apc.org/
 // Miscellaneous utility functions
 //
 
-require_once $GLOBALS['AA_INC_PATH']."constants.php3";
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
-require_once $GLOBALS['AA_INC_PATH']."zids.php3";
-require_once $GLOBALS['AA_INC_PATH']."logs.php3";
-require_once $GLOBALS['AA_INC_PATH']."go_url.php3";
+require_once AA_INC_PATH."constants.php3";
+require_once AA_INC_PATH."mgettext.php3";
+require_once AA_INC_PATH."zids.php3";
+require_once AA_INC_PATH."logs.php3";
+require_once AA_INC_PATH."go_url.php3";
 
 function get_aa_url($href, $session=true) {
-    global $AA_INSTAL_PATH, $sess;
-    return ($session AND is_object($sess)) ? $sess->url($AA_INSTAL_PATH.$href) :
-                               $AA_INSTAL_PATH.$href;
+    global $sess;
+    return ($session AND is_object($sess)) ? $sess->url(AA_INSTAL_PATH.$href) : AA_INSTAL_PATH.$href;
 }
 
 function get_admin_url($href, $session=true) {
@@ -83,9 +82,8 @@ function my_in_array($needle, $array) {
 }
 
 /** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
-function debuglog($text)
-{
-    $f = fopen($GLOBALS['AA_INC_PATH']."logs.txt","a");
+function debuglog($text) {
+    $f = fopen(AA_INC_PATH."logs.txt","a");
     if ($f) {
         fwrite($f, date( "h:i:s j-m-y ")  . $text . "\n");
         fclose($f);
@@ -93,8 +91,7 @@ function debuglog($text)
 }
 
 // adds all items from source to target, but doesn't overwrite items
-function array_add($source, &$target)
-{
+function array_add($source, &$target) {
     foreach ( (array)$source as $k => $v) {
         if (!isset($target[$k])) {
             $target[$k] = $v;
@@ -105,33 +102,35 @@ function array_add($source, &$target)
 }
 
 function self_complete_url() {
-    return self_server().$GLOBALS[REQUEST_URI];
+    return self_server().$GLOBALS['REQUEST_URI'];
 }
 
 // returns server name with protocol and port
 function self_server() {
-  global $HTTP_HOST, $SERVER_NAME, $HTTPS, $SERVER_PORT;
-  if ( isset($HTTPS) && $HTTPS == 'on' ){
-    $PROTOCOL='https';
-    if ($SERVER_PORT != "443")
-      $port = ":$SERVER_PORT";
-  } else {
-    $PROTOCOL='http';
-      if ($SERVER_PORT != "80")
-      $port = ":$SERVER_PORT";
-  }
-  // better to use HTTP_HOST - if we use SERVER_NAME and we try to open window
-  // by javascript, it is possible that the new window will be opened in other
-  // location than window.opener. That's  bad because accessing window.opener
-  // then leads to access denied javascript error (in IE at least)
-  $sname = ($HTTP_HOST ? $HTTP_HOST : $SERVER_NAME);
-  return("$PROTOCOL://$sname$port");
+    global $HTTP_HOST, $SERVER_NAME, $HTTPS, $SERVER_PORT;
+    if ( isset($HTTPS) && $HTTPS == 'on' ) {
+        $PROTOCOL='https';
+        if ($SERVER_PORT != "443") {
+            $port = ":$SERVER_PORT";
+        }
+    } else {
+        $PROTOCOL='http';
+        if ($SERVER_PORT != "80") {
+            $port = ":$SERVER_PORT";
+        }
+    }
+    // better to use HTTP_HOST - if we use SERVER_NAME and we try to open window
+    // by javascript, it is possible that the new window will be opened in other
+    // location than window.opener. That's  bad because accessing window.opener
+    // then leads to access denied javascript error (in IE at least)
+    $sname = ($HTTP_HOST ? $HTTP_HOST : $SERVER_NAME);
+    return("$PROTOCOL://$sname$port");
 }
 
 // returns server name with protocol, port and current directory of php script
 function self_base() {
-  global $PHP_SELF;
-  return (self_server(). ereg_replace("/[^/]*$", "", $PHP_SELF) . "/");
+    global $PHP_SELF;
+    return (self_server(). ereg_replace("/[^/]*$", "", $PHP_SELF) . "/");
 }
 
 /** On some serevers isn't defined DOCUMENT_URI
@@ -142,12 +141,12 @@ function document_uri() {
 
 // returns server name with protocol, port and current directory of shtml file
 function shtml_base() {
-  return (self_server(). ereg_replace("/[^/]*$", "", document_uri()) . "/");
+    return (self_server(). ereg_replace("/[^/]*$", "", document_uri()) . "/");
 }
 
 // returns url of current shtml file
 function shtml_url() {
-  return (self_server(). document_uri());
+    return (self_server(). document_uri());
 }
 
 /** returns query string passed to shtml file (variables are not quoted) */
@@ -174,17 +173,17 @@ function DeBackslash($txt) {
 //explodes $param by ":". The "#:" means true ":" - don't separate
 // Returns array
 function ParamExplode($param) {
-  $a = str_replace("#:", "__-__.", $param);    // dummy string
-  $b = str_replace("://", "__-__2", $a);       // replace all <http>:// too
-  $c = str_replace(":", "##Sx",$b);            // Separation string is //#Sx
-  $d = str_replace("__-__.", ":", $c);         // change "#:" to ":"
-  $e = str_replace("__-__2", "://", $d);       // change back "://"
-  return explode("##Sx", $e);
+    $a = str_replace("#:", "__-__.", $param);    // dummy string
+    $b = str_replace("://", "__-__2", $a);       // replace all <http>:// too
+    $c = str_replace(":", "##Sx",$b);            // Separation string is //#Sx
+    $d = str_replace("__-__.", ":", $c);         // change "#:" to ":"
+    $e = str_replace("__-__2", "://", $d);       // change back "://"
+    return explode("##Sx", $e);
 }
 
 function ParamImplode_replaceneeded($string) {
-   $a = str_replace(":", "#:", $string);
-   return $a;
+    $a = str_replace(":", "#:", $string);
+    return $a;
 }
 
 function ParamImplode($param) {
@@ -506,7 +505,7 @@ function get_microtime() {
 
 // Set a starting timestamp, if checking times, huhl can report
 // Debug function to print debug messages recursively - handles arrays
-function huhl ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
+function huhl($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
     global $debugtimes,$debugtimestart;
     if (isset($a)) {
         print("<listing>");
@@ -553,21 +552,21 @@ function PrintArray($a) {
 
 //Prepare OK Message
 function MsgOK($txt){
-  return "<div class=okmsg>$txt</div>";
+    return "<div class=okmsg>$txt</div>";
 }
 
 //Prepare Err Message
 function MsgERR($txt){
-  return "<div class=err>$txt</div>";
+    return "<div class=err>$txt</div>";
 }
 
 // function for unpacking string in edit_fields and needed_fields in database to array
 function UnpackFieldsToArray($packed, $fields) {
-  reset($fields);
-  $i=0;
-  while ( list($field,) = each($fields))
-    $arr[$field] = (substr($packed,$i++,1)=="y" ? true : false);
-  return $arr;
+    $i=0;
+    foreach ($fields as $field => $foo) {
+        $arr[$field] = (substr($packed,$i++,1)=="y" ? true : false);
+    }
+    return $arr;
 }
 
 // returns true, if specified input show func (name in $which) have constants
@@ -577,7 +576,6 @@ function HaveConstants($which) {
         if (substr($values['paramformat'], 4, 5) == "const") {
             if ($which == $key) { return true;}
         }
-        $i++;
     }
     return false;
 }
@@ -1184,30 +1182,39 @@ function clean_email($line) {
 * @param string $stylesheet  if empty, no StyleSheet tag is printed
 * @param bool   $js_lib      if true, includes js_lib.js javascript
 */
-function HtmlPageBegin($stylesheet='default', $js_lib=false) {
-    if ($stylesheet == "default")
-        $stylesheet = $GLOBALS["AA_INSTAL_PATH"].ADMIN_CSS;
+function HtmlPageBegin($stylesheet='default', $js_lib=false, $lang=null) {
+    if ($stylesheet == "default") {
+        $stylesheet = AA_INSTAL_PATH .ADMIN_CSS;
+    }
     echo
 '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
-  <HTML>
-    <HEAD>
-      <LINK rel="SHORTCUT ICON" href="'.$GLOBALS['AA_INSTAL_PATH'] .'images/favicon.ico">';
-    if ($stylesheet) echo '
-      <LINK rel="StyleSheet" href="'.$stylesheet.'" type="text/css">';
-    echo '
-      <META http-equiv="Content-Type" content="text/html; charset='
-        .$GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()].'">
-';
+  <html>
+    <head>
+      <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">';
+    if ($stylesheet) {
+        echo '
+      <link rel="StyleSheet" href="'.$stylesheet.'" type="text/css">';
+    }
+
+
+    $charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang ? $lang : get_mgettext_lang()];
+    echo "<!--$lang-->";
+    echo "\n     <meta http-equiv=\"Content-Type\" content=\"text/html; charset='$charset'\">\n";
     if ($js_lib) FrmJavascriptFile( 'javascript/js_lib.js' );
 }
 
 // use instead of </body></html> on pages which show menu
 function HtmlPageEnd() {
   echo "
-    </TD></TR></TABLE>
-    </TD></TR></TABLE>
-    </BODY></HTML>";
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>";
 }
 
 function getHtmlPage($param='') {
@@ -1741,7 +1748,7 @@ function DBFields(&$db) {
 }
 
 function ShowWizardFrames($aa_url, $wizard_url, $title, $noframes_html="") {
-    require $GLOBALS["AA_BASE_PATH"]."post2shtml.php3";
+    require AA_BASE_PATH."post2shtml.php3";
     global $post2shtml_id;
     echo
 '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
@@ -1767,8 +1774,8 @@ function ShowRefreshWizardJavaScript() {
 }
 
 function GetAAImage($filename, $alt='', $width=0, $height=0, $add='', $add_path='') {
-    $image_path = $GLOBALS['AA_BASE_PATH'].   $add_path. "images/$filename";
-    $image_url  = $GLOBALS['AA_INSTAL_PATH']. $add_path. "images/$filename";
+    $image_path = AA_BASE_PATH.   $add_path. "images/$filename";
+    $image_url  = AA_INSTAL_PATH. $add_path. "images/$filename";
     $title      = ($alt ? "title=\"$alt\"" : '');
     if ( $width ) {
         $size = "width=\"$width\" height=\"$height\"";

@@ -26,7 +26,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
+require_once AA_INC_PATH."feeding.php3";
 
 
 define('ITEMCONTENT_ERROR_BAD_PARAM', 200);
@@ -292,8 +292,8 @@ class ItemContent {
      *  TODO - convert to grabber/saver API
      */
     function storeToDB($slice_id, $actionIfItemExists=STORE_WITH_NEW_ID, $invalidatecache = true) {
-        require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-        require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+        require_once AA_INC_PATH."varset.php3";
+        require_once AA_INC_PATH."itemfunc.php3";
         global $db, $err, $varset, $itemvarset, $error, $ok;
 
         $db         = new DB_AA;

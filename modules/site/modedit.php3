@@ -28,15 +28,14 @@ if ($template['W']) {
     $no_slice_id = true;       // message for init_page.php3
 }
 
-$directory_depth = "../";
 require_once "../../include/init_page.php3";
-//require_once $GLOBALS['AA_INC_PATH']."en_site_lang.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."date.php3";
-require_once $GLOBALS['AA_INC_PATH']."modutils.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/site/util.php3";
+//require_once AA_INC_PATH."en_site_lang.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."date.php3";
+require_once AA_INC_PATH."modutils.php3";
+require_once AA_BASE_PATH."modules/site/util.php3";
 
 if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
@@ -178,7 +177,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
  <TITLE><?php echo _m("Site Admin");?></TITLE>
 </HEAD>
 <?php
-    require_once $GLOBALS['AA_BASE_PATH']."modules/site/menu.php3";
+    require_once AA_BASE_PATH."modules/site/menu.php3";
     showMenu($aamenus, "modadmin", "main");
 
     echo "<H1><B>" . ( $template['W'] ? _m("Add Site") : _m("Edit Site")) . "</B></H1>";
@@ -196,7 +195,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     ModW_HiddenRSpotId();
     FrmStaticText(_m("Id"), $module_id, false);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
-    $include_cmd = "<!--#include virtual=\"${AA_INSTAL_PATH}modules/site/site.php3?site_id=$module_id\"-->";
+    $include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/site/site.php3?site_id=$module_id\"-->";
     FrmInputText("slice_url", _m("URL"), $slice_url, 254, 25, false,
     _m("The file will probably contain just the following include:"). "$include_cmd" );
     FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);

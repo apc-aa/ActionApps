@@ -41,24 +41,18 @@ http://www.apc.org/
  *      "headerXXX" - display menu header
  */
 
-if (!defined("LINKS_MENU_INCLUDED"))
-      define("LINKS_MENU_INCLUDED",1);
-else return;
-
-require_once $GLOBALS[AA_INC_PATH]."menu_util.php3";
-require_once $GLOBALS[AA_INC_PATH]."perm_core.php3";
-require_once $GLOBALS[AA_INC_PATH]."mgettext.php3";
-//bind_mgettext_domain ($GLOBALS[AA_INC_PATH]."lang/".substr(LANG_FILE,0,2)."_news_lang.php3");
+require_once AA_INC_PATH."menu_util.php3";
+require_once AA_INC_PATH."perm_core.php3";
+require_once AA_INC_PATH."mgettext.php3";
+//bind_mgettext_domain (AA_INC_PATH."lang/".substr(LANG_FILE,0,2)."_news_lang.php3");
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
 
 $menu_function = 'get_aamenus_links';
-function get_aamenus_links()
-{
+function get_aamenus_links() {
     global $r_slice_view_url,
            $auth,
-           $AA_INSTAL_PATH,
            $AA_CP_Session,
            $linkedit,
            $r_state,
@@ -188,7 +182,7 @@ function get_aamenus_links()
     */
 
     // left menu for aaadmin is common to all modules, so it is shared
-    require_once $GLOBALS[AA_INC_PATH]."menu_aa.php3";
+    require_once AA_INC_PATH."menu_aa.php3";
     return $aamenus;
 }
 

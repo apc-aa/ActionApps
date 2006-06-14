@@ -2,14 +2,14 @@
 /**
  * Redirects to the main Alerts page.
  * Kept only for compatibility with the modules interface.
- * 
+ *
  * @package Alerts
  * @version $Id$
  * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
- * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -26,15 +26,13 @@ http://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-$directory_depth = "../";
-require_once $directory_depth."../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."go_url.php3";
+require_once dirname(__FILE__). "/../../include/init_page.php3";
+require_once AA_INC_PATH."go_url.php3";
 
-$session = $AA_CP_Session ? "AA_CP_Session=$AA_CP_Session" 
-    : "AA_SL_Session=$AA_SL_Session";
-$goto = $AA_INSTAL_PATH
-	."modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
+$session = $AA_CP_Session ? "AA_CP_Session=$AA_CP_Session" : "AA_SL_Session=$AA_SL_Session";
+$goto = AA_INSTAL_PATH
+    ."modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
     .$slice_id."]=1&slice_id=$slice_id&".$session;
 //echo $goto; exit;
-go_url ($goto);
+go_url($goto);
 ?>

@@ -28,10 +28,10 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']. "formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']. "searchbar.class.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/util.php3";
-require_once $GLOBALS['AA_INC_PATH']. "varset.php3";
+require_once AA_INC_PATH. "formutil.php3";
+require_once AA_INC_PATH. "searchbar.class.php3";
+require_once AA_BASE_PATH."modules/alerts/util.php3";
+require_once AA_INC_PATH. "varset.php3";
 
 $searchbar = new searchbar();   // mainly for bookmarks
 $items=$chb;
@@ -120,7 +120,7 @@ if ( !$send ) {               // for the first time - directly from item manager
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 echo '
-  <link rel=StyleSheet href="'.$AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
+  <link rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
   <title>'.  _m("Write email to users") .'</title>';
  IncludeManagerJavascript();
 echo '

@@ -113,7 +113,7 @@ function PrintModuleSelection() {
 */
 function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
 {
-    global $slice_id, $AA_INSTAL_PATH, $r_slice_headline, $useOnLoad, $sess, $db, $auth;
+    global $slice_id, $r_slice_headline, $useOnLoad, $sess, $db, $auth;
     global $menu_function;
     global $debug;
     trace("+","showMenu",$smmenus);
@@ -129,13 +129,13 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
 
     // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
     if ($activeMain == "aaadmin") {
-        bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/".get_mgettext_lang()."_news_lang.php3");
+        bind_mgettext_domain(AA_INC_PATH."lang/".get_mgettext_lang()."_news_lang.php3");
     }
 
     if (!$slice_id) {
         $r_slice_headline = _m("New slice");
     }
-    $nb_logo = '<a href="'. $AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>';
+    $nb_logo = '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>';
 
     echo '
 <body'. ($useOnLoad ? ' OnLoad="InitPage()"' : ''). ' bgcolor="'. COLOR_BACKGROUND .'">
@@ -146,12 +146,12 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
         // Show the Alerts and Reader management images in the header
         switch ( $GLOBALS["g_modules"][$slice_id]["type"] ) {
             case 'Alerts':
-                $title_img = a_href($AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 62, 36));
+                $title_img = a_href( AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 62, 36));
                 break;
             case 'S':
                 $slice_info = GetSliceInfo($slice_id);  // TODO - cache the sliceinfo()
                 if ($slice_info ["type"] == "ReaderManagement") {
-                    $title_img = a_href($AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('readers.gif', _m('Reader management'), 28, 40));
+                    $title_img = a_href( AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('readers.gif', _m('Reader management'), 28, 40));
                 }
                 break;
         }
@@ -162,9 +162,9 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
         <td colspan=2>
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td width="1%"><img src="'.$AA_INSTAL_PATH. 'images/spacer.gif" width=122 height=1></td>
-              <td><img src="'.$AA_INSTAL_PATH. 'images/spacer.gif" height=1></td>
-              <td><img src="'.$AA_INSTAL_PATH. 'images/spacer.gif" height=1></td>
+              <td width="1%"><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" width=122 height=1></td>
+              <td><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" height=1></td>
+              <td><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" height=1></td>
             </tr>
             <tr>
               <td width="1%" rowspan="2" align="center" class="nblogo">'.$nb_logo.'</td>
@@ -251,22 +251,22 @@ function showMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) 
 }
 
 function showSubMenuRows( $aamenuitems, $active ) {
-    global $AA_INSTAL_PATH, $slice_id,$debug;
+    global $slice_id,$debug;
 
-    if ( !isset($aamenuitems) OR !is_array($aamenuitems) )
+    if ( !isset($aamenuitems) OR !is_array($aamenuitems) ) {
        return;
+    }
 
-    reset ($aamenuitems);
-    while (list ($itemshow, $item) = each ($aamenuitems)) {
+    foreach ($aamenuitems as $itemshow => $item) {
         if (substr($itemshow,0,4) == "text") {
             echo "<tr><td>$item</td></tr>\n";
         } elseif (substr($itemshow,0,6) == "header") {
             echo '<tr><td>&nbsp;</td></tr>
-                  <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>
+                  <tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>
                   <tr><td class=leftmenu>'.$item.'</td></tr>
-                  <tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
+                  <tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
         } elseif (substr($itemshow,0,4) == "line") {
-            echo '<tr><td><img src="'.$AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
+            echo '<tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
         } elseif ( $item["function"] ) {
             // call some function to get menu items
             // it is better mainly for left submenus for which we need

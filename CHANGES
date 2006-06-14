@@ -1,3 +1,47 @@
+06/14/06 - fixed security problem with require - requires no longer use
+(honzam)   variables (see http://secunia.com/advisories/20299/)
+         - new possibility to use aliases and fields from Reader Slice
+           in Alert's e-mails. Now it is possible to create personalized e-mail
+           templates, so the e-mail could look like "Dear Mr. Rosicky, ...".
+           You can use the aliases in welcome e-mail as well as in alerts e-mail
+         - Alerts test page is rewritten, so you can select from list
+           of associated Readers and send the e-mail as if it is sent on regular
+           basis to that user
+         - new AA expressions which is based on f_t alias function modifiers
+           Instead of {alias:headline........:f_t:some_text:striptags} you can
+           write {striptags:some_text}. The same it is for
+               - {rss:some_text}
+               - {csv:some_text}
+               - {safe:some_text}
+               - {javascript:some_text}
+               - {urlencode:some_text}
+               - {conds:some_text}
+           There is also new {substitute:some_text} which simply expands
+           the text (finds aliases and substitute) and
+           {convert:some_text:from:to} for character encoding
+           (like: {convert:some_text:windows-1250:us-acsii})
+         - database structure updated to better work in MySQL 4 and MySQL 5
+           (columns with packed ids are marked as binary, so it is not converted
+           during import by MySQL characterset feature)
+         - fixed problem with COMMENTS used on MySQL 3
+           (which do not supprt this feature)
+         - fixed problem with SQL JOIN command in MySQL 5 in Links module
+         - csv import rewritten to allow periodical feeding of the data from
+           url/file (not completed yet)
+         - added number of displayed items near to page-scroller
+         - there is no longer need to add slice_id parameter to itemedit.php3
+           script if called from public pages. You can just provide id
+           (the slice_id is then grabbed from the item). Internaly we slightly
+           modified the character encoding handling in html header of input form.
+         - fix: removed additional line breaks in text e-mails
+         - fixed windows-1250 to us-ascii conversion (used for example as
+           view.php3?vid=123&convertfrom=windows-1250&convertto=us-ascii)
+         - changing of headline........ field enabled in
+           "Admin" -> "Change field IDs"
+         - new AA_Alias/ AA_Aliases class for better Alias handling
+           (internal change)
+         - FILEMAN_MODE_FILE and FILEMAN_MODE_DIR for file uploads changed from
+           variables to constants (which is more safe)
 05/25/06 - added new rss option to f_t function
 (brazda)
 04/24/06 - new parameter convertto and convertfrom for view.php3 which changes

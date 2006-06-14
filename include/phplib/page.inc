@@ -49,7 +49,7 @@ function page_open($feature) {
     ## Load the auto_init-File, if one is specified.
     if (($sess->auto_init != "") && ($sess->in == "")) {
       $sess->in = 1;
-      include($_PHPLIB["libdir"] . $sess->auto_init);
+      include(PHPLIB_LIBDIR . $sess->auto_init);
       if ($sess->secure_auto_init != "") {
         $sess->freeze();
       }

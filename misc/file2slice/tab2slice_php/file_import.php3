@@ -58,16 +58,16 @@ if (!get_magic_quotes_gpc()) {
 }
 
 require_once "../../include/config.php3";
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
-require_once $GLOBALS['AA_INC_PATH']."notify.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."date.php3";
-require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
-require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
+require_once AA_INC_PATH."locsess.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."itemfunc.php3";
+require_once AA_INC_PATH."notify.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."date.php3";
+require_once AA_INC_PATH."feeding.php3";
+require_once AA_INC_PATH."sliceobj.php3";
 
 function SendErrorPage($txt) {
   if ( $GLOBALS["err_url"] )

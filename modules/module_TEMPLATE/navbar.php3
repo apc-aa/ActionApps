@@ -59,7 +59,7 @@ $nb_view = (!$r_slice_view_url ?
   '<span class=nbenable>'. _m("View site") .'</span>' :
   " &nbsp; &nbsp;<a href=\"$r_slice_view_url\"><span class=nbenable>". _m("View site") .'</span></a>');
 
-$nb_logo = '<a href="'. $AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. _m("ActionApps") .'"></a>';
+$nb_logo = '<a href="'. AA_INSTAL_PATH .'"><img src="'.$nb_backpath.'../images/action.gif" width="106" height="73" border="0" alt="'. _m("ActionApps") .'"></a>';
 
 $nb_go = '<span class=nbenable>'. _m("Go") .'</span>';
 
@@ -90,6 +90,9 @@ echo "</TD></TR></TABLE>";
 
 /*
 $Log$
+Revision 1.8  2006/06/14 13:30:43  honzam
+fixed security problem require (see http://secunia.com/advisories/20299/). Requires no longer use variables
+
 Revision 1.7  2005/06/03 00:36:33  honzam
 strings in AA uses "ActionApps" name instead of "APC Action Apps"
 

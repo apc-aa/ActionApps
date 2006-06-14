@@ -81,22 +81,22 @@ if (!get_magic_quotes_gpc()) {
 /** APC-AA configuration file */
 require_once "include/config.php3";
 /** Main include file for using session management function on a page */
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once AA_INC_PATH."locsess.php3";
 /** Set of useful functions used on most pages */
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."formutil.php3";
 /** Defines class for inserting and updating database fields */
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."itemfunc.php3";
 /** utility for notifying people of events by email */
-require_once $GLOBALS['AA_INC_PATH']."notify.php3";
+require_once AA_INC_PATH."notify.php3";
 /** defines PageCache class used for caching informations into database */
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once AA_INC_PATH."pagecache.php3";
 /** date helper functions */
-require_once $GLOBALS['AA_INC_PATH']."date.php3";
-require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
-require_once $GLOBALS['AA_INC_PATH']."zids.php3";
-require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
+require_once AA_INC_PATH."date.php3";
+require_once AA_INC_PATH."feeding.php3";
+require_once AA_INC_PATH."zids.php3";
+require_once AA_INC_PATH."sliceobj.php3";
 
 
 function UseShowResult($txt,$url) {

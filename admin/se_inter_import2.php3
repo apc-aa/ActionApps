@@ -31,10 +31,10 @@ if (!IfSlPerm(PS_FEEDING)) {
     exit;
 }
 
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."xml_fetch.php3";
-require_once $GLOBALS['AA_INC_PATH']."xml_rssparse.php3";
-require_once $GLOBALS['AA_INC_PATH']."csn_util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."xml_fetch.php3";
+require_once AA_INC_PATH."xml_rssparse.php3";
+require_once AA_INC_PATH."csn_util.php3";
 
 $db->query("SELECT server_url, password FROM nodes WHERE name='$rem_nodes'");
 if ($db->next_record()) {
@@ -75,7 +75,7 @@ FrmJavascript('function InitPage() {}');
 echo "\n</HEAD>\n<BODY>\n";
 
 $useOnLoad = true;
-require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","n_import");
 
 echo "<H1><B>" . _m("Inter node import settings"). "</B></H1>";

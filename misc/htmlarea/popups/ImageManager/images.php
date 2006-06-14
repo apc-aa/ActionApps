@@ -1,11 +1,11 @@
-<?
+<?php
 /***********************************************************************
 ** Title.........:	Image Manager, draws the thumbnails and directies
 ** Version.......:	1.01
 ** Author........:	Xiang Wei ZHUO <wei@zhuo.org>
 ** Filename......:	images.php
-** Last changed..:	8 Mar 2003 
-** Notes.........:	Configuration in config.inc.php 
+** Last changed..:	8 Mar 2003
+** Notes.........:	Configuration in config.inc.php
 
                     Functions
                      - create a new folder,
@@ -15,78 +15,77 @@
 
 ***********************************************************************/
 /* changed for APC-AA by pavelji@ecn.cz */
-$directory_depth = "../../../";
-require_once $directory_depth."../include/init_page.php3";     # This pays attention to $change_id
-require_once $directory_depth."../include/util.php3";
+require_once dirname(__FILE__). "/../../../../include/init_page.php3";     // This pays attention to $change_id
+require_once AA_INC_PATH."util.php3";
 
-include 'config.inc.php';
+require_once 'config.inc.php';
 
 if(isset($_GET['dir'])) {
-	$dirParam = $_GET['dir'];
+    $dirParam = $_GET['dir'];
 
-	if(strlen($dirParam) > 0) 
-	{
-		if(substr($dirParam,0,1)=='/') 
-			$IMG_ROOT .= $dirParam;		
-		else
-			$IMG_ROOT = $dirParam;			
-	}	
+    if(strlen($dirParam) > 0)
+    {
+        if(substr($dirParam,0,1)=='/')
+            $IMG_ROOT .= $dirParam;
+        else
+            $IMG_ROOT = $dirParam;
+    }
 }
 
 $refresh_dirs = false;
 $clearUploads = false;
 
-if(strrpos($IMG_ROOT, '/')!= strlen($IMG_ROOT)-1) 
-	$IMG_ROOT .= '/';
+if(strrpos($IMG_ROOT, '/')!= strlen($IMG_ROOT)-1)
+    $IMG_ROOT .= '/';
 
 
-if(isset($_GET['create']) && isset($_GET['dir']) && $SAFE_MODE == false) 
+if(isset($_GET['create']) && isset($_GET['dir']) && $SAFE_MODE == false)
 {
-	create_folder();	
+    create_folder();
 }
 
-if(isset($_GET['delFile']) && isset($_GET['dir'])) 
+if(isset($_GET['delFile']) && isset($_GET['dir']))
 {
-	delete_file($_GET['delFile']);	
+    delete_file($_GET['delFile']);
 }
 
-if(isset($_GET['delFolder']) && isset($_GET['dir'])) 
+if(isset($_GET['delFolder']) && isset($_GET['dir']))
 {
-	delete_folder($_GET['delFolder']);	
+    delete_folder($_GET['delFolder']);
 }
 
-if(isset($_FILES['upload']) && is_array($_FILES['upload']) && isset($_POST['dirPath'])) 
+if(isset($_FILES['upload']) && is_array($_FILES['upload']) && isset($_POST['dirPath']))
 {
 
-	$dirPathPost = $_POST['dirPath'];
+    $dirPathPost = $_POST['dirPath'];
 
-	if(strlen($dirPathPost) > 0) 
-	{
-		if(substr($dirPathPost,0,1)=='/') 
-			$IMG_ROOT .= $dirPathPost;		
-		else
-			$IMG_ROOT = $dirPathPost;			
-	}
+    if(strlen($dirPathPost) > 0)
+    {
+        if(substr($dirPathPost,0,1)=='/')
+            $IMG_ROOT .= $dirPathPost;
+        else
+            $IMG_ROOT = $dirPathPost;
+    }
 
-	if(strrpos($IMG_ROOT, '/')!= strlen($IMG_ROOT)-1) 
-		$IMG_ROOT .= '/';
+    if(strrpos($IMG_ROOT, '/')!= strlen($IMG_ROOT)-1)
+        $IMG_ROOT .= '/';
 
-	do_upload($_FILES['upload'], $BASE_DIR.$BASE_ROOT.$dirPathPost.'/');
+    do_upload($_FILES['upload'], $BASE_DIR.$BASE_ROOT.$dirPathPost.'/');
 }
 
-function do_upload($file, $dest_dir) 
+function do_upload($file, $dest_dir)
 {
-	global $clearUploads;
-    
+    global $clearUploads;
+
 // changed for APC-AA by pavelji@ecn
 // we need another backward-compatibility (for older PHP) upload file handling
 /*
-	if(is_file($file['tmp_name'])) 
-	{
-		//var_dump($file); echo "DIR:$dest_dir";
-		move_uploaded_file($file['tmp_name'], $dest_dir.$file['name']);	
-		chmod($dest_dir.$file['name'], 0666);
-	}
+    if(is_file($file['tmp_name']))
+    {
+        //var_dump($file); echo "DIR:$dest_dir";
+        move_uploaded_file($file['tmp_name'], $dest_dir.$file['name']);
+        chmod($dest_dir.$file['name'], 0666);
+    }
 */
 /* this is excerpt from function aa_move_uploaded_file from include/util.php3 */
     list($va,$vb,$vc) = explode(".",phpversion());   # this check work with all possibilities (I hope) -
@@ -103,182 +102,182 @@ function do_upload($file, $dest_dir)
     }
 
 
-	$clearUploads = true;
+    $clearUploads = true;
 }
 
-function delete_folder($folder) 
+function delete_folder($folder)
 {
-	global $BASE_DIR, $refresh_dirs;
-	//var_dump($BASE_DIR);
-	$del_folder = dir_name($BASE_DIR).$folder;
-	//echo $del_folder;
-	if(is_dir($del_folder) && num_files($del_folder) <= 0) {
-		//echo $del_folder.'<br>';
-		rm_all_dir($del_folder);
-		$refresh_dirs = true;
-	}
+    global $BASE_DIR, $refresh_dirs;
+    //var_dump($BASE_DIR);
+    $del_folder = dir_name($BASE_DIR).$folder;
+    //echo $del_folder;
+    if(is_dir($del_folder) && num_files($del_folder) <= 0) {
+        //echo $del_folder.'<br>';
+        rm_all_dir($del_folder);
+        $refresh_dirs = true;
+    }
 }
 
-function rm_all_dir($dir) 
+function rm_all_dir($dir)
 {
-	//$dir = dir_name($dir);
-	//echo "OPEN:".$dir.'<Br>';
-	if(is_dir($dir)) 
-	{
-		$d = @dir($dir);
-		
-		while (false !== ($entry = $d->read())) 
-		{
-			//echo "#".$entry.'<br>';
-			if($entry != '.' && $entry != '..') 
-			{
-				$node = $dir.'/'.$entry;
-				//echo "NODE:".$node;
-				if(is_file($node)) {
-					//echo " - is file<br>";
-					unlink($node);
-				}
-				else if(is_dir($node)) {
-					//echo " -	is Dir<br>";
-					rm_all_dir($node);
-				}
-			}
-		}
-		$d->close();
+    //$dir = dir_name($dir);
+    //echo "OPEN:".$dir.'<Br>';
+    if(is_dir($dir))
+    {
+        $d = @dir($dir);
 
-		rmdir($dir);
-	}
-	//echo "RM: $dir <br>";
+        while (false !== ($entry = $d->read()))
+        {
+            //echo "#".$entry.'<br>';
+            if($entry != '.' && $entry != '..')
+            {
+                $node = $dir.'/'.$entry;
+                //echo "NODE:".$node;
+                if(is_file($node)) {
+                    //echo " - is file<br>";
+                    unlink($node);
+                }
+                else if(is_dir($node)) {
+                    //echo " -	is Dir<br>";
+                    rm_all_dir($node);
+                }
+            }
+        }
+        $d->close();
+
+        rmdir($dir);
+    }
+    //echo "RM: $dir <br>";
 }
 
-function delete_file($file) 
+function delete_file($file)
 {
-	global $BASE_DIR;
-	
-	$del_image = dir_name($BASE_DIR).$file;
+    global $BASE_DIR;
 
-	$del_thumb = dir_name($del_image).'.'.basename($del_image);
+    $del_image = dir_name($BASE_DIR).$file;
 
-	if(is_file($del_image)) {
-		unlink($del_image);	
-	}
+    $del_thumb = dir_name($del_image).'.'.basename($del_image);
 
-	if(is_file($del_thumb)) {
-		unlink($del_thumb);	
-	}
+    if(is_file($del_image)) {
+        unlink($del_image);
+    }
+
+    if(is_file($del_thumb)) {
+        unlink($del_thumb);
+    }
 }
 
-function create_folder() 
+function create_folder()
 {
-	global $BASE_DIR, $IMG_ROOT, $refresh_dirs;
-	
-	$folder_name = $_GET['foldername'];
+    global $BASE_DIR, $IMG_ROOT, $refresh_dirs;
 
-	if(strlen($folder_name) >0) 
-	{
-		$folder = $BASE_DIR.$IMG_ROOT.$folder_name;
+    $folder_name = $_GET['foldername'];
 
-		if(!is_dir($folder) && !is_file($folder))
-		{
-			mkdir($folder,0777);	
-			chmod($folder,0777);
-			$refresh_dirs = true;
-		}
-	}
+    if(strlen($folder_name) >0)
+    {
+        $folder = $BASE_DIR.$IMG_ROOT.$folder_name;
+
+        if(!is_dir($folder) && !is_file($folder))
+        {
+            mkdir($folder,0777);
+            chmod($folder,0777);
+            $refresh_dirs = true;
+        }
+    }
 }
 
-function num_files($dir) 
+function num_files($dir)
 {
-	$total = 0;
+    $total = 0;
 
-	if(is_dir($dir)) 
-	{
-		$d = @dir($dir);
+    if(is_dir($dir))
+    {
+        $d = @dir($dir);
 
-		while (false !== ($entry = $d->read())) 
-		{
-			//echo $entry."<br>";
-			if(substr($entry,0,1) != '.') {
-				$total++;
-			}
-		}
-		$d->close();
-	}
-	return $total;
+        while (false !== ($entry = $d->read()))
+        {
+            //echo $entry."<br>";
+            if(substr($entry,0,1) != '.') {
+                $total++;
+            }
+        }
+        $d->close();
+    }
+    return $total;
 }
 
-function dirs($dir,$abs_path) 
+function dirs($dir,$abs_path)
 {
-	$d = dir($dir);
-		//echo "Handle: ".$d->handle."<br>\n";
-		//echo "Path: ".$d->path."<br>\n";
-		$dirs = array();
-		while (false !== ($entry = $d->read())) {
-			if(is_dir($dir.'/'.$entry) && substr($entry,0,1) != '.') 
-			{
-				//dirs($dir.'/'.$entry, $prefix.$prefix);
-				//echo $prefix.$entry."<br>\n";
-				$path['path'] = $dir.'/'.$entry;
-				$path['name'] = $entry;
-				$dirs[$entry] = $path;
-			}
-		}
-		$d->close();
-	
-		ksort($dirs);
-		for($i=0; $i<count($dirs); $i++) 
-		{
-			$name = key($dirs);
-			$current_dir = $abs_path.'/'.$dirs[$name]['name'];
-			echo ", \"$current_dir\"\n";
-			dirs($dirs[$name]['path'],$current_dir);
-			next($dirs);
-		}
+    $d = dir($dir);
+        //echo "Handle: ".$d->handle."<br>\n";
+        //echo "Path: ".$d->path."<br>\n";
+        $dirs = array();
+        while (false !== ($entry = $d->read())) {
+            if(is_dir($dir.'/'.$entry) && substr($entry,0,1) != '.')
+            {
+                //dirs($dir.'/'.$entry, $prefix.$prefix);
+                //echo $prefix.$entry."<br>\n";
+                $path['path'] = $dir.'/'.$entry;
+                $path['name'] = $entry;
+                $dirs[$entry] = $path;
+            }
+        }
+        $d->close();
+
+        ksort($dirs);
+        for($i=0; $i<count($dirs); $i++)
+        {
+            $name = key($dirs);
+            $current_dir = $abs_path.'/'.$dirs[$name]['name'];
+            echo ", \"$current_dir\"\n";
+            dirs($dirs[$name]['path'],$current_dir);
+            next($dirs);
+        }
 }
 
-function parse_size($size) 
+function parse_size($size)
 {
-	if($size < 1024) 
-		return $size.' btyes';	
-	else if($size >= 1024 && $size < 1024*1024) 
-	{
-		return sprintf('%01.2f',$size/1024.0).' Kb';	
-	}
-	else
-	{
-		return sprintf('%01.2f',$size/(1024.0*1024)).' Mb';	
-	}
+    if($size < 1024)
+        return $size.' btyes';
+    else if($size >= 1024 && $size < 1024*1024)
+    {
+        return sprintf('%01.2f',$size/1024.0).' Kb';
+    }
+    else
+    {
+        return sprintf('%01.2f',$size/(1024.0*1024)).' Mb';
+    }
 }
 
-function show_image($img, $file, $info, $size) 
+function show_image($img, $file, $info, $size)
 {
-	global $BASE_DIR, $BASE_URL, $newPath, $AA_CP_Session, $regenerate;
+    global $BASE_DIR, $BASE_URL, $newPath, $AA_CP_Session, $regenerate;
 
-	$img_path = dir_name($img);
-	$img_file = basename($img);
+    $img_path = dir_name($img);
+    $img_file = basename($img);
     // changed for APC-AA by pavelji@ecn.cz : session
-	$thumb_image = 'thumbs.php?AA_CP_Session='.$AA_CP_Session.'&img='.urlencode($img);
+    $thumb_image = 'thumbs.php?AA_CP_Session='.$AA_CP_Session.'&img='.urlencode($img);
     if ($regenerate) { $thumb_image .= "&regenerate=1"; }
-    
-	$img_url = $BASE_URL.$img_path.'/'.$img_file;
 
-	$filesize = parse_size($size);
+    $img_url = $BASE_URL.$img_path.'/'.$img_file;
+
+    $filesize = parse_size($size);
 
 ?>
 <td>
 <table width="102" border="0" cellpadding="0" cellspacing="2">
-  <tr> 
+  <tr>
     <td align="center" class="imgBorder" onMouseOver="pviiClassNew(this,'imgBorderHover')" onMouseOut="pviiClassNew(this,'imgBorder')">
-	<a href="javascript:;" onClick="javascript:imageSelected('<? echo $img_url; ?>', <? echo $info[0];?>, <? echo $info[1]; ?>,'<? echo $file; ?>');"><img src="<? echo $thumb_image; ?>" alt="<? echo $file; ?> - <? echo $filesize; ?>" border="0"></a></td>
+    <a href="javascript:;" onClick="javascript:imageSelected('<?php echo $img_url; ?>', <?php echo $info[0];?>, <?php echo $info[1]; ?>,'<?php echo $file; ?>');"><img src="<?php echo $thumb_image; ?>" alt="<?php echo $file; ?> - <?php echo $filesize; ?>" border="0"></a></td>
   </tr>
-  <tr> 
+  <tr>
     <td><table width="100%" border="0" cellspacing="0" cellpadding="2">
-        <tr> 
+        <tr>
           <td width="1%" class="buttonOut" onMouseOver="pviiClassNew(this,'buttonHover')" onMouseOut="pviiClassNew(this,'buttonOut')">
-			<a href="javascript:;" onClick="javascript:preview('<? echo $img_url; ?>', '<? echo $file; ?>', ' <? echo $filesize; ?>',<? echo $info[0].','.$info[1]; ?>);"><img src="edit_pencil.gif" width="15" height="15" border="0"></a></td>
+            <a href="javascript:;" onClick="javascript:preview('<?php echo $img_url; ?>', '<?php echo $file; ?>', ' <?php echo $filesize; ?>',<?php echo $info[0].','.$info[1]; ?>);"><img src="edit_pencil.gif" width="15" height="15" border="0"></a></td>
           <td width="1%" class="buttonOut" onMouseOver="pviiClassNew(this,'buttonHover')" onMouseOut="pviiClassNew(this,'buttonOut')">
-			<a href="images.php?AA_CP_Session=<?php /* changed for APC-AA by pavelji@ecn.cz : Session */ echo $AA_CP_Session; ?>&delFile=<? echo $img_url; ?>&dir=<? echo $newPath; ?>" onClick="return deleteImage('<? echo $file; ?>');"><img src="edit_trash.gif" width="15" height="15" border="0"></a></td>
-          <td width="98%" class="imgCaption"><? echo $info[0].'x'.$info[1]; ?></td>
+            <a href="images.php?AA_CP_Session=<?php /* changed for APC-AA by pavelji@ecn.cz : Session */ echo $AA_CP_Session; ?>&delFile=<?php echo $img_url; ?>&dir=<?php echo $newPath; ?>" onClick="return deleteImage('<?php echo $file; ?>');"><img src="edit_trash.gif" width="15" height="15" border="0"></a></td>
+          <td width="98%" class="imgCaption"><?php echo $info[0].'x'.$info[1]; ?></td>
         </tr>
       </table></td>
   </tr>
@@ -287,36 +286,36 @@ function show_image($img, $file, $info, $size)
 <?
 }
 
-function show_dir($path, $dir) 
+function show_dir($path, $dir)
 {
-	global $newPath, $BASE_DIR, $BASE_URL;
+    global $newPath, $BASE_DIR, $BASE_URL;
 
-	$num_files = num_files($BASE_DIR.$path);
+    $num_files = num_files($BASE_DIR.$path);
 ?>
 <td>
 <table width="102" border="0" cellpadding="0" cellspacing="2">
-  <tr> 
+  <tr>
     <td align="center" class="imgBorder" onMouseOver="pviiClassNew(this,'imgBorderHover')" onMouseOut="pviiClassNew(this,'imgBorder')">
-	  <a href="images.php?dir=<? echo $path; ?>" onClick="changeLoadingStatus('load')">
-		<img src="folder.gif" width="80" height="80" border=0 alt="<? echo $dir; ?>">
-	  </a>
-	</td>
+      <a href="images.php?dir=<?php echo $path; ?>" onClick="changeLoadingStatus('load')">
+        <img src="folder.gif" width="80" height="80" border=0 alt="<?php echo $dir; ?>">
+      </a>
+    </td>
   </tr>
-  <tr> 
+  <tr>
     <td><table width="100%" border="0" cellspacing="1" cellpadding="2">
-        <tr> 
+        <tr>
           <td width="1%" class="buttonOut" onMouseOver="pviiClassNew(this,'buttonHover')" onMouseOut="pviiClassNew(this,'buttonOut')">
-			<a href="images.php?delFolder=<? echo $BASE_URL.$path; ?>&dir=<? echo $newPath; ?>" onClick="return deleteFolder('<? echo $dir; ?>', <? echo $num_files; ?>);"><img src="edit_trash.gif" width="15" height="15" border="0"></a></td>
-          <td width="99%" class="imgCaption"><? echo $dir; ?></td>
+            <a href="images.php?delFolder=<?php echo $BASE_URL.$path; ?>&dir=<?php echo $newPath; ?>" onClick="return deleteFolder('<?php echo $dir; ?>', <?php echo $num_files; ?>);"><img src="edit_trash.gif" width="15" height="15" border="0"></a></td>
+          <td width="99%" class="imgCaption"><?php echo $dir; ?></td>
         </tr>
       </table></td>
   </tr>
 </table>
 </td>
-<?	
+<?
 }
 
-function draw_no_results() 
+function draw_no_results()
 {
 ?>
 <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
@@ -324,32 +323,32 @@ function draw_no_results()
     <td><div align="center" style="font-size:large;font-weight:bold;color:#CCCCCC;font-family: Helvetica, sans-serif;">No Images Found</div></td>
   </tr>
 </table>
-<?	
+<?
 }
 
-function draw_no_dir() 
+function draw_no_dir()
 {
-	global $BASE_DIR, $BASE_ROOT;
+    global $BASE_DIR, $BASE_ROOT;
 ?>
 <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
   <tr>
-    <td><div align="center" style="font-size:small;font-weight:bold;color:#CC0000;font-family: Helvetica, sans-serif;">Configuration Problem: &quot;<? echo $BASE_DIR.$BASE_ROOT; ?>&quot; does not exist.</div></td>
+    <td><div align="center" style="font-size:small;font-weight:bold;color:#CC0000;font-family: Helvetica, sans-serif;">Configuration Problem: &quot;<?php echo $BASE_DIR.$BASE_ROOT; ?>&quot; does not exist.</div></td>
   </tr>
 </table>
-<?	
+<?
 }
 
 
-function draw_table_header() 
+function draw_table_header()
 {
-	echo '<table border="0" cellpadding="0" cellspacing="2">';
-	echo '<tr>';
+    echo '<table border="0" cellpadding="0" cellspacing="2">';
+    echo '<tr>';
 }
 
-function draw_table_footer() 
+function draw_table_footer()
 {
-	echo '</tr>';
-	echo '</table>';
+    echo '</tr>';
+    echo '</table>';
 }
 
 ?>
@@ -360,23 +359,23 @@ function draw_table_footer()
 <style type="text/css">
 <!--
 .imgBorder {
-	height: 96px;
-	border: 1px solid threedface;
-	vertical-align: middle;
+    height: 96px;
+    border: 1px solid threedface;
+    vertical-align: middle;
 }
 .imgBorderHover {
-	height: 96px;
-	border: 1px solid threedface;
-	vertical-align: middle;
-	background: #FFFFCC;
-	cursor: hand;
+    height: 96px;
+    border: 1px solid threedface;
+    vertical-align: middle;
+    background: #FFFFCC;
+    cursor: hand;
 }
 
 .buttonHover {
-	border: 1px solid;
-	border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
-	cursor: hand;
-	background: #FFFFCC;
+    border: 1px solid;
+    border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
+    cursor: hand;
+    background: #FFFFCC;
 }
 .buttonOut
 {
@@ -385,38 +384,38 @@ function draw_table_footer()
 }
 
 .imgCaption {
-	font-size: 9pt;
-	font-family: "MS Shell Dlg", Helvetica, sans-serif;
-	text-align: center;
+    font-size: 9pt;
+    font-family: "MS Shell Dlg", Helvetica, sans-serif;
+    text-align: center;
 }
 .dirField {
-	font-size: 9pt;
-	font-family: "MS Shell Dlg", Helvetica, sans-serif;
-	width:110px;
+    font-size: 9pt;
+    font-family: "MS Shell Dlg", Helvetica, sans-serif;
+    width:110px;
 }
 
 -->
 </style>
 <?
-	$dirPath = eregi_replace($BASE_ROOT,'',$IMG_ROOT);
+    $dirPath = eregi_replace($BASE_ROOT,'',$IMG_ROOT);
 
-	$paths = explode('/', $dirPath);
-	$upDirPath = '/';
-	for($i=0; $i<count($paths)-2; $i++) 
-	{
-		$path = $paths[$i];
-		if(strlen($path) > 0) 
-		{
-			$upDirPath .= $path.'/';
-		}
-	}
+    $paths = explode('/', $dirPath);
+    $upDirPath = '/';
+    for($i=0; $i<count($paths)-2; $i++)
+    {
+        $path = $paths[$i];
+        if(strlen($path) > 0)
+        {
+            $upDirPath .= $path.'/';
+        }
+    }
 
-	$slashIndex = strlen($dirPath);
-	$newPath = $dirPath;
-	if($slashIndex > 1 && substr($dirPath, $slashIndex-1, $slashIndex) == '/')
-	{
-		$newPath = substr($dirPath, 0,$slashIndex-1);
-	}
+    $slashIndex = strlen($dirPath);
+    $newPath = $dirPath;
+    if($slashIndex > 1 && substr($dirPath, $slashIndex-1, $slashIndex) == '/')
+    {
+        $newPath = substr($dirPath, 0,$slashIndex-1);
+    }
 ?>
 <script type="text/javascript" src="../popup.js"></script>
 <script type="text/javascript" src="../../dialog.js"></script>
@@ -429,112 +428,112 @@ function pviiClassNew(obj, new_style) { //v2.6 by PVII
   obj.className=new_style;
 }
 
-function goUp() 
+function goUp()
 {
-	location.href = "ImageManager/images.php?<?php /* changed for APC-AA by pavelji@ecn.cz */ echo "AA_CP_Session=".$AA_CP_Session."&"; ?>dir=<? echo $upDirPath; ?>";
+    location.href = "ImageManager/images.php?<?php /* changed for APC-AA by pavelji@ecn.cz */ echo "AA_CP_Session=".$AA_CP_Session."&"; ?>dir=<?php echo $upDirPath; ?>";
 }
 
-function changeDir(newDir) 
+function changeDir(newDir)
 {
 <?php /* changed for APC-AA by pavelji@ecn.cz : after pressing "Refresh" button regenerate thumbnails */ ?>
-    url = "ImageManager/images.php?<?php /* changed for APC-AA by pavelji@ecn.cz */ echo "AA_CP_Session=".$AA_CP_Session."&"; ?>dir="+newDir;    
+    url = "ImageManager/images.php?<?php /* changed for APC-AA by pavelji@ecn.cz */ echo "AA_CP_Session=".$AA_CP_Session."&"; ?>dir="+newDir;
     if (regenerate == 1) { url = url + "&regenerate=1"; }
-	location.href = url;
+    location.href = url;
 }
-<?php /* disabled for APC-AA by pavelji@ecn.cz - we can't create new folders 
-function newFolder(oldDir, newFolder) 
+<?php /* disabled for APC-AA by pavelji@ecn.cz - we can't create new folders
+function newFolder(oldDir, newFolder)
 {
-	location.href = "ImageManager/images.php?dir="+oldDir+'&create=folder&foldername='+newFolder;
+    location.href = "ImageManager/images.php?dir="+oldDir+'&create=folder&foldername='+newFolder;
 }
-*/ 
+*/
 ?>
-function updateDir() 
+function updateDir()
 {
-	var newPath = "<? echo $newPath; ?>";
-	if(window.top.document.forms[0] != null) {
-		
-	var allPaths = window.top.document.forms[0].dirPath.options;
-	//alert("new:"+newPath);
-	for(i=0; i<allPaths.length; i++) 
-	{
-		//alert(allPaths.item(i).value);
-		allPaths.item(i).selected = false;
-		if((allPaths.item(i).value)==newPath) 
-		{
-			allPaths.item(i).selected = true;
-		}
-	}
+    var newPath = "<?php echo $newPath; ?>";
+    if(window.top.document.forms[0] != null) {
+
+    var allPaths = window.top.document.forms[0].dirPath.options;
+    //alert("new:"+newPath);
+    for(i=0; i<allPaths.length; i++)
+    {
+        //alert(allPaths.item(i).value);
+        allPaths.item(i).selected = false;
+        if((allPaths.item(i).value)==newPath)
+        {
+            allPaths.item(i).selected = true;
+        }
+    }
 
 <?
-	if($clearUploads) {
+    if($clearUploads) {
 ?>
-	var topDoc = window.top.document.forms[0];
-	topDoc.upload.value = null;
-	//topDoc.upload.disabled = true;
+    var topDoc = window.top.document.forms[0];
+    topDoc.upload.value = null;
+    //topDoc.upload.disabled = true;
 <?
-	}
+    }
 ?>
 
-	}
+    }
 
 }
 
 <? if ($refresh_dirs) { ?>
-function refreshDirs() 
+function refreshDirs()
 {
-	var allPaths = window.top.document.forms[0].dirPath.options;
-	var fields = ["/" <? dirs($BASE_DIR.$BASE_ROOT,'');?>];
+    var allPaths = window.top.document.forms[0].dirPath.options;
+    var fields = ["/" <? dirs($BASE_DIR.$BASE_ROOT,'');?>];
 
-	var newPath = "<? echo $newPath; ?>";
+    var newPath = "<?php echo $newPath; ?>";
 
-	while(allPaths.length > 0) 
-	{
-		for(i=0; i<allPaths.length; i++) 
-		{
-			allPaths.remove(i);	
-		}		
-	}
+    while(allPaths.length > 0)
+    {
+        for(i=0; i<allPaths.length; i++)
+        {
+            allPaths.remove(i);
+        }
+    }
 
-	for(i=0; i<fields.length; i++) 
-	{
-		var newElem =	document.createElement("OPTION");
-		var newValue = fields[i];
-		newElem.text = newValue;
-		newElem.value = newValue;
+    for(i=0; i<fields.length; i++)
+    {
+        var newElem =	document.createElement("OPTION");
+        var newValue = fields[i];
+        newElem.text = newValue;
+        newElem.value = newValue;
 
-		if(newValue == newPath) 
-			newElem.selected = true;	
-		else
-			newElem.selected = false;
+        if(newValue == newPath)
+            newElem.selected = true;
+        else
+            newElem.selected = false;
 
-		allPaths.add(newElem);
-	}
+        allPaths.add(newElem);
+    }
 }
 refreshDirs();
 <? } ?>
 
-function imageSelected(filename, width, height, alt) 
+function imageSelected(filename, width, height, alt)
 {
-	var topDoc = window.top.document.forms[0];
-	topDoc.f_url.value = filename;
-	topDoc.f_width.value= width;
-	topDoc.f_height.value = height;
-	topDoc.f_alt.value = alt;
-	topDoc.orginal_width.value = width;
-	topDoc.orginal_height.value = height;
-	
+    var topDoc = window.top.document.forms[0];
+    topDoc.f_url.value = filename;
+    topDoc.f_width.value= width;
+    topDoc.f_height.value = height;
+    topDoc.f_alt.value = alt;
+    topDoc.orginal_width.value = width;
+    topDoc.orginal_height.value = height;
+
 }
 
-function preview(file, image, size, width, height) 
+function preview(file, image, size, width, height)
 {
-	/*
-	var predoc = '<img src="'+file+'" alt="'+image+' ('+width+'x'+height+', '+size+')">';
-	var w = 450;
-	var h = 400;
-	var LeftPosition=(screen.width)?(screen.width-w)/2:100;
-	var TopPosition=(screen.height)?(screen.height-h)/2:100;
-     
-	 var win = window.open('','image_preview','toolbar=no,location=no,menubar=no,status=yes,scrollbars=yes,resizable=yes,width='+w+',height='+h+',top='+TopPosition+',left='+LeftPosition);
+    /*
+    var predoc = '<img src="'+file+'" alt="'+image+' ('+width+'x'+height+', '+size+')">';
+    var w = 450;
+    var h = 400;
+    var LeftPosition=(screen.width)?(screen.width-w)/2:100;
+    var TopPosition=(screen.height)?(screen.height-h)/2:100;
+
+     var win = window.open('','image_preview','toolbar=no,location=no,menubar=no,status=yes,scrollbars=yes,resizable=yes,width='+w+',height='+h+',top='+TopPosition+',left='+LeftPosition);
      var doc=win.document.open();
 
      doc.writeln('<html>\n<head>\n<title>Image Preview - '+image+' ('+width+'x'+height+', '+size+')</title>');
@@ -543,34 +542,34 @@ function preview(file, image, size, width, height)
      doc.writeln('</body>\n</html>\n');
      doc=win.document.close();
      win.focus();*/
-	//alert(file);
-	 Dialog("../ImageEditor/ImageEditor.php?<?php /* changed for APC-AA by pavelji@ecn.cz */ echo "AA_CP_Session=".$AA_CP_Session; ?>&img="+escape(file), function(param) {
-		if (!param) {	// user must have pressed Cancel
-			return false;
-		}
-	}, null);
+    //alert(file);
+     Dialog("../ImageEditor/ImageEditor.php?<?php /* changed for APC-AA by pavelji@ecn.cz */ echo "AA_CP_Session=".$AA_CP_Session; ?>&img="+escape(file), function(param) {
+        if (!param) {	// user must have pressed Cancel
+            return false;
+        }
+    }, null);
      return;
 }
 
-function deleteImage(file) 
+function deleteImage(file)
 {
-	if(confirm("Delete image \""+file+"\"?")) 
-		return true;
+    if(confirm("Delete image \""+file+"\"?"))
+        return true;
 
-	return false;
+    return false;
 }
 
-function deleteFolder(folder, numFiles) 
+function deleteFolder(folder, numFiles)
 {
-	if(numFiles > 0) {
-		alert("There are "+numFiles+" files/folders in \""+folder+"\".\n\nPlease delete all files/folder in \""+folder+"\" first.");
-		return false;
-	}
+    if(numFiles > 0) {
+        alert("There are "+numFiles+" files/folders in \""+folder+"\".\n\nPlease delete all files/folder in \""+folder+"\" first.");
+        return false;
+    }
 
-	if(confirm("Delete folder \""+folder+"\"?")) 
-		return true;
+    if(confirm("Delete folder \""+folder+"\"?"))
+        return true;
 
-	return false;
+    return false;
 }
 
 function MM_findObj(n, d) { //v4.01
@@ -588,22 +587,22 @@ function MM_showHideLayers() { //v6.0
     obj.visibility=v; }
 }
 
-function changeLoadingStatus(state) 
+function changeLoadingStatus(state)
 {
-	var statusText = null;
-	if(state == 'load') {
-		statusText = 'Loading Images';	
-	}
-	else if(state == 'upload') {
-		statusText = 'Uploading Files';
-	}
-	if(statusText != null) {
-		var obj = MM_findObj('loadingStatus', window.top.document);
-		//alert(obj.innerHTML);
-		if (obj != null && obj.innerHTML != null)
-			obj.innerHTML = statusText;
-		MM_showHideLayers('loading','','show')		
-	}
+    var statusText = null;
+    if(state == 'load') {
+        statusText = 'Loading Images';
+    }
+    else if(state == 'upload') {
+        statusText = 'Uploading Files';
+    }
+    if(statusText != null) {
+        var obj = MM_findObj('loadingStatus', window.top.document);
+        //alert(obj.innerHTML);
+        if (obj != null && obj.innerHTML != null)
+            obj.innerHTML = statusText;
+        MM_showHideLayers('loading','','show')
+    }
 }
 
 //-->
@@ -617,65 +616,65 @@ function changeLoadingStatus(state)
 //echo '<br>';
 $d = dir($BASE_DIR.$IMG_ROOT);
 
-if($d) 
+if($d)
 {
-	//var_dump($d);
-	$images = array();
-	$folders = array();
-	while (false !== ($entry = $d->read())) 
-	{
-		$img_file = $IMG_ROOT.$entry; 
+    //var_dump($d);
+    $images = array();
+    $folders = array();
+    while (false !== ($entry = $d->read()))
+    {
+        $img_file = $IMG_ROOT.$entry;
 
-		if(is_file($BASE_DIR.$img_file) && substr($entry,0,1) != '.') 
-		{
-			$image_info = @getimagesize($BASE_DIR.$img_file);
-			if(is_array($image_info)) 
-			{
-				$file_details['file'] = $img_file;
-				$file_details['img_info'] = $image_info;
-				$file_details['size'] = filesize($BASE_DIR.$img_file);
-				$images[$entry] = $file_details;
-				//show_image($img_file, $entry, $image_info);
-			}
-		}
-		else if(is_dir($BASE_DIR.$img_file) && substr($entry,0,1) != '.') 
-		{
-			$folders[$entry] = $img_file;
-			//show_dir($img_file, $entry);	
-		}
-	}
-	$d->close();	
-	
-	if(count($images) > 0 || count($folders) > 0) 
-	{	
-		//now sort the folders and images by name.
-		ksort($images);
-		ksort($folders);
+        if(is_file($BASE_DIR.$img_file) && substr($entry,0,1) != '.')
+        {
+            $image_info = @getimagesize($BASE_DIR.$img_file);
+            if(is_array($image_info))
+            {
+                $file_details['file'] = $img_file;
+                $file_details['img_info'] = $image_info;
+                $file_details['size'] = filesize($BASE_DIR.$img_file);
+                $images[$entry] = $file_details;
+                //show_image($img_file, $entry, $image_info);
+            }
+        }
+        else if(is_dir($BASE_DIR.$img_file) && substr($entry,0,1) != '.')
+        {
+            $folders[$entry] = $img_file;
+            //show_dir($img_file, $entry);
+        }
+    }
+    $d->close();
 
-		draw_table_header();
+    if(count($images) > 0 || count($folders) > 0)
+    {
+        //now sort the folders and images by name.
+        ksort($images);
+        ksort($folders);
 
-		for($i=0; $i<count($folders); $i++) 
-		{
-			$folder_name = key($folders);		
-			show_dir($folders[$folder_name], $folder_name);
-			next($folders);
-		}
-		for($i=0; $i<count($images); $i++) 
-		{
-			$image_name = key($images);
-			show_image($images[$image_name]['file'], $image_name, $images[$image_name]['img_info'], $images[$image_name]['size']);
-			next($images);
-		}
-		draw_table_footer();
-	}
-	else
-	{
-		draw_no_results();
-	}
+        draw_table_header();
+
+        for($i=0; $i<count($folders); $i++)
+        {
+            $folder_name = key($folders);
+            show_dir($folders[$folder_name], $folder_name);
+            next($folders);
+        }
+        for($i=0; $i<count($images); $i++)
+        {
+            $image_name = key($images);
+            show_image($images[$image_name]['file'], $image_name, $images[$image_name]['img_info'], $images[$image_name]['size']);
+            next($images);
+        }
+        draw_table_footer();
+    }
+    else
+    {
+        draw_no_results();
+    }
 }
 else
 {
-	draw_no_dir();
+    draw_no_dir();
 }
 
 ?>

@@ -21,14 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // APC AA site Module main administration page
 
 // used in initpage.php3 script to include config.php3 from the right directory
-$directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH'] ."varset.php3";
-require_once $GLOBALS['AA_INC_PATH'] ."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH'] ."pagecache.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/site/util.php3";   // module specific utils
-require_once $GLOBALS['AA_BASE_PATH']."modules/site/sitetree.php3";   // module specific utils
+require_once AA_INC_PATH ."varset.php3";
+require_once AA_INC_PATH ."formutil.php3";
+require_once AA_INC_PATH ."pagecache.php3";
+require_once AA_BASE_PATH."modules/site/util.php3";   // module specific utils
+require_once AA_BASE_PATH."modules/site/sitetree.php3";   // module specific utils
 
 // ----------------- function definition end -----------------------------------
 
@@ -144,7 +143,7 @@ FrmJavascriptFile('javascript/js_lib.js');
 echo '</head>';
 
 // module specific navigation bar
-require_once $GLOBALS['AA_BASE_PATH']."modules/site/menu.php3";
+require_once AA_BASE_PATH."modules/site/menu.php3";
 showMenu($aamenus, "codemanager");
 
 function Links_PrintActionLink($r_spot_id, $action, $text, $img, $link=null) {

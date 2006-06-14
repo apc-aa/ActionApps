@@ -20,10 +20,10 @@ http://www.apc.org/
 */
 // expected $del - unpacked id of slice to delete
 
-require_once "$directory_depth../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "feeding.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "msgpage.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "modutils.php3";
+require_once dirname(__FILE__). "/../include/init_page.php3";
+require_once AA_INC_PATH . "feeding.php3";
+require_once AA_INC_PATH . "msgpage.php3";
+require_once AA_INC_PATH . "modutils.php3";
 
 
 if ($cancel)

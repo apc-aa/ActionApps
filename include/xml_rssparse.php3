@@ -26,7 +26,7 @@ http://www.apc.org/
 //       conforms to the RSS 1.0. Normally it parses document, which was created by aa server module (see
 //       getxml.php3)
 
-require_once $GLOBALS['AA_INC_PATH']."convert_charset.class.php3";
+require_once AA_INC_PATH."convert_charset.class.php3";
 
 // An array mapping all the name spaces we've seen in RSS feeds to abbreviations
 // Only a few of the abbreviations are likely to be used below

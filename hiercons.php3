@@ -35,19 +35,19 @@ http://www.apc.org/
 /** APC-AA configuration file */
 require_once "./include/config.php3";
 /** APC-AA constant definitions */
-require_once $GLOBALS['AA_INC_PATH']."constants.php3";
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
+require_once AA_INC_PATH."constants.php3";
+require_once AA_INC_PATH."mgettext.php3";
 $lang_file = substr ($lang_file, 0, 2);
 if (!$LANGUAGE_NAMES [$lang_file]) {
     $lang_file = "en";
 }
-bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/".$lang_file."_news_lang.php3");
+bind_mgettext_domain(AA_INC_PATH."lang/".$lang_file."_news_lang.php3");
 /** Main include file for using session management function on a page */
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once AA_INC_PATH."locsess.php3";
 /** Set of useful functions used on most pages */
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."itemfunc.php3";
 
 FrmJavascript('var listboxes = new Array();');
 if (!$varname) $varname = "hiercons";

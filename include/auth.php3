@@ -28,7 +28,7 @@ http://www.apc.org/
 */
 
 //require_once "config.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once AA_INC_PATH."util.php3";
 
 if (!is_object( $db )) $db = new DB_AA;
 

@@ -45,8 +45,8 @@ http://www.apc.org/
 ////////////////////////////////////////////////////////////////////
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
 
 function save_notify2db($slice_id, $function, $emails) {
     global $db;
@@ -179,7 +179,7 @@ while ($db->next_record()) {
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 HtmlPageBegin();
 echo '<TITLE> '. _m("Email Notifications of Events"). '</TITLE></HEAD>';
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+  require_once AA_INC_PATH."menu.php3";
   showMenu ($aamenus, "sliceadmin","notify");
 
   echo "<H1><B>" . _m("Email Notifications of Events") . "</B></H1>";

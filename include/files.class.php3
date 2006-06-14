@@ -426,6 +426,18 @@ class Files {
             return sprintf('%01.2f',$size/(1024.0*1024)).' Mb';
         }
     }
+
+    /**
+     * Returns type of the source
+     * @param string $filename the name of file (with path, protocol, ...)
+     * @return string FILE, HTTP, HTTPS, ...
+     */
+     function sourceType($filename) {
+         if ( strtoupper(substr($filename,0,5)) == 'HTTPS') return 'HTTPS';
+         if ( strtoupper(substr($filename,0,4)) == 'HTTP')  return 'HTTP';
+         if ( strtoupper(substr($filename,0,3)) == 'FTP')   return 'FTP';
+         return 'FILE';
+     }
 }
 
 ?>

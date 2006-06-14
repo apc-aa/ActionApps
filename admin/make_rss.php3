@@ -25,9 +25,9 @@ http://www.apc.org/
 //optionaly cat_id    // select only items in category with id cat_id
 
 require_once "../include/config.php3";
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
+require_once AA_INC_PATH."locsess.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."searchlib.php3";
 
 function RSS_restrict($txt, $len) {
   return utf8_encode(htmlspecialchars(substr($txt,0,$len)));

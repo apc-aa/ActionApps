@@ -44,21 +44,21 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v);
 }
 
-require_once ("../include/config.php3");
-require_once ($GLOBALS['AA_INC_PATH'] . "locsessi.php3");
-require_once ($GLOBALS['AA_INC_PATH'] . "perm_core.php3");
-require_once ($GLOBALS['AA_INC_PATH'] . "perm_" . PERM_LIB . ".php3");
-require_once ($GLOBALS['AA_INC_PATH'] . "util.php3");
-require_once ($GLOBALS['AA_INC_PATH'] . "formutil.php3");
-require_once ($GLOBALS['AA_INC_PATH'] . "mgettext.php3");
-bind_mgettext_domain ($GLOBALS['AA_INC_PATH']."lang/".DEFAULT_LANG_INCLUDE);
+require_once "../include/config.php3";
+require_once AA_INC_PATH. "locsessi.php3";
+require_once AA_INC_PATH. "perm_core.php3";
+require_once AA_INC_PATH. "perm_" . PERM_LIB . ".php3";
+require_once AA_INC_PATH. "util.php3";
+require_once AA_INC_PATH. "formutil.php3";
+require_once AA_INC_PATH. "mgettext.php3";
+bind_mgettext_domain(AA_INC_PATH."lang/".DEFAULT_LANG_INCLUDE);
 
 function HtmlStart() {
-   HTMLPageBegin ("../".ADMIN_CSS);
-   echo "<title>" . _m("AA Setup") . "</title></head>\n";
-   echo "<body bgcolor=\"". COLOR_BACKGROUND ."\">\n";
-   echo "<center>\n";
-   echo "<h1>" . _m("AA Setup") . "</h1>\n";
+    HTMLPageBegin("../".ADMIN_CSS);
+    echo "<title>" . _m("AA Setup") . "</title></head>\n";
+    echo "<body bgcolor=\"". COLOR_BACKGROUND ."\">\n";
+    echo "<center>\n";
+    echo "<h1>" . _m("AA Setup") . "</h1>\n";
 }
 
 function NoAction() {
@@ -66,9 +66,9 @@ function NoAction() {
 }
 
 function PrintErr($err) {
-   while (list(,$value) = each($err)) {
-      echo $value;
-   }
+    while (list(,$value) = each($err)) {
+        echo $value;
+    }
 }
 
 function SuperForm() {
@@ -141,29 +141,29 @@ $db->Halt_On_Error = $store_halt;
 // Discover current state in AA object perms
 
 if ($perms = GetObjectsPerms(AA_ID, "aa")) {
-   while (list($key, $value) = each ($perms)) {
-      if (!$value["type"]) {
-         $notusers[$key] = $value;      // non-existent user/group
-      } else if ($value["perm"] != $perms_roles["SUPER"]['id']) {
-         $others[$key] = $value;        // other than super privilege
-      } else if (stristr($value["type"], _m("User"))) {
-         $superusers[$key] = $value;    // users with super privileges
-      } else {
-         $supergroups[$key] = $value;   // groups with super privileges
-      }
-   }
+    while (list($key, $value) = each ($perms)) {
+        if (!$value["type"]) {
+            $notusers[$key] = $value;      // non-existent user/group
+        } elseif ($value["perm"] != $perms_roles["SUPER"]['id']) {
+            $others[$key] = $value;        // other than super privilege
+        } elseif (stristr($value["type"], _m("User"))) {
+            $superusers[$key] = $value;    // users with super privileges
+        } else {
+            $supergroups[$key] = $value;   // groups with super privileges
+        }
+    }
 }
 
 // Consider only non-empty superadmin groups
 
 if (isset($supergroups)) {
-   while (list($key,$value) = each ($supergroups)) {
-      $members = GetGroupMembers($key);
-      if (count($members)) {
-         $nonemptysupergroups[] = $value;
-      }
-   }
-   $supergroups = $nonemptysupergroups;
+    while (list($key,$value) = each ($supergroups)) {
+        $members = GetGroupMembers($key);
+        if (count($members)) {
+            $nonemptysupergroups[] = $value;
+        }
+    }
+    $supergroups = $nonemptysupergroups;
 }
 
 HtmlStart();

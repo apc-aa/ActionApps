@@ -1,11 +1,11 @@
-<?
+<?php
 /***********************************************************************
 ** Title.........:  Online Manipulation of Images
 ** Version.......:  1.0
 ** Author........:  Xiang Wei ZHUO <wei@zhuo.org>
 ** Filename......:  load_image.php
-** Last changed..:  30 Aug 2003 
-** Notes.........:  Configuration in config.inc.php 
+** Last changed..:  30 Aug 2003
+** Notes.........:  Configuration in config.inc.php
 
                    Uses the GD, ImageMagic or NetPBM to manipulate
                    images online. ImageMagic is preferred as it provides
@@ -22,7 +22,7 @@
                    Scaling         Fair      Good       Very Good
                    Rotation        Poor      Fair       Very Good
                    Flip            Good      Poor       Good
-                   
+
 
                    (1) GIF is support in old GD say version 1.61 and below
                    (2) Full colour JPEG is not supported in GD versions
@@ -33,10 +33,8 @@
 //***************************************************************************
 
 /* changed for APC-AA by pavelji@ecn.cz */
-$directory_depth = "../../../";
-include $directory_depth."../include/init_page.php3";     # This pays attention to $change_id
-
-include '../ImageManager/config.inc.php';
+require_once dirname(__FILE__). "/../../../../include/init_page.php3";     // This pays attention to $change_id
+require_once '../ImageManager/config.inc.php';
 
 // set this to whatever subdir you make
 $path = $BASE_ROOT.'/';
@@ -80,15 +78,15 @@ if(isset($params)) {
 //manipulate the images
 function manipulate($img_file, $action, $values)
 {
-    /* changed for APC-AA by pavelji@ecn.cz 
-        
+    /* changed for APC-AA by pavelji@ecn.cz
+
         we need to create path differently...
     */
     global $path, $save_file, $BASE_DIR, $r_state;
-    
+
     $mypath = $BASE_DIR.$r_state["module_id"]."/".$img_file;
     //Load the Image Manipulation Driver
-    $img = Image_Transform::factory(IMAGE_CLASS);    
+    $img = Image_Transform::factory(IMAGE_CLASS);
     //$img->load($BASE_DIR.$path.$img_file);
     $img->load($mypath);
 //var_dump($_SERVER['DOCUMENT_ROOT'].$path.$img_file);
@@ -105,7 +103,7 @@ function manipulate($img_file, $action, $values)
     case 'flip':
         if ($values[0] == 'hoz')
             $img->flip(true);
-        else if($values[0] == 'ver') 
+        else if($values[0] == 'ver')
             $img->flip(false);
         break;
     case 'save':
@@ -121,9 +119,9 @@ function manipulate($img_file, $action, $values)
     }
 
     //get the unique file name
-    /* changed for APC-AA by pavelji@ecn.cz */    
+    /* changed for APC-AA by pavelji@ecn.cz */
     $filename = $img->createUnique($BASE_DIR.$r_state["module_id"]);
-    //save the manipulated image 
+    //save the manipulated image
     /* changed for APC-AA by pavelji@ecn.cz */
     $img->save($BASE_DIR.$r_state["module_id"]."/".$filename);
     $img->free();
@@ -145,6 +143,6 @@ if (isset($file) && is_array($file))
     $dimensions = $file[1];
 }
 
-//now display the image with 
-include 'man_image.html';
+//now display the image with
+require_once 'man_image.html';
 ?>

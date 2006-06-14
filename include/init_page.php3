@@ -41,9 +41,9 @@ http://www.apc.org/
 /** Use require menu_include(); to include module-specific menu,
 *   call showMenu() afterwards. */
 function menu_include() {
-    global $AA_BASE_PATH, $MODULES, $g_modules, $slice_id;
+    global $MODULES, $g_modules, $slice_id;
     $menu = $MODULES[$g_modules[$slice_id]["type"]]["menu"];
-    return $AA_BASE_PATH. ($menu ? $menu : 'include/menu.php3');
+    return AA_BASE_PATH. ($menu ? $menu : 'include/menu.php3');
 }
 
  // handle with PHP magic quotes - quote the variables if quoting is set off
@@ -72,38 +72,37 @@ if ($encap == "false")    // used in itemedit for anonymous form
   $encap = false;        // it must be here, because the variable is rewriten
                          // if the get_magic_quotes_gpc()==false (see above)
 
-// modules other than slices are in deeper directory -> $directory_depth
-$config_path = ( $directory_depth == 'base' ) ? "./include/config.php3" :  // base (for live_checkbox.php3)
-                               "$directory_depth../include/config.php3";
-require_once $config_path;
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
+require_once dirname(__FILE__). "/config.php3";
+require_once AA_INC_PATH."mgettext.php3";
 
 // should be set in config.php3
-if (!$AA_INSTAL_PATH) {
+if (!defined(AA_INSTAL_PATH)) {
     $url_components = parse_url(AA_INSTAL_URL);
-    $AA_INSTAL_PATH = $url_components['path'];
+    define('AA_INSTAL_PATH', $url_components['path']);
 }
 // should be set in config.php3
-if (!$AA_BASE_PATH)
-    $AA_BASE_PATH = substr($AA_INC_PATH, 0, -8);
+if (!defined('AA_BASE_PATH')) {
+    define('AA_BASE_PATH', substr(AA_INC_PATH, 0, -8));
+}
 
 // anonymous authentication - locauth calls extauthnobody
-if ($free)
+if ($free) {
     $nobody = true;
+}
 
-require_once $GLOBALS['AA_INC_PATH'] . "locauth.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "scroller.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "perm_core.php3";
+require_once AA_INC_PATH. "locauth.php3";
+require_once AA_INC_PATH. "scroller.php3";
+require_once AA_INC_PATH. "perm_core.php3";
 
 // save before getting the session stored variables
-if ($change_id)
-    $pass_sliceid = $change_id;
-else $pass_sliceid = $slice_id;
+$pass_sliceid = $change_id ? $change_id : $slice_id;
 
 // Load the session stored variables.
-if ( $encap ) // we can't use AA_CP_Session - it uses more Header information
-     page_open(array("sess" => "AA_SL_Session", "auth" => "AA_CP_Auth"));
-else page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
+if ( $encap ) { // we can't use AA_CP_Session - it uses more Header information
+    page_open(array("sess" => "AA_SL_Session", "auth" => "AA_CP_Auth"));
+} else {
+    page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
+}
 
 // anonymous login
 if ($nobody) {
@@ -127,8 +126,8 @@ if ( $pass_sliceid )
 if ( $no_slice_id )
     unset($slice_id);
 
-require_once $GLOBALS['AA_INC_PATH'] . "util.php3";  // must be after language include because of lang constants in util.php3
-require_once $GLOBALS['AA_INC_PATH'] . "event.class.php3";
+require_once AA_INC_PATH. "util.php3";  // must be after language include because of lang constants in util.php3
+require_once AA_INC_PATH. "event.class.php3";
 
 /* It is not a good idea to store $slice_id, it made some damage in AA
    installations already. But for historical reasons before somebody ensures
@@ -212,9 +211,9 @@ if (!$no_slice_id) {
    using the Select Slice box.
 */
     if ( $module_type_changed && !$jumping ) {
-        $page = filename ($PHP_SELF);
-        $hdd_dir = $AA_INC_PATH."../".$MODULES[$module_type]['directory'];
-        $web_dir = $AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
+        $page = filename($PHP_SELF);
+        $hdd_dir = AA_INC_PATH."../".$MODULES[$module_type]['directory'];
+        $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
         if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') OR ($module_type=='J') )
             $page = "index.php3";
         if ($web_dir.$page != $PHP_SELF) {
@@ -227,6 +226,6 @@ if (!$no_slice_id) {
 }
 
 $mgettext_file = (!$require_default_lang AND ($r_lang_file != "")) ? $r_lang_file : DEFAULT_LANG_INCLUDE;
-bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/$mgettext_file");
+bind_mgettext_domain(AA_INC_PATH."lang/$mgettext_file");
 
 ?>

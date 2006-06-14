@@ -40,12 +40,12 @@ function f () {
     exit;
 }
 */
-$directory_depth = "base";
-require_once "./include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
 
-$image_path = $AA_BASE_PATH."images/";
+require_once "./include/init_page.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."itemfunc.php3";
+
+$image_path = AA_BASE_PATH."images/";
 
 reset($live_checkbox);
 list($short_id, $ar) = each ($live_checkbox);

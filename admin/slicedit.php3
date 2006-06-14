@@ -24,12 +24,12 @@ http://www.apc.org/
 require_once "../include/slicedit2.php3";
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."date.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."date.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
 // add mlx functions
-require_once $GLOBALS['AA_INC_PATH']."mlx.php";
+require_once AA_INC_PATH."mlx.php";
 
 trace("+","slicedit.php3");
 $PERMS_STATE = array( "0" => _m("Not allowed"),
@@ -51,7 +51,7 @@ if ($cancel)
 reset ($MODULES);
 while (list ($type,$module) = each ($MODULES)) {
     if ($create[$type]) {
-        $url = $sess->url($AA_INSTAL_PATH.$module["directory"] . "modedit.php3?no_slice_id=1");
+        $url = $sess->url(AA_INSTAL_PATH. $module["directory"] . "modedit.php3?no_slice_id=1");
         if ( $template[$type] )
             $url = get_url( $url, "template%5B$type%5D=". $template[$type]);
         go_url( $url );
@@ -61,7 +61,7 @@ while (list ($type,$module) = each ($MODULES)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $superadmin = IsSuperadmin();
 
-require_once $GLOBALS['AA_INC_PATH']."slicedit.php3";
+require_once AA_INC_PATH."slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
   // set variables from database - allways
@@ -119,7 +119,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php
   trace("=","","Menu");
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+  require_once AA_INC_PATH."menu.php3";
   trace("=","","calling showMenu");
   showMenu($aamenus, "sliceadmin","main");
   trace("=","","Post Menu");

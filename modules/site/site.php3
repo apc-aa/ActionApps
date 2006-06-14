@@ -22,11 +22,11 @@ http://www.apc.org/
 
 // APC AA site Module main administration page
 require_once "../../include/config.php3";
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."stringexpand.php3";
-require_once $GLOBALS['AA_INC_PATH']."item.php3"; // So site_ can create an item
+require_once AA_INC_PATH."locsess.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."stringexpand.php3";
+require_once AA_INC_PATH."item.php3"; // So site_ can create an item
 
 $timestart = get_microtime();
 
@@ -55,7 +55,7 @@ if ( substr($site_info['state_file'],0,4) == 'http' ) {
     echo "TODO";
 } else {
     // in the following file we should define apc_state variable
-    require_once $GLOBALS['AA_BASE_PATH']."modules/site/sites/site_".$site_info['state_file'];
+    require_once AA_BASE_PATH."modules/site/sites/site_".$site_info['state_file'];
 }
 
 trace("=","site.php3","precachecheck");
@@ -81,7 +81,7 @@ $site_nocache = $nocache;
 if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($key_str,$nocache))) {
     echo $res;
     if ( $debug ) {
-        $timeend = getmicrotime();
+        $timeend = get_microtime();
         $time    = $timeend - $timestart;
         echo "<br><br>Site cache hit!!! Page generation time: $time";
     }
@@ -90,13 +90,13 @@ if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($key_str,$noca
 }
 trace("=","site.php3","precachecheck");
 
-require_once $GLOBALS['AA_BASE_PATH']."modules/site/util.php3";                      // module specific utils
-require_once $GLOBALS['AA_BASE_PATH']."modules/site/sitetree.php3";
-require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
-require_once $GLOBALS['AA_INC_PATH']."easy_scroller.php3";
-require_once $GLOBALS['AA_INC_PATH']."view.php3";
-require_once $GLOBALS['AA_INC_PATH']."discussion.php3";
-require_once $GLOBALS['AA_INC_PATH']."item.php3";
+require_once AA_BASE_PATH."modules/site/util.php3";                      // module specific utils
+require_once AA_BASE_PATH."modules/site/sitetree.php3";
+require_once AA_INC_PATH."searchlib.php3";
+require_once AA_INC_PATH."easy_scroller.php3";
+require_once AA_INC_PATH."view.php3";
+require_once AA_INC_PATH."discussion.php3";
+require_once AA_INC_PATH."item.php3";
 
 trace("=","site.php3","preGetSite");
 $res = ModW_GetSite( $apc_state, $site_id, $site_info );

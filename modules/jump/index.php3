@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -22,27 +22,26 @@ http://www.apc.org/
 // APC AA - Module main administration page
 
 // used in init_page.php3 script to include config.php3 from the right directory
-$directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "varset.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "view.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "pagecache.php3";
+require_once AA_INC_PATH . "varset.php3";
+require_once AA_INC_PATH . "view.php3";
+require_once AA_INC_PATH . "pagecache.php3";
 
 $db = new DB_AA;
 $db->query("SELECT * FROM jump WHERE slice_id = '".q_pack_id($slice_id)."'");
 if ($db->next_record()) {
-	$dest = $db->f("destination");
-	if (strchr ($dest,"?")) $dest .= "&"; else $dest .= "?";
-    $instal_url = $AA_INSTAL_PATH;
-	$url = $sess->url($instal_url.$dest);
-    $change_id = $db->f("dest_slice_id");  
+    $dest = $db->f("destination");
+    if (strchr ($dest,"?")) $dest .= "&"; else $dest .= "?";
+    $instal_url = AA_INSTAL_PATH;
+    $url = $sess->url($instal_url.$dest);
+    $change_id = $db->f("dest_slice_id");
     if ($change_id) $url .= "&jumping=1&change_id=".unpack_id($change_id);
     //echo $url; exit;
     go_url ($url);
 }
-else 
-	echo "<HTML><BODY>Something is wrong. I didn't find any record for this slice in the <B>jump</B> table.</BODY></HTML>";
+else
+    echo "<HTML><BODY>Something is wrong. I didn't find any record for this slice in the <B>jump</B> table.</BODY></HTML>";
 
 page_close();
 ?>

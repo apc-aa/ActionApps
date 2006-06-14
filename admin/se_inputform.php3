@@ -22,12 +22,12 @@ http://www.apc.org/
 // expected $slice_id for edit slice, nothing for adding slice
 
 require_once "../include/init_page.php3";
-bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/".get_mgettext_lang()."_param_wizard_lang.php3", false, get_mgettext_lang());
-require_once $GLOBALS['AA_INC_PATH']."constants_param_wizard.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+bind_mgettext_domain(AA_INC_PATH."lang/".get_mgettext_lang()."_param_wizard_lang.php3", false, get_mgettext_lang());
+require_once AA_INC_PATH."constants_param_wizard.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."msgpage.php3";
 
 function EditConstantURL() {
     global $fld, $sess;
@@ -290,7 +290,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </script>
 </HEAD>
 <?php
-require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin");
 
 echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";

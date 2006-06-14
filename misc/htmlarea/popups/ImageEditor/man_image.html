@@ -45,12 +45,12 @@ var s_sh = MM_findObj('sh', window.top.document);
 
 var r_ra = MM_findObj('ra', window.top.document);
 
-var mode = "<? echo $action; ?>" //crop, scale, measure
+var mode = "<?php echo $action; ?>" //crop, scale, measure
 var pattern = "2x2.gif";
 
 function doSubmit(action)
 {
-    var image = escape("<? echo $path.$image; ?>");
+    var image = escape("<?php echo $path.$image; ?>");
 
     if (action == 'crop')
     {
@@ -61,19 +61,19 @@ function doSubmit(action)
         location.href = url;
 
         //location.reload();
-    }   
+    }
     else if (action == 'scale')
     {
         var url = "load_image.php?<?php /* changed for APC-AA by pavelji@ecn.cz */ echo "AA_CP_Session=".$AA_CP_Session."&";  ?>img="+image+"&action=scale&params="+parseInt(s_sw.value)+','+parseInt(s_sh.value);
         //alert(url);
         location.href = url;
-        
+
     }
     else if (action == 'rotate')
     {
         var flip = MM_findObj('flip', window.top.document);
 
-        if(flip.value == 'hoz' || flip.value == 'ver') 
+        if(flip.value == 'hoz' || flip.value == 'ver')
             location.href = "load_image.php?<?php /* changed for APC-AA by pavelji@ecn.cz */ echo "AA_CP_Session=".$AA_CP_Session."&";  ?>img="+image+"&action=flip&params="+flip.value;
         else if (isNaN(parseFloat(r_ra.value))==false)
             location.href = "load_image.php?<?php /* changed for APC-AA by pavelji@ecn.cz */ echo "AA_CP_Session=".$AA_CP_Session."&";  ?>img="+image+"&action=rotate&params="+parseFloat(r_ra.value);
@@ -108,7 +108,7 @@ function doSubmit(action)
 <table cellpadding="0" cellspacing="0" width="100%" height="100%">
  <Tr height="100%">
    <Td align="center" height="100%">
-   <span id="imgCanvas" class="crop"><IMG SRC="<? echo $path.$image; ?>" <? echo $dimensions; ?> BORDER=0 ALT="" id="theImage" name="theImage"></span>
+   <span id="imgCanvas" class="crop"><IMG SRC="<?php echo $path.$image; ?>" <? echo $dimensions; ?> BORDER=0 ALT="" id="theImage" name="theImage"></span>
    </td>
  </tr>
 </table>
@@ -118,7 +118,7 @@ function doSubmit(action)
 var jg_doc = new jsGraphics("imgCanvas"); // draw directly into document
 jg_doc.setColor("#000000"); // black
 
-<?
+<?php
     if(isset($save_file) && is_file($BASE_DIR.$path.$save_file)) {
         echo "alert('$save_file saved')";
     }

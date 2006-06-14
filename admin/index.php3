@@ -20,20 +20,20 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "varset.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "view.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "item.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "feeding.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "profile.class.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "itemfunc.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "notify.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "searchlib.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "sliceobj.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "msgpage.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "manager.class.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "actions.php3";
+require_once AA_INC_PATH . "varset.php3";
+require_once AA_INC_PATH . "view.php3";
+require_once AA_INC_PATH . "pagecache.php3";
+require_once AA_INC_PATH . "item.php3";
+require_once AA_INC_PATH . "feeding.php3";
+require_once AA_INC_PATH . "profile.class.php3";
+require_once AA_INC_PATH . "itemfunc.php3";
+require_once AA_INC_PATH . "notify.php3";
+require_once AA_INC_PATH . "searchlib.php3";
+require_once AA_INC_PATH . "formutil.php3";
+require_once AA_INC_PATH . "sliceobj.php3";
+require_once AA_INC_PATH . "msgpage.php3";
+require_once AA_INC_PATH . "manager.class.php3";
+require_once AA_INC_PATH . "actions.php3";
 
 FetchSliceReadingPassword();
 
@@ -232,7 +232,7 @@ $r_state['bin_cnt'] = CountItemsInBins();
 
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
 
-require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "itemmanager", $r_state['bin'], $navbar != "0", $leftbar != "0");
 
 $conds = $manager->getConds();

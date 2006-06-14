@@ -28,11 +28,11 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."msgpage.php3";
+require_once AA_INC_PATH."itemfunc.php3";
 
 function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_show_result, $show_result) {
 
@@ -45,7 +45,7 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     $form_type = $slice->getfield('permit_anonymous_edit');
 
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
-        $fillform_url = $GLOBALS["AA_INSTAL_PATH"] .'fillform.php3?form=inputform&notrun=1&slice_id='.$slice_id;
+        $fillform_url = AA_INSTAL_PATH .'fillform.php3?form=inputform&notrun=1&slice_id='.$slice_id;
         if ($use_show_result) {
             $fillform_url. "&show_result=$show_result";
         }
@@ -56,14 +56,14 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
     <!-- '. _m('ActionApps Anonymous form') .'-->
     <!-- '. _m('Note: If you are using HTMLArea editor in your form, you have to add: %1 to your page.  -->', array("     <body onload=\"HTMLArea.init()\">   ")) ."\n\n";
 
-    // get form - we need to call $form->getForm() before we call 
+    // get form - we need to call $form->getForm() before we call
     // $form->getFormStart(), $form->getFormJavascript
     $inputform_settings['form_action'] = AA_INSTAL_URL.'filler.php3';
     $form      = new inputform($inputform_settings);
     $form_code = $form->getForm(new ItemContent, $slice, false, $show);
 
     $ret .= $form->getFormStart();
-            
+
     // additional form fields
     $additional = '
     <input type="hidden" name="err_url" value="'.$err_url.'">
@@ -163,7 +163,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo "<TITLE>"._m("Admin - Anonymous Form Wizard")."</TITLE>
 </HEAD>";
 
-require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin", "anonym_wizard");
 
 echo "<H1>"._m("Admin - Anonymous Form Wizard")."</B></H1>";
@@ -179,7 +179,7 @@ $form_buttons=array("show_form" => array("value"=>_m("Show Form"),
 echo '
 <form method="post" action="'.$sess->url($PHP_SELF).'#form_content">';
 
-$helplink = ' <a href="'.$AA_INSTAL_PATH.'doc/anonym.html#wizard">'. GetAAImage("help100_simple.gif", _m("Help")).'<b>'._m("Help - Documentation").'</b></a>';
+$helplink = ' <a href="'.AA_INSTAL_PATH.'doc/anonym.html#wizard">'. GetAAImage("help100_simple.gif", _m("Help")).'<b>'._m("Help - Documentation").'</b></a>';
 FrmTabCaption(_m("URLs shown after the form was sent"). $helplink,'','',$form_buttons, $sess, $slice_id);
 FrmInputText('ok_url',  _m("OK page"),    $ok_url,  254, 60);
 FrmInputText('err_url', _m("Error page"), $err_url, 254, 60);

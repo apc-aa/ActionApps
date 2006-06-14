@@ -19,31 +19,31 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!is_array($_PHPLIB)) {
-  $_PHPLIB["libdir"] = "";
+if (!defined('PHPLIB_LIBDIR')) {
+    define ('PHPLIB_LIBDIR', '');
 }
 
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
   /* Change this to match your database. */
   $db_type_filename = (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc");
-  require_once($_PHPLIB["libdir"] . $db_type_filename);
+  require_once(PHPLIB_LIBDIR. $db_type_filename);
 
   /* Change this to match your data storage container */
-  require_once($_PHPLIB["libdir"] . "ct_sql.inc");
+  require_once(PHPLIB_LIBDIR. "ct_sql.inc");
 
   /* Required for everything below.      */
-  require_once($_PHPLIB["libdir"] . "session.inc");
+  require_once(PHPLIB_LIBDIR. "session.inc");
 
   /* Disable this, if you are not using authentication. */
-  require_once($_PHPLIB["libdir"] . "auth.inc");
+  require_once(PHPLIB_LIBDIR. "auth.inc");
 }
 
 /* Required, contains your local session management extension */
-require_once($GLOBALS['AA_INC_PATH'] . "extsess.php3");     
+require_once(AA_INC_PATH . "extsess.php3");
 
 /* Required, contains the page management functions. */
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
-   require_once($_PHPLIB["libdir"] . "page.inc");
+   require_once(PHPLIB_LIBDIR. "page.inc");
 };
 
 define ("PHPLIB_AA_LOADED", 1);

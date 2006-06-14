@@ -30,10 +30,10 @@ http://www.apc.org/
 $save_hidden = true;   // do not delete r_hidden session variable in init_page!
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "item.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "itemfunc.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "sliceobj.php3";
+require_once AA_INC_PATH . "item.php3";
+require_once AA_INC_PATH . "itemfunc.php3";
+require_once AA_INC_PATH . "formutil.php3";
+require_once AA_INC_PATH . "sliceobj.php3";
 
 $module_id = $slice_id;
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database

@@ -34,9 +34,9 @@ http://www.apc.org/
 
 //If this is needed, comment why! It trips out anything calling sliceobj NOT from one level down
 //require_once "../include/config.php3";
-//require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
-require_once $GLOBALS['AA_INC_PATH']."zids.php3"; // Pack and unpack ids
-require_once $GLOBALS['AA_INC_PATH']."viewobj.php3"; //GetViewsWhere
+//require_once AA_INC_PATH."locsess.php3";
+require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
+require_once AA_INC_PATH."viewobj.php3"; //GetViewsWhere
 
 class slice {
     var $name;            // The name of the slice
@@ -52,9 +52,9 @@ class slice {
 
     function slice($init_id="",$init_name=null) {
         global $errcheck;
-        if ($errcheck && ! ereg("[0-9a-f]{32}",$init_id))
-            huhe(_m("WARNING: slice: %s doesn't look like an unpacked id",
-                array($init_id)));
+        if ($errcheck && ! ereg("[0-9a-f]{32}",$init_id)) {
+            huhe(_m("WARNING: slice: %s doesn't look like an unpacked id", array($init_id)));
+        }
         $this->unpackedid = $init_id; // unpacked id
         if (isset($init_name)) $this->name = $init_name;
     }
@@ -64,16 +64,24 @@ class slice {
         if ( !$force AND isset($this->setting) AND is_array($this->setting) ) {
             return;
         }
+
+        // get fields from slice table
         $SQL = "SELECT * FROM slice WHERE id = '".$this->sql_id(). "'";
         $this->setting = GetTable2Array($SQL, 'aa_first', 'aa_fields');
         if ( $this->setting ) {
             // do it more secure and do not store it plain
             // (we should be carefull - mainly with debug outputs)
             $this->setting['reading_password'] = md5($this->setting['reading_password']);
-        } elseif ($GLOBALS[errcheck]) {
-            huhl("Slice ".$this->unpacked_id()." is not a valid slice");
+        } else {
+            if ($GLOBALS['errcheck']) {
+                huhl("Slice ".$this->unpacked_id()." is not a valid slice");
+            }
+            return;
         }
-        freeDB($db);
+
+        // get fields from module table
+        $SQL = "SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM module WHERE id = '".$this->sql_id(). "'";
+        $this->setting = array_merge($this->setting, GetTable2Array($SQL, 'aa_first', 'aa_fields'));
     }
 
     // Load $this from the DB for any of $fields not already loaded
@@ -112,6 +120,12 @@ class slice {
     function unpacked_id() { return $this->unpackedid;               } // Return a 32 character id
     function packed_id()   { return pack_id128($this->unpackedid);   }
 
+    /** Returns lang code ('cz', 'en', 'en-utf8', 'de',...) */
+    function getLang()     {
+        $lang_file = substr($this->getfield('lang_file'), 0, strpos($this->getfield('lang_file'), '_news_lang'));
+        return isset($GLOBALS['LANGUAGE_NAMES'][$lang_file]) ? $lang_file : substr(DEFAULT_LANG_INCLUDE, 0, 2);
+    }
+
     // Return an id in a form that can be passed to sql, (needs outer quotes)
     function sql_id()      { return q_pack_id($this->unpackedid); }
 
@@ -136,6 +150,7 @@ class slice {
             case 'record':  return $fields[0];  // array of field definitions where field_id is key
             case 'pri':     return $fields[1];  // array of field definitions sorted by priority - integer key
             case 'search':
+                $i = 0;
                 $fields_list = &$fields[0];    // in order we can use it in foreach
                 foreach ( $fields_list as $fld ) { // in priority order
                     $showfunc = ParseFnc($fld['input_show_func']);
@@ -179,7 +194,7 @@ class slice {
         if ($fileman_dir AND is_dir(FILEMAN_BASE_DIR.$fileman_dir)) {
             $ret['path']  = FILEMAN_BASE_DIR.$fileman_dir."/items";
             $ret['url']   = FILEMAN_BASE_URL.$fileman_dir."/items";
-            $ret['perms'] = $GLOBALS['FILEMAN_MODE_DIR'];
+            $ret['perms'] = FILEMAN_MODE_DIR;
         } else {
             // files are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
             $ret['path']  = IMG_UPLOAD_PATH. $this->unpacked_id();

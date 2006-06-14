@@ -28,7 +28,7 @@ if (!IfSlPerm(PS_FEEDING)) {
   MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to change feeding setting"));
   exit;
 }
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once AA_INC_PATH."formutil.php3";
 
 $p_slice_id = q_pack_id($slice_id);
 switch ($mode) {
@@ -90,7 +90,7 @@ function Delete() {
 <BODY>
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+  require_once AA_INC_PATH."menu.php3";
   showMenu ($aamenus, "sliceadmin", "n_export");
 
   echo "<H1><B>" . _m("Inter node export settings") . "</B></H1>";

@@ -31,7 +31,7 @@ http://www.apc.org/
  *   );
  */
 
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once AA_INC_PATH."varset.php3";
 
 class PageCache  {
     var $cacheTime     = 600; // number of seconds to store cached informations
@@ -55,7 +55,7 @@ class PageCache  {
 
     /** Returns cached informations or false */
     function get($keyString, $action='get') {
-        if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->get(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache action:'.$action );
+        if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->get(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache action:'.$action, 'Pagecach end' );
         if ( ENABLE_PAGE_CACHE ) {
             if ( $action == 'invalidate' ) {
                 $this->invalidateById( $this->getKeyId($keyString) );

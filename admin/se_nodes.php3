@@ -36,7 +36,7 @@ if ( !isSuperadmin() ) {
   exit;
 }
 $err["Init"]="";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once AA_INC_PATH."formutil.php3";
 
  if ($mode == "edit") {
     $db->query("SELECT * FROM nodes WHERE name='$sel_node_name'");
@@ -136,7 +136,7 @@ function Cancel() {
 
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+  require_once AA_INC_PATH."menu.php3";
   showMenu ($aamenus, "sliceadmin","nodes");
 
   echo "<H1><B>" . _m("Remote node administration") . "</B></H1>";

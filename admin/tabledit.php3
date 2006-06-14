@@ -27,8 +27,8 @@ http://www.apc.org/
        $set_tview -- required, name of the table view
 */
 
-require_once $directory_depth."../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."tabledit.php3";
+require_once dirname(__FILE__). "/../include/init_page.php3";
+require_once AA_INC_PATH."tabledit.php3";
 require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------
@@ -36,13 +36,13 @@ require_once menu_include();   //show navigation column depending on $show
 $sess->register("tview");
 if ($set_tview) $tview = $set_tview;
 
-require_once $GLOBALS['AA_INC_PATH']."tv_common.php3";
-require_once $GLOBALS['AA_INC_PATH']."tv_misc.php3";
+require_once AA_INC_PATH."tv_common.php3";
+require_once AA_INC_PATH."tv_misc.php3";
 
 // is tableview defined in special file (tableviews.php3)?
 if ( ($tview{0} == "a") OR ( substr($tview,0,5) =='polls') ) {
     $func = "GetTableView";
-    require_once $GLOBALS['AA_INC_PATH']."tableviews.php3";
+    require_once AA_INC_PATH."tableviews.php3";
 }
 else
     $func = "GetMiscTableView";
@@ -57,7 +57,7 @@ if (! $tableview["cond"] )  { MsgPage ($sess->url(self_base()."index.php3"), _m(
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
-echo '<LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
+echo '<LINK rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
 echo "<TITLE>".$tableview["title"]."</TITLE></HEAD>";
 showMenu ($aamenus, $tableview["mainmenu"], $tableview["submenu"]);
 echo "<H1><B>" . $tableview["caption"] . "</B></H1>";
@@ -69,7 +69,7 @@ echo $Msg;
 
 $script = $sess->url("tabledit.php3");
 
-$tabledit = new tabledit ($tview, $script, $cmd, $tableview, $AA_INSTAL_PATH."images/", $sess, $func);
+$tabledit = new tabledit($tview, $script, $cmd, $tableview, AA_INSTAL_PATH."images/", $sess, $func);
 $err = $tabledit->view ($where);
 if ($err) echo "<b>$err</b>";
 

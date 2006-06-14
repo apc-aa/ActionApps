@@ -69,8 +69,8 @@ http://www.apc.org/
 if ( !defined('DB_NAME') ) {
     require_once "./include/config.php3";
 }
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once AA_INC_PATH."locsess.php3";
+require_once AA_INC_PATH."util.php3";
 
 store_vars ();
 

@@ -23,9 +23,9 @@ http://www.apc.org/
 // utility for notifying people of events by email
 //
 
-require_once $GLOBALS['AA_INC_PATH']."item.php3";
-require_once $GLOBALS['AA_INC_PATH']."view.php3";
-require_once $GLOBALS['AA_INC_PATH']."mail.php3";
+require_once AA_INC_PATH."item.php3";
+require_once AA_INC_PATH."view.php3";
+require_once AA_INC_PATH."mail.php3";
 
 // notify users of an event
 function email_notify($slice_id, $event, $item_id, $extra = ""){

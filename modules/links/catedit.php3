@@ -5,13 +5,12 @@
 // $cid category id should be send to the slice
 
 // Edit Link Page
-$directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/cattree.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/constants.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_BASE_PATH."modules/links/cattree.php3";
+require_once AA_BASE_PATH."modules/links/constants.php3";
+require_once AA_BASE_PATH."modules/links/util.php3";
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id = $slice_id;
@@ -111,7 +110,7 @@ echo '
        <td align="CENTER" valign="TOP">'.
        $tree->getFrmTree(false, 'dblclick', $links_info['select_start'] ? $links_info['select_start'] : 2,
                                   'patharea', '', false, '', 8, 'f') .'</td>
-          <td><a href="javascript:MoveSelectedCat(\'document.f.tree\',\'document.f.selcat\')"><img src="'.$AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a></td>
+          <td><a href="javascript:MoveSelectedCat(\'document.f.tree\',\'document.f.selcat\')"><img src="'.AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a></td>
           <td align="CENTER" valign="TOP">'.
        $tree->getFrmSubCatList(true, '', $cid, 250, 'selcat') .'</td>
       </tr>
@@ -119,8 +118,8 @@ echo '
        <td>&nbsp;</td>
        <td>&nbsp;</td>
        <td align="center">';
-//         <a href="javascript:MoveSelectedUp(\'document.f.selcat\')"><img src="'.$AA_INSTAL_PATH.'images/cup.gif" border="0" alt="'. _m('Up') .'"></a>
-//         <a href="javascript:MoveSelectedDown(\'document.f.selcat\')"><img src="'.$AA_INSTAL_PATH.'images/cdown.gif" border="0" alt="'. _m('Down') .'"></a><br>';
+//         <a href="javascript:MoveSelectedUp(\'document.f.selcat\')"><img src="'.AA_INSTAL_PATH.'images/cup.gif" border="0" alt="'. _m('Up') .'"></a>
+//         <a href="javascript:MoveSelectedDown(\'document.f.selcat\')"><img src="'.AA_INSTAL_PATH.'images/cdown.gif" border="0" alt="'. _m('Down') .'"></a><br>';
 if ( IsCatPerm(PS_LINKS_ADD_SUBCATEGORY, $r_state['cat_path']) )
     echo ' <a href="javascript:NewCateg(\''._m('New subcategory').'\')">'. _m('Add') .'</a> &nbsp; ';
 if ( IsCatPerm(PS_LINKS_DEL_SUBCATEGORY, $r_state['cat_path']) )

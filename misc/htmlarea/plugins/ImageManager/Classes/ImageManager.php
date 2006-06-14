@@ -7,7 +7,7 @@
  */
 
 /* changed for APC-AA by honzam@ecn.cz */
-require_once $GLOBALS['AA_INC_PATH']. "files.class.php3";
+require_once AA_INC_PATH. "files.class.php3";
 
 // uncomment to turn on debugging
 

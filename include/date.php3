@@ -20,7 +20,7 @@ http://www.apc.org/
 */
 
 // javascript.php3 defines getTriggers, which is used by Add / Edit item page
-require_once $GLOBALS['AA_INC_PATH']."javascript.php3";
+require_once AA_INC_PATH."javascript.php3";
 
 //
 //	Date form element

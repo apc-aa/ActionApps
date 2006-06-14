@@ -22,12 +22,12 @@ http://www.apc.org/
 // expected $uid - user id we have to edit profile for
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
-require_once $GLOBALS['AA_INC_PATH']."profile.php3";
-require_once $GLOBALS['AA_INC_PATH']."constants_param_wizard.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."msgpage.php3";
+require_once AA_INC_PATH."profile.php3";
+require_once AA_INC_PATH."constants_param_wizard.php3";
 
 if ($cancel) {
     go_url( $sess->url(self_base() . "./se_users.php3"));
@@ -112,7 +112,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </script>
 </HEAD>
 <?php
-require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","");
 
 echo "<H1><B>" . _m("Admin - user Profiles") . "</B></H1>";

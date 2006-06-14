@@ -69,14 +69,14 @@ if (!get_magic_quotes_gpc()) {
 }
 
 require_once "./include/config.php3";
-require_once $GLOBALS['AA_INC_PATH']."easy_scroller.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."item.php3";
-require_once $GLOBALS['AA_INC_PATH']."view.php3";
-require_once $GLOBALS['AA_INC_PATH']."discussion.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
-require_once $GLOBALS['AA_INC_PATH']."locsessi.php3";    // DB_AA object definition
+require_once AA_INC_PATH."easy_scroller.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."item.php3";
+require_once AA_INC_PATH."view.php3";
+require_once AA_INC_PATH."discussion.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."searchlib.php3";
+require_once AA_INC_PATH."locsessi.php3";    // DB_AA object definition
 
 add_vars();
 
@@ -100,7 +100,7 @@ if ($contenttype) {
 $text = GetView(ParseViewParameters());
 
 if ($convertto AND $convertfrom) {
-    require_once $GLOBALS["AA_INC_PATH"]."convert_charset.class.php3";
+    require_once AA_INC_PATH."convert_charset.class.php3";
     $encoder = new ConvertCharset;
     $text = $encoder->Convert($text, $convertfrom, $convertto);
 }

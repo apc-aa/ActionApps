@@ -26,13 +26,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-$directory_depth = "../";
-require_once "$directory_depth../include/init_page.php3";
+require_once dirname(__FILE__). "/../../include/init_page.php3";
 require_once menu_include();
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/alerts/synchro2.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_BASE_PATH."modules/alerts/synchro2.php3";
 
 // -------------------------------------------------------------------
 // HTML code
@@ -82,13 +81,13 @@ echo '
     <h2>'._m("Choose Reader Management Slice").'</h2>
     '._m("This Alerts Collection takes user data from the slice").":<br><b>";
 if ($slice_set) echo "
-    <a href=\"".$sess->url($GLOBALS["AA_INSTAL_PATH"]."admin/index.php3?slice_id="
-    .unpack_id ($collectionprop["slice_id"]))."\">".$slice_name.'</a>';
+    <a href=\"".$sess->url(AA_INSTAL_PATH."admin/index.php3?slice_id="
+    .unpack_id($collectionprop["slice_id"]))."\">".$slice_name.'</a>';
 else echo $slice_name;
 echo '</b><br><br>'
     ._m("Change to: ");
 
-FrmSelectEasy ("change_to", getReaderManagementSlices(), unpack_id ($collectionprop["slice_id"]));
+FrmSelectEasy("change_to", getReaderManagementSlices(), unpack_id($collectionprop["slice_id"]));
 
 if ($slice_set) {
     echo '<br><input type="checkbox" name="change_to_delete" checked> '

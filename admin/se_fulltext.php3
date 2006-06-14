@@ -24,11 +24,11 @@ http://www.apc.org/
 // optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."item.php3";     // GetAliasesFromField funct def
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
@@ -121,7 +121,7 @@ function Defaults() {
 </HEAD>
 
 <?php
-require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin", "fulltext");
 
 echo "<H1><B>" . _m("Admin - design Fulltext view") . "</B></H1>&nbsp;&nbsp;" . _m("Use these boxes ( with the tags listed below ) to control what appears on full text view of each item");

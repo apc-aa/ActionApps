@@ -1,15 +1,15 @@
-<?php 
+<?php
 /**
  * Alerts - Collection Forms
  * Defines the $cf_fields array used in Collection Form handling scripts.
- * 
+ *
  * @package Alerts
  * @version $Id$
  * @author Jakub Adámek <jakubadamek@ecn.cz>, Econnect, December 2002
- * @copyright Copyright (C) 1999-2002 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
-/* 
-Copyright (C) 1999-2002 Association for Progressive Communications 
+/*
+Copyright (C) 1999-2002 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ require_once "util.php3";
 require_once "../../include/util.php3";
 require_once "../../include/formutil.php3";
 
-add_post2shtml_vars ();
+add_post2shtml_vars();
 
 global $LANGUAGE_CHARSETS;
 reset ($LANGUAGE_CHARSETS);
@@ -46,20 +46,20 @@ $cf_fields = array (
         "hidewizard"=>true),
     "email" => array (
         "code"=>"<INPUT type=\"text\" name=\"alerts[email]\" size=\"40\">",
-        "label"=>_m("Email"), 
+        "label"=>_m("Email"),
         "required"=>true,
         "userinfo"=>true),
     "password" => array (
         "code"=>"<INPUT type=\"password\" name=\"alerts[password]\" size=\"20\">",
-        "label"=>_m("Password"), 
+        "label"=>_m("Password"),
         "required"=>true),
     "firstname" => array (
         "code"=>"<INPUT type=\"text\" name=\"alerts[firstname]\" size=\"20\">",
-        "label"=>_m("First name"), 
+        "label"=>_m("First name"),
         "userinfo"=>true),
     "lastname" => array (
         "code"=>"<INPUT type=\"text\" name=\"alerts[lastname]\" size=\"25\">",
-        "label"=>_m("Last name"), 
+        "label"=>_m("Last name"),
         "userinfo"=>true),
     "howoften" => array (
         "code"=>FrmSelectEasyCode ("alerts[howoften]", get_howoften_options ()),
@@ -71,12 +71,12 @@ $cf_fields = array (
         "code"=>"<INPUT type=\"password\" name=\"alerts[chpwd]\">",
         "required"=>false,
         // the checkbox is valid for both this and the next row
-        "rowspan"=>2,        
+        "rowspan"=>2,
         "label"=>_m("Change password")),
     "chpwd2" => array (
         "code"=>"<INPUT type=\"password\" name=\"alerts[chpwd2]\">",
         // the checkbox from chpwd is valid for this row too
         "checkbox"=>"chpwd",
-        "label"=>_m("Retype new password"))    
+        "label"=>_m("Retype new password"))
 );
 ?>

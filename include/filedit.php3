@@ -63,7 +63,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo "<TITLE>"._m("File Manager")."</TITLE>";
 echo "</HEAD>";
 
-require_once $GLOBALS['AA_INC_PATH']."menu.php3"; 
+require_once AA_INC_PATH."menu.php3"; 
 showMenu ($aamenus, "sliceadmin","fileman");
 
 echo "<H1><B>" . _m("File Manager") . " - "._m("File")." ".$fe_filename . "</B></H1>";

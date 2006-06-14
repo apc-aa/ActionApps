@@ -12,7 +12,7 @@ $actions = array(
 "full_text......." => array("action" => "store", "from" => "Summary", "flag"=>1)
 );
 
-require_once $GLOBALS['AA_BASE_PATH']."misc/file2slice/importer.php3";
+require_once AA_BASE_PATH."misc/file2slice/importer.php3";
 
 Importer (
     "aa65a21b285c25f9fe0d4b662919b4b2", // slice iD

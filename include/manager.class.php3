@@ -29,8 +29,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS[AA_INC_PATH] . "searchbar.class.php3";
-require_once $GLOBALS[AA_INC_PATH] . "statestore.php3";
+require_once AA_INC_PATH . "searchbar.class.php3";
+require_once AA_INC_PATH . "statestore.php3";
 
 /**
  * manager class - used for 'item' manipulation 'managers' pages
@@ -406,7 +406,7 @@ class manager extends storable_class {
             }
 
             if ( $options ) {
-                echo "<img src='".$GLOBALS['AA_INSTAL_PATH']."images/arrow_ltr.gif'>
+                echo "<img src='".AA_INSTAL_PATH."images/arrow_ltr.gif'>
                     <a href='javascript:SelectVis()'>". _m('Select all')."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
 
                   // click "go" does not use markedform, it uses itemsfrom above...

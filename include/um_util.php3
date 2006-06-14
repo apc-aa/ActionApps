@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS['AA_INC_PATH']."constants.php3";
+require_once AA_INC_PATH."constants.php3";
 
 // Prints html tag <select ..
 function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {

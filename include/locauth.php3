@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -19,41 +19,41 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if (!is_array($_PHPLIB)) {
-  $_PHPLIB["libdir"] = "";
+if (!defined('PHPLIB_LIBDIR')) {
+    define ('PHPLIB_LIBDIR', '');
 }
 
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
   /* Change this to match your database. */
-  require_once($_PHPLIB["libdir"] . "db_mysql.inc");  
+  require_once(PHPLIB_LIBDIR. "db_mysql.inc");
 
   /* Change this to match your data storage container */
-  require_once($_PHPLIB["libdir"] . "ct_sql.inc");    
+  require_once(PHPLIB_LIBDIR. "ct_sql.inc");
 
   /* Required for everything below.      */
-  require_once($_PHPLIB["libdir"] . "session.inc");   
+  require_once(PHPLIB_LIBDIR. "session.inc");
 
   /* Disable this, if you are not using authentication. */
-  require_once($_PHPLIB["libdir"] . "auth.inc");      
+  require_once(PHPLIB_LIBDIR. "auth.inc");
 }
 
 /* Required, contains your local session management extension */
 if ($encap) {
-  require_once($GLOBALS['AA_INC_PATH'] . "extsessi.php3");   // if encapsulated (itemedit.php3) we can't send more Header
+  require_once(AA_INC_PATH . "extsessi.php3");   // if encapsulated (itemedit.php3) we can't send more Header
  } else {
-  require_once($GLOBALS['AA_INC_PATH'] . "extsess.php3");     
-}  
+  require_once(AA_INC_PATH . "extsess.php3");
+}
 
 /* Required, contains your local authentication extension. */
 if ($nobody) {  // used in itemedit.php3 for anonymoous news posting
-  require_once($GLOBALS['AA_INC_PATH'] . "extauthnobody.php3");     
- } else { 
-  require_once($GLOBALS['AA_INC_PATH'] . "extauth.php3");     
-}  
+  require_once(AA_INC_PATH . "extauthnobody.php3");
+ } else {
+  require_once(AA_INC_PATH . "extauth.php3");
+}
 
 /* Required, contains the page management functions. */
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
-   require_once($_PHPLIB["libdir"] . "page.inc");
+   require_once(PHPLIB_LIBDIR. "page.inc");
 }
 
 define ("PHPLIB_AA_LOADED", 1);

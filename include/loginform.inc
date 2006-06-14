@@ -1,6 +1,6 @@
 <?php
-bind_mgettext_domain ($GLOBALS["AA_INC_PATH"]."lang/".DEFAULT_LANG_INCLUDE);
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
+bind_mgettext_domain(AA_INC_PATH."lang/".DEFAULT_LANG_INCLUDE);
+require_once AA_INC_PATH."util.php3";
 
 HtmlPageBegin();
 
@@ -22,8 +22,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
  <tr valign=top align=left>
   <td><?php echo _m("Username:") ?></td>
   <td><input type="text" name="username"
-  value="<?php if (isset($this->auth["uname"]))
-                     htmlspecialchars(print $this->auth["uname"]); ?>"
+  value="<?php if (isset($this->auth["uname"])) { htmlspecialchars(print $this->auth["uname"]); }?>"
   size=16 maxlength=32><br><small><?php echo _m("Type your username or mail") ?></small></td>
  </tr>
  <tr valign=top align=left>
@@ -35,7 +34,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
  </tr>
 </table>
 
- <?php if ( isset($username) ): ?>
+<?php if ( isset($username) ) { ?>
  <!-- failed login code -->
 
  <p>
@@ -51,7 +50,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
   </tr>
  </table>
 
- <?php endif ?>
+<?php } ?>
 
 </table>
 </center>
@@ -67,4 +66,3 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
 // -->
 </script>
 </html>
-<!-- $Id$ -->

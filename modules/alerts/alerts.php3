@@ -32,25 +32,25 @@ http://www.apc.org/
 if (!defined ("AA_ID")) {
     require_once "../../include/config.php3";
 }
-require_once $GLOBALS['AA_INC_PATH']. ($encap ? "locsessi.php3" : "locsess.php3");
-require_once $GLOBALS["AA_INC_PATH"]."util.php3";
-require_once $GLOBALS["AA_INC_PATH"]."varset.php3";
+require_once AA_INC_PATH. ($encap ? "locsessi.php3" : "locsess.php3");
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."varset.php3";
 // mini gettext language environment (the _m() function)
-require_once $GLOBALS["AA_INC_PATH"]."mgettext.php3";
+require_once AA_INC_PATH."mgettext.php3";
 
 if (!$lang) {
     $lang = "en";
 }
-bind_mgettext_domain($GLOBALS["AA_INC_PATH"]."lang/".$lang."_alerts_lang.php3");
+bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_alerts_lang.php3");
 require_once "util.php3";
 
 
-require_once $GLOBALS['AA_BASE_PATH']."modules/alerts/lang.php3";
-require_once $GLOBALS['AA_INC_PATH']."item.php3";
-require_once $GLOBALS['AA_INC_PATH']."view.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/alerts/alerts_sending.php3";
+require_once AA_BASE_PATH."modules/alerts/lang.php3";
+require_once AA_INC_PATH."item.php3";
+require_once AA_INC_PATH."view.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."searchlib.php3";
+require_once AA_BASE_PATH."modules/alerts/alerts_sending.php3";
 
 
 /** This script is possible to run from commandline (so also from cron). The

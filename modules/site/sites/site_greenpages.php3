@@ -20,11 +20,11 @@ $apc_state = ModW_str2arr($apc_varnames, $apc, $apc_init, $apc_reg);
 if (isset($site_id)) $apc_state['site_id'] = $site_id;  // Make site_id available:
 
 if ($m) {
-	$apc_state['w'] = $apc_state['v'];
-	$apc_state['v'] = $apc_state['u'];
-	$apc_state['u'] = $apc_state['m'] . $apc_state['i'];
-	$apc_state['m'] = $m;
-	$apc_state['p'] = '1';
+    $apc_state['w'] = $apc_state['v'];
+    $apc_state['v'] = $apc_state['u'];
+    $apc_state['u'] = $apc_state['m'] . $apc_state['i'];
+    $apc_state['m'] = $m;
+    $apc_state['p'] = '1';
 }
 
 if (isset($p)) $apc_state = array_merge($apc_state, array('p' => $p, 'x' => '-')); //page
@@ -44,8 +44,8 @@ $nocache = 1; // Force nocache until caching problems fixed
 
 // Set up some variables in apc_state
 $apc_state['state'] =  ModW_arr2str($apc_varnames,$apc_state);
-$relargs = "apc=" . $apc_state['state'] . ($nocache ? "&nocache=1" : "") 
-	. ($debug ? "&debug=1" : "");
+$relargs = "apc=" . $apc_state['state'] . ($nocache ? "&nocache=1" : "")
+    . ($debug ? "&debug=1" : "");
 $apc_state['relargs'] = $relargs;
 // site_url is used as a return address, for example after going into edit
 //$apc_state["site_url"] = $AA_INSTAL_EDIT_PATH . "modules/site/site.php3?site_id=$site_id&" . $relargs;
@@ -59,17 +59,17 @@ if ($debug) huhl("<pre>New State=",$apc_state);
 // (you add item, ...), the cache should be cleared for this slice, in order site
 // show the newest slice content. In $slice4cache array you will tell the slice
 // module, which slices it should take care about
-$slices4cache = array( 
-		"5a8fc21be3fdb898d3ba77b62ac1a613", //GP business2flag
-		"0ec747ad42babf093e92e6bb9853e5e2", //GP businesses
-		"43cae042188b8d094044da804497ba3b", //GP Category
-		"aa1e51ff4e4e955386296cf7c3ea87df", //GP Flags
-		"0d9bd7ff5e62515e6fd432806fda8c6a", //GP Stories
-		"93075b63f842973ab40859a2104765a8"); //GP Site
+$slices4cache = array(
+        "5a8fc21be3fdb898d3ba77b62ac1a613", //GP business2flag
+        "0ec747ad42babf093e92e6bb9853e5e2", //GP businesses
+        "43cae042188b8d094044da804497ba3b", //GP Category
+        "aa1e51ff4e4e955386296cf7c3ea87df", //GP Flags
+        "0d9bd7ff5e62515e6fd432806fda8c6a", //GP Stories
+        "93075b63f842973ab40859a2104765a8"); //GP Site
 
 // You can define macros here, these can include any of the { ...} syntaxes
-$als[editme] = '{switch({t})e:<a href="_#EDITITEM"><img src="' . $AA_INSTAL_PATH . 'images/edit.gif"></a>}'; //Use {editme}
-$als[additem] = '{switch({t})e:<a href="{alias::f_e:add}"><img src="' . $AA_INSTAL_PATH . 'images/add.gif"></a>}'; //Use {additem}
+$als['editme'] = '{switch({t})e:<a href="_#EDITITEM"><img src="' . AA_INSTAL_PATH . 'images/edit.gif"></a>}'; //Use {editme}
+$als['additem'] = '{switch({t})e:<a href="{alias::f_e:add}"><img src="' . AA_INSTAL_PATH . 'images/add.gif"></a>}'; //Use {additem}
 
 ?>
 

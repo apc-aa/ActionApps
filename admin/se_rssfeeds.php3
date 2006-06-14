@@ -39,11 +39,11 @@ if (!IfSlPerm(PS_FEEDING)) {
   exit;
 }
 
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."xml_fetch.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."xml_fetch.php3";
 
 $err["Init"]="";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once AA_INC_PATH."formutil.php3";
 $qp_slice_id=q_pack_id($slice_id);
 
  if ($mode == "map") {
@@ -155,7 +155,7 @@ function checkData() {
 <BODY>
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+  require_once AA_INC_PATH."menu.php3";
   showMenu ($aamenus, "sliceadmin","rssfeeds");
 
   echo "<H1><B>" . _m("Remote RSS Feed administration") . "</B></H1>";

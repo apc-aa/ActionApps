@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,10 @@ http://www.apc.org/
 // APC AA - Module main administration page
 
 // used in init_page.php3 script to include config.php3 from the right directory
-$directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "varset.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "formutil.php3";
+require_once AA_INC_PATH . "varset.php3";
+require_once AA_INC_PATH . "formutil.php3";
 
 // id of the editted module
 $module_id = $slice_id;               // id in long form (32-digit hexadecimal
@@ -37,11 +36,11 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 // Check permissions for this page.
 // You should change PS_MODW_EDIT_CODE permission to match the permission in your
 // module. See /include/perm_core.php3 for more details
- 
+
 if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
   MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in this slice"));
   exit;
-}  
+}
 
 
 // fill code for handling the operations managed on this page
@@ -68,6 +67,9 @@ exit;
 
 /*
 $Log$
+Revision 1.5  2006/06/14 13:30:43  honzam
+fixed security problem require (see http://secunia.com/advisories/20299/). Requires no longer use variables
+
 Revision 1.4  2005/04/25 11:46:22  honzam
 a bit more beauty code - some coding standards setting applied
 

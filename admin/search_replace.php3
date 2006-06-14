@@ -28,9 +28,9 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']. "formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']. "searchbar.class.php3";
-require_once $GLOBALS['AA_INC_PATH']. "varset.php3";
+require_once AA_INC_PATH. "formutil.php3";
+require_once AA_INC_PATH. "searchbar.class.php3";
+require_once AA_INC_PATH. "varset.php3";
 
 function ChangeContent($zids, $field_id, $new_content, $new_flag, $field2copy) {
     global $allknownslices;
@@ -121,7 +121,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 echo '
-  <link rel=StyleSheet href="'.$AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
+  <link rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
   <title>'.  _m("Modify items") .'</title>';
 IncludeManagerJavascript();
 echo '

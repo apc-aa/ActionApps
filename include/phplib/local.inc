@@ -7,7 +7,7 @@
  *
  * $Id$
  *
- */ 
+ */
 
 class DB_Example extends DB_Sql {
   var $Host     = "localhost";
@@ -55,7 +55,7 @@ class Example_Session extends Session {
   var $fallback_mode  = "get";
   var $lifetime       = 0;                 ## 0 = do session cookies, else minutes
   var $that_class     = "Example_CT_Sql"; ## name of data storage container
-  var $gc_probability = 5;  
+  var $gc_probability = 5;
 }
 
 class Example_User extends User {
@@ -72,24 +72,24 @@ class Example_Auth extends Auth {
 
   var $database_class = "DB_Example";
   var $database_table = "auth_user";
-  
+
   function auth_loginform() {
     global $sess;
     global $_PHPLIB;
 
-    include($_PHPLIB["libdir"] . "loginform.ihtml");
+    include(PHPLIB_LIBDIR . "loginform.ihtml");
   }
-  
+
   function auth_validatelogin() {
     global $username, $password;
 
     if(isset($username)) {
       $this->auth["uname"]=$username;        ## This provides access for "loginform.ihtml"
     }
-    
-    
+
+
     $uid = false;
-    
+
     $this->db->query(sprintf("select user_id, perms ".
                              "        from %s ".
                              "       where username = '%s' ".
@@ -108,7 +108,7 @@ class Example_Auth extends Auth {
 
 class Example_Default_Auth extends Example_Auth {
   var $classname = "Example_Default_Auth";
-  
+
   var $nobody    = true;
 }
 
@@ -125,13 +125,13 @@ class Example_Challenge_Auth extends Auth {
     global $sess;
     global $challenge;
     global $_PHPLIB;
-    
+
     $challenge = md5(uniqid($this->magic));
     $sess->register("challenge");
-    
-    include($_PHPLIB["libdir"] . "crloginform.ihtml");
+
+    include(PHPLIB_LIBDIR . "crloginform.ihtml");
   }
-  
+
   function auth_validatelogin() {
     global $username, $password, $challenge, $response;
 
@@ -159,7 +159,7 @@ class Example_Challenge_Auth extends Auth {
         return $uid;
       }
     }
-    
+
     ## Response is set, JS is enabled
     if ($exspected_response != $response) {
       return false;
@@ -171,7 +171,7 @@ class Example_Challenge_Auth extends Auth {
 }
 
 ##
-## Example_Challenge_Crypt_Auth: Keep passwords in md5 hashes rather 
+## Example_Challenge_Crypt_Auth: Keep passwords in md5 hashes rather
 ##                           than cleartext in database
 ## Author: Jim Zajkowski <jim@jimz.com>
 
@@ -187,18 +187,18 @@ class Example_Challenge_Crypt_Auth extends Auth {
   function auth_loginform() {
     global $sess;
     global $challenge;
-    
+
     $challenge = md5(uniqid($this->magic));
     $sess->register("challenge");
-    
+
     include("crcloginform.ihtml");
   }
-  
+
   function auth_validatelogin() {
     global $username, $password, $challenge, $response;
 
     $this->auth["uname"]=$username;        ## This provides access for "loginform.ihtml"
-    
+
     $this->db->query(sprintf("select user_id,perms,password ".
                 "from %s where username = '%s'",
                           $this->database_table,
@@ -220,7 +220,7 @@ class Example_Challenge_Crypt_Auth extends Auth {
         return $uid;
       }
     }
-    
+
     ## Response is set, JS is enabled
     if ($exspected_response != $response) {
       return false;
@@ -233,7 +233,7 @@ class Example_Challenge_Crypt_Auth extends Auth {
 
 class Example_Perm extends Perm {
   var $classname = "Example_Perm";
-  
+
   var $permissions = array(
                             "user"       => 1,
                             "author"     => 2,
@@ -245,15 +245,15 @@ class Example_Perm extends Perm {
   function perm_invalid($does_have, $must_have) {
     global $perm, $auth, $sess;
     global $_PHPLIB;
-    
-    include($_PHPLIB["libdir"] . "perminvalid.ihtml");
+
+    include(PHPLIB_LIBDIR . "perminvalid.ihtml");
   }
 }
 
 ##
 ## Example_Menu may extend Menu.
 ## If you name this class differently, you must also
-## rename its constructor function - this is a PHP language 
+## rename its constructor function - this is a PHP language
 ## design stupidity.
 ##
 ## To use this, you must enable the require_once statement for
@@ -278,7 +278,7 @@ class Example_Perm extends Perm {
 #     "/menu/item23.php3"  => "/2/3",
 #     "/menu/item24.php3"  => "/2/4"
 #   );
-#   
+#
 #   # Information about each menu item
 #   var $item = array(
 #     ""      => array("title" => "Main"),
@@ -294,7 +294,7 @@ class Example_Perm extends Perm {
 #     "/2/3"  => array("title" => "Text 2.3"),
 #     "/2/4"  => array("title" => "Text 2.4")
 #   );
-#   
+#
 #   function Example_Menu() {
 #     $this->setup();
 #   }

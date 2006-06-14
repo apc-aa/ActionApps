@@ -16,14 +16,13 @@
 
 
 // Edit Link Page
-$directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/constants.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/cattree.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_BASE_PATH."modules/links/constants.php3";
+require_once AA_BASE_PATH."modules/links/cattree.php3";
+require_once AA_BASE_PATH."modules/links/util.php3";
 
 function printChange($field, $change_arr, $original_value="") {
     global $created_by_change; // used for display of initiator of the change
@@ -55,7 +54,7 @@ $select_start = get_if( $_GET['select_start'], $links_info['select_start'], 2); 
 $select_depth = substr_count(Links_GetCategoryColumn( $select_start, 'path' ), ',');  // count tree start category depth
 
 // load right langfile, if it is not loaded
-bind_mgettext_domain ($GLOBALS['AA_INC_PATH']."lang/".$r_lang_file);
+bind_mgettext_domain(AA_INC_PATH."lang/".$r_lang_file);
 
 // r_err and r_msg - passes messages between scripts
 if ( !isset($r_err) ) {
@@ -490,8 +489,8 @@ echo      '</td>
                 for ( $i=0; $i<CATEGORIES_COUNT_TO_MANAGE; $i++ ) {
                      echo '<tr><td width="1px"><a
                      href="javascript:MoveSelectedTo(\'document.f.tree\',\'selcat'.$i.'\',\'document.f.selcatSelect'.$i.'\')"><img
-                     src="'.$AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a></td><td width="1px"><a
-                     href="javascript:DeleteField(\''.$i.'\')"><img src="'.$AA_INSTAL_PATH.'images/bx.gif" border="0"
+                     src="'.AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a></td><td width="1px"><a
+                     href="javascript:DeleteField(\''.$i.'\')"><img src="'.AA_INSTAL_PATH.'images/bx.gif" border="0"
                      alt="delete"></a></td><td class="sel_title"><SMALL><DIV id=selcat'.$i.'>'.$selcatValue[$i].'&nbsp;</DIV></SMALL>
                      </td><td><small>'.$selcatPropAdd[$i].$selcatPropDel[$i].'</small>
                      <input type="hidden" name="selcatSelect'.$i.'" value="'.$selcatSelectValue[$i].'">

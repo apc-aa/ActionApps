@@ -33,15 +33,15 @@ http://www.apc.org/
 * Form utility functions
 */
 
-require_once $GLOBALS['AA_INC_PATH']."constedit_util.php3";
-require_once $GLOBALS['AA_INC_PATH']."javascript.php3";
-require_once $GLOBALS['AA_INC_PATH']."profile.class.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
-require_once $GLOBALS['AA_INC_PATH']."stringexpand.php3";
-require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
+require_once AA_INC_PATH."constedit_util.php3";
+require_once AA_INC_PATH."javascript.php3";
+require_once AA_INC_PATH."profile.class.php3";
+require_once AA_INC_PATH."itemfunc.php3";
+require_once AA_INC_PATH."stringexpand.php3";
+require_once AA_INC_PATH."sliceobj.php3";
 
 // IsUserNameFree() function deffinition here
-require_once($GLOBALS['AA_INC_PATH'] . "perm_" . PERM_LIB . ".php3");
+require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
 
 define( 'AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
 define( 'AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
@@ -134,7 +134,7 @@ class inputform {
         $form = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
 
         if ( $this->display_aa_begin_end ) {
-            HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+            HtmlPageBegin('default', false, $slice->getLang());   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
             // get validation and gui javascripts for used fields
             // getFormJavascript must be called after getForm since
@@ -822,7 +822,7 @@ class aainputfield {
 
     /** Print links to document convertors, if convertors are installed */
     function get_convertors() {
-        global $CONV_HTMLFILTERS, $AA_INSTAL_PATH;
+        global $CONV_HTMLFILTERS;
         if ( isset($CONV_HTMLFILTERS) AND is_array($CONV_HTMLFILTERS) ) {
             $delim='';
             foreach ( $CONV_HTMLFILTERS as $format => $program) {
@@ -831,7 +831,7 @@ class aainputfield {
                 $convertor .= $delim . strtoupper(str_replace( '.', '', $format ));
                 $delim = '/';
             }
-            $convertor = "<a href=\"javascript:CallConvertor('".self_server().$AA_INSTAL_PATH."', '".$this->varname."')\">$convertor "._m('import') ."</a>";
+            $convertor = "<a href=\"javascript:CallConvertor('".self_server(). AA_INSTAL_PATH."', '".$this->varname."')\">$convertor "._m('import') ."</a>";
         }
         return $convertor;
     }
@@ -2004,10 +2004,10 @@ function FrmTabSeparator( $subtitle , $buttons='', $sess='', $slice_id='', $vali
     if ($buttons) {
         echo "<tr><td bgcolor=". COLOR_TABBG." hegiht=6></td></tr>";
     }
+    if ( $subtitle ) {
+        echo "\n      <tr><td class=\"tabtit\"><b>&nbsp;$subtitle</b></td></tr>";
+    }
     echo '
-      <tr><td class=tabtit><b>&nbsp;'. $subtitle .'</b></td>';
-
-    echo '</tr>
       <tr>
         <td>
           <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'. COLOR_TABBG .'">';
@@ -2245,11 +2245,11 @@ function FrmCSS( $stylecode )      { echo getFrmCSS( $stylecode );      }
 
 /**  */
 function IncludeManagerJavascript() {
-    global $AA_INSTAL_PATH, $sess;
+    global $sess;
     FrmJavascript( '
-        var aa_instal_path        = "'. $AA_INSTAL_PATH .'";
-        var aa_live_checkbox_file = "'. $sess->url($AA_INSTAL_PATH."live_checkbox.php3") .'";
-        var aa_live_change_file   = "'. $sess->url($AA_INSTAL_PATH."live_change.php3") .'"; ');
+        var aa_instal_path        = "'. AA_INSTAL_PATH .'";
+        var aa_live_checkbox_file = "'. $sess->url(AA_INSTAL_PATH. "live_checkbox.php3") .'";
+        var aa_live_change_file   = "'. $sess->url(AA_INSTAL_PATH. "live_change.php3") .'"; ');
     FrmJavascriptFile( 'javascript/manager.js' );
 }
 

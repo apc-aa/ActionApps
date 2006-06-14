@@ -23,12 +23,12 @@ http://www.apc.org/
 // expected $view_id for editing specified view or $new
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."item.php3";     // GetAliasesFromField funct def
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."discussion.php3";  // GetDiscussionAliases funct def
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."discussion.php3";  // GetDiscussionAliases funct def
+require_once AA_INC_PATH."msgpage.php3";
 
 // ----------------------------------------------------------------------------
 
@@ -341,8 +341,8 @@ echo "<TITLE>". _m("Admin - design View") ."</TITLE>
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
 
 require_once (($view_type == 'categories') OR ($view_type == 'links')) ?
-                       $GLOBALS["AA_BASE_PATH"]."/modules/links/menu.php3" :
-                       $GLOBALS['AA_INC_PATH']."menu.php3";
+                       AA_BASE_PATH."/modules/links/menu.php3" :
+                       AA_INC_PATH."menu.php3";
 
 switch ( $view_type ) {
     case 'categories': showMenu($aamenus, "modadmin", $view_id ? "view$view_id" : "newcatview"); break;

@@ -1,7 +1,7 @@
 <?php
 require_once "./../../include/config.php3";
-require_once ($GLOBALS['AA_INC_PATH']."util.php3");
-require_once ($GLOBALS['AA_INC_PATH']."files.class.php3");
+require_once (AA_INC_PATH."util.php3");
+require_once (AA_INC_PATH."files.class.php3");
 
 if (!$view)     $view     = false;
 if (!$encoding) $encoding = CONV_DEFAULTENCODING;

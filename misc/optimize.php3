@@ -34,13 +34,11 @@ http://www.apc.org/
 */
 
 // need config.php3 to set db access, and phplib, and probably other stuff
-$AA_INC_PATH = "../include/";
-//$AA_INC_PATH = "/home/groups/a/ap/apc-aa/htdocs/apc-aa/include/";
+define ('AA_INC_PATH', "../include/");
 
-require_once $GLOBALS['AA_INC_PATH']."config.php3";
-
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";   // DB_AA definition
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once AA_INC_PATH."config.php3";
+require_once AA_INC_PATH."locsess.php3";   // DB_AA definition
+require_once AA_INC_PATH."util.php3";
 
 // init used objects
 $db = new DB_AA;

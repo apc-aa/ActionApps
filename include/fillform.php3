@@ -229,7 +229,7 @@ function fillFormWithContent($oldcontent4id) {
 function confirm_email() {
     global $slice_id;
 
-    require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+    require_once AA_INC_PATH."itemfunc.php3";
     $db = getDB();
     $db->query (
         "SELECT item.id FROM content INNER JOIN item
@@ -268,7 +268,7 @@ function confirm_email() {
 function unsubscribe_reader() {
     global $slice_id;
 
-    require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
+    require_once AA_INC_PATH."itemfunc.php3";
     $db = getDB();
     $db->query (
         "SELECT item.id FROM content INNER JOIN item

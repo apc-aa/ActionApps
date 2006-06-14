@@ -201,7 +201,7 @@ function xml_unserialize($xml_data) {
 /* Testing */
 function test_xmlserializer() {
     require_once "config.php3";
-    require_once "$GLOBALS[AA_INC_PATH]"."zids.php3";
+    require_once "AA_INC_PATH"."zids.php3";
     $aa = new zids("12345678901234567890123456789012");
     $a = $aa->packedids();
     print_r($a);

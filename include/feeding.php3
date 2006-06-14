@@ -23,7 +23,7 @@ http://www.apc.org/
 // Functions for feeding
 //
 
-require_once $GLOBALS['AA_INC_PATH']."stringexpand.php3"; // for translateString()
+require_once AA_INC_PATH."stringexpand.php3"; // for translateString()
 
 // Find fields mapping.
 function GetFieldMapping($from_slice_id, $to_slice_id, $fields_from, $fields_to="") {

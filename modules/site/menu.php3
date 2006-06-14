@@ -33,9 +33,9 @@ http://www.apc.org/
     exact_href  link, absolute (use either exact_href or href, not both)
 */
 
-require_once $GLOBALS['AA_INC_PATH']."menu_util.php3";
-require_once $GLOBALS['AA_INC_PATH']."perm_core.php3";
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
+require_once AA_INC_PATH."menu_util.php3";
+require_once AA_INC_PATH."perm_core.php3";
+require_once AA_INC_PATH."mgettext.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $aamenus = "aamenus";
@@ -44,8 +44,7 @@ $menu_function = 'get_aamenus_sites';
 function get_aamenus_sites()
 {
     global $r_slice_view_url,
-           $auth,
-           $AA_INSTAL_PATH;
+           $auth;
 
     $aamenus["view"] = array (
         "label" => _m("View site"),
@@ -89,7 +88,7 @@ function get_aamenus_sites()
     */
 
     // left menu for aaadmin is common to all modules, so it is shared
-    require_once $GLOBALS['AA_INC_PATH']."menu_aa.php3";
+    require_once AA_INC_PATH."menu_aa.php3";
     return $aamenus;
 }
 ?>

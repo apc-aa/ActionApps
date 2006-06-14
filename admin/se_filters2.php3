@@ -31,9 +31,9 @@ http://www.apc.org/
 //          $feed_id
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."csn_util.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."csn_util.php3";
+require_once AA_INC_PATH."msgpage.php3";
 
 if (!IfSlPerm(PS_FEEDING)) {
   MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "admin");

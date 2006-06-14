@@ -51,7 +51,7 @@ base 64 data from item_id (w/wo gzip)
 */
 
 
-require_once $GLOBALS['AA_INC_PATH'] . "xml_serializer.php3";
+require_once AA_INC_PATH . "xml_serializer.php3";
 
 //$dry_run = 1;
 

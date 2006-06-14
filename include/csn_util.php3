@@ -19,9 +19,9 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemview.php3";
-require_once $GLOBALS['AA_INC_PATH']."item.php3";
+require_once AA_INC_PATH."searchlib.php3";
+require_once AA_INC_PATH."itemview.php3";
+require_once AA_INC_PATH."item.php3";
 
 define("HTML", 0);
 define("PLAIN",1);

@@ -32,10 +32,10 @@ http://www.apc.org/
 /** APC-AA configuration file */
 require_once "./include/config.php3";
 /** Main include file for using session management function on page */
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once AA_INC_PATH."locsess.php3";
 /** Caching functions */
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."pagecache.php3";
 
 // headers copied from include/extsess.php3 file
 $allowcache_expire = 24*3600; // 1 day

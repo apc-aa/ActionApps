@@ -1,4 +1,4 @@
-<?
+<?php
 
 //************************** BEGIN CONFIGURATION *****************************//
 
@@ -7,7 +7,7 @@
 //of the web server document root. e.g.
 // Filesystem == /home/web/www.yourdomain.com
 
-// changed for APC-AA by pavelji@ecn.cz 
+// changed for APC-AA by pavelji@ecn.cz
 $BASE_DIR = IMG_UPLOAD_PATH;
 
 //the path where the browser sees the document root (i.e. http://www.yourdomain.com/)
@@ -19,11 +19,11 @@ $BASE_URL = IMG_UPLOAD_URL;
 //this directory MUST be readable AND writable by the web server.
 
 // changed for APC-AA by pavelji@ecn.cz
-$BASE_ROOT = $GLOBALS["slice_id"]; 
+$BASE_ROOT = $GLOBALS["slice_id"];
 
 //The image manipulation library to use, either GD or ImageMagick or NetPBM
 //valid definitions are 'GD' or 'IM' or 'NetPBM'.
-define('IMAGE_CLASS', 'GD'); // 
+define('IMAGE_CLASS', 'GD'); //
 
 //After defining which library to use, if it is NetPBM or IM, you need to
 //specify where the binary for the selected library are. And of course
@@ -41,22 +41,22 @@ $SAFE_MODE = false;
 
 $IMG_ROOT = $BASE_ROOT;
 
-if(strrpos($BASE_DIR, '/')!= strlen($BASE_DIR)-1) 
-	$BASE_DIR .= '/';
+if(strrpos($BASE_DIR, '/')!= strlen($BASE_DIR)-1)
+    $BASE_DIR .= '/';
 
-if(strrpos($BASE_URL, '/')!= strlen($BASE_URL)-1) 
-	$BASE_URL .= '/';
+if(strrpos($BASE_URL, '/')!= strlen($BASE_URL)-1)
+    $BASE_URL .= '/';
 
 //Built in function of dirname is faulty
 //It assumes that the directory nane can not contain a . (period)
-function dir_name($dir) 
+function dir_name($dir)
 {
-	$lastSlash = intval(strrpos($dir, '/'));
-	if($lastSlash == strlen($dir)-1){
-		return substr($dir, 0, $lastSlash);
-	}
-	else
-		return dirname($dir);
+    $lastSlash = intval(strrpos($dir, '/'));
+    if($lastSlash == strlen($dir)-1){
+        return substr($dir, 0, $lastSlash);
+    }
+    else
+        return dirname($dir);
 }
 
 ?>

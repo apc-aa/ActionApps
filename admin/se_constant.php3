@@ -26,11 +26,11 @@ http://www.apc.org/
 //             as_new - if we want to create new category group based on an existing (id of "template" group)
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."constedit_util.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."constedit_util.php3";
+require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
@@ -291,7 +291,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 </HEAD>
 <?php
 
-require_once $GLOBALS["AA_INC_PATH"]."menu.php3";
+require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin", $categ ? "category" : "");
 
 echo "<H1><B>" . _m("Admin - Constants Setting") . "</B></H1>";
@@ -312,7 +312,7 @@ $form_buttons = array("update",
 
 // load the HIERARCHICAL EDITOR
 if ($hierarch) {
-    require_once $GLOBALS['AA_INC_PATH']."constedit.php3";
+    require_once AA_INC_PATH."constedit.php3";
     // it exits here
 }
 

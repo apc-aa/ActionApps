@@ -34,10 +34,10 @@ http://www.apc.org/
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
-require_once $GLOBALS['AA_INC_PATH']."um_util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."msgpage.php3";
+require_once AA_INC_PATH."um_util.php3";
 
 if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));

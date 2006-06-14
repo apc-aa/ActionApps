@@ -19,16 +19,16 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."notify.php3";
-require_once $GLOBALS['AA_INC_PATH']."imagefunc.php3";
-require_once $GLOBALS['AA_INC_PATH']."javascript.php3";
-require_once $GLOBALS['AA_INC_PATH']."date.php3";
-require_once $GLOBALS['AA_INC_PATH']."item_content.php3";
-require_once $GLOBALS['AA_INC_PATH']."event.class.php3";
-require_once $GLOBALS['AA_INC_PATH']."profile.class.php3";
-require_once $GLOBALS['AA_INC_PATH']."files.class.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."notify.php3";
+require_once AA_INC_PATH."imagefunc.php3";
+require_once AA_INC_PATH."javascript.php3";
+require_once AA_INC_PATH."date.php3";
+require_once AA_INC_PATH."item_content.php3";
+require_once AA_INC_PATH."event.class.php3";
+require_once AA_INC_PATH."profile.class.php3";
+require_once AA_INC_PATH."files.class.php3";
 
 if ( !is_object($event) ) $event = new aaevent;   // not defined in scripts which do not include init_page.php3 (like offline.php3)
 
@@ -301,7 +301,7 @@ function insert_fnc_com($item_id, $field, $value, $param, $additional='') {
 //    fixed later (mtira)
 // in $additional are fields
 function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
-    global $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR, $err;
+    global $err;
 
     if (is_array($additional)) {
         $fields  = $additional["fields"];

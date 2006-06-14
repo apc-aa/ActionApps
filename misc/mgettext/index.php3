@@ -32,9 +32,9 @@ http://www.apc.org/
 */
 
 require_once "../../include/config.php3";
-require_once $GLOBALS['AA_BASE_PATH']."misc/mgettext/xmgettext.php3";
-require_once $GLOBALS['AA_BASE_PATH']."misc/mgettext/translate.php3";
-require_once $GLOBALS['AA_BASE_PATH']."misc/mgettext/createlogs.php3";
+require_once AA_BASE_PATH."misc/mgettext/xmgettext.php3";
+require_once AA_BASE_PATH."misc/mgettext/translate.php3";
+require_once AA_BASE_PATH."misc/mgettext/createlogs.php3";
 
 // list of all languages. Useful if you want e.g. to update only one language file.
 $lang_list = array ("cz"     => 1,
@@ -53,7 +53,7 @@ $lang_list = array ("cz"     => 1,
                    );
 
 // $aadir is the source dir for updating translation files
-$aadir = $AA_BASE_PATH;
+$aadir = AA_BASE_PATH;
 endslash($aadir);
 /* IMPORTANT:
    $destdir is the destination dir where are the copies of language files to which

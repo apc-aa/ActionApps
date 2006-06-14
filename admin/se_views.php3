@@ -22,11 +22,11 @@ http://www.apc.org/
 // expected $view_id for editing specified view
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."item.php3";     // GetAliasesFromField funct def
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."item.php3";     // GetAliasesFromField funct def
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
@@ -104,7 +104,7 @@ FrmJavascript($js);
 echo "</HEAD>\n";
 
 $useOnLoad = ($new_compact ? true : false);
-require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","views");
 
 echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";

@@ -32,7 +32,7 @@ $aamenus["aaadmin_submenu"] = array (
     "slicewiz"    => array("label"=>_m("Create new Wizard"), "cond"=>IfSlPerm(PS_ADD),    "href"=>"admin/slicewiz.php3"),
     "slicedel"    => array("label"=>_m("Delete"),          "cond"=>IsSuperadmin(),        "href"=>"admin/slicedel.php3"),
     "jumpedit"    => array("label"=>_m("Edit Jump"),       "cond"=>IfSlPerm(PS_ADD),      "exact_href" =>
-                   $sess->url($AA_INSTAL_PATH."modules/jump/modedit.php3?edit=1")),
+                   $sess->url(AA_INSTAL_PATH."modules/jump/modedit.php3?edit=1")),
 /*    "delete" => array ("label" => _m("Empty trash"), "cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php3?Delete=trash"),*/
 
     "header1"     =>_m("Users"),

@@ -32,7 +32,7 @@ http://www.mitra.biz
 require_once "../include/init_page.php3"; // Loads variables etc
 require_once "../include/util.php3"; // Loads variables etc
 
-//require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";  // for slices
+//require_once AA_INC_PATH."sliceobj.php3";  // for slices
 //$debug = 1;
 
 // Quick test to show contents of slice record
@@ -48,7 +48,7 @@ HtmlPageBegin();
 </HEAD>
 
 <?php
-    require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+    require_once AA_INC_PATH."menu.php3";
     showMenu($aamenus, "aaadmin","console");
   
     echo "<H1><B>" . _m("AA - Administration Console") . "</B></H1>";

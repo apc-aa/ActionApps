@@ -30,12 +30,12 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS['AA_INC_PATH']."auth.php3";
-require_once $GLOBALS['AA_INC_PATH']."mailman.php3";
-require_once $GLOBALS['AA_INC_PATH']."mail.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/event.php3";
+require_once AA_INC_PATH."auth.php3";
+require_once AA_INC_PATH."mailman.php3";
+require_once AA_INC_PATH."mail.php3";
+require_once AA_BASE_PATH."modules/alerts/event.php3";
 //mimo add
-require_once $GLOBALS['AA_INC_PATH']."mlx.php";
+require_once AA_INC_PATH."mlx.php";
 
 
 /**
@@ -129,8 +129,9 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio',      array('type' => 'ITEM_NEW',         'slice'        => '22613f53fdaa6e092569b6021b23fee2'));  // Aperio - rodina (poradna)
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_UPDATED',     'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porod',array('type' => 'ITEM_NEW',         'slice'        => '18f916e58b8929d79d6c69efd87e85b8'));  // Aperio - porodnice (poradna)
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_UPDATED',     'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',         'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_UPDATED',   'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',       'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
+        $this->handlers[] = new aahandler('Event_ItemAfterInsert_NszmAkce',array('type' => 'ITEM_NEW',         'slice'        => '987c680c5adfc6f872909d703f98ba97'));  // NSZM - akce - lidi
         $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));  // Ekoinfocentrum poradna
     }
 
@@ -288,9 +289,9 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
 function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
     $item_id = $itemContent->getItemID();
     AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
-    AlertsSendWelcome( $item_id, $slice_id, $itemContent );
+    AlertsSendWelcome( $slice_id, $itemContent );
 //    AlertsSendInstantAlert( $item_id, $slice_id );
-    MailmanCreateSynchroFiles ($slice_id);
+    MailmanCreateSynchroFiles($slice_id);
 
     // notifications
     switch ($itemContent->getStatusCode()) {
@@ -535,4 +536,20 @@ function Event_ItemUpdated_Aperio_porod( $type, $slice, $slice_type, &$ret_param
 function Event_ItemUpdated_Ekoinfocentrum( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 53);
 }
+
+function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
+    $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
+    $akce_id  = trim($ret_params->getValue('unspecified.....'));              // akce_id
+    $email    = trim($ret_params->getValue('e_posted_by....1'));
+
+    $item_akce = GetItemFromId(new zids($akce_id, 'l'));
+    $text     = trim($item_akce->getval('text...........7'));
+
+    if ($email AND $text) {
+        return send_mail_from_table_inner(60, $email, $item_akce) > 0;
+    }
+    return false;
+}
+
+
 ?>

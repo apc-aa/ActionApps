@@ -20,10 +20,9 @@ http://www.apc.org/
 */
 // expected $del - unpacked id of module to delete
 
-$directory_depth = "../";
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "msgpage.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "modutils.php3";
+require_once AA_INC_PATH . "msgpage.php3";
+require_once AA_INC_PATH . "modutils.php3";
 
 
 if ($cancel)
@@ -60,7 +59,7 @@ $db->query($SQL);
 DelPermObject($del, "slice");  // the word 'slice' is not mistake - do not change
 
 page_close();                                // to save session variables
-go_url(con_url($sess->url($AA_INSTAL_PATH . "admin/slicedel.php3"),
+go_url(con_url($sess->url(AA_INSTAL_PATH . "admin/slicedel.php3"),
                                           "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
 ?>

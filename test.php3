@@ -13,10 +13,10 @@
 /** APC-AA configuration file */
 require_once "include/config.php3";
 /** Main include file for using session management function on a page */
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
+require_once AA_INC_PATH."locsess.php3";
 /** Set of useful functions used on most pages */
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."formutil.php3";
 
 /** Components (plugins) manipulation class */
 class Components {
@@ -363,10 +363,10 @@ $pearmail = true;
 $pearlog = true;
 $peardb = true;
 set_error_handler('testErrorHandler');
-include 'PEAR.php';
-include 'Mail/RFC822.php';
-include 'Log.php';
-include 'DB.php';
+require_once 'PEAR.php';
+require_once 'Mail/RFC822.php';
+require_once 'Log.php';
+require_once 'DB.php';
 restore_error_handler();
 
 /* Check the version of the pear database API. */

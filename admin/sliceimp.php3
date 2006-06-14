@@ -29,13 +29,13 @@ http://www.apc.org/
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
-require_once $GLOBALS['AA_INC_PATH']."notify.php3";
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once AA_INC_PATH."itemfunc.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."feeding.php3";
+require_once AA_INC_PATH."notify.php3";
+require_once AA_INC_PATH."mgettext.php3";
+require_once AA_INC_PATH."formutil.php3";
 
 if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
     MsgPage($sess->url(self_base())."index.php3", _m("You are not allowed to export / import slices"), "standalone");
@@ -250,7 +250,7 @@ $slice_def_bck = $slice_def = stripslashes($slice_def);
 $imported_count = 0;
 
 // insert xml parser
-require_once $GLOBALS['AA_BASE_PATH']."admin/sliceimp_xml.php3";
+require_once AA_BASE_PATH."admin/sliceimp_xml.php3";
 
 // import via exported file
 if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {

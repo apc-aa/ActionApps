@@ -26,12 +26,11 @@ http://www.apc.org/
     $update=1 .. write changes to database
 */
 
-$directory_depth = "../";
 $require_default_lang = true;      // do not use module specific language file
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."varset.php3";
 
 // create the $jumps array:
 $db = new DB_AA;
@@ -83,8 +82,8 @@ if (!$jump_id)
     $jump_name = $jump_url = $dest_id = "";
 
 else {
-    $db->query("SELECT name,destination,dest_slice_id FROM jump INNER JOIN module 
-            ON jump.slice_id = module.id 
+    $db->query("SELECT name,destination,dest_slice_id FROM jump INNER JOIN module
+            ON jump.slice_id = module.id
             WHERE jump.slice_id = '".q_pack_id ($jump_id)."'");
     if ($db->next_record()) {
         $jump_name = $db->f("name");
@@ -100,16 +99,16 @@ if ($jump_id) {
     echo '
     <form name=choose action="'.$sess->url("modedit.php3").'" method="post">';
     FrmTabCaption(_m("Choose module to be edited"));
-    
+
     echo '<tr>
             <td>
                 <select name="jump_id" onchange="document.forms.choose.submit();">';
                 reset ($jumps);
-                while (list ($id,$name) = each ($jumps)) 
+                while (list ($id,$name) = each ($jumps))
                     echo "<option value=\"$id\""
                     .($id == $jump_id ? " selected" : "")
                     .">".htmlspecialchars($name);
-    
+
                 echo '</select>&nbsp;</td><td>
                 <input type=submit name="edit" value="'._m("Edit").'">
             </td>
@@ -134,7 +133,7 @@ echo '
 //        <option value=''>* * * Don't change slice * * *";
      if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
         reset($g_modules);
-        while (list($k, $v) = each($g_modules)) { 
+        while (list($k, $v) = each($g_modules)) {
             echo "<option value=\"". htmlspecialchars($k)."\"";
             if ( $dest_id == $k ) echo " selected";
             echo ">". htmlspecialchars($v['name']);
@@ -145,7 +144,7 @@ echo '
      </tr>
      <tr><td class=tabtxt><b>"._m("Module ID").":</b></td><td>$jump_id</td></tr>";
 FrmTabEnd(array("update"=>array("value"=>($jump_id ? _m("Update") : _m("Create"))),
-                "cancel"=>array("url"=>$AA_INSTAL_PATH."admin/um_uedit.php3")), $sess, $slice_id);
+                "cancel"=>array("url"=>AA_INSTAL_PATH."admin/um_uedit.php3")), $sess, $slice_id);
 echo "</form>";
 HTMLPageEnd();
 page_close();

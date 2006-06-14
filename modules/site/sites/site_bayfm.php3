@@ -23,11 +23,11 @@ if (isset($site_id)) $apc_state['site_id'] = $site_id;  // Make site_id availabl
 
 /* Sample code for keeping history
 if ($m) {
-	$apc_state['w'] = $apc_state['v'];
-	$apc_state['v'] = $apc_state['u'];
-	$apc_state['u'] = $apc_state['m'] . $apc_state['i'];
-	$apc_state['m'] = $m;
-	$apc_state['p'] = '1';
+    $apc_state['w'] = $apc_state['v'];
+    $apc_state['v'] = $apc_state['u'];
+    $apc_state['u'] = $apc_state['m'] . $apc_state['i'];
+    $apc_state['m'] = $m;
+    $apc_state['p'] = '1';
 }
 */
 
@@ -59,8 +59,8 @@ if ($debug) huhl("<pre>New State=",$apc_state);
 // (you add item, ...), the cache should be cleared for this slice, in order site
 // show the newest slice content. In $slice4cache array you will tell the slice
 // module, which slices it should take care about
-$slices4cache = array( 
-		"c85a4a34ccbe0ce54c4306b5c32373b1", //BayFM Home
+$slices4cache = array(
+        "c85a4a34ccbe0ce54c4306b5c32373b1", //BayFM Home
         "498aab17441f29623f404512198566ea",  //BayFM Site
         "8b6a44fb578aa6ee5ffbd7851da5317d", //BayFM discounters
         "0f94e5c07c9593b7199ca076ec079977", //BayFM CSA
@@ -69,13 +69,13 @@ $slices4cache = array(
         "29b3878c68a37ae6f495636a7968e48f", //BayFM photos
         "973f382e3ce6f17e2d96318398e6c0dc", //BayFM photo sections
         "6d5bedb31f4db3f5805afb11d8425b54"  //BayFM section
-); 
+);
 
 // You can define macros here, these can include any of the { ...} syntaxes
-$als[editme] = '<a href="_#EDITITEM"><img src="' . $AA_INSTAL_PATH . 'images/edit.gif"></a>'; //Use {editme}
-$als[additem] = '<a href="{alias::f_e:add}"><img src="' . $AA_INSTAL_PATH . 'images/add.gif"></a>'; //Use {additem}
+$als['editme'] = '<a href="_#EDITITEM"><img src="' . AA_INSTAL_PATH . 'images/edit.gif"></a>'; //Use {editme}
+$als['additem'] = '<a href="{alias::f_e:add}"><img src="' . AA_INSTAL_PATH . 'images/add.gif"></a>'; //Use {additem}
 
-// And functions 
+// And functions
 
 function myfillform($txt) {
     global $result;

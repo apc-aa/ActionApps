@@ -20,8 +20,8 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tabledit.php3";
-require_once $GLOBALS["AA_INC_PATH"]."tv_common.php3";
+require_once AA_INC_PATH."tabledit.php3";
+require_once AA_INC_PATH."tv_common.php3";
 require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ function TV_PageBegin(&$config_arr) {
     }
 
     HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-    echo '<LINK rel=StyleSheet href="'.$AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
+    echo '<LINK rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
     echo "<TITLE>".$config_arr["title"]."</TITLE></HEAD>";
     showMenu($GLOBALS['aamenus'], $config_arr["mainmenu"], $config_arr["submenu"]);
     echo "<H1><B>" . $config_arr["caption"] . "</B></H1>";
@@ -146,7 +146,7 @@ echo $Msg;
 
 $script = $sess->url("aarsstest.php3");
 
-$tabledit = new tabledit('aarsstest', $script, $cmd, $aarss_tv, $AA_INSTAL_PATH."images/", $sess, $func);
+$tabledit = new tabledit('aarsstest', $script, $cmd, $aarss_tv, AA_INSTAL_PATH."images/", $sess, $func);
 $err = $tabledit->view($where);
 if ($err) echo "<b>$err</b>";
 

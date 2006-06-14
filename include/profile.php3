@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS['AA_INC_PATH']."constants_param_wizard.php3";
+require_once AA_INC_PATH."constants_param_wizard.php3";
 
 function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
   global $sess, $uid;

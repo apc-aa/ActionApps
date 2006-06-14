@@ -24,7 +24,7 @@ http://www.apc.org/
 // optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Category update successful)
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once AA_INC_PATH."formutil.php3";
 
 if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -104,7 +104,7 @@ function UpdateImportExport(slice_id)
 </HEAD>
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+  require_once AA_INC_PATH."menu.php3";
   showMenu ($aamenus, "sliceadmin", "import");
 
   echo "<H1><B>" . _m("Admin - configure Content Pooling") . "</B></H1>";

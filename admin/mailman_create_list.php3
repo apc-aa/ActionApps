@@ -37,12 +37,12 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
-require_once $GLOBALS['AA_INC_PATH']."file_lock.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."msgpage.php3";
+require_once AA_INC_PATH."itemfunc.php3";
+require_once AA_INC_PATH."file_lock.php3";
 
 if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -57,7 +57,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo "<TITLE>"._m("Admin - Create Mailman List")."</TITLE>
 </HEAD>";
 
-require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin", "mailman_create_list");
 
 echo "<H1>"._m("Admin - Create Mailman List")."</B></H1>";

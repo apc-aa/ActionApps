@@ -1,7 +1,6 @@
 <?php
-$directory_depth = "../";
-require_once $directory_depth."../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once dirname(__FILE__). "/../../include/init_page.php3";
+require_once AA_INC_PATH."util.php3";
 
 if (!IsSuperadmin()) {
   echo "This script is intended for super admins only.";
@@ -10,7 +9,7 @@ if (!IsSuperadmin()) {
 
 $tables = array (
 "constant_slice"=>"WHERE slice_id IN",
-"content"=>"INNER JOIN field ON content.field_id = field.id 
+"content"=>"INNER JOIN field ON content.field_id = field.id
             WHERE slice_id IN",
 "field"=>"WHERE slice_id IN",
 "module"=>"WHERE id IN",
@@ -18,13 +17,13 @@ $tables = array (
 "view"=>"WHERE slice_id IN",
 );
 
-if ($slices_chosen) {    
+if ($slices_chosen) {
     $slice_ids = "";
     foreach ($slices_chosen as $slice_id) {
-        if ($slice_ids) $slice_ids .= ",";        
+        if ($slice_ids) $slice_ids .= ",";
         $slice_ids .= "'".q_pack_id($slice_id)."'";
     }
-    
+
     reset ($tables);
     while (list ($table,$sql) = each ($tables)) {
         $db->query("DELETE FROM export_".$table);
@@ -32,7 +31,7 @@ if ($slices_chosen) {
             .$sql." (".$slice_ids.")");
         echo "INSERT INTO export_".$table.": ".$db->affected_rows()." rows<br>\n";
     }
-    
+
     $show_types = inputShowFuncTypes ();
     $db->query ("SELECT input_show_func FROM field WHERE slice_id IN (".$slice_ids.")");
     $groups = "";
@@ -42,16 +41,16 @@ if ($slices_chosen) {
             && substr($group,0,7) != "#sLiCe-")
             $groups[] = $group;
     }
-    
+
     $group_in = "'".join("','",$groups)."'";
-    
+
     $db->query ("DELETE FROM export_constant");
-    $db->query("INSERT INTO export_constant SELECT * FROM constant 
+    $db->query("INSERT INTO export_constant SELECT * FROM constant
                 WHERE (constant.group_id='lt_groupNames' AND constant.name IN ($group_in))
                     OR(constant.group_id IN ($group_in))");
     echo "INSERT INTO export_constant: ".$db->affected_rows()." rows<br>\n";
-}    
-    
+}
+
 HTMLPageBegin();
 
 reset ($tables);
@@ -60,7 +59,7 @@ while (list ($table) = each ($tables)) {
     $tables_used .= $table;
 }
 
-echo '<title>Export by SQL</title>    
+echo '<title>Export by SQL</title>
 </head>
 <body>
 <h1>Export by SQL</h1>
@@ -70,15 +69,15 @@ SQL. It creates tables export_XXX from contents of XXX related
 to the chosen slices and you can than use any tool to dump the content
 of export_XXX, change the table names to XXX and run the resulting SQL.</b></p>
 
-<p><b>This is a simple and dangerous script. Be sure you are very careful when 
+<p><b>This is a simple and dangerous script. Be sure you are very careful when
 using it. </b></p>
 
 <p><b>Usage:</b></p>
 
-<p><b>First create the export tables with exactly the same structure as your 
+<p><b>First create the export tables with exactly the same structure as your
 current tables. This may be accomplished by using the file create_export_tables.sql,
 which I have created on 5.2.2003. But if the database structure changes, nobody
-will update the file. So better YOU update the file. Get the dump of the table 
+will update the file. So better YOU update the file. Get the dump of the table
 structures for the tables used (constant,'.$tables_used.'), then use some text
 editor to replace<br>
 "IF EXISTS " for "IF EXISTS export_" and <br>
@@ -93,7 +92,7 @@ editor to replace<br>
 
 $db = new DB_AA;
 $db->query ("SELECT * FROM slice ORDER BY name");
-while ($db->next_record()) 
+while ($db->next_record())
     echo "  <OPTION value='".unpack_id128 ($db->f("id"))."'>".$db->f("name")."\n";
 
 echo "
@@ -102,9 +101,8 @@ echo "
 <INPUT type=submit name=go value='Go!'>
 </FORM>
 </body>";
-  
-      
-   
-  
-  
-  
+
+
+
+
+

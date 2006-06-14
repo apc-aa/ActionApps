@@ -23,7 +23,7 @@
 -->
 <?php
 /* changed for APC-AA by pavelji@ecn.cz - we need constants.php3 */
-include "../../../../include/constants.php3";
+require_once "../../../../include/constants.php3";
 ?>
 
 <html xmlns="http://www.w3.org/1999/xhtml">

@@ -31,8 +31,8 @@ if (!IfSlPerm(PS_FEEDING)) {
     exit;
 }
 
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."csn_util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."csn_util.php3";
 
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -180,7 +180,7 @@ function Submit() {
 <?php
 
 $useOnLoad = true;
-require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","mapping");
 
 echo "<H1><B>" . _m("Admin - Content Pooling - Fields' Mapping") . "</B></H1>";

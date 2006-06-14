@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Image Manager configuration file.
  * @author $Author$
@@ -18,16 +18,15 @@
 
 
 /* changed for APC-AA by brazda@changenet.sk */
-$directory_depth = "../../../";
-require_once $directory_depth."../include/init_page.php3";     // This pays attention to $change_id
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once dirname(__FILE__). "/../../../../include/init_page.php3";     // This pays attention to $change_id
+require_once AA_INC_PATH."util.php3";
 
 /**
 * Default backend URL
 *
 * URL to use for unified backend.
 *
-* The ?__plugin=ImageManager& is required. 
+* The ?__plugin=ImageManager& is required.
 */
 
 /* changed for APC-AA by brazda@changenet.sk */
@@ -53,7 +52,7 @@ $IMConfig['base_url'] = '';
 * File system path to the directory you want to manage the images
 * for multiple user systems, set it dynamically.
 *
-* NOTE: This directory requires write access by PHP. That is, 
+* NOTE: This directory requires write access by PHP. That is,
 * PHP must be able to create files in this directory.
 * Able to create directories is nice, but not necessary.
 *
@@ -113,10 +112,10 @@ $IMConfig['safe_mode'] = ini_get('safe_mode');
 * Possible values: 'GD', 'IM', or 'NetPBM'
 *
 * The image manipulation library to use, either GD or ImageMagick or NetPBM.
-* If you have safe mode ON, or don't have the binaries to other packages, 
+* If you have safe mode ON, or don't have the binaries to other packages,
 * your choice is 'GD' only. Other packages require Safe Mode to be off.
 *
-* DEFAULT: GD is probably the most likely to be available. 
+* DEFAULT: GD is probably the most likely to be available.
 */
 
 define('IMAGE_CLASS', 'GD');
@@ -135,7 +134,7 @@ define('IMAGE_CLASS', 'GD');
 //define('IMAGE_TRANSFORM_LIB_PATH', 'C:/"Program Files"/ImageMagick-5.5.7-Q16/');
 
 // -------------------------------------------------------------------------
-//                OPTIONAL SETTINGS 
+//                OPTIONAL SETTINGS
 // -------------------------------------------------------------------------
 
 /**
@@ -155,7 +154,7 @@ $IMConfig['thumbnail_prefix'] = '.';
 *
 * Thumbnail can also be stored in a directory, this directory
 * will be created by PHP. If PHP is in safe mode, this parameter
-*  is ignored, you can not create directories. 
+*  is ignored, you can not create directories.
 *
 *  If you do not want to store thumbnails in a directory, set this
 *  to false or empty string '';
@@ -207,8 +206,8 @@ $IMConfig['allow_upload'] = true;
 *
 * Possible values: true, false
 *
-* TRUE - If set to true, uploaded files will be validated based on the 
-*        function getImageSize, if we can get the image dimensions then 
+* TRUE - If set to true, uploaded files will be validated based on the
+*        function getImageSize, if we can get the image dimensions then
 *        I guess this should be a valid image. Otherwise the file will be rejected.
 *
 * FALSE - All uploaded files will be processed.
@@ -216,7 +215,7 @@ $IMConfig['allow_upload'] = true;
 * NOTE: If uploading is not allowed, this parameter is ignored.
 */
 
-$IMConfig['validate_images'] = true;    
+$IMConfig['validate_images'] = true;
 
 // -------------------------------------------------------------------------
 
@@ -253,7 +252,7 @@ define( "IM_CONFIG_LOADED", "yes" );
 
 // bring in the debugging library
 
-include_once( "ddt.php" );
+require_once( "ddt.php" );
 
 // uncomment to send debug messages to a local file
 // _setDebugLog( "/tmp/debug_log.txt" );

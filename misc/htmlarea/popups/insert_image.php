@@ -1,4 +1,4 @@
-<?
+<?php
 /***********************************************************************
 ** Title.........:	Image Manager for HTMLArea 3.0 Alpha, PHP Version
 ** Version.......:	1.01
@@ -12,11 +12,9 @@
 ***********************************************************************/
 
 /* changed for APC-AA by pavelji@ecn.cz */
-$directory_depth = "../../";
-include $directory_depth."../include/init_page.php3";     // This pays attention to $change_id
+require_once dirname(__FILE__). "/../../../include/init_page.php3";     // This pays attention to $change_id
+require_once 'ImageManager/config.inc.php';
 
-
-    include 'ImageManager/config.inc.php';
     $no_dir = false;
     if (!is_dir($BASE_DIR.$BASE_ROOT)) {
         $no_dir = true;
@@ -63,7 +61,7 @@ function onOK() {
     var el = MM_findObj(id);
     if (id == "f_url")
         // changed for APC-AA by pavelji@ecn.cz
-        // param[id] = "<? echo 'http://'.$_SERVER['SERVER_NAME']; ?>" + el.value;
+        // param[id] = "<?php echo 'http://'.$_SERVER['SERVER_NAME']; ?>" + el.value;
         param[id] = el.value;
     else
         param[id] = el.value;
@@ -333,7 +331,7 @@ function refresh()
                   <td>
                   <select name="dirPath" id="dirPath" style="width:30em" onChange="updateDir(this)">
                   <option value="/">/</option>
-<?
+<?php
 
 
 function dirs($dir,$abs_path)
@@ -369,14 +367,14 @@ if ($no_dir == false) {
                   </td>
                   <td class="buttonOut" onMouseOver="pviiClassNew(this,'buttonHover')" onMouseOut="pviiClassNew(this,'buttonOut')">
                   <a href="#" onClick="javascript:goUpDir();"><img src="ImageManager/btnFolderUp.gif" width="15" height="15" border="0" alt="Up"></a></td>
-<? if ($SAFE_MODE == false) { ?>
+<?php if ($SAFE_MODE == false) { ?>
     <?php /* changed for APC-AA by pavelji@ecn.cz
                   <td><div class="separator"></div></td>
                   <td class="buttonOut" onMouseOver="pviiClassNew(this,'buttonHover')" onMouseOut="pviiClassNew(this,'buttonOut')">
                   <a href="#" onClick="javascript:newFolder();"><img src="ImageManager/btnFolderNew.gif" width="15" height="15" border="0" alt="New Folder"></a></td>
           */
      ?>
-<? } ?>
+<?php } ?>
                 </tr>
               </table></td>
           </tr>

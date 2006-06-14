@@ -23,10 +23,10 @@ http://www.apc.org/
 // optional slice_fields = 1 (for slice fields)
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -198,7 +198,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 </HEAD>
 <?php
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+  require_once AA_INC_PATH."menu.php3";
   showMenu($aamenus, "sliceadmin", $slice_fields ? 'slice_fields' : 'fields');
 
   echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";

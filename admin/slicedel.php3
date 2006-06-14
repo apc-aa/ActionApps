@@ -23,9 +23,9 @@ http://www.apc.org/
 
 $require_default_lang = true;      // do not use module specific language file
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."msgpage.php3";
 
 if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
@@ -36,10 +36,10 @@ if (!IsSuperadmin()) {
 }
 
 function PrintSlice($id, $name, $type) {
-  global $sess, $MODULES, $AA_INSTAL_PATH;
+  global $sess, $MODULES;
 
   $name=safe($name); $id=safe($id);
-  $url = (($type=='S') ? './slicedel2.php3' : $AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
+  $url = (($type=='S') ? './slicedel2.php3' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
 
   echo "<tr class=tabtxt><td>$name</td>
           <td class=tabtxt><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td></tr>";

@@ -21,7 +21,7 @@ http://www.apc.org/
 
 // used by the itemedit.php3 page, which calls getTrig ()
 
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once AA_INC_PATH."util.php3";
 
 $GLOBALS["js_triggers"] = array (
     "input"    => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),

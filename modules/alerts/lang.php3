@@ -1,7 +1,7 @@
 <?php
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -21,16 +21,23 @@ http://www.apc.org/
 
 // includes for alerts files
 
-if (!defined ("AA_ID")) require_once "../../include/config.php3";
-if ($encap) require_once $GLOBALS['AA_INC_PATH']."locsessi.php3";
-else require_once $GLOBALS['AA_INC_PATH']."locsess.php3"; 
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
+if (!defined ("AA_ID")) {
+    require_once "../../include/config.php3";
+}
+if ($encap) {
+    require_once AA_INC_PATH."locsessi.php3";
+} else {
+    require_once AA_INC_PATH."locsess.php3";
+}
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."varset.php3";
 // mini gettext language environment (the _m() function)
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
+require_once AA_INC_PATH."mgettext.php3";
 
-if (!$lang) $lang = "en";
-bind_mgettext_domain ($GLOBALS['AA_INC_PATH']."lang/".$lang."_alerts_lang.php3");
+if (!$lang) {
+    $lang = "en";
+}
+bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_alerts_lang.php3");
 
 require_once "util.php3";
 ?>

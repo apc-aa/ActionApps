@@ -945,7 +945,7 @@ $_m["Show discussion"]
 
 # admin/se_admin.php3, row 87
 $_m["Admin fields update successful"]
- = "Vzheld administrativních stánek úspìšnì zmìnìn";
+ = "Vzheld administrativních stránek úspìšnì zmìnìn";
 
 # admin/se_admin.php3, row 113, 130
 $_m["Admin - design Item Manager view"]

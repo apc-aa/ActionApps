@@ -20,22 +20,22 @@ http://www.apc.org/
 */
 /**
  * Linkcheck cron module - link validation for links module
- * This script should be started from AA cron - say twice a day. It checks 
- * LINKS_VALIDATION_COUNT links from LINKS module and counts the health if each 
+ * This script should be started from AA cron - say twice a day. It checks
+ * LINKS_VALIDATION_COUNT links from LINKS module and counts the health if each
  * checked link (valid_rank)
  *
  * @version $Id$
  * @author Pavel Jisl <pavelji@ecn.cz>
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
 */
-include "../../include/config.php3";
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";   // DB_AA definition
-require_once $GLOBALS['AA_INC_PATH']."zids.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
+require_once "../../include/config.php3";
+require_once AA_INC_PATH."locsess.php3";   // DB_AA definition
+require_once AA_INC_PATH."zids.php3";
+require_once AA_INC_PATH."util.php3";
 
 $db = new DB_AA;
 
-require_once $GLOBALS['AA_INC_PATH']."linkcheck.class.php3";
+require_once AA_INC_PATH."linkcheck.class.php3";
 
 $check_links = new linkcheck;
 

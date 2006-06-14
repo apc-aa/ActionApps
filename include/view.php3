@@ -19,14 +19,14 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS['AA_INC_PATH'] . "mgettext.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "itemview.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "viewobj.php3";
-require_once $GLOBALS['AA_INC_PATH'] . "searchlib.php3";
-require_once $GLOBALS['AA_BASE_PATH']. "modules/links/util.php3";
-require_once $GLOBALS['AA_BASE_PATH']. "modules/links/linksearch.php3";
+require_once AA_INC_PATH . "mgettext.php3";
+require_once AA_INC_PATH . "itemview.php3";
+require_once AA_INC_PATH . "viewobj.php3";
+require_once AA_INC_PATH . "searchlib.php3";
+require_once AA_BASE_PATH. "modules/links/util.php3";
+require_once AA_BASE_PATH. "modules/links/linksearch.php3";
 // add mlx functions
-require_once $GLOBALS['AA_INC_PATH']."mlx.php";
+require_once AA_INC_PATH."mlx.php";
 
 // ----------------------------------------------------------------------------
 //                         view functions
@@ -482,7 +482,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
     if (!$GLOBALS['LANGUAGE_NAMES'][$lang_file]) {
         $lang_file = "en";
     }
-    bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/".$lang_file."_output_lang.php3");
+    bind_mgettext_domain(AA_INC_PATH."lang/".$lang_file."_output_lang.php3");
 
     $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
                    ( (isset($view_info['noitem_msg']) AND (strlen($view_info['noitem_msg']) > 0) ) ?

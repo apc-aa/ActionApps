@@ -31,16 +31,16 @@ if ($edit) {         // parameter for init_page - we edited new item so
 }
 
 require_once "../include/init_page.php3";     // This pays attention to $change_id
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
-require_once $GLOBALS['AA_INC_PATH']."notify.php3";
-require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."feeding.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."itemfunc.php3";
+require_once AA_INC_PATH."notify.php3";
+require_once AA_INC_PATH."sliceobj.php3";
 
-if ( file_exists( $GLOBALS['AA_INC_PATH']."usr_validate.php3" ) ) {
-    include( $GLOBALS['AA_INC_PATH']."usr_validate.php3" );
+if ( file_exists( AA_INC_PATH."usr_validate.php3" ) ) {
+    require_once AA_INC_PATH."usr_validate.php3";
 }
 
 FetchSliceReadingPassword();

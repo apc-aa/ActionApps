@@ -122,17 +122,17 @@ $template_id = "96f50946e092fd45ed90af3de572bd4e";  // EN template
 $template = 0;
 
 require_once "../../include/config.php3";
-require_once $GLOBALS['AA_INC_PATH']."locsess.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
-require_once $GLOBALS['AA_INC_PATH']."notify.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."date.php3";
-require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
-require_once $GLOBALS['AA_BASE_PATH']."misc/oldDb2Db/move_util.php3";
+require_once AA_INC_PATH."locsess.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."itemfunc.php3";
+require_once AA_INC_PATH."notify.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."date.php3";
+require_once AA_INC_PATH."feeding.php3";
+require_once AA_INC_PATH."mgettext.php3";
+require_once AA_BASE_PATH."misc/oldDb2Db/move_util.php3";
 
 class OLD_DB_AA extends DB_Sql {
   var $Host     = OLD_DB_HOST;
@@ -442,6 +442,9 @@ else
 
 /*
 $Log$
+Revision 1.10  2006/06/14 13:30:42  honzam
+fixed security problem require (see http://secunia.com/advisories/20299/). Requires no longer use variables
+
 Revision 1.9  2005/04/29 11:20:49  honzam
 fixed include paths to be absolute and not relative. Relative paths in require_once makes some problem on AA install on WinXP. thanks belongs to Omar Martinez @ Colnodo
 

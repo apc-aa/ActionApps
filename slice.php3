@@ -125,22 +125,22 @@ if (!get_magic_quotes_gpc()) {
 $encap = ( ($encap=="false") ? false : true );
 
 require_once "./include/config.php3";
-require_once $GLOBALS['AA_INC_PATH']."easy_scroller.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3";
-require_once $GLOBALS['AA_INC_PATH']."item.php3";
-require_once $GLOBALS['AA_INC_PATH']."view.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
-require_once $GLOBALS['AA_INC_PATH']."discussion.php3";
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
+require_once AA_INC_PATH."easy_scroller.php3";
+require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."item.php3";
+require_once AA_INC_PATH."view.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."searchlib.php3";
+require_once AA_INC_PATH."discussion.php3";
+require_once AA_INC_PATH."mgettext.php3";
 // function definitions:
-require_once $GLOBALS['AA_INC_PATH']."slice.php3";
+require_once AA_INC_PATH."slice.php3";
 
-require_once $GLOBALS['AA_INC_PATH']. ($encap ? "locsessi.php3" : "locsess.php3");
+require_once AA_INC_PATH. ($encap ? "locsessi.php3" : "locsess.php3");
 $slice_starttime = get_microtime();
 
 //MLX stuff
-require_once $GLOBALS['AA_INC_PATH']."mlx.php";
+require_once AA_INC_PATH."mlx.php";
 
 page_open(array("sess" => "AA_SL_Session"));
 
@@ -199,7 +199,7 @@ if (!$slice_id AND is_array($slices)) {
 $slice_id   = trim($slice_id);
 $p_slice_id = q_pack_id($slice_id);
 
-require_once $GLOBALS['AA_INC_PATH']."javascript.php3";
+require_once AA_INC_PATH."javascript.php3";
 
 $db  = new DB_AA; 	 // open BD
 $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
@@ -217,7 +217,7 @@ $lang_file = substr($slice_info['lang_file'], 0, 2);
 if (!$LANGUAGE_NAMES[$lang_file]) {
     $lang_file = "en";
 }
-bind_mgettext_domain($GLOBALS['AA_INC_PATH']."lang/".$lang_file."_output_lang.php3");
+bind_mgettext_domain(AA_INC_PATH."lang/".$lang_file."_output_lang.php3");
 
 if (!$slice_info['even_odd_differ']) {
     $slice_info['even_row_format'] = "";

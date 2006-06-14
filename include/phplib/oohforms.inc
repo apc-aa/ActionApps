@@ -1,10 +1,10 @@
 <?php
 /* OOH! Forms!
- * 
+ *
  * Object Oriented HTML Forms
  *
  * Copyright (c) 1998 by Jay Bloodworth
- * 
+ *
  * $Id$
  */
 
@@ -14,16 +14,16 @@ class of_element {
   var $value;
   var $multiple;
   var $extrahtml;
-  
-  function marshal_dispatch($m,$func) {   
+
+  function marshal_dispatch($m,$func) {
     $vname = $this->name;
     global $$vname;
     return $this->$func($$vname);
   }
-  
+
   function self_get($val, $which, &$count) {
   }
-  
+
   function self_show($val, $which) {
     $count = 0;
     print $this->self_get($val, $which, $count);
@@ -46,7 +46,7 @@ class of_element {
 
   function self_get_js($ndx_array) {
   }
-  
+
   function self_print_js($ndx_array) {
     print $this->self_get_js($ndx_array);
   }
@@ -96,7 +96,7 @@ class of_hidden extends of_element {
         $str .=" $this->extrahtml";
       $str .= ">";
     }
-    
+
     return $str;
   }
 } // end HIDDEN
@@ -111,10 +111,10 @@ class of_reset extends of_element {
 
   function self_get($val, $which, &$count) {
     $str = "<input name='$this->name' type=reset value='$val'";
-    if ($this->extrahtml) 
+    if ($this->extrahtml)
       $str .= " $this->extrahtml";
     $str .= ">";
-    
+
     return $str;
   }
 } // end RESET
@@ -123,26 +123,26 @@ class of_submit extends of_element {
 
   var $src;
 
-  function of_submit($a) {    
+  function of_submit($a) {
     $this->setup_element($a);
   }
 
   function self_get($val, $which, &$count) {
     $str = "";
-    
+
     $sv = empty($val) ? $this->value : $val;
     $str .= "<input name='$this->name' value='$sv'";
-    if ($this->src) 
+    if ($this->src)
       $str .= " type='image' src='$this->src'";
-    else 
+    else
       $str .= " type='submit'";
-    if ($this->extrahtml) 
+    if ($this->extrahtml)
       $str .= " $this->extrahtml";
     $str .= ">";
-    
+
     return $str;
   }
-  
+
   function self_load_defaults($val) {
     // SUBMIT will not change its value
   }
@@ -157,9 +157,9 @@ class form {
 
   function get_start($jvs_name="",$method="",$action="",$target="",$form_name="") {
     global $PHP_SELF;
-    
+
     $str = "";
-    
+
     $this->jvs_name = "";
     $this->n = 0;
     if (!$method) $method = "POST";
@@ -178,9 +178,9 @@ class form {
       $this->jvs_name = $jvs_name;
       $str .= " onsubmit=\"return ${jvs_name}_Validator(this)\"";
     }
-    
+
     $str .= ">";
-    
+
     return $str;
   }
 
@@ -191,10 +191,10 @@ class form {
   function get_finish($after="",$before="") {
     global $sess;
     $str = "";
-    
+
     if ($this->hidden) {
       reset($this->hidden);
-      while (list($k,$elname) = each($this->hidden)) 
+      while (list($k,$elname) = each($this->hidden))
         $str .= $this->get_element($elname);
     }
     if (is_object($sess) && ($sess->mode == "get")) {
@@ -218,36 +218,36 @@ class form {
         $str .= "$after\n";
       $str .= "}\n//-->\n</script>";
     }
-    
+
     return $str;
   }
-  
+
   function finish($after="",$before="") {
     print $this->get_finish($after, $before);
   }
-  
+
   function add_element($el) {
 
-    if (!is_array($el)) 
+    if (!is_array($el))
       return false;
-    
+
     $cv_tab = array("select multiple"=>"select", "image"=>"submit");
-    if ($t = $cv_tab[$el["type"]]) 
+    if ($t = $cv_tab[$el["type"]])
       $t = ("of_" . $t);
     else
       $t = ("of_" . $el["type"]);
-    
+
     // translate names like $foo[int] to $foo{int} so that they can cause no
     // harm in $this->elements
     # Original match
-    # if (preg_match("/(\w+)\[(d+)\]/i", $el[name], $regs)) { 
+    # if (preg_match("/(\w+)\[(d+)\]/i", $el[name], $regs)) {
     if (ereg("([a-zA-Z_]+)\[([0-9]+)\]", $el["name"], $regs)) {
        $el["name"] = sprintf("%s{%s}", $regs[1], $regs[2]);
        $el["multiple"] = true;
     }
     $el = new $t($el);
     $el->type = $t; # as suggested by Michael Graham (magog@the-wire.com)
-    if ($el->isfile) 
+    if ($el->isfile)
       $this->isfile = true;
     $this->elements[$el->name]["ob"] = $el;
     if ($el->hidden)
@@ -258,7 +258,7 @@ class form {
     $str = "";
     $x   = 0;
     $flag_nametranslation = false;
-    
+
     // see add_element: translate $foo[int] to $foo{int}
 #   Original pattern
 #   if (preg_match("/(w+)\[(\d+)\]/i", $name, $regs) {
@@ -267,19 +267,19 @@ class form {
        $name = sprintf("%s{%s}", $regs[1], $regs[2]);
        $flag_nametranslation = true;
     }
-    
-    if (!isset($this->elements[$name])) 
-      return false; 
+
+    if (!isset($this->elements[$name]))
+      return false;
 
     if (!isset($this->elements[$name]["which"]))
       $this->elements[$name]["which"] = 0;
-   
+
     $el = $this->elements[$name]["ob"];
     if (true == $falg_nametranslation)
-      $el->name = $org_name; 
+      $el->name = $org_name;
 
-    if (false == $value) 
-       $value = $el->value; 
+    if (false == $value)
+       $value = $el->value;
 
     if ($this->elements[$name]["frozen"])
       $str .= $el->self_get_frozen($value,$this->elements[$name]["which"]++, $x);
@@ -287,7 +287,7 @@ class form {
       $str .= $el->self_get($value,$this->elements[$name]["which"]++, $x);
     $this->elements[$name]["ndx_array"][] = $this->n;
     $this->n += $x;
-    
+
     return $str;
   }
 
@@ -318,7 +318,7 @@ class form {
     while ($elrec) {
       $el = $elrec["ob"];
       if ($res = $el->marshal_dispatch($this->method,"self_validate"))
-        return $res; 
+        return $res;
       if ($vallist) {
         next($vallist);
         $elrec = $this->elements[current($vallist)];
@@ -375,11 +375,11 @@ class form {
 
 } /* end FORM */
 
-include($_PHPLIB["libdir"] . "of_text.inc");
-include($_PHPLIB["libdir"] . "of_select.inc");
-include($_PHPLIB["libdir"] . "of_radio.inc");
-include($_PHPLIB["libdir"] . "of_checkbox.inc");
-include($_PHPLIB["libdir"] . "of_textarea.inc");
-include($_PHPLIB["libdir"] . "of_file.inc");
+require_once(PHPLIB_LIBDIR. "of_text.inc");
+require_once(PHPLIB_LIBDIR. "of_select.inc");
+require_once(PHPLIB_LIBDIR. "of_radio.inc");
+require_once(PHPLIB_LIBDIR. "of_checkbox.inc");
+require_once(PHPLIB_LIBDIR. "of_textarea.inc");
+require_once(PHPLIB_LIBDIR. "of_file.inc");
 
 ?>

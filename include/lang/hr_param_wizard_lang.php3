@@ -1568,7 +1568,7 @@ $_m["javascript: window.alert('No source url specified')"]
  = "javascript: window.alert('Nije odreðen izvor datoteke')";
 
 # include/constants_param_wizard.php3, row 932
-$_m["print fied"]
+$_m["print field"]
  = "";
 
 # include/constants_param_wizard.php3, row 933

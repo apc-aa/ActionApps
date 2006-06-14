@@ -26,7 +26,7 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once AA_INC_PATH."formutil.php3";
 
 /** Print one row with one 'sliceexport' radiobuttons */
 function PrintExportRow( $sname, $sid, $odd) {

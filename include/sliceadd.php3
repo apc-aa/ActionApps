@@ -41,7 +41,7 @@ while ( $db->next_record() ) {
     }
 }
 
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once AA_INC_PATH."formutil.php3";
 
 /*echo '
     <table border="0" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTITBG.'" align="center">

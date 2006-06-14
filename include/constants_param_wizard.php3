@@ -49,7 +49,7 @@ use the escape character \ - the wizard will translate the characters. Remember 
         "params"=>the params in the internal format (divided by :)
 */
 
-// require_once $GLOBALS["AA_BASE_PATH"]."modules/alerts/reader_field_ids.php3";
+// require_once AA_BASE_PATH."modules/alerts/reader_field_ids.php3";
 
 $INSERT_TYPES["name"] = _m("Insert Function");
 $INSERT_TYPES["items"]["qte"] =
@@ -932,7 +932,7 @@ $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
         "desc"=>_m("default value"),
         "type"=>"STR",
         "example"=>_m("javascript: window.alert('No source url specified')")))),
-"f_t"=>array("name"=>_m("print fied"),
+"f_t"=>array("name"=>_m("print field"),
     "desc"=>_m("prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)"),
     "params"=>array(
         array("name"=>_m("unalias string"),
