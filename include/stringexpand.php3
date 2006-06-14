@@ -27,9 +27,9 @@ http://www.apc.org/
 
 // Code by Mitra based on code in existing other files
 
-require_once $GLOBALS['AA_INC_PATH']."easy_scroller.php3";
-require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
-require_once $GLOBALS['AA_INC_PATH']."perm_core.php3";   // needed for GetAuthData();
+require_once AA_INC_PATH."easy_scroller.php3";
+require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."perm_core.php3";   // needed for GetAuthData();
 
 function translateString( $string, $translation ) {
     $twos = ParamExplode( $translation );
@@ -350,7 +350,6 @@ function stringexpand_now() {
     return time();
 }
 
-
 function stringexpand_substr($string,$start,$length=999999999) {
     return substr($string,$start,$length);
 }
@@ -359,7 +358,45 @@ function stringexpand_str_replace($search, $replace, $subject) {
     return str_replace($search, $replace, $subject);
 }
 
+// Use this inside URLs e.g. {urlencode:_#EDITITEM}
+function stringexpand_urlencode($text='') {
+    return urlencode($text);
+}
 
+function stringexpand_csv($text='') {
+    return (strcspn($text,",\"\n\r") == strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
+}
+
+function stringexpand_safe($text='') {
+    return htmlspecialchars($text);
+}
+
+// In javascript we need escape apostroph
+function stringexpand_javascript($text='') {
+    return str_replace("'", "\'", safe($text));
+}
+
+function stringexpand_striptags($text='') {
+    return strip_tags($text);
+}
+
+function stringexpand_rss($text='') {
+    $entities_old = array("&nbsp;");
+    $entities_new = array(" ");
+    return str_replace($entities_old, $entities_new, strip_tags($text));
+}
+
+function stringexpand_convert($text, $from, $to) {
+    require_once AA_INC_PATH."convert_charset.class.php3";
+    $encoder = new ConvertCharset;
+    return $encoder->Convert($text, $from, $to);
+}
+
+// allows you to call view with conds:
+// {view.php3?vid=9&cmd[9]=c-1-{alias::f_t:{_#VALUE___}:conds}}
+function stringexpand_conds($text='') {
+    return '%22'. str_replace('-','--',$text) .'%22';
+}
 
 /** ids_string - ids (long or short (or mixed) separated by dash '-') */
 function stringexpand_item($ids_string, $expression, $delimiter='') {
@@ -897,11 +934,6 @@ function stringexpand_slice_comments($slice_id) {
     }
     freeDB($db);
     return $dc;
-}
-
-// Use this inside URLs e.g. {urlencode:_#EDITITEM}
-function stringexpand_urlencode($raw) {
-    return urlencode($raw);
 }
 
 function stringexpand_preg_match($pattern, $subject) {

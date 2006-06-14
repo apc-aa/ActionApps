@@ -19,14 +19,14 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-if ( file_exists( $GLOBALS['AA_INC_PATH']."usr_aliasfnc.php3" ) ) {
-  include( $GLOBALS['AA_INC_PATH']."usr_aliasfnc.php3" );
+if ( file_exists( AA_INC_PATH."usr_aliasfnc.php3" ) ) {
+  require_once AA_INC_PATH."usr_aliasfnc.php3";
 }
 
-require_once $GLOBALS['AA_INC_PATH']. "math.php3";
-require_once $GLOBALS['AA_INC_PATH']. "stringexpand.php3";
-require_once $GLOBALS['AA_INC_PATH']. "item_content.php3";
-require_once $GLOBALS["AA_BASE_PATH"]."modules/links/constants.php3";
+require_once AA_INC_PATH. "math.php3";
+require_once AA_INC_PATH. "stringexpand.php3";
+require_once AA_INC_PATH. "item_content.php3";
+require_once AA_BASE_PATH."modules/links/constants.php3";
 
 if ( !is_object($contentcache) ) {
     $contentcache = new contentcache;
@@ -825,27 +825,24 @@ function RSS_restrict($txt, $len) {
       if ( isset($p[1]) ) {
           $text = get_if( $p[0], $this->getval($col) );
           switch ( $p[1] ) {
-              case 'csv':         return (strcspn($text,",\"\n\r") == strlen($text)) ? $text :
-                                         '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
-              case 'safe':        return htmlspecialchars($text);
+              case 'csv':         return stringexpand_csv($text);
+              case 'safe':        return stringexpand_safe($text);
                                   // In javascript we need escape apostroph
-              case 'javascript':  return str_replace("'", "\'", safe($text));
-              case 'urlencode':   return urlencode($text);
-              case 'striptags':   return strip_tags($text);
-                                  // do not DeHtml - good for search & replace in fields
-              case 'asis':        return $text;
-                                  // remove forbiden entities from text
-              case 'rss':         $entities_old = array("&nbsp;");
-                                  $entities_new = array(" ");
-                                  return str_replace($entities_old, $entities_new, strip_tags($text));
+              case 'javascript':  return stringexpand_javascript($text);
+              case 'urlencode':   return stringexpand_urlencode($text);
+              case 'striptags':   return stringexpand_striptags($text);
+              case 'rss':         return stringexpand_rss($text);
                                   // allows you to call view with conds:
                                   // {view.php3?vid=9&cmd[9]=c-1-{alias::f_t:{_#VALUE___}:conds}}
-              case 'conds':       return '%22'. str_replace('-','--',$text) .'%22';
+              case 'conds':       return stringexpand_conds($text);
+                                  // do not DeHtml - good for search & replace in fields
+              case 'asis':        return $text;
+              case 'substitute':  // This is the same as '' - but be carefull, 'some text:' is not the same as 'some text',
+                                  // because in first case the colons should be escaped: #:
               case '':            $param = $p[0];  // case 'some text:'
           }
       }
-      return $param ? $this->subst_alias( $param ):
-                      DeHtml($this->getval($col), $this->getval($col,'flag'));
+      return $param ? $this->subst_alias( $param ): DeHtml($this->getval($col), $this->getval($col,'flag'));
   }
 
   // print database field or default value if empty
@@ -1095,7 +1092,6 @@ function RSS_restrict($txt, $len) {
 
   // live checkbox -- updates database immediately on clicking without reloading the page
   function f_k($col, $param = "") {
-    global $AA_INSTAL_PATH;
     $short_id = $this->getval("short_id........");
 
     if ($param == "") {
@@ -1103,7 +1099,7 @@ function RSS_restrict($txt, $len) {
         $img = $this->getval($col) ? "on" : "off";
         return "<img width='16' height='16' name='$name' border='0'
                  onClick='javascript:CallLiveCheckbox (\"$name\");'
-                 src='".$AA_INSTAL_PATH."images/cb_".$img.".gif'
+                 src='".AA_INSTAL_PATH."images/cb_".$img.".gif'
                  alt='".($this->getval($col) ? _m("on") : _m("off"))."'>";
     } else {
         $params = ParamExplode($param);
