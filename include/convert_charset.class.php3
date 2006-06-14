@@ -9,13 +9,13 @@
 
 // $convert_tables_path could be specified also before including this script
 // it is usen in /misc/charset/convert.php3 script, where config.php3
-// is not used (so we can't use $GLOBALS['AA_INC_PATH']
+// is not used (so we can't use AA_INC_PATH
 if ( !$convert_tables_path ) {
-    $convert_tables_path = $GLOBALS['AA_INC_PATH']."ConvertTables/";
+    $convert_tables_path = AA_INC_PATH."ConvertTables/";
 }
 
-define (CONVERT_TABLES_DIR, $convert_tables_path);
-define (DEBUG_MODE, -1);
+define ('CONVERT_TABLES_DIR', $convert_tables_path);
+define ('DEBUG_MODE', -1);
 
 /**
  * -- You should know about... --
@@ -402,6 +402,19 @@ class ConvertCharset {
             print $this->DebugOutput(1, 0, $FromCharset);
             return $StringToChange;
         }
+
+        // This function replace all Windows-1250 accent characters with
+        // thier non-accent ekvivalents. Useful for Czech and Slovak languages.
+        // Special approach, since Convert class do not do it by itself
+        if (($FromCharset == 'windows-1250') AND ($ToCharset == 'us-ascii')) {
+            $ret = $StringToChange;
+            $ret = strtr($ret, "\xE1\xE8\xEF\xEC\xE9\xED\xF2", "\x61\x63\x64\x65\x65\x69\x6E");
+            $ret = strtr($ret, "\xF3\xF8\x9A\x9D\xF9\xFA\xFD\x9E\xF4\xBC\xBE", "\x6F\x72\x73\x74\x75\x75\x79\x7A\x6F\x4C\x6C");
+            $ret = strtr($ret, "\xC1\xC8\xCF\xCC\xC9\xCD\xC2\xD3\xD8", "\x41\x43\x44\x45\x45\x49\x4E\x4F\x52");
+            $ret = strtr($ret, "\x8A\x8D\xDA\xDD\x8E\xD2\xD9\xEF\xCF", "\x53\x54\x55\x59\x5A\x4E\x55\x64\x44");
+            return $ret;
+        }
+
         /*
         if (($FromCharset == $ToCharset) AND ($FromCharset == "utf-8")) {
             print $this->DebugOutput(0, 4, $FromCharset);
