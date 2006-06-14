@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS['AA_INC_PATH']. 'files.class.php3';
+require_once AA_INC_PATH. 'files.class.php3';
 
 // array params: column header, default sort order
 $sortable_columns = array (
@@ -223,8 +223,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         // set to the name of file which should be viewed by filedit.php3
         $fe_filename,
         // used in copy template
-        $fileman_dir,
-        $FILEMAN_MODE_FILE, $FILEMAN_MODE_DIR;
+        $fileman_dir;
 
     if (!$cmd) return;
 
@@ -245,7 +244,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
         $newfile = $basedir.$directory.$arg;
         if (file_exists ($newfile)) { $err[] = _m("File already exists")." ($newfilename)."; return; }
         if (!fopen ($newfile, "w")) { $err[] = _m("Unable to create file")." $newfilename."; return; }
-        chmod ($newfile, $FILEMAN_MODE_FILE);
+        chmod ($newfile, FILEMAN_MODE_FILE);
         $fe_filename = $directory.$arg;
         // Action taken in caller, which outputs HTML
     }
@@ -254,7 +253,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
     else if ($cmd=='createdir') {
         if ( !EReg("^[0-9a-zA-Z_]*$", $arg)) { $err[] = _m("Wrong directory name."); return; }
         $newdir = $basedir.$directory.$arg;
-        mkdir ($newdir, $FILEMAN_MODE_DIR);
+        mkdir ($newdir, FILEMAN_MODE_DIR);
         if (!is_dir ($newdir))
             $err[] = _m("Unable to create directory")." $newdirname.";
     }
@@ -277,7 +276,7 @@ function fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset
     else if ($cmd=='upload') {
         set_time_limit(FILEMAN_UPLOAD_TIME_LIMIT);
 
-        // $uploaderr = aa_move_uploaded_file("uploadarg", $basedir.$directory, $FILEMAN_MODE_FILE);
+        // $uploaderr = aa_move_uploaded_file("uploadarg", $basedir.$directory, FILEMAN_MODE_FILE);
         $dest_file = Files::uploadFile('uploadarg', $basedir.$directory);
         if ($dest_file === false) {   // error
             $err[] = Files::lastErrMsg();
@@ -343,7 +342,7 @@ function get_files_subtree ($mydir) {
 }
 
 function fileman_copy_template ($srcdir, $dstdir) {
-    global $slice_id, $FILEMAN_MODE_FILE;
+    global $slice_id;
 
     $aliases = array (
         "_#SLICE_ID" => $slice_id);
@@ -378,7 +377,7 @@ function fileman_copy_template ($srcdir, $dstdir) {
             }
         }
         else copy ($srcdir."/".$file, $dstdir."/".$file);
-        chmod ($dstdir."/".$file, $FILEMAN_MODE_FILE);
+        chmod ($dstdir."/".$file, FILEMAN_MODE_FILE);
     }
 }
 
