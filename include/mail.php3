@@ -21,11 +21,11 @@ http://www.apc.org/
 
 // (c) Jakub Adámek, Econnect, December 2002
 
-require_once $GLOBALS['AA_INC_PATH']."item.php3";
-require_once $GLOBALS['AA_INC_PATH']."item_content.php3";
-require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
-require_once $GLOBALS['AA_INC_PATH']."stringexpand.php3";
-require_once $GLOBALS['AA_INC_PATH']."htmlMimeMail/htmlMimeMail.php";
+require_once AA_INC_PATH."item.php3";
+require_once AA_INC_PATH."item_content.php3";
+require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."stringexpand.php3";
+require_once AA_INC_PATH."htmlMimeMail/htmlMimeMail.php";
 
 class HtmlMail extends htmlMimeMail {
 
@@ -49,7 +49,7 @@ class HtmlMail extends htmlMimeMail {
         if ($record["html"]) {
             $this->setHtml( $record["body"], html2text($record["body"]));
         } else {
-            $this->setText( html2text( nl2br($record["body"])));
+            $this->setText( html2text( $record["body"] ));
         }
         $this->setSubject($record["subject"]);
         $this->setBasicHeaders($record, "");
@@ -206,8 +206,7 @@ function html2text($html) {
 *        array $aliases   (optional) array of alias => text
 * @return int count of successfully sent emails
 */
-function send_mail_from_table($mail_id, $to, $aliases="")
-{
+function send_mail_from_table($mail_id, $to, $aliases="") {
     if (!is_array($aliases)) {
         $aliases = array ("_#dUmMy__aLiAsSs#_" => "");
     }
@@ -215,7 +214,7 @@ function send_mail_from_table($mail_id, $to, $aliases="")
     // I try to pretend having an item.
     foreach ($aliases as $alias => $translate) {
         // I create the "columns"
-        $cols[$alias][0] = array (
+        $cols[$alias][0] = array(
             "value" => $translate,
             "flag"  => FLAG_HTML);
         // and "aliases"
