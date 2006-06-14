@@ -1,7 +1,7 @@
 <?php
-require_once $GLOBALS['AA_INC_PATH']."searchlib.php3";
-require_once $GLOBALS['AA_BASE_PATH']. "modules/links/constants.php3";
-require_once $GLOBALS['AA_BASE_PATH']. "modules/links/util.php3";
+require_once AA_INC_PATH."searchlib.php3";
+require_once AA_BASE_PATH. "modules/links/constants.php3";
+require_once AA_BASE_PATH. "modules/links/util.php3";
 
 //$Id$
 /*
@@ -82,7 +82,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
     $SQL = ( ($type=='unasigned') ?
            'SELECT  DISTINCT links_links.id  FROM links_links
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id ' :
-           'SELECT  DISTINCT links_links.id  FROM links_links, links_link_cat, links_categories ');
+           'SELECT  DISTINCT links_links.id  FROM links_categories, links_link_cat, links_links ');
 
     if ( $type == 'changed' ) {
         $join_tables['changes'] = true;

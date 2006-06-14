@@ -22,20 +22,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // APC AA - Module links main administration page
 
 // used in init_page.php3 script to include config.php3 from the right directory
-$directory_depth = '../';
 
 require_once "../../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']. "varset.php3";
-require_once $GLOBALS['AA_INC_PATH']. "formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']. "itemview.php3";
-require_once $GLOBALS['AA_INC_PATH']. "item.php3";
-require_once $GLOBALS['AA_INC_PATH']. "pagecache.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/linksearch.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/constants.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/actions.php3";
-require_once $GLOBALS['AA_INC_PATH']. "manager.class.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/cattree.php3";
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/util.php3";      // module specific utils
+require_once AA_INC_PATH. "varset.php3";
+require_once AA_INC_PATH. "formutil.php3";
+require_once AA_INC_PATH. "itemview.php3";
+require_once AA_INC_PATH. "item.php3";
+require_once AA_INC_PATH. "pagecache.php3";
+require_once AA_BASE_PATH."modules/links/linksearch.php3";
+require_once AA_BASE_PATH."modules/links/constants.php3";
+require_once AA_BASE_PATH."modules/links/actions.php3";
+require_once AA_INC_PATH. "manager.class.php3";
+require_once AA_BASE_PATH."modules/links/cattree.php3";
+require_once AA_BASE_PATH."modules/links/util.php3";      // module specific utils
 
 
 // Check permissions for this page.
@@ -146,7 +145,7 @@ function Links_IsActionPerm($action) {
         case 'Folder3':     return  ($current_bin != 'folder3') && IsCatPerm( PS_LINKS_LINK2FOLDER, $cid );
         case 'Activate':    return  (substr($current_bin,0,6) == 'folder') && IsCatPerm( PS_LINKS_LINK2ACT, $cid );
         case 'Add2Cat':     return  true;
-        case 'Move2Cat':     return !$subtree && IsCatPerm( PS_LINKS_DELETE_LINK, $cid );
+        case 'Move2Cat':    return !$subtree && IsCatPerm( PS_LINKS_DELETE_LINK, $cid );
         case 'DeleteTrash': return  false;
         case 'GoCateg':     return  true;
         case 'Tab':         return  true;
@@ -168,7 +167,7 @@ function Links_CountLinkInBins($cat_path) {
 
     // new
     $SQL = "SELECT  count(DISTINCT links_links.id) as count
-              FROM links_links, links_link_cat, links_categories
+              FROM links_link_cat, links_categories, links_links
              WHERE links_links.id = links_link_cat.what_id
                AND links_link_cat.category_id = links_categories.id
                AND ((path = '$cat_path') OR (path LIKE '$cat_path,%'))
@@ -186,7 +185,7 @@ function Links_CountLinkInBins($cat_path) {
 
     // changed
     $SQL = "SELECT  count(DISTINCT links_links.id) as count
-              FROM links_links, links_link_cat, links_categories
+              FROM links_link_cat, links_categories, links_links
               LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id
              WHERE links_links.id = links_link_cat.what_id
                AND links_link_cat.category_id = links_categories.id
@@ -383,7 +382,7 @@ $bookmarks[1] = _m('All my links');
 $bookmarks[2] = _m('Links to check');
 $bookmarks[3] = _m('Last edited');
 
-require_once $GLOBALS['AA_BASE_PATH']."modules/links/menu.php3";
+require_once AA_BASE_PATH."modules/links/menu.php3";
 showMenu($aamenus, "linkmanager", $r_state['bin'], $navbar!="0", $leftbar!="0");
 
 $conds = $manager->getConds();
