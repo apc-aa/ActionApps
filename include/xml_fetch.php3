@@ -22,10 +22,10 @@ http://www.apc.org/
 // Cross-Server Networking - xml_aa_rss fetch function
 //
 
-require_once $GLOBALS['AA_INC_PATH']."logs.php3";
-require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
-require_once $GLOBALS['AA_INC_PATH']."csn_util.php3";
-require_once $GLOBALS['AA_INC_PATH']."xml_rssparse.php3";
+require_once AA_INC_PATH."logs.php3";
+require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."csn_util.php3";
+require_once AA_INC_PATH."xml_rssparse.php3";
 
 /**  Fetch xml data from $url through http.
  *   This function is used by the rss aa module client as well as by the admin
@@ -79,51 +79,6 @@ function http_fetch($url, $d=null) {
     $data = file_get_contents($url);
     if ($GLOBALS['debugfeed'] >= 8) huhl('data obtained:', $data);
     return trim($data);
-}
-
-/** Get APC Feed definitions (from nodes and external_feeds tables)
- *  Returns array('feed_id'=>array( feed_informations_like: url, password... ))
- */
-function apcfeeds() {
-    global $debugfeed;
-    $db = getDB();
-    // select all incoming feeds from table external_feeds
-    $SQL="SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode
-            FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name";
-    if ($debugfeed >= 8) print("\n<br>$SQL");
-    $db->query($SQL);
-
-    $feeds=array();
-    while ($db->next_record()) {
-        $fi                       = $db->f('feed_id');
-        $feeds[$fi]               = $db->Record;
-        $feeds[$fi]['feed_type']  = $db->f('feed_mode')=='exact' ? FEEDTYPE_EXACT : FEEDTYPE_APC;
-    }
-    freeDB($db);
-    if ($debugfeed >= 8) { print("\n<br>feeds="); print_r($feeds); }
-    return $feeds;
-}
-
-/** Get APC Feed definitions (from nodes and external_feeds tables)
- *  Returns array('feed_id'=>array( feed_informations_like: url, password... ))
- */
-function rssfeeds() {
-    global $debugfeed;
-    $db = getDB();
-    $SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds";
-    if ($debugfeed >= 8) print("\n<br>$SQL");
-    $db->query($SQL);
-
-    $rssfeeds=array();
-    while ($db->next_record()) {
-        $fi                               = $db->f('feed_id');
-        $rssfeeds[$fi]                    = $db->Record;
-        $rssfeeds[$fi]['feed_type']       = FEEDTYPE_RSS;
-        $rssfeeds[$fi]['remote_slice_id'] = q_pack_id(attr2id($rssfeeds[$fi]['server_url']));
-    }
-    freeDB($db);
-    if ($debugfeed >= 9) { print("\n<br>rssfeeds="); print_r($rssfeeds); }
-    return $rssfeeds;
 }
 
 function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, &$ext_categs, &$l_categs, $all_categories) {
@@ -367,6 +322,9 @@ class saver {
 }
 
 class grabber {
+
+    function factory() {}
+
     function getItem() {}
 
     /** Possibly preparation of grabber - it is called directly before getItem()
@@ -392,7 +350,7 @@ class grabber_aarss extends grabber {
     var $r_slice_id;
     var $fire;
 
-    function grabber_aarss($feed_id, &$feed, $fire) {
+    function grabber_aarss($feed_id, &$feed, $fire='write') {
         global $debugfeed;
 
         /** Process one feed and returns parsed RSS (both AA and other)

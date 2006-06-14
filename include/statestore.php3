@@ -71,4 +71,39 @@ class storable_class {
         return $ret;
     }
 }
+
+
+class AA_Object {
+    function getNameArray($obj_type) {
+        return GetTable2Array("SELECT o1.object_id, o2.text FROM object_text as o1 INNER JOIN object_text as o2 ON o1.object_id=o2.object_id
+                                     WHERE o1.property = 'type' AND o1.text = '$obj_type' AND o2.property = 'name'", 'object_id', 'text');
+    }
+
+    function getProperty($id, $property) {
+        return GetTable2Array("SELECT text FROM object_text WHERE object_id = '$id' AND property = '$property'", 'aa_first', 'text');
+    }
+
+    function getObjectType($id) {
+        return AA_Object::getProperty($id, 'type');
+    }
+
+    function &load($id, $type=null) {
+        if ( !$type ) {
+            $type = getObjectType($id);
+        }
+        $object = call_user_func(array($type, 'loadFromDb'), $id);
+        return $object;
+    }
+
+    function saveProperty($obj_id, $property, $value) {
+        $varset = new CVarset();
+        $varset->add('object_id', 'text', $obj_id);
+        $varset->add('property',  'text', $property);
+        $varset->add('text',      'text', $value);
+        $varset->doInsert('object_text');
+    }
+
+}
+
+
 ?>

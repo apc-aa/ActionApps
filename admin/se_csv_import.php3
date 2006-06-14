@@ -50,8 +50,8 @@ http://www.apc.org/
 // todo - work with global variable $err??
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']. 'import_util.php3';
-require_once $GLOBALS['AA_INC_PATH']. 'files.class.php3';
+require_once AA_INC_PATH. 'import_util.php3';
+require_once AA_INC_PATH. 'files.class.php3';
 
 define("FILE_PREFIX",   'csvdata');
 
@@ -98,11 +98,13 @@ if ($upload OR $preview) {
             }
             break;
         case 'url':
-            if (($text = file_get_contents($url)) === false) {
-                $err[] = _m('Cannot read input file');
-                break;
+            if ( ($handle = fopen($url, 'r')) === false ) {
+                $err[] = _m('Cannot read input url');
+            } else {
+                fclose($handle);
+                $dest_file = $url;
             }
-            // continue to next option - NO break!!!
+            break;
         default:
             $dest_file = Files::createFileFromString($text, Files::destinationDir($slice), $file_name);
             if ($dest_file === false) {   // error
@@ -124,10 +126,10 @@ if ($upload) {
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
-    go_url($sess->url(self_base()."se_csv_import2.php3"). "&fileName=$dest_file&addParamsSerial=" .base64_encode(serialize($addParams)));
+    go_url($sess->url(self_base()."se_csv_import2.php3"). "&fileName=$dest_file&slice_id=$slice_id&addParamsSerial=" .base64_encode(serialize($addParams)));
 }
 
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
+require_once AA_INC_PATH."formutil.php3";
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 <TITLE><?php echo _m("Admin - Import .CSV file"); ?></TITLE>
@@ -139,7 +141,7 @@ function InitPage() {}
 <BODY>
 <?php
   $useOnLoad = true;
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+  require_once AA_INC_PATH."menu.php3";
   showMenu($aamenus, "sliceadmin","CSVimport");
 
   echo "<H1><B>" . _m("Admin - Import CSV (1/2) - Source data") . "</B></H1>";
@@ -215,7 +217,7 @@ function InitPage() {}
     <tr>
         <td class=tabtxt align=center><input type="radio" <?php if ($dataType == "url") echo "CHECKED"; ?> NAME="dataType" value="url"></td>
         <td class=tabtxt >URL</td>
-        <td class=tabtxt ><input type="text" NAME="url" value="<?php echo isset($url) ? $url : 'http://' ?>" ></td>
+        <td class=tabtxt ><input type="text" NAME="url" value="<?php echo isset($url) ? $url : 'http://' ?>" size="100"></td>
         </tr>
     <tr>
             <td class=tabtxt align=center><input type="radio" <?php if ($dataType == "text") echo "CHECKED"; ?> NAME="dataType" value="text"></td>
@@ -226,6 +228,7 @@ function InitPage() {}
     </td></tr>
     <tr><td align="center">
         <input type=hidden name=previous_upload value="<?php echo $dest_file ?>">
+        <input type=hidden name=slice_id value="<?php echo $slice_id ?>">
         <input type=submit name=preview value="<?php echo _m("Preview")?>">
         <input type=submit name=upload value="<?php echo _m("Next") ?>" align=center>&nbsp;&nbsp;
     </td></tr>
