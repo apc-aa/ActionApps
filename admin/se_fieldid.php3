@@ -32,11 +32,11 @@ http://www.apc.org/
 */
 
 require_once "../include/init_page.php3";
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."msgpage.php3";
-require_once $GLOBALS['AA_INC_PATH']."util.php3"; // tryquery
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."msgpage.php3";
+require_once AA_INC_PATH."util.php3"; // tryquery
 
 set_time_limit(600);
 
@@ -49,7 +49,6 @@ $reserved_ids = array (
   "edited_by.......",
   "expiry_date.....",
   "flags...........",
-  "headline........",
   "highlight.......",
   "last_edit.......",
   "posted_by.......",
@@ -230,7 +229,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 </HEAD>
 <?php
-  require_once $GLOBALS['AA_INC_PATH']."menu.php3";
+  require_once AA_INC_PATH."menu.php3";
   showMenu($aamenus, "sliceadmin", "field_ids");
 
   echo "<H1><B>" . _m("Admin - change Field IDs") . "</B></H1>";
