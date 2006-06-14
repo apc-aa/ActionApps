@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once $GLOBALS['AA_INC_PATH']."mgettext.php3";
+require_once AA_INC_PATH."mgettext.php3";
 
 //
 // Used constants. Do not edit if you are not developer.
@@ -38,6 +38,57 @@ function GetFieldDef( $name, $field, $operators='text', $table=false, $search_pr
 function GetAliasDef( $fce, $field='', $hlp='') {
     return array('fce' => $fce, 'param' => $field, 'hlp' => $hlp);
 }
+
+
+class AA_Alias {
+    var $alias;
+    var $funct;
+    var $field_id;
+    var $parameters;
+    var $hlp;
+
+    function AA_Alias($alias, $field_id, $funct, $parameters=null, $hlp='') {
+        $this->alias       = $alias;
+        $this->funct       = $funct;
+        $this->field_id    = $field_id;
+        $this->parameters  = empty($parameters) ? array() : $parameters;
+        $this->hlp         = $hlp;
+    }
+
+    function getArray() {
+        $fce = ParamImplode(array_merge(array($this->funct),$this->parameters));
+        return array('fce' => $fce, 'param' => $this->field_id, 'hlp' => $this->hlp);
+    }
+
+    function getAlias() {
+        return $this->alias;
+    }
+}
+
+class AA_Aliases {
+    var $aliases;
+
+    function AA_Aliases() {
+        $this->aliases = array();
+    }
+
+    function addAlias(&$alias) {
+        $this->aliases[] = $alias;
+    }
+
+    function addTextAlias($alias_name, $text) {
+        $this->addAlias(new AA_Alias($alias_name, "id..............", 'f_t', array($text, 'asis')));
+    }
+
+    function getArray() {
+        $ret = array();
+        foreach ($this->aliases as $alias) {
+            $ret[$alias->getAlias()] = $alias->getArray();
+        }
+        return $ret;
+    }
+}
+
 
   // There we can mention $FIELD_TYPES, but they are not defined in this file,
   // but in database as special slice with id 'AA_Core_Fields..'
@@ -763,7 +814,7 @@ function getViewTypesInfo() {
     $VIEW_TYPES_INFO['discus'] = array('modification'=>array('21'=>'timeorder',
                                                              '22'=>'reverse timeorder',
                                                              '23'=>'thread' ),
-                                       'aditional' =>array('default'=>'<img src="'.$AA_INSTAL_PATH.'images/blank.gif" width=20 height=1 border="0">'),
+                                       'aditional' =>array('default'=>'<img src="'.AA_INSTAL_PATH.'images/blank.gif" width=20 height=1 border="0">'),
                                        'aditional2'=>array('default'=>'<input type=button name=sel_ids value="' ._m("Show selected"). '" onClick=showSelectedComments() class="discbuttons">'),
                                        'aditional3'=>array('default'=>'<input type=button name=all_ids value="' ._m("Show all"). '" onClick=showAllComments() class="discbuttons">'),
                                        'aditional4'=>array('default'=>'<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">'),
