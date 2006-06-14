@@ -31,18 +31,18 @@ if ($edit OR $add) {         // parameter for init_page - we edited new item so
 }
 
 require_once "../include/init_page.php3";     // This pays attention to $change_id
-require_once $GLOBALS['AA_INC_PATH']."formutil.php3";
-require_once $GLOBALS['AA_INC_PATH']."varset.php3";
-require_once $GLOBALS['AA_INC_PATH']."feeding.php3";
-require_once $GLOBALS['AA_INC_PATH']."pagecache.php3";
-require_once $GLOBALS['AA_INC_PATH']."itemfunc.php3";
-require_once $GLOBALS['AA_INC_PATH']."notify.php3";
-require_once $GLOBALS['AA_INC_PATH']."sliceobj.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."feeding.php3";
+require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."itemfunc.php3";
+require_once AA_INC_PATH."notify.php3";
+require_once AA_INC_PATH."sliceobj.php3";
 //mimo include mlx functions
-require_once $GLOBALS['AA_INC_PATH']."mlx.php";
+require_once AA_INC_PATH."mlx.php";
 
-if ( file_exists( $GLOBALS['AA_INC_PATH']."usr_validate.php3" ) ) {
-    include( $GLOBALS['AA_INC_PATH']."usr_validate.php3" );
+if ( file_exists( AA_INC_PATH."usr_validate.php3" ) ) {
+    require_once AA_INC_PATH."usr_validate.php3";
 }
 
 /** Function for extracting variables from $r_hidden session field */
@@ -67,7 +67,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
         $content  = new ItemContent($zid);
         $slice    = new slice($content->getSliceID());
         $aliases  = $slice->aliases();
-        DefineBaseAliases($aliases, $content->getSliceID());  // _#JS_HEAD, ...
+        DefineBaseAliases($aliases, $content->getSliceID());  // _#JS_HEAD_, ...
         $item     = new item($content->getContent(),$aliases);
         $function = $insert ? 'SelectRelations' : 'UpdateRelations';
         $item->setformat( "$function('$openervar','".$tps['AMB']['A']['tag']."','".$tps['AMB']['A']['prefix']."','".$tps['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
@@ -129,6 +129,14 @@ else             { $action = "edit"; }
 //   $js_proove_fields - JavaScript code for form validation
 //   list ($fields, $prifields) = GetSliceFields ()
 //   $oldcontent4id
+
+// link from public pages sometimes do not contain slice_id
+if ( $id ) {
+    $content4id = new ItemContent($id);
+    $slice_id   = $content4id->getSliceID();
+    // we need just slice_id of current item - we can unset the content4id
+    unset($content4id);
+}
 
 $slice = new slice($slice_id);
 ValidateContent4Id($err, $slice, $action, $id);
