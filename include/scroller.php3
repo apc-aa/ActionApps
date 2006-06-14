@@ -39,7 +39,7 @@ function userdate2sec ($dttm, $time="") {
         return mktime($tpart[1],$tpart[2],$tpart[3],$part[1],$part[2],$part[3]);
 }
 
-require_once $GLOBALS['AA_INC_PATH'] . "statestore.php3";
+require_once AA_INC_PATH . "statestore.php3";
 
 class scroller extends storable_class {
     var $classname = "scroller";
@@ -217,6 +217,7 @@ class scroller extends storable_class {
             else   echo "<span class=\"scroller_actual\">$k</span>\n";
         }
         echo "| <a href=\"" . $url . "listlen=99999\" class=\"scroller\">" . _m("All") . "</a>";
+        echo " &nbsp; (". $this->itmcnt .")";
     }
 
     // add filter
