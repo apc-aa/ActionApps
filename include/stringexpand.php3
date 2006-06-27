@@ -381,8 +381,8 @@ function stringexpand_striptags($text='') {
 }
 
 function stringexpand_rss($text='') {
-    $entities_old = array("&nbsp;");
-    $entities_new = array(" ");
+    $entities_old = array('&nbsp;', '& ');
+    $entities_new = array(' ', '&amp; ');
     return str_replace($entities_old, $entities_new, strip_tags($text));
 }
 
