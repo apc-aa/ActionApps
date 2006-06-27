@@ -99,7 +99,7 @@ function store_digest_filters() {
     $varset->addkey("id", "number", $view_id);
     $varset->add("aditional", "number", $aditional);
     $varset->add("aditional3", "quoted", $aditional3);
-    $db->query($varset->makeUPDATE ("view"));
+    $db->query($varset->makeUPDATE("view"));
 
     foreach ($filters as $rowid => $filter) {
         if (!$filter["description"]) {
@@ -234,16 +234,17 @@ if ( $update ) {
             }
         }
         if ( $view_id ) {
-            $SQL = "UPDATE view SET ". $varset->makeUPDATE() ." WHERE id='$view_id'";
-            if ( !$db->query($SQL)) {
+            $varset->addkey('id','number', $view_id);
+            if ( !$varset->doUpdate('view') ) {
                 $err["DB"] = MsgErr( _m("Can't change slice settings") );
                 break;   // not necessary - we have set the halt_on_error
             }
         } else {
-            if ( !$db->query("INSERT INTO view ". $varset->makeINSERT())) {
+            if ( !$varset->doInsert('view')) {
                 $err["DB"] = MsgErr( _m("Can't insert into view.") );
                 break;   // not necessary - we have set the halt_on_error
             }
+            $view_id = $varset->lastInsertId('view');
         }
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
@@ -253,11 +254,13 @@ if ( $update ) {
                 $show_fn();
             }
         }
-        go_url( $back_url );
+        // go_url( $back_url );
     } while(false);
 
     if ( count($err) <= 1 ) {
         $Msg = MsgOK(_m("View successfully changed"));
+        // in order we reread the data from the database (see below)
+        unset($update);
     }
 }
 
