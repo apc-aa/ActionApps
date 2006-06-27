@@ -40,7 +40,7 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $p_slice_id = q_pack_id($slice_id);
 
 // lookup internal fed slices
-$SQL= "SELECT name, id FROM slice, feeds
+$SQL= "SELECT name, id FROM feeds, slice
         LEFT JOIN feedperms ON slice.id=feedperms.from_id
         WHERE slice.id=feeds.from_id
           AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
