@@ -27,10 +27,10 @@ class Cvariable {
     var $name;
     var $type;
     var $value;
-    /** Is it a key value? key values are used in UPDATE -> WHERE, 
+    /** Is it a key value? key values are used in UPDATE -> WHERE,
     *  INSERT -> VALUES.  See also makeINSERTorUPDATE. */
     var $iskey;
-    
+
     // constructor
     function Cvariable($name, $type, $value, $iskey=false) {
         $this->name  = $name;
@@ -38,15 +38,15 @@ class Cvariable {
         $this->value = $value;
         $this->iskey = $iskey;
     }
-    
+
     function getValue() {
         return $this->value;
     }
-    
+
     function getSQLValue() {
         switch ( $this->type )
         {
-            case "number": 
+            case "number":
                 // grrr: if $var=0 then $var=""!!!
                 return ($this->value == "") ? "0" : $this->value;
             case "unpacked":
@@ -57,11 +57,11 @@ class Cvariable {
                 return "NULL";
             case "date":
             case "text":
-            default: 
+            default:
                 return "'" . quote($this->value) ."'";
         }
     }
-    
+
     function huh() {
         echo "$this->name($this->type) -> $this->value <br>\n";
     }
@@ -69,9 +69,11 @@ class Cvariable {
 
 class Cvarset {
     var $vars;  // array of variables
+    var $db;    // database handler
 
     /** constructor - also good for filling the varset */
     function Cvarset( $arr=null ) {
+        $this->db = null;
         foreach ( (array)$arr as $varname => $value ) {
             if ( $varname ) {
                 $this->add($varname, 'text', $value);
@@ -127,27 +129,27 @@ class Cvarset {
         }
         $this->add($varname, $type, $value);   // it must be assigned this way, because $v is just copy
     }
-    
+
     /** if undefined - set */
     function ifnoset($varname, $value, $type="") {
         if ( !$this->get($varname) ) {
             $this->add($varname, ($type ? $type : "quoted"), $value);
         }
     }
-    
+
     /** return variable value */
     function value($varname){
         $v = $this->vars["$varname"];
         return $v->value;
     }
-    
+
     /** set variables values due to array */
     function setFromArray($arr) {
         foreach ( $this->vars as $varname => $variable ) {
             $this->set($varname, $arr[$varname]);
         }
     }
-    
+
     /** Fills varset with data grabed from database ($db->Record) */
     function resetFromRecord($record) {
         $this->clear();
@@ -157,7 +159,7 @@ class Cvarset {
             }
         }
     }
-    
+
     /** Add text and number variables from arrays to varset */
     function addArray($text_fields, $num_fields="") {
         if ( isset($text_fields) AND is_array($text_fields)) {
@@ -171,19 +173,20 @@ class Cvarset {
             }
         }
     }
-    
+
     /** Private function: executes qiven query) */
     function _doQuery($SQL, $nohalt=null) {
-        $db = getDB();
-        if ( $nohalt=='nohalt' ) {
-            $retval = $db->query_nohalt($SQL);
-        } else {
-            $retval = $db->tquery($SQL);
+        if ( is_null($this->db) ) {
+            $this->db = getDB();
         }
-        freeDB($db);
+        if ( $nohalt=='nohalt' ) {
+            $retval = $this->db->query_nohalt($SQL);
+        } else {
+            $retval = $this->db->tquery($SQL);
+        }
         return $retval;
     }
-    
+
     /** Makes SQL INSERT clause from varset */
     function makeINSERT($tablename = "")
     {
@@ -200,11 +203,11 @@ class Cvarset {
         }
         return $foo . " ) " ;
     }
-    
+
     function doInsert($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeINSERT($tablename), $nohalt);
     }
-    
+
     /** Makes SQL UPDATE clause from varset */
     function makeUPDATE($tablename = "") {
         foreach ( $this->vars as  $varname => $variable ) {
@@ -221,50 +224,40 @@ class Cvarset {
         }
         return $retval;
     }
-    
+
     function doUpdate($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeUPDATE($tablename), $nohalt);
     }
-    
-    /** Makes SQL UPDATE clause from varset */
-    function makeREPLACE($tablename = "")
-    {
-        foreach ( $this->vars as  $varname => $variable ) {
-            $updates[] = "`$varname`" ."=". $variable->getSQLValue();
-        }
-        if ($tablename) {
-            $retval = "REPLACE $tablename SET";
-        }
-        return $retval . " " . join (", ", $updates);
-    }
-    
+
+    // be sure, you have defined key field
     function doREPLACE($tablename, $nohalt=null) {
-        // TODO: REPLACE works for MySQL. For MS SQL and possibly other DB servers
-        //       we need to use another SQL (SELECT + UPDATE/INSERT)
-        return $this->_doQuery($this->makeREPLACE($tablename), $nohalt);
+        // we do no longer use REPLACE SQL command - it is not implemented in
+        // some DB engines (it is not ANSI SQL) nad even in MySQL it works bad
+        // with autoincremented fields
+        return $this->_doQuery($this->makeINSERTorUPDATE($tablename), $nohalt);
     }
-    
+
     function makeSELECT($table) {
         $where = $this->makeWHERE();
         return ($where ? "SELECT * FROM $table WHERE ".$where :
                          "SELECT * FROM $table");
     }
-    
+
     function makeDELETE($table, $where=null) {
         if ( is_null($where) ) {
             $where = $this->makeWHERE();
         }
         return ($where ? "DELETE FROM $table WHERE ".$where : 'Error');
     }
-    
+
     function doDelete($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeDELETE($tablename), $nohalt);
     }
-    
+
     function doDeleteWhere($tablename, $where, $nohalt=null) {
         return $this->_doQuery($this->makeDELETE($tablename, $where), $nohalt);
     }
-    
+
     function makeWHERE($table="") {
         $where = "";
         foreach ( $this->vars as $varname => $variable) {
@@ -276,24 +269,28 @@ class Cvarset {
         }
         return $where;
     }
-    
-    /** This function looks into the given table and if the row exists, it is 
-     *  updated, if not then inserted. Add always all key fields by addkey() 
+
+    /** This function looks into the given table and if the row exists, it is
+     *  updated, if not then inserted. Add always all key fields by addkey()
      *  to the varset before using this function.
      */
     function makeINSERTorUPDATE($table) {
-        global $db;
-        $sql = $this->makeSELECT($table);
-        $db->query($sql);
-        switch ($db->num_rows()) {
+        $this->_doQuery($this->makeSELECT($table));
+        switch ($this->db->num_rows()) {
             case 0: return $this->makeINSERT($table);
             case 1: return $this->makeUPDATE($table);
             default:
             // Error: there are several rows with the same key variables
-            return "Error using makeINSERTorUPDATE: " . $db->num_rows(). " rows match the query $sql";
+            return "Error using makeINSERTorUPDATE: " . $this->db->num_rows(). " rows match the query";
         }
     }
-    
+
+    function lastInsertId($table) {
+        $this->_doQuery("SELECT LAST_INSERT_ID() AS lid FROM $table");
+        $this->db->next_record();
+        return $this->db->f("lid");
+    }
+
     function huh($txt="") {
         echo "Varset: $txt";
         foreach ( $this->vars as  $varname => $variable ) {
