@@ -2405,13 +2405,28 @@ function PrintAliasHelp($aliases, $fields=false, $endtable=true, $buttons='', $s
   }
 }
 
+/**
+*  Validate users input. Error is reported in $err array
+*  @param $variable could be array or not
+*  You can add parameters to $type divided by ":".
+*/
+function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all") {
+    foreach ((array)$variable as $var) {
+        $valid = _ValidateSingleInput($variableName, $inputName, $var, &$err, $needed, $type);
+        if ( !$valid ) {
+            break;
+        }
+    }
+    return $valid;
+}
+
 
 /**
-* Validate users input. Error is reported in $err array
-* You can add parameters to $type divided by ":".
+*  Validate users input. Error is reported in $err array
+*  @param $variable could is not array
+*  You can add parameters to $type divided by ":".
 */
-function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all")
-{
+function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $needed, $type) {
     if ($variable=="" OR Chop($variable)=="")
         if ( $needed ) {                     // NOT NULL
             $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must be filled").")");
