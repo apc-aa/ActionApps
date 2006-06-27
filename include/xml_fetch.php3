@@ -254,7 +254,7 @@ class saver {
     var $store_mode;         /** store-policy - how to store - overwrite | insert_if_new */
     var $id_mode;            /** id-policy    - how to construct id - old | new | combined */
 
-    function saver(&$grabber, &$transformations, $slice_id, $store_mode='overwrite', $id_mode='old') {
+    function saver(&$grabber, &$transformations, $slice_id, $store_mode='insert_if_new', $id_mode='old') {
         $this->grabber         = $grabber;
         $this->transformations = $transformations;
         $this->slice_id        = $slice_id;
@@ -322,8 +322,22 @@ class saver {
 }
 
 class grabber {
+    function getItem() {}
 
-    function factory() {}
+    /** Possibly preparation of grabber - it is called directly before getItem()
+     *  method is called - it means "we are going really to grab the data
+     */
+    function prepare() {}
+
+    function finish()  {}
+}
+
+
+class AA_Grabber_CSV extends grabber {
+
+    function AA_Grabber_CSV() {
+
+    }
 
     function getItem() {}
 
@@ -334,6 +348,7 @@ class grabber {
 
     function finish()  {}
 }
+
 
 class grabber_aarss extends grabber {
     var $feed_id;
@@ -362,6 +377,8 @@ class grabber_aarss extends grabber {
         $this->fire       = $fire;
     }
 
+    function setUrl($url)    { $this->feed['server_url']  = $url; }
+    function setTime($time)  { $this->feed['newest_item'] = $time; }
 
     function _getRssData() {
         return http_fetch($this->feed['server_url']);

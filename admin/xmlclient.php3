@@ -71,6 +71,7 @@ require_once "../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."statestore.php3"; // AA_Object definition
 require_once AA_INC_PATH."csn_util.php3"; // defines HTML and PLAIN as well as other functions
 require_once AA_INC_PATH."xml_fetch.php3";
 require_once AA_INC_PATH."xml_rssparse.php3";
@@ -84,6 +85,7 @@ if ($debugfeed >= 8) print("\n<br>XMLCLIENT STARTING");
 
 // prepare Get variables
 
+
 if ( $_GET['display'] ) {
     $fire = 'display';
 } elseif ( isset($_GET['fill']) AND ($_GET['fill']==0) ) {
@@ -92,44 +94,122 @@ if ( $_GET['display'] ) {
     $fire = 'write';   // default
 }
 
+
+class AA_Feed {
+    var $grabber;
+    var $destination_slice_id;
+
+    /** @var $fire - write | test | display
+     *       - write   - feed and write the items to the databse
+     *       - test    - proccesd without write anything to the database
+     *       - display - only display the data from the feed
+     */
+    var $fire;
+
+    function AA_Feed($grabber=null, $destination_slice_id=null, $fire='write') {
+        $this->grabber              = $grabber;
+        $this->destination_slice_id = $destination_slice_id;
+        $this->fire                 = $fire;
+    }
+
+    function loadRSSFeed($id, $url=null) {
+        $SQL = "SELECT feed_id, server_url, name, slice_id FROM rssfeeds WHERE feed_id='$id'";
+        $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+        $feeddata['feed_type']       = FEEDTYPE_RSS;
+        // fictive remote slice id, but always the same for the same url
+        $feeddata['remote_slice_id'] = q_pack_id(attr2id($feeddata['server_url']));
+
+        $this->grabber               = new grabber_aarss($id, $feeddata);
+        $this->destination_slice_id  = unpack_id128($feeddata['slice_id']);
+
+        if ($url) {
+            $this->grabber->setUrl($url);
+        }
+    }
+
+
+    function loadAAFeed($id, $time=null) {
+        $SQL = "SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode
+                  FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name AND feed_id='$id'";
+        $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+        $feeddata['feed_type']       = ($feeddata['feed_mode'] == 'exact') ? FEEDTYPE_EXACT : FEEDTYPE_APC;
+
+        $this->grabber               = new grabber_aarss($id, $feeddata);
+        $this->destination_slice_id  = unpack_id128($feeddata['slice_id']);
+
+        if ($time) {
+            $this->grabber->setTime($time);
+        }
+    }
+
+    /** Process one feed RSS, or APC AA RSS, or CSV or ... - based on grabber
+     *  @param  $feed_id   - id of feed (it is autoincremented number from 1 ...
+     *                     - RSS and APC feeds could have the same id :-(
+     *          $feed      - feed definition array (server_url, password, ...)
+     *          $debugfeed - just for debuging purposes
+     *          $fire      - write   - feed and write the items to the databse
+     *                       test    - proccesd without write anything to the database
+     *                       display - only display the data from the feed
+     */
+    function feed() {
+        if ( $this->fire = 'write' ) {
+            $translations = null;
+            $saver        = new saver($this->grabber, $translations, $this->destination_slice_id);
+            $saver->run();
+        }
+    }
+}
+
+
 if ($feed_id) {          // just one specified APC feed
-
-    $feeds = apcfeeds(); // get all apc feeds definitions
-    if ( $_GET['time'] ) {
-        $feeds[$feed_id]['newest_item'] = $_GET['time'];
-    }
-    onefeed($feed_id, $feeds[$feed_id], $debugfeed, $fire);  // feed selected feed
-
+    $feed = new AA_Feed();
+    $feed->loadAAFeed($feed_id, $_GET['time']);
+    $feed->feed();
 } elseif ($rssfeed_id) { // just one specified RSS feed
+    $feed = new AA_Feed();
+    $feed->loadRSSFeed($rssfeed_id, $_GET['url']);
+    $feed->feed();
+} else {                 // all RSS and APC and general feeds
+    $rssfeeds     = GetTable2Array('SELECT feed_id FROM rssfeeds', 'NoCoLuMn', 'feed_id');
+    $aafeeds      = GetTable2Array('SELECT feed_id FROM external_feeds', 'NoCoLuMn', 'feed_id');
+    $generalfeeds = AA_Object::getNameArray('AA_Feed');
 
-    $rssfeeds = rssfeeds();
-    if ( $_GET['url'] ) {
-        $rssfeeds[$feed_id]['server_url'] = $_GET['url'];
-    }
-    onefeed($rssfeed_id, $rssfeeds[$rssfeed_id], $debugfeed, $fire);   // Not sure if its safe for feed_id to be same as for APC feeds
-
-} else {                 // all RSS and APC feeds
-
-    // we put the all teh feeds into an array and then we shuffle it
+    // we put all the feeds into an array and then we shuffle it
     // that makes the feeding in random order, so broken feeds do not stale
     // whole feeding
     $todo_feed = array();
-    $apcfeeds  = apcfeeds();
-    foreach ( $apcfeeds as $feed_id => $feed ) {
-        $todo_feed[] = array($feed_id, $feed);
+    if ( is_array($rssfeeds) ) {
+        foreach ( $rssfeeds as $v ) {
+            $todo_feed[] = array('type'=>'rss', 'id'=>$v);
+        }
     }
-
-    $rssfeeds = rssfeeds();
-    foreach ( $rssfeeds as $feed_id => $feed ) {
-        $todo_feed[] = array($feed_id, $feed);
+    if ( is_array($aafeeds) ) {
+        foreach ( $aafeeds as $v ) {
+            $todo_feed[] = array('type'=>'aarss', 'id'=>$v);
+        }
+    }
+    if ( is_array($generalfeeds) ) {
+        foreach ( $generalfeeds as $id => $name ) {
+            $todo_feed[] = array('type'=>'general', 'id'=>$id);
+        }
     }
 
     shuffle($todo_feed);
-    foreach ($todo_feed as $pair) {
-        onefeed($pair[0], $pair[1]);
+    foreach ($todo_feed as $feed_seting) {
+        switch ($feed_seting['type']) {
+            case 'aarss':
+                $feed = new AA_Feed();
+                $feed->loadAAFeed($feed_seting['id']);
+                break;
+            case 'rss':
+                $feed = new AA_Feed();
+                $feed->loadRSSFeed($feed_seting['id']);
+                break;
+            default:
+                $feed &= AA_Object::load($feed_seting['id']);
+        }
+        $feed->feed();
     }
-
 }
-
 
 ?>
