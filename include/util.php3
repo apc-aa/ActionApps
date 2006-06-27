@@ -1410,9 +1410,8 @@ function CopyTableRows ($table, $where, $set_columns, $omit_columns = "", $id_co
 
 // -----------------------------------------------------------------------------
 
-function get_last_insert_id ($db, $table)
-{
-    $db->tquery ("SELECT LAST_INSERT_ID() AS lid FROM $table");
+function get_last_insert_id($db, $table) {
+    $db->tquery("SELECT LAST_INSERT_ID() AS lid FROM $table");
     $db->next_record();
     return $db->f("lid");
 }

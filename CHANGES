@@ -1,3 +1,14 @@
+06/27/06 - fixed RSS and AARSS feeding - short_ids are not incremented after
+(honzam)   each feeding - Feeding moved to grabber/saver API
+         - improved usability of Admin interface of View edit - you will stay
+           on the view setting after save (not moved to list of views)
+         - {rss:...} alias now replaces also "& " by "&amp; "
+         - SELECT + INSERT/UPDATE used instead of REPLACE SQL command. REPLACE
+           is not implemented in many DB engines and it also do not work
+           correctly with autoincremented values in MySQL
+         - fixed form validation for multivalue fields
+           (it did not work correctly for example for numeric fields)
+         - fixed bug in SQL query for mapping fields (query failed on MySQL 5)
 06/14/06 - fixed security problem with require - requires no longer use
 (honzam)   variables (see http://secunia.com/advisories/20299/)
          - new possibility to use aliases and fields from Reader Slice

@@ -13,25 +13,25 @@
 </head>
 <body>
 <h1>ActionApps - Coding Standards</h1>
-            <a href="http://www.apc.org/actionapps">apc-aa home</a> | <a
- href="http://apc-aa.sourceforge.net/aa/doc/"> docs home </a> <br>
+            <a href="http://actionapps.org">apc-aa home</a> | <a
+ href="http://actionapps.org/aa/doc/"> docs home </a> <br>
 
 <p>We encourage ActionApps developers to follow the <i>coding standards</i>
 described bellow. It help us to have the code as readable as possible for
 everyone.</p>
 <p>Most of the following rules comes from php PEAR standard <a href="http://pear.php.net/manual/en/standards.php">http://pear.php.net/manual/en/standards.php</a><br>
-Most important rules on tne top:
+Most important rules on the top:
 
 <ul>
 <li><b>use UNIX end of lines (use \n and never windows \r\n)</b>
-     <p>If we mix both modes, the CVS diffs are unusefull</p>
+     <p>If we mix both modes, the CVS diffs are useful</p>
 
 <li><b>Indent 4 spaces, with no tabs</b>
      <p>Do not use Tabs or use 'insert Tabs as spaces' option of your text
      editor. Most of the editors (like Jedit or HomeSite) allows it.
      Then the code will look good in any editor.</p>
 
-<li><b>Use PHP functions up to version 4.0.6</b><br><br>
+<li><b>Use PHP functions up to version 4.3.0</b><br><br>
 
 <li><b>&lt;?php open tag</b>
      <p>Do not use any other shorted version like &lt;?, .. There are some
@@ -60,24 +60,24 @@ if ((condition1) || (condition2)) {
      <p>Try to write the code 80 characters wide, if possible.</p>
 
 <li><b>quote strings in indexes</b><br>
-     <p>Allways qoute strings like
+     <p>Always quote strings like
      <code>'name'</code> in <code>$arr['name']</code> or <code>$db->f('name')</code>
      although current PHP do not need it.</p>
 
-<li><b>use <code>$_GET</code>, <code>$POST</code>, and <code>$_SERVER</code></b><br>
+<li><b>use <code>$_GET</code>, <code>$_POST</code>, and <code>$_SERVER</code></b><br>
      <p>Use mentioned superglobal arrays to access variables from forms ...</p>
 
 <li><b>use return true; instead of return(true);</b><br>
      <p>Return is the statement, not a function.</p>
 
-<li><b>When you commiting changes into CVS, allways update <i>CHANGES</i> file and
+<li><b>When you committing changes into CVS, always update <i>CHANGES</i> file and
   send a note to <a href="mailto:apc-aa-coders@sourceforge.net">apc-aa-coders@sourceforge.net</a></b><br><br>
 
-<li><b>Document new feature in the FAQ (<a href="http://apc-aa.sourceforge.net/faq/">http://apc-aa.sourceforge.net/faq/</a>)
+<li><b>Document new feature on the wiki (<a href="http://actionapps.org/">http://actionapps.org/</a>)
   and in the code</b><br><br>
 
 <li><b>If it is possible, create an example of new feature on Sourceforge
-  installation of <a href="http://apc-aa.sourceforge.net/aa/admin/index.php3">ActionApps</a></b><br><br>
+  installation of <a href="http://actionapps.org/aa/admin/index.php3">ActionApps</a></b><br><br>
 
 <li><b>If you changing database structure (adding table, ...), you should update <i>sql_update.php3</i> script</b><br><br>
 

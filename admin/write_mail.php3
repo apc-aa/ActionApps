@@ -68,15 +68,8 @@ if ( !$send ) {               // for the first time - directly from item manager
                                  'quoted');
             $varset->add('html', 'number', $html);
 
-            $SQL = "INSERT email ". $varset->makeINSERT();
-            if ( !$db->tquery($SQL)) {
-                $err["DB"] = MsgErr( _m("Can't change slice settings") );
-                break;    // not necessary - we have set the halt_on_error
-            }
-
-            // --- write the e-mail template to the table - end ---
-
-            $mail_id = get_last_insert_id($db, 'email');  // get mail template id
+            $varset->doINSERT('email');
+            $mail_id = $varset->lastInsertId('email');  // get mail template id
 
             if ( !is_numeric($mail_id) )  {
                 $err["mail"] = MsgErr( _m("No template set (which is strange - template was just written to the database") );

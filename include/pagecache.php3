@@ -152,7 +152,6 @@ class PageCache  {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
                 $this->purge();
             }
-            freeDB($db);
         }
         return $keyid;
     }
