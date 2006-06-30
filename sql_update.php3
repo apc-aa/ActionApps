@@ -610,6 +610,39 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (id),
                           KEY digest (digest)
                       )",
+                      'object_float' => "(
+                          `id` bigint(20) NOT NULL auto_increment,
+                          `object_id` varbinary(32) NOT NULL default '',
+                          `property` varbinary(16) NOT NULL default '',
+                          `priority` smallint(20) default NULL,
+                          `float` double default NULL,
+                          `flag` smallint(6) default NULL,
+                          PRIMARY KEY  (`id`),
+                          KEY `item_id` (`object_id`,`property`,`float`),
+                          KEY `integer` (`float`)
+                        )",
+                      'object_integer' => "(
+                          `id` bigint(20) NOT NULL auto_increment,
+                          `object_id` varbinary(32) NOT NULL default '',
+                          `property` varbinary(16) NOT NULL default '',
+                          `priority` smallint(20) default NULL,
+                          `integer` bigint(20) default NULL,
+                          `flag` smallint(6) default NULL,
+                          PRIMARY KEY  (`id`),
+                          KEY `item_id` (`object_id`,`property`,`integer`),
+                          KEY `integer` (`integer`)
+                        )",
+                      'object_text' => "(
+                          `id` bigint(20) NOT NULL auto_increment,
+                          `object_id` varbinary(32) NOT NULL default '',
+                          `property` varbinary(16) NOT NULL default '',
+                          `priority` smallint(20) default NULL,
+                          `text` longtext,
+                          `flag` smallint(6) default NULL,
+                          PRIMARY KEY  (`id`),
+                          KEY `text` (`text`(10)),
+                          KEY `item_id` (`object_id`,`property`,`text`(16))
+                        )",
                       'pagecache' => "(
                           id varbinary(32) NOT NULL default '',
                           content longtext,
