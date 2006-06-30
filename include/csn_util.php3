@@ -217,7 +217,15 @@ function unixstamp_to_iso8601($t) {
     return date("Y-m-d\TH:i:s", $t). "${ts}${tz}:${tm}";
 }
 
+// It seems to be better to use strtotime() function instead custom parsing as
+// it supports also RFC-822 date time (e.g. "Fri, 30 Jun 2006 00:00:00 +0200")
+// used in rss feeds.
 function iso8601_to_unixstamp($t) {
+    return strtotime($t);
+}
+
+// TODO: remove this renamed function
+function iso8601_to_unixstamp_old($t) {
     ereg ("([0-9]{4})-([0-9]{2})-([0-9]{2})[T ]([0-9]{2})\:([0-9]{2})\:([0-9]{2})(\+|\-)([0-9]{2})\:([0-9]{2})", $t, $r);
     $tz = (int)$r[8]*3600+$r[9]*60;
     if ($r[7] == "+") {
