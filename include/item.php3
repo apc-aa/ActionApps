@@ -199,7 +199,7 @@ function Links_admin_url($script, $add) {
 function Inputform_url($add, $iid, $sid, $ret_url, $vid = null, $var = null) {
     global $sess, $AA_CP_Session, $profile;
 
-    $admin_path = "itemedit.php3";
+    $admin_path = AA_INSTAL_URL. "admin/itemedit.php3";
     // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
     $url2go = isset($sess) ?
                      $sess->url($admin_path)	:
