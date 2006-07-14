@@ -132,7 +132,7 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_UPDATED',   'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',       'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
         $this->handlers[] = new aahandler('Event_ItemAfterInsert_NszmAkce',array('type' => 'ITEM_NEW',         'slice'        => '987c680c5adfc6f872909d703f98ba97'));  // NSZM - akce - lidi
-        $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));  // Ekoinfocentrum poradna
+        $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));
     }
 
     /** Fills the handlers array from database */
@@ -259,13 +259,20 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
     }
 
     // get e-mail template - quite comlicated, isn't?
-    $view_id     = sliceid2field(unpack_id($content4id['slice_id........'][0]['value']), 'vid');
-    if ( $view_id < 1 ) {
-        return true;
+    $slice_id    = unpack_id($content4id['slice_id........'][0]['value']);
+
+    // if the view vid is assigned to fulltext view, take the e-mail template
+    // from that view
+    $view_id     = sliceid2field($slice_id, 'vid');
+
+    if ( $view_id > 0 ) {
+        // get id of e-mail template (stored in aditional6 field of view definition)
+        $mail_id = GetViewInfo($view_id, 'aditional6');
+    } else {
+        // get id of e-mail template from first discussion view of the slice
+        $mail_id = GetTable2Array("SELECT aditional6 FROM view WHERE slice_id='".q_pack_id($slice_id)."' AND type='discus' ORDER BY id", 'aa_first', 'aditional6');
     }
 
-    // get id of e-mail template (stored in aditional6 field of view definition
-    $mail_id = GetViewInfo($view_id, 'aditional6');
     if ( $mail_id < 1 ) {
         return true;
     }
