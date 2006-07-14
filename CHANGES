@@ -1,3 +1,12 @@
+07/14/06 - new possibility to display HTML comments before and after the view
+(honzam)   by checking the checkbox in view setting - good for debug
+         - mail template for sending discussion comments to users is grabbed
+           from FIRST discussion view of the slice, if the view is not asociated
+           in Fulltext setting, for some reason
+         - fixed sending of test e-mail to Readers
+         - language files updated
+06/30/06 - added object_text, object_float, object_numeric tables
+(honzam)   to the databaase used as general object store
 06/27/06 - fixed RSS and AARSS feeding - short_ids are not incremented after
 (honzam)   each feeding - Feeding moved to grabber/saver API
          - improved usability of Admin interface of View edit - you will stay
@@ -106,7 +115,7 @@
            descending. The main usage is with {item..} syntax - just like:
                {item:{ids:...}:_#HEADLINE}
          - new Conditions and Sortorder classes (used for conditions...)
-02/28/06 - New test environment. Created new abstract class Otimize (test.php3),
+02/28/06 - New test environment. Created new abstract class Optimize (test.php3),
 (honzam)   from which you (as programmer) can create new testing and possibly
            repair scripts. For now we have two tests/repairs
              - finding unnecessary duplicate records in relation table
@@ -158,7 +167,7 @@
          - Fixed site/slice caching
              - now invalidated after spot move...
              - the cache is not cleared completely after slice setting change,
-               but only for current slice (and all related views and sites,
+               but only for current slice (and all related views and sites,honza
                of course)
              - view cache now count with all set[] parameters, so the view is
                generated well even if you use set[] command for nested view

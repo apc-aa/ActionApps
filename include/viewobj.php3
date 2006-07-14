@@ -75,7 +75,8 @@ class view {
         $matches = array();
         if ($text AND (preg_match_all("/view\.php3?\?vid=(\d+)/",$text, $matches)>0)) {
             $ret = _m('Jump to view:');
-            foreach($matches[1] as $vid) {
+            $view_ids = array_unique((array)$matches[1]);
+            foreach($view_ids as $vid) {
                 $view = views::getView($vid);
                 if ($view) {                  // probably will be set
                     $ret .= ' '. $view->jumpLink();

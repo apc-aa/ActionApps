@@ -74,7 +74,7 @@ function PrintViewRow($id, $name, $type) {
 }
 
 // returns javascript row for view selection
-function GetViewJSArray( $sid, $id, $name, $type, $i ) {
+function GetViewJSArray( $sid, $id, $name, $i ) {
     $id=safe($id);
     return "\n vs[$i]=\"x$sid\"; vv[$i]=\"$id\"; vn[$i]=\"".safe(substr($name,0,20))."\";";
 }
@@ -121,10 +121,11 @@ $db->query($SQL);
 $i=0;
 while ( $db->next_record() ) {
     $view_sid = unpack_id128($db->f('slice_id'));
-    if ( $view_sid == $slice_id )    // list views for this slice
-    PrintViewRow($db->f('id'), $db->f('name'), $db->f('type'));
+    if ( $view_sid == $slice_id ) {   // list views for this slice
+        PrintViewRow($db->f('id'), $db->f('name'), $db->f('type'));
+    }
     if ($g_modules[$view_sid]) {     // if user has any permission for the view's slice
-        $view_array .= GetViewJSArray( $view_sid, $db->f(id), $db->f(name), $db->f(type), $i++ );
+        $view_array .= GetViewJSArray( $view_sid, $db->f('id'), $db->f('name'), $i++ );
         $sliceWview[$view_sid] = 1;  // mark the slices, where is an view
     }
 }
