@@ -1,0 +1,6 @@
+AddType application/x-httpd-php3 .php3
+DirectoryIndex index.html index.php3
+RedirectMatch bak http://wwwc.igc.apc.org/php/error.html
+RedirectMatch ~ http://wwwc.igc.apc.org/php/error.html
+RedirectMatch \.inc http://wwwc.igc.apc.org/php/error.html
+Options Includes FollowSymLinks
