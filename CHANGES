@@ -5,6 +5,7 @@
            in Fulltext setting, for some reason
          - fixed sending of test e-mail to Readers
          - language files updated
+         - optimize/reapair framework disabled by default in test.php3
 06/30/06 - added object_text, object_float, object_numeric tables
 (honzam)   to the databaase used as general object store
 06/27/06 - fixed RSS and AARSS feeding - short_ids are not incremented after

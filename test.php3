@@ -10,6 +10,13 @@
   * @copyright (c) 2002-3 Association for Progressive Communications
 */
 
+echo "AA version 2.10.0";
+exit;
+// Remove the two lines above to start Optimize / Repair framework
+// It is not completed yet - there is no user logging, so I disabled it by
+// default. Honza 14.7.2006
+
+
 /** APC-AA configuration file */
 require_once "include/config.php3";
 /** Main include file for using session management function on a page */
