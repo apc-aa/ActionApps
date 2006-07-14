@@ -2,7 +2,7 @@
 # $Id$
 # Language: HR
 # This file was created automatically by the Mini GetText environment
-# on 22.11.2005 17:38
+# on 14.7.2006 13:20
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -13,6 +13,11 @@ $mgettext_lang = "hr";
 # Unused messages
 $_m["index of item within view"]
  = "indeks stavki unutar pogleda";
+
+$_m["Alias for comment ID<br>\n"
+   ."                             <i>Usage: </i>in form code<br>\n"
+   ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"]
+ = "Sinonim za oznaku komentara";
 
 # End of unused messages
 # ./slice.php3, row 177
@@ -39,8 +44,8 @@ $_m["number of current page (on pagescroller)"]
 $_m["page length (number of items)"]
  = "";
 
-# ./slice.php3, row 560
-# include/view.php3, row 496
+# ./slice.php3, row 562
+# include/view.php3, row 498
 $_m["No item found"]
  = "Nije pronaðena stavka";
 
@@ -52,98 +57,104 @@ $_m["Select Category "]
 $_m["All categories"]
  = "Sve kategorije";
 
-# include/discussion.php3, row 135, 180
+# include/discussion.php3, row 196, 241
 $_m["Show selected"]
  = "Prikaži odabrano";
 
-# include/discussion.php3, row 136, 182
+# include/discussion.php3, row 197, 243
 $_m["Show all"]
  = "Prikaži sve";
 
-# include/discussion.php3, row 138, 184
+# include/discussion.php3, row 199, 245
 $_m["Add new"]
  = "Dodajte novo";
 
-# include/discussion.php3, row 144
+# include/discussion.php3, row 205
 $_m["Alias for subject of the discussion comment"]
  = "Sinonim za naslov komentara diskusije";
 
-# include/discussion.php3, row 145
+# include/discussion.php3, row 206
 $_m["Alias for text of the discussion comment"]
  = "Sinonim za tekst komentara diskusije";
 
-# include/discussion.php3, row 146
+# include/discussion.php3, row 207
 $_m["Alias for written by"]
  = "Sininim za napisao/la";
 
-# include/discussion.php3, row 147
+# include/discussion.php3, row 208
 $_m["Alias for author's e-mail"]
  = "Sininim za e-mail autora/ice";
 
-# include/discussion.php3, row 148
+# include/discussion.php3, row 209
 $_m["Alias for url address of author's www site"]
  = "Sinonim za web adresu web stranica autora/ice";
 
-# include/discussion.php3, row 149
+# include/discussion.php3, row 210
 $_m["Alias for description of author's www site"]
  = "Sinonim za opis web stranica autora/ice";
 
-# include/discussion.php3, row 150
+# include/discussion.php3, row 211
 $_m["Alias for publish date"]
  = "Sinonim za objavljeno dana";
 
-# include/discussion.php3, row 151
+# include/discussion.php3, row 212
 $_m["Alias for IP address of author's computer"]
  = "Sinonim za IP adresu raèunala autora/ice";
 
-# include/discussion.php3, row 152
+# include/discussion.php3, row 213
 $_m["Alias for checkbox used for choosing discussion comment"]
  = "Sinonim za kuæicu korištenu za odabir komentara diskusije";
 
-# include/discussion.php3, row 153
+# include/discussion.php3, row 214
 $_m["Alias for images"]
  = "Sinonim za slikovne datoteke";
 
-# include/discussion.php3, row 154, 155
+# include/discussion.php3, row 215
 $_m["Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
-   ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"]
- = "Sinonim za oznaku komentara";
+   ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"]
+ = "";
 
-# include/discussion.php3, row 156
+# include/discussion.php3, row 216
+$_m["Alias for comment ID (the same as _#DITEM_ID<br>)\n"
+   ."                             <i>Usage: </i>in form code<br>\n"
+   ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"]
+ = "";
+
+# include/discussion.php3, row 217
 $_m["Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"]
  = "Sinonim za stavku";
 
-# include/discussion.php3, row 157
+# include/discussion.php3, row 218
 $_m["Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"]
  = "Sinonim za vezu na tekst kometara diskusije";
 
-# include/discussion.php3, row 158
+# include/discussion.php3, row 219
 $_m["Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"]
  = "Sinonim za vezu na formu";
 
-# include/discussion.php3, row 159
+# include/discussion.php3, row 220
 $_m["Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"]
  = "Sinonim za vezu na diskusije";
 
-# include/discussion.php3, row 160
+# include/discussion.php3, row 221
 $_m["Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"]
  = "Sinonim za gumbe Prikaži sve, Prikaži odabrano, Dodaj novo";
 
-# include/discussion.php3, row 302
+# include/discussion.php3, row 374
 $_m["3rd parameter filled in DiscussionMailList field"]
  = "treæi parametar ispunjen u polju mailimng lista diskusija";
 
-# include/discussion.php3, row 304
+# include/discussion.php3, row 376
 $_m["%1th parameter filled in DiscussionMailList field"]
  = "prvi parametar ispunjen u polju mailimng lista diskusija";
 
@@ -247,19 +258,19 @@ $_m["Constant level (used for hierachical constants)"]
 $_m["Alias for %1"]
  = "Sinonim za %1";
 
-# include/item.php3, row 1107
+# include/item.php3, row 1103
 $_m["on"]
  = "Ukljuèeno";
 
-# include/item.php3, row 1107
+# include/item.php3, row 1103
 $_m["off"]
  = "Iskljuèeno";
 
-# include/item.php3, row 1229
+# include/item.php3, row 1225
 $_m["Back"]
  = "Ntrag";
 
-# include/item.php3, row 1230
+# include/item.php3, row 1226
 $_m["Home"]
  = "Povratak na poèetnu stranicu";
 
@@ -276,7 +287,7 @@ $_m["Previous"]
 $_m["Next"]
  = "Slijedeæe";
 
-# include/itemview.php3, row 279
+# include/itemview.php3, row 296
 $_m["No comment was selected"]
  = "Nije odabran nijedan komentar";
 

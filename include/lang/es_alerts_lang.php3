@@ -2,7 +2,7 @@
 # $Id$
 # Language: ES
 # This file was created automatically by the Mini GetText environment
-# on 22.11.2005 17:28
+# on 14.7.2006 13:19
 
 # Do not change this file otherwise than by typing translations on the right of =
 
@@ -11,107 +11,177 @@
 $mgettext_lang = "es";
 
 # Unused messages
-# End of unused messages
-# modules/alerts/synchro2.php3, row 43
-# modules/alerts/addusers.php3, row 73
-# modules/alerts/cf_common.php3, row 69
-$_m["How often"]
- = "Frecuencia";
-
-# modules/alerts/synchro2.php3, row 45, 53
-$_m["How often for {ALERNAME}"]
- = "Frecuencia para {ALERNAME}";
-
-# modules/alerts/synchro2.php3, row 50
-$_m["not subscribed"]
- = "no suscrito";
-
-# modules/alerts/synchro2.php3, row 67
-# modules/alerts/menu.php3, row 117
-# modules/alerts/tableviews.php3, row 101
-# modules/alerts/send_emails.php3, row 145
-$_m["Selections"]
- = "Selecciones";
-
-# modules/alerts/synchro2.php3, row 68
-$_m["Selections for {ALERNAME}"]
- = "Selecciones para {ALERNAME}";
-
-# modules/alerts/synchro2.php3, row 75
-$_m["Selecetion IDs for {ALERNAME}"]
- = "IDs selecciones para {ALERNAME}";
-
-# modules/alerts/synchro2.php3, row 195
-$_m["%1 field(s) added"]
- = "%1 campo(s) añadido(s)";
-
-# modules/alerts/synchro2.php3, row 221
-$_m["%1 field(s) and %2 constant group(s) deleted"]
- = "%1 campo(s) y %2 grupo(s) de constantes borrado(s)";
-
-# modules/alerts/synchro2.php3, row 248
-$_m["not set"]
- = "no activado";
-
-# modules/alerts/addusers.php3, row 43
 $_m["Collection Form Wizard"]
  = "Colección desde asistente";
 
-# modules/alerts/addusers.php3, row 53
 $_m["Add Users"]
  = "Añadir Usuarios";
 
-# modules/alerts/addusers.php3, row 57
 $_m["Some errors occured: "]
  = "Se produjeron Errores:";
 
-# modules/alerts/addusers.php3, row 62
 $_m["Enter email addresses one on a row, you may add first and last name separated by whitespace (spaces, tabs), e.g."]
  = "Escriba las direcciones email, una por fila. Puede añadir nombres y apellidos separados por espacios: ";
 
-# modules/alerts/addusers.php3, row 68
 $_m["Proove the email addresses format is correct."]
  = "Comprobar que el formato de las direcciones es correcto";
 
-# modules/alerts/addusers.php3, row 75
 $_m["Confirmation"]
  = "Confirmación";
 
-# modules/alerts/addusers.php3, row 76
 $_m["Send a confirmation email to users (recommended)."]
  = "Enviar mensaje de confirmación a los usuarios (recomendado).";
 
-# modules/alerts/addusers.php3, row 77
 $_m["Subscribe users immediately (use carefully)."]
  = "Suscribir immediatamente (use con cuidado).";
 
-# modules/alerts/addusers.php3, row 80
 $_m["Set the bin, into which the users will be added, on Alerts Admin."]
  = "Asignar la carpeta donde se añaden los usuarios en Admin Alertas.";
 
-# modules/alerts/addusers.php3, row 84
 $_m["Go"]
  = "Adelante";
 
-# modules/alerts/addusers.php3, row 122
 $_m["%1 new users were created and %2 users were subscribed (including the new ones)."]
  = "%1 nuevos usuarios creados y %2 usuarios suscritos (incluyendo los nuevos).";
 
-# modules/alerts/addusers.php3, row 137
 $_m["is already in the database with another name: "]
  = "ya está en la base de datos con otro nombre:";
 
-# modules/alerts/addusers.php3, row 160
 $_m["is already subscribed to this collection.<br>"]
  = "ya está suscrito a esta colección.<br>";
+
+$_m["This table sets handling of not confirmed users. It's accessible only\n"
+   ."            to superadmins.\n"
+   ."            You can delete not confirmed users after a number of days and / or send them an email \n"
+   ."            demanding them to do confirmation\n"
+   ."            after a smaller number of days. To switch either of the actions off,\n"
+   ."            set number of days to 0. The two last fields are for your information only.<br>\n"
+   ."            <br>\n"
+   ."            To run the script, you must have cron set up with a row running\n"
+   ."            misc/alerts/admin_mails.php3.<br>\n"
+   ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
+ = "Esta tabla configura la manera como se manejan o no los usuarios confirmados. Solamente pueden acceder a ella los superadministradores. Usted puede borrar usuarios no confirmados después de un número de días y/o enviarles un correo-e solicitando una confirmación después de un número menor de días. Para apagar alguna de las funciones defina el número de días como 0. Los dos últimos campos son para su información solamente.<br>\n"
+   ."            <br>\n"
+   ."            Para ejecutar el script, Usted debe configurar el cron con una file ejecutando misc/alerts/admin_mails.php3.<br>\n"
+   ."            Para mayor información, consulte <a href='http://apc-aa.sourceforge.net/faq/#1389'>el FAQ</a>.";
+
+$_m["Example"]
+ = "Ejemplo";
+
+$_m["digest"]
+ = "resumen";
+
+$_m["Define selections in slices from which you want to send Alerts, \n"
+   ."        in views of type Alerts Selection Set"]
+ = "Define las selecciones en los canales desde donde Usted desea enviar las alertas, utilizando las vistas de la Selección de Alertas";
+
+# End of unused messages
+# modules/alerts/menu.php3, row 53, 54
+# modules/alerts/tableviews.php3, row 149, 150
+$_m["Alerts Settings"]
+ = "Configuración Alertas";
+
+# modules/alerts/menu.php3, row 87
+$_m["AA"]
+ = "";
+
+# modules/alerts/menu.php3, row 88
+$_m["AA Administration"]
+ = "Administración AA";
+
+# modules/alerts/menu.php3, row 101
+# modules/alerts/tableviews.php3, row 254, 255
+$_m["Alerts Admin"]
+ = "Admin Alertas";
+
+# modules/alerts/menu.php3, row 105
+$_m["Settings"]
+ = "Configuración";
+
+# modules/alerts/menu.php3, row 108
+# modules/alerts/send_emails.php3, row 126
+# modules/alerts/synchro2.php3, row 66
+# modules/alerts/tableviews.php3, row 101
+$_m["Selections"]
+ = "Selecciones";
+
+# modules/alerts/menu.php3, row 112
+$_m["Send emails"]
+ = "Enviar correos-e";
+
+# modules/alerts/menu.php3, row 115
+$_m["Reader management"]
+ = "Administración Suscriptores";
+
+# modules/alerts/menu.php3, row 116
+$_m["Documentation"]
+ = "Documentación";
+
+# modules/alerts/menu.php3, row 118
+$_m["Common"]
+ = "Común";
+
+# modules/alerts/menu.php3, row 120
+$_m["Email templates"]
+ = "Plantillas de correo";
+
+# modules/alerts/send_emails.php3, row 53
+$_m["Send now an example alert email to"]
+ = "Enviar un mensaje de prueba ahora a";
+
+# modules/alerts/send_emails.php3, row 62
+# modules/alerts/cf_common.php3, row 49
+$_m["Email"]
+ = "Correo-e";
+
+# modules/alerts/send_emails.php3, row 63, 68
+$_m["as if"]
+ = "como sí";
+
+# modules/alerts/send_emails.php3, row 64, 69, 84
+$_m["Go!"]
+ = "Ir";
+
+# modules/alerts/send_emails.php3, row 67
+$_m["Reader"]
+ = "";
+
+# modules/alerts/send_emails.php3, row 76
+$_m["Send alerts"]
+ = "Envíe alertas";
+
+# modules/alerts/send_emails.php3, row 83
+$_m["Send now alerts to all users subscribed to "]
+ = "Enviar ahora las alertas a todos los suscriptores";
+
+# modules/alerts/send_emails.php3, row 83
+$_m["Warning: This is a real command!"]
+ = "Atención: Este es un comando real!";
+
+# modules/alerts/send_emails.php3, row 87
+$_m["Last time the alerts were sent on:"]
+ = "Ultima vez que las alertas fueron enviadas";
+
+# modules/alerts/send_emails.php3, row 97
+$_m["%1 email(s) sent"]
+ = "%1 correo(s) enviados";
+
+# modules/alerts/send_emails.php3, row 124
+$_m["Slice"]
+ = "Canal";
+
+# modules/alerts/send_emails.php3, row 125
+$_m["View (Selection set)"]
+ = "Ver (Selección)";
+
+# modules/alerts/send_emails.php3, row 131
+$_m["Define selections in slices from which you want to send Alerts,\n"
+   ."        in views of type Alerts Selection Set"]
+ = "";
 
 # modules/alerts/cf_common.php3, row 44
 $_m["Language"]
  = "Idioma";
-
-# modules/alerts/cf_common.php3, row 49
-$_m["Email"]
- = "Correo-e";
 
 # modules/alerts/cf_common.php3, row 54
 $_m["Password"]
@@ -125,6 +195,11 @@ $_m["First name"]
 $_m["Last name"]
  = "Apellidos";
 
+# modules/alerts/cf_common.php3, row 69
+# modules/alerts/synchro2.php3, row 42
+$_m["How often"]
+ = "Frecuencia";
+
 # modules/alerts/cf_common.php3, row 75
 $_m["Change password"]
  = "Cambiar clave";
@@ -133,77 +208,63 @@ $_m["Change password"]
 $_m["Retype new password"]
  = "Confirme nueva clave";
 
-# modules/alerts/menu.php3, row 62, 63
-# modules/alerts/tableviews.php3, row 149, 150
-$_m["Alerts Settings"]
- = "Configuración Alertas";
-
-# modules/alerts/menu.php3, row 96
-$_m["AA"]
- = "";
-
-# modules/alerts/menu.php3, row 97
-$_m["AA Administration"]
- = "Administración AA";
-
-# modules/alerts/menu.php3, row 110
-# modules/alerts/tableviews.php3, row 254, 255
-$_m["Alerts Admin"]
- = "Admin Alertas";
-
-# modules/alerts/menu.php3, row 114
-$_m["Settings"]
- = "Configuración";
-
-# modules/alerts/menu.php3, row 121
-$_m["Send emails"]
- = "Enviar correos-e";
-
-# modules/alerts/menu.php3, row 124
-$_m["Reader management"]
- = "Administración Suscriptores";
-
-# modules/alerts/menu.php3, row 125
-$_m["Documentation"]
- = "Documentación";
-
-# modules/alerts/menu.php3, row 127
-$_m["Common"]
- = "Común";
-
-# modules/alerts/menu.php3, row 129
-$_m["Email templates"]
- = "Plantillas de correo";
-
-# modules/alerts/util.php3, row 58
+# modules/alerts/util.php3, row 57
 $_m["instant"]
  = "instantáneo";
 
-# modules/alerts/util.php3, row 60
+# modules/alerts/util.php3, row 59
 $_m["daily"]
  = "diario";
 
-# modules/alerts/util.php3, row 61
+# modules/alerts/util.php3, row 60
 $_m["weekly"]
  = "semanal";
 
-# modules/alerts/util.php3, row 62
+# modules/alerts/util.php3, row 61
 $_m["monthly"]
  = "mensual";
 
-# modules/alerts/util.php3, row 68
+# modules/alerts/util.php3, row 67
 $_m["Active"]
  = "Aprobados";
 
-# modules/alerts/util.php3, row 69
+# modules/alerts/util.php3, row 68
 $_m["Holding bin"]
  = "Por aprobar";
 
-# modules/alerts/util.php3, row 70
+# modules/alerts/util.php3, row 69
 $_m["Trash bin"]
  = "Papelera";
 
-# modules/alerts/tabledit.php3, row 64
+# modules/alerts/synchro2.php3, row 44, 52
+$_m["How often for {ALERNAME}"]
+ = "Frecuencia para {ALERNAME}";
+
+# modules/alerts/synchro2.php3, row 49
+$_m["not subscribed"]
+ = "no suscrito";
+
+# modules/alerts/synchro2.php3, row 67
+$_m["Selections for {ALERNAME}"]
+ = "Selecciones para {ALERNAME}";
+
+# modules/alerts/synchro2.php3, row 74
+$_m["Selecetion IDs for {ALERNAME}"]
+ = "IDs selecciones para {ALERNAME}";
+
+# modules/alerts/synchro2.php3, row 194
+$_m["%1 field(s) added"]
+ = "%1 campo(s) añadido(s)";
+
+# modules/alerts/synchro2.php3, row 220
+$_m["%1 field(s) and %2 constant group(s) deleted"]
+ = "%1 campo(s) y %2 grupo(s) de constantes borrado(s)";
+
+# modules/alerts/synchro2.php3, row 247
+$_m["not set"]
+ = "no activado";
+
+# modules/alerts/tabledit.php3, row 68
 $_m["You have not permissions to add slice"]
  = "Usted no tiene permisos en este canal";
 
@@ -306,7 +367,7 @@ $_m["last delete not confirmed"]
 # modules/alerts/tableviews.php3, row 304
 $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            to superadmins.\n"
-   ."            You can delete not confirmed users after a number of days and / or send them an email \n"
+   ."            You can delete not confirmed users after a number of days and / or send them an email\n"
    ."            demanding them to do confirmation\n"
    ."            after a smaller number of days. To switch either of the actions off,\n"
    ."            set number of days to 0. The two last fields are for your information only.<br>\n"
@@ -314,126 +375,70 @@ $_m["This table sets handling of not confirmed users. It's accessible only\n"
    ."            To run the script, you must have cron set up with a row running\n"
    ."            misc/alerts/admin_mails.php3.<br>\n"
    ."            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."]
- = "Esta tabla configura la manera como se manejan o no los usuarios confirmados. Solamente pueden acceder a ella los superadministradores. Usted puede borrar usuarios no confirmados después de un número de días y/o enviarles un correo-e solicitando una confirmación después de un número menor de días. Para apagar alguna de las funciones defina el número de días como 0. Los dos últimos campos son para su información solamente.<br>\n"
-   ."            <br>\n"
-   ."            Para ejecutar el script, Usted debe configurar el cron con una file ejecutando misc/alerts/admin_mails.php3.<br>\n"
-   ."            Para mayor información, consulte <a href='http://apc-aa.sourceforge.net/faq/#1389'>el FAQ</a>.";
+ = "";
 
-# modules/alerts/tableviews.php3, row 367
+# modules/alerts/tableviews.php3, row 368
 $_m["no"]
  = "";
 
-# modules/alerts/tableviews.php3, row 367
+# modules/alerts/tableviews.php3, row 368
 $_m["yes"]
  = "si";
 
-# modules/alerts/send_emails.php3, row 73
-$_m["Example"]
- = "Ejemplo";
-
-# modules/alerts/send_emails.php3, row 79
-$_m["Send now an example alert email to"]
- = "Enviar un mensaje de prueba ahora a";
-
-# modules/alerts/send_emails.php3, row 83
-$_m["as if"]
- = "como sí";
-
-# modules/alerts/send_emails.php3, row 85, 110
-$_m["Go!"]
- = "Ir";
-
-# modules/alerts/send_emails.php3, row 91
-$_m["Send alerts"]
- = "Envíe alertas";
-
-# modules/alerts/send_emails.php3, row 96
-$_m["Last time the alerts were sent on:"]
- = "Ultima vez que las alertas fueron enviadas";
-
-# modules/alerts/send_emails.php3, row 107
-$_m["Send now alerts to all users subscribed to "]
- = "Enviar ahora las alertas a todos los suscriptores";
-
-# modules/alerts/send_emails.php3, row 109
-$_m["digest"]
- = "resumen";
-
-# modules/alerts/send_emails.php3, row 111
-$_m["Warning: This is a real command!"]
- = "Atención: Este es un comando real!";
-
-# modules/alerts/send_emails.php3, row 115
-$_m["%1 email(s) sent"]
- = "%1 correo(s) enviados";
-
-# modules/alerts/send_emails.php3, row 143
-$_m["Slice"]
- = "Canal";
-
-# modules/alerts/send_emails.php3, row 144
-$_m["View (Selection set)"]
- = "Ver (Selección)";
-
-# modules/alerts/send_emails.php3, row 150
-$_m["Define selections in slices from which you want to send Alerts, \n"
-   ."        in views of type Alerts Selection Set"]
- = "Define las selecciones en los canales desde donde Usted desea enviar las alertas, utilizando las vistas de la Selección de Alertas";
-
-# modules/alerts/synchro.php3, row 43
+# modules/alerts/synchro.php3, row 42
 $_m["Slice Synchro"]
  = "Sincronización Canal";
 
-# modules/alerts/synchro.php3, row 48
+# modules/alerts/synchro.php3, row 47
 $_m["Synchronization with Reader Management Slice"]
  = "Sincronización con el canal de Administración de Lectura";
 
-# modules/alerts/synchro.php3, row 73
+# modules/alerts/synchro.php3, row 72
 $_m["Not Yet Set"]
  = "No configurado aún";
 
-# modules/alerts/synchro.php3, row 82
+# modules/alerts/synchro.php3, row 81
 $_m["Choose Reader Management Slice"]
  = "Seleccione el Canal de Administración de Lectura";
 
-# modules/alerts/synchro.php3, row 83
+# modules/alerts/synchro.php3, row 82
 $_m["This Alerts Collection takes user data from the slice"]
  = "Esta colección de alertas toma información del usuario desde el canal";
 
-# modules/alerts/synchro.php3, row 89
+# modules/alerts/synchro.php3, row 88
 $_m["Change to: "]
  = "Cambiar a:";
 
-# modules/alerts/synchro.php3, row 95
+# modules/alerts/synchro.php3, row 94
 $_m["and delete the %1-specific fields from %2"]
  = "y borre los %1-campos específicos de %2";
 
-# modules/alerts/synchro.php3, row 99
+# modules/alerts/synchro.php3, row 98
 $_m["Change"]
  = "Cambiar";
 
-# modules/alerts/synchro.php3, row 109
+# modules/alerts/synchro.php3, row 108
 $_m["Add %1-specific fields to %2"]
  = "Añada %1-campos específicos de %2";
 
-# modules/alerts/synchro.php3, row 112
+# modules/alerts/synchro.php3, row 111
 $_m["Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."]
  = "Añada solamente campos con IDs que aún no existen en el canal. Refresque el grupo de constantes que contiene las selecciones si ya existen.";
 
-# modules/alerts/synchro.php3, row 117
+# modules/alerts/synchro.php3, row 116
 $_m["Field Name"]
  = "Nombre de Campo";
 
-# modules/alerts/synchro.php3, row 118
+# modules/alerts/synchro.php3, row 117
 $_m["Field ID"]
  = "ID Campo";
 
-# modules/alerts/synchro.php3, row 128
+# modules/alerts/synchro.php3, row 127
 $_m["Add or refresh fields"]
  = "Añada o refresque campos";
 
-# modules/alerts/synchro.php3, row 129
+# modules/alerts/synchro.php3, row 128
 $_m["This command can not be used until you choose the Reader Management Slice."]
  = "Este comando no puede ser utilizado hasta que Usted no seleccione el Canal de Administración de Lectura";
 
