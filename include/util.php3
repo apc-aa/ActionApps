@@ -2024,7 +2024,7 @@ function get_if($value, $else, $else2='aa_NoNe') {
  *  file, for better version informations
  */
 function aa_version() {
-    return 'ActionApps 2.8.1 ($Date$, $Revision$)';
+    return 'ActionApps 2.10.0 ($Date$, $Revision$)';
 }
 
 // file_get_contents works in PHP >=4.3.0
