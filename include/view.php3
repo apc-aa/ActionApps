@@ -471,6 +471,14 @@ function GetViewFromDB($view_param, &$cache_sid) {
     // gets view data
     $view_info     = GetViewInfo($vid);
 
+    // user could make the view to display view ID before and after the view output
+    // which is usefull mainly for debugging. See view setting in admin interface
+    $comment_begin = $comment_end = '';
+    if ( $debug OR ($view_info['flag'] & VIEW_FLAG_COMMENTS) ) {
+        $comment_begin = "<!-- $vid -->";
+        $comment_end   = "<!-- /$vid -->";
+    }
+
     if (!$view_info OR ($view_info['deleted']>0)) {
         trace("-");
         return false;
@@ -543,7 +551,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                 $ret      = $noitem_msg;
             }
             trace("-");
-            return $ret;
+            return $comment_begin. $ret . $comment_end;
 
         case 'discus':
             // create array of discussion parameters
@@ -583,7 +591,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
             $itemview = new itemview($format,"",$aliases,null,"","",$durl, $disc);
             $ret      = $itemview->get_output_cached("discussion");
             trace("-");
-            return($ret);
+            return $comment_begin. $ret. $comment_end;
 
         case 'links':              // links       (module Links)
         case 'categories':         // categories  (module Likns)
@@ -620,11 +628,11 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
             if ( !isset($zids) || $zids->count() <= 0) {
                 $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
-                return $ret;
+                return $comment_begin. $ret. $comment_end;
             }
 
             $ret = $itemview->get_output_cached($itemview_type);
-            return $ret;
+            return $comment_begin. $ret. $comment_end;
 
         case 'seetoo':
 
@@ -732,7 +740,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
             }
             // 	if ( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
             trace("-");
-            return $ret;
+            return $comment_begin. $ret. $comment_end;
 
         case 'static':
             // $format = GetViewFormat($view_info);  // not needed now
@@ -741,7 +749,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
             $formatstring = $view_info["odd"];          // it is better to copy format-
             $ret = $CurItem->unalias( $formatstring );  // string to variable - unalias
             trace("-");
-            return $ret;
+            return $comment_begin. $ret. $comment_end;
     }                                             // uses call by reference
 }
 ?>

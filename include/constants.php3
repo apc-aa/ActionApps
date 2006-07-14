@@ -368,6 +368,9 @@ define( "STATE_FEEDABLE_UPDATE_LOCKED",4);
 /** relation table flags */
 define( "REL_FLAG_FEED", 2 );    // 2 - just to be compatible with content table
 
+/** view table flags */
+define( "VIEW_FLAG_COMMENTS", 1 );    // display HTML comments before and after the view
+
 function inputFeedModes() {
   return array( STATE_FEEDABLE               => _m("Feed"),
                 STATE_UNFEEDABLE             => _m("Do not feed"),
@@ -422,7 +425,7 @@ function getViewFields() {
     $VIEW_FIELDS["cond3op"]         = GetViewFieldDef("text",  "quoted", "text",   "none"  );
     $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text",  "quoted", "text",   "none"  );
     $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number","quoted", "text",   "field" );
-    $VIEW_FIELDS["flag"]            = GetViewFieldDef("number","quoted", "text",   "field" );
+    $VIEW_FIELDS["flag"]            = GetViewFieldDef("",      "quoted", "bool",   "chbox" );
     $VIEW_FIELDS["scroller"]        = GetViewFieldDef("",      "quoted", "bool",   "chbox" );
     $VIEW_FIELDS["aditional"]       = GetViewFieldDef("text",  "quoted", "text",   "area"  );
     $VIEW_FIELDS["aditional2"]      = GetViewFieldDef("text",  "quoted", "text",   "area"  );
@@ -487,8 +490,8 @@ function getViewTypes () {
                          "cond3op" => " " ,
                          "cond3cond" => " " ,
                          "listlen" => _m("Listing length") ,
-                         "noitem_msg" => _m("HTML code for \"No item found\" message")
-    //                     "flag" => _m("Flag") ,
+                         "noitem_msg" => _m("HTML code for \"No item found\" message"),
+                         "flag" => _m("Add view ID as HTML comment")
     // TODO                     "scroller" => _m("Display page scroller") ,
     //                     "aditional" => _m("Additional") );
                        ),
@@ -507,7 +510,8 @@ function getViewTypes () {
                          "cond3field" => _m("Condition 3") ,
                          "cond3op" => " " ,
                          "cond3cond" => " " ,
-                         "noitem_msg" => _m("HTML code for \"No item found\" message")
+                         "noitem_msg" => _m("HTML code for \"No item found\" message"),
+                         "flag" => _m("Add view ID as HTML comment")
                         ),
 
         'discus' => array( 'name' => _m("Discussion"),
@@ -529,18 +533,19 @@ function getViewTypes () {
                            "aditional6" => array (
                                "label" => _m("E-mail template"),
                                "input" => "field",
-                               "help" => _m("Number of e-mail template used for posting new comments to users"))
+                               "help" => _m("Number of e-mail template used for posting new comments to users")),
+                           "flag" => _m("Add view ID as HTML comment")
                          ),
 
         // discussion to mail
         'disc2mail' => array( 'name' => _m("Discussion To Mail"),
-                                  "aditional" => _m("From: (email header)"),
-                                  "aditional2" => _m("Reply-To:"),
-                                  "aditional3" => _m("Errors-To:"),
-                                  "aditional4" => _m("Sender:"),
-                                  "aditional5" => _m("Mail Subject:"),
-                                  "even" => _m("Mail Body:")
-                                  ),
+                              "aditional" => _m("From: (email header)"),
+                              "aditional2" => _m("Reply-To:"),
+                              "aditional3" => _m("Errors-To:"),
+                              "aditional4" => _m("Sender:"),
+                              "aditional5" => _m("Mail Subject:"),
+                              "even" => _m("Mail Body:")
+                            ),
 
     /*  TODO
         'seetoo' => array( 'name' => _m("Related item"),
@@ -585,7 +590,8 @@ function getViewTypes () {
                           "cond3cond" => " " ,
                           "listlen" => _m("Listing length") ,
                           "noitem_msg" => _m("HTML code for \"No item found\" message"),
-                          "even_odd_differ" => _m("Use different HTML code for even rows")
+                          "even_odd_differ" => _m("Use different HTML code for even rows"),
+                          "flag" => _m("Add view ID as HTML comment")
                         ),
 
         'rss' => array( 'name' => _m("RSS exchange"),
@@ -610,7 +616,8 @@ function getViewTypes () {
                       ),
 
         'static' => array( 'name' => _m("Static page"),
-                           "odd" => _m("HTML code")
+                           "odd" => _m("HTML code"),
+                           "flag" => _m("Add view ID as HTML comment")
                          ),
 
         // for javascript list of items
@@ -663,7 +670,8 @@ function getViewTypes () {
                              "cond3op" => " " ,
                              "cond3cond" => " " ,
                              "listlen" => _m("Listing length") ,
-                             "noitem_msg" => _m("HTML code for \"No item found\" message")
+                             "noitem_msg" => _m("HTML code for \"No item found\" message"),
+                             "flag" => _m("Add view ID as HTML comment")
                            ),
 
         // this view uses also "aditonal" and "aditional3" for the "Group by"
@@ -692,7 +700,8 @@ function getViewTypes () {
                            "group_title" => _m("Group title format") ,
                            "group_bottom" => _m("Group bottom format") ,
                            "listlen" => _m("Max number of items"),
-                           "noitem_msg" => _m("HTML code for \"No item found\" message")
+                           "noitem_msg" => _m("HTML code for \"No item found\" message"),
+                           "flag" => _m("Add view ID as HTML comment")
                          ),
 
         // View used for listing of ursl - mainly for listing items for index
@@ -719,7 +728,8 @@ function getViewTypes () {
                          "cond3op" => " " ,
                          "cond3cond" => " " ,
                          "listlen" => _m("Listing length") ,
-                         "noitem_msg" => _m("HTML code for \"No item found\" message")
+                         "noitem_msg" => _m("HTML code for \"No item found\" message"),
+                         "flag" => _m("Add view ID as HTML comment")
                        ),
 
         // View used in Links module - displays set of link
@@ -749,7 +759,8 @@ function getViewTypes () {
                           "cond3op" => " " ,
                           "cond3cond" => " " ,
                           "listlen" => _m("Listing length") ,
-                          "noitem_msg" => _m("HTML code for \"No item found\" message")
+                          "noitem_msg" => _m("HTML code for \"No item found\" message"),
+                          "flag" => _m("Add view ID as HTML comment")
                         ),
 
         // View used in Links module - displays set of categories
@@ -779,7 +790,8 @@ function getViewTypes () {
                                "cond3op" => " " ,
                                "cond3cond" => " " ,
                                "listlen" => _m("Listing length") ,
-                               "noitem_msg" => _m("HTML code for \"No item found\" message")
+                               "noitem_msg" => _m("HTML code for \"No item found\" message"),
+                               "flag" => _m("Add view ID as HTML comment")
                              ),
         // View used for creating input forms
         'inputform' => array( 'name' => _m("Input Form"),
@@ -787,8 +799,9 @@ function getViewTypes () {
                          "odd" => _m("New item form template") ,
                          "even_odd_differ" => _m("Use different template for editing") ,
                          "even" => _m("Edit item form template"),
-                         "remove_string" => _m("Remove strings") ,
+                         "remove_string" => _m("Remove strings"),
 //                         "after" => _m("Bottom HTML") ,
+                         "flag" => _m("Add view ID as HTML comment")
                         ),
     );
 }
