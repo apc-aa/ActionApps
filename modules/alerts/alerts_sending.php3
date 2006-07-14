@@ -344,8 +344,10 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
             $als->addTextAlias("_#UNSBFORM", alerts_con_url($collection->getSliceUrl(), "au=ABCDE&c=".$collection_id));
             $aliases = $als->getArray();
 
+            $item = new item('', $aliases);
+
             foreach ( (array)$emails as $email ) {
-                if (send_mail_from_table($collection->getEmailIdAlert(), $email, $aliases)) {
+                if (send_mail_from_table_inner($collection->getEmailIdAlert(), $email, $item)) {
                     $email_count[$collection_id]++;
                 }
             }
