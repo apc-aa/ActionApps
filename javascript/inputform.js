@@ -202,22 +202,30 @@ Array.prototype.setStyle = function(propName,val) {
     }
 }
 
-function TabWidgetToggle(class2togle) {
+// displays all tags 'classtoshow' of 'type', which is in 'where' id
+// and hide all such tags which class begins with 'classmasktohide'
+function ShowThisTagClass(where,type,classtoshow,classmasktohide) {
     // hide all input tab rows except the row of "class2togle"
-    var yo = document.getElementById("inputtabrows").getElementsByTagName("tr");
+    var yo = document.getElementById(where).getElementsByTagName(type);
     var yoclass;
 
     // hide all parts except the selected one
     for (var i=0; i < yo.length; i++) {
         yoclass = yo[i].className;
-        if ( yoclass == class2togle ) {
+        if ( yoclass == classtoshow ) {
             yo[i].style.display = '';
-        } else if ( yoclass && (yoclass.substring(0,7) == 'formrow') ) {
+        } else if ( yoclass && (yoclass.substring(0,classmasktohide.length) == classmasktohide) ) {
             yo[i].style.display = 'none';
         }
     }
+}
 
-    yo = document.getElementById("formtabs").getElementsByTagName("a");
+function TabWidgetToggle(class2togle) {
+    // hide all input tab rows except the row of "class2togle"
+    ShowThisTagClass('inputtabrows', 'tr', class2togle, 'formrow');
+
+    var yo = document.getElementById("formtabs").getElementsByTagName("a");
+
     for (var i=0; i < yo.length; i++) {
         yo[i].className = 'tabsnonactiv';
     }
