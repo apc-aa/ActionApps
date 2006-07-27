@@ -27,6 +27,7 @@ http://www.apc.org/
 */
 
 require_once AA_INC_PATH."item.php3";
+require_once AA_INC_PATH."sliceobj.php3";
 require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."searchlib.php3";
@@ -217,7 +218,7 @@ class AA_Collection {
         return $this->$property;
     }
 
-    function getReaderSlice()    { return new slice($this->_get('reader_slice_id'));  }
+    function getReaderSlice()    { return AA_Slices::getSlice($this->_get('reader_slice_id'));  }
     function getAlertsModuleId() { return $this->_get('alerts_module_id');   }
     function getEmailIdWelcome() { return $this->_get('email_id_welcome'); }
     function getEmailIdAlert()   { return $this->_get('email_id_alert');   }
@@ -412,15 +413,15 @@ function get_view_settings_cached($vid) {
         return "";
     }
     if (!$cached_view_settings[$vid]) {
-        $view_info    = GetViewInfo($vid);
-        list($fields) = GetSliceFields( unpack_id($view_info["slice_id"]));
-        $slice_info   = GetSliceInfo( unpack_id($view_info["slice_id"]));
+        $view         = AA_Views::getView($vid);
+        $slice        = AA_Slices::getSlice(unpack_id($view->f("slice_id")));
+        $fields       = $slice->fields('record');
         $cached_view_settings[$vid] = array (
-            "lang"    => substr($slice_info["lang_file"],0,2),
-            "info"    => $view_info,
+            "lang"    => substr($slice->getfield('lang_file'),0,2),
+            "info"    => $view,
             "fields"  => $fields,
             "aliases" => GetAliasesFromFields($fields),
-            "format"  => GetViewFormat($view_info),
+            "format"  => $view->getViewFormat()
         );
     }
     return $cached_view_settings[$vid];
@@ -437,7 +438,6 @@ function get_view_settings_cached($vid) {
 function get_filter_output_cached($vid, $filter_settings, $zids) {
     global $cached_view_settings, $cached_filter_outputs;
 
-    //echo "zids"; print_r ($zids);
     if ($zids->count() == 0) {
         return "";
     }
@@ -446,13 +446,12 @@ function get_filter_output_cached($vid, $filter_settings, $zids) {
         // set language
         bind_mgettext_domain(AA_INC_PATH."lang/". $set["lang"]."_alerts_lang.php3", true);
         // $set["info"]["aditional2"] stores item URL
-        $item_url = $set["info"]["aditional2"];
+        $item_url = $set["info"]->f("aditional2");
         if (! $item_url) {
             $item_url = "You didn't set the item URL in the view $vid settings!";
         }
         $itemview   = new itemview($set["format"], $set["fields"], $set["aliases"], $zids, 0, 9999, $item_url);
         $items_text = $itemview->get_output ("view");
-    //echo "<h1>items $items_text</h1>"; print_r ($set["format"]); exit;
         //if (! strstr ($filter_settings, ","))
         $cached_filter_settings[$filter_settings] = $items_text;
     } else {
@@ -471,7 +470,7 @@ function get_filter_text_4_reader($readerContent, $filters, $cid) {
     if ($readerContent) {
         $user_filters_value = $readerContent->getValues( getAlertsField(FIELDID_FILTERS, $cid));
 
-        if ( !is_array($user_filters_value)) {
+        if ( empty($user_filters_value)) {
             return "";
         }
 

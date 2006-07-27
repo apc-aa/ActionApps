@@ -65,7 +65,7 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
     if ($zid) {               // id of new item defined
         // now we need to fill $item in order we can display item headline
         $content  = new ItemContent($zid);
-        $slice    = new slice($content->getSliceID());
+        $slice    = AA_Slices::getSlice($content->getSliceID());
         $aliases  = $slice->aliases();
         DefineBaseAliases($aliases, $content->getSliceID());  // _#JS_HEAD_, ...
         $item     = new item($content->getContent(),$aliases);
@@ -138,7 +138,7 @@ if ( $id ) {
     unset($content4id);
 }
 
-$slice = new slice($slice_id);
+$slice = AA_Slices::getSlice($slice_id);
 ValidateContent4Id($err, $slice, $action, $id);
 list($fields, $prifields) = $slice->fields();
 
@@ -255,7 +255,7 @@ if ($GLOBALS['debug']) huhl($content4id);
 if ( !$encap ) {
     $inputform_settings = array(
         'display_aa_begin_end' => true,
-        'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim($r_slice_headline).")",
+        'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim($slice->name()).")",
         'formheading'          => $mlx_formheading ); //added MLX
 }
 $inputform_settings['messages']            = array('err' => $err);

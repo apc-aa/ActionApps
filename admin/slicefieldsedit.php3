@@ -80,7 +80,7 @@ else         { $action = "edit"; }
 //   list ($fields, $prifields) = GetSliceFields ()
 //   $oldcontent4id
 
-$slice = new slice($slice_id);
+$slice = AA_Slices::getSlice($slice_id);
 ValidateContent4Id($err, $slice, $action, $id);
 list($fields, $prifields) = $slice->fields(null, true);
 
@@ -137,7 +137,7 @@ if ($edit) {
 if (!$encap) {
     $inputform_settings = array(
         'display_aa_begin_end' => true,
-        'page_title'           => _m("Slice Setting"). " (". trim($r_slice_headline).")",
+        'page_title'           => _m("Slice Setting"). " (". sliceid2name($slice_id).")",
     );
 }
 

@@ -44,7 +44,7 @@ $module_id = $slice_id;
 // (like Links, ...) it is not so confusing
 
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
-$slice = new slice($module_id);
+$slice = AA_Slices::getSlice($module_id);
 
 switch( $type ) {
     case 'users':

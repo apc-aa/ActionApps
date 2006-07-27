@@ -27,15 +27,16 @@ require_once menu_include();   //show navigation column depending on $show
 // ----------------------------------------------------------------------------------------
 
 function TV_PageBegin(&$config_arr) {
+    global $sess;
     if (! $config_arr["cond"] ) {
-        MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"), "standalone");
+        MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to this page"), "standalone");
         exit;
     }
 
     HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
     echo '<LINK rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
     echo "<TITLE>".$config_arr["title"]."</TITLE></HEAD>";
-    showMenu ($GLOBALS['aamenus'], $config_arr["mainmenu"], $config_arr["submenu"]);
+    showMenu($GLOBALS['aamenus'], $config_arr["mainmenu"], $config_arr["submenu"]);
     echo "<H1><B>" . $config_arr["caption"] . "</B></H1>";
 }
 
@@ -55,8 +56,7 @@ function showRSSFeedActions($feed_id) {
 }
 
 function displaySliceName($slice_id) {
-    global $allknownslices;
-    $slice    =& $allknownslices->addslice(unpack_id128($slice_id));
+    $slice = AA_Slices::getSlice(unpack_id128($slice_id));
     return $slice->jumpLink();
 }
 

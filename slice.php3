@@ -227,27 +227,27 @@ if (!$slice_info['even_odd_differ']) {
 // see fview and iview url parameters for this file (slice.php3)
 if ($fview || $iview) {
     if ($fview) {                       // use formating from view for fulltext
-        $fview_info = GetViewInfo($fview);
-        if ($fview_info AND ($fview_info['deleted']<1)) {
-            $slice_info['fulltext_format']        = $fview_info['odd'];
-            $slice_info['fulltext_format_top']    = $fview_info['before'];
-            $slice_info['fulltext_format_bottom'] = $fview_info['after'];
-            $slice_info['fulltext_remove']        = $fview_info['remove_string'];
+        $fview_info = AA_Views::getView($fview);
+        if ($fview_info AND ($fview_info->f('deleted')<1)) {
+            $slice_info['fulltext_format']        = $fview_info->f('odd');
+            $slice_info['fulltext_format_top']    = $fview_info->f('before');
+            $slice_info['fulltext_format_bottom'] = $fview_info->f('after');
+            $slice_info['fulltext_remove']        = $fview_info->f('remove_string');
         }
     }
     if ($iview) {                       // use formating from view for index
-        $iview_info = GetViewInfo($iview);
-        if ($iview_info AND ($iview_info['deleted']<1)) {
-            $slice_info['group_by']        = $iview_info['group_by1'];
-            $slice_info['gb_direction']    = $VIEW_SORT_DIRECTIONS[$iview_info['g1_direction']];  // views uses different sort codes (historical reasons)
-            $slice_info['category_format'] = $iview_info['group_title'];
-            $slice_info['category_bottom'] = $iview_info['group_bottom'];
-            $slice_info['compact_top']     = $iview_info['before'];
-            $slice_info['compact_bottom']  = $iview_info['after'];
-            $slice_info['compact_remove']  = $iview_info['remove_string'];
-            $slice_info['even_row_format'] = $iview_info['even'];
-            $slice_info['odd_row_format']  = $iview_info['odd'];
-            $slice_info['even_odd_differ'] = $iview_info['even_odd_differ'];
+        $iview_info = AA_Views::getView($iview);
+        if ($iview_info AND ($iview_info->f('deleted')<1)) {
+            $slice_info['group_by']        = $iview_info->f('group_by1');
+            $slice_info['gb_direction']    = $VIEW_SORT_DIRECTIONS[$iview_info->f('g1_direction')];  // views uses different sort codes (historical reasons)
+            $slice_info['category_format'] = $iview_info->f('group_title');
+            $slice_info['category_bottom'] = $iview_info->f('group_bottom');
+            $slice_info['compact_top']     = $iview_info->f('before');
+            $slice_info['compact_bottom']  = $iview_info->f('after');
+            $slice_info['compact_remove']  = $iview_info->f('remove_string');
+            $slice_info['even_row_format'] = $iview_info->f('even');
+            $slice_info['odd_row_format']  = $iview_info->f('odd');
+            $slice_info['even_odd_differ'] = $iview_info->f('even_odd_differ');
         }
     }
 }

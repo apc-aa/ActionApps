@@ -148,12 +148,12 @@ class manager extends storable_class {
      */
     function setDesign(&$format_strings, &$aliases, $manager_vid, $module_id) {
         if ( $manager_vid ) {
-            $view_info = GetViewInfo( $manager_vid );
-            if ( $view_info AND !($view_info['deleted']>0) ) {
-                $format_strings = GetViewFormat($view_info);
-                $this->messages['noitem_msg'] = $view_info['noitem_msg'];
+            $view = AA_Views::getView($manager_vid);
+            if ( $view AND !($view->f('deleted')>0) ) {
+                $format_strings = $view->getViewFormat();
+                $this->messages['noitem_msg'] = $view->f('noitem_msg');
                 if ( isset($this->scroller) )
-                    $this->scroller->metapage = $view_info['listlen'];
+                    $this->scroller->metapage = $view->f('listlen');
             }
         } else {
             // define JS_HEAD_, HEADLINE, SITEM_ID, ITEM_ID_ (if not set)

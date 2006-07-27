@@ -359,32 +359,6 @@ function GetViewGroup($view_info) {
   return false;                        // this is managed by GetViewSort()
 }
 
-function GetViewFormat($view_info, $selected_item='') {
-    $format['group_by']            = $view_info['group_by1'];
-    $format['category_format']     = $view_info['group_title'];
-    $format['category_bottom']     = $view_info['group_bottom'];
-    $format['compact_top']         = $view_info['before'];
-    $format['compact_bottom']      = $view_info['after'];
-    $format['compact_remove']      = $view_info['remove_string'];
-    $format['even_row_format']     = $view_info['even'];
-    $format['odd_row_format']      = $view_info['odd'];
-    $format['row_delimiter']       = $view_info['row_delimiter'];
-    $format['even_odd_differ']     = $view_info['even_odd_differ'];
-    $format['banner_position']     = $view_info['banner_position'];
-    $format['banner_parameters']   = $view_info['banner_parameters'];
-    $format['selected_item']       = $selected_item;
-    $format['id']                  = $view_info['slice_id'];
-    $format['vid']                 = $view_info['id'];
-
-    $format['calendar_start_date'] = $view_info['field1'];
-    $format['calendar_end_date']   = $view_info['field2'];
-    $format['aditional']           = $view_info['aditional'];
-    $format['aditional2']          = $view_info['aditional2'];
-    $format['aditional3']          = $view_info['aditional3'];
-    $format['calendar_type']       = $view_info['calendar_type'];
-    return $format;
-}
-
 /** Parses banner url parameter (for view.php3 as well as for slice.php3
  *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]
  *  (@see {@link http://apc-aa.sourceforge.net/faq/#219})
@@ -469,7 +443,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
     $selected_item = $view_param["selected"];      // used for boolean (1|0) _#SELECTED
     // alias - =1 for selected item
     // gets view data
-    $view_info     = GetViewInfo($vid);
+    $view      = AA_Views::getView($vid);
+    $view_info = $view->getViewInfo($vid);
 
     // user could make the view to display view ID before and after the view output
     // which is usefull mainly for debugging. See view setting in admin interface
@@ -525,22 +500,23 @@ function GetViewFromDB($view_param, &$cache_sid) {
     trace("=","GetViewFromDB",$view_info['type']);
     switch( $view_info['type'] ) {
         case 'full':  // parameters: zids, als
-            $format = GetViewFormat($view_info, $selected_item);
+            $format = $view->getViewFormat($selected_item);
             if ( isset($zids) && ($zids->count() > 0) ) {
                 // get alias list from database and possibly from url
                 list($fields,) = GetSliceFields($slice_id);
                 $aliases = GetAliasesFromFields($fields, $als);
                 //mlx stuff
-                if (!$slice_info)
-                $slice_info = GetSliceInfo($slice_id);
-                if (isMLXSlice($slice_info)) {  //mlx stuff, display the item's translation
+                if (!$slice) {
+                    $slice = AA_Slices::getSlice($slice_id);
+                }
+                if (isMLXSlice($slice)) {  //mlx stuff, display the item's translation
                     $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
                     //make sure the lang info doesnt get reused with different view
-                    $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]));
-                    $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
+                    $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)));
+                    $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)),$conds,$slices);
                     $zids3 = new zids($zids->longids());
-                    $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id,
-                                    $conds, $sort, $slice_info['group_by'],"ACTIVE", $slices, $neverAllItems, 0,
+                    $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)),$slice_id,
+                                    $conds, $sort, $slice->getfield('group_by'),"ACTIVE", $slices, $neverAllItems, 0,
                                     $defaultCondsOperator,$GLOBALS['nocache'], "vid=$vid t=full i=".serialize($zids3));
                     $zids->a    = $zids3->a;
                     $zids->type = $zids3->type;
@@ -599,7 +575,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
             if ( !$category_id ) {
                 $category_id = Links_SliceID2Category($slice_id);             // get default category for the view
             }
-            $format    = GetViewFormat($view_info, $selected_item);
+            $format    = $view->getViewFormat($selected_item);
             $aliases   = GetAliases4Type($view_info['type'],$als);
             if (!$conds) {          // conds could be defined via cmd[]=d command
                 $conds = GetViewConds($view_info, $param_conds);
@@ -688,20 +664,20 @@ function GetViewFromDB($view_param, &$cache_sid) {
             $sort  = GetViewSort($view_info, $param_sort);
 
             //mlx stuff
-            if (!$slice_info) {
-                $slice_info = GetSliceInfo($slice_id);
+            if (!$slice) {
+                $slice = AA_Slices::getSlice($slice_id);
             }
-            if (isMLXSlice($slice_info)) {
+            if (isMLXSlice($slice)) {
                 $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
                 //make sure the lang info doesnt get reused with different view
-                $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]));
-                $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
+                $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)));
+                $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)),$conds,$slices);
             }
             $zids2 = QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort, '', "ACTIVE", $zids ? false : $slices, 0, $zids);
 
-            if (isMLXSlice($slice_info)) {
-                $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id,
-                                                   $conds, $sort, $slice_info['group_by'],"ACTIVE", $slices, $neverAllItems, 0,
+            if (isMLXSlice($slice)) {
+                $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)),$slice_id,
+                                                   $conds, $sort, $slice->getfield('group_by'),"ACTIVE", $slices, $neverAllItems, 0,
                                                    $defaultCondsOperator,$GLOBALS['nocache'],"vid=$vid t=list");
             }
             //end mlx stuff
@@ -714,7 +690,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
             if ($debug) huhl("GetViewFromDB: Filtered ids=",$zids2);
 
-            $format = GetViewFormat($view_info, $selected_item);
+            $format = $view->getViewFormat($selected_item);
             $format['calendar_month'] = $month;
             $format['calendar_year']  = $year;
 
@@ -743,7 +719,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
             return $comment_begin. $ret. $comment_end;
 
         case 'static':
-            // $format = GetViewFormat($view_info);  // not needed now
+            // $format = $view->getViewFormat();  // not needed now
             // I create a CurItem object so I can use the unalias function
             $CurItem      = new item("", $als);
             $formatstring = $view_info["odd"];          // it is better to copy format-

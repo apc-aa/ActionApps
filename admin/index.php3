@@ -116,7 +116,7 @@ $module_id = $slice_id;
 // (like Links, ...) it is not so confusing
 
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
-$slice = new slice($module_id);
+$slice       = AA_Slices::getSlice($module_id);
 $bin_def = array( 'app'    => array('cond'=>'ACTIVE'),
                   'appb'   => array('cond'=>'PENDING'),
                   'appc'   => array('cond'=>'EXPIRED'),

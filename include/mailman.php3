@@ -48,9 +48,9 @@ function MailmanCreateSynchroFiles ($slice_id) {
         return;
     }
 
-    $slice_info = GetSliceInfo($slice_id);
-    $field      = $slice_info["mailman_field_lists"];
-    if ($slice_info["type"] != "ReaderManagement" || ! $field) {
+    $slice = AA_Slices::getSlice($slice_id);
+    $field = $slice->getfield("mailman_field_lists");
+    if ($slice->getfield("type") != "ReaderManagement" || ! $field) {
         return;
     }
 

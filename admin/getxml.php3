@@ -179,12 +179,12 @@ function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
     $xml_categories_refs.="\t</rdf:Bag></aa:categories>\n";
 }
 
-function GetXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$xml_items_refs,$time) {
-    $sli = GetSliceInfo($slice_id);
+function GetXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$xml_items_refs, $time) {
+    $slice = AA_Slices::getSlice($slice_id);
     echo "\t<channel rdf:about=\"".AA_INSTAL_URL."slices/$slice_id\">\n".
-                   "\t\t<title>".code($sli['name'])."</title>\n".
-                   "\t\t<description>".code($sli['description'])."</description>\n".
-                   "\t\t<link>".code($sli['slice_url'])."</link>\n".
+                   "\t\t<title>".code($slice->getfield('name'))."</title>\n".
+                   "\t\t<description>".code($slice->getfield('description'))."</description>\n".
+                   "\t\t<link>".code($slice->getfield('slice_url'))."</link>\n".
                    "\t\t<aa:newestitemtimestamp>$time</aa:newestitemtimestamp>\n".
                    "\t\t<dc:identifier>$slice_id</dc:identifier>\n".
                    $xml_fields_refs.
@@ -241,8 +241,8 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
 
     // get slice url for current slice
     if ( !isset($slice_url[$slice_id]) ) {
-        $sli = GetSliceInfo($slice_id);
-        $slice_url[$slice_id] = $sli['slice_url'];
+        $slice = AA_Slices::getSlice($slice_id);
+        $slice_url[$slice_id] = $slice->getfield('slice_url');
     }
 
     $item_link = ($link_only ? $hl_href : con_url($slice_url[$slice_id],"x=".$content4id['short_id........'][0]['value']) );
@@ -415,7 +415,7 @@ if (!CheckFeedingPermissions($slice_id, $node_name, $user)) {
 }
 $GLOBALS['g_slice_encoding'] = getSliceEncoding($slice_id);
 
-$slice = new slice($slice_id);
+$slice = AA_Slices::getSlice($slice_id);
 
 if ($exact AND !$ids) {
 

@@ -33,7 +33,7 @@ class MLXImport
         $this->itemvarset = new Cvarset();
         $this->db = new DB_AA;
 */
-        $this->sliceObj = new slice($slice_id);
+        $this->sliceObj = AA_Slices::getSlice($slice_id);
 
         list($this->fields,) = GetSliceFields($this->slice_id);
         //do sanity checks
@@ -58,8 +58,9 @@ class MLXImport
         ///TODO MLX doesnt do any sanity checks
         $this->mlxObj = new MLX($this->sliceObj);
     }
+
     function drop() {
-        if(! ALLOW_DROP) {
+        if (! ALLOW_DROP) {
             $this->fatal("drop is not enabled on this system");
         }
         $numDeleted = array();

@@ -246,7 +246,7 @@ echo"<tr><td class=tabtxt>"._m("This page allows to change field IDs. It is a bi
 $slice_fields = false;
 foreach ($s_fields as $fid => $fname) {
     if (!my_in_array($fid, $reserved_ids)) {
-        if ( isSliceField($fid)) {
+        if ( AA_Fields::isSliceField($fid)) {
             $slice_fields = true;
         }
         echo "<option value='$fid'>$fid";

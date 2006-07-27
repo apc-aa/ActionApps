@@ -65,15 +65,15 @@ echo "<H1>"._m("Admin - Create Mailman List")."</B></H1>";
 PrintArray($err);
 echo $Msg;
 
-$slice_info = GetSliceInfo($slice_id);
-if (! $slice_info["mailman_field_lists"]) {
+$slice = AA_Slices::getSlice($slice_id);
+if (! $slice->getfield("mailman_field_lists")) {
     echo _m('First set Mailman Lists Field in Slice Settings.');
     HtmlPageEnd(); page_close(); exit;
 }
 
 $db->query("SELECT field.input_show_func, field.name FROM field
     WHERE slice_id='".q_pack_id($slice_id)."' AND id='"
-    .$slice_info["mailman_field_lists"]."'");
+    .$slice->getfield("mailman_field_lists")."'");
 $db->next_record();
 $field_name = $db->f("name");
 list (,$groupid) = explode(":", $db->f("input_show_func"));

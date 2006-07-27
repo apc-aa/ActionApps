@@ -236,7 +236,7 @@ function import_views(&$slvs, $slice_id_new) {
     foreach ($slvs as $slv) {   // $slv is a viewobj
 
         $varset->clear();
-        $slvf = $slv->f();
+        $slvf = $slv->getViewInfo();
         $id   = $slvf["id"];
 
         /** Change the slice_id for the view to the current one

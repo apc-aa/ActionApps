@@ -87,7 +87,7 @@ $error = "";
 $ok = "";
 
 $p_slice_id = q_pack_id($slice_id);
-$slice_info = GetSliceInfo($slice_id);
+$slice      = AA_Slices::getSlice($slice_id);
 
 // There are two possibilities, how to send the data
 //   1) using GET/POST in $offline_data variable
@@ -109,14 +109,14 @@ if ( (strlen($offline_data) > 4) AND (substr($offline_data,0,4) == 'ket') ) {
     $offline_data = '<wddxPac'. $offline_data;
 }
 
-if ( !$slice_info ) {
+if ( !$slice ) {
     SendErrorPage(_m("Bad slice ID"));
 }
 
-if ( $slice_info["permit_offline_fill"] < 1 ) {
+if ( $slice->getfield("permit_offline_fill") < 1 ) {
     SendErrorPage(_m("You don't have permission to fill this slice off-line"));
 } else {
-    $bin2fill = $slice_info["permit_offline_fill"];
+    $bin2fill = $slice->getfield("permit_offline_fill");
 }
 
 // get slice fields and its priorities in inputform

@@ -19,7 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// $r_slice_headline - should be defined
 // $slice_id - should be defined
 // $r_slice_view_url - should be defined
 // $editor_page or $usermng_page or $settings_page - should be defined
@@ -152,8 +151,8 @@ function get_aamenus() {
 
     trace("=","","Getting slice info");
 
-    $slice_info = GetSliceInfo($slice_id);
-    if ($slice_info ["mailman_field_lists"]) {
+    $slice = AA_Slices::getSlice($slice_id);
+    if ( $slice->getfield("mailman_field_lists")) {
         $aamenus ["sliceadmin_submenu"]["items"]["mailman_create_list"] = array (
             "cond"  => IfSlPerm(PS_FIELDS),
             "href"  => "admin/mailman_create_list.php3",
@@ -187,7 +186,7 @@ function get_aamenus() {
         $items = &$aamenus["itemmanager_submenu"]["items"];
 
         // Add associated Alerts to Item Manager submenu
-        if ($slice_info["type"] == "ReaderManagement" ) {
+        if ($slice->getfield("type") == "ReaderManagement" ) {
             $db->query("SELECT module_id, module.name FROM alerts_collection AC
                 INNER JOIN module ON AC.module_id = module.id
                 WHERE slice_id='".q_pack_id($slice_id)."'");

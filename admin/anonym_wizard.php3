@@ -120,7 +120,7 @@ if (!IfSlPerm(PS_FIELDS)) {
 
 // get all warnings
 $warning = array();
-$slice   = new slice($slice_id);
+$slice   = AA_Slices::getSlice($slice_id);
 
 
 // lookup fields

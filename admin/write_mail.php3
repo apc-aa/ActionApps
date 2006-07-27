@@ -125,7 +125,7 @@ echo '
 PrintArray($err);
 echo $Msg;
 
-$slice = new slice($slice_id);
+$slice = AA_Slices::getSlice($slice_id);
 
 FrmTabCaption( (is_array($items) ? _m("Recipients") : ( _m("Stored searches for ").$slice->name()) ));
 

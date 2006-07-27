@@ -103,7 +103,7 @@ class slice {
     }
 
     function getfield($fname) {
-        if (isSliceField($fname)) {
+        if (AA_Fields::isSliceField($fname)) {
             $this->loadsettingfields();
             return $this->dynamic_setting->getValue($fname);
         } else {
@@ -146,7 +146,7 @@ class slice {
         }
 
         switch ( $return_type ) {
-            case 'fill':    return true;              // just make sure $this->fields is filled
+            case 'fill':    return true;        // just make sure $this->fields is filled
             case 'record':  return $fields[0];  // array of field definitions where field_id is key
             case 'pri':     return $fields[1];  // array of field definitions sorted by priority - integer key
             case 'search':
@@ -216,8 +216,7 @@ class slice {
 
     // Get all the views for this slice
     function views() {
-        $SQL = "slice_id = '".$this->sql_id()."'";
-        return GetViewsWhere($SQL);
+        return AA_Views::getSliceViews($this->unpackedid);
     }
 
     /** Returns array of admin format strings as used in manager class */
@@ -347,70 +346,54 @@ class slice {
     }
 }
 
-class slices {
-    var $a;     // Array unpackedsliceid -> slice obj
+class AA_Slices {
+    var $a = array();     // Array unpackedsliceid -> slice obj
 
-    // Create slices array from unpacked slice ids
-    function slices($iarr=null) {
+    function AA_Slices() {
         $this->a = array();
-        foreach ( (array)$iarr as $unpackedsliceid) {
-            $this->addslice($unpackedsliceid);
-        }
     }
 
-    // Return array of slice_obj
-    function objarr() {
-        return $this->a;
+    /** "class function" obviously called as AA_Slices::global_instance();
+     *  This function makes sure, there is global instance of the class
+     *  @todo  convert to static class variable (after migration to PHP5)
+     */
+    function & global_instance() {
+        if ( !isset($GLOBALS['allknownslices']) ) {
+            $GLOBALS['allknownslices'] = new AA_Slices;
+        }
+        return $GLOBALS['allknownslices'];
     }
 
-    function & addslice($unpackedsliceid) {
-        if (!$this->a[$unpackedsliceid]) {
-            $this->a[$unpackedsliceid] = new slice($unpackedsliceid);
+    /** main factory static method */
+    function & getSlice($slice_id) {
+        $slices = AA_Slices::global_instance();
+        return $slices->_getSlice($slice_id);
+    }
+
+    /** static function */
+    function getSliceField($slice_id, $field) {
+        $slices = AA_Slices::global_instance();
+        $slice  = $slices->_getSlice($slice_id);
+        return $slice ? $slice->getfield($field) : null;
+    }
+
+    function & _getSlice($slice_id) {
+        if (!isset($this->a[$slice_id])) {
+            $this->a[$slice_id] = new slice($slice_id);
         }
-        return $this->a[$unpackedsliceid];
+        return $this->a[$slice_id];
     }
 }
 
-$GLOBALS['allknownslices'] = new slices();  // Globally accessable
-
 // Utility functions to avoid mucking with classes where only used once
 function sliceid2name($unpackedsliceid) {
-    global $allknownslices;
-    $s = $allknownslices->addslice($unpackedsliceid);
-    return $s->name();
+    $slice = AA_Slices::getSlice($unpackedsliceid);
+    return $slice->name();
 }
 
 // Utility functions to avoid mucking with classes where only used once
 function sliceid2field($unpackedsliceid,$field) {
-    global $allknownslices;
-    $s = $allknownslices->addslice($unpackedsliceid);
-    $s = $s->getfield($field);  // Note this should save it but it doesn't BUG!
-    return $s;
+    return AA_Slices::getSliceField($unpackedsliceid,$field);
 }
 
-// Function just here for debugging
-/*
-function report_sliceids() {
-    $db = getDB();
-    $db->tquery("SELECT name,id FROM slice");
-    while ($db->next_record()) {
-        print("\nName=".$db->f("name")." unpacked ID=".unpack_id128($db->f("id")));
-    }
-    freeDB($db);
-}
-report_sliceids();
-*/
-/* A set of functions to exercise this object and test code */
-/*
-function test_sliceobj() {
-    $v = new slice(unpack_id128("AA_Core_Fields.."));
-    $n = $v->name();
-    if ($debug) huhl("test_sliceobj:slice=",$v);
-    if ($n != "Action Aplication Core")  {
-        print("\n<br>Sliceobj test didn't work, either 'Action Application Core' slice is missing, or code broken");
-        return false;
-    } else return true;
-}
-test_sliceobj();
-*/
 ?>

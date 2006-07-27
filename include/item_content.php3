@@ -188,6 +188,10 @@ class ItemContent {
         return is_array($this->content[$field_id]);
     }
 
+    function matches(&$conditions) {
+        return $conditions->matches($this);
+    }
+
     function getContent() {
         return $this->content;
     }
@@ -226,6 +230,17 @@ class ItemContent {
         return ( is_array($this->content[$field_id]) ? $this->content[$field_id] : false );
     }
 
+    function getValuesArray($field_id) {
+        $ret = array();
+        if ( !empty($this->content[$field_id]) ) {
+            foreach ($this->content[$field_id] as $val) {
+                $ret[] = $val['value'];
+            }
+        }
+        return $ret;
+    }
+
+
     function getFields() {
         $fields = array();
         if ( isset( $this->content ) AND is_array( $this->content ) ) {
@@ -258,6 +273,11 @@ class ItemContent {
         $this->content[$field_id][0]['value'] = $val;
     }
 
+    /** Special function - fills field by prepared array $v[]['value'] */
+    function setFieldValue($field_id,$v) {
+        $this->content[$field_id] = $v;
+    }
+
     function setItemValue($field_name, $value) {
         $this->content[substr($field_name."...................",0,16)] =
             array (0 => array ("value" => $value));
@@ -270,11 +290,6 @@ class ItemContent {
     function setExpiryDate($value) { $this->setItemValue("expiry_date", $value); }
 
     /*------------------------ */
-
-    /** Special function - fills field by prepared array $v[]['value'] */
-    function setFieldValue($field_id,$v) {
-        $this->content[$field_id] = $v;
-    }
 
     /** Set the content with CSV data */
     function setFromCSVArray(&$csvRec, &$fieldNames) {
@@ -289,7 +304,7 @@ class ItemContent {
      *    a) "update"    : update the item in DB
      *    b) or "new_id" : store the item with different (unique random) id
      *    c) otherwise   : do nothing
-     *  TODO - convert to grabber/saver API
+     *  TODO - convert to AA_Grabber/AA_Saver API
      */
     function storeToDB($slice_id, $actionIfItemExists=STORE_WITH_NEW_ID, $invalidatecache = true) {
         require_once AA_INC_PATH."varset.php3";
@@ -373,7 +388,7 @@ class ItemContent {
         $itemvarset = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
 
         $slice_id   = $this->getSliceID();
-        $slice      = new slice($slice_id);
+        $slice      = AA_Slices::getSlice($slice_id);
         $fields     = $slice->fields('record');
 
 
@@ -533,7 +548,7 @@ class ItemContent {
                 if ($computed_field_exist === false) {
                     $computed_field_exist = true;
                     // prepare item for computing
-                    $slice = new slice($this->getSliceID());
+                    $slice = AA_Slices::getSlice($this->getSliceID());
                     $item  = new item($this->getContent(),$slice->aliases());
                 }
 
@@ -697,3 +712,4 @@ function itemIsDuplicate($item_id) {
     return $ret ? true : false;
 }
 
+?>

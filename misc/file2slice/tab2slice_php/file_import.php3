@@ -115,22 +115,23 @@ while (list ($line_num, $line) = each ($import)) {
 
 
     if ( !$slice_id ) {
-      SendErrorPage(L_NO_SLICE_ID);
+        SendErrorPage(L_NO_SLICE_ID);
     }
 
     $error = "";
     $ok = "";
 
-    $slice      = new slice($slice_id);
+    $slice      = AA_Slices::getSlice($slice_id);
     $p_slice_id = q_pack_id($slice_id);
-    $slice_info = GetSliceInfo($slice_id);
 
-    if ( !$slice_info )
-      SendErrorPage(L_NO_SUCH_SLICE);
+    if ( !$slice ) {
+        SendErrorPage(L_NO_SUCH_SLICE);
+    }
 
-    $bin2fill = $slice_info["permit_anonymous_post"];
-    if ( $bin2fill < 1 )
+    $bin2fill = $slice->getfield("permit_anonymous_post");
+    if ( $bin2fill < 1 ) {
         SendErrorPage(L_ANONYMOUS_POST_ADMITED);
+    }
 
     $id = new_id();
     ValidateContent4Id($err, $slice, "insert", 0, ! $notvalidate);

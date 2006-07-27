@@ -576,7 +576,7 @@ function GetReaderGroupIDsInfo($rm_id) {
     if ( !$rm_id ) {
         return false;
     }
-    $slice       = new slice($rm_id);
+    $slice       = AA_Slices::getSlice($rm_id);
     $res['type'] = 'ReaderGroup';
     $res['name'] = $slice->getfield('name');
     return $res;

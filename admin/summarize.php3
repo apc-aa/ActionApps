@@ -53,10 +53,10 @@ HtmlPageBegin();
 <?php
     require_once AA_INC_PATH."menu.php3";
     showMenu($aamenus, "aaadmin","summarize");
-  
+
     echo "<H1><B>" . _m("AA - Summarize") . "</B></H1>";
     PrintArray($err);
-    echo $Msg;  
+    echo $Msg;
     initSummarize();
     $nocache=1;
     setnr();
@@ -73,10 +73,8 @@ function initSummarize() {
     $SQL = "SELECT id FROM slice ORDER BY created_at";
     $db -> tquery($SQL);
     while ($db->next_record()) {
-        $sliceids[] = unpack_id($db->f("id"));
+        $sao[unpack_id($db->f("id"))] = AA_Slices::getSlice(unpack_id($db->f("id")));
     }
-    $slicearr = new slices($sliceids);
-    $sao=$slicearr->objarr();
     $SQL = "SELECT * FROM slice";
     $slicetablefields = GetTable2Array($SQL,"id",1);
     freeDB($db);
@@ -84,7 +82,7 @@ function initSummarize() {
 
 function ignored_slice($si) {
     global $ignored_sliceids;
-    if (!$ignored_sliceids) 
+    if (!$ignored_sliceids)
         $ignored_sliceids = array( unpack_id128("AA_Core_Fields.."),
             unpack_id128("News_EN_tmpl...."),
             unpack_id128("ReaderManagement"));
@@ -99,7 +97,7 @@ function sliceshortcuts($ign) {
     if (!$ign || !ignored_slice($si)) {
         $n = $so->name();
          print("<tr><td><a href=\"#$si\">$si</a></td><td>$n</td><td>" .
-            ($so->deleted() ? "Deleted " : "") . 
+            ($so->deleted() ? "Deleted " : "") .
 //            pack_id128($si) .
             editslicefields($si) . " " . comparewith($si) .
             "</td></tr>\n");
@@ -235,7 +233,7 @@ function compareSlices($st,$sm,$pr) {
     reset($ft[0]);
     while (list($ftn,$fta) = each($ft[0])) {
         if (! $fm[0][$ftn]) {
-            compareFields($ftn,$ft[0][$ftn],$CoreFields[0][GetFieldType($ftn)],$pr,"Added",$st,$sm);
+            compareFields($ftn,$ft[0][$ftn],$CoreFields[0][AA_Fields::getFieldType($ftn)],$pr,"Added",$st,$sm);
             $score += $scoreAddOrMiss;
         } else {
             $score = $score + compareFields($ftn,$ft[0][$ftn],$fm[0][$ftn],$pr,"Common",$st,$sm);
@@ -270,7 +268,7 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
         if (EReg("^input_",$ftk) && ($ftv == $fm[$ftk] . ":")) continue;
         if (EReg("^input_",$ftk) && ($ftv . ":" == $fm[$ftk])) continue;
         // If alias or alias2 or alias3 not defined, then dont care about subsiduaries
-        if (EReg("^alias_",$ftk) && (! $ft["alias"]))  continue; 
+        if (EReg("^alias_",$ftk) && (! $ft["alias"]))  continue;
         if (EReg("^alias2_",$ftk) && (! $ft["alias2"]))  continue;
         if (EReg("^alias3_",$ftk) && (! $ft["alias3"]))  continue;
         if (!$opened && $pr) { print("<li>$pre field: $fn differs</li><ul>\n"); $opened = 1; }
@@ -281,7 +279,7 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
         }
         $score++;
       }
-      if ($opened) { 
+      if ($opened) {
         $u1 = "se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
         print("<li><a href=\"" . $u1
         . "&change_id=" . $st->unpacked_id()
@@ -295,7 +293,7 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
             . $fixerm ."\">Fix slice '". $sm->name() . "'</a>");
           }
         }
-        print("</li></ul>\n"); 
+        print("</li></ul>\n");
       }
     }
     //huhl("Adding score for field = $score");
@@ -339,7 +337,7 @@ function compareSliceTableFields($st,$sm,$pr) {
         }
         $score++;
       } //while
-      if ($opened) { 
+      if ($opened) {
         print("<li>Will fix to allow editing</li>");
 //        $u1 = "se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
 //        print("<li><a href=\"" . $u1
@@ -350,7 +348,7 @@ function compareSliceTableFields($st,$sm,$pr) {
 //            . "&change_id=" . $sm->unpacked_id()
 //            . $fixerm ."\">Fix slice '". $sm->name() . "'</a>");
 //        }
-        print("</ul></li>\n"); 
+        print("</ul></li>\n");
       }
     //huhl("Adding score for field = $score");
     return $score;
@@ -380,7 +378,7 @@ function setnr() {
  $blogfaq = "4b88f1c5e5a94e1e379d12f247a252b3";
  $alerts = "c338bb154f445afb84307f35f5facd9d"; //bbkm
 
- //AppTour 
+ //AppTour
  $nr["7bb93902675177d09b65183c49ea1e23"] = $directory;
 //BIN
  $nr[$blogfaq] = $blog;

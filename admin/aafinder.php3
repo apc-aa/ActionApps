@@ -69,7 +69,7 @@ if ($go_findview && $findview) {
     $db->query($SQL);
     echo $db->num_rows()." matching views found:<br>";
     while ($db->next_record()) {
-        $view = views::getView($db->f("id"));
+        $view = AA_Views::getView($db->f("id"));
         echo $view->jumpLink($db->f("id")." (".$db->f("name").") "). "<br>\n";
     }
 }

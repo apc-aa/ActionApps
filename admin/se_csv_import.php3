@@ -53,13 +53,11 @@ require_once "../include/init_page.php3";
 require_once AA_INC_PATH. 'import_util.php3';
 require_once AA_INC_PATH. 'files.class.php3';
 
-define("FILE_PREFIX",   'csvdata');
+define("FILE_PREFIX", 'importdata');
 
 $text      = magic_strip($text);
 $upfile    = magic_strip($upfile);
 $url       = magic_strip($url);
-$enclosure = magic_strip($enclosure);
-$delimiter = magic_strip($delimiter);
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to import files"));
@@ -71,9 +69,11 @@ if (!isset($slice_id)) {
     exit;
 }
 
-if (!isset($dataType)) $dataType = "file";
+if (!isset($dataType)) {
+    $dataType = "file";
+}
 
-$slice = new slice($slice_id);
+$slice = AA_Slices::getSlice($slice_id);
 
 // Upload a data to the server. The file name is generated automaticly
 // by unique id function. The path is upload_directory/csv_data.
@@ -202,6 +202,17 @@ function InitPage() {}
      }
 
      FrmInputChBox("caption","Use first row as field names",$preview ? $caption : true);
+
+     $options      = array ('file' => _m('File'),
+                            'url'  => _m('URL'),
+                            'text' => _m('Text')
+                           );
+     $html_options = array ('file' => _m('File'),
+                            'url'  => _m('URL'),
+                            'text' => _m('Text')
+                           );
+
+     echo getSelectWithParam('dataType', $options, "", $html_options);
      ?>
       </table>
     </td></tr>

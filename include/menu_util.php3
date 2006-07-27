@@ -113,7 +113,7 @@ function PrintModuleSelection() {
 */
 function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
 {
-    global $slice_id, $r_slice_headline, $useOnLoad, $sess, $db, $auth;
+    global $slice_id, $useOnLoad, $sess, $db, $auth;
     global $menu_function;
     global $debug;
     trace("+","showMenu",$smmenus);
@@ -132,9 +132,6 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
         bind_mgettext_domain(AA_INC_PATH."lang/".get_mgettext_lang()."_news_lang.php3");
     }
 
-    if (!$slice_id) {
-        $r_slice_headline = _m("New slice");
-    }
     $nb_logo = '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>';
 
     echo '
@@ -149,9 +146,8 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
                 $title_img = a_href( AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 62, 36));
                 break;
             case 'S':
-                $slice_info = GetSliceInfo($slice_id);  // TODO - cache the sliceinfo()
-                if ($slice_info ["type"] == "ReaderManagement") {
-                    $title_img = a_href( AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('readers.gif', _m('Reader management'), 28, 40));
+                if (AA_Slices::getSliceField($slice_id, 'type') == "ReaderManagement") {
+                    $title_img = a_href(AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('readers.gif', _m('Reader management'), 28, 40));
                 }
                 break;
         }
@@ -169,7 +165,8 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
             <tr>
               <td width="1%" rowspan="2" align="center" class="nblogo">'.$nb_logo.'</td>
               <td height="43" align="center" valign="middle" class="slicehead">'.
-                  $title_img .'&nbsp;'. $smmenus[$activeMain]['title']. "  -  $r_slice_headline".
+                  $title_img .'&nbsp;'. $smmenus[$activeMain]['title']. "  -  ".
+                  ($slice_id ? sliceid2name($slice_id) : _m("New slice")).
               '</td>
               <td width="20%" align="right" class="navbar">
                 <form name="logoutform" method="post" action="'. get_admin_url('logout.php3').'">';

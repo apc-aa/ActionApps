@@ -115,8 +115,7 @@ function __mlx_fatal($msg) {
 }
 
 // test if the slice is MLX enabled
-function isMLXSlice($sliceobj)
-{
+function isMLXSlice($sliceobj) {
     //hook other replies here
     return (is_object($sliceobj) ? $sliceobj->getfield(MLX_SLICEDB_COLUMN) : $sliceobj[MLX_SLICEDB_COLUMN]);
 }
@@ -698,7 +697,7 @@ class MLXEvents
     {
         if(empty($item_ids))
             return;
-        $sliceobj = new slice($slice_id);
+        $sliceobj = AA_Slices::getSlice($slice_id);
         if(!IsMLXSlice($sliceobj)) {
             return;
         }

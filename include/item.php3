@@ -145,7 +145,7 @@ function FillFakeAlias(&$content4id, &$aliases, $alias, $value, $flag=FLAG_HTML)
     if ( !is_array($value) ) {   $value = array($value);  }
 
     do {
-        $colname = CreateFieldId( strtolower( substr( $alias,2,12 )));
+        $colname = AA_Fields::createFieldId( strtolower( substr( $alias,2,12 )));
     } while ( isset($content4id[$colname]) );
 
     foreach ( $value as $v ) {
@@ -230,7 +230,7 @@ function Inputform_url($add, $iid, $sid, $ret_url, $vid = null, $var = null) {
  */
 function GetFormatedItems( $sid, $format="",  $restrict_zids=false, $frombins=AA_BIN_ACTIVE, $conds="", $sort="", $tagprefix=null) {
 
-    $slice = new slice($sid);
+    $slice = AA_Slices::getSlice($sid);
     $conds = String2Conds( $conds );
     $sort  = String2Sort( $sort );
 
@@ -282,7 +282,7 @@ function GetItemFromId($zid) {
     if (isset($zid) && ($zid != "-")) {
         $content = new ItemContent($zid);
         // reuse slice, if possible
-        $slice   = $GLOBALS['allknownslices']->addslice($content->getSliceID());
+        $slice = AA_Slices::getSlice($content->getSliceID());
         return new item($content->getContent(),$slice->aliases());
     }
     return false;
@@ -340,7 +340,7 @@ class item {
   function getval($column, $what='value') {  return $this->columns->getValue($column, $what); }
 
   /** shortcut for ItemContent->getValues() */
-  function getvalues($column) { return $this->columns->getValues($column); }
+  function getValues($column) { return $this->columns->getValues($column); }
 
   function getContent()       { return $this->columns->getContent(); }
   function getItemContent()   { return $this->columns;               }
@@ -495,8 +495,8 @@ class item {
   // print due to html flag set (escape html special characters or just print)
   // param: delimiter - used to separate values if the field is multi
   function f_h($col, $param="") {
-      $values = $this->getvalues($col);
-      if ( $param AND $values) {  // create list of values for multivalue fields
+      $values = $this->getValues($col);
+      if ( $param AND !empty($values)) {  // create list of values for multivalue fields
           $param = $this->subst_alias( $param );
           foreach ( $values as $v ) {
               $res .= ($res ? $param : ''). DeHtml($v['value'], $v['flag']); // add value separator just if field is filled
@@ -865,7 +865,7 @@ function RSS_restrict($txt, $len) {
   // _#EDITITEM used on admin page index.php3 for itemedit url
   // param: 0
   function f_e($col, $param="") {
-    global $sess, $allknownslices;
+    global $sess;
 
     $p = ParamExplode($param);  // 0 = disc|itemcount|safe|slice_info  //2 = return_url
     switch( $p[0]) {
@@ -890,20 +890,21 @@ function RSS_restrict($txt, $len) {
       case "slice_info":
         // get slice_id from item, but sometimes the item is not filled (like
         // on "Add Item" in itemedit.php3, so we use global slice_id here
-        $slice    =& $allknownslices->addslice(get_if($this->getSliceID(),$GLOBALS['slice_id']));
+        $slice = AA_Slices::getSlice(get_if($this->getSliceID(),$GLOBALS['slice_id']));
         return $slice->getfield($col);
       case "link_edit":
         return (($p[1]=='anonym') ?
             get_aa_url('modules/links/linkedit.php3?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :
             get_aa_url('modules/links/linkedit.php3?lid='. $this->getval('id')) );
       case "link_go_categ":
-        $cat_names            = $this->getvalues('cat_name');
-        $cat_ids              = $this->getvalues('cat_id');
-        $cat_highlight        = $this->getvalues('cat_state');
-        $cat_proposal         = $this->getvalues('cat_proposal');
-        $cat_proposal_delete  = $this->getvalues('cat_proposal_delete');
-        if ( !is_array($cat_names) )
-          return "";
+        $cat_names            = $this->getValues('cat_name');
+        $cat_ids              = $this->getValues('cat_id');
+        $cat_highlight        = $this->getValues('cat_state');
+        $cat_proposal         = $this->getValues('cat_proposal');
+        $cat_proposal_delete  = $this->getValues('cat_proposal_delete');
+        if ( empty($cat_names) ) {
+            return "";
+        }
         while ( list($k, $cat) = each($cat_names) ) {
           $print_cname = $cat['value'];
           if ( $cat_highlight[$k]['value']=='highlight' ) {
@@ -1189,11 +1190,11 @@ function RSS_restrict($txt, $len) {
     // $url_base = ''; //$this->getbaseurl();
     $urlprm = ($urlprm ? '&'.$urlprm : '');
 
-    $categs2print = $catseparator ? $this->getvalues($col) :
+    $categs2print = $catseparator ? $this->getValues($col) :
                                     array(0=>array('value'=>$this->parameters['category_id'])); // current category
     $linklast     = $catseparator ? true : false;
 
-    foreach ( (array)$categs2print as $v ) {
+    foreach ( $categs2print as $v ) {
         $path = GetCategoryPath($v['value']);
         if ($restrict AND (strpos($path,$restrict)!==0)) {
             continue;   // category is not on restriced branch
