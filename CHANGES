@@ -1,3 +1,5 @@
+07/27/06 - moved to SVN
+(honzam)
 07/14/06 - new possibility to display HTML comments before and after the view
 (honzam)   by checking the checkbox in view setting - good for debug
          - mail template for sending discussion comments to users is grabbed
