@@ -190,7 +190,7 @@ class Cvarset {
     /** Makes SQL INSERT clause from varset */
     function makeINSERT($tablename = "")
     {
-        $foo      = $tablename ? "INSERT INTO $tablename" : '';
+        $foo      = $tablename ? "INSERT INTO `$tablename`" : '';
         $predznak = " ( ";
         foreach ( $this->vars as  $varname => $variable ) {
             $foo .= $predznak . "`$varname`";
@@ -216,7 +216,7 @@ class Cvarset {
             }
         }
         if ($tablename) {
-            $retval = "UPDATE $tablename SET";
+            $retval = "UPDATE `$tablename` SET";
         }
         $retval .= " " . join (", ", $updates);
         if ($where = $this->makeWHERE()) {     // assignment
@@ -239,15 +239,15 @@ class Cvarset {
 
     function makeSELECT($table) {
         $where = $this->makeWHERE();
-        return ($where ? "SELECT * FROM $table WHERE ".$where :
-                         "SELECT * FROM $table");
+        return ($where ? "SELECT * FROM `$table` WHERE ".$where :
+                         "SELECT * FROM `$table`");
     }
 
     function makeDELETE($table, $where=null) {
         if ( is_null($where) ) {
             $where = $this->makeWHERE();
         }
-        return ($where ? "DELETE FROM $table WHERE ".$where : 'Error');
+        return ($where ? "DELETE FROM `$table` WHERE ".$where : 'Error');
     }
 
     function doDelete($tablename, $nohalt=null) {
@@ -298,4 +298,80 @@ class Cvarset {
         }
     }
 }
+
+class AA_Metabase_Table {
+    /** Name of the table */
+    var $tablename;
+    /** array of PRIMARY KEY columns */
+    var $primary_key;
+    /** array of INDEXES */
+    var $index;
+    /** array of table columns */
+    var $column;
+    /** array of table flags - like ENGINE=InnoDB, DEFAULT CHARSET=cp1250 */
+    var $flags;
+
+    /** Fills AA_Metabase_Table structure from the result of SQL command:
+     *     SHOW CREATE TABLE $table_name
+     */
+    function setFromSql($tablename, $create_SQL) {
+        $this->tablename = $tablename;
+        foreach (explode("\n", $create_SQL) as $row) {
+            $row = trim($row);
+            // first row - CREATE TABLE - no need to grab anything from it
+            if ( strpos($row, 'CREATE TABLE') === 0 ) {
+                continue;
+            }
+            // field definition row - grab it
+            if ( (strpos($row, 'KEY') === 0) OR
+                 (strpos($row, 'UNIQUE KEY') === 0) OR
+                 (strpos($row, 'PRIMARY KEY') === 0) ) {
+                $this->_setIndexFromSql($row);
+                continue;
+            }
+            if ( strpos($row, ')') === 0 ) {
+                $this->_setFlagFromSql($row);
+                continue;
+            }
+            // else urecognized row
+            echo $row;
+        }
+    }
+}
+
+/** @todo convert to static class variables after move to PHP5 */
+class AA_Metabase {
+    var $tables;
+    var $item_translations;
+
+    function AA_Metabase() {
+        $this->tables            = array('item' => array('id', 'short_id', 'slice_id', 'status_code', 'post_date', 'publish_date', 'expiry_date', 'highlight', 'posted_by', 'edited_by', 'last_edit', 'display_count', 'flags', 'disc_count', 'disc_app', 'externally_fed', 'moved2active'));
+        $this->item_translations = array();
+        foreach ($this->tables['item'] as $column) {
+            $this->item_translations[AA_Fields::createFieldId($column)] = $column;
+        }
+    }
+
+    function addTableFromSql($tablename, $create_SQL) {
+        $this->tables[$tablename] = new AA_Metabase_Table;
+        $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
+    }
+
+    function itemTableField($field_id) {
+        return get_if($this->item_translations[$field_id], false);
+    }
+
+    function itemFields4Sql($fields2get) {
+        $fields = array();
+        if ( is_array($fields2get) ) {
+            foreach ( $fields2get as $field_name ) {
+                if ($this->item_translations[$field_name]) {
+                    $fields[] = 'item.'. $this->item_translations[$field_name];
+                }
+            }
+        }
+        return ( count($fields) < 1 ) ? 'item.*' : join(',', $fields);
+    }
+}
+
 ?>
