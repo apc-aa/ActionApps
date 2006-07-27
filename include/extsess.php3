@@ -86,13 +86,59 @@ class AA_CT_Sql extends CT_Sql {	         // Container Type for Session is SQL D
     var $database_table = "active_sessions"; // and find our session data in this table.
 }
 
+class AA_SL_Session extends Session {
+    var $classname = "AA_SL_Session";
+
+    var $cookiename     = "";                // defaults to classname
+    var $magic          = "adwetdfgyr";      // ID seed
+    var $mode           = "cookie";          // We propagate session IDs via cookie method
+    var $fallback_mode  = "get";             // If cookie not possible, then via get method
+    var $lifetime       = 0;                 // 0 = do session cookies, else minutes
+    var $that_class     = "AA_CT_Sql";       // name of data storage container
+    var $gc_probability = 5;
+
+    function MyUrl($SliceID, $Encap=false, $noquery=false) {
+        global $HTTP_HOST, $HTTPS, $SCRIPT_NAME, $REDIRECT_SCRIPT_NAME, $scr_url;
+        if (isset($HTTPS) && $HTTPS == 'on') {
+            // You will need to fix suexec as well, if you use Apache and CGI PHP
+            $PROTOCOL='https';
+        } else {
+            $PROTOCOL='http';
+        }
+        // PHP used in CGI mode and ./configure --enable-force-cgi-redirect
+        if ($scr_url) {  // if included into php script
+            $foo = $PROTOCOL. "://". $HTTP_HOST.$scr_url;
+        } elseif (isset($REDIRECT_SCRIPT_NAME)) {
+            $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_SCRIPT_NAME;
+        } else {
+            $foo = $PROTOCOL. "://". $HTTP_HOST.$SCRIPT_NAME;
+        }
+
+        switch ($this->mode) {
+            case "get":
+                if (!$noquery) {
+                    $foo .= "?slice_id=$SliceID";
+                    $foo .= ($Encap?"":"&encap=false");
+                    $foo .= "&".urlencode($this->name)."=".$this->id;
+                }
+                break;
+            default:
+                break;
+        }
+        return $foo;
+    }
+}
+
+
+
+
 class AA_CP_Session extends Session {
     var $classname = "AA_CP_Session";
 
     var $cookiename     = "";                // defaults to classname
     var $magic          = "adwetdfgyr";      // ID seed
-    var $mode           = "get";             // We propagate session IDs in URL
-                                             //  var $fallback_mode
+    var $mode           = "cookie";          // We propagate session IDs via cookie method
+    var $fallback_mode  = "get";             // If cookie not possible, then via get method
     var $lifetime       = 0;                 // 0 = do session cookies, else minutes
     var $that_class     = "AA_CT_Sql";       // name of data storage container
     var $gc_probability = 5;
@@ -172,49 +218,6 @@ class AA_CP_Session extends Session {
         if ((rand()%100) < $this->gc_probability) {
             $this->gc();
         }
-    }
-}
-
-class AA_SL_Session extends Session {
-    var $classname = "AA_SL_Session";
-
-    var $cookiename     = "";                // defaults to classname
-    var $magic          = "adwetdfgyr";      // ID seed
-    var $mode           = "get";             // We propagate session IDs with cookies
-    var $fallback_mode  = "get";
-    var $lifetime       = 0;                 // 0 = do session cookies, else minutes
-    var $that_class     = "AA_CT_Sql";       // name of data storage container
-    var $gc_probability = 5;
-
-    function MyUrl($SliceID, $Encap=false, $noquery=false) {
-        global $HTTP_HOST, $HTTPS, $SCRIPT_NAME, $REDIRECT_SCRIPT_NAME, $scr_url;
-        if (isset($HTTPS) && $HTTPS == 'on') {
-            // You will need to fix suexec as well, if you use Apache and CGI PHP
-            $PROTOCOL='https';
-        } else {
-            $PROTOCOL='http';
-        }
-        // PHP used in CGI mode and ./configure --enable-force-cgi-redirect
-        if ($scr_url) {  // if included into php script
-            $foo = $PROTOCOL. "://". $HTTP_HOST.$scr_url;
-        } elseif (isset($REDIRECT_SCRIPT_NAME)) {
-            $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_SCRIPT_NAME;
-        } else {
-            $foo = $PROTOCOL. "://". $HTTP_HOST.$SCRIPT_NAME;
-        }
-
-        switch ($this->mode) {
-            case "get":
-                if (!$noquery) {
-                    $foo .= "?slice_id=$SliceID";
-                    $foo .= ($Encap?"":"&encap=false");
-                    $foo .= "&".urlencode($this->name)."=".$this->id;
-                }
-                break;
-            default:
-                break;
-        }
-        return $foo;
     }
 }
 
