@@ -42,14 +42,25 @@ class view {
         }
     }
 
-    function f( $k=null ) {
-        if (!isset($this->fields)) {
-            $this->fields = GetTable2Array("SELECT view.*, module.deleted, module.lang_file
-                                              FROM view, module
-                                             WHERE module.id=view.slice_id
-                                               AND view.id='".$this->id."'", 'aa_first', 'aa_fields');
+    function load( $force=false ) {
+        if (!isset($this->fields) OR $force) {
+            $SQL = "SELECT view.*, module.deleted, module.lang_file FROM view, module
+                     WHERE module.id=view.slice_id AND view.id='".$this->id."'";
+            $this->fields = GetTable2Array($SQL, 'aa_first', 'aa_fields');
         }
-        return isset($k) ? $this->fields[$k] : $this->fields;
+    }
+
+    function f( $field ) {
+        if ( !$field ) {
+            return '';
+        }
+        $this->load();
+        return $this->fields[$field];
+    }
+
+    function getViewInfo() {
+        $this->load();
+        return $this->fields;
     }
 
     /** Generates link to view edit */
@@ -66,6 +77,33 @@ class view {
         $this->fields = $rec;
     }
 
+    function getViewFormat($selected_item='') {
+        $format                        = array();
+        $format['group_by']            = $this->fields['group_by1'];
+        $format['category_format']     = $this->fields['group_title'];
+        $format['category_bottom']     = $this->fields['group_bottom'];
+        $format['compact_top']         = $this->fields['before'];
+        $format['compact_bottom']      = $this->fields['after'];
+        $format['compact_remove']      = $this->fields['remove_string'];
+        $format['even_row_format']     = $this->fields['even'];
+        $format['odd_row_format']      = $this->fields['odd'];
+        $format['row_delimiter']       = $this->fields['row_delimiter'];
+        $format['even_odd_differ']     = $this->fields['even_odd_differ'];
+        $format['banner_position']     = $this->fields['banner_position'];
+        $format['banner_parameters']   = $this->fields['banner_parameters'];
+        $format['selected_item']       = $selected_item;
+        $format['id']                  = $this->fields['slice_id'];
+        $format['vid']                 = $this->fields['id'];
+
+        $format['calendar_start_date'] = $this->fields['field1'];
+        $format['calendar_end_date']   = $this->fields['field2'];
+        $format['aditional']           = $this->fields['aditional'];
+        $format['aditional2']          = $this->fields['aditional2'];
+        $format['aditional3']          = $this->fields['aditional3'];
+        $format['calendar_type']       = $this->fields['calendar_type'];
+        return $format;
+    }
+
     /** Returns html code which will list links to all views contained
      *  in the template code
      *  static method
@@ -77,7 +115,7 @@ class view {
             $ret = _m('Jump to view:');
             $view_ids = array_unique((array)$matches[1]);
             foreach($view_ids as $vid) {
-                $view = views::getView($vid);
+                $view = AA_Views::getView($vid);
                 if ($view) {                  // probably will be set
                     $ret .= ' '. $view->jumpLink();
                 }
@@ -87,7 +125,7 @@ class view {
     }
 
     function xml_serialize($t,$i,$ii,$a) {
-        $f = $this->f();
+        $f = $this->getViewInfo();
         return xml_serialize("view",$f,$i.$ii,$ii,"tname=\"$t\" ".$a);
     }
 }
@@ -98,73 +136,73 @@ function VIEW_xml_unserialize($n,$a) {
     return $v;
 }
 
-class views {
+class AA_Views {
     var $a = array();
 
-    function views() {}
+    function AA_Views() {
+        $this->a = array();
+    }
 
-    /** "class function" obviously called as views::global_instance();
+    /** "class function" obviously called as AA_Views::global_instance();
      *  This function makes sure, there is global instance of the class
      *  @todo  convert to static class variable (after migration to PHP5)
      */
-    function global_instance() {
+    function & global_instance() {
         if ( !isset($GLOBALS['allknownviews']) ) {
-            $GLOBALS['allknownviews'] = new views;
+            $GLOBALS['allknownviews'] = new AA_Views;
         }
+        return $GLOBALS['allknownviews'];
     }
 
     function xml_serialize($t,$i,$ii,$a) {
         return xml_serialize("views",$this->a,$i.$ii,$ii,"tname=\"$t\" ".$a);
     }
 
-    function getViewInfo($vid, $field=null) {
-        $view = $this->_getView($vid);
+    /** main factory static method */
+    function & getView($vid) {
+        $views = AA_Views::global_instance();
+        return $views->_getView($vid);
+    }
+
+    /** static function */
+    function getViewField($vid, $field) {
+        $views = AA_Views::global_instance();
+        $view  = $views->_getView($vid);
         return $view ? $view->f($field) : null;
     }
 
-    /** main factory static method */
-    function getView($vid) {
-        views::global_instance();
-        return $GLOBALS['allknownviews']->_getView($vid);
-    }
-
-    function _getView($vid) {
+    function & _getView($vid) {
         if (!isset($this->a[$vid])) {
             $this->a[$vid] = new view($vid);
         }
         return $this->a[$vid];
     }
+
+    /** Returns an array of slice views, caching results in allknownviews */
+    function getSliceViews($slice_id) {
+        $a = array();
+        if ($slice_id) {
+            $views = AA_Views::global_instance();
+            $SQL   = "SELECT id FROM view WHERE ". q_pack_id($slice_id);
+            $v_arr = GetTable2Array($SQL, 'NoCoLuMn', 'id');
+            if (is_array($v_arr)) {
+                foreach ($v_arr as $id) {
+                    // cache it
+                    if (!isset($views->a[$id])) {
+                        $views->a[$id] = new view($id);
+                    }
+                    $a["$id"] = &$views->a[$id];
+                }
+            }
+        }
+        return $a;
+    }
 }
 
 function VIEWS_xml_unserialize($n,$a) {
-    $vs = new views();
+    $vs = new AA_Views();
     $vs->a = $a;
     return $vs;
-}
-
-function GetViewInfo($vid, $field=null) {
-    views::global_instance();  // creates global allknownviews variable
-    return $GLOBALS['allknownviews']->getViewInfo($vid, $field);
-}
-
-// Return an array of views matching the sql, caching results in allknownviews
-// this does not return views from deleted slices
-function GetViewsWhere($sql="") {
-    global $allknownviews;
-    $db = getDB();
-    $db->tquery("SELECT view.*,slice.deleted FROM view, slice WHERE slice.id=view.slice_id AND slice.deleted != 1" . ($sql ? (" AND ".$sql) : ""));
-    $a = array();
-    while ($db->next_record()) {
-        $id = $db->f("id");
-        if (!isset($allknownviews->a[$id])) {
-            $allknownviews->a[$id] = new view($id,DBFields($db));
-        } else {
-            $allknownviews->a[$id]->setfields(DBFields($db));
-        }
-        $a["$id"] = &$allknownviews->a[$id];
-    }
-    freeDB($db);
-    return $a;
 }
 
 ?>
