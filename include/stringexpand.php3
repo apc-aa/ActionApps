@@ -70,8 +70,9 @@ function stringexpand_user($field='') {
     // cache's keyString.
     // $auth_user_info caches values about auth user
     $cache_nostore = true;             // GLOBAL!!!
+    $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uname"]);
     switch ($field = trim($field)) {
-        case '':         return get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uname"]);
+        case '':         return $auth_user;
         case 'password': return $_SERVER['PHP_AUTH_PW'];
         case 'role' : // returns users permission to slice
         case 'permission' :
@@ -143,12 +144,10 @@ function parseMath($text) {
     $i=0;
     $key=true;
     while ( $i < count($twos) ) {
-     $val = trim($twos[$i]);
-      if ($key)
-        {
+        $val = trim($twos[$i]);
+        if ($key) {
             if ($val) $ret.=str_replace("#:","",$val); $key=false;
-        }
-        else {	//$val=str_replace ("{", "", $val);
+        } else {	//$val=str_replace ("{", "", $val);
             //$val=str_replace ("}", "", $val);
             $val = calculate($val); // defined in math.php3
             if ($variable) {
@@ -158,7 +157,7 @@ function parseMath($text) {
             $ret.=$val;
             $key=true;
         }
-     $i++;
+        $i++;
     }
     return $ret;
 }
@@ -206,10 +205,10 @@ function parseLoop($out, &$item) {
             $val[] = array('value' => $fld);
         }
     } else {
-        $val = $itemcontent->getvalues($field);
+        $val = $itemcontent->getValues($field);
     }
 
-    if (!is_array($val) OR (count($val)==0)) {
+    if ( empty($val) ) {
         return '';
     }
 
@@ -461,6 +460,7 @@ function stringexpand_sessurl($url) {
  *  returns:  'L' if val1 is less than val2
  *            'G' if val1 is greater than val2
  *            'E' if they are equal
+ *  ussage:  {switch({compare:{publish_date....}:{now}})G:greater:L:less:E:equal}
  */
 function stringexpand_compare($val1, $val2) {
     return ( $val1 == $val2 ) ? 'E' : (($val1 > $val2) ? 'G' : 'L' );
@@ -939,6 +939,54 @@ function stringexpand_slice_comments($slice_id) {
 function stringexpand_preg_match($pattern, $subject) {
     preg_match($pattern, $subject, $matches);
     return $matches[0];
+}
+
+/** Allows on-line editing of field content */
+function stringexpand_ajax($item_id, $field_id, $show_alias='') {
+    $ret = '';
+    $alias_name = ($show_alias == '') ? '' : substr($show_alias, 2);
+    if ( $item_id AND $field_id) {
+
+/*        $changes_monitor = new AA_ChangesMonitor();
+        $props     = $changes_monitor->getProposals(array($item_id));
+        $proposals = $props->getValues(array($item_id));
+        if ( $proposals ) {
+            $change_cmd = '';
+            foreach ( $proposals as $change_id => $changes ) {
+                foreach ( $changes as $selector => $values ) {
+                    if ( $selector == $fid ) {
+                        foreach ( $values as $value ) {
+                            $change_cmd .= "\n  <div class=\"change_cmd\">$value <input type=\"button\" value=\"zmìnit\" onclick=\"AcceptChange('$change_id', '$divid')\"></div>";
+                        }
+                    }
+                }
+            }
+        }
+        if ( $zmena_cmd ) {
+            $odmitnout_text = ( $fid == 'edit_note......1') ? 'Vyøešeno' : 'odmítnout zmìny';
+            $ret .= "<div class=\"change_cmds\" id=\"zmena_cmds$divid\">
+                     $zmena_cmd
+                     <div class=\"change_cmd\"><input type=\"button\" value=\"$odmitnout_text\" onclick=\"CancelChanges('$item_id', '$fid', '$divid')\"></div>
+                  </div>";
+        }
+*/
+        $item        = GetItemFromId(new zids($item_id));
+        $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
+        $repre_value = get_if($repre_value, '--');
+        $iid         = $item->getItemID();
+        $fid         = unpack_id($field_id);
+        $ret .= "<div class=\"ajax_container\" id=\"ajaxc_{$iid}_{$fid}\" onclick=\"displayInput('ajaxv_{$iid}_{$fid}', '$iid', '$field_id')\">\n";
+        $ret .= " <div class=\"ajax_value\" id=\"ajaxv_{$iid}_{$fid}\" aaalias=\"$alias_name\">$repre_value</div>\n";
+        $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_{$iid}_{$fid}\"></div>\n";
+
+/*        $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_{$iid}_{$fid}\">
+                     $zmena_cmd
+                     <div class=\"change_cmd\"><input type=\"button\" value=\"$odmitnout_text\" onclick=\"CancelChanges('$item_id', '$fid', '$divid')\"></div>
+                  </div>\n";
+*/
+        $ret .= "</div>\n\n";
+    }
+    return $ret;
 }
 
 /** @todo - convert whole stringexpand to the new class approach
