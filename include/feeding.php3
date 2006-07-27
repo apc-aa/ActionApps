@@ -271,7 +271,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
     }
     $field_ids = array("post_date", "publish_date","expiry_date", "highlight", "posted_by", "edited_by", "last_edit");
     while (list(,$fid) = each($field_ids)) {
-        $f_id = CreateFieldId($fid);
+        $f_id = AA_Fields::createFieldId($fid);
         if (!$new4id[$f_id]) {
             $new4id[$f_id] = $content4id[$f_id];
         }

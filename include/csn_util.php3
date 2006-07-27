@@ -130,24 +130,6 @@ function UseAllCategoriesOption( &$ext_categs ) {
      return array($map_to,$map_from);
  }
 
-/** Returns category_id of category with cat_group $cat_group and value $value
- */
-function GetCategoryIdFromValue($cat_group, $value) {
-    global $debugfeed;
-    if (!$cat_group || !is_array($cat_group)) {
-        return;
-    }
-    $SQL = "SELECT id FROM constant WHERE group_id='$group_id' AND value='".addslashes($value)."'";
-    if ($debugfeed >= 8) print("\n<br>$SQL");
-    $db = getDB();
-    $db->query($SQL);
-    if ($db->next_record()) {
-        $ret = unpack_id128($db->f('id'));
-    }
-    freeDB($db);
-    return $ret;
-}
-
 /** Returns first field id of specified type */
 function GetBaseFieldId( &$fields, $ftype ) {
     $no = 10000;
@@ -156,11 +138,11 @@ function GetBaseFieldId( &$fields, $ftype ) {
             if (!strstr($val['id'],$ftype)) {
                 continue;
             }
-            $last = GetFieldNo($val['id']);
+            $last = AA_Fields::getFieldNo($val['id']);
             $no   = min($no, (($last=='') ? -1 : (integer)$last));
         }
     }
-    return ($no == 10000) ? false : CreateFieldId($ftype, ($no==-1) ? '.' : (string)$no);
+    return ($no == 10000) ? false : AA_Fields::createFieldId($ftype, ($no==-1) ? '.' : (string)$no);
 }
 
 

@@ -32,13 +32,15 @@ require_once AA_INC_PATH."msgpage.php3";
 function EditConstantURL() {
     global $fld, $sess;
     if (substr($fld['id'],0,8)== "category") {
-        return con_url($sess->url(self_base(). "se_constant.php3"), "categ=1");
+        return con_url($sess->url(self_base(). "se_constant.php3"), 'categ=1');
     } else {
-        return $sess->url(self_base(). "se_constant.php3");
+        // we are adding foo parameter in order we can add other parameters by
+        // & in javascript (and do not care about '?' or '&'
+        return con_url($sess->url(self_base(). "se_constant.php3"), 'foo=1');
     }
 }
 
-$back_admin_url = $sess->url(self_base(). "./se_fields.php3" .(isSliceField($fid) ? '?slice_fields=1': ''));
+$back_admin_url = $sess->url(self_base(). "./se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1': ''));
 
 if ($cancel) {
     go_url($back_admin_url);
@@ -301,7 +303,7 @@ echo _m("<p>WARNING: Do not change this setting if you are not sure what you're 
 $form_buttons = array("update"=>array("type"=>"hidden","value"=>"1"),
                       "fid"=>array("type"=>"hidden", "value"=>$fid),
                       "update",
-                      "cancel"=>array("url"=>"se_fields.php3" .(isSliceField($fid) ? '?slice_fields=1':''))
+                      "cancel"=>array("url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':''))
                      );
 
 echo "
