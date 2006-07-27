@@ -28,12 +28,13 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
+if ($cancel) {
+    go_url( $sess->url(self_base() . "index.php3"));
+}
 
 if (!IfSlPerm(PS_FIELDS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
-  exit;
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
+    exit;
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
@@ -120,7 +121,7 @@ if ($update) {
                 // is full (it contains dots). We need base identifier, for now.
                 // Also we will add underscore for all "slice fields" - the ones
                 // which are not set for items, but rather for slice (settings)
-                $ftype_base = ($slice_fields ? '_' : '') . GetFieldType($ftype);
+                $ftype_base = ($slice_fields ? '_' : '') . AA_Fields::getFieldType($ftype);
 
                 // get new field id
                 $SQL = "SELECT id FROM field
@@ -128,11 +129,11 @@ if ($update) {
                 $max = -1;  // Was 0
                 $db->query($SQL);   // get all fields with the same type in this slice
                 while ( $db->next_record() ) {
-                    $max = max( $max, GetFieldNo($db->f('id')), 0);
+                    $max = max( $max, AA_Fields::getFieldNo($db->f('id')), 0);
                 }
                 $max++;
                 //create name like "time...........2"
-                $fieldid = CreateFieldId($ftype_base, $max);
+                $fieldid = AA_Fields::createFieldId($ftype_base, $max);
 
                 $varset->set("slice_id", $slice_id, "unpacked" );
                 $varset->set("id", $fieldid, "quoted" );

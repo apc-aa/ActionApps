@@ -563,6 +563,7 @@ function MsgERR($txt){
 // function for unpacking string in edit_fields and needed_fields in database to array
 function UnpackFieldsToArray($packed, $fields) {
     $i=0;
+    $arr = array();
     foreach ($fields as $field => $foo) {
         $arr[$field] = (substr($packed,$i++,1)=="y" ? true : false);
     }
@@ -580,12 +581,10 @@ function HaveConstants($which) {
     return false;
 }
 
-// returns true if constants are from slice
+/** Returns true if constants are from slice */
 function AreSliceConstants($name) {
-    if ( substr($name,0,7) == "#sLiCe-" )  // prefix indicates select from items
-        return true;
-   else
-        return false;
+    // prefix indicates select from items
+    return ( substr($name,0,7) == "#sLiCe-" );
 }
 
 /** Function fills the array from constants table
@@ -598,10 +597,19 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
     $column    = str_replace( 'const_', '', $column);
     $keycolumn = str_replace( 'const_', '', $keycolumn);
 
-    $const_fields = array('id'=>1,'group_id'=>1,'name'=>1,'value'=>1,'class'=>1,'pri'=>1,'ancestors'=>1,'description'=>1,'short_id'=>1);
+    $const_fields = array(
+        'id'          =>'id'         ,
+        'group_id'    =>'group_id'   ,
+        'name'        =>'name'       ,
+        'value'       =>'value'      ,
+        'class'       =>'class'      ,
+        'pri'         =>'pri,name'   ,   // ordered first by priority, secondary by name
+        'ancestors'   =>'ancestors'  ,
+        'description' =>'description',
+        'short_id'    =>'short_id'   );
 
     $db = getDB();
-    if (  $const_fields[$order] )     { $order_by  = "ORDER BY $order"; }
+    if (  $const_fields[$order] )     { $order_by  = "ORDER BY ". $const_fields[$order]; }
     if ( !$const_fields[$column] )    { $column    = 'name';            }
     if ( !$const_fields[$keycolumn] ) { $keycolumn = 'value';           }
     $fields = ($column==$keycolumn ? $column : "$keycolumn, $column");
@@ -683,6 +691,94 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
     return isset($arr) ? $arr : false;
 }
 
+
+class AA_Fields {
+    var $a = array();
+
+    function AA_Fields() {
+        $this->a = array();
+    }
+
+    /** Returns true, if the passed field id looks like slice setting field
+     *  "slice fields" are not used for items, but rather for slice setting.
+     *  Such fields are destinguished by underscore on first letter of field_id
+     *  - static class function
+     */
+    function isSliceField($field_id) {
+        return $field_id AND ($field_id{0} == '_');
+    }
+
+    /** Create field id from type and number
+     *  - static class function
+     */
+    function createFieldId($ftype, $no="0") {
+        if ((string)$no == "0") {
+            $no = "";    // id for 0 is "xxxxx..........."
+        }
+        return $ftype. substr("................$no", -(16-strlen($ftype)));
+    }
+
+    /** get field type from id (works also for AA_Core_Fields (without dots))
+     *  - static class function
+     */
+    function getFieldType($id) {
+        $dot_pos = strpos($id, ".");
+        return ($dot_pos === false) ? $id : substr($id, 0, $dot_pos);
+    }
+
+    /** get field number from id ('.', '0', '1', '12', ... )
+     *  - static class function
+     */
+    function getFieldNo($id) {
+        return (string)substr(strrchr($id,'.'), 1);
+    }
+
+    function createSliceField($type) {
+        $varset = new CVarset();
+
+//todo
+
+        // copy fields
+                // use the same setting for new field as template in AA_Core_Fields..
+                $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
+                $varset->setFromArray($field_types[$type]);   // from template for this field
+
+                // in AA_Core_Fields.. are fields identified by 'switch' or 'text'
+                // identifiers (without dots!) by default. However if user add new
+                // "template" field to the AA_Core_Fields.. slice, then the identifier
+                // is full (it contains dots). We need base identifier, for now.
+                // Also we will add underscore for all "slice fields" - the ones
+                // which are not set for items, but rather for slice (settings)
+                $ftype_base = ($slice_fields ? '_' : '') . AA_Fields::getFieldType($type);
+
+                // get new field id
+                $SQL = "SELECT id FROM field
+                        WHERE slice_id='$p_slice_id' AND id like '". $ftype_base ."%'";
+                $max = -1;  // Was 0
+                $db->query($SQL);   // get all fields with the same type in this slice
+                while ( $db->next_record() ) {
+                    $max = max( $max, AA_Fields::getFieldNo($db->f('id')), 0);
+                }
+                $max++;
+                //create name like "time...........2"
+                $fieldid = AA_Fields::createFieldId($ftype_base, $max);
+
+                $varset->set("slice_id", $slice_id, "unpacked" );
+                $varset->set("id", $fieldid, "quoted" );
+                $varset->set("name",  $val, "quoted");
+                $varset->set("input_pri", $pri[$key], "number");
+                $varset->set("required", ($req[$key] ? 1 : 0), "number");
+                $varset->set("input_show", ($shw[$key] ? 1 : 0), "number");
+                if (!$varset->doInsert('field')) {
+                    $err["DB"] .= MsgErr("Can't copy field");
+                    break;
+                }
+    }
+
+}
+
+
+
 /** Returns list of fields which belongs to the slice
  *  The result is in two arrays - $fields    (key is field_id)
  *                              - $prifields (just field_id sorted by priority)
@@ -734,33 +830,6 @@ function GetFields4Select($slice_id, $slice_fields = false, $order = 'name', $ad
     return $lookup_fields;
 }
 
-/** Returns true, if the passed field id looks like slice setting field
- *  "slice fields" are not used for items, but rather for slice setting.
- *  Such fields are destinguished by underscore on first letter of field_id
- */
-function isSliceField($field_id) {
-    return $field_id AND ($field_id{0} == '_');
-}
-
-/** Create field id from type and number */
-function CreateFieldId($ftype, $no="0") {
-    if ((string)$no == "0") {
-        $no = "";    // id for 0 is "xxxxx..........."
-    }
-    return $ftype. substr("................$no", -(16-strlen($ftype)));
-}
-
-/** get field type from id (works also for AA_Core_Fields (without dots)) */
-function GetFieldType($id) {
-    $dot_pos = strpos($id, ".");
-    return ($dot_pos === false) ? $id : substr($id, 0, $dot_pos);
-}
-
-/** get field number from id ('.', '0', '1', '12', ... ) */
-function GetFieldNo($id) {
-    return (string)substr(strrchr($id,'.'), 1);
-}
-
 // -------------------------------------------------------------------------------
 
 // helper function for GetItemContent and such functions
@@ -775,39 +844,6 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
     }
     return array( $sel_in, $settags );
 }
-
-/** @todo convert to static class variables after move to PHP5 */
-class DbStructure {
-    var $tables;
-    var $item_translations;
-
-    function DbStructure() {
-        $this->tables            = array('item' => array('id', 'short_id', 'slice_id', 'status_code', 'post_date', 'publish_date', 'expiry_date', 'highlight', 'posted_by', 'edited_by', 'last_edit', 'display_count', 'flags', 'disc_count', 'disc_app', 'externally_fed', 'moved2active'));
-        $this->item_translations = array();
-        foreach ($this->tables['item'] as $column) {
-            $this->item_translations[CreateFieldId($column)] = $column;
-        }
-    }
-
-    function itemTableField($field_id) {
-        return get_if($this->item_translations[$field_id], false);
-    }
-
-    function itemFields4Sql($fields2get) {
-        $fields = array();
-        if ( is_array($fields2get) ) {
-            foreach ( $fields2get as $field_name ) {
-                if ($this->item_translations[$field_name]) {
-                    $fields[] = 'item.'. $this->item_translations[$field_name];
-                }
-            }
-        }
-        return ( count($fields) < 1 ) ? 'item.*' : join(',', $fields);
-    }
-}
-
-
-
 
 /** Basic function to get item content. Use this function, not direct SQL queries.
 *
@@ -840,8 +876,8 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
     // if the output fields are restricted, restrict also item fields
     if ( $fields2get ) {
-        $dbstructure = new DbStructure();
-        $item_fields = $dbstructure->itemFields4Sql($fields2get);
+        $metabase = new AA_Metabase();
+        $item_fields = $metabase->itemFields4Sql($fields2get);
     } else {
         $item_fields = 'item.*';
     }
@@ -876,7 +912,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         while (list($key, $val) = each($db->Record)) {
             // we need only item fields
             if (!is_numeric($key) AND ($key != 'reading_password')) {
-                $content[$foo_id][CreateFieldId($key)][] = array(
+                $content[$foo_id][AA_Fields::createFieldId($key)][] = array(
                      "value" => $reading_permitted ? $val : _m("Error: Missing Reading Password"));
             }
         }
@@ -975,7 +1011,7 @@ function GetItemContentMinimal($zids, $fields2get=false) {
           $n_items++;
           $foo_id = unpack_id128($db->f("id"));
           foreach ( $fields2get as $fld ) {
-              $content[$foo_id][CreateFieldId($fld)][] = array("value" => $db->f($fld));
+              $content[$foo_id][AA_Fields::createFieldId($fld)][] = array("value" => $db->f($fld));
           }
       }
   }
@@ -1070,91 +1106,79 @@ function GetCategoryGroup($slice_id, $field='') {
 
 // returns field id of field which stores category (usually "category........")
 function GetCategoryFieldId( $fields ) {
-  $no = 10000;
-  if ( isset($fields) AND is_array($fields) ) {
-    reset( $fields );
-    while ( list( $k,$val ) = each( $fields ) ) {
-      if ( substr($val[id], 0, 8) != "category" )
-        continue;
-      $last = GetFieldNo($val[id]);
-      $no = min( $no, ( ($last=='') ? -1 : (integer)$last) );
+    $no = 10000;
+    if ( isset($fields) AND is_array($fields) ) {
+        foreach ($fields as  $k => $val ) {
+            if ( substr($val['id'], 0, 8) != "category" ) {
+                continue;
+            }
+            $last = AA_Fields::getFieldNo($val['id']);
+            $no = min( $no, ( ($last=='') ? -1 : (integer)$last) );
+        }
     }
-  }
-  if ($no==10000)
-    return false;
-  $no = ( ($no==-1) ? '.' : (string)$no);
-  return CreateFieldId("category", $no);
+    if ($no==10000) {
+        return false;
+    }
+    $no = ( ($no==-1) ? '.' : (string)$no);
+    return AA_Fields::createFieldId("category", $no);
 }
 
 // -------------------------------------------------------------------------------
 
 // get id from item short id
 function GetId4Sid($sid) {
-  global $db;
+    global $db;
 
-  if (!$sid)
-    return false;
-  $SQL = "SELECT id FROM item WHERE short_id='$sid'";
-  $db->query( $SQL );
-  if ( $db->next_record() )
-    return unpack_id128($db->f("id"));
-  return false;
+    if (!$sid) {
+        return false;
+    }
+    $SQL = "SELECT id FROM item WHERE short_id='$sid'";
+    $db->query( $SQL );
+    return ($db->next_record() ? unpack_id128($db->f("id")) : false);
 }
 
 // -------------------------------------------------------------------------------
 
 // get short item id item short id
 function GetSid4Id($iid) {
-  global $db;
+    global $db;
 
-  if (!$iid)
-    return false;
-  $SQL = "SELECT short_id FROM item WHERE id='". q_pack_id($iid) ."'";
-  $db->query( $SQL );
-  if ( $db->next_record() )
-    return $db->f("short_id");
-  return false;
+    if (!$iid) {
+        return false;
+    }
+    $SQL = "SELECT short_id FROM item WHERE id='". q_pack_id($iid) ."'";
+    $db->query( $SQL );
+    return ($db->next_record() ? $db->f("short_id") : false);
 }
 
 // -------------------------------------------------------------------------------
 
-// in_array and compact is available since PHP4
-if (substr(PHP_VERSION, 0, 1) < "4") {
-  function in_array($needle,$haystack){
-    if (!is_array($haystack)) return false;
-    reset ($haystack);
-    while (list (,$val) = each ($haystack))
-        if ($val == $needle)
-            return true;
-    return false;
-  }
-}
-
 // Parses the string xxx:yyyy (database stored func) to arr[fce]=xxx [param]=yyyy
 function ParseFnc($s) {
-  $pos = strpos($s,":");
-  if ( $pos ) {
-    $arr[fnc] = substr($s,0,$pos);
-    $arr[param] = substr($s,$pos+1);
-  } else
-    $arr[fnc] = $s;
-  return $arr;
+    $pos = strpos($s,":");
+    if ( $pos ) {
+        $arr['fnc'] = substr($s,0,$pos);
+        $arr['param'] = substr($s,$pos+1);
+    } else {
+        $arr['fnc'] = $s;
+    }
+    return $arr;
 }
 
 // returns html safe code (used for preparing variable to print in form)
 function safe( $var ) {
-  return htmlspecialchars( magic_strip($var) );  // stripslashes function added because of quote varibles sended to form before
+    return htmlspecialchars( magic_strip($var) );  // stripslashes function added because of quote varibles sended to form before
 }
 
 // is the browser able to show rich edit box? (using triedit.dll)
 function richEditShowable () {
-  global $BName, $BVersion, $BPlatform;
+    global $BName, $BVersion, $BPlatform;
     global $showrich;
     detect_browser();
-  // Note that Macintosh IE 5.2 does not support either richedit or current iframe
-  // Mac Omniweb/4.1.1 detects as Netscape 4.5 and doesn't support either
-  return (($BName == "MSIE" && $BVersion >= "5.0" && $BPlatform != "Macintosh") || $showrich > "");
-  // Note that RawRichEditTextarea could force iframe for certain BPlatform
+    // Note that Macintosh IE 5.2 does not support either richedit or current iframe
+    // Mac Omniweb/4.1.1 detects as Netscape 4.5 and doesn't support either
+    return (($BName == "MSIE" && $BVersion >= "5.0" && $BPlatform != "Macintosh") || $showrich > "");
+    // Note that RawRichEditTextarea could force iframe for certain BPlatform
 }
 
 /** Is it valid e-mail */
@@ -1201,7 +1225,9 @@ function HtmlPageBegin($stylesheet='default', $js_lib=false, $lang=null) {
     $charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang ? $lang : get_mgettext_lang()];
     echo "<!--$lang-->";
     echo "\n     <meta http-equiv=\"Content-Type\" content=\"text/html; charset='$charset'\">\n";
-    if ($js_lib) FrmJavascriptFile( 'javascript/js_lib.js' );
+    if ($js_lib) {
+        FrmJavascriptFile( 'javascript/js_lib.js' );
+    }
 }
 
 // use instead of </body></html> on pages which show menu
@@ -1747,7 +1773,7 @@ function DBFields(&$db) {
 }
 
 function ShowWizardFrames($aa_url, $wizard_url, $title, $noframes_html="") {
-    require AA_BASE_PATH."post2shtml.php3";
+    require_once AA_BASE_PATH."post2shtml.php3";
     global $post2shtml_id;
     echo
 '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
@@ -1792,7 +1818,7 @@ function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='
 /// On many places in Admin panel, it is secure to read sensitive data => use this function
 function FetchSliceReadingPassword() {
     global $slice_id, $slice_pwd, $db;
-    $db->query ("SELECT reading_password FROM slice WHERE id='".q_pack_id($slice_id)."'");
+    $db->query("SELECT reading_password FROM slice WHERE id='".q_pack_id($slice_id)."'");
     if ($db->next_record()) {
         $slice_pwd = $db->f("reading_password");
     }
@@ -2053,5 +2079,192 @@ class CookieManager {
         return $_COOKIE['AA_'.$name];
     }
 }
+
+/** Components (plugins) manipulation class */
+class AA_Components {
+
+    /** Return names of all known AA classes, which begins with $mask
+     *  static function
+     */
+    function getClassNames($mask) {
+        $right_classes = array();
+        $mask_length   = strlen($mask);
+        foreach (get_declared_classes() as $classname) {
+            if ( substr($classname,0,$mask_length) == $mask ) {
+                $right_classes[] = $classname;
+            }
+        }
+        return $right_classes;
+    }
+
+    function getSelectionCode($mask, $input_id, &$params) {
+        $options      = array('AA_Empty' => _m('select ...'));
+        $html_options = array('AA_Empty' => '');
+        foreach (AA_Components::getClassNames($mask) as $selection_class) {
+            // call static class methods
+            $options[$selection_class]      = call_user_func(array($selection_class, 'name'));
+            $html_options[$selection_class] = call_user_func_array(array($selection_class, 'htmlSetting'), array($input_id, &$params));
+        }
+        return getSelectWithParam($input_id, $options, "", $html_options);
+    }
+
+    function factory($classname, $params=null) {
+        return new $classname($params);
+    }
+}
+
+class AA_ChangeProposal {
+    var $resource_id;
+    var $selector;
+    var $values;    // array of values
+
+    function AA_ChangeProposal($resource_id, $selector, $values) {
+        $this->resource_id = $resource_id;
+        $this->selector    = $selector;
+        $this->values      = $values;
+    }
+
+    function getResourceId() { return($this->resource_id); }
+    function getSelector()   { return($this->selector);    }
+    function getValues()     { return($this->values);      }
+}
+
+
+class AA_GeneralizedArray {
+    var $arr;
+
+    function AA_GeneralizedArray() {
+        $this->arr = array();
+    }
+
+    function add($value, $coordinates) {
+        $arr =& $this->arr;
+        // make sure the position exist
+        foreach ( $coordinates as $key ) {
+            if (!isset($arr[$key])) {
+                $arr[$key] = array();
+            }
+            // go down - more deep in the structure
+            $arr = &$arr[$key];
+        }
+        $arr = array_merge($arr, array($value));
+    }
+
+    function getValues($coordinates) {
+        $arr =& $this->arr;
+        // make sure the position exist
+        foreach ( $coordinates as $key ) {
+            if (!isset($arr[$key])) {
+                return null;
+            }
+            // go down - more deep in the structure
+            $arr = &$arr[$key];
+        }
+        $ret = $arr;   // do not return reference
+        return $ret;
+    }
+
+    function getArray() {
+        return $this->arr;
+    }
+}
+
+class AA_ChangesMonitor {
+
+    function addProposal($change_proposal) {
+        global $auth;
+
+        $change_id = new_id();
+        $varset = new CVarset;
+        $varset->addkey("id",       "text",   $change_id);
+        $varset->add("time",        "number", now());
+        $varset->add("user",        "text",   is_object($auth) ? $auth->auth["uid"] : '');
+        $varset->add("type",        "text",   'proposal');
+        $varset->add("resource_id", 'text',   $change_proposal->getResourceId());
+        $varset->doInsert('change');
+
+        $priority = 0;
+        foreach ( $change_proposal->getValues() as $value ) {
+            $varset->clear();
+            $varset->add("change_id", "text",   $change_id);
+            $varset->add("selector",  "text",   $change_proposal->getSelector());
+            $varset->add("priority",  "number", $priority++);
+            $varset->add("type",      "text",   gettype($value));
+            $varset->add("value",     "text",   $value);
+            $varset->doInsert('change_record');
+        }
+        return true;
+    }
+
+    function deleteProposal($change_id) {
+        $varset = new CVarset;
+        $varset->doDeleteWhere('change_record', "change_id = '".quote($change_id). "'");
+        $varset->clear();
+        $varset->addkey("id", "text", $change_id);
+        $varset->doDelete('change');
+    }
+
+    function deleteProposalForSelector($resource_id, $selector) {
+        $changes_ids = GetTable2Array("SELECT DISTINCT change_id  FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                         WHERE `change`.resource_id = '".quote($resource_id)."' AND `change_record`.selector = '".quote($selector)."'", '', 'change_id');
+        if ( is_array($changes_ids) ) {
+            foreach( $changes_ids as $change_id ) {
+                $this->deleteProposal($change_id);
+            }
+        }
+    }
+
+
+    /** returns all proposals for given resource (like item_id)
+     *  return value is array ordered by time of proposal
+     */
+    function getProposals($resource_ids) {
+        $garr = new AA_GeneralizedArray();
+        if ( !is_array($resource_ids) OR (count($resource_ids)<1) ) {
+            return $garr;
+        }
+
+        $ids4sql = "'". implode("','", array_map( "quote", $resource_ids)). "'";
+
+        $changes = GetTable2Array("SELECT `change_record`.*, `change`.resource_id
+                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                WHERE `change`.resource_id IN ($ids4sql)
+                                ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority", '', 'aa_fields');
+
+        if ( is_array($changes) ) {
+            foreach($changes as $change) {
+                if ( $change['type'] ) {
+                    $value = $change['value'];
+                    settype($value, $change['type']);
+                    $garr->add($value, array($change['resource_id'], $change['change_id'], $change['selector']));
+                }
+            }
+        }
+        return $garr;
+    }
+
+    function getProposalByID($change_id) {
+        $garr = new AA_GeneralizedArray();
+        if ( !$change_id ) {
+            return $garr;
+        }
+        $changes = GetTable2Array("SELECT `change_record`.*, `change`.resource_id
+                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                WHERE `change`.id = '". quote($change_id)."'
+                                ORDER BY `change_record`.selector, `change_record`.priority", '', 'aa_fields');
+
+        if ( is_array($changes) ) {
+            foreach($changes as $change) {
+                if ( $change['type'] ) {
+                    $value = $change['value'];
+                    settype($value, $change['type']);
+                    $garr->add($value, array($change['resource_id'], $change['selector']));
+                }
+            }
+        }
+        return $garr->getArray();
+    }
+}
+
 
 ?>
