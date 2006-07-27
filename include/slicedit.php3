@@ -144,6 +144,7 @@ if ( $add || $update ) {
         ValidateInput("name", _m("Title"), $name, $err, true, "text");
         ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
         ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
+        ValidateInput("upload_url", _m("Upload URL"), $upload_url, $err, false, "url");
         ValidateInput("priority", _m("Priority (order in slice-menu)"), $priority, $err, false, "number");
         ValidateInput("d_listlen", _m("Listing length"), $d_listlen, $err, true, "number");
         ValidateInput("permit_anonymous_post", _m("Allow anonymous posting of items"), $permit_anonymous_post, $err, false, "number");
@@ -199,6 +200,7 @@ if ( $add || $update ) {
             $varset->add("auth_field_group", "text", $auth_field_group);
             $varset->add("mailman_field_lists", "text", $mailman_field_lists);
             $varset->add("reading_password", "text", $reading_password);
+
             //mlx
             //print("<br>$mlxctrl<br>");
             $varset->add(MLX_SLICEDB_COLUMN, "quoted", q_pack_id($mlxctrl)); //store 16bytes packed
@@ -208,7 +210,6 @@ if ( $add || $update ) {
                 $err["DB"] = MsgErr("Can't change slice");
                 break;
             }
-            $r_slice_headline = stripslashes($name);
             $r_slice_view_url = ($slice_url=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                                 : stripslashes($slice_url));
         } else { // insert (add)
@@ -284,7 +285,7 @@ if ( $add || $update ) {
                 }
             }
 
-            $sess->register(slice_id);
+            $sess->register('slice_id');
 
             AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
 
@@ -312,6 +313,9 @@ if ( $add || $update ) {
             }
             /* End of Wizard stuff */
         }
+        $slice = AA_Slices::getSlice($slice_id);
+        $slice->setSliceField('_upload_url.....', $upload_url);
+
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values for this slice
     } while(false);
 
