@@ -32,7 +32,7 @@ require_once AA_INC_PATH."files.class.php3";
 
 if ( !is_object($event) ) $event = new aaevent;   // not defined in scripts which do not include init_page.php3 (like offline.php3)
 
-/** ---------------- functions for default item values ----------------------/*/
+/** ---------------- functions for default item values ----------------------*/
 function default_fnc_now($param) {
     return now();
 }
@@ -314,7 +314,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
 
     // look if the uploaded picture exists
     if ($up_file['name'] AND ($up_file['name'] != 'none') AND ($context != 'feed')) {
-        $slice = new slice($GLOBALS["slice_id"]);
+        $slice = AA_Slices::getSlice($GLOBALS["slice_id"]);
 
         // $pdestination and $purl is not used, yet - it should be used to allow
         // slice administrators to store files to another directory
@@ -410,7 +410,7 @@ function insert_fnc_($item_id, $field, $value, $param, $additional='') {
 }
 
 // ----------------------- show functions --------------------------------------
-// moved to formutil into aainputfield class (formutil.php3)
+// moved to formutil into AA_Inputfield class (formutil.php3)
 // -----------------------------------------------------------------------------
 
 function IsEditable($fieldcontent, $field, &$profile) {
@@ -699,13 +699,16 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
         if ($editable && ($action == "insert" || $action == "update")) {
             switch( $validate ) {
                 case 'date':
+                    huhl( "-", $varname, "-", $foo_datectrl_name);
                     $foo_datectrl_name = new datectrl($varname);
                     $foo_datectrl_name->update();           // updates datectrl
+                    huhl( "-", $varname, "-", $foo_datectrl_name);
                     if ($$varname != "") {                  // loaded from defaults
                         $foo_datectrl_name->setdate_int($$varname);
                     }
                     $foo_datectrl_name->ValidateDate($f["name"], $err, $f["required"], $default_val);
                     $$varname = $foo_datectrl_name->get_date();  // write to var
+                    huhl( "-", $$varname);
                     break;
                 case 'bool':
                     $$varname = ($$varname ? 1 : 0);

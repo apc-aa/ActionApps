@@ -35,10 +35,10 @@ require_once AA_INC_PATH . "itemfunc.php3";
 require_once AA_INC_PATH . "formutil.php3";
 require_once AA_INC_PATH . "sliceobj.php3";
 
-$module_id = $slice_id;
+$module_id   = $slice_id;
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
-$slice = new slice($module_id);
-$fields = $slice->fields('record');
+$slice       = AA_Slices::getSlice($module_id);
+$fields      = $slice->fields('record');
 
 // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 // Include also js_lib.js javascript library
@@ -105,7 +105,7 @@ if ($sel_text) {
 }
 
 // Display the field
-$aainput = new aainputfield($content);
+$aainput = new AA_Inputfield($content);
 $aainput->setFromField($fields[$field_name]);
 switch ( $aainput->get_inputtype() ) {
     case "sel" :

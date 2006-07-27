@@ -73,7 +73,7 @@ function varname4form($fid, $type='normal') {
 /** Returns inputform template */
 function GetInputFormTemplate() {
      global $slice_id;
-     $slice = new slice($slice_id);
+     $slice = AA_Slices::getSlice($slice_id);
      $form  = new inputform($inputform_settings);
      // ItemContent in getForm passed by reference
      return $form->getForm(new ItemContent(), $slice, false, $slice_id);
@@ -151,11 +151,10 @@ class inputform {
         echo $this->getFormStart();
 
         // design of form could be customized by view
-        if ( $this->template AND ($view_info = GetViewInfo($this->template))) {
+        if ( $this->template AND ($view = AA_Views::getView($this->template))) {
             // we can use different forms for 'EDIT' and 'ADD' item => (even/odd)
-            $form =   ($edit AND $view_info['even_odd_differ']) ?
-                                $view_info['even'] : $view_info['odd'];
-            $remove_string =    $view_info['remove_string'];
+            $form          = ($edit AND $view->f('even_odd_differ')) ? $view->f('even') : $view->f('odd');
+            $remove_string = $view->f('remove_string');
         }
 
         // create buttons array for top (and lately for bottom of the form)
@@ -298,7 +297,7 @@ class inputform {
                 }
                 $field_html_flag = (((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
             }            // Display the field
-            $aainput = new aainputfield($field_value, $field_html_flag, $field_mode);
+            $aainput = new AA_Inputfield($field_value, $field_html_flag, $field_mode);
             //fix -- otherwise $field_value keeps array
             unset($field_value);
             $aainput->setFromField($f);
@@ -389,18 +388,18 @@ class inputform {
     }
 } // inputform class
 
-/** Special constructor shortcut for aainputfield class
- *  Returns new aainputfield object with setting defined in array */
+/** Special constructor shortcut for AA_Inputfield class
+ *  Returns new AA_Inputfield object with setting defined in array */
 function getAAField( $settings ) {
-    $x = new aainputfield();
+    $x = new AA_Inputfield();
     $x->setFromArray( $settings );
     return $x;
 }
 
 /**
- * aainputfield class - used for displaying input field
+ * AA_Inputfield class - used for displaying input field
  */
-class aainputfield {
+class AA_Inputfield {
     var $id;               // field id (like headline........) -
                            //  - we generate html variable name from id: v435...
     var $input_type;       // shortcut of 'input type' (like 'fld','sel','mse')
@@ -441,10 +440,10 @@ class aainputfield {
                            // value is selected (manily for multivalues)
     var $const_arr;        // array of constants used for selections (selectbox, radio, ...)
     var $msg;                         // stores return code from functions
-    var $classname = "aainputfield";  // class name (just for PHPLib sessions)
+    var $classname = "AA_Inputfield";  // class name (just for PHPLib sessions)
 
-    /** Constructor - initializes aainputfield  */
-    function aainputfield($value='', $html_flag=true, $mode='normal',
+    /** Constructor - initializes AA_Inputfield  */
+    function AA_Inputfield($value='', $html_flag=true, $mode='normal',
                           $varname="", $name="", $add=false, $required=false,
                           $hlp="", $morehlp="", $arr=null) {
         $this->clear();
@@ -462,6 +461,16 @@ class aainputfield {
         $this->setFromArray($settings);
 
         contentcache::global_instance();   // make sure $contentcache exists
+    }
+
+    /** Returns the value for a field. If it is a multi-value
+    *   field, this is the first value. */
+    function getValue() {
+        return $this->value[0]['value'];
+    }
+
+    function setValue($value) {
+        $this->value = array( 0=>array('value'=>$value));
     }
 
     /** private function - Returns list of class variables and its defaults */
@@ -513,6 +522,9 @@ class aainputfield {
             $this->input_type    = $funct[0];
             $this->param         = array_slice( $funct, 1 );
             $this->html_rb_show  = $field["html_show"];
+            if ( isset($field["const_arr"]) ) {
+                $this->const_arr  = $field["const_arr"];
+            }
         }
     }
 
@@ -524,10 +536,11 @@ class aainputfield {
     // private methods - helper - data manipulation
 
     /** Joins all values to one long string separated by $delim */
-    function implodaval($delim=',') {
+    function implodeVal($delim=',') {
+        $ret = '';
         if ( isset($this->value) AND is_array($this->value) ) {
             foreach ( $this->value as $v ) {
-                $res .= ($res ? $delim : ''). $v['value']; // add value separator just if field is filled
+                $ret .= ($ret ? $delim : ''). $v['value']; // add value separator just if field is filled
             }
         }
         return $ret;
@@ -658,7 +671,7 @@ class aainputfield {
             case 'freeze_wi2':
             case 'freeze_mse':
             case 'freeze_mfl':
-            case 'freeze_mch': $this->value_modified = $this->implodaval();
+            case 'freeze_mch': $this->value_modified = $this->implodeVal();
                                $this->staticText();       break;
             case 'freeze_pwd': $this->value_modified = $this->value[0] ? "*****" : "";
                                $this->staticText();       break;
@@ -767,7 +780,7 @@ class aainputfield {
                                $this->varname_modify('[]');         // use slightly modified varname
                                $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
                                if ( $this->mode == 'freeze' ) {
-                                   $this->value_modified = $this->implodaval('<br>');
+                                   $this->value_modified = $this->implodeVal('<br>');
                                    $this->staticText();
                                } else {
                                    $this->inputRelation($rows, $sid, MAX_RELATED_COUNT, $mode, $design, $actions, $whichitems, $conds, $condsrw);
@@ -1555,7 +1568,7 @@ function FrmMoreHelp($hlp, $text="", $hint="", $image=false) {
  *  for use within <form> and <table> tag
  */
 function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", $colspan=1, $needed=false, $hlp="", $morehlp="") {
-    $input = new aainputfield($checked, false, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    $input = new AA_Inputfield($checked, false, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputChBox($changeorder, $colspan);
     $input->print_result();
 }
@@ -1569,14 +1582,14 @@ function FrmInputChBox($name, $txt, $checked=true, $changeorder=false, $add="", 
  *                      any usage) - added by Jakub, 28.1.2003
  */
 function FrmInputText($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $type="text") {
-    $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputText($maxsize, $size, $type);
     $input->print_result();
 }
 
 /** Prints password input box */
 function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $html=false, $type="password") {
-    $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputText($maxsize, $size, $type);
     $input->print_result();
 }
@@ -1584,7 +1597,7 @@ function FrmInputPwd($name, $txt, $val, $maxsize=254, $size=25, $needed=false, $
 
 /** Prints two static text to 2-column table for use within <table> tag */
 function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=1 ) {
-    $input = new aainputfield($val, false, 'normal', '', $txt, '', $needed, $hlp, $morehlp);
+    $input = new AA_Inputfield($val, false, 'normal', '', $txt, '', $needed, $hlp, $morehlp);
     $input->staticText($safing);
     $input->print_result();
 }
@@ -1593,7 +1606,7 @@ function FrmStaticText($txt, $val, $needed=false, $hlp="", $morehlp="", $safing=
  *  for use within <form> and <table> tag
 */
 function FrmHidden($name, $val, $safing=true ) {
-    $input = new aainputfield($val, false, 'normal', $name);
+    $input = new AA_Inputfield($val, false, 'normal', $name);
     $input->hidden($safing);
     $input->print_result();
 }
@@ -1603,7 +1616,7 @@ function FrmHidden($name, $val, $safing=true ) {
  */
 function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single="") {
     $html=false;  // it was in parameter, but was never used in the code /honzam 05/15/2004
-    $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->textarea($rows, $cols, $single, false);
     $input->print_result();
 }
@@ -1613,7 +1626,7 @@ function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="
  *  On the other browsers, loads a normal text area
 */
 function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class", $needed=false, $hlp="", $morehlp="", $single="", $html=false) {
-    $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->richEditTextarea($rows, $cols, $type, $single);
     $input->print_result();
 }
@@ -1623,7 +1636,7 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class
  *  On the other browsers, loads a normal text area
 */
 function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $display_time=false) {
-    $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->dateSelect(7, 1, true, $display_time);
     $input->print_result();
 }
@@ -1633,7 +1646,7 @@ function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $displa
  *  for use within <form> and <table> tag
  */
 function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true) {
-    $input = new aainputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputRadio($ncols, $move_right);
     $input->print_result();
 }
@@ -1642,7 +1655,7 @@ function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", 
  *  for use within <form> and <table> tag
  */
 function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $relation=false, $needed=false, $hlp="", $morehlp="", $minrows=0, $mode='AMB', $design=false) {
-    $input = new aainputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     if ( $relation ) {
         $input->inputRelation($rows, $relation, $minrows, $mode, $design);
     } else {
@@ -1653,7 +1666,7 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $relation
 
 /** Print boxes allowing to choose constant in a hiearchical way */
 function FrmHierarchicalConstant($name, $txt, $value, $group_id, $levelCount, $boxWidth, $rows, $horizontal=0, $firstSelect=0, $needed=false, $hlp="", $morehlp="", $levelNames="") {
-    $input = new aainputfield($value, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    $input = new AA_Inputfield($value, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->hierarchicalConstant($group_id, $levelCount, $boxWidth, $rows, $horizontal, $firstSelect, $levelNames);
     $input->print_result();
 }
@@ -1662,7 +1675,7 @@ function FrmHierarchicalConstant($name, $txt, $value, $group_id, $levelCount, $b
  * for use within <form> and <table> tag
  */
 function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $usevalue=false) {
-    $input = new aainputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputSelect($usevalue);
     $input->print_result();
 }
@@ -1671,7 +1684,7 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false, $hlp="",
  *  for use within <form> and <table> tag
  */
 function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true) {
-    $input = new aainputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputMultiChBox($ncols, $move_right);
     $input->print_result();
 }
@@ -1680,7 +1693,7 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false, $hlp
  *  for use within <form> and <table> tag
  */
 function FrmInputFile($name, $txt, $needed=false, $accepts="image/*", $hlp="", $morehlp="" ){
-    $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputFile($accepts);
     $input->print_result();
 }
@@ -1689,19 +1702,19 @@ function FrmInputFile($name, $txt, $needed=false, $accepts="image/*", $hlp="", $
  *  to 2-column table for use within <form> and <table> tag
  */
 function FrmInputPreSelect($name, $txt, $arr, $val, $maxsize=254, $size=25, $needed=false, $hlp="", $morehlp="", $adding=0, $secondfield="", $usevalue=false) {
-    $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputPreSelect($maxsize,$size,$adding,$secondfield,$usevalue);
     $input->print_result();
 }
 
 function FrmTextareaPreSelect($name, $txt, $arr, $val, $needed=false, $hlp="", $morehelp="",  $rows=4, $cols=60) {
-    $input = new aainputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->textareaPreSelect($rows,$cols);
     $input->print_result();
 }
 
 function FrmRelated($name, $txt, $arr, $rows, $sid, $mode, $design, $needed=false, $hlp="", $morehlp="") {
-    $input = new aainputfield('', $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input = new AA_Inputfield('', $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputRelation($rows, $relation, $minrows, $mode, $design);
     $input->print_result();
 }
@@ -1709,7 +1722,7 @@ function FrmRelated($name, $txt, $arr, $rows, $sid, $mode, $design, $needed=fals
 /** Prints two boxes for multiple selection for use within <form> and <table> */
 function FrmTwoBox($name, $txt, $arr, $val, $rows, $selected, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp="") {
     // $val is not used - there is only from historical reasons and should be removed accross files
-    $input = new aainputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->twoBox($rows,$wi2_offer,$wi2_selected);
     $input->print_result();
 }
@@ -2251,6 +2264,7 @@ function IncludeManagerJavascript() {
         var aa_live_checkbox_file = "'. $sess->url(AA_INSTAL_PATH. "live_checkbox.php3") .'";
         var aa_live_change_file   = "'. $sess->url(AA_INSTAL_PATH. "live_change.php3") .'"; ');
     FrmJavascriptFile( 'javascript/manager.js' );
+    FrmJavascriptFile( 'javascript/ajax.js' );
 }
 
 /** returns one row with one radiobutton - asociated to bookmark (stored search)
@@ -2352,7 +2366,7 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
         $zids = new zids(null, 'l');
         $zids->set_from_item_arr($items);
     } else {                   // user defined by bookmark
-        $slice = new slice($slice_id);
+        $slice = AA_Slices::getSlice($slice_id);
         if ( $group == '' ) {
             // all active items in the slice
             $conds = false;
@@ -2375,6 +2389,19 @@ function FrmItemListForm(&$items) {
     }
     $out .= "\n  </form>";
     echo $out;
+}
+
+function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
+    $add = "onchange=\"ShowThisTagClass('fswp$name', 'div', 'fswp_'+sb_GetSelectedValue(this), 'fswp_')\"";
+    $ret = FrmSelectEasyCode($name, $arr, $selected, $add);
+    if (isset($html_setting) AND is_array($html_setting)) {
+        $ret .= "\n<div id=\"fswp$name\">";
+        foreach($html_setting as $value => $html) {
+            $ret .= "\n  <div class=\"fswp_$value\" style=\"display:none\">$html</div>";
+        }
+        $ret .= "\n</div>";
+    }
+    return $ret;
 }
 
 // Prints alias names as help for fulltext and compact format page
