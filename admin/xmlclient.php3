@@ -80,6 +80,7 @@ require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."notify.php3";
 require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."grabber.class.php3";
 
 if ($debugfeed >= 8) print("\n<br>XMLCLIENT STARTING");
 
@@ -119,7 +120,7 @@ class AA_Feed {
         // fictive remote slice id, but always the same for the same url
         $feeddata['remote_slice_id'] = q_pack_id(attr2id($feeddata['server_url']));
 
-        $this->grabber               = new grabber_aarss($id, $feeddata);
+        $this->grabber               = new AA_Grabber_Aarss($id, $feeddata, $this->fire);
         $this->destination_slice_id  = unpack_id128($feeddata['slice_id']);
 
         if ($url) {
@@ -134,7 +135,7 @@ class AA_Feed {
         $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
         $feeddata['feed_type']       = ($feeddata['feed_mode'] == 'exact') ? FEEDTYPE_EXACT : FEEDTYPE_APC;
 
-        $this->grabber               = new grabber_aarss($id, $feeddata);
+        $this->grabber               = new AA_Grabber_Aarss($id, $feeddata, $this->fire);
         $this->destination_slice_id  = unpack_id128($feeddata['slice_id']);
 
         if ($time) {
@@ -142,7 +143,7 @@ class AA_Feed {
         }
     }
 
-    /** Process one feed RSS, or APC AA RSS, or CSV or ... - based on grabber
+    /** Process one feed RSS, or APC AA RSS, or CSV or ... - based on AA_Grabber
      *  @param  $feed_id   - id of feed (it is autoincremented number from 1 ...
      *                     - RSS and APC feeds could have the same id :-(
      *          $feed      - feed definition array (server_url, password, ...)
@@ -154,7 +155,7 @@ class AA_Feed {
     function feed() {
         if ( $this->fire = 'write' ) {
             $translations = null;
-            $saver        = new saver($this->grabber, $translations, $this->destination_slice_id);
+            $saver        = new AA_Saver($this->grabber, $translations, $this->destination_slice_id);
             $saver->run();
         }
     }
