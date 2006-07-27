@@ -12,8 +12,8 @@
 $directory_depth = "../../../";
 require_once $directory_depth."../include/init_page.php3";     # This pays attention to $change_id
 require_once $directory_depth."../include/util.php3";
- 
- 
+
+
 // Error reporting should be set to E_NONE in production environment
 // error_reporting( E_NONE );
 error_reporting(E_ALL);

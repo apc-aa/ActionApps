@@ -66,7 +66,7 @@ page_close();
 exit;
 
 /*
-$Log$
+$Log: index.php3,v $
 Revision 1.5  2006/06/14 13:30:43  honzam
 fixed security problem require (see http://secunia.com/advisories/20299/). Requires no longer use variables
 

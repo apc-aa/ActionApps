@@ -19,7 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// $r_slice_headline - should be defined
 // $slice_id - should be defined
 // $r_slice_view_url - should be defined
 // $editor_page or $usermng_page or $settings_page - should be defined
@@ -32,15 +31,13 @@ http://www.apc.org/
 // way for all the modules. There should be APC-AA logo, name of page, module
 // switching dropdown menu, ...
 
-if ( !$module_id )
-  $r_slice_headline = _m("New slice");
-
-if ( $editor_page )
-  $nb_context = _m("Code&nbsp Manager");
- elseif( $settings_page )
-  $nb_context = _m("Module Settings");
- elseif( $usermng_page )
-  $nb_context = _m("Users");
+if ( $editor_page ) {
+    $nb_context = _m("Code Manager");
+} elseif( $settings_page ) {
+    $nb_context = _m("Module Settings");
+} elseif( $usermng_page ) {
+    $nb_context = _m("Users");
+}
 
 // modules are in directory one level deeper than scripts in /admin/...
 // if the '/admin' is in path, this navbar is called just after swithing to
@@ -49,7 +46,7 @@ $nb_backpath = ( (strpos($PHP_SELF, '/admin/') > 0 ) ? '' : '../' );
 
 $nb_manager = ( $editor_page ?
   '<span class=nbdisable>'. _m("Code&nbsp Manager") .'</span>':
-  '<a href="'. $sess->url("index.php3"). '"><span class=nbenable>'. _m("Code&nbsp Manager") .'</span></a>');
+  '<a href="'. $sess->url("index.php3"). '"><span class=nbenable>'. _m("Code Manager") .'</span></a>');
 
 $nb_settings = ( ( $settings_page OR !IfSlPerm(PS_MODW_SETTINGS) ) ?
   '<span class=nbdisable>'. _m("Module Settings") .'</span>':
@@ -77,7 +74,9 @@ echo "
   <TR>
     <TD rowspan=2 align=center class=nblogo>$nb_logo</td>
     <TD height=43 colspan=2 align=center valign=middle class=slicehead>
-    $nb_context  -  $r_slice_headline</TD>
+    $nb_context  -  ".
+    ($module_id ? sliceid2name($module_id) : _m("New slice"))
+    ."</TD>
   </TR>
   <TR>
     <td align=center class=navbar>
@@ -87,32 +86,4 @@ echo "
 PrintModuleSelection();
 
 echo "</TD></TR></TABLE>";
-
-/*
-$Log$
-Revision 1.8  2006/06/14 13:30:43  honzam
-fixed security problem require (see http://secunia.com/advisories/20299/). Requires no longer use variables
-
-Revision 1.7  2005/06/03 00:36:33  honzam
-strings in AA uses "ActionApps" name instead of "APC Action Apps"
-
-Revision 1.6  2005/04/25 11:46:22  honzam
-a bit more beauty code - some coding standards setting applied
-
-Revision 1.5  2003/10/24 00:00:32  honzam
-Action Application replaced by ActionApps name
-
-Revision 1.4  2003/01/27 14:20:22  jakubadamek
-fixed language constants
-
-Revision 1.3  2003/01/17 10:38:34  jakubadamek
-BIG CHANGES due to moving AA to use mini-gettext
-
-Revision 1.2  2002/10/14 14:26:51  jakubadamek
-no message
-
-Revision 1.1  2002/04/25 12:07:26  honzam
-initial version
-
-*/
 ?>

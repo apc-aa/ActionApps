@@ -12,10 +12,10 @@
  * @package UserOutput
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications 
-*/                      
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+*/
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -33,31 +33,31 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/** 
- * Handle with PHP magic quotes - quote the variables if quoting is set off 
+/**
+ * Handle with PHP magic quotes - quote the variables if quoting is set off
  * @param mixed $val the variable or array to quote (add slashes)
  * @return mixed the quoted variables (with added slashes)
  */
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
-  }  
+  }
   for (reset($val); list($k, $v) = each($val); )
     $ret[$k] = Myaddslashes($v, $n+1);
   return $ret;
-}    
+}
 
-if (!get_magic_quotes_gpc()) { 
-  // Overrides GPC variables 
+if (!get_magic_quotes_gpc()) {
+  // Overrides GPC variables
   if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
+      $$k = Myaddslashes($v);
   if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
+      $$k = Myaddslashes($v);
   if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) 
-      $$k = Myaddslashes($v); 
+    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
+      $$k = Myaddslashes($v);
 }
 
 /** APC-AA configuration file */
@@ -79,7 +79,7 @@ switch( $type ) {
     // get source item id and slice
 
     $SQL = "SELECT source_id, slice_url
-              FROM slice, relation, item 
+              FROM slice, relation, item
              WHERE relation.destination_id='$p_id'
                AND relation.source_id=item.id
                AND slice.id = item.slice_id
@@ -91,7 +91,7 @@ switch( $type ) {
       $slice_url = ($db->f(slice_url));
     }
     else { // if this item is not fed - give its own id
-      $SQL = "SELECT slice_url FROM slice, item 
+      $SQL = "SELECT slice_url FROM slice, item
                WHERE item.slice_id=slice.id
                  AND item.id = '$p_id'";
       $db->query($SQL);
@@ -99,7 +99,7 @@ switch( $type ) {
         $item = $sh_itm;
         $slice_url = ($db->f(slice_url));
       }
-    }  
+    }
 }
 
 if ( !$url )   // url can be given by parameter
@@ -107,34 +107,6 @@ if ( !$url )   // url can be given by parameter
 
 if ( !$url )   // url can be given by parameter
   $url = $slice_url;
-  
+
 go_url(con_url($url,"sh_itm=$item"));
-
-/*
-$Log$
-Revision 1.8  2006/06/14 13:30:31  honzam
-fixed security problem require (see http://secunia.com/advisories/20299/). Requires no longer use variables
-
-Revision 1.7  2005/04/24 21:48:11  honzam
-a bit more beauty code - some coding standards setting applied
-
-Revision 1.6  2003/02/05 14:50:43  jakubadamek
-changing require to require_once, deleting the "if (defined) return" constructs and changing GLOBALS[AA_INC_PATH] to GLOBALS["AA_INC_PATH"]
-
-Revision 1.5  2003/01/21 06:58:30  mitraearth
-cron.php3
-
-Revision 1.4  2002/12/18 13:32:14  drifta
-Just changes in comments - moving to phpdoc style.
-
-Revision 1.3  2002/06/17 22:09:19  honzam
-removed call-time passed-by-reference variables in function calls; better variable handling if magic_qoutes are not set (no more warning displayed)
-
-Revision 1.2  2001/12/18 11:37:38  honzam
-scripts are now "magic_quotes" independent - no matter how it is set
-
-Revision 1.1  2001/04/17 19:18:20  honzam
-no message
-
-*/
 ?>

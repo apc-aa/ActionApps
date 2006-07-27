@@ -207,7 +207,7 @@ function xmgettext($lang_list, $logfile, $lang_files, $files_base_dir, $files, $
         echo "<br> exist $langfile?";
         if (file_exists($langfile)) {
             echo " YES - require it - ";
-            require $langfile;
+            require_once $langfile;
         }
         echo count($_m) ." ($old_logs)";
 
@@ -279,10 +279,10 @@ function add_old_translations($log_files, $lang, &$_m, &$other_translations) {
         echo "ERROR: $file does not exist<br>";
     } else {
         $_log = "";
-        require $file;
+        require_once $file;
         $en_log = $_log;
         $_log = "";
-        require str_replace("??",$lang,$log_files);
+        require_once str_replace("??",$lang,$log_files);
         foreach ($en_log as $msg => $names) {
             foreach ($names as $name) {
                 if (!$_m[$msg]) {
@@ -328,7 +328,7 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
     // creates a log file allowing to process lots of files
 
     if (file_exists ($logfile)) {
-        require $logfile;
+        require_once $logfile;
     }
     foreach ( $files as $fname) {
         $skip = ($fname[0] == "-");
@@ -374,7 +374,7 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
 
     $messages = "";
     $warnings = "";
-    require $logfile;
+    require_once $logfile;
     foreach ($processed_files as $msgwrn) {
         $msg = unserialize($msgwrn["messages"]);
         if (is_array($msg)) {

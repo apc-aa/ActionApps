@@ -1,5 +1,47 @@
-07/27/06 - moved to SVN
-(honzam)
+07/27/06 - moved from CVS to SVN (Subversion)
+(honzam) - "Modify Content" group operation in Item Manager is improved. It uses
+           new AA_Transformation API, so new transformation function could be
+           easily added. There is new "Translate" transformation, by which you
+           are able to transform one value to one or more values. It works also
+           with multivalues. It uses new TabWidgetToggle for parameter setting.
+         - New possibility to change URL of uploaded files/images (per slice
+           basis). Images was stored with general AA URL for all slices, which
+           is not always what you want. Now you can redefine it on slice setting
+           page. Not 100% finished, yet.
+         - Session IDs are propageted via cookies (if possible - if not, URL
+           parameter used - just as before)
+         - AA_Slices and AA_Views classes used for slice/view properties,
+           where possible. Those classes caches slice/view properties, so it
+           reduces number of database calls.
+         - Started work on AA_Components class used for plugable classes.
+         - Started work on TabWidgetToggle - Widget, which allows you to set
+           different parameters for different options in the selectbox above.
+           Say you want to inport data from CSV or XML - for both formats
+           you have to set another parameters, so you first select the CSV
+           and the parameters like "delimiter" apears on the screen
+         - Started work on AJAX editing - Proof of Concept - you can use it like
+             {ajax:{_#ITEM_ID_}:headline........[:_#HOW2SHOW]}
+           which means, that _#HOW2SHOW for _#ITEM_ID_ will be printed inside
+           the div and after click on it the textfield for headline........
+           is displayed and the field could be directly edited. It works
+           in AA Item Manager as well as on public page - you just need
+           to attach javascript/ajax.js to your page. It is just experimental
+           version, yet.
+         - Started work on AA_ChangesMonitor class which will track the field
+           changes/history - we are still at the beginning, here.
+         - New class AA_Fields holding information the field information
+         - New AA_Metabase class which will be used to hold all the informations
+           about table structure. It will be additional database abstraction
+           layer.
+         - New AA_Condition class for conds[] handling
+         - aainputfield renamed to AA_Inputfield
+           (used new naming convention for AA classes).
+         - views class renamed and AA_Views. AA_Views was improved to use static
+           class variable to cache the view properties which reduces the number
+           of database queries. Static class variable also allows us not to use
+           global variables for that cache.
+         - grabber class renamed to AA_Grabber, saver class to AA_Saver
+           and moved to grabber.class.php3 file
 07/14/06 - new possibility to display HTML comments before and after the view
 (honzam)   by checking the checkbox in view setting - good for debug
          - mail template for sending discussion comments to users is grabbed

@@ -25,6 +25,7 @@ if (!defined('PHPLIB_LIBDIR')) {
 
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
   /* Change this to match your database. */
+  $db_type_filename = (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc");
   require_once(PHPLIB_LIBDIR. "db_mysql.inc");
 
   /* Change this to match your data storage container */
@@ -40,14 +41,14 @@ if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
 /* Required, contains your local session management extension */
 if ($encap) {
   require_once(AA_INC_PATH . "extsessi.php3");   // if encapsulated (itemedit.php3) we can't send more Header
- } else {
+} else {
   require_once(AA_INC_PATH . "extsess.php3");
 }
 
 /* Required, contains your local authentication extension. */
 if ($nobody) {  // used in itemedit.php3 for anonymoous news posting
   require_once(AA_INC_PATH . "extauthnobody.php3");
- } else {
+} else {
   require_once(AA_INC_PATH . "extauth.php3");
 }
 

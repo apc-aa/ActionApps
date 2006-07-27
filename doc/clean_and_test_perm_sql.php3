@@ -40,7 +40,7 @@ function uniq_array($haystack)
 
 
 /*
-$Log$
+$Log: clean_and_test_perm_sql.php3,v $
 Revision 1.3  2005/04/25 10:54:24  honzam
 optimized - converted to standard inputs
 

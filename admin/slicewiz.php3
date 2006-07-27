@@ -56,8 +56,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
     require_once AA_INC_PATH."sliceadd.php3";
 
-    FrmInputRadio ("wiz[copyviews]", _m("Copy Views"), array (1=>_m("yes"),0=>_m("no")), 1);
-    FrmInputRadio ("wiz[constants]", _m("Categories/Constants"),
+    FrmInputRadio("wiz[copyviews]", _m("Copy Views"), array (1=>_m("yes"),0=>_m("no")), 1);
+    FrmInputRadio("wiz[constants]", _m("Categories/Constants"),
         array ('share'=>_m("Share with Template"),'copy'=>_m("Copy from Template")),'copy');
 ?>
 
@@ -81,8 +81,8 @@ FrmTabCaption(_m("[Optional] Create New User"));
     echo '<input type=hidden name=add_submit value="1">
     <input type=hidden name=um_uedit_no_go_url value=1>';
 
-    $email_welcomes = GetUserEmails ("slice wizard welcome");
-    $email_welcomes [NOT_EMAIL_WELCOME] = _m("Do Not Email Welcome");
+    $email_welcomes = GetUserEmails("slice wizard welcome");
+    $email_welcomes[NOT_EMAIL_WELCOME] = _m("Do Not Email Welcome");
 
     FrmInputSelect("wiz[welcome]", _m("Email Welcome"), $email_welcomes, NOT_EMAIL_WELCOME);
 

@@ -94,7 +94,7 @@ if ( $res->is_success() ) {
           $res->content, "<HR>";
 };
 __END__
-#$Log$
+#$Log: remote,v $
 #Revision 1.4  2005/06/03 00:36:33  honzam
 #strings in AA uses "ActionApps" name instead of "APC Action Apps"
 #

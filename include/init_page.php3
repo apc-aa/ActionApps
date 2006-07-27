@@ -195,7 +195,6 @@ if (!$no_slice_id) {
 
     // These variables have names of $r_ but are not session stored
     // because this is unnecessary: their evaluation is very fast.
-    $r_slice_headline = $db->f("name");
     $r_lang_file      = $db->f('lang_file');
     $r_slice_view_url = $db->f('slice_url') ? $db->f('slice_url')
         : $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false";

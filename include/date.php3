@@ -84,7 +84,7 @@ class datectrl {
 
     // set date, format form integer
     function setdate_int($date) {
-        $d = getdate($date);
+        $d = getdate((int)$date);
         $this->year = $d["year"];
         $this->month = $d["mon"];
         $this->day = $d["mday"];

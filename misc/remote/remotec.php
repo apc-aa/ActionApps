@@ -140,7 +140,7 @@ if ( ( file_exists($target) ) and ( $age < $cache4secs ) ) {
   echo $data;
 }
 /*
-$Log$
+$Log: remotec.php,v $
 Revision 1.7  2005/06/03 00:36:33  honzam
 strings in AA uses "ActionApps" name instead of "APC Action Apps"
 

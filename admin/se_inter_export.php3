@@ -1,7 +1,7 @@
-<?php 
+<?php
 //$Id$
 /*
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+Copyright (C) 1999, 2000 Association for Progressive Communications
 http://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -102,8 +102,8 @@ function Delete() {
 <?php
 
 FrmTabCaption(_m("Inter node export settings"));
-?>      
-      <tr><td colspan=2 ><?php echo _m("Existing exports of the slice "). "<B>".$r_slice_headline."</B>"; ?></td></tr>
+?>
+      <tr><td colspan=2 ><?php echo _m("Existing exports of the slice "). "<B>".sliceid2name($slice_id)."</B>"; ?></td></tr>
       <tr><td colspan=2 align=center>
         <SELECT name="perms" size=5>
          <?php
@@ -125,7 +125,7 @@ FrmTabCaption(_m("Inter node export settings"));
        </td></tr>
 <?php
       FrmTabSeparator(_m("Insert new item"));
-?>      
+?>
       <tr><td width="40%"><?php echo _m("Remote Nodes"); ?></td><td align="left">
         <SELECT name="r_nodes" class=tabtxt size=5>
         <?php
@@ -144,8 +144,8 @@ FrmTabCaption(_m("Inter node export settings"));
     FrmTabEnd(array("mode"=>array("type"=>"hidden", "value"=>"insert"),
                     "submit",
                     "cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
-  
-?>  
+
+?>
 </FORM>
 <?php
 HtmlPageEnd();

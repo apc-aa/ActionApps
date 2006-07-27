@@ -29,7 +29,7 @@ http://www.apc.org/
 
 
 /*
-$Log$
+$Log: util.php3,v $
 Revision 1.2  2005/04/25 11:46:22  honzam
 a bit more beauty code - some coding standards setting applied
 

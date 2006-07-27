@@ -189,7 +189,7 @@ function huhu($txt) {
 
 
 /*
-$Log$
+$Log: move_util.php3,v $
 Revision 1.4  2005/04/25 11:46:21  honzam
 a bit more beauty code - some coding standards setting applied
 

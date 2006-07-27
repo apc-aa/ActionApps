@@ -441,7 +441,7 @@ else
   echo "<br><b>Slice succesfully copied</b>";
 
 /*
-$Log$
+$Log: move.php3,v $
 Revision 1.10  2006/06/14 13:30:42  honzam
 fixed security problem require (see http://secunia.com/advisories/20299/). Requires no longer use variables
 

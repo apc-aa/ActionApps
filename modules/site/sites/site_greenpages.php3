@@ -48,7 +48,7 @@ $relargs = "apc=" . $apc_state['state'] . ($nocache ? "&nocache=1" : "")
     . ($debug ? "&debug=1" : "");
 $apc_state['relargs'] = $relargs;
 // site_url is used as a return address, for example after going into edit
-//$apc_state["site_url"] = $AA_INSTAL_EDIT_PATH . "modules/site/site.php3?site_id=$site_id&" . $relargs;
+//$apc_state["site_url"] = AA_INSTAL_EDIT_PATH . "modules/site/site.php3?site_id=$site_id&" . $relargs;
 $apc_state["site_url"] = "/gp/draft.shtml?".$relargs;
 // Read item from database
 $apc_state["item"] = ModW_id2item($apc_state["i"],true);

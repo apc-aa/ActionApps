@@ -38,7 +38,7 @@ $p_slice_id = q_pack_id($slice_id);
 
 if (isset($feed_id)) {
     // delete mode
-    
+
     // delete mapping from feedmap table
     $db->query("SELECT remote_slice_id FROM external_feeds WHERE feed_id='$feed_id' AND slice_id='$p_slice_id'");
     if ($db->next_record()) {
@@ -117,7 +117,7 @@ function Submit() {
   $useOnLoad = true;
   require_once AA_INC_PATH."menu.php3";
   showMenu($aamenus, "sliceadmin","n_import");
-  
+
   echo "<H1><B>" . _m("Inter node import settings") . "</B></H1>";
   PrintArray($err);
   echo $Msg;
@@ -126,7 +126,7 @@ function Submit() {
 ?>
 <form method=post name="f" action="<?php echo $sess->url(self_base() ."se_inter_import2.php3") ?>" onSubmit="return Submit()" >
 <?php
-  FrmTabCaption(_m("Existing remote imports into the slice") ." <b>$r_slice_headline</b>");
+  FrmTabCaption(_m("Existing remote imports into the slice") ." <b>". sliceid2name($slice_id). "</b>");
   FrmInputMultiSelect('feed_id', _m('Imported slices'), $ext_feeds, '', 5, false, true, _m('feeds prefixed by (=) are "exact copy" feeds'));
   FrmTabSeparator(_m("All remote nodes"), array("delete" => array('value'=>_m("Delete"),'type'=>'button', 'add'=>'onClick="Delete()"')));
   FrmInputMultiSelect('rem_nodes', _m('Remote node'), $nodes, $node, 5, false, true);

@@ -73,7 +73,6 @@ function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
       return false;
     }
 
-    $GLOBALS['r_slice_headline'] = stripslashes($name);
     $GLOBALS['r_lang_file'] = stripslashes($lang_file);
     $GLOBALS['r_slice_view_url'] = ($slice_url=="" ? $sess->url("../slice.php3"). "&slice_id=$slice_id&encap=false"
                                     : stripslashes($slice_url));
