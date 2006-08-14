@@ -1012,4 +1012,9 @@ class AA_Stringexpand {
     }
 }
 
+function stringexpand_log($number='', $base='') {
+    return log($number, $base);
+}
+
+
 ?>
