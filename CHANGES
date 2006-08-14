@@ -42,6 +42,7 @@
            global variables for that cache.
          - grabber class renamed to AA_Grabber, saver class to AA_Saver
            and moved to grabber.class.php3 file
+           
 --------------------
 07/14/06 - v2.10.0 - stable release
 --------------------
