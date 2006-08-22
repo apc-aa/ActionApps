@@ -70,6 +70,19 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
     $admin = $admin ? 1 : 0;
     if ($boxWidth == 0) $boxWidth = $horizontal ? 30 : 70;
 
+    /* OFMG
+       20060421
+       When you add a value in a hierarchicalConstant
+       it does not respond to the onChange triger on the mainbox
+    */
+    $this_triggers = getTriggers("select",$targetBox);
+    $aa_onchange_exist = strstr($this_triggers,'aa_onChange(');
+    $add_button_trigger = "";
+    if( $aa_onchange_exist ){
+       list($aux1,$fieldid,$aux2) = split("'",$aa_onchange_exist,3);
+       $add_button_trigger = "aa_onChange('".$fieldid."'); ";
+    }
+
     $out = "<table border=0 cellpadding=3>";
     if ($horizontal) $out .= "<tr>";
     $widthTxt = str_repeat("m",$boxWidth);
@@ -82,7 +95,7 @@ function getHierConstBoxes($hcid, $levelCount, $horizontal=0, $targetBox="", $ad
         else {
             $buttonAdd = "";
             if ($minLevelSelect > $i) $buttonSelect = "";
-            else $buttonSelect = "<input type=button value=\""._m("Select")."\" onClick=\"hcAddItemTo($hcid,$i,'$targetBox');\">";
+            else $buttonSelect = "<input type=button value=\""._m("Select")."\" onClick=\"hcAddItemTo($hcid,$i,'$targetBox'); ".$add_button_trigger."\">";
         }
         if (!$levelNames[$i]) $levelNames[$i] = _m("Level")." $i";
         if ($horizontal) {
@@ -635,3 +648,4 @@ function refresh_constant_group ($group_id, $items) {
     freeDB($db);
     return $existed;
 }
+?>
