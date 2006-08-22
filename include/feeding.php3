@@ -82,7 +82,7 @@ function GetBaseItem($item_id) {
         $p_dest_id = q_pack_id($dest_id);
         $SQL=  "SELECT source_id FROM relation
                  WHERE  destination_id = '$p_dest_id'
-                   AND ((flag & ". REL_FLAG_FEED .") = 1)";
+                   AND ((flag & ". REL_FLAG_FEED .") != 0)";
         $db->query($SQL);
         $item_id = $db->next_record() ? unpack_id($db->f('source_id')) : false;
     }
@@ -108,8 +108,8 @@ function IsItemFed($item_id, $destination) {
     $SQL = "SELECT source_id FROM relation, item
              WHERE relation.destination_id = item.id
                AND item.slice_id = '$p_destination'
-               AND ((flag & ". REL_FLAG_FEED .") = 1)";
-    $db->query($SQL);
+               AND ((flag & ". REL_FLAG_FEED .") != 0)";
+    $db->tquery($SQL);
 
     // Build an array of source id's
     while ($db->next_record()) {
@@ -117,7 +117,7 @@ function IsItemFed($item_id, $destination) {
     }
 
     if (!isset($sources) || !is_array($sources)) {
-        return false; // this was set to "return", mitra changed to return false
+        return false;
     }
 
     // Test array for containing an item fed from same baseid
@@ -150,14 +150,14 @@ function FeedJoin($columns, $fields, $params, &$result)
     $update = 0;
     foreach ($params as $val) {
         if ($i++ % 2 == 0) {
-            switch ($fields[$val][feed]) {
+            switch ($fields[$val]['feed']) {
             case STATE_UNFEEDABLE:	 return;
             case STATE_FEEDNOCHANGE:
-                $result[flag] |= FLAG_FREEZE;
+                $result['flag'] |= FLAG_FREEZE;
                 $update = -1;
                 break;
             case STATE_FEEDABLE_UPDATE_LOCKED:
-                $result[flag] |= FLAG_FREEZE; // break shouldn't be here!
+                $result['flag'] |= FLAG_FREEZE; // break shouldn't be here!
             case STATE_FEEDABLE_UPDATE:
                 if ($update > -1) {
                     $update = 1;
@@ -387,7 +387,7 @@ function UpdateItems($tree, $item_id, $slice_id, $cat_id) {
         $SQL = "SELECT destination_id, slice_id  FROM relation, item
                  WHERE destination_id = id
                    AND source_id='$p_item_id'
-                   AND ((flag & ". REL_FLAG_FEED .") = 1)";
+                   AND ((flag & ". REL_FLAG_FEED .") != 0)";
         $db2->query($SQL);
         while ( $db2->next_record() ) {
             $update     = true;
@@ -475,7 +475,7 @@ function DeleteItem($db, $id) {
     // delete feeding relation
     $SQL = "DELETE LOW_PRIORITY FROM relation WHERE (source_id='$p_itm_id'
                 OR destination_id='$p_itm_id')
-               AND ((flag & ". REL_FLAG_FEED .") = 1)";
+               AND ((flag & ". REL_FLAG_FEED .") != 0)";
     $db->query($SQL);
 }
 ?>
