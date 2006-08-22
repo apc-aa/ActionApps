@@ -1,124 +1,75 @@
 <?php
-//$Id$
-/*
-Copyright (C) 2003 Mitra Technology Consulting
-http://www.mitra.biz
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/* Shows a Table View, allowing to edit, delete, update fields of a table
+   Params:
+       $set_tview -- required, name of the table view
 */
 
+$require_default_lang = true;      // do not use module specific language file
+                                   // (message for init_page.php3)
+require_once "../include/init_page.php3";
+require_once AA_INC_PATH."formutil.php3";
+require_once AA_INC_PATH."mgettext.php3";
+// ----------------------------------------------------------------------------------------
 
-/*
-  This is a prototype of a console, a single place to access all the tasks that
-  might need doing. It might be a better point of entry than the Item Manager
-
-  Note it is based on the code in admin/oneoff.php3
-*/
-
-
-
-require_once "../include/init_page.php3"; // Loads variables etc
-require_once "../include/util.php3"; // Loads variables etc
-
-//require_once AA_INC_PATH."sliceobj.php3";  // for slices
-//$debug = 1;
-
-// Quick test to show contents of slice record
-if (0) {
-    $db->query("SELECT * FROM slice LIMIT 1");
-    $db->next_record();
-    huhl(GetTable2Array("SELECT * FROM slice LIMIT 1",NoCoLuMn,1));
+if (!IsSuperadmin()) {
+    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone");
+    exit;
 }
 
-HtmlPageBegin();
-?>
- <TITLE><?php echo _m("Console");?></TITLE>
-</HEAD>
+echo _m('comment out following "exit;" line in admin/console.php3');
+exit;
 
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+echo "<TITLE>"._m("ActionApps onsole")."</TITLE></HEAD>";
+require_once AA_INC_PATH."menu.php3";
+showMenu($aamenus, "aaadmin", "console");
+echo "<H1><B>" ._m("ActionApps Cosole"). "</B></H1>";
+
+echo $Msg;
+
+$db = new DB_AA;
+
+if ($code) {
+    $code = get_magic_quotes_gpc() ? stripslashes($code) : $code;
+    eval($code);
+}
+
+// ------------------------------------------------------------------------------------------
+?>
+<form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+
+    <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#00638C" align="center" >
+        <tr><td>
+          <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#D2E2E8">
+          <tr><td align="center" valign="middle" bgcolor=#D2E2E8>&nbsp;<input type="submit" name="update" accesskey="S" value=" Actualizar (ALT+S)  ">&nbsp;
+&nbsp;<input type="hidden" name="update" value="1">&nbsp;
+&nbsp;<input type="button" name="cancel" value=" Cancelar " onclick="document.location='se_fields.php3?slice_id=5abf7d2c73d7294cb105505a45e97762&AA_CP_Session=e755ffbe019124c6cfdb89e3352cc8a2'">&nbsp;
+<input type="hidden" name="AA_CP_Session" value="<?php echo $AA_CP_Session ?>">
+<input type="hidden" name="slice_id" value="<?php echo $slice_id ?>"></td></tr></table></td></tr>
+      <tr>
+        <td>
+          <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#D2E2E8" ><tr class="formrow{formpart}">
+ <td class="tabtxt" colspan="2"><b>Console</b></td>
+</tr>
+<tr><td colspan="2"><textarea id="code" name="code" rows="20" cols="60" style="width:100%" ><?php echo $code ?></textarea></td>
+</tr>
+</table>
+
+<table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#00638C" align="center">
+  <tr>
+    <td align="center" valign="middle" bgcolor=#00638C>&nbsp;<input type="submit" name="update" accesskey="S" value=" Actualizar (ALT+S)  ">&nbsp;</td>
+  </tr>
+</table>
+
+</td>
+        </tr>
+        </table>
+
+</form>
 <?php
-    require_once AA_INC_PATH."menu.php3";
-    showMenu($aamenus, "aaadmin","console");
-  
-    echo "<H1><B>" . _m("AA - Administration Console") . "</B></H1>";
-    PrintArray($err);
-    echo $Msg;
-    $nocache=1;
-// Call code here
-    do_actionrequired();
-    HtmlPageEnd();
-    page_close();
-
-
-function do_actionrequired() {
-  comments_table();
-  hold_table();
-}
-function comments_table() {
-    $SQL = "SELECT sum(disc_count),sum(disc_app),slice_id FROM item GROUP BY slice_id";
-    $slices_arr = GetTable2Array($SQL,"slice_id");
-    while (list($qpsliceid,$slarr) = each($slices_arr)) {
-        // huhl("s=",unpack_id128($qpsliceid),"c=".$slarr[0],"a=",$slarr[1]);
-        if ($slarr[1] != $slarr[0]) {
-            $usi = unpack_id128($qpsliceid);
-            print("<tr><td>".sliceid2name($usi)."</td><td><a href=\""
-                .get_admin_url("console.php3?slice_id=$usi")
-                ."\">".($slarr[0]-$slarr[1])." unapproved comments</a>");
-//            if ($GLOBALS["slice_id"] == $usi) 
-            {
-                $SQL="SELECT disc_count,disc_app,id FROM item WHERE disc_count > disc_app AND slice_id = \"$qpsliceid\"";
-                $itemsarr = GetTable2Array($SQL,"id");
-                print("<ul>");
-                while (list($qpitemid,$itarr) = each($itemsarr)) {
-                    $uid=unpack_id128($qpitemid);
-                    $ic = GetItemContent($uid);
-                    $headline = $ic[$uid]["headline........"][0]['value'];
-//                    huhl($GLOBALS);
-                    $url = get_admin_url("discedit.php3?item_id=$uid")."&return_url=$GLOBALS[PHP_SELF]";
-                    print("<li><a href=\"$url\">$headline</a>\n");
-                }
-                print("</ul>");
-            }
-            print("</td>"
-            ."</tr>\n");
-        }
-    }
-    print("</table>");
-/*
-    $db = getDB();
-    $res = $db->tquery($SQL);
-    if ($db->next_record()) {
-        $dc = $db->f("sum(disc_count)");
-    } else {
-        $dc = 0;
-    }
-    freeDB($db);
-    return $dc;
-*/
-}
-function hold_table() {
-    $SQL = "select slice_id,name,count(*) FROM item,slice WHERE status_code =2 AND slice_id = slice.id GROUP BY slice_id";
-    $slices_arr = GetTable2Array($SQL,"slice_id");
-    print("<table>\n");
-    while (list($qpsliceid,$slarr) = each($slices_arr)) {
-            $usi = unpack_id128($qpsliceid);
-            print("<tr><td>".$slarr[1]."</td><td><a href=\""
-                .get_admin_url("index.php3?Tab=hold&change_id=$usi")
-                ."\">".$slarr[2]." held</a>");
-            print("</td>"
-            ."</tr>\n");
-    }
-    print("</table>");
-}
+HtmlPageEnd();
+page_close()
 ?>
+
