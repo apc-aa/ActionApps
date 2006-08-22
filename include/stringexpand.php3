@@ -1016,5 +1016,9 @@ function stringexpand_log($number='', $base='') {
     return log($number, $base);
 }
 
+function stringexpand_unpack($number='') {
+    return unpack_id($number);
+}
+
 
 ?>
