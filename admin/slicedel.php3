@@ -27,12 +27,13 @@ require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
+if ($cancel) {
+    go_url( $sess->url(self_base() . "index.php3"));
+}
 
 if (!IsSuperadmin()) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to delete slice."), "admin");
-  exit;
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to delete slice."), "admin");
+    exit;
 }
 
 function PrintSlice($id, $name, $type) {
@@ -41,7 +42,7 @@ function PrintSlice($id, $name, $type) {
   $name=safe($name); $id=safe($id);
   $url = (($type=='S') ? './slicedel2.php3' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
 
-  echo "<tr class=tabtxt><td>$name</td>
+  echo "<tr class=tabtxt><td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td><td>$name</td>
           <td class=tabtxt><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td></tr>";
 }
 
@@ -63,25 +64,46 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 $useOnLoad = ($new_compact ? true : false);
 
 require_once menu_include();   //show navigation column depending on $show
-showMenu ($aamenus, "aaadmin","slicedel");
+showMenu($aamenus, "aaadmin","slicedel");
 
 echo "<H1><B>" . _m("Admin - Delete Slice") . "</B></H1>";
 echo $Msg;
-echo _m("<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>");
+// echo _m("<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>");
 
-FrmTabCaption(_m("Select slice to delete"));
+?>
+<form name=f method=post action="<?php echo $sess->url(self_base() . "slicedel2.php3")?>">
+<?php
+
+
+$form_buttons=array("submit" => array('name' => _m('Delete selected') ),
+                    "cancel" => array("url"  => "um_uedit.php3"));
+
+if ( !isset($slices2show) ) {
+    $slices2show = 'todelete';
+}
+FrmTabCaption(_m("Select slice to delete"), '','', $form_buttons);
+FrmInputRadio('slices2show', _m('Slices to show'), array('todelete'=>_m('Marked as "Deleted"'), 'all'=>"All slices" ),
+              $slices2show, false, _m('This option allows you to display all the slices and delete them, so be careful!'), '', 0, true,
+              "onClick='document.location = \"". get_url($sess->url(self_base(). "slicedel.php3"), "slices2show=") ."\" + this.value'");
+FrmTabSeparator(_m('Slices to delete') );
 
 // -- get views for current slice --
-$SQL = "SELECT * FROM module WHERE deleted>0";
+if ($slices2show == 'all') {
+    $SQL = "SELECT * FROM module";
+} else {
+    $SQL = "SELECT * FROM module WHERE deleted>0";
+}
+
 $db->query($SQL);
 while ( $db->next_record() ) {
-  PrintSlice(unpack_id128($db->f(id)), $db->f(name), $db->f(type) );
+  PrintSlice(unpack_id128($db->f('id')), $db->f('name'), $db->f('type') );
   $slice_to_delete = true;
 }
-if ( !$slice_to_delete )
+if ( !$slice_to_delete ) {
   echo "<tr class=tabtxt><td>". _m("No slice marked for deletion") ."</td></tr>";
+}
 
-FrmTabEnd(array("cancel"=>array("url"=>"um_uedit.php3")), $sess, $slice_id);
+FrmTabEnd($form_buttons, $sess, $slice_id);
 
 echo '</form>';
 

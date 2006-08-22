@@ -29,7 +29,7 @@ require_once AA_INC_PATH . "modutils.php3";
 if ($cancel)
   go_url( $sess->url(self_base() . "index.php3"));
 
-if ($del) {
+if ($del OR $deletearr) {
   if (!IsSuperadmin()) {
     MsgPage($sess->url(self_base())."index.php3", _m("You don't have permissions to delete slice."), "admin");
     exit;
@@ -42,20 +42,12 @@ if ($del) {
 $err["Init"] = "";      // error array (Init - just for initializing variable
 $p_del = q_pack_id($del);
 
-// check if module can be deleted
-ExitIfCantDelete( $del, $db );
-
-// delete module (from common module table)
-DeleteModule( $del, $db );
-
-// delete slice from permission system -----------------------------------------
-DelPermObject($del, "slice");
-
-switch ($g_modules[$del]['type']) {
-    case 'Alerts': DeleteAlerts ($del); break;
-    case 'S': DeleteSlice ($del); break;
-    default: echo "Functions for deleting module type ".$g_modules[$slice_id]['type']
-        ." are not yet defined."; exit;
+if ($del) {
+    DeleteOneModule($del);
+} else {
+    foreach ($deletearr as $del_id) {
+        DeleteOneModule($del_id);
+    }
 }
 
 page_close();                                // to save session variables
@@ -64,7 +56,28 @@ page_close();                                // to save session variables
 go_url(con_url($sess->url("slicedel.php3"),
                                           "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
 
-function DeleteAlerts ($module_id) {
+
+function DeleteOneModule($del) {
+    global $db, $g_modules;
+
+    // check if module can be deleted
+    ExitIfCantDelete( $del, $db );
+
+    // delete module (from common module table)
+    DeleteModule( $del, $db );
+
+    // delete slice from permission system -----------------------------------------
+    DelPermObject($del, "slice");
+
+    switch ($g_modules[$del]['type']) {
+        case 'Alerts': DeleteAlerts($del); break;
+        case 'S': DeleteSlice($del); break;
+        default: echo "Functions for deleting module type ".$g_modules[$slice_id]['type']
+        ." are not yet defined."; exit;
+    }
+}
+
+function DeleteAlerts($module_id) {
     global $db;
 
     $db->query("SELECT id FROM alerts_collection WHERE moduleid='".q_pack_id($module_id)."'");
@@ -80,24 +93,14 @@ function DeleteAlerts ($module_id) {
 function DeleteSlice($del) {
     global $db;
     $p_del = q_pack_id($del);
-    // delete all module specific tables
-    $SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_del'";
-    $db->query($SQL);
-
-    $SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_del'";
-    $db->query($SQL);
-
-    // delete fields
-    $SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_del'";
-    $db->query($SQL);
 
     // delete items
     $db2  = new DB_AA;
     $SQL = "SELECT id FROM item WHERE slice_id='$p_del'";
     $db->query($SQL);
-    while ( $db->next_record() )
-      DeleteItem($db2, unpack_id128($db->f(id))); // deletes from content, offline and
-                                               // relation tables
+    while ( $db->next_record() ) {
+      DeleteItem($db2, unpack_id128($db->f('id'))); // deletes from content, offline and
+    }                                           // relation tables
 
     // delete items
     $SQL = "DELETE LOW_PRIORITY FROM item WHERE slice_id='$p_del'";
@@ -116,6 +119,18 @@ function DeleteSlice($del) {
     // delete email_notify
     $SQL = "DELETE LOW_PRIORITY FROM email_notify WHERE slice_id='$p_del'";
     $db->query($SQL);
+
+    // delete fields
+    $SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_del'";
+    $db->query($SQL);
+
+    // delete all module specific tables
+    $SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_del'";
+    $db->query($SQL);
+
+    $SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_del'";
+    $db->query($SQL);
+
 }
 
 ?>

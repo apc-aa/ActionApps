@@ -129,10 +129,12 @@ function ExitIfCantDelete( $del, $db ) {
   $p_del = q_pack_id($del);
   $SQL = "SELECT deleted FROM module WHERE id='$p_del'";
   $db->query($SQL);
-  if ( !$db->next_record() )
+  if ( !$db->next_record() ) {
     go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No such module."))));
-  if ( $db->f(deleted) < 1 )
-    go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No module flagged for deletion."))));
+  }
+  // now you can delete also slices not marked for deletion
+  //  if ( $db->f(deleted) < 1 )
+  //    go_url(get_admin_url("slicedel.php3?Msg=". urlencode(_m("No module flagged for deletion."))));
 }
 
 // delete module from module table
