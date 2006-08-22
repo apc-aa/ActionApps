@@ -261,9 +261,14 @@ function insert_fnc_ids($item_id, $field, $value, $param, $additional='') {
 
 function insert_fnc_uid($item_id, $field, $value, $param, $additional='') {
     global $auth;
-    // if not $auth, it is from anonymous posting - 9999999999 is anonymous user
-    $val = (isset($auth) ?  $auth->auth["uid"] : ((strlen($value['value'])>0) ?
+
+    if ( $value['value'] AND IsSuperadmin() ) {
+        $val = $value['value'];
+    } else {
+        // if not $auth, it is from anonymous posting - 9999999999 is anonymous user
+        $val = (isset($auth) ?  $auth->auth["uid"] : ((strlen($value['value'])>0) ?
                                                   $value['value'] : "9999999999"));
+    }
     insert_fnc_qte($item_id, $field, array('value' => $val), $param, $additional);
 }
 
@@ -699,16 +704,13 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
         if ($editable && ($action == "insert" || $action == "update")) {
             switch( $validate ) {
                 case 'date':
-                    huhl( "-", $varname, "-", $foo_datectrl_name);
                     $foo_datectrl_name = new datectrl($varname);
                     $foo_datectrl_name->update();           // updates datectrl
-                    huhl( "-", $varname, "-", $foo_datectrl_name);
                     if ($$varname != "") {                  // loaded from defaults
                         $foo_datectrl_name->setdate_int($$varname);
                     }
                     $foo_datectrl_name->ValidateDate($f["name"], $err, $f["required"], $default_val);
                     $$varname = $foo_datectrl_name->get_date();  // write to var
-                    huhl( "-", $$varname);
                     break;
                 case 'bool':
                     $$varname = ($$varname ? 1 : 0);
