@@ -800,6 +800,18 @@ class AA_Inputfield {
             case 'normal_pwd': list($fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help) = $this->param;
                                $this->passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help);
                                break;
+        //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
+            case 'anonym_lup':
+            case 'normal_lup':
+            case 'freeze_lup': list($url) = $this->param;
+                               if ( $this->mode == 'freeze' ) {
+                                   $this->value_modified = $this->implodaval('<br>');
+                                   $this->staticText();
+                               } else {
+                                   $this->inputLocalURLPick($url);
+                               }
+                               break;
+        //END// Local URL Picker | Omar/Jaime | 11-06-2005
         }
         return $this->result;
     }
@@ -898,19 +910,19 @@ class AA_Inputfield {
     // pivate functions - field specific helper functions ---------------------
 
     /** Returns one radio tag - Used in inputRadio */
-    function getRadioButtonTag(&$k, &$v) {
+    function getRadioButtonTag(&$k, &$v, $add='') {
         $name = $this->varname();
-        $ret = "<input type='radio' name='$name' value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
+        $ret = "<input type='radio' name='$name' value='". htmlspecialchars($k) ."' $add".getTriggers("input",$name);
         $ret .= $this->if_selected($k, " checked");
         $ret .= ">".htmlspecialchars($v);
         return $ret;
     }
 
     /** Returns one checkbox tag - Used in inputMultiChBox */
-    function getOneChBoxTag(&$k, &$v) {
+    function getOneChBoxTag(&$k, &$v, $add='') {
         $name = $this->varname();
         $ret = "<nobr><input type='checkbox' name='$name'
-             value='". htmlspecialchars($k) ."'".getTriggers("input",$name);
+             value='". htmlspecialchars($k) ."' $add".getTriggers("input",$name);
         $ret .= $this->if_selected($k, " checked");
         $ret .= ">".htmlspecialchars($v)."</nobr>";
         return $ret;
@@ -1059,7 +1071,7 @@ class AA_Inputfield {
         if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
         foreach ( $this->const_arr as $k => $v ) {
-            $records[] = $this->getRadioButtonTag($k, $v);
+            $records[] = $this->getRadioButtonTag($k, $v, $add);
         }
         $this->printInMatrix_Frm($records, $ncols, $move_right);
     }
@@ -1074,7 +1086,7 @@ class AA_Inputfield {
         if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
         foreach ( $this->const_arr as $k => $v ) {
-            $records[] = $this->getOneChBoxTag($k, $v);
+            $records[] = $this->getOneChBoxTag($k, $v, $add);
         }
         $this->printInMatrix_Frm($records, $ncols, $move_right);
     }
@@ -1352,9 +1364,22 @@ class AA_Inputfield {
 
         $widthTxt = str_repeat("m",$boxWidth);
 
+        /* OFMG
+           20060421
+           When you delete a value from a hierarchicalConstant mainbox
+           it does not respond to the onChange triger
+        */
+        $this_triggers = getTriggers("select",$name);
+        $aa_onchange_exist = strstr($this_triggers,'aa_onChange(');
+        $delete_button_trigger = "";
+        if( $aa_onchange_exist ){
+            list($aux1,$fieldid,$aux2) = split("'",$aa_onchange_exist,3);
+            $delete_button_trigger = 'aa_onChange("'.$fieldid.'"); ';
+        }
+
         $this->echoo("
             <TABLE border=0 cellpadding=2 width='100%'><TR>
-            <TD align=center><b><span class=redtext>Selected:<span></b><BR><BR><INPUT TYPE=BUTTON VALUE='Delete' onclick='hcDelete(\"$name\")'></TD>
+            <TD align=center><b><span class=redtext>"._m("Selected").":<span></b><BR><BR><INPUT TYPE=BUTTON VALUE='"._m("Delete")."' onclick='hcDelete(\"$name\"); ".$delete_button_trigger."'></TD>
             <TD>");
         $out = "<SELECT name='$name' MULTIPLE size=$rows".getTriggers("select",$name).">";
             if (is_array($val)) {
@@ -1536,6 +1561,27 @@ class AA_Inputfield {
         $this->helps('plus',$retype_pwd_help );
     }
 
+    //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
+    function inputLocalURLPick($url) {
+        list($name,$val) = $this->prepareVars();
+        $this->field_name('plus');
+        $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".htmlspecialchars($val)."\"".getTriggers("input",$name).">";
+
+        $this->echoo('<table border="0" cellspacing="0"><tr>');
+        if ($movebuttons) {
+            $this->echoo("\n <td rowspan=\"2\">");
+        } else {
+            $this->echoo("\n <td>");
+        }
+        $this->echovar( $ret );
+        $this->echoo("</td>\n");
+        $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"left\">\n");
+        $this->echoo("<input type='button' value='". _m("Add") ."' onclick='OpenLocalURLPick(\"$name\",\"$url\",\"".self_server().get_aa_url("admin", false)."\",\"$val\")'>\n");
+        $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Clear") ."' onclick=\"sb_ClearField(document.inputform['".$name."']);\">\n");
+        $this->echoo("</td></tr></table>\n");
+        $this->helps('plus');
+    }
+    //END// Local URL Picker | Omar/Jaime | 11-06-2005
 
 }
 
@@ -1645,7 +1691,7 @@ function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $displa
 /** Prints a radio group, html tags <input type="radio" .. to 2-column table
  *  for use within <form> and <table> tag
  */
-function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true) {
+function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true, $add='') {
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputRadio($ncols, $move_right);
     $input->print_result();
@@ -2125,7 +2171,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                     }
                     break;
                 case 'submit':
-                    echo '&nbsp;<input type="submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  ($accesskey_pref+S) ". ' ">&nbsp;';
+                    echo '&nbsp;<input type="submit" name="submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  ($accesskey_pref+S) ". ' ">&nbsp;';
                     if ($properties['help'] != '') {
                         echo FrmMoreHelp($properties['help']);
                         echo "&nbsp;&nbsp;";

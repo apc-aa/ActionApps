@@ -331,9 +331,13 @@ function inputShowFuncTypes() {
         "nul" => GetInputShowFuncTypesDef( _m("Do not show"),                 false, 'fnc' ),
         "hco" => GetInputShowFuncTypesDef( _m("Hierachical constants"),       false, 'fnc:const:param'),
         "pwd" => GetInputShowFuncTypesDef( _m("Password and Change password"),false, 'fnc:param' ),
-        "hid" => GetInputShowFuncTypesDef( _m("Hidden field"),                false, 'fnc')  // hidden field (good for javascript triggers
+        "hid" => GetInputShowFuncTypesDef( _m("Hidden field"),                false, 'fnc'),  // hidden field (good for javascript triggers
+        //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
+        "lup" => GetInputShowFuncTypesDef( _m("Local URL Picker"),            false, 'fnc:param' )
+        //END// Local URL Picker | Omar/Jaime | 11-06-2005
     );
 }
+
 
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "1"   => LOG_EVENTS_,

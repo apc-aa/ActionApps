@@ -3,6 +3,7 @@ var listboxes = Array();
 var htmlareas = Array();
 var myform    = document.inputform;
 var relatedwindow;  // window for related stories
+var urlpickerwindow; // window for local URL picking
 
 function SelectAllInBox( listbox ) {
     for (var i = 0; i < document.inputform[listbox].length; i++) {
@@ -231,4 +232,18 @@ function TabWidgetToggle(class2togle) {
     }
     document.getElementById("formtabs"+class2togle).className = 'tabsactiv';
 }
+
+//BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
+function OpenLocalURLPick(varname, url, aa_instal_path, value) {
+    if ((urlpickerwindow != null) && (!urlpickerwindow.closed)) {
+        urlpickerwindow.close()    // in order to preview go on top after open
+    }
+    page = aa_instal_path + "/localurlpick.php3?var_id=" + varname + "&url=" + url + "&value=" + value
+    urlpickerwindow = open(page, "urlpickerwindow", "scrollbars=1, resizable=1, height=600 width=800 menubar=no");
+}
+
+function sb_ClearField(field) {
+    field.value='';
+}
+//END// Local URL Picker | Omar/Jaime | 11-06-2005
 

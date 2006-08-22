@@ -687,6 +687,17 @@ $INPUT_TYPES["items"]["nul"]=
 array("name"=>_m("Do not show"),
     "desc"=>_m("This option hides the input field"));
 
+//BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
+$INPUT_TYPES["items"]["lup"]=
+array("name"=>_m("Local URL Pick"),
+    "desc"=>_m("You can use this window to browse your local web site and pick the URL that you want to use."),
+    "params"=>array(
+        array("name"=>_m("URL"),
+        "desc"=>"The URL of your local web server from where you want to start browsing for a particular URL.",
+        "type"=>"STR",
+        "example"=>_m("http#://www.ecn.cz/articles/solar.shtml"))));
+//END// Local URL Picker | Omar/Jaime | 11-06-2005
+
 // --------------------------------------------------------------------------------
 
 $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
