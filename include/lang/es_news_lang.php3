@@ -5399,6 +5399,14 @@ $_m["Answer HTML"]
 $_m["Params"]
  = "Parámetros";
 
+# para cambio de contraseña
+$_m["Current password"]
+ = "Clave actual";
+
+# para cambio de contraseña
+$_m["Change user data"]
+ = "Cambio de datos de usuario";
+
 # include/tv_email.php3, row 29
 $_m["Aliases for Alerts Alert"]
  = "Aliases para alerta de alertas";
