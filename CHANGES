@@ -1,3 +1,31 @@
+08/22/06 - fixed security hole for setup.php3
+(honzam) - changes all binary fields in database to varbinary, which is needed
+           for MySQL >=5.0.17 in sql_update.ph3; new repair routine in test.php3
+           which repairs db when you already applied unpatched sql_update.php3
+           script to MySQL >=5.0.17 database, so your fields are binary and
+           users can't login, do not see constants, ...
+         - admin/console.php3 now allows run any php script including calling
+           AA functions. Only superadministrators could use it (after they
+           uncomment one "exit" line in the code.
+         - New possibility to delete more than one slice in one step on slice
+           deletion page. You can also delete slices, which are not marked
+           as deleted.
+         - new possibilty to use Local URL Picker as input type
+           Thanks to Omar Martinez / Jaime Torres
+         - Superadmin is now able to change posted_by field through
+           "Modify content" feature of Admin interface
+         - New {expresions}
+             - {log:number:base} for logarithm
+             - {unpack:pcked_id} for unpacking packed id
+         - es language files updated (just 2 additions)
+         - fixed bug "When you add a value in a hierarchicalConstant it
+           does not respond to the onChange triger on the mainbox"
+           Thanks to Omar Martinez
+         - fixed feeding bug - the items was rewritten or imported once more
+           if they was edited in the source slice
+         - fixed small bugs
+         - begin the work on aa_synchronize.php3 script, which allows to sync
+           setting of two similar AA installs or just slices
 07/27/06 - moved from CVS to SVN (Subversion)
 (honzam) - "Modify Content" group operation in Item Manager is improved. It uses
            new AA_Transformation API, so new transformation function could be
@@ -42,7 +70,7 @@
            global variables for that cache.
          - grabber class renamed to AA_Grabber, saver class to AA_Saver
            and moved to grabber.class.php3 file
-           
+
 --------------------
 07/14/06 - v2.10.0 - stable release
 --------------------
