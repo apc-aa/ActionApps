@@ -62,7 +62,8 @@ $aamenus["aaadmin_submenu"] = array (
     "te_searchlog"=> array("label"=>_m("View SearchLog"),  "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php3?set_tview=searchlog"),
     "aafinder"    => array("label"=>_m("AA finder"),       "cond"=>IsSuperadmin(),        "href"=>"admin/aafinder.php3"),
     "xmgettext"   => array("label"=>_m("Mgettext"),        "cond"=>IsSuperadmin(),        "exact_href"=>"../misc/mgettext/index.php3"),
-    "summarize"   => array("label"=>_m("Summarize"),       "cond"=>IsSuperadmin(),        "href"=>"admin/summarize.php3")
+    "summarize"   => array("label"=>_m("Summarize"),       "cond"=>IsSuperadmin(),        "href"=>"admin/summarize.php3"),
+    "synchronize" => array("label"=>_m("Synchronize AA"),  "cond"=>IsSuperadmin(),        "href"=>"admin/aa_synchronize.php3")
 //    "oneoff" => array("label"=>_m("One Off Code"), "cond"=>IsSuperadmin(), "href"=>"admin/oneoff.php3"),
 //    "console" => array("label"=>_m("Console"), "cond"=>IsSuperadmin(), "href"=>"admin/console.php3"),
 ));
