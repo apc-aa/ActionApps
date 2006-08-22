@@ -480,7 +480,7 @@ function huhw($msg) {
 
 // Report only if errcheck is set, this is used to test for errors to speed debugging
 // Use to catch cases in the code which shouldn't exist, but are handled anyway.
-function huhe ($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
+function huhe($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
     global $errcheck;
     if ($errcheck) {
         huhl($a, $b, $c,$d,$e,$f,$g,$h,$i,$j);
@@ -1157,10 +1157,10 @@ function GetSid4Id($iid) {
 function ParseFnc($s) {
     $pos = strpos($s,":");
     if ( $pos ) {
-        $arr['fnc'] = substr($s,0,$pos);
-        $arr['param'] = substr($s,$pos+1);
+        $arr['fnc']   = substr($s, 0, $pos);
+        $arr['param'] = substr($s, $pos+1);
     } else {
-        $arr['fnc'] = $s;
+        $arr['fnc']   = $s;
     }
     return $arr;
 }

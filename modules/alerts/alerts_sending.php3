@@ -250,8 +250,10 @@ class AA_Collection {
     function getReadersSelectArray($how_often = null) {
         $ret = array();
         $content4ids = GetItemContent($this->getReaders($how_often), false, false, array(FIELDID_USERNAME, FIELDID_EMAIL));
-        foreach ($content4ids as $reader_id => $content4id ) {
-            $ret[$reader_id] = $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')';
+        if ( is_array($content4ids) ) {
+            foreach ($content4ids as $reader_id => $content4id ) {
+                $ret[$reader_id] = $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')';
+            }
         }
         return $ret;
     }
