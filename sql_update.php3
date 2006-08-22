@@ -123,21 +123,21 @@ $tablelist = array(   'active_sessions' => "(
                       )",
                       'alerts_collection' => "(
                           id char(6) NOT NULL default '',
-                          module_id binary(16) NOT NULL default '',
+                          module_id varbinary(16) NOT NULL default '',
                           emailid_welcome int(11) default NULL,
                           emailid_alert int(11) default NULL,
-                          slice_id binary(16) default NULL,
+                          slice_id varbinary(16) default NULL,
                           PRIMARY KEY  (id),
                           UNIQUE KEY module_id (module_id)
                       )",
                       'alerts_collection_filter' => "(
-                          collectionid binary(6) NOT NULL default '',
+                          collectionid varbinary(6) NOT NULL default '',
                           filterid int(11) NOT NULL default '0',
                           myindex tinyint(4) NOT NULL default '0',
                           PRIMARY KEY  (collectionid,filterid)
                       )",
                       'alerts_collection_howoften' => "(
-                          collectionid binary(6) NOT NULL default '',
+                          collectionid varbinary(6) NOT NULL default '',
                           howoften char(20) NOT NULL default '',
                           `last` int(10) NOT NULL default '0',
                           PRIMARY KEY  (collectionid,howoften)
@@ -167,11 +167,11 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (username)
                       )",
                       'constant' => "(
-                          id binary(16) NOT NULL default '',
-                          group_id binary(16) NOT NULL default '',
+                          id varbinary(16) NOT NULL default '',
+                          group_id varbinary(16) NOT NULL default '',
                           name char(150) NOT NULL default '',
                           `value` char(255) NOT NULL default '',
-                          class binary(16) default NULL,
+                          class varbinary(16) default NULL,
                           pri smallint(5) NOT NULL default '100',
                           ancestors char(160) default NULL,
                           description char(250) default NULL,
@@ -181,8 +181,8 @@ $tablelist = array(   'active_sessions' => "(
                           KEY short_id (short_id)
                       )",
                       'constant_slice' => "(
-                          slice_id binary(16) default NULL,
-                          group_id binary(16) NOT NULL default '',
+                          slice_id varbinary(16) default NULL,
+                          group_id varbinary(16) NOT NULL default '',
                           propagate tinyint(1) NOT NULL default '1',
                           levelcount tinyint(2) NOT NULL default '2',
                           horizontal tinyint(1) NOT NULL default '0',
@@ -274,7 +274,7 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (uid)
                       )",
                       'email_notify' => "(
-                          slice_id binary(16) NOT NULL default '',
+                          slice_id varbinary(16) NOT NULL default '',
                           uid char(60) NOT NULL default '',
                           `function` smallint(5) NOT NULL default '0',
                           PRIMARY KEY  (slice_id,uid,`function`)
@@ -374,9 +374,9 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (name)
                       )",
                       'item' => "(
-                          id binary(16) NOT NULL default '',
+                          id varbinary(16) NOT NULL default '',
                           short_id int(11) NOT NULL auto_increment,
-                          slice_id binary(16) NOT NULL default '',
+                          slice_id varbinary(16) NOT NULL default '',
                           status_code smallint(5) NOT NULL default '0',
                           post_date bigint(20) NOT NULL default '0',
                           publish_date bigint(20) default NULL,
@@ -403,7 +403,7 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (slice_id)
                       )",
                       'links' => "(
-                          id binary(16) NOT NULL default '',
+                          id varbinary(16) NOT NULL default '',
                           start_id int(10) NOT NULL default '0',
                           tree_start int(11) NOT NULL default '0',
                           select_start int(11) default NULL,
@@ -538,13 +538,13 @@ $tablelist = array(   'active_sessions' => "(
                       )",
                       'membership' => "(
                           groupid int(11) NOT NULL default '0',
-                          memberid binary(32) NOT NULL default '0',
+                          memberid varbinary(32) NOT NULL default '0',
                           last_mod timestamp(14) NOT NULL,
                           PRIMARY KEY  (groupid,memberid),
                           KEY memberid (memberid)
                       )",
                       'module' => "(
-                          id binary(16) NOT NULL default '',
+                          id varbinary(16) NOT NULL default '',
                           name char(100) NOT NULL default '',
                           deleted smallint(5) default NULL,
                           `type` char(16) default 'S',
@@ -552,8 +552,8 @@ $tablelist = array(   'active_sessions' => "(
                           lang_file char(50) default NULL,
                           created_at bigint(20) NOT NULL default '0',
                           created_by char(255) NOT NULL default '',
-                          owner binary(16) NOT NULL default '',
-                          app_id binary(16) default NULL,
+                          owner varbinary(16) NOT NULL default '',
+                          app_id varbinary(16) default NULL,
                           priority smallint(6) NOT NULL default '0',
                           flag int(11) default '0',
                           PRIMARY KEY  (id)
@@ -604,8 +604,8 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (name)
                       )",
                       'offline' => "(
-                          id binary(16) NOT NULL default '',
-                          digest binary(32) NOT NULL default '',
+                          id varbinary(16) NOT NULL default '',
+                          digest varbinary(32) NOT NULL default '',
                           flag int(11) default NULL,
                           PRIMARY KEY  (id),
                           KEY digest (digest)
@@ -661,9 +661,9 @@ $tablelist = array(   'active_sessions' => "(
                       )",
                       'perms' => "(
                           object_type char(30) NOT NULL default '',
-                          objectid binary(32) NOT NULL default '',
-                          userid binary(32) NOT NULL default '0',
-                          perm binary(32) NOT NULL default '',
+                          objectid varbinary(32) NOT NULL default '',
+                          userid varbinary(32) NOT NULL default '0',
+                          perm varbinary(32) NOT NULL default '',
                           last_mod timestamp(14) NOT NULL,
                           PRIMARY KEY  (objectid,userid,object_type),
                           KEY userid (userid)
@@ -715,7 +715,7 @@ $tablelist = array(   'active_sessions' => "(
                           logID int(11) NOT NULL auto_increment,
                           pollID int(11) NOT NULL default '0',
                           voteID int(11) NOT NULL default '0',
-                          votersIP binary(16) NOT NULL default '',
+                          votersIP varbinary(16) NOT NULL default '',
                           `timeStamp` int(11) NOT NULL default '0',
                           PRIMARY KEY  (logID)
                       )",
@@ -843,7 +843,7 @@ $tablelist = array(   'active_sessions' => "(
                           KEY type (type)
                       )",
                       'slice_owner' => "(
-                          id binary(16) NOT NULL default '',
+                          id varbinary(16) NOT NULL default '',
                           name char(80) NOT NULL default '',
                           email char(80) NOT NULL default '',
                           PRIMARY KEY  (id)
@@ -852,7 +852,7 @@ $tablelist = array(   'active_sessions' => "(
                           uid char(50) NOT NULL default '',
                           category char(16) default NULL,
                           content_type char(16) default NULL,
-                          slice_owner binary(16) default NULL,
+                          slice_owner varbinary(16) default NULL,
                           frequency smallint(5) NOT NULL default '0',
                           last_post bigint(20) NOT NULL default '0',
                           KEY uid (uid,frequency)
@@ -873,9 +873,9 @@ $tablelist = array(   'active_sessions' => "(
                       )",
                       'users' => "(
                           id int(11) NOT NULL auto_increment,
-                          `type` binary(10) NOT NULL default '',
-                          `password` binary(30) NOT NULL default '',
-                          uid binary(40) NOT NULL default '',
+                          `type` varbinary(10) NOT NULL default '',
+                          `password` varbinary(30) NOT NULL default '',
+                          uid varbinary(40) NOT NULL default '',
                           mail char(40) NOT NULL default '',
                           name char(80) NOT NULL default '',
                           description char(255) NOT NULL default '',

@@ -80,6 +80,69 @@ class Optimize_db_relation_dups extends Optimize {
     }
 }
 
+
+/** Fix user login problem, constants editiong problem, ...
+ *  Replaces binary fields by varbinary and removes trailing zeros
+ *  Needed for MySQL > 5.0.17
+ */
+class Optimize_db_binary_traing_zeros extends Optimize {
+
+    function name() {
+        return _m("Fix user login problem, constants editiong problem, ...");
+    }
+
+    function description() {
+        return _m("Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17");
+    }
+
+    function test() {
+        return true;
+    }
+
+    function repair() {
+        $this->_fixTable('constant','id','varbinary(16) NOT NULL default \'\'');
+        $this->_fixTable('constant','group_id','varbinary(16) NOT NULL default \'\'');
+        $this->_fixTable('constant','class','varbinary(16) default NULL');
+        $this->_fixTable('alerts_collection','module_id',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('alerts_collection','slice_id',"varbinary(16) default NULL");
+        $this->_fixTable('alerts_collection_filter','collectionid',"varbinary(6) NOT NULL default ''");
+        $this->_fixTable('alerts_collection_howoften','collectionid',"varbinary(6) NOT NULL default ''");
+        $this->_fixTable('constant_slice','slice_id',"varbinary(16) default NULL");
+        $this->_fixTable('constant_slice','group_id',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('email_notify','slice_id',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('item','id',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('item','slice_id',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('links','id',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('membership','memberid','varbinary(32) NOT NULL');
+        $this->_fixTable('module','id',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('module','owner',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('module','app_id',"varbinary(16) default NULL");
+        $this->_fixTable('offline','id',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('offline','digest',"varbinary(32) NOT NULL default ''");
+        $this->_fixTable('perms','objectid',"varbinary(32) NOT NULL default ''");
+        $this->_fixTable('perms','userid',"varbinary(32) NOT NULL default '0'");
+        $this->_fixTable('perms','perm',"varbinary(32) NOT NULL default ''");
+        $this->_fixTable('polls_log','votersIP',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('slice_owner','id',"varbinary(16) NOT NULL default ''");
+        $this->_fixTable('subscriptions','slice_owner',"varbinary(16) default NULL");
+        $this->_fixTable('users','type',"varbinary(10) NOT NULL default ''");
+        $this->_fixTable('users','password',"varbinary(30) NOT NULL default ''");
+        $this->_fixTable('users','uid',"varbinary(40) NOT NULL default ''");
+        return true;
+    }
+    
+    function _fixTable($table, $field, $definition) {
+        $db  = getDb();
+        $SQL = "ALTER TABLE `$table` CHANGE `$field` `$field` $definition";
+        $this->messages($SQL);
+        $db->query($SQL);
+        $SQL = "UPDATE `$table` SET $field=TRIM(TRAILING '\0' FROM $field)";
+        $this->messages($SQL);
+        $db->query($SQL);
+        freeDb($db);
+    }
+}
+
 /** There was change in Reader management functionality in AA v2.8.1 */
 class Optimize_readers_login2id extends Optimize {
 
