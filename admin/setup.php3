@@ -139,17 +139,16 @@ if ( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
 $db->Halt_On_Error = $store_halt;
 
 // Discover current state in AA object perms
-
 if ($perms = GetObjectsPerms(AA_ID, "aa")) {
     while (list($key, $value) = each ($perms)) {
         if (!$value["type"]) {
             $notusers[$key] = $value;      // non-existent user/group
         } elseif ($value["perm"] != $perms_roles["SUPER"]['id']) {
             $others[$key] = $value;        // other than super privilege
-        } elseif (stristr($value["type"], _m("User"))) {
-            $superusers[$key] = $value;    // users with super privileges
-        } else {
+        } elseif (($value["type"] == 'Group') OR ($value["type"] == _m('Group'))) {
             $supergroups[$key] = $value;   // groups with super privileges
+        } else {
+            $superusers[$key] = $value;    // users with super privileges
         }
     }
 }

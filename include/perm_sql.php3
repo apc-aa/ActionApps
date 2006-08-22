@@ -429,7 +429,7 @@ function AddGroup($group, $flags = 0) {
     // creates new person in permission system
     $db  = new DB_AA;
     // do a little bit of QA on the $user array
-    $array["type"]        = _m("Group");
+    $array["type"]        = "Group";
     $array["name"]        = $group["name"];
     $array["description"] = $group["description"];
     $array["password"]    = 'crypt will never return this';
