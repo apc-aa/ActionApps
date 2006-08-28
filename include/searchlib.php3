@@ -23,12 +23,74 @@ require_once AA_INC_PATH."sql_parser.php3";
 require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."pagecache.php3";
 
-class Conditions {
-    /** clasic conds array - array('operator'  => ..,
-     *                             'value'     => ..,
-     *                             <field_1>   => 1
-     *                             [,<field_n> => 1])
+class AA_Condition {
+    /** Array of compared fields */
+    var $fields;
+    /** Condition operator like 'LIKE', 'RLIKE', '=', '<>', '<', '>' ... */
+    var $operator;
+    /** Comared value */
+    var $value;
+
+    function AA_Condition($fields, $operator, $value) {
+        $this->fields =   $fields;
+        $this->operator = $operator;
+        $this->value    = $value;
+    }
+
+    /** Returns clasic $conds array - array('operator'  => ..,
+     *                                      'value'     => ..,
+     *                                      <field_1>   => 1
+     *                                      [,<field_n> => 1])
+     *  Mainly for backward compatibility with old - array approach
      */
+    function getArray() {
+        $ret['value']    = $this->value;
+        $ret['operator'] = $this->operator;
+        foreach ($this->fields as $cond_field) {
+            $ret[$cond_field] = 1;
+        }
+        return $ret;
+    }
+
+    function matches(&$itemcontent) {
+        foreach ($this->fields as $field) {
+            foreach ($itemcontent->getValues($field) as $val) {
+                if ( $this->_compare($val['value']) ) {
+                    // any match is sufficient
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function _compare($field_value) {
+        switch( $this->operator ) {
+            case 'LIKE':
+            case 'XLIKE':   return (strpos($field_value, $this->value) === false) ? false : true;
+            case 'RLIKE':   return (strpos($field_value, $this->value) === 0)     ? true  : false;
+            case 'LLIKE':   return  strpos($field_value, $this->value) == (strlen($field_value)-strlen($this->value));
+            case '=':       return  $field_value == $this->value;
+            case 'BETWEEN':
+                $arr = explode( ",", $this->value );
+                return (((int)$field_value >= (int)$arr[0]) AND ((int)$field_value <= (int)$arr[1]));
+            case 'ISNULL':  return ($field_value == '');
+            case 'NOTNULL': return ($field_value <> '');
+            case '='  :     return $field_value == $this->value;
+            case '<>' :     return $field_value != $this->value;
+            case '!=' :     return $field_value != $this->value;
+            case '<=' :     return $field_value <= $this->value;
+            case '<'  :     return $field_value <  $this->value;
+            case '>=' :     return $field_value >= $this->value;
+            case '>'  :     return $field_value >  $this->value;
+//          case '<=>':  //MySQL know this operator, but we do not use it in AA
+        }
+        return false;
+    }
+}
+
+class Conditions {
+    /** array of Condition */
     var $conds;
 
     function Conditions() {
@@ -37,6 +99,12 @@ class Conditions {
 
     function clear() {
         $this->conds = array();
+    }
+
+    function addCondition(&$condition) {
+        if ( $condition ) {
+            $this->conds[] = $condition;
+        }
     }
 
     /** Creates conditions from d-<fields>-<operator>-<value>-<fields>-<op....
@@ -59,26 +127,42 @@ class Conditions {
         $command_params = $command->getParameterArray();
         while ( $command_params[$i] ) {
              if ( Conditions::check($command_params[$i], $command_params[$i+2]) ) {
-                 $field_arr = array();
-                 foreach (explode(',',$command_params[$i]) as $cond_field) {
-                     $field_arr[$cond_field] = 1;
-                 }
-                 $this->conds[]= array_merge($field_arr, array('operator' => $command_params[$i+1],
-                                                               'value'    => stripslashes($command_params[$i+2])));
+                 $field_arr = explode(',',$command_params[$i]);
+                 $this->conds[] = new AA_Condition($field_arr, $command_params[$i+1], stripslashes($command_params[$i+2]));
              }
              $i += 3;
          }
          return true;
     }
 
-    /** retruns $conds[] array - mainny for backward compatibility */
+    /** retruns $conds[] array - mainly for backward compatibility */
     function getConds() {
-        return $this->conds;
+        $ret = array();
+        foreach ( $this->conds as $condition ) {
+            $ret[] = $condition->getArray();
+        }
+        return $ret;
     }
 
     /** static - Checks if the condition is in right format - is valid */
     function check($field, $value) {
         return ($field && ($value != 'AAnoCONDITION'));
+    }
+
+    /** Postfilter - checks if the item matches the conditions
+     *  In this case we already have an item loaded from database
+     *  (which is new). We are trying to have the same syntax as classical
+     *  $conds[] applayed to database selection.
+     *  @todo allow to compare not only fields, but also aliases
+     */
+    function matches(&$itemcontent) {
+        foreach ( $this->conds as $condition ) {
+            if ( !$condition->matches($itemcontent) ) {
+                // we must met all the conditions criteria
+                return false;
+            }
+        }
+        return true;
     }
 }
 
@@ -158,71 +242,83 @@ function getSortFromUrl( $sort ) {
 
 function GetWhereExp( $field, $operator, $querystring ) {
 
-  // query string could be slashed - sometimes :-(
-  $querystring = stripslashes( $querystring );
+    // query string could be slashed - sometimes :-(
+    $querystring = stripslashes( $querystring );
 
-  if ( $GLOBALS['debug'] )
-    echo "<br>GetWhereExp( $field, $operator, $querystring )";
+    if ( $GLOBALS['debug'] ) {
+        echo "<br>GetWhereExp( $field, $operator, $querystring )";
+    }
 
-  // search operator for functions (some operators can be in function:operator
-  // fomat - the function is called to $querystring (good for date transform ...)
-  if ( $pos = strpos($operator,":") ) {  // not ==
-    $func = substr($operator,0,$pos);
-    $operator = substr($operator,$pos+1);
+    // search operator for functions (some operators can be in function:operator
+    // fomat - the function is called to $querystring (good for date transform ...)
+    if ( $pos = strpos($operator,":") ) {  // not ==
+        $func = substr($operator,0,$pos);
+        $operator = substr($operator,$pos+1);
 
-    switch( $func ) {
-      case 'd': // english style datum (like '12/31/2001' or '10 September 2000')
+        switch( $func ) {
+            case 'd': // english style datum (like '12/31/2001' or '10 September 2000')
                 $querystring = strtotime($querystring);
                 break;
-      case 'e': // european datum style (like 24. 12. 2001)
-                if ( !ereg("^ *([0-9]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{4}) *$", $querystring, $part))
-                  if ( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{2}) *$", $querystring, $part))
-                    if ( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$", $querystring, $part)) {
-                      $querystring = time();
-                      break;
+            case 'e': // european datum style (like 24. 12. 2001)
+                if ( !ereg("^ *([0-9]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{4}) *$", $querystring, $part)) {
+                    if ( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *\. *([0-9]{2}) *$", $querystring, $part)) {
+                        if ( !ereg("^ *([[0-9]]{1,2}) *\. *([0-9]{1,2}) *$", $querystring, $part)) {
+                            $querystring = time();
+                            break;
+                        }
                     }
-                if ( ($operator == "<=") or ($operator == ">") )
-                  // end of day used for some operators
-                  $querystring = mktime(23,59,59,$part[2],$part[1],$part[3]);
-                 else
-                  $querystring = mktime(0,0,0,$part[2],$part[1],$part[3]);
+                }
+                if ( ($operator == "<=") or ($operator == ">") ) {
+                    // end of day used for some operators
+                    $querystring = mktime(23,59,59,$part[2],$part[1],$part[3]);
+                } else {
+                    $querystring = mktime(0,0,0,$part[2],$part[1],$part[3]);
+                }
                 break;
-      case 'm':
-      case '-': $querystring = time() - $querystring;
+            case 'm':
+            case '-':
+                $querystring = time() - $querystring;
                 break;
+        }
     }
-  }
 
-  $querystring =  (string) $querystring;   // to be able to do string operations
+    $querystring =  (string)$querystring;   // to be able to do string operations
 
-  switch( $operator ) {
-    case 'LIKE':
-    case 'RLIKE':
-    case 'LLIKE':
-    case 'XLIKE':
-    case '=':
-      $querystring = str_replace('*', '%', trim($querystring));
-      $querystring = str_replace('?', '_', $querystring);
-        $syntax = new Syntax($field, $operator, lex( trim($querystring) ) );
-      $ret = $syntax->S();
-      if ( $ret == "_SYNTAX_ERROR" ) {
-        if ( $GLOBALS['debug'] )
-          echo "<br>Query syntax error: ". $GLOBALS['syntax_error'];
-        return "1=1";
-      }
-      return ( $ret ? " ($ret) " : "1=1" );
-    case 'BETWEEN':
-      $arr = explode( ",", $querystring );
-      return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
-    case 'ISNULL':
-      return ( " (($field IS NULL) OR ($field='')) ");
-    case 'NOTNULL':
-      return ( " (($field IS NOT NULL) AND ($field<>'')) ");
-    default:
-      $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ?
-                                 substr( $querystring, 1, -1 ) : $querystring ;
-      return " ($field $operator '$str') ";
-  }
+    switch( $operator ) {
+        case 'LIKE':
+        case 'RLIKE':
+        case 'LLIKE':
+        case 'XLIKE':
+        case '=':
+            $querystring = str_replace('*', '%', trim($querystring));
+            $querystring = str_replace('?', '_', $querystring);
+            $syntax      = new Syntax($field, $operator, lex( trim($querystring) ) );
+            $ret         = $syntax->S();
+            if ( $ret == "_SYNTAX_ERROR" ) {
+                if ( $GLOBALS['debug'] ) {
+                    echo "<br>Query syntax error: ". $GLOBALS['syntax_error'];
+                }
+                return "1=1";
+            }
+            return ( $ret ? " ($ret) " : "1=1" );
+        case 'BETWEEN':
+            $arr = explode( ",", $querystring );
+            return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
+        case 'ISNULL':
+            return ( " (($field IS NULL) OR ($field='')) ");
+        case 'NOTNULL':
+            return ( " (($field IS NOT NULL) AND ($field<>'')) ");
+        case '='  :
+//      case '<=>':  //MySQL know this operator, but we do not use it in AA
+        case '<>' :
+        case '!=' :
+        case '<=' :
+        case '<'  :
+        case '>=' :
+        case '>'  :
+            $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ? substr( $querystring, 1, -1 ) : $querystring ;
+            return " ($field $operator '$str') ";
+    }
 }
 
 // -------------------------------------------------------------------------------------------
@@ -375,7 +471,7 @@ function String2Conds( $conds_string ) {
         // we also need PHP to think a['key'] is the same as a[key], that's why we
         // call NormalizeArrayIndex()
         $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
-        $conds = $aa_query_arr['conds'];
+        $conds        = $aa_query_arr['conds'];
         ParseMultiSelectConds($conds);
         ParseEasyConds($conds,'RLIKE');
     }
