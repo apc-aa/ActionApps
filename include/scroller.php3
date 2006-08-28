@@ -83,10 +83,10 @@ class scroller extends storable_class {
     function pVisButton($url = "",
                         $show = "<img src=\"../images/expand.gif\" border=0 align=left alt=Expand>",
                         $hide = "<img src=\"../images/collapse.gif\" border=0 align=left alt=Collapse>") {
-        if (!$url)
+        if (!$url) {
             $url = $this->urldefault;
-        echo "<a href=\"$url" . $this->ToggleVis() . "\">" .
-            ($this->visible ? $hide : $show) . "</a>";
+        }
+        echo "<a href=\"$url". $this->ToggleVis(). "\">". ($this->visible ? $hide : $show) . "</a>";
     }
 
     // return part of a query string for move to toggle visibility
@@ -101,25 +101,25 @@ class scroller extends storable_class {
 
     // print sort label
     function pSort($sortcol, $show, $url = "") {
-        if (!$url)
+        if (!$url) {
             $url = $this->urldefault;
+        }
         echo "<a href=\"$url" . $this->Sort($sortcol) . "\">$show";
-        if ($this->sortcol == $sortcol && $this->sortdir)
+        if ($this->sortcol == $sortcol && $this->sortdir) {
             echo "<img src=\"../images/sort" . $this->sortdir . ".gif\" border=0>";
+        }
         echo "</a>";
     }
 
     // return "order by" sql clause
     function sortSql() {
-        if ($this->sortcol && $this->sortdir)
-            return " order by $this->sortcol " . ($this->sortdir == 2 ? "desc" : "");
-        return "";
+        return ($this->sortcol && $this->sortdir) ? " ORDER BY $this->sortcol ". ($this->sortdir == 2 ? "desc" : "") : '';
     }
 
     // keep current page within bounds
     function checkBounds() {
-        if ($this->current < 1)            $this->current = 1;
-        if ($this->current > $this->pgcnt) $this->current = max($this->pgcnt,1);
+        if ($this->current < 1)            { $this->current = 1; }
+        if ($this->current > $this->pgcnt) { $this->current = max($this->pgcnt,1); }
     }
 
     // adjust number of pages
@@ -153,70 +153,80 @@ class scroller extends storable_class {
 
     // process query string and execute commands for this scroller
     // query string is taken from global variables
-    // deprecated - better to use updateScr (based on $itmcnt)
-    function update($url = "", $pgcnt = "") {
+    function updateScr($url = "") {
         $this->updateFilters();
-        if ($url)   $this->urldefault = $url;
-        if ($pgcnt) $this->pgcnt = $pgcnt; // adjust size
-        if (isset($GLOBALS["scr_" . $this->id . "_Vi"]))
+        if ($url) {
+            $this->urldefault = $url;
+        }
+        if (isset($GLOBALS["scr_" . $this->id . "_Vi"])) {
             $this->visible = $GLOBALS["scr_" . $this->id . "_Vi"];
-        if ($GLOBALS["scr_" . $this->id . "_Go"])
+        }
+        if ($GLOBALS["scr_" . $this->id . "_Go"]) {
             $this->current = $GLOBALS["scr_" . $this->id . "_Go"];
-        if ($GLOBALS["scr_" . $this->id . "_Mv"])
+        }
+        if ($GLOBALS["scr_" . $this->id . "_Mv"]) {
             $this->current += $GLOBALS["scr_" . $this->id . "_Mv"];
+        }
         if ($GLOBALS["scr_" . $this->id . "_Sort"]) {
             $sortcol = $GLOBALS["scr_" . $this->id . "_Sort"];
-            $this->sortdir = ($sortcol == $this->sortcol) ?
-                             (($this->sortdir + 1) % 3) : 1;
+            $this->sortdir = ($sortcol == $this->sortcol) ? (($this->sortdir + 1) % 3) : 1;
             $this->sortcol = $sortcol;
         }
         $this->checkBounds();
     }
 
-    // process query string and execute commands for this scroller
-    // query string is taken from global variables
-    // (based on $itmcnt)
-    function updateScr($url = "", $itmcnt = "") {
-        if ($itmcnt)
-        $this->countPages($itmcnt);
-        $this->update($url);
-    }
-
     // return navigation bar as a hash
     // labels as keys, query string fragments a values
     function navarray() {
-        if (!$this->pgcnt) return array();
+        if (!$this->pgcnt) {
+            return array();
+        }
         $mp   = floor(($this->current - 1) / SCROLLER_LENGTH);  // current means current page
         $from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
         $to   = min(($mp + 1) * SCROLLER_LENGTH + 1, $this->pgcnt);
-        if ($this->current > 1)
-        $arr["<<"]                             = $this->Relative(-1);
-        if ($from > 1)              $arr["1"]   = $this->Absolute(1);
-        if ($from > 2)              $arr[".. "] = "";
+        if ($this->current > 1) {
+            $arr["<<"]  = $this->Relative(-1);
+        }
+        if ($from > 1) {
+            $arr["1"]   = $this->Absolute(1);
+        }
+        if ($from > 2) {
+            $arr[".. "] = "";
+        }
         for ($i = $from; $i <= $to; $i++) {
             $arr[(string)$i] = ($i == $this->current ? "" : $this->Absolute($i));
         }
-        if ($to < $this->pgcnt - 1) $arr[" .."] = "";
-        if ($to < $this->pgcnt)
+        if ($to < $this->pgcnt - 1) {
+            $arr[" .."] = "";
+        }
+        if ($to < $this->pgcnt) {
             $arr[(string) $this->pgcnt] = $this->Absolute($this->pgcnt);
-        if ($this->current < $this->pgcnt)
+        }
+        if ($this->current < $this->pgcnt) {
             $arr[">>"] = $this->Relative(1);
+        }
         return $arr;
     }
 
     // convert array provided by navarray into HTML code
     // commands are added to $url
-    function pnavbar($url = "") {
-        if (!$this->visible) return;
-        if (!$url)           $url = $this->urldefault;
-        $i = 0;
-        $arr = $this->navarray();
-        while (list($k, $v) = each($arr)) {
-            if ($i++) echo " | ";
-            if ($v) echo "<a href=\"$url$v\" class=\"scroller\">$k</a>\n";
-            else   echo "<span class=\"scroller_actual\">$k</span>\n";
+    function pnavbar() {
+        if (!$this->visible) {
+            return;
         }
-        echo "| <a href=\"" . $url . "listlen=99999\" class=\"scroller\">" . _m("All") . "</a>";
+        $delimiter = '';
+        $arr = $this->navarray();
+
+        while (list($k, $v) = each($arr)) {
+            echo $delimiter;
+            $delimiter = " | ";
+            if ($v) {
+                echo "<a href=\"".get_url($url,array($v))."\" class=\"scroller\">$k</a>\n";
+            } else {
+                echo "<span class=\"scroller_actual\">$k</span>\n";
+            }
+        }
+        echo "| <a href=\"" . get_url($url,array("listlen=99999")) ."\" class=\"scroller\">" . _m("All") . "</a>";
         echo " &nbsp; (". $this->itmcnt .")";
     }
 

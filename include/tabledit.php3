@@ -118,13 +118,12 @@ class tabledit {
             $orderby = key ($orderby);
             $this->orderby = $orderby;
             if ($tecmd["orderby"][$orderby]) {
-                $tecmd["orderdir"] =
-                    $tecmd["orderdir"] == 'd' ? 'a' : 'd';
-                $this->orderdir = $tecmd["orderdir"];
+                $tecmd["orderdir"] = $tecmd["orderdir"] == 'd' ? 'a' : 'd';
+                $this->orderdir    = $tecmd["orderdir"];
             }
             else {
                 $tecmd["orderdir"] = 'a';
-                $tecmd["orderby"] = array ($orderby => 1);
+                $tecmd["orderby"]  = array ($orderby => 1);
             }
         }
         else {
@@ -181,25 +180,26 @@ class tabledit {
         global $$scrname;
         $scroll = $$scrname;
         if (is_object($this->sess))
-            $scrurl = $this->sess->url($GLOBALS[PHP_SELF]."?set_tview=".$this->gotoview2()."&")."&";
+            $scrurl = $this->sess->url($GLOBALS[PHP_SELF]."?set_tview=".$this->gotoview2());
 
         if (is_object($scroll)) {
             $scroll->metapage = $this->view["listlen"];
             $scroll->countPages ($rowcount);
             $scroll->updateScr($scrurl);
-        }
-        else {
+        } else {
             $$scrname = new scroller($scrname, $scrurl);
             $scroll = $$scrname;
-            if (is_object($this->sess))
-                $this->sess->register ($scrname);
+            if (is_object($this->sess)) {
+                $this->sess->register($scrname);
+            }
             $scroll->metapage = $this->view["listlen"];
-            $scroll->countPages ($rowcount);
+            $scroll->countPages($rowcount);
         }
         $$scrname = $scroll;
 
-        if ($this->orderby)
+        if ($this->orderby) {
             $orderby = " ORDER BY ".$this->orderby.($this->orderdir == 'd' ? " DESC" : "");
+        }
 
         reset ($this->cols);
         while (list ($cname,$cprop) = each ($this->cols)) {

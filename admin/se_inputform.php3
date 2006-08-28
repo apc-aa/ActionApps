@@ -258,7 +258,7 @@ if ( !$update ) {      // load defaults
     $feed         = $fld["feed"];
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <TITLE><?php echo _m("Admin - configure Fields");?></TITLE>
 <script language="JavaScript"><!--
@@ -281,10 +281,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     text_param = the text field where the parameters are placed
   */
   function CallParamWizard(list, combo_list, text_param ) {
-    page = "<?php echo $sess->url(self_base()."param_wizard.php3")?>"
-        + "&list=" + list + "&combo_list=" + combo_list + "&text_param=" + text_param;
     combo_list_el = document.f.elements[combo_list];
-    page += "&item=" + combo_list_el.options [combo_list_el.selectedIndex].value;
+    page = GetUrl("<?php echo $sess->url(self_base()."param_wizard.php3")?>", ["list=" + list, "combo_list=" + combo_list, "text_param=" + text_param, "item=" + combo_list_el.options[combo_list_el.selectedIndex].value]);
     param_wizard = window.open(page,"somename","width=450,scrollbars=yes,menubar=no,hotkeys=no,resizable=yes");
     param_wizard.focus();
   }
@@ -300,10 +298,10 @@ PrintArray($err);
 echo $Msg;
 echo _m("<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
 
-$form_buttons = array("update"=>array("type"=>"hidden","value"=>"1"),
-                      "fid"=>array("type"=>"hidden", "value"=>$fid),
+$form_buttons = array("update" => array("type"=>"hidden","value"=>"1"),
+                      "fid"    => array("type"=>"hidden", "value"=>$fid),
                       "update",
-                      "cancel"=>array("url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':''))
+                      "cancel" => array("url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':''))
                      );
 
 echo "
