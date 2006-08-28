@@ -877,7 +877,7 @@ function RSS_restrict($txt, $len) {
       // These next two return values from globals that would actually be better coming froom the item or itemview,
       // otherwise won't work if there are nested views.
       case "itemcount":
-        return $GLOBALS['QueryIDsCount'];
+        return (string)$GLOBALS['QueryIDsCount'];
       case "itemindex": /*mimo hack, this is now a stack*/
         return "".end($GLOBALS['QueryIDsIndex']);   // Need to append to "" so doesn't return "false" on 0th item
       case "pageindex": /*mimo hack, this is now a stack*/
