@@ -1,3 +1,14 @@
+08/29/06 - new version of "Modify Content..." window - better and universal
+(honzam)   interface, more options, easy to write your own new transformation
+           class (see AA_Transformation class)
+         - "No Item Message" is unaliased now, for Item Manager
+         - fixed problem with wrong url of "related Item Window" and "Parameter
+           Wizard"
+         - fix: _#ID_COUNT returns string "0" if no item is found (instead
+           of empty string)
+         - new AA_Condition class for conditions manipulations in searchlib.php3
+         - fixed email permissions file to use User and Group constatnts instead
+           of translated strings
 08/22/06 - fixed security hole for setup.php3
 (honzam) - changes all binary fields in database to varbinary, which is needed
            for MySQL >=5.0.17 in sql_update.ph3; new repair routine in test.php3

@@ -647,6 +647,11 @@ class AA_Inputfield {
     /** returns $ret_val if given $option is selected for current field */
     function if_selected($option, $ret_val) {
         // fill selected array from value
+        $this->_fillSelected();
+        return $this->selected[(string)$option] ? $ret_val : '';
+    }
+
+    function _fillSelected() {
         if ( !isset( $this->selected ) ) {  // not cached yet => create selected array
             if ( isset($this->value) AND is_array($this->value) ) {
                 foreach ( $this->value as $v ) {
@@ -656,7 +661,6 @@ class AA_Inputfield {
                 }
             }
         }
-        return $this->selected[(string)$option] ? $ret_val : '';
     }
 
     /** Returns field as it should be displayed on screen (or at least template
@@ -1122,11 +1126,12 @@ class AA_Inputfield {
 
     /** returns select options created from given array */
     function get_options( &$arr, $usevalue=false, $testval=false, $restrict='all', $add_empty=false, $do_not_select=false) {
-        $selectedused = false;
+        $selectedused  = false;
         $select_string = ( $do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
 
         $already_selected = array();    // array where we mark selected values
         $pair_used        = array();    // array where we mark used pairs
+        $this->_fillSelected();         // fill selected array by all values in order we can print invlaid values later
         if (isset($arr) && is_array($arr)) {
             foreach ( $arr as $k => $v ) {
                 if ($usevalue) {
