@@ -108,7 +108,7 @@ class manager extends storable_class {
         }
 
         // create page scroller -----------------------------------------------
-        $scroller = new scroller('st',sess_return_url($_SERVER['PHP_SELF'])."&");
+        $scroller = new scroller('st',sess_return_url($_SERVER['PHP_SELF']));
         // could be redefined by view (see ['itemview']['manager_vid'])
         $scroller->metapage = $settings['scroller']['listlen'];
         $scroller->addFilter("slice_id", "md5", $settings['scroller']['slice_id']);
@@ -262,7 +262,7 @@ class manager extends storable_class {
 */
         // update scroller
         if ( isset($this->scroller) ) {
-            $this->scroller->updateScr(sess_return_url($_SERVER['PHP_SELF'])."&"); // use $return_url if set.
+            $this->scroller->updateScr(sess_return_url($_SERVER['PHP_SELF'])); // use $return_url if set.
             if ( $_GET['listlen'] ) {
                 $this->setListlen($_GET['listlen']);
             }
@@ -280,8 +280,9 @@ class manager extends storable_class {
         }
 
         // update searchbar
-        if ( isset($this->searchbar) )
+        if ( isset($this->searchbar) ) {
             $this->searchbar->update();
+        }
 
         $action2do = $this->actions[$akce];
         $actions_perm_function = $this->actions_perm_function;
@@ -361,7 +362,7 @@ class manager extends storable_class {
 
         $ids_count = $zids->count();
         if ( $ids_count == 0 ) {
-            echo "<div class=tabtxt>". $this->messages['noitem_msg']. "</div></form><br>";
+            echo "<div class=tabtxt>". $this->itemview->unaliasWithScrollerEasy($this->messages['noitem_msg']). "</div></form><br>";
             return $ids_count;
         }
 
