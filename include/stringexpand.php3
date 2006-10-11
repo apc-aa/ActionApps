@@ -135,6 +135,33 @@ function stringexpand_formpart() {
 }
 
 
+/** Expands {icq:<user_id>[:<action>[:<style>]]} and displays ICQ status for
+ *  the user.
+ *  @param $user_id  - ICQ ID of the user
+ *  @param $action   - add | message
+ *  @param $style    - 0-26 - displayed icon type
+ *                   - see: http://www.icq.com/features/web/indicator.html
+ */
+function stringexpand_icq($user_id='', $action='add', $style=1) {
+    if ( !$user_id ) {
+        return "";
+    }
+    if ( $action != 'add' ) {    // possibly other actions in future
+        $action = 'add';
+    }
+    $style = (int)$style;
+    if ( !($style >= 0 AND $style <= 26) ) {
+        $style = 1;
+    }
+
+    // set the url to the image and the stype of the image
+    $image = '<img src="http://status.icq.com/online.gif?icq='.$user_id.'&img='.$style.'" border="0">' ;
+    // start the rendering the html outupt
+    $output .= '<a href="http://www.icq.com/people/cmd.php?uin='.$user_id.'&action='.$action.'">'.$image.'</a>';
+    // send the output to MediaWiki
+    return $output;
+}
+
 // text = [ decimals [ # dec_point [ thousands_sep ]]] )
 function parseMath($text) {
     // get format string, need to add and remove // to
@@ -289,6 +316,7 @@ function getConstantValue($group, $what, $field_name) {
             case "group" :
             case "class" :
             case "id" :
+            case "level" :
                 // get values from contentcache or use GetConstants function to get it from db
                 $val = $contentcache->get_result("GetConstants", array($group, "pri", $what));
                 return $val[$field_name];
@@ -366,6 +394,17 @@ function stringexpand_csv($text='') {
     return (strcspn($text,",\"\n\r") == strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
 }
 
+/** Returns Text as is.
+ *  Looks funny, but it is usefull. If you write {abstract........}, then it
+ *  is NOT the same as {asis:abstract........}, since {abstract........} counts
+ *  with HTML/plaintext setting, so maybe the \n are replaced by <br> if
+ *  "plaintext" is set for the field. The {asis:abstract........} returns the
+ *  exact value as inserted in the database
+ */
+function stringexpand_asis($text='') {
+    return $text;
+}
+
 function stringexpand_safe($text='') {
     return htmlspecialchars($text);
 }
@@ -423,14 +462,18 @@ function stringexpand_item($ids_string, $expression, $delimiter='') {
  *        QueryZids() - the fields should not be parameter - it should be
  *        grabbed from slice(s)
  */
-function stringexpand_ids($slice_id, $conds=null, $sort=null, $delimiter=null) {
+function stringexpand_ids($slices, $conds=null, $sort=null, $delimiter=null) {
     $conditions = new Conditions;
     $conditions->addFromString($conds);
     $order      = new Sortorder;
     $order->addFromString($sort);
+    $slices_arr = explode('-', $slices);
+
+    // first slice, if defined more than one
+    $slice_id   = reset($slices_arr);
 
     list($fields,) = GetSliceFields($slice_id);
-    $zids = QueryZIDs($fields, $slice_id, $conditions->getConds(), $order->getOrder());
+    $zids = QueryZIDs($fields, $slice_id, $conditions->getConds(), $order->getOrder(), '', 'ACTIVE', $slices_arr);
     return join($zids->longids(), $delimiter ? $delimiter : '-');
 }
 
@@ -606,6 +649,19 @@ function stringexpand_dictionary($dictionaries, $text, $format, $conds='') {
     return $text;
 }
 
+function ExpandGetFieldName( &$item, $params) {
+    list($field_id, $property) = $params;
+    if (is_null($item) OR !IsField($field_id)) {
+        return '';
+    }
+    list($fields,) = GetSliceFields($item->getSliceID());
+    // we do not want to allow users to get all field setting
+    // that's why we restict it to the properties, which makes sense
+    // @todo - make it less restrictive
+    $property = 'name';
+    return $fields[$field_id][$property];
+}
+
 /** Expand a single, syntax element */
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
@@ -648,8 +704,9 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     if ( isset($item) && (substr($out, 0, 5)=='alias') AND ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$", $out, $parts) ) {
       // call function (called by function reference (pointer))
       // like f_d("start_date......", "m-d")
-      if ($parts[1] && ! isField($parts[1]))
+      if ($parts[1] && ! AA_Fields::isField($parts[1])) {
         huhe("Warning: $out: $parts[1] is not a field, don't wrap it in { } ");
+      }
       $fce     = $parts[2];
       return QuoteColons($level, $maxlevel, $item->$fce($parts[1], $parts[3]));
       // QuoteColons used to mark colons, which is not parameter separators.
@@ -774,6 +831,8 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     if ( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts) ) {
         if ( $GLOBALS['eb_functions'][$parts[1]] ) {          // eb functions - call allowed php functions directly
             $fnctn = $GLOBALS['eb_functions'][$parts[1]];
+        } elseif ( $parts[1] == 'field' ) {  // special function - we need slice_id here
+            return QuoteColons($level, $maxlevel, ExpandGetFieldName($item,(array)array_map('DeQuoteColons',ParamExplode($parts[2]))));
         } elseif ( is_callable("stringexpand_".$parts[1])) {  // custom stringexpand functions
             $fnctn = "stringexpand_".$parts[1];
         }
@@ -794,7 +853,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             return QuoteColons($level, $maxlevel, $item->getItemID());
         } elseif ($out == "slice_id........") {
             return QuoteColons($level, $maxlevel, $item->getSliceID());
-        } elseif ( IsField($out) ) {
+        } elseif ( AA_Fields::isField($out) ) {
             return QuoteColons($level, $maxlevel, $item->f_h($out,"-"));
             // QuoteColons used to mark colons, which is not parameter separators.
         }
