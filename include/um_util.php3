@@ -101,6 +101,10 @@ function PrintModulePermModificator($selected_user, $form_buttons='', $sess='', 
         PrintModuleAddRow($mod_2B_add, 1);
         PrintModuleAddRow($mod_2B_add, 2);
         PrintModuleAddRow($mod_2B_add, 3);
+        PrintModuleAddRow($mod_2B_add, 4);
+        PrintModuleAddRow($mod_2B_add, 5);
+        PrintModuleAddRow($mod_2B_add, 6);
+        PrintModuleAddRow($mod_2B_add, 7);
     }
     ?>
     </table></td></tr>
@@ -211,6 +215,10 @@ function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
       SetRole(1);
       SetRole(2);
       SetRole(3);
+      SetRole(4);
+      SetRole(5);
+      SetRole(6);
+      SetRole(7);
       // -->
     </script>
     <?php
