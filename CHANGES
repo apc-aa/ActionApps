@@ -1,3 +1,31 @@
+10/11/06 - new {icq:<user_id>[:<action>[:<style>]]} expressions, which display
+(honzam)   ICQ status of the user.
+                user_id - ICQ ID of the user
+                action  - add | message
+                style   - 0-26 - displayed icon type
+                          (see: http://www.icq.com/features/web/indicator.html)
+         - new {field:<field_id>:name} expression - displays name of the field
+           as defined for inputform
+         - {ids:<slices>:<conds>[:<sort>[:<delimiter>]]} modified to be able to
+           get ids from more than one slice (slice ids are delimited by dash -)
+         - "No Item Message" in Item Manager is unaliased now (= you can use AA
+           expressions there)
+         - new possibility to set ordering of items in Item Manager on two
+           or more columns in profiles
+         - fixed bug with automatic feeding (did not work, when item was posted
+           posted to holding bin first)
+         - fixed problem with two boxes inputform - the order of values now
+           persist
+         - fixed _#ID_COUNT to display also 0
+         - paths to scripts are relative again for the admin interface
+         - it is possible to order values also by "level" (of nesting)
+           as defined in Constants for the field
+         - UI change - added another 4 empty rows for setting of permissions
+           to slice for user
+         - new validation class
+         - optimize/repair scripts was moved to AA -> Optimize
+           (aa_optimize.php3) script
+         - work on history tracking begins - see AA -> history
 08/29/06 - new version of "Modify Content..." window - better and universal
 (honzam)   interface, more options, easy to write your own new transformation
            class (see AA_Transformation class)
