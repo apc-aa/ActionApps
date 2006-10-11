@@ -597,32 +597,31 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
     $column    = str_replace( 'const_', '', $column);
     $keycolumn = str_replace( 'const_', '', $keycolumn);
 
-    $const_fields = array(
-        'id'          =>'id'         ,
-        'group_id'    =>'group_id'   ,
-        'name'        =>'name'       ,
-        'value'       =>'value'      ,
-        'class'       =>'class'      ,
-        'pri'         =>'pri,name'   ,   // ordered first by priority, secondary by name
-        'ancestors'   =>'ancestors'  ,
-        'description' =>'description',
-        'short_id'    =>'short_id'   );
+    $db_order     = $order;
+    $db_column    = ($column    == 'level') ? 'ancestors' : $column;
+    $db_keycolumn = ($keycolumn == 'level') ? 'ancestors' : $keycolumn;
+
+    $const_fields = array('id'=>1,'group_id'=>1,'name'=>1,'value'=>1,'class'=>1,'pri'=>1,'ancestors'=>1,'description'=>1,'short_id'=>1);
 
     $db = getDB();
-    if (  $const_fields[$order] )     { $order_by  = "ORDER BY ". $const_fields[$order]; }
-    if ( !$const_fields[$column] )    { $column    = 'name';            }
-    if ( !$const_fields[$keycolumn] ) { $keycolumn = 'value';           }
-    $fields = ($column==$keycolumn ? $column : "$keycolumn, $column");
+    if (  $const_fields[$db_order] )     { $order_by  = "ORDER BY $db_order"; }
+    if ( !$const_fields[$db_column] )    { $db_column    = 'name';  $column    = 'name'; }
+    if ( !$const_fields[$db_keycolumn] ) { $db_keycolumn = 'value'; $keycolumn = 'value'; }
+    $fields = ($db_column==$db_keycolumn ? $db_column : "$db_keycolumn, $db_column");
 
-    $db->tquery("SELECT $fields FROM constant WHERE group_id='$group' $order_by");
+    $SQL = "SELECT $fields FROM constant WHERE group_id='$group' $order_by";
+    $db->tquery($SQL);
+
     while ($db->next_record()) {
-        $key = $db->f($keycolumn);
+        $key = GrabConstantColumn($db, $keycolumn);
+        $key = $key['value'];
         // generate unique keys by adding space
         while ( $already_key[$key] ) {
             $key .= ' ';                   // add space in order we get unique keys
         }
         $already_key[$key] = true;       // mark the $key
-        $arr[$key] = $db->f($column);
+        $val = GrabConstantColumn($db, $column);
+        $arr[$key] = $val['value'];
     }
     freeDB($db);
     return $arr;
@@ -707,6 +706,25 @@ class AA_Fields {
     function isSliceField($field_id) {
         return $field_id AND ($field_id{0} == '_');
     }
+
+    /** Returns true, if the passed field id looks like field id
+     *  - static class function
+     *  @todo - pass also $module_id and look directly into module, if the field
+     *          is really field in slecific slice/module
+     */
+    function isField($field_id) {
+        if ( !isset($GLOBALS['LINKS_FIELDS']) ) {
+             $GLOBALS['LINKS_FIELDS'] = GetLinkFields();
+             $GLOBALS['CATEGORY_FIELDS'] = GetCategoryFields();
+             $GLOBALS['CONSTANT_FIELDS'] = GetConstantFields();
+        }
+        // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
+        return( ((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id))
+               OR $GLOBALS['LINKS_FIELDS'][$field_id]
+               OR $GLOBALS['CATEGORY_FIELDS'][$field_id]
+               OR $GLOBALS['CONSTANT_FIELDS'][$field_id] );
+    }
+
 
     /** Create field id from type and number
      *  - static class function
@@ -1020,6 +1038,22 @@ function GetItemContentMinimal($zids, $fields2get=false) {
   return ($n_items == 0) ? null : $content;   // null returned if no items found
 }
 
+function GrabConstantColumn(&$db, $column) {
+    switch ($column) {
+        case "name":        return array( "value"=> $db->f("name") );
+        case "value":       return array( "value"=> $db->f("value"), "flag" => FLAG_HTML );
+        case "pri":         return array( "value"=> $db->f("pri") );
+        case "group":       return array( "value"=> $db->f("group_id") );
+        case "class":       return array( "value"=> $db->f("class") );
+        case "counter":     return array( "value"=> $i++ );
+        case "id":          return array( "value"=> unpack_id128($db->f("id") ));
+        case "description": return array( "value"=> $db->f("description"), "flag" => FLAG_HTML);
+        case "short_id":    return array( "value"=> $db->f("short_id") );
+        case "level":       return array( "value"=> strlen($db->f("ancestors"))/16);
+    }
+    return array();
+}
+
 /** Fills Abstract data srtructure for Constants */
 function GetConstantContent( $zids ) {
   if ( !$zids ) return false;
@@ -1030,18 +1064,16 @@ function GetConstantContent( $zids ) {
   $i=1;
   while ($db->next_record()) {
     $coid = $db->f('short_id');
-    $content[$coid]["const_name"][]        = array( "value"=> $db->f("name") );
-    $content[$coid]["const_value"][]       = array( "value"=> $db->f("value"),
-                                                    "flag" => FLAG_HTML );
-    $content[$coid]["const_pri"][]         = array( "value"=> $db->f("pri") );
-    $content[$coid]["const_group"][]       = array( "value"=> $db->f("group_id") );
-    $content[$coid]["const_class"][]       = array( "value"=> $db->f("class") );
-    $content[$coid]["const_counter"][]     = array( "value"=> $i++ );
-    $content[$coid]["const_id"][]          = array( "value"=> unpack_id128($db->f("id") ));
-    $content[$coid]["const_description"][] = array( "value"=> $db->f("description"),
-                                                    "flag" => FLAG_HTML);
-    $content[$coid]["const_short_id"][]    = array( "value"=> $db->f("short_id") );
-    $content[$coid]["const_level"][]       = array( "value"=> strlen($db->f("ancestors"))/16);
+    $content[$coid]["const_name"][]        = GrabConstantColumn($db, "name");
+    $content[$coid]["const_value"][]       = GrabConstantColumn($db, "value");
+    $content[$coid]["const_pri"][]         = GrabConstantColumn($db, "pri");
+    $content[$coid]["const_group"][]       = GrabConstantColumn($db, "group");
+    $content[$coid]["const_class"][]       = GrabConstantColumn($db, "class");
+    $content[$coid]["const_counter"][]     = GrabConstantColumn($db, "counter");
+    $content[$coid]["const_id"][]          = GrabConstantColumn($db, "id");
+    $content[$coid]["const_description"][] = GrabConstantColumn($db, "description");
+    $content[$coid]["const_short_id"][]    = GrabConstantColumn($db, "short_id");
+    $content[$coid]["const_level"][]       = GrabConstantColumn($db, "level");
   }
   freeDB($db);
 
@@ -1049,14 +1081,14 @@ function GetConstantContent( $zids ) {
 }
 
 /** Just helper function for storing data from database to Abstract Data Structure */
-function StoreTable2Content(&$db, &$content, $SQL, $prefix, $id_field) {
-    $db->tquery($SQL);
-    while ( $db->next_record() ) {
-        $foo_id = $db->f($id_field);
-        reset( $db->Record );
-        while ( list( $key, $val ) = each( $db->Record )) {
-            if ( !is_int($key))
+function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
+    $data = GetTable2Array($SQL, 'NoCoLuMn', 'aa_fields');
+    if ( is_array($data) ) {
+        foreach ( $data as $row ) {
+            $foo_id = $row[$id_field];
+            foreach($row as $key => $val) {
                 $content[$foo_id][$prefix . $key][] = array('value' => $val);
+            }
         }
     }
 }
@@ -1171,7 +1203,7 @@ function safe( $var ) {
 }
 
 // is the browser able to show rich edit box? (using triedit.dll)
-function richEditShowable () {
+function richEditShowable() {
     global $BName, $BVersion, $BPlatform;
     global $showrich;
     detect_browser();
@@ -1179,25 +1211,6 @@ function richEditShowable () {
     // Mac Omniweb/4.1.1 detects as Netscape 4.5 and doesn't support either
     return (($BName == "MSIE" && $BVersion >= "5.0" && $BPlatform != "Macintosh") || $showrich > "");
     // Note that RawRichEditTextarea could force iframe for certain BPlatform
-}
-
-/** Is it valid e-mail */
-function valid_email( $str ) {
-    return EReg("^.+@.+\..+", $str);  // should be improved
-}
-
-function clean_email($line) {
-  // consider using imap_rfc822_parse_adrlist
-  // file://localhost/usr/local/doc/php/function.imap-rfc822-parse-adrlist.html
-  //string ereg_replace (string pattern, string replacement, string string);
-
-  $patterns = array ('/^\s+/', '/\s+$/');
-  $replace  = array ('', '');
-  return preg_replace ($patterns, $replace, $line);
-  /*  $line = ereg_replace ('^\s+','', $line);
-    $line = ereg_replace ('\s+$','',$line);
-    return $line;
-  */
 }
 
 /**
@@ -1284,21 +1297,6 @@ function MsgPage($url, $msg, $dummy="standalone") {
   echo "</body></html>";
   page_close();
   exit;
-}
-
-
-// function returns true if $fld fits the field scheme (used in unaliasing)
-function IsField($fld) {
-    if ( !isset($GLOBALS['LINKS_FIELDS']) ) {
-         $GLOBALS['LINKS_FIELDS'] = GetLinkFields();
-         $GLOBALS['CATEGORY_FIELDS'] = GetCategoryFields();
-         $GLOBALS['CONSTANT_FIELDS'] = GetConstantFields();
-    }
-    // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
-    return( ((strlen($fld)==16) && ereg("^[a-z0-9_]+\.+[0-9A-Za-z]*$",$fld))
-           OR $GLOBALS['LINKS_FIELDS'][$fld]
-           OR $GLOBALS['CATEGORY_FIELDS'][$fld]
-           OR $GLOBALS['CONSTANT_FIELDS'][$fld] );
 }
 
 /**
@@ -2172,6 +2170,14 @@ class AA_GeneralizedArray {
 class AA_ChangesMonitor {
 
     function addProposal($change_proposal) {
+        return $this->_add($change_proposal, 'proposal');
+    }
+
+    function addHistory($change_proposal) {
+        return $this->_add($change_proposal, 'history');
+    }
+
+    function _add($change_proposal, $type) {
         global $auth;
 
         $change_id = new_id();
@@ -2179,7 +2185,7 @@ class AA_ChangesMonitor {
         $varset->addkey("id",       "text",   $change_id);
         $varset->add("time",        "number", now());
         $varset->add("user",        "text",   is_object($auth) ? $auth->auth["uid"] : '');
-        $varset->add("type",        "text",   'proposal');
+        $varset->add("type",        "text",   $type);
         $varset->add("resource_id", 'text',   $change_proposal->getResourceId());
         $varset->doInsert('change');
 
@@ -2206,7 +2212,7 @@ class AA_ChangesMonitor {
 
     function deleteProposalForSelector($resource_id, $selector) {
         $changes_ids = GetTable2Array("SELECT DISTINCT change_id  FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
-                                         WHERE `change`.resource_id = '".quote($resource_id)."' AND `change_record`.selector = '".quote($selector)."'", '', 'change_id');
+                                         WHERE `change`.resource_id = '".quote($resource_id)."' AND `change`.type = 'proposal' AND `change_record`.selector = '".quote($selector)."'", '', 'change_id');
         if ( is_array($changes_ids) ) {
             foreach( $changes_ids as $change_id ) {
                 $this->deleteProposal($change_id);
