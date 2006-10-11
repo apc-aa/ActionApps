@@ -266,20 +266,20 @@ function Links_GetLinkContent($zids) {
               FROM links_link_lang, links_languages
              WHERE links_languages.id = links_link_lang.lang_id
                AND links_link_lang.link_id $sel_in";
-    StoreTable2Content($db, $content, $SQL, 'lang_', 'link_id');
+    StoreTable2Content($content, $SQL, 'lang_', 'link_id');
 
     // get region data for links
     $SQL = "SELECT links_regions.*, links_link_reg.link_id
               FROM links_link_reg, links_regions
              WHERE links_regions.id = links_link_reg.region_id
                AND links_link_reg.link_id $sel_in";
-    StoreTable2Content($db, $content, $SQL, 'reg_', 'link_id');
+    StoreTable2Content($content, $SQL, 'reg_', 'link_id');
 
     // get categories data for links
     $SQL = "SELECT * FROM links_link_cat, links_categories
              WHERE links_categories.id = links_link_cat.category_id
                AND links_link_cat.what_id $sel_in ORDER BY base DESC";
-    StoreTable2Content($db, $content, $SQL, 'cat_', 'what_id');
+    StoreTable2Content($content, $SQL, 'cat_', 'what_id');
     return $content;
 }
 

@@ -158,7 +158,6 @@ if ($update) {
                     break;
                 }
             }
-            $r_filelds = "";   // unset the r_fields array to be load again
         }
         freeDB($db);
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values

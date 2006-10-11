@@ -344,8 +344,9 @@ if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
 
 $manager = new manager($manager_settings);
 
-if ( $r_state['manager'] )        // do not set state for the first time calling
+if ( $r_state['manager'] ) {       // do not set state for the first time calling
     $manager->setFromState($r_state['manager']);
+}
 
 $manager->performActions();
 $manager->printHtmlPageBegin();  // html, head, css, title, javascripts

@@ -42,10 +42,7 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 $p_slice_id = q_pack_id($slice_id);
 
-if ( $r_fields )
-  $fields = $r_fields;
-else
-  list($fields,) = GetSliceFields($slice_id);
+list($fields,) = GetSliceFields($slice_id);
 
 if ( $update )
 {

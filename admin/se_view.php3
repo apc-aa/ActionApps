@@ -416,11 +416,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
     case 'discus2mail': PrintAliasHelp(GetDiscussion2MailAliases(), false, false , $form_buttons, $sess, $slice_id);
     case 'discus':      PrintAliasHelp(GetDiscussionAliases(), false, false, $form_buttons, $sess, $slice_id);    break;
-    case 'field':       if ( $r_fields ) {
-                            $fields = $r_fields;
-                        } else {
-                            list($fields,) = GetSliceFields($slice_id);
-                        }
+    case 'field':       list($fields,) = GetSliceFields($slice_id);
                         PrintAliasHelp(GetAliasesFromFields($fields, $VIEW_TYPES_INFO[$view_type]['aliases_additional']),$fields, false, $form_buttons, $sess, $slice_id);
                         break;
     case 'justids':     PrintAliasHelp(GetAliasesFromFields('','','justids'), false, false, $form_buttons, $sess, $slice_id);

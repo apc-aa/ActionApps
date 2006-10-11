@@ -84,11 +84,11 @@ class datectrl {
 
     // set date, format form integer
     function setdate_int($date) {
-        $d = getdate((int)$date);
-        $this->year = $d["year"];
+        $d           = is_numeric($date) ? getdate($date) : getdate();
+        $this->year  = $d["year"];
         $this->month = $d["mon"];
-        $this->day = $d["mday"];
-        $this->time = $d["hours"].":".$d["minutes"].":".$d["seconds"] ;
+        $this->day   = $d["mday"];
+        $this->time  = $d["hours"].":".$d["minutes"].":".$d["seconds"] ;
     }
 
     // get stored date as integer

@@ -156,7 +156,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <?php
   FrmInputChBox("export_to_all", _m("Enable export to any slice"), $export_to_all, true, "OnClick=\"ExportAllClick()\"");
   if ( isset($exported) AND is_array($exported) ) {
-    FrmStaticText(_m("Currently exported to"), join('<br>',$exported));
+    FrmStaticText(_m("Currently exported to"), join("<br>",$exported), false, '', '', false);
   }
 ?>
 </table></td></tr>

@@ -157,8 +157,8 @@ $inputDefaultTypes = getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES);
 
 PrintSetRule(1,'listlen',     0,0,                  1,0,_m("number of item displayed in Item Manager") );
 PrintSetRule(2,'input_view',  0,0,                  1,0,_m("id of view used for item input") );
-PrintSetRule(3,'admin_search',1,0,                  1,0,_m("preset \"Search\" in Itme Manager"));
-PrintSetRule(4,'admin_order', 1,$SORTORDER_TYPES,   0,0,_m("preset \"Order\" in Itme Manager"));
+PrintSetRule(3,'admin_search',1,0,                  1,0,_m("preset \"Search\" in Item Manager"));
+PrintSetRule(4,'admin_order', 1,$SORTORDER_TYPES,   0,0,_m("preset \"Order\" in Item Manager"));
 PrintSetRule(5,'hide',        1,0,                  0,0,_m("hide the field in inputform"));
 PrintSetRule(6,'hide&fill',   1,$inputDefaultTypes, 1,1,_m("hide the field in inputform and fill it by the value"));
 PrintSetRule(7,'fill',        1,$inputDefaultTypes, 1,1,_m("fill the field in inputform by the value"));
