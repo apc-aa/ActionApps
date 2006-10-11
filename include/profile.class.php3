@@ -211,8 +211,8 @@ function AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $pa
             break;
         case 'admin_order':
             if ( $field_id ) {
-                $profile->deleteProperty($property);
-                $profile->insertProperty($property, '0', $field_id.$fnction);
+                $profile->deleteProperty($property, $field_id);
+                $profile->insertProperty($property, $field_id, $field_id.$fnction);
                 $Msg = MsgOK(_m("Rule added"));
             }
             break;

@@ -273,8 +273,13 @@ class searchbar extends storable_class{
     /** */
     function setFromProfile(&$profile) {
         // admin_order is in 'publish_date....+' format
-        $order    = new Sortorder;
-        $order->addFromString($profile->getProperty('admin_order'));
+        $order        = new Sortorder;
+        $orderstrings = $profile->get('admin_order', '*');
+        if (is_array($orderstrings)) {
+            foreach ( $orderstrings as $orderstring ) {
+                $order->addFromString($orderstring[0]);
+            }
+        }
         $foo_order = $order->getOrder();
         if ( count($foo_order) < 1 ) {
             $this->setDefaultOrder();
@@ -283,10 +288,10 @@ class searchbar extends storable_class{
         }
         list($fld,$search_str) = explode(':', $profile->getProperty('admin_search'));
         if ( $fld ) {
-          /* path.net specific change to make profiles readonly */
-          //            $this->addSearch( array( 0=>array( $fld => 1, 'value'=>$search_str, 'operator'=>'RLIKE', 'readonly' => 1)),1);
+            $this->addSearch( array( 0=>array( $fld => 1, 'value'=>$search_str, 'operator'=>'RLIKE', 'readonly' => 1)),1);
         }
     }
+
 
     /**
      * Returns conds[] array to use with QueryIDs() (or Links_QueryIDs(), ...)
