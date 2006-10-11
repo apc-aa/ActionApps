@@ -54,12 +54,11 @@ function save_notify2db($slice_id, $function, $emails) {
     // split $notify_holding_item_e textarea into array
     $arr = explode("\n", $emails);
     foreach ($arr as $uid) {
-        if ( strpos($uid, '@') === false ) {
-            continue;
+        $uid = trim($uid);
+        if ( AA_Validate::email($uid)) {
+            $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', '$p_slice_id', $function)";
+            $result = $db->query($SQL);
         }
-        $uid = clean_email($uid);
-        $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', '$p_slice_id', $function)";
-        $result = $db->query($SQL);
     }
 }
 

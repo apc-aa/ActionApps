@@ -26,6 +26,7 @@ require_once AA_INC_PATH."item_content.php3";
 require_once AA_INC_PATH."sliceobj.php3";
 require_once AA_INC_PATH."stringexpand.php3";
 require_once AA_INC_PATH."htmlMimeMail/htmlMimeMail.php";
+require_once AA_INC_PATH."validate.php3";
 
 class HtmlMail extends htmlMimeMail {
 
@@ -65,7 +66,7 @@ class HtmlMail extends htmlMimeMail {
         $tos  = array_unique(is_array($to) ? $to : array($to));
         $sent = 0;
         foreach ($tos as $to) {
-            if (!$to OR !valid_email($to)) {
+            if (!$to OR !AA_Validate::email($to)) {
                 continue;
             }
 

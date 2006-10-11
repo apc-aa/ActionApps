@@ -88,6 +88,7 @@ require_once AA_INC_PATH."itemview.php3";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
 require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."event.class.php3";
+require_once AA_INC_PATH."validate.php3";
 
 $err["Init"] = "";       // error array (Init - just for initializing variable)
 
@@ -125,7 +126,7 @@ $event->comes('ITEM_NEW_COMMENT', $d_item_id, 'Item', $new_id );
 
 send2mailList($d_item_id, $new_id);
 
-if ($_REQUEST['send_reactions'] AND valid_email($d_e_mail)) {
+if ($_REQUEST['send_reactions'] AND AA_Validate::email($d_e_mail)) {
     AddNotification('ITEM_NEW_COMMENT', 'Item', $d_item_id, 'email', $d_e_mail);
 }
 
