@@ -39,6 +39,7 @@ require_once AA_INC_PATH."profile.class.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."stringexpand.php3";
 require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."validate.php3";
 
 // IsUserNameFree() function deffinition here
 require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
@@ -574,7 +575,7 @@ class AA_Inputfield {
                     return;
                 }
             }
-            $format = IsField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+            $format = AA_Fields::isField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
             $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix);
             return $sid; // in most cases not very impotant information, but used in inputRelatION() input type
         } else {
@@ -1519,7 +1520,17 @@ class AA_Inputfield {
           <td align=\"CENTER\" valign=\"TOP\">");
 
         $out = "<select multiple name=\"".$name."\" size=$rows  ".getTriggers("select",$name).">";
-        $out .= get_if( $this->get_options( $this->const_arr, false, false, 'selected', false, true), AA_WIDTHTOR );
+
+        // we need values in second box sorted just like in values
+        $selected_values = array();
+        if ( isset($this->value) AND is_array($this->value) ) {
+            foreach ( $this->value as $v ) {
+                $key = (string)$v['value'];
+                $selected_values[$key] = $this->const_arr[$key];
+            }
+        }
+
+        $out .= get_if( $this->get_options( $selected_values, false, false, 'selected', false, true), AA_WIDTHTOR );
         $out  .= '</select>';
         $this->echovar( $out, 'selected' );
 
@@ -2481,215 +2492,6 @@ function PrintAliasHelp($aliases, $fields=false, $endtable=true, $buttons='', $s
    echo '
     </table></td></tr>';
   }
-}
-
-/**
-*  Validate users input. Error is reported in $err array
-*  @param $variable could be array or not
-*  You can add parameters to $type divided by ":".
-*/
-function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all") {
-    foreach ((array)$variable as $var) {
-        $valid = _ValidateSingleInput($variableName, $inputName, $var, &$err, $needed, $type);
-        if ( !$valid ) {
-            break;
-        }
-    }
-    return $valid;
-}
-
-
-/**
-*  Validate users input. Error is reported in $err array
-*  @param $variable could is not array
-*  You can add parameters to $type divided by ":".
-*/
-function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $needed, $type) {
-    if ($variable=="" OR Chop($variable)=="")
-        if ( $needed ) {                     // NOT NULL
-            $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must be filled").")");
-            return false;
-        }
-        else  return true;
-
-    if (strchr ($type, ":")) {
-        $params = substr ($type, strpos($type,":")+1);
-        $type = substr ($type, 0, strpos ($type,":"));
-    }
-
-    switch($type) {
-    case "id":     if ((string)$variable=="0" AND !$needed)
-                     return true;
-                   if ( !EReg("^[0-9a-f]{1,32}$",Chop($variable)))
-                   { $err["$variableName"] = MsgErr(_m("Error in")." $inputName");
-                     return false;
-                   }
-                   return true;
-    case "alias":  if ((string)$variable=="0" AND !$needed)
-                     return true;
-                   if ( !EReg("^_#[0-9_#a-zA-Z]{8}$",Chop($variable)))
-                   { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
-                     return false;
-                   }
-                   return true;
-    case "number": if ( !EReg("^[0-9]+$",Chop($variable)) )
-                   { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
-                     return false;
-                   }
-                   return true;
-    case "perms":  if ( !(($Promenna=="editor") OR ($Promenna=="admin")))
-                   { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
-                     return false;
-                   }
-                   return true;
-    case "email":  if ( !valid_email(Chop($variable)) )
-                   { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
-                     return false;
-                   }
-                   return true;
-    case "login":
-      $len = strlen($variable);
-      if ( ($len>=3) AND ($len<=32) )
-      { if ( !EReg("^[a-zA-Z0-9]*$",Chop($variable)))
-        { $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("you should use a-z, A-Z and 0-9 characters").")");
-          return false;
-        }
-        return true;
-      }
-      $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must by 5 - 32 characters long").")");
-      return false;
-
-    case "password":
-      $len = strlen($variable);
-      if ( ($len>=5) AND ($len<=32) )
-        return true;
-      $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must by 5 - 32 characters long").")");
-      return false;
-
-    case "filename": if ( !EReg("^[-.0-9a-zA-Z_]+$", $variable)) {
-                       $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("only 0-9 A-Z a-z . _ and - are allowed").")");
-                       return false;
-                     }
-                     return true;
-
-    case "e-unique": // validate email ...
-                     if ( !EReg("^.+@.+\..+",Chop($variable)))
-                       { $err[$variableName] = MsgErr(_m("Error in")." $inputName");
-                         return false;
-                       }
-                     // ... and proceed to "unique"
-
-    case "unique":
-
-        // username is searched in all slices AND in permission system
-        define("SCOPE_USERNAME",0);
-        // search only in this slice
-        define("SCOPE_SLICE",1);
-        // search in all slices
-        define("SCOPE_ALLSLICES",2);
-
-        list($field_id, $scope) = explode(":", $params);
-        if (!strchr ($params, ":"))
-            $scope = SCOPE_SLICE;
-        if (strlen ($field_id) != 16) {
-            $err[$variableName] = MsgErr(_m("Error in parameters for UNIQUE validation: "
-                ."field ID is not 16 but %1 chars long: ",array(strlen($field_id))).$field_id);
-            return false;
-        } else {
-            global $slice_id, $db;
-            if ($scope == SCOPE_USERNAME) {
-                $ok = IsUsernameFree($variable);
-            }
-            else {
-                if ($scope == SCOPE_SLICE)
-                    $SQL = "SELECT * FROM content INNER JOIN
-                            item ON content.item_id = item.id
-                            WHERE item.slice_id='".q_pack_id($slice_id)."'
-                            AND field_id='".addslashes($field_id)."'
-                            AND text='".$variable."'";
-                else $SQL = "SELECT * FROM content WHERE field_id='".addslashes($field_id)
-                            ."' AND text='$variable'";
-                $db->query ($SQL);
-                $ok = ! $db->next_record();
-            }
-
-            if (! $ok) {
-                $err[$variableName] = MsgErr(_m("Error in")." $inputName (".
-                    _m("this value is already used, choose another one").")");
-                return false;
-            }
-        }
-        return true;
-
-    case "url":
-    case "all":
-    default:       return true;
-    }
-}
-
-/**
-* used in tabledit.php3 and itemedit.php3
-*/
-function get_javascript_field_validation() {
-    /* javascript params:
-       myform = the form object
-       txtfield = field name in the form
-       type = validation type
-       add = is it an "add" form, i.e. showing a new item?
-    */
-    return "
-        function validate (myform, txtfield, type, required, add) {
-            var ble;
-            var invalid_email = /(@.*@)|(\\.\\.)|(@\\.)|(\\.@)|(^\\.)/;
-            var valid_email = /^.+@[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,6}|[0-9]{1,3})$/;
-
-            if (type == 'pwd') {
-                myfield = myform[txtfield+'a'];
-                myfield2 = myform[txtfield+'b'];
-            } else
-                myfield = myform[txtfield];
-
-            if (myfield == null)
-                return true;
-
-            var val = myfield.value;
-            var err = '';
-
-            if (val == '' && required && (type != 'pwd' || add == 1)) {
-                if (type == 'pwd')
-                     err = '"._m("This field is required.")."';
-                else err = '"._m("This field is required (marked by *).")."';
-            }
-
-            else if (val == '')
-                return true;
-
-            else switch (type) {
-                case 'number':
-                    if (!val.match (/^[0-9]+$/))
-                        err = '"._m("Not a valid integer number.")."';
-                    break;
-                case 'filename':
-                    if (!val.match (/^[0-9a-zA-Z_]+$/))
-                        err = '"._m("Not a valid file name.")."';
-                    break;
-                case 'email':
-                    if (val.match(invalid_email) || !val.match(valid_email))
-                        err = '"._m("Not a valid email address.")."';
-                    break;
-                case 'pwd':
-                    if (val && val != myfield2.value)
-                        err = '"._m("The two password copies differ.")."';
-                    break;
-            }
-
-            if (err != '') {
-                alert (err);
-                myfield.focus();
-                return false;
-            }
-            else return true;
-        }";
 }
 
 ?>
