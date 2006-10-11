@@ -44,6 +44,8 @@ function Item_MoveItem($status, $item_arr, $akce_param) {
         $item_ids[] = pack_id(substr($it_id,1));      // remove initial 'x'
     }
 
+    $slice  = AA_Slices::getSlice($slice_id);
+    $fields = $slice->fields('record');
     if ($item_ids) {
         $SQL = "UPDATE item SET
            status_code = $status,
@@ -56,6 +58,12 @@ function Item_MoveItem($status, $item_arr, $akce_param) {
 
         $SQL .= " WHERE id IN ('".join_and_quote("','",$item_ids)."')";
         $db->tquery($SQL);
+
+        if ($status == 1) {
+            foreach ($item_ids as $iid) {
+                FeedItem(unpack_id128($iid), $fields);
+            }
+        }
         $event->comes('ITEMS_MOVED', $slice_id, 'S', $item_ids, $status );
     }
     $pagecache->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
