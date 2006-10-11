@@ -57,6 +57,7 @@ define("PS_NEW_USER",             "R");   // aa    | create new user
 define("PS_MANAGE_ALL_SLICES",    "S");   // aa    | edit all slices (this
                                           //         permission is useable, when
                                           //         you want credit some rights
+define("PS_HISTORY",              "T");   // slice | access history log
 
 //---------- Polls -----------------
 // author        - possibly letters 'abcdefg'
