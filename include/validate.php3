@@ -124,15 +124,15 @@ class AA_Validate {
     }
 
     function long_id(&$var, $param=array(), $default='AA_noDefault') {
-        return $this->_regexp($var, '/^[0-9a-f]{30,32}$/', $default);
+        return AA_Validate::_regexp($var, '/^[0-9a-f]{30,32}$/', $default);
     }
 
     function short_id(&$var, $param=array(), $default='AA_noDefault') {
-        return $this->integer($var, $param, $default);
+        return AA_Validate::integer($var, $param, $default);
     }
 
     function alias(&$var, $param=array(), $default='AA_noDefault') {
-        return $this->_regexp($var, '/^_#[0-9_#a-zA-Z]{8}$/', $default);
+        return AA_Validate::_regexp($var, '/^_#[0-9_#a-zA-Z]{8}$/', $default);
     }
 
     /** Email validation
@@ -140,7 +140,7 @@ class AA_Validate {
      */
     function email(&$var, $param=array(), $default='AA_noDefault') {
         // should be improved
-        return $this->_regexp($var, '/^.+@.+\..+$/', $default);
+        return AA_Validate::_regexp($var, '/^.+@.+\..+$/', $default);
     }
 
     function login(&$var, $param=array(), $default='AA_noDefault') {
@@ -151,7 +151,7 @@ class AA_Validate {
         if ( $len>32 ) {
             return AA_Validate::_bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
         }
-        return $this->_regexp($var, '/^[a-zA-Z0-9]*$/', $default, VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z and 0-9 characters"));
+        return AA_Validate::_regexp($var, '/^[a-zA-Z0-9]*$/', $default, VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z and 0-9 characters"));
     }
 
     function password(&$var, $param=array(), $default='AA_noDefault') {
@@ -166,7 +166,7 @@ class AA_Validate {
     }
 
     function filename(&$var, $param=array(), $default='AA_noDefault') {
-        return $this->_regexp($var, '/^[-.0-9a-zA-Z_]+$/', $default, VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z, 0-9 . _ and - characters"));
+        return AA_Validate::_regexp($var, '/^[-.0-9a-zA-Z_]+$/', $default, VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z, 0-9 . _ and - characters"));
     }
 
     /** Test for unique value in slice/database
@@ -203,10 +203,10 @@ class AA_Validate {
     }
 
     function e_unique(&$var, $param=array(), $default='AA_noDefault') {
-        if ( !$this->email($var, $param, $default )) {
+        if ( !AA_Validate::email($var, $param, $default )) {
             return false;
         }
-        return $this->unique($var, $param, $default);
+        return AA_Validate::unique($var, $param, $default);
     }
 
     /** @todo url check */
@@ -244,7 +244,7 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
     }
     switch ($type) {
         case 'alias':    $ret = AA_Validate::alias($variable); break;
-        case 'id':       $ret = AA_Validate::id($variable); break;
+        case 'id':       $ret = AA_Validate::long_id($variable); break;
         case 'integer':
         case 'number':   $ret = AA_Validate::integer($variable); break;
         case 'email':    $ret = AA_Validate::email($variable); break;

@@ -1,9 +1,11 @@
+10/13/06 - fixed bug in new input validation code
+(honzam)
 10/11/06 - new {icq:<user_id>[:<action>[:<style>]]} expressions, which display
 (honzam)   ICQ status of the user.
                 user_id - ICQ ID of the user
                 action  - add | message
                 style   - 0-26 - displayed icon type
-                          (see: http://www.icq.com/features/web/indicator.html)
+                        (see: http://www.icq.com/features/web/indicator.html)
          - new {field:<field_id>:name} expression - displays name of the field
            as defined for inputform
          - {ids:<slices>:<conds>[:<sort>[:<delimiter>]]} modified to be able to
