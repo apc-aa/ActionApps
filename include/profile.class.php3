@@ -62,19 +62,36 @@ class aaprofile {
         $db = getDB();
         $this->properties = array();
 
+        // get also profiles from user's group(s)
+        $groups = GetMembership($this->user_id);
+        $usr_groups = "";
+        foreach ( $groups as $v ) {
+            $usr_groups .= sprintf(" OR uid='%s'", $v);
+        }
+
         // default setting for the slice is stored as user with uid = *
         $SQL= " SELECT * FROM profile
                 WHERE slice_id='". q_pack_id($this->module_id) ."'
-                AND (uid='". $this->user_id ."' OR uid='*')";
+                AND (uid='". $this->user_id ."' OR uid='*'".$usr_groups.")";
         $db->tquery($SQL);
         while ( $db->next_record() ) {
-            if ( $db->f('uid') == '*' ) {
-                $general_profile[] = $db->Record;  // store for later use
-            } else {
+            if ( $db->f('uid') == $this->user_id ) {
                 $this->set($db->f('property'), $db->f('selector'), $db->f('value'), 'u', $db->f('id'), $db->f('uid'));
+            } elseif ( in_array($db->f('uid'),$groups) ) {
+                $group_profile[] = $db->Record;  // store for later use
+            } else {
+                $general_profile[] = $db->Record;  // store for later use
             }
         }
-
+        // now add properties from group profile(s), if it is not already set
+        // TODO: deal with priority of multiple groups
+        if ( $group_profile ) {
+            foreach ( $group_profile as $v ) {
+                if ( !$this->getProperty($v['property'],$v['selector'],true) ) {
+                    $this->set( $v['property'], $v['selector'], $v['value'], '*', $v['id'], $v['uid'] );
+                }
+            }
+        }
         // now add properties from default profile, if it is not already set
         if ( $general_profile ) {
             foreach ( $general_profile as $v ) {

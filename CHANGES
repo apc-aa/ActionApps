@@ -1,3 +1,7 @@
+10/14/06 - added profile support and profile settings button also for groups
+(brazda)   (rules priority is in the order User -> Groups -> Default, so if you
+           define different values for some rule, then the User rule wins.
+           The priority of rules in different groups is random.)
 10/13/06 - fixed bug in new input validation code
 (honzam)
 10/11/06 - new {icq:<user_id>[:<action>[:<style>]]} expressions, which display
