@@ -1,3 +1,6 @@
+// aajslib.php3 should be always included before this script - we are using
+// AA_Config variable from there (at least)
+
 // function replaces html code of a an HTML element (identified by id)
 // by another code
 function SetContent(id,txt,d) {
@@ -23,6 +26,37 @@ function SetContent(id,txt,d) {
     }
 }
 
+
+/** This code comes from: http://www.devpro.it/JSL/JSLOpenSource.js */
+// (C) Andrea Giammarchi - JSL 1.4b
+function $JSL(){
+    this.charCodeAt=function(str){return $JSL.$charCodeAt(str.charCodeAt(0))};
+    this.$charCodeAt=function(i){
+        var str=i.toString(16).toUpperCase();
+        return str.length<2?"0"+str:str;
+    };
+    this.encodeURI=function(str){return str.replace(/"/g,"%22").replace(/\\/g,"%5C")};
+    this.$encodeURI=function(str){return $JSL.$charCodeAt(str)};
+    this.$encodeURIComponent=function(a,b){
+        var i=b.charCodeAt(0),str=[];
+        if(i<128)		str.push(i);
+        else if(i<2048)		str.push(0xC0+(i>>6),0x80+(i&0x3F));
+        else if(i<65536)	str.push(0xE0+(i>>12),0x80+(i>>6&0x3F),0x80+(i&0x3F));
+        else			str.push(0xF0+(i>>18),0x80+(i>>12&0x3F),0x80+(i>>6&0x3F),0x80+(i&0x3F));
+        return "%"+str.map($JSL.$encodeURI).join("%");
+    };
+};$JSL=new $JSL();
+if(typeof(encodeURI)==="undefined"){function encodeURI(str){
+    var elm=/([\x00-\x20]|[\x25|\x3C|\x3E|\x5B|\x5D|\x5E|\x60|\x7F]|[\x7B-\x7D]|[\x80-\uFFFF])/g;
+    return $JSL.encodeURI(str.toString().replace(elm,$JSL.$encodeURIComponent));
+}};
+if(typeof(encodeURIComponent)==="undefined"){function encodeURIComponent(str){
+    var elm=/([\x23|\x24|\x26|\x2B|\x2C|\x2F|\x3A|\x3B|\x3D|\x3F|\x40])/g;
+    return $JSL.encodeURI(encodeURI(str).replace(elm,function(a,b){return "%"+$JSL.charCodeAt(b)}));
+}};
+
+
+/*
 function writeProposal(divid, item_id, fid, text) {
     var divtag = document.getElementById(divid);
     var divcontent = divtag.innerHTML;
@@ -31,7 +65,9 @@ function writeProposal(divid, item_id, fid, text) {
     proposeChange(divid, item_id, fid);
     //SetContent(divid, divcontent);
 }
+*/
 
+/*
 function convertToForm(divtag, item_id, fid) {
     var divcontent = divtag.innerHTML;
     if ((divcontent.substring(0,6) == '<input') ||
@@ -57,6 +93,8 @@ function convertToForm(divtag, item_id, fid) {
     SetContent(divtag.getAttribute('id'), formhtml);
 }
 
+*/
+
 function displayInput(valdivid, item_id, fid) {
     var valdivtag = document.getElementById(valdivid);
     if (valdivtag.getAttribute("aaedit")=="1") {
@@ -74,7 +112,7 @@ function displayInput(valdivid, item_id, fid) {
     else if (window.ActiveXObject) {
         self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    self.xmlHttpReq.open('POST', '/apc-aa-dev/misc/proposefieldchange.php', true);
+    self.xmlHttpReq.open('POST', AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', true);
     self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     self.xmlHttpReq.onreadystatechange = function() {
         if (self.xmlHttpReq.readyState == 4) {
@@ -84,6 +122,7 @@ function displayInput(valdivid, item_id, fid) {
         }
     }
     var qs = 'field_id='+escape(fid)+'&item_id='+escape(item_id)+'&alias_name='+escape(alias_name)+'&form=1';
+    SetContent(valdivid, 'moment...');  // new value
     self.xmlHttpReq.send(qs);
 }
 
@@ -100,7 +139,7 @@ function proposeChange(combi_id, item_id, fid, change) {
     else if (window.ActiveXObject) {
         self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    self.xmlHttpReq.open('POST', '/apc-aa-dev/misc/proposefieldchange.php', true);
+    self.xmlHttpReq.open('POST', AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', true);
     self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     self.xmlHttpReq.onreadystatechange = function() {
         if (self.xmlHttpReq.readyState == 4) {
@@ -115,7 +154,7 @@ function proposeChange(combi_id, item_id, fid, change) {
             valdivtag.setAttribute("aaedit", "0");
         }
     }
-    var qs = 'field_id='+escape(fid)+'&item_id='+escape(item_id)+'&content='+document.getElementById('ajaxi_'+combi_id).value + '&alias_name='+escape(alias_name);
+    var qs = 'field_id='+escape(fid)+'&item_id='+escape(item_id)+'&content='+encodeURIComponent(document.getElementById('ajaxi_'+combi_id).value) + '&alias_name='+escape(alias_name);
     var perms = (typeof do_change == 'undefined') ? 1 : do_change;
     if ( perms ) {
         qs += '&do_change=1'
@@ -134,7 +173,7 @@ function AcceptChange(change_id, divid) {
     else if (window.ActiveXObject) {
         self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    self.xmlHttpReq.open('POST', '/apc-aa-dev/misc/proposefieldchange.php', true);
+    self.xmlHttpReq.open('POST', AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', true);
     self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     self.xmlHttpReq.onreadystatechange = function() {
         if (self.xmlHttpReq.readyState == 4) {
@@ -158,7 +197,7 @@ function CancelChanges(item_id, fid, divid) {
     else if (window.ActiveXObject) {
         self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    self.xmlHttpReq.open('POST', '/apc-aa-dev/misc/proposefieldchange.php', true);
+    self.xmlHttpReq.open('POST', AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', true);
     self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     self.xmlHttpReq.onreadystatechange = function() {
         if (self.xmlHttpReq.readyState == 4) {
