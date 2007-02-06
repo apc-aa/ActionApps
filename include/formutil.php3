@@ -75,7 +75,8 @@ function varname4form($fid, $type='normal') {
 function GetInputFormTemplate() {
      global $slice_id;
      $slice = AA_Slices::getSlice($slice_id);
-     $form  = new inputform($inputform_settings);
+     //           inputform($inputform_settings);
+     $form  = new inputform();
      // ItemContent in getForm passed by reference
      return $form->getForm(new ItemContent(), $slice, false, $slice_id);
 }
@@ -108,7 +109,7 @@ class inputform {
     var $classname = "inputform";
 
     /** Constructor - initializes inputform  */
-    function inputform($settings) {
+    function inputform($settings=array()) {
         $this->display_aa_begin_end = $settings['display_aa_begin_end'];
         $this->page_title           = $settings['page_title'];
         $this->form_action          = $settings['form_action'];
@@ -216,7 +217,7 @@ class inputform {
         // add rest "hidden buttons" to the end of form
         $buttons['MAX_FILE_SIZE']       = array('value' => IMG_UPLOAD_MAX_SIZE );
         $buttons['encap']               = array('value' => "false");
-        $buttons['vid']                 = array('value' => $vid);   // ?? $vid is not defined here ?? - TODO
+        $buttons['vid']                 = array('value' => $vid);   // ?? $vid is not defined here ?? - @todo
 
 
         FrmTabEnd( $buttons, $sess, $slice->unpacked_id() );
@@ -519,6 +520,8 @@ class AA_Inputfield {
             $this->input_help    = $field['input_help'];
             $this->input_morehlp = $field['input_morehlp'];
             $funct = ParamExplode($field["input_show_func"]);
+            // @todo check, how to do it better - this do not work if
+            // "slice_field" parameter uses {subst...} for examle
             AA_Stringexpand::unaliasArray($funct);
             $this->input_type    = $funct[0];
             $this->param         = array_slice( $funct, 1 );
@@ -579,7 +582,7 @@ class AA_Inputfield {
             $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix);
             return $sid; // in most cases not very impotant information, but used in inputRelatION() input type
         } else {
-            $this->const_arr = GetConstants($constgroup, 'pri', $slice_field);
+            $this->const_arr = GetFormatedConstants($constgroup, $slice_field, $ids_arr, $conds, $sort);
         }
         if ( !isset($this->const_arr) OR !is_array($this->const_arr) ) {
             $this->const_arr = array();
@@ -1031,6 +1034,8 @@ class AA_Inputfield {
         global $BName, $BPlatform, $sess;
 
         list($name,$val,$add) = $this->prepareVars();
+        // make the textarea bigger, if already filled with long text
+        $rows    = max($rows, min(substr_count($val,"\n")+1, 30));
         $val = htmlspecialchars($val);
         $colspan = $single ? 2 : 1;
         $this->echoo("<tr class=\"formrow{formpart}\">");
@@ -1584,11 +1589,7 @@ class AA_Inputfield {
         $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".htmlspecialchars($val)."\"".getTriggers("input",$name).">";
 
         $this->echoo('<table border="0" cellspacing="0"><tr>');
-        if ($movebuttons) {
-            $this->echoo("\n <td rowspan=\"2\">");
-        } else {
-            $this->echoo("\n <td>");
-        }
+        $this->echoo("\n <td>");
         $this->echovar( $ret );
         $this->echoo("</td>\n");
         $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"left\">\n");
@@ -2248,6 +2249,7 @@ function FrmTabRow( $row ) {
 function getFrmTabs( $tabs, $tabsId ) {
     if ( isset($tabs) AND is_array($tabs) ) {
         $ret = "\n <tr id=\"$tabsId\"><td colspan=\"2\" class=\"tabsrow\">";
+        $non = '';
         foreach ( $tabs as $class => $name ) {
             $ret .= "<a href=\"javascript:TabWidgetToggle('$class')\" id=\"${tabsId}${class}\" class=\"tabs${non}activ\">$name</a>";
             $non = 'non';
@@ -2428,7 +2430,6 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
         $zids = new zids(null, 'l');
         $zids->set_from_item_arr($items);
     } else {                   // user defined by bookmark
-        $slice = AA_Slices::getSlice($slice_id);
         if ( $group == '' ) {
             // all active items in the slice
             $conds = false;
@@ -2436,7 +2437,7 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
             $searchbar->setFromBookmark($group);
             $conds = $searchbar->getConds();
         }
-        $zids  = QueryZIDs($slice->fields('record'), $slice_id, $conds, "", "", 'ACTIVE');
+        $zids  = QueryZIDs( array($slice_id), $conds );
     }
     return $zids;
 }
