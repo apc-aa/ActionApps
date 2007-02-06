@@ -163,7 +163,13 @@ if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER");
 
 // init used objects
 //if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
-if ( !$slice_id ) SendErrorPage(array ("fatal"=>_m("Slice ID not defined")));
+if ( !$slice_id ) {
+    SendErrorPage(array ("fatal"=>_m("Slice ID not defined")));
+}
+// trap field for spammer bots
+if ( $answer )    {
+    SendErrorPage(array ("fatal"=>_m("Not allowed to post comments")));
+}
 
 $slice      = AA_Slices::getSlice($slice_id);
 $p_slice_id = q_pack_id($slice_id);
@@ -221,7 +227,7 @@ if (! $insert && is_array($notshown)) {
 }
 
 // put the item into the right bin
-$bin2fill = $slice->getfield("permit_anonymous_post");
+$bin2fill = $slice->getProperty("permit_anonymous_post");
 if ($debugfill) huhl("bin2fill=",$bin2fill, " force_status_code=",$force_status_code);
 if ( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
 // you may force to put the item into a higher bin (active < hold < trash)
@@ -232,9 +238,9 @@ $content4id["status_code....."][0]['value'] = max($bin2fill,$content4id["status_
 if ($insert) {
     $content4id["flags..........."][0]['value'] = ITEM_FLAG_ANONYMOUS_EDITABLE;
 } elseif (!is_array($result)) {
-  if ($debugfill) huhl("Perms=",$slice->getfield("permit_anonymous_edit"));
+  if ($debugfill) huhl("Perms=",$slice->getProperty("permit_anonymous_edit"));
     // Proove we are permitted to update this item.
-    switch ($slice->getfield("permit_anonymous_edit")) {
+    switch ($slice->getProperty("permit_anonymous_edit")) {
     case ANONYMOUS_EDIT_NOT_ALLOWED: $permok = false; break;
     case ANONYMOUS_EDIT_ALL:         $permok = true; break;
     case ANONYMOUS_EDIT_ONLY_ANONYMOUS:
