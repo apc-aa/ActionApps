@@ -235,8 +235,10 @@ function AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $pa
             break;
         case 'admin_search':
             if ( $field_id ) {
-                $profile->deleteProperty($property);
-                $profile->insertProperty($property, '0', "$field_id:$param");
+                $profile->deleteProperty($property, $field_id);
+                // 0 is just placeholder - normaly we use it for html flag
+                // @todo - do it better with some classes and custom parameters
+                $profile->insertProperty($property, $field_id, "0:$fnction:$param");
                 $Msg = MsgOK(_m("Rule added"));
             }
             break;
