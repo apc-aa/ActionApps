@@ -52,6 +52,57 @@ class Optimize {
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
  */
+class Optimize_category_sort2group_by extends Optimize {
+
+    function name() {
+        return _m("Convert slice.category_sort to slice.group_by");
+    }
+
+    function description() {
+        return _m("In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We use newer group_by field for quite long time s most probably all your slices are already conevrted.");
+    }
+
+    function test() {
+        $SQL         = "SELECT name FROM slice WHERE category_sort>0 AND ((group_by IS NULL) OR (group_by=''))";
+        $slice_names = GetTable2Array($SQL, '', 'name');
+        if ($slice_names AND (count($slice_names) > 0)) {
+            $this->message( _m('%1 slices are not converted', array(count($slice_names))). '<br> &nbsp; '. join('<br> &nbsp; ',$slice_names));
+            return false;
+        }
+        $this->message(_m('All slices are already converted'));
+        return true;
+    }
+
+    function repair() {
+        $db      = getDb();
+        $SQL    = "SELECT id FROM slice WHERE category_sort>0 AND ((group_by IS NULL) OR (group_by=''))";
+        $slices = GetTable2Array($SQL, '', 'id');
+        foreach ($slices as $p_slice_id) {
+            $q_slice_id = quote($p_slice_id);
+
+            $SQL       = "SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='$q_slice_id'";
+            $cat_field = GetTable2Array($SQL, "aa_first", 'id');
+            if ($cat_field) {
+                // number 2 represents 'a' - ascending (because gb_direction in number)
+                $SQL = "UPDATE slice SET group_by='". quote($cat_field) ."', gb_direction=2, gb_header=0 WHERE id='$q_slice_id'";
+            } else {
+                $SQL = "UPDATE slice SET group_by='', gb_direction=0, gb_header=0 WHERE id='$q_slice_id'";
+            }
+            $db->query($SQL);   // correct it
+        }
+        // fix all category_sort
+        $SQL = "UPDATE slice SET category_sort=0";
+        $db->query($SQL);
+        freeDb($db);
+        return true;
+    }
+}
+
+
+
+/** Testing if relation table contain records, where values in both columns are
+ *  identical (which was bug fixed in Jan 2006)
+ */
 class Optimize_db_relation_dups extends Optimize {
 
     function name() {
@@ -309,6 +360,58 @@ class Optimize_clear_pagecache extends Optimize {
         return true;
     }
 }
+
+/** Whole pagecache will be invalidated and deleted */
+class Optimize_copy_content extends Optimize {
+
+    function name() {
+        return _m("Copy Content Table");
+    }
+
+    function description() {
+        return _m("Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not usefull for any other users, I think.");
+    }
+
+    function test() {
+        $this->messages[] = _m('There is nothing to test.');
+        return true;
+    }
+
+    /** Deletes the pagecache - the renaming and deleting is much, much quicker,
+     *  than easy DELETE FROM ...
+     */
+    function repair() {
+        $db  = getDb();
+
+        $SQL = "INSERT INTO content2 SELECT content.* FROM content
+                LEFT JOIN item on content.item_id=item.id
+                WHERE item.short_id>1941629";
+
+        // Situation was:
+        //    Content table was corrupted, so we replace i from backup. The last item in backup was short_id=1941629;
+        //    After one day we found, that we restore the table from backup by wrong way, so it is corrupted for UTF slices
+        //    So we decided to import old backup of content table to content2 table, and copy theer new items from content table
+
+
+        // First of all we insert new content, which is missing in content2 table
+        // INSERT INTO content2 SELECT content.* FROM content LEFT JOIN item on content.item_id=item.id WHERE item.short_id>1941629;
+
+        // Then we switch from backup conten2 to content
+        // RENAME TABLE content TO contentblb, content2 TO content;
+
+        // And now we update all content of the item, which was updated after the first switch (one day before)
+        // DELETE FROM content USING content, item WHERE content.item_id=item.id AND item.last_edit>1165360279 AND item.last_edit<1165500000 AND item.last_edit<>item.post_date AND item.short_id<1941629;
+        // INSERT INTO content SELECT contentblb.* FROM contentblb LEFT JOIN item on contentblb.item_id=item.id WHERE item.last_edit>1165360279 AND item.last_edit<1165500000 AND item.last_edit<>item.post_date AND item.short_id<1941629;
+
+
+        // $db->query($SQL);
+        $this->messages[] = _m('Coppied');
+
+        freeDb($db);
+        return true;
+    }
+}
+
 
 $Msg = '';
 
