@@ -366,7 +366,9 @@ $form_buttons = array( 'update',
 // Print View Form ----------
 echo "<form name=f method=post action='$PHP_SELF'>";
 FrmTabCaption( _m("Defined Views"), '', '', $form_buttons, $sess, $slice_id);
-FrmStaticText(_m("Id"), $view_id );
+
+$view_url = AA_INSTAL_URL. "view.php3?vid=$view_id";
+FrmStaticText(_m("Id"), "<a href=\"$view_url\" title=\"". _m('show this view') ."\">$view_id</a>", false, '', '', false );
 
 foreach ($VIEW_TYPES[$view_type] as $k => $v) {
     if (substr ($k,0,strlen("function:")) == "function:") {
