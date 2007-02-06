@@ -250,9 +250,9 @@ $USE_SHORT_URL = true;
 // Following section just prepares some constants
 // You probably do not need to change this
 
-define('AA_BASE_PATH', AA_SITE_PATH. AA_BASE_DIR);     // do not change
-define('AA_INC_PATH' , AA_BASE_PATH. "include/");         // do not change
-
+define('AA_BASE_PATH',     AA_SITE_PATH. AA_BASE_DIR);        // do not change
+define('AA_INC_PATH' ,     AA_BASE_PATH. "include/");         // do not change
+define('AA_PHPTHUMB_PATH', AA_BASE_PATH. "misc/phpThumb/");   // do not change
 
 if ( !defined('AA_BASE_PATH') OR (strlen(AA_BASE_PATH) < 1)) {
     echo "you must set AA_INC_PATH and other variables in config.php3 !";
@@ -283,6 +283,7 @@ define("DOCUMENTATION_URL", "http://actionapps.org/aa/doc");
  *  Switches here are based on SERVER_ADDR so that all virtual hosts
  *  can be configured in one place
  */
+/*
   switch ($SERVER_ADDR) {
     case "209.220.30.175":
     case "209.220.30.171":
@@ -293,7 +294,7 @@ define("DOCUMENTATION_URL", "http://actionapps.org/aa/doc");
     // require does not work as expected inside control structures!
     include (AA_INC_PATH . SITE_CONFIG);
   }
-
+*/
 
 /** Filemanager is special feature which allows you to modify static files right
  *  inside AA admin interface.
