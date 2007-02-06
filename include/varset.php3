@@ -46,6 +46,7 @@ class Cvariable {
     function getSQLValue() {
         switch ( $this->type )
         {
+            case "integer":
             case "number":
                 // grrr: if $var=0 then $var=""!!!
                 return ($this->value == "") ? "0" : $this->value;
@@ -55,6 +56,7 @@ class Cvariable {
                 return "'" . $this->value ."'";
             case "null":
                 return "NULL";
+            case "float":
             case "date":
             case "text":
             default:
@@ -187,10 +189,8 @@ class Cvarset {
         return $retval;
     }
 
-    /** Makes SQL INSERT clause from varset */
-    function makeINSERT($tablename = "")
-    {
-        $foo      = $tablename ? "INSERT INTO `$tablename`" : '';
+    function _makeInsertReplace($command, $tablename) {
+        $foo      = $tablename ? "$command INTO `$tablename`" : '';
         $predznak = " ( ";
         foreach ( $this->vars as  $varname => $variable ) {
             $foo .= $predznak . "`$varname`";
@@ -202,6 +202,11 @@ class Cvarset {
             $predznak = ", ";
         }
         return $foo . " ) " ;
+    }
+
+    /** Makes SQL INSERT clause from varset */
+    function makeINSERT($tablename = "") {
+        return $this->_makeInsertReplace('INSERT', $tablename);
     }
 
     function doInsert($tablename, $nohalt=null) {
@@ -236,6 +241,15 @@ class Cvarset {
         // with autoincremented fields
         return $this->_doQuery($this->makeINSERTorUPDATE($tablename), $nohalt);
     }
+
+    // be sure, you have defined key field
+    function doTrueReplace($tablename, $nohalt=null) {
+        // uses REPLACE SQL command - it is not implemented in some DB engines
+        // (it is not ANSI SQL) and even in MySQL it works bad
+        // with autoincremented fields
+        return $this->_doQuery($this->_makeInsertReplace('REPLACE', $tablename), $nohalt);
+    }
+
 
     function makeSELECT($table) {
         $where = $this->makeWHERE();
@@ -296,6 +310,27 @@ class Cvarset {
         foreach ( $this->vars as  $varname => $variable ) {
             $variable->huh();
         }
+    }
+
+    // Static //
+
+    /** Returns part of SQL command ised in WHERE, column = value, or column IN (...) */
+    function sqlin($column, $values) {
+        if (!is_array($values)) {
+            $values = array($values);
+        }
+        $arr = array();
+        foreach ((array)$values as $v) {
+            if ($v!='') {
+                $arr[] = "'".quote($v)."'";
+            }
+        }
+        if (count($arr) == 1) {
+            return "$column = ". $arr[0];
+        } elseif ( count($values) == 0 ) {
+            return "2=1";
+        }
+        return "$column IN (". join(',', $arr) .")";
     }
 }
 

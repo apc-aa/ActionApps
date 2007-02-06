@@ -135,7 +135,7 @@ class PageCache  {
      */
     function store($keyString, $content, $str2find) {
         global $cache_nostore;
-        if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache str2find:'.$str2find, '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
+        if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache str2find:'.$str2find->getStr2find(), '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
         if (ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
             $keyid  = $this->getKeyId($keyString);
@@ -144,7 +144,16 @@ class PageCache  {
                                           'stored'  => time()));
             $varset->addkey('id', 'text', $keyid);
             $str2find->store($keyid);
-            $varset->doReplace('pagecache');
+
+            // true replace mean it calls REPLACE command and no
+            // SELECT+INSERT/UPDATE (which is better for tables with
+            // autoincremented columns). There is no autoincrement, so we can
+            // use true Replace
+            // I'm trying to avoid problms with:
+            //    Database error: Invalid SQL: INSERT INTO pagecache ...
+            //    Error Number (description): 1062 (Duplicate entry '52e2804826c438a439cf301817c07020' for key 1)
+
+            $varset->doTrueReplace('pagecache');  // true replace mean it calls REPLACE command and no SELECT+INSERT/UPDATE (which is better for tables with autoincremented columns, which is no
 
             // writeLog('PAGECACHE', $keyid.':'.serialize($str2find)); // for debug
 
