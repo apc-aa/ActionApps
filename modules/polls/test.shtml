@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<title>Untitled</title>
+</head>
+
+<body>
+<h1>Testovani</h1>
+<hr>
+<!--#include virtual="/apc-aa-dev/modules/polls/poll.php3?poll_id=ef5470982b28bf8465f0dd98f7c73f50&show=36"-->
+<!-- #include virtual="/apc-aa-dev/modules/polls/showpoll.php3?packed=1&id=testovacianketka"-->
+<br>
+<br>
+<br>
+
+<!-- #include virtual="/apc-aa-dev/modules/polls/showpoll.php3?id=ef5470982b28bf8465f0dd98f7c73f50&poll_id=36"-->
+<hr>
+</body>
+</html>
