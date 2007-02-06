@@ -98,7 +98,7 @@ class AA_SL_Session extends Session {
 
     var $cookiename     = "";                // defaults to classname
     var $magic          = "adwetdfgyr";      // ID seed
-    var $mode           = "cookie";          // We propagate session IDs via cookie method
+    var $mode           = "get";             // We propagate session IDs via cookie method
     var $fallback_mode  = "get";             // If cookie not possible, then via get method
     var $lifetime       = 0;                 // 0 = do session cookies, else minutes
     var $that_class     = "AA_CT_Sql"; // name of data storage container

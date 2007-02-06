@@ -91,7 +91,7 @@ class AA_SL_Session extends Session {
 
     var $cookiename     = "";                // defaults to classname
     var $magic          = "adwetdfgyr";      // ID seed
-    var $mode           = "cookie";          // We propagate session IDs via cookie method
+    var $mode           = "get";             // We propagate session IDs via cookie method
     var $fallback_mode  = "get";             // If cookie not possible, then via get method
     var $lifetime       = 0;                 // 0 = do session cookies, else minutes
     var $that_class     = "AA_CT_Sql";       // name of data storage container
@@ -137,7 +137,12 @@ class AA_CP_Session extends Session {
 
     var $cookiename     = "";                // defaults to classname
     var $magic          = "adwetdfgyr";      // ID seed
-    var $mode           = "cookie";          // We propagate session IDs via cookie method
+    var $mode           = "get";          // We propagate session IDs via cookie method
+    // we still can't use cookie, since it is still not possible (or at least 
+    // recommended) to use two windows with the same session ID - we do not 
+    // store there only the session ID, but also slice_id, ... so it is possible 
+    // to mix the data.    
+    //    var $mode           = "cookie";          // We propagate session IDs via cookie method
     var $fallback_mode  = "get";             // If cookie not possible, then via get method
     var $lifetime       = 0;                 // 0 = do session cookies, else minutes
     var $that_class     = "AA_CT_Sql";       // name of data storage container
