@@ -137,7 +137,7 @@ if ($edit) {
 if (!$encap) {
     $inputform_settings = array(
         'display_aa_begin_end' => true,
-        'page_title'           => _m("Slice Setting"). " (". sliceid2name($slice_id).")",
+        'page_title'           => _m("Slice Setting"). " (". AA_Slices::getName($slice_id).")",
     );
 }
 

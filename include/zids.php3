@@ -90,14 +90,15 @@ class zids {
         } elseif ($initial) {  // Single id
             $this->a[]  = $initial;
         } else {
-            $this->type = $inittype;    // Prepare for zids
+            // prepare for zids
+            $this->a = array();      // Make sure at least empty array
             return;                     // Empty $zids;
         }
 
         if ($this->type == "z") {
             $this->type = guesstype($this->a[0]);
         } elseif ($this->type != guesstype($this->a[0])) {
-            huhe("Warning: zids created type=$this->type but id $this->a[0] looks like type=" . guesstype($this->a[o]));
+            huhe("Warning: zids created type=$this->type but id $this->a[0] looks like type=" . guesstype($this->a[0]));
         }
     }
 
@@ -115,7 +116,7 @@ class zids {
 
     // removes all zids and resets
     function clear($inittype = 'z') {
-        unset($this->a);
+        $this->a    = array();
         $this->type = $inittype;
     }
 
@@ -124,12 +125,12 @@ class zids {
     function add($ids) {
         if ( isset($ids) AND is_object($ids) ) {           // zids
             if ($ids->onetype() == $this->onetype()) {
-                $this->a = array_merge((array)$this->a, (array)$ids->a);
+                $this->a = array_merge($this->a, (array)$ids->a);
             } else {
                 return false;
             }
         } elseif ( isset($ids) AND is_array($ids) ) {      // array of ids
-            $this->a = array_merge((array)$this->a, $ids);
+            $this->a = array_merge($this->a, $ids);
         } elseif ( $ids ) {                                // id
             $this->a[] = $ids;
         } else {
@@ -142,20 +143,18 @@ class zids {
     *   If called without parameters, only deletes duplicate ids.
     *   The type must be already set (from init). */
     function union($ids = "") {
-        $this->add ($ids);
+        $this->add($ids);
         if ($this->count() > 0 ) {
             // we can't use array_unique because we need to preserve key range 0..x
             sort ($this->a);
             $last = "XXXXXXXX";
-            $unique = "";
-            for (reset ($this->a); list (,$v) = each($this->a);) {
+            $unique = array();
+            foreach ($this->a as $v) {
                 if ($v && $v != $last) {
                     $unique[] = $v;
                 }
                 $last = $v;
             }
-            if ($v && $v != $last)
-            $unique[] = $v;
             $this->a = $unique;
         }
     }
@@ -174,7 +173,7 @@ class zids {
 
     // Count how many ids
     function count() {
-        return (is_array($this->a) ? count($this->a) : 0 );
+        return count($this->a);
     }
 
     // Quick check to warn if item doesn't exist
@@ -348,12 +347,39 @@ class zids {
         // - don't ask me why, please. Honza
         return (($this->count() == 1) ? " $column = $id_list " : " $column IN ($id_list) ");
     }
+    
+    function itemWhere($i) {
+        if ( $this->use_short_ids() ) {
+            return "item.short_id='". $this->a[$i]."'";
+        }
+        return "item.id=". $this->qq_packedids($i);
+    }
+    
+    /** Returns the slice id for the ids
+     *  If items are from more than one slice, then it returns the random of them
+     */
+    function getFirstSlice() {
+        if ($this->count() == 0) {
+            return false;
+        }
+        foreach ( $this->a as $i => $id ) {
+            $SQL        = "SELECT slice_id FROM item WHERE ". $this->itemWhere($i);
+            $p_slice_id = GetTable2Array($SQL, 'aa_first', 'slice_id');
+            if ( !empty($p_slice_id) ) {
+                return unpack_id128($p_slice_id);
+            }
+        }
+        return false;
+    }
 
     /** Sorts zids array in the same order as the zids are in $sort_zids */
     function sort_and_restrict_as_in($sort_zids) {
         $translation = $this->get_translation($sort_zids->onetype());
+        $ret         = array();
         foreach ( $sort_zids->a as $zid ) {
-            if ( $translation[$zid] )  $ret[] = $translation[$zid];
+            if ( $translation[$zid] ) {
+                $ret[] = $translation[$zid];
+            }
         }
         $this->a = $ret;
     }
@@ -439,16 +465,19 @@ function unpack_id128($packed_id){
 
 
 // returns packed and quoted md5 id
-function q_pack_id ($unpacked_id){
+function q_pack_id($unpacked_id){
     $foo = pack_id128($unpacked_id);
     return quote($foo);
 }
+
 function qq_pack_id($str) {
     return "'".q_pack_id($str)."'";
 }
+
 function qquote($str) {
     return "'".quote($str)."'";
 }
+
 function qqquote($str) {
     return '"'.quote($str).'"';
 }

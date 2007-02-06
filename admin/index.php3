@@ -128,7 +128,7 @@ $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
 if ( !$perm_edit_all && !$perm_edit_self) {
-  MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").sliceid2name($slice_id));
+  MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").AA_Slices::getName($slice_id));
   exit;
 }
 
@@ -178,7 +178,7 @@ $manager_settings = array(
 //                               ),
                           // no function - this function just opens preview
          'Preview'     => array('name'       => _m('Preview'),
-                                'open_url'   => con_url($slice->getfield('slice_url'),'rXn=1'), // rXn=1 is foo parameter to make sure, we can use '&' to join items[] parameter (see open_url_add below)
+                                'open_url'   => con_url($slice->getProperty('slice_url'),'rXn=1'), // rXn=1 is foo parameter to make sure, we can use '&' to join items[] parameter (see open_url_add below)
                                 'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
                                ),
          'FillField'   => array('name'       => _m('Modify content'),
@@ -206,7 +206,7 @@ $manager_settings = array(
                          )
          );
 
-$manager = new manager($manager_settings);
+$manager = new AA_Manager($manager_settings);
 $profile = new aaprofile($auth->auth["uid"], $module_id); // current user settings
 
 // r_state array holds all configuration of Links Manager
@@ -239,13 +239,13 @@ $conds = $manager->getConds();
 $sort  = $manager->getSort();
 
 // authors have only permission to edit its own items
-if (! $perm_edit_all )
-  $conds[]=array( 'operator' => '=',
-                  'value' => $auth->auth['uid'],
-                  'posted_by.......' => 1 );
+if (! $perm_edit_all ) {
+      $conds[]=array( 'operator' => '=',
+                      'value' => $auth->auth['uid'],
+                      'posted_by.......' => 1 );
+}
 
-
-$zids=QueryZIDs($slice->fields('record'), $slice_id, $conds, $sort, "", $bin_def[$r_state['bin']]['cond']);
+$zids = QueryZIDs( array($slice_id), $conds, $sort, $bin_def[$r_state['bin']]['cond']);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form

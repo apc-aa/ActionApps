@@ -19,17 +19,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-//
-//	Class scroller
-//	Implements navigation bar for scrolling through long lists
-//
-if (!defined ("SCROLLER_INCLUDED"))
-define ("SCROLLER_INCLUDED",1);
-else return;
+/**	Class AA_Scroller
+ *	Implements navigation bar for scrolling through long lists
+ */
+
 
 // tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
 // break year for short year description is 1950
-function userdate2sec ($dttm, $time="") {
+function userdate2sec($dttm, $time="") {
     if ( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $dttm, $part))
         if ( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $dttm, $part))
             return "";
@@ -41,41 +38,66 @@ function userdate2sec ($dttm, $time="") {
 
 require_once AA_INC_PATH . "statestore.php3";
 
-class scroller extends storable_class {
-    var $classname = "scroller";
-    var $persistent_slots = Array("pgcnt", "current", "id", "visible", "sortdir",
-                      "sortcol", "filters", "itmcnt", "metapage", "urldefault");
-    var $current = 1;		// current page
-    var $id;			    // scroller id
-    var $visible = 1;
-    var $pgcnt;			    // total page count
-    var $itmcnt;            // total item count
-    var $metapage = 10;	    // "metapage" size
-    var $urldefault;		// cache self url
-    var $sortdir = 1;
-    var $sortcol = "";
+class AA_Scroller extends storable_class {
+    var $pgcnt;			            // total page count
+    var $current          = 1;		// current page
+    var $id;			            // scroller id
+    var $visible          = 1;
+    var $sortdir          = 1;
+    var $sortcol          = "";
     var $filters;
+    var $itmcnt;                    // total item count
+    var $metapage         = 10;	    // "metapage" size
+    var $urldefault;		        // cache self url
+
+    // needed for PHPlib's session storing.
+    // @todo rewrite PHPlib's sessions to storable_class approach (since there is
+    // problem that you need to have class already defined before you try to
+    // get data from session. It is not so good, since you need to include all the
+    // class definition files which could be potentialy stored in the session
+    var $classname        = "AA_Scroller";
+    var $persistent_slots = array("pgcnt", "current", "id", "visible", "sortdir",
+                                  "sortcol", "filters", "itmcnt", "metapage", "urldefault");
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getPersistentProperties($class=null) {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
+        // class parameter is needed, because generic static classs method
+        // in storable_class is not able to detect, what type of class it is in
+        // Grrr! PHP (5.2.0)
+        return array (
+            'pgcnt'      => new AA_Property( 'pgcnt'     , _m('Pgcnt'     ), 'int',  false, true),
+            'current'    => new AA_Property( 'current'   , _m('Current'   ), 'int',  false, true),
+            'id'         => new AA_Property( 'id'        , _m('Id'        ), 'text', false, true),
+            'visible'    => new AA_Property( 'visible'   , _m('Visible'   ), 'bool', false, true),
+            'sortdir'    => new AA_Property( 'sortdir'   , _m('Sortdir'   ), 'int',  false, true),
+            'sortcol'    => new AA_Property( 'sortcol'   , _m('Sortcol'   ), 'text', false, true),
+            'filters'    => new AA_Property( 'filters'   , _m('Filters'   ), 'text', true,  true),  // @todo - should be better specified, since it is in fact array of arrays
+            'itmcnt'     => new AA_Property( 'itmcnt'    , _m('Itmcnt'    ), 'int',  false, true),
+            'metapage'   => new AA_Property( 'metapage'  , _m('Metapage'  ), 'int',  false, true),
+            'urldefault' => new AA_Property( 'urldefault', _m('Urldefault'), 'text', false, true)
+            );
+    }
 
     // constructor
     // $id identifies scroller on a web page
     // $pgcnt is the number of pages to scroll
-    function scroller($id = "", $url = "", $pgcnt = 0) {
-        $this->id = $id;
-        $this->pgcnt = $pgcnt;
+    function AA_Scroller($id = "", $url = "", $pgcnt = 0) {
+        $this->id         = $id;
+        $this->pgcnt      = $pgcnt;
         $this->urldefault = $url;
-        $this->filters = array();
-        $this->current = 1;
-        $this->metapage = 10;
-        $this->visible = 1;
+        $this->filters    = array();
+        $this->current    = 1;
+        $this->metapage   = 10;
+        $this->visible    = 1;
     }
 
     // return part of a query string for move of $pages relative of current position
-    function Relative($pages) {
+    function relative($pages) {
         return urlencode("scr_" . $this->id . "_Mv") . "=" . urlencode($pages);
     }
 
     // return part of a query string for move to absolute position $page
-    function Absolute($page) {
+    function absolute($page) {
         return urlencode("scr_" . $this->id . "_Go") . "=" . urlencode($page);
     }
 
@@ -90,12 +112,12 @@ class scroller extends storable_class {
     }
 
     // return part of a query string for move to toggle visibility
-    function ToggleVis() {
+    function toggleVis() {
         return urlencode("scr_" . $this->id . "_Vi") . "=" . ($this->visible ? "0" : "1");
     }
 
     // return part of a query string for move to toggle visibility
-    function Sort($sortcol) {
+    function sort($sortcol) {
         return urlencode("scr_" . $this->id . "_Sort") . "=" . urlencode($sortcol);
     }
 
@@ -185,25 +207,25 @@ class scroller extends storable_class {
         $from = max(1, $mp * SCROLLER_LENGTH);                // SCROLLER_LENGTH - number of displayed pages in navbab
         $to   = min(($mp + 1) * SCROLLER_LENGTH + 1, $this->pgcnt);
         if ($this->current > 1) {
-            $arr["<<"]  = $this->Relative(-1);
+            $arr["<<"]  = $this->relative(-1);
         }
         if ($from > 1) {
-            $arr["1"]   = $this->Absolute(1);
+            $arr["1"]   = $this->absolute(1);
         }
         if ($from > 2) {
             $arr[".. "] = "";
         }
         for ($i = $from; $i <= $to; $i++) {
-            $arr[(string)$i] = ($i == $this->current ? "" : $this->Absolute($i));
+            $arr[(string)$i] = ($i == $this->current ? "" : $this->absolute($i));
         }
         if ($to < $this->pgcnt - 1) {
             $arr[" .."] = "";
         }
         if ($to < $this->pgcnt) {
-            $arr[(string) $this->pgcnt] = $this->Absolute($this->pgcnt);
+            $arr[(string) $this->pgcnt] = $this->absolute($this->pgcnt);
         }
         if ($this->current < $this->pgcnt) {
-            $arr[">>"] = $this->Relative(1);
+            $arr[">>"] = $this->relative(1);
         }
         return $arr;
     }
@@ -215,7 +237,8 @@ class scroller extends storable_class {
             return;
         }
         $delimiter = '';
-        $arr = $this->navarray();
+        $arr       = $this->navarray();
+        $url       = $this->urldefault;
 
         while (list($k, $v) = each($arr)) {
             echo $delimiter;
@@ -233,15 +256,14 @@ class scroller extends storable_class {
     // add filter
     // type: "char", "date", "int","md5" (other can be added)
     function addFilter($name, $type, $value = "", $truename = "") {
-        $this->filters[$name]['value'] = $value;
-        $this->filters[$name][type] = $type;
-        $this->filters[$name][truename] = $truename;   // truename is for storing names like "categories.name" which cannot by real names for php variables
+        $this->filters[$name]['value']    = $value;
+        $this->filters[$name]['type']     = $type;
+        $this->filters[$name]['truename'] = $truename;   // truename is for storing names like "categories.name" which cannot by real names for php variables
     }
 
     // process query string, execute commands for filters
     function updateFilters() {
-        reset($this->filters);
-        while (list($name, $flt) = each($this->filters)) {
+        foreach ($this->filters as $name => $flt) {
             if (isset($GLOBALS["flt_" . $this->id . "_${name}_val"])){
                 $this->filters[$name]['value'] = $GLOBALS["flt_" . $this->id . "_${name}_val"];
             }
@@ -250,36 +272,38 @@ class scroller extends storable_class {
 
     // return sql "where" clause generated by filters
     function sqlCondFilter() {
-        reset($this->filters);
-        while (list($name, $flt) = each($this->filters)) {
-            if (!$flt['value']) continue;
-            if (ereg("^ *(>|<|=|>=|<=) *(.*)", $flt['value'], $regs)) {
-                $op = $regs[1];
-                $value = $regs[2];
+        foreach ($this->filters as $name => $flt) {
+            if (!$flt['value']) {
+                continue;
             }
-            else {
-                $op = ($flt[type] == "char" ? "like" : "=");
+            if (ereg("^ *(>|<|=|>=|<=) *(.*)", $flt['value'], $regs)) {
+                $op    = $regs[1];
+                $value = $regs[2];
+            } else {
+                $op    = ($flt['type'] == "char" ? "like" : "=");
                 $value = $flt['value'];
             }
-            if ( $flt[truename]!="" )
-            $name = $flt[truename];
-            switch($flt[type]) {
+            if ( $flt['truename'] != "" ) {
+                $name = $flt['truename'];
+            }
+            switch($flt['type']) {
                 case "char":
-                    if ($op == "like") $value = "%$value%";
+                    if ($op == "like") {
+                        $value = "%$value%";
+                    }
                     $cond[] = "$name $op '$value'";
                     break;
                 case "int":
                     $cond[] = "$name $op " . $value;
                     break;
                 case "date":
-                    $cond[] = "$name $op '" . userdate2sec($value) . "'";
+                    $cond[] = "$name $op '". userdate2sec($value) . "'";
                     break;
                 case "md5":
                     $cond[]= "$name $op '". quote(pack("H*",$value))."'";
             }
         }
-        if (!is_array($cond)) return "1 = 1";
-        return join(" AND ", $cond);
+        return is_array($cond) ? join(" AND ", $cond) : "1 = 1";
     }
 }
 

@@ -133,6 +133,8 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',       'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
         $this->handlers[] = new aahandler('Event_ItemAfterInsert_NszmAkce',array('type' => 'ITEM_NEW',         'slice'        => '987c680c5adfc6f872909d703f98ba97'));  // NSZM - akce - lidi
         $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_UPDATED',     'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_NEW',         'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
     }
 
     /** Fills the handlers array from database */
@@ -251,7 +253,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
     $content4id  = reset($content4ids);  // get first element
 
     // send e-mail also to author of the item
-    if ( valid_email($content4id['e_posted_by.....'][0]['value']) ) {
+    if ( AA_Validate::validate($content4id['e_posted_by.....'][0]['value'], 'email')) {
         $emails[] = $content4id['e_posted_by.....'][0]['value'];
     }
     if ( count($emails) < 1 ) {
@@ -263,11 +265,11 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
 
     // if the view vid is assigned to fulltext view, take the e-mail template
     // from that view
-    $view_id     = sliceid2field($slice_id, 'vid');
+    $view_id     = AA_Slices::getSliceProperty($slice_id, 'vid');
 
     if ( $view_id > 0 ) {
         // get id of e-mail template (stored in aditional6 field of view definition)
-        $mail_id = GetViewInfo($view_id, 'aditional6');
+        $mail_id = AA_Views::getViewField($view_id, 'aditional6');
     } else {
         // get id of e-mail template from first discussion view of the slice
         $mail_id = GetTable2Array("SELECT aditional6 FROM view WHERE slice_id='".q_pack_id($slice_id)."' AND type='discus' ORDER BY id", 'aa_first', 'aditional6');
@@ -537,6 +539,11 @@ function Event_ItemUpdated_Aperio( $type, $slice, $slice_type, &$ret_params, $pa
 /** Send email with answer to Aperio staff with the answer (from item) */
 function Event_ItemUpdated_Aperio_porod( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 50);
+}
+
+/** Send email with answer to Aperio staff with the answer (from item) */
+function Event_ItemUpdated_Aperio_porad( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+    return SendFilledItem($ret_params, 62);
 }
 
 /** Send email with answer to Aperio staff with the answer (from item) */

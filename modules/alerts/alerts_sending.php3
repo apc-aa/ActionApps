@@ -113,7 +113,6 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
 
     foreach ( $slices as $slice_id => $slice ) {
         $p_slice_id   = q_pack_id($slice_id);
-        list($fields) = GetSliceFields($slice_id);
 
         /*
         this query is carefully made to include only items, which:
@@ -161,7 +160,7 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
                 if (is_array($all_ids)) {
                     // find items for the given filter
                     if ($debug_alerts) { print_r ($conds); echo "----<br>"; $GLOBALS['debug']=1; }
-                    $zids = QueryZIDs($fields, $slice_id, $conds, $sort, "", "ACTIVE", "", 0, new zids( $all_ids,'p' ));
+                    $zids = QueryZIDs(array($slice_id), $conds, $sort, "ACTIVE", 0, new zids( $all_ids,'p' ));
                     if ($debug_alerts) { $GLOBALS['debug']=0; echo "<br>Item IDs count: ".$zids->count()."<br>"; }
                 }
 
@@ -243,7 +242,7 @@ class AA_Collection {
         }
 
 
-        $zids  = QueryZIDs($slice->fields('record'), $slice->unpacked_id(), $conds);
+        $zids  = QueryZIDs(array($slice->unpacked_id()), $conds);
         return $zids;
     }
 
@@ -419,7 +418,7 @@ function get_view_settings_cached($vid) {
         $slice        = AA_Slices::getSlice(unpack_id($view->f("slice_id")));
         $fields       = $slice->fields('record');
         $cached_view_settings[$vid] = array (
-            "lang"    => substr($slice->getfield('lang_file'),0,2),
+            "lang"    => substr($slice->getProperty('lang_file'),0,2),
             "info"    => $view,
             "fields"  => $fields,
             "aliases" => GetAliasesFromFields($fields),
@@ -498,7 +497,7 @@ function get_filter_text_4_reader($readerContent, $filters, $cid) {
                 parse_str( $last_fprop["sort"], $dbconds_arr);
                 $sort      = $dbconds_arr['sort'];
                 $set       = &get_view_settings_cached($last_fprop["vid"]);
-                $user_zids = QueryZIDs($set["fields"], unpack_id($set["info"]["slice_id"]), "", $sort, "", "ACTIVE", "", 0, $user_zids);
+                $user_zids = QueryZIDs(array(unpack_id($set["info"]->f("slice_id"))), "", $sort, "ACTIVE", 0, $user_zids);
             }
 
             $user_text .= get_filter_output_cached($last_fprop["vid"], join (",",$filter_ids), $user_zids);

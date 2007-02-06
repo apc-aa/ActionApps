@@ -10,9 +10,9 @@
 */
 
 require_once(dirname(__FILE__) . '/mimePart.php');
+require_once AA_INC_PATH."files.class.php3";  // file wrapper;
 
-class htmlMimeMail
-{
+class htmlMimeMail {
     /**
     * The html part of the message
     * @var string
@@ -158,19 +158,10 @@ class htmlMimeMail
 * argument of the the functions
 * add_html_image() or add_attachment().
 */
-    function getFile($filename)
-    {
-        $return = '';
-        if ($fp = fopen($filename, 'rb')) {
-            while (!feof($fp)) {
-                $return .= fread($fp, 1024);
-            }
-            fclose($fp);
-            return $return;
-
-        } else {
-            return false;
-        }
+    function getFile($filename) {
+        $file = &AA_File_Wrapper::wrapper($filename);
+        // $file->contents(); opens the stream, reads the data and close the stream
+        return $file->contents();
     }
 
 /**

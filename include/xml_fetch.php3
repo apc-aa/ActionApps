@@ -27,6 +27,8 @@ require_once AA_INC_PATH."sliceobj.php3";
 require_once AA_INC_PATH."csn_util.php3";
 require_once AA_INC_PATH."xml_rssparse.php3";
 require_once AA_INC_PATH."grabber.class.php3";
+require_once AA_INC_PATH."files.class.php3";  // file wrapper;
+
 
 /**  Fetch xml data from $url through http.
  *   This function is used by the rss aa module client as well as by the admin
@@ -68,16 +70,9 @@ function http_fetch($url, $d=null) {
         }
     }
     if ($GLOBALS['debugfeed'] >= 8) print("http_fetch:$url\n");
-    /* This old version breaks on 4.3.1 and later, ends after first packet
-    if (!($fp = fopen($url, "r"))) {
-        writeLog("CSN","Unable to connect remote node $url");
-        return false;
-    }
-    $data = fread($fp, 4000000);
-    fclose($fp);
-    */
-    // Replacement only works php >4.3.0
-    $data = file_get_contents($url);
+    $file = &AA_File_Wrapper::wrapper($url);
+    // $file->contents(); opens the stream, reads the data and close the stream
+    $data = $file->contents();
     if ($GLOBALS['debugfeed'] >= 8) huhl('data obtained:', $data);
     return trim($data);
 }

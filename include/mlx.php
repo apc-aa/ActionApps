@@ -117,7 +117,7 @@ function __mlx_fatal($msg) {
 // test if the slice is MLX enabled
 function isMLXSlice($sliceobj) {
     //hook other replies here
-    return (is_object($sliceobj) ? $sliceobj->getfield(MLX_SLICEDB_COLUMN) : $sliceobj[MLX_SLICEDB_COLUMN]);
+    return (is_object($sliceobj) ? $sliceobj->getProperty(MLX_SLICEDB_COLUMN) : $sliceobj[MLX_SLICEDB_COLUMN]);
 }
 
 /** Stores information about translations (= ids of translations items)
@@ -185,7 +185,7 @@ class MLX
 //public:
     function MLX(&$slice) {
         $this->slice = $slice;
-        $this->langSlice = unpack_id128($this->slice->getfield(MLX_SLICEDB_COLUMN));
+        $this->langSlice = unpack_id128($this->slice->getProperty(MLX_SLICEDB_COLUMN));
         list($this->ctrlFields,) = GetSliceFields($this->langSlice);
     }
 

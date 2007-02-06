@@ -66,8 +66,6 @@ if ($del) {
     go_url($back_admin_url);  // back to field page
 }
 
-$INPUT_SHOW_FUNC_TYPES = inputShowFuncTypes();
-
 // If $onlyupdate is set, then just set fields defined Note exceptiosn
 //      $input_default is as to store in the database, i.e. input_default_f:$input_default
 //      $alias1_func is as to store in database ie alias1_func_f:alias1_func (same for 2 and 3)
@@ -94,10 +92,10 @@ function Qvarsetadd($varname, $type, $value) {
 
 if ($update) {
     do {
-        QValidateInput("input_before", _m("Before HTML code"), $input_before, $err, false, "text");
-        QValidateInput("input_help", _m("Help for this field"), $input_help, $err, false, "text");
-        QValidateInput("input_morehlp", _m("More help"), $input_morehlp, $err, false, "text");
-        QValidateInput("input_default", _m("Default"), $input_default, $err, false, "text");
+        QValidateInput("input_before",    _m("Before HTML code"),    $input_before,      $err, false, "text");
+        QValidateInput("input_help",      _m("Help for this field"), $input_help,        $err, false, "text");
+        QValidateInput("input_morehlp",   _m("More help"),           $input_morehlp,     $err, false, "text");
+        QValidateInput("input_default",   _m("Default"),             $input_default,     $err, false, "text");
         QValidateInput("input_show_func", _m("Input show function"), $input_show_func_f, $err, false, "text");
 
         $alias_err = _m("Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING.");
@@ -116,18 +114,19 @@ if ($update) {
         }
         // A group that only appear with onlyupdate, normally edited in se_fields
         if ($onlyupdate) {
-            Qvarsetadd("name","quoted",$name);
-            Qvarsetadd("input_pri","number",$input_pri);
-            Qvarsetadd("input_show","number",$input_show);
+            Qvarsetadd("name",      "quoted", $name);
+            Qvarsetadd("input_pri", "number", $input_pri);
+            Qvarsetadd("input_show","number", $input_show);
         }
-        Qvarsetadd("input_before", "quoted", $input_before);
-        Qvarsetadd("input_help", "quoted", $input_help);
+        Qvarsetadd("input_before",  "quoted", $input_before);
+        Qvarsetadd("input_help",    "quoted", $input_help);
         Qvarsetadd("input_morehlp", "quoted", $input_morehlp);
-        Qvarsetadd("input_default", "quoted",
-            ($onlyupdate ? $input_default : "$input_default_f:$input_default"));
-        Qvarsetadd("multiple","quoted",                     // mark as multiple
-            ($onlyupdate ? $multiple :
-            ($INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['multiple'] ? 1 : 0)));
+        Qvarsetadd("input_default", "quoted", ($onlyupdate ? $input_default : "$input_default_f:$input_default"));
+        // mark as multiple
+        // Mark field as multiple is not necessary - we can remove this
+        // property in the future. Honza, 17.10.2006
+        $widget_class = 'AA_Widget_'. ucwords($input_show_func_f);
+        Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : (call_user_func(array($widget_class,'multiple')) ? 1 : 0)));
 
         for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
             Qvarsetadd("alias".$iAlias, "quoted", $GLOBALS["alias".$iAlias]);
@@ -142,26 +141,19 @@ if ($update) {
         // the constants are packed in order it could be easily passed
         // to another script
         $input_show_func_c_real = ($input_show_func_c{0} == 'v') ? pack_id(substr($input_show_func_c,1)) : $input_show_func_c;
-        switch( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']) {
-            case "fnc:param":
-                $isf = "$input_show_func_f:$input_show_func_p";
-                break;
-            case "fnc:const:param":
-                $isf = "$input_show_func_f:$input_show_func_c_real:$input_show_func_p";
-                break;
-            case "fnc":
-            default:
-                $isf = "$input_show_func_f";
-        }
+        $isf_parameters = call_user_func(array($widget_class,'getClassProperties'));
+        $isf                                         = $input_show_func_f;
+        if (isset($isf_parameters['const'])) { $isf .= ':'.$input_show_func_c_real; }
+        $isf                                        .= ':'.$input_show_func_p; 
 
-        // setting input insert function
-        $iif="$input_insert_func_f:$input_insert_func_p";
-
-        Qvarsetadd("input_show_func", "quoted", ($onlyupdate ? $input_show_func : "$isf"));
+        Qvarsetadd("input_show_func", "quoted", ($onlyupdate ? $input_show_func : $isf));
         Qvarsetadd("input_validate", "quoted", ($onlyupdate ? $input_validate : "$input_validate_f:$input_validate_p"));
         if (!($onlyupdate && is_null($feed))) {
             Qvarsetadd("feed", "quoted", "$feed");
         }
+
+        // setting input insert function
+        $iif="$input_insert_func_f:$input_insert_func_p";
         Qvarsetadd("input_insert_func", "quoted", ($onlyupdate ? $input_insert_func : "$iif"));
         if (!($onlyupdate && is_null($html_default))) {
             Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
@@ -248,7 +240,12 @@ if ( !$update ) {      // load defaults
 
     // switching type of show
     get_params($fld["input_show_func"], $input_show_func_f, $input_show_func_p);
-    if ( $INPUT_SHOW_FUNC_TYPES[$input_show_func_f]['paramformat']  == "fnc:const:param") {
+
+    // which parameters uses this widget?
+    $widget_class   = 'AA_Widget_'. ucwords($input_show_func_f);
+    $isf_parameters = call_user_func(array($widget_class,'getClassProperties'));
+
+    if ( isset($isf_parameters['const'])) {
         get_params($input_show_func_p, $input_show_func_c_real, $input_show_func_p);
         $input_show_func_c = (substr($input_show_func_c_real,0,7) == '#sLiCe-') ? $input_show_func_c_real : varname4form($input_show_func_c_real);
     }
@@ -308,13 +305,19 @@ echo "
 <form enctype=\"multipart/form-data\" method=post action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">";
 FrmTabCaption(_m("Field properties"). ': '. safe($fld['name']. ' ('.$fld['id']. ')'),
               '','',$form_buttons, $sess, $slice_id);
+
+$input_show_classes = AA_Components::getClassNames('AA_Widget_');
+foreach ($input_show_classes as $class) {
+    $isc_arr[strtolower(substr($class, 10))] = call_user_func(array($class, 'name'));
+}
+
 echo "
   <tr>
    <td>
      <tr>
       <td class=tabtxt><b>". _m("Input type") ."</b></td>
       <td class=tabtxt colspan=3>";
-       FrmSelectEasy("input_show_func_f", $INPUT_SHOW_FUNC_TYPES, $input_show_func_f);
+       FrmSelectEasy("input_show_func_f", $isc_arr, $input_show_func_f);
 
       echo "<div class=tabhlp>". _m("Input field type in Add / Edit item.") ."</div>
             <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">

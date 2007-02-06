@@ -28,6 +28,7 @@ require_once AA_INC_PATH."mgettext.php3";
 require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."logs.php3";
 require_once AA_INC_PATH."go_url.php3";
+require_once AA_INC_PATH."statestore.php3";
 
 function get_aa_url($href, $session=true) {
     global $sess;
@@ -83,10 +84,11 @@ function my_in_array($needle, $array) {
 
 /** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
 function debuglog($text) {
-    $f = fopen(AA_INC_PATH."logs.txt","a");
-    if ($f) {
-        fwrite($f, date( "h:i:s j-m-y ")  . $text . "\n");
-        fclose($f);
+    require_once AA_INC_PATH."files.class.php3";  // file wrapper
+    $file = &AA_File_Wrapper::wrapper(AA_INC_PATH."logs.txt");
+    if ($file->open('a')) {
+        $file->write(date( "h:i:s j-m-y "). $text. "\n");
+        $file->close();
     }
 }
 
@@ -181,14 +183,36 @@ function ParamExplode($param) {
     return explode("##Sx", $e);
 }
 
-function ParamImplode_replaceneeded($string) {
-    $a = str_replace(":", "#:", $string);
-    return $a;
+/** Parses class parameters from the string, which is stored in the database
+ *  Typical use is for fields.input_show_func, where parameters are stored
+ *  as string in the form: fnc:const:param
+ *  @returns asociative array of parameters, the name of parameters is given
+ *  by the class itself ($class_mask . fnc).
+ */
+function ParseClassProperties($param, $class_mask) {
+    // we do not use ParamExplode() - I  do not like the http:// replacement there
+    $a      = str_replace("#:", "__-__.", $param);    // dummy string
+    $b      = str_replace(":", "##Sx", $a);            // Separation string is //#Sx
+    $c      = str_replace("__-__.", ":", $b);         // change "#:" to ":"
+    $params = explode("##Sx", $c);
+
+    $ret['class'] = $class = $class_mask. ucwords(strtolower($params[0]));
+    // ask class, which parameters uses
+    // call AA_Widget_Txt::getClassProperties()), for example
+
+    $class_parameters = call_user_func(array($class,'getClassProperties'));
+    $i=0;
+    foreach ( $class_parameters as $name =>$foo ) {
+        if (isset($params[$i])) {
+            $ret[$name] = $params[$i++];
+        }
+    }
+    return $ret;
 }
 
 function ParamImplode($param) {
-   $param = array_map("ParamImplode_replaceneeded", $param);
-   return implode(":", $param);
+    array_walk($param, create_function('&$v,$k', '$v = str_replace(":", "#:", $v);'));
+    return implode(":", $param);
 }
 
 /** Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
@@ -199,7 +223,7 @@ function add_vars($query_string="") {
 
     if ( !$varstring ) return;
     if ( ($pos = strpos('#', $varstring)) === true ) {  // remove 'fragment' part
-        $varstring = substr($str,0,$pos);
+        $varstring = substr($varstring,0,$pos);
     }
     // parse_str function is quite unusable, if used with magic_quotes_gpc ON
     // - it adds slashes not only to values, but ALSO to ARRAY KEYS!
@@ -319,14 +343,32 @@ function p_arr($a,$name="given array") {
 }
 
 // returns new unpacked md5 unique id, except these which can  force unexpected end of string
-function new_id($seed="hugo"){
+function new_id($mark=0){
     do {
-        $id = md5(uniqid($seed));
+        $id = md5(uniqid('hugo'));
     } while ((strpos($id, '00')!==false) OR (strpos($id, '27')!==false) OR (substr($id,30,2)=='20'));
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
+
+    // the condition above is too restrictive, since it do not allow also ids
+    // like 30049391... (00 on odd position), which makes no problem in packing
+    // That allow us to "mark" some ids, so we can distinguish, that belongs to ...
+    // We have 3*15=45 marks, first 15 are implemented
+
+    // mark 1 used for AA_Set used in groups of readers - permission related
+    if ($mark>0) {
+        // 27 is first, since it can't create any secondary problems like '00' and '20' could (123056 => 100056...)
+        return substr_replace($id, '27', $mark*2-1, 2);
+    }
     return $id;
 }
+
+/** Returns true, if the $id is marked by $mark - @see new_id() */
+function is_marked_by($id, $mark) {
+    // now only supports mark 1-15
+    return (substr($id, $mark*2-1, 2) == '27');
+}
+
 
 /** Returns a unique id from a string.
  *  Note that it will always return the same id from the same string so it
@@ -498,6 +540,10 @@ function huhlo($a) {
     }
 }
 
+if ( !$timestart ) {
+    $timestart = get_microtime();
+}
+
 function get_microtime() {
     list($usec, $sec) = explode(" ",microtime());
     return ((float)$usec + (float)$sec);
@@ -513,7 +559,7 @@ function huhl($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
            if (! $debugtimestart) {
                 $debugtimestart = get_microtime();
             }
-            print("Time: ".get_microtime() - $debugtimestart."\n");
+            print("Time: ".(get_microtime() - $debugtimestart)."\n");
         }
         huhlo($a);
         huhlo($b);
@@ -568,23 +614,6 @@ function UnpackFieldsToArray($packed, $fields) {
         $arr[$field] = (substr($packed,$i++,1)=="y" ? true : false);
     }
     return $arr;
-}
-
-// returns true, if specified input show func (name in $which) have constants
-function HaveConstants($which) {
-    $inputtypes = inputShowFuncTypes();
-    foreach ( $inputtypes as $key => $values) {
-        if (substr($values['paramformat'], 4, 5) == "const") {
-            if ($which == $key) { return true;}
-        }
-    }
-    return false;
-}
-
-/** Returns true if constants are from slice */
-function AreSliceConstants($name) {
-    // prefix indicates select from items
-    return ( substr($name,0,7) == "#sLiCe-" );
 }
 
 /** Function fills the array from constants table
@@ -690,12 +719,844 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
     return isset($arr) ? $arr : false;
 }
 
+/** Components (plugins) manipulation class */
+class AA_Components extends AA_Object {
+
+    /// Static ///
+
+    /** Used parameter format (in fields.input_show_func table)
+     *  @todo - specify the parameters better - value type, used widget, ... so
+     *          we could generate Parameter wizard (and validation) from those
+     *          informations
+     */
+    function getClassProperties()  {
+        // array of AA parameters (can't be object's data, since we need
+        // to call it staticaly (as class method)
+        return array();
+    }
+
+    /** Return names of all known AA classes, which begins with $mask
+     *  static function
+     */
+    function getClassNames($mask) {
+        $right_classes = array();
+        $mask_length   = strlen($mask);
+        foreach (get_declared_classes() as $classname) {
+            if ( substr($classname,0,$mask_length) == $mask ) {
+                $right_classes[] = $classname;
+            }
+        }
+        return $right_classes;
+    }
+
+    function getSelectionCode($mask, $input_id, &$params) {
+        $options      = array('AA_Empty' => _m('select ...'));
+        $html_options = array('AA_Empty' => '');
+        foreach (AA_Components::getClassNames($mask) as $selection_class) {
+            // call static class methods
+            $options[$selection_class]      = call_user_func(array($selection_class, 'name'));
+            $html_options[$selection_class] = call_user_func_array(array($selection_class, 'htmlSetting'), array($input_id, &$params));
+        }
+        return getSelectWithParam($input_id, $options, "", $html_options);
+    }
+}
+
+// AA_Widget class should implement some interface (in php5), so it is possible
+// to use AA_Components factory, ... methods
+// used for easy ussage of factory, adding new user widgets, and selectbox
+// AA_Widget should became abstract in php5
+class AA_Widget extends AA_Components {
+
+    /** $parameters - Array of AA_Property used for the widget
+    *   inherited from AA_Components
+    */
+
+    function name()         {}
+//    function description()  {}
+}
+
+/** Textarea widget */
+class AA_Widget_Txt extends AA_Widget {
+
+    function AA_Widget_Txt() {
+    }
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Text Area'); }   // widget name
+    function multiple()     { return false;           }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties() {       //  id             name          type   multi  persistent validator, required, help, morehelp, example
+        return array (
+            'fnc'       => new AA_Property( 'fnc',       _m("Widget"),    'text', false, true, 'alpha'),
+            'row_count' => new AA_Property( 'row_count', _m("Row Count"), 'int',  false, true, 'int', false, '', '', 20),
+            );
+
+    }
+}
+
+/** Textarea with Presets widget */
+class AA_Widget_Tpr extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Textarea with Presets'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'const' => true,
+                      'param' => true
+                    );
+    }
+}
+
+/** Rich Edit Text Area widget */
+class AA_Widget_Edt extends AA_Widget {
+
+    function AA_Widget_Edt() {
+    }
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Rich Edit Text Area'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array (                       //  id                name             type   multi  persist validator, required, help, morehelp, example
+            'fnc'          => new AA_Property( 'fnc',          _m("Widget"),       'text', false, true, 'alpha'),
+            'row_count'    => new AA_Property( 'row_count',    _m("row count"),    'int',  false, true, 'int', false, '', '', 10),
+            'column_count' => new AA_Property( 'column_count', _m("column count"), 'int',  false, true, 'int', false, '', '', 70),
+            'type'         => new AA_Property( 'type',         _m("column count"), 'text', false, true, array('enum',array('class'=>'class', 'iframe'=>'iframe')), false, _m("type: class (default) / iframe"), '', 'class')
+            );
+    }
+}
+
+/** Text Field widget */
+class AA_Widget_Fld extends AA_Widget {
+
+    function AA_Widget_Fld() {
+    }
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Text Field'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array (                        //  id                  name               type    multi  persist validator, required, help,                                         morehelp, example
+            'fnc'            => new AA_Property( 'fnc',            _m("Widget"),         'text', false, true, 'alpha'),
+            'max_characters' => new AA_Property( 'max_characters', _m("max characters"), 'int',  false, true, 'int', false, _m("max count of characters entered (maxlength parameter)"), '', 254),
+            'width'          => new AA_Property( 'width',          _m("width"),          'int',  false, true, 'int', false, _m("width of the field in characters (size parameter)"),     '',  30)
+            );
+    }
+}
+
+/** Multiple Text Field widget */
+class AA_Widget_Mfl extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Multiple Text Field'); }   // widget name
+    function multiple()     { return true;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'param' => true
+                    );
+    }
+}
+
+/** Text Field with Presets widget */
+class AA_Widget_Pre extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Text Field with Presets'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'const' => true,
+                      'param' => true
+                    );
+    }
+}
+
+/** Select Box widget */
+class AA_Widget_Sel extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Select Box'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'const' => true,
+                      'param' => true
+                    );
+    }
+}
+
+/** Radio Button widget */
+class AA_Widget_Rio extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Radio Button'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'const' => true,
+                      'param' => true
+                    );
+    }
+}
+
+/** Date widget */
+class AA_Widget_Dte extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Date'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'param' => true
+                    );
+    }
+}
+
+/** Check Box widget */
+class AA_Widget_Chb extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Check Box'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true   // @todo - replace 'true' by parameter specification
+                    );
+    }
+}
+
+/** Multiple Checkboxes widget */
+class AA_Widget_Mch extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Multiple Checkboxes'); }   // widget name
+    function multiple()     { return true;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'const' => true,
+                      'param' => true
+                    );
+    }
+}
+
+/** Multiple Selectbox widget */
+class AA_Widget_Mse extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Multiple Selectbox'); }   // widget name
+    function multiple()     { return true;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'const' => true,
+                      'param' => true
+                    );
+    }
+}
+
+/** Two Boxes widget */
+class AA_Widget_Wi2 extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Two Boxes'); }   // widget name
+    function multiple()     { return true;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'const' => true,
+                      'param' => true
+                    );
+    }
+}
+
+/** File Upload widget */
+class AA_Widget_Fil extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('File Upload'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'param' => true
+                    );
+    }
+}
+
+/** Related Item Window widget */
+class AA_Widget_Iso extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Related Item Window'); }   // widget name
+    function multiple()     { return true;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'const' => true,
+                      'param' => true
+                    );
+    }
+}
+
+/** Do not show widget */
+class AA_Widget_Nul extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Do not show'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true   // @todo - replace 'true' by parameter specification
+                    );
+    }
+}
+
+/** Hierachical constants widget */
+class AA_Widget_Hco extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Hierachical constants'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'const' => true,
+                      'param' => true
+                    );
+    }
+}
+
+/** Password and Change password widget */
+class AA_Widget_Pwd extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Password and Change password'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'param' => true
+                    );
+    }
+}
+
+/** Hidden field widget */
+class AA_Widget_Hid extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Hidden field'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true   // @todo - replace 'true' by parameter specification
+                    );
+    }
+}
+
+/** Local URL Picker widget */
+class AA_Widget_Lup extends AA_Widget {
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    function name()         { return _m('Local URL Picker'); }   // widget name
+    function multiple()     { return false;       }   // returns multivalue or single value
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
+                      'param' => true
+                    );
+    }
+}
+
+
+/** AA_Property
+*  Used alse for definition of components's parameters
+*   Components are AA_Widgets, AA_Transofrmations, ...
+*/
+class AA_Property {
+
+    /** Id of property - like: new_flag */
+    var $id;
+
+    /** Property name - like: _m('Mark as') */
+    var $name;
+
+    /** Property type - text | int | bool | float | <class_name>
+     *  If the type is <class_name>, then it should support getAaValue() method.
+     */
+    var $type;
+
+    /** Contain one or multiple values (numbered array) - bool (default is false)  */
+    var $multi;
+
+    /** should be stored, when we are storing the state of the object */
+    var $persistent;
+
+    /** validate - standard validators are
+     *  text | bool | int | float | email | alpha | long_id | short_id | alias | filename | login | password | unique | e_unique | url | all | enum
+     */
+    var $validator;
+
+    /** boolean - is it required? - like: true */
+    var $required;
+
+    /** Help text for the property */
+    var $input_help;
+
+    /** Url, where user can get more informations about the property */
+    var $input_morehlp;
+
+    /** Value example */
+    var $example;
+
+    /** show_content_type_switch is used instead of $html_show or $html_rb_show.
+     *  It is more generalized, so we can use more formaters in the future (not
+     *  only HTML / Plain text, but also Wiki, Texy or whatever.
+     *  The value is flagged 0 - do not show, FLAG_HTML | FLAG_PLAIN (1+2=3)
+     *  means HTML / Plain text switch. There is an idea to use constant like
+     *  CONTENT_SWITCH_STANDARD = FLAG_HTML | FLAG_PLAIN | .... = 1+2+4+8+16+...
+     *  = 65535, so first 16 formaters will be standard (displayed after we add
+     *  it to AA) and the rest (above 16) will be used for special purposes.
+     *  However, it is just an idea right now (we still have just HTML and
+     *  plain text)
+     */
+    var $show_content_type_switch;
+
+    /** Default value for content type switch
+    *   (FLAG_HTML or FLAG_PLAIN at this moment)
+    */
+    var $content_type_switch_default;
+
+    /** array of constants used for selections (selectbox, radio, ...) */
+    var $const_arr;
+
+    function AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN) {
+        $this->id                          = $id;
+        $this->name                        = $name;
+        $this->type                        = $type;
+        $this->multi                       = $multi;
+        $this->persistent                  = $persistent;
+        $this->validator                   = is_object($validator) ? $validator : AA_Validate::factory($validator ? $validator : $type);
+        $this->required                    = $required;
+        $this->input_help                  = $input_help;
+        $this->input_morehlp               = $input_morehlp;
+        $this->example                     = $example;
+        $this->show_content_type_switch    = $show_content_type_switch;
+        $this->content_type_switch_default = $content_type_switch_default;
+        $this->const_arr                   = (is_array($validator) AND ($validator[0]=='enum')) ? $validator[1] : array();
+    }
+
+    function getId()        { return $this->id;  }
+    function getName()      { return $this->name;  }
+    function getType()      { return $this->type;  }
+    function isObject()     { return !in_array($this->type, array('text', 'int', 'bool', 'float')); }
+    function isArray()      { return $this->multi; }
+    function isPersistent() { return $this->persistent; }
+}
+
+/** AA_Variable class defines one variable in AA. It is describes the datatype,
+ *  (numeric, date, string), constraints (range of values, length, if it is
+ *  required, ...), name, and some description of the variable. It do not hold
+ *  the information, how the value is presented to the user and how it could
+ *  be entered. For displaying the AA_Variable we choose some AA_Widget.
+ *
+ *  This approach AA_Variable/AA_Widget/AA_Value should replace the old - all
+ *  in one AA_Inputfield approach. It should be used not only for AA Fields,
+ *  but also for parameters of functions/widgets...
+ *
+ */
+class AA_Variable extends AA_Property {
+
+    /** Current value of $type. The value must be convertable to AA_Value - @see type */
+    var $value;
+
+    function setValue($value) {
+        if ( !is_null($this->validator) AND $this->validator->validate($value)) {
+            $this->value = new AA_Value($value);
+        }
+    }
+
+}
+
+
+/** Base class for formatters (like HTML/Plain text/wiki/Texy/...)
+*   Currently we use just HTML and Plain text
+*/
+class AA_Formatter {
+
+    /// Static ///
+
+    /** @return bit field representig, which formatters we want to show. 65535
+    *   means "all standard formatters", which means all 16 standard formatters.
+    *   We use just two, at this moment - HTML (=1) and PLAIN (=2)
+    *   (we will continue on bit basis, so next formatter would be xxx (=4))
+    */
+    function getStandardFormattersBitfield($html_show) {
+        // @todo move to const in php5
+        return 65535;
+    }
+
+    /** @return (bit) id of the formatter_type (HTML or PLAIN, at this moment) */
+    function getFlag($formatter_type) {
+        return ($formatter_type == 'HTML') ? 1 : 2;
+    }
+}
+
+class AA_Field {
+    /** asociative array of field data as defined in field table
+    *   (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored)
+    */
+    var $data;
+
+    /** Default widget - as parsed from field data (input_show_func) */
+    var $widget;
+
+    function AA_Field($data) {
+        $this->data   = is_array($data) ? $data : array();
+        $this->widget = null;
+    }
+
+    /** @returns the table and column, where the field is stored */
+    function storageColumn() {
+        return $this->data['in_item_tbl'] ? $this->data['in_item_tbl'] :  ($this->data['text_stored'] ? 'text' : 'number');
+    }
+
+    /** @returns the table and column, where the field is stored */
+    function storageTable() {
+        return $this->data['in_item_tbl'] ? 'item' : 'content';
+    }
+
+    /** @return field data */
+    function getProperty($property) {
+        return $this->data[$property];
+    }
+
+    /** @return id of the field */
+    function getId() {    return $this->getProperty('id');              }
+
+    /** @return name of the field */
+    function getName() {  return $this->getProperty('name');            }
+
+    /** @return boolean value if the field is requierd  (must be filled) */
+    function required() { return (bool) $this->getProperty('required'); }
+
+    function getWidget() {
+        if ( is_null($this->widget) ) {
+            $this->widget = &AA_Widget::factory($somethinnnnng); // @todo
+        }
+    }
+
+    function getAliases() {
+        $ret = array();
+        if ($this->data['alias1']) {
+            // fld used in PrintAliasHelp to point to alias editing page
+            $ret[$this->data['alias1']] = array("fce" => $this->data['alias1_func'], "param" => $this->data['id'], "hlp" => $this->data['alias1_help'], "fld" => $this->data['id']);
+        }
+        if ($this->data['alias2']) {
+            $ret[$this->data['alias2']] = array("fce" => $this->data['alias2_func'], "param" => $this->data['id'], "hlp" => $this->data['alias2_help'], "fld" => $this->data['id']);
+        }
+        if ($this->data['alias3']) {
+            $ret[$this->data['alias3']] = array("fce" => $this->data['alias3_func'], "param" => $this->data['id'], "hlp" => $this->data['alias3_help'], "fld" => $this->data['id']);
+        }
+        return $ret;
+    }
+
+    /** function finds group_id in field.input_show_func parameter */
+    function getConstantGroup() {
+        $showfunc   = ParseClassProperties($this->data['input_show_func'], 'AA_Widget_');
+        // does this field use constants? Isn't it slice?
+        if ( $showfunc['const'] AND (substr($showfunc['const'],0,7) != "#sLiCe-")) {
+            return $showfunc['const'];
+        }
+        return false;
+    }
+
+    /** deprecated - for backward compatibility only */
+    function getRecord() {
+        return $this->data;
+    }
+
+    /** @returns text | numeric | date | constants */
+    function getSearchType() {
+        $showfunc   = ParseClassProperties($this->data['input_show_func'], 'AA_Widget_');
+        $field_type = 'numeric';
+        if ($this->data['text_stored']) {
+            $field_type = 'text';
+        }
+        if (substr($this->data['input_validate'],0,4)=='date') {
+            $field_type = 'date';
+        }
+        if ($showfunc['const'] AND !$this->_areSliceConstants($showfunc['const'])) {
+            $field_type = 'constants';
+        }
+        return $field_type;
+    }
+
+    /** ID of the field input - used for name atribute of input tag (or so)
+    *   Format is:
+    *       aa[i<long_item_id>][modified_field_id][]
+    *   Note:
+    *      first brackets contain
+    *          'i'+long_item_id when item is edited or
+    *          'n<number>_long_slice_id' if you want to add the item to slice_id
+    *                                    <number> is used to add more than one
+    *                                    item at the time
+    *      modified_field_id is field_id, where all dots are replaced by '_'
+    *      we always add [] at the end, so it becames arra at the end
+    *   Example:
+    *       aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
+    *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
+    */
+    function getId4Form($item_id) {
+        return "aa[i$item_id][". str_replace('.','_',$this->getId()).'][]';
+    }
+
+    /**
+    *   @todo create validator on input_validate
+    */
+    function getWidgetAjaxHtml($item_id, $aa_value) {
+        // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN) {
+        $aa_variable = new AA_Variable( $this->getId4Form($item_id),
+                                        $this->getName(),
+                                                           // type  @todo
+                                                           // multi @todo
+                                                           // persistent @todo
+                                        null,              // $validator - @todo create validator
+                                        $this->required(),
+                                        $this->getProperty('input_help'),
+                                        $this->getProperty('input_morehlp'),
+                                        $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
+                                        AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
+                                        $aa_value);
+
+        return $this->fields->getWidgetAjaxHtml($field_id, $aa_value);
+    }
+
+    /** @returns true if constants are from slice */
+    function _areSliceConstants($name) {
+        // prefix indicates select from items
+        return ( substr($name,0,7) == "#sLiCe-" );
+    }
+}
+
 
 class AA_Fields {
-    var $a = array();
 
-    function AA_Fields() {
-        $this->a = array();
+    /** array of object of AA_Field type */
+    var $fields;
+
+    /** id of slice/module ... for which the fields are used */
+    var $master_id;
+
+    /** collection - each id could have multiple fieldsets.
+     *  In fact we do not use this feature yet, it is just abstraction for
+     *  "slice fields" - slice has two field sets - normal fields and
+     *  "slice (setting) fields", where id of those fields begins with '_'
+     */
+    var $collection;
+
+    /** Array of field ids sorted by priority */
+    var $prifields;
+
+    /** Array of aliases - for caching purposes */
+    var $aliases;
+
+    function AA_Fields($master_id, $collection = 0) {
+        $this->master_id  = $master_id;
+        $this->fields     = null;
+        $this->collection = $collection;
+        $this->prifields  = null;
+        $this->aliases    = null;
+    }
+
+    /** Returns list of fields which belongs to the slice
+     *  The result is in two arrays - $fields    (key is field_id)
+     *                              - $prifields (just field_id sorted by priority)
+     *  @param $slice_id       - id of slice for which you want to get fields array
+     *  @param $slice_fields   - if true, the result contains only "slice fields"
+     *                           which are not used for items, but rather for slice
+     *                           setting
+     *  @see sliceobj:slice->fields()
+     */
+    function load($force=false) {
+        if ( !$force AND !is_null($this->fields) ) {
+            return;
+        }
+
+        $this->fields    = array();
+        $this->prifields = array();
+
+        $p_master_id = q_pack_id($this->master_id);
+        $db = getDB();
+
+        // slice_fields are begins with underscore
+        // slice fields are the fields, which we do not use for items in the slice,
+        // but rather for setting parameters of the slice
+        $fields_where = ($this->collection == 0) ? "AND id NOT LIKE '\_%'" : "AND id LIKE '\_%'";
+        $SQL = "SELECT * FROM field WHERE slice_id='$p_master_id' $fields_where ORDER BY input_pri";
+        $db->query($SQL);
+        while ($db->next_record()) {
+            $fid                = $db->f("id");
+            $this->fields[$fid] = new AA_Field(DBFields($db));
+            $this->prifields[]  = $fid;
+        }
+        freeDB($db);
+    }
+
+    /** returns the field (copy - just because of syntax - it is not possible
+     *  to return null in &function())
+     */
+    function getField($field_id) {
+        $this->load();
+        return isset($this->fields[$field_id]) ? $this->fields[$field_id] : null;
+    }
+
+    function getProperty($field_id, $property) {
+        $this->load();
+        return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getProperty($property) : null;
+    }
+
+    function getWidgetAjaxHtml($field_id, $item_id, $aa_value) {
+        $this->load();
+        return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getWidgetAjaxHtml($item_id, $aa_value) : '';
+    }
+
+
+    function getAliases($additional='', $type='') {
+        if ( !is_null($this->aliases) ) {
+            return $this->aliases;
+        }
+        $this->load();
+
+        $this->aliases = is_array($additional) ? $additional : array();
+
+        //  Standard aliases
+        $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_e:itemcount",        "id..............", _m("number of found items"));
+        $this->aliases["_#ITEMINDX"] = GetAliasDef( "f_e:itemindex",        "id..............", _m("index of item within whole listing (begins with 0)"));
+        $this->aliases["_#PAGEINDX"] = GetAliasDef( "f_e:pageindex",        "id..............", _m("index of item within a page (it begins from 0 on each page listed by pagescroller)"));
+        $this->aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............", _m("alias for Item ID"));
+        $this->aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........", _m("alias for Short Item ID"));
+
+        if ( $type == 'justids') {  // it is enough for view of urls
+            return $this->aliases;
+        }
+
+        $this->aliases["_#EDITITEM"] = GetAliasDef(  "f_e",            "id..............", _m("alias used on admin page index.php3 for itemedit url"));
+        $this->aliases["_#ADD_ITEM"] = GetAliasDef(  "f_e:add",        "id..............", _m("alias used on admin page index.php3 for itemedit url"));
+        $this->aliases["_#EDITDISC"] = GetAliasDef(  "f_e:disc",       "id..............", _m("Alias used on admin page index.php3 for edit discussion url"));
+        $this->aliases["_#RSS_TITL"] = GetAliasDef(  "f_r",            "SLICEtitle",       _m("Title of Slice for RSS"));
+        $this->aliases["_#RSS_LINK"] = GetAliasDef(  "f_r",            "SLICElink",        _m("Link to the Slice for RSS"));
+        $this->aliases["_#RSS_DESC"] = GetAliasDef(  "f_r",            "SLICEdesc",        _m("Short description (owner and name) of slice for RSS"));
+        $this->aliases["_#RSS_DATE"] = GetAliasDef(  "f_r",            "SLICEdate",        _m("Date RSS information is generated, in RSS date format"));
+        $this->aliases["_#SLI_NAME"] = GetAliasDef(  "f_e:slice_info", "name",             _m("Slice name"));
+
+        $this->aliases["_#MLX_LANG"] = GetAliasDef(  "f_e:mlx_lang",   MLX_CTRLIDFIELD,             _m("Current MLX language"));
+        $this->aliases["_#MLX_DIR_"] = GetAliasDef(  "f_e:mlx_dir",   MLX_CTRLIDFIELD,             _m("HTML markup direction tag (e.g. DIR=RTL)"));
+
+        // database stored aliases
+        foreach ($this->fields as $field) {
+            $this->aliases = array_merge($this->aliases, $field->getAliases());
+        }
+        return($this->aliases);
+    }
+
+    // returns field id of field which stores category (usually "category........")
+    function getCategoryFieldId() {
+        $this->load();
+        $no = 10000;
+        foreach ($this->fields as  $fid => $foo ) {
+            if ( substr($fid, 0, 8) != "category" ) {
+                continue;
+            }
+            $last = AA_Fields::getFieldNo($fid);
+            $no = min( $no, ( ($last=='') ? -1 : (integer)$last) );
+        }
+        if ($no==10000) {
+            return false;
+        }
+        $no = ( ($no==-1) ? '.' : (string)$no);
+        return AA_Fields::createFieldId("category", $no);
+    }
+
+
+    /** deprecated - for backward compatibility only */
+    function getRecordArray() {
+        $this->load();
+        $ret = array();
+        foreach ( $this->fields as $fid => $fld ) { // in priority order
+            $ret[$fid] = $fld->getRecord();
+        }
+        return $ret;
+    }
+
+    function getPriorityArray() {
+        $this->load();
+        return $this->prifields;
+    }
+
+    function getSearchArray() {
+        $this->load();
+        $i = 0;
+        foreach ( $this->fields as $field_id => $field ) { // in priority order
+            $field_type = $field->getSearchType();
+            // we can hide the field, if we put in fields.search_pri=0
+            $search_pri = ($field->getProperty('search_pri') ? ++$i : 0 );
+                               //             $name,        $field,   $operators, $table, $search_pri, $order_pri
+            $ret[$field_id] = GetFieldDef( $field->getProperty('name'), $field_id, $field_type, false, $search_pri, $search_pri);
+        }
+        return $ret;
     }
 
     /** Returns true, if the passed field id looks like slice setting field
@@ -751,6 +1612,9 @@ class AA_Fields {
         return (string)substr(strrchr($id,'.'), 1);
     }
 
+    /** creates slice field
+     *  - static class function
+     */
     function createSliceField($type) {
         $varset = new CVarset();
 
@@ -794,7 +1658,6 @@ class AA_Fields {
     }
 
 }
-
 
 
 /** Returns list of fields which belongs to the slice
@@ -894,24 +1757,31 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
     // if the output fields are restricted, restrict also item fields
     if ( $fields2get ) {
+        $item_sql_fields = $fields2get;
+
+        // we need slice_id for each item, if we have to count with slice permissions
+        if ( !$ignore_reading_password AND !in_array('slice_id........', $fields2get) ) {
+            $item_sql_fields[] = 'slice_id........';
+        }
         $metabase = new AA_Metabase();
-        $item_fields = $metabase->itemFields4Sql($fields2get);
+        $item_fields = $metabase->itemFields4Sql($item_sql_fields);
     } else {
         $item_fields = 'item.*';
     }
 
     $id_column = ($use_short_ids ? "short_id" : "id");
-    $SQL = "SELECT $item_fields, slice.reading_password
-            FROM item INNER JOIN slice ON item.slice_id = slice.id
-            WHERE item.$id_column $sel_in";
+    $SQL = "SELECT $item_fields FROM item WHERE item.$id_column $sel_in";
     $db->tquery($SQL);
 
     $n_items = 0;
     while ( $db->next_record() ) {
         // proove permissions for password-read-protected slices
-        $reading_permitted = $ignore_reading_password
-           || ($db->f("reading_password") == "")
-           || ($db->f("reading_password") == $GLOBALS["slice_pwd"]);
+
+        if (!$ignore_reading_password) {
+            $reading_password = AA_Slices::getSliceProperty(unpack_id128($db->f("slice_id")),'reading_password');
+        }
+
+        $reading_permitted = ($ignore_reading_password OR !$reading_password OR ($reading_password == md5($GLOBALS["slice_pwd"])));
         $item_permitted[$db->f("id")] = $reading_permitted;
 
         $n_items = $n_items+1;
@@ -929,7 +1799,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         // could be either shortid or longid, but is NOT tagged id.
         while (list($key, $val) = each($db->Record)) {
             // we need only item fields
-            if (!is_numeric($key) AND ($key != 'reading_password')) {
+            if (!is_numeric($key)) {
                 $content[$foo_id][AA_Fields::createFieldId($key)][] = array(
                      "value" => $reading_permitted ? $val : _m("Error: Missing Reading Password"));
             }
@@ -1045,7 +1915,7 @@ function GrabConstantColumn(&$db, $column) {
         case "pri":         return array( "value"=> $db->f("pri") );
         case "group":       return array( "value"=> $db->f("group_id") );
         case "class":       return array( "value"=> $db->f("class") );
-        case "counter":     return array( "value"=> $i++ );
+        // case "counter":     return array( "value"=> $i++ );
         case "id":          return array( "value"=> unpack_id128($db->f("id") ));
         case "description": return array( "value"=> $db->f("description"), "flag" => FLAG_HTML);
         case "short_id":    return array( "value"=> $db->f("short_id") );
@@ -1069,7 +1939,7 @@ function GetConstantContent( $zids ) {
     $content[$coid]["const_pri"][]         = GrabConstantColumn($db, "pri");
     $content[$coid]["const_group"][]       = GrabConstantColumn($db, "group");
     $content[$coid]["const_class"][]       = GrabConstantColumn($db, "class");
-    $content[$coid]["const_counter"][]     = GrabConstantColumn($db, "counter");
+    $content[$coid]["const_counter"][]     = $i++;
     $content[$coid]["const_id"][]          = GrabConstantColumn($db, "id");
     $content[$coid]["const_description"][] = GrabConstantColumn($db, "description");
     $content[$coid]["const_short_id"][]    = GrabConstantColumn($db, "short_id");
@@ -1132,27 +2002,6 @@ function GetCategoryGroup($slice_id, $field='') {
     } else {
         return false;
     }
-}
-
-// -------------------------------------------------------------------------------
-
-// returns field id of field which stores category (usually "category........")
-function GetCategoryFieldId( $fields ) {
-    $no = 10000;
-    if ( isset($fields) AND is_array($fields) ) {
-        foreach ($fields as  $k => $val ) {
-            if ( substr($val['id'], 0, 8) != "category" ) {
-                continue;
-            }
-            $last = AA_Fields::getFieldNo($val['id']);
-            $no = min( $no, ( ($last=='') ? -1 : (integer)$last) );
-        }
-    }
-    if ($no==10000) {
-        return false;
-    }
-    $no = ( ($no==-1) ? '.' : (string)$no);
-    return AA_Fields::createFieldId("category", $no);
 }
 
 // -------------------------------------------------------------------------------
@@ -1237,7 +2086,7 @@ function HtmlPageBegin($stylesheet='default', $js_lib=false, $lang=null) {
 
     $charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang ? $lang : get_mgettext_lang()];
     echo "<!--$lang-->";
-    echo "\n     <meta http-equiv=\"Content-Type\" content=\"text/html; charset='$charset'\">\n";
+    echo "\n     <meta http-equiv=\"Content-Type\" content=\"text/html; charset=$charset\">\n";
     if ($js_lib) {
         FrmJavascriptFile( 'javascript/js_lib.js' );
     }
@@ -1370,7 +2219,7 @@ function is_field_type_numerical ($field_type) {
 *   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
 *   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
 */
-function CopyTableRows ($table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
+function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
     if (!$omit_columns) $omit_columns = array();
     if (!$id_columns) $id_columns = array();
 
@@ -1869,15 +2718,23 @@ class contentcache {
      *  value is then stored into cache, so next call of the $function with the
      *  same parameters is returned from cache - function is not performed.
      *  Use this feature mainly for repeating, time consuming functions!
-     *  You could use also object methods - then the $function parameter should
-     *  be array (see http://php.net/manual/en/function.call-user-func.php)
-     *  For static class methods:
-     *     $result = $contentcache->get_result(array('Classname', 'function_name'), array(param1, param2));
-     *  For instance methods:
-     *     $result = $contentcache->get_result(array($this, 'function_name'), array(param1, param2));
+     *
+     *  @param $function - name of function or you could use also object methods
+     *                     then the $function parameter should be array
+     *                     (see http://php.net/manual/en/function.call-user-func.php)
+     *                     For static class methods:
+     *                        $result = $contentcache->get_result(array('Classname', 'function_name'), array(param1, param2));
+     *                     For instance methods:
+     *                        $result = $contentcache->get_result(array($this, 'function_name'), array(param1, param2));
+     *  @param $params   - array of function's parameters
+     *  @param $additional_params - string
+     *                   - special param for cache - it is not passed to the
+     *                     function but the cache counts with it (useful, if you
+     *                     know, that the result of the $function depends not
+     *                     only on its parameters, but also on some (global?) variable
      */
-    function get_result( $function, $params=array() ) {
-        $key = md5(serialize($function).serialize($params));
+    function get_result( $function, $params=array(), $additional_params='' ) {
+        $key = md5(serialize($function).serialize($params).$additional_params);
         if ( isset( $this->content[$key]) ) {
             return $this->content[$key];
         }
@@ -1885,7 +2742,6 @@ class contentcache {
         $this->content[$key] = $val;
         return $val;
     }
-
 
     // set new value for key $key
     function set($access_code, &$val) {
@@ -2048,22 +2904,7 @@ function get_if($value, $else, $else2='aa_NoNe') {
  *  file, for better version informations
  */
 function aa_version() {
-    return 'ActionApps 2.10.0 ($Date$, $Revision$)';
-}
-
-// file_get_contents works in PHP >=4.3.0
-if (!function_exists("file_get_contents")) {
-    function file_get_contents($filename, $use_include_path = 0) {
-        $data = ""; // just to be safe. Dunno, if this is really needed
-        $file = @fopen($filename, "rb", $use_include_path);
-        if ($file) {
-            while (!feof($file)) {
-                $data .= fread($file, 1024);
-            }
-            fclose($file);
-        }
-        return $data;
-    }
+    return 'ActionApps 2.11.0 ($Date$, $Revision$)';
 }
 
 class CookieManager {
@@ -2075,39 +2916,6 @@ class CookieManager {
 
     function get($name) {
         return $_COOKIE['AA_'.$name];
-    }
-}
-
-/** Components (plugins) manipulation class */
-class AA_Components {
-
-    /** Return names of all known AA classes, which begins with $mask
-     *  static function
-     */
-    function getClassNames($mask) {
-        $right_classes = array();
-        $mask_length   = strlen($mask);
-        foreach (get_declared_classes() as $classname) {
-            if ( substr($classname,0,$mask_length) == $mask ) {
-                $right_classes[] = $classname;
-            }
-        }
-        return $right_classes;
-    }
-
-    function getSelectionCode($mask, $input_id, &$params) {
-        $options      = array('AA_Empty' => _m('select ...'));
-        $html_options = array('AA_Empty' => '');
-        foreach (AA_Components::getClassNames($mask) as $selection_class) {
-            // call static class methods
-            $options[$selection_class]      = call_user_func(array($selection_class, 'name'));
-            $html_options[$selection_class] = call_user_func_array(array($selection_class, 'htmlSetting'), array($input_id, &$params));
-        }
-        return getSelectWithParam($input_id, $options, "", $html_options);
-    }
-
-    function factory($classname, $params=null) {
-        return new $classname($params);
     }
 }
 
@@ -2220,11 +3028,21 @@ class AA_ChangesMonitor {
         }
     }
 
-
     /** returns all proposals for given resource (like item_id)
      *  return value is array ordered by time of proposal
      */
     function getProposals($resource_ids) {
+        return $this->_get($resource_ids, 'proposal');
+    }
+
+    function getHistory($resource_ids) {
+        return $this->_get($resource_ids, 'history');
+    }
+
+    /** returns all proposals for given resource (like item_id)
+     *  return value is array ordered by time of proposal
+     */
+    function _get($resource_ids, $type) {
         $garr = new AA_GeneralizedArray();
         if ( !is_array($resource_ids) OR (count($resource_ids)<1) ) {
             return $garr;
@@ -2235,6 +3053,7 @@ class AA_ChangesMonitor {
         $changes = GetTable2Array("SELECT `change_record`.*, `change`.resource_id
                                 FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
                                 WHERE `change`.resource_id IN ($ids4sql)
+                                AND   `change`.type='$type'
                                 ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority", '', 'aa_fields');
 
         if ( is_array($changes) ) {

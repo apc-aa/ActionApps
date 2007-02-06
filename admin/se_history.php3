@@ -202,7 +202,7 @@ $manager_settings = array(
                          )
          );
 
-$manager = new manager($manager_settings);
+$manager = new AA_Manager($manager_settings);
 $profile = new aaprofile($auth->auth["uid"], $module_id); // current user settings
 
 // r_state array holds all configuration of Links Manager

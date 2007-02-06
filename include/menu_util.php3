@@ -146,7 +146,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
                 $title_img = a_href( AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('alerts.gif', _m('Alerts'), 62, 36));
                 break;
             case 'S':
-                if (AA_Slices::getSliceField($slice_id, 'type') == "ReaderManagement") {
+                if (AA_Slices::getSliceProperty($slice_id, 'type') == "ReaderManagement") {
                     $title_img = a_href(AA_INSTAL_PATH. 'doc/reader.html', GetAAImage('readers.gif', _m('Reader management'), 28, 40));
                 }
                 break;
@@ -166,7 +166,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
               <td width="1%" rowspan="2" align="center" class="nblogo">'.$nb_logo.'</td>
               <td height="43" align="center" valign="middle" class="slicehead">'.
                   $title_img .'&nbsp;'. $smmenus[$activeMain]['title']. "  -  ".
-                  ($slice_id ? sliceid2name($slice_id) : _m("New slice")).
+                  ($slice_id ? AA_Slices::getName($slice_id) : _m("New slice")).
               '</td>
               <td width="20%" align="right" class="navbar">
                 <form name="logoutform" method="post" action="'. get_admin_url('logout.php3').'">';

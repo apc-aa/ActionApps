@@ -173,7 +173,7 @@ if ($feed_id) {          // just one specified APC feed
 } else {                 // all RSS and APC and general feeds
     $rssfeeds     = GetTable2Array('SELECT feed_id FROM rssfeeds', 'NoCoLuMn', 'feed_id');
     $aafeeds      = GetTable2Array('SELECT feed_id FROM external_feeds', 'NoCoLuMn', 'feed_id');
-    $generalfeeds = AA_Object::getNameArray('AA_Feed');
+    $generalfeeds = AA_Object::getNameArray('AA_Feed', array(AA_ID));
 
     // we put all the feeds into an array and then we shuffle it
     // that makes the feeding in random order, so broken feeds do not stale
@@ -207,7 +207,7 @@ if ($feed_id) {          // just one specified APC feed
                 $feed->loadRSSFeed($feed_seting['id']);
                 break;
             default:
-                $feed &= AA_Object::load($feed_seting['id']);
+                $feed = AA_Object::load($feed_seting['id']);
         }
         $feed->feed();
     }

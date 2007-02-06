@@ -124,19 +124,20 @@ class linkcheck
                $dump .= "Connection: close\r\n\r\n";
                fputs($sock, $dump);
                while (($str = fgets($sock, 1024)) && (($return["code"] == "") || ($return["contentType"] == ""))) {
-                   if (eregi("^http/[0-9]+.[0-9]+ ([0-9]{3}) [a-z ]*", $str)) {
-                       $return["code"] = trim(eregi_replace("^http/[0-9]+.[0-9]+ ([0-9]{3}) [a-z ]*", "\\1", $str));
+                   $match = array();
+                   if (preg_match("~^http/[0-9]+.[0-9]+ ([0-9]{3})~i", $str, $match)) {
+                       $return["code"] = $match[1];
                    }
-                   if (eregi("^Content-Type: ", $str)) {
-                       $return["contentType"] = trim(eregi_replace("^Content-Type: ", "", $str));
+                   if (preg_match("~^Content-Type: (.*)~", $str, $match)) {
+                       $return["contentType"] = $match[1];
                    }
                 }
                 fclose($sock);
                 flush();
              }
         }
-        $return["comment"] = $this->http_error_codes[$return["code"]]["comment"];
-        $return["weight"] = $this->http_error_codes[$return["code"]]["weight"];
+        $return["comment"]   = $this->http_error_codes[$return["code"]]["comment"];
+        $return["weight"]    = $this->http_error_codes[$return["code"]]["weight"];
         $return["timestamp"] = $time;
         return $return;
     }
@@ -153,21 +154,21 @@ class linkcheck
 
         for ($i = 0; (($i < LINKS_VALIDATION_COUNT) && ($db->next_record())); $i++) {
 
-            $l_id = $db->f(id);
-            $l_url = $db->f(url);
-            $l_vc = $db->f(valid_codes);
-            $l_vr = $db->f(valid_rank);
+            $l_id  = $db->f('id');
+            $l_url = $db->f('url');
+            $l_vc  = $db->f('valid_codes');
+            $l_vr  = $db->f('valid_rank');
 
             $val = $this->check_url($l_url); // check url
             $val["valid_codes"] = $this->add_check($val, $l_vc); // add this check into valid_codes
-            $val["valid_rank"] = $this->count_weight($val["valid_codes"]); // count rank for link
+            $val["valid_rank"]  = $this->count_weight($val["valid_codes"]); // count rank for link
 
             if ($debug) { print_r($val); }
 
             // update values in db
             $SQL = "UPDATE links_links SET valid_codes='".$val["valid_codes"]."',
-                                           valid_rank='".$val["valid_rank"]. "',
-                                           validated='".$val["timestamp"]."'
+                                           valid_rank='" .$val["valid_rank"]. "',
+                                           validated='"  .$val["timestamp"].  "'
                     WHERE id = '".$l_id."'";
             if ($debug) { echo "<pre> $SQL </pre>"; }
             $db2->tquery($SQL);

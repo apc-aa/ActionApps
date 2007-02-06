@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -19,22 +20,129 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+require_once AA_INC_PATH ."statestore.php3";
 require_once AA_INC_PATH."sql_parser.php3";
 require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."pagecache.php3";
 
-class AA_Condition {
-    /** Array of compared fields */
-    var $fields;
-    /** Condition operator like 'LIKE', 'RLIKE', '=', '<>', '<', '>' ... */
+
+class AA_Operators {
+
+    /// Static ///
+
+    function getEnum() {
+        return array('enum', array('LIKE'    => _m('contains'),
+                                   'RLIKE'   => _m('begins with'),
+                                   'LLIKE'   => _m('LLIKE'),
+                                   'XLIKE'   => _m('XLIKE'),
+                                   'BETWEEN' => _m('BETWEEN'),
+                                   'ISNULL'  => _m('not set'),
+                                   'NOTNULL' => _m('is set'),
+                                   '='       => _m('='),
+                                   '<'       => _m('<'),
+                                   '>'       => _m('>'),
+                                   '<>'      => _m('<>'),
+                                   '!='      => _m('<>'),
+                                   '<='      => _m('<>'),
+                                   '>='      => _m('<>'),
+                                   'd:<'     => _m('d:<'),
+                                   'd:>'     => _m('d:>'),
+                                   'd:<='    => _m('d:<='),
+                                   'd:>='    => _m('d:>='),
+                                   'd:='     => _m('d:='),
+                                   'd:!='    => _m('d:!='),
+                                   'd:<>'    => _m('d:<>'),
+                                   'e:<'     => _m('e:<'),
+                                   'e:>'     => _m('e:>'),
+                                   'e:<='    => _m('e:<='),
+                                   'e:>='    => _m('e:>='),
+                                   'e:='     => _m('e:='),
+                                   'e:!='    => _m('e:!='),
+                                   'e:<>'    => _m('e:<>'),
+                                   'm:<'     => _m('m:<'),
+                                   'm:>'     => _m('m:>'),
+                                   'm:<='    => _m('m:<='),
+                                   'm:>='    => _m('m:>='),
+                                   'm:='     => _m('m:='),
+                                   'm:!='    => _m('m:!='),
+                                   'm:<>'    => _m('m:<>'),
+                                   '-:<'     => _m('-:<'),
+                                   '-:>'     => _m('-:>'),
+                                   '-:<='    => _m('-:<='),
+                                   '-:>='    => _m('-:>='),
+                                   '-:='     => _m('-:='),
+                                   '-:!='    => _m('-:!='),
+                                   '-:<>'    => _m('-:<>'),
+                                   ));
+    }
+
+    function getJsDefinition() {
+        return '
+            var operator_names  = new Array();
+            var operator_values = new Array();
+            // text
+            operator_names[0]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ");
+            operator_values[0] = new Array(       "LIKE"         ,       "RLIKE"           ,        "=",              "ISNULL",              "NOTNULL");
+            // numeric
+            operator_names[1]  = new Array(" = "," < "," > ", " <> ", " '._m('not set').' ", " '._m('is set').' ");
+            operator_values[1] = new Array( "=" , "<" , ">" ,  "<>",          "ISNULL",             "NOTNULL");
+            // date
+            operator_names[2]  = new Array(" < "," > ", " '._m('not set').' ", " '._m('is set').' ");
+            operator_values[2] = new Array("d:<","d:>",         "ISNULL",             "NOTNULL");
+            // constants
+            operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ", " '._m("select ...").' ");
+            operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,         "ISNULL"     ,        "NOTNULL",            "select");
+            ';
+    }
+}
+
+class AA_Condition extends AA_Object {
+
+    var $fields;    // (array)
     var $operator;
-    /** Comared value */
     var $value;
 
-    function AA_Condition($fields, $operator, $value) {
-        $this->fields =   $fields;
-        $this->operator = $operator;
-        $this->value    = $value;
+
+    /// Static ///
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array (                   //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
+            /** Array of compared fields */
+            'fields'   => new AA_Property( 'fields',   _m("Fields"),   'text',  true,  true, 'field' ),
+            /** Condition operator like 'LIKE', 'RLIKE', '=', '<>', '<', '>' ... */
+            'operator' => new AA_Property( 'operator', _m("Operator"), 'text',  false, true, AA_Operators::getEnum() ),
+             /** Compared value */
+            'value'    => new AA_Property( 'value',    _m("Value"),    'text',  false, true, 'text' )
+            );
+    }
+
+    // required - class name (just for PHPLib sessions)
+    var $classname        = "AA_Condition";
+    var $persistent_slots = array('fields', 'operator', 'value');
+
+    // The parameters are optional, because we are storing AA_Condition
+    // to the session (with AA_Search_Row) and phplib session management uses
+    // constructors with none parameters
+    function AA_Condition($fields=null, $operator=null, $value=null) {
+        $this->fields    = (array)$fields;
+        $this->operator  = $operator;
+        $this->value     = $value;
+    }
+
+    /** Access function to condition field */
+    function getFields() {
+        return $this->fields;
+    }
+
+    /** Access function to condition operator */
+    function getOperator() {
+        return $this->operator;
+    }
+
+    /** Access function to condition value */
+    function getValue() {
+        return $this->value;
     }
 
     /** Returns clasic $conds array - array('operator'  => ..,
@@ -52,6 +160,16 @@ class AA_Condition {
         return $ret;
     }
 
+    function getAsString($condition_number=0) {
+        $ret = array();
+        foreach ($this->fields as $cond_field) {
+            $ret[] = "conds[$condition_number][$cond_field]=1";
+        }
+        $ret[] = "conds[$condition_number][operator]=". $this->operator;
+        $ret[] = "conds[$condition_number][value]=".    $this->value;
+        return join('&', $ret);
+    }
+
     function matches(&$itemcontent) {
         foreach ($this->fields as $field) {
             foreach ($itemcontent->getValues($field) as $val) {
@@ -64,6 +182,7 @@ class AA_Condition {
         return false;
     }
 
+    /** Postfiltering, when the item (field value) is already loaded */
     function _compare($field_value) {
         switch( $this->operator ) {
             case 'LIKE':
@@ -89,12 +208,18 @@ class AA_Condition {
     }
 }
 
-class Conditions {
-    /** array of Condition */
+class AA_Set extends AA_Object {
+    /** array of AA_Condition */
     var $conds;
 
-    function Conditions() {
+    /** array of AA_Sortorder */
+    var $sort;
+
+    function AA_Set($conds=null, $sort=null) {
         $this->clear();
+        if ( !is_null($conds) ) {
+            $this->addCondsFromArray($conds, 'LIKE');
+        }
     }
 
     function clear() {
@@ -110,8 +235,148 @@ class Conditions {
     /** Creates conditions from d-<fields>-<operator>-<value>-<fields>-<op....
      *  string ie:   d-headline........,category.......1-RLIKE-Bio
      */
-    function addFromString($string) {
-        $commands = new ViewCommands($string);
+    function addCondsFromString($string, $defaultCondsOperator='RLIKE') {
+        if (substr($string, 0, 2)== 'd-') {
+            $this->_parseViewConds($string);
+        }
+        $this->_parseCondsString($string, $defaultCondsOperator);
+    }
+
+    /** Returns $conds[] array, which is created from conds[] 'url' string
+     *  like conds[0][category........]=first&conds[1][switch.........1]=1
+     */
+    function _parseCondsString($conds_string, $defaultCondsOperator) {
+        if (empty($conds_string)) {
+            return;
+        }
+        $conds = false;
+        parse_str($conds_string, $aa_query_arr);
+        // we also need PHP to think a['key'] is the same as a[key], that's why we
+        // call NormalizeArrayIndex()
+        $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
+        $this->addCondsFromArray($aa_query_arr['conds'], $defaultCondsOperator);
+    }
+
+    function addCondsFromArray($conds, $defaultCondsOperator='RLIKE') {
+        if (!is_array($conds)) {
+            return;
+        }
+
+        // joined two older functions:
+        //    ParseMultiSelectConds($conds);
+        //    ParseEasyConds($conds, $defaultCondsOperator);
+
+        // First take care about 'valuejoin'
+
+        // Parses the conds from a multiple select box: e.g.
+        //  conds[1][value][0] = 'apple'
+        //  conds[1][value][1] = 'cherry'
+        //  conds[1][valuejoin] = 'AND'
+        //      => creates two conds: conds[7] and conds[8] for example,
+        //         fill conds[7][value] = 'apple', conds[8][value] = 'cherry'
+        //
+        //  with conds[1][valuejoin] = 'OR'
+        //      => only changes conds[1][value] to '"apple" OR "cherry"'
+        //  (c) Jakub, May 2002
+        foreach ($conds as $icond => $cond) {
+            if (is_array($cond['value'])) {
+                // make phrases from all the all the values
+                array_walk($cond['value'], 'PutInQuotes');
+                if ($cond['valuejoin'] == 'AND') {
+                    foreach ($cond['value'] as $val) {
+                        $newcond = $cond;
+                        unset($newcond['valuejoin']);
+                        $conds[] = $newcond;
+                    }
+                    unset($conds[$icond]);
+                } else {    // default is using valuejoin as OR
+                    // the phrases are already in quotes
+                    unset($conds[$icond]['valuejoin']);
+                    $conds[$icond]['value'] = join(' OR ', $cond['value']);
+                }
+            }
+        }
+
+        // the 'valuejoin is now removed - transformed into miltiple conditions
+
+        // Now we convert the easy conds to extended syntax
+
+        /**
+         * Transforms simplified version of conditions to the extended syntax
+         * for example conds[0][headline........]='Hi' transforms into
+         * conds[0][headline........]=1,conds[0]['value']='Hi',conds[0][operator]=LIKE
+         *
+         * It also replaces all united field conds
+         *    like conds[0][headline........,abstract........]='Hi'
+         * with its equivalents:
+         *     conds[0][headline........]=1,conds[0][abstract........]=1,
+         *     conds[0]['value']='Hi',conds[0][operator]=LIKE
+         * (number of united field conds is unlimited and you can use it in simplified
+         *  condition syntax as well as in extended condition syntax)
+         *
+         * @param array $conds input/output - transformed conditions
+         * @param array $defaultCondsOperator - could be scalar (default), but also
+         *              array: field_id => array('operator'=>'LIKE')
+         */
+        // Check the syntax and remove conds with wrong syntax (like conds[xx]=yy)
+        // and replace easy conds with extended syntax conds
+        foreach ($conds as $k => $cond) {
+            if ( !is_array($cond) ) {
+                unset($conds[$k]);
+                continue;             // bad condition - ignore
+            }
+            if ( !isset($cond['value']) && (count($cond) == 1) ) {
+                $conds[$k]['value'] = reset($cond);
+            }
+            if ( !isset($cond['operator']) ) {
+                if ( is_array($defaultCondsOperator) ) {
+                    if ( is_array($defaultCondsOperator[key($cond)] )) {
+                        $conds[$k]['operator'] = get_if($defaultCondsOperator[key($cond)]['operator'], 'LIKE');
+                    } else {
+                        $conds[$k]['operator'] = 'LIKE';
+                    }
+                } else {
+                    $conds[$k]['operator'] = $defaultCondsOperator;
+                }
+            }
+            if (!($cond['operator'] == 'ISNULL') AND !($cond['operator'] == 'NOTNULL')) {
+                // The value could be empty for ISNULL or NOTNULL operators
+                if (!isset($conds[$k]['value']) OR ($conds[$k]['value']=="")) {
+                    // For other operators we should remove all conditions without value
+                    unset ($conds[$k]);
+                }
+            }
+        }
+
+        // and now replace all united conds (like conds[0][headline........,abstract........]=1)
+        // with its equivalents
+        foreach ($conds as $k => $cond) {
+            foreach ( $cond as $field => $val ) {
+                if ( strpos( $field, ',') !== false ) {
+                    unset($conds[$k][$field]);
+                    foreach ( explode(',',$field) as $separate_field ) {
+                        $conds[$k][$separate_field] = $val;
+                    }
+                }
+            }
+        }
+
+        // Finally create the the conds array
+        foreach ($conds as $k => $cond) {
+            $operator      = $cond['operator'];
+            $value         = $cond['value'];
+            unset($cond['operator']);
+            unset($cond['value']);
+            $field_arr      = array_keys($cond);
+            $this->conds[] = new AA_Condition($field_arr, $operator, $value);
+        }
+    }
+
+    /** Creates conditions from d-<fields>-<operator>-<value>-<fields>-<op....
+     *  string ie:   d-headline........,category.......1-RLIKE-Bio
+     */
+    function _parseViewConds($string) {
+        $commands = new AA_View_Commands($string);
         $command  = $commands->get('d');
         if (!$command) {
             return false;
@@ -126,7 +391,7 @@ class Conditions {
         $i=0;
         $command_params = $command->getParameterArray();
         while ( $command_params[$i] ) {
-             if ( Conditions::check($command_params[$i], $command_params[$i+2]) ) {
+             if ( AA_Set::check($command_params[$i], $command_params[$i+2]) ) {
                  $field_arr = explode(',',$command_params[$i]);
                  $this->conds[] = new AA_Condition($field_arr, $command_params[$i+1], stripslashes($command_params[$i+2]));
              }
@@ -140,6 +405,17 @@ class Conditions {
         $ret = array();
         foreach ( $this->conds as $condition ) {
             $ret[] = $condition->getArray();
+        }
+        return $ret;
+    }
+
+    /** retruns $conds[] array - mainly for backward compatibility */
+    function getCondsAsString() {
+        $ret   = '';
+        $delim = '';
+        foreach ( $this->conds as $k => $condition ) {
+            $ret  .= $delim . $condition->getAsString($k);
+            $delim = '&';
         }
         return $ret;
     }
@@ -164,12 +440,25 @@ class Conditions {
         }
         return true;
     }
+
+    /// Static ///
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getClassProperties()  {
+        return array (                //  id            name         type          multi  persistent validator, required, help,                                         morehelp, example
+            /** Array of AA_Condition */
+            'conds' => new AA_Property( 'conds', _m("Conditions"), 'AA_Condition',  true, true ),
+            /** array of AA_Sortorder */
+            'sort'  => new AA_Property( 'sort',  _m("Sort"),       'AA_Sortorder',  true, true )
+            );
+    }
+
 }
 
-class Sortorder {
+class AA_Sortorder {
     var $order;
 
-    function Sortorder() {
+    function AA_Sortorder() {
         $this->clear();
     }
 
@@ -184,7 +473,7 @@ class Sortorder {
      *  4 items of each category. In such case we returned something like:
      *  array( 'limit' => 4, 'category........' => d )
      */
-    function addFromString( $sort ) {
+    function addSortFromString( $sort ) {
         $ret = array();
         if ($sort) {
             // is defined group limit?
@@ -217,10 +506,10 @@ class Sortorder {
  */
 function getSortFromUrl( $sort ) {
     $ret_sort = array();
-    $order    = new Sortorder;
+    $order    = new AA_Sortorder;
     if ( isset($sort) ) {
         if ( !is_array($sort) ) {
-            $order->addFromString($sort);
+            $order->addSortFromString($sort);
             $ret_sort = $order->getOrder();
         } else {
             ksort( $sort, SORT_NUMERIC); // it is not sorted and the order is important
@@ -229,7 +518,7 @@ function getSortFromUrl( $sort ) {
                     if ( is_array($srt) ) {
                         $ret_sort[] = array( key($srt) => (strtolower(current($srt)) == "d" ? 'd' : 'a'));
                     } else {
-                        $order->addFromString($srt);
+                        $order->addSortFromString($srt);
                         $ret_sort = array_merge($ret_sort, $order->getOrder());
                     }
                 }
@@ -355,6 +644,13 @@ function ProoveFieldNames($slices, $conds) {
 
 // -------------------------------------------------------------------------------------------
 
+/** Puts the expression in the quotes, so it becames phrase
+ *  Example:   I say: "Hay..."    ->    "I say: \"Hay\"..."
+ */
+function PutInQuotes(&$text, $key) {
+    $text = '"'. str_replace('"', '\"', $text). '"';
+}
+
 /* parses the conds from a multiple select box: e.g.
     conds[1][value][0] = 'apple'
     conds[1][value][1] = 'cherry'
@@ -366,34 +662,26 @@ function ProoveFieldNames($slices, $conds) {
     with conds[1][valuejoin] = 'OR' only changes conds[1][value] to '"apple" OR "cherry"'
     (c) Jakub, May 2002
 */
-function ParseMultiSelectConds(&$conds)
-{
-    if (!is_array($conds)) return;
+function ParseMultiSelectConds(&$conds) {
+    if (!is_array($conds)) {
+        return;
+    }
     foreach ($conds as $icond => $cond) {
         if (is_array($cond['value'])) {
-            if (!$cond['valuejoin']) {
-                echo "ERROR in conds: when using ['value'][], you must use [valuejoin]='OR'|'AND' also!";
-                return;
-            }
-            if ($cond['valuejoin'] == 'OR') {
-                $values = "";
-                foreach ($cond['value'] as $val) {
-                    if ($values != "") $values .= " OR ";
-                    $values .= '"'.addslashes($val).'"';
-                }
-                unset($conds[$icond]['valuejoin']);
-                $conds[$icond]['value'] = $values;
-
-            } elseif ($cond['valuejoin'] == 'AND') {
+            // make phrases from all the all the values
+            array_walk($cond['value'], 'PutInQuotes');
+            if ($cond['valuejoin'] == 'AND') {
                 foreach ($cond['value'] as $val) {
                     $newcond = $cond;
-                    $newcond['value'] = '"'.addslashes ($val).'"';
-                    unset ($newcond['valuejoin']);
+                    unset($newcond['valuejoin']);
                     $conds[] = $newcond;
                 }
-                unset ($conds[$icond]);
-
-            } else echo "ERROR in conds: [valuejoin] must be set to 'OR' or 'AND'.";
+                unset($conds[$icond]);
+            } else {    // default is using valuejoin as OR
+                // the phrases are already in quotes
+                unset($conds[$icond]['valuejoin']);
+                $conds[$icond]['value'] = join(' OR ', $cond['value']);
+            }
         }
     }
 }
@@ -491,18 +779,6 @@ function String2Sort( $sort_string ) {
         $sort = $aa_query_arr['sort'];
     }
     return $sort;
-}
-
-// function finds group_id in field.input_show_func parameter
-function GetConstantGroup( $input_show_func ) {
-  $INPUT_SHOW_FUNC_TYPES = inputShowFuncTypes();
-  list($fnc,$constgroup) = explode(':', $input_show_func);
-
-  // does this field use constants?
-  if ( strstr($INPUT_SHOW_FUNC_TYPES[$fnc]['paramformat'], 'const') AND
-      (substr($constgroup,0,7) != "#sLiCe-") )  // prefix indicates select from items, not constants
-    return $constgroup;          // yes
-  return false;
 }
 
 /** Creates array of SQL conditions based on $conds and fields $add
@@ -653,17 +929,84 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_str2find,
 }
 
 
+/** Returns part of SQL command used in where related to bins */
+function CreateBinCondition($bin, $ignore_expiry_date=false) {
+    // now is rounded in order the time is in steps - it is better for search
+    // caching - SQL is THE SAME during one time step
+    $now = now('step');            // round up
+
+    /* new version of bin selecting, now we use type of bin from constants.php3 */
+    if (is_numeric($bin)) {
+        /* $bin is numeric constant */
+        $numeric_bin = max(1,$bin);
+    } elseif (is_string($bin)) { /* for backward compatibility */
+        switch ($bin) {
+            /* assign to string type it's numeric constant */
+            case 'ACTIVE'  : $numeric_bin = AA_BIN_ACTIVE;  break;  // 1
+            case 'PENDING' : $numeric_bin = AA_BIN_PENDING; break;  // 2
+            case 'EXPIRED' : $numeric_bin = AA_BIN_EXPIRED; break;  // 4
+            case 'HOLDING' : $numeric_bin = AA_BIN_HOLDING; break;  // 8
+            case 'TRASH'   : $numeric_bin = AA_BIN_TRASH;   break;  // 16
+            case 'ALL'     : $numeric_bin = (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH); break;
+            default        : $numeric_bin = AA_BIN_ACTIVE;  break;  // 1
+        }
+    } else {
+        /* strange case, I think never possible :) */
+        $numeric_bin = AA_BIN_ACTIVE;
+    }
+
+    $SQL = '';
+    /* create SQL query for different types of numeric constants */
+    if ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH)) {
+        $SQL .= ' 1=1 ';
+    } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
+        $SQL .= ' item.status_code=1 ';
+    } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_PENDING)) {
+        //      $SQL .= " item.status_code=1 AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
+        $SQL .= " item.status_code=1 AND (item.expiry_date > '$now') ";
+    } else {
+        $SQL2 = '';
+        if ($numeric_bin & AA_BIN_ACTIVE) {
+            $SQL2 .= " ( item.status_code=1 AND (item.publish_date <= '$now') ";
+            /* condition can specify expiry date (good for archives) */
+            if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
+                //              $SQL2 .= " AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
+                $SQL2 .= " AND (item.expiry_date > '$now') ";
+            }
+            $SQL2 .= ' )';
+        }
+        if ($numeric_bin & AA_BIN_EXPIRED) {
+            if ($SQL2 != "") { $SQL2 .= ' OR '; }
+            $SQL2 .= " (item.status_code=1 AND item.expiry_date <= '$now') ";
+        }
+        if ($numeric_bin & AA_BIN_PENDING) {
+            if ($SQL2 != "") { $SQL2 .= ' OR '; }
+            $SQL2 .= " (item.status_code=1 AND item.publish_date > '$now') ";
+        }
+        if ($numeric_bin & AA_BIN_HOLDING) {
+            if ($SQL2 != "") { $SQL2 .= ' OR '; }
+            $SQL2 .= " (item.status_code=2) ";
+        }
+        if ($numeric_bin & AA_BIN_TRASH) {
+            if ($SQL2 != "") { $SQL2 .= ' OR '; }
+            $SQL2 .= " (item.status_code=3) ";
+        }
+        $SQL .= " ( ".$SQL2 ." ) ";
+    }
+
+    return $SQL;
+}
+
+
+
 // -------------------------------------------------------------------------------------------
 
 /** Finds item IDs for items to be shown in a slice / view
 *
-*   @param string $slice_id older parameter, used only when $slices is not set,
-*                           translated to $slices = array($slice_id)
+*   @param array  $slices array of slices in which to look for items
+*                         could be false. if you specifi restrict_zids
 *   @param array  $conds    search conditions (see FAQ)
 *   @param array  $sort     sort fields (see FAQ)
-*   @param array  $group_by not used (it was implemented, but never used, so
-*                           removed in file version 1.69)
-*   @param array  $slices array of slices in which to look for items
 *   @param string $type
 *       sets status, pub_date and expiry_date according to specified type:
 *       ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL.
@@ -709,301 +1052,288 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_str2find,
 *   sort[0][category........]='9';    // order items by category priority - descending
 *   </pre>
 */
-function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",    // group_by is never used
-    $type="ACTIVE", $slices="", $neverAllItems=0, $restrict_zids=false,
-    $defaultCondsOperator = "LIKE", $use_cache=false ) {
+function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=false, $defaultCondsOperator = "LIKE", $use_cache=false ) {
 
-  // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
+    // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
-  global $debug;                 // displays debug messages
-  global $nocache;               // do not use cache, if set
-  global $CONDS_NOT_FIELD_NAMES; // list of special conds[] indexes (defined in constants.php3)
-  global $QueryIDsCount;
+    global $debug;                 // displays debug messages
+    global $nocache;               // do not use cache, if set
+    global $CONDS_NOT_FIELD_NAMES; // list of special conds[] indexes (defined in constants.php3)
+    global $QueryIDsCount;
 
-  $db = new DB_AA;
-
-  if ( $debug ) huhl("<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",$slices);
-
-
-  //create keystring from values, which exactly identifies resulting content
-  $keystr = $slice_id. serialize($conds). serialize($sort). $group_by. $type.
-            serialize($slices). $neverAllItems.
-            ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
-            $defaultCondsOperator;
-  $cache_condition = ($use_cache AND !$nocache);
-
-  if ( $res = CachedSearch( $cache_condition, $keystr )) {
-      return $res;
-  }
-
-  if (!$slices) {
-      if ($slice_id)
-           $slices = array($slice_id);
-  }
-
-  if ($GLOBALS[debugfields] || $debug) {
-      if ($slices) ProoveFieldNames($slices, $conds);
-  }
-
-  ParseMultiSelectConds($conds);
-  ParseEasyConds($conds, $defaultCondsOperator);
-
-  if ( $debug ) huhl("Conds=",$conds,"Sort=",$sort, "Slices=",$slices);
-
-  // parse conditions ----------------------------------
-  if ( is_array($conds)) {
-    $tbl_count=0;
-    foreach ($conds as $cond) {
-
-      // fill arrays according to this condition
-      $field_count = 0;
-      $cond_flds   = '';
-      foreach ( $cond as $fid => $v ) {
-          // search in all content table fields (new in AA v2.8)
-          switch ( strtolower($fid) ) {
-              case 'all_fields':          $cond_flds = 'all_fields';
-                                          $store     = 'text';
-                                          continue;
-              case 'all_fields_numeric':  $cond_flds = 'all_fields';
-                                          $store     = 'number';
-                                          continue;
-          }
-          if ( $CONDS_NOT_FIELD_NAMES[$fid] ) {
-              continue;      // it is not field_id parameters - skip it for now
-          }
-          if ( !$fields[$fid] OR $v=="") {
-              if ($debug) echo "Skipping $fid in conds[]: not known.<br>"; {
-                  continue;            // bad field_id or not defined condition - skip
-              }
-          }
-
-          if ( $fields[$fid]['in_item_tbl'] ) {   // field is stored in table 'item'
-              // Long ID in conds should be specified as unpacked, but in db it is packed
-              if (($fid == 'id..............') AND (guesstype($cond['value'])=='l')) {
-                  $cond['value'] = q_pack_id($cond['value']);
-              }
-              $select_conds[] = GetWhereExp( 'item.'.$fields[$fid]['in_item_tbl'], $cond['operator'], $cond['value'] );
-              if ( $fid == 'expiry_date.....' ) {
-                  $ignore_expiry_date = true;
-              }
-          } else {
-              $cond_flds .= ( ($field_count++>0) ? ',' : "" ). "'$fid'";
-              // will not work with one condition for text and number fields
-              $store      = ($fields[$fid]['text_stored'] ? "text" : "number");
-          }
-      }
-      if ( $cond_flds != '' ) {
-        $tbl = 'c'.$tbl_count++;
-        // fill arrays to be able construct select command
-        $select_conds[] = GetWhereExp( "$tbl.$store",
-                                          $cond['operator'], $cond['value'] );
-
-        if ( strpos($cond_flds, 'all_fields')!== false ) {  // we are searching all fields in content table
-            $select_tabs[] = "LEFT JOIN content as $tbl
-                                     ON ($tbl.item_id=item.id)";
-        } elseif ($field_count>1) {
-            $select_tabs[] = "LEFT JOIN content as $tbl
-                                     ON ($tbl.item_id=item.id
-                                     AND ($tbl.field_id IN ($cond_flds) OR $tbl.field_id is NULL))";
-        } else {
-            $select_tabs[] = "LEFT JOIN content as $tbl
-                                     ON ($tbl.item_id=item.id
-                                     AND ($tbl.field_id=$cond_flds OR $tbl.field_id is NULL))";
-                      // mark this field as sortable (store without apostrofs)
-            $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;
-        }
-      }
+    if (!is_array($slices)) {
+        $slices = empty($slices) ? array() : (array)$slices;
     }
-  }
 
-  if ( !is_array($sort) OR count($sort)<1 ) {
-    $select_order =  is_object($restrict_zids) ? '' : 'item.publish_date DESC';   // default item order
-  } else {
-    $delim='';
-    foreach ($sort as  $sort_no => $srt) {
-      if (key($srt)=='limit') {
-        next($srt);       // skip the 'limit' record in the array
-      }
-      $fid = key($srt);
-      if ( !$fields[$fid] ) { // bad field_id - skip
-        if ($debug) echo "Skipping sort[x][$fid], don't know $fid.<br>";
-        continue;
-      }
-
-      if ( $fields[$fid]['in_item_tbl'] ) {   // field is stored in table 'item'
-        $fieldId          = 'item.' . $fields[$fid]['in_item_tbl'];
-        $select_order    .= $delim  . $fieldId;
-        // select_distinct added in order we can group by multiple value fields
-        // (items are shown more times)
-        $select_distinct .= ", $fieldId as s$sort_no";
-        if ( stristr(current( $srt ), 'd'))
-          $select_order .= " DESC";
-        $delim=',';
-      } else {
-        if ( !$sortable[ $fid ] ) {           // this field is not joined, yet
-          $tbl = 'c'.$tbl_count++;
-          // fill arrays to be able construct select command
-          $select_tabs[] = "LEFT JOIN content as $tbl
-                                   ON ($tbl.item_id=item.id
-                                   AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
-                        // mark this field as sortable (store without apostrofs)
-          $sortable[$fid] = $tbl;
-        }
-
-        // join constant table if we want to sort by priority
-        $direction = current( $srt );
-        if ( stristr($direction,'1') OR stristr($direction,'9') ) { // sort by priority
-          if ( !($constgroup = GetConstantGroup($fields[$fid]['input_show_func']) ))
-            continue;   // no constant group defined - can't assign priority
-
-          $tbl = 'o'.$tbl_count++;
-          // fill arrays to be able construct select command
-          $select_tabs[] = "LEFT JOIN constant as $tbl
-                                   ON ($tbl.value=". $sortable[$fid] .".text
-                                   AND ($tbl.group_id='$constgroup'
-                                        OR $tbl.group_id is NULL))";
-                        // mark this field as sortable (store without apostrofs)
-
-          // fill arrays according to this sort specification
-          $fieldId          = $tbl. ".pri";
-          $select_order    .= $delim . $fieldId;
-          $select_distinct .= ", $fieldId as s$sort_no";
-          if ( stristr($direction,'9') )
-            $select_order  .= " DESC";
-        } else {                                                   // sort by value
-          $store = ($fields[$fid]['text_stored'] ? "text" : "number");
-          // fill arrays according to this sort specification
-          $fieldId          = $sortable[$fid]. ".$store";
-          $select_order    .= $delim . $fieldId;
-          $select_distinct .= ", $fieldId as s$sort_no";
-          if ( stristr(current( $srt ), 'd'))
-            $select_order  .= " DESC";
-        }
-        $delim=',';
-      }
-      if ($srt['limit']) {
-        $select_limit_field = array('field' => "s$sort_no", 'limit' => $srt['limit']);
-      }
+    if ( $debug ) {
+        huhl("<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",join('-',$slices));
     }
-  }
 
-  // parse group by parameter ----------------------------
-  // .. removed 2/27/2005 Honza (was never used)
-  // ---
-
-  if ( $debug )
-    huhl("QueryZIDs:slice_id=",$slice_id,"  select_tabs=",$select_tabs,
-        "  select_conds=",$select_conds,"  select_order=",$select_order );
-
-  // construct query --------------------------
-  $SQL = "SELECT DISTINCT item.id as itemid $select_distinct FROM item ";
-  if ( isset($select_tabs) AND is_array($select_tabs))
-    $SQL .= " ". implode (" ", $select_tabs);
-
-  $SQL .= " WHERE ";                                         // slice ----------
-
-  if ( is_array($slices) AND (count($slices) >= 1) ) {
-      reset ($slices);
-      $slicesText = "";
-      while (list (,$slice) = each ($slices)) {
-          if ($slicesText != "") $slicesText .= ",";
-          $slicesText .= "'".q_pack_id($slice)."'";
-      }
-      $SQL .= 'item.slice_id' . ((count($slices) == 1) ? " = $slicesText AND " :
-                                      " IN ($slicesText) AND ");
-  }
-  if (is_object($restrict_zids)) {
-    if ($restrict_zids->count() == 0) {
+    if (is_object($restrict_zids) AND ($restrict_zids->count() == 0)) {
         return new zids(); // restrict_zids defined but empty - no result
-    } else {
-       $SQL .= " ".$restrict_zids->sqlin() ." AND ";
     }
-  } else {
-    // slice(s) or item_ids MUST be specified (in order we can get answer in limited time)
-    if (!$slicesText) return new zids();
-  }
 
-  // now is rounded in order the time is in steps - it is better for search
-  // caching - SQL is THE SAME during one time step
-  $now = now('step');            // round up
+    //create keystring from values, which exactly identifies resulting content
+    $keystr          = serialize($conds). serialize($sort). $type.
+                       serialize($slices). $neverAllItems.
+                       ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
+                       $defaultCondsOperator;
+    $cache_condition = ($use_cache AND !$nocache);
 
-  /* new version of bin selecting, now we use type of bin from constants.php3 */
-  if (is_numeric($type)) { /* $type is numeric constant */
-      $numeric_type = max(1,$type);
-  } elseif (is_string($type)) { /* for backward compatibility */
-      switch ($type) { /* assign to string type it's numeric constant */
-          case 'ACTIVE'  : $numeric_type = AA_BIN_ACTIVE;  break;  // 1
-          case 'PENDING' : $numeric_type = AA_BIN_PENDING; break;  // 2
-          case 'EXPIRED' : $numeric_type = AA_BIN_EXPIRED; break;  // 4
-          case 'HOLDING' : $numeric_type = AA_BIN_HOLDING; break;  // 8
-          case 'TRASH'   : $numeric_type = AA_BIN_TRASH;   break;  // 16
-          case 'ALL'     : $numeric_type = (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH); break;
-          default        : $numeric_type = AA_BIN_ACTIVE;  break;  // 1
-      }
-  } else { /* strange case, I think never possible :) */
-      $numeric_type = AA_BIN_ACTIVE;
-  }
-/* create SQL query for different types of numeric constants */
-    if ($numeric_type == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH)) {
-      $SQL .= " 1=1 ";
-    } elseif ($numeric_type == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
-      $SQL .= " item.status_code=1 ";
-    } elseif ($numeric_type == (AA_BIN_ACTIVE | AA_BIN_PENDING)) {
-//      $SQL .= " item.status_code=1 AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
-      $SQL .= " item.status_code=1 AND (item.expiry_date > '$now') ";
-    } else {
-        $SQL2 = "";
-        if ($numeric_type & AA_BIN_ACTIVE) {
-//          $SQL2 .= " ( item.status_code=1 AND (  item.publish_date <= '$now' OR item.publish_date IS NULL ) ";
-          $SQL2 .= " ( item.status_code=1 AND (item.publish_date <= '$now') ";
-            /* condition can specify expiry date (good for archives) */
-            if ( !( $ignore_expiry_date &&
-                   defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
-//              $SQL2 .= " AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
-              $SQL2 .= " AND (item.expiry_date > '$now') ";
+    if ( $res = CachedSearch( $cache_condition, $keystr )) {
+        return $res;
+    }
+
+    if ($GLOBALS['debugfields'] OR $debug) {
+        if (!empty($slices)) {
+            ProoveFieldNames($slices, $conds);
+        }
+    }
+
+    ParseMultiSelectConds($conds);
+    ParseEasyConds($conds, $defaultCondsOperator);
+
+    // we need fields just in case we use sort or conds. Not necessary for
+    // restrict_zids queries, where we often do not have slice id
+    if ( (is_array($conds) AND (count($conds)>0)) OR (is_array($sort) AND (count($sort)>0)) ) {
+        if ( empty($slices) ) {
+            if ( is_object($restrict_zids) ) {
+                $sid = $restrict_zids->getFirstSlice();
+                if ( $sid ) {
+                    $slices[] = $sid;
+                }
             }
-          $SQL2 .= ' )';
         }
-        if ($numeric_type & AA_BIN_EXPIRED) {
-            if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " (item.status_code=1 AND item.expiry_date <= '$now') ";
+        if ( empty($slices) ) {
+            return new zids();
         }
-        if ($numeric_type & AA_BIN_PENDING) {
-            if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " (item.status_code=1 AND item.publish_date > '$now') ";
-        }
-        if ($numeric_type & AA_BIN_HOLDING) {
-            if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " (item.status_code=2) ";
-        }
-        if ($numeric_type & AA_BIN_TRASH) {
-            if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " (item.status_code=3) ";
-        }
-        $SQL .= " ( ".$SQL2 ." ) ";
+
+        // get the fields for the first slice (used as template and we expect that
+        // all slices in the query has the same structure
+        $slice  = AA_Slices::getSlice(reset($slices));   // @todo convert whole $slices to AA_Slices
+        // access the fields through slice - it is better for caching of values
+
+        $fields = $slice->getFields();
     }
 
-  if ( isset($select_conds) AND is_array($select_conds))      // conditions -----
-    $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";
+    if ( $debug ) {
+        huhl("Conds=",$conds,"Sort=",$sort, "Slices=",join('-',$slices));
+    }
 
-  if ( $select_order )                                 // order ----------
-    $SQL .= " ORDER BY $select_order";
+    // parse conditions ----------------------------------
+    if ( is_array($conds)) {
+        $tbl_count=0;
 
-  // add comment to the SQL command (for debug purposes)
-  $SQL .= " -- AA slice_id: $slice_id";
-  if ($GLOBALS['slice_info']) $SQL .= ", slice_name: ". $GLOBALS['slice_info']['name'];
-  if ($GLOBALS['vid'])        $SQL .= ", vid: ".        $GLOBALS['vid'];
-  if ($GLOBALS['view_info'])  $SQL .= ", view_name: ".  $GLOBALS['view_info']['name'];
+        foreach ($conds as $cond) {
 
-  // if neverAllItems is set, return empty set if no conds[] are used
-  $str2find = new CacheStr2find($slices, 'slice_id');
-  $str2find->add($slice_id, 'slice_id');
-  return GetZidsFromSQL($SQL, 'itemid', $cache_condition, $keystr, $str2find, 'p',
-                  !is_array($select_conds) && $neverAllItems,
-                  // last parameter is used for sorting zids to right order
-                  // - if no order specified and restrict_zids are specified,
-                  // return zids in unchanged order
-                  (is_object($restrict_zids) AND !$select_order) ? $restrict_zids : null, $select_limit_field);
+            // fill arrays according to this condition
+            $field_count = 0;
+            $cond_flds   = '';
+            foreach ( $cond as $fid => $v ) {
+                // search in all content table fields (new in AA v2.8)
+                switch ( strtolower($fid) ) {
+                    case 'all_fields':          $cond_flds = 'all_fields';
+                                                $store     = 'text';
+                                                continue;
+                    case 'all_fields_numeric':  $cond_flds = 'all_fields';
+                                                $store     = 'number';
+                                                continue;
+                }
+                if ( $CONDS_NOT_FIELD_NAMES[$fid] ) {
+                    continue;      // it is not field_id parameters - skip it for now
+                }
+
+                // Remote fields
+                // It is possible to write conditions also using fields from
+                // remote slice (which is related to this one)
+                // Syntax is:
+                //   <remote_field>@<remote_slice_id>/<relation_field>@<this_slice_id>
+                //   headline........@2a652342562728238937365353322372/relation.......1@eba428a3736353783289287499a99c8e
+                //   - search in headline field of all related items
+                //     (relation.......1 field pointed to related items)
+                if ( strpos('@',$fid) !== false ) {
+
+                }
+
+                $field = $fields->getField($fid);
+
+                if ( is_null($field) OR $v=="") {
+                    if ($debug) echo "Skipping $fid in conds[]: not known.<br>"; {
+                        continue;            // bad field_id or not defined condition - skip
+                    }
+                }
+
+                if ( $field->storageTable() == 'item' ) {   // field is stored in table 'item'
+                    // Long ID in conds should be specified as unpacked, but in db it is packed
+                    if (($fid == 'id..............') AND (guesstype($cond['value'])=='l')) {
+                        $cond['value'] = q_pack_id($cond['value']);
+                    }
+                    $select_conds[] = GetWhereExp( 'item.'. $field->storageColumn(), $cond['operator'], $cond['value'] );
+                    if ( $fid == 'expiry_date.....' ) {
+                        $ignore_expiry_date = true;
+                    }
+                } else {
+                    $cond_flds .= ( ($field_count++>0) ? ',' : "" ). "'$fid'";
+                    // will not work with one condition for text and number fields
+                    $store      = $field->storageColumn();
+                }
+            }
+            if ( $cond_flds != '' ) {
+                $tbl = 'c'.$tbl_count++;
+                // fill arrays to be able construct select command
+                $select_conds[] = GetWhereExp( "$tbl.$store", $cond['operator'], $cond['value'] );
+
+                if ( strpos($cond_flds, 'all_fields')!== false ) {  // we are searching all fields in content table
+                    $select_tabs[] = "LEFT JOIN content as $tbl
+                                      ON ($tbl.item_id=item.id)";
+                } elseif ($field_count>1) {
+                    $select_tabs[] = "LEFT JOIN content as $tbl
+                                      ON ($tbl.item_id=item.id
+                                      AND ($tbl.field_id IN ($cond_flds) OR $tbl.field_id is NULL))";
+                } else {
+                    $select_tabs[] = "LEFT JOIN content as $tbl
+                                      ON ($tbl.item_id=item.id
+                                      AND ($tbl.field_id=$cond_flds OR $tbl.field_id is NULL))";
+                    // mark this field as sortable (store without apostrofs)
+                    $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;
+                }
+            }
+        }
+    }
+
+    if ( !is_array($sort) OR count($sort)<1 ) {
+        $select_order =  is_object($restrict_zids) ? '' : 'item.publish_date DESC';   // default item order
+    } else {
+        $delim='';
+        foreach ($sort as  $sort_no => $srt) {
+            if (key($srt)=='limit') {
+                next($srt);       // skip the 'limit' record in the array
+            }
+            $fid   = key($srt);
+            $field = $fields->getField($fid);
+            if ( is_null($field) ) { // bad field_id - skip
+                if ($debug) {
+                    echo "Skipping sort[x][$fid], don't know $fid.<br>";
+                }
+                continue;
+            }
+
+            if ( $field->storageTable() == 'item' ) {   // field is stored in table 'item'
+                $fieldId          = 'item.' . $field->storageColumn();
+                $select_order    .= $delim  . $fieldId;
+                // select_distinct added in order we can group by multiple value fields
+                // (items are shown more times)
+                $select_distinct .= ", $fieldId as s$sort_no";
+                if ( stristr(current( $srt ), 'd'))
+                $select_order .= ' DESC';
+                $delim         = ',';
+            } else {
+                if ( !$sortable[ $fid ] ) {           // this field is not joined, yet
+                    $tbl = 'c'.$tbl_count++;
+                    // fill arrays to be able construct select command
+                    $select_tabs[] = "LEFT JOIN content as $tbl
+                                      ON ($tbl.item_id=item.id
+                                      AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
+                    // mark this field as sortable (store without apostrofs)
+                    $sortable[$fid] = $tbl;
+                }
+
+                // join constant table if we want to sort by priority
+                $direction = current( $srt );
+                if ( stristr($direction,'1') OR stristr($direction,'9') ) { // sort by priority
+                    if ( !($constgroup = $field->getConstantGroup() )) {
+                        // no constant group defined - can't assign priority
+                        continue;
+                    }
+
+                    $tbl = 'o'.$tbl_count++;
+                    // fill arrays to be able construct select command
+                    $select_tabs[] = "LEFT JOIN constant as $tbl
+                                      ON ($tbl.value=". $sortable[$fid] .".text
+                                      AND ($tbl.group_id='$constgroup'
+                                      OR $tbl.group_id is NULL))";
+                    // mark this field as sortable (store without apostrofs)
+
+                    // fill arrays according to this sort specification
+                    $fieldId          = $tbl. ".pri";
+                    $select_order    .= $delim . $fieldId;
+                    $select_distinct .= ", $fieldId as s$sort_no";
+                    if ( stristr($direction,'9') ) {
+                        $select_order  .= " DESC";
+                    }
+                } else {                                                   // sort by value
+                    $store = $field->storageColumn();
+                    // fill arrays according to this sort specification
+                    $fieldId          = $sortable[$fid]. ".$store";
+                    $select_order    .= $delim . $fieldId;
+                    $select_distinct .= ", $fieldId as s$sort_no";
+                    if ( stristr(current( $srt ), 'd')) {
+                        $select_order  .= " DESC";
+                    }
+                }
+                $delim = ',';
+            }
+            if ($srt['limit']) {
+                $select_limit_field = array('field' => "s$sort_no", 'limit' => $srt['limit']);
+            }
+        }
+    }
+
+    // parse group by parameter ----------------------------
+    // .. removed 2/27/2005 Honza (was never used)
+    // ---
+
+    if ( $debug ) {
+        huhl("QueryZIDs:slice_id=",join('-',$slices),"  select_tabs=",$select_tabs, "  select_conds=",$select_conds,"  select_order=",$select_order );
+    }
+
+    // construct query --------------------------
+    $SQL = "SELECT DISTINCT item.id as itemid $select_distinct FROM item ";
+    if ( isset($select_tabs) AND is_array($select_tabs)) {
+        $SQL .= ' '. implode (' ', $select_tabs);
+    }
+
+    $SQL .= ' WHERE ';                                         // slice ----------
+
+    if ( !empty($slices) ) {
+        $slices_SQL = join(",", array_map( "qq_pack_id", $slices));
+        $SQL .= 'item.slice_id' . ((count($slices) == 1) ? " = $slices_SQL AND " :
+                                                           " IN ($slices_SQL) AND ");
+    }
+
+    if (is_object($restrict_zids)) {
+        $SQL .= " ".$restrict_zids->sqlin() ." AND ";
+    } else {
+        // slice(s) or $restrict_zids MUST be specified (in order we can get answer in limited time)
+        if (!$slices_SQL) {
+            return new zids();
+        }
+    }
+
+    $SQL .= CreateBinCondition($type, $ignore_expiry_date);
+
+    if ( isset($select_conds) AND is_array($select_conds)) {     // conditions -----
+        $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";
+    }
+
+    if ( $select_order ) {                                // order ----------
+        $SQL .= " ORDER BY $select_order";
+    }
+
+    // add comment to the SQL command (for debug purposes)
+    $SQL .= " -- AA slice: ". join('-', $slices);
+    if ($GLOBALS['slice_info']) { $SQL .= ", slice_name: ". $GLOBALS['slice_info']['name']; }
+    if ($GLOBALS['vid'])        { $SQL .= ", vid: ".        $GLOBALS['vid']; }
+    if ($GLOBALS['view_info'])  { $SQL .= ", view_name: ".  $GLOBALS['view_info']['name']; }
+
+    // if neverAllItems is set, return empty set if no conds[] are used
+    $str2find = new CacheStr2find($slices, 'slice_id');
+    return GetZidsFromSQL( $SQL, 'itemid', $cache_condition, $keystr, $str2find, 'p',
+                           !is_array($select_conds) && $neverAllItems,
+                           // last parameter is used for sorting zids to right order
+                           // - if no order specified and restrict_zids are specified,
+                           // return zids in unchanged order
+                           (is_object($restrict_zids) AND !$select_order) ? $restrict_zids : null, $select_limit_field);
 }
 
 /** Finds constant ZIDs for constants to be shown in a slice / view
@@ -1024,8 +1354,7 @@ function QueryZIDs($fields, $slice_id, $conds, $sort="", $group_by="",    // gro
 *   Parameter format example - {see QueryZIDs, FAQ}
 *   Fields definition - {see include/constants.php3}
 */
-function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
-    $restrict_zids=false, $defaultCondsOperator = "RLIKE", $use_cache=false ) {
+function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $defaultCondsOperator = "RLIKE", $use_cache=false ) {
 
     global $debug;                 // displays debug messages
     global $nocache;               // do not use cache, if set
@@ -1044,7 +1373,7 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $type="",
     if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
     //create keystring from values, which exactly identifies resulting content
-    $keystr = $group_id. serialize($conds). serialize($sort). $type.
+    $keystr = $group_id. serialize($conds). serialize($sort).
                   ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
                   $defaultCondsOperator;
 
@@ -1177,28 +1506,30 @@ if ( $debug ) {
     $SQL = "SELECT discussion.id
             FROM discussion INNER JOIN item ON item.id = discussion.item_id
             WHERE ";
-    if ( $slices ) {
-        $slicesText = "";
-        for ($islice = 0; $islice < count($slices); ++$islice) {
-            if ($islice) $slicesText .= ",";
-            $slicesText .= "'".q_pack_id($slices[$islice])."'";
-        }
-        $SQL .= " item.slice_id IN ( $slicesText )";
+
+    if ( is_array($slices) AND (count($slices) > 0) ) {
+        $slices_SQL = join(",", array_map( "qq_pack_id", $slices));
+        $SQL .= ' item.slice_id' . ((count($slices) == 1) ? " = $slices_SQL AND " :
+                                                           " IN ($slices_SQL) AND ");
     }
-    else if ( $slice_id )
+    elseif ( $slice_id ) {
         $SQL .= " item.slice_id = '". q_pack_id($slice_id) ."'";
+    }
 
-    if ( isset($select_conds) AND is_array($select_conds))      // conditions -----
+    if ( isset($select_conds) AND is_array($select_conds)) {    // conditions -----
         $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";
+    }
 
-    if ( isset($select_order) )                                 // order ----------
+    if ( isset($select_order) ) {                               // order ----------
         $SQL .= " ORDER BY $select_order";
+    }
 
     // get result --------------------------
     $db->tquery($SQL);
 
-    while ( $db->next_record() )
-        $arr[] = unpack_id128($db->f(id));
+    while ( $db->next_record() ) {
+        $arr[] = unpack_id128($db->f('id'));
+    }
 
     return $arr;
 }

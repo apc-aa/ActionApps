@@ -26,24 +26,25 @@ http://www.apc.org/
 require_once AA_INC_PATH."stringexpand.php3"; // for translateString()
 
 // Find fields mapping.
-function GetFieldMapping($from_slice_id, $to_slice_id, $fields_from, $fields_to="") {
-    global $db;
+function GetFieldMapping($from_slice_id, $destination_id) {
+    $db = getDb();
 
-    if (!$fields_to) {
-        list($fields_to,) = GetSliceFields($to_slice_id);
-    }
+    $fields_from = AA_Slices::getSlice($from_slice_id)->getFields()->getRecordArray();
+    $fields_to   = AA_Slices::getSlice($destination_id)->getFields()->getPriorityArray();
 
-    if (!$fields_to || !is_array($fields_to)) {
+    if (empty($fields_to)) {
         return;
     }
 
-    $p_from_slice_id = q_pack_id($from_slice_id);
-    $p_to_slice_id   = q_pack_id($to_slice_id);
+    $p_from_slice_id  = q_pack_id($from_slice_id);
+    $p_destination_id = q_pack_id($destination_id);
 
+
+    // fill $m array with mapping set by user on mapping page (and stored to db)
     $SQL = "SELECT from_field_id, to_field_id, flag, value
               FROM feedmap
              WHERE from_slice_id = '$p_from_slice_id'
-               AND to_slice_id = '$p_to_slice_id'";
+               AND to_slice_id = '$p_destination_id'";
     $db->query($SQL);
     while ( $db->next_record() ) {
         switch ($db->f('flag')) {
@@ -61,14 +62,16 @@ function GetFieldMapping($from_slice_id, $to_slice_id, $fields_from, $fields_to=
         $m[$db->f('to_field_id')] = array("feedmap_flag"=>$db->f('flag'),"val"=>$val);
     }
 
-    foreach ($fields_to as  $k => $v ) {
-        if ( $m[$k] ) {
-            $map[$k] = $m[$k];                 // set if mapped
+    foreach ($fields_to as $field_id ) {
+        if ( $m[$field_id] ) {
+            $map[$field_id] = $m[$field_id];                 // set if mapped
         } else {                                 // if not mapped - store in the same; if not exist, set empty
-            $map[$k] = $fields_from[$k] ? array("feedmap_flag"=>FEEDMAP_FLAG_MAP,"val"=>$k)  :
-                                          array("feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"val"=>"") ;
+            $map[$field_id] = $fields_from[$field_id] ? array("feedmap_flag"=>FEEDMAP_FLAG_MAP,"val"=>$field_id)  :
+                                                        array("feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"val"=>"") ;
         }
     }
+
+    freeDb($db);
     return $map;
 }
 
@@ -121,7 +124,7 @@ function IsItemFed($item_id, $destination) {
     }
 
     // Test array for containing an item fed from same baseid
-    while (list(,$source_id) = each($sources)) {
+    foreach ($sources as $source_id) {
         if ($base_id ==  GetBaseItem($source_id)) {
             return true;
         }
@@ -132,7 +135,7 @@ function IsItemFed($item_id, $destination) {
 
 /** Returns the joined fields
  *  @param  columns - values of the processed item (db record)
- *  @param  fields  - source fields description
+ *  @param  fields  - source fields description (object)
  *  @param  params  - parameters of the "join" mapping function - separated by
  *                    ':', contains field names separated by HTML separator
  *                    description (the result will be the fields' content
@@ -141,8 +144,7 @@ function IsItemFed($item_id, $destination) {
  *  @returns  result
  *  @author   Jakub Adámek
  */
-function FeedJoin($columns, $fields, $params, &$result)
-{
+function FeedJoin($columns, $fields, $params, &$result) {
     $params = str_replace ("#:","#~",$params);
     $params = explode(":",$params);
     $i = 0;
@@ -150,7 +152,7 @@ function FeedJoin($columns, $fields, $params, &$result)
     $update = 0;
     foreach ($params as $val) {
         if ($i++ % 2 == 0) {
-            switch ($fields[$val]['feed']) {
+            switch ($fields->getProperty($val,'feed')) {
             case STATE_UNFEEDABLE:	 return;
             case STATE_FEEDNOCHANGE:
                 $result['flag'] |= FLAG_FREEZE;
@@ -177,22 +179,19 @@ function FeedJoin($columns, $fields, $params, &$result)
 
 
 // copy one item
-function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, $tocategory=0, $content="") {
+function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocategory=0, $content="") {
     global $db, $varset, $itemvarset;
 
-    if ( $destination == $from_slice_id ) { // don't feed into the same slice
+    if ( $destination_id == $from_slice_id ) { // don't feed into the same slice
         return false;
     }
 
     // don't feed if the item is already fed.
-    if (isItemFed($item_id, $destination)) {
+    if (isItemFed($item_id, $destination_id)) {
         return false;
     }
 
-    $p_destination = q_pack_id($destination);
-
-    list($fields_to,) = GetSliceFields($destination);
-    $map = GetFieldMapping($from_slice_id, $destination, $fields, $fields_to);
+    $map = GetFieldMapping($from_slice_id, $destination_id);
 
     if ( !$content ) {
         $content = GetItemContent($item_id);
@@ -200,7 +199,10 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
     $content4id    = $content[$item_id];   // shortcut
     $oldcontent4id = $content4id;
 
-    $catfieldid = GetCategoryFieldId( $fields );
+    $from_slice  = AA_Slices::getSlice($from_slice_id);
+    $destination = AA_Slices::getSlice($destination_id);
+    $fields      = $from_slice->getFields();
+    $catfieldid  = $fields->getCategoryFieldId();
 
     if ( $catfieldid AND ( (string)$tocategory != "0" ) ) {
         $SQL = "SELECT value FROM constant WHERE id='".q_pack_id($tocategory)."'";
@@ -214,6 +216,9 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
     $itemvarset = new Cvarset;  // must be defined before insert_fnc_qte
     $id         = new_id();
 
+
+    $fields_to   = $destination->fields('record');
+
     // prepare new4id array before call StoreItem function
     while (list($newfld,$newfldname) = each($fields_to)) {
         $flag = $map[$newfld]['feedmap_flag'];
@@ -222,13 +227,13 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
         switch ($flag) {
             case FEEDMAP_FLAG_EMPTY : continue;
             case FEEDMAP_FLAG_MAP :
-                if ($fields[$val]['feed']==STATE_UNFEEDABLE) {
+                if ($fields->getProperty($val,'feed')==STATE_UNFEEDABLE) {
                     continue;
                 } else {
                     $new4id[$newfld] = $content4id[$val];
-                    if ($fields[$val]['feed']==STATE_FEEDNOCHANGE ) {
+                    if ($fields->getProperty($val,'feed')==STATE_FEEDNOCHANGE ) {
                         $new4id[$newfld][0]['flag'] |= FLAG_FREEZE;  // don't allow to change
-                    } elseif ($fields[$val]['feed']==STATE_FEEDABLE_UPDATE_LOCKED) {
+                    } elseif ($fields->getProperty($val,'feed')==STATE_FEEDABLE_UPDATE_LOCKED) {
                         $new4id[$newfld][0]['flag'] |= FLAG_FREEZE | FLAG_UPDATE;   //update and don't allow to change
                     }
                 }
@@ -239,7 +244,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
             case FEEDMAP_FLAG_VALUE :
                 // create item from source data (in order we can unalias)
                 if ( !$item2fed ) {
-                    $item2fed = new item($content4id, GetAliasesFromFields($fields));
+                    $item2fed = new item($content4id, $fields->getAliases());
                 }
                 $new4id[$newfld][0]['value'] = $item2fed->unalias($val);
                 break;
@@ -276,8 +281,9 @@ function FeedItemTo($item_id, $from_slice_id, $destination, $fields, $approved, 
             $new4id[$f_id] = $content4id[$f_id];
         }
     }
+
     // insert, invalidatecache, not feed
-    if ( StoreItem($id, $destination, $new4id, $fields_to, true, true, false, $oldcontent4id, 'feed' ) ) {
+    if ( StoreItem($id, $destination_id, $new4id, $fields_to, true, true, false, $oldcontent4id, 'feed' ) ) {
         AddRelationFeed($id,$item_id); // Add to relation table
     }
     return $id;
@@ -298,84 +304,87 @@ function AddRelationFeed($dest_id, $source_id) {
  *  slice $from will be fed to slice $to, category $cat_id and bin depending on $appr :
  *  $appp="y" => active folder else hold bin.
  */
- function CreateFeedTree($sl_id, $from_category_id) {
-     global $db;
 
-     $slice_queue[$sl_id] = array('approved'=>"y", 'category'=>$from_category_id);
+function CreateFeedTree($sl_id, $from_category_id) {
+    global $db;
 
-     while (list($sl_id, $val) = each($slice_queue)) {
-         if ($val['approved'] == "y") {
-             $from_category_id = $val['category'];
-             if ($from_category_id) {
-                 $p_from_cat_id = pack_id($from_category_id);
-             }
+    $slice_queue[$sl_id] = array('approved'=>"y", 'category'=>$from_category_id);
 
-             $SQL = "SELECT feeds.to_id, feeds.category_id, feeds.all_categories,
-                            feeds.to_approved, feeds.to_category_id
-                      FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
-                     WHERE feeds.from_id = slice.id
-                       AND feeds.from_id='". q_pack_id($sl_id) ."'
-                       AND (slice.export_to_all=1
-                        OR  feedperms.to_id = feeds.to_id)";  // check perms to feed, too
-             $db->query($SQL);
+    while (list($sl_id, $val) = each($slice_queue)) {
+        if ($val['approved'] == "y") {
+            $from_category_id = $val['category'];
+            if ($from_category_id) {
+                $p_from_cat_id = pack_id($from_category_id);
+            }
 
-             while ($db->next_record()) {
-                 $to_id = unpack_id128($db->f('to_id'));
-                 // condition is necessary for multi feeding to this slice
-                 if (isset($slice_queue[$to_id])) {
-                     continue;
-                 }
-                 $approved = $db->f('to_approved') ? "y" : "n";
-                 if (($p_from_cat_id == $db->f('category_id')) OR $db->f('all_categories')) {
-                     $slice_queue[$to_id] = $tree[$sl_id][$to_id] = array( 'approved'=>$approved, 'category'=>unpack_id($db->f('to_category_id')));
-                 }
-             }
-         }
-     }
-     return $tree;
- }
+            $SQL = "SELECT feeds.to_id, feeds.category_id, feeds.all_categories,
+                           feeds.to_approved, feeds.to_category_id
+                     FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
+                    WHERE feeds.from_id = slice.id
+                      AND feeds.from_id='". q_pack_id($sl_id) ."'
+                      AND (slice.export_to_all=1
+                       OR  feedperms.to_id = feeds.to_id)";  // check perms to feed, too
+            $db->query($SQL);
 
- // Update $dest_d item according to $item_id
- function Update($item_id, $slice_id, $dest_id, $destination) {
-     global $varset, $itemvarset;
+            while ($db->next_record()) {
+                $to_id = unpack_id128($db->f('to_id'));
+                // condition is necessary for multi feeding to this slice
+                if (isset($slice_queue[$to_id])) {
+                    continue;
+                }
+                $approved = $db->f('to_approved') ? "y" : "n";
+                if (($p_from_cat_id == $db->f('category_id')) OR $db->f('all_categories')) {
+                    $slice_queue[$to_id] = $tree[$sl_id][$to_id] = array( 'approved'=>$approved, 'category'=>unpack_id($db->f('to_category_id')));
+                }
+            }
+        }
+    }
+    return $tree;
+}
 
-     list($fields,)    = GetSliceFields($slice_id);
-     list($fields_to,) = GetSliceFields($destination);
+// Update $dest_d item according to $item_id
+function Update($item_id, $slice_id, $dest_id, $destination_id) {
+    global $varset, $itemvarset;
 
-     $map = GetFieldMapping($slice_id, $destination, $fields, $fields_to);
+    $slice       = AA_Slices::getSlice($slice_id);
+    $destination = AA_Slices::getSlice($destination_id);
+    $fields      = $slice->getFields();
+    $fields_to   = $destination->fields('record');
 
-     $oldcontent    = GetItemContent($dest_id);
-     $oldcontent4id = $oldcontent[$dest_id];
-     $backup_oldcontent4id =  $oldcontent4id;
-     $content       = GetItemContent($item_id);
-     $content4id    = $content[$item_id];   // shortcut
+    $map = GetFieldMapping($slice_id, $destination_id);
 
-     $varset     = new Cvarset;
-     $itemvarset = new Cvarset;  // must be defined before insert_fnc_qte
+    $oldcontent    = GetItemContent($dest_id);
+    $oldcontent4id = $oldcontent[$dest_id];
+    $backup_oldcontent4id =  $oldcontent4id;
+    $content       = GetItemContent($item_id);
+    $content4id    = $content[$item_id];   // shortcut
 
-     while (list($key,$fval) = each($oldcontent4id)) {
-         // skip field, if field from source item is not mapped to dest
-         if ($map[$key]['feedmap_flag'] != FEEDMAP_FLAG_MAP) {
-             continue;
-         }
-         $val = $map[$key]['val'];
-         // There is a question if we would not handle status_code in special way.
-         // Current setting is, that if source slice admin sets status_code
-         // as update&change, then status_code is changed also in destination slice
-         // - Source admin APPROVE OR TRASHES items in destiation slice !!!
-         if (($fval[0]['flag'] & FLAG_UPDATE) || $fields[$val]['feed']==STATE_FEEDABLE_UPDATE ) {
-             $oldcontent4id[$key][0]['value'] = $content4id[$val][0]['value'];
-         }
-     }
-     StoreItem( $dest_id, $destination, $oldcontent4id, $fields_to, false, true, false, $backup_oldcontent4id, 'feed' );
-     // update, invalidatecache, not feed
- }
+    $varset     = new Cvarset;
+    $itemvarset = new Cvarset;  // must be defined before insert_fnc_qte
+
+    while (list($key,$fval) = each($oldcontent4id)) {
+        // skip field, if field from source item is not mapped to dest
+        if ($map[$key]['feedmap_flag'] != FEEDMAP_FLAG_MAP) {
+            continue;
+        }
+        $val = $map[$key]['val'];
+        // There is a question if we would not handle status_code in special way.
+        // Current setting is, that if source slice admin sets status_code
+        // as update&change, then status_code is changed also in destination slice
+        // - Source admin APPROVE OR TRASHES items in destiation slice !!!
+        if (($fval[0]['flag'] & FLAG_UPDATE) || $fields->getProperty($val,'feed')==STATE_FEEDABLE_UPDATE ) {
+            $oldcontent4id[$key][0]['value'] = $content4id[$val][0]['value'];
+        }
+    }
+    StoreItem( $dest_id, $destination_id, $oldcontent4id, $fields_to, false, true, false, $backup_oldcontent4id, 'feed' );
+    // update, invalidatecache, not feed
+}
 
 /** Update all items descending from $item_id
  *  it's expected, that items don't change their category, so $cat_id is
  *  unneccessary.
  */
-function UpdateItems($tree, $item_id, $slice_id, $cat_id) {
+function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id, $slice_id, $tree)
 
     $items[$item_id] = $slice_id;
     $db2 = new DB_AA; 	// do not use db, because of conflict in Update - StoreItem
@@ -406,8 +415,8 @@ function UpdateItems($tree, $item_id, $slice_id, $cat_id) {
 /** Feeds item to all apropriate slices
  *  item_id is unpacked id of feeded item
  */
-function FeedItem($item_id, $fields) {
-    global $db, $slice_id;
+function FeedItem($item_id) {
+    $db = getDb();
 
     // get item field definition
     $content    = GetItemContent($item_id);
@@ -418,14 +427,19 @@ function FeedItem($item_id, $fields) {
         return false;
     }
 
+    $slice_id   = $content4id["u_slice_id......"][0]['value'];
+    $slice      = AA_Slices::getSlice($slice_id);
+
+
     // get this item category_id
     $cat_group = GetCategoryGroup($slice_id);
-    $cat_field = GetCategoryFieldId( $fields );
+
+    $cat_field = $slice->getFields()->getCategoryFieldId();
 
     if ($cat_group AND $cat_field) {
         $SQL = "SELECT id FROM constant
                  WHERE group_id = '$cat_group'
-                   AND value = '". addslashes ($content4id[$cat_field][0]['value']) ."'";
+                   AND value = '". addslashes($content4id[$cat_field][0]['value']) ."'";
         $db->query($SQL);
         if ( $db->next_record() ) {
             $cat_id = unpack_id128($db->f('id'));
@@ -436,7 +450,7 @@ function FeedItem($item_id, $fields) {
     // now we have the feeding tree in $tree array
 
     // we try to update items
-    $update = UpdateItems($tree, $item_id, $slice_id, $cat_id);
+    $update = UpdateItems($item_id, $slice_id);
     if ($update) {    // if update was done, don't feed
         return;
     }
@@ -447,12 +461,11 @@ function FeedItem($item_id, $fields) {
 
     // feed item to all destination slices
     $items_id[$slice_id] = $item_id;
-    while ( list($from_slice,$slices) = each($tree) ) {
-        list($fields,) = GetSliceFields($from_slice);
-        while (list($to_slice, $atribs) = each($slices)) {
-            if ($items_id[$from_slice]) {
-                $new_item = FeedItemTo($items_id[$from_slice], $from_slice, $to_slice, $fields, $atribs['approved'], $atribs['category']);
-                $items_id[$to_slice] = $new_item;
+    foreach ( $tree as $from_slice_id => $slices ) {
+        foreach ( $slices as $to_slice_id => $atribs ) {
+            if ($items_id[$from_slice_id]) {
+                $new_item = FeedItemTo($items_id[$from_slice_id], $from_slice_id, $to_slice_id, $atribs['approved'], $atribs['category']);
+                $items_id[$to_slice_id] = $new_item;
             }
         }
     }

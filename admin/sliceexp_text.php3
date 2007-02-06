@@ -127,7 +127,6 @@ function exportOneSliceViews($slobj, $b_export_gzip, $temp_file, $b_export_hex) 
 
 
 function exportOneSliceData($slobj, $b_export_gzip, $temp_file, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex) {
-    $fields = $slobj->fields('record');
     if ($b_export_spec_date) {
         $conds[0]["operator"]         = "e:>=";
         $conds[0]["publish_date...."] = 1;
@@ -138,7 +137,7 @@ function exportOneSliceData($slobj, $b_export_gzip, $temp_file, $b_export_spec_d
     } else {
         $conds="";
     }
-    $zids=QueryZIDs($fields, $slobj->unpacked_id(), $conds, "", "", "ALL");
+    $zids=QueryZIDs(array($slobj->unpacked_id()), $conds, "", "ALL");
     if ($zids->count() == 0) {
         if ($b_export_spec_date) {
             fwrite($temp_file, "<comment>\nThere are no data in selected days (from ".$b_export_from_date." to ".$b_export_to_date.").\n</comment>\n");
@@ -160,7 +159,6 @@ function exportOneSliceData($slobj, $b_export_gzip, $temp_file, $b_export_spec_d
                 $e_temp = xml_serialize("item",$content,"\n","    ");
            }
            fwrite($temp_file, "$e_temp\n</data>\n");
-           unset($myids);
            unset($e_temp);
         }
     }
@@ -172,6 +170,11 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $ne
 {
     global $db, $sess;
     $temp_file = tmpfile();
+
+    if ( !$temp_file ) {
+        echo _m("Can't create temporary file.");
+        exit;
+    }
 
     if ($b_export_type != _m("Export to Backup")) {
         unset($export_slices);

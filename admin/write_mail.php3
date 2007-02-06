@@ -33,7 +33,7 @@ require_once AA_INC_PATH. "searchbar.class.php3";
 require_once AA_BASE_PATH."modules/alerts/util.php3";
 require_once AA_INC_PATH. "varset.php3";
 
-$searchbar = new searchbar();   // mainly for bookmarks
+$searchbar = new AA_Searchbar();   // mainly for bookmarks
 $items=$chb;
 
 if ( !$send ) {               // for the first time - directly from item manager

@@ -92,6 +92,7 @@ if ($free) {
 
 require_once AA_INC_PATH. "locauth.php3";
 require_once AA_INC_PATH. "scroller.php3";
+require_once AA_INC_PATH. "searchbar.class.php3";  // search_row is stored to session, so we need to have definition already loaded
 require_once AA_INC_PATH. "perm_core.php3";
 
 // save before getting the session stored variables
@@ -149,7 +150,7 @@ $perm_slices = GetUserSlices();
 
 if ( !$no_slice_id AND !IsSuperadmin() AND !$perm_slices[$slice_id] AND !$after_login ) {
     MsgPage($sess->url(self_base())."index.php3",
-        _m("You do not have permission to edit items in the slice").": ".sliceid2name($slice_id),"standalone");
+        _m("You do not have permission to edit items in the slice").": ".AA_Slices::getName($slice_id),"standalone");
     exit;
 }
 

@@ -126,8 +126,6 @@ if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
 function GetUserData($identification,$findby="headline........") {
     // create fields array - headline........ for user name, con_email....... for email
     $ret=false;
-    $fields[$findby] = array( 'in_item_tbl' => false,
-                              'text_stored' => true );
     $conds[] = array( $findby => $identification );
 
     // getReaderManagement slices
@@ -138,7 +136,7 @@ function GetUserData($identification,$findby="headline........") {
     }
     freeDB($db);
     // get item id of current user
-    $zid = QueryZIDs($fields, '', $conds, '', '', 'ACTIVE', $slices, 1, false, '=' );
+    $zid = QueryZIDs($slices, $conds, '', 'ACTIVE', 1, false, '=' );
     //var_dump($conds);
     if ( $zid->count()<1 )      return false;
 

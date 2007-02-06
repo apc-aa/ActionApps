@@ -71,11 +71,11 @@ class ViewCommand {
 }
 
 /** Class for storing set of url commands for view  */
-class ViewCommands {
+class AA_View_Commands {
     var $commands;     /** array of obkects of ViewCommand class */
 
     /** constructor - calls parseCommand() */
-    function ViewCommands($cmd, $als=false) {
+    function AA_View_Commands($cmd, $als=false) {
         $this->commands = array();
         $this->parseCommand($cmd, $als);
     }
@@ -168,7 +168,7 @@ function ParseViewParameters($query_string="") {
 
     // Parse parameters
     // if view in cmd[] or set[] is not specified - fill it from vid
-    if ( EReg( "vid=([0-9]*)", $query_string, $parts) ) {
+    if ( preg_match("/vid=([0-9]*)/", $query_string, $parts) ) {
         $query_string = str_replace( 'cmd[]', "cmd[".$parts[1]."]", $query_string );
         $query_string = str_replace( 'set[]', "set[".$parts[1]."]", $query_string );
     }
@@ -187,10 +187,10 @@ function ParseViewParameters($query_string="") {
     }
 
     // Splits on "-" and subsitutes aliases
-    $commands = new ViewCommands($cmd[$vid], $GLOBALS['als']);
-    $v_conds  = new Conditions;
+    $commands = new AA_View_Commands($cmd[$vid], $GLOBALS['als']);
+    $v_conds  = new AA_Set;
 
-    if ( $GLOBALS['debug'] ) huhl("<br>ParseViewParameters - command:", $command);
+    if ( $GLOBALS['debug'] ) huhl("<br>ParseViewParameters - command:", $commands);
 
     $commands->reset();
     while($command = $commands->current()) {
@@ -224,13 +224,13 @@ function ParseViewParameters($query_string="") {
                        }
 
 
-                       if (Conditions::check($command_params[0], $command_params[1])) {
+                       if (AA_Set::check($command_params[0], $command_params[1])) {
                            $param_conds[$command_params[0]] = stripslashes($command_params[1]);
                        }
-                       if (Conditions::check($command_params[2], $command_params[3])) {
+                       if (AA_Set::check($command_params[2], $command_params[3])) {
                            $param_conds[$command_params[2]] = stripslashes($command_params[3]);
                        }
-                       if (Conditions::check($command_params[4], $command_params[5])) {
+                       if (AA_Set::check($command_params[4], $command_params[5])) {
                            $param_conds[$command_params[4]] = stripslashes($command_params[5]);
                        }
                        break;
@@ -329,8 +329,8 @@ function GetViewSort(&$view_info, $param_sort=null) {
 
     $sort = false;
     if ($param_sort['sort']) {
-        $order    = new Sortorder;
-        $order->addFromString($param_sort['sort']);
+        $order    = new AA_Sortorder;
+        $order->addSortFromString($param_sort['sort']);
         $sort = $order->getOrder();
     }
     // grouping
@@ -355,24 +355,22 @@ function GetViewSort(&$view_info, $param_sort=null) {
     return $sort;
 }
 
-function GetViewGroup($view_info) {
-  return false;                        // this is managed by GetViewSort()
-}
-
 /** Parses banner url parameter (for view.php3 as well as for slice.php3
  *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]
  *  (@see {@link http://apc-aa.sourceforge.net/faq/#219})
  */
-function ParseBannerParam(&$view_info, $banner_param) {
+function ParseBannerParam($banner_param) {
+    $ret = array();
     if ( $banner_param ) {
         list( $foo_pos, $foo_vid, $foo_fld ) = explode('-',$banner_param);
-        $view_info['banner_position']   = $foo_pos;
-        $view_info['banner_parameters'] = "vid=$foo_vid";
+        $ret['banner_position']   = $foo_pos;
+        $ret['banner_parameters'] = "vid=$foo_vid";
         if ($foo_fld == 'norandom') {
-            return;
+            return $ret;
         }
-        $view_info['banner_parameters'] .= "&set[$foo_vid]=random-". ($foo_fld ? $foo_fld : 1);
+        $ret['banner_parameters'] .= "&set[$foo_vid]=random-". ($foo_fld ? $foo_fld : 1);
     }
+    return $ret;
 }
 
 function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
@@ -405,7 +403,7 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 function GetView($view_param) {
     global $nocache, $debug;
     //create keystring from values, which exactly identifies resulting content
-    $keystr = serialize($view_param).stringexpand_keystring();
+    $keystr = serialize($view_param). AA_Stringexpand_Keystring::expand();
 
     if ( $res = $GLOBALS['pagecache']->get($keystr, $nocache) ) {
         return $res;
@@ -472,7 +470,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                    str_replace( '<!--Vacuum-->', '', $view_info['noitem_msg']) :
                                      ("<div>"._m("No item found") ."</div>")));
 
-    ParseBannerParam($view_info, $view_param["banner"]);  // if banner set format
+    $view->setBannerParam(ParseBannerParam($view_param["banner"]));  // if banner set format
 
     $listlen    = ($view_param["listlen"] ? $view_param["listlen"] : $view_info['listlen'] );
 
@@ -506,18 +504,16 @@ function GetViewFromDB($view_param, &$cache_sid) {
                 list($fields,) = GetSliceFields($slice_id);
                 $aliases = GetAliasesFromFields($fields, $als);
                 //mlx stuff
-                if (!$slice) {
-                    $slice = AA_Slices::getSlice($slice_id);
-                }
+                $slice = AA_Slices::getSlice($slice_id);
                 if (isMLXSlice($slice)) {  //mlx stuff, display the item's translation
                     $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
                     //make sure the lang info doesnt get reused with different view
-                    $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)));
-                    $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)),$conds,$slices);
+                    $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)));
+                    $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$conds,$slices);
                     $zids3 = new zids($zids->longids());
-                    $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)),$slice_id,
-                                    $conds, $sort, $slice->getfield('group_by'),"ACTIVE", $slices, $neverAllItems, 0,
-                                    $defaultCondsOperator,$GLOBALS['nocache'], "vid=$vid t=full i=".serialize($zids3));
+                    $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id,
+                                    $conds, '', $slice->getProperty('group_by'),"ACTIVE", $slices, '', 0,
+                                    '',$GLOBALS['nocache'], "vid=$vid t=full i=".serialize($zids3));
                     $zids->a    = $zids3->a;
                     $zids->type = $zids3->type;
                 }
@@ -607,7 +603,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                 return $comment_begin. $ret. $comment_end;
             }
 
-            $ret = $itemview->get_output_cached($itemview_type);
+            $ret = $itemview->get_output_cached();
             return $comment_begin. $ret. $comment_end;
 
         case 'seetoo':
@@ -655,9 +651,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
             $aliases       = GetAliasesFromFields($fields, $als);
 
             if (is_array($slices)) {
-                foreach ( $slices as $slice) {
-                    list($fields,) = GetSliceFields($slice);
-                    $aliases[q_pack_id($slice)] = GetAliasesFromFields($fields,$als);
+                foreach ( $slices as $sid) {
+                    list($fields,) = GetSliceFields($sid);
+                    $aliases[q_pack_id($sid)] = GetAliasesFromFields($fields,$als);
                 }
             }
 
@@ -670,15 +666,15 @@ function GetViewFromDB($view_param, &$cache_sid) {
             if (isMLXSlice($slice)) {
                 $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
                 //make sure the lang info doesnt get reused with different view
-                $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)));
-                $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)),$conds,$slices);
+                $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)));
+                $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$conds,$slices);
             }
-            $zids2 = QueryZIDs($fields, $zids ? false : $slice_id, $conds, $sort, '', "ACTIVE", $zids ? false : $slices, 0, $zids);
+            $zids2 = QueryZIDs($zids ? false : (is_array($slices) ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", 0, $zids);
 
             if (isMLXSlice($slice)) {
-                $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id128($slice->getfield(MLX_SLICEDB_COLUMN)),$slice_id,
-                                                   $conds, $sort, $slice->getfield('group_by'),"ACTIVE", $slices, $neverAllItems, 0,
-                                                   $defaultCondsOperator,$GLOBALS['nocache'],"vid=$vid t=list");
+                $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id,
+                                                   $conds, $sort, $slice->getProperty('group_by'),"ACTIVE", $slices, '', 0,
+                                                   '',$GLOBALS['nocache'],"vid=$vid t=list");
             }
             //end mlx stuff
             // Note this zids2 is always packed ids, so lost tag information

@@ -1,6 +1,6 @@
 <?php
 /**
- * File contains definition of manager class - used for 'item' manipulation
+ * File contains definition of AA_Manager class - used for 'item' manipulation
  * 'managers' pages (like Item Manager, Link Manager, Discussion comments,
  * Related Items, ...) It takes care about searchber, scroller, actions, ...
  *
@@ -33,12 +33,12 @@ require_once AA_INC_PATH . "searchbar.class.php3";
 require_once AA_INC_PATH . "statestore.php3";
 
 /**
- * manager class - used for 'item' manipulation 'managers' pages
+ * AA_Manager class - used for 'item' manipulation 'managers' pages
  * (like Item Manager, Link Manager, Discussion comments, Related Items, ...)
  * It takes care about searchber, scroller, actions, ...
  */
-class manager extends storable_class {
-    var $searchbar;       // searchbar object
+class AA_Manager extends storable_class {
+    var $searchbar;       // AA_Searchbar object
     var $searchbar_funct; // searchbar aditional function
     var $scroller;        // scroller object
     var $actions;
@@ -61,12 +61,24 @@ class manager extends storable_class {
     //  scroller), but we are using the $persistent_slots array in the same way)
 
     // required - class name (just for PHPLib sessions)
-    var $classname = "manager";
+    var $classname = "AA_Manager";
 
     // required - object's slots to save in session
     //            (no itemview, actions, switches, messages, searchbar_funct
     //             - we want to have it fresh (from constructor and $settings))
     var $persistent_slots = array('searchbar', 'scroller', 'msg');
+
+    /** Used parameter format (in fields.input_show_func table)  */
+    function getPersistentProperties($class=null) {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
+        // class parameter is needed, because generic static classs method
+        // in storable_class is not able to detect, what type of class it is in
+        // Grrr! PHP (5.2.0)
+        return array (
+            'searchbar' => new AA_Property( 'searchbar', _m("Searchbar"), 'AA_Searchbar', false, true),
+            'scroller'  => new AA_Property( 'scroller',  _m("Scroller"),  'AA_Scroller',  false, true),
+            'msg'       => new AA_Property( 'msg',       _m("Msg"),       'text',         true,  true),
+            );
+    }
 
     /**
      * constructor - initializes manager - creates scroller, searchbar, ...
@@ -74,7 +86,7 @@ class manager extends storable_class {
      *
      * @param array $settings - main manager settings
      */
-    function manager($settings) {
+    function AA_Manager($settings) {
 
         $this->show = isset($settings['show']) ?
                       $settings['show'] :
@@ -92,7 +104,7 @@ class manager extends storable_class {
 
         // create searchbar, if we have to ------------------------------------
         if ( $settings['searchbar'] ) {
-            $this->searchbar = new searchbar(
+            $this->searchbar = new AA_Searchbar(
                               $settings['searchbar']['fields'],
                               'filterform',   // form name is given in this case
                               $settings['searchbar']['search_row_count_min'],
@@ -108,7 +120,7 @@ class manager extends storable_class {
         }
 
         // create page scroller -----------------------------------------------
-        $scroller = new scroller('st',sess_return_url($_SERVER['PHP_SELF']));
+        $scroller = new AA_Scroller('st',sess_return_url($_SERVER['PHP_SELF']));
         // could be redefined by view (see ['itemview']['manager_vid'])
         $scroller->metapage = $settings['scroller']['listlen'];
         $scroller->addFilter("slice_id", "md5", $settings['scroller']['slice_id']);
@@ -152,8 +164,9 @@ class manager extends storable_class {
             if ( $view AND !($view->f('deleted')>0) ) {
                 $format_strings = $view->getViewFormat();
                 $this->messages['noitem_msg'] = $view->f('noitem_msg');
-                if ( isset($this->scroller) )
+                if ( isset($this->scroller) ) {
                     $this->scroller->metapage = $view->f('listlen');
+                }
             }
         } else {
             // define JS_HEAD_, HEADLINE, SITEM_ID, ITEM_ID_ (if not set)
@@ -188,8 +201,9 @@ class manager extends storable_class {
      * Get conditios (conds[] array) for *_QueryIDs from scroller
      */
     function getConds() {
-        if ( $this->searchbar )
+        if ( $this->searchbar ) {
             return $this->searchbar->getConds();
+        }
         return false;
     }
 
@@ -197,15 +211,17 @@ class manager extends storable_class {
      * Get sort[] array for *_QueryIDs from scroller
      */
     function getSort() {
-        if ( $this->searchbar )
+        if ( $this->searchbar ) {
             return $this->searchbar->getSort();
+        }
         return false;
     }
 
     /** Resets the searchbar (both - Search as well as Order)  */
     function resetSearchBar() {
-        if ( $this->searchbar )
+        if ( $this->searchbar ) {
             $this->searchbar->resetSearchAndOrder();
+        }
     }
 
     /**
@@ -215,8 +231,9 @@ class manager extends storable_class {
      * for description @see searchbar.class.php3
      */
     function addOrderBar($sort) {
-        if ( $this->searchbar )
+        if ( $this->searchbar ) {
             $this->searchbar->addOrder($sort);
+        }
     }
 
 

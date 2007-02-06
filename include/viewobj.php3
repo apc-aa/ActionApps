@@ -76,6 +76,11 @@ class view {
     function setfields($rec) {
         $this->fields = $rec;
     }
+    
+    /** sets ['banner_position'] and ['banner_parameters'] */
+    function setBannerParam($banner_param) {
+        $this->fields = array_merge( $this->fields, $banner_param);
+    }
 
     function getViewFormat($selected_item='') {
         $format                        = array();
@@ -94,6 +99,9 @@ class view {
         $format['selected_item']       = $selected_item;
         $format['id']                  = $this->fields['slice_id'];
         $format['vid']                 = $this->fields['id'];
+        
+        $format['banner_position']     = $this->fields['banner_position'];
+        $format['banner_parameters']   = $this->fields['banner_parameters'];
 
         $format['calendar_start_date'] = $this->fields['field1'];
         $format['calendar_end_date']   = $this->fields['field2'];

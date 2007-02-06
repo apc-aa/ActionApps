@@ -38,7 +38,7 @@ http://www.apc.org/
 require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
 require_once AA_INC_PATH."viewobj.php3"; //GetViewsWhere
 
-class slice {
+class AA_Slice {
     var $name;            // The name of the slice
     var $unpackedid;      // The unpacked id of the slice i.e. 32 chars
     var $fields;          // 2 member array( $fields, $prifields)
@@ -50,13 +50,14 @@ class slice {
     var $js_validation;  // javascript form validation code
     var $show_func_used; // used show functions in the input form
 
-    function slice($init_id="",$init_name=null) {
+    function AA_Slice($slice_id) {
         global $errcheck;
-        if ($errcheck && ! ereg("[0-9a-f]{32}",$init_id)) {
-            huhe(_m("WARNING: slice: %s doesn't look like an unpacked id", array($init_id)));
+        if ($errcheck && ! ereg("[0-9a-f]{32}",$slice_id)) {
+            huhe(_m("WARNING: slice: %s doesn't look like an unpacked id", array($slice_id)));
         }
-        $this->unpackedid = $init_id; // unpacked id
-        if (isset($init_name)) $this->name = $init_name;
+        $this->unpackedid     = $slice_id; // unpacked id
+        $this->fields         = new AA_Fields($this->unpackedid);
+        $this->dynamic_fields = new AA_Fields($this->unpackedid, 1);
     }
 
     // Load $this from the DB for any of $fields not already loaded
@@ -71,7 +72,9 @@ class slice {
         if ( $this->setting ) {
             // do it more secure and do not store it plain
             // (we should be carefull - mainly with debug outputs)
-            $this->setting['reading_password'] = md5($this->setting['reading_password']);
+            if ($this->setting['reading_password']) {
+                $this->setting['reading_password'] =  md5($this->setting['reading_password']);
+            }
         } else {
             if ($GLOBALS['errcheck']) {
                 huhl("Slice ".$this->unpacked_id()." is not a valid slice");
@@ -102,7 +105,7 @@ class slice {
         $this->dynamic_setting = new ItemContent($content4id);
     }
 
-    function getfield($fname) {
+    function getProperty($fname) {
         if (AA_Fields::isSliceField($fname)) {
             $this->loadsettingfields();
             return $this->dynamic_setting->getValue($fname);
@@ -112,17 +115,25 @@ class slice {
         }
     }
 
-    function name()        { return $this->getfield('name');         }
+    function name()        { return $this->getProperty('name');         }
     function jumpLink()    { return "<a href=\"".get_admin_url("index.php3?change_id=".$this->unpacked_id()). "\">".$this->name()."</a>"; }
-    function deleted()     { return $this->getfield('deleted');      }
-    function fileman_dir() { return $this->getfield('fileman_dir');  }
-    function type()        { return $this->getfield('type');         }
+    function deleted()     { return $this->getProperty('deleted');      }
+    function fileman_dir() { return $this->getProperty('fileman_dir');  }
+    function type()        { return $this->getProperty('type');         }
     function unpacked_id() { return $this->unpackedid;               } // Return a 32 character id
     function packed_id()   { return pack_id128($this->unpackedid);   }
 
+    function & getFields() {
+        return $this->fields;
+    }
+
+    function getWidgetAjaxHtml($field_id, $item_id, $aa_value) {
+        return $this->fields->getWidgetAjaxHtml($field_id, $item_id, $aa_value);
+    }
+    
     /** Returns lang code ('cz', 'en', 'en-utf8', 'de',...) */
     function getLang()     {
-        $lang_file = substr($this->getfield('lang_file'), 0, strpos($this->getfield('lang_file'), '_news_lang'));
+        $lang_file = substr($this->getProperty('lang_file'), 0, strpos($this->getProperty('lang_file'), '_news_lang'));
         return isset($GLOBALS['LANGUAGE_NAMES'][$lang_file]) ? $lang_file : substr(DEFAULT_LANG_INCLUDE, 0, 2);
     }
 
@@ -133,50 +144,21 @@ class slice {
     // returns an array with two elements [0] is array in form
     // wanted by Storeitem etc, [1] is array of fields in priority order
     function fields( $return_type = null, $slice_fields = false ) {
-        if ($slice_fields) {
-            if (!isset($this->dynamic_fields)) {
-                $this->dynamic_fields = GetSliceFields($this->unpacked_id(), true);
-            }
-            $fields = &$this->dynamic_fields;
-        } else {
-            if (!isset($this->fields)) {
-                $this->fields = GetSliceFields($this->unpacked_id());
-            }
-            $fields = &$this->fields;
-        }
+
+        $fields = $slice_fields ? $this->dynamic_fields : $this->fields;
 
         switch ( $return_type ) {
-            case 'fill':    return true;        // just make sure $this->fields is filled
-            case 'record':  return $fields[0];  // array of field definitions where field_id is key
-            case 'pri':     return $fields[1];  // array of field definitions sorted by priority - integer key
-            case 'search':
-                $i = 0;
-                $fields_list = &$fields[0];    // in order we can use it in foreach
-                foreach ( $fields_list as $fld ) { // in priority order
-                    $showfunc = ParseFnc($fld['input_show_func']);
-                    $field_type = 'numeric';
-                    if ($fld['text_stored']) { $field_type = 'text'; }
-                    if (substr($fld['input_validate'],0,4)=='date') { $field_type = 'date'; }
-                    if (HaveConstants($showfunc['fnc'])) {
-                        if (!AreSliceConstants($showfunc['param'])) { $field_type = 'constants';}
-                    }
-                    /* $field_type = ( $fld['text_stored'] ?
-                      'text' : (( substr($fld['input_validate'],0,4)=='date' ) ?
-                      'date' : 'numeric')); */
-                    // we can hide the field, if we put in fields.search_pri=0
-                    $search_pri = ($fld['search_pri'] ? ++$i : 0 );
-                                       //             $name,        $field,   $operators, $table, $search_pri, $order_pri
-                    $ret[$fld['id']] = GetFieldDef( $fld['name'], $fld['id'], $field_type, false, $search_pri, $search_pri);
-                }
-                return $ret;
+            // record - deprecated
+            case 'record':  return $fields->getRecordArray();    // array of field definitions where field_id is key
+            case 'pri':     return $fields->getPriorityArray();  // array of field definitions sorted by priority - integer key
+            case 'search':  return $fields->getSearchArray();
         }
-        return $fields;                         // two member array ('record' array, 'pri' array)
+        return array($fields->getRecordArray(), $fields->getPriorityArray());                         // two member array ('record' array, 'pri' array)
     }
-
 
     /** Returns slice setting field content in ItemContent object */
     function get_dynamic_setting_content($ignore_reading_password = false) {
-        if ($ignore_reading_password || ($this->getfield('reading_password') == '') || ($this->getfield('reading_password') == md5($GLOBALS["slice_pwd"]))) {
+        if ($ignore_reading_password || ($this->getProperty('reading_password') == '') || ($this->getProperty('reading_password') == md5($GLOBALS["slice_pwd"]))) {
             $this->loadsettingfields();
             return $this->dynamic_setting;
         } else {
@@ -190,7 +172,7 @@ class slice {
     /** Get the base for the file uploads */
     function getUploadBase() {
         $ret = array();
-        $fileman_dir = $this->getfield('fileman_dir');
+        $fileman_dir = $this->getProperty('fileman_dir');
         if ($fileman_dir AND is_dir(FILEMAN_BASE_DIR.$fileman_dir)) {
             $ret['path']  = FILEMAN_BASE_DIR.$fileman_dir."/items";
             $ret['url']   = FILEMAN_BASE_URL.$fileman_dir."/items";
@@ -198,7 +180,7 @@ class slice {
         } else {
             // files are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
             $ret['path']  = IMG_UPLOAD_PATH. $this->unpacked_id();
-            $ret['url']   = get_if($this->getfield('_upload_url.....'), IMG_UPLOAD_URL. $this->unpacked_id());
+            $ret['url']   = get_if($this->getProperty('_upload_url.....'), IMG_UPLOAD_URL. $this->unpacked_id());
             $ret['perms'] = (int)IMG_UPLOAD_DIR_MODE;
         }
         return $ret;
@@ -243,7 +225,7 @@ class slice {
 
     /** Get standard aliases definition from slice's fields */
     function aliases($additional_aliases = false) {
-        return GetAliasesFromFields($this->fields('record'), $additional_aliases);
+        return $this->fields->getAliases($additional_aliases);
     }
 
     /** Returns javascript code for inputform validation */
@@ -371,29 +353,23 @@ class AA_Slices {
     }
 
     /** static function */
-    function getSliceField($slice_id, $field) {
+    function getSliceProperty($slice_id, $field) {
         $slices = AA_Slices::global_instance();
         $slice  = $slices->_getSlice($slice_id);
-        return $slice ? $slice->getfield($field) : null;
+        return $slice ? $slice->getProperty($field) : null;
+    }
+
+    /** static function */
+    function getName($slice_id) {
+        return AA_Slices::getSliceProperty($slice_id, 'name');
     }
 
     function & _getSlice($slice_id) {
         if (!isset($this->a[$slice_id])) {
-            $this->a[$slice_id] = new slice($slice_id);
+            $this->a[$slice_id] = new AA_Slice($slice_id);
         }
         return $this->a[$slice_id];
     }
-}
-
-// Utility functions to avoid mucking with classes where only used once
-function sliceid2name($unpackedsliceid) {
-    $slice = AA_Slices::getSlice($unpackedsliceid);
-    return $slice->name();
-}
-
-// Utility functions to avoid mucking with classes where only used once
-function sliceid2field($unpackedsliceid,$field) {
-    return AA_Slices::getSliceField($unpackedsliceid,$field);
 }
 
 ?>

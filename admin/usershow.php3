@@ -87,7 +87,7 @@ $manager_settings = array(
                          )
          );
 
-$manager = new manager($manager_settings);
+$manager = new AA_Manager($manager_settings);
 
 // r_userstate array holds all configuration of Manager
 // the configuration then could be Bookmarked
@@ -126,9 +126,7 @@ if ( $r_userstate['items'] ) {
     $zids->set_from_item_arr($r_userstate['items']);
 }
 
-$zids=QueryZIDs($slice->fields('record'), $slice_id, $conds, $sort, "", 'ACTIVE',
-                "", 0, $r_userstate['items'] ? $zids : false);
-
+$zids = QueryZIDs( array($slice_id), $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form

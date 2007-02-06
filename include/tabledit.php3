@@ -187,7 +187,7 @@ class tabledit {
             $scroll->countPages ($rowcount);
             $scroll->updateScr($scrurl);
         } else {
-            $$scrname = new scroller($scrname, $scrurl);
+            $$scrname = new AA_Scroller($scrname, $scrurl);
             $scroll = $$scrname;
             if (is_object($this->sess)) {
                 $this->sess->register($scrname);

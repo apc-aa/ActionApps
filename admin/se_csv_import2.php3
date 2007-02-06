@@ -153,8 +153,7 @@ class AA_Csv_Importer {
         //-----------------------------------------------------------------------------
         // Output items should contain just these slice fields
 
-        // $slice = AA_Slices::getSlice($this->slice_id);  // will be working after AA 2.10.0
-        $slice = $GLOBALS['allknownslices']->addslice($this->slice_id);
+        $slice = AA_Slices::getSlice($this->slice_id);
 
         $trans_actions = new Actions($this->actions,$this->mapping, $this->html, $this->params);
 
@@ -219,8 +218,7 @@ class AA_Csv_Importer {
         global $sess;
         $this->_prepare();
 
-        // $slice = AA_Slices::getSlice($this->slice_id);  // will be working after AA 2.10.0
-        $slice = $GLOBALS['allknownslices']->addslice($this->slice_id);
+        $slice = AA_Slices::getSlice($this->slice_id);
 
         $trans_actions = new Actions($this->actions,$this->mapping, $this->html, $this->params);
 
@@ -266,8 +264,7 @@ class AA_Csv_Importer {
         //----------------------------------------------------------------------------
         // Create output fields
 
-        // $slice = AA_Slices::getSlice($this->slice_id);  // will be working after AA 2.10.0
-        $slice = $GLOBALS['allknownslices']->addslice($this->slice_id);
+        $slice = AA_Slices::getSlice($this->slice_id);
 
         list($slice_fields, $prifields) =  $slice->fields();
 
@@ -368,9 +365,9 @@ class AA_Csv_Importer {
 
         FrmTabSeparator(_m("Store settings..."));
 
-        $load_arr = GetTable2Array("SELECT o1.object_id, o2.text FROM object_text as o1 INNER JOIN object_text as o2 ON o1.object_id=o2.object_id
-                                     WHERE o1.property LIKE 'type' AND o1.text LIKE 'AA_CSV_Importer'
-                                     AND o2.property LIKE 'name'", 'object_id', 'text');
+        $load_arr = GetTable2Array("SELECT o1.object_id, o2.value FROM object_text as o1 INNER JOIN object_text as o2 ON o1.object_id=o2.object_id
+                                     WHERE o1.property LIKE 'type' AND o1.value LIKE 'AA_Csv_Importer'
+                                     AND o2.property LIKE 'name'", 'object_id', 'value');
 
         FrmInputSelect('load_id', _m('Load setting'), (array)$load_arr);
 
@@ -388,9 +385,9 @@ class AA_Csv_Importer {
 
 if ( $load ) {
     // should be rewritten to true object storing functions
-    $SQL      = "SELECT text FROM object_text WHERE object_id = '$load_id' AND property='importer'";
+    $SQL      = "SELECT value FROM object_text WHERE object_id = '$load_id' AND property='importer'";
     $ret      = GetTable2Array($SQL, 'aa_first', 'aa_fields');
-    $importer = unserialize($ret['text']);
+    $importer = unserialize($ret['value']);
     $importer->setFilename($_REQUEST['fileName']);
 } else {
     $importer = new AA_Csv_Importer();
@@ -401,13 +398,13 @@ function SaveObjectProperty($obj_id, $property, $value) {
     $varset = new CVarset();
     $varset->add('object_id', 'text', $obj_id);
     $varset->add('property',  'text', $property);
-    $varset->add('text',      'text', $value);
+    $varset->add('value',     'text', $value);
     $varset->doInsert('object_text');
 }
 
 if ( $save ) {
     $obj_id = new_id();
-    SaveObjectProperty($obj_id, 'type',       'AA_CSV_Importer');
+    SaveObjectProperty($obj_id, 'type',       'AA_Csv_Importer');
     SaveObjectProperty($obj_id, 'importer',   serialize($importer));
     SaveObjectProperty($obj_id, 'name',       $save_name);
     SaveObjectProperty($obj_id, 'periodical', $save_periodical);

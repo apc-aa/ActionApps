@@ -127,7 +127,7 @@ $manager_settings = array(
          );
 
 
-$manager = new manager($manager_settings);
+$manager = new AA_Manager($manager_settings);
 if ((isset($conds_ro)) && (isset($showcondsro))) {
     $manager->searchbar->addSearch($conds_ro, true);
 }
@@ -175,7 +175,7 @@ FrmJavascript("
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
 
-$zids=QueryZIDs($slice->fields('record'), $module_id, $conds, $sort, "", $frombins);
+$zids = QueryZIDs(array($module_id), $conds, $sort, $frombins);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form
