@@ -29,7 +29,8 @@ http://www.apc.org/
 
 require_once AA_INC_PATH."easy_scroller.php3";
 require_once AA_INC_PATH."sliceobj.php3";
-require_once AA_INC_PATH."perm_core.php3";   // needed for GetAuthData();
+require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
+require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
 
 function translateString( $string, $translation ) {
     $twos = ParamExplode( $translation );
@@ -63,75 +64,100 @@ function parseSwitch($text) {
 *                   'permission'
 *                   'role'
 */
-function stringexpand_user($field='') {
-    global $auth_user_info, $cache_nostore, $auth, $slice_id, $perms_roles;
-    // this GLOBAL :-( variable is message for pagecache to NOT store views (or
-    // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
-    // cache's keyString.
-    // $auth_user_info caches values about auth user
-    $cache_nostore = true;             // GLOBAL!!!
-    $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uname"]);
-    switch ($field = trim($field)) {
-        case '':         return $auth_user;
-        case 'password': return $_SERVER['PHP_AUTH_PW'];
-        case 'role' : // returns users permission to slice
-        case 'permission' :
-                if ( IfSlPerm($perms_roles['SUPER']['perm']) ) {
-                    return 'super';
-                } elseif ( IfSlPerm($perms_roles['ADMINISTRATOR']['perm'] ) ) {
-                    return 'administrator';
-                } elseif ( IfSlPerm($perms_roles['EDITOR']['perm'] ) ) {
-                    return 'editor';
-                } elseif ( IfSlPerm($perms_roles['AUTHOR']['perm'] ) ) {
-                    return 'author';
-                } else {
-                    return 'undefined';
+class AA_Stringexpand_User extends AA_Stringexpand {
+
+    function additionalCacheParam() {
+        return serialize(array($GLOBALS['auth_user_info'], $GLOBALS['auth']));
+    }
+
+    function expand($field='') {
+        global $auth_user_info, $cache_nostore, $auth, $perms_roles;
+        // this GLOBAL :-( variable is message for pagecache to NOT store views (or
+        // slices), where we use {user:xxx} alias, into cache (AUTH_USER is not in
+        // cache's keyString.
+        // $auth_user_info caches values about auth user
+        $cache_nostore = true;             // GLOBAL!!!
+        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uname"]);
+        switch ($field = trim($field)) {
+            case '':         return $auth_user;
+            case 'password': return $_SERVER['PHP_AUTH_PW'];
+            case 'role' : // returns users permission to slice
+            case 'permission' :
+                    if ( IfSlPerm($perms_roles['SUPER']['perm']) ) {
+                        return 'super';
+                    } elseif ( IfSlPerm($perms_roles['ADMINISTRATOR']['perm'] ) ) {
+                        return 'administrator';
+                    } elseif ( IfSlPerm($perms_roles['EDITOR']['perm'] ) ) {
+                        return 'editor';
+                    } elseif ( IfSlPerm($perms_roles['AUTHOR']['perm'] ) ) {
+                        return 'author';
+                    } else {
+                        return 'undefined';
+                    }
+                break;
+            default:
+                // $auth_user_info caches user's informations
+                if ( !isset($auth_user_info[$auth_user]) ) {
+                    $auth_user_info[$auth_user] = GetAuthData();
                 }
-            break;
-        default:
-            // $auth_user_info caches user's informations
-            if ( !isset($auth_user_info[$auth_user]) ) {
-                $auth_user_info[$auth_user] = GetAuthData();
-            }
-//            huhl($auth_user_info, $auth_user);
-            return get_if($auth_user_info[$auth_user]->getValue($field), "");
+    //            huhl($auth_user_info, $auth_user);
+                return get_if($auth_user_info[$auth_user]->getValue($field), "");
+        }
     }
 }
+
 
 /** Replace inputform field alias with the real core for the field, which is
  *  stored already in the pagecache
  *  @param $parameters - field id and other modifiers to the field
  */
-function stringexpand_inputvar() {
-    global $contentcache;
-    $arg_list = func_get_args();   // must be asssigned to the variable
-    // replace inputform field
-    return $contentcache->get('inputvar:'. join(':',$arg_list));
+class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // cache is used by expand function itself
+
+    function expand() {
+        global $contentcache;
+        $arg_list = func_get_args();   // must be asssigned to the variable
+        // replace inputform field
+        return $contentcache->get('inputvar:'. join(':',$arg_list));
+    }
 }
 
 
 /** Expands {formbreak:xxxxxx:yyyy:....} alias - split of inputform into parts
  *  @param $part_name - name of the part (like 'Related Articles').
  */
-function stringexpand_formbreak($part_names='') {
-    $GLOBALS['g_formpart']++;  // Nothing to print, it just increments part counter
+class AA_Stringexpand_Formbreak extends AA_Stringexpand {
 
-    // You can specify also the names for next tabs (separated by ':'), which is
-    // usefull mainly for last tab (for which you do not have formbrake, of course
-    $part_names = func_get_args();
-    $i = 0;
-    foreach ($part_names as $name) {  // remember part name
-        // the formparts are numbered backward
-        $index = ($GLOBALS['g_formpart'] - $i++);
-        if ($name != '' AND ($index >= 0)) {
-            $GLOBALS['g_formpart_names'][$index] = $name;
+    function additionalCacheParam() {
+        return serialize(array($GLOBALS['g_formpart'], $GLOBALS['g_formpart_names']));
+    }
+
+    function expand($part_names='') {
+        $GLOBALS['g_formpart']++;  // Nothing to print, it just increments part counter
+
+        // You can specify also the names for next tabs (separated by ':'), which is
+        // usefull mainly for last tab (for which you do not have formbrake, of course
+        $part_names = func_get_args();
+        $i = 0;
+        foreach ($part_names as $name) {  // remember part name
+            // the formparts are numbered backward
+            $index = ($GLOBALS['g_formpart'] - $i++);
+            if ($name != '' AND ($index >= 0)) {
+                $GLOBALS['g_formpart_names'][$index] = $name;
+            }
         }
     }
 }
 
 /** Expands {formpart:} alias - prints number of current form part */
-function stringexpand_formpart() {
-    return get_if($GLOBALS['g_formpart'],'0');  // Just print part counter
+class AA_Stringexpand_Formpart extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand() {
+        return get_if($GLOBALS['g_formpart'],'0');  // Just print part counter
+    }
 }
 
 
@@ -142,55 +168,203 @@ function stringexpand_formpart() {
  *  @param $style    - 0-26 - displayed icon type
  *                   - see: http://www.icq.com/features/web/indicator.html
  */
-function stringexpand_icq($user_id='', $action='add', $style=1) {
-    if ( !$user_id ) {
-        return "";
-    }
-    if ( $action != 'add' ) {    // possibly other actions in future
-        $action = 'add';
-    }
-    $style = (int)$style;
-    if ( !($style >= 0 AND $style <= 26) ) {
-        $style = 1;
-    }
+class AA_Stringexpand_Icq extends AA_Stringexpand {
 
-    // set the url to the image and the stype of the image
-    $image = '<img src="http://status.icq.com/online.gif?icq='.$user_id.'&img='.$style.'" border="0">' ;
-    // start the rendering the html outupt
-    $output .= '<a href="http://www.icq.com/people/cmd.php?uin='.$user_id.'&action='.$action.'">'.$image.'</a>';
-    // send the output to MediaWiki
-    return $output;
+    function expand($user_id='', $action='add', $style=1) {
+        if ( !$user_id ) {
+            return "";
+        }
+        $user_id = urlencode($user_id);
+        $action  = urlencode($action);
+        $style   = (int)$style;
+
+        // set the url to the image and the stype of the image
+        $image = '<img src="http://status.icq.com/online.gif?icq='.$user_id.'&img='.$style.'" border="0">' ;
+        // start the rendering the html outupt
+        $output .= '<a href="http://www.icq.com/people/cmd.php?uin='.$user_id.'&action='.$action.'">'.$image.'</a>';
+        // send the output to MediaWiki
+        return $output;
+    }
+}
+
+/** Expands {skype:<skype_name>[:<action>[:<style>[:<message>]]]} and displays
+ *  SKYPE status for the user
+ *  @param $user_skype_name  - skype name of the user
+ *  @param $action           - add | call | chat | userinfo
+ *  @param $style            - add | call | chat | smallicon |mediumicon | ballon | bigclassic | smallclassic
+ *  @param $message          - a text to display
+ *                   - @see: http://www.skype.com/share/buttons/advanced.html
+ */
+class AA_Stringexpand_Skype extends AA_Stringexpand {
+
+    function expand($user_skype_name='', $action='userinfo', $style='smallicon', $message='Skype me') {
+        if ( !$user_skype_name ) {
+            return "";
+        }
+        $user_skype_name = urlencode($user_skype_name);
+        $action          = urlencode($action);
+        $style           = urlencode($style);
+        $message         = safe($message);
+
+        // start the rendering the html output
+        $output  = '<!-- Skype "My status" button http://www.skype.com/go/skypebuttons -->';
+        $output .= '<script type="text/javascript" src="http://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>';
+        $output .= '<a href="skype:'.$user_skype_name.'?'.$action.'"><img src="http://mystatus.skype.com/'.$style.'/'.$user_skype_name.'" style="border: none;" alt="'.$message.'" title="'.$message.'" /></a>';
+        $output .= '<!-- end of skype button -->';
+
+        return $output;
+    }
+}
+
+
+/** Expands {yahoo:<yahoo_name>[:<action>[:<style>]]} and displays YAHOO status for
+ *  the user.
+ *  @param $user_id  - yahoo name of the user
+ *  @param $action           - addfriend | call | sendim
+ *  @param $style            - 0-4 - dysplayed icon type
+ *                   - see: http://messenger.yahoo.com/messenger/help/online.html
+ */
+class AA_Stringexpand_Yahoo extends AA_Stringexpand {
+
+    function expand($user_id='', $action='sendim', $style='2') {
+
+        if ( !$user_id ) {
+            return "";
+        }
+
+        // set your defaults for the style and action (addfriend, call or sendim) (0, 1, 2, 3 and 4)
+
+        $action_default = "sendim" ;
+        $style_default = "2" ;
+
+        // test to see if the optinal elements of the params are supported. if not set them to the defaults
+
+        if ( !($style == "0" OR $style == "1" OR $style == "2" OR $style == "3" OR $style == "4" ) ) {
+            $style = $style_default ;
+        }
+
+        if ( !($action == "addfriend" OR $action == "sendim" OR $action == "call") ) {
+            $action = $action_default ;
+        }
+
+        // set the url to the image and the style of the image
+        switch( $style ){
+
+            case "0":
+                    $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=0" ' ;
+                    $image .= ' style="border: none; width: 12px; height: 12px;" alt="My status" />' ;
+            break;
+
+            case "1":
+                    $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=1" ' ;
+                    $image .= ' style="border: none; width: 64px; height: 16px;" alt="My status" />' ;
+            break;
+
+            case "2":
+                    $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=2" ' ;
+                    $image .= ' style="border: none; width: 125px; height: 25px;" alt="My status" />' ;
+            break;
+
+            case "3":
+                    $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=3" ' ;
+                    $image .= ' style="border: none; width: 86px; height: 16px;" alt="My status" />' ;
+            break;
+
+            case "4":
+                    $image = '<img src="http://opi.yahoo.com/online?u='.$user_id.'&m=g&t=4" ' ;
+                    $image .= ' style="border: none; width: 12px; height: 12px;" alt="My status" />' ;
+            break;
+
+         }
+
+         // start the rendering the html outupt
+         $output .= '<a href="ymsgr:'.$action.'?'.$user_id.'">'.$image.'</a>';
+
+        // send the output to MediaWiki
+         return $output;
+    }
+}
+
+/** Expands {jabber:<user_id>[:<action>[:<style>]]} and displays Jabber status for
+ *  the user.
+ *  @param $user_id  - ICQ ID of the user
+ *  @param $action   - call
+ *  @param $style    - 0-3 - displayed icon type
+ *                     @see: http://www.the-server.net:8000
+ *                     @see: http://www.onlinestatus.org/
+ */
+class AA_Stringexpand_Jabber extends AA_Stringexpand {
+
+    function expand($user_id='', $action='call', $style=0) {
+        if ( !$user_id ) {
+            return "";
+        }
+        $port  = '800'.(int)$style;
+
+        //  @see http://www.onlinestatus.org/
+        $output = "<a href=\"xmpp:$user_id\"><img
+          src=\"http://www.the-server.net:$port/jabber/$user_id\" align=\"absmiddle\" border=\"0\" alt=\""._m('Jabber Online Status Indicator') ."\"
+          onerror=\"this.onerror=null;this.src='http://www.the-server.net:$port/image/jabberunknown.gif';\"></a>";
+
+        return $output;
+    }
+}
+
+/** Expands {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>} like:
+ *          {htmltoggle:more >>>:Econnect:less <<<:Econnect is ISP for NGOs...}
+ *  It creates the link text1 (or text2) and two divs, where only one is visible
+ *  at the time
+ *  The /javscript/aajslib.php3 shoud be included to the page
+ *  (by <script src="">)
+ *  @param $switch_state_1 - default link text
+ *  @param $code_1         - HTML code displayed as default (in div)
+ *  @param $switch_state_2 - link text 2
+ *  @param $code_2         - HTML code displayed as alternative after clicking
+ *                           on the link
+ */
+class AA_Stringexpand_Htmltoggle extends AA_Stringexpand {
+
+    function expand($switch_state_1, $code_1, $switch_state_2, $code_2) {
+        $uniqid = uniqid();
+        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:Htmltoggle('toggle_link_$uniqid', '$switch_state_1', 'toggle_1_$uniqid', '$switch_state_2', 'toggle_2_$uniqid')\">$switch_state_1</a>\n";
+        $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
+        $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
+        return $ret;
+    }
 }
 
 // text = [ decimals [ # dec_point [ thousands_sep ]]] )
 function parseMath($text) {
     // get format string, need to add and remove // to
     // allow for empty string
+
     $variable = substr(strtok("#".$text,")"),1);
-    $twos = ParamExplode( strtok("") );
-    $i=0;
-    $key=true;
+    $twos     = ParamExplode( strtok("") );
+    $i        = 0;
+    $key      = true;
+
     while ( $i < count($twos) ) {
         $val = trim($twos[$i]);
         if ($key) {
-            if ($val) $ret.=str_replace("#:","",$val); $key=false;
-        } else {	//$val=str_replace ("{", "", $val);
-            //$val=str_replace ("}", "", $val);
+            if ($val) {
+                $ret.=str_replace("#:","",$val);
+            }
+            $key=false;
+        } else {
             $val = calculate($val); // defined in math.php3
             if ($variable) {
-                $format=explode("#",$variable);
-                $val = number_format($val, $format[0], $format[1], $format[2]);
+                $format = explode("#",$variable);
+                $val    = number_format($val, $format[0], $format[1], $format[2]);
             }
-            $ret.=$val;
-            $key=true;
+            $ret .= $val;
+            $key  = true;
         }
         $i++;
     }
     return $ret;
 }
 
-/** parseLoop - in loop writes out values from field
- */
+/** parseLoop - in loop writes out values from field */
 function parseLoop($out, &$item) {
     global $contentcache;
 
@@ -211,7 +385,7 @@ function parseLoop($out, &$item) {
 
         if (strpos($field, "(") == true) { // if we have special parameters - in () after field name
             // get this special parameters
-            $param = substr($field, strpos($field, "(")+1,strpos($field, ")")-strpos($field, "(")-1);
+            $param  = substr($field, strpos($field, "(")+1,strpos($field, ")")-strpos($field, "(")-1);
             $params = explode(",",$param);
             // field name
             $field    = substr($field, 0, strpos($field, "("));
@@ -367,31 +541,90 @@ $GLOBALS[eb_functions] = array (
 );
 */
 
+class AA_Stringexpand_Fmod extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
 
-// Alternative is to create functions starting with "stringexpand_"
-function stringexpand_testexpfnctn($var) { return "Just testing it".$var; }
-function stringexpand_fmod($x,$y)        { return fmod($x,$y); }
-function stringexpand_cookie($name)      { return $_COOKIE[$name]; }
-
-function stringexpand_now() {
-    return time();
+    function expand($x,$y) {
+        return fmod($x,$y);
+    }
 }
 
-function stringexpand_substr($string,$start,$length=999999999) {
-    return substr($string,$start,$length);
+class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($name) {
+        return $_COOKIE[$name];
+    }
 }
 
-function stringexpand_str_replace($search, $replace, $subject) {
-    return str_replace($search, $replace, $subject);
+class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand() {
+        return time();
+    }
+}
+
+class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($string,$start,$length=999999999,$add='') {
+        $ret = substr($string,$start,$length);
+        if ( $add AND (strlen($ret) < strlen($string)) ) {
+            $ret .= $add;
+        }
+        return $ret;
+    }
+}
+
+class AA_Stringexpand_Strlen extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($string) {
+        return strlen($string);
+    }
+}
+
+class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($string) {
+        return trim($string);
+    }
+}
+
+class AA_Stringexpand_Str_Replace extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($search, $replace, $subject) {
+        return str_replace($search, $replace, $subject);
+    }
 }
 
 // Use this inside URLs e.g. {urlencode:_#EDITITEM}
-function stringexpand_urlencode($text='') {
-    return urlencode($text);
+class AA_Stringexpand_Urlencode extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($text='') {
+        return urlencode($text);
+    }
 }
 
-function stringexpand_csv($text='') {
-    return (strcspn($text,",\"\n\r") == strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
+class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($text='') {
+        return (strcspn($text,",\"\n\r") == strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
+    }
 }
 
 /** Returns Text as is.
@@ -401,101 +634,206 @@ function stringexpand_csv($text='') {
  *  "plaintext" is set for the field. The {asis:abstract........} returns the
  *  exact value as inserted in the database
  */
-function stringexpand_asis($text='') {
-    return $text;
+class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($text='') {
+        return $text;
+    }
 }
 
-function stringexpand_safe($text='') {
-    return htmlspecialchars($text);
+class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($text='') {
+        return htmlspecialchars($text);
+    }
 }
 
 // In javascript we need escape apostroph
-function stringexpand_javascript($text='') {
-    return str_replace("'", "\'", safe($text));
+class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($text='') {
+        return str_replace("'", "\'", safe($text));
+    }
 }
 
-function stringexpand_striptags($text='') {
-    return strip_tags($text);
+class AA_Stringexpand_Striptags extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($text='') {
+        return strip_tags($text);
+    }
 }
 
-function stringexpand_rss($text='') {
-    $entities_old = array('&nbsp;', '& ');
-    $entities_new = array(' ', '&amp; ');
-    return str_replace($entities_old, $entities_new, strip_tags($text));
+class AA_Stringexpand_Rss extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($text='') {
+        $entities_old = array('&nbsp;', '& ');
+        $entities_new = array(' ', '&amp; ');
+        return str_replace($entities_old, $entities_new, strip_tags($text));
+    }
 }
 
-function stringexpand_convert($text, $from, $to) {
-    require_once AA_INC_PATH."convert_charset.class.php3";
-    $encoder = new ConvertCharset;
-    return $encoder->Convert($text, $from, $to);
+class AA_Stringexpand_Convert extends AA_Stringexpand {
+
+    function expand($text, $from, $to) {
+        require_once AA_INC_PATH."convert_charset.class.php3";
+        $encoder = new ConvertCharset;
+        return $encoder->Convert($text, $from, $to);
+    }
 }
 
 // allows you to call view with conds:
-// {view.php3?vid=9&cmd[9]=c-1-{alias::f_t:{_#VALUE___}:conds}}
-function stringexpand_conds($text='') {
-    return '%22'. str_replace('-','--',$text) .'%22';
+// {view.php3?vid=9&cmd[9]=c-1-{conds:{_#VALUE___}}}
+// or
+// {view.php3?vid=9&cmd[9]=c-1-{conds:category.......1}}
+class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($text='') {
+        if ( !AA_Fields::isField($text) ) {
+            return AA_Stringexpand_Conds::_textToConds($text);
+        }
+
+        if ( is_null($this->item) ) {
+            return 'AA_NeVeRtRuE';          // never true condition
+        }
+        $values = $this->item->getvalues($text);
+        if (empty($values)) {
+            return 'AA_NeVeRtRuE';
+        }
+        $ret = $delim = '';
+        foreach ( $values as $val ) {
+            if ( empty($val['value']) ) {
+                continue;
+            }
+            $ret  .= $delim. AA_Stringexpand_Conds::_textToConds($val['value']);
+            $delim = '%20OR%20';
+        }
+        return empty($ret) ? 'AA_NeVeRtRuE' : $ret;
+    }
+
+    /** Static */
+    function _textToConds($text) {
+        return '%22'. str_replace(array('-',' '), array('--','%20'), $text) .'%22';
+    }
 }
 
 /** ids_string - ids (long or short (or mixed) separated by dash '-') */
-function stringexpand_item($ids_string, $expression, $delimiter='') {
-    $ids   = explode('-', $ids_string);
-    $ret   = '';
-    $delim = '';
-    if ( is_array($ids) ) {
-        foreach ( $ids as $item_id ) {
-            if ( $item_id ) {
-                $item  = GetItemFromId(new zids($item_id));
-                $ret  .= ($item ? ($delim . $item->subst_alias($expression)) : '');
-                $delim = $delimiter;
+class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // The caching is made by AA_Stringexpand_Aggregate, which is enough
+
+    function expand($ids_string, $expression, $delimiter=', ') {
+        return AA_Stringexpand_Aggregate::expand('concat', $ids_string, $expression, $delimiter);
+    }
+}
+
+/** ids_string - ids (long or short (or mixed) separated by dash '-') */
+class AA_Stringexpand_Aggregate extends AA_Stringexpand {
+
+    function expand($function, $ids_string, $expression=null, $parameter=null) {
+        if ( !in_array($function, array('sum', 'avg', 'concat', 'count')) ) {
+            return '';
+        }
+        $ids     = explode('-', $ids_string);
+        $results = array();
+        $count   = 0;
+        if ( is_array($ids) ) {
+            foreach ( $ids as $item_id ) {
+                if ( $item_id ) {
+                    $item = GetItemFromId(new zids($item_id));
+                    if ($item) {
+                        $count++;
+                        if ($expression) {
+                            $results[$item_id] = $item->subst_alias($expression);
+                        }
+                    }
+                }
             }
         }
+        switch ($function) {
+            case 'sum':
+                $ret = array_sum($results);
+                break;
+            case 'avg':
+                array_walk($results, create_function('$a', 'return (float)$a;'));
+                $ret = (count($results) > 0) ? array_sum($results)/count($results) : '';
+                break;
+            case 'concat':
+                $ret = join($parameter,$results);
+                break;
+            case 'count':
+                $ret = $count;
+                break;
+        }
+        return $ret;
     }
-    return $ret;
 }
 
 /** returns ids of items based on conds d-...
- *  {ids:<slice>:<conds>[:<sort>[:<delimiter>]]}
+ *  {ids:<slice>:<conds>[:<sort>[:<delimiter>[:<restrict_ids>]]]}
  *  {ids:6a435236626262738348478463536272:d-category.......1-RLIKE-Bio-switch.........1-=-1:headine........-}
  *  returns dash separated long ids of items in selected slice where category
  *  begins with Bio and switch is 1 ordered by headline - descending
- *  @todo allow specify more than one slice. this also means rewriting
- *        QueryZids() - the fields should not be parameter - it should be
- *        grabbed from slice(s)
  */
-function stringexpand_ids($slices, $conds=null, $sort=null, $delimiter=null) {
-    $conditions = new Conditions;
-    $conditions->addFromString($conds);
-    $order      = new Sortorder;
-    $order->addFromString($sort);
-    $slices_arr = explode('-', $slices);
+class AA_Stringexpand_Ids extends AA_Stringexpand {
 
-    // first slice, if defined more than one
-    $slice_id   = reset($slices_arr);
+    function expand($slices, $conds=null, $sort=null, $delimiter=null, $ids=null) {
+        $conditions = new AA_Set;
+        $conditions->addCondsFromString($conds);
+        $order      = new AA_Sortorder;
+        $order->addSortFromString($sort);
+        $slices_arr = explode('-', $slices);
+        $restrict_zids = false;
+        if ( $ids ) {
+            $restrict_zids = new zids(explode('-',$ids),'l');
+        }
 
-    list($fields,) = GetSliceFields($slice_id);
-    $zids = QueryZIDs($fields, $slice_id, $conditions->getConds(), $order->getOrder(), '', 'ACTIVE', $slices_arr);
-    return join($zids->longids(), $delimiter ? $delimiter : '-');
+        $zids       = QueryZIDs($slices_arr, $conditions->getConds(), $order->getOrder(), 'ACTIVE', 0, $restrict_zids);
+        return join($zids->longids(), $delimiter ? $delimiter : '-');
+    }
+}
+
+/** @returns name (or other field) of the constant in $gropup_id with $value */
+class AA_Stringexpand_Constant extends AA_Stringexpand {
+    function expand($group_id, $value, $what='name') {
+         return getConstantValue($group_id, $what, $value);
+    }
 }
 
 /** If $condition is filled by some text, then print $text. $text could contain
  *  _#1 alias for the condition, but you can use any {} AA expression.
  *  Example: {ifset:{img_height.....2}: height="_#1"}
  */
-function stringexpand_ifset($condition, $text) {
-    return (strlen($condition)<1) ? '' : str_replace('_#1', $condition, $text);
+class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($condition, $text) {
+        return (strlen($condition)<1) ? '' : str_replace('_#1', $condition, $text);
+    }
 }
 
 /** Expand URL by adding session,
  *  also handle special cases like {sessurl:hidden}
  */
-function stringexpand_sessurl($url) {
-    global $sess;
-    switch ($url) {
-        case "hidden":
-            return "<input type=\"hidden\" name=\"".$sess->name."\" value=\"".$sess->id."\">";
-            break;
-        default:
-            return $sess->url($url);
+class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($url) {
+        global $sess;
+        return ($url == "hidden") ? "<input type=\"hidden\" name=\"".$sess->name."\" value=\"".$sess->id."\">" : $sess->url($url);
     }
 }
 
@@ -505,84 +843,45 @@ function stringexpand_sessurl($url) {
  *            'E' if they are equal
  *  ussage:  {switch({compare:{publish_date....}:{now}})G:greater:L:less:E:equal}
  */
-function stringexpand_compare($val1, $val2) {
-    return ( $val1 == $val2 ) ? 'E' : (($val1 > $val2) ? 'G' : 'L' );
+class AA_Stringexpand_Compare extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($val1, $val2) {
+        return ( $val1 == $val2 ) ? 'E' : (($val1 > $val2) ? 'G' : 'L' );
+    }
 }
 
-/** Return array of substitution pairs for dictionary, based on given dictionary
- *  slice, format string which defines the format and possible slice codnitions.
- *   [biom] => <a href="http://biom.cz">_#KEYWORD_</a>, ...
- */
-function getDictReplacePairs($dictionary, $format, &$delimiters, $conds='') {
-    // return array of pairs: [biom] => <a href="http://biom.cz">_#KEYWORD_</a>
-    $replace_pairs = array();
+// allows you to call view with conds:
+// {view.php3?vid=9&cmd[9]=c-1-{alias::f_t:{_#VALUE___}:conds}}
+class AA_Stringexpand_Field extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // We need to solve item caching (it is not problem, but I'm lazy, now)
 
-    // conds string could contain also sort[] - if so, use conds also as $sort
-    // parameter (the sort is grabbed form the string then)
-    $sort     = (strpos( $conds, 'sort') !== false ) ? $conds : '';
-
-    /** 'keywords........' field could contain multiple values. In this case we
-     *  have to create pair for each of the word. The _#KEYWORD_ alias is then
-     *  used in format string
-     */
-    $kw_item  = GetFormatedItems( $dictionary, "{@keywords........:##}_AA_DeLiM_$format", false, AA_BIN_ACTIVE, $conds, $sort);
-    // above is little hack - we need keyword pair, but we want to call
-    // GetFormatedItems only once (for speedup), so we create one string with
-    // delimiter:
-    //   BIOM##Biom##biom_AA_DeLiM_<a href="http://biom.cz">_#KEYWORD_</a>
-    foreach ( $kw_item as $kw_string ) {
-        list($keywords, $link) = explode('_AA_DeLiM_', $kw_string,2);
-        $kw_array              = explode('##', $keywords);
-        foreach ( (array)$kw_array as $kw ) {
-            /*
-            $search_kw - Replace inner delimiters from collocations (we suppose
-            that the single words, compound words and also collocations will
-            beare replaced) and add special word boundary in order to recognize
-            text as the whole word - not as part of any word
-            added by haha
-             */
-            $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
-            $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
-            if ( ($first_upper=strtoupper($kw{0})) != $kw{0} ) {
-                // do the same for the word with first letter in uppercase
-                $kw{0} = $first_upper;
-                $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
-                $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
-            }
+    function expand($field_id, $property='name', $slice_id=null) {
+        if (!AA_Fields::isField($field_id)) {
+            return '';
         }
+        if (empty($slice_id)) {
+            if ( empty($item) ) {
+                return '';
+            }
+            $slice_id = $item->getSliceID();
+        }
+        list($fields,) = GetSliceFields($slice_id);
+        // we do not want to allow users to get all field setting
+        // that's why we restict it to the properties, which makes sense
+        // @todo - make it less restrictive
+        $property = 'name';
+        return $fields[$field_id][$property];
     }
-    return $replace_pairs;
-}
-
-/** It's necessary to select characters used as standard word delimiters
- *  Check the value of the string variable $delimiter_chars and correct it.
- *  Associative array $delimiters contains frequently used delimiters and it's
- *  special replace_strings used as word boundaries
- *  @author haha
- */
-function define_delimiters()
-{
-    $delimiter_chars = "()[] ,.;:?!\"&'\n";
-    for ($i=0; $i<strlen($delimiter_chars); $i++) {
-        $index              = $delimiter_chars[$i];
-        $delimiters[$index] = 'AA#@'.$index.'AA#@';
-    }
-    // HTML tags are word delimiters, too
-    $delimiters['<'] = 'AA#@<';
-    $delimiters['>'] ='>AA#@';
-    /*
-    Some HTML tags in text will be replaced with special strings
-    beginning with '_AA_' and ending with '_ShCut'
-    (see function makeAsShortcut())
-    these special strings are taken as delimiters
-    */
-    $delimiters['_ShCut']='_ShCutAA#@';
-    $delimiters['_AA_']='AA#@_AA_';
-    return $delimiters;
 }
 
 /** Store $text in the $html_subst_arr array - used for dictionary escaping html
- *  tags
+ *  tags.
+ *  This function belongs to AA_Stringexpand_Dictionary class, but I don't know,
+ *  how to call class method from preg_replace function.
+ *  So it remains as separate function.
  */
 function makeAsShortcut($text) {
     static $count=0;
@@ -591,6 +890,7 @@ function makeAsShortcut($text) {
     $count++;
     return $shortcut;
 }
+
 
 /** Uses one slice ($dictionary) and replace any word which matches a word
  *  in dictionary by the text specified in $format.
@@ -601,71 +901,133 @@ function makeAsShortcut($text) {
  *  instead
  *  @author Honza Malik, Hana Havelková
  */
-function stringexpand_dictionary($dictionaries, $text, $format, $conds='') {
-    global $pagecache;
+class AA_Stringexpand_Dictionary extends AA_Stringexpand {
 
-    // sometimes this function last to much time - try to extend it
-    if (($max_execution_time = ini_get('max_execution_time')) > 0) {
-        set_time_limit($max_execution_time+20);
+    function expand($dictionaries, $text, $format, $conds='') {
+        global $pagecache;
+
+        // sometimes this function last to much time - try to extend it
+        if (($max_execution_time = ini_get('max_execution_time')) > 0) {
+            set_time_limit($max_execution_time+20);
+        }
+
+        $delimiters = AA_Stringexpand_Dictionary::defineDelimiters();
+        // get pairs (like APC - <a href="http://apc.org">APC</a>' from dict. slice
+        // (we call it through the pagecache in order it is called only once for
+        // the same parameters)
+        $replace_pairs = $pagecache->cacheMemDb(array('AA_Stringexpand_Dictionary','getDictReplacePairs'), array($dictionaries, $format, $delimiters, $conds), new CacheStr2find($dictionaries));
+
+        // we do not want to replace text in the html tags, so we substitute all
+        // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the
+        // $html_subst_arr. Then it is used with replace_pairs to return back
+        $GLOBALS['html_subst_arr'] = array();
+        $search = array ("'<script[^>]*?>.*?</script>'sie",  // Strip out javascript
+                         "'<h[1-6][^>]*?>.*?</h[1-6]>'sie",  // Strip out titles
+                                                                                                                                 // can't be nested
+                         "'<a[^>]*?>.*?</a>'sie",            // Strip out links
+                         "'<[\/\!]*?[^<>]*?>'sie");          // Strip out HTML tags
+
+        $replace = array ("makeAsShortcut('\\0')", "makeAsShortcut('\\0')",
+                          "makeAsShortcut('\\0')", "makeAsShortcut('\\0')");
+
+        // substitute html tags with shortcuts
+        // (= remove the code where we do not want replace text)
+        $text = preg_replace($search, $replace, $text);
+
+        // Insert special string before the beginning and after the end of the text
+        // Replacing all delimiters with special strings!!!
+        $text = 'AA#@'.strtr($text, $delimiters).'AA#@';
+
+        // add shortcuts also to the replace_pairs, so all is done in one step
+        $replace_pairs = array_merge($replace_pairs, $GLOBALS['html_subst_arr']);
+        // do both: process dictionary words and put back the shortcuted text
+        $text = strtr($text, $replace_pairs);
+
+        unset($GLOBALS['html_subst_arr']);         // just clean up
+
+        // finally - removing additional vaste text 'AA#@' - recovering original
+        // word delimiters
+        $text = str_replace('AA#@', '', $text);
+        return $text;
     }
 
-    $delimiters = define_delimiters();
-    // get pairs (like APC - <a href="http://apc.org">APC</a>' from dict. slice
-    // (we call it through the pagecache in order it is called only once for
-    // the same parameters)
-    $replace_pairs = $pagecache->cacheMemDb("getDictReplacePairs", array($dictionaries, $format, $delimiters, $conds), new CacheStr2find($dictionaries));
 
-    // we do not want to replace text in the html tags, so we substitute all
-    // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the
-    // $html_subst_arr. Then it is used with replace_pairs to return back
-    $GLOBALS['html_subst_arr'] = array();
-    $search = array ("'<script[^>]*?>.*?</script>'sie",  // Strip out javascript
-                     "'<h[1-6][^>]*?>.*?</h[1-6]>'sie",  // Strip out titles
-                                                                                                                             // can't be nested
-                     "'<a[^>]*?>.*?</a>'sie",            // Strip out links
-                     "'<[\/\!]*?[^<>]*?>'sie");          // Strip out HTML tags
+    /** Return array of substitution pairs for dictionary, based on given dictionary
+     *  slice, format string which defines the format and possible slice codnitions.
+     *   [biom] => <a href="http://biom.cz">_#KEYWORD_</a>, ...
+     */
+    function getDictReplacePairs($dictionary, $format, &$delimiters, $conds='') {
+        // return array of pairs: [biom] => <a href="http://biom.cz">_#KEYWORD_</a>
+        $replace_pairs = array();
 
-    $replace = array ("makeAsShortcut('\\0')", "makeAsShortcut('\\0')",
-                      "makeAsShortcut('\\0')", "makeAsShortcut('\\0')");
+        // conds string could contain also sort[] - if so, use conds also as $sort
+        // parameter (the sort is grabbed form the string then)
+        $sort     = (strpos( $conds, 'sort') !== false ) ? $conds : '';
 
-    // substitute html tags with shortcuts
-    // (= remove the code where we do not want replace text)
-    $text = preg_replace($search, $replace, $text);
-
-    // Insert special string before the beginning and after the end of the text
-    // Replacing all delimiters with special strings!!!
-    $text = 'AA#@'.strtr($text, $delimiters).'AA#@';
-
-    // add shortcuts also to the replace_pairs, so all is done in one step
-    $replace_pairs = array_merge($replace_pairs, $GLOBALS['html_subst_arr']);
-    // do both: process dictionary words and put back the shortcuted text
-    $text = strtr($text, $replace_pairs);
-
-    unset($GLOBALS['html_subst_arr']);         // just clean up
-
-    // finally - removing additional vaste text 'AA#@' - recovering original
-    // word delimiters
-    $text = str_replace('AA#@', '', $text);
-    return $text;
-}
-
-function ExpandGetFieldName( &$item, $params) {
-    list($field_id, $property) = $params;
-    if (is_null($item) OR !IsField($field_id)) {
-        return '';
+        /** 'keywords........' field could contain multiple values. In this case we
+         *  have to create pair for each of the word. The _#KEYWORD_ alias is then
+         *  used in format string
+         */
+        $kw_item  = GetFormatedItems( $dictionary, "{@keywords........:##}_AA_DeLiM_$format", false, AA_BIN_ACTIVE, $conds, $sort);
+        // above is little hack - we need keyword pair, but we want to call
+        // GetFormatedItems only once (for speedup), so we create one string with
+        // delimiter:
+        //   BIOM##Biom##biom_AA_DeLiM_<a href="http://biom.cz">_#KEYWORD_</a>
+        foreach ( $kw_item as $kw_string ) {
+            list($keywords, $link) = explode('_AA_DeLiM_', $kw_string,2);
+            $kw_array              = explode('##', $keywords);
+            foreach ( (array)$kw_array as $kw ) {
+                /*
+                $search_kw - Replace inner delimiters from collocations (we suppose
+                that the single words, compound words and also collocations will
+                beare replaced) and add special word boundary in order to recognize
+                text as the whole word - not as part of any word
+                added by haha
+                 */
+                $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
+                $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
+                if ( ($first_upper=strtoupper($kw{0})) != $kw{0} ) {
+                    // do the same for the word with first letter in uppercase
+                    $kw{0} = $first_upper;
+                    $search_kw = 'AA#@'. strtr($kw, $delimiters) .'AA#@';
+                    $replace_pairs[$search_kw] = str_replace('_#KEYWORD_', $kw, $link);
+                }
+            }
+        }
+        return $replace_pairs;
     }
-    list($fields,) = GetSliceFields($item->getSliceID());
-    // we do not want to allow users to get all field setting
-    // that's why we restict it to the properties, which makes sense
-    // @todo - make it less restrictive
-    $property = 'name';
-    return $fields[$field_id][$property];
+
+    /** It's necessary to select characters used as standard word delimiters
+     *  Check the value of the string variable $delimiter_chars and correct it.
+     *  Associative array $delimiters contains frequently used delimiters and it's
+     *  special replace_strings used as word boundaries
+     *  @author haha
+     */
+    function defineDelimiters() {
+        $delimiter_chars = "()[] ,.;:?!\"&'\n";
+        for ($i=0; $i<strlen($delimiter_chars); $i++) {
+            $index              = $delimiter_chars[$i];
+            $delimiters[$index] = 'AA#@'.$index.'AA#@';
+        }
+        // HTML tags are word delimiters, too
+        $delimiters['<'] = 'AA#@<';
+        $delimiters['>'] ='>AA#@';
+        /*
+        Some HTML tags in text will be replaced with special strings
+        beginning with '_AA_' and ending with '_ShCut'
+        (see function makeAsShortcut())
+        these special strings are taken as delimiters
+        */
+        $delimiters['_ShCut']='_ShCutAA#@';
+        $delimiters['_AA_']='AA#@_AA_';
+        return $delimiters;
+    }
 }
 
 /** Expand a single, syntax element */
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
-    global $als,$debug,$errcheck;
+    global $contentcache, $als, $debug, $errcheck;
 
     $maxlevel = max($maxlevel, $level); // stores maximum deep of nesting {}
                                         // used just for speed optimalization (QuoteColons)
@@ -701,7 +1063,10 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     //
     // all parameters could contain aliases (like "{any _#HEADLINE text}"),
     // which are processed before expanding the function
-    if ( isset($item) && (substr($out, 0, 5)=='alias') AND ereg("^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$", $out, $parts) ) {
+
+    // tried to change to preg_match, but there was problem with multiple lines
+    //   used: '/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/'
+    if ( isset($item) && (substr($out, 0, 5)=='alias') AND ereg('^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$', $out, $parts) ) {
       // call function (called by function reference (pointer))
       // like f_d("start_date......", "m-d")
       if ($parts[1] && ! AA_Fields::isField($parts[1])) {
@@ -745,15 +1110,16 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
           case "fileman":
             // Note this won't work if called from a Static view because no slice_id available
             // This should be fixed.
-            global $auth,$slice_id;
             //huhl($itemview->slice_info);
-            if ($itemview->slice_info["id"]) $mysliceid = unpack_id128($itemview->slice_info['id']);
-            elseif ($slice_id) $mysliceid = $slice_id;
-            else {
+            if ($itemview->slice_info["id"]) {
+                $mysliceid = unpack_id128($itemview->slice_info['id']);
+            } elseif ($GLOBALS['slice_id']) {
+                $mysliceid = $slice_id;
+            } else {
                 if ($errcheck) huhl("No slice_id defined when expanding fileman");
                 return "";
             }
-            $fileman_dir = sliceid2field($mysliceid,"fileman_dir");
+            $fileman_dir = AA_Slices::getSliceProperty($mysliceid,"fileman_dir");
           // Note dropthrough from case "fileman"
           case "site":
             if ($parts[1] == "site") {
@@ -763,28 +1129,15 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                 }
             }
             $filename = FILEMAN_BASE_DIR . $fileman_dir . "/" . $parts[0];
-            if ($filedes = @fopen ($filename, "r")) {
-                $fileout = "";
-                while (!feof ($filedes))
-                    $fileout .= fgets($filedes, 4096);
-                fclose($filedes);
-            } else {
-                if ($errcheck) huhl("Unable to read from file $filename");
-                return "";
-            }
+            $file = &AA_File_Wrapper::wrapper($filename);
+            // $file->contents(); opens the stream, reads the data and close the stream
+            $fileout = $file->contents();
             break;
           case "readfile": //simple support for reading static html (use at own risk)
             $filename = $_SERVER["DOCUMENT_ROOT"] . "/" . $parts[0];
-            if ($filedes = @fopen ($filename, "r")) {
-                $fileout = "";
-                while (!feof ($filedes)) {
-                    $fileout .= fgets($filedes, 4096);
-                }
-                fclose($filedes);
-            } else {
-                if ($errcheck) huhl("Unable to read from file $filename");
-                return "";
-            }
+            $file = &AA_File_Wrapper::wrapper($filename);
+            // $file->contents(); opens the stream, reads the data and close the stream
+            $fileout = $file->contents();
             break;
           default:
             if ($errcheck) huhl("Trying to expand include, but no valid hint in $out");
@@ -828,11 +1181,11 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         return DeQuoteColons(substr($out,8));
     }
     // OK - its not a known fixed string, look in various places for the whole string
-    if ( ereg("^([a-zA-Z_0-9]+):?([^}]*)$", $out, $parts) ) {
-        if ( $GLOBALS['eb_functions'][$parts[1]] ) {          // eb functions - call allowed php functions directly
+    if ( preg_match('/^([a-zA-Z_0-9]+):?([^}]*)$/', $out, $parts) ) {
+
+        // eb functions - call allowed php functions directly
+        if ( $GLOBALS['eb_functions'][$parts[1]] ) {
             $fnctn = $GLOBALS['eb_functions'][$parts[1]];
-        } elseif ( $parts[1] == 'field' ) {  // special function - we need slice_id here
-            return QuoteColons($level, $maxlevel, ExpandGetFieldName($item,(array)array_map('DeQuoteColons',ParamExplode($parts[2]))));
         } elseif ( is_callable("stringexpand_".$parts[1])) {  // custom stringexpand functions
             $fnctn = "stringexpand_".$parts[1];
         }
@@ -846,6 +1199,20 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             }
             return QuoteColons($level, $maxlevel, $ebres);
         }
+
+        // main stringexpand functions.
+        // @todo switch most of above constructs to standard AA_Stringexpand...
+        // class
+        elseif ( !is_null($stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $parts[1], $item))) {
+            $param = empty($parts[2]) ? array() : array_map('DeQuoteColons',ParamExplode($parts[2]));
+            $additional_params = $stringexpand->additionalCacheParam();
+            if ( '_AA_NeVeR_CaChE' == $additional_params ) {
+                $res = call_user_func_array( array($stringexpand,'expand'), $param);
+            } else {
+                $res = $contentcache->get_result(array($stringexpand, 'expand'), $param, $additional_params);
+            }
+            return QuoteColons($level, $maxlevel, $res);
+        }
         // else - continue
     }
     if (isset($item) ) {
@@ -856,6 +1223,20 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         } elseif ( AA_Fields::isField($out) ) {
             return QuoteColons($level, $maxlevel, $item->f_h($out,"-"));
             // QuoteColons used to mark colons, which is not parameter separators.
+        }
+        // look for {const_*:} for changing viewing type of constants
+        elseif (substr($out, 0, 6) == "const_") {
+            // $what - name of column (eg. from const_name we get name)
+            $what = substr($out, strpos($out, "_")+1, strpos($out, ":") - strpos($out, "_")-1);
+            // parameters - first is field
+            $parts = ParamExplode(substr($out,strpos($out,":")+1));
+            // get group id
+            $group_id = getConstantsGroupID($item->getval("slice_id........"), $parts[0]);
+            /* get short_id/name/... of constant with specified value from constants category with
+               group $group_id */
+            $value = getConstantValue($group_id, $what, $item->getval($parts[0]));
+
+            return QuoteColons($level, $maxlevel, $value);
         }
     }
     // Look and see if its in the state variable in module site
@@ -884,20 +1265,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     elseif ( (substr($out,0,1) == "@") OR (substr($out,0,5) == "list:")) {
         return QuoteColons($level, $maxlevel, parseLoop($out, $item));
     }
-    // look for {const_*:} for changing viewing type of constants
-    elseif (substr($out, 0, 6) == "const_") {
-        // $what - name of column (eg. from const_name we get name)
-        $what = substr($out, strpos($out, "_")+1, strpos($out, ":") - strpos($out, "_")-1);
-        // parameters - first is field
-        $parts = ParamExplode(substr($out,strpos($out,":")+1));
-        // get group id
-        $group_id = getConstantsGroupID($item->getval("slice_id........"), $parts[0]);
-        /* get short_id/name/... of constant with specified value from constants category with
-           group $group_id */
-        $value = getConstantValue($group_id, $what, $item->getval($parts[0]));
-
-        return QuoteColons($level, $maxlevel, $value);
-    }elseif (substr($out,0,8) == "mlx_view") {
+    elseif (substr($out,0,8) == "mlx_view") {
         if(!$GLOBALS['mlxView'])
            return "$out";
         //$param = array_map('DeQuoteColons',ParamExplode($parts[2]));
@@ -931,29 +1299,47 @@ function expandFilenameWithHttp($parturl) {
           $filename = self_server(). (($filename{0}=='/') ? '' : '/'). $filename;
       }
 
-      if (! $fp = @fopen( $filename, 'r'))  {
-        if ($errcheck) huhl("Unable to retrieve $filename");
-        return "";
-      }
-      $fileout = "";
-      do {   // this is needed since PHP 4.3.2 - remote files are read on PACKET
-             // by PACKET BASIS !!! (maybe we can use new file_get_contents() for
-             // php >= 4.3.0
-          $data = fread( $fp, defined("INCLUDE_FILE_MAX_SIZE") ? INCLUDE_FILE_MAX_SIZE : 400000 );
-          if (strlen($data) == 0) break;
-          $fileout .= $data;
-      } while (true);
-      fclose( $fp );
-      return $fileout;
+      $file = &AA_File_Wrapper::wrapper($filename);
+      // $file->contents(); opens the stream, reads the data and close the stream
+      return $file->contents();
 }
 
 // Return some strings to use in keystr for cache if could do a stringexpand
-function stringexpand_keystring() {
-    $ks = "";
-    if (isset($GLOBALS["apc_state"])) $ks .= serialize($GLOBALS["apc_state"]);
-    if (isset($GLOBALS["als"]))       $ks .= serialize($GLOBALS["als"]);
-    if (isset($_COOKIE))              $ks .= serialize($_COOKIE);
-    return $ks;
+class AA_Stringexpand_Keystring extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand() {
+        $ks = "";
+        if (isset($GLOBALS["apc_state"])) $ks .= serialize($GLOBALS["apc_state"]);
+        if (isset($GLOBALS["als"]))       $ks .= serialize($GLOBALS["als"]);
+        if (isset($_COOKIE))              $ks .= serialize($_COOKIE);
+        return $ks;
+    }
+}
+
+/** helper class
+ *  Its purpose is just tricky - we can't use preg_replace_callback where callback
+ *  function has some more parameters. So we use this class as callback
+ */
+class AA_Unalias_Callback {
+    var $level;
+    var $maxlevel;
+    var $item;
+    var $itemview;
+    var $aliases;
+
+    function AA_Unalias_Callback( $level, &$maxlevel, $item, $itemview, $aliases ) {
+        $this->level    = $level;
+        $this->maxlevel = $maxlevel;
+        $this->item     = $item;
+        $this->itemview = $itemview;
+        $this->aliases  = $aliases;
+    }
+
+    function expand_bracketed_callback($match) {
+        return expand_bracketed($match[1], $this->level,$this->maxlevel,$this->item,$this->itemview,$this->aliases);
+    }
 }
 
 // This is based on the old unalias_recurent, it is intended to replace
@@ -962,19 +1348,25 @@ function stringexpand_keystring() {
 //   - remove is applied to the entire result, not the parts!
 function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $itemview=null, $aliases=null ) {
     global $debug;
+
+    // make sure, that $contentcache is defined - we will use it in expand_bracketed()
+    contentcache::global_instance();
+
     $maxlevel = max($maxlevel, $level); // stores maximum deep of nesting {}
                                         // used just for speed optimalization (QuoteColons)
-// Note ereg was 15 seconds on one multi-line example cf .002 secs
-//    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
 
-    while (preg_match("/^(.*)[{]([^{}]+)[}](.*)$/s",$text,$vars)) {
-        $t1 = expand_bracketed($vars[2],$level+1,$maxlevel,$item,$itemview,$aliases);
+    // Note ereg was 15 seconds on one multi-line example cf .002 secs
+    //    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
 
-        $text = $vars[1] . $t1 . $vars[3];
+    $callback = new AA_Unalias_Callback($level+1,$maxlevel,$item,$itemview,$aliases);
+    while (preg_match('/[{]([^{}]+)[}]/s',$text)) {
+        $text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback,'expand_bracketed_callback'), $text);
     }
 
+    $maxlevel = $callback->maxlevel;
+
     if (isset($item)) {
-        return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text,explode ("##",$remove)));
+        return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text, explode("##",$remove)));
     } else {
         return QuoteColons($level, $maxlevel, $text);
     }
@@ -982,76 +1374,115 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
 
 // This isn't used yet, might be changed
 // remove this comment if you use it!
-function stringexpand_slice_comments($slice_id) {
-    $SQL = "SELECT sum(disc_count) FROM item WHERE slice_id=\"$slice_id\"";
-    $db = getDB();
-    $res = $db->tquery($SQL);
-    if ($db->next_record()) {
-        $dc = $db->f("sum(disc_count)");
-    } else {
-        $dc = 0;
+class AA_Stringexpand_Slice_Comments extends AA_Stringexpand {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($slice_id) {
+        $SQL = "SELECT sum(disc_count) FROM item WHERE slice_id=\"$slice_id\"";
+        $db  = getDB();
+        $res = $db->tquery($SQL);
+        $dc  = $db->next_record() ? $db->f("sum(disc_count)") : 0;
+        freeDB($db);
+        return $dc;
     }
-    freeDB($db);
-    return $dc;
 }
 
-function stringexpand_preg_match($pattern, $subject) {
-    preg_match($pattern, $subject, $matches);
-    return $matches[0];
+class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($pattern, $subject) {
+        // preg_match unfortunately allow users to run their own PHP code
+        // (using '/pattern/e'), which is dangerous. We do not want to allow
+        // designers to run custom scripts inside AA
+        // @todo better check for e modifier
+        if (strpos($pattern,'e', strpos($pattern, $pattern{0}, 1))) {
+            return _m('PHP patterns in Preg_Match aro not allowed');
+        }
+        preg_match($pattern, $subject, $matches);
+        return $matches[0];
+    }
 }
 
 /** Allows on-line editing of field content */
-function stringexpand_ajax($item_id, $field_id, $show_alias='') {
-    $ret = '';
-    $alias_name = ($show_alias == '') ? '' : substr($show_alias, 2);
-    if ( $item_id AND $field_id) {
+class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // It works with database, so it shoud always look in the database
 
-/*        $changes_monitor = new AA_ChangesMonitor();
-        $props     = $changes_monitor->getProposals(array($item_id));
-        $proposals = $props->getValues(array($item_id));
-        if ( $proposals ) {
-            $change_cmd = '';
-            foreach ( $proposals as $change_id => $changes ) {
-                foreach ( $changes as $selector => $values ) {
-                    if ( $selector == $fid ) {
-                        foreach ( $values as $value ) {
-                            $change_cmd .= "\n  <div class=\"change_cmd\">$value <input type=\"button\" value=\"zmìnit\" onclick=\"AcceptChange('$change_id', '$divid')\"></div>";
+    function expand($item_id, $field_id, $show_alias='') {
+        $ret = '';
+        $alias_name = ($show_alias == '') ? '' : substr($show_alias, 2);
+        if ( $item_id AND $field_id) {
+
+    /*        $changes_monitor = new AA_ChangesMonitor();
+            $props     = $changes_monitor->getProposals(array($item_id));
+            $proposals = $props->getValues(array($item_id));
+            if ( $proposals ) {
+                $change_cmd = '';
+                foreach ( $proposals as $change_id => $changes ) {
+                    foreach ( $changes as $selector => $values ) {
+                        if ( $selector == $fid ) {
+                            foreach ( $values as $value ) {
+                                $change_cmd .= "\n  <div class=\"change_cmd\">$value <input type=\"button\" value=\"zmìnit\" onclick=\"AcceptChange('$change_id', '$divid')\"></div>";
+                            }
                         }
                     }
                 }
             }
-        }
-        if ( $zmena_cmd ) {
-            $odmitnout_text = ( $fid == 'edit_note......1') ? 'Vyøešeno' : 'odmítnout zmìny';
-            $ret .= "<div class=\"change_cmds\" id=\"zmena_cmds$divid\">
-                     $zmena_cmd
-                     <div class=\"change_cmd\"><input type=\"button\" value=\"$odmitnout_text\" onclick=\"CancelChanges('$item_id', '$fid', '$divid')\"></div>
-                  </div>";
-        }
-*/
-        $item        = GetItemFromId(new zids($item_id));
-        $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
-        $repre_value = get_if($repre_value, '--');
-        $iid         = $item->getItemID();
-        $fid         = unpack_id($field_id);
-        $ret .= "<div class=\"ajax_container\" id=\"ajaxc_{$iid}_{$fid}\" onclick=\"displayInput('ajaxv_{$iid}_{$fid}', '$iid', '$field_id')\">\n";
-        $ret .= " <div class=\"ajax_value\" id=\"ajaxv_{$iid}_{$fid}\" aaalias=\"$alias_name\">$repre_value</div>\n";
-        $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_{$iid}_{$fid}\"></div>\n";
+            if ( $zmena_cmd ) {
+                $odmitnout_text = ( $fid == 'edit_note......1') ? 'Vyøešeno' : 'odmítnout zmìny';
+                $ret .= "<div class=\"change_cmds\" id=\"zmena_cmds$divid\">
+                         $zmena_cmd
+                         <div class=\"change_cmd\"><input type=\"button\" value=\"$odmitnout_text\" onclick=\"CancelChanges('$item_id', '$fid', '$divid')\"></div>
+                      </div>";
+            }
+    */
+            $item        = GetItemFromId(new zids($item_id));
+            $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
+            $repre_value = get_if($repre_value, '--');
+            $iid         = $item->getItemID();
+            $fid         = unpack_id($field_id);
+            $ret .= "<div class=\"ajax_container\" id=\"ajaxc_{$iid}_{$fid}\" onclick=\"displayInput('ajaxv_{$iid}_{$fid}', '$iid', '$field_id')\">\n";
+            $ret .= " <div class=\"ajax_value\" id=\"ajaxv_{$iid}_{$fid}\" aaalias=\"$alias_name\">$repre_value</div>\n";
+            $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_{$iid}_{$fid}\"></div>\n";
 
-/*        $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_{$iid}_{$fid}\">
-                     $zmena_cmd
-                     <div class=\"change_cmd\"><input type=\"button\" value=\"$odmitnout_text\" onclick=\"CancelChanges('$item_id', '$fid', '$divid')\"></div>
-                  </div>\n";
-*/
-        $ret .= "</div>\n\n";
+    /*        $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_{$iid}_{$fid}\">
+                         $zmena_cmd
+                         <div class=\"change_cmd\"><input type=\"button\" value=\"$odmitnout_text\" onclick=\"CancelChanges('$item_id', '$fid', '$divid')\"></div>
+                      </div>\n";
+    */
+            $ret .= "</div>\n\n";
+        }
+        return $ret;
     }
-    return $ret;
 }
 
 /** @todo - convert whole stringexpand to the new class approach
  *        - this is just begin
  */
 class AA_Stringexpand {
+
+    /** item, for which we are stringexpanding
+     *  Not used fot many expand functions
+     */
+    var $item;
+
+    function AA_Stringexpand($item) {
+        $this->item = $item;
+    }
+
+    function expand() {
+    }
+
+    /** Some stringexpand functions uses global parameters, so it is not posible
+     *  to use cache for results based just on expand() parameters. We need to
+     *  add following parameters. In mast cases you do not need to override this
+     *  function
+     */
+    function additionalCacheParam() {
+        return '';
+    }
 
     /** static function */
     function unalias(&$text, $remove="", $item=null) {
@@ -1071,13 +1502,34 @@ class AA_Stringexpand {
     }
 }
 
-function stringexpand_log($number='', $base='') {
-    return log($number, $base);
+/** Special parent class for all stringexpand functions, where no cache
+ *  is needed (probably very easy functions
+ */
+class AA_Stringexpand_Nevercache extends AA_Stringexpand {
+    function additionalCacheParam() {
+        // no reason to cache this simple function
+        return '_AA_NeVeR_CaChE';
+    }
 }
 
-function stringexpand_unpack($number='') {
-    return unpack_id($number);
+
+
+class AA_Stringexpand_Log extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($number='', $base='') {
+        return log($number, $base);
+    }
 }
 
+class AA_Stringexpand_Unpack extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    function expand($number='') {
+        return unpack_id($number);
+    }
+}
 
 ?>
