@@ -125,6 +125,8 @@ $headline = getHeadline($content[$item_id]);
         <td width="10">&nbsp;</td>
         <td><b><?php echo _m("Author") ?></td>
         <td width="10">&nbsp;</td>
+        <td><b><?php echo _m("IP Address") ?></td>
+        <td width="10">&nbsp;</td>
         <td><b><?php echo _m("Date") ?></td>
         <td width="10">&nbsp;</td>
         <td align="center"><b><?php echo _m("Actions") ?></td>
@@ -146,14 +148,16 @@ if (!$outcome) {
         $im2 = "<tr><td>&nbsp;</td>
                  <td><table cellspacing=0 cellpadding=0 border=0>
                     <tr><td>".$im. PrintImg("blank.gif",2,21)."</td>
-                        <td nowrap>_#SUBJECT#&nbsp;</td>
+                        <td nowrap>_#SUBJECT_&nbsp;</td>
                     </tr>
                     </table>
                  </td>
                  <td>&nbsp;</td>
-                 <td nowrap>_#AUTHOR##</td>
+                 <td nowrap>_#AUTHOR#_</td>
                  <td>&nbsp;</td>
-                 <td nowrap>_#DATE####</td>
+                 <td nowrap>_#IP_ADDR_</td>
+                 <td>&nbsp;</td>
+                 <td nowrap>_#DATE###_</td>
                  <td>&nbsp;</td>";
         $item->setformat($im2);
         $item->set_data($dcontent[$d_id]);
