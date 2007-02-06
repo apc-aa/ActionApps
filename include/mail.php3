@@ -66,7 +66,7 @@ class HtmlMail extends htmlMimeMail {
         $tos  = array_unique(is_array($to) ? $to : array($to));
         $sent = 0;
         foreach ($tos as $to) {
-            if (!$to OR !AA_Validate::email($to)) {
+            if (!$to OR !AA_Validate::validate($to, 'email')) {
                 continue;
             }
 

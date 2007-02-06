@@ -42,18 +42,69 @@ function ValidateInput($variableName, $inputName, $variable, &$err, $needed=fals
 }
 
 define('VALIDATE_ERROR_BAD_TYPE',         400);
-define('VALIDATE_ERROR_OUT_OF_RANGE',     401);
-define('VALIDATE_ERROR_NOT_MATCH',        402);
-define('VALIDATE_ERROR_BAD_PARAMETER',    403);
-define('VALIDATE_ERROR_NOT_UNIQUE',       404);
-define('VALIDATE_ERROR_TOO_LONG',         405);
-define('VALIDATE_ERROR_TOO_SHORT',        406);
-define('VALIDATE_ERROR_WRONG_CHARACTERS', 407);
+define('VALIDATE_ERROR_BAD_VALIDATOR',    401);
+define('VALIDATE_ERROR_OUT_OF_RANGE',     402);
+define('VALIDATE_ERROR_NOT_MATCH',        403);
+define('VALIDATE_ERROR_BAD_PARAMETER',    404);
+define('VALIDATE_ERROR_NOT_UNIQUE',       405);
+define('VALIDATE_ERROR_TOO_LONG',         406);
+define('VALIDATE_ERROR_TOO_SHORT',        407);
+define('VALIDATE_ERROR_WRONG_CHARACTERS', 408);
+define('VALIDATE_ERROR_NOT_IN_LIST',      409);
 
 /** AA user input validation class
- *  Ussage: AA_Validate::integer();
+ *  Ussage (for standard validators): AA_Validate::validate($variable, 'int');
  */
 class AA_Validate {
+
+    /** Returns validators for standard data types
+    *   @param $v_type is string, or array($type,$parameter)
+    */
+    function &factory($v_type) {
+        static $standard_validators = array();
+
+        list ($type, $parameter) = is_array($v_type) ? $v_type : array($v_type, '');
+
+        $sv_key = md5($type.serialize($parameter));
+        if ( !isset($standard_validators[$sv_key]) ) {
+            switch ($type) {
+                case 'bool':     $standard_validators[$sv_key] = new AA_Validate_Int(0,1);         break;
+                case 'int':
+                case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Int();            break;
+                case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float();          break;
+                // email regexp should be improved
+                case 'email':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^.+@.+\..+$/');          break;
+                case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[a-fA-Z]+$/');          break;
+                case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[0-9a-f]{30,32}$/');    break;
+                case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Int(0);           break;
+                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^_#[0-9_#a-zA-Z]{8}$/'); break;
+                case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp('^[-.0-9a-zA-Z_]+$/', VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z, 0-9 . _ and - characters")); break;
+                case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login();          break;
+                case 'password': $standard_validators[$sv_key] = new AA_Validate_Password();       break;
+                case 'unique':   $standard_validators[$sv_key] = new AA_Validate_Unique();         break;
+                case 'e_unique': $standard_validators[$sv_key] = new AA_Validate_E_Unique();       break;
+                case 'url':
+                case 'text':
+                case 'field':
+                case 'all':      $standard_validators[$sv_key] = new AA_Validate_All();            break;
+                case 'enum':     $standard_validators[$sv_key] = new AA_Validate_Enum($parameter); break;
+                default:         // Bad validator type: $type;
+                                 return null;
+            }
+        }
+
+        return $standard_validators[$sv_key];
+    }
+
+    /** static class function - called as AA_Validate::validate('email'); */
+    function validate(&$var, $type, $default='AA_noDefault') {
+        $validator = AA_Validate::factory($type);
+        if ( is_null( $validator ) ) {
+            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', array($type)), $default);
+        }
+        return $validator->validate($var);
+    }
+
 
     /** Method returns or sets last itemContent error
      *  The trick for static class variables is used */
@@ -73,7 +124,8 @@ class AA_Validate {
         return AA_Validate::lastErr(null, null, true);
     }
 
-    function _bad(&$var, $err_id, $err_msg, $default) {
+    /** Protected static method - used only from AA_Validate_* objects */
+    function bad(&$var, $err_id, $err_msg, $default) {
         AA_Validate::lastErr($err_id, $err_msg);
         if ( $default != 'AA_noDefault' ) {
             $var = $default;
@@ -81,136 +133,226 @@ class AA_Validate {
         return false;
     }
 
-    /** Test for integer value
-     *  @param   $param['min']
-     *  @param   $param['max']
-     */
-    function integer(&$var, $param=array(), $default='AA_noDefault') {
+}
+
+/** Test for integer value
+ *  @param   $min
+ *  @param   $max
+ */
+class AA_Validate_Int extends AA_Validate {
+    /** Minum number */
+    var $min;
+
+    /** Maximum number */
+    var $max;
+
+    function AA_Validate_Int($min=null, $max=null) {
+        $this->min = $min;
+        $this->max = $max;
+    }
+
+    function validate(&$var, $default='AA_noDefault') {
         if ((string)$var !== (string)(int)$var) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No integer value'), $default);
+            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No integer value'), $default);
         }
         $var = (int)$var;
-        if ( isset($param['max']) AND ($var > $param['max']) ) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
+        if ( !is_null($this->max) AND ($var > $this->max) ) {
+            return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
         }
-        if ( isset($param['min']) AND ($var < $param['min']) ) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
+        if ( !is_null($this->min) AND ($var < $this->min) ) {
+            return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
         }
         return true;
     }
+}
 
-    /** Test for decimal value
-     *  @param   $param['min']
-     *  @param   $param['max']
-     */
-    function float(&$var, $param=array(), $default='AA_noDefault') {
+/** Test for float value
+ *  @param   $min
+ *  @param   $max
+ */
+class AA_Validate_Float extends AA_Validate {
+    /** Minum number */
+    var $min;
+
+    /** Maximum number */
+    var $max;
+
+    function AA_Validate_Float($min=null, $max=null) {
+        $this->min = $min;
+        $this->max = $max;
+    }
+
+    function validate(&$var, $default='AA_noDefault') {
         if ( !is_float($var) ) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $default);
+            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $default);
         }
         $var = (float)$var;
-        if ( isset($param['max']) AND ($var > $param['max']) ) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
-        } elseif (isset($param['min']) AND ($var < $param['min']) ) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
+        if ( !is_null($this->max) AND ($var > $this->max) ) {
+            return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too big'), $default);
+        }
+        if ( !is_null($this->min) AND ($var < $this->min) ) {
+            return AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Out of range - too small'), $default);
         }
         return true;
     }
+}
 
-    function _regexp(&$var, $pattern, $default, $err_id=null, $err_msg=null) {
-        $err_id  = is_null($err_id) ? VALIDATE_ERROR_NOT_MATCH : $err_id;
-        $err_msg = is_null($err_msg) ? _m('Wrong value')       : $err_msg;
+/** Test for Regular Expression
+ *  @param   $regular_expression
+ *  @param   $default_error_id
+ *  @param   $default_error_msg
+ */
+class AA_Validate_Regexp extends AA_Validate {
+    /** Regular Expression */
+    var $regular_expression;
 
-        return preg_match($pattern, $var) ? true : AA_Validate::_bad($var, $err_id, $err_msg, $default);
+    /** Defines possible return error id and messages, if the variable do not matches */
+    var $default_error_id;
+    var $default_error_msg;
+
+    function AA_Validate_Regexp( $regular_expression, $err_id=null, $err_msg=null ) {
+        $this->regular_expression = $regular_expression;
+        $this->default_error_id  = is_null($err_id)  ? VALIDATE_ERROR_NOT_MATCH : $err_id;
+        $this->default_error_msg = is_null($err_msg) ? _m('Wrong value')        : $err_msg;
     }
 
-    function long_id(&$var, $param=array(), $default='AA_noDefault') {
-        return AA_Validate::_regexp($var, '/^[0-9a-f]{30,32}$/', $default);
+    function validate(&$var, $default='AA_noDefault') {
+        return preg_match($this->regular_expression, $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_NOT_IN_LIST, _m('Not in the list of possible values'), $default);
+    }
+}
+
+/** Test for Regular Expression
+ *  @param   $regular_expression
+ *  @param   $default_error_id
+ *  @param   $default_error_msg
+ */
+class AA_Validate_Enum extends AA_Validate {
+    /** Enumeration array (array of possible values). Values are stored as keys. */
+    var $possible_values;
+
+    /** Defines possible return error id and messages, if the variable do not matches */
+    var $default_error_id;
+    var $default_error_msg;
+
+    function AA_Validate_Regexp( $possible_values ) {
+        $this->possible_values = $possible_values;
     }
 
-    function short_id(&$var, $param=array(), $default='AA_noDefault') {
-        return AA_Validate::integer($var, $param, $default);
+    function validate(&$var, $default='AA_noDefault') {
+        return isset($this->possible_values[$var]) ? true : AA_Validate::bad($var, $this->default_error_id, $this->default_error_msg, $default);
     }
+}
 
-    function alias(&$var, $param=array(), $default='AA_noDefault') {
-        return AA_Validate::_regexp($var, '/^_#[0-9_#a-zA-Z]{8}$/', $default);
-    }
+/** Test for login name value */
+class AA_Validate_Login extends AA_Validate {
 
-    /** Email validation
-     *  @todo the regexp should be improved
-     */
-    function email(&$var, $param=array(), $default='AA_noDefault') {
-        // should be improved
-        return AA_Validate::_regexp($var, '/^.+@.+\..+$/', $default);
-    }
+    function AA_Validate_Login() {}
 
-    function login(&$var, $param=array(), $default='AA_noDefault') {
+    function validate(&$var, $default='AA_noDefault') {
         $len = strlen($var);
         if ( $len<3 ) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $default);
+            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $default);
         }
         if ( $len>32 ) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
+            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
         }
-        return AA_Validate::_regexp($var, '/^[a-zA-Z0-9]*$/', $default, VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z and 0-9 characters"));
+        return preg_match('/^[a-zA-Z0-9]*$/', $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z and 0-9 characters"), $default);
     }
+}
 
-    function password(&$var, $param=array(), $default='AA_noDefault') {
+/** Test for password */
+class AA_Validate_Password extends AA_Validate {
+
+    function AA_Validate_Password() {}
+
+    function validate(&$var, $default='AA_noDefault') {
         $len = strlen($var);
         if ( $len<5 ) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $default);
+            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $default);
         }
         if ( $len>32 ) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
+            return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
         }
         return true;
     }
+}
 
-    function filename(&$var, $param=array(), $default='AA_noDefault') {
-        return AA_Validate::_regexp($var, '/^[-.0-9a-zA-Z_]+$/', $default, VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z, 0-9 . _ and - characters"));
+/** Test for unique value in slice/database
+ *  @param   $field_id
+ *  @param   $scope       - username | slice | allslices
+ */
+class AA_Validate_Unique extends AA_Validate {
+    /** Search in which field */
+    var $field_id;
+
+    /** Scope, where to search - username | slice | allslices */
+    var $scope;
+
+    function AA_Validate_Unique($scope, $field_id) {
+        $this->scope    = $scope ? $scope : 'slice';
+        $this->field_id = $field_id;
     }
 
-    /** Test for unique value in slice/database
-     *  @param   $param['field_id']
-     *  @param   $param['scope']       - username | slice | allslices
-     */
-    function unique(&$var, $param=array(), $default='AA_noDefault') {
-        if ( !isset($param['scope'] )) {
-            $param['scope'] = 'slice';
-        }
-        if ( !AA_Fields::isField($param['field_id']) ) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $default);
+    function validate(&$var, $default='AA_noDefault') {
+        if ( !AA_Fields::isField($this->field_id) ) {
+            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $default);
         }
         global $slice_id;
 
-        if ( $param['scope'] == 'username') {
+        if ( $this->scope == 'username') {
             if ( !IsUsernameFree($var) ) {
-                return AA_Validate::_bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $default);
+                return AA_Validate::bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $default);
             }
             return true;
         }
-        if ( $param['scope'] == 'slice') {
+        if ( $this->scope == 'slice') {
             $SQL = "SELECT * FROM content INNER JOIN item ON content.item_id = item.id
                     WHERE item.slice_id='".q_pack_id($slice_id)."'
-                        AND field_id='".addslashes($field_id)."'
+                        AND field_id='".addslashes($this->field_id)."'
                         AND text='$var'";
         } else {
-            $SQL = "SELECT * FROM content WHERE field_id='".addslashes($field_id) ."' AND text='$var'";
+            $SQL = "SELECT * FROM content WHERE field_id='". addslashes($this->field_id) ."' AND text='$var'";
         }
         if (GetTable2Array($SQL, 'aa_first', 'aa_mark')) {
-            return AA_Validate::_bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Not unique - value already used'), $default);
+            return AA_Validate::bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Not unique - value already used'), $default);
         }
         return true;
     }
+}
 
-    function e_unique(&$var, $param=array(), $default='AA_noDefault') {
-        if ( !AA_Validate::email($var, $param, $default )) {
-            return false;
-        }
-        return AA_Validate::unique($var, $param, $default);
+/** Test for unique value in slice/database
+ *  @param   $field_id
+ *  @param   $scope       - username | slice | allslices
+ */
+class AA_Validate_E_Unique extends AA_Validate {
+    /** Search in which field */
+    var $field_id;
+
+    /** Scope, where to search - username | slice | allslices */
+    var $scope;
+
+    function AA_Validate_E_Unique($scope, $field_id) {
+        $this->scope    = $scope ? $scope : 'slice';
+        $this->field_id = $field_id;
     }
 
-    /** @todo url check */
-    function url(&$var, $param=array(), $default='AA_noDefault') {
+    function validate(&$var, $default='AA_noDefault') {
+        if ( !AA_Validate::validate($var, 'email', $default) ) {
+            return false;
+        }
+        $validator = new AA_Validate_Unique($this->scope, $this->field_id);
+        return $validator->validate($var, $default);
+    }
+}
+
+/** Test for text (any characters allowed)
+ *  @todo Realy validate URL
+ */
+class AA_Validate_All extends AA_Validate {
+
+    function AA_Validate_All() {}
+
+    function validate(&$var, $default='AA_noDefault') {
         return true;
     }
 }
@@ -243,14 +385,14 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
         }
     }
     switch ($type) {
-        case 'alias':    $ret = AA_Validate::alias($variable); break;
-        case 'id':       $ret = AA_Validate::long_id($variable); break;
+        case 'alias':    $ret = AA_Validate::validate($variable, 'alias');    break;
+        case 'id':       $ret = AA_Validate::validate($variable, 'long_id');  break;
         case 'integer':
-        case 'number':   $ret = AA_Validate::integer($variable); break;
-        case 'email':    $ret = AA_Validate::email($variable); break;
-        case 'login':    $ret = AA_Validate::login($variable); break;
-        case 'password': $ret = AA_Validate::password($variable); break;
-        case 'filename': $ret = AA_Validate::filename($variable); break;
+        case 'number':   $ret = AA_Validate::validate($variable, 'int');      break;
+        case 'email':    $ret = AA_Validate::validate($variable, 'email');    break;
+        case 'login':    $ret = AA_Validate::validate($variable, 'login');    break;
+        case 'password': $ret = AA_Validate::validate($variable, 'password'); break;
+        case 'filename': $ret = AA_Validate::validate($variable, 'filename'); break;
         case 'e-unique':
         case 'unique':
                          list($field_id, $scope) = explode(":", $params);
@@ -258,15 +400,15 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
                                                                 1 => 'slice',
                                                                 2 => 'allslices'
                                                                );
-                         $validate_params['scope']    = $UNIQUE_SCOPES[(int)$scope];
-                         $validate_params['field_id'] = $field_id;
                          if ( $type == 'unique' ) {
-                             $ret = AA_Validate::unique($variable, $validate_params);
+                             $validator = new AA_Validate_Unique( $UNIQUE_SCOPES[(int)$scope], $field_id);
+                             $ret       = $validator->validate($variable);
                          } else {
-                             $ret = AA_Validate::e_unique($variable, $validate_params);
+                             $validator = new AA_Validate_E_Unique( $UNIQUE_SCOPES[(int)$scope], $field_id);
+                             $ret       = $validator->validate($variable);
                          }
                          break;
-        case 'url':      $ret = AA_Validate::url($variable); break;
+        case 'url':      $ret = AA_Validate::validate($variable, 'url'); break;
         case 'all':
         default:         $ret = true;
     }
