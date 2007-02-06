@@ -72,7 +72,7 @@ if ($add || $update) {
         $deleted  = ( $deleted  ? 1 : 0 );
 
         // now validate all module specific fields
-        ValidateInput("state_file", _m("State file"), $state_file, $err, true, "text");
+        ValidateInput("state_file", _m("State file"), $state_file, $err, false, "text");
 
         if (count($err) > 1) {
             break;

@@ -45,17 +45,33 @@ add_vars();                 // get variables pased to stm page
 
 $site_info = GetModuleInfo($site_id,'W');   // W is identifier of "site" module
                                             //    - see /include/constants.php3
-
-if ( !$site_info['state_file'] ) {
-    echo "<br>Error: no 'state_file' defined";
+if ( !is_array($site_info) ) {
+    echo "<br>Error: no 'site_id' or 'site_id' is invalid";
     exit;
 }
 
-if ( substr($site_info['state_file'],0,4) == 'http' ) {
-    echo "TODO";
-} else {
+// There are two possibilities, how to control the apc_state variable. It could
+// be se in ./modules/site/sites/site_...php control file. The control file
+// could be managed only by people, who have the access to the AA sources on the
+// server. If we want to permit control of the site to extenal people, which do
+// not have access to AA scripts directory, then it is possible to them to not
+// fill "site control file" in site configuration dialog and then call this
+// script from their own file, where the new $apc_state, $slices4cache and
+// $site_id will be defined and passed by GET method. Just like this:
+//
+//    $url  = 'http://example.org/apc-aa/modules/site/site.php3?';
+//    $url .= http_build_query( array( 'apc_state'    => $apc_state,
+//                                     'slices4cache' => $slices4cache,
+//                                     'site_id'      => 'ae54378beac7c7e8a998e7de8a998e7a'
+//                                    ));
+//    readfile($url);
+
+if ( $site_info['state_file'] ) {
     // in the following file we should define apc_state variable
     require_once AA_BASE_PATH."modules/site/sites/site_".$site_info['state_file'];
+} elseif ( !isset($_GET['apc_state']) )  {
+    echo "<br>Error: no 'state_file' nor 'apc_state' variable defined";
+    exit;
 }
 
 trace("=","site.php3","precachecheck");
