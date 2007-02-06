@@ -41,7 +41,7 @@ $p_slice_id = q_pack_id($slice_id);
 $slice      = AA_Slices::getSlice($slice_id);
 
 // update export_to_all switch
-if ( ($slice->getfield('export_to_all') ? 1:0) != ($to_all ? 1:0) ) {
+if ( ($slice->getProperty('export_to_all') ? 1:0) != ($to_all ? 1:0) ) {
   $SQL= "UPDATE slice SET export_to_all=". ($to_all ? 1 : 0) ." WHERE id='$p_slice_id'";
   $db->query($SQL);
   writeLog( ($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), $slice_id);

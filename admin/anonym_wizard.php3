@@ -42,7 +42,7 @@ function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_s
 
     $ret       = '';   // resulting HTML code
     $slice_id  = $slice->unpacked_id();
-    $form_type = $slice->getfield('permit_anonymous_edit');
+    $form_type = $slice->getProperty('permit_anonymous_edit');
 
     if ($form_type != ANONYMOUS_EDIT_NOT_ALLOWED) {
         $fillform_url = AA_INSTAL_PATH .'fillform.php3?form=inputform&notrun=1&slice_id='.$slice_id;
@@ -130,10 +130,10 @@ $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl
         ORDER BY input_pri";
 $s_fields = GetTable2Array($SQL);
 
-if ($slice->getfield('permit_anonymous_post') == 0) {
+if ($slice->getProperty('permit_anonymous_post') == 0) {
     $warning[] = _m("WARNING: You did not permit anonymous posting in slice settings.");
 }
-elseif ($slice->getfield('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_ALLOWED) {
+elseif ($slice->getProperty('permit_anonymous_edit') == ANONYMOUS_EDIT_NOT_ALLOWED) {
     $warning[] = _m("WARNING: You did not permit anonymous editing in slice settings. A form allowing only anonymous posting will be shown.");
 }
 
@@ -141,7 +141,7 @@ if ($show_form) {
     $fields = $slice->fields('record');
     foreach ($fields as $fid => $foo) {
         if (substr ($fid,0,13) == "password.....") {
-            if ($show[$fid] && $slice->getfield('permit_anonymous_edit') != ANONYMOUS_EDIT_PASSWORD) {
+            if ($show[$fid] && $slice->getProperty('permit_anonymous_edit') != ANONYMOUS_EDIT_PASSWORD) {
                 $warning[] = _m("WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing.");
             }
             break;

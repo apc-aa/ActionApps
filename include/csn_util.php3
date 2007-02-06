@@ -208,7 +208,7 @@ function iso8601_to_unixstamp($t) {
 
 // TODO: remove this renamed function
 function iso8601_to_unixstamp_old($t) {
-    ereg ("([0-9]{4})-([0-9]{2})-([0-9]{2})[T ]([0-9]{2})\:([0-9]{2})\:([0-9]{2})(\+|\-)([0-9]{2})\:([0-9]{2})", $t, $r);
+    preg_match("~([0-9]{4})-([0-9]{2})-([0-9]{2})[T ]([0-9]{2})\:([0-9]{2})\:([0-9]{2})(\+|\-)([0-9]{2})\:([0-9]{2})~", $t, $r);
     $tz = (int)$r[8]*3600+$r[9]*60;
     if ($r[7] == "+") {
         $tz =-$tz;
@@ -238,7 +238,7 @@ $DEFAULT_RSS_MAP = array (
 // the tricky part is that APC attribute strings contain a prefix and 32 digits, while
 // non APC strings need the whole string hashed.
 function attr2id($str) {
-    if (ereg("/(items|cat|slices)/([0-9a-f]{32})",$str,$regs)) { // Looks like an APC id
+    if (preg_match("~/(items|cat|slices)/([0-9a-f]{32})~",$str,$regs)) { // Looks like an APC id
         return $regs[2]; // Maybe this should be 0 ?
     } else {
         return(string2id($str));
@@ -278,7 +278,7 @@ class LastEditList {
      */
     function setFromSlice($conds, &$slice) {
         ParseEasyConds($conds);
-        $zids    = QueryZIDs($slice->fields('record'), $slice->unpacked_id(), $conds, '', '', 'ALL');
+        $zids    = QueryZIDs( array($slice->unpacked_id()), $conds, '', 'ALL');
         $format  = array('odd_row_format' => '{id..............}-{last_edit.......}',
                          'row_delimiter'  => ',');
         $itemview = new itemview($format, '', '', $zids,

@@ -28,6 +28,7 @@ http://www.apc.org/
 */
 
 require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
 
 if (!is_object( $db )) $db = new DB_AA;
 
@@ -49,8 +50,8 @@ function MailmanCreateSynchroFiles ($slice_id) {
     }
 
     $slice = AA_Slices::getSlice($slice_id);
-    $field = $slice->getfield("mailman_field_lists");
-    if ($slice->getfield("type") != "ReaderManagement" || ! $field) {
+    $field = $slice->getProperty("mailman_field_lists");
+    if ($slice->getProperty("type") != "ReaderManagement" || ! $field) {
         return;
     }
 

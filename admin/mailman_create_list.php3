@@ -66,14 +66,14 @@ PrintArray($err);
 echo $Msg;
 
 $slice = AA_Slices::getSlice($slice_id);
-if (! $slice->getfield("mailman_field_lists")) {
+if (! $slice->getProperty("mailman_field_lists")) {
     echo _m('First set Mailman Lists Field in Slice Settings.');
     HtmlPageEnd(); page_close(); exit;
 }
 
 $db->query("SELECT field.input_show_func, field.name FROM field
     WHERE slice_id='".q_pack_id($slice_id)."' AND id='"
-    .$slice->getfield("mailman_field_lists")."'");
+    .$slice->getProperty("mailman_field_lists")."'");
 $db->next_record();
 $field_name = $db->f("name");
 list (,$groupid) = explode(":", $db->f("input_show_func"));

@@ -44,8 +44,6 @@ function Item_MoveItem($status, $item_arr, $akce_param) {
         $item_ids[] = pack_id(substr($it_id,1));      // remove initial 'x'
     }
 
-    $slice  = AA_Slices::getSlice($slice_id);
-    $fields = $slice->fields('record');
     if ($item_ids) {
         $SQL = "UPDATE item SET
            status_code = $status,
@@ -61,7 +59,7 @@ function Item_MoveItem($status, $item_arr, $akce_param) {
 
         if ($status == 1) {
             foreach ($item_ids as $iid) {
-                FeedItem(unpack_id128($iid), $fields);
+                FeedItem(unpack_id128($iid));
             }
         }
         $event->comes('ITEMS_MOVED', $slice_id, 'S', $item_ids, $status );
@@ -89,8 +87,7 @@ function Item_Feed($slice, $item_arr, $akce_param) {
         $it_id = substr($it_id,1);                 // remove initial 'x'
         foreach ( $export_to as $exp_slice_pair ) {
             list($status,$sid) = explode("-", $exp_slice_pair);
-            FeedItemTo($it_id, $slice->unpacked_id(), $sid, $slice->fields('record'),
-                     ($status=='1' ? 'y':'n'), 0);
+            FeedItemTo($it_id, $slice->unpacked_id(), $sid, ($status=='1' ? 'y':'n'), 0);
         }
     }
     return false;                                  // OK - no error
@@ -200,15 +197,6 @@ function Item_Tab($value, $param) {
     global $manager;
     $GLOBALS['r_state']['bin'] = $value;
     $manager->go2page(1);
-}
-
-
-function FeedAllItems($chb, $fields) {    // Feed all checked items
-    if ( isset($chb) AND is_array($chb) ) {
-        foreach ($chb as $it_id => $foo) {
-            FeedItem( substr($it_id,1), $fields );       // substr removes first 'x'
-        }
-    }
 }
 
 ?>

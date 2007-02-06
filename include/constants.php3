@@ -305,40 +305,6 @@ function GetConstantFields() {  // function - we need translate _m() on use (not
         'const_level'       => GetFieldDef( _m('Level'),       'constant.level',      'numeric'));
 }
 
-function GetInputShowFuncTypesDef( $name, $multiple, $paramformat) {
-    return array( 'name'=>$name, 'multiple'=>$multiple, 'paramformat'=>$paramformat);
-}
-
-    /// @return array input show function types
-function inputShowFuncTypes() {
-    return array (                   //        $name,                    $multiple,   $paramformat
-        "txt" => GetInputShowFuncTypesDef( _m("Text Area"),                   false, 'fnc:param' ),
-        "tpr" => GetInputShowFuncTypesDef( _m("Textarea with Presets"),       false, 'fnc:const:param' ),
-        "edt" => GetInputShowFuncTypesDef( _m("Rich Edit Text Area"),         false, 'fnc:param' ),
-        "fld" => GetInputShowFuncTypesDef( _m("Text Field"),                  false, 'fnc:param' ),
-        "mfl" => GetInputShowFuncTypesDef( _m("Multiple Text Field"),         true,  'fnc:param' ),
-        "pre" => GetInputShowFuncTypesDef( _m("Text Field with Presets"),     false, 'fnc:const:param' ),
-        "sel" => GetInputShowFuncTypesDef( _m("Select Box"),                  false, 'fnc:const:param' ),
-        "rio" => GetInputShowFuncTypesDef( _m("Radio Button"),                false, 'fnc:const:param' ),
-        "dte" => GetInputShowFuncTypesDef( _m("Date"),                        false, 'fnc:param' ),
-        "chb" => GetInputShowFuncTypesDef( _m("Check Box"),                   false, 'fnc' ),
-        "mch" => GetInputShowFuncTypesDef( _m("Multiple Checkboxes"),         true,  'fnc:const:param' ),
-        "mse" => GetInputShowFuncTypesDef( _m("Multiple Selectbox"),          true,  'fnc:const:param' ),
-        "wi2" => GetInputShowFuncTypesDef( _m("Two Boxes"),                   true,  'fnc:const:param' ),
-        "fil" => GetInputShowFuncTypesDef( _m("File Upload"),                 false, 'fnc:param' ),
-    //  "isi" => GetInputShowFuncTypesDef( _m("Related Item Select Box"),     true,  'fnc:const:param' ),
-        "iso" => GetInputShowFuncTypesDef( _m("Related Item Window"),         true,  'fnc:const:param' ),
-        "nul" => GetInputShowFuncTypesDef( _m("Do not show"),                 false, 'fnc' ),
-        "hco" => GetInputShowFuncTypesDef( _m("Hierachical constants"),       false, 'fnc:const:param'),
-        "pwd" => GetInputShowFuncTypesDef( _m("Password and Change password"),false, 'fnc:param' ),
-        "hid" => GetInputShowFuncTypesDef( _m("Hidden field"),                false, 'fnc'),  // hidden field (good for javascript triggers
-        //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
-        "lup" => GetInputShowFuncTypesDef( _m("Local URL Picker"),            false, 'fnc:param' )
-        //END// Local URL Picker | Omar/Jaime | 11-06-2005
-    );
-}
-
-
 $LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
                       "1"   => LOG_EVENTS_,
                       "2"   => LOG_EVENTS_,
@@ -877,7 +843,11 @@ define ("FEEDMAP_FLAG_RSS",    5);
 define ("DISCUS_HTML_FORMAT",  1);  // discussion html format flag in slice table
 
 // don't check whether these fields exist (in the conds[] array used by searchform):
-$CONDS_NOT_FIELD_NAMES = array ("operator"=>1,"value"=>1,"discussion"=>1,"valuejoin"=>1);
+$CONDS_NOT_FIELD_NAMES = array(
+    "operator"   => true,
+    "value"      => true,
+    "discussion" => true,
+    "valuejoin"  => true );
 
 // used in add slice wizard
 define ("NOT_EMAIL_WELCOME", -1);

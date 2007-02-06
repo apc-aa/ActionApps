@@ -29,6 +29,48 @@ http://www.apc.org/
 require_once AA_INC_PATH."feeding.php3";
 
 
+
+/**
+ * AA_Value - Holds information about one value - could be multiple, 
+ *            could contain flags...
+ */
+class AA_Value {
+    /** array of the values */
+    var $val;         
+    /** holds the flag - common for all the values */
+    var $flag;        
+    
+    function AA_Value($value=false, $flag=null) {
+        $this->clear();
+        if (is_array($value)) {
+            // aa array used in AA_ItemContent - [0]['value'] = ..
+            //                                      ['flag']  = ..
+            //                                   [1]['value'] = ..
+            foreach($value as $val) {
+                $this->val[] = $val['value']; 
+            }
+            $this->flag = !is_null($flag) ? $flag : get_if($value[0]['flag'], 0);
+        } else {
+            $this->val  = $value;
+            $this->flag = !is_null($flag) ? $flag : 0; 
+        }
+    }
+    
+    /** Returns the value for a field. If it is a multi-value
+    *   field, this is the first value. */
+    function getValue($i=0) {
+        return $this->val[$i];
+    }
+    
+    function clear() {
+        $this->val  = array();
+        $this->flag = 0;
+    }
+}
+
+
+
+
 define('ITEMCONTENT_ERROR_BAD_PARAM', 200);
 define('ITEMCONTENT_ERROR_DUPLICATE', 201);
 define('ITEMCONTENT_ERROR_NO_ID',     202);
@@ -224,6 +266,13 @@ class ItemContent {
     *   field, this is the first value. */
     function getValue($field_id, $what='value') {
         return ( is_array($this->content[$field_id]) ? $this->content[$field_id][0][$what] : false );
+    }
+
+    
+    /** Returns the value for a field. If it is a multi-value
+    *   field, this is the first value. */
+    function getAaValue($field_id) {
+        return new AA_Value( $this->getValue($field_id) );
     }
 
     function getValues($field_id) {
@@ -520,7 +569,7 @@ class ItemContent {
         }
 
         if ($feed) {
-            FeedItem($id, $fields);
+            FeedItem($id);
         }
 
         if ($mode == 'insert') {

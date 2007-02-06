@@ -86,7 +86,7 @@ function fillForm() {
 
     // reader management: aw=ABCDE is sent in welcome
     // emails to confirm the email address
-    if ($slice->getfield("type") == "ReaderManagement") {
+    if ($slice->getProperty("type") == "ReaderManagement") {
         if ($GLOBALS["aw"]) {
             $GLOBALS["ac"] = $GLOBALS["aw"];
             if (confirm_email()) {
@@ -107,8 +107,8 @@ function fillForm() {
     // For Reader management slices we use special ways to find the item:
     // either HTTP auth info, or the access code. No other possibility.
 
-    if ($slice->getfield("type") == "ReaderManagement") {
-        if ($slice->getfield("permit_anonymous_edit") == ANONYMOUS_EDIT_HTTP_AUTH) {
+    if ($slice->getProperty("type") == "ReaderManagement") {
+        if ($slice->getProperty("permit_anonymous_edit") == ANONYMOUS_EDIT_HTTP_AUTH) {
             if ( !$_SERVER["REMOTE_USER"]) {
                 ; // if no user is sent, this is perhaps the subscribe page
                   // which is out of the protected folder
@@ -156,7 +156,7 @@ function fillForm() {
 
     $permsok = true;
     // Do not show items which are not allowed to be updated
-    switch ($slice->getfield("permit_anonymous_edit")) {
+    switch ($slice->getProperty("permit_anonymous_edit")) {
     case ANONYMOUS_EDIT_NOT_ALLOWED: $permsok = false; break;
     case ANONYMOUS_EDIT_ONLY_ANONYMOUS:
     case ANONYMOUS_EDIT_NOT_EDITED_IN_AA:

@@ -182,9 +182,9 @@ function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
 function GetXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$xml_items_refs, $time) {
     $slice = AA_Slices::getSlice($slice_id);
     echo "\t<channel rdf:about=\"".AA_INSTAL_URL."slices/$slice_id\">\n".
-                   "\t\t<title>".code($slice->getfield('name'))."</title>\n".
-                   "\t\t<description>".code($slice->getfield('description'))."</description>\n".
-                   "\t\t<link>".code($slice->getfield('slice_url'))."</link>\n".
+                   "\t\t<title>".code($slice->getProperty('name'))."</title>\n".
+                   "\t\t<description>".code($slice->getProperty('description'))."</description>\n".
+                   "\t\t<link>".code($slice->getProperty('slice_url'))."</link>\n".
                    "\t\t<aa:newestitemtimestamp>$time</aa:newestitemtimestamp>\n".
                    "\t\t<dc:identifier>$slice_id</dc:identifier>\n".
                    $xml_fields_refs.
@@ -242,7 +242,7 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
     // get slice url for current slice
     if ( !isset($slice_url[$slice_id]) ) {
         $slice = AA_Slices::getSlice($slice_id);
-        $slice_url[$slice_id] = $slice->getfield('slice_url');
+        $slice_url[$slice_id] = $slice->getProperty('slice_url');
     }
 
     $item_link = ($link_only ? $hl_href : con_url($slice_url[$slice_id],"x=".$content4id['short_id........'][0]['value']) );
@@ -440,7 +440,7 @@ if ($ids) {
      */
     $ids           = explode('-',$ids);
     $restrict_zids = new zids($ids);
-    $zids          = QueryZIDs($slice->fields('record'), $slice_id, $conds, '', '', 'ALL', '', 0, $restrict_zids);
+    $zids          = QueryZIDs( array($slice_id), $conds, '', 'ALL', 0, $restrict_zids);
     $ids           = $zids->longids();
     if ($ids) {
         $content = GetItemContent($ids);     // get the content of all items
@@ -455,7 +455,7 @@ if ($ids) {
     // plus '+' sign (besause wrong url where + is translated to space)
     $start_timestamp      = str_replace(' ', '+', trim($start_timestamp));
     $start_timestamp      = iso8601_to_unixstamp($start_timestamp);
-    $cat_field            = GetCategoryFieldId($slice->fields('record'));
+    $cat_field            = $slice->getFields()->getCategoryFieldId();
 
     $p_slice_id           = q_pack_id($slice_id);
 
