@@ -67,12 +67,17 @@ function AuthenticateSqlUsername($username, $password, $flags = 0) {
     $bd_uid = $db->f('uid');
     $db_pwd = $db->f('password');
 
-    if (defined(CRYPT_SALT_LENGTH)) {                      // set by PHP
+    // the first option should work
+    if (defined('CRYPT_SALT_LENGTH')) {                      // set by PHP
         $slength = CRYPT_SALT_LENGTH;
-    } else if (substr($db_pwd, 0, 3) == '$1$') {    // MD5
+    } elseif (substr($db_pwd, 0, 3) == '$1$') {    // MD5
         $slength = 12;
-    } else if (substr($db_pwd, 0, 3) == '$2$') {    // Extended DES (16)
+    } elseif (substr($db_pwd, 0, 3) == '$2$') {    // Blowfish ( Extended DES (16))
         $slength = 16;
+//    } elseif (substr($db_pwd, 0, 4) == '$2a$') {   // Blowfish ( Extended DES (16))
+//        $slength = 60;   // I do not know, how big is the salt here
+                           // We will try to use crypt itself
+                           // @todo get more info about salts in Blowfish
     } else {
         $slength = 2;                                       // Standard DES
     }
@@ -96,6 +101,7 @@ function AuthenticateSqlUsername($username, $password, $flags = 0) {
     // then its a copy of a database on a different architecture.
     // so let the user in,
     // It should (but doesn't) then set the password to that entered.
+    /*
     if ( (strlen($db_pwd)      != strlen($cryptpw)
       && (substr($db_pwd,0,3)  == '$1$')
       && (substr($cryptpw,0,3) != '$1$')))  {
@@ -104,6 +110,7 @@ function AuthenticateSqlUsername($username, $password, $flags = 0) {
         }
         return $db_id;
     }
+    */
 
     // The next substr looks odd, but $cryptpw is under
     // certain circumstances 4 chars longer than $row[password]

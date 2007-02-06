@@ -113,10 +113,10 @@ if ( !$slice ) {
     SendErrorPage(_m("Bad slice ID"));
 }
 
-if ( $slice->getfield("permit_offline_fill") < 1 ) {
+if ( $slice->getProperty("permit_offline_fill") < 1 ) {
     SendErrorPage(_m("You don't have permission to fill this slice off-line"));
 } else {
-    $bin2fill = $slice->getfield("permit_offline_fill");
+    $bin2fill = $slice->getProperty("permit_offline_fill");
 }
 
 // get slice fields and its priorities in inputform

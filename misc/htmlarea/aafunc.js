@@ -95,7 +95,8 @@ function openHTMLAreaFullscreen(name, session) { // open HTMLArea in popupwindow
     setTimeout(function() {
         heditor.activateEditor();
         heditor._fullScreen();
-        heditor._toolbarObjects[FullScreen].swapImage([_editor_url + cfg.imgURL + 'ed_buttons_main.gif',8,0]);
+        // doesn't work, for some reason - disabled, Honza 14.12.2006
+        // heditor._toolbarObjects[FullScreen].swapImage([_editor_url + cfg.imgURL + 'ed_buttons_main.gif',8,0]);
     }, 500);
     switchHTML(name);
 

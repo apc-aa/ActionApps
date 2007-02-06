@@ -58,6 +58,8 @@ define("FILE_PREFIX", 'importdata');
 $text      = magic_strip($text);
 $upfile    = magic_strip($upfile);
 $url       = magic_strip($url);
+$enclosure = magic_strip($enclosure);
+$delimiter = magic_strip($delimiter);
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to import files"));
@@ -126,7 +128,7 @@ if ($upload) {
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
-    go_url($sess->url(self_base()."se_csv_import2.php3"). "&fileName=$dest_file&slice_id=$slice_id&addParamsSerial=" .base64_encode(serialize($addParams)));
+    go_url($sess->url(self_base()."se_csv_import2.php3"). "&fileName=".urlencode($dest_file)."&slice_id=$slice_id&addParamsSerial=" .urlencode(base64_encode(serialize($addParams))));
 }
 
 require_once AA_INC_PATH."formutil.php3";
@@ -187,19 +189,17 @@ function InitPage() {}
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
       <?php
-         $arr = array(';'  => 'semicolon ;',
-                      ','  => 'comma ,',
+         $arr = array(','  => 'comma ,',
+                      ';'  => 'semicolon ;',
                       '\t' => 'tabulator \t',
                       '|'  => 'pipe |',
                       '~'  => 'tilde ~',
                       ''   => 'other');
 
      FrmInputPreSelect("delimiter", "Delimiter of fields", $arr, $preview ? $delimiter : ';' );
-     if (comparePHPVersion("4.3.0") >= 0) {
-         $arr = array('"'  => 'double quote "',
-                      "'"  => 'single quote \'');
-         FrmInputPreSelect("enclosure", "Enclosure", $arr, $preview ? $enclosure : '"');
-     }
+     $arr = array('"'  => 'double quote "',
+                  "'"  => 'single quote \'');
+     FrmInputPreSelect("enclosure", "Enclosure", $arr, $preview ? $enclosure : '"');
 
      FrmInputChBox("caption","Use first row as field names",$preview ? $caption : true);
 

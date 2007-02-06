@@ -4782,7 +4782,7 @@ $_m["Items Page"]
 
 # include/loginform.inc, row 12
 $_m["Welcome!"]
- = "Pøihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.10";
+ = "Pøihlášení (Login) - <a href='http://www.ecn.cz'>Econnect</a> Toolkit 2.11";
 
 # include/loginform.inc, row 14
 $_m["Welcome! Please identify yourself with a username and a password:"]

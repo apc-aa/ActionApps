@@ -238,7 +238,7 @@ class sitetree {
         }
         return false;
     }
-    
+
     /** Adds already created spot object into sequence (positions array) */
     function _addInSequence(&$spot, $where) {
         //get real parent
@@ -322,7 +322,7 @@ class sitetree {
     }
 
 
-    /** Moves the spot left (to the parent) or right (to first child) within 
+    /** Moves the spot left (to the parent) or right (to first child) within
      *  the sitetree.
      *  @param string $direction - 'moveLeft' or 'moveRight'
      */
@@ -347,13 +347,12 @@ class sitetree {
             // fing next spot in the current spot-set (positions/choices)
             $sibling_id = $spot_id;
             while (false !== ($sibling_id = $this->getNextSibling($sibling_id))) {
-                echo "\n<br>sibling: $sibling_id";
                 if ( $this->haveBranches($sibling_id) ) {
                     if ($spot_type == 'choice') {
                         // if the moved spot is choice, then we just add it to choices
                         $destination_parent_id = $sibling_id;
                     } else {
-                        // in case the spot is normal sequence spot, then we 
+                        // in case the spot is normal sequence spot, then we
                         // have to add it to first option
                         $choices = $this->get('choices', $sibling_id);
                         $destination_parent_id = ((is_array($choices) AND isset($choices[0])) ? $choices[0] : false);

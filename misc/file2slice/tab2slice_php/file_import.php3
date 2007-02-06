@@ -128,7 +128,7 @@ while (list ($line_num, $line) = each ($import)) {
         SendErrorPage(L_NO_SUCH_SLICE);
     }
 
-    $bin2fill = $slice->getfield("permit_anonymous_post");
+    $bin2fill = $slice->getProperty("permit_anonymous_post");
     if ( $bin2fill < 1 ) {
         SendErrorPage(L_ANONYMOUS_POST_ADMITED);
     }

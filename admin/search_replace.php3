@@ -50,6 +50,7 @@ class AA_Transformation {
     function name()         {}
     function description()  {}
     function transform()    {}
+    function parameters()   { return array(); }
 
     /** Construct name of input form variable
      *  It consist of classname, so we are able to guess which variable
@@ -93,7 +94,8 @@ class AA_Transformation {
     }
 
     function getParam($param_name) {
-        return $this->parameters[$param_name]->getValue();
+//        return $this->parameters[$param_name]->getValue();
+        return $this->$param_name;
     }
 
     function htmlSetting($input_prefix, $params) {
@@ -118,6 +120,7 @@ class AA_Transformation {
  *  {switch({category.......1})Bio:...} and such expressions as well as normal
  *  text.
  */
+/*  New approach - not fully functional, yet
 class AA_Transformation_Value extends AA_Transformation {
 
     function AA_Transformation_Value($param) {
@@ -174,6 +177,62 @@ class AA_Transformation_Value extends AA_Transformation {
         return array( 0 => array('value' => $text, 'flag' => $flag ));
     }
 }
+*/
+class AA_Transformation_Value extends AA_Transformation {
+
+    var $new_flag;
+    var $new_content;
+
+    function AA_Transformation_Value($param) {
+        $this->new_flag    = $param['new_flag'];
+        $this->new_content = $param['new_content'];
+    }
+
+    function name() {
+        return _m("Fill by value");
+    }
+
+    function description() {
+        return _m("Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {switch()...}, ...");
+    }
+
+    function transform($field_id, &$content4id) {
+        $slice = AA_Slices::getSlice($content4id->getSliceID());
+        $item = new item($content4id->getContent(),$slice->aliases());
+
+        $text = $item->subst_alias($this->getParam('new_content'));
+
+        switch ($this->getParam('new_flag')) {
+            case 'u': $flag = $item->getval($field_id, 'flag'); break;
+            case 'h': $flag = $item->getval($field_id, 'flag') | FLAG_HTML; break;
+            case 't': $flag = $item->getval($field_id, 'flag') & ~FLAG_HTML; break;
+        }
+
+        return array( 0 => array('value' => $text, 'flag' => $flag ));
+    }
+
+    function htmlSetting($input_prefix, $params) {
+        $flag_options = array('h' => _m('HTML'),
+                              't' => _m('Plain text'),
+                              'u' => _m('As for other values of this field'));
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', AA_Transformation_Value::description());
+
+        $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
+        $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
+
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
+        FrmTextarea(  $varname_new_content, _m('New content'),       dequote($_GET[$varname_new_content]),  12, 80, true,
+               _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
+
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+
+
 
 /** The result is single-value (not multivalue), which is created as result of
  *  normal AA expression using source item. You can use
@@ -185,7 +244,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
     var $new_flag;
     var $new_content;
 
-    function AA_Transformation_Value($param) {
+    function AA_Transformation_AddValue($param) {
         $this->new_flag    = $param['new_flag'];
         $this->new_content = $param['new_content'];
     }
@@ -195,7 +254,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
     }
 
     function description() {
-        return _m("Add new value to current content of field, so the field becames multivalueR.<br>You can use any AA expressions like {switch()...}, ... for new value.");
+        return _m("Add new value to current content of field, so the field becames multivalue.<br>You can use any AA expressions like {switch()...}, ... for new value.");
     }
 
     function transform($field_id, &$content4id) {
@@ -397,7 +456,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
 
 
 
-$searchbar = new searchbar();   // mainly for bookmarks
+$searchbar = new AA_Searchbar();   // mainly for bookmarks
 $items=$chb;
 
 if ( !$fill ) {               // for the first time - directly from item manager
