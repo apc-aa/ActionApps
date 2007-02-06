@@ -80,8 +80,7 @@ class itemview {
                                       //   fulltext_format_bottom,
                                       //   banner_position, banner_parameters
 
-    $this->group_fld   = ($slice_info['category_sort'] ?
-                         GetCategoryFieldId($fields) : $slice_info['group_by']);
+    $this->group_fld   = $slice_info['group_by'];
 
     $this->aliases     = $aliases;
     // add special alias, which is = 1 for selected item (given by
@@ -151,7 +150,7 @@ class itemview {
     }
     $keystr .= serialize($this->disc);
     $keystr .= serialize($this->aliases);
-    $keystr .= stringexpand_keystring();
+    $keystr .= AA_Stringexpand_Keystring::expand();
 
     global $str2find_passon, $pagecache;
     if ( !$GLOBALS['nocache'] && ($res = $pagecache->get($keystr)) ) {
@@ -332,16 +331,16 @@ class itemview {
               $depth = count($images)-1;
               $spacer = "";
               $out.= '
-              <table border="0" cellspacing="0" cellpadding="0">
+              <table border="0" cellspacing="0" cellpadding="0" class="discrow">
                 <tr>';
               for ( $i=0; $i<$depth; $i++)
               $spacer .= $this->slice_info['d_spacer'];
               if ($spacer) {
                   $out .= "
-                      <td valign=top>$spacer</td>";
+                      <td valign=top class=\"discspacer\">$spacer</td>";
               }
               $out .= "
-                  <td width=\"99%\">".$CurItem->get_item()."
+                  <td width=\"99%\" class=\"discitem\">".$CurItem->get_item()."
                   </td>
                 </tr>
               </table>
