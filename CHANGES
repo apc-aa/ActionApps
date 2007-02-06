@@ -1,3 +1,179 @@
+02/06/07 - new possibility to grant AA permissions to only susbset of users from
+(honzam)   Reader Slice. The "Reader Set" is defined by normal conditions, so
+           it is extremly powerfull - you can use any field of Reader slice
+           for it. The conditions are controlled be new AA_Set feature, which
+           holds set of conditions and sorts (we will use such "Sets" as named
+           conditions to view.php3/slice.php3 in near future). The set is
+           defined on "Slice Admin -> Design - Sets of Items".
+           The "reader set" works just with LDAP permission system, right now,
+           but it is very easy to adapt it also for SQL permissions.
+         - image manipulation library phpThumb integrated into AA. You can use
+           it by calling /img.php script:
+           <img src="/aaa/img.php?src=http://example.com/img/flower.gif&w=150">
+           (w=150 means that image will be converted to width=150).
+           All the patrameters you can see on
+           http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
+           (just use img.php instead of phpThumb.php in the examples)
+           The modified images are cached in <IMG_UPLOAD_PATH>/phpThumbcache/
+         - new possibilty to define external script as Control File for Site
+           Module, so you can give this script to your users without the need to
+           give them also rights to edit AA files.
+              There are two possibilities, how to control the apc_state
+              variable. It could be se in ./modules/site/sites/site_...php
+              control file. The control file could be managed only by people,
+              who have the access to the AA sources on the server. If we want to
+              permit control of the site to extenal people, which do not have
+              access to AA scripts directory, then it is possible to them to not
+              fill "site control file" in site configuration dialog and then
+              call this script from their own file, where the new $apc_state,
+              $slices4cache and $site_id will be defined and passed by GET
+              method. Just like this:
+                 $url  = 'http://example.org/apc-aa/modules/site/site.php3?';
+                 $url .= http_build_query( array(
+                           'apc_state'    => $apc_state,
+                           'slices4cache' => $slices4cache,
+                           'site_id'      => 'ae54378beac7c7e8a998e7de8a998e7a'
+                                          ));
+                 readfile($url);
+           See apc-aa/modules/site/sites/external_controlfile_example.php3 for
+           more info
+         - Basic spam filter solution for discussions. It is based
+           on the presumption, that the robots fill all the fields in the form,
+           even the hidden ones. filler.php3 then never stores comment, which
+           would have "answer" field filled. So if you add say:
+              <style type="text/css">
+                  .skryt { display:none };
+              </style>
+              <div class="skryt">
+                Do not fill, please: <input type="text" name="answer" value="">
+              </div>
+           to the form, then the comments form is "protected". It works quite
+           well, but of course it should be improved in future.
+         - stringexpand functions was converted to classes AA_Stringexpand_...,
+           which is more flexible and will allow to add new custom syntaxes
+           {custom_function:..} in the future.
+         - the result of most time consuming stringexpand functions is cached
+           now, so if you will use {ids:...} and then again {ids:...} with the
+           same parameters during displaying one page, then the database is
+           contacted just once. The unaliasing is faster then (thanks to new
+           AA_Stringexpand class).
+         - new {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>} which creates
+           the link text1 (or text2) and two divs, where only one is visible at
+           the time
+           see http://www.actionapps.org/en/Syntax
+         - new parameter <restict_ids> for
+           {ids:<slices>:<conds>[:<sort>[:<delimiter>[:<restrict_ids>]]]}
+           see http://www.actionapps.org/en/Syntax for more details
+         - better {icq}, {skype}, {jabber} handling
+         - speedup of AA unaliasing by better regular expression handling
+           (x-times speedup for complicated AA expressions - like forms)
+         - new {aggregate:function:ids_string:expression:parameter} which
+           operates across set of items. The possible functions are:
+             sum, average, concat, count
+           parameter is used just for concat (concatenation) as delimiter
+           expression could be field_id as well as alias
+           (see http://www.actionapps.com/en/Syntax for more details)
+         - new {strlen:<string>} alias function (returning length of the string)
+         - new parameter "add" for {substr:<string>:<begin>:<length>:<add>}
+           alias function. The <add> parameter is added to the returning string,
+           but only if the resulting string is shorter than current <string>.
+           It is useful if you want to short the headline to max 60 characers,
+           and add three dot, in the case the headline is shorted:
+              {substr:{headline........}:0:60:...}
+         - new {trim:<string>} alias function - removes beginning and ending
+           spaces from the <string> - see php trim() function
+         - new possibility for {conds:<string>} alias function. Now you can
+           create condition based on value of the field (including multivalue):
+              {view.php3?vid=9&cmd[9]=c-1-{conds:category.......1}}, where
+           {conds:category.......1} is expanded to something like
+           '%22Squash%22%20OR%20%22Table%20Tenis%22', which is urlencoded
+           "Squash" OR "Table Tenis". This way you can find all people, who have
+           at least one common hobby with you.
+         - new {constant:<group_id>:<value>:<what>} which allows to get
+           the 'Name' of constant in <group_id> for the specified <value>
+              say {constant:apc_main_categs_:ENV:name} returns "Environment".
+           Default value for <what> parameter is "name", so if you want to know
+           the name, then you can ommit it.
+         - session ids are passed by GET (again) - not by cookies, since there
+           was problems with it (the tabs in firefox shares the cookies,
+           so multiple tabs uses the same session id, which is still not ok
+           for some pages in AA administration.
+         - It is possible to specify more than one searchbar default condition
+           in profiles, now; code moved to more object oriented - using
+           AA_Conditions, ...
+         - textareas in AA forms automatically get bigger, if it already
+           contains long text
+         - admin interface for discussion now contains information about
+           IP address of comments writer
+         - new possibility to use conds[] and sort[] also for constants used for
+           dispaying some Input Type. Now you are able to sort the constants
+           transparently at the time it is displayed in the selectbox, for
+           example. You are also able to display only constants containing
+           "Nature", have value bigger than 1000, ...
+         - added some classes to discussion output, so it is more skinable, now.
+         - better handling of empty search row (change in inner code) in search
+           bar
+         - added modules/polls to SVN repository - This module allows voting
+           on page - it uses "phpPolls" code and it is not completed yet.
+           Anyway it is better to have it in the svn in order other can look
+           and finish it since Pavel Jisl (original author) is no longer
+           available for this work.
+         - GUI improvement in view setting - link to view is not in popup
+         - Cleanup
+            - class names now uses standardnamiong convention - prefix AA_ and
+              name with all first letters in upper case (manager => AA_Manager)
+            - global functions now rewritten to static class methods, where
+              appropriate (sliceid2name() => AA_Slices::getName())
+            - class methods begins with lower caps letter
+            - cleanup of QueryZids() parameters - fields are no longer needed,
+              as well as other unused parameters
+            - new AA_Object, AA_Property, AA_Widget, AA_Fields, AA_File_Wrapper,
+              AA_Set classes. Many uses standard AA properties and prepared for
+              easy extensibility of the code
+            - regular experssions ereg functions replaced by faster preg
+              functions, where possible
+            - new AA_File_Wrapper class, which is used for accessing local
+              as well as remote (http:, ftp:) files
+            - new implementation of storable_class - more object oriented, more
+              robust. It is based on AA_Object super-parent class and its
+              getPersistentProperties() method, which should be overriden in all
+              Child classes which want to be persistent. The objects are stored
+              to new object tables (object_text, object_integer, object_float).
+            - improved valiadion class AA_Validate
+            - new javascript AA_Config object storing AA_INSTALL_PATH,
+              ... for usage in AA javascripts
+         - added "prototype" javascript library to the AA. It have some very
+           nice fetures like function $(), which is shortcut for
+           document.getElementById, DOM manipulation functions AJAX, ... We will
+           use it intensively in near future.
+           see http://www.prototypejs.org/
+         - database structure updated - fields in object_* tables renamed to
+           match common structure
+         - pagecache uses REPLACE command where possible
+           (instead of SELECT+INSERT/UPDATE)
+         - new optimalization functions in AA Optimize
+            - Convert no longer used slice.category_sort to slice.group_by
+            - Copy Content Table
+
+         - fixed banner parameter and some more fixes in slice.php3
+         - fixed problem with some filenames in CSV import
+         - small changes and bugfixes in slice export, authentication and
+           pagecache
+         - fixed database structure to be compatible with MySQL > 4.1
+           (binary changed to varbinary)
+         - fixed sql permission system, so it works also if crypt() function
+           of the system uses Blowfish encryption
+         - fixed problems with charsets in AA Admin interface on some systems
+           (php 5.2?)
+         - the xinha (wysiwyg HTML area) do not report javascript error, now
+           (dirty hack, for now)
+         - fixed bug in link checking code (used in Links module) - the server
+           response wasn't parsed well, when the response text contains
+           apostrophe (Italian server responses for 404 uses such character)
+         - fixed bug in {math} - now work again
+
+
+
 10/14/06 - added profile support and profile settings button also for groups
 (brazda)   (rules priority is in the order User -> Groups -> Default, so if you
            define different values for some rule, then the User rule wins.
