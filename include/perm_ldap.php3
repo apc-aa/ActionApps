@@ -488,6 +488,7 @@ function GetMembership($id, $flags = 0) {
             $result[] = $key;                   // transform to a numbered array
         }
     }
+    
     return $result;
 }
 
@@ -698,9 +699,10 @@ function GetApcAciPerm($str) {
 function GetIDsInfo($id, $ds = "") {
     global $aa_default_ldap;
 
-    if ( !$id )               return false;
-    if ( IsGroupReader($id) ) return GetReaderGroupIDsInfo($id);
-    if ( IsUserReader($id) )  return GetReaderIDsInfo($id);
+    if ( !$id )                  return false;
+    if ( IsGroupReader($id) )    return GetReaderGroupIDsInfo($id);
+    if ( IsGroupReaderSet($id) ) return GetReaderSetIDsInfo($id);
+    if ( IsUserReader($id) )     return GetReaderIDsInfo($id);
 
     if ( $ds=="" ) {
         if ( !($ds=InitLDAP()) ) {
@@ -753,7 +755,11 @@ function IsUserReader($user_id) {
 }
 
 function IsGroupReader($group_id) {
-    return ((guesstype($group_id, true) == 'l') AND (sliceid2field($group_id, 'type')=='ReaderManagement'));
+    return ((guesstype($group_id, true) == 'l') AND (AA_Slices::getSliceProperty($group_id, 'type')=='ReaderManagement'));
+}
+
+function IsGroupReaderSet($group_id) {
+    return is_marked_by($group_id, 1);
 }
 
 function IsUsernameFree($username) {

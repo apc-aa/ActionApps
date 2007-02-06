@@ -65,27 +65,35 @@ function AuthDeleteReaders( $item_ids, $slice_id ) {
 *   @param array $item_ids non-quoted packed IDs
 */
 function AuthUpdateReaders( $item_ids, $slice_id ) {
-    $sl_type             = sliceid2field($slice_id, 'type');
-    $sl_auth_field_group = sliceid2field($slice_id, 'auth_field_group');
+    $sl_type             = AA_Slices::getSliceProperty($slice_id, 'type');
+    $sl_auth_field_group = AA_Slices::getSliceProperty($slice_id, 'auth_field_group');
     if (($sl_type != "ReaderManagement") OR !$sl_auth_field_group) {
         return;
     }
 
     // This select follows the idea of QueryZIDs: it uses several times the
     // table content to place several fields on one row.
-    $SQL     = AuthSelect($sl_auth_field_group) ." AND item.id IN ('".join_and_quote( "','", $item_ids )."')";
-    $readers = GetTable2Array( $SQL, "NoCoLuMn");
+    $zids    = new zids($item_ids, 'p');
+    $readers = AuthGetReadersData($slice_id, $zids);
 
     if ( is_array( $readers )) {
         foreach ($readers as $reader) {
-            if (AuthIsActive($reader) AND $reader["groups"]) {
-                AuthUpdateReader($reader["username"], $reader["password"], $reader["groups"]);
+            $reader_obj = new ItemContent($reader);
+            if (AuthIsActive($reader_obj) AND $reader_obj->is_set($sl_auth_field_group)) {
+                AuthUpdateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($sl_auth_field_group));
             } else {
-                AuthDeleteReader($reader["username"]);
+                AuthDeleteReader($reader_obj->getValue(FIELDID_USERNAME));
             }
         }
     }
     AuthMaintenance();
+}
+
+function AuthGetReadersData($slice_id, $restrict_zids=false) {
+    $auth_field_group = AA_Slices::getSliceProperty($slice_id, 'auth_field_group');
+    $zids  = QueryZIDs( array($slice_id), '', '', 'ALL', 0, $restrict_zids);
+    return GetItemContent($zids, false, true, array('id..............','status_code.....','slice_id........',
+                                                    'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD));
 }
 
 // --------------------------------------------------------------------------
@@ -112,25 +120,30 @@ function AuthMaintenance() {
             continue;
         }
         // Get all reader data for this slice
-        $SQL = AuthSelect($slice["auth_field_group"])." AND slice_id = '".addslashes($slice_id)."'";
-        $db->query($SQL);
-        while ($db->next_record()) {
-            $olduser_exists = $oldusers[$db->f("username")];
-            unset($oldusers[$db->f("username")]);
 
-            // Add readers which should be in auth_user but are not
-            // (perhaps moved recently from Pending to Active)
-            if (AuthIsActive($db->Record) && $db->f("groups")) {
-                if (! $olduser_exists) {
-                    $result["readers added"] ++;
-                    AuthUpdateReader($db->f("username"), $db->f("password"), $db->f("groups"));
+        $readers = AuthGetReadersData(unpack_id($slice_id));
+
+        if ( is_array( $readers )) {
+            foreach ($readers as $reader) {
+                $reader_obj = new ItemContent($reader);
+
+                $olduser_exists = $oldusers[$reader_obj->getValue(FIELDID_USERNAME)];
+                unset($oldusers[$reader_obj->getValue(FIELDID_USERNAME)]);
+
+                // Add readers which should be in auth_user but are not
+                // (perhaps moved recently from Pending to Active)
+                if (AuthIsActive($reader_obj) AND $reader_obj->is_set($slice["auth_field_group"])) {
+                    if (! $olduser_exists) {
+                        $result["readers added"]++;
+                        AuthUpdateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($slice["auth_field_group"]));
+                    }
                 }
-            }
-            // Remove readers which are in auth_user but should not
-            // (perhaps moved recently from Active to Expired)
-            elseif ($olduser_exists) {
-                $result["not active readers deleted"] ++;
-                AuthDeleteReader($db->f("username"));
+                // Remove readers which are in auth_user but should not
+                // (perhaps moved recently from Active to Expired)
+                elseif ($olduser_exists) {
+                    $result["not active readers deleted"]++;
+                    AuthDeleteReader($reader_obj->getValue(FIELDID_USERNAME));
+                }
             }
         }
     }
@@ -209,17 +222,30 @@ function AuthUpdateReader($username, $password, $groups) {
 // --------------------------------------------------------------------------
 
 function AuthIsActive($reader) {
-    return ($reader["status_code"] == SC_ACTIVE) AND ($reader["publish_date"] <= time()) AND ($reader["expiry_date"] >= time());
+    return ($reader->getValue('status_code.....') == SC_ACTIVE) AND
+           ($reader->getValue('publish_date....') <= time()) AND
+           ($reader->getValue('expiry_date.....') >= time());
 }
+
 
 // --------------------------------------------------------------------------
 
-function AuthUpdateGroups($username, $groups = "") {
+/** Writes user's groups to the database.
+*   You can specify multiple groups for the user in two ways:
+*      - pass $groups as array( 0 => array('value' => ...),
+*      - separate groups in $proups string by semicolon ';'
+*/
+function AuthUpdateGroups($username, $groups = array()) {
     global $db;
     $username = addslashes($username);
     $db->query("DELETE FROM auth_group WHERE username='$username'");
-    if ($groups) {
-        foreach (explode(";", $groups) as $group) {
+
+    $final_groups = array();
+    foreach( (array)$groups as $group_string ) {
+        $final_groups = array_merge($final_groups, explode(";", $group_string['value']));
+    }
+    foreach (array_unique($final_groups) as $group) {
+        if ( $group ) {
             $db->query("INSERT INTO auth_group (username, groups, last_changed) VALUES ('$username','".addslashes($group)."',".time().")");
         }
     }
@@ -252,14 +278,14 @@ function AuthChangeGroups($constant_id, $oldvalue, $newvalue) {
     if (empty($newvalue) OR ($oldvalue == $newvalue)) {
         return;
     }
-    $db_usernames->query("SELECT * FROM constant WHERE id='".q_pack_id ($constant_id)."'");
+    $db_usernames->query("SELECT * FROM constant WHERE id='".q_pack_id($constant_id)."'");
     if (!$db_usernames->next_record()) {
         return;
     }
     $group_id = $db_usernames->f("group_id");
     $db_usernames->query("
-        SELECT username.text
-        FROM slice INNER JOIN field ON slice.id=field.slice_id
+        SELECT username.text FROM slice
+        INNER JOIN field ON slice.id=field.slice_id
         INNER JOIN item ON slice.id = item.slice_id
         INNER JOIN content ON item.id=content.item_id AND field.id = content.field_id
         INNER JOIN content AS username ON username.item_id=item.id

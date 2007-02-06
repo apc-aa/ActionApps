@@ -130,6 +130,7 @@ function get_aamenus() {
         "fulltext"      => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_fulltext.php3",              "label"=>_m("Fulltext")),
         "views"         => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_views.php3",                 "label"=>_m("Views")),
         "config"        => array("cond"=>IfSlPerm(PS_CONFIG),   "href"=>"admin/se_admin.php3",                 "label"=>_m("Item Manager")),
+        "sets"          => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_sets.php3",                  "label"=>_m("Sets of Items")),
 
         "header4"       => _m("Content Pooling"),
         "nodes"         => array("cond"=>isSuperadmin(),        "href"=>"admin/se_nodes.php3",                 "label"=>_m("Nodes")),
@@ -152,7 +153,7 @@ function get_aamenus() {
     trace("=","","Getting slice info");
 
     $slice = AA_Slices::getSlice($slice_id);
-    if ( $slice->getfield("mailman_field_lists")) {
+    if ( $slice->getProperty("mailman_field_lists")) {
         $aamenus ["sliceadmin_submenu"]["items"]["mailman_create_list"] = array (
             "cond"  => IfSlPerm(PS_FIELDS),
             "href"  => "admin/mailman_create_list.php3",
@@ -186,7 +187,7 @@ function get_aamenus() {
         $items = &$aamenus["itemmanager_submenu"]["items"];
 
         // Add associated Alerts to Item Manager submenu
-        if ($slice->getfield("type") == "ReaderManagement" ) {
+        if ($slice->getProperty("type") == "ReaderManagement" ) {
             $db->query("SELECT module_id, module.name FROM alerts_collection AC
                 INNER JOIN module ON AC.module_id = module.id
                 WHERE slice_id='".q_pack_id($slice_id)."'");
