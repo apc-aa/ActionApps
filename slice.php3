@@ -133,6 +133,7 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."mgettext.php3";
+require_once AA_INC_PATH."sliceobj.php3";
 // function definitions:
 require_once AA_INC_PATH."slice.php3";
 
@@ -204,9 +205,9 @@ require_once AA_INC_PATH."javascript.php3";
 $db  = new DB_AA; 	 // open BD
 $db2 = new DB_AA; 	 // open BD	(for subqueries in order to fullfill fulltext in feeded items)
 
-
-list($fields) = GetSliceFields($slice_id);     // get fields info
-$slice_info   = GetSliceInfo($slice_id);       // get slice info
+$slice      = AA_Slices::getSlice($slice_id);
+$fields     = $slice->fields('record');            // get fields info
+$slice_info = GetSliceInfo($slice_id);       // get slice info
 if (!$slice_info OR $slice_info['deleted']>0) {
     echo _m("Invalid slice number or slice was deleted") . " (ID: $slice_id)";
     ExitPage();
@@ -273,7 +274,7 @@ $add_aliases = $aliases    = GetAliasesFromUrl($als);
 $add_aliases['_#SESSION_'] = GetAliasDef( 'f_e:session', 'id..............', _m('session id'));
 
 // if banner parameter supplied => set format
-ParseBannerParam($slice_info, $banner);
+$slice_info = array_merge( $slice_info, ParseBannerParam($banner));
 
 // get alias list from database and possibly from url
 // if working with multi-slice, get aliases for all slices
@@ -281,13 +282,13 @@ if (!is_array($slices)) {
     $aliases = GetAliasesFromFields($fields);
     array_add($add_aliases, $aliases);
 } else {
-    foreach ($slices as $slice) {
-        list($fields) = GetSliceFields($slice);
+    foreach ($slices as $sid) {
+        list($fields) = GetSliceFields($sid);
         // hack for searching in multiple slices. This is not so nice part
         // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
         // it is needed by itemview::set_column() (see include/itemview.php3)
-        $aliases[q_pack_id($slice)] = GetAliasesFromFields($fields,$als);
-        array_add($add_aliases, $aliases[q_pack_id($slice)]);
+        $aliases[q_pack_id($sid)] = GetAliasesFromFields($fields,$als);
+        array_add($add_aliases, $aliases[q_pack_id($sid)]);
     }
 }
 
@@ -383,11 +384,11 @@ $scr_aliases['_#PAGE_LEN'] = GetAliasDef( 'f_s:'. $scr->metapage, '', _m('page l
 if (!is_array($slices)) {
     array_add($scr_aliases, $aliases);
 } else {
-    foreach ($slices as $slice) {
+    foreach ($slices as $sid) {
         // hack for searching in multiple slices. This is not so nice part
         // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
         // it is needed by itemview::set_column() (see include/itemview.php3)
-        array_add($scr_aliases, $aliases[q_pack_id($slice)]);
+        array_add($scr_aliases, $aliases[q_pack_id($sid)]);
     }
 }
 
@@ -435,19 +436,22 @@ if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($
     // ***** CONDS *****
 
     if ($cat_id) {  // optional parameter cat_id - deprecated - slow ------
+        $cat_field = $slice->getFields()->getCategoryFieldId();
         $cat_group = GetCategoryGroup($slice_id);
+
         $SQL = "SELECT value FROM constant
                  WHERE group_id = '$cat_group' AND id='". q_pack_id($cat_id) ."'";
         $db->query($SQL);
         if ( $db->next_record() ) {
-            $conds[] = array( GetCategoryFieldId( $fields ) => 1,
-                              'value'                       => $db->f('value'),
-                              'operator'                    => ($exact ? '=' : 'LIKE'));
+            $conds[] = array( $cat_field => 1,
+                              'value'    => $db->f('value'),
+                              'operator' => ($exact ? '=' : 'LIKE'));
         }
     } elseif ($cat_name)  {  // optional parameter cat_name -------
-        $conds[]     = array( GetCategoryFieldId( $fields ) => 1,
-                              'value'                       => $cat_name,
-                              'operator'                    => ($exact ? '=' : 'LIKE'));
+        $cat_field = $slice->getFields()->getCategoryFieldId();
+        $conds[]     = array( $cat_field => 1,
+                              'value'    => $cat_name,
+                              'operator' => ($exact ? '=' : 'LIKE'));
     }
 
     if ($restrict) {
@@ -478,8 +482,8 @@ if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($
     *  (add number before the field if you want to group limit (limit number of items of the same value))
     */
     if ($order) {
-        $sortorder = new Sortorder;
-        $sortorder->addFromString($order);
+        $sortorder = new AA_Sortorder;
+        $sortorder->addSortFromString($order);
         $order = reset($sortorder->getOrder());  // get the first from array
         list($order, $orderdirection) = each($order);
     }
@@ -490,13 +494,13 @@ if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($
 
     $sort_tmp = array();
     if ($group_by) {
-        $sortorder = new Sortorder;
-        $sortorder->addFromString($group_by);
+        $sortorder = new AA_Sortorder;
+        $sortorder->addSortFromString($group_by);
         $sort_tmp = $sortorder->getOrder();
         $slice_info["group_by"] = key($sort_tmp[0]);
     }
     elseif ($slice_info['category_sort']) {
-        $group_field = GetCategoryFieldId( $fields );
+        $group_field = $slice->getFields()->getCategoryFieldId();
         $grp_odir    = (($order==$group_field) AND ($orderdirection!='d')) ? 'a' : 'd';
         $sort_tmp[]  = array( $group_field => $grp_odir );
     }
@@ -528,7 +532,8 @@ if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($
         }
         $mlxView->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
     }
-    $zids = QueryZIDs($fields, $slice_id, $conds, $sort, $slice_info['group_by'], "ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator, true );
+
+    $zids = QueryZIDs( ($slices ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator, true );
 
     if (isMLXSlice($slice_info)) {
         $mlxView->postQueryZIDs($zids,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id, $conds, $sort, $slice_info['group_by'],"ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator,$nocache);
