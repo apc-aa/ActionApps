@@ -314,7 +314,7 @@ if ( $add || $update ) {
             /* End of Wizard stuff */
         }
         $slice = AA_Slices::getSlice($slice_id);
-        $slice->setSliceField('_upload_url.....', $upload_url);
+//        $slice->setSliceField('_upload_url.....', $upload_url);
 
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values for this slice
     } while(false);

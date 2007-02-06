@@ -615,33 +615,33 @@ $tablelist = array(   'active_sessions' => "(
                           `object_id` varbinary(32) NOT NULL default '',
                           `property` varbinary(16) NOT NULL default '',
                           `priority` smallint(20) default NULL,
-                          `float` double default NULL,
+                          `value` double default NULL,
                           `flag` smallint(6) default NULL,
                           PRIMARY KEY  (`id`),
-                          KEY `item_id` (`object_id`,`property`,`float`),
-                          KEY `integer` (`float`)
+                          KEY `item_id` (`object_id`,`property`,`value`),
+                          KEY `integer` (`value`)
                         )",
                       'object_integer' => "(
                           `id` bigint(20) NOT NULL auto_increment,
                           `object_id` varbinary(32) NOT NULL default '',
                           `property` varbinary(16) NOT NULL default '',
                           `priority` smallint(20) default NULL,
-                          `integer` bigint(20) default NULL,
+                          `value` bigint(20) default NULL,
                           `flag` smallint(6) default NULL,
                           PRIMARY KEY  (`id`),
-                          KEY `item_id` (`object_id`,`property`,`integer`),
-                          KEY `integer` (`integer`)
+                          KEY `item_id` (`object_id`,`property`,`value`),
+                          KEY `integer` (`value`)
                         )",
                       'object_text' => "(
                           `id` bigint(20) NOT NULL auto_increment,
                           `object_id` varbinary(32) NOT NULL default '',
                           `property` varbinary(16) NOT NULL default '',
                           `priority` smallint(20) default NULL,
-                          `text` longtext,
+                          `value` longtext,
                           `flag` smallint(6) default NULL,
                           PRIMARY KEY  (`id`),
-                          KEY `text` (`text`(10)),
-                          KEY `item_id` (`object_id`,`property`,`text`(16))
+                          KEY `text` (`value`(10)),
+                          KEY `item_id` (`object_id`,`property`,`value`(16))
                         )",
                       'pagecache' => "(
                           id varbinary(32) NOT NULL default '',
@@ -874,7 +874,7 @@ $tablelist = array(   'active_sessions' => "(
                       'users' => "(
                           id int(11) NOT NULL auto_increment,
                           `type` varbinary(10) NOT NULL default '',
-                          `password` varbinary(30) NOT NULL default '',
+                          `password` varbinary(255) NOT NULL default '',
                           uid varbinary(40) NOT NULL default '',
                           mail char(40) NOT NULL default '',
                           name char(80) NOT NULL default '',
