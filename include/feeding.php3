@@ -29,8 +29,13 @@ require_once AA_INC_PATH."stringexpand.php3"; // for translateString()
 function GetFieldMapping($from_slice_id, $destination_id) {
     $db = getDb();
 
-    $fields_from = AA_Slices::getSlice($from_slice_id)->getFields()->getRecordArray();
-    $fields_to   = AA_Slices::getSlice($destination_id)->getFields()->getPriorityArray();
+    $tmpobj = AA_Slices::getSlice($from_slice_id);
+    $tmpobj1 = $tmpobj->getFields();
+    $fields_from = $tmpobj1->getRecordArray(); 
+
+    $tmpobj = AA_Slices::getSlice($destination_id);
+    $tmpobj1 = $tmpobj->getFields();
+    $fields_to = $tmpobj1->getPriorityArray();
 
     if (empty($fields_to)) {
         return;
@@ -434,7 +439,8 @@ function FeedItem($item_id) {
     // get this item category_id
     $cat_group = GetCategoryGroup($slice_id);
 
-    $cat_field = $slice->getFields()->getCategoryFieldId();
+    $tmpobj = $slice->getFields();
+    $cat_field = $tmpobj->getCategoryFieldId();
 
     if ($cat_group AND $cat_field) {
         $SQL = "SELECT id FROM constant

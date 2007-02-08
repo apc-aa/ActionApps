@@ -455,8 +455,8 @@ if ($ids) {
     // plus '+' sign (besause wrong url where + is translated to space)
     $start_timestamp      = str_replace(' ', '+', trim($start_timestamp));
     $start_timestamp      = iso8601_to_unixstamp($start_timestamp);
-    $cat_field            = $slice->getFields()->getCategoryFieldId();
-
+    $tmpobj               = $slice->getFields();
+    $cat_field            = $tmpobj->getCategoryFieldId();
     $p_slice_id           = q_pack_id($slice_id);
 
     $now   = now();

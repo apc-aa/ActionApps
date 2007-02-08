@@ -376,7 +376,8 @@ class item {
     
     /** returns HTML code for Ajaxian Html input for the field_id */ 
     function getWidgetAjaxHtml($field_id) {
-        return AA_Slices::getSlice($this->getSliceID())->getWidgetAjaxHtml($field_id, $this->getItemID(), $this->getAaValue($field_id));
+        $tmpobj = AA_Slices::getSlice($this->getSliceID());
+        return $tmpobj->getWidgetAjaxHtml($field_id, $this->getItemID(), $this->getAaValue($field_id));
     }
 
     function getbaseurl($redirect, $no_sess) {
