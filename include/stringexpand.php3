@@ -100,8 +100,11 @@ class AA_Stringexpand_User extends AA_Stringexpand {
                 if ( !isset($auth_user_info[$auth_user]) ) {
                     $auth_user_info[$auth_user] = GetAuthData();
                 }
-    //            huhl($auth_user_info, $auth_user);
-                return get_if($auth_user_info[$auth_user]->getValue($field), "");
+                $item_user = GetItemFromContent($auth_user_info[$auth_user]);
+                if ($field=='id') {
+                    return $item_user->getItemID();
+                }
+                return $item_user->subst_alias($field);
         }
     }
 }
@@ -326,12 +329,39 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand {
 
     function expand($switch_state_1, $code_1, $switch_state_2, $code_2) {
         $uniqid = uniqid();
-        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:Htmltoggle('toggle_link_$uniqid', '$switch_state_1', 'toggle_1_$uniqid', '$switch_state_2', 'toggle_2_$uniqid')\">$switch_state_1</a>\n";
+        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1', 'toggle_1_$uniqid', '$switch_state_2', 'toggle_2_$uniqid')\">$switch_state_1</a>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
         return $ret;
     }
 }
+
+/** Expands {htmlajaxtoggle:<toggle1>:<text1>:<toggle2>:<url_of_text2>} like:
+ *          {htmlajaxtoggle:more >>>:Econnect:less <<<:/about-ecn.html}
+ *  It creates the link text1 (or text2) and two divs, where only one is visible
+ *  at the time - first is displayed as defaut, the second is loaded by AJAX
+ *  call on demand from specified url. The URL should be on the same server
+ *  The /javscript/aajslib.php3 shoud be included to the page
+ *  (by <script src="">)
+ *  @param $switch_state_1 - default link text
+ *  @param $code_1         - HTML code displayed as default (in div)
+ *  @param $switch_state_2 - link text 2
+ *  @param $url_of_text2   - url, which will be called by AJAX and displayed
+ *                           on demand (click on the link)
+ */
+class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
+
+    function expand($switch_state_1, $code_1, $switch_state_2, $url) {
+        $uniqid = uniqid();
+        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:AA_HtmlAjaxToggle('toggle_link_$uniqid', '$switch_state_1', 'toggle_1_$uniqid', '$switch_state_2', 'toggle_2_$uniqid', '$url')\">$switch_state_1</a>\n";
+        $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
+        $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\"></div>\n";
+        return $ret;
+    }
+}
+
+
+
 
 // text = [ decimals [ # dec_point [ thousands_sep ]]] )
 function parseMath($text) {
@@ -819,8 +849,8 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
 
-    function expand($condition, $text) {
-        return (strlen($condition)<1) ? '' : str_replace('_#1', $condition, $text);
+    function expand($condition, $text, $else_text='') {
+        return (strlen($condition)<1) ? $else_text : str_replace('_#1', $condition, $text);
     }
 }
 
@@ -852,8 +882,7 @@ class AA_Stringexpand_Compare extends AA_Stringexpand_Nevercache {
     }
 }
 
-// allows you to call view with conds:
-// {view.php3?vid=9&cmd[9]=c-1-{alias::f_t:{_#VALUE___}:conds}}
+/** Get field property (currently only 'name' is supported */
 class AA_Stringexpand_Field extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // We need to solve item caching (it is not problem, but I'm lazy, now)
@@ -863,10 +892,10 @@ class AA_Stringexpand_Field extends AA_Stringexpand_Nevercache {
             return '';
         }
         if (empty($slice_id)) {
-            if ( empty($item) ) {
+            if ( empty($this->item) ) {
                 return '';
             }
-            $slice_id = $item->getSliceID();
+            $slice_id = $this->item->getSliceID();
         }
         list($fields,) = GetSliceFields($slice_id);
         // we do not want to allow users to get all field setting
@@ -876,6 +905,30 @@ class AA_Stringexpand_Field extends AA_Stringexpand_Nevercache {
         return $fields[$field_id][$property];
     }
 }
+
+/** Get module (slice, ...) property (currently only 'name' is supported */
+class AA_Stringexpand_Slice extends AA_Stringexpand {
+
+    function additionalCacheParam() {
+        return serialize(array($GLOBALS['slice_id']));
+    }
+
+    function expand($property='name') {
+        // get slice_id from item, but sometimes the item is not filled (like
+        // on "Add Item" in itemedit.php3, so we use global slice_id here
+        $slice = AA_Slices::getSlice(get_if($this->item->getSliceID(),$GLOBALS['slice_id']));
+        // we do not want to allow users to get all field setting
+        // that's why we restict it to the properties, which makes sense
+        // @todo - make it less restrictive
+        $property = 'name';
+        return $slice->getProperty($property);
+    }
+}
+
+
+
+
+
 
 /** Store $text in the $html_subst_arr array - used for dictionary escaping html
  *  tags.
@@ -1375,8 +1428,6 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
 // This isn't used yet, might be changed
 // remove this comment if you use it!
 class AA_Stringexpand_Slice_Comments extends AA_Stringexpand {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
 
     function expand($slice_id) {
         $SQL = "SELECT sum(disc_count) FROM item WHERE slice_id=\"$slice_id\"";
