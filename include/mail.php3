@@ -50,7 +50,7 @@ class HtmlMail extends htmlMimeMail {
         if ($record["html"]) {
             $this->setHtml( $record["body"], html2text($record["body"]));
         } else {
-            $this->setText( html2text( $record["body"] ));
+            $this->setText( html2text( nl2br($record["body"]) ));
         }
         $this->setSubject($record["subject"]);
         $this->setBasicHeaders($record, "");
