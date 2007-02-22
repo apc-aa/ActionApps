@@ -132,6 +132,7 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_UPDATED',   'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
         $this->handlers[] = new aahandler('Event_ItemUpdated_Ekoinfocentrum',array('type' => 'ITEM_NEW',       'slice'        => 'eedbdb4543581e21d89c89877cfdc70f'));  // Ekoinfocentrum poradna
         $this->handlers[] = new aahandler('Event_ItemAfterInsert_NszmAkce',array('type' => 'ITEM_NEW',         'slice'        => '987c680c5adfc6f872909d703f98ba97'));  // NSZM - akce - lidi
+        $this->handlers[] = new aahandler('Event_ItemAfterInsert_NszmPruzkum',array('type' => 'ITEM_NEW',         'slice'        => '63e7f6ee3d20167df1663444a9d828c2'));  // NSZM - pruzkum
         $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_UPDATED',     'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_NEW',         'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
@@ -564,6 +565,21 @@ function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_pa
     }
     return false;
 }
+
+function Event_ItemAfterInsert_NszmPruzkum( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
+    $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
+    $email1    = trim($ret_params->getValue('address.........'));
+    $email2    = trim($ret_params->getValue('address........1'));
+
+    $item     = GetItemFromId(new zids($short_id, 's'));
+
+    if ($email1 OR $email2) {
+        return send_mail_from_table_inner(63, array($email1, $email2), $item) > 0;
+    }
+    return false;
+}
+
+
 
 
 ?>

@@ -307,12 +307,21 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
  */
 function GetItemFromId($zid) {
     if (isset($zid) && ($zid != "-")) {
-        $content = new ItemContent($zid);
-        // reuse slice, if possible
-        $slice = AA_Slices::getSlice($content->getSliceID());
-        return new item($content->getContent(),$slice->aliases());
+        return GetItemFromContent(new ItemContent($zid));
     }
     return false;
+}
+
+/** Creates item object just from item_content
+ * @param         $content  - itemcontent object
+ */
+function GetItemFromContent($content) {
+    if ( !is_object($content) ) {
+        return null;
+    }
+    // reuse slice, if possible
+    $slice = AA_Slices::getSlice($content->getSliceID());
+    return new item($content->getContent(),$slice->aliases());
 }
 
 class item {
@@ -322,7 +331,7 @@ class item {
     var $remove;         // remove string
     var $aliases;        // array of usable aliases
     var $parameters;     // optional additional parameters - copied from itemview->parameters
-    
+
     /** Constructor
     *  @param $content4id could be ItemContent as well as zids as well as old
     *                     contentent array
@@ -339,52 +348,53 @@ class item {
         $this->remove       = $remove;
         $this->parameters   = ( $param ? $param : array() );
     }
-    
+
     function setformat( $format, $remove="") {
         $this->format = $format;
         $this->remove = $remove;
     }
-    
+
     /** Optional asociative array of additional parameters
     *  Used for category_id (in Links module) ... */
     function set_parameters($parameters) {
         $this->parameters = $parameters;
     }
-    
+
     /** sets content (ItemContent object or older - content4id array) */
     function set_data($content4id) {
         $this->content4id = ((strtolower(get_class($content4id))=='itemcontent') ? $content4id : new ItemContent($content4id));
     }
-    
+
     /** sets for defined field it's new value  */
     function set_field_value($field, $value) {
         $this->content4id->setValue($field, $value);
     }
-    
-    
+
+
     /** shortcut for ItemContent->getValue() */
     function getval($field_id, $what='value') {  return $this->content4id->getValue($field_id, $what); }
-    
+
     /** shortcut for ItemContent->getValues() */
     function getValues($field_id) { return $this->content4id->getValues($field_id); }
     function getAaValue($field_id){ return $this->content4id->getAaValue($field_id); }
-    
+
     function getContent()       { return $this->content4id->getContent(); }
     function getItemContent()   { return $this->content4id;               }
     function getItemID()        { return $this->content4id->getItemID();  }
     function getSliceID()       { return $this->content4id->getSliceID(); }
-    
-    /** returns HTML code for Ajaxian Html input for the field_id */ 
+
+    /** returns HTML code for Ajaxian Html input for the field_id */
     function getWidgetAjaxHtml($field_id) {
         $tmpobj = AA_Slices::getSlice($this->getSliceID());
         return $tmpobj->getWidgetAjaxHtml($field_id, $this->getItemID(), $this->getAaValue($field_id));
     }
 
+
     function getbaseurl($redirect, $no_sess) {
         global $sess;
         /*  old version - it prints whole url (http://...). Current uses url as
         short as possible - like "?x=445445"
-        
+
         $url_base = ($redirect ? $redirect : $this->clean_url );
         if ( $no_sess ) {                     //remove session id
             $pos = strpos($url_base, '?');
@@ -393,11 +403,11 @@ class item {
             }
         }
         */
-        
+
         // redirecting to another page?
         $url_base = ( $redirect ? $redirect :
         (($no_sess OR !is_object($sess))  ? '' : $sess->url('')) );
-        
+
         // add state variable, if defined (apc - AA Pointer Cache)
         if ( $GLOBALS['apc_state'] ) {
             $url_base = con_url( $url_base, 'apc='.$GLOBALS['apc_state']['state'] );
@@ -413,11 +423,11 @@ class item {
         if ( !$condition ) {
             return false;
         }
-        
+
         $url_param = ( $GLOBALS['USE_SHORT_URL'] ?
                                     "x=". $this->getval('short_id........') :
                                     "sh_itm=". $this->getItemID());
-        
+
         return con_url( $this->getbaseurl($redirect, $no_sess), $url_param );
     }
 
@@ -448,7 +458,7 @@ class item {
         // use_field is for expanding aliases with loop - prefix {@
         $ali_arr = $this->aliases[$alias];
         // is this realy alias?
-        
+
         if ( !is_array($ali_arr) ) {
             // try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
             // unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
@@ -460,7 +470,7 @@ class item {
         // get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
         $function = ParseFnc($ali_arr['fce']);
         $fce      = $function['fnc'];
-        
+
         // call function (called by function reference (pointer))
         // like f_d("start_date......", "mm-dd")
         return $this->$fce(get_if($use_field, $ali_arr['param']), $function['param']);
@@ -494,7 +504,7 @@ class item {
         }
         return $clear_output . $this->remove_strings($out,$remove_arr);
     }
-    
+
     function unalias( &$text, $remove="" ) {
         trace("+","unalias",htmlentities($text));
         // just create variables and set initial values
@@ -506,11 +516,11 @@ class item {
         trace("-");
         return $ret;
     }
-    
+
     function subst_alias( $text ) {
         return (AA_Fields::isField($text) ? $this->getval($text) : $this->unalias($text));
     }
-    
+
     function subst_aliases( $var ) {
         if ( !is_array( $var ) ) {
             return $this->subst_alias( $var );
@@ -520,13 +530,13 @@ class item {
         }
         return $ret;
     }
-    
+
     // --------------- functions called for alias substitution -------------------
-    
+
     // null function
     // param: 0
     function f_0($col, $param="") { return ""; }
-    
+
     // print due to html flag set (escape html special characters or just print)
     // param: delimiter - used to separate values if the field is multi
     function f_h($col, $param="") {
@@ -540,7 +550,7 @@ class item {
         }
         return DeHtml($this->getval($col), $this->getval($col,'flag'));
     }
-    
+
     // prints date in user defined format
     // param: date format like in PHP (like "m-d-Y")
     function f_d($col, $param="") {
@@ -551,19 +561,19 @@ class item {
         $dstr = date($param, (int)$this->getval($col));
         return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
     }
-    
+
     // prints image scr (<img src=...) - NO_PICTURE for none
     // param: 0
     function f_i($col, $param="") {
         return get_if( $this->getval($col), NO_PICTURE_URL);
     }
-    
+
     // expands and prints a string, if parameters are blank then expands field
     function f_y($col, $param="") {
         $str2unalias = get_if( $param, $this->getval($col) );
         return $this->unalias( $str2unalias );
     }
-    
+
     // prints height and width of image file or URL referenced in field
     // Could be special case if in uploads directory, so can read directly
     function i_s($col, $param="") {
@@ -593,7 +603,7 @@ class item {
     function f_n($col, $param="") {
         return unpack_id( $this->getval($col) );
     }
-    
+
     // prints image height atribut (<img height=...) or clears it
     // param: 0
     function f_g($col, $param="") {    // image height
@@ -604,7 +614,7 @@ class item {
         }
         return htmlspecialchars($this->getval($col));
     }
-    
+
     // prints image width atribut (<img width=...) or clears it
     // param: 0
     function f_w($col, $param="") {    // image width
@@ -615,7 +625,7 @@ class item {
         }
         return htmlspecialchars($this->getval($col));
     }
-    
+
     /** Prints abstract ($col) or grabed fulltext text from field_id
     *  param: length:field_id:paragraph
     *         length    - max number of characters taken from field_id
@@ -635,7 +645,7 @@ class item {
             return DeHtml( $value, $this->getval($col,'flag') );
         }
         $shorted_text = substr(get_if($value, $pfield), 0, $plength);    // pfield is already expanded!!!
-        
+
         // search the text for following ocurrences in the order!
         $PARAGRAPH_ENDS = array( '</p>','<p>','<br>', "\n", "\r" );
         if ($pparagraph) {
@@ -672,7 +682,7 @@ class item {
         list($plink, $predir, $psess) = $this->subst_aliases(ParamExplode($param));
         return $this->getitemurl($plink, $this->getval($col), $predir, 1, $psess);
     }
-    
+
     // prints text with link to fulltext (hedline url)
     // param: link_only:url_field:redirect:txt:condition_fld
     //    link_only     - field id (like "link_only.......")
@@ -687,17 +697,17 @@ class item {
     function f_b($col, $param="") {
         $p = ParamExplode($param);
         list ($plink_only, $purl_field, $predirect, $ptxt, $pcondition, $paddition, $pno_sess) = $this->subst_aliases($p);
-        
+
         if (!$p[4]) {          // undefined condition parameter
             $pcondition = true;
         }
-        
+
         // last parameter - condition field
         $url = $this->getitemurl($plink_only, $purl_field, $predirect, $pcondition, $pno_sess);
         $flg = ( $this->content4id->is_set($p[3]) ? $this->getval($p[3],'flag') : true );
         return $this->getahref($url,$ptxt,$paddition,$flg);
     }
-    
+
     // prints 'blurb' (piece of text) based from another slice,
     // based on a simple condition.
     /*
@@ -707,7 +717,7 @@ class item {
     OR
     title.......     ; "Computer Basics - Overview"
     fulltext.....  ; "What you need to know for this cateogry is ...."
-    
+
     In view (of other slices), these blurbs can be gotten by creating a
     _#BLURB### alias, as a part of the field category........
     _#BLURB### uses function f_q
@@ -726,12 +736,12 @@ class item {
         [3] fieldToReturn is by default BLURB_FIELD_TO_RETURN
         these constants should be defined in include/config.php3
         */
-        
+
         $p = ParamExplode($param);
         $stringToMatch_Raw = $p[0] ? $p[0] : $col;
         // can use either the 'headline......' format or "You static text here"
         $stringToMatch = get_if( $this->getval($stringToMatch_Raw), $stringToMatch_Raw);
-        
+
         $fieldToMatch    = quote(     $p[2] ? $p[2] : BLURB_FIELD_TO_MATCH  );
         $fieldToReturn   = quote(     $p[3] ? $p[3] : BLURB_FIELD_TO_RETURN );
         /*
@@ -754,7 +764,7 @@ class item {
                     WHERE
                          c2.field_id    = '$fieldToReturn' AND
                          c2.item_id     = '$fqsqlid'";
-    
+
         } elseif ($fieldToMatch == "short_id........") {
             $p_blurbSliceId  = q_pack_id( $p[1] ? $p[1] : BLURB_SLICE_ID  );
             $SQL = "SELECT c2.text AS text
@@ -779,7 +789,7 @@ class item {
         return $res;
     }
 
-    
+
     // This function used to do a UTF8 encode, but since characters
     // are coming out of a DB which I believe is iso-8859-1, they shouldn't
     // be utf8 encoded. Unfortunately the internationalisation of AA isn't
@@ -793,31 +803,31 @@ class item {
         //    return utf8_encode(htmlspecialchars(substr($txt,0,$len)));
         return htmlspecialchars(substr($txt,0,$len));
     }
-    
+
     // standard aliases to generate RSS .91 compliant meta-information
     function f_r($col, $param="") {
         static $title, $link, $description;
-        
+
         $slice_id   = $this->getSliceID();
         $p_slice_id = q_pack_id($slice_id);
-        
+
         if (! $title) {
             if ($slice_id==""){ echo "Error: slice_id not defined"; exit; }
-            
+
             // RSS chanel (= slice) info
             $SQL= "SELECT name, slice_url, owner FROM slice WHERE id='$p_slice_id'";
-            
+
             $db = getDB(); $db->query($SQL);
             if (!$db->next_record()) {
-                echo "Can't get slice info"; exit;  
+                echo "Can't get slice info"; exit;
             }
-            
+
             $title       = $this->RSS_restrict( $db->f('name'), 100);
             $link        = $this->RSS_restrict( $db->f('slice_url'), 500);
             $name        = $db->f('name');
             $q_owner     = addslashes($db->f('owner'));
             //$language  = RSS_restrict( strtolower($db->f(lang_file)), 2);
-            
+
             $SQL = "SELECT name, email FROM slice_owner WHERE id='$q_owner'";
             $db->query($SQL);
             if (!$db->next_record()) {
@@ -825,17 +835,17 @@ class item {
             }
             $description = $this->RSS_restrict( $db->f('name').": $name", 500);
             freeDB($db);
-            
+
         }
-        
+
         //   return "tt: $col : $param<BR>";
         if ($col == 'SLICEdate')  return $this->RSS_restrict( GMDate("D, d M Y H:i:s "). "GMT", 100);
         if ($col == 'SLICEtitle') return $title;
         if ($col == 'SLICElink')  return $link;
         if ($col == 'SLICEdesc')  return $description;
-        
+
         $p = ParamExplode($param);
-        
+
         if ($col == 'hl_href.........' && strlen($p[0]) == 16) {
             $redirect  = $p[1] ? $p[1] :
                                         strtr(AA_INSTAL_URL, ':', '#:') .
@@ -843,7 +853,7 @@ class item {
             //      return strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/') ;
             return $this->RSS_restrict(strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/'),500) ;
         }
-        
+
         if (strpos($p[0],"{") !== false) {
             // It can't be a field, must be expandable
             return $this->RSS_restrict(strtr( $this->unalias($p[0]), '#/', ':/'),500) ;
@@ -855,7 +865,7 @@ class item {
 
     // prints the field content and converts text to html or escape html (due to
     // html flag). If param is specified, it prints rather param (instead of field)
-    
+
     // f_t looks to see if param is a field, and if so gets the value, and
     //  if it doesn't look like a field, then it unaliases the param
     // If there is no param, then it converts the field to HTML (if text)
@@ -890,7 +900,7 @@ class item {
     function f_s($col, $param="") {
         return ( $this->getval($col) ? $this->getval($col) : $param);
     }
-    
+
     // prints $col as link, if field_id in $param is defined, else prints just $col
     // param: field_id         - of possible link (like "source_href.....")
     //        additional atrib - for <a> tag
@@ -898,14 +908,14 @@ class item {
         list($plink, $padditional) = $this->subst_aliases( ParamExplode($param) );
         return $this->getahref($plink, $this->getval($col), $padditional,$this->getval($col,'flag'));
     }
-    
+
     // If someone understands the parameter wizzard, it would be good to expand this to take a second parameter
     // i.e. return url.
     // _#EDITITEM used on admin page index.php3 for itemedit url
     // param: 0
     function f_e($col, $param="") {
         global $sess;
-        
+
         $p = ParamExplode($param);  // 0 = disc|itemcount|safe|slice_info  //2 = return_url
         switch( $p[0]) {
             case "session":
@@ -927,10 +937,7 @@ class item {
             case "csv":
                 return $this->f_t($col,":".$p[0]);
             case "slice_info":
-                // get slice_id from item, but sometimes the item is not filled (like
-                // on "Add Item" in itemedit.php3, so we use global slice_id here
-                $slice = AA_Slices::getSlice(get_if($this->getSliceID(),$GLOBALS['slice_id']));
-                return $slice->getProperty($col);
+                return AA_Stringexpand_Slice::expand($col);
             case "link_edit":
                 return (($p[1]=='anonym') ?
                 get_aa_url('modules/links/linkedit.php3?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :
@@ -1012,11 +1019,11 @@ class item {
             $param = substr($param, 1);
             $negate=true;
         }
-        
+
         $p = ParamExplode($param);
-        
+
         list ($pcond, $pbegin, $pend, $pnone, $pccol, $pskip_col) = $this->subst_aliases($p);
-        
+
         $cond = ( $p[4] ? $pccol : $this->subst_alias($col) );
         if ( $cond != $pcond ) {
             $negate = !$negate;
@@ -1026,7 +1033,7 @@ class item {
         }
         return  ($negate ? $pnone : $pbegin. $coltxt .$pend);
     }
-    
+
     /** Calls user defined function in file /include/usr_aliasfnc.php3 */
     function f_u($col, $param="") {
         // first we substitute alias on whole param string
@@ -1040,7 +1047,7 @@ class item {
         }
         return $fnc($this->content4id->getContent(), $col, $param);
     }
-    
+
     // display specified view
     // param:
     //    link_only     - field id (like "link_only.......")
@@ -1051,23 +1058,23 @@ class item {
     //    txt           - if txt is field_id content is shown as link, else txt
     //    condition_fld - field id - if no content of this field, no link
     //    addition      - additional parameter to <a tag (like target=_blank)
-    
+
     function f_v($col, $param="") {
         global $vid, $als, $conds, $param_conds, $item_ids, $use_short_ids;
-        
+
         // if no parameter specified, the content of this field specifies view id
         if ( !$param ) {
             $param = "vid=".$this->getval($col);
         }
-        
+
         // older aliases substitution ------------- (_#publish_date....) -----------
         // substitute aliases by real item content
         $part = $param;
-        
+
         // If you change this to support more items, please change FAQ item //1488
         while ( $part = strstr( $part, "_#" )) {  // aliases for field content
             $fid = substr( $part, 2, 16 );         // looks like _#headline........
-            
+
             if ( substr( $fid, 0, 4 ) == "this" ) {  // special alias _#this
                 $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
             }
@@ -1083,12 +1090,12 @@ class item {
             }
             $part = substr( $part, 6 );
         }
-        
+
         // unalias new ------------ ({publish_date....}, _#ITEM_ID_, ...) -----------
         $param = $this->subst_alias($param);
         return GetView(ParseViewParameters($param));
     }
-    
+
     // mailto link
     // prints: "begin<a href="mailto:$col">field/text</a>"
     // if no $col is filled, prints "else_fileld/text"
@@ -1097,7 +1104,7 @@ class item {
     function f_m($col, $param="") {
         $p = ParamExplode($param);
         list ($pbegin, $pfield, $pelse, $ptype, $padd, $phide) = $this->subst_aliases($p);
-        
+
         if ( !$this->getval($col) ) {
             return $pelse ? $pbegin.$pelse : "";
         }
@@ -1112,7 +1119,7 @@ class item {
         $linktype =  (($ptype && ($ptype!='mailto')) ? "" : "mailto:");
         return $pbegin.$this->getahref( $linktype.$this->getval($col), $txt, $padd, $flg, $phide);
     }
-    
+
     /** substring with case conversion
     * @param $start  - position, where to start the substring
     * @param $n      - number of characters (<=0 means all charasters to the end)
@@ -1123,27 +1130,27 @@ class item {
     function f_j($col, $param="") {
         $p = ParamExplode($param);
         list ($start, $n, $case, $addstr) = $this->subst_aliases($p);
-        
+
         $text = $this->getval($col);
         if ($n <= 0) {
             $n = strlen ($text);
         }
         $ret = substr($text,$start,$n);
-        
+
         if ($case == "upper")     { $ret = strtoupper ($ret);           }
         elseif ($case == "lower") { $ret = strtolower ($ret);           }
         elseif ($case == "first") { $ret = ucwords (strtolower ($ret)); }
-        
+
         if ( $addstr AND (strlen($ret) <> strlen($text))) {
             $ret .= $addstr;
         }
         return $ret;
     }
-    
+
     // live checkbox -- updates database immediately on clicking without reloading the page
     function f_k($col, $param = "") {
         $short_id = $this->getval("short_id........");
-        
+
         $name = "live_checkbox[".$short_id."][$col]";
         $img  = $this->getval($col) ? "on" : "off";
         return "<img width='16' height='16' name='$name' border='0'
@@ -1162,7 +1169,7 @@ class item {
         $p        = $this->subst_aliases( ParamExplode($param) );
         $to       = (int) floor(count($p)/2);
         $colvalue = $this->getval($col);
-        
+
         for ( $i=0; $i < $to; $i++ ) {
             $first  = $i*2;
             $second = $first +1;
@@ -1173,7 +1180,7 @@ class item {
         // the last option can be definned as default
         return $p[$second+1];
     }
-    
+
     // prints 'New' (or something similar) for new items
     // Parameters: <time_in_minutes>:<text_to_print_if_newer>:<text_to_print_if_older>
     //   (this alias will be probably used with expiry date field)
@@ -1191,12 +1198,12 @@ class item {
         $way = explode(',', $this->getval($col)); // to get parent category
         return ( $way[count($way)-2] == $this->parameters['category_id']) ? '' : ($p[0] ? $p[0] : '@' );
     }
-    
+
     /** Link module (category) function - prints 1 when category is general one */
     function l_g($col, $param="") {
         return Links_IsGlobalCategory($this->getval($col)) ? '1' : '0';
     }
-    
+
     /** Link module (category) function - prints category priority, if category
     *  is general one */
     function l_o($col, $param="") {
@@ -1217,21 +1224,21 @@ class item {
     */
     function l_p($col, $param="") {
         global $contentcache;
-        
+
         $translate = $contentcache->get_result( 'GetTable2Array', array(
             "SELECT id, name FROM links_categories WHERE deleted='n'", 'id', true));
-        
+
         list ($start, $format, $separator, $catseparator, $urlprm, $url_base, $restrict) = $this->subst_aliases(ParamExplode($param));
         if ( !$separator ) {
             $separator = ' &gt; ';
         }
         // $url_base = ''; //$this->getbaseurl();
         $urlprm = ($urlprm ? '&'.$urlprm : '');
-        
+
         $categs2print = $catseparator ? $this->getValues($col) :
                                         array(0=>array('value'=>$this->parameters['category_id'])); // current category
         $linklast     = $catseparator ? true : false;
-        
+
         $ret = '';
         foreach ( (array)$categs2print as $v ) {
             $path = GetCategoryPath($v['value']);
@@ -1260,15 +1267,15 @@ class item {
         }
         return $ret;
     }
-    
+
     // ----------------- alias function definition end --------------------------
-    
+
     // function shows full text navigation (back, home)
     function show_navigation($home_url) {
         echo '<br><a href="javascript:history.back()">'. _m("Back") .'</a> &nbsp; ';
         echo "<a href=\"$home_url\">". _m("Home") .'</a><br>';
     }
-    
+
     // Get format string, unalias it and return (not clear why unaliased - Mitra)
     function get_item() {
         // format string

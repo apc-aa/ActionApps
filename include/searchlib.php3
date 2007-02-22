@@ -172,7 +172,7 @@ class AA_Condition extends AA_Object {
 
     function matches(&$itemcontent) {
         foreach ($this->fields as $field) {
-            foreach ($itemcontent->getValues($field) as $val) {
+            foreach ((array)$itemcontent->getValues($field) as $val) {
                 if ( $this->_compare($val['value']) ) {
                     // any match is sufficient
                     return true;

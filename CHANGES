@@ -1,6 +1,40 @@
-02/06/07 - new possibility to grant AA permissions to only susbset of users from
+02/22/07 - better spam checking feature are now implemented in filler.php3
+(honzam)   (anonymous items) as well as filldisc.php3 (discussion comments). It
+           is based on the fact, that spammers obviously submits many urls, so
+           there is allowed only limited count of links for each field. Four or
+           less urls are always OK. More are allowed just for longer comments
+           (1 link for 250 characters).
+         - ajax methods now uses prototype implementation of AJAX
+           @see http://prototypejs.org
+         - new experimental possibility for "Selectbox" and "Two Boxes" input
+           types to set use item value in conditions. This allows to create
+           Selectbox with Related Items where you show only related Items of
+           given category of edited field:
+             conds[1][place..........1]=1&conds[1][operator]=%3D&conds[1][value]=_#TOWN_ID_
+           _#TOWN_ID is alias in current slice, so only items where
+           place..........1 is equal to town of currently edited item is listed
+           in the selectbox.
+         - new possibility to display not only one "field: of current user from
+           Reader Management Slice by {user:address.........}, but you can use
+           any AA string with aliases, ... {user:This is my _#FULLNAME}
+         - new {htmlajaxtoggle:<toggle1>:<text1>:<toggle2>:<url_of_text2>} used
+           for hide/show part of the page (like {htmltoggle}), but the hidden
+           code is loaded into the page right after user demand (click)
+           It creates the link text1 (or text2) and two divs, where only one is
+           visible at the time - first is displayed as defaut, the second is
+           loaded by AJAX call on demand from specified url. The URL should be
+           on the same server.
+           The /javascript/aajslib.php3 shoud be included to the page by
+           (by <script src="">)
+           Example:
+             {htmlajaxtoggle:more &gt;&gt;:Econnect:less &gt;&gt;:/aboutEcn.htm}
+         - new else_text option for {ifset:<condition>:<text>:<else_text>}
+           - displayed, when the condition is not empty
+         - New {slice:name} function which displayes slice name :-)
+         - fixed problem with additional newlines in e-mails sent by AA
+02/06/07 - new possibility to grant AA permissions to only subset of users from
 (honzam)   Reader Slice. The "Reader Set" is defined by normal conditions, so
-           it is extremly powerfull - you can use any field of Reader slice
+           it is extremely powerful - you can use any field of Reader slice
            for it. The conditions are controlled be new AA_Set feature, which
            holds set of conditions and sorts (we will use such "Sets" as named
            conditions to view.php3/slice.php3 in near future). The set is
@@ -11,11 +45,11 @@
            it by calling /img.php script:
            <img src="/aaa/img.php?src=http://example.com/img/flower.gif&w=150">
            (w=150 means that image will be converted to width=150).
-           All the patrameters you can see on
+           All the parameters you can see on
            http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
            (just use img.php instead of phpThumb.php in the examples)
            The modified images are cached in <IMG_UPLOAD_PATH>/phpThumbcache/
-         - new possibilty to define external script as Control File for Site
+         - new possibility to define external script as Control File for Site
            Module, so you can give this script to your users without the need to
            give them also rights to edit AA files.
               There are two possibilities, how to control the apc_state
@@ -77,7 +111,7 @@
          - new parameter "add" for {substr:<string>:<begin>:<length>:<add>}
            alias function. The <add> parameter is added to the returning string,
            but only if the resulting string is shorter than current <string>.
-           It is useful if you want to short the headline to max 60 characers,
+           It is useful if you want to short the headline to max 60 characters,
            and add three dot, in the case the headline is shorted:
               {substr:{headline........}:0:60:...}
          - new {trim:<string>} alias function - removes beginning and ending
@@ -93,7 +127,7 @@
            the 'Name' of constant in <group_id> for the specified <value>
               say {constant:apc_main_categs_:ENV:name} returns "Environment".
            Default value for <what> parameter is "name", so if you want to know
-           the name, then you can ommit it.
+           the name, then you can omit it.
          - session ids are passed by GET (again) - not by cookies, since there
            was problems with it (the tabs in firefox shares the cookies,
            so multiple tabs uses the same session id, which is still not ok
@@ -106,7 +140,7 @@
          - admin interface for discussion now contains information about
            IP address of comments writer
          - new possibility to use conds[] and sort[] also for constants used for
-           dispaying some Input Type. Now you are able to sort the constants
+           displaying some Input Type. Now you are able to sort the constants
            transparently at the time it is displayed in the selectbox, for
            example. You are also able to display only constants containing
            "Nature", have value bigger than 1000, ...
@@ -120,7 +154,7 @@
            available for this work.
          - GUI improvement in view setting - link to view is not in popup
          - Cleanup
-            - class names now uses standardnamiong convention - prefix AA_ and
+            - class names now uses standard naming convention - prefix AA_ and
               name with all first letters in upper case (manager => AA_Manager)
             - global functions now rewritten to static class methods, where
               appropriate (sliceid2name() => AA_Slices::getName())
@@ -130,7 +164,7 @@
             - new AA_Object, AA_Property, AA_Widget, AA_Fields, AA_File_Wrapper,
               AA_Set classes. Many uses standard AA properties and prepared for
               easy extensibility of the code
-            - regular experssions ereg functions replaced by faster preg
+            - regular expressions ereg functions replaced by faster preg
               functions, where possible
             - new AA_File_Wrapper class, which is used for accessing local
               as well as remote (http:, ftp:) files
@@ -143,7 +177,7 @@
             - new javascript AA_Config object storing AA_INSTALL_PATH,
               ... for usage in AA javascripts
          - added "prototype" javascript library to the AA. It have some very
-           nice fetures like function $(), which is shortcut for
+           nice features like function $(), which is shortcut for
            document.getElementById, DOM manipulation functions AJAX, ... We will
            use it intensively in near future.
            see http://www.prototypejs.org/
@@ -151,7 +185,7 @@
            match common structure
          - pagecache uses REPLACE command where possible
            (instead of SELECT+INSERT/UPDATE)
-         - new optimalization functions in AA Optimize
+         - new optimization functions in AA Optimize
             - Convert no longer used slice.category_sort to slice.group_by
             - Copy Content Table
 
@@ -171,9 +205,6 @@
            response wasn't parsed well, when the response text contains
            apostrophe (Italian server responses for 404 uses such character)
          - fixed bug in {math} - now work again
-
-
-
 10/14/06 - added profile support and profile settings button also for groups
 (brazda)   (rules priority is in the order User -> Groups -> Default, so if you
            define different values for some rule, then the User rule wins.

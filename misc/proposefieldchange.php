@@ -121,7 +121,7 @@ elseif (AA_V::P('form') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
     $repre_value = safe(GetRepreValue(AA_V::P('item_id'), AA_V::P('field_id'), AA_V::P('alias_name')));
     $ret         = "<input type=\"text\" size=\"80\" id=\"ajaxi_$combi_id\" value=\"$value\">";
     $ret        .= "<input type=\"button\" value=\"ULOŽIT ZMÌNU\" onclick=\"proposeChange('$combi_id', '$iid', '$field_id', (typeof do_change == 'undefined') ? 1 : do_change)\">";
-    $ret        .= "<input type=\"button\" value=\"storno\" onclick=\"SetContent('ajaxv_$combi_id', '$repre_value'); document.getElementById('ajaxv_$combi_id').setAttribute('aaedit', '0');\">";
+    $ret        .= "<input type=\"button\" value=\"storno\" onclick=\"$('ajaxv_$combi_id').update('".str_replace("'", "\\"."'", $repre_value )."'); $('ajaxv_$combi_id').setAttribute('aaedit', '0');\">";
     $ret        .= " <input type=\"hidden\" id=\"ajaxh_$combi_id\" value=\"$repre_value\">";
     $encoder = new ConvertCharset;
     echo $encoder->Convert($ret, 'windows-1250', 'utf-8');
