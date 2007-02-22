@@ -129,7 +129,6 @@ function SendErrorPage($txt) {
             echo $txt;
         }
         echo "</body></html>";
-        exit;
     } else {
         if (!$GLOBALS["use_post2shtml"]) {
             $posturl = con_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000));
@@ -140,6 +139,7 @@ function SendErrorPage($txt) {
             UseShowResult($txt,$GLOBALS["err_url"]);
         }
     }
+    exit;
 }
 
 /**
@@ -213,6 +213,17 @@ if (count($err_valid) > 1) {
 
 // prepare content4id array before calling StoreItem (content4id is QUOTED!)
 $content4id    = GetContentFromForm( $slice, $oldcontent4id, $insert );
+
+// test for spam
+foreach ($content4id as $field) {
+    if (is_array($field)) {
+        foreach ($field as $value) {
+            if ( IsSpamText($value['value']) ) {
+                SendErrorPage(array ("spam"=>_m("Not accepted, sorry. Looks like spam.")));
+            }
+        }
+    }
+}
 
 // copy old values for fields not shown in the form
 if (! $insert && is_array($notshown)) {

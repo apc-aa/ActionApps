@@ -92,6 +92,16 @@ require_once AA_INC_PATH."validate.php3";
 
 $err["Init"] = "";       // error array (Init - just for initializing variable)
 
+
+// test for spam
+$discussion_fields = array('d_parent','d_item_id','d_subject','d_author','d_e_mail','d_body','d_state','d_flag','d_free1','d_free2','d_url_address','d_url_description');
+foreach ($discussion_fields as $field) {
+    if ( IsSpamText($$field) ) {
+         echo _m("Not accepted, sorry. Looks like spam.");
+         exit;
+    }
+}
+
 $new_id = new_id();
 
 $cookie = new CookieManager();

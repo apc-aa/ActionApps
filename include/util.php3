@@ -1122,7 +1122,7 @@ class AA_Widget_Lup extends AA_Widget {
 
 
 /** AA_Property
-*  Used alse for definition of components's parameters
+*  Used also for definition of components's parameters
 *   Components are AA_Widgets, AA_Transofrmations, ...
 */
 class AA_Property {
@@ -3091,5 +3091,20 @@ class AA_ChangesMonitor {
     }
 }
 
+function IsSpamText($text) {
+    $link_count  = substr_count(strtoupper($text), 'HTTP');
+    $text_length = strlen($text);
+
+    // four links are OK always
+    if ( $link_count < 5 ) {
+        return false;
+    }
+
+    // link density - text of 250 characters could contain one link (in average)
+    if ( ($text_length/$link_count)>250 ) {
+        return false;
+    }
+    return true;
+}
 
 ?>
