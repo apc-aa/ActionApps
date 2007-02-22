@@ -255,6 +255,8 @@ class inputform {
         // holds array of fields, which we will use on the form, so we have
         // to count with them for javascript and show_sunc_used
         $shown_fields = array();
+        
+        $item = $edit ? GetItemFromContent($content4id) : null;
 
         foreach ($prifields as $pri_field_id) {
             $f           = $fields[$pri_field_id];
@@ -305,7 +307,7 @@ class inputform {
             $aainput->setFromField($f);
 
             // do not return template for anonymous form wizard
-            $ret .= $aainput->get($form4anonymous_wizard ? 'expand' : 'template');
+            $ret .= $aainput->get($form4anonymous_wizard ? 'expand' : 'template', $item);
             unset($aainput);
         }
         $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
@@ -520,10 +522,7 @@ class AA_Inputfield {
             $this->input_help    = $field['input_help'];
             $this->input_morehlp = $field['input_morehlp'];
             $funct = ParamExplode($field["input_show_func"]);
-            // @todo check, how to do it better - this do not work if
-            // "slice_field" parameter uses {subst...} for examle
-            AA_Stringexpand::unaliasArray($funct);
-            $this->input_type    = $funct[0];
+            $this->input_type    = AA_Stringexpand::unalias($funct[0]);
             $this->param         = array_slice( $funct, 1 );
             $this->html_rb_show  = $field["html_show"];
             if ( isset($field["const_arr"]) ) {
@@ -670,7 +669,10 @@ class AA_Inputfield {
     /** Returns field as it should be displayed on screen (or at least template
      *  for the field with filled $contentcache object
      */
-    function get( $result_mode='expand' ) {
+    function get( $result_mode='expand', $item=null ) {
+        // @todo check, how to do it better - this do not work if
+        // "slice_field" parameter uses {subst...} for examle
+        AA_Stringexpand::unaliasArray($this->param);
         $this->result_mode = $result_mode;
         $this->echoo($this->input_before);
         switch ($this->mode. '_'. $this->input_type) {
@@ -733,6 +735,9 @@ class AA_Inputfield {
                                break;
             case 'anonym_sel':
             case 'normal_sel': list(,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str) = $this->param;
+                               if ( !is_null($item) ) {
+                                   $conds_str = $item->unalias($conds_str);
+                               }
                                if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
                                $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
                                $this->inputSelect($usevalue);
@@ -801,6 +806,9 @@ class AA_Inputfield {
                                break;
             case 'anonym_wi2':
             case 'normal_wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
+                               if ( !is_null($item) ) {
+                                   $conds_str = $item->unalias($conds_str);
+                               }
                                $this->varname_modify('[]');         // use slightly modified varname
                                $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str);
                                break;
