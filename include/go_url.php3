@@ -39,10 +39,24 @@ function con_url($url, $params) {
  *  using apropriate ? or &. */
 function get_url($url, $params) {
     list($path, $fragment) = explode( '#', $url, 2 );
-    if (is_array($params)) {
-        $params = implode('&', $params);
+    $param_string = '';
+    if (!is_array($params)) {
+        $param_string = $params;
+    } else {
+        $delimiter = '';
+        foreach ($params as $variable => $value) {
+            // you can use it in two ways:
+            //   1) $params = array('a=1', 'text=OK%20boy')
+            //   2) $params = array('a' => 1, 'b' => 'OK boy')
+            if ( is_numeric($variable)) {
+                $param_string .= $delimiter. $value;
+            } else {
+                $param_string .= $delimiter. rawurlencode($variable). '='. rawurlencode($value);
+            }
+            $delimiter     = '&';
+        }
     }
-    return $path . (strstr($path, '?') ? "&" : "?"). $params. ($fragment ? '#'.$fragment : '') ;
+    return $path . (strstr($path, '?') ? "&" : "?"). $param_string. ($fragment ? '#'.$fragment : '') ;
 }
 
 /// Move to another page (must be before any output from script)
@@ -65,8 +79,74 @@ function go_url($url, $add_param="", $usejs=false) {
        ';
     } else {
         header("Status: 302 Moved Temporarily");
-        header("Location: ". get_url($url,$netscape));
+        header("Location: $url");
     }
     exit;
 }
+
+/** POST data to the url (usin POST request and returns resulted data
+ *  @retuns array $result[] 
+ */
+function HttpPostRequest($url, $data = array() ) {
+    $request = parse_url($url);
+    
+    $host = $request['host'];
+    $uri  = $request['path']. (empty($request['query']) ? '' : '?'.$request['query']);
+    
+    $reqbody = "";
+    foreach($data as $key=>$val) {
+        if (!empty($reqbody)) {
+            $reqbody.= "&";
+        }
+        $reqbody.= $key."=".rawurlencode($val);
+    }
+    
+    $contentlength = strlen($reqbody);
+    $reqheader =  "POST $uri HTTP/1.1\r\n".
+                  "Host: $host\n". "User-Agent: ActionApps\r\n".
+                  "Content-Type: application/x-www-form-urlencoded\r\n".
+                  "Content-Length: $contentlength\r\n\r\n".
+                  "$reqbody\r\n"; 
+                  
+    $socket = fsockopen($host, 80, $errno, $errstr);
+    
+    if (!$socket) {
+        $result["errno"] = $errno;
+        $result["errstr"] = $errstr;
+        return $result;
+    }
+    
+    fputs($socket, $reqheader);
+    
+    $responseHeader = '';
+    $responseContent = '';
+    
+    do {
+        $responseHeader.= fread($socket, 1);
+    } while (!preg_match('/\\r\\n\\r\\n$/', $responseHeader));
+    
+    
+    if (!strstr($responseHeader, "Transfer-Encoding: chunked")) {
+        while (!feof($socket)) {
+            $responseContent.= fgets($socket, 128);
+        }
+    } else {
+        while ($chunk_length = hexdec(fgets($socket))) {
+            $responseContentChunk = '';
+            $read_length = 0;
+            
+            while ($read_length < $chunk_length) {
+                $responseContentChunk .= fread($socket, $chunk_length - $read_length);
+                $read_length = strlen($responseContentChunk);
+            }
+            
+            $responseContent.= $responseContentChunk;
+            
+            fgets($socket);
+        }
+    }
+    
+    return array( 0=>$responseContent );
+}
+
 ?>
