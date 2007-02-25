@@ -40,19 +40,19 @@ class AA_Value {
     /** holds the flag - common for all the values */
     var $flag;        
     
-    function AA_Value($value=false, $flag=null) {
+    function AA_Value($value=null, $flag=null) {
         $this->clear();
         if (is_array($value)) {
             // aa array used in AA_ItemContent - [0]['value'] = ..
             //                                      ['flag']  = ..
             //                                   [1]['value'] = ..
             foreach($value as $val) {
-                $this->val[] = $val['value']; 
+                $this->val[] = $val['value'];
             }
             $this->flag = !is_null($flag) ? $flag : get_if($value[0]['flag'], 0);
-        } else {
+        } elseif ( !is_null($value) ) {
             $this->val  = $value;
-            $this->flag = !is_null($flag) ? $flag : 0; 
+            $this->flag = !is_null($flag) ? $flag : 0;
         }
     }
     

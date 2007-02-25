@@ -319,7 +319,7 @@ class AA_Object extends storable_class {
     }
 
     function &factoryByName($mask, $name, $params=null) {
-        return AA_Components::factory($mask. ucwords(strtolower($name)), $params);
+        return AA_Object::factory($mask. ucwords(strtolower($name)), $params);
     }
 
     function getProperty($id, $property) {

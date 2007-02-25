@@ -1294,6 +1294,26 @@ class AA_Field {
 
     function getWidget() {
         if ( is_null($this->widget) ) {
+            
+                function setFromField(&$field) {
+                if (isset($field) AND is_array($field)) {
+                    $this->id            = $field['id'];
+                    $this->varname       = varname4form($this->id);
+                    $this->name          = $field['name'];
+                    $this->input_before  = $field['input_before'];
+                    $this->required      = $field['required'];
+                    $this->input_help    = $field['input_help'];
+                    $this->input_morehlp = $field['input_morehlp'];
+                    $funct = ParamExplode($field["input_show_func"]);
+                    $this->input_type    = AA_Stringexpand::unalias($funct[0]);
+                    $this->param         = array_slice( $funct, 1 );
+                    $this->html_rb_show  = $field["html_show"];
+                    if ( isset($field["const_arr"]) ) {
+                        $this->const_arr  = $field["const_arr"];
+                    }
+                }
+            }
+            
             $this->widget = &AA_Widget::factory($somethinnnnng); // @todo
         }
     }
@@ -1370,7 +1390,7 @@ class AA_Field {
         // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN) {
         $aa_variable = new AA_Variable( $this->getId4Form($item_id),
                                         $this->getName(),
-                                                           // type  @todo
+                                        $this->getProperty('text_stored') ? 'text' : 'int',
                                                            // multi @todo
                                                            // persistent @todo
                                         null,              // $validator - @todo create validator

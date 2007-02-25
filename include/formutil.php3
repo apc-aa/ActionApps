@@ -1755,7 +1755,16 @@ function FrmInputSelect($name, $txt, $arr, $selected="", $needed=false, $hlp="",
  *  for use within <form> and <table> tag
  */
 function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true) {
-    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    // selected array we need to be in form array( 0 => array('value'=>val))
+    // so we need to prepare it
+    $sel = array();
+    if (is_array($selected)) {
+        foreach($selected as $val) {
+            $sel[] = array('value'=>$val);
+        }
+    }
+    
+    $input = new AA_Inputfield($sel, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputMultiChBox($ncols, $move_right);
     $input->print_result();
 }
@@ -1791,7 +1800,7 @@ function FrmRelated($name, $txt, $arr, $rows, $sid, $mode, $design, $needed=fals
 }
 
 /** Prints two boxes for multiple selection for use within <form> and <table> */
-function FrmTwoBox($name, $txt, $arr, $val, $rows, $selected, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp="") {
+function FrmTwoBox($name, $txt, $arr, $selected, $rows, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp="") {
     // $val is not used - there is only from historical reasons and should be removed accross files
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->twoBox($rows,$wi2_offer,$wi2_selected);

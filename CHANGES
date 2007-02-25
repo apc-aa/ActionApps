@@ -1,3 +1,7 @@
+02/25/07 - started work on Central - the place, from which you can control many 
+(honzam)   installed AAs. The first script part is used for synchronization 
+           of slices across AA installs.
+           @see /apc-aa/central
 02/22/07 - better spam checking feature are now implemented in filler.php3
 (honzam)   (anonymous items) as well as filldisc.php3 (discussion comments). It
            is based on the fact, that spammers obviously submits many urls, so
