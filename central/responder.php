@@ -63,16 +63,36 @@ class AA_Responder_Get_Slices extends AA_Object {
 class AA_Responder_Get_Slice_Defs extends AA_Object {
     var $slice_names;
     
-    function AA_Responder_Get_Slice_Defs($slice_names) {
-        $this->slice_names = is_array($slice_names) ? $slice_names : array(); 
+    function AA_Responder_Get_Slice_Defs($param) {
+        $this->slice_names = is_array($param['slice_names']) ? $param['slice_names'] : array(); 
     }
 
     function run() {
         $ret = array();
-        $slice_def = new AA_Slice_Definition();
         foreach ( $this->slice_names as $slice_name ) {
-            $slice_def->loadForSliceName($slice_name);
-            $ret[$slice_name] = $slice_def;
+            $ret[$slice_name] = new AA_Slice_Definition();
+            $ret[$slice_name]->loadForSliceName($slice_name);
+        }
+        return new AA_Response($ret);
+    }
+}
+
+/** @return structure which define all the definition of the slice (like slice 
+ *  properties, fields, views, ...). It is returned for all the slices in array
+ */
+class AA_Responder_Do_Synchronize extends AA_Object {
+    var $sync_commands;
+    
+    function AA_Responder_Do_Synchronize($param) {
+        $this->sync_commands = is_array($param['sync']) ? $param['sync'] : array(); 
+    }
+
+    function run() {
+        $ret = array();
+        $slice_id_cache = array();
+        foreach ( $this->sync_commands as $serialized_command ) {
+            $cmd = unserialize($serialized_command);
+            $ret[] = $cmd->doAction();
         }
         return new AA_Response($ret);
     }

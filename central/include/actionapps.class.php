@@ -111,8 +111,20 @@ class AA_Actionapps {
             return $response->getResponse();
         }
     }
-
     
+    /** This commend synchronizes the slices base on sync[] array 
+     *  @return the report on the synchronization 
+     */
+    function synchronize($sync_commands) {
+        // We will use rather one call which returns all the data for all the 
+        // slices, since it is much quicker than separate call for each slice 
+        $response = $this->getResponse( new AA_Request('Do_Synchronize', array('sync'=>$sync_commands)) );
+        if ($response->isError()) {
+            return array();
+        } else {
+            return $response->getResponse();
+        }
+    }
 
     /** Main communication function - returns AA_Response object */
     function getResponse($request) {
@@ -138,12 +150,16 @@ class AA_Actionapps {
 
     /// Static methods
     function _ask($url, $request) {
+//        huhl($url, $request);
         $result = HttpPostRequest($url, $request->requestArr());
+//        huhl($result);
         if (isset($result["errno"])) {
+            huhl("<br>Error - response:", $result);
             return new AA_Response('No response recieved ('. $result["errno"] .' - '. $result["errstr"]. ')', 3);
         }
         $response  = unserialize($result[0]);
         if ( $response == false ) {
+            huhl("<br>Error - Bad response:", $result ,"<br>on request: $url", $request);
             return new AA_Response("Bad response", 3);
         }
         return $response;
@@ -251,12 +267,37 @@ class AA_Slice_Definition {
     }
 
     function compareWith($dest_def) {
-        $diff = AA_Slice_Definition::_compareArray($this->slice_data, $dest_def->slice_data);
-        $diff = array_merge($diff, AA_Slice_Definition::_compareArray($this->fields_data,    $dest_def->fields_data));
-        $diff = array_merge($diff, AA_Slice_Definition::_compareArray($this->views_data,     $dest_def->views_data));
-        $diff = array_merge($diff, AA_Slice_Definition::_compareArray($this->emails_data,    $dest_def->emails_data));
-        $diff = array_merge($diff, AA_Slice_Definition::_compareArray($this->constants_data, $dest_def->constants_data));
+        /** @todo chack the state, when the name contains "->" */
+        $slice_name = $dest_def->slice_data['name'];
+        $diff =                    AA_Difference::_compareArray($this->slice_data,     $dest_def->slice_data,     $slice_name.'->slice');
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->fields_data,    $dest_def->fields_data,    $slice_name.'->field'));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->views_data,     $dest_def->views_data,     $slice_name.'->view'));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->emails_data,    $dest_def->emails_data,    $slice_name.'->email'));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->constants_data, $dest_def->constants_data, $slice_name.'->constant'));
         return $diff;
+    }
+}
+
+class AA_Difference {
+    
+    var $description;
+    var $type;           // INFO | DIFFERENT | NEW | DELETED
+    /** array of AA_Sync_Actions defining, what we can do with this difference */
+    var $actions;
+       
+    /** */
+    function AA_Difference($type, $description, $actions=array()) {
+        $this->type        = $type;        
+        $this->description = $description;
+        $this->actions     = empty($actions) ? array() : (is_array($actions) ? $actions : array($actions));        
+    }
+    
+    function printOut() {
+        echo "\n<tr><td>". $this->description .'</td><td>';
+        foreach ($this->actions as $action) {
+            $action->printToForm();
+        }
+        echo '</td></tr>';
     }
     
     /// Static
@@ -264,23 +305,30 @@ class AA_Slice_Definition {
     function _compareArray($template_arr, $destination_arr, $name) {
         $diff = array();
         if (! is_array($template_arr) AND is_array($destination_arr)) {
-            return array( 0 => new AA_Difference('%1 is not array in template slice', array($name)));
+            return array( 0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', array($name)), new AA_Sync_Action('DELETE', $name)));
         }
         if ( is_array($template_arr) AND !is_array($destination_arr)) {
-            return array( 0 => new AA_Difference('%1 is not array in destination slice', array($name)));
+            return array( 0 => new AA_Difference('NEW', _m('%1 is not array in destination slice', array($name)), new AA_Sync_Action('NEW', $name, $template_arr)));
+        }
+        if ( !is_array($template_arr) AND !is_array($destination_arr)) {
+            return array( 0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', array($name))));
         }
         foreach ($template_arr as $key => $value) {
-            if (!array_key_exists($key,$destination_arr)) {
-                $diff[] = new AA_Difference('There is no such key (%1) in destination slice for %2', array($key, $name));
-            }
-            elseif (is_array($value)) {
-                $diff = array_merge($diff, AA_Slice_Definition::_compareArray($value,$destination_arr[$key], "$name -> $key")); 
+            if (is_array($value)) {
+                $diff = array_merge($diff, AA_Difference::_compareArray($value,$destination_arr[$key], $name."->$key")); 
                 // we need to clear the destination array in order we can know, 
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
             }
+            elseif (!array_key_exists($key,$destination_arr)) {
+                $diff[] = new AA_Difference('DIFFERENT', _m('There is no such key (%1) in destination slice for %2', array($key, $name)), new AA_Sync_Action('UPDATE', $name."->$key", $value));
+            }
             elseif ($value != $destination_arr[$key]) {
-                $diff[] = new AA_Difference('The value for key %1 in %2 array is different (%3 != %4)', array($key, $name, $destination_arr[$key], $value));
+                $code = '{htmltoggle:&gt;&gt;::&lt;&lt;:
+                       <div style="background-color#:#FFE0E0;border#: solid 1px #F88;">'.AaSafe(safe($destination_arr[$key])).'</div>
+                       <br>
+                       <div style="background-color#:#E0E0FF;border#: solid 1px #88F;">'.AaSafe(safe($value)).'</div>}';
+                $diff[] = new AA_Difference('DIFFERENT', _m('The value for key %1 in %2 array is different %3', array($key, $name, AA_Stringexpand::unalias($code))), new AA_Sync_Action('UPDATE', $name."->$key", $value));
                 // we need to clear the destination array in order we can know, 
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
@@ -290,25 +338,210 @@ class AA_Slice_Definition {
         }
         foreach ($destination_arr as $key => $value) {
             // there are no such keys in template 
-            $diff[] = new AA_Difference('There is no such key (%1) in template slice for %2', array($key, $name));
+            if ( is_array($value) ) {
+                // I know - we can define the difference right here, but it is better to use the same method as above
+                $diff = array_merge($diff, AA_Difference::_compareArray('',$destination_arr[$key], $name."->$key"));
+            } else {
+                $diff[] = new AA_Difference('DELETED', _m('There is no such key (%1) in template slice for %2', array($key, $name)), new AA_Sync_Action('UPDATE', $name."->$key", ''));
+            }
+        }
+        if ( count($diff) < 1 ) {
+            $diff[] = new AA_Difference('INFO', _m('%1 are identical', array($name)));
         }
         return $diff;
     }
 }
 
-class AA_Difference {
-    
-    var $description;
-    
-    /** */
-    function AA_Difference($description, $actions=array()) {
-        $this->description = $description;        
-    }
-    
-    function printOut() {
-        echo "\n<div>". $this->description .'</div>';
-    }
+/** Makes the string safe for AA stringexpand
+ *  @todo do it better - it is not functional since the characters are changed
+ */
+function AaSafe($string) {
+    return str_replace(array(':','{','}'), array('#:','#[','#]'), $string);
+}
 
+/** Class which defines synchronization actions */
+class AA_Sync_Action {
+    /** action type  - DELETE | NEW | UPDATE */
+    var $type;
+    
+    /** identifier string (like 'view->678->name') */
+    var $identifier;
+    
+    /** action parameters (field's data). Could be scalar as well as array */
+    var $params;
+    
+    function AA_Sync_Action($type, $identifier, $params=null) {
+        $this->type       = $type;
+        $this->identifier = $identifier;
+        $this->params     = $params;
+    }
+    
+    function printToForm() {
+        $packed_action = serialize($this);
+        echo '<div>';
+        FrmChBoxEasy('sync[]', in_array($packed_action, (array)$_POST['sync']), '', $packed_action);
+        switch ( $this->type ) {
+            case 'DELETE': echo _m("Delete"); break;
+            case 'NEW':    echo _m("Create new"); break;
+            case 'UPDATE': echo _m("Update"); break;
+        }
+        echo '</div>';
+    }
+    
+    /** do synchronization action in destination slice */
+    function doAction() {
+        /** @todo convert to class variable after move to PHP5 */
+        global $slice_id_cache;
+        
+        $cmd = explode('->', $this->identifier);
+        if ( !isset($slice_id_cache[$cmd[0]])) {
+            $slice_id_cache[$cmd[0]] = GetTable2Array("SELECT id FROM slice WHERE name='".quote($cmd[0])."'", 'aa_first', 'unpack:id');
+        }
+        if (!$slice_id_cache[$cmd[0]]) {
+            return _m('Slice not found: %1',array($cmd[0]));
+        }
+        $qp_slice_id = q_pack_id($slice_id_cache[$cmd[0]]);
+        
+        $varset = new Cvarset();
+        switch( $cmd[1] ) {
+            case 'slice':
+                if ( $this->type == 'UPDATE' ) {
+                    $varset->addkey('id', 'quoted', $qp_slice_id);
+                    if ( isset($cmd[2]) ) {
+                        // single value
+                        $varset->add($cmd[2], 'text', $this->params);
+                    } else {
+                        // whole slice record
+                        foreach ( $this->params as $key => $val ) {
+                            $varset->add($key, 'text', $val);
+                        }
+                    }
+                    $varset->doUpdate('slice');
+                    return _m('Slice %1 updated', array($cmd[0]));
+                }
+                if ( $this->type == 'NEW' ) {
+                    /** @todo Add it to the module table, as well */
+                    $varset->addkey('id', 'unpacked', new_id());
+                    foreach ( $this->params as $key => $val ) {
+                        $varset->add($key, 'text', $val);
+                    }
+                    $varset->doInsert('slice');
+                    return _m('Slice %1 Inserted', array($cmd[0]));
+                }
+                /** @todo DELETE */
+                return _m('Operation not supprted, yet - Slice %1', array($cmd[0]));
+            case 'field':
+                if (!isset($cmd[2])) {
+                    return _m('Operation not supprted, yet - Slice->Field %1->%2', array($cmd[0],$cmd[2]));
+                }
+                $fid = $cmd[2];
+                if ( $this->type == 'UPDATE' ) {
+                    $varset->addkey('slice_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id',       'text',   $fid);
+                    if ( isset($cmd[3]) ) {
+                        // single value
+                        $varset->add($cmd[3], 'text', $this->params);
+                    } else {
+                        // whole slice record
+                        foreach ( $this->params as $key => $val ) {
+                            $varset->add($key, 'text', $val);
+                        }
+                    }
+                    $varset->doUpdate('field');
+                    return _m('Field %1 in slice %2 updated', array($fid, $cmd[0]));
+                }
+                if ( $this->type == 'NEW' ) {
+                    $varset->addkey('slice_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id', 'text', $fid);
+                    foreach ( $this->params as $key => $val ) {
+                        $varset->add($key, 'text', $val);
+                    }
+                    $varset->doInsert('field');
+                    return _m('Field %1 inserted into slice %2', array($fid, $cmd[0]));
+                }
+                if ( $this->type == 'DELETE' ) {
+                    $varset->addkey('slice_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id',       'text',   $fid);
+                    $varset->doDelete('field');
+                    return _m('Field %1 deleted from slice %2', array($fid, $cmd[0]));
+                }
+                return _m("Unknown action (%1) for field %2 in slice %3", array($this->type, $fid, $cmd[0]));
+            case 'view':
+                if (!isset($cmd[2])) {
+                    return _m('Operation not supprted, yet - Slice->View %1->%2', array($cmd[0],$cmd[2]));
+                }
+                $vid = $cmd[2];
+                if ( $this->type == 'UPDATE' ) {
+                    $varset->addkey('slice_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id',       'text',   $vid);
+                    if ( isset($cmd[3]) ) {
+                        // single value
+                        $varset->add($cmd[3], 'text', $this->params);
+                    } else {
+                        // whole slice record
+                        foreach ( $this->params as $key => $val ) {
+                            $varset->add($key, 'text', $val);
+                        }
+                    }
+                    $varset->doUpdate('view');
+                    return _m('View %1 in slice %2 updated', array($vid, $cmd[0]));
+                }
+                if ( $this->type == 'NEW' ) {
+                    $varset->addkey('slice_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id', 'text', $vid);
+                    foreach ( $this->params as $key => $val ) {
+                        $varset->add($key, 'text', $val);
+                    }
+                    $varset->doInsert('view');
+                    return _m('View %1 inserted into slice %2', array($vid, $cmd[0]));
+                }
+                if ( $this->type == 'DELETE' ) {
+                    $varset->addkey('slice_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id',       'text',   $vid);
+                    $varset->doDelete('view');
+                    return _m('View %1 deleted from slice %2', array($vid, $cmd[0]));
+                }
+                return _m("Unknown action (%1) for view %2 in slice %3", array($this->type, $vid, $cmd[0]));
+            case 'email':
+                if (!isset($cmd[2])) {
+                    return _m('Operation not supprted, yet - Slice->Email %1->%2', array($cmd[0],$cmd[2]));
+                }
+                $emailid = $cmd[2];
+                if ( $this->type == 'UPDATE' ) {
+                    $varset->addkey('slice_id',        'quoted', $qp_slice_id);
+                    $varset->addkey('owner_module_id', 'text',   $emailid);
+                    if ( isset($cmd[3]) ) {
+                        // single value
+                        $varset->add($cmd[3], 'text', $this->params);
+                    } else {
+                        // whole slice record
+                        foreach ( $this->params as $key => $val ) {
+                            $varset->add($key, 'text', $val);
+                        }
+                    }
+                    $varset->doUpdate('email');
+                    return _m('Email %1 in slice %2 updated', array($emailid, $cmd[0]));
+                }
+                if ( $this->type == 'NEW' ) {
+                    $varset->addkey('slice_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id', 'text', $emailid);
+                    foreach ( $this->params as $key => $val ) {
+                        $varset->add($key, 'text', $val);
+                    }
+                    $varset->doInsert('email');
+                    return _m('Email %1 inserted into slice %2', array($emailid, $cmd[0]));
+                }
+                if ( $this->type == 'DELETE' ) {
+                    $varset->addkey('slice_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id',       'text',   $emailid);
+                    $varset->doDelete('email');
+                    return _m('Email %1 deleted from slice %2', array($emailid, $cmd[0]));
+                }
+                return _m("Unknown action (%1) for email %2 in slice %3", array($this->type, $emailid, $cmd[0]));
+            case 'constant':  /** @todo work with constant */ 
+        }
+        return _m("Unknown action for data %1 in slice %2", array($cmd[1], $cmd[0]));
+    }
 }
 
 ?>

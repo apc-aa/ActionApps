@@ -325,7 +325,8 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
  *  @param $code_2         - HTML code displayed as alternative after clicking
  *                           on the link
  */
-class AA_Stringexpand_Htmltoggle extends AA_Stringexpand {
+class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
+    // Never cache this code, since we need unique divs with uniqid() 
 
     function expand($switch_state_1, $code_1, $switch_state_2, $code_2) {
         $uniqid = uniqid();

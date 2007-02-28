@@ -1,3 +1,5 @@
+02/28/07 - AA synchronization script in AA Cenral now is able to stynchronize 
+(honzam)   two remote slices. It works, but we need UI improvements and testing 
 02/25/07 - started work on Central - the place, from which you can control many 
 (honzam)   installed AAs. The first script part is used for synchronization 
            of slices across AA installs.

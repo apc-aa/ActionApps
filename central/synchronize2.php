@@ -49,7 +49,14 @@ if (!IsSuperadmin()) {
   exit;
 }
 
-if ($_POST['sumbit'] == _m('Compare')) {
+
+// ActionApps to synchronize
+$aas   = array();
+foreach ($ACTIONAPPS as $k => $aadef) {
+    $aas[$k] = new AA_Actionapps($aadef['name'], $aadef['url'], $aadef['user'], $aadef['pwd']);
+}
+
+if ($_POST['compare']) {
     $template_slice_defs = $aas[$_POST['template_aa']]->sliceDefinitions($_POST['sync_slices']);
     if (is_array($_POST['destination_aa']) ) {
         foreach ($_POST['destination_aa'] as $dest_aa) {
@@ -57,21 +64,22 @@ if ($_POST['sumbit'] == _m('Compare')) {
             
             // now compare slices
             $differences = CompareSliceDefs($template_slice_defs, $dest_slice_defs);
-            
-            // and prit diffs out
-            echo "\n\n<h2>". $aas[$dest_aa]->org_name() . "</h2>";
-            foreach ($differences as $slice_name => $diffs) {
-                echo "\n<h3>$slice_name</h3>";
-                foreach ($diffs as $diff) {
-                    $diff->pritOut();
-                }
-            }
         }
     }
 }
 
+if ($_POST['synchronize']) {
+    if (is_array($_POST['destination_aa']) ) {
+        foreach ($_POST['destination_aa'] as $dest_aa) {
+            $sync_result[$aas[$dest_aa]->org_name()] = $aas[$dest_aa]->synchronize($_POST['sync']);
+        }
+    }
+    print_r($sync_result);
+}
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+FrmJavascriptFile('javascript/aajslib.php3');
+
 ?>
 <TITLE><?php echo _m("Central - Synchronize ActionApps (2/3) - Slices to Synchronize"); ?></TITLE>
 </HEAD>
@@ -84,12 +92,6 @@ $useOnLoad = true;
 echo "<H1><B>" . _m("Central - Synchronize ActionApps (2/3) - Slices to Synchronize") . "</B></H1>";
 PrintArray($err);
 echo $Msg;
-
-// ActionApps to synchronize
-$aas   = array();
-foreach ($ACTIONAPPS as $k => $aadef) {
-    $aas[$k] = new AA_Actionapps($aadef['name'], $aadef['url'], $aadef['user'], $aadef['pwd']);
-}
 
 // ActionApps to synchronize
 $aas_array = array();
@@ -105,23 +107,39 @@ foreach ($tmp_slices as $sid => $name) {
     $template_slices[$name] = $name;
 }
 
-$form_buttons = array("compare"      => array( "type"      => "submit",
+$form_buttons1 = array("synchronize"  => array( "type"      => "submit",
+                                               "value"     => _m("Synchronize"),
+                                               "accesskey" => "S")
+                     );
+                     
+$form_buttons2 = array("compare"      => array( "type"      => "submit",
                                                "value"     => _m("Compare"),
                                                "accesskey" => "C"),
-                      "synchronize"  => array( "type"      => "submit",
-                                               "value"     => _m("Synchronize"),
-                                               "accesskey" => "S"),
                       "template_aa"  => array( "value"     =>  $_POST['template_aa'])
                      );
+                     
 ?>
 <form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
-FrmTabCaption('', '','', $form_buttons, $sess, $slice_id);
-FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->org_name());
-FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
 
+if ( isset($differences) ) {
+    FrmTabCaption(_m('Slice Comparison - %1', array($aas[$dest_aa]->org_name())), '','', $form_buttons1);
+        // and print diffs out
+        foreach ($differences as $slice_name => $diffs) {
+            FrmTabSeparator($slice_name);
+            foreach ($diffs as $diff) {
+                $diff->printOut();
+            }
+        }
+    FrmTabEnd($form_buttons1);
+}
+            
+
+FrmTabCaption('', '','', $form_buttons2, $sess, $slice_id);
+FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->org_name());
 // prepared for multiple update
 FrmInputSelect('destination_aa[]', _m('AA to update'), $aas_array, $_POST['destination_aa'], true, _m('ActionApps installation to update'));
+FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
 </FORM>

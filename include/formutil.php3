@@ -1834,14 +1834,16 @@ function PrintMoreHelp( $txt ) {
 /**
 * Prints html tag <input type=checkbox
 */
-function FrmChBoxEasy($name, $checked=true, $add="") {
-  echo FrmChBoxEasyCode($name, $checked, $add);
+function FrmChBoxEasy($name, $checked=true, $add="", $value='') {
+  echo FrmChBoxEasyCode($name, $checked, $add, $value);
 }
 
-function FrmChBoxEasyCode($name, $checked=true, $add="") {
-  $name=safe($name); // $add=safe($add); NO!!
+function FrmChBoxEasyCode($name, $checked=true, $add="", $value='') {
+  $name  = safe($name); 
+  $value = safe($value); // $add=safe($add); NO!!
 
-  return "<input type=\"checkbox\" name=\"$name\" $add".
+  return "<input type=\"checkbox\" name=\"$name\" $add". 
+    ($value   ? " value=\"$value\"" : '').
     ($checked ? " checked>" : ">");
 }
 
