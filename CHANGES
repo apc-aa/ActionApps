@@ -1,7 +1,15 @@
-02/28/07 - AA synchronization script in AA Cenral now is able to stynchronize 
-(honzam)   two remote slices. It works, but we need UI improvements and testing 
-02/25/07 - started work on Central - the place, from which you can control many 
-(honzam)   installed AAs. The first script part is used for synchronization 
+03/06/07 - new {formbreaktop:...} and {formbreakbottom:...} commands for
+(honzam)   spliting inputform into parts - the ussage is the same
+           as {formbreak:...}, but the tabs are displayed only on top or bottom,
+           respectively
+         - fixed bug of not working user administration, when all reader slices
+           are marked as deleted
+         - new possibility to use utf8 encoding in site module
+           (en-utf8_site_lang.php3)
+02/28/07 - AA synchronization script in AA Cenral now is able to stynchronize
+(honzam)   two remote slices. It works, but we need UI improvements and testing
+02/25/07 - started work on Central - the place, from which you can control many
+(honzam)   installed AAs. The first script part is used for synchronization
            of slices across AA installs.
            @see /apc-aa/central
 02/22/07 - better spam checking feature are now implemented in filler.php3

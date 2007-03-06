@@ -85,14 +85,14 @@ function go_url($url, $add_param="", $usejs=false) {
 }
 
 /** POST data to the url (usin POST request and returns resulted data
- *  @retuns array $result[] 
+ *  @retuns array $result[]
  */
 function HttpPostRequest($url, $data = array() ) {
     $request = parse_url($url);
-    
+
     $host = $request['host'];
     $uri  = $request['path']. (empty($request['query']) ? '' : '?'.$request['query']);
-    
+
     $reqbody = "";
     foreach($data as $key=>$val) {
         if (!empty($reqbody)) {
@@ -100,32 +100,32 @@ function HttpPostRequest($url, $data = array() ) {
         }
         $reqbody.= $key."=".rawurlencode($val);
     }
-    
+
     $contentlength = strlen($reqbody);
     $reqheader =  "POST $uri HTTP/1.1\r\n".
                   "Host: $host\n". "User-Agent: ActionApps\r\n".
                   "Content-Type: application/x-www-form-urlencoded\r\n".
                   "Content-Length: $contentlength\r\n\r\n".
-                  "$reqbody\r\n"; 
-                  
+                  "$reqbody\r\n";
+
     $socket = fsockopen($host, 80, $errno, $errstr);
-    
+
     if (!$socket) {
         $result["errno"] = $errno;
         $result["errstr"] = $errstr;
         return $result;
     }
-    
+
     fputs($socket, $reqheader);
-    
+
     $responseHeader = '';
     $responseContent = '';
-    
+
     do {
         $responseHeader.= fread($socket, 1);
     } while (!preg_match('/\\r\\n\\r\\n$/', $responseHeader));
-    
-    
+
+
     if (!strstr($responseHeader, "Transfer-Encoding: chunked")) {
         while (!feof($socket)) {
             $responseContent.= fgets($socket, 128);
@@ -134,18 +134,18 @@ function HttpPostRequest($url, $data = array() ) {
         while ($chunk_length = hexdec(fgets($socket))) {
             $responseContentChunk = '';
             $read_length = 0;
-            
+
             while ($read_length < $chunk_length) {
                 $responseContentChunk .= fread($socket, $chunk_length - $read_length);
                 $read_length = strlen($responseContentChunk);
             }
-            
+
             $responseContent.= $responseContentChunk;
-            
+
             fgets($socket);
         }
     }
-    
+
     return array( 0=>$responseContent );
 }
 

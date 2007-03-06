@@ -31,15 +31,15 @@ require_once AA_INC_PATH."feeding.php3";
 
 
 /**
- * AA_Value - Holds information about one value - could be multiple, 
+ * AA_Value - Holds information about one value - could be multiple,
  *            could contain flags...
  */
 class AA_Value {
     /** array of the values */
-    var $val;         
+    var $val;
     /** holds the flag - common for all the values */
-    var $flag;        
-    
+    var $flag;
+
     function AA_Value($value=null, $flag=null) {
         $this->clear();
         if (is_array($value)) {
@@ -55,13 +55,13 @@ class AA_Value {
             $this->flag = !is_null($flag) ? $flag : 0;
         }
     }
-    
+
     /** Returns the value for a field. If it is a multi-value
     *   field, this is the first value. */
     function getValue($i=0) {
         return $this->val[$i];
     }
-    
+
     function clear() {
         $this->val  = array();
         $this->flag = 0;
@@ -268,7 +268,7 @@ class ItemContent {
         return ( is_array($this->content[$field_id]) ? $this->content[$field_id][0][$what] : false );
     }
 
-    
+
     /** Returns the value for a field. If it is a multi-value
     *   field, this is the first value. */
     function getAaValue($field_id) {
