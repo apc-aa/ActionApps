@@ -186,6 +186,7 @@ class inputform {
 
         FrmTabCaption( '', 'id="inputtab"', 'id="inputtabrows"', $buttons);
         $parts = $GLOBALS['g_formpart'];
+        $tabs  = array();
         if ( $parts ) {
             $idx = 0;
             while ( $parts+1 ) {
@@ -194,7 +195,9 @@ class inputform {
                 $parts--;
             }
             // print tabs for form switching
-            FrmTabs( $tabs, 'formtabs' );
+            if ( $GLOBALS['g_formpart_pos'] & 1 ) {  // 1 ~ top
+                FrmTabs( $tabs, 'formtabs' );
+            }
         }
 
         if ($this->formheading) {// added for mlx tab
@@ -203,9 +206,9 @@ class inputform {
 
         echo $out;
 
-        if ( $parts ) {
+        if ( $parts AND ($GLOBALS['g_formpart_pos'] & 2)) {  // 2 ~ bottom
             // print tabs for form switching
-            FrmTabs( $tabs, 'formtabs' );
+            FrmTabs( $tabs, 'formtabs2' );
         }
 
         if (is_array($this->hidden)) {
@@ -255,7 +258,7 @@ class inputform {
         // holds array of fields, which we will use on the form, so we have
         // to count with them for javascript and show_sunc_used
         $shown_fields = array();
-        
+
         $item = $edit ? GetItemFromContent($content4id) : null;
 
         foreach ($prifields as $pri_field_id) {
@@ -1763,7 +1766,7 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false, $hlp
             $sel[] = array('value'=>$val);
         }
     }
-    
+
     $input = new AA_Inputfield($sel, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputMultiChBox($ncols, $move_right);
     $input->print_result();
@@ -1839,10 +1842,10 @@ function FrmChBoxEasy($name, $checked=true, $add="", $value='') {
 }
 
 function FrmChBoxEasyCode($name, $checked=true, $add="", $value='') {
-  $name  = safe($name); 
+  $name  = safe($name);
   $value = safe($value); // $add=safe($add); NO!!
 
-  return "<input type=\"checkbox\" name=\"$name\" $add". 
+  return "<input type=\"checkbox\" name=\"$name\" $add".
     ($value   ? " value=\"$value\"" : '').
     ($checked ? " checked>" : ">");
 }
@@ -2124,7 +2127,9 @@ function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
     echo '    </table>
             </td>
           </tr>';
-    if ( $buttons ) FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABTITBG);
+    if ( $buttons ) {
+        FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABTITBG);
+    }
     echo '
         </table>';
 }
@@ -2220,10 +2225,11 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                         // (used for FrmTabSeparator, to not duplicate hiddens)
                         break;
                     }
-                    echo '&nbsp;<input type="'.  $type .
+                    $nbsp = ( $type == 'hidden' ) ? '' : '&nbsp;';
+                    echo $nbsp.'<input type="'.  $type .
                          '" name="'.  $name .
                          '" value="'. $properties['value'] . ($properties['accesskey'] ? "  (".$accesskey_pref."+".$properties['accesskey'].")  " : "").
-                         '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>&nbsp;';
+                         '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>'.$nbsp;
                     if ($properties['help'] != '') {
                         echo FrmMoreHelp($properties['help']);
                         echo "&nbsp;&nbsp;";

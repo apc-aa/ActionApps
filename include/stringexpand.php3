@@ -133,11 +133,15 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Formbreak extends AA_Stringexpand {
 
     function additionalCacheParam() {
-        return serialize(array($GLOBALS['g_formpart'], $GLOBALS['g_formpart_names']));
+        return serialize(array($GLOBALS['g_formpart'], $GLOBALS['g_formpart_names'], $GLOBALS['g_formpart_pos']));
     }
 
     function expand($part_names='') {
         $GLOBALS['g_formpart']++;  // Nothing to print, it just increments part counter
+
+        if (empty($GLOBALS['g_formpart_pos'])) {
+            $GLOBALS['g_formpart_pos'] = 3;  // position of the tabs - bottom and top
+        }
 
         // You can specify also the names for next tabs (separated by ':'), which is
         // usefull mainly for last tab (for which you do not have formbrake, of course
@@ -150,6 +154,26 @@ class AA_Stringexpand_Formbreak extends AA_Stringexpand {
                 $GLOBALS['g_formpart_names'][$index] = $name;
             }
         }
+    }
+}
+
+/** Expands {formbreakbottom:xxxxxx:yyyy:....} alias - split of inputform into parts
+ *  @param $part_name - name of the part (like 'Related Articles').
+ */
+class AA_Stringexpand_Formbreakbottom extends AA_Stringexpand_Formbreak {
+    function expand($part_names='') {
+        $GLOBALS['g_formpart_pos'] = 2;  // bottom
+        parent::expand($part_names);
+    }
+}
+
+/** Expands {formbreaktop:xxxxxx:yyyy:....} alias - split of inputform into parts
+ *  @param $part_name - name of the part (like 'Related Articles').
+ */
+class AA_Stringexpand_Formbreaktop extends AA_Stringexpand_Formbreak {
+    function expand($part_names='') {
+        $GLOBALS['g_formpart_pos'] = 1;  // top
+        parent::expand($part_names);
     }
 }
 
@@ -326,7 +350,7 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
  *                           on the link
  */
 class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
-    // Never cache this code, since we need unique divs with uniqid() 
+    // Never cache this code, since we need unique divs with uniqid()
 
     function expand($switch_state_1, $code_1, $switch_state_2, $code_2) {
         $uniqid = uniqid();

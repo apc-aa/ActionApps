@@ -262,7 +262,7 @@ TD.sel_title {
   background: #F5F0E7;
 }
 
-#formtabs {
+#formtabs, #formtabs2 {
     font-size: 0.85em;
     font-weight: bold;
     padding: 0px;
@@ -271,7 +271,7 @@ TD.sel_title {
     border-bottom: 1px solid #EBDABE;
 }
 
-#formtabs td {
+#formtabs td, #formtabs2 td {
     padding: 0px;
     border-bottom: 1px solid #745623;;
 }

@@ -226,12 +226,25 @@ function TabWidgetToggle(class2togle) {
     // hide all input tab rows except the row of "class2togle"
     ShowThisTagClass('inputtabrows', 'tr', class2togle, 'formrow');
 
-    var yo = document.getElementById("formtabs").getElementsByTagName("a");
+    var yo;
 
-    for (var i=0; i < yo.length; i++) {
-        yo[i].className = 'tabsnonactiv';
+    // toggle top tabs
+    if(document.getElementById("formtabs") != undefined) {
+        yo = document.getElementById("formtabs").getElementsByTagName("a");
+        for (var i=0; i < yo.length; i++) {
+            yo[i].className = 'tabsnonactiv';
+        }
+        document.getElementById("formtabs"+class2togle).className = 'tabsactiv';
     }
-    document.getElementById("formtabs"+class2togle).className = 'tabsactiv';
+
+    // toggle bottom tabs
+    if(document.getElementById("formtabs2") != undefined) {
+        yo = document.getElementById("formtabs2").getElementsByTagName("a");
+        for (var i=0; i < yo.length; i++) {
+            yo[i].className = 'tabsnonactiv';
+        }
+        document.getElementById("formtabs2"+class2togle).className = 'tabsactiv';
+    }
 }
 
 //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
