@@ -114,6 +114,7 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'directory' => "modules/site/",
                                 'menu' => "modules/site/menu.php3",
                                 'language_files' => array(
+                                    'en-utf8_site_lang.php3' => 'en-utf8_site_lang.php3',
                                     'en_site_lang.php3' => 'en_site_lang.php3',
                                     'es_site_lang.php3' => 'es_site_lang.php3',
                                     'cz_site_lang.php3' => 'cz_site_lang.php3')),
