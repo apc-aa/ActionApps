@@ -520,10 +520,11 @@ function FindReaderGroups($pattern) {
                     AND module.deleted < '1'
                     AND module.name LIKE '$pattern%'");
     $prefix = _m('Reader Slice');
+    $groups = array();
     while ($db->next_record()) {
         $groups[unpack_id128($db->f('id'))] = array('name' => "$prefix: ". $db->f('name'));
     }
-    
+
     // get all ReaderSets
     $prefix = _m('Reader Set');
     foreach ( AA_Object::getNameArray('AA_Set', array_keys($groups)) as $set_id => $name ) {
@@ -531,7 +532,7 @@ function FindReaderGroups($pattern) {
     }
     return $groups;
 
-        
+
 }
 
 /** return list of RM users which matches the pattern */
@@ -608,27 +609,27 @@ function GetReaderMembership($user_id) {
         return false;
     }
     $user_info = GetAuthData( $user_id );
-    
+
     if ($user_info->is_empty()) {
         return false;
     }
 
     $reader_slice_id = $user_info->getSliceID();
     $ret             = array($reader_slice_id);
-    
+
     $restrict_zids   = new zids($user_id, 'l');
     // groups could be definned also by subset of readers - defined by AA_Set
     $set_ids         = AA_Object::query('AA_Set', array($reader_slice_id));
     foreach( $set_ids as $set_id ) {
         $set  = AA_Object::load($set_id, 'AA_Set');
         $zids = QueryZids(array($reader_slice_id), $set->getConds(), '', 'ACTIVE', 0, $restrict_zids);
-        
+
         // reader is in this reader set
         if ($zids->count() > 0) {
             $ret[] = $set->getId();
         }
     }
-    
+
     // we use unpacked slice id as id of group for RM slices
     return $ret;
 }

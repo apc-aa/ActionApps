@@ -169,11 +169,11 @@ class AA_Object extends storable_class {
     function setName($name) {
         $this->aa_name = $name;
     }
-    
+
     function setId($id) {
         $this->aa_id = $id;
     }
-    
+
     /** Save the object to the database */
     function save() {
         $this->delete();
@@ -216,13 +216,13 @@ class AA_Object extends storable_class {
     /** Deletes the object from the database including all the subobjects */
     function delete() {
         $to_delete = array( $this->getId() );
-        
-        // we have to ask database for subobjects, because it gives us the ids 
+
+        // we have to ask database for subobjects, because it gives us the ids
         // as stored in database, not the ids of current subobjects, which could
         // be different. The $this->getSubObjects() donot help us here!
         $to_delete = array_merge($to_delete, explode(',',$this->getProperty($to_delete[0], 'aa_subobjects')));
         $varset    = new CVarset;
-        
+
         $sqlin     = Cvarset::sqlin('object_id', $to_delete);
 //        $varset->doDeleteWhere('object_text', Cvarset::sqlin('object_id', AA_Object::query('AA_Set', array('cde50ab466e2211b97ff8f93e7add44f', 'cd8499c809cdbb3b51d026e1e07520c5'))));
 //        exit;
@@ -258,7 +258,7 @@ class AA_Object extends storable_class {
     }
 
     function _saveProperty($property, $value, $priority=0) {
-        
+
         // Property type - text | int | bool | float | <class_name>
         if ( !$property->isObject()) {
             $this->_saveRow($property->getId(), $value, $property->getType(), $priority);
@@ -302,16 +302,19 @@ class AA_Object extends storable_class {
     function getName() {
         return $this->aa_name;
     }
-    
+
     /// Static ///
     function getNameArray($obj_type, $owner) {
+        if ( empty($owner) ) {
+            return array();
+        }
         $SQL = "SELECT o1.object_id, o3.value FROM object_text as o1 INNER JOIN object_text as o2 ON o2.object_id=o1.object_id INNER JOIN object_text as o3 ON o3.object_id=o1.object_id
-                 WHERE o1.property = 'aa_type'  AND o1.value = '$obj_type' 
+                 WHERE o1.property = 'aa_type'  AND o1.value = '$obj_type'
                    AND o2.property = 'aa_owner' AND ". CVarset::sqlin('o2.value', $owner) ."
                    AND o3.property = 'aa_name'";
-                                       
+
         $ret = GetTable2Array($SQL, 'object_id', 'value');
-        return is_array($ret) ? $ret : array();                                       
+        return is_array($ret) ? $ret : array();
     }
 
     function &factory($classname, $params=null) {
@@ -331,10 +334,10 @@ class AA_Object extends storable_class {
     }
 
     function &load($id, $type=null) {
-        // @todo optimize the load 
+        // @todo optimize the load
         //    - get used tables from properties,
         //    - load object from database in one step using aa_subobjects property of the objects
-        
+
         if ( !$type ) {
             $type = getObjectType($id);
         }
@@ -344,7 +347,7 @@ class AA_Object extends storable_class {
         $obj = new $type;
         $obj->setId($id);
         $properties = call_user_func_array(array($type, 'getClassProperties'), array($type));
-        
+
         $props_from_db = GetTable2Array("SELECT `property`, `value` FROM object_text WHERE object_id = '$id' ORDER by property, priority", '');
         if ( is_array($props_from_db) ) {
             foreach ( $props_from_db as $v ) {
@@ -365,7 +368,7 @@ class AA_Object extends storable_class {
                 }
             }
         }
-        
+
         $props_from_db = GetTable2Array("SELECT `property`,`value` FROM `object_integer` WHERE object_id = '$id' ORDER by property, priority", '');
         if ( is_array($props_from_db) ) {
             foreach ( $props_from_db as $v ) {
@@ -383,7 +386,7 @@ class AA_Object extends storable_class {
                 }
             }
         }
-        
+
         $props_from_db = GetTable2Array("SELECT `property`,`value` FROM `object_float` WHERE object_id = '$id' ORDER by property, priority", '');
         if ( is_array($props_from_db) ) {
             foreach ( $props_from_db as $v ) {
@@ -418,18 +421,18 @@ class AA_Object extends storable_class {
     *   @global  bool $nocache (in) do not use cache, even if use_cache is set
     */
     function query($type, $owners=null, $set=null, $restrict_zids=null) {
-        // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND 
+        // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND
         // c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
         global $debug;                 // displays debug messages
         global $nocache;               // do not use cache, if set
-        
-        $SQL = "SELECT o1.object_id FROM object_text as o1, object_text as o2 WHERE o1.object_id=o2.object_id 
+
+        $SQL = "SELECT o1.object_id FROM object_text as o1, object_text as o2 WHERE o1.object_id=o2.object_id
                 AND o1.property='aa_type'  AND o1.value='".quote($type)."'
                 AND o2.property='aa_owner' AND o2.value='".quote(reset($owners))."'";
-        
-        $ids = GetTable2Array($SQL, '', 'object_id');           
+
+        $ids = GetTable2Array($SQL, '', 'object_id');
         return $ids ? $ids : array();
-        
+
         // @todo !!! - rewrite it.
         // do the same as in quryZids for any object
     }
