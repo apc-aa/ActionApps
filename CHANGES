@@ -1,3 +1,5 @@
+03/29/07 - increased max size of val field in active_sessions (to mediumtext)
+(brazda)
 03/06/07 - new {formbreaktop:...} and {formbreakbottom:...} commands for
 (honzam)   spliting inputform into parts - the ussage is the same
            as {formbreak:...}, but the tabs are displayed only on top or bottom,
