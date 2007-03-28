@@ -108,7 +108,7 @@ function myquery($db, $SQL) {
 $tablelist = array(   'active_sessions' => "(
                           sid varbinary(32) NOT NULL default '',
                           name varchar(32) NOT NULL default '',
-                          val text,
+                          val mediumtext,
                           `changed` varchar(14) NOT NULL default '',
                           PRIMARY KEY  (name,sid),
                           KEY `changed` (`changed`)
