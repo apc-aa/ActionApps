@@ -38,7 +38,7 @@ class AA_Saver {
     var $store_mode;         /** store-policy - how to store - overwrite | insert_if_new */
     var $id_mode;            /** id-policy    - how to construct id - old | new | combined */
 
-    function AA_Saver(&$grabber, &$transformations, $slice_id, $store_mode='overwrite', $id_mode='old') {
+    function AA_Saver(&$grabber, &$transformations, $slice_id=null, $store_mode='overwrite', $id_mode='old') {
         $this->grabber         = $grabber;
         $this->transformations = $transformations;
         $this->slice_id        = $slice_id;
@@ -74,8 +74,20 @@ class AA_Saver {
             // set the item to be recevied from remote node
             $content4id->setItemID($new_item_id);
 
-            // TODO - move to translations
-            $content4id->setSliceID($this->slice_id);
+
+            // @todo - move to translations
+            if ( !is_null($this->slice_id) ) {
+                // for AA_Grabber_Form we have the slice_id already filled
+                $content4id->setSliceID($this->slice_id);
+            }
+            if ( $content4id->getPublishDate() <= 0 ) {
+                $content4id->setPublishDate(now());
+            }
+            if ( $content4id->getExpiryDate() <= 0 ) {
+                $content4id->setExpiryDate(now()+(60*60*24*365*10));
+            }
+
+
 
             if ($debugfeed >= 3) print("\n<br>      ". $content4id->getValue('headline........'));
             if ($debugfeed >= 8) { print("\n<br>xmlUpdateItems:content4id="); huhl($content4id); }
@@ -446,7 +458,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
 
         // create item from source data (in order we can unalias)
-        $item2fed = new item($item['fields_content'], array());
+        $item2fed = new AA_Item($item['fields_content'], array());
 
         foreach ( $this->map as $to_field_id => $v) {
             switch ($v['feedmap_flag']) {
@@ -486,5 +498,125 @@ class AA_Grabber_Aarss extends AA_Grabber {
         }
     }
 }
+
+/** AA_Grabber_Form - Grabbs data POSTed by AA form
+*
+*  The format of the data is followiing
+*  (this is new format, which allows to fill or modify more items at once
+*
+*   Format is:
+*       aa[i<long_item_id>][modified_field_id][]
+*   Note:
+*      first brackets contain
+*          'i'+long_item_id when item is edited or
+*          'n<number>_long_slice_id' if you want to add the item to slice_id
+*                                    <number> is used to add more than one
+*                                    item at the time
+*      modified_field_id is field_id, where all dots are replaced by '_'
+*      we always add [] at the end, so it becames array at the end
+*   Example:
+*       aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
+*       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
+*/
+class AA_Grabber_Form {
+    var $_items;
+
+    function AA_Grabber_Form() {
+        $_items = array();
+    }
+
+    /** Name of the grabber - used for grabber selection box */
+    function name() { return _m('Form'); }
+
+    /** Description of the grabber - used as help text for the users.
+     *  Description is in in HTML
+     */
+    function description() { return _m('Grabbs data POSTed by AA form'); }
+
+    /** HTML code for parameters - defines parameters of this grabber.
+     *  Each grabber could have its own parameters (like separator for CSV, ...)
+     */
+    function htmlSetting($input_prefix, $params) {}
+
+    /** Method called by the AA_Saver to get next item from the data input */
+    function getItem() {
+        if (!($itemcontent = current($this->_items))) {
+            return false;
+        }
+        next($this->_items);
+        return $itemcontent;
+    }
+
+    /** Possibly preparation of grabber - it is called directly before getItem()
+     *  method is called - it means "we are going really to grab the data
+     */
+    function prepare() {
+        $this->_items = array();
+        if (!isset($_POST['aa']) OR !is_array($_POST['aa'])) {
+            return;
+        }
+
+        /** the item ids are in the form of i<item_id> for edited items,
+         *  or n<number>_<slice_id> for new item.
+         *  We have to construct translation table of the ids
+         */
+        $id_trans_table = array();
+
+        $aa = $_POST['aa'];
+        foreach ( $aa as $dirty_item_id => $item_fields) {
+
+            // common fields
+            if ($dirty_item_id == 'all' ) {
+                continue;
+            }
+            // edited item
+            elseif ( $dirty_item_id{0} == 'i' ) {
+                $item_id = substr($dirty_item_id, 1);
+            }
+            // new items
+            else {
+                $item_id       = new_id();
+
+                //grabb slice_id of new item
+                $item_slice_id = substr($dirty_item_id, strpos($dirty_item_id, '_')+1);
+                // and add slice_id field to the item
+                $item_fields['slice_id________'] = array(pack_id($item_slice_id));
+            }
+            $id_trans_table[$dirty_item_id] = $item_id;
+
+            // now fill the ItemContent for each item and tepmorary store it into $this->_items[]
+            $item = new ItemContent();
+            $item->setItemID($item_id);
+
+            // join common fields (the specific fields win in the battle of common and specific content)
+            if ( isset($aa['all']) ) {
+                $item_fields = array_merge($aa['all'], $item_fields);
+            }
+            foreach ($item_fields as $dirty_field_id => $val_array) {
+                $flag          = $val_array['flag'] & FLAG_HTML;
+                $fld_value_arr = array();
+                foreach ( (array)$val_array as $key => $value ) {
+                    if (is_numeric($key)) {
+                        $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
+                    }
+                }
+                // create full_text......1 from full_text______1
+                $field_id = str_replace('._', '..', str_replace('__', '..', $dirty_field_id));
+                $item->setFieldValue($field_id, $fld_value_arr);
+            }
+            $this->_items[] = $item;
+        }
+        reset ($this->_items);
+    }
+
+
+    /** Function called by AA_Saver after we get the last item from the data
+     *  input
+     */
+    function finish()  {
+        $this->_items = array();
+    }
+}
+
 
 ?>

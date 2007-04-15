@@ -56,26 +56,41 @@ http://www.apc.org/
 
 $debugfill=$GLOBALS[debugfill];
 
-function Myaddslashes($val, $n=1) {
-  if (!is_array($val)) {
-    return addslashes($val);
-  }
-  for (reset($val); list($k, $v) = each($val); )
-    $ret[$k] = Myaddslashes($v, $n+1);
-  return $ret;
+// handle with PHP magic quotes - quote the variables if quoting is set off
+function AddslashesDeep($value) {
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
 }
 
+function StripslashesDeep($value) {
+    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
+}
+
+// global variables should be quoted (since old AA code rely on that fact), 
+// however the new code should use $_POST, which are NOT quoted 
+
 if (!get_magic_quotes_gpc()) {
-  // Overrides GPC variables
-  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
-      $$k = Myaddslashes($v);
+    // Overrides GPC variables
+    if (is_array($HTTP_GET_VARS)) {
+        foreach ($HTTP_GET_VARS as $k => $v) {
+            $$k = AddslashesDeep($v);
+        }
+    }
+    if (is_array($HTTP_POST_VARS)) {
+        foreach ($HTTP_POST_VARS as $k => $v) {
+            $$k = AddslashesDeep($v);
+        }
+    }
+    if (is_array($HTTP_COOKIE_VARS)) {
+        foreach ($HTTP_COOKIE_VARS as $k => $v) {
+            $$k = AddslashesDeep($v);
+        }
+    }
+}
+
+if ( get_magic_quotes_gpc() ) {
+    $_POST   = StripslashesDeep($_POST);
+    $_GET    = StripslashesDeep($_GET);
+    $_COOKIE = StripslashesDeep($_COOKIE);
 }
 
 /** APC-AA configuration file */
@@ -97,7 +112,7 @@ require_once AA_INC_PATH."date.php3";
 require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."sliceobj.php3";
-
+require_once AA_INC_PATH."grabber.class.php3";
 
 function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
@@ -158,6 +173,23 @@ function SendOkPage($txt) {
     }
 }
 
+// trap field for spammer bots
+if ( $answer )    {
+    SendErrorPage(array ("fatal"=>_m("Not allowed to post comments")));
+}
+
+// new version of filling - through aa[] array allowing multiple items to store
+//      aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
+//      aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
+if ( isset($_POST['aa']) ) {
+    $grabber = new AA_Grabber_Form();
+    $translations = null;
+    $saver        = new AA_Saver($grabber, $translations, null, 'insert_if_new', 'new');
+    $saver->run();
+    SendOkPage( array("success" => "insert" ));
+    exit;
+}
+
 //$debugfill=1;
 if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER");
 
@@ -165,10 +197,6 @@ if ($debugfill) huhl("DEBUGGING FILL PLEASE COME BACK LATER");
 //if ($debugfill) huhl("Filler: Globals=",$GLOBALS);
 if ( !$slice_id ) {
     SendErrorPage(array ("fatal"=>_m("Slice ID not defined")));
-}
-// trap field for spammer bots
-if ( $answer )    {
-    SendErrorPage(array ("fatal"=>_m("Not allowed to post comments")));
 }
 
 $slice      = AA_Slices::getSlice($slice_id);
