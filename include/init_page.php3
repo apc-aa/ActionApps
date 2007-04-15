@@ -68,6 +68,21 @@ if (!get_magic_quotes_gpc()) {
       $$k = Myaddslashes($v);
 }
 
+
+// global variables should be quoted (since old AA code rely on that fact),
+// however the new code should use $_POST and $_GET, which are NOT quoted
+
+function StripslashesDeep($value) {
+    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
+}
+
+if ( get_magic_quotes_gpc() ) {
+    $_POST    = StripslashesDeep($_POST);
+    $_GET     = StripslashesDeep($_GET);
+    $_COOKIE  = StripslashesDeep($_COOKIE);
+}
+
+
 if ($encap == "false")    // used in itemedit for anonymous form
   $encap = false;        // it must be here, because the variable is rewriten
                          // if the get_magic_quotes_gpc()==false (see above)
