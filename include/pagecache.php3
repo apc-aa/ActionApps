@@ -192,7 +192,16 @@ class PageCache  {
         // halting the operation.
 
         // writeLog('PAGECACHE', $cond, 'invalidate'); // for debug
+
         $keys = GetTable2Array("SELECT pagecache_id FROM pagecache_str2find WHERE str2find = '".quote($cond)."'", '', 'pagecache_id');
+
+        // invalidateById() is quite slow - mainly if we have to delete mor rows
+        // I do not know, how to make it quicker. I tried to refine the SQL
+        // command, but following SQL do not help either:
+        //
+        //   DELETE pagecache, pagecache_str2find FROM pagecache, pagecache_str2find
+        //    WHERE pagecache.id = pagecache_str2find.pagecache_id AND pagecache_str2find.str2find = '".quote($cond)."'";
+
         $this->invalidateById( $keys );
     }
 

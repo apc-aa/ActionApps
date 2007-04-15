@@ -273,7 +273,7 @@ class zids {
 
     // Return nth id, note there is no guarrantee what format this will be in, so its
     // only really useful for serialization or if type is checked as well
-    function id($idx) {
+    function id($idx=0) {
         return $this->a[$idx];
     }
 
@@ -347,14 +347,14 @@ class zids {
         // - don't ask me why, please. Honza
         return (($this->count() == 1) ? " $column = $id_list " : " $column IN ($id_list) ");
     }
-    
+
     function itemWhere($i) {
         if ( $this->use_short_ids() ) {
             return "item.short_id='". $this->a[$i]."'";
         }
         return "item.id=". $this->qq_packedids($i);
     }
-    
+
     /** Returns the slice id for the ids
      *  If items are from more than one slice, then it returns the random of them
      */
