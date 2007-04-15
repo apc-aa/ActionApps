@@ -806,7 +806,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
         if ( is_array($ids) ) {
             foreach ( $ids as $item_id ) {
                 if ( $item_id ) {
-                    $item = GetItemFromId(new zids($item_id));
+                    $item = AA_Item::getItem(new zids($item_id));
                     if ($item) {
                         $count++;
                         if ($expression) {
@@ -1514,7 +1514,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                       </div>";
             }
     */
-            $item        = GetItemFromId(new zids($item_id));
+            $item        = AA_Item::getItem(new zids($item_id));
             $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
             $repre_value = get_if($repre_value, '--');
             $iid         = $item->getItemID();

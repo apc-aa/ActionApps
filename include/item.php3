@@ -244,7 +244,7 @@ function GetFormatedItems( $sid, $format="",  $restrict_zids=false, $frombins=AA
     }
 
     $content = GetItemContent($zids);
-    $item    = new item('',$slice->aliases());
+    $item    = new AA_Item('',$slice->aliases());
     $item->setformat( $format );
     for ( $i=0; $i<$zids->count(); $i++ ) {
         $iid = $zids->short_or_longids($i);
@@ -291,7 +291,7 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
     }
 
     $content = GetConstantContent($zids);
-    $item    = new item();
+    $item    = new AA_Item();
     $format = $format ? $format : 'const_name';
     for ( $i=0; $i<$zids->count(); $i++ ) {
         $iid = $zids->short_or_longids($i);
@@ -299,17 +299,6 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
         $ret[$item->subst_alias('const_value')] = $item->subst_alias($format);
     }
     return $ret;
-}
-
-/** Creates item object just from item id and fills all necessary structures
- * @param         id        - an item id, unpacked or short
- *                          - could be also ZID - then $use_short_ids is ignored
- */
-function GetItemFromId($zid) {
-    if (isset($zid) && ($zid != "-")) {
-        return GetItemFromContent(new ItemContent($zid));
-    }
-    return false;
 }
 
 /** Creates item object just from item_content
@@ -321,10 +310,10 @@ function GetItemFromContent($content) {
     }
     // reuse slice, if possible
     $slice = AA_Slices::getSlice($content->getSliceID());
-    return new item($content->getContent(),$slice->aliases());
+    return new AA_Item($content->getContent(),$slice->aliases());
 }
 
-class item {
+class AA_Item {
     var $content4id;        // ItemContent array for this Item (like from GetItemContent)
     var $clean_url;      //
     var $format;         // format string with aliases
@@ -336,9 +325,9 @@ class item {
     *  @param $content4id could be ItemContent as well as zids as well as old
     *                     contentent array
     *
-    *  Take a look at GetItemFromId() above, if you want to create item from id
+    *  Take a look at AA_Item::getItem() below, if you want to create item from id
     */
-    function item($content4id='', $aliases='', $clean_url='', $format='', $remove='', $param=false){
+    function AA_Item($content4id='', $aliases='', $clean_url='', $format='', $remove='', $param=false){
         // there was three other options, but now it was never used so I it was
         // removed: $item_content, $top and $bottom (honzam 2003-08-19)
         $this->set_data($content4id);
@@ -1283,6 +1272,47 @@ class item {
         $remove = $this->remove;
         $out    = $this->unalias($out, $remove);
         return $out;
+    }
+
+    /** Static methods */
+
+    /** Item caching function
+     *
+     *  This function is used for cahcing all the items which we need during
+     *  page rendering. The main reason is, that we want to grab the item from
+     *  database just once during the page creation.
+     *
+     *  Creates item object just from item id and fills all necessary structures
+     *  @param  zid     - an item id - zid object, unpacked or short id
+     */
+    function getItem($zid) {
+        /** array of all items grabbed from database during rendering of the
+         *  page
+         */
+        static $_i;
+        /** translation table from long ids to short ones */
+        static $_l2s;
+
+        if (empty($zid)) {
+            return false;
+        }
+        $zid = (strtolower(get_class($zid))=='zids') ? $zid : new zids($zid);
+
+        // is it cached inder its id (we expect short id here)
+        if ( isset($_i[$zid->id(0)]) ) {
+            return $_i[$zid->id(0)];
+        }
+        // but maybe it is long id, so we look for translation to short one
+        if ( isset($_l2s[$zid->id(0)]) AND isset($_i[$_l2s[$zid->id(0)]]) ) {
+            return $_i[$_l2s[$zid->id(0)]];
+        }
+
+        // no cached - get it from database
+        $item                     = GetItemFromContent(new ItemContent($zid));
+        $short_id                 = $item->getval('short_id........');
+        $_i[$short_id]            = &$item;    // cache it
+        $_l2s[$item->getItemId()] = $short_id;
+        return $_i[$short_id];
     }
 };
 

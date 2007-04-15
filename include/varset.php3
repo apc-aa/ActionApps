@@ -393,20 +393,30 @@ class AA_Metabase {
     }
 
     function itemTableField($field_id) {
-        return get_if($this->item_translations[$field_id], false);
+        return empty($field_id) ? false : get_if($this->item_translations[$field_id], false);
     }
 
     function itemFields4Sql($fields2get) {
         $fields = array();
-        if ( is_array($fields2get) ) {
-            foreach ( $fields2get as $field_name ) {
-                if ($this->item_translations[$field_name]) {
-                    $fields[] = 'item.'. $this->item_translations[$field_name];
-                }
+        foreach ( (array)$fields2get as $field_name ) {
+            $item_field = $this->itemTableField($field_name);
+            if ( $item_field ) {
+                $fields[] = 'item.'. $item_field;
             }
         }
         return ( count($fields) < 1 ) ? 'item.*' : join(',', $fields);
     }
+
+    function nonItemFields($fields2get) {
+        $fields = array();
+        foreach ( (array)$fields2get as $field_name ) {
+            if ( !$this->itemTableField($field_name) ) {
+                $fields[] = $field_name;
+            }
+        }
+        return $fields;
+    }
+
 }
 
 ?>

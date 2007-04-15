@@ -717,7 +717,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
         case 'static':
             // $format = $view->getViewFormat();  // not needed now
             // I create a CurItem object so I can use the unalias function
-            $CurItem      = new item("", $als);
+            $CurItem      = new AA_Item("", $als);
             $formatstring = $view_info["odd"];          // it is better to copy format-
             $ret = $CurItem->unalias( $formatstring );  // string to variable - unalias
             trace("-");

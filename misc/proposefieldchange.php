@@ -32,17 +32,17 @@ require_once AA_INC_PATH."convert_charset.class.php3";
 error_reporting(E_ERROR | E_PARSE);
 
 class AA_V {
-    function P($var=null) {
+    function p($var=null) {
         AA_V::_unquote();
         return isset($var) ? $_POST[$var] : $_POST;
     }
 
-    function G($var=null) {
+    function g($var=null) {
         AA_V::_unquote();
         return isset($var) ? $_GET[$var] : $_GET;
     }
 
-    function C($var=null) {
+    function c($var=null) {
         AA_V::_unquote();
         return isset($var) ? $_COOKIE[$var] : $_COOKIE;
     }
@@ -50,16 +50,16 @@ class AA_V {
     function _unquote() {
         if (!$GLOBALS['magic_unquoted']) {
            if ( get_magic_quotes_gpc() ) {
-               $_POST   = AA_V::stripslashes_deep($_POST);
-               $_GET    = AA_V::stripslashes_deep($_GET);
-               $_COOKIE = AA_V::stripslashes_deep($_COOKIE);
+               $_POST   = AA_V::stripslashesDeep($_POST);
+               $_GET    = AA_V::stripslashesDeep($_GET);
+               $_COOKIE = AA_V::stripslashesDeep($_COOKIE);
             }
             $GLOBALS['magic_unquoted'] = true;
         }
     }
 
-    function stripslashes_deep($value) {
-        return is_array($value) ? array_map(array('AA_V','stripslashes_deep'), $value) : stripslashes($value);
+    function stripslashesDeep($value) {
+        return is_array($value) ? array_map(array('AA_V','stripslashesDeep'), $value) : stripslashes($value);
     }
 
 }
@@ -87,7 +87,7 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
 }
 
 function GetRepreValue($item_id, $field_id, $alias_name) {
-    $item        = GetItemFromId(new zids($item_id));
+    $item        = AA_Item::getItem(new zids($item_id));
     $repre_value = $alias_name ? $item->subst_alias('_#'.$alias_name) : $item->getval($field_id);
     return get_if($repre_value, '--');
 }
@@ -111,7 +111,7 @@ if ( AA_V::P('bsc') == 1 ) {
     echo "Upraveno $updated záznamù";
 }
 elseif (AA_V::P('form') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
-    $item        = GetItemFromId(new zids(AA_V::P('item_id')));
+    $item        = AA_Item::getItem(new zids(AA_V::P('item_id')));
     $iid         = $item->getItemID();
     $field_id    = AA_V::P('field_id');
     $fid         = unpack_id($field_id);
@@ -119,7 +119,28 @@ elseif (AA_V::P('form') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
 //    $widget_html = $item->getWidgetHtml($fid);
     $value       = safe($item->getval(AA_V::P('field_id')));
     $repre_value = safe(GetRepreValue(AA_V::P('item_id'), AA_V::P('field_id'), AA_V::P('alias_name')));
-    $ret         = "<input type=\"text\" size=\"80\" id=\"ajaxi_$combi_id\" value=\"$value\">";
+    switch ($item->getSliceId()."-".$field_id) {
+        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......1':
+        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......2':
+        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......3':
+        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......4':
+        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......5':
+        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......6':
+        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......7':
+        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......8':
+        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......9':
+            $widget = '<select id="ajaxi_'.$combi_id.'">
+                          <option value="1"'.(($value==1) ? ' selected' : '') .'>splnìno</option>
+                          <option value="2"'.(($value==2) ? ' selected' : '') .'>nesplnìno</option>
+                          <option value="3"'.(($value==3) ? ' selected' : '') .'>neutrální</option>
+                          <option value="4"'.(($value==4) ? ' selected' : '') .'>nehodnoceno</option>
+                          <option value="5"'.(($value==5) ? ' selected' : '') .'>informativní</option>
+                      </select>';
+            break;
+        default:
+            $widget = "<input type=\"text\" size=\"80\" id=\"ajaxi_$combi_id\" value=\"$value\">";
+    }
+    $ret         = $widget;
     $ret        .= "<input type=\"button\" value=\"ULOŽIT ZMÌNU\" onclick=\"proposeChange('$combi_id', '$iid', '$field_id', (typeof do_change == 'undefined') ? 1 : do_change)\">";
     $ret        .= "<input type=\"button\" value=\"storno\" onclick=\"$('ajaxv_$combi_id').update('".str_replace("'", "\\"."'", $repre_value )."'); $('ajaxv_$combi_id').setAttribute('aaedit', '0');\">";
     $ret        .= " <input type=\"hidden\" id=\"ajaxh_$combi_id\" value=\"$repre_value\">";

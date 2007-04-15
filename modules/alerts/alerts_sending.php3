@@ -323,7 +323,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
 
                     $reader_slice = $collection->getReaderSlice();
                     $aliases      = array_merge($reader_slice->aliases(), $als->getArray());
-                    $item         = new item($readerContent, $aliases);
+                    $item         = new AA_Item($readerContent, $aliases);
 
                     if ($GLOBALS['debug_email']) {
                         huhl("\n<br>send_mail_from_table_inner(".$collection->getEmailIdAlert().", ".$readerContent->getValue(FIELDID_EMAIL).", ...)");
@@ -346,7 +346,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
             $als->addTextAlias("_#UNSBFORM", alerts_con_url($collection->getSliceUrl(), "au=ABCDE&c=".$collection_id));
             $aliases = $als->getArray();
 
-            $item = new item('', $aliases);
+            $item = new AA_Item('', $aliases);
 
             foreach ( (array)$emails as $email ) {
                 if (send_mail_from_table_inner($collection->getEmailIdAlert(), $email, $item)) {

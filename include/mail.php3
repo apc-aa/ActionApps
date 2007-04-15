@@ -221,7 +221,7 @@ function send_mail_from_table($mail_id, $to, $aliases="") {
         // and "aliases"
         $als[$alias] = array ("fce"=>"f_h", "param"=>$alias);
     }
-    $item = new item($cols, $als);
+    $item = new AA_Item($cols, $als);
     return send_mail_from_table_inner($mail_id, $to, $item);
 }
 
@@ -232,7 +232,7 @@ function send_mail_from_table($mail_id, $to, $aliases="") {
 function send_mail_to_reader($mail_id, $zids, $recipient='aa_field_email') {
     $mail_count = 0;
     for ( $i=0; $i<$zids->count(); $i++) {
-        $item = GetItemFromId($zids->longids($i));
+        $item = AA_Item::getItem($zids->longids($i));
         $to   = (($recipient=='aa_field_email') ? $item->getval(FIELDID_EMAIL) : $recipient);
         $mail_count += send_mail_from_table_inner($mail_id, $to, $item);
     }

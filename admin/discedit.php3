@@ -135,7 +135,7 @@ $headline = getHeadline($content[$item_id]);
       <tr><td colspan=9>&nbsp;</td></tr>
 
 <?php
-$item = new item("",$aliases);
+$item = new AA_Item("",$aliases);
 $i = 0;
 if (!$outcome) {
     echo "<tr><td colspan=9 align=center class=tabtxt>". _m("No discussion comments") ."<br><br></td></tr>";

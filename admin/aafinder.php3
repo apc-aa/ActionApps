@@ -110,7 +110,7 @@ if ($go_findslice && $findslice) {
 }
 
 if ($go_finditem && $finditem) {
-    $item = GetItemFromId($finditem);
+    $item = AA_Item::getItem($finditem);
     echo "<pre>";
     print_r($item);
     echo "</pre>";

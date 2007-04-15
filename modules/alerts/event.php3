@@ -52,7 +52,7 @@ function AlertsSendWelcome( $slice_id, &$itemContent ) {
             $aliases["_#COLLFORM"] = GetAliasDef( "f_t:". alerts_con_url($mydb->f("slice_url"),"aw=".$itemContent->getValue(FIELDID_ACCESS_CODE)), "id..............");
             $aliases["_#HOWOFTEN"] = GetAliasDef( "f_h",  getAlertsField(FIELDID_HOWOFTEN, $mydb->f("id")));
             $aliases["_#CONFIRM_"] = GetAliasDef( "f_h",  FIELDID_MAIL_CONFIRMED);
-            $item  = new item($itemContent, $aliases);
+            $item  = new AA_Item($itemContent, $aliases);
 
             if ($mydb->f("emailid_welcome")) {
                 send_mail_from_table_inner($mydb->f("emailid_welcome"), $itemContent->getValue(FIELDID_EMAIL), $item);

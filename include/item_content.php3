@@ -598,7 +598,7 @@ class ItemContent {
                     $computed_field_exist = true;
                     // prepare item for computing
                     $slice = AA_Slices::getSlice($this->getSliceID());
-                    $item  = new item($this->getContent(),$slice->aliases());
+                    $item  = new AA_Item($this->getContent(),$slice->aliases());
                 }
 
                 // delete content just for this computed field

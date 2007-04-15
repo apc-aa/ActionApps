@@ -164,7 +164,7 @@ class AA_Transformation_Value extends AA_Transformation {
 
     function transform($field_id, &$content4id) {
         $slice = AA_Slices::getSlice($content4id->getSliceID());
-        $item = new item($content4id->getContent(),$slice->aliases());
+        $item = new AA_Item($content4id->getContent(),$slice->aliases());
 
         $text = $item->subst_alias($this->getParam('new_content'));
 
@@ -198,7 +198,7 @@ class AA_Transformation_Value extends AA_Transformation {
 
     function transform($field_id, &$content4id) {
         $slice = AA_Slices::getSlice($content4id->getSliceID());
-        $item = new item($content4id->getContent(),$slice->aliases());
+        $item = new AA_Item($content4id->getContent(),$slice->aliases());
 
         $text = $item->subst_alias($this->getParam('new_content'));
 
@@ -259,7 +259,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
 
     function transform($field_id, &$content4id) {
         $slice = AA_Slices::getSlice($content4id->getSliceID());
-        $item = new item($content4id->getContent(),$slice->aliases());
+        $item = new AA_Item($content4id->getContent(),$slice->aliases());
 
         switch ($this->new_flag) {
             case 'u': $flag = $item->getval($field_id, 'flag'); break;
@@ -349,7 +349,7 @@ class AA_Transformation_Translate extends AA_Transformation {
         }
 
         $slice = AA_Slices::getSlice($content4id->getSliceID());
-        $item = new item($content4id->getContent(),$slice->aliases());
+        $item = new AA_Item($content4id->getContent(),$slice->aliases());
 
         switch ($this->new_flag) {
             case 'u': $flag = $item->getval($field_id, 'flag'); break;

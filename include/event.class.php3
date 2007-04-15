@@ -191,7 +191,7 @@ class NewDiscussionCommentEvent {
             FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
         }
 
-        $CurItem = new item($columns, $aliases);
+        $CurItem = new AA_Item($columns, $aliases);
 
         // newer version based on email templates
         if ( $vid{0} == 't' ) {   // email template
@@ -284,7 +284,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
     $zids      = new zids($disc_id, 'l');
     $d_content = GetDiscussionContent($zids);
     $columns   = reset($d_content);  // get first element
-    $CurItem   = new item($columns, GetDiscussionAliases());
+    $CurItem   = new AA_Item($columns, GetDiscussionAliases());
 
     $mail = new HtmlMail;
     $mail->setFromTemplate($mail_id, $CurItem);
@@ -521,7 +521,7 @@ function SendFilledItem(&$ret_params, $email_template) {
     $send     = trim($ret_params->getValue('switch.........2'));
 
     if ($email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1'))) {
-        $item = GetItemFromId(new zids($short_id, 's'));
+        $item = AA_Item::getItem(new zids($short_id, 's'));
         return send_mail_from_table_inner($email_template, $email, $item) > 0;
     }
     return false;
@@ -553,12 +553,12 @@ function Event_ItemUpdated_Ekoinfocentrum( $type, $slice, $slice_type, &$ret_par
 }
 
 function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
-    $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
-    $akce_id  = trim($ret_params->getValue('unspecified.....'));              // akce_id
-    $email    = trim($ret_params->getValue('e_posted_by....1'));
+    $short_id  = $ret_params->getValue('short_id........');              // item's short_id is in params
+    $akce_id   = trim($ret_params->getValue('unspecified.....'));              // akce_id
+    $email     = trim($ret_params->getValue('e_posted_by....1'));
 
-    $item_akce = GetItemFromId(new zids($akce_id, 'l'));
-    $text     = trim($item_akce->getval('text...........7'));
+    $item_akce = AA_Item::getItem(new zids($akce_id, 'l'));
+    $text      = trim($item_akce->getval('text...........7'));
 
     if ($email AND $text) {
         return send_mail_from_table_inner(60, $email, $item_akce) > 0;
@@ -568,10 +568,10 @@ function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_pa
 
 function Event_ItemAfterInsert_NszmPruzkum( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
-    $email1    = trim($ret_params->getValue('address.........'));
-    $email2    = trim($ret_params->getValue('address........1'));
+    $email1   = trim($ret_params->getValue('address.........'));
+    $email2   = trim($ret_params->getValue('address........1'));
 
-    $item     = GetItemFromId(new zids($short_id, 's'));
+    $item     = AA_Item::getItem(new zids($short_id, 's'));
 
     if ($email1 OR $email2) {
         return send_mail_from_table_inner(63, array($email1, $email2), $item) > 0;

@@ -180,7 +180,7 @@ class inputform {
 //        debug( $form, $GLOBALS['contentcache']);
     //added for MLX
         // print the inputform
-        $CurItem = new item($content4id, $slice->aliases(), '', $form, $remove_string);   // just prepare
+        $CurItem = new AA_Item($content4id, $slice->aliases(), '', $form, $remove_string);   // just prepare
 
         $out = $CurItem->get_item();
 
