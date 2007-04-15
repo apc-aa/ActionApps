@@ -502,8 +502,13 @@ function debug() {
 
 // debug function for printing debug messages
 function huh($msg, $name="") {
-    //  if (! $GLOBALS['debug'] )
-    //    return;
+    global $debugtimes,$debugtimestart;
+    if ($debugtimes) {
+        if (! $debugtimestart) {
+            $debugtimestart = get_microtime();
+        }
+        print("Time: ".(get_microtime() - $debugtimestart)."\n");
+    }
     if ( @is_array($msg) OR @is_object($msg) ) {
         echo "<br>\n$name";
         print_r($msg);
@@ -1294,7 +1299,7 @@ class AA_Field {
 
     function getWidget() {
         if ( is_null($this->widget) ) {
-            
+
                 function setFromField(&$field) {
                 if (isset($field) AND is_array($field)) {
                     $this->id            = $field['id'];
@@ -1313,7 +1318,7 @@ class AA_Field {
                     }
                 }
             }
-            
+
             $this->widget = &AA_Widget::factory($somethinnnnng); // @todo
         }
     }
@@ -1759,8 +1764,6 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
 */
 function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
-    trace("+","GetItemContent",$zids);
-
     $db = getDB();
 
     // construct WHERE clause
@@ -1783,8 +1786,9 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         if ( !$ignore_reading_password AND !in_array('slice_id........', $fields2get) ) {
             $item_sql_fields[] = 'slice_id........';
         }
-        $metabase = new AA_Metabase();
-        $item_fields = $metabase->itemFields4Sql($item_sql_fields);
+        $metabase       = new AA_Metabase();
+        $item_fields    = $metabase->itemFields4Sql($item_sql_fields);
+        $content_fields = $metabase->nonItemFields($fields2get);
     } else {
         $item_fields = 'item.*';
     }
@@ -1842,11 +1846,17 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         $sel_in = (count($translate) > 1) ? " IN ( $new_sel_in ) " : " = $new_sel_in ";
     }
 
-    if ( isset( $fields2get ) AND is_array( $fields2get ) AND (count($fields2get)>0 )) {
-        $restrict_field = join( "','", $fields2get );
-        $restrict_cond  = (count($fields2get) > 1) ?
-                       " AND field_id IN ( '". $restrict_field ."' ) " :
-                       " AND field_id = '$restrict_field' ";
+    if ( isset( $fields2get ) AND is_array( $fields2get ) ) {
+        switch ( count($content_fields) ) {
+            case 0:  // we want just some item fields
+                     $restrict_cond = '1=0';
+                     break;
+            case 1:
+                     $restrict_cond = " AND field_id = '". reset($content_fields) ."' ";
+                     break;
+            default:
+                     $restrict_cond = " AND field_id IN ( '". join( "','", $content_fields ) ."' ) ";
+        }
     }
 
     // get content from content table
@@ -1854,26 +1864,30 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     // feeding - don't worry about it - when fed item is updated, informations
     // in content table is updated too
 
-    $SQL = "SELECT * FROM content
-             WHERE item_id $sel_in $restrict_cond
-             ORDER BY content.number"; // usable just for constants
+    // do we want any content field?
+    if ( $restrict_cond != '1=0' ) {
 
-    $db->tquery($SQL);
+        $SQL = "SELECT * FROM content
+                 WHERE item_id $sel_in $restrict_cond
+                 ORDER BY content.number"; // usable just for constants
 
-    while ( $db->next_record() ) {
+        $db->tquery($SQL);
 
-        $fooid = ($use_short_ids ? $translate[unpack_id128($db->f("item_id"))] :
-                                   unpack_id128($db->f("item_id")) );
+        while ( $db->next_record() ) {
 
-        if ( !$item_permitted[$db->f("item_id")] ) {
-            $content[$fooid][$db->f("field_id")][0] = array( "value" => _m("Error: Missing Reading Password"));
-            continue;
+            $fooid = ($use_short_ids ? $translate[unpack_id128($db->f("item_id"))] :
+                                       unpack_id128($db->f("item_id")) );
+
+            if ( !$item_permitted[$db->f("item_id")] ) {
+                $content[$fooid][$db->f("field_id")][0] = array( "value" => _m("Error: Missing Reading Password"));
+                continue;
+            }
+
+            // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
+            $db_field = ( ($db->f("text")!="") OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
+            $content[$fooid][$db->f("field_id")][] = array( "value" => $db->f($db_field),
+                                                            "flag"  => $db->f("flag") );
         }
-
-        // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-        $db_field = ( ($db->f("text")!="") OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
-        $content[$fooid][$db->f("field_id")][] = array( "value" => $db->f($db_field),
-                                                        "flag"  => $db->f("flag") );
     }
 
     // add special fields to all items (zids)
@@ -1886,7 +1900,6 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     }
 
     freeDB($db);
-    trace("-");
     return $content;   // Note null returned above if no items found
 }
 

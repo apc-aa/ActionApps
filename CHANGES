@@ -1,3 +1,26 @@
+04/15/07 - new version of filling items from form - through aa[] array allowing 
+(honzam)   multiple items to store at once. The format of the data is followiing
+                 aa[i<long_item_id>][modified_field_id][]
+           Note:
+           First brackets contain
+              'i'+long_item_id when item is edited or
+              'n<number>_long_slice_id' if you want to add the item to slice_id
+                                        <number> is used to add more than one
+                                        item at the time
+              modified_field_id is field_id, where all dots are replaced by '_'
+              we always add [] at the end, so it becames array at the end
+           Example:
+              aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
+              aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
+         - new AA_Item class which is able to cache items during page display. 
+           It should reduce number of SQL queries during page creation 
+         - more time informations on SQL queries for debugtime option 
+         - new class AA_Includer which will automatically include required class
+           definitions (user defined actions/functions) for you in the future 
+           (not finished, yet).
+         - some query optimalization for GetItemContent()
+         - make sure that $_GET, _$POST, $_COOKIES are always unquoted 
+           (check in init_page.php3)
 03/29/07 - increased max size of val field in active_sessions (to mediumtext)
 (brazda)
 03/06/07 - new {formbreaktop:...} and {formbreakbottom:...} commands for
