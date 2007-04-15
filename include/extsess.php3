@@ -31,6 +31,13 @@ class DB_AA extends DB_Sql {
     }
 
     function dquery($SQL) {
+        global $debugtimes,$debugtimestart;
+        if ($debugtimes) {
+            if (! $debugtimestart) {
+                $debugtimestart = get_microtime();
+            }
+            echo "\n<br>Time: ".(get_microtime() - $debugtimestart)."\n";
+        }
         echo "<br>".htmlentities($SQL);
 
         $SelectQuery = (strpos( " ".$SQL, "SELECT") == 1);
@@ -62,7 +69,7 @@ class DB_AA extends DB_Sql {
     function query_nohalt($SQL) {
         $store_halt          = $this->Halt_On_Error;
         $this->Halt_On_Error = 'no';
-        $retval              = $this->query($SQL);
+        $retval              = $this->dquery($SQL);
         $this->Halt_On_Error = $store_halt;
         return $retval;
     }
@@ -138,10 +145,10 @@ class AA_CP_Session extends Session {
     var $cookiename     = "";                // defaults to classname
     var $magic          = "adwetdfgyr";      // ID seed
     var $mode           = "get";          // We propagate session IDs via cookie method
-    // we still can't use cookie, since it is still not possible (or at least 
-    // recommended) to use two windows with the same session ID - we do not 
-    // store there only the session ID, but also slice_id, ... so it is possible 
-    // to mix the data.    
+    // we still can't use cookie, since it is still not possible (or at least
+    // recommended) to use two windows with the same session ID - we do not
+    // store there only the session ID, but also slice_id, ... so it is possible
+    // to mix the data.
     //    var $mode           = "cookie";          // We propagate session IDs via cookie method
     var $fallback_mode  = "get";             // If cookie not possible, then via get method
     var $lifetime       = 0;                 // 0 = do session cookies, else minutes

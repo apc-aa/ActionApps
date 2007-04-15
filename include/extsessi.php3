@@ -30,6 +30,13 @@ class DB_AA extends DB_Sql {
     }
 
     function dquery($SQL) {
+        global $debugtimes,$debugtimestart;
+        if ($debugtimes) {
+            if (! $debugtimestart) {
+                $debugtimestart = get_microtime();
+            }
+            echo "\n<br>Time: ".(get_microtime() - $debugtimestart)."\n";
+        }
         echo "<br>".htmlentities($SQL);
 
         $SelectQuery = (strpos( " ".$SQL, "SELECT") == 1);
@@ -61,7 +68,7 @@ class DB_AA extends DB_Sql {
     function query_nohalt($SQL) {
         $store_halt          = $this->Halt_On_Error;
         $this->Halt_On_Error = 'no';
-        $retval              = $this->query($SQL);
+        $retval              = $this->dquery($SQL);
         $this->Halt_On_Error = $store_halt;
         return $retval;
     }
