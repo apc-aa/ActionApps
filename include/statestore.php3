@@ -29,6 +29,29 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+/** AA_Includer manages php scripts includes.
+ *
+ *  The class holds the in the static variable the pair "class" => "file"
+ *  so if you then call AA_Includer::include($classname), then the file
+ *  with the class definition is processed (required)
+ */
+
+class AA_Includer {
+
+    /** function simulates static class data (since php4 do not support
+     *  class variables
+     */
+    function manage($action) {
+
+    }
+
+    function weNeed($classname) {
+
+    }
+
+}
+
+
 /**
  * storable_class - abstract class which implements methods for storing and
  * restoring class data (used in searchbar class, manager class, ...).
@@ -318,7 +341,13 @@ class AA_Object extends storable_class {
     }
 
     function &factory($classname, $params=null) {
-        return class_exists($classname) ? new $classname($params) : null;
+        if ( class_exists($classname) ) {
+            return new $classname($params);
+        }
+        if ( AA_Includer::weNeed($classname) ) {
+            return new $classname($params);
+        }
+        return null;
     }
 
     function &factoryByName($mask, $name, $params=null) {
