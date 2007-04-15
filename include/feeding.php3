@@ -31,7 +31,7 @@ function GetFieldMapping($from_slice_id, $destination_id) {
 
     $tmpobj = AA_Slices::getSlice($from_slice_id);
     $tmpobj1 = $tmpobj->getFields();
-    $fields_from = $tmpobj1->getRecordArray(); 
+    $fields_from = $tmpobj1->getRecordArray();
 
     $tmpobj = AA_Slices::getSlice($destination_id);
     $tmpobj1 = $tmpobj->getFields();
@@ -249,7 +249,7 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
             case FEEDMAP_FLAG_VALUE :
                 // create item from source data (in order we can unalias)
                 if ( !$item2fed ) {
-                    $item2fed = new item($content4id, $fields->getAliases());
+                    $item2fed = new AA_Item($content4id, $fields->getAliases());
                 }
                 $new4id[$newfld][0]['value'] = $item2fed->unalias($val);
                 break;
