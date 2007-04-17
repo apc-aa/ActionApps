@@ -162,7 +162,7 @@ function shtml_query_string() {
                             substr($REQUEST_URI, strpos($REQUEST_URI, '?')+1) :
                   ( isset($REDIRECT_QUERY_STRING_UNESCAPED)    ?
                             $REDIRECT_QUERY_STRING_UNESCAPED :
-                            $QUERY_STRING_UNESCAPED );
+                            stripslashes($QUERY_STRING_UNESCAPED) );
     // get off magic quotes
     return magic_strip($ret_string);
 }
@@ -2243,7 +2243,7 @@ function is_field_type_numerical ($field_type) {
 
 // -----------------------------------------------------------------------------
 /** Copies rows within a table changing only given columns and omitting given columns.
-*   @author Jakub Adámek
+*   @author Jakub Adï¿½ek
 *	@return bool  true if all additions succeed, false otherwise
 *
 *   @param string $table    table name
