@@ -174,7 +174,7 @@ class AA_CP_Session extends Session {
             if (isset($HTTP_GET_VARS[$this->name])) {
                 $this->mode = $this->fallback_mode;
             } else {
-                header("Status: 302 Moved Temporarily");
+                header("HTTP/1.1 Status: 302 Moved Temporarily");
                 $this->get_id($sid);
                 $this->mode = $this->fallback_mode;
                 if (isset($HTTPS) && $HTTPS == 'on') {
