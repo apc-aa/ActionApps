@@ -78,7 +78,7 @@ function go_url($url, $add_param="", $usejs=false) {
         </script>
        ';
     } else {
-        header("Status: 302 Moved Temporarily");
+        header("HTTP/1.1 Status: 302 Moved Temporarily");
         header("Location: $url");
     }
     exit;
