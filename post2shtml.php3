@@ -42,7 +42,7 @@
  *
  * @package UserInput
  * @version $Id$
- * @author Jakub Adámek, Econnect, December 2002
+ * @author Jakub Adï¿½ek, Econnect, December 2002
  * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
 */
 /*
@@ -105,7 +105,7 @@ function store_vars ()
         VALUES ('$id', '$vars', ".time().")");
     freeDB($db);
     if ($shtml_page) {
-        header("Status: 302 Moved Temporarily");
+        header("HTTP/1.1 Status: 302 Moved Temporarily");
         $shtml_page = stripslashes ($shtml_page);
         $shtml_page .= (strchr ($shtml_page,"?") ? "&" : "?") . "post2shtml_id=$id";
         if ($debugfill) huhl("post2shtml:Location=$shtml_page");
