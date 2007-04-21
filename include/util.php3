@@ -161,7 +161,7 @@ function shtml_query_string() {
     $ret_string = ($REQUEST_URI AND strpos($REQUEST_URI, '?')) ?
                             substr($REQUEST_URI, strpos($REQUEST_URI, '?')+1) :
                   ( isset($REDIRECT_QUERY_STRING_UNESCAPED)    ?
-                            $REDIRECT_QUERY_STRING_UNESCAPED :
+                            stripslashes($REDIRECT_QUERY_STRING_UNESCAPED) :
                             stripslashes($QUERY_STRING_UNESCAPED) );
     // get off magic quotes
     return magic_strip($ret_string);
