@@ -72,80 +72,80 @@ if ( !defined('DB_NAME') ) {
 require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 
-store_vars ();
+store_vars();
 
 // Store variables, set $GLOBALS[post2shtml_id] or generate Location header
-function store_vars ()
-{
+function store_vars() {
     global $shtml_page;
-    if ($GLOBALS[debugfill]) huhl("post2html:store_vars:$shtml_page:");
+    if ($GLOBALS['debugfill']) huhl("post2html:store_vars:$shtml_page:");
 
     $vars = array (
-        "post" => &$GLOBALS["HTTP_POST_VARS"],
-        "get" => &$GLOBALS["HTTP_GET_VARS"],
-        "files" => &$GLOBALS["HTTP_POST_FILES"],
-        "cookie" => &$GLOBALS["HTTP_COOKIE_VARS"]);
+        "post"   => &$_POST,
+        "get"    => &$_GET,
+        "files"  => &$_FILES,
+        "cookie" => &$_COOKIE);
 
-    reset ($vars);
-    while (list ($key) = each ($vars)) {
+    foreach ($vars as $key => $foo) {
         $var = &$vars[$key];
         if (is_array($var["md5"])) {
-            md5_array ($var["md5"]);
-            add_var2 ($var["md5"], $var);
-            unset ($var["md5"]);
+            md5_array($var["md5"]);
+            add_var2($var["md5"], $var);
+            unset($var["md5"]);
         }
     }
 
-    $vars = addslashes (serialize ($vars));
+    $vars = addslashes( serialize($vars) );
 
     $id = new_id();
     $db = getDB();
-    $db->query("
-        INSERT INTO post2shtml (id, vars, time)
-        VALUES ('$id', '$vars', ".time().")");
+    $db->query("INSERT INTO post2shtml (id, vars, time) VALUES ('$id', '$vars', ".time().")");
     freeDB($db);
     if ($shtml_page) {
-        header("HTTP/1.1 Status: 302 Moved Temporarily");
-        $shtml_page = stripslashes ($shtml_page);
+        $shtml_page  = stripslashes($shtml_page);
         $shtml_page .= (strchr ($shtml_page,"?") ? "&" : "?") . "post2shtml_id=$id";
-        if ($debugfill) huhl("post2shtml:Location=$shtml_page");
+        header("HTTP/1.1 Status: 302 Moved Temporarily");
+        header("Status: 302 Moved Temporarily");
         header("Location: $shtml_page");
     }
-    else $GLOBALS["post2shtml_id"] = $id;
+    else {
+        $GLOBALS["post2shtml_id"] = $id;
+    }
 }
 
-function md5_array (&$array) {
+function md5_array(&$array) {
     // uses crypt() instead of md5() - Change by honza 06/19/2003 (see top)
     if (is_array($array)) {
-        reset ($array);
-        while (list ($key) = each ($array))
-            md5_array ($array[$key]);
+        foreach ($array as $key => $foo) {
+            md5_array($array[$key]);
+        }
     }
-    else if ($array)
+    elseif ($array) {
         $array = crypt( $array, 'xx');
+    }
 }
 
 /** Adds all values from the $source array to the $dest array. Follows all paths
 * in order that all values present in $dest and not in $source are kept.
 */
-function add_var2 (&$source, &$dest) {
+function add_var2(&$source, &$dest) {
     if (is_array($source)) {
-        reset ($source);
-        while (list ($key) = each ($source))
-            add_var3 ($key, $source[$key], $dest);
+        foreach ($source as $key => $foo) {
+            add_var3($key, $source[$key], $dest);
+        }
     }
 }
 
 /** Recursively adds all values from the $source array to the $dest array. Follows all paths
 * in order that all values present in $dest and not in $source are kept.
 */
-function add_var3 ($varname, &$source, &$dest) {
+function add_var3($varname, &$source, &$dest) {
     if (is_array($source)) {
-        reset ($source);
-        while (list ($key) = each ($source))
-            add_var3 ($key, $source[$key], $dest[$varname]);
+        foreach ($source as $key => $foo) {
+            add_var3($key, $source[$key], $dest[$varname]);
+        }
     }
-    else if (isset ($source))
+    elseif (isset ($source)) {
         $dest[$varname] = $source;
+    }
 }
 ?>
