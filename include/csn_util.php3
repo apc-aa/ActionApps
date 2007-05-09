@@ -1,22 +1,28 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once AA_INC_PATH."searchlib.php3";
@@ -40,8 +46,11 @@ define( 'UNPACKED_AA_OTHER_CATEGOR', unpack_id128('AA_Other_Categor') );
 $CONTENT_FORMATS = array("http://www.isi.edu/in-notes/iana/assignments/media-types/text/html" => HTML,
                          "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain"=> PLAIN);
 
-/** Each slice can use different character encoding. The encoding is based on
+/** getSliceEncoding function
+ *   Each slice can use different character encoding. The encoding is based on
  *  selected language for the slice
+ * @param $slice_id
+ * @return string encoding
  */
 function getSliceEncoding($slice_id) {
     $db = getDB();
@@ -58,10 +67,12 @@ function getSliceEncoding($slice_id) {
 }
 
 
-/** Get categories from table ef_categories
+/** GetExternalCategories function
+ *  Get categories from table ef_categories
  *  ef_categories is used only for APC type of feedin (APC RSS) and the change
  *  would by tricky, since there could unfortunatelly be two feeds with the same
  *  id (one APC and one other RSS)
+ *  @param $feed_id
  *  @param $add_other - if there are external categories it will add default
  *                      (AA_Other_Categor) category to the array (if not present
  *                      already
@@ -89,8 +100,10 @@ function GetExternalCategories($feed_id, $add_other=false) {
     return $ext_categs;
 }
 
-/** Returns true if filters are set for 'All categories' option
+/** UseAllCategoriesOption
+ *  Returns true if filters are set for 'All categories' option
  *  (and not separately for each category)
+ * @param $ext_categs (by link)
  */
 function UseAllCategoriesOption( &$ext_categs ) {
     foreach ( $ext_categs as $k => $v ) {
@@ -102,9 +115,12 @@ function UseAllCategoriesOption( &$ext_categs ) {
 }
 
 
-/** Get external mapping from remote slice to local slice = returns two array
+/** GetExternalMapping function
+ *  Get external mapping from remote slice to local slice = returns two array
  *  map_to = from_field_id -> from_field_name  (but just for fields with flag = FEEDMAP_FLAG_MAP
  *  map_from = to_field_id -> { feedmap_flag => flag, value => from_field_id|value, from_field_name
+ *  @param $l_slice_id
+ *  @param $r_slice_id
  */
  function GetExternalMapping($l_slice_id, $r_slice_id) {
      global $db;
@@ -130,7 +146,11 @@ function UseAllCategoriesOption( &$ext_categs ) {
      return array($map_to,$map_from);
  }
 
-/** Returns first field id of specified type */
+/** GetBaseFieldId function
+ * Returns first field id of specified type
+ * @param $fields (by link)
+ * @param $ftype
+ */
 function GetBaseFieldId( &$fields, $ftype ) {
     $no = 10000;
     if ( isset($fields) AND is_array($fields) ) {
@@ -146,8 +166,10 @@ function GetBaseFieldId( &$fields, $ftype ) {
 }
 
 
-/** Returns Category definitions for specified slice
+/** GetGroupConstants function
+ *  Returns Category definitions for specified slice
  *  $cat[<unpacked_id>] = array( 'name'=> , 'value'=> 'parent_id'=> );
+ *  @param $slice_id
  */
 function GetGroupConstants($slice_id) {
     global $db;
@@ -165,7 +187,11 @@ function GetGroupConstants($slice_id) {
     }
     return $cat_ids;
 }
-
+/** MapDefaultCategory function
+ * @param $categories (by link)
+ * @param $value
+ * @param $parent_id
+ */
 function MapDefaultCategory(&$categories, $value, $parent_id) {
     // try to find the same category
     foreach ( $categories as $to_id => $v) {
@@ -183,7 +209,9 @@ function MapDefaultCategory(&$categories, $value, $parent_id) {
     reset($categories);
     return key($categories);
 }
-
+/** unixstamp_to_iso8601 function
+ * @param $t
+ */
 function unixstamp_to_iso8601($t) {
     $tz=date("Z", $t)/60;
     $tm=$tz % 60;
@@ -202,11 +230,17 @@ function unixstamp_to_iso8601($t) {
 // It seems to be better to use strtotime() function instead custom parsing as
 // it supports also RFC-822 date time (e.g. "Fri, 30 Jun 2006 00:00:00 +0200")
 // used in rss feeds.
+/** iso8601_to_unixstamp function
+ * @param $t
+ */
 function iso8601_to_unixstamp($t) {
     return strtotime($t);
 }
 
 // TODO: remove this renamed function
+/** iso8601_to_unixstamp_old function
+ * @param $t
+ */
 function iso8601_to_unixstamp_old($t) {
     preg_match("~([0-9]{4})-([0-9]{2})-([0-9]{2})[T ]([0-9]{2})\:([0-9]{2})\:([0-9]{2})(\+|\-)([0-9]{2})\:([0-9]{2})~", $t, $r);
     $tz = (int)$r[8]*3600+$r[9]*60;
@@ -232,11 +266,14 @@ $DEFAULT_RSS_MAP = array (
         "hl_href........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"ITEM/link|ITEM/guid","from_field_name"=>"ITEM:link"),
         "expiry_date....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),"from_field_name"=>"Expiry Date")
     );
-
-// This function converts an attribute string to a unique id,
-// this function must: always return the same result; and not contain 00 or 27
-// the tricky part is that APC attribute strings contain a prefix and 32 digits, while
-// non APC strings need the whole string hashed.
+/** attr2id function
+ * @param $str
+ *
+ * This function converts an attribute string to a unique id,
+ * this function must: always return the same result; and not contain 00 or 27
+ * the tricky part is that APC attribute strings contain a prefix and 32 digits,
+ * while non APC strings need the whole string hashed.
+ */
 function attr2id($str) {
     if (preg_match("~/(items|cat|slices)/([0-9a-f]{32})~",$str,$regs)) { // Looks like an APC id
         return $regs[2]; // Maybe this should be 0 ?
@@ -244,7 +281,10 @@ function attr2id($str) {
         return(string2id($str));
     }
 }
-
+/** name2rssfeed function
+ * @param $slice_id
+ * @param $name
+ */
 function name2rssfeed($slice_id,$name) {
     $db = getDB();
     $db->query("SELECT * FROM rssfeeds WHERE name='$name' AND slice_id = '".q_pack_id($slice_id)."'");
@@ -257,7 +297,10 @@ function name2rssfeed($slice_id,$name) {
     return $res;
 }
 
-/** Translates feed type number to human readable name (1 -> RSS, ...) */
+/** getFeedTypeName function
+ *  Translates feed type number to human readable name (1 -> RSS, ...)
+ * @param $type
+ */
 function getFeedTypeName($type) {
     return (($type == 1) ? 'RSS' : (($type == 2) ? 'APC' : 'EXACT'));
 }
@@ -269,12 +312,17 @@ function GetXml_GetContent(&$zids) {
 
 class LastEditList {
     var $lastlist = null;
-
+    /** lastEditList function
+     *
+     */
     function LastEditList() {
     }
 
-    /** return list of items with last_edit date (id-last_edit,) used for 'exact'
+    /** setFromSlice function
+     *  return list of items with last_edit date (id-last_edit,) used for 'exact'
      *  feeding between slices
+     *  @param $conds
+     *  @param $slice (by link)
      */
     function setFromSlice($conds, &$slice) {
         ParseEasyConds($conds);
@@ -289,20 +337,28 @@ class LastEditList {
                                            'GetXml_GetContent');
         $this->lastlist = $itemview->get_output_cached("view");
     }
-
+    /** setList function
+     * @param $list
+     */
     function setList($list) {
         $this->lastlist = $list;
     }
-
+    /** printList function
+     *
+     */
     function printList() {        // print() can't be name of the method :-( -
         echo $this->lastlist;     // parse error, unexpected T_PRINT, expecting
     }                             // T_STRING (php 4.3.10),
                                   // so I postfixed all functions with *List :-(
-
+    /** getList function
+     *
+     */
     function getList() {
         return $this->lastlist;
     }
-
+    /** getPairs function
+     *
+     */
     function getPairs() {
         $ret = array();
         foreach (explode(',', $this->lastlist) as $pair) {

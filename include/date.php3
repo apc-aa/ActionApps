@@ -1,24 +1,29 @@
-<?php // -*-mode: Fundamental; tab-width: 4; -*-
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+<?php
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Jiri Hejsek
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
 // javascript.php3 defines getTriggers, which is used by Add / Edit item page
 require_once AA_INC_PATH."javascript.php3";
 
@@ -39,8 +44,15 @@ class datectrl {
   var $from_now;        // year range is in relation to today's date/selected date
   var $display_time;    // display time too
 
-    // constructor
-    // name identifies control on a form
+    /** datectrl function
+     *  constructor
+     *  name identifies control on a form
+     * @param $name
+     * @param $y_range_minus = 5
+     * @param $y_range_plus = 5
+     * @param $from_now = false
+     * @param $display_time = false
+     */
     function datectrl($name, $y_range_minus=5, $y_range_plus=5, $from_now=false,
                     $display_time=false) {
         $this->name = $name;
@@ -50,25 +62,33 @@ class datectrl {
         $this->display_time = $display_time;
         $this->update();
     }
-
-    // process form data
+    /** update function
+     * process form data
+     */
     function update() {
         $timevar  = chop($GLOBALS["tdctr_" . $this->name . "_time"]);
         $dayvar   = chop($GLOBALS["tdctr_" . $this->name . "_day"]);
         $monthvar = chop($GLOBALS["tdctr_" . $this->name . "_month"]);
         $yearvar  = chop($GLOBALS["tdctr_" . $this->name . "_year"]);
-        if ( $timevar )
+        if ( $timevar ) {
             $this->time = $timevar;
-        if ( $dayvar)
+        }
+        if ( $dayvar) {
             $this->day = $dayvar;
-        if ( $monthvar )
+        }
+        if ( $monthvar ) {
             $this->month = $monthvar;
-        if ( $yearvar )
+        }
+        if ( $yearvar ) {
             $this->year = $yearvar;
+        }
         return ( $timevar OR $dayvar OR $monthvar OR $yearvar );
     }
 
-    // set date, format form db
+    /** setdate function
+     *  set date, format form db
+     * @param $date
+     */
     function setdate($date) {
         if (ereg("([[:digit:]]{4}) *- *([[:digit:]]{1,2}) *- *([[:digit:]]{1,2}) *(.*$)",
                 $date, $regs)) {
@@ -82,7 +102,10 @@ class datectrl {
         return "";
     }
 
-    // set date, format form integer
+    /** setdate_int function
+     *  set date, format form integer
+     * @param $date
+     */
     function setdate_int($date) {
         $d           = is_numeric($date) ? getdate($date) : getdate();
         $this->year  = $d["year"];
@@ -91,7 +114,9 @@ class datectrl {
         $this->time  = $d["hours"].":".$d["minutes"].":".$d["seconds"] ;
     }
 
-    // get stored date as integer
+    /** get_date function
+     *  get stored date as integer
+     */
     function get_date() {
         // time is not set ?
         if (!$this->year) {
@@ -103,16 +128,25 @@ class datectrl {
         return mktime ($t[0],$t[1],$t[2],(int)$this->month,(int)$this->day,(int)$this->year);
     }
 
-    // get stored date as integer
+    /** get_datestring function
+     *  get stored date as integer
+     */
     function get_datestring() {
         return  $this->day. " - ". $this->month." - ".$this->year." ". $this->time;
     }
 
-    // check if date is valid and possibly set date to "default" value if it is
-    // not required and default value is specified
+    /** ValidateDate function
+     *  check if date is valid and possibly set date to "default" value if it is
+     *  not required and default value is specified
+     * @param $inputName
+     * @param $err
+     * @param $required = true
+     * @param $default = '0'
+     */
     function ValidateDate($inputName, &$err, $required=true, $deafult='0')  {
-        if (( $this->get_date() > 0  ) OR ($this->get_date()==-3600))
+        if (( $this->get_date() > 0  ) OR ($this->get_date()==-3600)) {
             return true;
+        }
         if ($required) {
             $err[$this->name] = MsgErr(_m("Error in")." $inputName");
             return false;
@@ -121,7 +155,10 @@ class datectrl {
         return (( $this->get_date() > 0  ) OR ($this->get_date()==-3600));
     }
 
-    // print select box for day
+    /** getdayselect function
+     * print select box for day
+     * @return string
+     */
     function getdayselect() {
         $at = getdate(time());
         $sel =  ($this->day != 0 ? $this->day : $at["mday"]);
@@ -131,7 +168,10 @@ class datectrl {
         return "<select name=\"tdctr_" . $this->name . "_day\"".getTriggers("select",$this->name).">$ret</select>";
     }
 
-    // print select box for month
+    /** getmonthselect function
+     * print select box for month
+     * @return string
+     */
     function getmonthselect() {
         $L_MONTH = monthNames();
         $at = getdate(time());
@@ -143,7 +183,10 @@ class datectrl {
         return "<select name=\"tdctr_" . $this->name . "_month\"".getTriggers("select",$this->name).">$ret</select>";
     }
 
-    // print select box for year
+    /** getyearselect function
+     * print select box for year
+     * @return string
+     */
     function getyearselect() {
         $at = getdate(time());
         $from = ( $this->from_now ? $at["year"] - $this->y_range_minus :
@@ -168,11 +211,14 @@ class datectrl {
         return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">$ret</select>";
     }
 
-    // print select box for time
+    /** gettimeselect function
+     * print select box for time
+     * @return string
+     */
     function gettimeselect() {
     switch( $this->display_time ) {
       case 2:   //display time as is - hour:minutes:seconds
-              return "<input type=text name=\"tdctr_". $this->name ."_time\"
+              return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"
                      value=\"". safe($this->time) ."\" size=8 maxlength=8>";
       case 1:   //display time as hour:minutes - if time is 00:00, it shows nothing
       case 3:   //display time as hour:minutes
@@ -185,23 +231,36 @@ class datectrl {
               $timestr = $t[0] .":". $t[1];
               if ( ($this->display_time == 1) AND ($timestr == "00:00") )
                 $timestr = "";
-              return "<input type=text name=\"tdctr_". $this->name ."_time\"
-                     value=\"". safe($timestr). "\" size=8 maxlength=8".getTriggers("input",$this->name).">";
+              return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"
+                     value=\"". safe($timestr). "\" size=\"8\" maxlength=\"8\"".getTriggers("input",$this->name).">";
     }
     return "";
     }
 
-    // print complete date control
+    /** getselect function
+     * print complete date control
+     * @return string
+     */
     function getselect () {
         return $this->get_datestring().$this->getdayselect(). $this->getmonthselect(). $this->getyearselect(). $this->gettimeselect();
     }
 
-    // print complete date control
+    /** pselect function
+     * print complete date control
+     * @return string
+     */
     function pselect () {
         echo $this->getselect();
     }
 }
-
+/** datum function
+ * @param $name
+ * @param $val
+ * @param $y_range_minus = 5
+ * @param $y_range_plus = 5
+ * @param $from_now = false
+ * @param $display_time = false
+ */
 function datum($name, $val, $y_range_minus=5, $y_range_plus=5, $from_now=false,
                $display_time=false) {
     $dc = new datectrl($name, $y_range_minus, $y_range_plus, $from_now, $display_time);

@@ -2,29 +2,31 @@
 /**
  * Form displayed in popup window sending emails to user/group_of_users
  *
- * @version $Id$
- * @author Honza Malik <honza.malik@ecn.cz>
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Jakub Adamek, Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
  * @param $items[] - OLD VERSION : array of selected users (in reader management slice)
  * @param $chb[] - array of selected users (in reader management slice)
- */
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 require_once "../include/init_page.php3";
@@ -34,7 +36,7 @@ require_once AA_BASE_PATH."modules/alerts/util.php3";
 require_once AA_INC_PATH. "varset.php3";
 
 $searchbar = new AA_Searchbar();   // mainly for bookmarks
-$items=$chb;
+$items     = $chb;
 
 if ( !$send ) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
@@ -60,7 +62,9 @@ if ( !$send ) {               // for the first time - directly from item manager
             ValidateInput("lang",        _m("Language (charset)"), $lang,        $err, false, "text");
             ValidateInput("html",        _m("Use HTML"),           $html,        $err, false, "number");
 
-            if ( count($err) > 1) break;
+            if ( count($err) > 1) {
+                break;
+            }
 
             $varset->addglobals( array('description', 'subject', 'body',
                                        'header_from', 'reply_to', 'errors_to', 'sender',
@@ -113,14 +117,14 @@ if ( !$send ) {               // for the first time - directly from item manager
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 echo '
-  <link rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
+  <link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
   <title>'.  _m("Write email to users") .'</title>';
  IncludeManagerJavascript();
 echo '
 </head>
 <body>
   <h1>'. _m("Bulk Email Wizard") .'</h1>
-  <form name=mailform>';
+  <form name="mailform">';
 
 PrintArray($err);
 echo $Msg;

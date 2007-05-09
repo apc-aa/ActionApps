@@ -1,22 +1,29 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 // perm_core.php3
@@ -148,8 +155,10 @@ $perms_roles_modules = array(
 
 
 
-/** Replaces roles with apropriate perms
+/** ResolvePerms function
+ *  Replaces roles with apropriate perms
  *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
+ * @param $perms
  */
 function ResolvePerms($perms) {
     global $perms_roles;
@@ -160,7 +169,10 @@ function ResolvePerms($perms) {
     return $perms;
 }
 
-/** Save all permissions for specified user to session variable */
+/** CachePermissions function
+ *  Save all permissions for specified user to session variable
+ * @param $user_id
+ */
 function CachePermissions($user_id) {
     global $permission_uid, $permission_to, $sess, $perms_roles, $r_superuser;
 
@@ -192,12 +204,22 @@ function CachePermissions($user_id) {
     }
 }
 
-/** Check, if specified $perm is in $perms list */
+/** IsPerm function
+ *  Check, if specified $perm is in $perms list
+ * @param $perms
+ * @param $perm
+ */
 function IsPerm($perms, $perm){
     return ( !$perms || !$perm ) ? false : strstr($perms,$perm);
 }
 
-/** Check if user has specified permissions */
+/** CheckPerms function
+ *  Check if user has specified permissions
+ * @param $user_id
+ * @param $objType
+ * @param $objID
+ * @param $perm
+ */
 function CheckPerms( $user_id, $objType, $objID, $perm) {
     global $permission_uid, $permission_to;
     trace("+","CheckPerms");
@@ -218,8 +240,12 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
     }
 }
 
-/** Returns users's permissions to specified slice
+/** GetSlicePerms function
+ *  Returns users's permissions to specified slice
  *  if $whole is true, then consider membership in groups
+ * @param $user_id
+ * @param $objID
+ * @param $whole
  */
 function GetSlicePerms( $user_id, $objID, $whole=true) {
     $slice_perms = GetIDPerms($user_id, "slice", ($whole ? 0 : 1));
@@ -227,8 +253,11 @@ function GetSlicePerms( $user_id, $objID, $whole=true) {
     return JoinAA_SlicePerm($slice_perms[$objID], $aa_perms[AA_ID]);
 }
 
-/** Returns "E" if both permission are equal, "G" if perms1
+/** ComparePerms function
+ *  Returns "E" if both permission are equal, "G" if perms1
  *  are more powerfull than perm2, "L" if perm2 are more powerful than perm1
+ * @param $perms1
+ * @param $perms2
  */
 function ComparePerms($perms1, $perms2) {
     $perms1 = ResolvePerms($perms1);
@@ -241,9 +270,12 @@ function ComparePerms($perms1, $perms2) {
     return 'G';
 }
 
-/** Resolves precedence issues between slice-specific permissions
+/** JoinAA_SlicePerm function
+ * Resolves precedence issues between slice-specific permissions
  * and global access rigths (rights to object aa).
  * Slice-specific perms take precedence except the SUPER access level
+ * @param $slice_perm
+ * @param $aa_perm
  */
 function JoinAA_SlicePerm($slice_perm, $aa_perm) {
     global $perms_roles;
@@ -253,10 +285,14 @@ function JoinAA_SlicePerm($slice_perm, $aa_perm) {
         return ($slice_perm ? $slice_perm : $aa_perm);
     }
 }
-
+/** GetUserSlices function
+ * @param $user_id
+ */
 function GetUserSlices( $user_id = "current") {
     global $permission_uid, $permission_to, $auth;
-    if ($GLOBALS['debugpermissions']) huhl("GetUserSlices:pu=",$permission_uid," pt=",$permission_to);
+    if ($GLOBALS['debugpermissions']) {
+        huhl("GetUserSlices:pu=",$permission_uid," pt=",$permission_to);
+    }
     if ($user_id == "current") {
         $user_id = $auth->auth["uid"];
     }
@@ -264,7 +300,9 @@ function GetUserSlices( $user_id = "current") {
     if ($permission_uid != $user_id) {
         CachePermissions($user_id);
     }
-    if ($GLOBALS['debugpermissions'] && !$permission_to["aa"][AA_ID]) huhe("Warning: No global permission on this system",AA_ID);
+    if ($GLOBALS['debugpermissions'] && !$permission_to["aa"][AA_ID]) {
+        huhe("Warning: No global permission on this system",AA_ID);
+    }
     if (IsPerm($permission_to["aa"][AA_ID], PS_MANAGE_ALL_SLICES) ) {
         return "all";
     }
@@ -272,14 +310,22 @@ function GetUserSlices( $user_id = "current") {
     return  $permission_to["slice"];
 }
 
-// shortcut for slice permission checking
+/** IfSlPerm function
+ *  shortcut for slice permission checking
+ * @param $perm
+ * @param $slice
+ */
 function IfSlPerm($perm, $slice=null) {
     global $auth, $slice_id, $debugpermissions;
-    if ($debugpermissions) { huhl("Slice_id=",$slice_id," Perm=",$perm); }
+    if ($debugpermissions) {
+        huhl("Slice_id=",$slice_id," Perm=",$perm);
+    }
     return CheckPerms( $auth->auth["uid"], "slice", get_if($slice,$slice_id), $perm);
 }
 
-// Checks if logged user is superadmin
+/** IsSuperadmin function
+ *  Checks if logged user is superadmin
+ */
 function IsSuperadmin() {
     global $auth, $r_superuser, $permission_uid;
     trace("+","isSuperadmin");
@@ -291,14 +337,16 @@ function IsSuperadmin() {
     return $r_superuser[AA_ID];
 }
 
-/** Check if authenticed user has specified permissions to category
-* (used for Links module)
-*
-* Slice id for each category in Links module is not random - it is predictable:
-* <category_id>'Links'<shorted AA_ID>
-*
-* @return bool true if the user has specific $perm for $category
-*/
+/** IsCatPerm function
+ *  Check if authenticed user has specified permissions to category
+ * (used for Links module)
+ *
+ * Slice id for each category in Links module is not random - it is predictable:
+ * <category_id>'Links'<shorted AA_ID>
+ * @param $perm
+ * @param $cat_path
+ * @return bool true if the user has specific $perm for $category
+ */
 function IsCatPerm($perm, $cat_path) {
     global $permission_uid, $permission_to, $auth;
 
@@ -340,9 +388,12 @@ function IsCatPerm($perm, $cat_path) {
     return IsPerm($perm2aa, $perm);
 }
 
-/** Change category permission as in template category
-*   (used for Links module)
-*/
+/** ChangeCatPermAsIn function
+ *  Change category permission as in template category
+ *   (used for Links module)
+ * @param $category
+ * @param $template
+ */
 function ChangeCatPermAsIn($category, $template) {
     // (Slice id for category in Links module is not random - it is predictable:
     // <category_id>'Links'<shorted AA_ID>
@@ -370,9 +421,12 @@ function ChangeCatPermAsIn($category, $template) {
 }
 
 
-/** Permissions for the on-line file manager
-* (c) Jakub Adamek, Econnect, +-July 2002
-*/
+/** FilemanPerms function
+ *  Permissions for the on-line file manager
+ * (c) Jakub Adamek, Econnect, +-July 2002
+ * @param $auth
+ * @param $slice_id
+ */
 function FilemanPerms($auth, $slice_id) {
     global $sess, $errcheck;
     // Sets the fileman_dir var:
@@ -411,14 +465,15 @@ function FilemanPerms($auth, $slice_id) {
     return $perms_ok;
 }
 
-/** get email permissions
-* (c) Jakub Adamek, Econnect, December 2002
-*
-* @param $type      OPTIONAL emails type, see get_email_types() in util.php3.
-*                   If not specified, all types are included.
-* @param $user_id   OPTIONAL, default is current user
-* @return array (email id => description)
-*/
+/** GetUserEmails function
+ *  get email permissions
+ * (c) Jakub Adamek, Econnect, December 2002
+ *
+ * @param $type      OPTIONAL emails type, see get_email_types() in util.php3.
+ *                   If not specified, all types are included.
+ * @param $user_id   OPTIONAL, default is current user
+ * @return array (email id => description)
+ */
 function GetUserEmails($type = "", $user_id = "current") {
     global $auth;
     if ($user_id == "current") {
@@ -442,7 +497,7 @@ function GetUserEmails($type = "", $user_id = "current") {
     return GetTable2Array("SELECT id, description FROM email $where", 'id', 'description');
 }
 
-/**
+/** perm_username function
  * Grabs login name from LDAP username (you must use LDAP permission system)
  * @param $username in LDAP form (uid=peterf,ou=People,ou=AA)
  * @return username without additional characters ('peterf' in our example)
@@ -456,8 +511,12 @@ function perm_username( $username ) {
     }
     $begin = strpos($username, '=');
     $end   = strpos($username, ',');
-    if ( $username == '9999999999' ) return "anonym";
-    if ( !$begin OR !$end )          return $username;  // possibly some Reader
+    if ( $username == '9999999999' ) {
+        return "anonym";
+    }
+    if ( !$begin OR !$end ) {
+        return $username;  // possibly some Reader
+    }
     return substr($username, $begin+1, $end-$begin-1);
 }
 
@@ -465,16 +524,21 @@ require_once AA_INC_PATH ."util.php3";          // for getDB()
 require_once AA_INC_PATH ."searchlib.php3";     // for queryzids()
 require_once AA_INC_PATH ."item_content.php3";  // for ItemContent class
 
-/** Looks into reader management slices whether the reader name is not yet used.
-*   This function is used in perm_ldap and perm_sql in IsUsernameFree().
-*/
+/** IsReadernameFree function
+ *  Looks into reader management slices whether the reader name is not yet used.
+ *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
+ * @param $username
+ */
 function IsReadernameFree($username) {
     // search not only Active bin, but also Holding bin, Pending, ...
     return ReaderName2Id($username, 'ALL') ? false : true;
 }
 
-/** Search all Reader slices for $username and check if tha password is correct
+/** AuthenticateReaderUsername function
+ *  Search all Reader slices for $username and check if tha password is correct
  *  Returns ID of the user (item ID of the user in Reader slice, in this case)
+ * @param $username
+ * @param $password
  */
 function AuthenticateReaderUsername($username, $password) {
     if ( !$username ) {
@@ -489,8 +553,11 @@ function AuthenticateReaderUsername($username, $password) {
     return false;
 }
 
-/** Tries to find item id for the username in the Reader slices
+/** ReaderName2Id function
+ *  Tries to find item id for the username in the Reader slices
  *  You can search all users or just the active (default)
+ * @param $username
+ * @param $restrict
  */
 function ReaderName2Id($username, $restrict = 'ACTIVE') {
     // Prepare for calling QueryZIDs()
@@ -502,7 +569,9 @@ function ReaderName2Id($username, $restrict = 'ACTIVE') {
     return $zid->longids(0);
 }
 
-/** Returns array of all - not deleted - Reader slices */
+/** getReaderSlices function
+ *  Returns array of all - not deleted - Reader slices
+ */
 function getReaderSlices() {
     $SQL = "SELECT module.id FROM slice, module
              WHERE slice.type = 'ReaderManagement'
@@ -511,7 +580,9 @@ function getReaderSlices() {
     return GetTable2Array($SQL, '', 'unpack:id');
 }
 
-/** return list of RM slices which matches the pattern */
+/** FindReaderGroupsn function
+ *  return list of RM slices which matches the pattern
+ */
 function FindReaderGroups($pattern) {
     global $db;
     $db->tquery("SELECT module.id,module.name FROM slice,module
@@ -535,7 +606,10 @@ function FindReaderGroups($pattern) {
 
 }
 
-/** return list of RM users which matches the pattern */
+/** FindReaderUsers function
+ *  return list of RM users which matches the pattern
+ * @param $pattern
+ */
 function FindReaderUsers($pattern) {
     global $db;
     $db->tquery("SELECT content.text AS name, content.item_id AS id
@@ -551,7 +625,10 @@ function FindReaderUsers($pattern) {
     return $users;
 }
 
-/** Fills content array for current loged user or specified user */
+/** GetAuthData function
+ *  Fills content array for current loged user or specified user
+ * @param $user_id
+ */
 function GetAuthData( $user_id = false ) {
     global $auth;
     if ( !$user_id ) {
@@ -564,7 +641,10 @@ function GetAuthData( $user_id = false ) {
     return new ItemContent($user_id);
 }
 
-/** returns basic information on user grabed from any Reader Management slice */
+/** GetReaderIDsInfo function
+ *  returns basic information on user grabed from any Reader Management slice
+ * @param $user_id
+ */
 function GetReaderIDsInfo($user_id) {
     if ( !$user_id ) {
         return false;
@@ -579,7 +659,10 @@ function GetReaderIDsInfo($user_id) {
     return $res;
 }
 
-/** returns basic information on user grabed from any Reader Management slice */
+/** GetReaderGroupIDsInfo function
+ *  returns basic information on user grabed from any Reader Management slice
+ * @param $rm_id
+ */
 function GetReaderGroupIDsInfo($rm_id) {
     if ( !$rm_id ) {
         return false;
@@ -589,7 +672,9 @@ function GetReaderGroupIDsInfo($rm_id) {
     $res['name'] = $slice->getProperty('name');
     return $res;
 }
-
+/** GetReaderSetIDsInfo function
+ * @param $set_id
+ */
 function GetReaderSetIDsInfo($set_id) {
     if ( !$set_id ) {
         return false;
@@ -603,7 +688,10 @@ function GetReaderSetIDsInfo($set_id) {
     return $res;
 }
 
-/** return id of group (=Reader Management slice) in which is the user member */
+/** GetReaderMembership function
+ *  return id of group (=Reader Management slice) in which is the user member
+ * @param $user_id
+ */
 function GetReaderMembership($user_id) {
     if (!$user_id) {
         return false;

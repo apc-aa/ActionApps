@@ -1,8 +1,28 @@
 <?php
 
-/* Shows a Table View, allowing to edit, delete, update fields of a table
-   Params:
-       $set_tview -- required, name of the table view
+/** Shows a Table View, allowing to edit, delete, update fields of a table
+   @param $set_tview -- required, name of the table view
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
 */
 
 $require_default_lang = true;      // do not use module specific language file
@@ -26,9 +46,9 @@ if (!IsSuperadmin()) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
-echo "<TITLE>"._m("AA finder")."</TITLE></HEAD>";
+echo "<title>"._m("AA finder")."</title></head>";
 showMenu($aamenus, "aaadmin", "aafinder");
-echo "<H1><B>" ._m("AA finder"). "</B></H1>";
+echo "<h1><b>" ._m("AA finder"). "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
@@ -121,23 +141,23 @@ if ($go_finditem && $finditem) {
 
 FrmTabCaption(_m("AA finder"));
 echo '<tr><td>';
-echo '<FORM name="f_findview" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<form name="f_findview" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Find all VIEWS containing in any field the string:").'</b><br>
     <input type="text" name="findview" value="'.$findview.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findview" value="'._m("Go!").'">';
-echo '</FORM>';
+echo '</form>';
 echo '</td></tr><tr><td>';
-echo '<FORM name="f_findslice" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<form name="f_findslice" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Find all SLICES containing in any field the string:").'</b><br>
     <input type="text" name="findslice" value="'.$findslice.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findslice" value="'._m("Go!").'">';
-echo '</FORM>';
+echo '</form>';
 echo '</td></tr><tr><td>';
-echo '<FORM name="f_finditem" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<form name="f_finditem" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Get all informations about the item").'</b><br>
     <input type="text" name="finditem" value="'.$finditem.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_finditem" value="'._m("Go!").'">';
-echo '</FORM></td></tr>';
+echo '</form></td></tr>';
 FrmTabEnd();
 
 HTMLPageEnd();

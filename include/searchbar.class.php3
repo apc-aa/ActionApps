@@ -1,40 +1,49 @@
 <?php
 /**
- * File contains definition of AA_Searchbar class - it handles search and order bar
- * in AA admin interface (Link Manager page for example)
+ * File contains definition of AA_Searchbar class - it handles search and order
+ * bar in AA admin interface (Link Manager page for example)
  *
  * Should be included to other scripts (as /modules/links/index.php3)
  *
- * @package Links
- * @version $Id$
- * @author Honza Malik <honza.malik@ecn.cz>
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
-*/
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * @link      http://www.apc.org/ APC
 */
 
 require_once AA_INC_PATH. "statestore.php3";
 require_once AA_INC_PATH. "profile.class.php3";
 require_once AA_INC_PATH. "formutil.php3";
-require_once AA_INC_PATH. "searchlib.php3";   // AA_Condition, ...
 
-/** helper function to sort search fields */
+/** searchlib for AA_Condition definition, ... */
+require_once AA_INC_PATH. "searchlib.php3";
+
+/** searchfields_cmp function
+ *  Helper function to sort search fields
+ *
+ *  @param $a string first field for comparison
+ *  @param $b string second
+ *  @return integer  (0 or 1 or -1)
+ */
 function searchfields_cmp($a, $b) {
     if ($a['search_pri'] == $b['search_pri']) {
         return 0;
@@ -42,7 +51,11 @@ function searchfields_cmp($a, $b) {
     return ($a['search_pri'] < $b['search_pri']) ? -1 : 1;
 }
 
-/** helper function to sort order fields */
+/** orderfields_cmp function
+ *  helper function to sort order fields
+ * @param $a
+ * @param $b
+ */
 function orderfields_cmp($a, $b) {
     if ($a['order_pri'] == $b['order_pri']) {
         return 0;
@@ -50,6 +63,9 @@ function orderfields_cmp($a, $b) {
     return ($a['order_pri'] < $b['order_pri']) ? -1 : 1;
 }
 
+/**
+ * AA_Searchbar_Row class - handles one search row
+ */
 class AA_Searchbar_Row extends storable_class {
     var $condition;
     var $readonly;
@@ -57,7 +73,9 @@ class AA_Searchbar_Row extends storable_class {
     // required - class name (just for PHPLib sessions)
     var $classname        = "AA_Searchbar_Row";
     var $persistent_slots = array('condition', 'readonly');
-
+    /** getPersistentProperties function
+     * @param $class
+     */
     function getPersistentProperties($class=null) {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         // class parameter is needed, because generic static classs method
         // in storable_class is not able to detect, what type of class it is in
@@ -67,13 +85,18 @@ class AA_Searchbar_Row extends storable_class {
             'readonly'  => new AA_Property( 'readonly'   , _m('Readonly' ), 'bool',         false, true)
             );
     }
-
+    /** AA_Searchbar_Row function
+     * @param $condition
+     * @param $readonly
+     */
     function AA_Searchbar_Row($condition=null, $readonly=false) {
         $this->condition = $condition;
         $this->readonly  = $readonly;
     }
 
-    /** Access function to searchbar_row field */
+    /** getField function
+     *  Access function to searchbar_row field
+     */
     function getField() {
         if (is_null($this->condition)) {
             return '';
@@ -83,24 +106,31 @@ class AA_Searchbar_Row extends storable_class {
         return reset($fields);
     }
 
-    /** Access function to searchbar_row operator */
+    /** getOperator function
+     *  Access function to searchbar_row operator
+     */
     function getOperator() {
         return ( is_null($this->condition) ? '' : $this->condition->getOperator() );
     }
 
-    /** Access function to searchbar_row value */
+    /** getValue function
+     *  Access function to searchbar_row value
+     */
     function getValue() {
         return ( is_null($this->condition) ? '' : $this->condition->getValue() );
     }
 
-    /** Get old conds[] array - for backward compatibility only
+    /** getCondsArray function
+     *  Get old conds[] array - for backward compatibility only
      *  @deprecated
      */
     function getCondArray() {
         return ( is_null($this->condition) ? array() : $this->condition->getArray() );
     }
 
-    /** Returns, if the search row is marked as readonly */
+    /** isReadonly function
+     *  Returns, if the search row is marked as readonly
+     */
     function isReadonly() {
         return $this->readonly;
     }
@@ -135,7 +165,10 @@ class AA_Searchbar extends storable_class {
             // save only small or dynamicaly changed values - not base setting
             array("search_row", "order_row");
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getPersistentProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     * @param $class
+     */
     function getPersistentProperties($class=null) {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         // class parameter is needed, because generic static classs method
         // in storable_class is not able to detect, what type of class it is in
@@ -146,7 +179,17 @@ class AA_Searchbar extends storable_class {
             );
     }
 
-    /** constructor */
+    /** AA_Searchbar function
+     *  constructor
+     * @param $fields
+     * @param $f
+     * @param $srcm
+     * @param $orcm
+     * @param $aesr
+     * @param $show
+     * @param $hint
+     * @param $hint_url
+     */
     function AA_Searchbar($fields=false, $f='foo', $srcm=1, $orcm=1, $aesr=1, $show='aa_default', $hint='', $hint_url='') {
         $this->fields               = $fields;
         $this->show                 = (($show == 'aa_default') ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show);
@@ -193,7 +236,7 @@ class AA_Searchbar extends storable_class {
 
     }
 
-    /**
+    /** update funtion
      * Updates internal search_row and order_row variables from data posted from
      * form (in $_POST[])
      */
@@ -247,13 +290,17 @@ class AA_Searchbar extends storable_class {
         $this->setFromForm();
     }
 
-    /** Resets the searchbar (both - Search as well as Order)  */
+    /** resetSearchAndOrder function
+     *  Resets the searchbar (both - Search as well as Order)
+     */
     function resetSearchAndOrder() {
         $this->resetSearch();
         $this->resetOrder();
     }
 
-    /** Resets the searchbar's Search */
+    /** resetSearch function
+     *  Resets the searchbar's Search
+     */
     function resetSearch() {
         $search_row = array();
         foreach ( $this->search_row as $k => $row ) {
@@ -265,13 +312,17 @@ class AA_Searchbar extends storable_class {
         $this->search_row = $search_row;
     }
 
-    /** Resets the searchbar's Order */
+    /** resetOrder function
+     *  Resets the searchbar's Order
+     */
     function resetOrder() {
         unset($this->order_row);
         $this->order_row = array();
     }
 
-    /** Set searchbar state from form */
+    /** setFromForm function
+     *  Set searchbar state from form
+     */
     function setFromForm() {
         $srchbar = array();
         if ($this->show & MGR_SB_SEARCHROWS) {
@@ -297,7 +348,10 @@ class AA_Searchbar extends storable_class {
         }
     }
 
-    /** Set searchbar state from bookmark number <$key> */
+    /** setFromBookmark function
+     *  Set searchbar state from bookmark number <$key>
+     * @param $key
+     */
     function setFromBookmark($key) {
         if ( $this->bookmarks->is_defined($key) ) {
             $this->resetSearchAndOrder();
@@ -306,7 +360,11 @@ class AA_Searchbar extends storable_class {
         }
     }
 
-    /** Setting state from previou versions of state */
+    /** convertState function
+     *  Setting state from previou versions of state
+     * @param $version
+     * @param $state
+     */
     function &convertState($version, &$state) {
         /* Current state store structure
                                 [search_row] => Array (
@@ -352,14 +410,16 @@ class AA_Searchbar extends storable_class {
         return $state;
     }
 
-    /** Searchbar version 2 - we have stored state in older verion
+    /** version function
+     *  Searchbar version 2 - we have stored state in older verion
      *  (through stored seaches feature), which do not use AA_Searchbar_Row
+     * @return 2
      */
     function version() {
         return 2;
     }
 
-    /**
+    /** addOrder function
      * Adds new Order bar(s)
      * @param  array $sort[] = array( <field> => <a|d> )
      *               value other than 'a' means DESCENDING
@@ -375,10 +435,11 @@ class AA_Searchbar extends storable_class {
         }
     }
 
-    /**
+    /** addSearch function
      * Adds new Search bar(s)
      * @param  array $conds[] = array ( <field> => 1, 'operator' => <operator>,
      *                                  'value' => <search_string> )
+     * @param $readonly
      */
     function addSearch($conds, $readonly=false) {
         // fill search_row variable
@@ -400,14 +461,17 @@ class AA_Searchbar extends storable_class {
         }
     }
 
-    /** */
+    /** setDefaultOrder function
+    */
     function setDefaultOrder() {
         if (($this->order_row_count_min > 0) AND isset( $this->order_fields['publish_date....'])) {
             $this->addOrder( array( 0=>array('publish_date....' => 'd')) );
         }
     }
 
-    /** */
+    /** setFromProfile function
+     * @param $profile
+     */
     function setFromProfile(&$profile) {
         // admin_order is in 'publish_date....+' format
         $order        = new AA_Sortorder;
@@ -437,7 +501,7 @@ class AA_Searchbar extends storable_class {
         }
     }
 
-    /**
+    /** getConds function
      * Returns conds[] array to use with QueryIDs() (or Links_QueryIDs(), ...)
      */
     function getConds() {
@@ -452,8 +516,8 @@ class AA_Searchbar extends storable_class {
         return $conds;
     }
 
-    /**
-     * Returns sort[] array to use with QueryIDs() (or Links_QueryIDs(), ...)
+    /** getSort function
+     * @return sort[] array to use with QueryIDs() (or Links_QueryIDs(), ...)
      */
     function getSort() {
         if ( !isset($this->order_row) OR !is_array($this->order_row) ) {
@@ -466,16 +530,20 @@ class AA_Searchbar extends storable_class {
         return $sort;
     }
 
-     /** Returns array of bookmark names <key> => <name>  */
+     /** getBookmarkNames function
+      *  @return array of bookmark names <key> => <name>
+      */
     function getBookmarkNames() {
         return isset($this->bookmarks) ? $this->bookmarks->getKeyName() : false;
     }
-
+    /** getBookmarkParams function
+     * @param $key
+     */
     function getBookmarkParams($key) {
         return isset($this->bookmarks) ? $this->bookmarks->getBookmarkParams($key) : false;
     }
 
-    /**
+    /** print_search_bar function
      * Prints one search bar (one row)
      * @param int $bar which bar to print (index)
      * @return bool true, if the printed searchrow is not empty
@@ -504,7 +572,7 @@ class AA_Searchbar extends storable_class {
         }
 
         // filter
-        echo "<tr class=leftmenuy><td class='search'>$searchimage</td><td><b>$searchtext</b></td>";
+        echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>$searchtext</b></td>";
         if ($readonly) {
             echo "<td class=\"tabtxteven\">".$this->search_fields[$fld]."</td>";
             echo "<td class=\"tabtxteven\">";
@@ -521,14 +589,14 @@ class AA_Searchbar extends storable_class {
             echo '</td><td>';
             FrmSelectEasy("srchbr_oper[$bar]", array(' ' => ' '), null, 'onchange="OpenWindowIfRequest(\''.$this->form_name.'\',\''. $slice_id.'\',\''.$bar.'\',\''.get_admin_url("constants_sel.php3").'\')" ');
             echo '</td><td>';
-            echo "<input type='Text' name='srchbr_value[$bar]' size=20 maxlength=254
+            echo "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" maxlength=\"254\"
               value=\"$val\"></td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";
         }
         echo '</tr>';
         return $val != "";
     }
 
-    /**
+    /** print_order_bar function
      * Prints one order bar (one row)
      * @param int $bar which bar to print (index)
      */
@@ -541,26 +609,28 @@ class AA_Searchbar extends storable_class {
                                 array( "a", $this->order_fields[0]);
 
         $searchtext  = _m('Order');
-        $searchimage = "<a href='javascript:document.".$this->form_name. ".submit()'>".
+        $searchimage = "<a href=\"javascript:document.".$this->form_name. ".submit()\">".
                            GetAAImage('order.gif', $searchtext, 15, 15) .'</a>';
-        echo "<tr class=leftmenuy><td class=search>$searchimage</td><td><b>".
+        echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>".
               str_replace(' ','&nbsp;',$searchtext). "</b></td><td>";
         FrmSelectEasy("srchbr_order[$bar]", $this->order_fields, $fld);
-        echo '</td><td colspan="2" class=leftmenuy>';
+        echo '</td><td colspan="2" class=\"leftmenuy\">';
         FrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d');
         echo _m('Descending'). "</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td></tr>";
     }
-
+    /** print_bar_actions function
+     *
+     */
     function print_bar_actions() {
-        echo "<tr class=leftmenuy>
+        echo "<tr class=\"leftmenuy\">
 
                <td colspan=\"3\">
-               <a href='javascript:document.".$this->form_name. ".submit()'>". _m('Search') ."</a> /
-               <a href='javascript:SearchBarAction(\"".$this->form_name. "\", \"clearsearch\", false, false)'>". _m('Clear') ."</a>
+               <a href=\"javascript:document.".$this->form_name. ".submit()\">". _m('Search') ."</a> /
+               <a href=\"javascript:SearchBarAction(\"".$this->form_name. "\", \"clearsearch\", false, false)\">". _m('Clear') ."</a>
                </td>
                <td colspan=\"2\">
-                <a href='javascript:SearchBarAction(\"".$this->form_name. "\", \"bookmark\", \""._m('Stored search name') ."\",".
-                    ( !IfSlPerm(PS_BOOKMARK) ? "false" : '"'. _m('You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?').'"') .")'>". _m('Store') ."</a>";
+                <a href=\"javascript:SearchBarAction(\"".$this->form_name. "\", \"bookmark\", \""._m('Stored search name') ."\",".
+                    ( !IfSlPerm(PS_BOOKMARK) ? "false" : '"'. _m('You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?').'"') .")\">". _m('Store') ."</a>";
               echo "</td>";
 
               if ($this->hint != "") {
@@ -570,32 +640,34 @@ class AA_Searchbar extends storable_class {
               }
               echo "</tr>";
     }
-
+    /** print_bar_bookmarks function
+     *
+     */
     function print_bar_bookmarks() {
-        echo "<tr class=leftmenuy>
+        echo "<tr class=\"leftmenuy\">
                <td colspan=\"2\"><b>". _m('Stored searches') ."</b></td>
                <td>".
                $this->bookmarks->getSelectbox() .
-               " <a href='javascript:SearchBarAction(\"".$this->form_name ."\", \"bookmarkgo\",     false, false)'>". _m('View')   ."</a>
+               " <a href=\"javascript:SearchBarAction(\"".$this->form_name ."\", \"bookmarkgo\",     false, false)\">". _m('View')   ."</a>
                </td>
                <td colspan=\"4\">
-                 <span class=\"smalltext\"><a href='javascript:SearchBarActionConfirm(\"".$this->form_name ."\", \"bookmarkupdate\", \"". _m("Are you sure to refine current search?") ."\")'>". _m('Update') ."</a> /
-                 <a href='javascript:SearchBarAction(\"".$this->form_name ."\", \"bookmarkrename\", \"". _m("Enter new name") ."\", false)'>". _m('Rename') ."</a> /
-                 <a href='javascript:SearchBarActionConfirm(\"".$this->form_name ."\", \"bookmarkdelete\", \""._m("Are you sure to delete selected search?")."\")'>". _m('Delete') ."</a></span>
+                 <span class=\"smalltext\"><a href=\"javascript:SearchBarActionConfirm(\"".$this->form_name ."\", \"bookmarkupdate\", \"". _m("Are you sure to refine current search?") ."\")\">". _m('Update') ."</a> /
+                 <a href=\"javascript:SearchBarAction(\"".$this->form_name ."\", \"bookmarkrename\", \"". _m("Enter new name") ."\", false)\">". _m('Rename') ."</a> /
+                 <a href=\"javascript:SearchBarActionConfirm(\"".$this->form_name ."\", \"bookmarkdelete\", \""._m("Are you sure to delete selected search?")."\")\">". _m('Delete') ."</a></span>
                </td>
               </tr>";
     }
 
 
-    /**
+    /** printBar function
      * Prints searchbar (search rows and order rows - based on current settings)
      */
     function printBar() {
         global $slice_id;
 
-        echo '<input type=hidden name=srchbr_akce value="1">
+        echo '<input type="hidden" name="srchbr_akc"e value="1">
               <table width="100%" border="0" cellspacing="5" cellpadding="0"
-              class=leftmenu bgcolor="'. COLOR_TABBG .'">';
+              class="leftmenu" bgcolor="'. COLOR_TABBG .'">';
 
         // print searchbars
         $count_sb = 0;
@@ -663,7 +735,9 @@ class AA_Bookmarks {
     var $profile;                    // profile, where to store bookmarks
     var $active_bookmark;            // last used bookmark
 
-    /** constructor */
+    /** AA_Bookmarks function
+     * constructor
+     */
     function AA_Bookmarks() {
         global $auth, $slice_id;
         $this->profile = new aaprofile($auth->auth["uid"], $slice_id);  // current user settings
@@ -671,13 +745,18 @@ class AA_Bookmarks {
         $this->setLastUsed();
     }
 
-    /** Get searchbar state for bookmark number $key.
-     *  See storable_class in statestore.php3 for more info about 'state' */
+    /** get function
+     *  Get searchbar state for bookmark number $key.
+     *  See storable_class in statestore.php3 for more info about 'state'
+     * @param $param key
+     */
     function get($key) {
         return $this->is_defined($key) ? $this->bookmarks[$key]['state'] : false;
     }
 
-    /** Get array of bookmark (<key> => <name>) */
+    /** getKeeyName function
+     *  Get array of bookmark (<key> => <name>)
+     */
     function getKeyName() {
         if ( isset($this->bookmarks) AND is_array($this->bookmarks) ) {
             foreach ( $this->bookmarks as $key => $book ) {
@@ -687,32 +766,48 @@ class AA_Bookmarks {
         return $ret;
     }
 
-    /** Get parameters of bookmark defined by number $key */
+    /** getBookmarkParams function
+     *  Get parameters of bookmark defined by number $key
+     * @param $key
+     */
     function getBookmarkParams($key) {
         return $this->bookmarks[$key];
     }
 
-    /** Is the bookmark number $key defined? */
+    /** is_defined function
+     *  Is the bookmark number $key defined?
+     * @param $key
+     */
     function is_defined($key) {
         return isset( $this->bookmarks[$key] );
     }
 
-    /** Returns number of stored bookmarks */
+    /** count function
+     *  Returns number of stored bookmarks
+     */
     function count() {
         return count($this->bookmarks);
     }
-
+    /** setLastUsed function
+     * @param $last_used
+     */
     function setLastUsed($last_used="none") {
         $this->active_bookmark = $last_used;
     }
-
+    /** getLastUsed function
+     *
+     */
     function getLastUsed() {
         return $this->active_bookmark;
     }
 
-
+    /** setFromProfile function
+     *
+     */
     function setFromProfile() {
-        if ( !is_object($this->profile) ) return false;
+        if ( !is_object($this->profile) ) {
+            return false;
+        }
         $this->bookmarks = array();               // reset
         $b_arr = $this->profile->get('bookmark', '*');  // get all bookmark properties for user
         if ( isset($b_arr) AND is_array($b_arr) ) {
@@ -726,7 +821,12 @@ class AA_Bookmarks {
         }
     }
 
-    /** Store bookmark to database */
+    /** store function
+     *  Store bookmark to database
+     * @param $name
+     * @param $state
+     * @param $to_global
+     */
     function store( $name, $state, $to_global ) {
         if ( !is_object($this->profile) ) {
             return false;
@@ -749,7 +849,13 @@ class AA_Bookmarks {
         return true;
     }
 
-    /** Update bookmark in database */
+    /** update function
+     *  Update bookmark in database
+     * @param $name
+     * @param $state
+     * @param $to_global
+     * @param $id
+     */
     function update( $name, $state, $to_global, $id) {
         if ( !is_object($this->profile) ) {
             return false;
@@ -771,18 +877,26 @@ class AA_Bookmarks {
     }
 
 
-    /**     */
+    /** is_global function
+     * @param $key
+     */
     function is_global($key) {
         return $this->bookmarks[$key]['type'] == '*';
     }
 
-    /** */
+    /** delete function
+     * @param $key
+     */
     function delete($key) {
-        if ( !is_object($this->profile) ) return false;
+        if ( !is_object($this->profile) ) {
+            return false;
+        }
           // if it global bookmark?
         $global = $this->is_global($key);
           // and have we permisson to delete it?
-        if ( $global AND !IfSlPerm(PS_BOOKMARK) ) return false;
+        if ( $global AND !IfSlPerm(PS_BOOKMARK) ) {
+            return false;
+        }
           // store to database
         $this->profile->deleteProperty('bookmark', $this->bookmarks[$key]['name'], $global);
         writeLog("BM_DELETE", $this->bookmarks[$key]['name'], $this->bookmarks[$key]['id'] );
@@ -791,7 +905,10 @@ class AA_Bookmarks {
         return true;
     }
 
-    /** */
+    /** updateBookmark function
+     * @param $key
+     * @param $state
+     */
     function updateBookmark($key, $state) {
         $old = $this->bookmarks[$key];
         $ret = $this->update( $old['name'], $state, $old['type']=='*', $old['id']);
@@ -802,9 +919,12 @@ class AA_Bookmarks {
         }
     }
 
-    /** */
+    /** renameBookmark function
+     * @param $key
+     * @param $newname
+     */
     function renameBookmark($key, $newname) {
-        $old =  $this->bookmarks[$key];
+        $old = $this->bookmarks[$key];
         $ret = $this->update( $newname, $old['state'], $old['type']=='*', $old['id']);
         if ($ret) {
             writeLog("BM_RENAME", array($newname,$old['name']), $old['id'] );
@@ -814,7 +934,9 @@ class AA_Bookmarks {
     }
 
 
-    /** Return HTML selectbox from bookmarks */
+    /** getSelectbox function
+     * Return HTML selectbox from bookmarks
+     */
     function getSelectbox() {
         $ret = '
           <select name="srchbr_bookmark">

@@ -1,26 +1,33 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *  se_admin.php3 - assigns html format for administation item view (index.php3)
+ *  optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
-// se_admin.php3 - assigns html format for administation item view (index.php3)
-// optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
@@ -105,8 +112,8 @@ $inputform_vids = GetTable2Array("SELECT id, name FROM view WHERE slice_id ='$p_
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo _m("Admin - design Item Manager view");?></TITLE>
-<SCRIPT Language="JavaScript"><!--
+<title><?php echo _m("Admin - design Item Manager view");?></title>
+<script Language="JavaScript"><!--
 function Defaults() {
   document.f.admin_format_top.value = '<?php echo DEFAULT_ADMIN_TOP ?>'
   document.f.admin_format.value = '<?php echo DEFAULT_ADMIN_HTML ?>'
@@ -115,14 +122,14 @@ function Defaults() {
   document.f.admin_noitem_msg.value = ''
 }
 // -->
-</SCRIPT>
-</HEAD>
+</script>
+</head>
 
 <?php
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin", "config");
 
-echo "<H1><B>" . _m("Admin - design Item Manager view") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - design Item Manager view") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
@@ -131,7 +138,7 @@ $form_buttons = array("update" => array("type"=>"hidden", "value"=>"1"),
                       "defaults" => array("type"=>"button", "value"=> _m("Default"), "add"=>'onclick="Defaults()"'));
 
 ?>
-<form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="f" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
 FrmTabCaption(_m("Listing of items in Admin interface"),'','',$form_buttons, $sess, $slice_id);
 
@@ -154,7 +161,7 @@ FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputf
 PrintAliasHelp(GetAliasesFromFields($fields), $fields, false, $form_buttons);
 FrmTabEnd("", false, true);
 ?>
-</FORM>
+</form>
 <?php
 HtmlPageEnd();
 page_close()

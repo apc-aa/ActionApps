@@ -1,24 +1,30 @@
 <?php
 // Anonymous authentication
 // the only change against extauth.php3 is the line: var $nobody=true
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (c) 2002-3 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 
@@ -38,31 +44,32 @@ class AA_CP_Auth extends Auth {
 //  var $database_class = "DB_AA";
 //  var $database_table = "auth_user";
 
-  function relogin_if( $t ) {
-    if ( $t )  {
-      printf ("<center><b>User ".$this->auth["uname"]." has been logged out.</b></center><br>");
-      $this->unauth();
-      $this->start();
+    function relogin_if( $t ) {
+        if ( $t )  {
+          printf ("<center><b>User ".$this->auth["uname"]." has been logged out.</b></center><br>");
+          $this->unauth();
+          $this->start();
+        }
     }
-  }
 
-  function auth_loginform() {
-    global $sess;
-    global $_PHPLIB;
-    global $username, $password, $anonymous_user;
-    require_once (AA_INC_PATH . "loginform.html");
-  }
+    function auth_loginform() {
+        global $sess;
+        global $_PHPLIB;
+        global $username, $password, $anonymous_user;
+        require_once (AA_INC_PATH . "loginform.html");
+    }
 
-  function auth_validatelogin() {
-    global $username, $password;
+    function auth_validatelogin() {
+        global $username, $password;
 
-    if (isset($username)) 
-      $this->auth["uname"]=$username;
+        if (isset($username)) {
+            $this->auth["uname"]=$username;
+        }
 
-    $user=$username;
+        $user=$username;
 
-    $uid = AuthenticateUsername($user, $password);
-    return $uid;
+        $uid = AuthenticateUsername($user, $password);
+        return $uid;
   }
 }
 ?>

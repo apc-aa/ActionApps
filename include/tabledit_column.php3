@@ -5,39 +5,42 @@
  * DOCUMENTATION: @link doc/tabledit.html,
  *                @link doc/tabledit_developer.html,
  *                @link doc/tableview.html
- * @package TableEdit
- * @version $Id$
- * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   TableEdit
+ * @version   $Id$
+ * @author    Jakub Adamek, Econnect
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (c) 2002-3 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
 */
-/*
-Copyright (C) 1999-2003 Association for Progressive Communications
-http://www.apc.org/
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Does column type-specific work.
-*
-* @param string $function "show" prints HTML code showing the column value
-*                       "form" transforms the returned value if needed and returns it
-* @param mixed $val     value to be shown ("show") or to be changed ("form")
-* @param array $record  the whole record for the current row, to be used by "calculated" fields
-* @return nothing
-*/
+/** ColumnFunctions function
+ * Does column type-specific work.
+ *
+ * @param $cview
+ * @param string $function "show" prints HTML code showing the column value
+ *                       "form" transforms the returned value if needed and returns it
+ * @param mixed $val     value to be shown ("show") or to be changed ("form")
+ * @param $new_record
+ * @param array $record  the whole record for the current row, to be used by "calculated" fields
+ * @return nothing
+ */
 
 function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, $record="")
 {
@@ -45,8 +48,9 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
     // value to be shown if the requested value is not a part of the select box array
     $unknown_select_value = "????????";
 
-    if ($function == "show" && $cview["readonly"])
+    if ($function == "show" && $cview["readonly"]) {
         $function = "show_ro";
+    }
 
     // ********************* UNPACKED *************************
     if ($cview["unpacked"]) {
@@ -75,7 +79,7 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
         switch ($function) {
         case 'show':
         case 'show_ro':
-            echo "<INPUT type=\"hidden\" name=\"$name\" value=\"".$val."\">\n";
+            echo "<input type=\"hidden\" name=\"$name\" value=\"".$val."\">\n";
             break;
         }
         return;
@@ -88,12 +92,12 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
         case 'show':
             $val = str_replace ('<','&lt;',$val);
             $val = str_replace ('>','&gt;',$val);
-            echo "<TEXTAREA name=\"$name\""
+            echo "<textarea name=\"$name\""
                 ." rows=\"".$cview["size"]["rows"]."\" cols=\"".$cview["size"]["cols"]."\">\n"
                 .$val."</textarea>";
             break;
         case 'show_ro':
-            ShowColumnValueReadOnly ($cview, $val, $val, $name);
+            ShowColumnValueReadOnly($cview, $val, $val, $name);
             break;
         }
         return;
@@ -104,15 +108,17 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
         switch ($function) {
         case 'show':
             // show ****** for undefined values in select box, but not for new records
-            if (!isset ($cview["source"][$val]) && !$new_record)
+            if (!isset ($cview["source"][$val]) && !$new_record) {
                 $cview["source"][$val] = $unknown_select_value;
+            }
             FrmSelectEasy($name, $cview["source"], $val);
             break;
         case 'show_ro':
             // show ****** for undefined values in select box, but not for new records
-            if (!isset ($cview["source"][$val]) && !$new_record)
+            if (!isset ($cview["source"][$val]) && !$new_record) {
                 $cview["source"][$val] = $unknown_select_value;
-            ShowColumnValueReadOnly ($cview, $cview["source"][$val], $val, $name);
+            }
+            ShowColumnValueReadOnly($cview, $cview["source"][$val], $val, $name);
             break;
         }
         return;
@@ -124,19 +130,21 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
         switch ($function) {
         case 'show':
             if ($val) $val = date($cview["format"], $val);
-            $maxlen = $column["len"] ? "maxlength=$column[len]" : "";
-            echo "<INPUT type=\"text\" $maxlen size=\"".$cview["size"]["cols"]."\" name=\"$name\"
+            $maxlen = $column["len"] ? "maxlength=".$column['len'] : "";
+            echo "<input type=\"text\" $maxlen size=\"".$cview["size"]["cols"]."\" name=\"$name\"
                 value=\"".$val."\">";
             break;
         case 'show_ro':
             if ($val) {
                 $show_val = @date($cview["format"], $val);
-                if (!$show_val) $show_val = $val;
+                if (!$show_val) {
+                    $show_val = $val;
+                }
             }
-            ShowColumnValueReadOnly ($cview, $show_val, $show_val, $name);
+            ShowColumnValueReadOnly($cview, $show_val, $show_val, $name);
             break;
         case 'form':
-            $val = get_formatted_date ($val, $cview["format"]);
+            $val = get_formatted_date($val, $cview["format"]);
             break;
         }
         return;
@@ -146,7 +154,7 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
 
         switch ($function) {
         case 'show':
-            //echo "<INPUT type=\"checkbox\" name=\"$name\"".($val ? " checked" : "").">";
+            //echo "<input type=\"checkbox\" name=\"$name\"".($val ? " checked" : "").">";
             FrmSelectEasy($name, array (0 => _m("no"), 1 => _m("yes")), $val ? 1 : 0);
             break;
         case 'show_ro':
@@ -190,8 +198,8 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
         switch ($function) {
         case 'show':
             $val = str_replace ('"','&quot;',$val);
-            $maxlen = $cview["maxlen"] ? "maxlength=$cview[maxlen]" : "";
-            echo "<INPUT type=\"text\" $maxlen size=\"".$cview["size"]["cols"]."\" name=\"$name\"
+            $maxlen = $cview["maxlen"] ? "maxlength=".$cview['maxlen'] : "";
+            echo "<input type=\"text\" $maxlen size=\"".$cview["size"]["cols"]."\" name=\"$name\"
                 value=\"".$val."\">";
             break;
         case 'show_ro':
@@ -203,15 +211,19 @@ function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, 
     }
 }
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* Shows a column value for a read-only column.
-*
-* @param $name if given, a hidden box with the field value will be added
-*/
-function ShowColumnValueReadOnly ($cview, $show_val, $val, $name="") {
-    if ($name)
-        echo "<INPUT type=\"hidden\" name=\"$name\" value=\"".
+/** ShowColumnValueReadOnly function
+ * Shows a column value for a read-only column.
+ *
+ * @param $cview
+ * @param $show_val
+ * @param $val
+ * @param $name if given, a hidden box with the field value will be added
+ */
+function ShowColumnValueReadOnly($cview, $show_val, $val, $name="") {
+    if ($name) {
+        echo "<input type=\"hidden\" name=\"$name\" value=\"".
             str_replace ('"', '&quot;',$val)."\">\n";
+    }
     if ($show_val) {
         if (!$cview["html"]) {
             $show_val = htmlspecialchars ($show_val);
@@ -220,10 +232,13 @@ function ShowColumnValueReadOnly ($cview, $show_val, $val, $name="") {
     elseif (($show_val == 0) && is_field_type_numerical($cview["dbtype"]) && ($cview["type"] != "date")) {
         $show_val = "0";
     }
-    else $show_val = "&nbsp;";
+    else {
+        $show_val = "&nbsp;";
+    }
 
-    if ($cview["maxlen"] && strlen ($show_val) > $cview["maxlen"])
+    if ($cview["maxlen"] && strlen ($show_val) > $cview["maxlen"]) {
         $show_val = substr ($show_val, 0, $cview["maxlen"])." ...";
+    }
 
     echo $show_val;
 }

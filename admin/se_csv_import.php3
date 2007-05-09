@@ -1,25 +1,6 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/** Importing CSV data (CSV stands for Comma Separated Value)
+/**
+ * Importing CSV data (CSV stands for Comma Separated Value)
  *
  * The process of importing CSV data is splitted in the two parts:
  *   1) Converting CSV data to list of items, where each item is stored to the
@@ -45,7 +26,31 @@ http://www.apc.org/
  *  $url      - url of csv data applied when $dataType == "url"
  *  $upfile   - applied when $dataType == "file"
  *  $text     - applied when $dataType == "text"
- */
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Ondrej Mazanec, Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
+*/
+
 
 // todo - work with global variable $err??
 
@@ -134,19 +139,19 @@ if ($upload) {
 require_once AA_INC_PATH."formutil.php3";
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo _m("Admin - Import .CSV file"); ?></TITLE>
-<SCRIPT Language="JavaScript"><!--
+<title><?php echo _m("Admin - Import .CSV file"); ?></title>
+<script Language="JavaScript"><!--
 function InitPage() {}
 //-->
-</SCRIPT>
-</HEAD>
-<BODY>
+</script>
+</head>
+<body>
 <?php
   $useOnLoad = true;
   require_once AA_INC_PATH."menu.php3";
   showMenu($aamenus, "sliceadmin","CSVimport");
 
-  echo "<H1><B>" . _m("Admin - Import CSV (1/2) - Source data") . "</B></H1>";
+  echo "<h1><b>" . _m("Admin - Import CSV (1/2) - Source data") . "</b></h1>";
   echo stripslashes($Msg);
   unset($err);
 
@@ -170,21 +175,24 @@ function InitPage() {}
           }
           while ($numRows-- > 0) {
               $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
-              if (!$csvRec)
+              if (!$csvRec) {
                   break;
+              }
               FrmTabRow($csvRec);
           }
           FrmTabEnd("");
           fclose($handle);
       }
-      if ($err) huhl($err);
+      if ($err) {
+          huhl($err);
+      }
   }
 ?>
-<form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url(self_base() . "se_csv_import.php3")?>">
+<form enctype="multipart/form-data" method="post" name="f" action="<?php echo $sess->url(self_base() . "se_csv_import.php3")?>">
 
 <table width="600" border="0" cellspacing="0" cellpadding="1"
        bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-    <tr><td class=tabtit><b>&nbsp;<?php echo _m("CSV format settings") ?></b></td></tr>
+    <tr><td class="tabtit"><b>&nbsp;<?php echo _m("CSV format settings") ?></b></td></tr>
 
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
@@ -217,34 +225,34 @@ function InitPage() {}
       </table>
     </td></tr>
 
-    <tr><td class=tabtit><b>&nbsp;<?php echo _m("Source of CSV data") ?></b></td></tr>
+    <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Source of CSV data") ?></b></td></tr>
     <tr><td>
         <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
         <tr>
-        <td class=tabtxt align=center><input type="radio" <?php if ($dataType == "file") echo "CHECKED"; ?> NAME="dataType" value="file"></td>
-        <td class=tabtxt >file</td>
-        <td class=tabtxt ><input type="file" NAME="upfile" value="<?php echo $upfile_name ?>"> Max upload size: <?php echo IMG_UPLOAD_MAX_SIZE; ?> B </td>
+        <td class="tabtxt" align="center"><input type="radio" <?php if ($dataType == "file") echo "CHECKED"; ?> NAME="dataType" value="file"></td>
+        <td class="tabtxt" >file</td>
+        <td class="tabtxt" ><input type="file" NAME="upfile" value="<?php echo $upfile_name ?>"> Max upload size: <?php echo IMG_UPLOAD_MAX_SIZE; ?> B </td>
     </tr>
     <tr>
-        <td class=tabtxt align=center><input type="radio" <?php if ($dataType == "url") echo "CHECKED"; ?> NAME="dataType" value="url"></td>
-        <td class=tabtxt >URL</td>
-        <td class=tabtxt ><input type="text" NAME="url" value="<?php echo isset($url) ? $url : 'http://' ?>" size="100"></td>
+        <td class="tabtxt" align="center"><input type="radio" <?php if ($dataType == "url") echo "CHECKED"; ?> NAME="dataType" value="url"></td>
+        <td class="tabtxt" >URL</td>
+        <td class="tabtxt" ><input type="text" NAME="url" value="<?php echo isset($url) ? $url : 'http://' ?>" size="100"></td>
         </tr>
     <tr>
-            <td class=tabtxt align=center><input type="radio" <?php if ($dataType == "text") echo "CHECKED"; ?> NAME="dataType" value="text"></td>
-        <td class=tabtxt >text</td>
-        <td class=tabtxt ><textarea NAME="text" rows=5 cols=30><?php echo $text ?></textarea></td>
+            <td class="tabtxt" align="center"><input type="radio" <?php if ($dataType == "text") echo "CHECKED"; ?> NAME="dataType" value="text"></td>
+        <td class="tabtxt">text</td>
+        <td class="tabtxt"><textarea NAME="text" rows="5" cols="30"><?php echo $text ?></textarea></td>
         </tr>
         </table>
     </td></tr>
     <tr><td align="center">
-        <input type=hidden name=previous_upload value="<?php echo $dest_file ?>">
-        <input type=hidden name=slice_id value="<?php echo $slice_id ?>">
-        <input type=submit name=preview value="<?php echo _m("Preview")?>">
-        <input type=submit name=upload value="<?php echo _m("Next") ?>" align=center>&nbsp;&nbsp;
+        <input type="hidden" name="previous_upload" value="<?php echo $dest_file ?>">
+        <input type="hidden" name="slice_id" value="<?php echo $slice_id ?>">
+        <input type="submit" name="preview" value="<?php echo _m("Preview")?>">
+        <input type="submit" name="upload" value="<?php echo _m("Next") ?>" align="center">&nbsp;&nbsp;
     </td></tr>
   </table>
-</FORM>
+</form>
  <?php
 HtmlPageEnd();
 page_close()

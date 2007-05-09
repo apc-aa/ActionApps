@@ -1,25 +1,29 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/** expected $slice_id for edit slice, nothing for adding slice
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
-// expected $slice_id for edit slice, nothing for adding slice
 
 require_once "../include/init_page.php3";
 bind_mgettext_domain(AA_INC_PATH."lang/".get_mgettext_lang()."_param_wizard_lang.php3", false, get_mgettext_lang());
@@ -29,6 +33,9 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
+/** EditConstantURL function
+ * @return result of the con_url function
+ */
 function EditConstantURL() {
     global $fld, $sess;
     if (substr($fld['id'],0,8)== "category") {
@@ -76,6 +83,15 @@ if ($del) {
 //      $text_stored instead of function of $input_validate_f
 
 // Extend ValidateInput to NOT check if field is not present
+
+/** QVaidateInput function
+ * @param $variabeName
+ * @param $inputName
+ * @param $variable
+ * @param $err (by link)
+ * @param $needed
+ * @param $type
+ */
 function QValidateInput($variableName, $inputName, $variable, &$err, $needed, $type) {
     global $onlyupdate;
     if (! $onlyupdate || ($variable !== null)) {
@@ -83,6 +99,11 @@ function QValidateInput($variableName, $inputName, $variable, &$err, $needed, $t
     }
 }
 
+/** Qvarsetadd function
+ * @param $varname
+ * @param $type
+ * @param $value
+ */
 function Qvarsetadd($varname, $type, $value) {
     global $varset,$onlyupdate;
     if (! $onlyupdate || ($value !== null)) {
@@ -101,7 +122,9 @@ if ($update) {
         $alias_err = _m("Alias must be always _# + 8 UPPERCASE letters, e.g. _#SOMTHING.");
         for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
             $alias_var = "alias".$iAlias;
-            if ($$alias_var == "_#") $$alias_var = "";
+            if ($$alias_var == "_#") {
+                $$alias_var = "";
+            }
             QValidateInput("alias".$iAlias, _m("Alias")." ".$iAlias, $$alias_var, $err, false, "alias");
             $alias_var = "alias".$iAlias."_help";
             QValidateInput("alias".$iAlias."_help", $alias_err.$iAlias, $$alias_var, $err, false, "text");
@@ -143,8 +166,10 @@ if ($update) {
         $input_show_func_c_real = ($input_show_func_c{0} == 'v') ? pack_id(substr($input_show_func_c,1)) : $input_show_func_c;
         $isf_parameters = call_user_func(array($widget_class,'getClassProperties'));
         $isf                                         = $input_show_func_f;
-        if (isset($isf_parameters['const'])) { $isf .= ':'.$input_show_func_c_real; }
-        $isf                                        .= ':'.$input_show_func_p; 
+        if (isset($isf_parameters['const'])) {
+            $isf .= ':'.$input_show_func_c_real;
+        }
+        $isf     .= ':'.$input_show_func_p;
 
         Qvarsetadd("input_show_func", "quoted", ($onlyupdate ? $input_show_func : $isf));
         Qvarsetadd("input_validate", "quoted", ($onlyupdate ? $input_validate : "$input_validate_f:$input_validate_p"));
@@ -210,8 +235,13 @@ if ( $db->next_record()) {
     go_url($return_url ? expand_return_url(1) : $back_admin_url);  // back to field page
 }
 
-/** Finds the first ":" and fills the part before ":" into $fnc, after ":" into $params.
-*   (c) Jakub, 28.1.2003 */
+/** get_params function
+ * Finds the first ":" and fills the part before ":" into $fnc, after ":" into $params.
+ *   (c) Jakub, 28.1.2003
+ * @param $src
+ * @param $fnc (by link)
+ * @param $params (by link)
+ */
 function get_params($src, &$fnc, &$params) {
     if (strchr ($src,":")) {
         $params = substr ($src, strpos ($src,":")+1);
@@ -229,7 +259,7 @@ if ( !$update ) {      // load defaults
     $input_morehlp = $fld['input_morehlp'];
 
     for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
-        $GLOBALS["alias".$iAlias] = $fld["alias".$iAlias];
+        $GLOBALS["alias".$iAlias]         = $fld["alias".$iAlias];
         $GLOBALS["alias".$iAlias."_help"] = $fld["alias".$iAlias."_help"];
         get_params($fld["alias".$iAlias."_func"], $GLOBALS["alias".$iAlias."_func_f"], $GLOBALS["alias".$iAlias."_func"]);
     }
@@ -257,7 +287,7 @@ if ( !$update ) {      // load defaults
 
 HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Admin - configure Fields");?></TITLE>
+ <title><?php echo _m("Admin - configure Fields");?></title>
 <script language="JavaScript"><!--
   function CallConstantEdit(as_new) {
     var url = "<?php echo EditConstantURL(); ?>"
@@ -285,12 +315,12 @@ HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, enc
   }
 //-->
 </script>
-</HEAD>
+</head>
 <?php
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin");
 
-echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - configure Fields") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 echo _m("<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
@@ -302,7 +332,7 @@ $form_buttons = array("update" => array("type"=>"hidden","value"=>"1"),
                      );
 
 echo "
-<form enctype=\"multipart/form-data\" method=post action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">";
+<form enctype=\"multipart/form-data\" method=\"post\" action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">";
 FrmTabCaption(_m("Field properties"). ': '. safe($fld['name']. ' ('.$fld['id']. ')'),
               '','',$form_buttons, $sess, $slice_id);
 
@@ -315,84 +345,84 @@ echo "
   <tr>
    <td>
      <tr>
-      <td class=tabtxt><b>". _m("Input type") ."</b></td>
-      <td class=tabtxt colspan=3>";
+      <td class=\"tabtxt\"><b>". _m("Input type") ."</b></td>
+      <td class=\"tabtxt\" colspan=\"3\">";
        FrmSelectEasy("input_show_func_f", $isc_arr, $input_show_func_f);
 
-      echo "<div class=tabhlp>". _m("Input field type in Add / Edit item.") ."</div>
+      echo "<div class=\"tabhlp\">". _m("Input field type in Add / Edit item.") ."</div>
             <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" bgcolor=\"". COLOR_TABBG ."\">
              <tr>
-              <td class=tabtit><b>". _m("Constants") ."</b> ";
+              <td class=\"tabtit\"><b>". _m("Constants") ."</b> ";
                FrmSelectEasy("input_show_func_c", $constants, $input_show_func_c);
       $constants_menu = explode('|', str_replace(" ","&nbsp;",_m("Edit|Use as new|New")));
-      echo "   <div class=tabtit>". _m("Choose a Constant Group or a Slice.") ."</div>
+      echo "   <div class=\"tabtit\">". _m("Choose a Constant Group or a Slice.") ."</div>
               </td>
-              <td class=tabtit>
-                <font class=tabtxt><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>"
+              <td class=\"tabtit\">
+                <font class=\"tabtxt\"><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(0)'>"
                     . $constants_menu[0] ."</a></b></font><br>
-                <span class=tabtxt><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>"
+                <span class=\"tabtxt\"><b>&lt;&nbsp;<a href='javascript:CallConstantEdit(1)'>"
                     . $constants_menu[1] ."</a></b></span><br>
-                <span class=tabtxt>
+                <span class=\"tabtxt\">
                     <B><a href='". con_url(EditConstantURL(),"return_url=se_inputform.php3&fid=$fid"). "'>". $constants_menu[2] ."</a></B></span>
               </td>
              </tr>
             </table>
             <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
-                <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
-                <td class=tabhlp><a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
+                <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
+                <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-            <input type=\"Text\" name=\"input_show_func_p\" size=50 maxlength=240 value=\"". safe($input_show_func_p) ."\">
+            <input type=\"text\" name=\"input_show_func_p\" size=\"50\" maxlength=\"240\" value=\"". safe($input_show_func_p) ."\">
       </td>
      </tr>
-     <tr><td colspan=4><hr></td></tr>
+     <tr><td colspan=\"4\"><hr></td></tr>
      <tr>
-      <td class=tabtxt><b>". _m("Default") ."</b></td>
-      <td class=tabtxt colspan=3>";
+      <td class=\"tabtxt\"><b>". _m("Default") ."</b></td>
+      <td class=\"tabtxt\" colspan=\"3\">";
         // txt and qte is the same, so it is better to use the only one
         if ($input_default_f == 'qte') {
             $input_default_f = 'txt';
         }
         FrmSelectEasy("input_default_f", getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES), $input_default_f);
-      echo "<div class=tabhlp>". _m("How to generate the default value") ."</div>
+      echo "<div class=\"tabhlp\">". _m("How to generate the default value") ."</div>
             <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
-                <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
-                <td class=tabhlp><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
+                <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
+                <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-            <input type=\"Text\" name=\"input_default\" size=50 value=\"". safe($input_default) ."\">
+            <input type=\"text\" name=\"input_default\" size=50 value=\"". safe($input_default) ."\">
       </td>
      </tr>
-     <tr><td colspan=4><hr></td></tr>
+     <tr><td colspan=\"4\"><hr></td></tr>
      <tr>
-         <td class=tabtxt><b>". _m("Validate") ."</b></td>
-         <td class=tabtxt colspan=3>";
+         <td class=\"tabtxt\"><b>". _m("Validate") ."</b></td>
+         <td class=\"tabtxt\" colspan=\"3\">";
          FrmSelectEasy("input_validate_f", getSelectBoxFromParamWizard($VALIDATE_TYPES),
             $input_validate_f);
          echo "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
-             <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
-             <td class=tabhlp><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
+             <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
+             <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"Text\" name=\"input_validate_p\" size=50 maxlength=240 value=\"". safe($input_validate_p) ."\">
+         <input type=\"text\" name=\"input_validate_p\" size=\"50\" maxlength=\"240\" value=\"". safe($input_validate_p) ."\">
          </td>
       </td>
      </tr>
-     <tr><td colspan=4><hr></td></tr>
+     <tr><td colspan=\"4\"><hr></td></tr>
      <tr>
-         <td class=tabtxt><b>". _m("Insert") ."</b></td>
-         <td class=tabtxt colspan=3>";
+         <td class=\"tabtxt\"><b>". _m("Insert") ."</b></td>
+         <td class=\"tabtxt\" colspan=\"3\">";
          FrmSelectEasy("input_insert_func_f", getSelectBoxFromParamWizard($INSERT_TYPES),
             $input_insert_func_f);
-         echo "<div class=tabhlp>"._m("Defines how value is stored in database.")."</div>
+         echo "<div class=\"tabhlp\">"._m("Defines how value is stored in database.")."</div>
          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
-             <tr><td class=tabtxt><b>"._m("Parameters")."</b></td>
-             <td class=tabhlp><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
+             <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
+             <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"Text\" name=\"input_insert_func_p\" size=50 maxlength=240 value=\"". safe($input_insert_func_p) ."\">
+         <input type=\"text\" name=\"input_insert_func_p\" size=\"50\" maxlength=\"240\" value=\"". safe($input_insert_func_p) ."\">
          </td>
      </tr>
-     <tr><td colspan=4><hr></td></tr>
+     <tr><td colspan=\"4\"><hr></td></tr>
      <tr>
-      <td class=tabtxt><b>HTML</b></td>
-      <td class=tabtxt colspan=3>
+      <td class=\"tabtxt\"><b>HTML</b></td>
+      <td class=\"tabtxt\" colspan=3>
         <input type=\"checkbox\" name=\"html_show\"". ($html_show ? " checked" : "") .">
         <b>". _m("Show 'HTML' / 'plain text' option") ."</b><br>
         <input type=\"checkbox\" name=\"html_default\"". ($html_default ? " checked" : "") .">
@@ -400,29 +430,29 @@ echo "
       </td>
      </tr>
      <tr>
-      <td class=tabtxt><b>". _m("Help for this field") ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"input_help\" size=50 maxlength=254 value=\"". safe($input_help). "\">
-      <div class=tabhlp>". _m("Shown help for this field") ."</div>
+      <td class=\"tabtxt\"><b>". _m("Help for this field") ."</b></td>
+      <td class=\"tabtxt\" colspan=3><input type=\"text\" name=\"input_help\" size=\"50\" maxlength=\"254\" value=\"". safe($input_help). "\">
+      <div class=\"tabhlp\">". _m("Shown help for this field") ."</div>
       </td>
      </tr>
      <tr>
-      <td class=tabtxt><b>". _m("More help") ."</b></td>
-      <td class=tabtxt colspan=3><input type=\"Text\" name=\"input_morehlp\" size=50 maxlength=254 value=\"". safe($input_morehlp) ."\">
-      <div class=tabhlp>". _m("Text shown after user click on '?' in input form") ."</div>
+      <td class=\"tabtxt\"><b>". _m("More help") ."</b></td>
+      <td class=\"tabtxt\" colspan=\"3\"><input type=\"text\" name=\"input_morehlp\" size=\"50\" maxlength=\"254\" value=\"". safe($input_morehlp) ."\">
+      <div class=\"tabhlp\">". _m("Text shown after user click on '?' in input form") ."</div>
       </td>
      </tr>
      <tr>
-      <td class=tabtxt><b>". _m("Before HTML code") ."</b></td>
-      <td class=tabtxt colspan=3><textarea name=\"input_before\" rows=4 cols=50 wrap=virtual>". safe($input_before) ."</textarea>
-      <div class=tabhlp>". _m("Code shown in input form before this field") ."</div>
+      <td class=\"tabtxt\"><b>". _m("Before HTML code") ."</b></td>
+      <td class=\"tabtxt\" colspan=\"3\"><textarea name=\"input_before\" rows=\"4\" cols=\"50\" wrap=\"virtual\">". safe($input_before) ."</textarea>
+      <div class=\"tabhlp\">". _m("Code shown in input form before this field") ."</div>
       </td>
      </tr>
-     <tr><td colspan=4><hr></td></tr>
+     <tr><td colspan=\"4\"><hr></td></tr>
      <tr>
-      <td class=tabtxt><b>". _m("Feeding mode") ."</b></td>
-      <td class=tabtxt colspan=3>";
+      <td class=\"tabtxt\"><b>". _m("Feeding mode") ."</b></td>
+      <td class=\"tabtxt\" colspan=\"3\">";
         FrmSelectEasy("feed", inputFeedModes(), $feed);
-      echo "<div class=tabhlp>". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
+      echo "<div class=\"tabhlp\">". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
       </td>
      </tr>";
 FrmTabSeparator(_m("ALIASES used in views to print field content"));

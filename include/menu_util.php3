@@ -1,34 +1,39 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/* Author: Jakub Adamek
-
-   This script shows the top menu (navigation bar) and second level menu (left bar)
-   by the function showMenu ($aamenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1).
+/** This script shows the top menu (navigation bar) and second level menu (left bar)
+ *   by the function showMenu ($aamenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1).
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Jakub Adamek
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 // ----------------------------------------------------------------------------------------
 /* creates a JavaScript variable modulesOptions, which allows to create another Module selectbox
     without reprinting all the options */
-
+/** PrintModuleSelection function
+ *
+ */
 function PrintModuleSelection() {
     global $slice_id, $g_modules, $sess, $PHP_SELF, $db, $MODULES;
 
@@ -93,7 +98,7 @@ function PrintModuleSelection() {
             $js .= "\t+'<option value=\"new\" selected>". _m("New slice") + "'";
         }
         $js .= ";
-        document.write('<select name=slice_id onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
+        document.write('<select name=\"slice_id\" onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
         document.write(modulesOptions);
         document.write('</select>');\n";
         FrmJavascriptCached($js, 'modules');
@@ -105,12 +110,13 @@ function PrintModuleSelection() {
 // ----------------------------------------------------------------------------------------
 //                                SHOW MENU
 
-/* PARAMS: $smmenus -- array with menu information, see menu.php3 for an example
-           $activeMain -- selected item in main (top) menu
-           $activeSubmenu -- selected item in sub (left) menu
-           $showMain -- show the main menu (top navigation bar) ?
-           $showSub -- show the submenu (left navigation bar) ?
-*/
+/** showMenu function
+ * @param $smmenus -- array with menu information, see menu.php3 for an example
+ * @param $activeMain -- selected item in main (top) menu
+ * @param $activeSubmenu -- selected item in sub (left) menu
+ * @param $showMain -- show the main menu (top navigation bar) ?
+ * @param $showSub -- show the submenu (left navigation bar) ?
+ */
 function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
 {
     global $slice_id, $useOnLoad, $sess, $db, $auth;
@@ -155,12 +161,12 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
             $title_img = GetAAImage('spacer.gif', '', 28, 36);
         }
         echo '
-        <td colspan=2>
+        <td colspan="2">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td width="1%"><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" width=122 height=1></td>
-              <td><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" height=1></td>
-              <td><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" height=1></td>
+              <td width="1%"><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" width="122" height="1"></td>
+              <td><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" height="1"></td>
+              <td><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" height="1"></td>
             </tr>
             <tr>
               <td width="1%" rowspan="2" align="center" class="nblogo">'.$nb_logo.'</td>
@@ -195,7 +201,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
 
         echo '
               </td>
-              <td width="20%" class=navbar valign="bottom">
+              <td width="20%" class="navbar" valign="bottom">
                 <form name="nbform" enctype="multipart/form-data" method="post" action="'. $sess->url($PHP_SELF) .'" style="display:inline">
                 &nbsp; ';
         if (is_array($g_modules) AND (count($g_modules) > 1)) {
@@ -217,23 +223,30 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
     if ($showSub) {
         $submenu = $smmenus[$activeMain]["submenu"];
         if ($submenu) {
-            echo "<td valign=top>";
+            echo "<td valign=\"top\">";
             showSubmenu($smmenus[$submenu], $activeSubmenu);
             echo "</td>";
         }
     }
     echo '
-        <td align=left valign=top width="99%">
-          <table border=0 cellspacing=0 cellpadding=10 width="100%">
+        <td align="left" valign="top" width="99%">
+          <table border="0" cellspacing="0" cellpadding="10" width="100%">
             <tr>
               <td align="left">
               ';
     trace("-");
 }
-
+/** showMenuLink
+ * @param $active
+ * @param $label
+ * @param $cond
+ * @param $aa_href
+ * @param $exact_href
+ * @param $slice_id
+ */
 function showMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) {
     if ($active) {
-        echo "<span class=nbactive>$label</span>\n";
+        echo "<span class=\"nbactive\">$label</span>\n";
     }
     elseif ($slice_id AND $cond) {
         $href = $exact_href;
@@ -241,12 +254,15 @@ function showMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) 
             $href = get_aa_url($aa_href);
         }
         $href = con_url($href, "slice_id=$slice_id");
-        echo a_href($href, "<span class=nbenable>$label</span>");
+        echo a_href($href, "<span class=\"nbenable\">$label</span>");
     } else {
-        echo "<span class=nbdisable>$label</span>";
+        echo "<span class=\"nbdisable\">$label</span>";
     }
 }
-
+/** showSubMenuRows function
+ * @param $aamenuitems
+ * @param $active
+ */
 function showSubMenuRows( $aamenuitems, $active ) {
     global $slice_id,$debug;
 
@@ -259,11 +275,11 @@ function showSubMenuRows( $aamenuitems, $active ) {
             echo "<tr><td>$item</td></tr>\n";
         } elseif (substr($itemshow,0,6) == "header") {
             echo '<tr><td>&nbsp;</td></tr>
-                  <tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>
-                  <tr><td class=leftmenu>'.$item.'</td></tr>
-                  <tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
+                  <tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width="120" height="1"></td></tr>
+                  <tr><td class="leftmenu">'.$item.'</td></tr>
+                  <tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width="120" height="1"></td></tr>'."\n";
         } elseif (substr($itemshow,0,4) == "line") {
-            echo '<tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width=120 height=1></td></tr>'."\n";
+            echo '<tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width="120" height="1"></td></tr>'."\n";
         } elseif ( $item["function"] ) {
             // call some function to get menu items
             // it is better mainly for left submenus for which we need
@@ -275,7 +291,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
             echo '<tr><td width="122" valign="TOP">&nbsp;';
             if (!isset ($item["cond"])) $item["cond"] = 1;
             if ($itemshow == $active) {
-                echo "<span class=leftmenua>".$item["label"]."</span>\n";
+                echo "<span class=\"leftmenua\">".$item["label"]."</span>\n";
             } elseif (($slice_id || $item["show_always"]) && $item["cond"]) {
                 $href = ($item["exact_href"] ? $item["exact_href"] : get_aa_url($item["href"]));
                 if ($slice_id && !$item["no_slice_id"]) {
@@ -286,9 +302,9 @@ function showSubMenuRows( $aamenuitems, $active ) {
                     $item['js'] = str_replace("{exact_href}",$href,$item['js']);
                     $href       = "javascript:".$item['js'];
                 }
-                echo '<a href="'.$href.'" class=leftmenuy>'.$item["label"]."</a>\n";
+                echo '<a href="'.$href.'" class=\"leftmenuy\">'.$item["label"]."</a>\n";
             } elseif ( !$item["hide"] ) {
-                echo "<span class=leftmenun>".$item["label"]."</span>\n";
+                echo "<span class=\"leftmenun\">".$item["label"]."</span>\n";
             }
             echo "</td></tr>\n";
         }
@@ -297,22 +313,30 @@ function showSubMenuRows( $aamenuitems, $active ) {
 
 // ----------------------------------------------------------------------------------------
 //                                SHOW SUBMENU
-
+/** showSubmenu function
+ * @param $aamenu
+ * @param $active
+ */
 function showSubmenu(&$aamenu, $active)
 {
     global $debug;
-    if ($debug) { echo "<p><font color=purple>showSubmenu:active=$active</font></p>\n"; }
-    echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="LEFT" class="leftmenu">'."\n";
+    if ($debug) { echo "<p><font color=\"purple\">showSubmenu:active=$active</font></p>\n"; }
+    echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="left" class="leftmenu">'."\n";
 
     $aamenuitems = $aamenu["items"];
     showSubMenuRows( $aamenuitems, $active );
 
-    echo '<tr><td class=leftmenu>&nbsp;</td></tr>
-          <tr><td class=leftmenu height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
-          <tr><td class=copymsg ><small>'. _m("Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
+    echo '<tr><td class=\"leftmenu\">&nbsp;</td></tr>
+          <tr><td class=\"leftmenu\" height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
+          <tr><td class=\"copymsg\" ><small>'. _m("Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
           </table>'."\n";
 }
-
+/** CreateMenuItem function
+ * @param $label
+ * @param $href
+ * @param $cond
+ */
 function CreateMenuItem( $label, $href, $cond = true ) {
     return array('label' => $label, 'href' => $href, 'cond' => $cond);
 }
+?>

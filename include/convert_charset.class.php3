@@ -1,11 +1,28 @@
 <?php
 /**
- * @author Mikolaj Jedrzejak <mikolajj@op.pl>
- * @copyright Copyright Mikolaj Jedrzejak (c) 2003
- * @version 1.0 BETA 2003-10-21 00:37
- * @link http://www.unicode.org Unicode Homepage
+ * PHP versions 4 and 5
  *
- **/
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   1.0 BETA 2003-10-21 00:37
+ * @author    Mikolaj Jedrzejak <mikolajj@op.pl>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright Mikolaj Jedrzejak (c) 2003
+ * @link      http://www.unicode.org Unicode Homepage
+ *
+*/
 
 // $convert_tables_path could be specified also before including this script
 // it is usen in /misc/charset/convert.php3 script, where config.php3

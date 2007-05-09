@@ -1,37 +1,42 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
 // set template id (changes language file => must be here):
 require_once "../include/slicedit2.php3";
 
 // messages for init_page:
-$no_slice_id = true;
+$no_slice_id          = true;
 $require_default_lang = true;
 
 require_once "../include/init_page.php3";
 // the parts used by the slice wizard are in the included file
 require_once AA_INC_PATH."formutil.php3";
 
-if ($cancel)
+if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
+}
 
 $wizard = 1;
 
@@ -43,16 +48,16 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Add Slice Wizard");?></TITLE>
-</HEAD>
+ <title><?php echo _m("Add Slice Wizard");?></title>
+</head>
 <?php
-  echo "<H1><B>" . _m("Add Slice Wizard") ."</B></H1>";
+  echo "<h1><b>" . _m("Add Slice Wizard") ."</b></h1>";
   PrintArray($err);
   echo $Msg;
 ?>
 
 <center>
-<form method=post action="<?php echo $sess->url("slicedit.php3") ?>">
+<form method="post" action="<?php echo $sess->url("slicedit.php3") ?>">
 <?php
     require_once AA_INC_PATH."sliceadd.php3";
 
@@ -78,8 +83,8 @@ FrmTabCaption(_m("[Optional] Create New User"));
     FrmInputText("user_firstname", _m("First name"), "", 50, 50, true);
     FrmInputText("user_surname", _m("Surname"), "", 50, 50, true);
     FrmInputText("user_mail1", _m("E-mail")." 1", "", 50, 50, false);
-    echo '<input type=hidden name=add_submit value="1">
-    <input type=hidden name=um_uedit_no_go_url value=1>';
+    echo '<input type="hidden" name="add_submit" value="1">
+    <input type="hidden" name="um_uedit_no_go_url" value="1">';
 
     $email_welcomes = GetUserEmails("slice wizard welcome");
     $email_welcomes[NOT_EMAIL_WELCOME] = _m("Do Not Email Welcome");
@@ -99,10 +104,10 @@ FrmTabCaption(_m("[Optional] Create New User"));
                                     "accesskey"=>"S"),
                   "cancel"=>array("url"=>"um_uedit.php3")), $sess, $slice_id);
 ?>
-</FORM>
+</form>
 </center>
 <?php echo "<br><br><br><br>"; ?>
-</BODY>
-</HTML>
+</body>
+</html>
 <?php page_close()?>
 

@@ -1,23 +1,30 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (c) 2002-3 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
+
 
 //
 // Functions for feeding
@@ -25,7 +32,12 @@ http://www.apc.org/
 
 require_once AA_INC_PATH."stringexpand.php3"; // for translateString()
 
-// Find fields mapping.
+/** GetFieldMapping function
+ *  Find fields mapping.
+ * @param $from_slice_id
+ * @param $destination_id
+ * @return array
+ */
 function GetFieldMapping($from_slice_id, $destination_id) {
     $db = getDb();
 
@@ -80,7 +92,10 @@ function GetFieldMapping($from_slice_id, $destination_id) {
     return $map;
 }
 
-// get base item of $item_id from relation table
+/** GetBaseItem function
+ * get base item of $item_id from relation table
+ * @param $item_id
+ */
 function GetBaseItem($item_id) {
     global $db;
     $dest_id = $item_id;
@@ -97,7 +112,11 @@ function GetBaseItem($item_id) {
     return $dest_id;
 }
 
-// find if item was already fed to $destination slice or it comes from it
+/** IsItemFed function
+ * find if item was already fed to $destination slice or it comes from it
+ * @param $item_id
+ * @param $destination
+ */
 function IsItemFed($item_id, $destination) {
     global $db;
     $p_destination = q_pack_id($destination);
@@ -138,7 +157,8 @@ function IsItemFed($item_id, $destination) {
     return false;
 }
 
-/** Returns the joined fields
+/** FeedJoin function
+ *  Returns the joined fields
  *  @param  columns - values of the processed item (db record)
  *  @param  fields  - source fields description (object)
  *  @param  params  - parameters of the "join" mapping function - separated by
@@ -146,7 +166,7 @@ function IsItemFed($item_id, $destination) {
  *                    description (the result will be the fields' content
  *                    separated by the separators)
  *  @param  result  - the value to be changed (see FeedItemTo)
- *  @returns  result
+ *  @return  result
  *  @author   Jakub Adámek
  */
 function FeedJoin($columns, $fields, $params, &$result) {
@@ -183,7 +203,15 @@ function FeedJoin($columns, $fields, $params, &$result) {
 }
 
 
-// copy one item
+/** FeedItemTo function
+ * copy one item
+ * @param $item_id
+ * @param $from_slice_id
+ * @param $destination_id
+ * @param $approved
+ * @param $tocategory
+ * @param $content
+ */
 function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocategory=0, $content="") {
     global $db, $varset, $itemvarset;
 
@@ -264,8 +292,9 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
 
         // category mapping
         if ( $newfld == $catfieldid ) {
-            if ( (string)$tocategory != "0" )    // if 0 - don't change category
-            $new4id[$newfld][0]['value'] = $destinationcat;
+            if ( (string)$tocategory != "0" ) {    // if 0 - don't change category
+                $new4id[$newfld][0]['value'] = $destinationcat;
+            }
         }
     }
 
@@ -293,7 +322,10 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
     }
     return $id;
 }
-
+/** AddRelationFeed function
+ * @param $dest_id
+ * @param $source_id
+ */
 function AddRelationFeed($dest_id, $source_id) {
     global $db;
     $p_dest_id   = q_pack_id($dest_id);
@@ -304,10 +336,13 @@ function AddRelationFeed($dest_id, $source_id) {
     $db->query($SQL);
 }
 
-/** Return feeding tree where items should be fed.
+/** CreateFeedTree function
+ *  Return feeding tree where items should be fed.
  *  $tree[$from, $to] = array(approved=>$appr, category=>$cat_id) means, that item from
  *  slice $from will be fed to slice $to, category $cat_id and bin depending on $appr :
  *  $appp="y" => active folder else hold bin.
+ * @param $sl_id
+ * @param $from_category_id
  */
 
 function CreateFeedTree($sl_id, $from_category_id) {
@@ -346,8 +381,13 @@ function CreateFeedTree($sl_id, $from_category_id) {
     }
     return $tree;
 }
-
-// Update $dest_d item according to $item_id
+/** Update function
+ * Update $dest_d item according to $item_id
+ * @param $item_id
+ * @param $slice_id
+ * @param $dest_id
+ * @param $destination_id
+ */
 function Update($item_id, $slice_id, $dest_id, $destination_id) {
     global $varset, $itemvarset;
 
@@ -385,9 +425,12 @@ function Update($item_id, $slice_id, $dest_id, $destination_id) {
     // update, invalidatecache, not feed
 }
 
-/** Update all items descending from $item_id
+/** UpdateItems function
+ *  Update all items descending from $item_id
  *  it's expected, that items don't change their category, so $cat_id is
  *  unneccessary.
+ * @param $item_id
+ * @param $slice_id
  */
 function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id, $slice_id, $tree)
 
@@ -417,8 +460,9 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
     return $update;
 }
 
-/** Feeds item to all apropriate slices
- *  item_id is unpacked id of feeded item
+/** FeedItem function
+ *  Feeds item to all apropriate slices
+ *  @param $item_id is unpacked id of feeded item
  */
 function FeedItem($item_id) {
     $db = getDb();
@@ -439,7 +483,7 @@ function FeedItem($item_id) {
     // get this item category_id
     $cat_group = GetCategoryGroup($slice_id);
 
-    $tmpobj = $slice->getFields();
+    $tmpobj    = $slice->getFields();
     $cat_field = $tmpobj->getCategoryFieldId();
 
     if ($cat_group AND $cat_field) {
@@ -477,8 +521,11 @@ function FeedItem($item_id) {
     }
 }
 
-/** Completely deletes item content from database with all subsequencies
+/** DeleteItem function
+ *  Completely deletes item content from database with all subsequencies
  *  but not deleted item from item table !!!
+ * @param $db
+ * @param $id
  */
 function DeleteItem($db, $id) {
     $p_itm_id = q_pack_id($id);

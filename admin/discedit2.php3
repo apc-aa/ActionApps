@@ -1,22 +1,26 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ /**
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
 */
 
 // discedit2.php3 - admin discussion comments
@@ -91,23 +95,23 @@ if ($db->next_record()) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo _m("Edit discussion");?></TITLE>
-<SCRIPT Language="JavaScript"><!--
+<title><?php echo _m("Edit discussion");?></title>
+<script Language="JavaScript"><!--
 function InitPage() {}
 // -->
-</SCRIPT>
+</script>
 
 
-</HEAD>
-<BODY>
+</head>
+<body>
 <?php
-echo "<H1><B>" . _m("Items managment - Discussion comments managment - Edit comment") . "</B></H1>";
+echo "<h1><b>" . _m("Items managment - Discussion comments managment - Edit comment") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 ?>
-  <form method=post action="<?php echo $sess->url($PHP_SELF . "?d_id=".$d_id) ?>">
+  <form method="post" action="<?php echo $sess->url($PHP_SELF . "?d_id=".$d_id) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Edit comment") ?></b></td></tr>
+<tr><td class="tabtit"><b>&nbsp;<?php echo _m("Edit comment") ?></b></td></tr>
 <tr><td>
 <table width="540" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
@@ -124,15 +128,15 @@ echo $Msg;
 </table>
 <tr><td align="center">
 <?php
-    echo "<input type=hidden name=d_id value=".$d_id.">";
-    echo "<input type=hidden name=item_id value=".unpack_id128($item_id).">";
-    echo "<input type=submit name=update value=". _m("Update") .">&nbsp;&nbsp;";
-    echo "<input type=reset value=". _m("Reset form") .">&nbsp;&nbsp;";
-    echo "<input type=submit name=cancel value=". _m("Cancel") .">";
+    echo "<input type=\"hidden\" name=\"d_id\" value=".$d_id.">";
+    echo "<input type=\"hidden\" name=\"item_id\" value=".unpack_id128($item_id).">";
+    echo "<input type=\"submit\" name=\"update\" value=". _m("Update") .">&nbsp;&nbsp;";
+    echo "<input type=\"reset\" value=". _m("Reset form") .">&nbsp;&nbsp;";
+    echo "<input type=\"submit\" name=\"cancel\" value=". _m("Cancel") .">";
 ?>
 </td></tr></table>
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>
 <?php page_close()
 ?>

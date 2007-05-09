@@ -1,22 +1,29 @@
 <?php  //slice_id expected
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once "../include/init_page.php3";
@@ -44,7 +51,7 @@ $module_id = $slice_id;
 // (like Links, ...) it is not so confusing
 
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
-$slice = AA_Slices::getSlice($module_id);
+$slice       = AA_Slices::getSlice($module_id);
 
 switch( $type ) {
     case 'users':
@@ -108,8 +115,9 @@ if ( !isset($r_userstate) OR isset($group) OR isset($items)) {
 // echo "<pre>"; print_r($manager); echo "</pre>";
 
 
-if ( $r_userstate['usershowmanager'] )        // do not set state for the first time calling
+if ( $r_userstate['usershowmanager'] ) {        // do not set state for the first time calling
     $manager->setFromState($r_userstate['usershowmanager']);
+}
 
 $manager->performActions();
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
@@ -142,8 +150,8 @@ $r_userstate['usershowmanager'] = $manager->getState();
 
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
  <tr>
-  <td align=center>
-   <input type=button value='". _m("Close") ."' onclick='window.close()'>
+  <td align=\"center\">
+   <input type=\"button\" value='". _m("Close") ."' onclick='window.close()'>
    <input type=\"hidden\" name=\"group\" value=\"".$group."\">
   </td>
  </tr>

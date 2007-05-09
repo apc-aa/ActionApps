@@ -1,22 +1,27 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>, Mitra Ardron <mitra@mitra.biz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
 */
 
 // ----------------------------------------------------------------------------
@@ -31,7 +36,10 @@ require_once AA_INC_PATH."easy_scroller.php3";
 require_once AA_INC_PATH."sliceobj.php3";
 require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
 require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
-
+/** translateString function
+ * @param $string
+ * @param $translation
+ */
 function translateString( $string, $translation ) {
     $twos = ParamExplode( $translation );
     $i=0;
@@ -48,7 +56,9 @@ function translateString( $string, $translation ) {
     }
     return "";
 }
-
+/** parseSwitch function
+ * @param $text
+ */
 function parseSwitch($text) {
     $variable = substr(strtok('_'.$text,")"),1);   // add and remove '_' - this
                                                    // is hack for empty variable
@@ -65,11 +75,15 @@ function parseSwitch($text) {
 *                   'role'
 */
 class AA_Stringexpand_User extends AA_Stringexpand {
-
+    /** additionalCacheParam function
+     *
+     */
     function additionalCacheParam() {
         return serialize(array($GLOBALS['auth_user_info'], $GLOBALS['auth']));
     }
-
+    /** expand function
+     * @param $field
+     */
     function expand($field='') {
         global $auth_user_info, $cache_nostore, $auth, $perms_roles;
         // this GLOBAL :-( variable is message for pagecache to NOT store views (or
@@ -117,7 +131,9 @@ class AA_Stringexpand_User extends AA_Stringexpand {
 class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // cache is used by expand function itself
-
+    /** expand function
+     *
+     */
     function expand() {
         global $contentcache;
         $arg_list = func_get_args();   // must be asssigned to the variable
@@ -131,11 +147,15 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
  *  @param $part_name - name of the part (like 'Related Articles').
  */
 class AA_Stringexpand_Formbreak extends AA_Stringexpand {
-
+    /** additionalCacheParam function
+     *
+     */
     function additionalCacheParam() {
         return serialize(array($GLOBALS['g_formpart'], $GLOBALS['g_formpart_names'], $GLOBALS['g_formpart_pos']));
     }
-
+    /** expand function
+     *
+     */
     function expand($part_names='') {
         $GLOBALS['g_formpart']++;  // Nothing to print, it just increments part counter
 
@@ -161,6 +181,9 @@ class AA_Stringexpand_Formbreak extends AA_Stringexpand {
  *  @param $part_name - name of the part (like 'Related Articles').
  */
 class AA_Stringexpand_Formbreakbottom extends AA_Stringexpand_Formbreak {
+    /** expand function
+     *
+     */
     function expand($part_names='') {
         $GLOBALS['g_formpart_pos'] = 2;  // bottom
         parent::expand($part_names);
@@ -171,6 +194,9 @@ class AA_Stringexpand_Formbreakbottom extends AA_Stringexpand_Formbreak {
  *  @param $part_name - name of the part (like 'Related Articles').
  */
 class AA_Stringexpand_Formbreaktop extends AA_Stringexpand_Formbreak {
+    /** expand function
+     *
+     */
     function expand($part_names='') {
         $GLOBALS['g_formpart_pos'] = 1;  // top
         parent::expand($part_names);
@@ -181,7 +207,9 @@ class AA_Stringexpand_Formbreaktop extends AA_Stringexpand_Formbreak {
 class AA_Stringexpand_Formpart extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     *
+     */
     function expand() {
         return get_if($GLOBALS['g_formpart'],'0');  // Just print part counter
     }
@@ -196,7 +224,11 @@ class AA_Stringexpand_Formpart extends AA_Stringexpand_Nevercache {
  *                   - see: http://www.icq.com/features/web/indicator.html
  */
 class AA_Stringexpand_Icq extends AA_Stringexpand {
-
+    /** expand function
+     * @param $user_id
+     * @param $action
+     * @param $style
+     */
     function expand($user_id='', $action='add', $style=1) {
         if ( !$user_id ) {
             return "";
@@ -223,7 +255,12 @@ class AA_Stringexpand_Icq extends AA_Stringexpand {
  *                   - @see: http://www.skype.com/share/buttons/advanced.html
  */
 class AA_Stringexpand_Skype extends AA_Stringexpand {
-
+    /** expand function
+     * @param $user_id
+     * @param $action
+     * @param $style
+     * @param $message
+     */
     function expand($user_skype_name='', $action='userinfo', $style='smallicon', $message='Skype me') {
         if ( !$user_skype_name ) {
             return "";
@@ -252,7 +289,11 @@ class AA_Stringexpand_Skype extends AA_Stringexpand {
  *                   - see: http://messenger.yahoo.com/messenger/help/online.html
  */
 class AA_Stringexpand_Yahoo extends AA_Stringexpand {
-
+    /** expand function
+     * @param $user_id
+     * @param $action
+     * @param $style
+     */
     function expand($user_id='', $action='sendim', $style='2') {
 
         if ( !$user_id ) {
@@ -321,7 +362,11 @@ class AA_Stringexpand_Yahoo extends AA_Stringexpand {
  *                     @see: http://www.onlinestatus.org/
  */
 class AA_Stringexpand_Jabber extends AA_Stringexpand {
-
+    /** expand function
+     * @param $user_id
+     * @param $action
+     * @param $style
+     */
     function expand($user_id='', $action='call', $style=0) {
         if ( !$user_id ) {
             return "";
@@ -351,7 +396,12 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
  */
 class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
-
+    /** expand function
+     * @param $switch_state_1
+     * @param $code_1
+     * @param $switch_state_2
+     * @param $code_2
+     */
     function expand($switch_state_1, $code_1, $switch_state_2, $code_2) {
         $uniqid = uniqid();
         $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1', 'toggle_1_$uniqid', '$switch_state_2', 'toggle_2_$uniqid')\">$switch_state_1</a>\n";
@@ -375,7 +425,12 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
  *                           on demand (click on the link)
  */
 class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
-
+    /** expand function
+     * @param $switch_state_1
+     * @param $code_1
+     * @param $switch_state_2
+     * @param $url
+     */
     function expand($switch_state_1, $code_1, $switch_state_2, $url) {
         $uniqid = uniqid();
         $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:AA_HtmlAjaxToggle('toggle_link_$uniqid', '$switch_state_1', 'toggle_1_$uniqid', '$switch_state_2', 'toggle_2_$uniqid', '$url')\">$switch_state_1</a>\n";
@@ -389,6 +444,9 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
 
 
 // text = [ decimals [ # dec_point [ thousands_sep ]]] )
+/** parseMath function
+ * @param $text
+ */
 function parseMath($text) {
     // get format string, need to add and remove // to
     // allow for empty string
@@ -419,7 +477,11 @@ function parseMath($text) {
     return $ret;
 }
 
-/** parseLoop - in loop writes out values from field */
+/** parseLoop function
+ *  - in loop writes out values from field
+ * @param $out
+ * @param $item
+ */
 function parseLoop($out, &$item) {
     global $contentcache;
 
@@ -518,11 +580,15 @@ function parseLoop($out, &$item) {
     return $ret_str;
 }
 
-/* getConstantsGroupGroupID returns group id for specified field */
+/** getConstantsGroupID function
+ *  @return group id for specified field
+ * @param $slice_id
+ * @param $field
+ */
 function getConstantsGroupID($slice_id, $field) {
     global $contentcache;
     // get constant group_id from content cache or get it from db
-    $zids = new zids($slice_id, "p");
+    $zids    = new zids($slice_id, "p");
     $long_id = $zids->longids();
     // GetCategoryGroup looks in database - there is a good chance, we will
     // expand {const_*} very soon (again), so we cache the result for future
@@ -532,8 +598,13 @@ function getConstantsGroupID($slice_id, $field) {
     return $group_id;
 }
 
-/* getConstantValue returns $what (name, value, short_id,...) of constants with
-   group $group and name $field_name) */
+/** getConstantValue function
+ * @param $group
+ * @param $what
+ * @param $field_name
+ *  @return $what (name, value, short_id,...) of constants with
+   group $group and name $field_name)
+   */
 function getConstantValue($group, $what, $field_name) {
     global $contentcache;
     switch ($what) { // this switch is for future changes in this code
@@ -564,9 +635,13 @@ $QuoteArray = array(":" => "_AA_CoLoN_",
 $UnQuoteArray = array_flip($QuoteArray);
 
 
-/** Substitutes all colons with special AA string and back depending on unalias
+/** QuoteColons function
+ *  Substitutes all colons with special AA string and back depending on unalias
  *  nesting. Used to mark characters :{}() which are content, not syntax
  *  elements
+ * @param $level
+ * @param $maxlevel
+ * @param $text
  */
 function QuoteColons($level, $maxlevel, $text) {
     global $QuoteArray, $UnQuoteArray;  // Global so not built at each call
@@ -581,8 +656,10 @@ function QuoteColons($level, $maxlevel, $text) {
     return $text;
 }
 
-/** Substitutes special AA 'colon' string back to colon ':' character
+/** DeQuoteColons function
+ *  Substitutes special AA 'colon' string back to colon ':' character
  *  Used for parameters, where is no need colons are not parameter separators
+ * @param $text
  */
 function DeQuoteColons($text) {
     return strtr($text, $GLOBALS['UnQuoteArray']);
@@ -599,7 +676,10 @@ $GLOBALS[eb_functions] = array (
 class AA_Stringexpand_Fmod extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $x
+     * @param $y
+     */
     function expand($x,$y) {
         return fmod($x,$y);
     }
@@ -608,7 +688,9 @@ class AA_Stringexpand_Fmod extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $name
+     */
     function expand($name) {
         return $_COOKIE[$name];
     }
@@ -617,7 +699,8 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     */
     function expand() {
         return time();
     }
@@ -626,7 +709,12 @@ class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $string
+     * @param $start
+     * @param $length
+     * @param $add
+     */
     function expand($string,$start,$length=999999999,$add='') {
         $ret = substr($string,$start,$length);
         if ( $add AND (strlen($ret) < strlen($string)) ) {
@@ -639,7 +727,9 @@ class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Strlen extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $string
+     */
     function expand($string) {
         return strlen($string);
     }
@@ -648,7 +738,9 @@ class AA_Stringexpand_Strlen extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $string
+     */
     function expand($string) {
         return trim($string);
     }
@@ -657,7 +749,11 @@ class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Str_Replace extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $search
+     * @param $replace
+     * @param $subject
+     */
     function expand($search, $replace, $subject) {
         return str_replace($search, $replace, $subject);
     }
@@ -667,7 +763,9 @@ class AA_Stringexpand_Str_Replace extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Urlencode extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $text
+     */
     function expand($text='') {
         return urlencode($text);
     }
@@ -676,7 +774,9 @@ class AA_Stringexpand_Urlencode extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $text
+     */
     function expand($text='') {
         return (strcspn($text,",\"\n\r") == strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
     }
@@ -692,7 +792,9 @@ class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $text
+     */
     function expand($text='') {
         return $text;
     }
@@ -701,7 +803,9 @@ class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $text
+     */
     function expand($text='') {
         return htmlspecialchars($text);
     }
@@ -711,7 +815,9 @@ class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $text
+     */
     function expand($text='') {
         return str_replace("'", "\'", safe($text));
     }
@@ -720,7 +826,9 @@ class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Striptags extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $text
+     */
     function expand($text='') {
         return strip_tags($text);
     }
@@ -729,7 +837,9 @@ class AA_Stringexpand_Striptags extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Rss extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $text
+     */
     function expand($text='') {
         $entities_old = array('&nbsp;', '& ');
         $entities_new = array(' ', '&amp; ');
@@ -738,7 +848,9 @@ class AA_Stringexpand_Rss extends AA_Stringexpand_Nevercache {
 }
 
 class AA_Stringexpand_Convert extends AA_Stringexpand {
-
+    /** expand function
+     * @param $text
+     */
     function expand($text, $from, $to) {
         require_once AA_INC_PATH."convert_charset.class.php3";
         $encoder = new ConvertCharset;
@@ -753,7 +865,9 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
 class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $text
+     */
     function expand($text='') {
         if ( !AA_Fields::isField($text) ) {
             return AA_Stringexpand_Conds::_textToConds($text);
@@ -787,7 +901,11 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // The caching is made by AA_Stringexpand_Aggregate, which is enough
-
+    /** expand function
+     * @param $ids_string
+     * @param $expression
+     * @param $delimeter
+     */
     function expand($ids_string, $expression, $delimiter=', ') {
         return AA_Stringexpand_Aggregate::expand('concat', $ids_string, $expression, $delimiter);
     }
@@ -795,7 +913,12 @@ class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
 
 /** ids_string - ids (long or short (or mixed) separated by dash '-') */
 class AA_Stringexpand_Aggregate extends AA_Stringexpand {
-
+    /** expand function
+     * @param $function
+     * @param $ids_string
+     * @param $expression
+     * @param $parameter
+     */
     function expand($function, $ids_string, $expression=null, $parameter=null) {
         if ( !in_array($function, array('sum', 'avg', 'concat', 'count')) ) {
             return '';
@@ -842,7 +965,13 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
  *  begins with Bio and switch is 1 ordered by headline - descending
  */
 class AA_Stringexpand_Ids extends AA_Stringexpand {
-
+    /** expand function
+     * @param $slices
+     * @param $conds
+     * @param $sort
+     * @param $delimeter
+     * @param $ids
+     */
     function expand($slices, $conds=null, $sort=null, $delimiter=null, $ids=null) {
         $conditions = new AA_Set;
         $conditions->addCondsFromString($conds);
@@ -861,6 +990,11 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
 
 /** @returns name (or other field) of the constant in $gropup_id with $value */
 class AA_Stringexpand_Constant extends AA_Stringexpand {
+    /** expand function
+     * @param $group_id
+     * @param $value
+     * @param $what
+     */
     function expand($group_id, $value, $what='name') {
          return getConstantValue($group_id, $what, $value);
     }
@@ -873,7 +1007,11 @@ class AA_Stringexpand_Constant extends AA_Stringexpand {
 class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $condition
+     * @param $text
+     * @param $else_text
+     */
     function expand($condition, $text, $else_text='') {
         return (strlen($condition)<1) ? $else_text : str_replace('_#1', $condition, $text);
     }
@@ -885,7 +1023,9 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $url
+     */
     function expand($url) {
         global $sess;
         return ($url == "hidden") ? "<input type=\"hidden\" name=\"".$sess->name."\" value=\"".$sess->id."\">" : $sess->url($url);
@@ -901,7 +1041,10 @@ class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Compare extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $val1
+     * @param $val2
+     */
     function expand($val1, $val2) {
         return ( $val1 == $val2 ) ? 'E' : (($val1 > $val2) ? 'G' : 'L' );
     }
@@ -911,7 +1054,11 @@ class AA_Stringexpand_Compare extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Field extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // We need to solve item caching (it is not problem, but I'm lazy, now)
-
+    /** expand function
+     * @param $field_id
+     * @param $property
+     * @param $slice_id
+     */
     function expand($field_id, $property='name', $slice_id=null) {
         if (!AA_Fields::isField($field_id)) {
             return '';
@@ -933,11 +1080,15 @@ class AA_Stringexpand_Field extends AA_Stringexpand_Nevercache {
 
 /** Get module (slice, ...) property (currently only 'name' is supported */
 class AA_Stringexpand_Slice extends AA_Stringexpand {
-
+    /** additionalCacheParam function
+     *
+     */
     function additionalCacheParam() {
         return serialize(array($GLOBALS['slice_id']));
     }
-
+    /** expand function
+     * @param $property
+     */
     function expand($property='name') {
         // get slice_id from item, but sometimes the item is not filled (like
         // on "Add Item" in itemedit.php3, so we use global slice_id here
@@ -955,11 +1106,13 @@ class AA_Stringexpand_Slice extends AA_Stringexpand {
 
 
 
-/** Store $text in the $html_subst_arr array - used for dictionary escaping html
+/** makeAsShortcut function
+ *  Store $text in the $html_subst_arr array - used for dictionary escaping html
  *  tags.
  *  This function belongs to AA_Stringexpand_Dictionary class, but I don't know,
  *  how to call class method from preg_replace function.
  *  So it remains as separate function.
+ * @param $text
  */
 function makeAsShortcut($text) {
     static $count=0;
@@ -980,7 +1133,12 @@ function makeAsShortcut($text) {
  *  @author Honza Malik, Hana Havelková
  */
 class AA_Stringexpand_Dictionary extends AA_Stringexpand {
-
+    /** expand function
+     * @param $dictionaries
+     * @param $text
+     * @param $format
+     * @param $conds
+     */
     function expand($dictionaries, $text, $format, $conds='') {
         global $pagecache;
 
@@ -1030,9 +1188,14 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
     }
 
 
-    /** Return array of substitution pairs for dictionary, based on given dictionary
+    /** getDictReplacePairs function
+     *  Return array of substitution pairs for dictionary, based on given dictionary
      *  slice, format string which defines the format and possible slice codnitions.
      *   [biom] => <a href="http://biom.cz">_#KEYWORD_</a>, ...
+     * @param $dictionary
+     * @param $format
+     * @param $delimeters
+     * @param $conds
      */
     function getDictReplacePairs($dictionary, $format, &$delimiters, $conds='') {
         // return array of pairs: [biom] => <a href="http://biom.cz">_#KEYWORD_</a>
@@ -1075,7 +1238,8 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         return $replace_pairs;
     }
 
-    /** It's necessary to select characters used as standard word delimiters
+    /** defineDelimiters function
+     *  It's necessary to select characters used as standard word delimiters
      *  Check the value of the string variable $delimiter_chars and correct it.
      *  Associative array $delimiters contains frequently used delimiters and it's
      *  special replace_strings used as word boundaries
@@ -1102,7 +1266,15 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
     }
 }
 
-/** Expand a single, syntax element */
+/** expand_bracketed function
+ *  Expand a single, syntax element
+ * @param $out
+ * @param $level
+ * @param $maxlevel
+ * @param $item
+ * @param $itemview
+ * @param $aliases
+ */
 function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
 
     global $contentcache, $als, $debug, $errcheck;
@@ -1169,8 +1341,9 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
     elseif( substr($out, 0, 8) == "include(" ) {
       // include file
-      if ( !($pos = strpos($out,')')) )
+      if ( !($pos = strpos($out,')')) ) {
         return "";
+      }
         $fileout = expandFilenameWithHttp(substr($out, 8, $pos-8));
         return QuoteColons($level, $maxlevel, $fileout);
         // QuoteColons used to mark colons, which is not parameter separators.
@@ -1178,10 +1351,13 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     elseif( substr($out, 0, 8) == "include:") {
         //include file, first parameter is filename, second is hints on where to find it
         $parts = ParamExplode(substr($out,8));
-        if (! ($fn = $parts[0]))
+        if (! ($fn = $parts[0])) {
             return "";
+        }
         // Could extend this to recognize | seperated alternatives
-        if (! $parts[1]) $parts[1] = "http";  // Backward compatability
+        if (! $parts[1]) {
+            $parts[1] = "http";  // Backward compatability
+        }
         switch ($parts[1]) {
           case "http":
             $fileout = expandFilenameWithHttp($parts[0]); break;
@@ -1242,10 +1418,18 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
     elseif( substr($out, 0,5) == "debug" ) {
         // Note don't rely on the behavior of {debug} its changed by programmers for testing!
-        if (isset($GLOBALS["apc_state"])) huhl("apc_state=",$GLOBALS["apc_state"]);
-        if (isset($itemview))             huhl("itemview=",$itemview);
-        if (isset($aliases))              huhl("aliases=",$aliases);
-        if (isset($als))                  huhl("als=",$als);
+        if (isset($GLOBALS["apc_state"])) {
+            huhl("apc_state=",$GLOBALS["apc_state"]);
+        }
+        if (isset($itemview)) {
+            huhl("itemview=",$itemview);
+        }
+        if (isset($aliases)) {
+            huhl("aliases=",$aliases);
+        }
+        if (isset($als)) {
+            huhl("als=",$als);
+        }
         huhl("globals=",$GLOBALS);
         return "";
     }
@@ -1344,8 +1528,9 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         return QuoteColons($level, $maxlevel, parseLoop($out, $item));
     }
     elseif (substr($out,0,8) == "mlx_view") {
-        if(!$GLOBALS['mlxView'])
-           return "$out";
+        if(!$GLOBALS['mlxView']) {
+            return "$out";
+        }
         //$param = array_map('DeQuoteColons',ParamExplode($parts[2]));
         return $GLOBALS['mlxView']->getTranslations($item->getval('id..............'),
           $item->getval('slice_id........'),array_map('DeQuoteColons',ParamExplode($parts[2])));
@@ -1362,7 +1547,10 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
 }
 
-// Expand any quotes in the parturl, and fetch via http
+/** expandFilenameWithHttp function
+ *  Expand any quotes in the parturl, and fetch via http
+ * @param $parturl
+ */
 function expandFilenameWithHttp($parturl) {
     global $errcheck;
       $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()),
@@ -1386,12 +1574,19 @@ function expandFilenameWithHttp($parturl) {
 class AA_Stringexpand_Keystring extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     */
     function expand() {
         $ks = "";
-        if (isset($GLOBALS["apc_state"])) $ks .= serialize($GLOBALS["apc_state"]);
-        if (isset($GLOBALS["als"]))       $ks .= serialize($GLOBALS["als"]);
-        if (isset($_COOKIE))              $ks .= serialize($_COOKIE);
+        if (isset($GLOBALS["apc_state"])) {
+            $ks .= serialize($GLOBALS["apc_state"]);
+        }
+        if (isset($GLOBALS["als"])) {
+            $ks .= serialize($GLOBALS["als"]);
+        }
+        if (isset($_COOKIE)) {
+            $ks .= serialize($_COOKIE);
+        }
         return $ks;
     }
 }
@@ -1406,7 +1601,13 @@ class AA_Unalias_Callback {
     var $item;
     var $itemview;
     var $aliases;
-
+    /** AA_Unalias_Callback function
+     * @param $level
+     * @param $maxlevel
+     * @param $item
+     * @param $itemview
+     * @param $aliases
+     */
     function AA_Unalias_Callback( $level, &$maxlevel, $item, $itemview, $aliases ) {
         $this->level    = $level;
         $this->maxlevel = $maxlevel;
@@ -1414,16 +1615,27 @@ class AA_Unalias_Callback {
         $this->itemview = $itemview;
         $this->aliases  = $aliases;
     }
-
+    /** expand_bracketed_callback function
+     * @param $match
+     */
     function expand_bracketed_callback($match) {
         return expand_bracketed($match[1], $this->level,$this->maxlevel,$this->item,$this->itemview,$this->aliases);
     }
 }
 
-// This is based on the old unalias_recurent, it is intended to replace
-// string substitution wherever its occurring.
-// Differences ....
-//   - remove is applied to the entire result, not the parts!
+/**  new_unalias_recurent function
+ *  This is based on the old unalias_recurent, it is intended to replace
+ *  string substitution wherever its occurring.
+ *  Differences ....
+ *    - remove is applied to the entire result, not the parts!
+ * @param $text
+ * @param $remove
+ * @param $level
+ * @param $maxlevel
+ * @param $item
+ * @param $itemview
+ * @param $aliases
+ */
 function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $itemview=null, $aliases=null ) {
     global $debug;
 
@@ -1453,7 +1665,9 @@ function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $
 // This isn't used yet, might be changed
 // remove this comment if you use it!
 class AA_Stringexpand_Slice_Comments extends AA_Stringexpand {
-
+    /** expand function
+     * @param $slice_id
+     */
     function expand($slice_id) {
         $SQL = "SELECT sum(disc_count) FROM item WHERE slice_id=\"$slice_id\"";
         $db  = getDB();
@@ -1467,7 +1681,10 @@ class AA_Stringexpand_Slice_Comments extends AA_Stringexpand {
 class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $pattern
+     * @param $subject
+     */
     function expand($pattern, $subject) {
         // preg_match unfortunately allow users to run their own PHP code
         // (using '/pattern/e'), which is dangerous. We do not want to allow
@@ -1485,7 +1702,11 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // It works with database, so it shoud always look in the database
-
+    /** expand function
+     * @param $item_id
+     * @param $field_id
+     * @param $show_alias
+     */
     function expand($item_id, $field_id, $show_alias='') {
         $ret = '';
         $alias_name = ($show_alias == '') ? '' : substr($show_alias, 2);
@@ -1543,15 +1764,19 @@ class AA_Stringexpand {
      *  Not used fot many expand functions
      */
     var $item;
-
+    /** AA_Stringexpand function
+     * @param $item
+     */
     function AA_Stringexpand($item) {
         $this->item = $item;
     }
-
+    /** expand function
+     */
     function expand() {
     }
 
-    /** Some stringexpand functions uses global parameters, so it is not posible
+    /** additionalCacheParam function
+     *  Some stringexpand functions uses global parameters, so it is not posible
      *  to use cache for results based just on expand() parameters. We need to
      *  add following parameters. In mast cases you do not need to override this
      *  function
@@ -1560,7 +1785,12 @@ class AA_Stringexpand {
         return '';
     }
 
-    /** static function */
+    /** unalias function
+     *  static function
+     * @param $text
+     * @param $remove
+     * @param $item
+     */
     function unalias(&$text, $remove="", $item=null) {
         // just create variables and set initial values
         $maxlevel = 0;
@@ -1568,7 +1798,11 @@ class AA_Stringexpand {
         $GLOBALS['g_formpart'] = 0;  // used for splited inputform into parts
         return new_unalias_recurent($text, $remove, $level, $maxlevel, $item ); // Note no itemview param
     }
-
+    /** unaliasArray function
+     * @param $arr
+     * @param $remove
+     * @param $item
+     */
     function unaliasArray(&$arr, $remove="", $item=null) {
         if (is_array( $arr )) {
             foreach ( $arr as $k => $text ) {
@@ -1582,6 +1816,8 @@ class AA_Stringexpand {
  *  is needed (probably very easy functions
  */
 class AA_Stringexpand_Nevercache extends AA_Stringexpand {
+    /** additionalCacheParam function
+     */
     function additionalCacheParam() {
         // no reason to cache this simple function
         return '_AA_NeVeR_CaChE';
@@ -1593,7 +1829,10 @@ class AA_Stringexpand_Nevercache extends AA_Stringexpand {
 class AA_Stringexpand_Log extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $number
+     * @param $base
+     */
     function expand($number='', $base='') {
         return log($number, $base);
     }
@@ -1602,7 +1841,9 @@ class AA_Stringexpand_Log extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Unpack extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-
+    /** expand function
+     * @param $number
+     */
     function expand($number='') {
         return unpack_id($number);
     }

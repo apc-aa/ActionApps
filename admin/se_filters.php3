@@ -1,40 +1,48 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/** se_filters.php3 - feeding filters settings
+ *   expected $slice_id for edit slice
+ *   optionaly $import_id for selected imported slice
+ *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Filters update successful)
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
-// se_filters.php3 - feeding filters settings
-// expected $slice_id for edit slice
-// optionaly $import_id for selected imported slice
-// optionaly $Msg to show under <h1>Hedline</h1> (typicaly: Filters update successful)
+
+//
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."csn_util.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
+if ($cancel) {
+    go_url( $sess->url(self_base() . "index.php3"));
+}
 
 if (!IfSlPerm(PS_FEEDING)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "sliceadmin", "filters");
-  exit;
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"), "sliceadmin", "filters");
+    exit;
 }
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
@@ -133,7 +141,7 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
             $all_categories = true;
             $approved_0     = $db->f('to_approved');
             $categ_0        = unpack_id($db->f('to_category_id'));  // if 0 => the same category
-        }else{
+        } else {
             $chboxcat[unpack_id($db->f('category_id'))] = true;
             $selcat[unpack_id($db->f('category_id'))]   = unpack_id($db->f('to_category_id'));
             $chboxapp[unpack_id($db->f('category_id'))] = $db->f('to_approved');
@@ -141,8 +149,8 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
     }
 }
 ?>
- <TITLE><?php echo _m("Admin - Content Pooling - Filters");?></TITLE>
-<SCRIPT Language="JavaScript"><!--
+ <title><?php echo _m("Admin - Content Pooling - Filters");?></title>
+<script Language="JavaScript"><!--
 
 function ChBoxState(chbox) {
   return eval(chbox).checked
@@ -233,30 +241,30 @@ function UpdateFilters(slice_id, import_id) {
         }
     }
 // -->
-</SCRIPT>
-</HEAD>
+</script>
+</head>
 <?php
   $useOnLoad = true;
   require_once AA_INC_PATH."menu.php3";
   showMenu ($aamenus, "sliceadmin", "filters");
 
-  echo "<H1><B>" . _m("Admin - Content Pooling - Filters") . "</B></H1>";
+  echo "<h1><b>" . _m("Admin - Content Pooling - Filters") . "</b></h1>";
   PrintArray($err);
   echo $Msg;
 
-  $form_buttons=array("btn_upd"=>array("type"=>"button",
-                                 "value"=>_m("Update"),
-                                 "accesskey"=>"S",
-                                 "add"=>"onclick=\"UpdateFilters('".$slice_id."','".$import_id."')\""),
-                "cancel"=>array("url"=>"se_fields.php3"))
+  $form_buttons=array("btn_upd"=>array("type"  =>"button",
+                                 "value"       =>_m("Update"),
+                                 "accesskey"   =>"S",
+                                 "add"         =>"onclick=\"UpdateFilters('".$slice_id."','".$import_id."')\""),
+                "cancel"       =>array("url"   =>"se_fields.php3"))
 
 ?>
-<form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
   FrmTabCaption(_m("Content Pooling - Configure Filters"),'','',$form_buttons, $sess, $slice_id);
 ?>
 <tr>
-  <td colspan class=tabtxt align=center><b><?php echo _m("Filter for imported slice") . "&nbsp; "?></b></td>
+  <td colspan class="tabtxt" align="center"><b><?php echo _m("Filter for imported slice") . "&nbsp; "?></b></td>
   <td><?php FrmSelectEasy("import_id", $impslices, $import_id, "OnChange=\"ChangeImport()\""); ?></td>
 </tr>
 <?php
@@ -265,50 +273,55 @@ FrmTabSeparator(_m("Categories"));
 <tr><td>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <tr>
-  <td width="40%" colspan=2 class=tabtxt align=center><b><?php echo _m("From") ?></b></td>
-  <td width="30%" class=tabtxt align=center><b><?php echo _m("To") ?></b></td>
-  <td width="30%" class=tabtxt align=center><b><?php echo _m("Active") ?></b></td>
+  <td width="40%" colspan="2" class="tabtxt" align="center"><b><?php echo _m("From") ?></b></td>
+  <td width="30%" class="tabtxt" align="center"><b><?php echo _m("To") ?></b></td>
+  <td width="30%" class="tabtxt" align="center"><b><?php echo _m("Active") ?></b></td>
 </tr>
 
 <tr>
 <?php
 if ($imp_count) {
-   echo "<td align=center>";
+   echo "<td align=\"center\">";
    FrmChBoxEasy("all_categories", $all_categories, "OnClick=\"AllCategClick()\"");
    echo "</td>";
 }
 ?>
-<td class=tabtxt <?php if (!$imp_count) { echo "colspan=2 align=center"; } ?>><?php echo _m("All Categories") ?></td>
+<td class=tabtxt <?php if (!$imp_count) { echo "colspan=\"2\" align=\"center\""; } ?>><?php echo _m("All Categories") ?></td>
 </td>
 
-<TD><?php
-  if ( isset($to_categories) AND is_array($to_categories) )
+<td><?php
+if ( isset($to_categories) AND is_array($to_categories) ) {
     FrmSelectEasy("categ_0", $to_categories, $categ_0);
-   else
-    echo "<span class=tabtxt>". _m("No category defined") ."</span>";
+} else {
+    echo "<span class=\"tabtxt\">". _m("No category defined") ."</span>";
+}
 ?></td>
-<td align="CENTER"><?php FrmChBoxEasy("approved_0", $approved_0); ?></td>
+<td align="center"><?php FrmChBoxEasy("approved_0", $approved_0); ?></td>
 </tr>
-<tr><td colspan=4><hr></td></tr>
+<tr><td colspan="4"><hr></td></tr>
 <?php
-
+/** PrintOneRow function
+ *  @param $id
+ *  @param $cat_name
+ *  @param $i
+ */
 function PrintOneRow($id, $cat_name, $i) {
     global $chboxcat, $selcat, $chboxapp, $to_categories;
 
-    echo "<tr><td align=CENTER>";
+    echo "<tr><td align=\"center\">";
     $chboxname = "chbox_". $i;
     FrmChBoxEasy($chboxname, $chboxcat[$id] );
-    echo "</td>\n<td class=tabtxt>". $cat_name. "</td><TD>";
+    echo "</td>\n<td class=\"tabtxt\">". $cat_name. "</td><td>";
     $selectname = "categ_". $i;
     if ( isset($to_categories) AND is_array($to_categories) ) {
         FrmSelectEasy($selectname, $to_categories, isset($selcat[$id]) ? $selcat[$id] : $id);
     } else {
-        echo "<span class=tabtxt>". _m("No category defined") ."</span>";
+        echo "<span class=\"tabtxt\">". _m("No category defined") ."</span>";
     }
-    echo "</td>\n<TD align=CENTER>";
+    echo "</td>\n<td align=\"center\">";
     $chboxname = "approved_". $i;
     FrmChBoxEasy($chboxname, $chboxapp[$id] );
-    echo "<input type=hidden name=hid_$i value=$id>";
+    echo "<input type=\"hidden\" name=\"hid_$i\" value=\"$id\">";
     echo "</td></tr>";
 }
 
@@ -339,11 +352,12 @@ else {
     }
 }
 ?>
-<tr><td colspan=3><a href="javascript:SelectChboxes('chbox_')"><?php echo _m('Select all');?></td><td><a href="javascript:SelectChboxes('approved_')"><?php echo _m('Select all');?></td></tr>
+<tr><td colspan="3"><a href="javascript:SelectChboxes('chbox_')"><?php echo _m('Select all');?></td><td><a href="javascript:SelectChboxes('approved_')"><?php echo _m('Select all');?></td></tr>
 <?php
 FrmTabEnd($form_buttons,$sess, $slice_id);
 ?>
-</FORM>
+</form>
 <?php
 HtmlPageEnd();
-page_close()?>
+page_close();
+?>

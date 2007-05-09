@@ -1,24 +1,29 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
 // Parameters: group_id - identifier of constant group
 //             categ - if true, constants are taken as category, so
 //                     APC parent categories are displayed for selecting parent
@@ -74,19 +79,30 @@ if (! $category && $group_id ) {
         exit;
     }
 }
-
+/** ShowConstant function
+ * @param $id
+ * @param $name
+ * @param $value
+ * @param $cid
+ * @param $pri
+ * @param $class
+ * @param $categ
+ * @param $classes
+ * @return
+ *
+ */
 function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) {
     global $sess;
     $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid);
 
     echo "
     <tr>
-      <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=149 value=\"$name\"></td>
-      <td><input type=\"Text\" name=\"value[$id]\" size=25 maxlength=255 value=\"$value\">
-          <input type=\"Hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
-      <td class=tabtxt><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>";
+      <td><input type=\"text\" name=\"name[$id]\" size=\"25\" maxlength=\"149\" value=\"$name\"></td>
+      <td><input type=\"text\" name=\"value[$id]\" size=\"25\" maxlength=\"255\" value=\"$value\">
+          <input type=\"hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
+      <td class=\"tabtxt\"><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>";
     if ($categ) {   // it is categories - show APC wide categories for parent category select
-        echo "<td class=tabtxt>";
+        echo "<td class=\"tabtxt\">";
         echo "<select name=\"class[$id]\" $add>";
         foreach ($classes as $k => $v) {
             echo "<option value=\"". htmlspecialchars($k)."\"";
@@ -98,14 +114,16 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
         echo "</select>\n";
         echo "</td>";
     } else {
-        echo "<td class=tabtxt>&nbsp;</td>";
+        echo "<td class=\"tabtxt\">&nbsp;</td>";
     }
     echo "</tr>\n";
 }
 
-/** Propagates changes to a constant value to the items which contain this value.
-*
+/** propagateChanges function
+* Propagates changes to a constant value to the items which contain this value.
+*   @param $constant_id
 *   @param string $newvalue The new value with added slashes (e.g. from a form)
+*   @param $oldvalue
 */
 function propagateChanges($constant_id, $newvalue, $oldvalue) {
     global $db, $group_id, $Msg, $debug, $event, $slice_id;
@@ -141,7 +159,9 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
                 AND field_id='".addslashes($field)."'";
         $db->tquery($SQL);
     }
-    if ($cnt) $Msg .= $cnt . _m(" items changed to new value ") . "'$newvalue'<br>";
+    if ($cnt) {
+        $Msg .= $cnt . _m(" items changed to new value ") . "'$newvalue'<br>";
+    }
 
     $event->comes('CONSTANT_UPDATED', $slice_id, 'S', $newvalue, $oldvalue, $constant_id);
 }
@@ -287,14 +307,14 @@ $classes = GetTable2Array($SQL, "id");
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Admin - Constants Setting");?></TITLE>
-</HEAD>
+ <title><?php echo _m("Admin - Constants Setting");?></title>
+</head>
 <?php
 
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin", $categ ? "category" : "");
 
-echo "<H1><B>" . _m("Admin - Constants Setting") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - Constants Setting") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
@@ -305,9 +325,9 @@ $form_buttons = array("update",
                                           "add"   => 'onclick="deleteWholeGroup();"')
                       );
 ?>
-<form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
- <input type=hidden name="group_id" value="<?php echo varname4form($group_id); /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
- <input type=hidden name="categ" value="<?php echo $categ;       /* the same as above for group_id */ ?>">
+<form method="post" name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+ <input type="hidden" name="group_id" value="<?php echo varname4form($group_id); /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
+ <input type="hidden" name="categ" value="<?php echo $categ;       /* the same as above for group_id */ ?>">
 <?php
 
 // load the HIERARCHICAL EDITOR
@@ -324,13 +344,13 @@ $form_buttons["return_url"]  = array("value" => $return_url);
 $form_buttons["fid"]         = array("value" => $fid);
 
 
-echo "<td class=tabtxt><b>"._m("Constant Group") ."</b></td>
-  <td class=tabtxt colspan=3>";
+echo "<td class=\"tabtxt\"><b>"._m("Constant Group") ."</b></td>
+  <td class=\"tabtxt\" colspan=\"3\">";
 
 if ( $group_id ) {
     echo safe($group_id);
 } else {
-    echo '<input type="text" name="new_group_id" size=16 maxlength=16 value="'.safe($new_group_id).'">
+    echo '<input type="text" name="new_group_id" size=\"16\" maxlength=\"16\" value="'.safe($new_group_id).'">
           <a href="'.get_admin_url('se_constant_import.php3?return_url=se_inputform.php3&amp;fid='. urlencode($fid)).
           '">'._m('Import Constants...').'</a>';
 }
@@ -349,7 +369,7 @@ if ($group_id) {
     }
     echo "
       <tr><td><b>"._m("Constants used in slice")."</b></td>
-        <td colspan=3>$using_slices</td>
+        <td colspan=\"3\">$using_slices</td>
       </tr>";
 }
 
@@ -358,18 +378,20 @@ $db->tquery("
     SELECT * FROM constant_slice INNER JOIN slice
     ON constant_slice.slice_id = slice.id
     WHERE group_id='$group_id'");
-if ($db->next_record()) $owner_id = unpack_id128($db->f("slice_id"));
+    if ($db->next_record()) {
+        $owner_id = unpack_id128($db->f("slice_id"));
+    }
 
 echo "
 <tr><td><b>"._m("Constant group owner - slice")."</b></td>
-<td colspan=3>";
+<td colspan=\"3\">";
 
 if (!$owner_id || !$group_id) {
     echo _m("Whoever first updates values becomes owner.");
 }
 elseif($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
     // display the select box to change group owner if requested ($chown)
-    echo "<select name=new_owner_id>";
+    echo "<select name=\"new_owner_id\">";
     foreach ($g_modules as $k => $v) {
         echo "<option value='". htmlspecialchars($k)."'". ($owner_id == $k ? " selected" : ""). "> ". htmlspecialchars($v["name"]);
     }
@@ -377,22 +399,22 @@ elseif($chown AND is_array($g_modules) AND (count($g_modules) > 1) ) {
 }
 else {
     echo $db->f("name")."&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type=submit name='chown' value='"._m("Change owner")."'>";
+    <input type=\"submit\" name=\"chown\" value=\""._m("Change owner")."\">";
 }
 
 $propagate_ch = ( $group_id ? $db->f("propagate") : 1);   // default is checked for new constant group;
 
 echo "</td></tr>
-<tr><td colspan=4><input type=checkbox name='propagate_changes'".($propagate_ch ? " checked" : "").">"._m("Propagate changes into current items");
+<tr><td colspan=\"4\"><input type=\"checkbox\" name=\"propagate_changes\"".($propagate_ch ? " checked" : "").">"._m("Propagate changes into current items");
 echo "'</td></tr>
-<tr><td colspan=4><input type=submit name='hierarch' value='"._m("Edit in Hierarchical editor (allows to create constant hierarchy)")."'></td></tr>
+<tr><td colspan=\"4\"><input type=\"submit\" name=\"hierarch\" value=\""._m("Edit in Hierarchical editor (allows to create constant hierarchy)")."\"></td></tr>
 <tr>
- <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</td>
- <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</td>
- <td class=tabtxt align=center><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</td>
- <td class=tabtxt align=center><b><a href=\"javascript:SortConstants('class')\">". _m("Parent") ."</a></b><br>". _m("categories&nbsp;only") ."</td>
+ <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</td>
+ <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</td>
+ <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</td>
+ <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('class')\">". _m("Parent") ."</a></b><br>". _m("categories&nbsp;only") ."</td>
 </tr>
-<tr><td colspan=4><hr></td></tr>";
+<tr><td colspan=\"4\"><hr></td></tr>";
 
 // existing constants
 if ($s_constants) {
@@ -418,8 +440,8 @@ $lastIndex = $i-1;    // lastindex used in javascript (below) to get number of r
 FrmTabEnd($form_buttons, $sess, $slice_id);
 
 echo '
-</FORM>
-<SCRIPT language=javascript>
+</form>
+<script language=javascript>
 <!--
     function deleteWholeGroup() {
         if (confirm("'._m("Are you sure you want to PERMANENTLY DELETE this group?"). '")) {
@@ -469,6 +491,7 @@ echo '
   }
 
 //-->
-</SCRIPT>';
+</script>';
 HtmlPageEnd();
-page_close()?>
+page_close()
+?>

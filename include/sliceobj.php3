@@ -1,30 +1,33 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * A class for manipulating slices
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Mitra Ardron <mitra@mitra.biz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
 */
 
 // A class for manipulating slices
 //
 // Author and Maintainer: Mitra mitra@mitra.biz
-//
-// And yes, I'll move the docs to phpDocumentor as soon as someone explains how
-// to use it!
 //
 // It is intended - and you are welcome - to extend this to bring into
 // one place the functions for working with slices.
@@ -49,7 +52,9 @@ class AA_Slice {
     // computed values form slice fields
     var $js_validation;  // javascript form validation code
     var $show_func_used; // used show functions in the input form
-
+    /** AA_Slice function
+     * @param $slice_id
+     */
     function AA_Slice($slice_id) {
         global $errcheck;
         if ($errcheck && ! ereg("[0-9a-f]{32}",$slice_id)) {
@@ -60,7 +65,10 @@ class AA_Slice {
         $this->dynamic_fields = new AA_Fields($this->unpackedid, 1);
     }
 
-    // Load $this from the DB for any of $fields not already loaded
+    /** loadsettings function
+     *  Load $this from the DB for any of $fields not already loaded
+     * @param $force
+     */
     function loadsettings($force=false) {
         if ( !$force AND isset($this->setting) AND is_array($this->setting) ) {
             return;
@@ -87,7 +95,10 @@ class AA_Slice {
         $this->setting = array_merge($this->setting, GetTable2Array($SQL, 'aa_first', 'aa_fields'));
     }
 
-    // Load $this from the DB for any of $fields not already loaded
+    /** loadsettingfields function
+     *  Load $this from the DB for any of $fields not already loaded
+     * @param $force
+     */
     function loadsettingfields($force=false) {
         if ( !$force AND isset($this->dynamic_setting) AND is_array($this->dynamic_setting) ) {
             return;
@@ -104,7 +115,9 @@ class AA_Slice {
         freeDB($db);
         $this->dynamic_setting = new ItemContent($content4id);
     }
-
+    /** getProperty function
+     * @param $fname
+     */
     function getProperty($fname) {
         if (AA_Fields::isSliceField($fname)) {
             $this->loadsettingfields();
@@ -114,35 +127,82 @@ class AA_Slice {
             return $this->setting[$fname];
         }
     }
-
-    function name()        { return $this->getProperty('name');         }
-    function jumpLink()    { return "<a href=\"".get_admin_url("index.php3?change_id=".$this->unpacked_id()). "\">".$this->name()."</a>"; }
-    function deleted()     { return $this->getProperty('deleted');      }
-    function fileman_dir() { return $this->getProperty('fileman_dir');  }
-    function type()        { return $this->getProperty('type');         }
-    function unpacked_id() { return $this->unpackedid;               } // Return a 32 character id
-    function packed_id()   { return pack_id128($this->unpackedid);   }
-
+    /** name function
+     *
+     */
+    function name() {
+        return $this->getProperty('name');
+    }
+    /** jumpLink function
+     *
+     */
+    function jumpLink() {
+        return "<a href=\"".get_admin_url("index.php3?change_id=".$this->unpacked_id()). "\">".$this->name()."</a>";
+    }
+    /** deleted function
+     *
+     */
+    function deleted() {
+        return $this->getProperty('deleted');
+    }
+    /** fleman_dir function
+     *
+     */
+    function fileman_dir() {
+        return $this->getProperty('fileman_dir');
+    }
+    /** type function
+     *
+     */
+    function type() {
+        return $this->getProperty('type');
+    }
+    /** unpacked_id function
+     *
+     */
+    function unpacked_id() {
+        return $this->unpackedid; // Return a 32 character id
+    }
+    /** packed_id function
+     *
+     */
+    function packed_id() {
+        return pack_id128($this->unpackedid);
+    }
+    /** getFields function
+     *
+     */
     function & getFields() {
         return $this->fields;
     }
-
+    /** getWidgetAjaxHtml function
+     * @param $field_id
+     * @param $item_id
+     * @param $aa_value
+     */
     function getWidgetAjaxHtml($field_id, $item_id, $aa_value) {
         return $this->fields->getWidgetAjaxHtml($field_id, $item_id, $aa_value);
     }
-    
-    /** Returns lang code ('cz', 'en', 'en-utf8', 'de',...) */
+    /** getLang function
+     *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
+     */
     function getLang()     {
         $lang_file = substr($this->getProperty('lang_file'), 0, strpos($this->getProperty('lang_file'), '_news_lang'));
         return isset($GLOBALS['LANGUAGE_NAMES'][$lang_file]) ? $lang_file : substr(DEFAULT_LANG_INCLUDE, 0, 2);
     }
 
-    // Return an id in a form that can be passed to sql, (needs outer quotes)
+    /** sql_id function
+     *  Return an id in a form that can be passed to sql, (needs outer quotes)
+     */
     function sql_id()      { return q_pack_id($this->unpackedid); }
 
-    // fetch the fields
-    // returns an array with two elements [0] is array in form
-    // wanted by Storeitem etc, [1] is array of fields in priority order
+    /** fields function
+     *  fetch the fields
+     * @param $return_type
+     * @param $slice_fields
+     * @return an array with two elements [0] is array in form
+     * wanted by Storeitem etc, [1] is array of fields in priority order
+     */
     function fields( $return_type = null, $slice_fields = false ) {
 
         $fields = $slice_fields ? $this->dynamic_fields : $this->fields;
@@ -156,7 +216,10 @@ class AA_Slice {
         return array($fields->getRecordArray(), $fields->getPriorityArray());                         // two member array ('record' array, 'pri' array)
     }
 
-    /** Returns slice setting field content in ItemContent object */
+    /** get_dynamic_setting_content function
+     *  Returns slice setting field content in ItemContent object
+     * @param $ignore_reading_password
+     */
     function get_dynamic_setting_content($ignore_reading_password = false) {
         if ($ignore_reading_password || ($this->getProperty('reading_password') == '') || ($this->getProperty('reading_password') == md5($GLOBALS["slice_pwd"]))) {
             $this->loadsettingfields();
@@ -169,7 +232,9 @@ class AA_Slice {
         }
     }
 
-    /** Get the base for the file uploads */
+    /** getUploadBase function
+     *  Get the base for the file uploads
+     */
     function getUploadBase() {
         $ret = array();
         $fileman_dir = $this->getProperty('fileman_dir');
@@ -186,8 +251,11 @@ class AA_Slice {
         return $ret;
     }
 
-    /** Try to transform file path to file url - based on setting of file
-     *  uploads or filemanager */
+    /** getUrlFromPath function
+     *  Try to transform file path to file url - based on setting of file
+     *  uploads or filemanager
+     * @param $filename
+     */
     function getUrlFromPath($filename) {
         $upload = $this->getUploadBase();
         if (strpos($filename, $upload['path']) === 0) {
@@ -196,12 +264,16 @@ class AA_Slice {
         return $filename;
     }
 
-    // Get all the views for this slice
+    /** views function
+     *  Get all the views for this slice
+     */
     function views() {
         return AA_Views::getSliceViews($this->unpackedid);
     }
 
-    /** Returns array of admin format strings as used in manager class */
+    /** get_format_strings function
+     *  Returns array of admin format strings as used in manager class
+     */
     function get_format_strings() {
          $this->loadsettings();
          // additional string for compact_top and compact_bottom needed
@@ -223,29 +295,46 @@ class AA_Slice {
                         "id"              => $this->setting['id'] );
     }
 
-    /** Get standard aliases definition from slice's fields */
+    /** aliases function
+     *  Get standard aliases definition from slice's fields
+     * @param $additional_aliases
+     */
     function aliases($additional_aliases = false) {
         return $this->fields->getAliases($additional_aliases);
     }
 
-    /** Returns javascript code for inputform validation */
+    /** get_js_validation function
+     *  Returns javascript code for inputform validation
+     * @param $action
+     * @param $id
+     * @param $shown_fields
+     * @param $slice_fields
+     */
     function get_js_validation($action, $id=0, $shown_fields=false, $slice_fields=false) {
         $this->_compute_field_stats($action, $id, $shown_fields, $slice_fields);
         return $this->js_validation;
     }
 
-    /** Returns array of inputform function used the in inputform */
+    /** get_show_func_used function
+     *  Returns array of inputform function used the in inputform
+     * @param $action
+     * @param $id
+     * @param $shown_fields
+     * @param $slice_fields
+     */
     function get_show_func_used($action, $id=0, $shown_fields=false, $slice_fields=false) {
         $this->_compute_field_stats($action, $id, $shown_fields, $slice_fields);
         return $this->show_func_used;
     }
 
-    /** Computes js_validation code and show_func_used
-     *  $action       - 'update' | 'edit'
-     *  $id           - id of item to edit
-     *  $shown_fields - array of field ids which we will use in the output
+    /** _compute_field_stats function
+     *  Computes js_validation code and show_func_used
+     * @param $action       - 'update' | 'edit'
+     * @param $id           - id of item to edit
+     * @param $shown_fields - array of field ids which we will use in the output
      *                  (inputform)(we have to count with them).
      *                  If false, then we use all the fields
+     * @param $slice_fields
      */
     function _compute_field_stats($action, $id=0, $shown_fields=false, $slice_fields=false) {
         if (isset($this->js_validation)) {
@@ -330,12 +419,15 @@ class AA_Slice {
 
 class AA_Slices {
     var $a = array();     // Array unpackedsliceid -> slice obj
-
+    /** AA_Slices function
+     *
+     */
     function AA_Slices() {
         $this->a = array();
     }
 
-    /** "class function" obviously called as AA_Slices::global_instance();
+    /** global_instance function
+     *  "class function" obviously called as AA_Slices::global_instance();
      *  This function makes sure, there is global instance of the class
      *  @todo  convert to static class variable (after migration to PHP5)
      */
@@ -346,24 +438,36 @@ class AA_Slices {
         return $GLOBALS['allknownslices'];
     }
 
-    /** main factory static method */
+    /** getSlice function
+     *  main factory static method
+     * @param $slice_id
+     */
     function & getSlice($slice_id) {
         $slices = AA_Slices::global_instance();
         return $slices->_getSlice($slice_id);
     }
 
-    /** static function */
+    /** getSliceProperty function
+     *  static function
+     * @param $slice_id
+     * @param $field
+     */
     function getSliceProperty($slice_id, $field) {
         $slices = AA_Slices::global_instance();
         $slice  = $slices->_getSlice($slice_id);
         return $slice ? $slice->getProperty($field) : null;
     }
 
-    /** static function */
+    /** getName function
+     *  static function
+     * @param $slice_id
+     */
     function getName($slice_id) {
         return AA_Slices::getSliceProperty($slice_id, 'name');
     }
-
+    /** _getSlice function
+     * @param $slice_id
+     */
     function & _getSlice($slice_id) {
         if (!isset($this->a[$slice_id])) {
             $this->a[$slice_id] = new AA_Slice($slice_id);

@@ -1,31 +1,31 @@
 <?php
-//$Id$
-/*
-Copyright (C) 2003 Mitra Technology Consulting
-http://www.mitra.biz
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *   This module generates a human readable output page that summarizes the slices on a system
+ *   Feel free to modify it - but please talk to Mitra about any changes.
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Mitra Ardron <mitra@mitra.biz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 2003 Mitra Technology Consulting
+ * @link      http://www.mitra.biz
+ *
 */
-
-
-/*
-    This module generates a human readable output page that summarizes the slices on a system
-    Feel free to modify it - but please talk to Mitra about any changes.
-*/
-
-
 
 require_once "../include/init_page.php3"; // Loads variables etc
 require_once AA_INC_PATH."sliceobj.php3";  // for slices
@@ -48,14 +48,14 @@ $scoreAddOrMiss = 50;
 
 HtmlPageBegin();
 ?>
- <TITLE><?php echo _m("Summarize slice differences");?></TITLE>
-</HEAD>
+ <title><?php echo _m("Summarize slice differences");?></title>
+</head>
 
 <?php
     require_once AA_INC_PATH."menu.php3";
     showMenu($aamenus, "aaadmin","summarize");
 
-    echo "<H1><B>" . _m("AA - Summarize") . "</B></H1>";
+    echo "<h1><b>" . _m("AA - Summarize") . "</b></h1>";
     PrintArray($err);
     echo $Msg;
     initSummarize();
@@ -68,6 +68,9 @@ HtmlPageBegin();
     HtmlPageEnd();
     page_close();
 
+/** initSummarize function
+ *
+ */
 function initSummarize() {
     global $sao,$slicetablefields;
     $db = getDB();
@@ -80,18 +83,25 @@ function initSummarize() {
     $slicetablefields = GetTable2Array($SQL,"id",1);
     freeDB($db);
 }
-
+/** ignored_slice function
+ * @param $si
+ * @return bool
+ */
 function ignored_slice($si) {
     global $ignored_sliceids;
-    if (!$ignored_sliceids)
+    if (!$ignored_sliceids) {
         $ignored_sliceids = array( unpack_id128("AA_Core_Fields.."),
             unpack_id128("News_EN_tmpl...."),
             unpack_id128("ReaderManagement"));
+    }
     return !  (array_search($si,$ignored_sliceids) === false);
 }
+/** sliceshortcuts function
+ * @param $ign
+ */
 function sliceshortcuts($ign) {
   global $sao;
-  print("<table cellspacing=1>\n");
+  print("<table cellspacing=\"1\">\n");
   reset($sao);
   while (list($si,$so) = each($sao)) {
     //if ($debugsummarize) huhl("Slice Obj",$so);
@@ -106,72 +116,106 @@ function sliceshortcuts($ign) {
   }
   print("</table>\n");
 }
-
+/** editsliceinfo function
+ * @param $sid
+ * @return string
+ */
 function editsliceinfo($sid) {
     global $AA_CP_Session;
     return "<a href=\"slicedit.php3?AA_CP_Session=$AA_CP_Session&change_id=$sid\">Edit slice info</a>";
 }
-
+/** editslicefields function
+ * @param $sid
+ * @return string
+ */
 function editslicefields($sid) {
     global $AA_CP_Session;
     return "<a href=\"se_fields.php3?AA_CP_Session=$AA_CP_Session&change_id=$sid\"> Edit fields </a>";
 }
-
+/** url_slicefieldcopy function
+ * @param $field
+ * @return string
+ */
 function url_slicefieldcopy($field) {
     global $AA_CP_Session,$nearest;
     return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$nearest&slicefieldcopy=$field\"> -> </a>";
 }
-
+/** url_copyfield function
+ * @param $field
+ * @return string
+ */
 function url_copyfield($field) {
     global $AA_CP_Session,$nearest;
     return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$nearest&copyfield=$field\"> Copy Field </a>";
 }
+/** url_showfield function
+ * @param $field
+ * @return string
+ */
 function url_showfield($field) {
     global $AA_CP_Session;
     return "not shown <a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid&showfield=$field\"> (show it) </a>";
 }
+/** comparewith function
+ * @param $sid
+ * @return string
+ */
 function comparewith($sid) {
     global $AA_CP_Session;
     return "<a href=\"summarize.php3?AA_CP_Session=$AA_CP_Session&nearest=$sid\"> Compare </a>";
 }
-
+/** mapslice function
+ *
+ */
 function mapslice() {
     global $sao,$slice_id,$nr,$nearest;
     $sid = $slice_id;
     $so = $sao[$sid];
-    if (!$nearest) $nearest = $nr[$slice_id];
+    if (!$nearest) {
+        $nearest = $nr[$slice_id];
+    }
     if ($nearest) {
         $sno = $sao[$nearest];
         print("<a name=\"$sid\"></a><font color=purple>$sid: '" . $so->name() . "'</font> closest to <font color=red><a href=\"#$nearest\">$nearest</a> '" . $sno->name()."'</font><br>".editslicefields($sid));
         // Here is where we do any actions that change things, before doing
         // a comparisom
-        if ($GLOBALS["copyfield"]) do_copyfield();
-        if ($GLOBALS["showfield"]) do_showfield();
+        if ($GLOBALS["copyfield"]) {
+            do_copyfield();
+        }
+        if ($GLOBALS["showfield"]) {
+            do_showfield();
+        }
         // and now the comparisom
         compareSlices($so,$sno,1);
     } else {
         print "summarize.php3 needs configuring for closest slice to $sid";
     }
 }
-
+/** copyslicefield function
+ * @param $new
+ */
 function copyslicefield($new) {
   global $slice_id,$nearest,$slicefieldcopy;
-  $db = getDB();
+  $db  = getDB();
   $SQL = "UPDATE slice SET ".$slicefieldcopy."='".quote($new)."' WHERE id='".q_pack_id($slice_id)."'";
   $db -> tquery($SQL);
   freeDB($db);
 }
-
+/** do_showfield function
+ *
+ */
 function do_showfield() {
   global $showfield,$slice_id,$nearest;
   $db = getDB();
-  $GLOBALS[debug]=1;
+  $GLOBALS['debug']=1;
   $SQL = "UPDATE field SET input_show=1 WHERE (id='".$showfield."') AND (slice_id='".q_pack_id($slice_id)."')";
   $db -> tquery($SQL);
-  $GLOBALS[debug]=0;
+  $GLOBALS['debug']=0;
   freeDB($db);
 }
-
+/** do_copyfield function
+ * executes a set of SQL commands
+ */
 function do_copyfield() {
   global $copyfield,$slice_id,$nearest;
   $db = getDB();
@@ -183,10 +227,12 @@ function do_copyfield() {
   $db -> tquery($SQL);
   $SQL = "DROP TABLE temp1";
   $db -> tquery($SQL);
-  print "<P>Copied field $copyfield from $nearest</P>";
+  print "<p>Copied field $copyfield from $nearest</p>";
   freeDB($db);
 }
-
+/** mapslices function
+ * prints a ul list
+ */
 function mapslices() {
     global $sao;
     print("<ul>");
@@ -206,15 +252,22 @@ function mapslices() {
     print("</ul>");
 }
 
-if ($debugsummarize) huhl("Starting summarize");
-
+if ($debugsummarize) {
+    huhl("Starting summarize");
+}
+/** nearestSlice function
+ * @param $st
+ * @param $possmodels
+ */
 function nearestSlice($st,$possmodels) {
     global $sao;
     $sc_min = 999999;
     $sm_min = "";
     reset($possmodels);
     while (list(,$sm) = each($possmodels)) {
-        if ($sm == $st->unpacked_id()) continue;
+        if ($sm == $st->unpacked_id()) {
+            continue;
+        }
         $sc = compareSlices($st,$sao[$sm],0);
         if ($sc < $sc_min) {
             $sm_min = $sm;
@@ -223,13 +276,21 @@ function nearestSlice($st,$possmodels) {
     }
     return $sm_min;
 }
+/** compareSlices
+ * @param $st
+ * @param $sm
+ * @param $pr
+ * @return $score
+ */
 function compareSlices($st,$sm,$pr) {
     global $scoreAddOrMiss,$sao;
     $CoreFields = $sao[unpack_id128("AA_Core_Fields..")]->fields();
     $score = 0;
     $ft = $st->fields();
     $fm = $sm->fields();
-    if ($pr) print("<ul>\n");
+    if ($pr) {
+        print("<ul>\n");
+    }
     $score += compareSliceTableFields($st,$sm,$pr);
     reset($ft[0]);
     while (list($ftn,$fta) = each($ft[0])) {
@@ -250,7 +311,15 @@ function compareSlices($st,$sm,$pr) {
     if ($pr) print("</ul>\n");
     return $score;
 }
-
+/** compareFields function
+ * @param $fn
+ * @param $ft
+ * @param $fm
+ * @param $pr
+ * @param $pre
+ * @param $st
+ * @param $sm
+ */
 function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
     global $scoreUnshown,$AA_CP_Session;
     $score = 0;
@@ -262,23 +331,40 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
       $fixer="";
       reset($ft);
       while (list($ftk,$ftv) = each($ft)) {
-        if ($ftk == "slice_id") continue;
-        if ( EReg("^[0-9]*$", $ftk))
-            continue;
-        if ($ftv == $fm[$ftk]) continue; // They match
-        if (EReg("^input_",$ftk) && ($ftv == $fm[$ftk] . ":")) continue;
-        if (EReg("^input_",$ftk) && ($ftv . ":" == $fm[$ftk])) continue;
-        // If alias or alias2 or alias3 not defined, then dont care about subsiduaries
-        if (EReg("^alias_",$ftk) && (! $ft["alias"]))  continue;
-        if (EReg("^alias2_",$ftk) && (! $ft["alias2"]))  continue;
-        if (EReg("^alias3_",$ftk) && (! $ft["alias3"]))  continue;
-        if (!$opened && $pr) { print("<li>$pre field: $fn differs</li><ul>\n"); $opened = 1; }
-        if ($pr) {
-            print("<li>$ftk: ".qenc($fm[$ftk],true,false,"red")." -&gt; ".qenc($ftv,true,false,"purple") . "</li>\n");
-            $fixert .= "&$ftk=" . urlencode($fm[$ftk]);
-            $fixerm .= "&$ftk=" . urlencode($ftv);
-        }
-        $score++;
+          if ($ftk == "slice_id") {
+              continue;
+          }
+          if ( EReg("^[0-9]*$", $ftk)) {
+              continue;
+          }
+          if ($ftv == $fm[$ftk]) {
+              continue; // They match
+          }
+          if (EReg("^input_",$ftk) && ($ftv == $fm[$ftk] . ":")) {
+              continue;
+          }
+          if (EReg("^input_",$ftk) && ($ftv . ":" == $fm[$ftk])) {
+              continue;
+          }
+          // If alias or alias2 or alias3 not defined, then dont care about subsiduaries
+          if (EReg("^alias_",$ftk) && (! $ft["alias"])) {
+              continue;
+          }
+          if (EReg("^alias2_",$ftk) && (! $ft["alias2"])) {
+              continue;
+          }
+          if (EReg("^alias3_",$ftk) && (! $ft["alias3"])) {
+              continue;
+          }
+          if (!$opened && $pr) {
+              print("<li>$pre field: $fn differs</li><ul>\n"); $opened = 1;
+          }
+          if ($pr) {
+              print("<li>$ftk: ".qenc($fm[$ftk],true,false,"red")." -&gt; ".qenc($ftv,true,false,"purple") . "</li>\n");
+              $fixert .= "&$ftk=" . urlencode($fm[$ftk]);
+              $fixerm .= "&$ftk=" . urlencode($ftv);
+          }
+          $score++;
       }
       if ($opened) {
         $u1 = "se_inputform.php3?fid=$fn&AA_CP_Session=$AA_CP_Session&update=1&onlyupdate=1&return_url=summarize.php3";
@@ -301,7 +387,12 @@ function compareFields($fn,$ft,$fm,$pr,$pre,$st,$sm) {
     return $score;
 }
 
-// st=sliceobj target,  sm=sliceob master pr=true if print difference
+/** compareSliceTableFields function
+ * @param $st sliceobj target
+ * @param $sm sliceob master
+ * @param $pr true if print difference
+ * @return $score
+ */
 function compareSliceTableFields($st,$sm,$pr) {
     global $slicetablefields;
 //    global $scoreUnshown,$AA_CP_Session;
@@ -312,31 +403,41 @@ function compareSliceTableFields($st,$sm,$pr) {
       $fixer="";
       reset($ft);
       while (list($ftk,$ftv) = each($ft)) {
-        $hf = 0;
-        $unp = 0;
-        if (($ftk == "id") || ($ftk == "name") || ($ftk == "created_at")
-            || ($ftk == "created_by"))
-             continue;    // Fields we expect to be different
-        if (EReg("format",$ftk)) { $hf = 1; }
-        if ($ftk == "owner") { $unp=1; }
-        if ( EReg("^[0-9]*$", $ftk))
-            continue;
-        if ($ftv == $fm[$ftk]) continue; // They match
-        if (!$opened && $pr) { print("<li>slice fields differ (".editsliceinfo($ft)."</a>)<ul>\n"); $opened = 1; }
-        if ($pr) {
-          if ($GLOBALS["slicefieldcopy"] == $ftk) {
-            copyslicefield($fm[$ftk]);
-            print("<li>$ftk copied</li>\n");
-          } else {
-            print("<li>$ftk: " . qenc($fm[$ftk],$hf,$unp,"red")
-                  . url_slicefieldcopy($ftk)
-                . qenc($ftv,$hf,$unp,"purple")
-                . "</li>\n");
-            $fixert .= "&$ftk=" . urlencode($fm[$ftk]);
-            $fixerm .= "&$ftk=" . urlencode($ftv);
+          $hf = 0;
+          $unp = 0;
+          if (($ftk == "id") || ($ftk == "name") || ($ftk == "created_at")
+          || ($ftk == "created_by")) {
+               continue;    // Fields we expect to be different
           }
-        }
-        $score++;
+          if (EReg("format",$ftk)) {
+              $hf = 1;
+          }
+          if ($ftk == "owner") {
+              $unp=1;
+          }
+          if ( EReg("^[0-9]*$", $ftk)) {
+              continue;
+          }
+          if ($ftv == $fm[$ftk]) {
+              continue; // They match
+          }
+          if (!$opened && $pr) {
+              print("<li>slice fields differ (".editsliceinfo($ft)."</a>)<ul>\n"); $opened = 1;
+          }
+          if ($pr) {
+            if ($GLOBALS["slicefieldcopy"] == $ftk) {
+              copyslicefield($fm[$ftk]);
+              print("<li>$ftk copied</li>\n");
+            } else {
+              print("<li>$ftk: " . qenc($fm[$ftk],$hf,$unp,"red")
+                    . url_slicefieldcopy($ftk)
+                  . qenc($ftv,$hf,$unp,"purple")
+                  . "</li>\n");
+              $fixert .= "&$ftk=" . urlencode($fm[$ftk]);
+              $fixerm .= "&$ftk=" . urlencode($ftv);
+            }
+          }
+          $score++;
       } //while
       if ($opened) {
         print("<li>Will fix to allow editing</li>");
@@ -354,17 +455,26 @@ function compareSliceTableFields($st,$sm,$pr) {
     //huhl("Adding score for field = $score");
     return $score;
 }
+/** qenc function
+ * @param $val
+ * @param $htmlformat
+ * @param $unp
+ * @param $color
+ * @return string
+ */
 function qenc($val,$htmlformat,$unp,$color) {
-    return ("<FONT color=\"$color\">"
+    return ("<font color=\"$color\">"
         . ( $htmlformat ? htmlentities($val)
             : ($unp ? unpack_id128($val) : $val))
         . "</font>"
     );
 }
 
-
-// This part needs configuring, eventually each slice can have the slice it was
-// built from as a field in the database.
+/** setnr function
+ * This part needs configuring, eventually each slice can have the slice it was
+ * built from as a field in the database.
+ */
+//
 function setnr() {
     global $nr;
 // This is a good place to set some short names for your templates

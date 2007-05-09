@@ -1,27 +1,40 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once AA_INC_PATH."constants.php3";
 
-// Prints html tag <select ..
+/** SelectGU_ID function
+ * Prints html tag <select ..
+ * @param $name
+ * @param $arr
+ * @param $selected
+ * @param $type
+ * @param $substract
+ */
 function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
     if ( $substract=="" ) {                // $substract list of values not shovn in <select> even if in $arr
         $substract = array();
@@ -39,7 +52,7 @@ function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
                 if ((string)$selected == (string)$k) {
                     echo " selected";
                 }
-                echo "> ". htmlspecialchars($v[name]) ." </option>";
+                echo "> ". htmlspecialchars($v['name']) ." </option>";
             }
         }
         if ( !$option_exist ) { // if no options, we must set width of <select> box
@@ -48,7 +61,12 @@ function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
     }
     echo "</select>\n";
 }
-
+/** GetFiltered function
+ * @param $type
+ * @param $filter
+ * @param $to_much
+ * @param $none
+ */
 function GetFiltered($type, $filter, $to_much, $none) {
     switch( $type ) {
         case "U": $list = FindUsers($filter);  break;
@@ -60,7 +78,12 @@ function GetFiltered($type, $filter, $to_much, $none) {
     }
     return $list;
 }
-
+/** PrintModulePermModificator function
+ * @param $selected_user
+ * @param $form_buttons
+ * @param $sess
+ * @param $slice_id
+ */
 function PrintModulePermModificator($selected_user, $form_buttons='', $sess='', $slice_id='') {
     global $db;
 
@@ -111,7 +134,13 @@ function PrintModulePermModificator($selected_user, $form_buttons='', $sess='', 
     <?php
     return $mod_types;
 }
-
+/** PrintModulePermRow function
+ * @param $mid
+ * @param $type
+ * @param $name
+ * @param $perm
+ * @param $odd
+ */
 function PrintModulePermRow($mid, $type, $name, $perm, $odd=false) {
     global $MODULES, $perms_roles_modules, $perms_roles;
     echo "<tr>
@@ -134,7 +163,10 @@ function PrintModulePermRow($mid, $type, $name, $perm, $odd=false) {
     </tr>";
 }
 
-
+/** PrintModuleAddRow function
+ * @param $mod_options
+ * @param $no
+ */
 function PrintModuleAddRow($mod_options, $no) {
     echo "<tr>
            <td><select name=\"new_module[$no]\" onchange=\"SetRole($no)\">
@@ -150,8 +182,12 @@ function PrintModuleAddRow($mod_options, $no) {
 }
 
 
-/** Change module permissions if user wants
+/** ChangeUserModulePerms function
+ *  Change module permissions if user wants
  * Works not only with users, but with groups too
+ * @param $perm_mod
+ * @param $selected_user
+ * @param $perms_roles
  */
 function ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles ) {
     if ($debug) {
@@ -173,8 +209,13 @@ function ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles ) {
     }
 }
 
-/** Add new modules for this user
+/** AddUserModulePerms function
+ *  Add new modules for this user
  *  Works not only with users, but with groups too
+ * @param $new_module
+ * @param $new_module_role
+ * @param $selected_user
+ * @param $perms_roles
  */
 function AddUserModulePerms( $new_module, $new_module_role, $selected_user, $perms_roles) {
     if ( isset($new_module) AND is_array($new_module) ) {
@@ -186,16 +227,21 @@ function AddUserModulePerms( $new_module, $new_module_role, $selected_user, $per
     }
 }
 
-/**
+/** GetModuleLetter function
  * Returned Module letter is used for as full identification of the module
  * by 1-letter long id (we need it for some javascripts in um_util.php3)
+ * @param $type
  */
 function GetModuleLetter($type) {
     global $MODULES;
     // get 'letter' or first letter of MODULE type
     return ($MODULES[$type]['letter'] ? $MODULES[$type]['letter'] : substr($type,0,1));
 }
-
+/** PrintPermUmPageEnd function
+ * @param $MODULES
+ * @param $mod_types
+ * @param $perms_roles_modules
+ */
 function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
     <script language="JavaScript"><!--
       var mod       = new Array();
@@ -224,7 +270,12 @@ function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
     <?php
 }
 
-/** Procces group data */
+/** ChangeUserGroups function
+ *  Procces group data
+ * @param $posted_groups
+ * @param $sel_groups
+ * @param $selected_user
+ */
 function ChangeUserGroups($posted_groups, $sel_groups, $selected_user) {
     if ( isset($sel_groups) AND is_array($sel_groups) AND ($sel_groups["n"]=="")) {
         // first we remove user from all groups
@@ -242,7 +293,17 @@ function ChangeUserGroups($posted_groups, $sel_groups, $selected_user) {
         }
     }
 }
-
+/** FillUserRecord function
+ * @param $err
+ * @param $user_login
+ * @param $user_surname
+ * @param $user_firstname
+ * @param $user_password1
+ * @param $user_password2
+ * @param $user_mail1
+ * @param $user_mail2
+ * @param $user_mail3
+ */
 function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1, $user_mail2, $user_mail3) {
 
     $userrecord = array();
@@ -265,12 +326,25 @@ function FillUserRecord(&$err, $user_login, $user_surname, $user_firstname, $use
     $userrecord["givenname"]               = $user_firstname;
     $userrecord["sn"]                      = $user_surname;
 
-    if ($user_mail1) $userrecord["mail"][] = $user_mail1;
-    if ($user_mail2) $userrecord["mail"][] = $user_mail2;
-    if ($user_mail3) $userrecord["mail"][] = $user_mail3;
+    if ($user_mail1) {
+        $userrecord["mail"][] = $user_mail1;
+    }
+    if ($user_mail2) {
+        $userrecord["mail"][] = $user_mail2;
+    }
+    if ($user_mail3) {
+        $userrecord["mail"][] = $user_mail3;
+    }
     return $userrecord;
 }
-
+/** NewUserData function
+ * @param $err
+ * @param $uid
+ * @param $userrecord
+ * @param $user_super
+ * @param $perms_roles
+ * @param $um_uedit_no_go_url
+ */
 function NewUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles, $um_uedit_no_go_url) {
     global $sess;
     $userrecord["uid"] = $uid;
@@ -287,7 +361,13 @@ function NewUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles, $um
         }
     }
 }
-
+/** ChangeUserData function
+ * @param $err
+ * @param $uid
+ * @param $userrecord
+ * @param $user_super
+ * @param $perms_roles
+ */
 function ChangeUserData( &$err, $uid, &$userrecord, $user_super, &$perms_roles) {
       $userrecord["uid"] = $uid;
       if (!ChangeUser($userrecord)) {

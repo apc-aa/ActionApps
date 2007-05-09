@@ -1,24 +1,32 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * Class AA_Validate
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
 /** Cvarset - class for storing variables
  *          - simplifies database manipulation (by Cvarset class below)
  */
@@ -31,18 +39,28 @@ class Cvariable {
     *  INSERT -> VALUES.  See also makeINSERTorUPDATE. */
     var $iskey;
 
-    // constructor
+    /** Cvariable function
+     *  constructor
+     * @param $name
+     * @param $type
+     * @param $value
+     * @param $iskey
+     */
     function Cvariable($name, $type, $value, $iskey=false) {
         $this->name  = $name;
         $this->type  = $type;
         $this->value = $value;
         $this->iskey = $iskey;
     }
-
+    /** getValue function
+     *
+     */
     function getValue() {
         return $this->value;
     }
-
+    /** getSQLValue function
+     *
+     */
     function getSQLValue() {
         switch ( $this->type )
         {
@@ -63,7 +81,9 @@ class Cvariable {
                 return "'" . quote($this->value) ."'";
         }
     }
-
+    /** huh function
+     *
+     */
     function huh() {
         echo "$this->name($this->type) -> $this->value <br>\n";
     }
@@ -73,7 +93,10 @@ class Cvarset {
     var $vars;  // array of variables
     var $db;    // database handler
 
-    /** constructor - also good for filling the varset */
+    /** Cvarset function
+     *  constructor - also good for filling the varset
+     * @param $arr
+     */
     function Cvarset( $arr=null ) {
         $this->db = null;
         foreach ( (array)$arr as $varname => $value ) {
@@ -83,28 +106,44 @@ class Cvarset {
         }
     }
 
-    /** clears whole varset */
+    /** clear function
+     *  clears whole varset
+     */
     function clear() {
         $this->vars="";
     }
 
-    /** get variable value */
+    /** get function
+     *  get variable value
+     * @param $varname
+     */
     function get($varname) {
         $cv = $this->vars["$varname"];
         return ( $cv ? $cv->getValue() : false);
     }
-
+    /** getSQLvalue function
+     * @param $varname
+     */
     function getSQLvalue($varname) {
         $cv = $this->vars[$varname];
         return ( $cv ? $cv->getSQLvalue() : false);
     }
 
-    /** add variable to varset */
+    /** add function
+     *  add variable to varset
+     * @param $varname
+     * @param $type
+     * @param $value
+     */
     function add($varname, $type="text", $value="") {
         $this->vars[$varname]= new Cvariable($varname, $type, $value);
     }
 
-    /** add global variables to varset (names in $arr) */
+    /** addglobals function
+     *  add global variables to varset (names in $arr)
+     * @param $arr
+     * @param $type
+     */
     function addglobals($arr, $type="quoted") {
         if ( isset($arr) AND is_array($arr) ) {
             foreach ( $arr as $varname ) {
@@ -113,17 +152,30 @@ class Cvarset {
         }
     }
 
-    /** add key variable to varset (see Cvariable) */
+    /** addkey function
+     *  add key variable to varset (see Cvariable)
+     * @param $varname
+     * @param $type
+     * @param $value
+     */
     function addkey($varname, $type="text", $value="") {
         $this->vars[$varname] = new Cvariable($varname, $type, $value, true);
     }
 
-    /** remove variable from varset */
+    /** remove function
+     *  remove variable from varset
+     * @param $varname
+     */
     function remove($varname) {
         unset ($this->vars[$varname]);
     }
 
-    /** set variable value */
+    /** set function
+     *  set variable value
+     * @param $varname
+     * @param $value
+     * @param $type
+     */
     function set($varname, $value, $type="") {
         if ( $type=="" ) {
             $v    = $this->vars[$varname];
@@ -132,27 +184,41 @@ class Cvarset {
         $this->add($varname, $type, $value);   // it must be assigned this way, because $v is just copy
     }
 
-    /** if undefined - set */
+    /** ifnoset function
+     *  if undefined - set
+     * @param $varname
+     * @param $value
+     * @param $type
+     */
     function ifnoset($varname, $value, $type="") {
         if ( !$this->get($varname) ) {
             $this->add($varname, ($type ? $type : "quoted"), $value);
         }
     }
 
-    /** return variable value */
+    /** value function
+     *  return variable value
+     * @param $varname
+     */
     function value($varname){
         $v = $this->vars["$varname"];
         return $v->value;
     }
 
-    /** set variables values due to array */
+    /** setFromArray function
+     *  set variables values due to array
+     * @param $arr
+     */
     function setFromArray($arr) {
         foreach ( $this->vars as $varname => $variable ) {
             $this->set($varname, $arr[$varname]);
         }
     }
 
-    /** Fills varset with data grabed from database ($db->Record) */
+    /** resetFromRecord function
+     *  Fills varset with data grabed from database ($db->Record)
+     * @param $record
+     */
     function resetFromRecord($record) {
         $this->clear();
         foreach ( $record as $name => $value ) {
@@ -162,7 +228,11 @@ class Cvarset {
         }
     }
 
-    /** Add text and number variables from arrays to varset */
+    /** addArray function
+     *  Add text and number variables from arrays to varset
+     * @param $text_fields
+     * @param $num_fields
+     */
     function addArray($text_fields, $num_fields="") {
         if ( isset($text_fields) AND is_array($text_fields)) {
             foreach ($text_fields as $name) {
@@ -176,7 +246,11 @@ class Cvarset {
         }
     }
 
-    /** Private function: executes qiven query) */
+    /** _doQuery function
+     *  Private function: executes qiven query)
+     * @param $SQL
+     * @param $nohalt
+     */
     function _doQuery($SQL, $nohalt=null) {
         if ( is_null($this->db) ) {
             $this->db = getDB();
@@ -188,7 +262,10 @@ class Cvarset {
         }
         return $retval;
     }
-
+    /** _makeInsertReplace function
+     * @param $command
+     * @param $tablename
+     */
     function _makeInsertReplace($command, $tablename) {
         $foo      = $tablename ? "$command INTO `$tablename`" : '';
         $predznak = " ( ";
@@ -204,16 +281,25 @@ class Cvarset {
         return $foo . " ) " ;
     }
 
-    /** Makes SQL INSERT clause from varset */
+    /** makeINSERT function
+     *  Makes SQL INSERT clause from varset
+     * @param $tablename
+     */
     function makeINSERT($tablename = "") {
         return $this->_makeInsertReplace('INSERT', $tablename);
     }
-
+    /** doInsert function
+     * @param $tablename
+     * @param $nohalt
+     */
     function doInsert($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeINSERT($tablename), $nohalt);
     }
 
-    /** Makes SQL UPDATE clause from varset */
+    /** makeUPDATE function
+     *  Makes SQL UPDATE clause from varset
+     * @param $tablename
+     */
     function makeUPDATE($tablename = "") {
         foreach ( $this->vars as  $varname => $variable ) {
             if (!$variable->iskey) {
@@ -229,11 +315,17 @@ class Cvarset {
         }
         return $retval;
     }
-
+    /** doUpdate function
+     * @param $tablename
+     * @param $nohalt
+     */
     function doUpdate($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeUPDATE($tablename), $nohalt);
     }
-
+    /** doREPLACE function
+     * @param $tablename
+     * @param $nohalt
+     */
     // be sure, you have defined key field
     function doREPLACE($tablename, $nohalt=null) {
         // we do no longer use REPLACE SQL command - it is not implemented in
@@ -241,7 +333,10 @@ class Cvarset {
         // with autoincremented fields
         return $this->_doQuery($this->makeINSERTorUPDATE($tablename), $nohalt);
     }
-
+    /** doTrueReplace function
+     * @param $tablename
+     * @param $nohalt
+     */
     // be sure, you have defined key field
     function doTrueReplace($tablename, $nohalt=null) {
         // uses REPLACE SQL command - it is not implemented in some DB engines
@@ -250,43 +345,63 @@ class Cvarset {
         return $this->_doQuery($this->_makeInsertReplace('REPLACE', $tablename), $nohalt);
     }
 
-
+    /** makeSELECT function
+     * @param $table
+     */
     function makeSELECT($table) {
         $where = $this->makeWHERE();
         return ($where ? "SELECT * FROM `$table` WHERE ".$where :
                          "SELECT * FROM `$table`");
     }
-
+    /** makeDELETE function
+     * @param $table
+     * @param $where
+     */
     function makeDELETE($table, $where=null) {
         if ( is_null($where) ) {
             $where = $this->makeWHERE();
         }
         return ($where ? "DELETE FROM `$table` WHERE ".$where : 'Error');
     }
-
+    /** doDelete function
+     * @param $tablename
+     * @param $nohalt
+     */
     function doDelete($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeDELETE($tablename), $nohalt);
     }
-
+    /** doDeleteWhere function
+     * @param $tablename
+     * @param $where
+     * @param $nohalt
+     */
     function doDeleteWhere($tablename, $where, $nohalt=null) {
         return $this->_doQuery($this->makeDELETE($tablename, $where), $nohalt);
     }
-
+    /** makeWHERE function
+     * @param $table
+     */
     function makeWHERE($table="") {
         $where = "";
         foreach ( $this->vars as $varname => $variable) {
             if ($variable->iskey) {
-                if ($where) { $where .= " AND "; }
-                if ($table) { $varname = $table.".".$varname; }
+                if ($where) {
+                    $where .= " AND ";
+                }
+                if ($table) {
+                    $varname = $table.".".$varname;
+                }
                 $where .= $varname ."=". $variable->getSQLValue();
             }
         }
         return $where;
     }
 
-    /** This function looks into the given table and if the row exists, it is
+    /** makeINSERTorUPDATE function
+     *  This function looks into the given table and if the row exists, it is
      *  updated, if not then inserted. Add always all key fields by addkey()
      *  to the varset before using this function.
+     * @param $table
      */
     function makeINSERTorUPDATE($table) {
         $this->_doQuery($this->makeSELECT($table));
@@ -298,13 +413,17 @@ class Cvarset {
             return "Error using makeINSERTorUPDATE: " . $this->db->num_rows(). " rows match the query";
         }
     }
-
+    /** lastInsertId function
+     * @param $table
+     */
     function lastInsertId($table) {
         $this->_doQuery("SELECT LAST_INSERT_ID() AS lid FROM $table");
         $this->db->next_record();
         return $this->db->f("lid");
     }
-
+    /** huh function
+     * @param $text
+     */
     function huh($txt="") {
         echo "Varset: $txt";
         foreach ( $this->vars as  $varname => $variable ) {
@@ -314,7 +433,11 @@ class Cvarset {
 
     // Static //
 
-    /** Returns part of SQL command ised in WHERE, column = value, or column IN (...) */
+    /** sqlin function
+     *  Returns part of SQL command ised in WHERE, column = value, or column IN (...)
+     * @param $column
+     * @param $values
+     */
     function sqlin($column, $values) {
         if (!is_array($values)) {
             $values = array($values);
@@ -346,8 +469,11 @@ class AA_Metabase_Table {
     /** array of table flags - like ENGINE=InnoDB, DEFAULT CHARSET=cp1250 */
     var $flags;
 
-    /** Fills AA_Metabase_Table structure from the result of SQL command:
+    /** setFromSql function
+     *  Fills AA_Metabase_Table structure from the result of SQL command:
      *     SHOW CREATE TABLE $table_name
+     * @param $tablename
+     * @param $create_SQL
      */
     function setFromSql($tablename, $create_SQL) {
         $this->tablename = $tablename;
@@ -378,7 +504,9 @@ class AA_Metabase_Table {
 class AA_Metabase {
     var $tables;
     var $item_translations;
-
+    /** AA_Metabase function
+     *
+     */
     function AA_Metabase() {
         $this->tables            = array('item' => array('id', 'short_id', 'slice_id', 'status_code', 'post_date', 'publish_date', 'expiry_date', 'highlight', 'posted_by', 'edited_by', 'last_edit', 'display_count', 'flags', 'disc_count', 'disc_app', 'externally_fed', 'moved2active'));
         $this->item_translations = array();
@@ -386,16 +514,23 @@ class AA_Metabase {
             $this->item_translations[AA_Fields::createFieldId($column)] = $column;
         }
     }
-
+    /** addTableFromSql function
+     * @param $tablename
+     * @param $create_SQL
+     */
     function addTableFromSql($tablename, $create_SQL) {
         $this->tables[$tablename] = new AA_Metabase_Table;
         $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
     }
-
+    /** itemTableField function
+     * @param $field_id
+     */
     function itemTableField($field_id) {
         return empty($field_id) ? false : get_if($this->item_translations[$field_id], false);
     }
-
+    /** itemFields4Sql function
+     * @param $fields2get
+     */
     function itemFields4Sql($fields2get) {
         $fields = array();
         foreach ( (array)$fields2get as $field_name ) {

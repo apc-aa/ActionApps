@@ -1,55 +1,53 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**  Slice Import - XML parsing function
+ *
+ *      Note: This parser does not check correctness of the data. It assumes, that xml document
+ *            was exported by slice export and has the form of
+ *
+ *   <sliceexport version="1.0">
+ *   ...
+ *   <slice id="new id" name="new name">
+ *   base 64 data
+ *   </slice>
+ *   </sliceexport>
+ *
+ *   new version 1.1:
+ *
+ *   <sliceexport version="1.1">
+ *   <slice id="new id" name="new name">
+ *   <slicedata gzip="1">
+ *   if gzip parameter == 1 => gzipped base 64 slice struct
+ *                     == 0 => base 64 slice struct
+ *   </slicedata>
+ *   <data item_id="item id" gzip="1">
+ *   base 64 data from item_id (w/wo gzip)
+ *   </data>
+ *   </slice>
+ *   </sliceexport>
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Mitra (based on earlier versions by Jakub Adámek, Pavel Jisl)
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
-/*
-    Author: Mitra (based on earlier versions by Jakub Adámek, Pavel Jisl)
-
-// Slice Import - XML parsing function
-//
-// Note: This parser does not check correctness of the data. It assumes, that xml document
-//       was exported by slice export and has the form of
-
-<sliceexport version="1.0">
-...
-<slice id="new id" name="new name">
-base 64 data
-</slice>
-</sliceexport>
-
-new version 1.1:
-
-<sliceexport version="1.1">
-<slice id="new id" name="new name">
-<slicedata gzip="1">
-if gzip parameter == 1 => gzipped base 64 slice struct
-                  == 0 => base 64 slice struct
-</slicedata>
-<data item_id="item id" gzip="1">
-base 64 data from item_id (w/wo gzip)
-</data>
-</slice>
-</sliceexport>
-
-*/
-
 
 require_once AA_INC_PATH . "xml_serializer.php3";
 
@@ -57,6 +55,10 @@ require_once AA_INC_PATH . "xml_serializer.php3";
 
 // This function should go in site-specific file, just here to make easier to debug
 // and to have an example
+/** bayfm_preimport function
+ * @param $s
+ * @return huhl($s)
+ */
 function bayfm_preimport($s) {
     // Create a vid_translate table, and change ids while there
     foreach ( $s['SLICE'] as $k => $v ) {
@@ -95,26 +97,39 @@ function bayfm_preimport($s) {
 huhl($s);
 exit;
 }
-
+/** si_err function
+ * @param $str
+ */
 function si_err($str) {
     global $sess;
     MsgPage($sess->url(self_base())."index.php3", $str, "standalone");
     exit;
 }
 
-// Create and parse data
+/** sliceimp_xml_parse function
+ * Create and parse data
+ * @param $xml_data
+ * @param $dry_run = false
+ * @param $force_this_slice = false
+ */
 function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) {
     global $debugimport;
     set_time_limit(600); // This can take a while
     $xu = new xml_unserializer();
-    if ($debugimport) huhl("Importing data=",htmlentities($xml_data));
+    if ($debugimport) {
+        huhl("Importing data=",htmlentities($xml_data));
+    }
 
     /** Create array strusture from XML data */
     $i = $xu->parse($xml_data);  // PHP data structure
-    if ($debugimport) huhl("Parsed data=",$i);
+    if ($debugimport) {
+        huhl("Parsed data=",$i);
+    }
 
     $s = $i["SLICEEXPORT"][0];
-    if (! $s) si_err(_m("\nERROR: File doesn't contain SLICEEXPORT"));
+    if (! $s) {
+        si_err(_m("\nERROR: File doesn't contain SLICEEXPORT"));
+    }
     if ($s['PROCESS']) {
 
         // This is some kind of data preprocessing from Mitra
@@ -196,8 +211,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
                     }
                     if ($dry_run) {
                         huhl("Would import data to ",$sld['ITEM_ID'],$content4id);
-                    }
-                    else {
+                    } else {
                         import_slice_data( $force_this_slice ? $GLOBALS['slice_id'] : $sl['ID'],
                                            $sld['ITEM_ID'], $content4id, true, true);
                     }
@@ -207,12 +221,17 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
     } // Version 1.1
     else si_err(_m("ERROR: Unsupported version for import").$s['VERSION']);
 }
-
+/** import_views function
+ * @param $slvs (by link)
+ * @param $slice_id_new
+ */
 function import_views(&$slvs, $slice_id_new) {
     global $dry_run, $view_resolve_conflicts, $new_slice_ids,
            $view_IDconflict,$IDconflict, $view_conflicts_ID;
 
-    if ( $dry_run ) { huhl($slvs); }
+    if ( $dry_run ) {
+        huhl($slvs);
+    }
 
     $db = getDB();
 
@@ -278,12 +297,13 @@ function import_views(&$slvs, $slice_id_new) {
 }
 
 
-/** Creates SQL command for inserting
- *  $fields      - fields for creating query
- *  $table       - name of table
- *  $pack_fields - whitch fields needs to be packed (some types of ids...)
- *  $only_fields - put in SQL command only some values from $fields
- *  $add_values  - adds some another values, whitch aren't in $fields
+/** create_SQL_insert_statement function
+ *  Creates SQL command for inserting
+ * @param $fields      - fields for creating query
+ * @param $table       - name of table
+ * @param $pack_fields - whitch fields needs to be packed (some types of ids...)
+ * @param $only_fields - put in SQL command only some values from $fields
+ * @param $add_values  - adds some another values, whitch aren't in $fields
  */
 function create_SQL_insert_statement ($fields, $table, $pack_fields = "", $only_fields="", $add_values="")
 {
@@ -320,5 +340,4 @@ function create_SQL_insert_statement ($fields, $table, $pack_fields = "", $only_
     }
     return "INSERT INTO ".$table." (".$sqlfields.") VALUES (".$sqlvalues.")";
 }
-
 ?>

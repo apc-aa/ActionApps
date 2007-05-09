@@ -1,22 +1,29 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Michael de Beer, Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once AA_INC_PATH."perm_core.php3";
@@ -39,7 +46,12 @@ users        membership     perms
 
 // ----------------------------- QUERY -----------------------------------
 
-/** Returns uid if user is authentificied, else false. */
+/** AuthenticateUsername function
+ * @param $username
+ * @param $password
+ * @param $flags
+ * @return uid if user is authentificied, else false.
+ */
 function AuthenticateUsername($username, $password, $flags = 0) {
 
     // try to authenticate user in LDAP
@@ -47,7 +59,12 @@ function AuthenticateUsername($username, $password, $flags = 0) {
     return  $sqluseruid ? $sqluseruid : AuthenticateReaderUsername($username, $password);
 }
 
-// returns uid if user is authenticated, else false.
+/** AuthenticateSqlUsername function
+ * @param $username
+ * @param $password
+ * @param $flags
+ * @return uid if user is authenticated, else false.
+ */
 function AuthenticateSqlUsername($username, $password, $flags = 0) {
     $db = new DB_AA;
     $id = false; $i = 0;
@@ -124,7 +141,11 @@ function AuthenticateSqlUsername($username, $password, $flags = 0) {
     }
 }
 
-// returns array(uid, name, description, owner)
+/** GetGroup function
+ * @param $user_id
+ * @param $flags
+ *  @return array(uid, name, description, owner)
+ */
 function GetGroup($user_id, $flags = 0) {
     $db  = new DB_AA;
     $SQL = sprintf( "SELECT id, name, description FROM users WHERE id = '%s'", $user_id);
@@ -139,10 +160,14 @@ function GetGroup($user_id, $flags = 0) {
     return $res;
 }
 
-// function returns list of groups which corresponds to mask $pattern
+/** FindGroups function
+ * @param $pattern
+ * @param $flags
+ * @return list of groups which corresponds to mask $pattern
+ */
 function FindGroups($pattern, $flags = 0) {
 
-    $db  = new DB_AA;
+    $db    = new DB_AA;
     $by_id = FindReaderGroups($pattern);
 
     // older code uses _m("Group"), the new one uses 'Group' or 'User' as keyword
@@ -159,7 +184,9 @@ function FindGroups($pattern, $flags = 0) {
     }
     return $by_id;
 }
-
+/** find_user_by_login function
+ * @param $login
+ */
 function find_user_by_login($login) {
     $db = new DB_AA;
     $db->query("SELECT * FROM users WHERE uid='$login'");
@@ -170,7 +197,11 @@ function find_user_by_login($login) {
     return $by_id;
 }
 
-// function returns list of users which corresponds to mask $pattern
+/** FindUsers function
+ * @param $pattern
+ * @param $flags
+ * @return list of users which corresponds to mask $pattern
+ */
 function FindUsers($pattern, $flags = 0) {
 
     $db  = new DB_AA;
@@ -194,7 +225,10 @@ function FindUsers($pattern, $flags = 0) {
 };
 
 // TODO : make this recursive friendly?
-
+/** GetGroupMembers function
+ * @param $group_id
+ * @param $flags
+ */
 function GetGroupMembers($group_id, $flags = 0) {
     $db  = new DB_AA;
 
@@ -212,8 +246,11 @@ function GetGroupMembers($group_id, $flags = 0) {
     return $by_id;
 }
 
-// returns list of group_ids, where id (group or user) is a member
-// $flags - use to obey group in groups?
+/** GetMembership function
+ * @param $id
+ * @param $flags - use to obey group in groups?
+ * @return list of group_ids, where id (group or user) is a member
+ */
 function GetMembership($id, $flags = 0) {
     $db  = new DB_AA;
 
@@ -246,21 +283,27 @@ function GetMembership($id, $flags = 0) {
     // I _think_ this is a list of groupids.
     return $all_groups;
 }
-
+/** IsUserReader function
+ * @param $user_id
+ */
 function IsUserReader($user_id) {
     return (guesstype($user_id, true) == 'l');
 }
 
 
-// returns an array of user/group identities and their permissions
-// granted on specified object $objectID
-
-/* example:
-$arr["uid=honzam,dc=ecn,dc=apc,dc=org"][type] == User
-$arr["uid=honzam,dc=ecn,dc=apc,dc=org"][name] == Honza Malik
-$arr["uid=honzam,dc=ecn,dc=apc,dc=org"][mail] == honzam@ecn.cz
-$arr["uid=honzam,dc=ecn,dc=apc,dc=org"][perm] == 2
-*/
+/** GetObjectsPerms function
+ * @param $obejctID
+ * @param $objectType
+ * @param $flags
+ * @return an array of user/group identities and their permissions
+ * granted on specified object $objectID
+ *
+ *  example:
+ * $arr["uid=honzam,dc=ecn,dc=apc,dc=org"][type] == User
+ * $arr["uid=honzam,dc=ecn,dc=apc,dc=org"][name] == Honza Malik
+ * $arr["uid=honzam,dc=ecn,dc=apc,dc=org"][mail] == honzam@ecn.cz
+ * $arr["uid=honzam,dc=ecn,dc=apc,dc=org"][perm] == 2
+ */
 
 function GetObjectsPerms($objectID, $objectType, $flags = 0) {
     $db  = new DB_AA;
@@ -295,9 +338,14 @@ function GetObjectsPerms($objectID, $objectType, $flags = 0) {
 }
 
 
-// returns an array of sliceids and their permissions (for user $userid).
-// granted on all objects of type $objectType
-// flags & 1 -> do not involve membership in groups
+/** GetIDPerms function
+ * @param $id
+ * @param $objectType
+ * @param $flags
+ * @return an array of sliceids and their permissions (for user $userid).
+ * granted on all objects of type $objectType
+ * flags & 1 -> do not involve membership in groups
+ */
 function GetIDPerms($id, $objectType, $flags = 0) {
 
     $db  = new DB_AA;
@@ -315,7 +363,9 @@ function GetIDPerms($id, $objectType, $flags = 0) {
                   $objectType, $id, $gsql);
 
     $sth = $db->query( $SQL );
-    if (!$sth) return false;
+    if (!$sth) {
+        return false;
+    }
 
     $user_perms = array();
     while ($db->next_record()) {
@@ -338,7 +388,11 @@ function GetIDPerms($id, $objectType, $flags = 0) {
 //   groups have null for the attributes  password & mail
 //   (also marked by  'type'
 
-// creates new person in permission system
+/** AddUser function
+ * @param $user
+ * @param $flags
+ * creates new person in permission system
+ */
 function AddUser($user, $flags = 0) {
     if (! IsUsernameFree($user["uid"])) {
         return false;
@@ -365,8 +419,12 @@ function AddUser($user, $flags = 0) {
     return $id;
 }
 
-// deletes an user in permission system
-// $user_id is DN
+/** DelUser function
+ * @param $user_id
+ * @param $flags
+ *  deletes an user in permission system
+ *  $user_id is DN
+ */
 function DelUser($user_id, $flags = 3) {
     $db  = new DB_AA;
 
@@ -388,7 +446,11 @@ function DelUser($user_id, $flags = 3) {
     return $r;
 }
 
-// changes user entry in permission system
+/** ChangeUser function
+ * @param $user
+ * @param $flags
+ *  changes user entry in permission system
+ */
 function ChangeUser($user, $flags = 0) {
     $db  = new DB_AA;
     // do a little bit of QA on the $user array
@@ -408,7 +470,11 @@ function ChangeUser($user, $flags = 0) {
     return true;
 }
 
-// returns array(uid, login, cn, sn, givenname, array(mail), array(phone))
+/** GetUser function
+ * @param $user_id
+ * @param $flags
+ * @return array(uid, login, cn, sn, givenname, array(mail), array(phone))
+ */
 function GetUser($user_id, $flags = 0) {
     $db  = new DB_AA;
     $SQL = sprintf( "SELECT uid, sn, givenname, mail
@@ -430,8 +496,11 @@ function GetUser($user_id, $flags = 0) {
 
 // ----------------------------- GROUPS -----------------------------------
 
-// creates new group in permission system
-// $group is an array ("name", "description", ...)
+/** AddGroup function
+ * creates new group in permission system
+ * @param $group is an array ("name", "description", ...)
+ * @param $flags
+ */
 function AddGroup($group, $flags = 0) {
     // creates new person in permission system
     $db  = new DB_AA;
@@ -448,8 +517,11 @@ function AddGroup($group, $flags = 0) {
     return $id;
 }
 
-// deletes an group in permission system
-// $group_id is DN
+/** DelGroup function
+ *  deletes an group in permission system
+ * @param $group_id is DN
+ * @param $flags
+ */
 function DelGroup($group_id, $flags = 3) {
   $db  = new DB_AA;
 
@@ -471,8 +543,11 @@ function DelGroup($group_id, $flags = 3) {
   return 1;
 }
 
-// changes fields about group
-// $group is an array ("name", "description", ...)
+/** ChangeGroup function
+ *  changes fields about group
+ * @param $group is an array ("name", "description", ...)
+ * @param $flags
+ */
 function ChangeGroup($group, $flags = 0) {
     $db  = new DB_AA;
     // do a little bit of QA on the $user array
@@ -486,7 +561,11 @@ function ChangeGroup($group, $flags = 0) {
 }
 
 // ----------------------------- MEMBERSHIP ---------------------------------
-
+/** AddGroupMember function
+ * @param $group_id
+ * @param $id
+ * @param $flags
+ */
 function AddGroupMember($group_id, $id, $flags = 0) {
     $db  = new DB_AA;
     $SQL = sprintf( "DELETE FROM membership WHERE groupid = '%s' AND memberid = '%s'",
@@ -496,7 +575,11 @@ function AddGroupMember($group_id, $id, $flags = 0) {
                       VALUES ('%s','%s')", $group_id, $id);
     $db->query( $SQL );
 }
-
+/** DelGroupMember function
+ * @param $group_id
+ * @param $id
+ * @param $flags
+ */
 function DelGroupMember($group_id, $id, $flags = 0) {
     $db  = new DB_AA;
     $SQL = sprintf( "DELETE from membership
@@ -507,19 +590,36 @@ function DelGroupMember($group_id, $id, $flags = 0) {
 
 // ----------------------------- PERMS -----------------------------------
 
-// creates a new object
+/** AddPermObject function
+ *  creates a new object
+ * @param $objectID
+ * @param $objectType
+ * @param $flags
+ */
 function AddPermObject($objectID, $objectType, $flags = 0) {
     // we don't need to do that in mysql
     return true;
 }
 
-// deletes an ACL object in permission system
+/** DelPermObject function
+ *  deletes an ACL object in permission system
+ * @param $objectID
+ * @param $objectType
+ * @param $flags
+ */
 function DelPermObject($objectID, $objectType, $flags = 0) {
     // we don't need to do that in mysql
     return true;
 }
 
-// append permission to existing object
+/** AddPerm function
+ * append permission to existing object
+ * @param $id
+ * @param $objectID
+ * @param $objectType
+ * @param $perm
+ * @param $flags
+ */
 function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
     $db  = new DB_AA;
     $SQL = sprintf( "DELETE FROM perms WHERE object_type = '%s' AND objectid = '%s' AND userid = '%s'",
@@ -530,7 +630,12 @@ function AddPerm($id, $objectID, $object_type, $perm, $flags = 0) {
                     $object_type, $objectID, $id, $perm);
     $db->query( $SQL );
 }
-
+/** DelPerm function
+ * @param $id
+ * @param $objectID
+ * @param $objectType
+ * @param $flags
+ */
 function DelPerm($id, $objectID, $object_type, $flags = 0) {
     $db  = new DB_AA;
     $SQL = sprintf( "DELETE FROM perms
@@ -540,7 +645,13 @@ function DelPerm($id, $objectID, $object_type, $flags = 0) {
                     $id, $objectID, $object_type);
     $db->query( $SQL );
 }
-
+/** ChangePerm function
+ * @param $id
+ * @param $objectID
+ * @param $objectType
+ * @param $perm
+ * @param $flags
+ */
 function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
     return AddPerm($id, $objectID, $objectType, $perm);
 }
@@ -550,13 +661,21 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
 //# Internal functions
 //#############################################################################
 
-// returns an array containing basic information on $id (user DN or group DN)
-// or false if ID does not exist
-// array("mail => $mail", "name => $cn", "type => "User" : "Group"")
+/** GetIDsInfo function
+ * @param $id
+ * @param $ds
+ * @return an array containing basic information on $id (user DN or group DN)
+ * or false if ID does not exist
+ * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
+ */
 function GetIDsInfo($id, $ds = "") {
 
-    if ( !$id )              return false;
-    if ( IsUserReader($id) ) return GetReaderIDsInfo($id);
+    if ( !$id ) {
+        return false;
+    }
+    if ( IsUserReader($id) ){
+        return GetReaderIDsInfo($id);
+    }
 
     $db  = new DB_AA;
     $SQL = sprintf( "SELECT name, givenname, sn, mail, type
@@ -574,12 +693,18 @@ function GetIDsInfo($id, $ds = "") {
     return $res;
 }
 
-// uses a list of variables to import from global namespace
+/** L2sql_insert function
+ * uses a list of variables to import from global namespace
+ * @param $table
+ * @param $aData
+ */
 function L2sql_insert($table, $aData) {
     global  $debug_query;
 
     $i = 0;
-    if ($debug_query) print "in simple_Insert<BR>";
+    if ($debug_query) {
+        print "in simple_Insert<br>";
+    }
 
     while ($i < count($aData)) {
         $var = $aData[$i];
@@ -596,11 +721,17 @@ function L2sql_insert($table, $aData) {
     return ("INSERT INTO $table ( $FieldClause ) VALUES ( $ValueClause )");
 }
 
-// inserts an associative array
+/** A2sql_insert function
+ * inserts an associative array
+ * @param $table
+ * @param $aData
+ */
 function A2sql_insert($table, $aData) {
     global  $debug_query;
 
-    if ($debug_query) print "in simple_Insert<BR>";
+    if ($debug_query) {
+        print "in simple_Insert<br>";
+    }
 
     while (list($key, $val) = each($aData)) {
         $fields[] = addslashes($key);
@@ -613,10 +744,17 @@ function A2sql_insert($table, $aData) {
     return ("INSERT INTO $table ( $FieldClause ) VALUES ( $ValueClause )");
 }
 
-// generates update sql statement from array
+/** A2sql_update function
+ *  generates update sql statement from array
+ * @param $table
+ * @param $keyField
+ * @param $aData
+ */
 function A2sql_update($table, $keyField, $aData) {
     global  $debug_query;
-    if ($debug_query) print "in simple_Insert<BR>";
+    if ($debug_query) {
+        print "in simple_Insert<br>";
+    }
 
     while (list($key, $val) = each($aData)) {
         if ($key == $keyField) {
@@ -631,7 +769,9 @@ function A2sql_update($table, $keyField, $aData) {
     // create the sql
     return " UPDATE $table SET $set WHERE $where";
 }
-
+/** IsUsernameFree function
+ * @param $username
+ */
 function IsUsernameFree($username) {
     $db = getDB();
     $db->query("SELECT uid FROM users WHERE uid='".addslashes($username)."'");

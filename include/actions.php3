@@ -5,36 +5,43 @@
  *
  * Should be included to other scripts (admin/index.php3)
  *
- * @package ControlPanel
- * @version $Id$
- * @author Honza Malik <honza.malik@ecn.cz>
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
-*/
-/*
-    Copyright (C) 1999, 2000 Association for Progressive Communications
-    http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/** Move item to app/hold/trash based on param
+ *   Move item to app/hold/trash based on param
  *  @param $status    static function parameter defined in manager action
  *                   in this case it holds bin number, where the items should go
  *  @param $item_arr array, where keys are unpacked ids of items prefixed by
  *                   'x' character (javascript purposes only)
  *  @param $akce_param additional parameter for the action - not used here
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
+*/
+
+/** Item_MoveItem function
+ * @param $status
+ * @param $item_arr
+ * @param $akce_param
+ * @return false
  */
 function Item_MoveItem($status, $item_arr, $akce_param) {
     global $event, $auth, $slice_id, $pagecache;
@@ -70,12 +77,14 @@ function Item_MoveItem($status, $item_arr, $akce_param) {
     return false;                                     // OK - no error
 }
 
-/** Export (Copy) items to another slice
+/** Item_Feed function
+ *  Export (Copy) items to another slice
  *  @param $slice      slice object - slice, from which we export
  *  @param $item_arr   array, where keys are unpacked ids of items prefixed by
  *                     'x' character (javascript purposes only)
  *  @param $akce_param Special string, where destination slices are coded.
  *                     The format is "<status>-<unpacked_slice_id>,<status>-.."
+ * @return false or error message
  */
 function Item_Feed($slice, $item_arr, $akce_param) {
     if (strlen($akce_param) < 1) {
@@ -93,7 +102,8 @@ function Item_Feed($slice, $item_arr, $akce_param) {
     return false;                                  // OK - no error
 }
 
-/** Move items to another slice
+/** Item_Move2Slice function
+ *  Move items to another slice
  *  @param $slice      slice object - slice, from which we export
  *  @param $item_arr   array, where keys are unpacked ids of items prefixed by
  *                     'x' character (javascript purposes only)
@@ -135,12 +145,13 @@ function Item_Move2Slice($slice, $item_arr, $akce_param) {
 }
 
 
-/**
+/** Item_DeleteTrash function
  *  Handler for DeleteTrash switch - Delete all items in the trash bin
  *  @param $param       'selected' if we have to delete only items specified
  *                      in $item_arr - otherwise delete all items in Trash
  *  @param $item_arr    Items to delete (if 'selected' is $param)
  *  @param $akce_param  Not used
+ * @return false or error message
  */
 function Item_DeleteTrash($param, $item_arr, $akce_param) {
     global $pagecache, $slice_id, $event;
@@ -192,7 +203,11 @@ function Item_DeleteTrash($param, $item_arr, $akce_param) {
     freeDB($db);
 }
 
-/** Handler for Tab switch - switch between bins */
+/** Item_Tab function
+ * Handler for Tab switch - switch between bins
+ * @param $value
+ * @param $param
+ */
 function Item_Tab($value, $param) {
     global $manager;
     $GLOBALS['r_state']['bin'] = $value;

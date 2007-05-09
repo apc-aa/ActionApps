@@ -14,60 +14,73 @@
  *          hold id of any module. The name slice_id comes from
  *          history, when there was no other module than slice.
  *
- * @package ControlPanel
- * @version $Id$
- * @author Honza Malík, Jakub Adámek, Econnect
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malík, Jakub Adámek, Econnect
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
-*/
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * @link      http://www.apc.org/ APC
+ *
 */
 
-/** Use require menu_include(); to include module-specific menu,
-*   call showMenu() afterwards. */
+/** menu_include function
+ * Use require menu_include(); to include module-specific menu,
+ *   call showMenu() afterwards.
+ */
 function menu_include() {
     global $MODULES, $g_modules, $slice_id;
     $menu = $MODULES[$g_modules[$slice_id]["type"]]["menu"];
     return AA_BASE_PATH. ($menu ? $menu : 'include/menu.php3');
 }
 
- // handle with PHP magic quotes - quote the variables if quoting is set off
+/** Myaddslashes function
+ * handle with PHP magic quotes - quote the variables if quoting is set off
+ * @param $val
+ * @param $n
+ */
 function Myaddslashes($val, $n=1) {
-    if (!is_array($val))
+    if (!is_array($val)) {
         return addslashes($val);
-    for (reset($val); list($k, $v) = each($val); )
+    }
+    for (reset($val); list($k, $v) = each($val); ) {
         $ret[$k] = Myaddslashes($v, $n+1);
+    }
     return $ret;
 }
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
-      $$k = Myaddslashes($v);
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS)) {
+      for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) {
+          $$k = Myaddslashes($v);
+      }
+  }
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS)) {
+      for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) {
+          $$k = Myaddslashes($v);
+      }
+  }
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS)) {
+      for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) {
+          $$k = Myaddslashes($v);
+      }
+  }
 }
-
 
 // global variables should be quoted (since old AA code rely on that fact),
 // however the new code should use $_POST and $_GET, which are NOT quoted
@@ -83,9 +96,10 @@ if ( get_magic_quotes_gpc() ) {
 }
 
 
-if ($encap == "false")    // used in itemedit for anonymous form
-  $encap = false;        // it must be here, because the variable is rewriten
-                         // if the get_magic_quotes_gpc()==false (see above)
+if ($encap == "false") {   // used in itemedit for anonymous form
+    $encap = false;        // it must be here, because the variable is rewriten
+                           // if the get_magic_quotes_gpc()==false (see above)
+}
 
 require_once dirname(__FILE__). "/config.php3";
 require_once AA_INC_PATH."mgettext.php3";
@@ -136,11 +150,13 @@ $auth->relogin_if($relogin);
 
 $last_slice_id = $slice_id;
 
-if ( $pass_sliceid )
+if ( $pass_sliceid ) {
     $slice_id = $pass_sliceid;
+}
 
-if ( $no_slice_id )
+if ( $no_slice_id ) {
     unset($slice_id);
+}
 
 require_once AA_INC_PATH. "util.php3";  // must be after language include because of lang constants in util.php3
 require_once AA_INC_PATH. "event.class.php3";
@@ -157,8 +173,9 @@ $sess->register("r_hidden");
 // sometimes we need not to unset hidden - popup for related stories ...
 // only acceptor can read values. For others they are destroyed.
 $my_document_uri = $DOCUMENT_URI ? $DOCUMENT_URI : $PHP_SELF;
-if ( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_document_uri))
+if ( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_document_uri)) {
     unset( $r_hidden );
+}
 
 $after_login = !$no_slice_id && !$slice_id;
 $perm_slices = GetUserSlices();
@@ -229,8 +246,9 @@ if (!$no_slice_id) {
         $page = filename($PHP_SELF);
         $hdd_dir = AA_INC_PATH."../".$MODULES[$module_type]['directory'];
         $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
-        if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') OR ($module_type=='J') )
+        if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') OR ($module_type=='J') ) {
             $page = "index.php3";
+        }
         if ($web_dir.$page != $PHP_SELF) {
             $page = $sess->url($web_dir.$page."?slice_id=$slice_id");
             page_close();

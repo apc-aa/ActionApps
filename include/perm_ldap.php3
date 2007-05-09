@@ -1,22 +1,29 @@
-<?php  # perm_ldap - functions for working with permissions with LDAP
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+<?php
+/**
+ *  perm_ldap - functions for working with permissions with LDAP
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once "perm_core.php3";
@@ -55,7 +62,12 @@ $aa_ldap_servers = array(
 // API functions
 //#############################################################################
 
-/** Returns uid if user is authentificied, else false. */
+/** AuthenticateUsername function
+ *  Returns uid if user is authentificied, else false.
+ * @param $username
+ * @param $password
+ * @param $flags
+ */
 function AuthenticateUsername($username, $password, $flags = 0) {
 
     // try to authenticate user in LDAP
@@ -65,7 +77,11 @@ function AuthenticateUsername($username, $password, $flags = 0) {
 
 //############### User functions //#############################################
 
-/** Creates new person in LDAP permission system */
+/** AddUser function
+ *  Creates new person in LDAP permission system
+ * @param $user
+ * @param $flags
+ */
 function AddUser($user, $flags = 0) {
     if (! IsUsernameFree($user["uid"])) {
         return false;
@@ -93,14 +109,16 @@ function AddUser($user, $flags = 0) {
     }
 
     // add data to directory
-    $user_dn = "uid=$user[uid]," . $aa_default_ldap['people'];
+    $user_dn = "uid=".$user['uid']."," . $aa_default_ldap['people'];
     $r       = @ldap_add($ds, $user_dn, $record);
     ldap_close($ds);
     return ($r ? $user_dn : false);
 }
 
-/** Deletes an user in LDAP permission system
+/** DelUser function
+ *  Deletes an user in LDAP permission system
  *  @param $user_id is DN
+ * @param $flags
  */
 function DelUser($user_id, $flags = 3) {
     global $aa_default_ldap;
@@ -138,7 +156,11 @@ function DelUser($user_id, $flags = 3) {
     return $r;
 }
 
-/** Changes user entry in LDAP permission system */
+/** ChangeUser function
+ *  Changes user entry in LDAP permission system
+ * @param $user
+ * @param $flags
+ */
 function ChangeUser($user, $flags = 0) {
     global $aa_default_ldap;
     if ( !($ds = InitLDAP()) ) {
@@ -162,7 +184,11 @@ function ChangeUser($user, $flags = 0) {
     return $r;
 }
 
-/** returns array(cn, sn, givenname, array(mail), array(phone)) */
+/** GetUser function
+ *  returns array(cn, sn, givenname, array(mail), array(phone))
+ * @param $user_id
+ * @param $flags
+ */
 function GetUser($user_id, $flags = 0) {
     global $aa_default_ldap;
     if ( !($ds=InitLDAP()) ) {
@@ -205,8 +231,10 @@ function GetUser($user_id, $flags = 0) {
 
 //############### Group functions //############################################
 
-/** Creates new group in LDAP permission system
+/** AddGroup function
+ *  Creates new group in LDAP permission system
  *  @param $group array ("name", "description", ...)
+ * @param $flags
  */
 function AddGroup($group, $flags = 0) {
     global $aa_default_ldap;
@@ -225,15 +253,17 @@ function AddGroup($group, $flags = 0) {
     }
 
     // add data to directory
-    $group_dn = "cn=$group[name]," . $aa_default_ldap['groups'];
+    $group_dn = "cn=".$group['name']."," . $aa_default_ldap['groups'];
     $r = @ldap_add($ds, $group_dn, $record);
     ldap_close($ds);
 
     return ($r ? $group_dn : false);
 }
 
-/** Deletes a group in LDAP permission system
- * $group_id is DN
+/** DelGroup function
+ *  Deletes a group in LDAP permission system
+ *  @param $group_id is DN
+ * @param $flags
  */
  function DelGroup($group_id, $flags = 3) {
      global $aa_default_ldap;
@@ -272,7 +302,11 @@ function AddGroup($group, $flags = 0) {
      return $r;
 }
 
-/** changes group entry in LDAP permission system */
+/** ChangeGroup function
+ *  changes group entry in LDAP permission system
+ * @param $group
+ * @param $flags
+ */
 function ChangeGroup($group, $flags = 0) {
     global $aa_default_ldap;
 
@@ -291,7 +325,11 @@ function ChangeGroup($group, $flags = 0) {
     return $r;
 }
 
-/** @returns array(uid, name, description) */
+/** GetGroup function
+ * @param $user_id
+ * @param $flags
+ *  @return array(uid, name, description)
+ */
 function GetGroup($user_id, $flags = 0) {
     global $aa_default_ldap;
     if ( !($ds=InitLDAP()) ) {
@@ -318,7 +356,11 @@ function GetGroup($user_id, $flags = 0) {
     return $res;
 }
 
-/** @returns list of groups which corresponds to mask $pattern */
+/** FindGroups function
+ * @param $pattern
+ * @param $flags
+ *  @return list of groups which corresponds to mask $pattern
+ */
 function FindGroups($pattern, $flags = 0) {
     global $aa_default_ldap;
 
@@ -343,7 +385,9 @@ function FindGroups($pattern, $flags = 0) {
     ldap_close($ds);
     return $result;
 }
-
+/** find_user_by_login function
+ * @param $login
+ */
 function find_user_by_login($login) {
     $users = FindUsers($login);
     if (is_array($users)) {
@@ -358,7 +402,11 @@ function find_user_by_login($login) {
     return false;
 }
 
-/** @returns list of users which corresponds to mask $pattern */
+/** FindUsers function
+ * @param $pattern
+ * @param $flags
+ *  @return list of users which corresponds to mask $pattern
+ */
 function FindUsers($pattern, $flags = 0) {
     global $aa_default_ldap;
     if ( !($ds=InitLDAP()) ) {
@@ -380,7 +428,11 @@ function FindUsers($pattern, $flags = 0) {
     ldap_close($ds);
     return $result;
 }
-
+/** AddGroupMember function
+ * @param $group_id
+ * @param $id
+ * @param $flags
+ */
 function AddGroupMember($group_id, $id, $flags = 0) {
     global $aa_default_ldap;
     if ( !($ds=InitLDAP()) ) {
@@ -391,7 +443,11 @@ function AddGroupMember($group_id, $id, $flags = 0) {
     ldap_close($ds);
     return $r;
 }
-
+/** DelGroupMember function
+ * @param $group_id
+ * @param $id
+ * @param $flags
+ */
 function DelGroupMember($group_id, $id, $flags = 0) {
     global $aa_default_ldap;
     if ( !($ds=InitLDAP()) ) {
@@ -421,7 +477,10 @@ function DelGroupMember($group_id, $id, $flags = 0) {
     ldap_close($ds);
     return $r;
 }
-
+/** GetGroupMembers function
+ * @param $group_id
+ * @param $flags
+ */
 function GetGroupMembers($group_id, $flags = 0) {
     global $aa_default_ldap;
     if ( !($ds=InitLDAP()) ) {
@@ -446,8 +505,10 @@ function GetGroupMembers($group_id, $flags = 0) {
     return $res;
 }
 
-/** @returns list of group_ids, where id (group or user) is a member
- * $flags - use to obey group in groups?
+/** GetMembership function
+ * @param $id
+ * @param $flags - use to obey group in groups?
+ * @return list of group_ids, where id (group or user) is a member
  */
 function GetMembership($id, $flags = 0) {
     global $aa_default_ldap;
@@ -488,13 +549,18 @@ function GetMembership($id, $flags = 0) {
             $result[] = $key;                   // transform to a numbered array
         }
     }
-    
+
     return $result;
 }
 
 //############### Permission functions //#######################################
 
-/** Creates a new object in LDAP */
+/** AddPermObject function
+ *  Creates a new object in LDAP
+ * @param $objectID
+ * @param $objectType
+ * @param $flags
+ */
 function AddPermObject($objectID, $objectType, $flags = 0) {
     global $aa_default_ldap;
 
@@ -513,7 +579,12 @@ function AddPermObject($objectID, $objectType, $flags = 0) {
     return $r;
 }
 
-/** Deletes an ACL object in LDAP permission system */
+/** DelPermObject function
+ *  Deletes an ACL object in LDAP permission system
+ * @param $objectID
+ * @param $objectType
+ * @param $flags
+ */
 function DelPermObject($objectID, $objectType, $flags = 0) {
     global $aa_default_ldap;
     if (!($ds=InitLDAP())) {
@@ -526,7 +597,14 @@ function DelPermObject($objectID, $objectType, $flags = 0) {
     return $r;
 }
 
-/** Append permission to existing object */
+/** AddPerm function
+ * Append permission to existing object
+ * @param $id
+ * @param $objectID
+ * @param $objectType
+ * @param $perm
+ * @param $flags
+ */
 function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
     global $aa_default_ldap;
     if (!($ds=InitLDAP())) {
@@ -566,16 +644,31 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
     ldap_close($ds);
     return $r;          // true or false
 }
-
+/** DelPerm function
+ * @param $id
+ * @param $objectID
+ * @param $objectType
+ * @param $flags
+ */
 function DelPerm($id, $objectID, $objectType, $flags = 0) {
     return AddPerm($id, $objectID, $objectType, false);
 }
-
+/** ChangePerm function
+ * @param $id
+ * @param $objectID
+ * @param $objectType
+ * @param $perm
+ * @param $flags
+ */
 function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
     return AddPerm($id, $objectID, $objectType, $perm);
 }
 
-/** Returns an array of user/group identities and their permissions
+/** GetObjectsPerms function
+ * @param $objectID
+ * @param $ojectType
+ * @param $flags
+ * @return an array of user/group identities and their permissions
  *  granted on specified object $objectID
  */
 function GetObjectsPerms($objectID, $objectType, $flags = 0) {
@@ -585,7 +678,7 @@ function GetObjectsPerms($objectID, $objectType, $flags = 0) {
     }
 
     $filter = "(&(objectclass=apcacl)(apcobjecttype=$objectType))";
-    $basedn = "apcobjectid=$objectID,$aa_default_ldap[acls]";
+    $basedn = "apcobjectid=$objectID,".$aa_default_ldap['acls'];
 
     $result = @ldap_read($ds,$basedn,$filter,array("apcaci"));
     if (!$result) {
@@ -608,9 +701,12 @@ function GetObjectsPerms($objectID, $objectType, $flags = 0) {
     return $info;
  }
 
-/** Returns an array of user/group identities and their permissions
+/** GetIDPerms function
+ * @param $id
+ * @param $objectType
+ * @param flags & 1 -> do not involve membership in groups
+ * @return an array of user/group identities and their permissions
  *  granted on all objects of type $objectType
- *  @param flags & 1 -> do not involve membership in groups
  */
 function GetIDPerms($id, $objectType, $flags = 0) {
     global $aa_default_ldap;
@@ -659,15 +755,19 @@ function GetIDPerms($id, $objectType, $flags = 0) {
 // Internal functions
 //#############################################################################
 
-/** Decides which LDAP server ask for authentification
+/** WhereToSearch function
+ *  Decides which LDAP server ask for authentification
  *  (acording to org - ecn.cz ..)
+ * @param $org
  */
 function WhereToSearch($org) {
     global $aa_ldap_servers, $aa_default_ldap;
     return ($aa_ldap_servers[$org] ? $aa_ldap_servers[$org] : $aa_default_ldap);
 }
 
-/** Connect to LDAP server */
+/** InitLDAP function
+ * Connect to LDAP server
+ */
 function InitLDAP() {
     global $aa_default_ldap;
 
@@ -682,27 +782,44 @@ function InitLDAP() {
     return $ds;
 }
 
-/** Parse apcaci LDAP entry */
+/** ParseApcAci function
+ *  Parse apcaci LDAP entry
+ * @param $str
+ */
 function ParseApcAci($str) {
     $foo = explode(':', $str);
     return ((count($foo) < 2) ? false : array("dn"=>$foo[0], "perm"=>$foo[1]));
 }
-
+/** GetApcAciPerm function
+ * @param $str
+ */
 function GetApcAciPerm($str) {
     $foo = explode(':', $str);
     return $foo[1];         // permission string
 }
 
-// returns an array containing basic information on $id (user DN or group DN)
-// or false if ID does not exist
-// array("mail => $mail", "name => $cn", "type => "User" : "Group"")
+/** GetIDsInfo function
+ * @param $id
+ * @param $ds
+ * @return an array containing basic information on $id (user DN or group DN)
+ * or false if ID does not exist
+ * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
+ */
 function GetIDsInfo($id, $ds = "") {
     global $aa_default_ldap;
 
-    if ( !$id )                  return false;
-    if ( IsGroupReader($id) )    return GetReaderGroupIDsInfo($id);
-    if ( IsGroupReaderSet($id) ) return GetReaderSetIDsInfo($id);
-    if ( IsUserReader($id) )     return GetReaderIDsInfo($id);
+    if ( !$id ) {
+        return false;
+    }
+    if ( IsGroupReader($id) ) {
+        return GetReaderGroupIDsInfo($id);
+    }
+    if ( IsGroupReaderSet($id) ) {
+        return GetReaderSetIDsInfo($id);
+    }
+    if ( IsUserReader($id) ) {
+        return GetReaderIDsInfo($id);
+    }
 
     if ( $ds=="" ) {
         if ( !($ds=InitLDAP()) ) {
@@ -749,25 +866,36 @@ function GetUserType( $user_id ) {
     return 'Reader';
 }
 */
-
+/** IsUserReader function
+ * @param $user_id
+ */
 function IsUserReader($user_id) {
     return ((guesstype($user_id, true) == 'l') AND (substr($user_id,0,4) != 'uid='));
 }
-
+/** IsGroupReader function
+ * @param $group_id
+ */
 function IsGroupReader($group_id) {
     return ((guesstype($group_id, true) == 'l') AND (AA_Slices::getSliceProperty($group_id, 'type')=='ReaderManagement'));
 }
-
+/** IsGroupReaderSet function
+ * @param $group_id
+ */
 function IsGroupReaderSet($group_id) {
     return is_marked_by($group_id, 1);
 }
-
+/** IsUsernameFree function
+ * @param $username
+ */
 function IsUsernameFree($username) {
     return ! GetUser("uid=$username,".$LDAPserver['people']) && IsReadernameFree($username);
 }
 
-/** Try to authenticate user from LDAP
- *  Returns uid if user is authentificied, else false.
+/** AuthenticateLDAPUsername function
+ *  Try to authenticate user from LDAP
+ * @param $username
+ * @param $password
+ *  @return uid if user is authentificied, else false.
  */
 function AuthenticateLDAPUsername($username, $password) {
     global $aa_ldap_servers, $aa_default_ldap;

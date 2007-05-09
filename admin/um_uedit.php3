@@ -1,34 +1,40 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**  um_uedit.php3 - adds new user to permission system
+ *     optionaly $Msg to show under <h1>Headline</h1> (typicaly: update successful)
+ *     selected_user
+ *     state variables:
+ *        $usr_edit       - comes from um_usrch - button Edit $selected_user
+ *        $usr_del        - comes from um_usrch - button Delete $selected_user
+ *        $usr_new        - comes from um_inc   - New user link
+ *        $submit_action  - = update_submit if pressed update
+ *                          = usr_del if delete user is confirmed
+ *        $add_submit     - if new user Add button pressed
+ *
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
-// um_uedit.php3 - adds new user to permission system
-// optionaly $Msg to show under <h1>Headline</h1> (typicaly: update successful)
-// selected_user
-// state variables:
-//    $usr_edit       - comes from um_usrch - button Edit $selected_user
-//    $usr_del        - comes from um_usrch - button Delete $selected_user
-//    $usr_new        - comes from um_inc   - New user link
-//    $submit_action  - = update_submit if pressed update
-//                      = usr_del if delete user is confirmed
-//    $add_submit     - if new user Add button pressed
 
 
 $require_default_lang = true;      // do not use module specific language file
@@ -87,7 +93,7 @@ if ( $selected_user ) {
         $user_groups = GetMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)
     }
     if ( !isset($user_groups) OR !is_array($user_groups) ) {
-        $sel_groups["n"][name] = (( $user_groups == "too much" ) ? _m("Too much groups found.") : "");
+        $sel_groups["n"]['name'] = (( $user_groups == "too much" ) ? _m("Too much groups found.") : "");
     } else {
         foreach ($user_groups as $foo_gid) {
             $sel_groups[$foo_gid] = GetGroup($foo_gid);
@@ -107,7 +113,7 @@ if ( $selected_group ) {
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$varset = new Cvarset();
+$varset      = new Cvarset();
 
 // Process submited form -------------------------------------------------------
 
@@ -152,8 +158,8 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 HtmlPageBegin('default', true);
 
 ?>
- <TITLE><?php echo _m("User management - Users");?></TITLE>
-<SCRIPT Language="JavaScript"><!--
+ <title><?php echo _m("User management - Users");?></title>
+<script Language="JavaScript"><!--
   function UpdateUser(action) {
     var foo= CommaDelimeted( 'document.fx.sel_groups_sel' )
     document.fx.posted_groups.value = foo
@@ -191,15 +197,15 @@ HtmlPageBegin('default', true);
     }
   }
 // -->
-</SCRIPT>
-</HEAD>
+</script>
+</head>
 
 <?php
 
 require_once menu_include();   //show navigation column depending on $show
 showMenu($aamenus, "aaadmin", $usr_new ? "u_new" : "u_edit");
 
-echo "<H1><B>". ( $usr_new ? _m("New User") : _m("Edit User") )."</B></H1>";
+echo "<h1><b>". ( $usr_new ? _m("New User") : _m("Edit User") )."</b></h1>";
 PrintArray($err);
 echo $Msg;
 
@@ -209,13 +215,13 @@ echo $Msg;
 FrmTabCaption(_m("Users"));
 ?>
  <tr><td>
-   <form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
+   <form method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
      <tr>
             <td width="20%">&nbsp;</td>
-            <td width="46%"><input type=Text name=usr value="<?php echo safe($rusr)?>"></td>
-            <td width="33%"><input type=submit value="<?php echo _m("Search")?>">
-          <input type=hidden name="UsrSrch" value=1></td>
+            <td width="46%"><input type="text" name="usr" value="<?php echo safe($rusr)?>"></td>
+            <td width="33%"><input type="submit" value="<?php echo _m("Search")?>">
+          <input type="hidden" name="UsrSrch" value="1"></td>
      </tr>
     </table>
    </form>
@@ -225,18 +231,18 @@ FrmTabCaption(_m("Users"));
 FrmTabSeparator("");
 ?>
  <tr>
-  <td><form name=f2 method=post action="<?php echo $sess->url($PHP_SELF) ?>">
-    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align=center>
+  <td><form name="f2" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+    <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
      <tr>
-            <td width="20%" class=tabtxt><b><?php echo _m("User") ?></b></td>
+            <td width="20%" class="tabtxt"><b><?php echo _m("User") ?></b></td>
             <td width="46%"><?php SelectGU_ID("selected_user", $users, $selected_user);
           ?></td>
-            <td width="33%"><input type=submit name="usr_edit" value="<?php echo _m("Edit")?>">&nbsp;
-                <input type=hidden name=submit_action value=0>  <!-- to this variable store "usr_del" (by javascript) -->
-                <input type=button name="usr_del" value="<?php echo _m("Delete")?>" onclick="RealyDelete()"></td>
+            <td width="33%"><input type="submit" name="usr_edit" value="<?php echo _m("Edit")?>">&nbsp;
+                <input type="hidden" name="submit_action" value="0">  <!-- to this variable store "usr_del" (by javascript) -->
+                <input type="button" name="usr_del" value="<?php echo _m("Delete")?>" onclick="RealyDelete()"></td>
      </tr>
     </table>
-   </FORM>
+   </form>
 <?php
 FrmTabEnd();
 
@@ -273,7 +279,7 @@ do {
 
 ?>
 <br />
-<form name=fx method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="fx" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
 
 // User data ---------------------------------------------------
@@ -301,19 +307,19 @@ if ( !$add_submit AND !$usr_new) {
 
     FrmTabSeparator(_m("Groups"));
 
-    echo '<tr><td width=190 align=center>'. _m("All Groups") .'</td>
-                    <td width=60>&nbsp;</td>
-                    <td width=190 align=center>'. _m("User's Groups") .'</td></tr>
-          <tr><td><input type=Text name=grp1_flt value="'. safe($grp1_flt) .'">
-                  <input type=submit name="grp1_submit" value="'. _m("Search") .'"></td>
+    echo '<tr><td width="190" align="center">'. _m("All Groups") .'</td>
+                    <td width="60">&nbsp;</td>
+                    <td width="190" align="center">'. _m("User's Groups") .'</td></tr>
+          <tr><td><input type="text" name="grp1_flt" value="'. safe($grp1_flt) .'">
+                  <input type="submit" name="grp1_submit" value="'. _m("Search") .'"></td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td></tr>
-          <tr><td align="CENTER" valign="TOP">';
+          <tr><td align="center" valign="top">';
                 SelectGU_ID("all_groups_sel", $all_groups, $all_groups_sel, "long", $sel_groups);
     echo '    </td>
               <td><input type="button" VALUE="  >>  " onClick = "MoveSelected(\'document.fx.all_groups_sel\',\'document.fx.sel_groups_sel\')" align=center><br><br>
                   <input type="button" VALUE="  <<  " onClick = "MoveSelected(\'document.fx.sel_groups_sel\',\'document.fx.all_groups_sel\')" align=center></td>
-                    <td align="CENTER" valign="TOP">';
+                    <td align="center" valign="TOP">';
                 SelectGU_ID("sel_groups_sel", $sel_groups, $sel_groups_sel, "long");
     echo '    </td>
           </tr>';
@@ -351,4 +357,5 @@ if ( !$add_submit AND !$usr_new) {
 }
 
 HtmlPageEnd();
-page_close(); ?>
+page_close();
+?>

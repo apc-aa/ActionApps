@@ -1,42 +1,45 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/** linkcheck class - link validation for links module
+ *
+ *  functions:
+ *
+ *      check_url($url) - checks url (http and mailto), retunrs array with status
+ *                        code, content-type, ...
+ *      checking() - run checking of urls from table links_links, number of checked
+ *                   links defined in LINKS_VALIDATION_CHECK
+ *      add_check($arr, $valid_codes) - add new check values to string valid_codes
+ *      remove_old($valid_codes) - removes old check values from valid_codes
+ *      count_weight($valid_codes) - count valid_rank from valid_codes
+ *
+ *  arrays:
+ *
+ *      $http_error_codes - associates comment and weight to http error code
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Pavel Jisl <pavelji@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
-/* linkcheck class - link validation for links module
-
-Author: Pavel Jisl (pavelji@ecn.cz)
-
-functions:
-
-    check_url($url) - checks url (http and mailto), retunrs array with status
-                      code, content-type, ...
-    checking() - run checking of urls from table links_links, number of checked
-                 links defined in LINKS_VALIDATION_CHECK
-    add_check($arr, $valid_codes) - add new check values to string valid_codes
-    remove_old($valid_codes) - removes old check values from valid_codes
-    count_weight($valid_codes) - count valid_rank from valid_codes
-
-arrays:
-
-    $http_error_codes - associates comment and weight to http error code
-*/
 
 class linkcheck
 {
@@ -89,7 +92,10 @@ class linkcheck
         '504' => array ("comment" => "Gateway Timeout", "weight" => "5"),
         '505' => array ("comment" => "HTTP Version Not Supported", "weight" => "5"));
 
-    // check url - returns error codes, content type, error weight and comment
+    /** check_irl function
+     *  check url - returns error codes, content type, error weight and comment
+     * @param $url
+     */
     function check_url($url) {
         $time = time();
         if (!eregi("^http://", $url)) {
@@ -142,7 +148,9 @@ class linkcheck
         return $return;
     }
 
-    // checking - runs check_url for links (count defined in LINKS_VALIDATION_COUNT)
+    /** checking function
+     *  checking - runs check_url for links (count defined in LINKS_VALIDATION_COUNT)
+     */
     function checking() {
         global $db;
         $db2 = new DB_AA;
@@ -163,26 +171,37 @@ class linkcheck
             $val["valid_codes"] = $this->add_check($val, $l_vc); // add this check into valid_codes
             $val["valid_rank"]  = $this->count_weight($val["valid_codes"]); // count rank for link
 
-            if ($debug) { print_r($val); }
+            if ($debug) {
+                print_r($val);
+            }
 
             // update values in db
             $SQL = "UPDATE links_links SET valid_codes='".$val["valid_codes"]."',
                                            valid_rank='" .$val["valid_rank"]. "',
                                            validated='"  .$val["timestamp"].  "'
                     WHERE id = '".$l_id."'";
-            if ($debug) { echo "<pre> $SQL </pre>"; }
+            if ($debug) {
+                echo "<pre> $SQL </pre>";
+            }
             $db2->tquery($SQL);
         }
     }
 
-    // creates new valid_codes string (new is added as first)
+    /** add_check function
+     *  creates new valid_codes string (new is added as first)
+     * @param $arr
+     * @param $valid_codes
+     */
     function add_check($arr, $valid_codes) {
         $element = $this->remove_old($valid_codes);
         $element = $arr["timestamp"]. ",". $arr["code"]. ":". $element;
         return $element;
     }
 
-    // remove old checks - more than 10
+    /** remove_old function
+     *  remove old checks - more than 10
+     * @param $valid_codes
+     */
     function remove_old($valid_codes) {
         $dummy = explode(":", $valid_codes);
         rsort($dummy);
@@ -191,11 +210,16 @@ class linkcheck
             for ($i=0; $i < 10; $i++) {
                 $valid_codes2 .= $dummy[$i]. ($i==9 ? "" : ":");
             }
-        } else { $valid_codes2 = $valid_codes; }
+        } else {
+            $valid_codes2 = $valid_codes;
+        }
         return $valid_codes2;
     }
 
-    // function count_weight - counts weight of link from it's http error codes
+    /** count_weight function
+     *  counts weight of link from it's http error codes
+     * @param $valid_codes
+     */
     function count_weight($valid_codes) {
         $dummy = explode(":", $valid_codes);
         rsort($dummy); // sort descend (newest is first)
@@ -209,7 +233,9 @@ class linkcheck
             */
         }
         $count = count($arr);
-        if ($count > 10) { $count = 10; } // take only last 10
+        if ($count > 10) { // take only last 10
+            $count = 10;
+        }
         $num = 0;
         for ($i=0; $i<$count; $i++) {
             /* exponential function - too fast near zero :(

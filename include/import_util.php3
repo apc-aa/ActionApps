@@ -1,22 +1,28 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999-2003 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Ondrej Mazanec, Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 define("SHOW_FILE_SIZE",         65536);
@@ -31,8 +37,10 @@ define("UPDATE",           2);
 define("INSERT", 1);
 define("UPDATE", 2);
 
-/** compare version  phpversion() to $ver (format major.minor.build)
+/** comparePHPVersion function
+ *  compare version  phpversion() to $ver (format major.minor.build)
  *  returns -1,0,1 :  if php version is less,equal,greater than $ver
+ * @param $ver
  */
 function comparePHPVersion($ver) {
     $v1 = explode(".",phpversion());
@@ -43,7 +51,12 @@ function comparePHPVersion($ver) {
     }
     return 0;
 }
-
+/** getCSV function
+ * @param $handle
+ * @param $maxsize
+ * @param $delimeter
+ * @param $enclosure
+ */
 function getCSV($handle,$maxsize = 65536,$delimiter = ";",$enclosure = '"') {
     if ($delimiter == '\t') {
         $delimiter = chr(9);  // tabulator ascii
@@ -55,10 +68,13 @@ function getCSV($handle,$maxsize = 65536,$delimiter = ";",$enclosure = '"') {
     }
 }
 
-/** create field names from the CSV file
+/** createFieldNames function
+ *  create field names from the CSV file
  *  For CSV data: if the first row is used for field names, parse first row
  *                according to additional params (delimiter, enclosure),
  *                otherwise creates field1, field2, ...
+ * @param $fileName
+ * @param $addParams
  */
 function createFieldNames($fileName,&$addParams) {
     $handle = fopen($fileName,"r");
@@ -81,19 +97,31 @@ function createFieldNames($fileName,&$addParams) {
     }
     return $fieldNames;
 }
-
+/** convertCSV2Items function
+ * @param $csvRec
+ * @param $fieldNames
+ * @param $trans_actions
+ * @param $slice_fields
+ * @param $itemContent
+ */
 function convertCSV2Items(&$csvRec,&$fieldNames,&$trans_actions,&$slice_fields,&$itemContent) {
     $itemContent1 = new ItemContent;
     $itemContent1->setFromCSVArray($csvRec, $fieldNames);
-    $itemContent = new ItemContent;
-    $err = $itemContent->transform($itemContent1, $trans_actions, $slice_fields);
+    $itemContent  = new ItemContent;
+    $err          = $itemContent->transform($itemContent1, $trans_actions, $slice_fields);
     return $err;
 }
 
 class Actions {
     var $actions;
     var $globalParams;
-
+    /** Actions function
+     * @param $actions
+     * @param $inFields
+     * @param $html
+     * @param $params
+     * @param $globalParams
+     */
     function Actions($actions, $inFields, $html, $params, $globalParams="") {
         foreach ( $actions as $f_id => $action) {
             $this->actions[$f_id] = array( "from"=>$inFields[$f_id],
@@ -102,8 +130,12 @@ class Actions {
         $this->globalParams = $globalParams;
     }
 
-    /** Transform the input item content to the output item content according
+    /** transform function
+     *  Transform the input item content to the output item content according
      *  to the actions
+     * @param $itemcontent
+     * @param $slice_fields
+     * @param $outputItemContent
      */
      function transform(&$itemContent, $slice_fields, &$outputItemContent) {
          global $auth;
@@ -159,26 +191,40 @@ class Actions {
              }
         }
     }
-
+    /** getOutputFields function
+     *
+     */
     function getOutputFields() {
         return array_keys( $this->actions );
     }
-
+    /** getActions function
+     *
+     */
     function getActions() {
-        foreach ( $this->actions as $v ) { $f[] = $v['action']; }
+        foreach ( $this->actions as $v ) {
+            $f[] = $v['action'];
+        }
         return $f;
     }
-
+    /** getHtml function
+     *
+     */
     function getHtml() {
-        foreach ( $this->actions as $v ) { $f[] = $v['action']->getHtml(); }
+        foreach ( $this->actions as $v ) {
+            $f[] = $v['action']->getHtml();
+        }
         return $f;
     }
-
+    /** getParams function
+     *
+     */
     function getParams() {
         foreach ( $this->actions as $v ) { $f[] = $v['action']->getParams(); }
         return $f;
     }
-
+    /** getGlobalParams function
+     *
+     */
     function getGlobalParams() {
         return $this->globalParams;
     }
@@ -194,19 +240,48 @@ class Action {
     var $action;
     var $html;
     var $params;
-
+    /** Action function
+     * @param $action
+     * @param $html
+     * @param $params
+     */
     function Action($action, $html, $params) {
         $this->action = $action;
         $this->html = ($html ? FLAG_HTML : 0);
         $this->params = $params;
     }
+    /** getAction function
+     *
+     */
+    function getAction() {
+        return $this->action;
+    }
+    /** getHtml function
+     *
+     */
+    function getHtml() {
+        return $this->html;
+    }
+    /** getParams function
+     *
+     */
+    function getParams() {
+        return $this->params;
+    }
+    /** setAction function
+     * @param $action
+     */
+    function setAction($action) {
+        $this->action = $action;
+    }
 
-    function getAction()        { return $this->action; }
-    function getHtml()          { return $this->html;   }
-    function getParams()        { return $this->params; }
-    function setAction($action) { $this->action = $action; }
-
-    /* transforms a value from $itemContent[$from] to $fvalues */
+    /** transform function
+     *  transforms a value from $itemContent[$from] to $fvalues
+     * @param $itemcontent
+     * @param $from
+     * @param $globalParams
+     * @param $fvalues
+     */
     function transform(&$itemContent, $from, &$globalParams, &$fvalues ) {
         switch ( $this->action) {
             case "store": {
@@ -408,7 +483,7 @@ $nszmciselnik = array (
 );
 
 $nszmmesta = array(
-    'Žïár nad Sázavou'      => '5f3e1d8a5654bcbec5aebc18802cc3ab',
+    '®ïár nad Sázavou'      => '5f3e1d8a5654bcbec5aebc18802cc3ab',
     'Velké Meziøíèí'        => '6bfe94a7be75cba6bf4d382d2cfa56c3',
     'Tøebíè'                => 'f2fab2ff86ab58626148f7b7d8141f92',
     'Telè'                  => 'fb0c96998a51b0d4865a8bf3681f89f2',
@@ -416,15 +491,17 @@ $nszmmesta = array(
     'Pelhøimov'             => '88eb421653b38c4bdd4ea3e1b94253da',
     'Pacov'                 => 'ff46f6e1b2999a09ddbf4776d4d985e7',
     'Nové Mìsto na Moravì'  => '0e51a3726c152f17a6b18f81adfa85a3',
-    'Námìš nad Oslavou'    => '57c4724b65aa8a9c191a4bc069b6b0e5',
+    'Námì¹» nad Oslavou'    => '57c4724b65aa8a9c191a4bc069b6b0e5',
     'Moravské Budìjovice'   => 'dd35b973320dcb5ee70ea1dfd566465c',
     'Jihlava'               => 'da4dcfdf17cb9b5a0e3ba37e7a9799e6',
     'Humpolec'              => '358bd219028e31e6612d607bc79cd058',
     'Havlíèkùv Brod'        => 'ede15d796d90d4c6ce6180d48a7aecbd',
     'Chotìboø'              => '135e12ccfa199f24e3ce9e9d7a6e46aa',
-    'Bystøice nad Pernštejnem' => '7723d9023b66ad5a950fb2d945fadfcb');
+    'Bystøice nad Pern¹tejnem' => '7723d9023b66ad5a950fb2d945fadfcb');
 
-/** Get List of actions */
+/** getActions function
+ *  Get List of actions
+ */
 function getActions() {
     $a = array("store","removestring","formatdate", "web", "storeparsemulti","value","string2id", 'nszmstav', 'nszmciselnik', 'nszmmesta', "default");
     // not used:  "convertvalue","storemultiasone", "storeasmulti", "not map"

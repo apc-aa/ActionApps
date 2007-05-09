@@ -1,22 +1,28 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once AA_INC_PATH."varset.php3";
@@ -30,35 +36,52 @@ require_once AA_INC_PATH."event.class.php3";
 require_once AA_INC_PATH."profile.class.php3";
 require_once AA_INC_PATH."files.class.php3";
 
-if ( !is_object($event) ) $event = new aaevent;   // not defined in scripts which do not include init_page.php3 (like offline.php3)
+if ( !is_object($event) ) {
+    $event = new aaevent;   // not defined in scripts which do not include init_page.php3 (like offline.php3)
+}
 
 /** ---------------- functions for default item values ----------------------*/
+/** default_fnc_now function
+ * @param $param
+ */
 function default_fnc_now($param) {
     return now();
 }
-
+/** default_fnc_uid function
+ * @param $param
+ */
 function default_fnc_uid($param) {
     global $auth;                                  // 9999999999 for anonymous
     return (isset($auth) ? $auth->auth["uid"] : "9999999999");
 }
-
+/** default_fnc_log function
+ * @param $param
+ */
 function default_fnc_log($param) {
     global $auth;                                  // "anonymous" for anonymous
     return (isset($auth) ? $auth->auth["uname"] : "anonymous");
 }
-
+/** default_fnc_dte function
+ * @param $param
+ */
 function default_fnc_dte($param) {
     return mktime(0,0,0,date("m"),date("d")+$param,date("Y"));
 }
-
+/** default_fnc_qte function
+ * @param $param
+ */
 function default_fnc_qte($param) {
     return $param;
 }
-
+/** default_fnc_txt function
+ * @param $param
+ */
 function default_fnc_txt($param) {
     return $param;
 }
-
+/** default_fnc_rnd function
+ * @param $param
+ */
 function default_fnc_rnd($param) {
     global $slice_id;
 
@@ -95,14 +118,19 @@ function default_fnc_rnd($param) {
 
     return $salt;
 }
-
+/** default_fnc_ function
+ * @param $param
+ */
 function default_fnc_($param) {
     global $err;
     $err["default_fnc"] = "No default function defined for parameter '$param'- default_fnc_()";
     return "";
 }
 
-// Expands parameter string (e.g. {user})
+/** default_fnc_variable function
+ *  Expands parameter string (e.g. {user})
+ * @param $param
+ */
 function default_fnc_variable($param) {
   $maxlevel = 0;
   return new_unalias_recurent($param, '', 0, $maxlevel);
@@ -110,7 +138,14 @@ function default_fnc_variable($param) {
 
 // ----------------------- insert functions ------------------------------------
 
-// What are the parameters to this function - $field must be an array with values [input_show_func] etc
+/** insert_fnc_qte function
+ *  What are the parameters to this function - $field must be an array with values [input_show_func] etc
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
     global $itemvarset;
 
@@ -193,24 +228,54 @@ function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
     $varset->add("field_id", "text", $field["id"]);
     $varset->doInsert('content');
 }
-
+/** insert_fnc_dte function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_dte($item_id, $field, $value, $param, $additional='') {
     insert_fnc_qte($item_id, $field, $value, $param, $additional);
 }
-
+/** insert_fnc_cns function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_cns($item_id, $field, $value, $param, $additional='') {
     insert_fnc_qte($item_id, $field, $value, $param, $additional);
 }
-
+/** insert_fnc_num function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_num($item_id, $field, $value, $param, $additional='') {
     insert_fnc_qte($item_id, $field, $value, $param, $additional);
 }
-
+/** insert_fnc_boo function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_boo($item_id, $field, $value, $param, $additional='') {
     $value['value'] = ( $value['value'] ? 1 : 0 );
     insert_fnc_qte($item_id, $field, $value, $param, $additional);
 }
-
+/** insert_fnc_ids function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_ids($item_id, $field, $value, $param, $additional='') {
 
     $add_mode = substr($value['value'],0,1);          // x=add, y=add mutual, z=add backward
@@ -244,7 +309,7 @@ function insert_fnc_ids($item_id, $field, $value, $param, $additional='') {
                      WHERE item_id = '". q_pack_id($reverse_id) ."'
                        AND field_id = '". $field["id"] ."'
                        AND ". ($field["text_stored"] ? "text" : "number") ."= '". $value['value'] ."'";
-            $db = getDB();
+            $db  = getDB();
             $db->query( $SQL );
             if (!$db->next_record()) { // not found
                 insert_fnc_qte($reverse_id, $field, $value, $param);
@@ -258,7 +323,13 @@ function insert_fnc_ids($item_id, $field, $value, $param, $additional='') {
     }
     return;
 }
-
+/** insert_fnc_uid function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_uid($item_id, $field, $value, $param, $additional='') {
     global $auth;
 
@@ -271,7 +342,13 @@ function insert_fnc_uid($item_id, $field, $value, $param, $additional='') {
     }
     insert_fnc_qte($item_id, $field, array('value' => $val), $param, $additional);
 }
-
+/** insert_fnc_log function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_log($item_id, $field, $value, $param, $additional='') {
     global $auth;
     // if not $auth, it is from anonymous posting
@@ -279,11 +356,23 @@ function insert_fnc_log($item_id, $field, $value, $param, $additional='') {
                                                     $value['value'] : 'anonymous'));
     insert_fnc_qte($item_id, $field, array('value' => $val), $param, $additional);
 }
-
+/** insert_fnc_now function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_now($item_id, $field, $value, $param, $additional='') {
     insert_fnc_qte($item_id, $field, array("value"=>now()), $param, $additional);
 }
-
+/** insert_fnc_com function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_com($item_id, $field, $value, $param, $additional='') {
     // we store it to the database at this time, even if it is probably
     // not final value for this field - we probably recompute this value later
@@ -295,9 +384,15 @@ function insert_fnc_com($item_id, $field, $value, $param, $additional='') {
 }
 
 // -----------------------------------------------------------------------------
-/** Insert function for File Upload.
-*   @return Array of fields stored inside this function as thumbnails.
-*/
+/** insert_fnc_fil function
+ *  Insert function for File Upload.
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ * @return Array of fields stored inside this function as thumbnails.
+ */
 // There are three cases here
 // 1: uploaded - overwrites any existing value, does resampling etc
 // 2: file name left over from existing record, just stores the value
@@ -384,7 +479,13 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
 } // end of insert_fnc_fil
 
 // -----------------------------------------------------------------------------
-
+/** insert_fnc_pwd function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_pwd($item_id, $field, $value, $param, $additional='')
 {
     $change_varname = "v".unpack_id($field["id"])."a";
@@ -406,18 +507,35 @@ function insert_fnc_pwd($item_id, $field, $value, $param, $additional='')
 }
 
 // -----------------------------------------------------------------------------
-
+/** insert_fnc_nul function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_nul($item_id, $field, $value, $param, $additional='') {
 }
 
-// not defined insert func in field table (it is better to use insert_fnc_nul)
+/** insert_fnc_ function
+ *  not defined insert func in field table (it is better to use insert_fnc_nul)
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
 function insert_fnc_($item_id, $field, $value, $param, $additional='') {
 }
 
 // ----------------------- show functions --------------------------------------
 // moved to formutil into AA_Inputfield class (formutil.php3)
 // -----------------------------------------------------------------------------
-
+/** IsEditable function
+ * @param $fieldcontent
+ * @param $field
+ * @param $profile
+ */
 function IsEditable($fieldcontent, $field, &$profile) {
     return (!($fieldcontent[0]['flag'] & FLAG_FREEZE)
         AND $field["input_show"]
@@ -426,7 +544,12 @@ function IsEditable($fieldcontent, $field, &$profile) {
         AND !$profile->getProperty('fill',$field['id']));
 }
 
-/** Returns content4id - values in content4id are quoted (addslashes) */
+/** GetContentFromForm function
+ *  Returns content4id - values in content4id are quoted (addslashes)
+ * @param $slice
+ * @param $oldcontent4id
+ * @param $insert
+ */
 function GetContentFromForm( $slice, $oldcontent4id="", $insert=true ) {
     global $profile, $auth;
 
@@ -495,18 +618,25 @@ function GetContentFromForm( $slice, $oldcontent4id="", $insert=true ) {
 
 // -----------------------------------------------------------------------------
 /** StoreItem - deprecated function - $content4id->storeItem() instead
-*
-*   Basic function for changing contents of items.
-*   Use always this function, not direct SQL queries.
-*   Updates the tables @c item and @c content.
-*   $GLOBALS[err][field_id] should be set on error in function
-*   It looks like it will return true even if inset_fnc_xxx fails
-*
-*   @param array $content4id   array (field_id => array of values
-*						      (usually just a single value, but still an array))
-*   @param array $oldcontent4id if not sent, StoreItem finds it
-*   @return true on success, false otherwise
-*/
+ *
+ *   Basic function for changing contents of items.
+ *   Use always this function, not direct SQL queries.
+ *   Updates the tables @c item and @c content.
+ *   $GLOBALS[err][field_id] should be set on error in function
+ *   It looks like it will return true even if inset_fnc_xxx fails
+ *
+ * @param $id
+ * @param $slice_id
+ * @param array $content4id   array (field_id => array of values
+ *						      (usually just a single value, but still an array))
+ * @param $fields
+ * @param $insert
+ * @param $invalidatecache
+ * @param $feed
+ * @param array $oldcontent4id if not sent, StoreItem finds it
+ * @param $context
+ * @return true on success, false otherwise
+ */
 function StoreItem( $id, $slice_id, $content4id, $fields, $insert, $invalidatecache=true, $feed=true, $oldcontent4id="", $context='direct' ) {
     $content4id = new ItemContent($content4id);
     $content4id->setItemID($id);
@@ -515,7 +645,9 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert, $invalidateca
 } // end of StoreItem
 
 // -----------------------------------------------------------------------------
-
+/** GetDefault function
+ * @param $f
+ */
 function GetDefault($f) {
     // all default should have fnc:param format
     $fnc = ParseFnc($f["input_default"]);
@@ -525,16 +657,23 @@ function GetDefault($f) {
     }
     return false;
 }
-
+/** GetDefaultHTML function
+ * @param $f
+ */
 function GetDefaultHTML($f) {
     return (($f["html_default"]>0) ? FLAG_HTML : 0);
 }
 
 // -----------------------------------------------------------------------------
-/** Shows the Add / Edit item form fields
-*   @param $show is used by the Anonymous Form Wizard, it is an array
-*                (packed field id => 1) of fields to show
-*/
+/** ShowForm function
+ *  Shows the Add / Edit item form fields
+ * @param $content4id
+ * @param $fields
+ * @param $prifields
+ * @param $edit
+ * @param $show is used by the Anonymous Form Wizard, it is an array
+ *                (packed field id => 1) of fields to show
+ */
 function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
     global $slice_id, $auth, $profile;
 
@@ -612,25 +751,27 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
 // ----------------------------------------------------------------------------
 
 /** Validates new content, sets defaults, reads dates from the 3-selectbox-AA-format,
-*   sets global variables:
-*       $oldcontent4id
-*       $special input variables
-*
-*   This function is used in itemedit.php3, filler.php3 and file_import.php3.
-*
-*   @author Jakub Adamek, Econnect, January 2003
-*           Most of the code is taken from itemedit.php3, created by Honza.
-*
-*   @param string $action should be one of:
-*                         "add" .... a "new item" page (not form-called)
-*                         "edit" ... an "edit item" page (not form-called)
-*                         "insert" . call for inserting an item
-*                         "update" . call for updating an item
-*   @param id $id is useful only for "update"
-*   @param bool $do_validate Should validate the fields?
-*   @param array $notshown is an optional array ("field_id"=>1,...) of fields
-*                          not shown in the anonymous form
-*/
+ *   sets global variables:
+ *       $oldcontent4id
+ *       $special input variables
+ *
+ *   This function is used in itemedit.php3, filler.php3 and file_import.php3.
+ *
+ *   @author Jakub Adamek, Econnect, January 2003
+ *           Most of the code is taken from itemedit.php3, created by Honza.
+ *
+ * @param $err
+ * @param $slice
+ * @param string $action should be one of:
+ *                       "add" .... a "new item" page (not form-called)
+ *                       "edit" ... an "edit item" page (not form-called)
+ *                       "insert" . call for inserting an item
+ *                       "update" . call for updating an item
+ * @param id $id is useful only for "update"
+ * @param bool $do_validate Should validate the fields?
+ * @param array $notshown is an optional array ("field_id"=>1,...) of fields
+ *                          not shown in the anonymous form
+ */
 //./admin/itemedit.php3:                               ValidateContent4Id($err, $slice, $action, $id);
 //./misc/file2slice/tab2slice_php/file_import.php3:    ValidateContent4Id($err, $slice, "insert", 0, ! $notvalidate);
 //./filler.php3:                                       ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown)

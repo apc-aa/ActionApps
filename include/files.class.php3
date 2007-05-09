@@ -1,10 +1,33 @@
 <?php
 /**
+ *
  * File Utilities.
- * @author $Author$
- * @version $Id$
- * @package ImageManager
- */
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (c) 2002-3 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
+*/
+
+
 
 define('FILE_ERROR_NO_SOURCE',        100);
 define('FILE_ERROR_COPY_FAILED',      101);
@@ -19,16 +42,14 @@ define('FILE_ERROR_READ',             110);
 define('FILE_COPY_OK',                199);
 
 
-/**
- * File Utilities
- * @author $Author$
- * @version $Id$
- * @package ImageManager
- * @subpackage files
- */
 class Files {
-    /** Method returns or sets last file error
-     *  The trick for static class variables is used */
+    /** lastErr function
+     *  Method returns or sets last file error
+     *  The trick for static class variables is used
+     * @param $err_id
+     * @param $err_msg
+     * @param $getmsg
+     */
     function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
         static $lastErrMsg;
@@ -39,28 +60,36 @@ class Files {
         return $getmsg ? $lastErrMsg : $lastErr;
     }
 
-    /** Return last error message - it is grabbed from static variable
-     *  of lastErr() method */
+    /** lastErrMsg function
+     *  Return last error message - it is grabbed from static variable
+     *  of lastErr() method
+     */
     function lastErrMsg() {
         return Files::lastErr(null, null, true);
     }
 
-    /** Prepares slice directories for uploaded file and returns destination
+    /** destinationDir function
+     *  Prepares slice directories for uploaded file and returns destination
      *  dir name
+     * @param $slice
      */
     function destinationDir(&$slice) {
         $upload = $slice->getUploadBase();
         return Files::_destinationDirCreate($upload['path'], $upload['perms']);
     }
 
-    /** Prepares global AA directory for uploaded file and returns destination
+    /** aadestinationDir
+     *  Prepares global AA directory for uploaded file and returns destination
      *  dir name
      */
     function aadestinationDir() {
         return Files::_destinationDirCreate(IMG_UPLOAD_PATH. AA_ID, (int)IMG_UPLOAD_DIR_MODE);
     }
 
-    /** Prepares directory for uploaded file and returns destination dir name
+    /** _destinationDirCreate function
+     *  Prepares directory for uploaded file and returns destination dir name
+     * @param $path
+     * @param $perms
      */
     function _destinationDirCreate($path, $perms) {
         if (!$path OR !is_dir($path)) {
@@ -72,9 +101,12 @@ class Files {
         return $path;
     }
 
-    /** checks, if the file is not exist and in case it exist, it finds similar
+    /** genereateUnusedFilename function
+     *  checks, if the file is not exist and in case it exist, it finds similar
      *  file name which do not exists. If modificator specified, then it is
      *  added to fileneme (like '_thumb')
+     * @param $file_name
+     * @param $modificator
      */
     function generateUnusedFilename($file_name, $modificator='') {
         $path_parts = pathinfo($file_name);
@@ -96,7 +128,8 @@ class Files {
         return $dest_file;
     }
 
-    /** Returns all content of the uploaded file as the string.
+    /** getUploadedFile function
+     *  Returns all content of the uploaded file as the string.
      *  The file is deleted after read
      *  @param string $filevarname - name of form variable, where the file is stored
      */
@@ -120,11 +153,11 @@ class Files {
         return $text;
     }
 
-    /** Uploads file to slice's directory
+    /** uploadFile function
+     *  Uploads file to slice's directory
      *  @param $filevarname - name of form variable containing the uploaded data
      *                        (like "upfile")
-     *  @param $slice       - slice for which we would like to upload the file
-     *                        (used for determining the destination file)
+     *  @param $dest_dir
      *  @param $type        - allowed file types (like 'image/jpeg', 'image/*')
      *  @param $replacemethod - how to handle conflicts with existing file
      *                            'new'       - stored as new (unused) filename
@@ -189,7 +222,11 @@ class Files {
         return $dest_file;
     }
 
-    /** Creates or rewrites file in slice's directory and stores there the $text
+    /** createFileFromString function
+     *  Creates or rewrites file in slice's directory and stores there the $text
+     * @param $text
+     * @param $dest_dir
+     * @param $filename
      */
     function createFileFromString(&$text, $dest_dir, $filename) {
         $dest_file = Files::makeFile($dest_dir, Files::escape($filename));
@@ -212,13 +249,18 @@ class Files {
 
         return $dest_file;
     }
-
+    /** getTmpFilename function
+     * @param $ident
+     */
     function getTmpFilename($ident) {
         return $ident . "_" . md5(uniqid(rand(),1))  . "_" . date("mdY");
     }
 
-    /** Delete all files with the format : {ident}_{hash20}_mmddyyyy older than
+    /** deleteTmpFiles function
+     *  Delete all files with the format : {ident}_{hash20}_mmddyyyy older than
      *  7 days (used as temporary upload files)
+     * @param $ident
+     * @param $slice
      */
     function deleteTmpFiles($ident, $slice=null) {
         if ( !$slice ) {
@@ -250,8 +292,10 @@ class Files {
     }
 
 
-    /** Create backup copy of the file
-     *  @returns whole filename of the backup file (or empty string, if
+    /** backupFile function
+     *  Create backup copy of the file
+     *  @param $source
+     *  @return whole filename of the backup file (or empty string, if
      *           the source file do not exists; returns false if backup fails
      */
     function backupFile($source) {
@@ -272,14 +316,14 @@ class Files {
 
 
 
-    /**
+    /** copyFile function
      * Copy a file from source to destination. If unique == true, then if
      * the destination exists, it will be renamed by appending an increamenting
      * counting number.
      * @param string $source where the file is from, full path to the files required
      * @param string $destination_file name of the new file, just the filename
      * @param string $destination_dir where the files, just the destination dir,
-     * e.g., /www/html/gallery/
+     *                  e.g., /www/html/gallery/
      * @param boolean $unique create unique destination file if true.
      * @return string the new copied filename, else error if anything goes bad.
      */
@@ -309,9 +353,10 @@ class Files {
     }
 
 
-    /**
+    /** createFolder function
      * Create a new folder.
      * @param string $newFolder specifiy the full path of the new folder.
+     * @param $perms
      * @return boolean true if the new folder is created, false otherwise.
      */
     function createFolder($newFolder, $perms=0777) {
@@ -320,7 +365,7 @@ class Files {
     }
 
 
-    /**
+    /** escape function
      * Escape the filenames, any non-word characters will be
      * replaced by an underscore.
      * @param string $filename the orginal filename
@@ -330,7 +375,7 @@ class Files {
         return preg_replace('/[^\w\._]/', '_', $filename);
     }
 
-    /**
+    /** delFile function
      * Delete a file.
      * @param string $file file to be deleted
      * @return boolean true if deleted, false otherwise.
@@ -339,7 +384,7 @@ class Files {
         return is_file($file) ? unlink($file) : false;
     }
 
-    /**
+    /** delFolder function
      * Delete folder(s), can delete recursively.
      * @param string $folder the folder to be deleted.
      * @param boolean $recursive if true, all files and sub-directories
@@ -369,7 +414,7 @@ class Files {
         return $deleted;
     }
 
-    /**
+    /** fixPath function
      * Append a / to the path if required.
      * @param string $path the path
      * @return string path with trailing /
@@ -382,7 +427,7 @@ class Files {
         return $path;
     }
 
-    /**
+    /** makePath function
      * Concat two paths together. Basically $pathA+$pathB
      * @param string $pathA path one
      * @param string $pathB path two
@@ -396,7 +441,7 @@ class Files {
         return Files::fixPath($pathA.$pathB);
     }
 
-    /**
+    /** makeFile function
      * Similar to makePath, but the second parameter
      * is not only a path, it may contain say a file ending.
      * @param string $pathA the leading path
@@ -412,7 +457,7 @@ class Files {
     }
 
 
-    /**
+    /** formatSize function
      * Format the file size, limits to Mb.
      * @param int $size the raw filesize
      * @return string formated file size.
@@ -427,7 +472,7 @@ class Files {
         }
     }
 
-    /**
+    /** sourceType function
      * Returns type of the source
      * @param string $filename the name of file (with path, protocol, ...)
      * @return string FILE, HTTP, HTTPS, ...
@@ -476,7 +521,7 @@ class AA_File_Wrapper {
     /** @var $fp int the file descriptor */
     var $fp;
 
-    /**
+    /** AA_File_Wrapper function
      * Constructor.
      * @param $url string
      * @param $info array
@@ -486,7 +531,7 @@ class AA_File_Wrapper {
         $this->info = $info;
     }
 
-    /**
+    /** contents function
      * Read and return the contents of the file (like file_get_contents()).
      * @return string
      */
@@ -501,7 +546,7 @@ class AA_File_Wrapper {
         return $contents;
     }
 
-    /**
+    /** open function
      * Open the file.
      * @param $mode string only 'r' (read-only) is currently supported
      * @return boolean
@@ -512,7 +557,7 @@ class AA_File_Wrapper {
         return $this->fp;
     }
 
-    /**
+    /** close function
      * Close the file.
      */
     function close() {
@@ -520,7 +565,7 @@ class AA_File_Wrapper {
         unset($this->fp);
     }
 
-    /**
+    /** read function
      * Read from the file.
      * @param $len int
      * @return string
@@ -529,7 +574,7 @@ class AA_File_Wrapper {
         return fread($this->fp, $len);
     }
 
-    /**
+    /** eof function
      * Check for end-of-file.
      * @return boolean
      */
@@ -542,7 +587,7 @@ class AA_File_Wrapper {
     // Static
     //
 
-    /**
+    /** &wrapper function
      * Return instance of a class for reading the specified URL.
      * @param $url string
      * @return AA_File_Wrapper
@@ -579,38 +624,54 @@ class AA_HTTP_File_Wrapper extends AA_File_Wrapper {
     var $defaultPort;
     var $defaultHost;
     var $defaultPath;
-
+    /** AA_HTTP_File_Wrapper function
+     * @param $url
+     * @param $info
+     */
     function AA_HTTP_File_Wrapper($url, &$info) {
         parent::AA_File_Wrapper($url, $info);
         $this->setDefaultPort(80);
         $this->setDefaultHost('localhost');
         $this->setDefaultPath('/');
     }
-
+    /** setDefaultPort function
+     * @param $port
+     */
     function setDefaultPort($port) {
         $this->defaultPort = $port;
     }
-
+    /** setDefaultHost function
+     * @param $port
+     */
     function setDefaultHost($host) {
         $this->defaultHost = $host;
     }
-
+    /** setDefaultPath function
+     * @param $port
+     */
     function setDefaultPath($path) {
         $this->defaultPath = $path;
     }
-
+    /** addHeader function
+     * @param $name
+     * @param $value
+     */
     function addHeader($name, $value) {
         if (!isset($this->headers)) {
             $this->headers = array();
         }
         $this->headers[$name] = $value;
     }
-
+    /** open function
+     * @param $mode
+     */
     function open($mode = 'r') {
         $host = isset($this->info['host']) ? $this->info['host'] : $this->defaultHost;
         $port = isset($this->info['port']) ? (int)$this->info['port'] : $this->defaultPort;
         $path = isset($this->info['path']) ? $this->info['path'] : $this->defaultPath;
-        if (isset($this->info['query'])) $path .= '?' . $this->info['query'];
+        if (isset($this->info['query'])) {
+            $path .= '?' . $this->info['query'];
+        }
 
         if (!($this->fp = fsockopen($host, $port, $errno, $errstr))) {
             return false;
@@ -643,6 +704,10 @@ class AA_HTTP_File_Wrapper extends AA_File_Wrapper {
  * HTTPS protocol class.
  */
 class AA_HTTPS_File_Wrapper extends AA_HTTP_File_Wrapper {
+    /** AA_HTTPS_File_Wrapper function
+     * @param $url
+     * @param $info
+     */
     function AA_HTTPS_File_Wrapper($url, &$info) {
         parent::AA_HTTP_File_Wrapper($url, $info);
         $this->setDefaultPort(443);
@@ -659,7 +724,9 @@ class AA_HTTPS_File_Wrapper extends AA_HTTP_File_Wrapper {
 class AA_FTP_File_Wrapper extends AA_File_Wrapper {
 
     var $ctrl;
-
+    /** open function
+     * @param $mode
+     */
     function open($mode = 'r') {
         $user = isset($this->info['user']) ? $this->info['user'] : 'anonymous';
         $pass = isset($this->info['pass']) ? $this->info['pass'] : 'user@example.com';
@@ -667,16 +734,20 @@ class AA_FTP_File_Wrapper extends AA_File_Wrapper {
         $port = isset($this->info['port']) ? (int)$this->info['port'] : 21;
         $path = isset($this->info['path']) ? $this->info['path'] : '/';
 
-        if (!($this->ctrl = fsockopen($host, $port, $errno, $errstr)))
+        if (!($this->ctrl = fsockopen($host, $port, $errno, $errstr))) {
             return false;
+        }
 
-        if ($this->_open($user, $pass, $path))
+        if ($this->_open($user, $pass, $path)){
             return true;
+        }
 
         $this->close();
         return false;
     }
-
+    /** close function
+     *
+     */
     function close() {
         if ($this->fp) {
             parent::close();
@@ -689,11 +760,16 @@ class AA_FTP_File_Wrapper extends AA_File_Wrapper {
         fclose($this->ctrl);
         $this->ctrl = null;
     }
-
+    /** _open function
+     * @param $user
+     * @param $pass
+     * @param $path
+     */
     function _open($user, $pass, $path) {
         // Connection establishment
-        if ($this->_receive() != '220')
+        if ($this->_receive() != '220') {
             return false;
+        }
 
         // Authentication
         $this->_send('USER', $user);
@@ -702,46 +778,59 @@ class AA_FTP_File_Wrapper extends AA_File_Wrapper {
             $this->_send('PASS', $pass);
             $rc = $this->_receive();
         }
-        if ($rc != '230')
+        if ($rc != '230') {
             return false;
+        }
 
         // Binary transfer mode
         $this->_send('TYPE', 'I');
-        if ($this->_receive() != '200')
+        if ($this->_receive() != '200') {
             return false;
+        }
 
         // Enter passive mode and open data transfer connection
         $this->_send('PASV');
-        if ($this->_receiveLine($line) != '227')
+        if ($this->_receiveLine($line) != '227') {
             return false;
+        }
 
-        if (!preg_match('/(\d+),(\d+),(\d+),(\d+),(\d+),(\d+)/', $line, $matches))
+        if (!preg_match('/(\d+),(\d+),(\d+),(\d+),(\d+),(\d+)/', $line, $matches)) {
             return false;
+        }
         list($tmp, $h1, $h2, $h3, $h4, $p1, $p2) = $matches;
 
         $host = "$h1.$h2.$h3.$h4";
         $port = ($p1 << 8) + $p2;
 
-        if (!($this->fp = fsockopen($host, $port, $errno, $errstr)))
+        if (!($this->fp = fsockopen($host, $port, $errno, $errstr))) {
             return false;
+        }
 
         // Retrieve file
         $this->_send('RETR', $path);
         $rc = $this->_receive();
-        if ($rc != '125' && $rc != '150')
+        if ($rc != '125' && $rc != '150') {
             return false;
+        }
 
         return true;
     }
-
+    /** _send function
+     * @param $command
+     * @param $data
+     */
     function _send($command, $data = '') {
         return fwrite($this->ctrl, $command . (empty($data) ? '' : ' ' . $data) . "\r\n");
     }
-
+    /** _receive function
+     *
+     */
     function _receive() {
         return $this->_receiveLine($line);
     }
-
+    /** _receiveLine function
+     * @param $line
+     */
     function _receiveLine(&$line) {
         do {
             $line = fgets($this->ctrl);

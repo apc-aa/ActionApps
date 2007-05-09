@@ -3,28 +3,26 @@
  * Anonymous form wizard: Allows to select fields included on the Anonymous
  * form and shows the form.
  *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  *  @package UserInput
  *  @version $Id$
  *  @author Jakub Adamek <jakubadamek@ecn.cz>, February 2003
  *  @copyright (C) 1999-2003 Association for Progressive Communications
-*/
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 require_once "../include/init_page.php3";
@@ -34,6 +32,16 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 
+/** GetAnonymousForm function
+ * @param $slice
+ * @param $s_fields
+ * @param $show
+ * @param $ok_url
+ * @param $err_url
+ * @param $use_show_result
+ * @param $show_result
+ * @return string
+ */
 function GetAnonymousForm(&$slice, &$s_fields, &$show, $ok_url, $err_url, $use_show_result, $show_result) {
 
     // we do not want anonymous form to use sessions at all
@@ -149,10 +157,18 @@ if ($show_form) {
     }
 }
 
-if (!$form_url)    $form_url = "http://FILL_YOUR_URL.shtml";
-if (!$ok_url)      $ok_url = "http://THANK_YOU.shtml";
-if (!$err_url)     $err_url = "http://ERROR_OCCURED.shtml";
-if (!$show_result) $show_result = "http://SHOW_RESULT.php3";
+if (!$form_url) {
+    $form_url = "http://FILL_YOUR_URL.shtml";
+}
+if (!$ok_url) {
+    $ok_url = "http://THANK_YOU.shtml";
+}
+if (!$err_url) {
+    $err_url = "http://ERROR_OCCURED.shtml";
+}
+if (!$show_result) {
+    $show_result = "http://SHOW_RESULT.php3";
+}
 
 
 // -----------------------------------------------------------------------------
@@ -160,21 +176,21 @@ if (!$show_result) $show_result = "http://SHOW_RESULT.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
-echo "<TITLE>"._m("Admin - Anonymous Form Wizard")."</TITLE>
-</HEAD>";
+echo "<title>"._m("Admin - Anonymous Form Wizard")."</title>
+</head>";
 
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin", "anonym_wizard");
 
-echo "<H1>"._m("Admin - Anonymous Form Wizard")."</B></H1>";
+echo "<h1>"._m("Admin - Anonymous Form Wizard")."</b></h1>";
 
 PrintArray($err);
 PrintArray($warning);
 echo $Msg;
 
 $form_buttons=array("show_form" => array("value"=>_m("Show Form"),
-                                         "type"=>"submit"),
-                    "cancel"    => array("url"=>"se_fields.php3"));
+                                         "type" =>"submit"),
+                    "cancel"    => array("url"  =>"se_fields.php3"));
 
 echo '
 <form method="post" action="'.$sess->url($PHP_SELF).'#form_content">';
@@ -189,32 +205,32 @@ FrmTabSeparator(_m("Fields"));
 
 echo '
 <tr>
- <td class=tabtxt align=center><b>'._m("Field").'</b></td>
- <td class=tabtxt align=center><b>'._m("Id").'</b></td>
- <td class=tabtxt align=center><b>'._m("Show").'</b></td>
- <td class=tabtxt align=center><b>'._m("Field Id in Form").'</b></td>
+ <td class="tabtxt" align="center"><b>'._m("Field").'</b></td>
+ <td class="tabtxt" align="center"><b>'._m("Id").'</b></td>
+ <td class="tabtxt" align="center"><b>'._m("Show").'</b></td>
+ <td class="tabtxt" align="center"><b>'._m("Field Id in Form").'</b></td>
 </tr>
-<tr><td class=tabtxt colspan="4"><hr></td></tr>';
+<tr><td class="tabtxt" colspan="4"><hr></td></tr>';
 
 if ( is_array($s_fields)) {
     foreach ($s_fields as $field) {
         if ($field["input_show"]) {
             echo '
-            <tr><td class=tabtxt><b>'.$field["name"].'</b></td>
-                <td class=tabtxt>'.$field["id"].'</td>
-                <td class=tabtxt align=center>
-                    <input type=checkbox name="show['.$field["id"].']"';
+            <tr><td class="tabtxt"><b>'.$field["name"].'</b></td>
+                <td class="tabtxt">'.$field["id"].'</td>
+                <td class="tabtxt" align="center">
+                    <input type="checkbox" name="show['.$field["id"].']"';
             if (! $show || $show[$field["id"]])
                 echo " checked";
             echo "></td>
-                <td class=tabtxt>v".unpack_id($field["id"])."</td>
+                <td class=\"tabtxt\">v".unpack_id($field["id"])."</td>
             </tr>";
         }
     }
 }
 
 echo '
-<tr><td colspan=4 class=tabtxt><hr><b>'
+<tr><td colspan="4" class="tabtxt"><hr><b>'
     ._m("Only fields marked as \"Show\" on the \"Fields\" page
          are offered on this page.")
 .'</b></td></tr>';
@@ -228,7 +244,7 @@ if ($show_form) {
     echo "\n</textarea></td></tr>\n";
 }
 
-echo "</table></FORM>";
+echo "</table></form>";
 HtmlPageEnd();
 page_close();
 ?>

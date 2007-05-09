@@ -6,29 +6,28 @@
  *
  * Should be included to other scripts (as /include/searchbar.class.php3)
  *
- * @version $Id$
- * @author Honza Malik <honza.malik@ecn.cz>
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
 */
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
 /** AA_Includer manages php scripts includes.
  *
  *  The class holds the in the static variable the pair "class" => "file"
@@ -62,7 +61,7 @@ class AA_Includer {
  * getState() and setFromState() methods for storing and restoring object's data
  */
 class storable_class {
-    /**
+    /** setFromState function
      * Restores the object's data from $state
      * State uses just basic types - array, int, text - not objects
      * @param  array $state state array which stores object's data. The array
@@ -103,7 +102,11 @@ class storable_class {
             $this->$property_id = $propery_value;
         }
     }
-
+    /** _oneStatePropertyValue function
+     * @param $obj
+     * @param $property
+     * @param $state
+     */
     function _oneStatePropertyValue($obj, $property, $state) {
         if (!$property->isObject()) {
             return $state;
@@ -117,7 +120,7 @@ class storable_class {
         return $obj;
     }
 
-    /**
+    /** getState function
      * Returns state array of the object - stores object's data for leter
      * restoring (by setFromState() method)
      */
@@ -145,7 +148,8 @@ class storable_class {
 
     /// Static ///
 
-    /** Class version
+    /** version function
+     *  Class version
      *  Used for getting state from data, which was stored sometimes in
      *  the history, so the inner structure of the class was changed
      */
@@ -153,8 +157,10 @@ class storable_class {
         return 1;
     }
 
-    /** Returns array of persistent slots (AA_property)
+    /** getPersistentProperties function
+     *  Returns array of persistent slots (AA_property)
      *  Should be overiden in child classes!
+     * @param $class
      */
     function getPersistentProperties($class=null) {
         // we need to call getPersistentProperties() with $class parameter
@@ -184,20 +190,28 @@ class AA_Object extends storable_class {
 
     /** Object Owner - id if object's parent, where the object belongs - oprional */
     var $aa_owner;
-
+    /** setOwner function
+     * @param $owner_id
+     */
     function setOwner($owner_id) {
         $this->aa_owner = $owner_id;
     }
-
+    /** setName function
+     * @param $name
+     */
     function setName($name) {
         $this->aa_name = $name;
     }
-
+    /** setId function
+     * @param $id
+     */
     function setId($id) {
         $this->aa_id = $id;
     }
 
-    /** Save the object to the database */
+    /** save function
+     *  Save the object to the database
+     */
     function save() {
         $this->delete();
 
@@ -236,7 +250,9 @@ class AA_Object extends storable_class {
         return $this->aa_id;
     }
 
-    /** Deletes the object from the database including all the subobjects */
+    /** delete function
+     *  Deletes the object from the database including all the subobjects
+     */
     function delete() {
         $to_delete = array( $this->getId() );
 
@@ -254,7 +270,9 @@ class AA_Object extends storable_class {
         $varset->doDeleteWhere('object_float',   $sqlin);
     }
 
-    /** Get all object ids which is inside this object */
+    /** getSubObjects function
+     *  Get all object ids which is inside this object
+     */
     function getSubObjects() {
         $ret   = array();
         $class = get_class($this);
@@ -279,7 +297,11 @@ class AA_Object extends storable_class {
         }
         return $ret;
     }
-
+    /** _saveProperty function
+     * @param $property
+     * @param $value
+     * @param $priority
+     */
     function _saveProperty($property, $value, $priority=0) {
 
         // Property type - text | int | bool | float | <class_name>
@@ -300,7 +322,12 @@ class AA_Object extends storable_class {
         $this->_saveRow($property->getId(), $object_id, 'text', $priority);
         return true;
     }
-
+    /** _saveRow function
+     * @param $property_id
+     * @param $value
+     * @param $type
+     * @param $priority
+     */
     function _saveRow($property_id, $value, $type, $priority=0) {
         $TABLE_NAMES = array('text'=>'text', 'bool'=>'integer', 'int'=>'integer', 'float'=>'float');
 
@@ -313,7 +340,9 @@ class AA_Object extends storable_class {
         $varset->add('value',      $type,   $value);
         $varset->doInsert('object_'. $TABLE_NAMES[$type]);
     }
-
+    /** getId function
+     *
+     */
     function getId() {
         // id of the object is not deffined, yet
         if (!$this->aa_id) {
@@ -321,12 +350,18 @@ class AA_Object extends storable_class {
         }
         return $this->aa_id;
     }
-
+    /** getName function
+     *
+     */
     function getName() {
         return $this->aa_name;
     }
 
     /// Static ///
+    /** getNameArray function
+     * @param $obj_type
+     * @param $owner
+     */
     function getNameArray($obj_type, $owner) {
         if ( empty($owner) ) {
             return array();
@@ -339,7 +374,10 @@ class AA_Object extends storable_class {
         $ret = GetTable2Array($SQL, 'object_id', 'value');
         return is_array($ret) ? $ret : array();
     }
-
+    /** factory function
+     * @param $classname
+     * @param $params
+     */
     function &factory($classname, $params=null) {
         if ( class_exists($classname) ) {
             return new $classname($params);
@@ -349,19 +387,31 @@ class AA_Object extends storable_class {
         }
         return null;
     }
-
+    /** factoryByName function
+     * @param $mask
+     * @param $name
+     * @param $params
+     */
     function &factoryByName($mask, $name, $params=null) {
         return AA_Object::factory($mask. ucwords(strtolower($name)), $params);
     }
-
+    /** getProperty function
+     * @param $id
+     * @param $property
+     */
     function getProperty($id, $property) {
         return GetTable2Array("SELECT value FROM object_text WHERE object_id = '$id' AND property = '$property'", 'aa_first', 'value');
     }
-
+    /** getObjectType
+     * @param $id
+     */
     function getObjectType($id) {
         return AA_Object::getProperty($id, 'aa_type');
     }
-
+    /** load function
+     * @param $id
+     * @param $type
+     */
     function &load($id, $type=null) {
         // @todo optimize the load
         //    - get used tables from properties,
@@ -437,18 +487,18 @@ class AA_Object extends storable_class {
     }
 
 
-    /** Finds object IDs for objects given by conditions
-    *
-    *   @param string        $type   - object type
-    *   @param AA_Slices     $owners - search only objects owned by those slices
-    *   @param AA_Set        $conds  - search conditions
-    *                        $sort   - sort fields (see FAQ)
-    *   @param zids          $restrict_zids - use it if you want to choose only from a set of ids
-    *   @return A zids object with a list of the ids that match the query.
-    *
-    *   @global  bool $debug (in) many debug messages
-    *   @global  bool $nocache (in) do not use cache, even if use_cache is set
-    */
+    /** query function
+     * Finds object IDs for objects given by conditions
+     *
+     *   @param string        $type   - object type
+     *   @param AA_Slices     $owners - search only objects owned by those slices
+     *   @param $set
+     *   @param zids          $restrict_zids - use it if you want to choose only from a set of ids
+     *   @return A zids object with a list of the ids that match the query.
+     *
+     *   @global  bool $debug (in) many debug messages
+     *   @global  bool $nocache (in) do not use cache, even if use_cache is set
+     */
     function query($type, $owners=null, $set=null, $restrict_zids=null) {
         // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND
         // c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';

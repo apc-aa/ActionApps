@@ -1,24 +1,27 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ /**
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
 */
-
 // discedit.php3 - admin discussion comments
 // expected  $item_id for comment's item_id
 // optional  $mode for delete,hide or normal mode
@@ -33,7 +36,11 @@ require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."msgpage.php3";
 
-// get a headline of the item
+/** getHeadline function
+ * get a headline of the item
+ * @param $content4id
+ * @return headline
+ */
 function getHeadline($content4id) {
     if (!$content4id) {
         return;
@@ -89,9 +96,9 @@ GetDiscussionThread($tree, "0", 0, $outcome);         // get array of images
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo _m("Admin - Discussion comments management");?></TITLE>
+<title><?php echo _m("Admin - Discussion comments management");?></title>
 
-<SCRIPT Language="JavaScript"><!--
+<script Language="JavaScript"><!--
   function InitPage() {}
   function DeleteComment(id) {
     if ( !confirm("<?php echo _m("Are you sure you want to delete selected comment?"); ?>"))
@@ -100,12 +107,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     document.location=url + "&d_id=" + escape(id) + "&item_id=" + "<?php echo $item_id; ?>"
   }
   // -->
-</SCRIPT>
-</HEAD>
-<BODY>
+</script>
+</head>
+<body>
 <?php
 echo "<center>
-    <H1><B>" . _m("Discussion comments management") . "</B></H1>";
+    <h1><b>" . _m("Discussion comments management") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
@@ -114,7 +121,7 @@ $headline = getHeadline($content[$item_id]);
 ?>
   <form method="post" action=<?php echo sess_return_url(self_base()."index.php3") ?> >
   <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-  <tr><td class=tabtit><b>&nbsp;<?php
+  <tr><td class="tabtit"><b>&nbsp;<?php
      echo _m("Item: ")." $headline</b> (".
            $content[$item_id]["disc_app........"][0]['value']. "/".
            $content[$item_id]["disc_count......"][0]['value']. ")" ?> </td></tr>
@@ -132,13 +139,13 @@ $headline = getHeadline($content[$item_id]);
         <td align="center"><b><?php echo _m("Actions") ?></td>
         <td width="10">&nbsp;</td>
     </tr>
-      <tr><td colspan=9>&nbsp;</td></tr>
+      <tr><td colspan="9">&nbsp;</td></tr>
 
 <?php
 $item = new AA_Item("",$aliases);
 $i = 0;
 if (!$outcome) {
-    echo "<tr><td colspan=9 align=center class=tabtxt>". _m("No discussion comments") ."<br><br></td></tr>";
+    echo "<tr><td colspan=\"9\" align=\"center\" class=\"tabtxt\">". _m("No discussion comments") ."<br><br></td></tr>";
 } else {
     foreach ($outcome as $d_id => $images) {
         $im = "";
@@ -146,7 +153,7 @@ if (!$outcome) {
             $im .= GetImageSrc($img);
         }
         $im2 = "<tr><td>&nbsp;</td>
-                 <td><table cellspacing=0 cellpadding=0 border=0>
+                 <td><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\">
                     <tr><td>".$im. PrintImg("blank.gif",2,21)."</td>
                         <td nowrap>_#SUBJECT_&nbsp;</td>
                     </tr>
@@ -163,12 +170,12 @@ if (!$outcome) {
         $item->set_data($dcontent[$d_id]);
         echo $item->get_item();
 
-        echo "<td align=center>&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><SMALL>". _m("Delete") ."</SMALL></a>";
+        echo "<td align=\"center\">&nbsp;&nbsp;&nbsp;<a href=\"javascript:DeleteComment('".$d_id."')\"><small>". _m("Delete") ."</small></a>";
         echo "&nbsp;<a href=". con_url($sess->url("discedit2.php3"),"d_id=".
-             $d_id."&item_id=".$item_id) ."><SMALL>". _m("Edit") ."</SMALL></a>";
+             $d_id."&item_id=".$item_id) ."><small>". _m("Edit") ."</small></a>";
         $s = ($h = !$dcontent[$d_id]["d_state........."][0]['value']) ? _m("Hide") : _m("Approve");
         echo "&nbsp;<a href=" . con_url($sess->url("discedit.php3"), "mode=hide&h=".$h.
-            "&d_id=".$d_id. "&item_id=".$item_id) ."><SMALL>". $s. "</SMALL></a></td>
+            "&d_id=".$d_id. "&item_id=".$item_id) ."><small>". $s. "</small></a></td>
             <td>&nbsp;</td>";
         echo "</tr>\n";
     }
@@ -176,7 +183,7 @@ if (!$outcome) {
 ?>
   </table>
   </td></tr>
-  <tr><td class=tabtit  align=center><input type="submit" value="<?php echo _m("Back") ?>"></td></tr>
+  <tr><td class="tabtit"  align="center"><input type="submit" value="<?php echo _m("Back") ?>"></td></tr>
   </table>
   </form>
   </center>

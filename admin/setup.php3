@@ -1,47 +1,66 @@
 <?php
 // $Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
+
 
 ///////////////////////////////////////////////////////////////////////////
 
-// handle with PHP magic quotes - quote the variables if quoting is set off
+/** Myaddslashes function
+ * handle with PHP magic quotes - quote the variables if quoting is set off
+ * @param $val
+ * @param $n = 1
+ * @return string
+ */
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
   }
-  for (reset($val); list($k, $v) = each($val); )
+  for (reset($val); list($k, $v) = each($val); ) {
     $ret[$k] = Myaddslashes($v, $n+1);
+  }
   return $ret;
 }
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
-      $$k = Myaddslashes($v);
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS)) {
+      for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) {
+          $$k = Myaddslashes($v);
+      }
+  }
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS)) {
+      for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) {
+          $$k = Myaddslashes($v);
+      }
+  }
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS)) {
+      for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) {
+          $$k = Myaddslashes($v);
+      }
+  }
 }
 
 require_once "../include/config.php3";
@@ -52,7 +71,9 @@ require_once AA_INC_PATH. "util.php3";
 require_once AA_INC_PATH. "formutil.php3";
 require_once AA_INC_PATH. "mgettext.php3";
 bind_mgettext_domain(AA_INC_PATH."lang/".DEFAULT_LANG_INCLUDE);
-
+/** HtmlStart function
+ * @return prints title,body,h1
+ */
 function HtmlStart() {
     HTMLPageBegin("../".ADMIN_CSS);
     echo "<title>" . _m("AA Setup") . "</title></head>\n";
@@ -60,17 +81,24 @@ function HtmlStart() {
     echo "<center>\n";
     echo "<h1>" . _m("AA Setup") . "</h1>\n";
 }
-
+/** NoAction function
+ * @return prints a message
+ */
 function NoAction() {
     echo _m("This script can't be used on a configured system.");
 }
-
+/** PrintErr function
+ * @param $err
+ * @return prints every value in $err
+ */
 function PrintErr($err) {
     while (list(,$value) = each($err)) {
         echo $value;
     }
 }
-
+/** SuperForm function
+ * @return prints a form
+ */
 function SuperForm() {
   global $sess;
   global $login, $password1, $password2, $fname, $lname, $email;
@@ -99,7 +127,9 @@ function SuperForm() {
   </form>
   <?php
 }
-
+/** InitForm function
+ * @return prints two messages and a form
+ */
 function InitForm() {
    global $sess;
    echo _m("Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>");
@@ -112,7 +142,9 @@ function InitForm() {
    </form>
    <?php
 }
-
+/** HtmlEnd function
+ * @return prints end of html tags
+ */
 function HtmlEnd() {
    echo "</center></body></html>";
 }
@@ -124,9 +156,9 @@ page_open(array("sess" => "AA_SL_Session"));
 $db = new DB_AA;
 
 // Check if database is already created
-$store_halt = $db->Halt_On_Error;
+$store_halt        = $db->Halt_On_Error;
 $db->Halt_On_Error = "report";
-$info = $db->metadata( 'active_sessions' );
+$info              = $db->metadata( 'active_sessions' );
 if ( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
     HtmlStart();
     echo _m('Database is not configured correctly or the database is empty.<br>

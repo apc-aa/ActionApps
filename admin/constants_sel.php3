@@ -1,31 +1,35 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ /**
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Pavel Jisl <pavelji@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
 */
-
-// constants select - for searchbar.class.php3, pavelji@ecn.cz
-
-// sid        - expected - slice_id where to search
-// field_name - expected - field id from which we want take the constants
-// var_id     - expected - id of variable in calling form, which should be filled
-// design     - ???      - boolean - use standard or admin design (currently always 1)
-// sel_text   - expected - current setting of the search
+/** constants select - for searchbar.class.php3, pavelji@ecn.cz
+ *
+ * sid        - expected - slice_id where to search
+ * field_name - expected - field id from which we want take the constants
+ * var_id     - expected - id of variable in calling form, which should be filled
+ * design     - ???      - boolean - use standard or admin design (currently always 1)
+ * sel_text   - expected - current setting of the search
+ */
 
 $save_hidden = true;   // do not delete r_hidden session variable in init_page!
 

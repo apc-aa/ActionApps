@@ -1,22 +1,26 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/** PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 // expected $view_type for both - new and edit
@@ -31,13 +35,20 @@ require_once AA_INC_PATH."discussion.php3";  // GetDiscussionAliases funct def
 require_once AA_INC_PATH."msgpage.php3";
 
 // ----------------------------------------------------------------------------
-
+/** get_row_count function
+ * @param $s
+ * @param $cols
+ * @param $maxrows
+ * @return number of rows
+ */
 function get_row_count($s, $cols, $maxrows) {
     $retval = 1 + strlen ($s) / $cols;
     return ($retval > $maxrows) ?  $maxrows : $retval;
 }
 
-/// Shows the top part of the Alerts Selection Set view
+/** show_digest_filters function
+ *  @return Shows the top part of the Alerts Selection Set view
+ */
 function show_digest_filters() {
     global $view_id;
     $db = getDB();
@@ -52,14 +63,14 @@ function show_digest_filters() {
     }
 
     $sortrows = 1 + strlen ($sort) / 50;
-    echo "<tr><td class=tabtxt><b>"._m("Group by selections")."</b></td>
-        <td class=tabtxt><b><input type=radio name=aditional value=1 "
+    echo "<tr><td class=\"tabtxt\"><b>"._m("Group by selections")."</b></td>
+        <td class=\"tabtxt\"><b><input type=\"radio\" name=\"aditional\" value=\"1\" "
         .($group ? "checked" : "")."> ".
         _m("Yes. Write sort[] to the conds[] field for each Selection.")."<br>
-        <input type=radio name=aditional value=0 "
+        <input type=\"radio\" name=\"aditional\" value=\"0\" "
         .($group ? "" : "checked")."> ".
         _m("No. Use this sort[]:")."</b>
-        <textarea name=aditional3 cols=50 rows=".get_row_count($sort, 50, 4).">"
+        <textarea name=\"aditional3\" cols=\"50\" rows=".get_row_count($sort, 50, 4).">"
         .$sort."</textarea>
         </td>
     </tr>";
@@ -82,8 +93,9 @@ function show_digest_filters() {
     freeDB($db);
 }
 
-// ----------------------------------------------------------------------------
-/// Stores info from the top part of the Alerts Selection Set view
+/** store_digest_filters function
+ *  Stores info from the top part of the Alerts Selection Set view
+ */
 function store_digest_filters() {
     global $view_id, $filters, $err;
     $db = getDB ();
@@ -127,7 +139,13 @@ function store_digest_filters() {
 }
 
 // ----------------------------------------------------------------------------
-
+/** OrderFrm function
+ * @param $name
+ * @param $txt
+ * @param $val
+ * @param $order_fields
+ * @param $easy_order=false
+ */
 function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false) {
     global $vw_data;
     $name=safe($name); $txt=safe($txt);
@@ -135,7 +153,7 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false) {
     $order_type = $easy_order ?
         array( '0'=>_m("Ascending"), '1' => _m("Descending")) :
         array( '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority"));
-    echo "<tr><td class=tabtxt><b>$txt</b> ";
+    echo "<tr><td class=\"tabtxt\"><b>$txt</b> ";
     if (!SINGLE_COLUMN_FORM) {
         echo "</td>\n<td>";
     }
@@ -147,11 +165,15 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false) {
     //  PrintHelp($hlp);
     echo "</td></tr>\n";
 }
-
+/** ConditionForm function
+ * @param $name
+ * @param $txt
+ * @param $val
+ */
 function ConditionFrm($name, $txt, $val) {
     global $lookup_fields, $lookup_op, $vw_data;
     $name=safe($name); $txt=safe($txt);
-    echo "<tr><td class=tabtxt><b>$txt</b> ";
+    echo "<tr><td class=\"tabtxt\"><b>$txt</b> ";
     if (!SINGLE_COLUMN_FORM) {
         echo "</td>\n<td>";
     }
@@ -167,7 +189,7 @@ function ConditionFrm($name, $txt, $val) {
     }
 
     $condvarname = substr($name,0,5)."cond";
-    echo "<input type=\"Text\" name=\"$condvarname\" size=50 maxlength=254 value=\"". safe($vw_data[$condvarname]) ."\">";
+    echo "<input type=\"text\" name=\"$condvarname\" size=\"50\" maxlength=\"254\" value=\"". safe($vw_data[$condvarname]) ."\">";
 
     PrintMoreHelp(DOCUMENTATION_URL);
     //  PrintHelp($hlp);
@@ -196,8 +218,8 @@ if (!IfSlPerm(PS_FULLTEXT)) {
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$varset = new Cvarset();
-$p_slice_id = q_pack_id($slice_id);
+$varset      = new Cvarset();
+$p_slice_id  = q_pack_id($slice_id);
 
 // fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
 // adds wrong $view_type variable to $_SERVER array, which then redefine
@@ -327,8 +349,8 @@ if ( $VIEW_TYPES_INFO[$view_type]['fields'] ) {
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<TITLE>". _m("Admin - design View") ."</TITLE>
-      <SCRIPT Language=\"JavaScript\"><!--
+echo "<title>". _m("Admin - design View") ."</title>
+      <script Language=\"JavaScript\"><!--
       function InitPage() {
         EnableClick('document.f.even_odd_differ','document.f.even_row_format')
         EnableClick('document.f.category_sort','document.f.category_format')
@@ -338,8 +360,8 @@ echo "<TITLE>". _m("Admin - design View") ."</TITLE>
         // property .disabled supported only in MSIE 4.0+
       }
       // -->
-      </SCRIPT>
-    </HEAD>";
+      </script>
+    </head>";
 
 $useOnLoad = ($VIEW_TYPES[$type]["even_odd_differ"] ? true : false);
 
@@ -353,7 +375,7 @@ switch ( $view_type ) {
     default:           showMenu($aamenus, "sliceadmin",""); break;
 }
 
-echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - design View") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
@@ -364,7 +386,7 @@ $form_buttons = array( 'update',
                       );
 
 // Print View Form ----------
-echo "<form name=f method=post action='$PHP_SELF'>";
+echo "<form name=\"f\" method=\"post\" action=\"$PHP_SELF\">";
 FrmTabCaption( _m("Defined Views"), '', '', $form_buttons, $sess, $slice_id);
 
 $view_url = AA_INSTAL_URL. "view.php3?vid=$view_id";
@@ -431,7 +453,7 @@ switch( $VIEW_TYPES_INFO[$view_type]['aliases'] ) {
 }
 
 FrmTabEnd();
-echo "</FORM><br>";
+echo "</form><br>";
 
 if ( $view_id ) {
   $ssiuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF);

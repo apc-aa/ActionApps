@@ -1,35 +1,45 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Jiri Hejsek, Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (c) 2002-3 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 class DB_AA extends DB_Sql {
-    var $Host     = DB_HOST;
-    var $Database = DB_NAME;
-    var $User     = DB_USER;
-    var $Password = DB_PASSWORD;
+    var $Host      = DB_HOST;
+    var $Database  = DB_NAME;
+    var $User      = DB_USER;
+    var $Password  = DB_PASSWORD;
     var $Auto_Free = 'yes';
-
+    /** tquery function
+     * @param $SQL
+     */
     function tquery($SQL) {
         return ($GLOBALS['debug'] ? $this->dquery($SQL) : $this->query($SQL));
     }
-
+    /** dquery function
+     * @param $SQL
+     */
     function dquery($SQL) {
         global $debugtimes,$debugtimestart;
         if ($debugtimes) {
@@ -65,7 +75,9 @@ class DB_AA extends DB_Sql {
                             "<br>Affected rows: ".$this->affected_rows();
         return $retval;
     }
-
+    /** query_nohalt function
+     * @param $SQL
+     */
     function query_nohalt($SQL) {
         $store_halt          = $this->Halt_On_Error;
         $this->Halt_On_Error = 'no';
@@ -73,7 +85,9 @@ class DB_AA extends DB_Sql {
         $this->Halt_On_Error = $store_halt;
         return $retval;
     }
-
+    /** halt function
+     * @param $msg
+     */
     function halt($msg) {
         if ($this->Halt_On_Error == "no") {
             return;
@@ -103,7 +117,11 @@ class AA_SL_Session extends Session {
     var $lifetime       = 0;                 // 0 = do session cookies, else minutes
     var $that_class     = "AA_CT_Sql";       // name of data storage container
     var $gc_probability = 5;
-
+    /** MyUrl function
+     * @param $SliceID
+     * @param $Encap
+     * @param $noquery
+     */
     function MyUrl($SliceID, $Encap=false, $noquery=false) {
         global $HTTP_HOST, $HTTPS, $SCRIPT_NAME, $REDIRECT_SCRIPT_NAME, $scr_url;
         if (isset($HTTPS) && $HTTPS == 'on') {
@@ -157,7 +175,9 @@ class AA_CP_Session extends Session {
     var $auto_init;                          // auto init
     var $allowcache     = "no";              // Control caching of session pages, if set to no (also the default), the page is not cached under HTTP/1.1 or HTTP/1.0; if set to public , the page is publically cached under HTTP/1.1 and HTTP/1.0; if set to private , the page is privately cached under HTTP/1.1 and not cached under HTTP/1.0
     var $allowcache_expire = 1;              // When caching is allowed, the pages can be cached for this many minutes.
-
+    /** start function
+     * @param $sid
+     */
     function start($sid = "") {
         global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $HTTP_HOST, $HTTPS;
         $name = $this->that_class;

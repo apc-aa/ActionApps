@@ -1,45 +1,53 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Mitra Ardron <mitra@mitra.biz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 // A class for converting PHP structures to XML and back
 //
 // Author and Maintainer: Mitra mitra@mitra.biz
 //
-// And yes, I'll move the docs to phpDocumentor as soon as someone explains how
-// to use it!
-//
 // It is intended - and you are welcome - to extend this to be more
 // comprehensive.  It is a requirement that the routines here are inverses
 // of each other, i.e.
 
 
-if (!defined("AA_XML_SERIALIZER_INCLUDED"))
-     define ("AA_XML_SERIALIZER_INCLUDED",1);
-else return;
-
-// Convert a PHP array to an XML structure
-// A logical extension of this would be to make it nest
-// if $a is set, then output is of form <k $a>....</k>,
-// otherwise it is of form <t tname="k">.....</t>
-// note that it can be set to ""
+/** xml_serialize function
+ *  Convert a PHP array to an XML structure
+ *   A logical extension of this would be to make it nest
+ *   if $a is set, then output is of form <k $a>....</k>,
+ *   otherwise it is of form <t tname="k">.....</t>
+ *   note that it can be set to ""
+ * @param $k
+ * @param $v
+ * @param $i
+ * @param $ii
+ * @param $a
+ */
 function xml_serialize($k,&$v,$i,$ii,$a=null) {
     global $debug;
     $start = (isset($a) ? "$k $a" : "t tname=\"$k\"");
@@ -50,9 +58,11 @@ function xml_serialize($k,&$v,$i,$ii,$a=null) {
     elseif (is_string($v) || is_integer($v) || is_real($v) || is_bool($v)) {
         //if ($debug) print "STRING";
         // if contains stuff other than printable ascii and CRLF then hex it
-        if (preg_match('/[\000-\011\013-\014\016-\037\200-\377]/',$v))
+        if (preg_match('/[\000-\011\013-\014\016-\037\200-\377]/',$v)) {
             return "$i<$start coding=\"bin2hex\">".bin2hex($v)."</$end>";
-        else return "$i<$start>".HTMLEntities($v)."</$end>";
+        } else {
+            return "$i<$start>".HTMLEntities($v)."</$end>";
+        }
     }
     elseif (is_array($v)) {
         reset($v);
@@ -62,10 +72,11 @@ function xml_serialize($k,&$v,$i,$ii,$a=null) {
         return "$i<$start>$o$i</$end>";
     } elseif (is_object($v)) {
         //if ($debug) print "OBJECT";
-        if (is_callable(array($v,"xml_serialize")))
+        if (is_callable(array($v,"xml_serialize"))) {
             return $v->xml_serialize($k,$i,$ii,$a);
-        else
+        } else {
             print("ERROR: Can't serialize an Object");
+        }
     } else {
         print("What is $k, if it isn't String, array or object=");
         print_r($v);
@@ -84,7 +95,9 @@ class xml_unserializer {
     var $namestack;
     var $codingstack;
     var $name;      // Name of the current array
-
+    /** xml_unserializer function
+     *
+     */
     function xml_unserializer() {
         $this->stack       = array();
         $this->namestack   = array();
@@ -98,18 +111,28 @@ class xml_unserializer {
         xml_set_element_handler($this->parser, "startElement", "endElement");
         xml_set_character_data_handler($this->parser,"charD");
     }
+    /** parse function
+     * @param $xml_data
+     */
     function parse($xml_data) {
-        if (!xml_parse($this->parser, $xml_data, true))
-        return sprintf("XML parse error: %s at line %d",
-            xml_error_string(xml_get_error_code($this->parser)),
-            xml_get_current_line_number($this->parser));
-        xml_parser_free($this->parser);
+        if (!xml_parse($this->parser, $xml_data, true)) {
+            return sprintf("XML parse error: %s at line %d",
+                xml_error_string(xml_get_error_code($this->parser)),
+                xml_get_current_line_number($this->parser));
+                xml_parser_free($this->parser);
+        }
         return $this->top;
     }
-
+    /** startElement function
+     * @param $parser
+     * @param $name
+     * @param $attrs
+     */
     function startElement($parser, $name, $attrs) {
         global $debugimport;
-        if ($this->debug) { huhl("\n:start='".$name."'",$attrs,$this); }
+        if ($this->debug) {
+            huhl("\n:start='".$name."'",$attrs,$this);
+        }
         array_push($this->stack,$this->top);
         array_push($this->namestack,$this->name);
         array_push($this->codingstack,$this->coding);
@@ -129,21 +152,30 @@ class xml_unserializer {
         if (isset($attrs) && count($attrs)) {
             $this->top = $attrs;
         }
-        else $this->top = null;
+        else {
+            $this->top = null;
+        }
         $this->chardata = "";
 //        if ($debugimport) huhl("START:$name: els=",$this->stack,"Top=",$this->top);
     }
 
-    // End Element, two choices, either data, or attributes.
+    /** endElement function
+     *  End Element, two choices, either data, or attributes.
+     * @param $parser
+     * @param $name
+     */
     function endElement($parser,$name) {
-        if ($this->debug) { huhl("\n:end='".$name."'",$this); }
+        if ($this->debug) {
+            huhl("\n:end='".$name."'",$this);
+        }
         switch ($this->coding) {
           case "bin2hex": $this->chardata = pack_id($this->chardata); break;
           case "serialize":
           case "serializezip":
                 $c = base64_decode($this->chardata);
-                if ($this->coding == "serializegzip")
+                if ($this->coding == "serializegzip") {
                     $c = gzuncompress($c);
+                }
                 $this->top = unserialize($c);
                 $this->chardata = "";
                 break;
@@ -186,19 +218,30 @@ class xml_unserializer {
         }
         if ($this->debug)  huhl("END:$name: els=",$this->stack,"Top=",$this->top);
     }
-
+    /** charD function
+     * @param $parser
+     * @param $data
+     */
     function charD($parser, $data) {
-        if ($this->debug) huhl("\n:charD='".$data."'");
+        if ($this->debug) {
+            huhl("\n:charD='".$data."'");
+        }
         $this->chardata .= $data;
-        if ($this->debug) huhl("\n:charD now='".$this->chardata."'");
+        if ($this->debug) {
+            huhl("\n:charD now='".$this->chardata."'");
+        }
     }
 }
-
+/** xml_unserialize function
+ * @param $xml_data
+ */
 function xml_unserialize($xml_data) {
     $x = new xml_unserializer();
     return $x->parse($xml_data);
 }
-/* Testing */
+/** test_xmlserializer function
+ * Testing
+ */
 function test_xmlserializer() {
     require_once "config.php3";
     require_once "AA_INC_PATH"."zids.php3";

@@ -1,30 +1,30 @@
 <?php
-//$Id$
-/*
-Copyright (C) 2001 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**  Imports the slice definition and data, exported from toolkit
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Jakub Adámek, Pavel Jisl
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
-/*
-    Author: Jakub Adámek, Pavel Jisl
-
-    Imports the slice definition and data, exported from toolkit
-
-*/
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php3)
@@ -48,7 +48,10 @@ $itemvarset = new Cvarset();
 
 // Prooves whether this ID already exists in the slices table,
 // changes the ID to a new chosen one
-
+/** proove_ID function
+ * @param $slice
+ * @return true
+ */
 function proove_ID($slice)
 {
     global $newID,
@@ -65,7 +68,9 @@ function proove_ID($slice)
                 array ($res, strlen ($res)))."<br>\n";
         }
         $res = pack_id($res);
-        if (strlen($res) == 16)	$slice["id"] = unpack_id($res);
+        if (strlen($res) == 16) {
+            $slice["id"] = unpack_id($res);
+        }
     }
     // Find out whether a slice of the same ID already exists
 
@@ -92,13 +97,18 @@ function proove_ID($slice)
             $overwrite = true;
         }
         else return false;
+    } else {
+        $overwrite = false;
     }
-    else $overwrite = false;
     return true;
 }
 
-// same function as above, but for table item and content
-function proove_data_ID ($data_id)
+/** proove_data_ID function
+ * @param $data_id
+ * @return true
+ */
+ // same function as above, but for table item and content
+function proove_data_ID($data_id)
 {
     global $data_newID,
            $sess,
@@ -114,13 +124,15 @@ function proove_data_ID ($data_id)
         }
         $res = q_pack_id($res);
     }
-    if (strlen($res) == 16)	$data_id = unpack_id($res);
+    if (strlen($res) == 16) {
+        $data_id = unpack_id($res);
+    }
     // Find out whether item with the same ID already exists
 //	if ((strlen($data_id) != 32)&&(strlen($data_id) != 30)) {
 //		echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", $slice["id"], strlen($slice["id"]));
 //	}
     $old_data_id = addslashes(pack_id($data_id));
-    $SQL = "SELECT * FROM item WHERE id=\"$old_data_id\"";
+    $SQL         = "SELECT * FROM item WHERE id=\"$old_data_id\"";
     global $db;
     $db->query($SQL);
     if ($db->next_record()) {
@@ -129,15 +141,19 @@ function proove_data_ID ($data_id)
             $SQL = "DELETE FROM item WHERE id='$old_data_id'";	$db->query($SQL);
             $SQL = "DELETE FROM content WHERE item_id='$old_data_id'";	$db->query($SQL);
             $data_overwrite = true;
+        } else {
+              return false;
         }
-        else return false;
+    } else {
+          $data_overwrite = false;
     }
-    else $data_overwrite = false;
     return true;
 }
-
+/** import_slice function
+ * @param $slice (by link)
+ */
 // imports one slice (called by XML parser)
-function import_slice (&$slice)
+function import_slice(&$slice)
 {
     global $db,
            $showme,
@@ -177,15 +193,23 @@ function import_slice (&$slice)
             $sqltext = create_SQL_insert_statement ($curf, "field", ";slice_id;","","")."\n";
             $db->query($sqltext);
         }
-        if ($overwrite)
+        if ($overwrite) {
             $overwritten_list[] = $slice["name"]." (id:".$slice["id"].")";
-        else
+        } else {
             $imported_list[] = $slice["name"]." (id:".$slice["id"].")";
+        }
         $Cancel = "OHYES";
     }
 }
 
-// returns false on failure, but ignored
+/** import_slice_data function
+ * @param $slice_id
+ * @param $id
+ * @param $content4id
+ * @param $insert
+ * @param $feed
+ */
+ // returns false on failure, but ignored
 function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
 {
     global $db,
@@ -201,7 +225,9 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
            $only_data,
            $new_slice_ids,
            $debugimport;
-    if ($debugimport) huhl("import_slice_data:id=$id;only_data=$only_data");
+    if ($debugimport) {
+        huhl("import_slice_data:id=$id;only_data=$only_data");
+    }
     if ($only_data) { // import slice items ?
         list($fields,) = GetSliceFields($slice_id);
         if (!is_array($fields)) {
@@ -209,7 +235,7 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
             $data_import_failure[] = $id." No fields for slice_id=$slice_id";
             return false;
         }
-        $cont = $content4id[$id];
+        $cont            = $content4id[$id];
         $data_IDconflict = !proove_data_ID($id);
         if (($data_IDconflict)&&($GLOBALS["Submit"]!=_m("Insert with new ids"))) {
             $data_conflicts_ID[$id] = $cont["headline........"][0]['value'];
@@ -221,19 +247,24 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
           // when importing with new ids, we need create new id for item
           // and get new id of slice
         // This looks like a bug to me, won't use new id if Overwrite (mitra)
-          $new_data_id = new_id();
+          $new_data_id  = new_id();
           $new_slice_id = $new_slice_ids[$slice_id]["new_id"];
-          $slice_id = $new_slice_id;
-          $id=$new_data_id;
+          $slice_id     = $new_slice_id;
+          $id           = $new_data_id;
         }
 
-        if ($debugimport) huhl("Storing item: $id");
-        if ($debugimport) $GLOBALS[debugsi] = 1;
+        if ($debugimport) {
+            huhl("Storing item: $id");
+        }
+        if ($debugimport) {
+            $GLOBALS['debugsi'] = 1;
+        }
         if ( StoreItem($id, $slice_id, $cont, $fields, $insert, true, $feed)) {
-          if ($data_overwrite)
-            $data_overwritten_list[] = $id." (id:".$id.")";
-          else
-            $data_imported_list[] = $id." (id:".$id.")";
+            if ($data_overwrite) {
+                $data_overwritten_list[] = $id." (id:".$id.")";
+            } else {
+                $data_imported_list[] = $id." (id:".$id.")";
+            }
         } else {
             $data_import_failure[] = $id." StoreItem failed";
         }
@@ -241,12 +272,15 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
     }
 }
 
-if ($Cancel)
+if ($Cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
+}
 
 $IDconflict = false;
-if ($debugimport) huhl("Slice_def=",htmlentities($slice_def));
-$slice_def_bck = $slice_def = stripslashes($slice_def);
+if ($debugimport) {
+    huhl("Slice_def=",htmlentities($slice_def));
+}
+$slice_def_bck  = $slice_def = stripslashes($slice_def);
 $imported_count = 0;
 
 // insert xml parser
@@ -254,29 +288,33 @@ require_once AA_BASE_PATH."admin/sliceimp_xml.php3";
 
 // import via exported file
 if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
-  if ($debugimport) huhl("Importing a file");
-  $dirname = IMG_UPLOAD_PATH;
-  $fileman_used=false;
-  $dest_file = $_FILES['slice_def_file']['name'];
-  $perms = 0664;
+    if ($debugimport) {
+        huhl("Importing a file");
+    }
+    $dirname = IMG_UPLOAD_PATH;
+    $fileman_used=false;
+    $dest_file = $_FILES['slice_def_file']['name'];
+    $perms = 0664;
 
   // i must copy this from aa_move_uploaded_file because of some variables,that i can't (don't know how) set
 
     list($va,$vb,$vc) = explode(".",phpversion());   // this check work with all possibilities (I hope) -
     if ( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    // '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
-        if (is_uploaded_file($_FILES['slice_def_file']['tmp_name']))
-            if ( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file"))
+        if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
+            if ( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file")) {
                 echo _m("Can't upload Import file") . "to $dirname$dest_file";
-        else if ($perms)
+            } else if ($perms) {
                 chmod ($dirname.$dest_file, $perms);
-    }
-    else {   // for php 3.x and php <4.0.3
-        if (!copy($_FILES['slice_def_file']['tmp_name'],"$dirname$dest_file"))
+            }
+        }
+    } else {   // for php 3.x and php <4.0.3
+        if (!copy($_FILES['slice_def_file']['tmp_name'],"$dirname$dest_file")) {
             echo _m("Can't upload Import file");
-        else if ($perms)
+        } else if ($perms) {
             chmod ($dirname.$dest_file, $perms);
+        }
     }
-    $fd = fopen ($dirname.$dest_file, "r");
+    $fd            = fopen ($dirname.$dest_file, "r");
     $slice_def_bck = $slice_def = fread ($fd, filesize ($dirname.$dest_file));
     fclose ($fd);
 
@@ -312,169 +350,179 @@ if ($data_conflicts_list) {
 
 if ($slice_def != "") {
     $err = sliceimp_xml_parse($slice_def,false,$force_this_slice);
-    if ($err != "") si_err($err);
+    if ($err != "") {
+        si_err($err);
+    }
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo _m("Import exported data (slice structure and content)")?></TITLE>
+<title><?php echo _m("Import exported data (slice structure and content)")?></title>
 
-</HEAD>
+</head>
 
 <?php
   require_once menu_include();   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin","sliceimp");
 ?>
 <?php echo $pom ?>
-<form name=formular method=post action="<?php echo $sess->url("sliceimp.php3") ?>"
+<form name="formular" method="post" action="<?php echo $sess->url("sliceimp.php3") ?>"
 enctype="multipart/form-data">
 
 <h1><b><?php echo _m("Import exported data (slice structure and content)").$pom?></b></h1>
 <?php
   FrmTabCaption( _m("Import exported data"));
 
-echo "<tr><td class=tabtxt>";
+echo "<tr><td class=\"tabtxt\">";
 
-if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list || $data_import_failure):
-    echo "<B>".sprintf(_m("Count of imported slices: %d."),count($imported_list)+count($overwritten_list))."</p>";
+if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list || $data_import_failure) {
+    echo "<b>".sprintf(_m("Count of imported slices: %d."),count($imported_list)+count($overwritten_list))."</p>";
     if (is_array($imported_list)) {
         echo "</p>"._m("Added were:")."</p>";
         reset($imported_list);
-        while (list(,$desc)=each($imported_list))
+        while (list(,$desc)=each($imported_list)) {
             echo $desc."<br>";
+        }
     }
     if (is_array($overwritten_list)) {
         echo "</p>"._m("Overwritten were:")."</p>";
         reset($overwritten_list);
-        while (list(,$desc)=each($overwritten_list))
+        while (list(,$desc)=each($overwritten_list)) {
             echo $desc."<br>";
+        }
     }
 
-    echo "<br><br><B>".sprintf(_m("Count of imported stories: %d."),count($data_imported_list)+count($data_overwritten_list))."</p>";
+    echo "<br><br><b>".sprintf(_m("Count of imported stories: %d."),count($data_imported_list)+count($data_overwritten_list))."</p>";
     echo $data_showme;
     if (is_array($data_imported_list)) {
         echo "</p>"._m("Added were:")."</p>";
         reset($data_imported_list);
-        while (list(,$desc)=each($data_imported_list))
+        while (list(,$desc)=each($data_imported_list)) {
             echo $desc."<br>";
+        }
     }
     if (is_array($data_overwritten_list)) {
         echo "</p>"._m("Overwritten were:")."</p>";
         reset($data_overwritten_list);
-        while (list(,$desc)=each($data_overwritten_list))
+        while (list(,$desc)=each($data_overwritten_list)) {
             echo $desc."<br>";
+        }
     }
     if (is_array($data_import_failure)) {
         echo "</p>"._m("Failed were:")."</p>";
         reset($data_import_failure);
-        while (list(,$desc)=each($data_import_failure))
+        while (list(,$desc)=each($data_import_failure)) {
             echo $desc."<br>";
+        }
     }
 
     ?>
-    </P>
-    <INPUT TYPE=SUBMIT NAME=Cancel VALUE="  OK  ">
+    </p>
+    <input type="submit" name="Cancel" value="  OK  ">
 <?php
-else:
+} else {
 ?>
 
 <?php echo _m("Here you can import exported data to toolkit. You can use two types of import:") ?></p>
 </td></tr>
 <?php
-if ($IDconflict):?>
-    <tr><td class=tabtxt>
+if ($IDconflict) {?>
+    <tr><td class="tabtxt">
     <b><?php echo sprintf (_m("Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"),pack_id128($slice_id)) ?></b></p>
-    <p align=center>
-<TEXTAREA NAME=conflicts_list ROWS=<?php echo count($conflicts_ID) ?> COLS=90>
+    <p align="center">
+<textarea name="conflicts_list" rows=<?php echo count($conflicts_ID) ?> cols="90">
 <?php
     reset($conflicts_ID);
-    while (list($c_id,$name)=each($conflicts_ID))
+    while (list($c_id,$name)=each($conflicts_ID)) {
         echo $name.":\t".$c_id." -> ".$c_id."\n";
+    }
 ?>
-</TEXTAREA>
+</textarea>
 
 <?php
-endif;
-if ($view_IDconflict): ?>
-<tr><td class=tabtxt>
+}
+if ($view_IDconflict) { ?>
+<tr><td class="tabtxt">
 <b><?php echo sprintf (_m("<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>")) ?></b></p>
-<p align=center>
-<TEXTAREA NAME=view_conflicts_list ROWS=<?php echo count($view_conflicts_ID) ?> COLS=90>
+<p align="center">
+<textarea name="view_conflicts_list" rows=<?php echo count($view_conflicts_ID) ?> cols="90">
 <?php
     reset($view_conflicts_ID);
-    while (list($c_id,$name)=each($view_conflicts_ID))
+    while (list($c_id,$name)=each($view_conflicts_ID)) {
         echo $name.":\t".$c_id." -> ".$c_id."\n";
+    }
 ?>
-</TEXTAREA>
+</textarea>
 <?php
-endif;
-if ($data_IDconflict): ?>
+}
+if ($data_IDconflict) { ?>
 
-<tr><td class=tabtxt>
+<tr><td class="tabtxt">
 <b><?php echo sprintf (_m("<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>")) ?></b></p>
-<p align=center>
-<TEXTAREA NAME=data_conflicts_list ROWS=<?php echo count($data_conflicts_ID) ?> COLS=90>
+<p align="center">
+<textarea name="data_conflicts_list" rows=<?php echo count($data_conflicts_ID) ?> cols="90">
 <?php
     reset($data_conflicts_ID);
-    while (list($c_id,$name)=each($data_conflicts_ID))
+    while (list($c_id,$name)=each($data_conflicts_ID)) {
         echo substr($name,0,27).":\t".$c_id." -> ".$c_id."\n";
+    }
 ?>
-</TEXTAREA>
+</textarea>
 <?php
-endif;
-if ($IDconflict || $data_IDconflict): ?>
-    </P>
+}
+if ($IDconflict || $data_IDconflict) { ?>
+    </p>
 <?php	echo _m("<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>") ?>
-    <p align=center>
+    <p align="center">
 <?php if ($only_slice)	 {?>
-    <input type=hidden name=only_slice value=1>
+    <input type="hidden" name="only_slice" value="1">
 <?php };
     if ($only_data) { ?>
-    <input type=hidden name=only_data value=1>
+    <input type="hidden" name="only_data" value="1">
 <?php }; ?>
-    <INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Overwrite") ?>">
-    <INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Insert") ?>">
-    <INPUT TYPE=SUBMIT NAME=Submit VALUE="<?php echo _m("Insert with new ids") ?>">
-    <INPUT TYPE=SUBMIT NAME=Cancel VALUE="<?php echo _m("Cancel") ?>">
+    <input type="submit" name="Submit" VALUE="<?php echo _m("Overwrite") ?>">
+    <input type="submit" name="Submit" VALUE="<?php echo _m("Insert") ?>">
+    <input type="submit" name="Submit" VALUE="<?php echo _m("Insert with new ids") ?>">
+    <input type="submit" name="Cancel" VALUE="<?php echo _m("Cancel") ?>">
     </p>
     </td></tr>
 <?php
-endif;?>
-    <?php if (!$IDconflict || !$data_IDconflict): ?>
-<tr><td class=tabtxt align=center>
+}?>
+<?php if (!$IDconflict || !$data_IDconflict) { ?>
+<tr><td class="tabtxt" align="center">
 <br>
         <?php echo _m("1) If you have exported data in file, insert it's name here (eg. D:\data\apc_aa_slice.aaxml):") ?><p>
         <input type="file" name="slice_def_file" size="60">
 <!--		<p><input type="submit" name="file_submit" value="<?php echo _m("Send file with slice structure and data"); ?>">  -->
     </td></tr>
-    <?php endif; ?>
-<tr><td class=tabtxt align=center>
+    <?php } ?>
+<tr><td class="tabtxt" align="center">
 <br>
-    <?php if (!$IDconflict || !$data_IDconflict): ?>
+<?php if (!$IDconflict || !$data_IDconflict) { ?>
         <?php echo _m("2) If you have exported data in browser's window, insert the exported text into the textarea below:") ?><p>
-    <?php endif;
+    <?php }
 ?>
-    <TEXTAREA NAME="slice_def" ROWS = 10 COLS = 100><?php if ($IDconflict || $data_IDconflict)
+    <textarea name="slice_def" rows="10" cols="100"><?php if ($IDconflict || $data_IDconflict)
 // Be careful here, $slice_def_bck contains structures line
 // <xxx>&lt;BR&gt;some content</xxx>
 // Which the browser will convert to <xxx><BR>some content</xxx>
 // which is invalid XML. So, convert & to &amp; first, so pass through
 // HTMLEntities, which browser will undo.
-echo HTMLEntities($slice_def_bck) ?></TEXTAREA>
+echo HTMLEntities($slice_def_bck) ?></textarea>
     <p>
-<?php if (!$IDconflict || !$data_IDconflict): ?>
+    <?php if (!$IDconflict || !$data_IDconflict) { ?>
 <?php if (!$GLOBALS["Submit"]) { ?>
     <?php echo _m("Here specify, what do you want to import:"); ?><p>
-    <input type=checkbox name=only_slice checked><?php echo _m("Import slice definition") ?><br>
-    <input type=checkbox name=only_data checked><?php echo _m("Import slice items") ?><br><br>
-    <input type=checkbox name=force_this_slice><?php echo _m("Import into this slice - whatever file says") ?><br><br>
+    <input type="checkbox" name="only_slice" checked><?php echo _m("Import slice definition") ?><br>
+    <input type="checkbox" name="only_data" checked><?php echo _m("Import slice items") ?><br><br>
+    <input type="checkbox" name="force_this_slice"><?php echo _m("Import into this slice - whatever file says") ?><br><br>
 <?php
     FrmTabEnd(array("Submit"=>array("value"=>_m("Send the slice structure and data"), "accesskey"=>"S", "type"=>"submit"),
               "Cancel"=>array("value"=>_m("Cancel"), "type"=>"submit")), $sess, $slice_id);
  } ?>
 <?php
-endif;
-endif; //if ($cancel || $coflicts_list)?>
+}
+} //if ($cancel || $coflicts_list)?>
 </form>
 </tr></td>
 </table>
@@ -485,5 +533,3 @@ endif; //if ($cancel || $coflicts_list)?>
 HtmlPageEnd();
 page_close();
 ?>
-
-

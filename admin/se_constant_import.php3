@@ -1,29 +1,35 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * Parameters: group_id - identifier of constant group
+ *             categ - if true, constants are taken as category, so
+ *                     APC parent categories are displayed for selecting parent
+ *             category - edit categories for this slice (no group_id nor categ required)
+ *             as_new - if we want to create new category group based on an existing (id of "template" group)
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
-// Parameters: group_id - identifier of constant group
-//             categ - if true, constants are taken as category, so
-//                     APC parent categories are displayed for selecting parent
-//             category - edit categories for this slice (no group_id nor categ required)
-//             as_new - if we want to create new category group based on an existing (id of "template" group)
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
@@ -45,7 +51,7 @@ $back_url = ($return_url ? ($fid ? con_url($return_url,"fid=".$fid) : $return_ur
 
 if ($update) {
     do {
-        $err["Init"] = "";          // error array (Init - just for initializing variable
+        $err["Init"]  = "";          // error array (Init - just for initializing variable
         $new_group_id = stripslashes(str_replace(':','-',$new_group_id));  // we don't need ':'
                                                              // in id (parameter separator)
         ValidateInput("new_group_id", _m("Constant Group"), $new_group_id, $err, true, "text");
@@ -86,23 +92,23 @@ if ($update) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Admin - Constants Import");?></TITLE>
-</HEAD>
+ <title><?php echo _m("Admin - Constants Import");?></title>
+</head>
 <?php
 
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin", "");
 
-echo "<H1><B>" . _m("Admin - Constants Import") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - Constants Import") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
 $form_buttons = array("update",
-                      "cancel"=>array("url"=> $back_url),
-                      "return_url"=>array("value"=>$return_url),
-                      "fid"=>array("value"=>$fid));
+                      "cancel"    => array("url"=> $back_url),
+                      "return_url"=> array("value"=>$return_url),
+                      "fid"       => array("value"=>$fid));
 ?>
-<form method=post name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
 FrmTabCaption(_m("Constants"), '', '', $form_buttons, $sess, $slice_id);
 FrmInputText('new_group_id', _m("Constant Group"), $new_group_id, 16, 16);

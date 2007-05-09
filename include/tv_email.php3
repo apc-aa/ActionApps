@@ -1,30 +1,38 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Jakub Adamek
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tableview.html
 
 require_once AA_BASE_PATH."modules/alerts/util.php3";
-
-function ShowEmailAliases () {
+/** ShowEmailAliases function
+ *
+ */
+function ShowEmailAliases() {
     $ali[] = array (
         "group" => _m("Aliases for Alerts Alert"),
         "aliases" => array (
@@ -54,21 +62,25 @@ function ShowEmailAliases () {
             "_#ME_MAIL_" => _m("My email"),
          ));
 
-    echo "<BR><TABLE border=0 cellspacing=0 cellpadding=0>";
+    echo "<br><table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
     reset ($ali);
     while (list (, $aligroup) = each ($ali)) {
-        echo "<TR><TD class=tabtit colspan=2><B>&nbsp;$aligroup[group]&nbsp;</B></TD></TR>";
+        echo "<tr><td class=\"tabtit\" colspan=\"2\"><b>&nbsp;".$aligroup['group']."&nbsp;</b></td></tr>";
         reset ($aligroup["aliases"]);
         while (list ($alias, $desc) = each ($aligroup["aliases"]))
-            echo "<TR><TD class=tabtxt>&nbsp;$alias&nbsp;</TD>
-                <TD class=tabtxt>&nbsp;$desc&nbsp;</TD></TR>";
+            echo "<tr><td class=\"tabtxt\">&nbsp;$alias&nbsp;</TD>
+                <td class=\"tabtxt\">&nbsp;$desc&nbsp;</td></tr>";
     }
-    echo "</TABLE>";
+    echo "</table>";
 }
 
 // Settings for emails table views
-/** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */
-function GetEmailTableView ($viewID, $processForm = false)
+/** GetEmailTableView function
+ *  see class tabledit :: var $getTableViewsFn for an explanation of the parameters
+ * @param $viewID
+ * @param $processForm
+ */
+function GetEmailTableView($viewID, $processForm = false)
 {
     global $auth, $slice_id, $db;
     global $attrs_edit, $attrs_browse, $format, $langs;
@@ -171,25 +183,34 @@ function GetEmailTableView ($viewID, $processForm = false)
         ));
     }
 }
-
-function GetEmailWhere () {
+/** GetEmailWhere function
+ *
+ */
+function GetEmailWhere() {
     global $auth, $db;
-    if (IsSuperadmin ())
+    if (IsSuperadmin()) {
         return "(1=1)";
+    }
     else {
         $myslices = GetUserSlices();
         if (is_array($myslices)) {
             reset ($myslices);
-            while (list ($my_slice_id, $perms) = each ($myslices))
-                if (strchr ($perms, PS_FULLTEXT))
-                    $restrict_slices[] = q_pack_id($my_slice_id);
+            while (list ($my_slice_id, $perms) = each ($myslices)) {
+                if (strchr ($perms, PS_FULLTEXT)) {
+                        $restrict_slices[] = q_pack_id($my_slice_id);
+                }
+            }
             return "owner_module_id IN ('".join("','",$restrict_slices)."')";
         }
-        else return "(1=0)";
+        else {
+            return "(1=0)";
+        }
     }
     return $retval;
 }
-
+/** EmailAfterInsert function
+ * @param $varset
+ */
 function EmailAfterInsert($varset) {
     ShowRefreshWizardJavaScript();
 }

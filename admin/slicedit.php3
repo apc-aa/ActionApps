@@ -1,22 +1,27 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 // expected $slice_id for edit slice, no_slice_id=1 for adding slice
 
@@ -59,7 +64,7 @@ foreach ($MODULES as $type => $module) {
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
-$superadmin = IsSuperadmin();
+$superadmin  = IsSuperadmin();
 
 require_once AA_INC_PATH."slicedit.php3";
 
@@ -79,7 +84,7 @@ $id    = unpack_id128($db->f("id"));  // correct ids
 $owner = unpack_id($db->f("owner"));  // correct ids
 //mlx admin
 $mlxctrl = $db->f(MLX_SLICEDB_COLUMN);  // should we use unpack_id here...
-$SQL  = "SELECT `name`,`id`,`".MLX_SLICEDB_COLUMN."` FROM slice ORDER BY name";
+$SQL     = "SELECT `name`,`id`,`".MLX_SLICEDB_COLUMN."` FROM slice ORDER BY name";
 $db->query($SQL);
 
 while ($db->next_record()) {
@@ -105,7 +110,7 @@ if ( $slice_id == "" ) {
 
 // lookup owners
 $slice_owners[0] = _m("Select owner");
-$SQL= " SELECT id, name FROM slice_owner ORDER BY name";
+$SQL             = " SELECT id, name FROM slice_owner ORDER BY name";
 $db->query($SQL);
 while ($db->next_record()) {
     $slice_owners[unpack_id128($db->f('id'))] = $db->f('name');
@@ -117,13 +122,13 @@ foreach ($LANGUAGE_NAMES as $l => $langname) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Slice Administration");?></TITLE>
-</HEAD>
+ <title><?php echo _m("Slice Administration");?></title>
+</head>
 <?php
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","main");
 
-echo "<H1><B>" . ( $slice_id=="" ? _m("Add Slice") : _m("Admin - Slice settings")) . "</B></H1>";
+echo "<h1><b>" . ( $slice_id=="" ? _m("Add Slice") : _m("Admin - Slice settings")) . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
@@ -134,7 +139,7 @@ if ($slice_id == "") {
 }
 
 ?>
-<form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
 
 FrmTabCaption(_m("Slice"), '','', $form_buttons, $sess, $slice_id);
@@ -144,8 +149,8 @@ FrmInputText("name", _m("Title"), $name, 99, 25, true);
 FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, 254, 25, false);
 FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5, false);
 $ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
-echo "<TR><TD colspan=2>" . _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") . "<BR><pre>" .
-     "&lt;!--#include virtual=&quot;" . $ssiuri . "?slice_id=" . $slice_id . "&quot;--&gt;</pre></TD></TR>";
+echo "<tr><td colspan=\"2\">" . _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") . "<BR><pre>" .
+     "&lt;!--#include virtual=&quot;" . $ssiuri . "?slice_id=" . $slice_id . "&quot;--&gt;</pre></td></tr>";
 
 FrmInputText("upload_url", _m("Upload URL"), $slice_url, 254, 25, false, _m('Url of uploaded files is %1 by default. You can change it by setting this parameter.<br>Note: This do not change the place, wheer the file is stored - you can just use another virtualhost name, for example.', array(IMG_UPLOAD_URL)));
 FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
@@ -191,16 +196,16 @@ FrmInputText("reading_password", _m("Password for Reading"), $reading_password,
              100, 25, false, "", "http://apc-aa.sourceforge.net/faq/#slice_pwd");
 
 if ($slice_id=="") {
-    echo "<input type=hidden name=\"add\" value=1>";        // action
-    echo "<input type=hidden name=\"no_slice_id\" value=1>";  // detects new slice
-    echo "<input type=hidden name=template_id value=\"". $set_template_id .'">';
+    echo "<input type=\"hidden\" name=\"add\" value=\"1\">";        // action
+    echo "<input type=\"hidden\" name=\"no_slice_id\" value=\"1\">";  // detects new slice
+    echo "<input type=\"hidden\" name=\"template_id\" value=\"". $set_template_id .'">';
 
     // fields storing values from wizard
-    echo "<input type=hidden name=\"wiz[copyviews]\" value='$wiz[copyviews]'>";
-    echo "<input type=hidden name=\"wiz[constants]\" value='$wiz[constants]'>";
-    echo "<input type=hidden name=\"wiz[welcome]\" value='$wiz[welcome]'>";
-    echo "<input type=hidden name=\"user_login\" value='$user_login'>";
-    echo "<input type=hidden name=\"user_role\" value='$user_role'>";
+    echo "<input type=\"hidden\" name=\"wiz[copyviews]\" value='$wiz[copyviews]'>";
+    echo "<input type=\"hidden\" name=\"wiz[constants]\" value='$wiz[constants]'>";
+    echo "<input type=\"hidden\" name=\"wiz[welcome]\" value='$wiz[welcome]'>";
+    echo "<input type=\"hidden\" name=\"user_login\" value='$user_login'>";
+    echo "<input type=\"hidden\" name=\"user_role\" value='$user_role'>";
     // end of fields storing values from wizard
 }
 
@@ -208,8 +213,9 @@ if ($slice_id=="") {
 FrmTabEnd($form_buttons, $sess, $slice_id);
 
 ?>
-</FORM>
+</form>
 <?php
 freeDB($db);
 HTMLPageEnd();
-page_close()?>
+page_close();
+?>

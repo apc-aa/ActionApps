@@ -1,45 +1,54 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Jakub Adamek
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
 // (c) Econnect, Jakub Adamek, December 2002
 // DOCUMENTATION: doc/tableview.html
 
 require_once AA_INC_PATH."tv_email.php3";
 
 // Settings for miscellaneous table views (see doc/tabledit.html for more info)
-/** see class tabledit :: var $getTableViewsFn for an explanation of the parameters */
-function GetMiscTableView ($viewID, $processForm = false) {
+/** GetMiscTableView function
+ *  see class tabledit :: var $getTableViewsFn for an explanation of the parameters
+ * @param $viewID
+ * @param $processForm
+ */
+function GetMiscTableView($viewID, $processForm = false) {
     global $auth, $slice_id, $db;
     global $attrs_edit, $attrs_browse, $format, $langs;
 
     $p_slice_id = q_pack_id($slice_id);
 
     if ($viewID == "email_edit") {
-        $tableview = GetEmailTableView ($viewID);
+        $tableview = GetEmailTableView($viewID);
         $tableview["mainmenu"] = "sliceadmin";
         return $tableview;
     }
 
     if ($viewID == "email") {
-        $tableview = GetEmailTableView ($viewID);
+        $tableview = GetEmailTableView($viewID);
         $tableview["mainmenu"] = "sliceadmin";
         $tableview["submenu"] = "te_emails";
         return $tableview;
@@ -49,7 +58,8 @@ function GetMiscTableView ($viewID, $processForm = false) {
        ww -- browse wizard welcomes
        ww_edit -- edit -"-
     */
-    if ($viewID == "ww") return  array (
+    if ($viewID == "ww") {
+        return  array (
         "table" => "wizard_welcome",
         "type" => "browse",
         "readonly" => true,
@@ -65,9 +75,10 @@ function GetMiscTableView ($viewID, $processForm = false) {
             "mail_from" => array ("hint" => _m("From: mail header"), "required" => true)),
         "attrs" => $attrs_browse,
         "gotoview" => "ww_edit");
+    }
 
     if ($viewID == "ww_edit") {
-        $retval = GetMiscTableView ("ww");
+        $retval = GetMiscTableView("ww");
         $retval["type"] = "edit";
         $retval["attrs"] = $attrs_edit;
         $retval["readonly"] = false;
@@ -79,7 +90,8 @@ function GetMiscTableView ($viewID, $processForm = false) {
     /* ------------------------------------------------------------------------------------
        wt -- browse wizard templates
     */
-    if ($viewID == "wt") return  array (
+    if ($viewID == "wt") {
+        return  array (
         "table" => "wizard_template",
         "type" => "browse",
         "readonly" => false,
@@ -98,6 +110,7 @@ function GetMiscTableView ($viewID, $processForm = false) {
                 "required" => true)
             ),
         "attrs" => $attrs_browse);
+    }
 
     /* ------------------------------------------------------------------------------------
        cron

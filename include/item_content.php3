@@ -2,30 +2,30 @@
 /**
  * Class ItemContent.
  *
- * @package UserInput
- * @version $Id$
- * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Jakub Adamek, Econnect
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (c) 2002-3 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-/*
-Copyright (C) 1999-2003 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
 require_once AA_INC_PATH."feeding.php3";
 
 
@@ -39,7 +39,10 @@ class AA_Value {
     var $val;
     /** holds the flag - common for all the values */
     var $flag;
-
+    /** AA_Value function
+     * @param $value
+     * @param $flag
+     */
     function AA_Value($value=null, $flag=null) {
         $this->clear();
         if (is_array($value)) {
@@ -56,12 +59,17 @@ class AA_Value {
         }
     }
 
-    /** Returns the value for a field. If it is a multi-value
-    *   field, this is the first value. */
+    /** getValue function
+     *  Returns the value for a field. If it is a multi-value
+     *   field, this is the first value.
+     * @param $i
+     */
     function getValue($i=0) {
         return $this->val[$i];
     }
-
+    /** clear function
+     *
+     */
     function clear() {
         $this->val  = array();
         $this->flag = 0;
@@ -95,8 +103,13 @@ class ItemContent {
     // PRIVATE:
     var $content;
 
-    /** Method returns or sets last itemContent error
-     *  The trick for static class variables is used */
+    /** lastErr function
+     *  Method returns or sets last itemContent error
+     *  The trick for static class variables is used
+     * @param $err_id
+     * @param $err_msg
+     * @param $getmsg
+     */
     function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
         static $lastErrMsg;
@@ -107,13 +120,18 @@ class ItemContent {
         return $getmsg ? $lastErrMsg : $lastErr;
     }
 
-    /** Return last error message - it is grabbed from static variable
-     *  of lastErr() method */
+    /** lastErrMsg function
+     *  Return last error message - it is grabbed from static variable
+     *  of lastErr() method
+     */
     function lastErrMsg() {
         return ItemContent::lastErr(null, null, true);
     }
 
-    /// Constructor which takes content for ID or item_id (unpacked).
+    /** ItemContent function
+     *  Constructor which takes content for ID or item_id (unpacked).
+     * @param $content4id
+     */
     function ItemContent($content4id = "") {
         if ( is_array($content4id) ) {
             $this->setFromArray($content4id);
@@ -121,22 +139,35 @@ class ItemContent {
             $this->setByItemID($content4id );
         }
     }
-
+    /** setFromArray function
+     * @param $content4id
+     */
     function setFromArray(&$content4id) {
         $this->content = $content4id;
     }
 
-    // Set by item ID (zid or unpacked or short)
+    /** setByItemID function
+     * Set by item ID (zid or unpacked or short)
+     * @param $item_id
+     * @param $ignore_reading_password
+     */
     function setByItemID($item_id, $ignore_reading_password=false) {
-        if (!$item_id) return false;
+        if (!$item_id) {
+            return false;
+        }
         $zid           = (strtolower(get_class($item_id))=='zids') ? $item_id : new zids($item_id);
         $content       = GetItemContent($zid, false, $ignore_reading_password);
         $this->content = is_array($content) ? reset($content) : null;
     }
 
-    /** Functions tries to fill all the fields from the form. It do not add any
+    /** setFieldsFromForm function
+     *  Functions tries to fill all the fields from the form. It do not add any
      *  item specific fields (like status_code), so it could be used also for
      *  dynamic "slice setting fields"
+     * @param $slice
+     * @param $content4id
+     * @param $insert
+     * @param $slice_fields
      */
     function setFieldsFromForm(&$slice, $oldcontent4id="", $insert=true, $slice_fields=false) {
         global $profile, $auth;
@@ -194,8 +225,12 @@ class ItemContent {
     }
 
 
-    /** Fills content4id - values in content4id are NOT quoted (addslashes)
+    /** setFromForm function
+     *  Fills content4id - values in content4id are NOT quoted (addslashes)
      *  (new version of previous GetContentFromForm() function)
+     * @param $slice
+     * @param $oldcontent4id
+     * @param $insert
      */
     function setFromForm( &$slice, $oldcontent4id="", $insert=true) {
         global $id;
@@ -221,33 +256,45 @@ class ItemContent {
                                       // from historical reasons. We probably change it in next versions - TODO
         $this->setSliceID($slice->unpacked_id());
     }
-
+    /** is_empty function
+     *
+     */
     function is_empty() {
         return !is_array($this->content);
     }
-
+    /** is_set function
+     * @param $field_id
+     */
     function is_set($field_id) {
         return is_array($this->content[$field_id]);
     }
-
+    /** matches function
+     * @param $conditions
+     */
     function matches(&$conditions) {
         return $conditions->matches($this);
     }
-
+    /** getContent function
+     *
+     */
     function getContent() {
         return $this->content;
     }
 
-    /** Function quotes all content to use in database query */
-    //  This is just transformation function - we do not say, that content is
-    //  not already quoted - we will add $quoted flag to this class in order
-    //  it will be transparent for ussage in near future
+    /** getContentQuoted function
+     *  Function quotes all content to use in database query
+     *  This is just transformation function - we do not say, that content is
+     *  not already quoted - we will add $quoted flag to this class in order
+     *  it will be transparent for ussage in near future
+     */
     function getContentQuoted() {
         return $this->_content_walk('quote');
     }
 
-    /** Goes through all values of content and and returns transformed content.
+    /** _content_walk function
+     *  Goes through all values of content and and returns transformed content.
      *  Transformation is given by callback function.
+     * @param $callback
      */
     function _content_walk($callback) {     // private function
         if ( !isset( $this->content ) OR !is_array(  $this->content ) ) {
@@ -262,23 +309,34 @@ class ItemContent {
         return $ret;
     }
 
-    /** Returns the value for a field. If it is a multi-value
-    *   field, this is the first value. */
+    /** getValue function
+     *  Returns the value for a field. If it is a multi-value
+     *   field, this is the first value.
+     * @param $field_id
+     * @param $what
+     */
     function getValue($field_id, $what='value') {
         return ( is_array($this->content[$field_id]) ? $this->content[$field_id][0][$what] : false );
     }
 
 
-    /** Returns the value for a field. If it is a multi-value
-    *   field, this is the first value. */
+    /** getAaValue function
+     *  Returns the value for a field. If it is a multi-value
+     *   field, this is the first value.
+     * @param $field_id
+     */
     function getAaValue($field_id) {
         return new AA_Value( $this->getValue($field_id) );
     }
-
+    /** getValues function
+     * @param $field_id
+     */
     function getValues($field_id) {
         return ( is_array($this->content[$field_id]) ? $this->content[$field_id] : false );
     }
-
+    /** getValuesArray function
+     * @param $field_id
+     */
     function getValuesArray($field_id) {
         $ret = array();
         if ( !empty($this->content[$field_id]) ) {
@@ -289,7 +347,9 @@ class ItemContent {
         return $ret;
     }
 
-
+    /** getFields function
+     *
+     */
     function getFields() {
         $fields = array();
         if ( isset( $this->content ) AND is_array( $this->content ) ) {
@@ -300,47 +360,119 @@ class ItemContent {
         return $fields;
     }
 
-    /** Fills the name with dots to the standard 16 characters,
-    *   returns the value for the field. You can use field names
-    *   from the <i>item</i> table with this function. */
+    /** getItemValue function
+     *  Fills the name with dots to the standard 16 characters,
+     *   returns the value for the field. You can use field names
+     *   from the <i>item</i> table with this function.
+     * @param $field_name
+     */
     function getItemValue($field_name) {
         return $this->getValue(substr($field_name."................",0,16));
     }
-
+    /** getQuotedValue function
+     * @param $field_id
+     */
     function getQuotedValue($field_id) {
         return addslashes($this->getValue($field_id));
     }
-
-    function getItemID()     { return unpack_id($this->getItemValue("id")); }
-    function getSliceID()    { return unpack_id($this->getItemValue("slice_id")); }
-    function getPSliceID()   { return addslashes($this->getItemValue("slice_id")); }
-    function getStatusCode() { return $this->getItemValue("status_code"); }
-    function getPublishDate(){ return $this->getItemValue("publish_date"); }
-    function getExpiryDate() { return $this->getItemValue("expiry_date"); }
-
+    /** getItemID function
+     *
+     */
+    function getItemID() {
+        return unpack_id($this->getItemValue("id"));
+    }
+    /** getSliceID function
+     *
+     */
+    function getSliceID() {
+        return unpack_id($this->getItemValue("slice_id"));
+    }
+    /** getPSliceID function
+     *
+     */
+    function getPSliceID() {
+        return addslashes($this->getItemValue("slice_id"));
+    }
+    /** getStatusCode function
+     *
+     */
+    function getStatusCode() {
+        return $this->getItemValue("status_code");
+    }
+    /** getPublishDate function
+     *
+     */
+    function getPublishDate() {
+        return $this->getItemValue("publish_date");
+    }
+    /** getExpiryDate function
+     *
+     */
+    function getExpiryDate() {
+        return $this->getItemValue("expiry_date");
+    }
+    /** setValue function
+     * @param $field_id
+     * @param $val
+     */
     function setValue($field_id,$val) {
         $this->content[$field_id][0]['value'] = $val;
     }
 
-    /** Special function - fills field by prepared array $v[]['value'] */
+    /** setFieldValue function
+     *  Special function - fills field by prepared array $v[]['value']
+     * @param $field_id
+     * @param $v
+     */
     function setFieldValue($field_id,$v) {
         $this->content[$field_id] = $v;
     }
-
+    /** setItemValue function
+     * @param $field_name
+     * @param $value
+     */
     function setItemValue($field_name, $value) {
         $this->content[substr($field_name."...................",0,16)] =
             array (0 => array ("value" => $value));
     }
-
-    function setItemID($value)     { $this->setItemValue("id", pack_id($value)); }
-    function setSliceID($value)    { $this->setItemValue("slice_id", pack_id($value)); }
-    function setStatusCode($value) { $this->setItemValue("status_code", $value); }
-    function setPublishDate($value){ $this->setItemValue("publish_date", $value); }
-    function setExpiryDate($value) { $this->setItemValue("expiry_date", $value); }
+    /** setItemID function
+     * @param $value
+     */
+    function setItemID($value) {
+        $this->setItemValue("id", pack_id($value));
+    }
+    /** setSliceID function
+     * @param $value
+     */
+    function setSliceID($value) {
+        $this->setItemValue("slice_id", pack_id($value));
+    }
+    /** setStatusCode function
+     * @param $value
+     */
+    function setStatusCode($value) {
+        $this->setItemValue("status_code", $value);
+    }
+    /** setPublishDate function
+     * @param $value
+     */
+    function setPublishDate($value) {
+        $this->setItemValue("publish_date", $value);
+    }
+    /** setExpiryDate function
+     * @param $value
+     */
+    function setExpiryDate($value) {
+        $this->setItemValue("expiry_date", $value);
+    }
 
     /*------------------------ */
 
-    /** Set the content with CSV data */
+    /** setFromCSVArray function
+     *  Set the content with CSV data
+     * @param $csvRec
+     * @param $fieldNames
+     */
     function setFromCSVArray(&$csvRec, &$fieldNames) {
         $i = 0;
         foreach ($fieldNames as $k => $foo) {
@@ -348,12 +480,16 @@ class ItemContent {
         }
     }
 
-    /** Store item content to DB. if an item has item_id, which is already
+    /** storeToDB function
+     *  Store item content to DB. if an item has item_id, which is already
      *  stored in $items_id, then according to the $actionIfItemExists performs:
      *    a) "update"    : update the item in DB
      *    b) or "new_id" : store the item with different (unique random) id
      *    c) otherwise   : do nothing
      *  TODO - convert to AA_Grabber/AA_Saver API
+     * @param $alice_id
+     * @param $actionIfItemExists
+     * @param $invalidatecache
      */
     function storeToDB($slice_id, $actionIfItemExists=STORE_WITH_NEW_ID, $invalidatecache = true) {
         require_once AA_INC_PATH."varset.php3";
@@ -368,8 +504,8 @@ class ItemContent {
             $insert = true;
         } else {
             // Check duplicity
-            $p_id = q_pack_id($id);
-            $SQL= "SELECT id FROM item WHERE item.id='$p_id'";
+            $p_id   = q_pack_id($id);
+            $SQL    = "SELECT id FROM item WHERE item.id='$p_id'";
             $db->query($SQL);
             $insert = !$db->next_record();
         }
@@ -378,7 +514,7 @@ class ItemContent {
                 case UPDATE:  	    // the item  will be updated
                     break;
                 case STORE_WITH_NEW_ID:
-                    $id = new_id();	// the item should be stored with a new id
+                    $id     = new_id();	// the item should be stored with a new id
                     $insert = true;
                     break;
                 case NOT_STORE:
@@ -394,43 +530,44 @@ class ItemContent {
         return $added_to_db ? array(0=> ($insert ? INSERT : UPDATE) ,1=>$id) : false;
     }
 
-    /** Basic function for changing contents of items.
-    *   Use always this function, not direct SQL queries.
-    *   Updates the tables @c item and @c content.
-    *   $GLOBALS[err][field_id] should be set on error in function
-    *   It looks like it will return true even if inset_fnc_xxx fails
-    *
-    *   @param string $mode   how to deal with the stored item.
-    *      update        - the fields defined in $this object are cleared and
-    *                      then overwriten by values from $this object
-    *                      - other fields of the item are untouched. The id
-    *                      of the item must be set before calling this
-    *                      function ($this->setItemID($id))
-    *      add           - do not clear the current content - the values are
-    *                      added in paralel to curent values (stored
-    *                      as multivalues for all fields stored in content
-    *                      table). The id of the item must be set before
-    *                      calling this function ($this->setItemID($id))
-    *      overwrite     - the whole item is cleared and then filed by the
-    *                      content of $this object
-    *      insert_as_new - the item is stored as new item - new id is always
-    *                      generated ($this->getItemID() is not taken into
-    *                      account)
-    *      insert_new    - if the id is not defined or the id is duplicated then
-    *                      the item is stored with new id (as new item)
-    *      insert        - the same as insert_as_new, but "this id" is
-    *                      accepted - if the id is defined, it is stored
-    *                      under specified id, otherwise the new id is
-    *                      generated. The id MUST be new - the id must not be
-    *                      in the database
-    *      insert_if_new - the item is stored only if the item with this id
-    *                      ($this->getItemID()) is not in the database.
-    *                      Otherwise it is skiped (not stored)
-    *    @param bool   $invalidatecache   should we invalidate the cache for the
-    *                                     slice?
-    *    @param bool   $feed     procces feeding (as in in the slice setting)?
-    *    @param string $context  special parameter used for thumbnails
-    */
+    /** storeItem function
+     *  Basic function for changing contents of items.
+     *   Use always this function, not direct SQL queries.
+     *   Updates the tables @c item and @c content.
+     *   $GLOBALS[err][field_id] should be set on error in function
+     *   It looks like it will return true even if inset_fnc_xxx fails
+     *
+     *   @param string $mode   how to deal with the stored item.
+     *      update        - the fields defined in $this object are cleared and
+     *                      then overwriten by values from $this object
+     *                      - other fields of the item are untouched. The id
+     *                      of the item must be set before calling this
+     *                      function ($this->setItemID($id))
+     *      add           - do not clear the current content - the values are
+     *                      added in paralel to curent values (stored
+     *                      as multivalues for all fields stored in content
+     *                      table). The id of the item must be set before
+     *                      calling this function ($this->setItemID($id))
+     *      overwrite     - the whole item is cleared and then filed by the
+     *                      content of $this object
+     *      insert_as_new - the item is stored as new item - new id is always
+     *                      generated ($this->getItemID() is not taken into
+     *                      account)
+     *      insert_new    - if the id is not defined or the id is duplicated then
+     *                      the item is stored with new id (as new item)
+     *      insert        - the same as insert_as_new, but "this id" is
+     *                      accepted - if the id is defined, it is stored
+     *                      under specified id, otherwise the new id is
+     *                      generated. The id MUST be new - the id must not be
+     *                      in the database
+     *      insert_if_new - the item is stored only if the item with this id
+     *                      ($this->getItemID()) is not in the database.
+     *                      Otherwise it is skiped (not stored)
+     *    @param bool   $invalidatecache   should we invalidate the cache for the
+     *                                     slice?
+     *    @param bool   $feed     procces feeding (as in in the slice setting)?
+     *    @param string $context  special parameter used for thumbnails
+     */
     function storeItem( $mode, $invalidatecache=true, $feed=true, $context='direct' ) {
         global $event, $itemvarset;
 
@@ -577,10 +714,15 @@ class ItemContent {
         } else {
             $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
         }
-        if ($debugsi) huhl("StoreItem err=",$err);
+        if ($debugsi) {
+            huhl("StoreItem err=",$err);
+        }
         return $id;
     } // end of storeItem()
-
+    /** updateComputedFields function
+     * @param $id
+     * @param $fields
+     */
     function updateComputedFields($id, &$fields) {
         $varset     = new CVarset();
 
@@ -615,7 +757,10 @@ class ItemContent {
         return $computed_field_exist;
     }
 
-    /** Stores the fields into content table for dynamic "slice setting fields"
+    /** storeSliceFields function
+     *  Stores the fields into content table for dynamic "slice setting fields"
+     * @param $slice_id
+     * @param $fields
      */
     function storeSliceFields($slice_id, &$fields) {
         // delete content of all fields, which are in new content array
@@ -626,8 +771,11 @@ class ItemContent {
         $this->_store_fields($slice_id, $fields);
     }
 
-    /** delete content of all fields, which are in new content array
+    /** _clean_updated_fields function
+     *  delete content of all fields, which are in new content array
      *  (this means - all not redefined fields are unchanged)
+     * @param $id
+     * @param $fields
      */
     function _clean_updated_fields($id, &$fields) {
         $varset     = new CVarset();
@@ -645,9 +793,13 @@ class ItemContent {
         }
     }
 
-    /** private function - goes through content and runs all insert functions
+    /** _store_fields function
+     *  private function - goes through content and runs all insert functions
      *  on each field in content array. The content is stored in the database
      *  of in itemvarset
+     * @param $id
+     * @param $fields
+     * @param $context
      */
     function _store_fields($id, &$fields, $context='direct') {
         foreach ($this->content as $fid => $cont) {
@@ -672,7 +824,9 @@ class ItemContent {
                     // some other fields as thumbnails
                     if ($fnc["fnc"]=="fil") {
                         if ($debugsi >= 5) huhl("StoreItem: fil");
-                        if ($debugsi >= 5) { $GLOBALS[debug] = 1; $GLOBALS[debugupload] = 1; }
+                        if ($debugsi >= 5) {
+                            $GLOBALS['debug'] = 1; $GLOBALS['debugupload'] = 1;
+                        }
                         //Note $thumbnails is undefined the first time in this loop
                         if (is_array($thumbnails)) {
                             foreach ($thumbnails as $v_stop) {
@@ -683,7 +837,9 @@ class ItemContent {
                         }
 
                         if (!$stop) {
-                            if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fnc["param"],")");
+                            if ($debugsi >= 5) {
+                                huhl($fncname,"(",$id,$f,$v,$fnc["param"],")");
+                            }
                             if ($numbered) {
                                 $parameters["order"] = $order;
                             }
@@ -692,7 +848,9 @@ class ItemContent {
                             $thumbnails = $fncname($id, $f, $v, $fnc["param"], $parameters);
                         }
                     } else {
-                        if ($debugsi >= 5) huhl($fncname,"(",$id,$f,$v,$fnc["param"],")");
+                        if ($debugsi >= 5) {
+                            huhl($fncname,"(",$id,$f,$v,$fnc["param"],")");
+                        }
                         if ($numbered) {
                             $parameters["order"] = $order;
                             $fncname($id, $f, $v, $fnc["param"], $parameters);
@@ -711,20 +869,27 @@ class ItemContent {
     }
 
 
-    /**
-    Exports item content to CSV. TODO
-    */
+    /** export2CSV function
+     * Exports item content to CSV. TODO
+     */
     function export2CSV() {}
 
-    /**
-    Transform $itemContent according to the transformation actions $trans_actions and slice fields $slice_fields
-    */
+    /** transform function
+     * Transform $itemContent according to the transformation actions $trans_actions and slice fields $slice_fields
+     * @param $itemContent
+     * @param $trans_actions
+     * @param $slice_fields
+     */
     function transform(&$itemContent, &$trans_actions, &$slice_fields) {
         return $trans_actions->transform($itemContent,$slice_fields,$this);
     }
 
-    /** Show the item in one row in a table according to the order specified
-     *  by slice fields $slf  */
+    /** showAsRowInTable function
+     *  Show the item in one row in a table according to the order specified
+     *  by slice fields $slf
+     * @param $slf
+     * @param $tr_att
+     */
     function showAsRowInTable(&$slf, $tr_att="") {
         echo "<tr ".$tr_att." >";
         foreach ( $slf as $k => $foo) {
@@ -749,9 +914,12 @@ class ItemContent {
     }
 }
 
-// Figure out if item alreaady imported into this slice
-// Id's are unpacked
-// Note that this could be replaced by feeding.php3:IsItemFed which is more complex and would use orig id
+/** itemIsDuplicate function
+ *  Figure out if item alreaady imported into this slice
+ * Id's are unpacked
+ * Note that this could be replaced by feeding.php3:IsItemFed which is more complex and would use orig id
+ * @param $item_id
+ */
 function itemIsDuplicate($item_id) {
     $db = getDB();
     $SQL="SELECT * FROM item WHERE id='".q_pack_id($item_id)."'" ;

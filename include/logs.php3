@@ -1,30 +1,33 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
 /** Logging functions
  *
  *  @TODO Convert all loging into some class
  *        Enable setting of log level online
- */
-
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
+*/
 
 /** By $DO_NOT_LOG array you are able to specify, which events you don't want
  *  to log - it's just like filter
@@ -65,7 +68,12 @@ TOEXECUTE       object's class                  return code
 ALERTS          howoften                        Start/email sent
 */
 
-/** Write log entry */
+/** writelog function
+ *  Write log entry
+ * @param $event
+ * @param $params
+ * @param $selector
+ */
 function writeLog($event, $params="", $selector="" ) {
     global $auth, $DO_NOT_LOG;
 
@@ -91,13 +99,15 @@ function writeLog($event, $params="", $selector="" ) {
     return true;
 }
 
-/** Get events from log
- *  event           - type of event
- *  from            - events from date
- *  to              - events to date
- *  group_by_params - if true, returns events grouped by params and their count
- *                    as count
- *  delete_old_logs -
+/** getLogEvents function
+ *  Get events from log
+ *  @param $event           - type of event
+ *  @param $from            - events from date
+ *  @param $to              - events to date
+ *  @param $group_by_params - if true, returns events grouped by params and their count
+ *                            as count
+ *  @param $delete_old_logs -
+ *  @param $selector
  */
 function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_old_logs=false, $selector="") {
 
@@ -107,22 +117,38 @@ function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_o
 
     // if "to" isn't set, we use time of query, because of saving log entries
     // written in (and after) query
-    if ($to == "") { $to = $time; }
+    if ($to == "") {
+        $to = $time;
+    }
 
-    if ($selector != "") { $slctr = " AND selector = '$selector'"; }
+    if ($selector != "") {
+        $slctr = " AND selector = '$selector'";
+    }
 
     if ($group_by_param) {
         $SQL = "SELECT params,COUNT(*) AS count FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
-        if ($from)  { $SQL .= " AND time >= '$from'"; }
-        if ($to)    { $SQL .= " AND time <= '$to'";}
-        if ($slctr) { $SQL .= $slctr; }
+        if ($from) {
+            $SQL .= " AND time >= '$from'";
+        }
+        if ($to) {
+            $SQL .= " AND time <= '$to'";
+        }
+        if ($slctr) {
+            $SQL .= $slctr;
+        }
         $SQL .= " GROUP BY params";
         $return = GetTable2Array($SQL, 'NoCoLuMn');
     } else {
         $SQL = "SELECT * FROM log WHERE type". ($like ? " LIKE " : "=") ."'$event'";
-        if ($from)  { $SQL .= " AND time >= '$from'"; }
-        if ($to)    { $SQL .= " AND time <= '$to'"; }
-        if ($slctr) { $SQL .= $slctr;  }
+        if ($from) {
+            $SQL .= " AND time >= '$from'";
+        }
+        if ($to) {
+            $SQL .= " AND time <= '$to'";
+        }
+        if ($slctr) {
+            $SQL .= $slctr;
+        }
         // $SQL .= "ORDER BY TIME";
         $return = GetTable2Array($SQL, 'id');
     }
@@ -130,9 +156,15 @@ function getLogEvents($event, $from="", $to="", $group_by_param=false, $delete_o
     // remove old log entries from table
     if ($delete_old_logs) {
         $SQL = "DELETE FROM log WHERE type='$event'";
-        if ($from)  { $SQL .= " AND time >= '$from'"; }
-        if ($to)    { $SQL .= " AND time <= '$to'"; }
-        if ($slctr) { $SQL .= $slctr;  }
+        if ($from) {
+            $SQL .= " AND time >= '$from'";
+        }
+        if ($to) {
+            $SQL .= " AND time <= '$to'";
+        }
+        if ($slctr) {
+            $SQL .= $slctr;
+        }
         tryQuery($SQL);
     }
 

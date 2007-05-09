@@ -1,22 +1,28 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ /**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Maintain
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
 */
 
 require_once "../include/init_page.php3";
@@ -35,14 +41,23 @@ class Optimize {
     function test()         {}
     function repair()       {}
 
+    /** Message function
+    * @param $text
+    */
     function message($text) {
         $this->messages[] = $text;
     }
 
+    /** Report function
+    * @return messages separated by <br>
+    */
     function report()       {
         return join('<br>', $this->messages);
     }
 
+    /** Clear report function
+    * unsets all current messages
+    */
     function clear_report() {
         unset($this->messages);
         $this->messages = array();
@@ -54,14 +69,23 @@ class Optimize {
  */
 class Optimize_category_sort2group_by extends Optimize {
 
+    /** Name function
+    * @return a message
+    */
     function name() {
         return _m("Convert slice.category_sort to slice.group_by");
     }
 
+    /** Description function
+    * @return a message
+    */
     function description() {
         return _m("In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We use newer group_by field for quite long time s most probably all your slices are already conevrted.");
     }
 
+    /** Test function
+    * @return bool
+    */
     function test() {
         $SQL         = "SELECT name FROM slice WHERE category_sort>0 AND ((group_by IS NULL) OR (group_by=''))";
         $slice_names = GetTable2Array($SQL, '', 'name');
@@ -73,15 +97,18 @@ class Optimize_category_sort2group_by extends Optimize {
         return true;
     }
 
+    /** Repair function
+    * runs a series of SQL commands
+    * @return bool
+    */
     function repair() {
-        $db      = getDb();
+        $db     = getDb();
         $SQL    = "SELECT id FROM slice WHERE category_sort>0 AND ((group_by IS NULL) OR (group_by=''))";
         $slices = GetTable2Array($SQL, '', 'id');
         foreach ($slices as $p_slice_id) {
             $q_slice_id = quote($p_slice_id);
-
-            $SQL       = "SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='$q_slice_id'";
-            $cat_field = GetTable2Array($SQL, "aa_first", 'id');
+            $SQL        = "SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id='$q_slice_id'";
+            $cat_field  = GetTable2Array($SQL, "aa_first", 'id');
             if ($cat_field) {
                 // number 2 represents 'a' - ascending (because gb_direction in number)
                 $SQL = "UPDATE slice SET group_by='". quote($cat_field) ."', gb_direction=2, gb_header=0 WHERE id='$q_slice_id'";
@@ -105,16 +132,26 @@ class Optimize_category_sort2group_by extends Optimize {
  */
 class Optimize_db_relation_dups extends Optimize {
 
+    /** Name function
+    * @return a message
+    */
     function name() {
         return _m("Relation table duplicate records");
     }
 
+    /** Description function
+    * @return a message
+    */
     function description() {
         return _m("Testing if relation table contain records, where values in both columns are identical (which was bug fixed in Jan 2006)");
     }
 
+    /** Test function
+    * tests for duplicate entries
+    * @return bool
+    */
     function test() {
-        $SQL = 'SELECT count(*) as err_count FROM `relation` WHERE `source_id`=`destination_id`';
+        $SQL       = 'SELECT count(*) as err_count FROM `relation` WHERE `source_id`=`destination_id`';
         $err_count = GetTable2Array($SQL, "aa_first", 'err_count');
         if ($err_count > 0) {
             $this->message( _m('%1 duplicates found', array($err_count)) );
@@ -124,6 +161,9 @@ class Optimize_db_relation_dups extends Optimize {
         return true;
     }
 
+    /** Name function
+    * @return bool
+    */
     function repair() {
         $db  = getDb();
         $SQL = 'DELETE FROM `relation` WHERE `source_id`=`destination_id`';
@@ -140,18 +180,31 @@ class Optimize_db_relation_dups extends Optimize {
  */
 class Optimize_db_binary_traing_zeros extends Optimize {
 
+    /** Name function
+    * @return a message
+    */
     function name() {
         return _m("Fix user login problem, constants editiong problem, ...");
     }
 
+    /** Description function
+    * @return a message
+    */
     function description() {
         return _m("Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17");
     }
 
+    /** Test function
+    * @return true
+    */
     function test() {
         return true;
     }
 
+    /** Repair function
+    * repairs tables
+    * @return true
+    */
     function repair() {
         $this->_fixTable('constant','id','varbinary(16) NOT NULL default \'\'');
         $this->_fixTable('constant','group_id','varbinary(16) NOT NULL default \'\'');
@@ -184,6 +237,7 @@ class Optimize_db_binary_traing_zeros extends Optimize {
         return true;
     }
 
+    /** Helper _fixTable function */
     function _fixTable($table, $field, $definition) {
         $db  = getDb();
         $SQL = "ALTER TABLE `$table` CHANGE `$field` `$field` $definition";
@@ -199,20 +253,29 @@ class Optimize_db_binary_traing_zeros extends Optimize {
 /** There was change in Reader management functionality in AA v2.8.1 */
 class Optimize_readers_login2id extends Optimize {
 
+    /** Name function
+    * @return a message
+    */
     function name() {
         return _m("Convert Readers login to reader id");
     }
 
+    /** Description function
+    * @return a message
+    */
     function description() {
         return _m("There was change in Reader management functionality in AA v2.8.1, so readers are not internaly identified by its login, but by reader ID (item ID of reader in Reader slice). This is much more powerfull - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by readers login instead of reader id. You can fix it by \"Repair\".");
     }
 
+    /** Test function
+    * @return bool
+    */
     function test() {
         $this->clear_report();
         $ret = true;  // which means OK
 
         // get all readers in array: id => arrary( name => ...)
-        $readers = FindReaderUsers('');
+        $readers         = FindReaderUsers('');
         $posted_by_found = $this->_test_field($readers, 'posted_by');
         if (count($posted_by_found) > 0) {
             $this->message(_m('%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). "Repair" will correct it.', array(count($posted_by_found))));
@@ -226,9 +289,9 @@ class Optimize_readers_login2id extends Optimize {
         return $ret;
     }
 
-    /** test if we can find an item which was edited by reader and is idetified
+    /** test if we can find an item which was edited by reader and is identified
      *  by login name (instead of item_id)
-     *  @returns array of such users
+     *  @return array of such users
      */
     function _test_field(&$readers, $item_field) {
         // get posted_by, edit_by, ... array:  posted_by => 1
@@ -243,6 +306,9 @@ class Optimize_readers_login2id extends Optimize {
         return $ret;
     }
 
+    /** Repair function
+    * @return bool
+    */
     function repair() {
         $this->clear_report();
 
@@ -272,14 +338,23 @@ class Optimize_readers_login2id extends Optimize {
 /** There was change in Reader management functionality in AA v2.8.1 */
 class Optimize_database_structure extends Optimize {
 
+    /** Name function
+    * @return a message
+    */
     function name() {
         return _m("Checks if all tables have right columns and indexes");
     }
 
+    /** Description function
+    * @return a message
+    */
     function description() {
         return _m("We are time to time add new table or collumn to existing table in order we can support new features. This option will update the datastructure to the last one. No data will be lost.");
     }
 
+    /** Name function
+    * @return bool
+    */
     function test() {
         $this->clear_report();
         $ret = true;  // which means OK
@@ -299,14 +374,16 @@ class Optimize_database_structure extends Optimize {
 
     }
 
-
+    /** Repair function
+    * @return bool
+    */
     function repair() {
         $this->clear_report();
 
         // get all readers in array: id => arrary( name => ...)
-        $readers = FindReaderUsers('');
+        $readers         = FindReaderUsers('');
         $posted_by_found = $this->_test_field($readers, 'posted_by');
-        $db = getDb();
+        $db              = getDb();
         if (count($posted_by_found) > 0) {
             foreach ($posted_by_found as $r_id => $r_login ) {
                 $SQL = "UPDATE item SET posted_by = '$r_id' WHERE posted_by = '$r_login'";
@@ -328,14 +405,23 @@ class Optimize_database_structure extends Optimize {
 /** Whole pagecache will be invalidated and deleted */
 class Optimize_clear_pagecache extends Optimize {
 
+    /** Name function
+    * @return a message
+    */
     function name() {
         return _m("Clear Pagecache");
     }
 
+    /** Description function
+    * @return a message
+    */
     function description() {
         return _m("Whole pagecache will be invalidated and deleted");
     }
 
+    /** Test function
+    * @return bool
+    */
     function test() {
         $this->messages[] = _m('There is nothing to test.');
         return true;
@@ -343,6 +429,7 @@ class Optimize_clear_pagecache extends Optimize {
 
     /** Deletes the pagecache - the renaming and deleting is much, much quicker,
      *  than easy DELETE FROM ...
+     * @return bool
      */
     function repair() {
         $db  = getDb();
@@ -364,14 +451,23 @@ class Optimize_clear_pagecache extends Optimize {
 /** Whole pagecache will be invalidated and deleted */
 class Optimize_copy_content extends Optimize {
 
+    /** Name function
+    * @return a message
+    */
     function name() {
         return _m("Copy Content Table");
     }
 
+    /** Description function
+    * @return a message
+    */
     function description() {
         return _m("Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not usefull for any other users, I think.");
     }
 
+    /** Test function
+    * @return a message
+    */
     function test() {
         $this->messages[] = _m('There is nothing to test.');
         return true;
@@ -379,6 +475,7 @@ class Optimize_copy_content extends Optimize {
 
     /** Deletes the pagecache - the renaming and deleting is much, much quicker,
      *  than easy DELETE FROM ...
+     * @return bool
      */
     function repair() {
         $db  = getDb();
@@ -387,24 +484,25 @@ class Optimize_copy_content extends Optimize {
                 LEFT JOIN item on content.item_id=item.id
                 WHERE item.short_id>1941629";
 
-        // Situation was:
-        //    Content table was corrupted, so we replace i from backup. The last item in backup was short_id=1941629;
-        //    After one day we found, that we restore the table from backup by wrong way, so it is corrupted for UTF slices
-        //    So we decided to import old backup of content table to content2 table, and copy theer new items from content table
-
-
-        // First of all we insert new content, which is missing in content2 table
-        // INSERT INTO content2 SELECT content.* FROM content LEFT JOIN item on content.item_id=item.id WHERE item.short_id>1941629;
-
-        // Then we switch from backup conten2 to content
-        // RENAME TABLE content TO contentblb, content2 TO content;
-
-        // And now we update all content of the item, which was updated after the first switch (one day before)
-        // DELETE FROM content USING content, item WHERE content.item_id=item.id AND item.last_edit>1165360279 AND item.last_edit<1165500000 AND item.last_edit<>item.post_date AND item.short_id<1941629;
-        // INSERT INTO content SELECT contentblb.* FROM contentblb LEFT JOIN item on contentblb.item_id=item.id WHERE item.last_edit>1165360279 AND item.last_edit<1165500000 AND item.last_edit<>item.post_date AND item.short_id<1941629;
-
-
-        // $db->query($SQL);
+        /** Situation was:
+         *     Content table was corrupted, so we replace i from backup. The last item in backup was short_id=1941629;
+         *     After one day we found, that we restore the table from backup by wrong way, so it is corrupted for UTF slices
+         *     So we decided to import old backup of content table to content2 table, and copy theer new items from content table
+         *
+         *
+         *  First of all we insert new content, which is missing in content2 table
+         *  INSERT INTO content2 SELECT content.* FROM content LEFT JOIN item on content.item_id=item.id WHERE item.short_id>1941629;
+         *
+         *  Then we switch from backup conten2 to content
+         *  RENAME TABLE content TO contentblb, content2 TO content;
+         *
+         *  And now we update all content of the item, which was updated after the first switch (one day before)
+         *  DELETE FROM content USING content, item WHERE content.item_id=item.id AND item.last_edit>1165360279 AND item.last_edit<1165500000 AND item.last_edit<>item.post_date AND item.short_id<1941629;
+         *  INSERT INTO content SELECT contentblb.* FROM contentblb LEFT JOIN item on contentblb.item_id=item.id WHERE item.last_edit>1165360279 AND item.last_edit<1165500000 AND item.last_edit<>item.post_date AND item.short_id<1941629;
+         *
+         *
+         *  $db->query($SQL);
+        */
         $this->messages[] = _m('Coppied');
 
         freeDb($db);
@@ -433,7 +531,7 @@ $optimize_descriptions = array();
 foreach (AA_Components::getClassNames('Optimize_') as $optimize_class) {
     // call static class methods
     $optimize_names[]        = call_user_func(array($optimize_class, 'name'));
-    $description = call_user_func(array($optimize_class, 'description'));
+    $description             = call_user_func(array($optimize_class, 'description'));
     $optimize_descriptions[] = "
     <div>
       <div style=\"float: right;\">
@@ -446,13 +544,13 @@ foreach (AA_Components::getClassNames('Optimize_') as $optimize_class) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo _m("Admin - Optimize a Repair ActionApps"); ?></TITLE>
-<SCRIPT Language="JavaScript"><!--
+<title><?php echo _m("Admin - Optimize a Repair ActionApps"); ?></title>
+<script Language="JavaScript"><!--
 function InitPage() {}
 //-->
-</SCRIPT>
-</HEAD>
-<BODY>
+</script>
+</head>
+<body>
 <?php
 $useOnLoad = true;
 require_once AA_INC_PATH."menu.php3";
@@ -463,11 +561,11 @@ PrintArray($err);
 echo $Msg;
 
 //$form_buttons = array ("submit");
-$form_buttons = array ();
+$form_buttons   = array ();
 //$destinations = array_flip(array_unique($COLNODO_DOMAINS));
 
 ?>
-<form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="f" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
 FrmTabCaption(_m('Optimalizations'), '','', $form_buttons, $sess, $slice_id);
 foreach ( $optimize_names as $i => $name ) {
@@ -475,7 +573,7 @@ foreach ( $optimize_names as $i => $name ) {
 }
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
-</FORM>
+</form>
 <?php
 HtmlPageEnd();
 page_close()

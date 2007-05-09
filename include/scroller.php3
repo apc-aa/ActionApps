@@ -1,22 +1,29 @@
-<?php // -*-mode: Fundamental; tab-width: 4; -*-
-//$Id$
-/*
-    Copyright (C) 1999, 2000 Association for Progressive Communications
-    http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+<?php
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Jiri Hejsek, Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 /**	Class AA_Scroller
@@ -24,8 +31,12 @@
  */
 
 
-// tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
-// break year for short year description is 1950
+/** userdate2sec function
+ *  tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
+ * break year for short year description is 1950
+ * @param $dttm
+ * @param $time
+ */
 function userdate2sec($dttm, $time="") {
     if ( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $dttm, $part))
         if ( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $dttm, $part))
@@ -59,7 +70,10 @@ class AA_Scroller extends storable_class {
     var $persistent_slots = array("pgcnt", "current", "id", "visible", "sortdir",
                                   "sortcol", "filters", "itmcnt", "metapage", "urldefault");
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getPersistentProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     * @param $class
+     */
     function getPersistentProperties($class=null) {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         // class parameter is needed, because generic static classs method
         // in storable_class is not able to detect, what type of class it is in
@@ -78,9 +92,12 @@ class AA_Scroller extends storable_class {
             );
     }
 
-    // constructor
-    // $id identifies scroller on a web page
-    // $pgcnt is the number of pages to scroll
+    /** AA_Scroller function
+     *  constructor
+     * @param $id identifies scroller on a web page
+     * @param $ulr
+     * @param $pgcnt is the number of pages to scroll
+     */
     function AA_Scroller($id = "", $url = "", $pgcnt = 0) {
         $this->id         = $id;
         $this->pgcnt      = $pgcnt;
@@ -91,90 +108,135 @@ class AA_Scroller extends storable_class {
         $this->visible    = 1;
     }
 
-    // return part of a query string for move of $pages relative of current position
+    /** relative function
+     *  return part of a query string for move of $pages relative of current position
+     * @param $pages
+     */
     function relative($pages) {
         return urlencode("scr_" . $this->id . "_Mv") . "=" . urlencode($pages);
     }
 
-    // return part of a query string for move to absolute position $page
+    /** absolute function
+     *  return part of a query string for move to absolute position $page
+     * @param $page
+     */
     function absolute($page) {
         return urlencode("scr_" . $this->id . "_Go") . "=" . urlencode($page);
     }
 
-    // print Toggle Visibility button
+    /** pVisButton function
+     *  print Toggle Visibility button
+     * @param $url
+     * @param $show
+     * @param $hide
+     */
     function pVisButton($url = "",
-                        $show = "<img src=\"../images/expand.gif\" border=0 align=left alt=Expand>",
-                        $hide = "<img src=\"../images/collapse.gif\" border=0 align=left alt=Collapse>") {
+                        $show = "<img src=\"../images/expand.gif\" border=\"0\" align=\"left\" alt=\"Expand\">",
+                        $hide = "<img src=\"../images/collapse.gif\" border=\"0\" align=\"left\" alt=\"Collapse\">") {
         if (!$url) {
             $url = $this->urldefault;
         }
         echo "<a href=\"$url". $this->ToggleVis(). "\">". ($this->visible ? $hide : $show) . "</a>";
     }
 
-    // return part of a query string for move to toggle visibility
+    /** toggleVis function
+     *  return part of a query string for move to toggle visibility
+     */
     function toggleVis() {
         return urlencode("scr_" . $this->id . "_Vi") . "=" . ($this->visible ? "0" : "1");
     }
 
-    // return part of a query string for move to toggle visibility
+    /** sort function
+     * @param $sortcol
+     *  @return part of a query string for move to toggle visibility
+     */
     function sort($sortcol) {
         return urlencode("scr_" . $this->id . "_Sort") . "=" . urlencode($sortcol);
     }
 
-    // print sort label
+    /** pSort function
+     * print sort label
+     * @param $sortcol
+     * @param $show
+     * @param $url
+     */
     function pSort($sortcol, $show, $url = "") {
         if (!$url) {
             $url = $this->urldefault;
         }
         echo "<a href=\"$url" . $this->Sort($sortcol) . "\">$show";
         if ($this->sortcol == $sortcol && $this->sortdir) {
-            echo "<img src=\"../images/sort" . $this->sortdir . ".gif\" border=0>";
+            echo "<img src=\"../images/sort" . $this->sortdir . ".gif\" border=\"0\">";
         }
         echo "</a>";
     }
 
-    // return "order by" sql clause
+    /** sortSql function
+     *  @return "order by" sql clause
+     */
     function sortSql() {
         return ($this->sortcol && $this->sortdir) ? " ORDER BY $this->sortcol ". ($this->sortdir == 2 ? "desc" : "") : '';
     }
 
-    // keep current page within bounds
+    /** checkBounds function
+     *  keep current page within bounds
+     */
     function checkBounds() {
-        if ($this->current < 1)            { $this->current = 1; }
-        if ($this->current > $this->pgcnt) { $this->current = max($this->pgcnt,1); }
+        if ($this->current < 1) {
+            $this->current = 1;
+        }
+        if ($this->current > $this->pgcnt) {
+            $this->current = max($this->pgcnt,1);
+        }
     }
 
-    // adjust number of pages
-    // deprecated - use coutPages instead
+    /** adjustSize function
+     *  adjust number of pages
+     * deprecated - use coutPages instead
+     * @param $pgcnt
+     */
     function adjustSize($pgcnt) {
         $this->pgcnt = $pgcnt;
         $this->checkBounds();
     }
 
-    // adjust number of pages depends on item count and metapage
+    /** countPages function
+     *  adjust number of pages depends on item count and metapage
+     * @param $itmcnt
+     */
     function countPages($itmcnt) {
         $this->pgcnt = floor(($itmcnt - 1) / $this->metapage) + 1;
         $this->checkBounds();
         $this->itmcnt = $itmcnt;
     }
-
+    /** go2page function
+     * @param $page
+     */
     function go2page($page) {
         $this->current=$page;
         $this->checkBounds();
     }
 
-    //returns number of pages
+    /** pageCount function
+     *  returns number of pages
+     */
     function pageCount() {
         return floor(($this->itmcnt - 1) / max(1,$this->metapage)) + 1;
     }
-
+    /** setSort function
+     * @param $column
+     * @param $desc
+     */
     function setSort($column, $desc="") {
         $this->sortcol = $column;
         $this->sortdir = ( $desc ? 2 : 1 );
     }
 
-    // process query string and execute commands for this scroller
-    // query string is taken from global variables
+    /** updateScr function
+     *  process query string and execute commands for this scroller
+     *  query string is taken from global variables
+     * @param $url
+     */
     function updateScr($url = "") {
         $this->updateFilters();
         if ($url) {
@@ -197,8 +259,10 @@ class AA_Scroller extends storable_class {
         $this->checkBounds();
     }
 
-    // return navigation bar as a hash
-    // labels as keys, query string fragments a values
+    /** navarray function
+     * @return navigation bar as a hash
+     * labels as keys, query string fragments a values
+     */
     function navarray() {
         if (!$this->pgcnt) {
             return array();
@@ -230,8 +294,10 @@ class AA_Scroller extends storable_class {
         return $arr;
     }
 
-    // convert array provided by navarray into HTML code
-    // commands are added to $url
+    /** pnavbar function
+     *  convert array provided by navarray into HTML code
+     *  commands are added to $url
+     */
     function pnavbar() {
         if (!$this->visible) {
             return;
@@ -253,15 +319,22 @@ class AA_Scroller extends storable_class {
         echo " &nbsp; (". $this->itmcnt .")";
     }
 
-    // add filter
-    // type: "char", "date", "int","md5" (other can be added)
+    /** addFilter function
+     *  add filter
+     * @param $name
+     * @param $type: "char", "date", "int","md5" (other can be added)
+     * @param $value
+     * @param $truename
+     */
     function addFilter($name, $type, $value = "", $truename = "") {
         $this->filters[$name]['value']    = $value;
         $this->filters[$name]['type']     = $type;
         $this->filters[$name]['truename'] = $truename;   // truename is for storing names like "categories.name" which cannot by real names for php variables
     }
 
-    // process query string, execute commands for filters
+    /** updateFilters function
+     *  process query string, execute commands for filters
+     */
     function updateFilters() {
         foreach ($this->filters as $name => $flt) {
             if (isset($GLOBALS["flt_" . $this->id . "_${name}_val"])){
@@ -270,7 +343,9 @@ class AA_Scroller extends storable_class {
         }
     }
 
-    // return sql "where" clause generated by filters
+    /** sqlCondFilter function
+     *  return sql "where" clause generated by filters
+     */
     function sqlCondFilter() {
         foreach ($this->filters as $name => $flt) {
             if (!$flt['value']) {

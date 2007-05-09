@@ -1,25 +1,6 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/** Setting the transformation actions for converting an input ItemContent
+ /** Setting the transformation actions for converting an input ItemContent
  *  to an output ItemContent
  *
  * Parameters:
@@ -27,7 +8,32 @@ http://www.apc.org/
  *   $slice_id        - for edit slice
  *   $fileName        - file in upload directory
  *   $addParamsSerial - serialized additional parameters (file type specific)
- */
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Ondrej Mazanec, Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
+*/
+
+
 
 
 require_once "../include/init_page.php3";
@@ -37,7 +43,12 @@ require_once AA_INC_PATH."constants_param_wizard.php3";
 require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."feeding.php3";
 
-/** Returns key of the $array, which value is most similar to given $text */
+/** findNearestText function
+ * Returns key of the $array, which value is most similar to given $text
+ * @param $text
+ * @param $array
+ * @return string
+ */
 function findNearestText($text, $array) {
     $ret = '__empty__';
     $max = 5;
@@ -75,8 +86,14 @@ class AA_Csv_Importer {
 
     var $auth_uid;
 
+/** AA_Csv_Importer function
+ *
+ */
     function AA_Csv_Importer() {}
 
+/** loadFromRequest function
+ *
+ */
     function loadFromRequest() {
         global $auth;
         $this->slice_id            = $_REQUEST['slice_id'];
@@ -94,15 +111,33 @@ class AA_Csv_Importer {
         $this->auth_uid            = $auth->auth["uid"];
     }
 
+/** loadFromDb function
+ *
+ */
     function loadFromDb() {}
+
+/** saveToDb function
+ *
+ */
     function saveToDb()   {}
 
+/** setFilename function
+ * @param $filename
+ */
     function setFilename($filename) {
         $this->fileName            = $filename;
     }
 
-    function getSliceId() { return $this->slice_id; }
+/** getSliceId function
+ * @return slice ID
+ */
+    function getSliceId() {
+        return $this->slice_id;
+    }
 
+/** check function
+ *
+ */
     function check() {
         global $sess;
         if (!CheckPerms( $this->auth_uid, "slice", $this->slice_id, PS_EDIT_ALL_ITEMS)) {
@@ -122,6 +157,9 @@ class AA_Csv_Importer {
         }
     }
 
+/** prepare function
+ *
+ */
     function _prepare() {
         if (!isset($this->itemId)) {
             $this->itemId = "new";
@@ -146,6 +184,9 @@ class AA_Csv_Importer {
         }
     }
 
+/** upload function
+ *
+ */
     function upload() {
         global $sess;
         $this->_prepare();
@@ -214,6 +255,9 @@ class AA_Csv_Importer {
         MsgPage($sess->url(self_base()."se_csv_import.php3"), $msg.$logMsg );
     }
 
+/** preview function
+ *
+ */
     function preview() {
         global $sess;
         $this->_prepare();
@@ -258,6 +302,9 @@ class AA_Csv_Importer {
         // end preview
     }
 
+/** printForm function
+ * @param $set_default
+ */
     function printForm($set_default) {
         global $sess;
 
@@ -303,42 +350,42 @@ class AA_Csv_Importer {
         FrmTabCaption(_m("Mapping settings"));
         ?>
             <tr>
-              <td class=tabtxt><b><?php echo _m("To") ?></b></td>
-              <td class=tabtxt><b><?php echo _m("From") ?></b></td>
-              <td class=tabtxt><b><?php echo _m("Action") ?></b></td>
-              <td class=tabtxt><b><?php echo _m("Html") ?></b></td>
-              <td class=tabtxt><b><?php echo _m("Action parameters") ?></b></td>
-              <td class=tabtxt><b><?php echo _m("Parameter wizard") ?></b></td>
+              <td class="tabtxt"><b><?php echo _m("To") ?></b></td>
+              <td class="tabtxt"><b><?php echo _m("From") ?></b></td>
+              <td class="tabtxt"><b><?php echo _m("Action") ?></b></td>
+              <td class="tabtxt"><b><?php echo _m("Html") ?></b></td>
+              <td class="tabtxt"><b><?php echo _m("Action parameters") ?></b></td>
+              <td class="tabtxt"><b><?php echo _m("Parameter wizard") ?></b></td>
              </tr>
 
                <?php
                $inFields["__empty__"] = "     ";
                foreach ( $outFields as $f_id => $f_name) {
-                   echo "<tr><td class=tabtxt><b>$f_name</b></td>\n";
+                   echo "<tr><td class=\"tabtxt\"><b>$f_name</b></td>\n";
                    echo "<td>";
                    FrmSelectEasy("mapping[$f_id]",$inFields,!$set_default ? $this->mapping[$f_id] : findNearestText($f_name, $inFields));		// todo - multiple
                    echo "</td>";
-                   echo "<td class=tabtxt>";
+                   echo "<td class=\"tabtxt\">";
                    FrmSelectEasy("actions[$f_id]",$actionList,!$set_default ? $this->actions[$f_id] : "default");
                    echo "</td>";
 
-                   echo "<td class=tabtxt ><input type=checkbox name=\"html[$f_id]\" "; if (!$set_default AND $this->html[$f_id]) echo  "CHECKED";  echo  "></input></td>";
-                   echo "<td class=tabtxt><input type=text name=\"params[$f_id]\" value=\""; if (!$set_default) echo stripslashes($this->params[$f_id]);  echo "\"></input></td>";
-                   echo "<td class=tabhlp><a href='javascript:CallParamWizard(\"TRANS_ACTIONS\",\"actions[$f_id]\",\"params[$f_id]\")'><b>"
+                   echo "<td class=\"tabtxt\"><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default AND $this->html[$f_id]) echo  "checked";  echo  "></input></td>";
+                   echo "<td class=\"tabtxt\"><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) echo stripslashes($this->params[$f_id]);  echo "\"></input></td>";
+                   echo "<td class=\"tabhlp\"><a href='javascript:CallParamWizard(\"TRANS_ACTIONS\",\"actions[$f_id]\",\"params[$f_id]\")'><b>"
                    ._m("Help: Parameter Wizard")."</b></a></td>";
                    echo "</tr>\n";
                }
                FrmTabSeparator(_m("Import options"));
                ?>
 
-               <tr><td class=tabtxt colspan=2>Setting item id:</td><tr>
+               <tr><td class="tabtxt" colspan="2">Setting item id:</td><tr>
 
-               <tr><td class=tabtxt align=center><input type="radio" <?php if ($this->itemId == "new") echo "CHECKED"; ?> NAME="itemId" value="new"></td>
-                <td class=tabtxt >Create new id</td>
+               <tr><td class="tabtxt" align="center"><input type="radio" <?php if ($this->itemId == "new") echo "CHECKED"; ?> name="itemId" value="new"></td>
+                <td class="tabtxt">Create new id</td>
                </tr>
                <tr>
-               <td class=tabtxt align=center><input type="radio" <?php if ($this->itemId == "old") echo "CHECKED"; ?> NAME="itemId" value="old"></td>
-               <td class=tabtxt ><?php
+               <td class="tabtxt" align="center"><input type="radio" <?php if ($this->itemId == "old") echo "CHECKED"; ?> name="itemId" value="old"></td>
+               <td class="tabtxt"><?php
                  echo _m("Map item id from"). '&nbsp';
                  FrmSelectEasy("itemIdMappedFrom",$inFields, $this->itemIdMappedFrom ? $this->itemIdMappedFrom : ( !$set_default ? $this->idFrom : $inFields[0]));
                  echo '<br>';
@@ -378,7 +425,7 @@ class AA_Csv_Importer {
         }
 
         FrmTabEnd($form_buttons, $sess, $this->slice_id);
-        echo "</FORM>";
+        echo "</form>";
     }
 
 }
@@ -394,6 +441,12 @@ if ( $load ) {
     $importer->loadFromRequest();
 }
 
+/** SaveObjectProperty function
+ * @param $obj_id
+ * @param $property
+ * @param $value
+ *
+ */
 function SaveObjectProperty($obj_id, $property, $value) {
     $varset = new CVarset();
     $varset->add('object_id', 'text', $obj_id);
@@ -420,8 +473,8 @@ if ($upload) {
 // -- Output form
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo _m("Admin - Import .CSV file"); ?></TITLE>
-<SCRIPT Language="JavaScript"><!--
+<title><?php echo _m("Admin - Import .CSV file"); ?></title>
+<script Language="JavaScript"><!--
 function InitPage() {}
 
 /* Calls the parameters wizard. Parameters are as follows:
@@ -439,16 +492,16 @@ function InitPage() {}
   }
 
 //-->
-</SCRIPT>
-</HEAD>
-<BODY>
+</script>
+</head>
+<body>
 <?php
 $useOnLoad = true;
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","CSVimport");
 PrintArray($err);
 echo stripslashes($Msg);
-echo "<H1><B>" . _m("Admin - Import CSV (2/2) - Mapping and Actions") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - Import CSV (2/2) - Mapping and Actions") . "</b></h1>";
 
 if ($preview) {
     $importer->preview();

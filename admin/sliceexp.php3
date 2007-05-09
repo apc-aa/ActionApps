@@ -1,35 +1,35 @@
 <?php
-//$Id$
-/*
-Copyright (C) 2001 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/*
-    Author: Jakub Adámek, Pavel  Jisl
-
-    Exports the slice definition as a template
-    Two kinds of export:
-        * for another AA installation - allows to change the id
-        * for backup reasons - allows to export more defs at once
-    Now you can export slice data too (all data or some only, if date
-    is specified.
-
-    To show the exported text the page sliceexp_text.php3 is called.
+/**  Exports the slice definition as a template
+ *    Two kinds of export:
+ *        * for another AA installation - allows to change the id
+ *        * for backup reasons - allows to export more defs at once
+ *    Now you can export slice data too (all data or some only, if date
+ *    is specified.
+ *
+ *    To show the exported text the page sliceexp_text.php3 is called.
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Jakub Adámek, Pavel Jisl
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 $require_default_lang = true;      // do not use module specific language file
@@ -62,9 +62,9 @@ if (isset($b_export_to_file)) {
 }
 
 ?>
-<TITLE><?php echo _m("Export slice structure")?></TITLE>
+<title><?php echo _m("Export slice structure")?></title>
 
-<SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
+<script language="JavaScript" type="text/javascript">
 <!-- Hide script from old browsers
 
   function b_export_date_onchange(vstup)
@@ -131,9 +131,9 @@ if (isset($b_export_to_file)) {
         }
     };
     //-->
-</SCRIPT>
-</HEAD>
-<BODY>
+</script>
+</head>
+<body>
 <?php
   require_once menu_include();   //show navigation column depending on $show
   showMenu ($aamenus, "aaadmin","sliceexp");
@@ -148,18 +148,19 @@ FrmTabCaption(_m("Export slice structure"));
 if ($SHOWTEXT == ""):
 
 ?>
-    <form name="f" method=post action="<?php echo $sess->url("sliceexp.php3") ?>" onsubmit="return validate2();">
+    <form name="f" method="post" action="<?php echo $sess->url("sliceexp.php3") ?>" onsubmit="return validate2();">
 
     <?php
         $SQL= "SELECT id, name FROM slice ORDER BY name";
         $db->query($SQL);
-        while ($db->next_record())
+        while ($db->next_record()) {
             $all_slices[unpack_id128($db->f(id))] = $db->f(name);
+        }
     ?>
 
-    <tr><td class=tabtxt colspan=2>
+    <tr><td class="tabtxt" colspan="2">
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr><td class=tabtxt>
+        <tr><td class="tabtxt">
         <b><?php echo _m("Choose, if you want export slices structure, data or both.") ?></b><br>
         <input type="checkbox" name="b_export_struct" value="1" checked><?php echo _m("Export structure") ?><br>
         <input type="checkbox" name="b_export_data" value="1"><?php echo _m("Export data") ?><br>
@@ -172,9 +173,9 @@ if ($SHOWTEXT == ""):
         <input type="checkbox" name="b_export_to_file" value="1"><?php echo _m("Store exported data in file") ?><br><br>
         <table>
         <tr>
-            <td class=tabtxt><input type="checkbox" name="b_export_spec_date" value="1"><?php echo _m("Export data from specified dates: ") ?></td>
-            <td class=tabtxt><?php echo _m("From ") ?><input type="text" name="b_export_from_date" length="10" maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
-            <td class=tabtxt><?php echo _m("to") ?><input type="text" name="b_export_to_date" length="10"  maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
+            <td class="tabtxt"><input type="checkbox" name="b_export_spec_date" value="1"><?php echo _m("Export data from specified dates: ") ?></td>
+            <td class="tabtxt"><?php echo _m("From ") ?><input type="text" name="b_export_from_date" length="10" maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
+            <td class="tabtxt"><?php echo _m("to") ?><input type="text" name="b_export_to_date" length="10"  maxlength="10" width="10"  onChange="b_export_date_onchange(this)"></td>
         </tr>
         </table>
         </td>
@@ -183,35 +184,35 @@ if ($SHOWTEXT == ""):
     FrmTabSeparator(_m("Choose one of two export kinds:"));
 ?>
     <tr>
-        <td class=tabtxt width=50%>
+        <td class="tabtxt" width="50%">
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
-            <tr><td class=tabtxt width="100%">
+            <tr><td class="tabtxt" width="100%">
             <b><?php echo _m("When exporting \"to Backup\" you may choose more slices at once.") ?></b></P>
             <?php echo _m("Select slices which you WANT to export:") ?>
             </td>
-            <tr><td class=tabtxt width="100%">
-                <table width=200><tr><td width=100%>
-                <SELECT name="export_slices[]" size=8 class=tabtxt MULTIPLE>
+            <tr><td class="tabtxt" width="100%">
+                <table width="200"><tr><td width="100%">
+                <SELECT name="export_slices[]" size="8" class="tabtxt" multiple>
                 <?php
                     reset($all_slices);
                     while (list($s_id,$name) = each($all_slices))
                         echo "<option value=\"$s_id\"> $name </option>";
                 ?>
-                </SELECT>
+                </select>
                 </td></tr>
                 </table>
         </table>
         </td>
-        <td class=tabtxt width=50% valign=top>
-            <b><?php echo _m("When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator.") ?></b></P>
+        <td class="tabtxt" width="50%" valign="top">
+            <b><?php echo _m("When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator.") ?></b></p>
             <b><?php echo _m("Choose a new slice identificator exactly 16 characters long: ") ?></b>
-            <INPUT TYPE="TEXT" NAME="SliceID" VALUE="template" SIZE=16 MAXLENGTH=16></P>
-            <INPUT TYPE="HIDDEN" NAME="SHOWTEXT" VALUE="OHYES">
+            <input type="text" name="SliceID" value="template" size="16" maxlength="16"></P>
+            <input type="hidden" name="SHOWTEXT" value="OHYES">
         </td>
     </tr>
     <tr>
-        <td><INPUT TYPE=submit NAME="b_export_type" VALUE="<?php echo _m("Export to Backup") ?>"></td>
-        <td><INPUT TYPE=button NAME="b_export_type" VALUE="<?php echo _m("Export to another ActionApps") ?>" onClick="javascript:validate()"></td>
+        <td><input type="submit" name="b_export_type" value="<?php echo _m("Export to Backup") ?>"></td>
+        <td><input type="button" name="b_export_type" value="<?php echo _m("Export to another ActionApps") ?>" onClick="javascript:validate()"></td>
     </tr>
     </form>
     </tr></td>
@@ -221,7 +222,7 @@ else:
 endif;
 ?>
 
-</TABLE>
+</table>
 <?php
 HtmlPageEnd();
 page_close();

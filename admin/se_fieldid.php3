@@ -1,35 +1,38 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * This script allows to change a field ID in hopefully all tables where it occurs.
+ *
+ *  The array maintain_fields contains database fields to be checked. All such fields
+ *  are downloaded from database, the old ID occuring anywhere in them is changed to the
+ *  new one and the fields are uploaded back.
+ *
+ *  Some texts cannot be described in this easy way, so maintain_sql may contain other
+ *  SQL commands. You may use the :old_id: and :new_id: strings which will be replaced by the old / new ids.
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Jakub Adamek, May 2002
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
-/* (c) Jakub Adamek, May 2002
-
-   This script allows to change a field ID in hopefully all tables where it occurs.
-
-   The array maintain_fields contains database fields to be checked. All such fields
-   are downloaded from database, the old ID occuring anywhere in them is changed to the
-   new one and the fields are uploaded back.
-
-   Some texts cannot be described in this easy way, so maintain_sql may contain other
-   SQL commands. You may use the :old_id: and :new_id: strings which will be replaced by the old / new ids.
-*/
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
@@ -122,28 +125,35 @@ $maintain_sql = array (
      WHERE from_field_id=':old_id:' AND from_slice_id = '$p_slice_id'");
 
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
+if ($cancel) {
+    go_url( $sess->url(self_base() . "index.php3"));
+}
 
 
 if (!IfSlPerm(PS_FIELDS)) {
-  MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
-  exit;
+    MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change fields settings"), "admin");
+    exit;
 }
 
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
+/** ChangefieldID function
+ * @param $old_id
+ * @param $new_id
+ */
 function ChangeFieldID($old_id, $new_id)
 {
     global $maintain_fields, $maintain_sql, $p_slice_id;
 
     $varset = new Cvarset();
     foreach ( $maintain_fields as $table => $settings) {
-        $keyfield = $settings[primary];
-        if (!$keyfield) $keyfield = $settings[primary_part];
+        $keyfield = $settings['primary'];
+        if (!$keyfield) {
+            $keyfield = $settings['primary_part'];
+        }
         $SQL = "SELECT `$keyfield`, `".join($settings['fields'],"`, `")."` FROM `$table`
-                WHERE $settings[slice_id] = '$p_slice_id'";
+                WHERE ".$settings['slice_id']." = '$p_slice_id'";
         $rows = GetTable2Array ($SQL);
         if (is_array($rows)) {
             $i = 0;
@@ -165,7 +175,7 @@ function ChangeFieldID($old_id, $new_id)
                         $SQL .= $row[$keyfield];
                     }
                     if ($settings['primary_part']) {
-                        $SQL .= " AND $settings[slice_id] = '$p_slice_id'";
+                        $SQL .= " AND". $settings["slice_id"]." = '$p_slice_id'";
                     }
                     tryQuery($SQL);
                 }
@@ -207,7 +217,9 @@ if ($update && $new_id_text && $p_slice_id) {
                 // proove the field does not exist
                 $db = getDB();
                 $db->query("SELECT id FROM field WHERE slice_id='$p_slice_id' AND id='$new_id'");
-                if ($db->next_record()) $err[] = _m("This ID is already used")." ($new_id).";
+                if ($db->next_record()) {
+                    $err[] = _m("This ID is already used")." ($new_id).";
+                }
                 freeDB($db);
             }
             if (count($err) <= 1 ) {
@@ -225,24 +237,26 @@ $d_fields = GetFields4Select(unpack_id('AA_Core_Fields..'), 'all', 'id');
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Admin - change Field IDs");?></TITLE>
+ <title><?php echo _m("Admin - change Field IDs");?></title>
 
-</HEAD>
+</head>
 <?php
-  require_once AA_INC_PATH."menu.php3";
-  showMenu($aamenus, "sliceadmin", "field_ids");
+require_once AA_INC_PATH."menu.php3";
+showMenu($aamenus, "sliceadmin", "field_ids");
 
-  echo "<H1><B>" . _m("Admin - change Field IDs") . "</B></H1>";
-  PrintArray($err);
-  echo $Msg;
-  if ($update) echo "$nchanges "._m("field IDs were changed").".<br>";
+echo "<h1><b>" . _m("Admin - change Field IDs") . "</b></h1>";
+PrintArray($err);
+echo $Msg;
+if ($update) {
+    echo "$nchanges "._m("field IDs were changed").".<br>";
+}
 
 echo "
-<form method=post action='".$sess->url($PHP_SELF)."'>";
+<form method=\"post\" action='".$sess->url($PHP_SELF)."'>";
 FrmTabCaption(_m("Admin - change Field IDs"));
 
-echo"<tr><td class=tabtxt>"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
-<tr><td class=tabtxt align=center><br>"._m("Change from").": <select name='old_id'>";
+echo"<tr><td class=\"tabtxt\">"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
+<tr><td class=\"tabtxt\" align=\"center\"><br>"._m("Change from").": <select name='old_id'>";
 $slice_fields = false;
 foreach ($s_fields as $fid => $fname) {
     if (!my_in_array($fid, $reserved_ids)) {
@@ -287,21 +301,22 @@ FrmTabSeparator(_m("Fields"),
 */
 ?>
 <tr>
- <td class=tabtxt align=left><b>&nbsp;&nbsp;<?php echo _m("Id") ?></b></td>
- <td class=tabtxt align=left><b>&nbsp;&nbsp;<?php echo _m("Field") ?></b></td>
+ <td class="tabtxt" align="left"><b>&nbsp;&nbsp;<?php echo _m("Id") ?></b></td>
+ <td class="tabtxt" align="left"><b>&nbsp;&nbsp;<?php echo _m("Field") ?></b></td>
 </tr>
-<tr><td colspan=2 class=tabtxt><hr></td></tr>
+<tr><td colspan="2" class="tabtxt"><hr></td></tr>
 <?php
     foreach ($s_fields as $fid => $fname) {
         if (!my_in_array($fid, $reserved_ids)) {
             echo "
             <tr>
-            <td class=tabtxt align=left>&nbsp;&nbsp;$fid&nbsp;&nbsp;</td>
-            <td class=tabtxt>&nbsp;&nbsp;<b>$fname&nbsp;&nbsp;</b></td></tr>";
+            <td class=\"tabtxt\" align=\"left\">&nbsp;&nbsp;$fid&nbsp;&nbsp;</td>
+            <td class=\"tabtxt\">&nbsp;&nbsp;<b>$fname&nbsp;&nbsp;</b></td></tr>";
         }
     }
 FrmTabEnd();
 echo "
-</FORM>";
+</form>";
 HtmlPageEnd();
-page_close()?>
+page_close();
+?>

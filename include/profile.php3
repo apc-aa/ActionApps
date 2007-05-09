@@ -1,39 +1,54 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
 require_once AA_INC_PATH."constants_param_wizard.php3";
-
+/** PrintRuleRow function
+ * @param $rid
+ * @param $prop
+ * @param $col1
+ * @param $col2
+ * @param $col3
+ * @param $col4
+ */
 function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
   global $sess, $uid;
-  echo "<tr class='tabtxt'>
+  echo "<tr class=\"tabtxt\">
           <td>$prop&nbsp;</td>
           <td>$col1&nbsp;</td>
           <td>$col2&nbsp;</td>
           <td>$col3&nbsp;</td>
           <td>$col4&nbsp;</td>
-          <td align='right'><a href=\"javascript:document.location='".
+          <td align=\"right\"><a href=\"javascript:document.location='".
             $sess->url("se_profile.php3?del=$rid&uid=$uid"). "'\">". _m("Delete") ."</a></td>
         </tr>";
 }
-
+/** PrintRule function
+ * @param $rule
+ */
 function PrintRule($rule) {
     global $PROPERTY_TYPES, $SORTORDER_TYPES, $fields, $DEFAULT_VALUE_TYPES;
     $INPUT_DEFAULT_TYPES = getSelectBoxFromParamWizard($DEFAULT_VALUE_TYPES);
@@ -84,8 +99,8 @@ function PrintRule($rule) {
  */
 function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
     global $PROPERTY_TYPES, $lookup_fields, $SORTORDER_TYPES, $fields;
-    echo "<tr class=tabtxt>
-           <td>". $PROPERTY_TYPES[$rule]. "<input type=hidden name=prop$n value=$rule></td>
+    echo "<tr class=\"tabtxt\">
+           <td>". $PROPERTY_TYPES[$rule]. "<input type=\"hidden\" name=\"prop$n\" value=\"$rule\"></td>
            <td>";
     if ($sfld) {
         FrmSelectEasy("fld$n", $lookup_fields, "");
@@ -100,8 +115,8 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
         echo "&nbsp;";
     }
     echo " </td>
-    <td>". ($sparam ? "<input type=text name=param$n size=20>" : "&nbsp;"). "</td>
-    <td>". ($shtml  ? "<input type=checkbox name=html$n>" : "&nbsp;"). "</td>
+    <td>". ($sparam ? "<input type=\"text\" name=\"param$n\" size=\"20\">" : "&nbsp;"). "</td>
+    <td>". ($shtml  ? "<input type=\"checkbox\" name=\"html$n\">" : "&nbsp;"). "</td>
     <td><a href=\"javascript:addrule($n)\">". _m("Add") ."</a></td></tr>
     <tr>
       <td class=\"tabhlp\">&nbsp;</td>

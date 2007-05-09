@@ -1,22 +1,26 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/** PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once "../include/init_page.php3";
@@ -25,7 +29,10 @@ require_once AA_INC_PATH."tv_common.php3";
 require_once menu_include();   //show navigation column depending on $show
 
 // ----------------------------------------------------------------------------------------
-
+/** TV_PageBegin function
+ * @param $config_arr (by link)
+ * @return prints html page beginning
+ */
 function TV_PageBegin(&$config_arr) {
     global $sess;
     if (! $config_arr["cond"] ) {
@@ -34,16 +41,24 @@ function TV_PageBegin(&$config_arr) {
     }
 
     HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-    echo '<LINK rel=StyleSheet href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
-    echo "<TITLE>".$config_arr["title"]."</TITLE></HEAD>";
+    echo '<link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">';
+    echo "<title>".$config_arr["title"]."</title></head>";
     showMenu($GLOBALS['aamenus'], $config_arr["mainmenu"], $config_arr["submenu"]);
-    echo "<H1><B>" . $config_arr["caption"] . "</B></H1>";
+    echo "<h1><b>" . $config_arr["caption"] . "</b></h1>";
 }
-
+/** tv_field_value function
+ * @param $feed_id
+ * @param $param
+ * @param $var
+ * @return string
+ */
 function tv_field_value($feed_id,$param,$var) {
     return "+'&$param='+escape(document.tv_rsstest.elements['val[$feed_id][$var]'].value)";
 }
-
+/** showRSSFeedActions function
+ * @param $feed_id
+ * @return set of html links
+ */
 function showRSSFeedActions($feed_id) {
     $url = "'".get_admin_url('xmlclient.php3'). "&rssfeed_id=$feed_id'".
                tv_field_value($feed_id,'fill','fire').
@@ -54,7 +69,10 @@ function showRSSFeedActions($feed_id) {
     $out .= "<a href=\"javascript:OpenWindowTop(document.tv_rsstest.elements['val[$feed_id][server_url]'].value)\" title=\"displays the source data in new window\">"._m('show')."</a>";
     return $out;
 }
-
+/** displaySliceName function
+ * @param $slice_id
+ * @return result of jumpLink() function of the slice class
+ */
 function displaySliceName($slice_id) {
     $slice = AA_Slices::getSlice(unpack_id128($slice_id));
     return $slice->jumpLink();
@@ -63,7 +81,11 @@ function displaySliceName($slice_id) {
 $sess->register("tview");
 $tview = 'rss_tv';
 
-
+/** GetRSS_tv function
+ * @param $viewID
+ * @param $processForm = false
+ * @return array
+ */
 /// this must be function
 function GetRSS_tv($viewID, $processForm = false) {
 
@@ -126,7 +148,9 @@ $script = $sess->url("rsstest.php3");
 
 $tabledit = new tabledit ('rsstest', $script, $cmd, $rss_tv, AA_INSTAL_PATH."images/", $sess, $func);
 $err = $tabledit->view($where);
-if ($err) echo "<b>$err</b>";
+if ($err) {
+    echo "<b>$err</b>";
+}
 
 HTMLPageEnd();
 page_close ();

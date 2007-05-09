@@ -1,29 +1,36 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/**  A simple calculator (expression parser).
+/** A simple calculator (expression parser).
  *
  *   (c) by Stanislav Kühnl, October 2002
  *   modified and moved to this file by Jakub Adámek
- */
+ *
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Stanislav Kühnl
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
+*/
+
 
  // TRY IT
 /*
@@ -33,15 +40,21 @@ while (list (,$exp) = each ($exps))
     echo "$exp = ".calculate ($exp)."<br>\n";
 */
 
-/** I replace binary minus by tilde (~) to recognize it from unary minus */
+/** bminus function
+ *  I replace binary minus by tilde (~) to recognize it from unary minus
+ */
 function bminus() { return "~"; }
 
-/** Returns result for an expression consisting of numbers, brackets (),
+/** calculate function
+ *  Returns result for an expression consisting of numbers, brackets (),
  *  operators +, -, *, /, ^ and spaces
+ * @param $exp
  */
 function calculate($exp)
 {
-    if ($GLOBALS['debug']) huhl("calculate:$exp");
+    if ($GLOBALS['debug']) {
+        huhl("calculate:$exp");
+    }
     $exp = str_replace(" ","",$exp);
     $exp = str_replace("\t","",$exp);
 
@@ -59,9 +72,14 @@ function calculate($exp)
 }
 
 
-/** Return expression with resolved one of most inner brackets */
+/** calculate_brackets function
+ *  Return expression with resolved one of most inner brackets
+ * @param $expr
+ */
 function calculate_brackets($expr) {
-    if ($GLOBALS['debug']) huhl("calculate_brackets:$expr");
+    if ($GLOBALS['debug']) {
+        huhl("calculate_brackets:$expr");
+    }
     $beg      = strrpos($expr, "(");
     $expr_beg = substr($expr, 0, $beg);
     $expr_mid = substr($expr, $beg+1);
@@ -71,16 +89,26 @@ function calculate_brackets($expr) {
     return $expr_beg. calculate_without_brackets($expr_mid). $expr_end;
 }
 
-/** Calculate expression consisting of numbers, operators +,~,*,/,^, but no brackets () */
+/** calculate_without_brackets function
+ * Calculate expression consisting of numbers, operators +,~,*,/,^, but no brackets ()
+ */
 function calculate_without_brackets($expr) {
-    if ($GLOBALS['debug']) huhl("calculate_without_brackets:$expr");
+    if ($GLOBALS['debug']) {
+        huhl("calculate_without_brackets:$expr");
+    }
     return calculate_operator($expr, "+");
 }
 
-/** Recursively resolve operators in priority order */
+/** calculate_operator function
+ *  Recursively resolve operators in priority order
+ * @param $expr
+ * @param $operator
+ */
 function calculate_operator($expr, $operator)
 {
-    if ($GLOBALS['debug']) huhl("calculate_operator:$expr:$operator");
+    if ($GLOBALS['debug']) {
+        huhl("calculate_operator:$expr:$operator");
+    }
     $next_operator = array ("+" => bminus(), bminus() => "*", "*" => "/", "/" => "%", "%" => "^");
 
     $parts = explode($operator, $expr);
@@ -110,7 +138,9 @@ function calculate_operator($expr, $operator)
     }
     return $result;
 }
-
+/** is_digit function
+ * @param $c
+ */
 function is_digit($c)  { return $c >= "0" && $c <= "9"; }
 
 ?>

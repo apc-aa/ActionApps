@@ -5,28 +5,30 @@
  *
  * Should be included to other scripts
  *
- * @package Include
- * @version $Id$
- * @author Honza Malik <honza.malik@ecn.cz>
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
-*/
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once AA_INC_PATH."stringexpand.php3";
@@ -61,7 +63,17 @@ class itemview {
   var $parameters;         // optional asociative array of additional parameters
                            // - used for category_id (in Links module) ...
                            // - filed by parameter() method
-
+  /** itemview function
+   * @param $slice_info
+   * @param $fields
+   * @param $aliases
+   * @param $zids
+   * @param $from
+   * @param $number
+   * @param $clean_url
+   * @param $disc
+   * @param $get_content_funct
+   */
   function itemview( $slice_info, $fields, $aliases, $zids, $from, $number,
                      $clean_url, $disc="", $get_content_funct='GetItemContent'){
     //constructor
@@ -85,8 +97,9 @@ class itemview {
     $this->aliases     = $aliases;
     // add special alias, which is = 1 for selected item (given by
     // set[34]=selected-43535 view.php3 parameter
-    if ( !$aliases['_#SELECTED'] AND $slice_info['selected_item'] )
+    if ( !$aliases['_#SELECTED'] AND $slice_info['selected_item'] ) {
         $this->aliases['_#SELECTED'] = array('fce'=>'f_e:selected:'.$slice_info['selected_item'], "param"=>"", "hlp"=>"");
+    }
     $this->fields      = $fields;
     $this->zids        = $zids;
     $this->from_record = $from;      // number or text "random[:<weight_field>]"
@@ -109,21 +122,31 @@ class itemview {
     }
   }
 
-  /** Optional asociative array of additional parameters
-   *  Used for category_id (in Links module) ... */
+  /** parameter function
+   *  Optional asociative array of additional parameters
+   *  Used for category_id (in Links module) ...
+   * @param $property
+   * @param $value
+   */
   function parameter($property, $value ) {
       $this->parameters[$property] = $value;
   }
-
+  /** assign_items function
+   * @param $zids
+   */
   function assign_items($zids) {
       $this->zids = $zids;
   }
 
-  /** returns true, if view have to show random item (weighted or not) */
+  /** is_random function
+   * returns true, if view have to show random item (weighted or not)
+   */
   function is_random() {
       return (substr($this->from_record, 0, 6) == 'random');
   }
-
+  /** get_output_cached function
+   * @param $view_type
+   */
   function get_output_cached($view_type="") {
     //create keystring from values, which exactly identifies resulting content
 
@@ -131,7 +154,7 @@ class itemview {
         $res = $this->get_output($view_type);
         return $res;
     }
-    if (isset($this->zids))
+    if (isset($this->zids)) {
       $keystr = serialize($this->slice_info).
               $view_type.
               $this->from_record.
@@ -141,6 +164,7 @@ class itemview {
               // (Honza 2004-11-4)
               //              $this->clean_url.
               ((isset($this->zids)) ? $this->zids->id(0) : "");
+    }
     $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  // negative used for displaying n-th group of items only
                                         $this->from_record+$this->num_records );
     for ( $i=$this->from_record; $i<$number_of_ids; $i++) {
@@ -159,14 +183,16 @@ class itemview {
 
     $str2find_save   = $str2find_passon;    // Save str2find from same level
     $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
-    $res = $this->get_output($view_type);
+    $res             = $this->get_output($view_type);
     $str2find_passon->add(unpack_id128($this->slice_info["id"]), 'slice_id');
     $pagecache->store($keystr, $res, $str2find_passon);
     $str2find_passon->add_str2find($str2find_save); // and append saved for above
 
     return $res;
   }
-
+  /** get_disc_buttons function
+   * @param $empty
+   */
   function get_disc_buttons($empty) {
     if (!$empty) {
       $out.= $this->slice_info['d_sel_butt'];
@@ -177,7 +203,9 @@ class itemview {
   }
 
   // show list of discussion items --- useful as search form return value
-
+  /** get_disc_list function
+   * @param $CurItem
+   */
   function get_disc_list(&$CurItem) {
       $top_html_already_printed = false;
       if (is_array($this->disc['disc_ids'])) {
@@ -206,7 +234,10 @@ class itemview {
       return $out;
   }
 
-  // show discussion comments in the thread mode
+  /** get_disc_thread function
+   *  show discussion comments in the thread mode
+   * @param $CurItem
+   */
   function get_disc_thread(&$CurItem) {
       $top_html_already_printed = false;
 
@@ -307,7 +338,10 @@ class itemview {
    return $out;
   }
 
-  // show discussion comments in the fulltext mode
+  /** get_disc_fulltext function
+   *  show discussion comments in the fulltext mode
+   * @param $CurItem
+   */
   function get_disc_fulltext(&$CurItem) {
       $CurItem->setformat( $this->slice_info['d_fulltext']);      // set fulltext format
       $zids      = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
@@ -350,7 +384,10 @@ class itemview {
       return $out;
   }
 
-  // show the form for adding discussion comments
+  /** get_disc_add function
+   *  show the form for adding discussion comments
+   * @param $CurItem
+   */
   function get_disc_add(&$CurItem) {
       trace("+","get_disc_add","Parent=".$this->disc['parent_id']);
       // if parent_id is set => show discussion comment
@@ -393,14 +430,20 @@ class itemview {
       return $out;
   }
 
-  /** Just wrapper for unaliasWithScroller() without $item parameter */
+  /** unaliasWithScrollerEasy function
+   *  Just wrapper for unaliasWithScroller() without $item parameter
+   * @param $txt
+   */
   function unaliasWithScrollerEasy(&$txt) {
       // we just need to pass something as item parameter
       // in unaliasWithScroller (in order we can use reference, there)
       $fooparameter = null;
       return $this->unaliasWithScroller($txt, $fooparameter);
   }
-
+  /** unaliasWithScroller function
+   * @param $txt
+   * @param $item
+   */
   function unaliasWithScroller($txt, &$item) {
       // get HTML code, unalias it and add scroller, if needed
       $level = 0; $maxlevel = 0;
@@ -415,7 +458,11 @@ class itemview {
 
   // set the aliases from the slice of the item ... used to view items from
   // several slices at once: all slices have to define aliases with the same names
-
+  /** set_columns function
+   * @param $CurItem
+   * @param $content
+   * @param $iid
+   */
   function set_columns(&$CurItem, &$content, $iid)
   {
      // hack for searching in multiple slices. This is not so nice part
@@ -430,7 +477,10 @@ class itemview {
   // ----------------------------------------------------------------------------------
   //  get_output
 
-  //view_type used internaly for different view types
+  /** get_output
+   *  view_type used internaly for different view types
+   * @param $view_type
+   */
   function get_output($view_type="") {
     global $debug;
     trace("+","itemview:get_output",$view_type);
@@ -487,7 +537,9 @@ class itemview {
     $content = $function2call($foo_zids);
 
     trace("=","",$view_type." after content");
-    if ($debug>1) huhl("itemview:get_content: found",$content);
+    if ($debug>1) {
+        huhl("itemview:get_content: found",$content);
+    }
 
     $CurItem = new AA_Item("", $this->aliases, $this->clean_url);   // just prepare
     $CurItem->set_parameters($this->parameters);
@@ -569,17 +621,24 @@ class itemview {
             }
 
             $zidx = $this->from_record+$i;
-            if ($zidx >= $this->zids->count()) continue;
+            if ($zidx >= $this->zids->count()) {
+                continue;
+            }
             /* mimo hack -- put this on a stack **/
-            if (!$GLOBALS['QueryIDsIndex'])
+            if (!$GLOBALS['QueryIDsIndex']) {
                 $GLOBALS['QueryIDsIndex'] = array();
-            if (!$GLOBALS['QueryIDsPageIndex'])
+            }
+            if (!$GLOBALS['QueryIDsPageIndex']) {
                 $GLOBALS['QueryIDsPageIndex'] = array();
+            }
             array_push($GLOBALS['QueryIDsIndex'],$zidx);  // So that _#ITEMINDX = f_e:itemindex can find it
             array_push($GLOBALS['QueryIDsPageIndex'],$i);     // So that _#PAGEINDX = f_e:pageindex can find it
 
             $iid = $this->zids->short_or_longids($zidx);
-            if ( !$iid ) { huhe("Warning: itemview: got a null id"); continue; }
+            if ( !$iid ) {
+                huhe("Warning: itemview: got a null id");
+                continue;
+            }
             // Note if iid is invalid, then expect empty answers
 
             $catname = $content[$iid][$this->group_fld][0]['value'];
@@ -662,9 +721,13 @@ class itemview {
 // ----------------------------------------------------------------------------
 //                            calendar view
 // ----------------------------------------------------------------------------
-    function resolve_calendar_aliases ($txt,$day="") {
+    /** resolve_calendar_aliases function
+     * @param $txt
+     * @param $day
+     */
+    function resolve_calendar_aliases($txt,$day="") {
         $month = $this->slice_info['calendar_month'];
-        $year = $this->slice_info['calendar_year'];
+        $year  = $this->slice_info['calendar_year'];
 
         $aliases = array (
             "_#CV_NUM_Y" => $year,
@@ -674,13 +737,17 @@ class itemview {
             "_#CV_TST_2" => mktime (0,0,0,$month,$day+1,$year));
 
         reset ($aliases);
-        while (list ($alias,$replace) = each($aliases))
+        while (list ($alias,$replace) = each($aliases)) {
             $txt = str_replace ($alias,$replace,$txt);
+        }
         return $txt;
     }
 
-    // send content via reference to be quicker
-    function get_output_calendar (&$content) {
+    /** get_output_calendar function
+     *  send content via reference to be quicker
+     * @param $content
+     */
+    function get_output_calendar(&$content) {
         trace("+","get_output_calendar");
         $CurItem = new AA_Item("", $this->aliases, $this->clean_url);   // just prepare
         $CurItem->set_parameters($this->parameters);
@@ -711,21 +778,26 @@ class itemview {
             && ($i+$this->from_record < $this->zids->count());
             $i++ ) {
             $iid = $this->zids->short_or_longids($this->from_record+$i);
-            if ( !$iid )
-                continue;                                     // iid = unpacked item id
+            if ( !$iid ) {
+                continue;
+            }// iid = unpacked item id
             $start_date = $content[$iid][$this->slice_info['calendar_start_date']][0]['value'];
             $end_date = $content[$iid][$this->slice_info['calendar_end_date']][0]['value'];
-            if ($start_date > $max_cell_date || $end_date < $min_cell_date)
-                if ($debug) echo "<h1>Some error in calendar view!
-                $start_date &gt; $max_cell_date || $end_date &lt; $min_cell_date </h1>";
-            if ($start_date < $min_cell_date)
-                $start_date = $min_cell;
-            else {
+            if ($start_date > $max_cell_date || $end_date < $min_cell_date) {
+                if ($debug) {
+                    echo "<h1>Some error in calendar view!
+                    $start_date &gt; $max_cell_date || $end_date &lt; $min_cell_date </h1>";
+                }
+                if ($start_date < $min_cell_date) {
+                    $start_date = $min_cell;
+                }
+            } else {
                 $start_date = getdate ($start_date);
                 $start_date = $start_date["mday"];
             }
-            if ($end_date >= $max_cell_date)
+            if ($end_date >= $max_cell_date) {
                 $end_date = $max_cell;
+            }
             else {
                 $end_date = getdate ($end_date);
                 $end_date = $end_date["mday"];
@@ -734,19 +806,23 @@ class itemview {
             $ievent = 0;
             do {
                 $free = true;
-                for ($date = $start_date; $date <= $end_date; ++$date)
+                for ($date = $start_date; $date <= $end_date; ++$date) {
                     if ($calendar[$date][$ievent]["iid"]) {
                         $free = false;
                         break;
                     }
-                if (!$free) $ievent ++;
+                }
+                if (!$free) {
+                    $ievent ++;
+                }
             } while (!$free);
 
             $max_events = max ($max_events, $ievent+1);
 
             $calendar [$start_date][$ievent] = array ("iid"=>$iid,"span"=>$end_date-$start_date+1,"start"=>1);
-            for ($date = $start_date+1; $date <= $end_date; ++$date)
+            for ($date = $start_date+1; $date <= $end_date; ++$date) {
                 $calendar [$date][$ievent] = array ("iid" => $iid,"span"=>$end_date-$date+1);
+            }
         }
         trace("=","","post-for");
 
@@ -754,7 +830,9 @@ class itemview {
             $row_len = 7;
             $firstday = getdate (mktime (0,0,0,$month,1,$year));
             $firstday = $firstday ["wday"] - 2;
-            if ($firstday < -1) $firstday += $row_len;
+            if ($firstday < -1) {
+                $firstday += $row_len;
+            }
             $rowcount = ($max_cell + $firstday + 1) / $row_len;
 
             for ($cell = 7 - $firstday; $cell <= $max_cell; $cell += $row_len) {
@@ -794,11 +872,10 @@ class itemview {
                         $CurItem->setformat ($this->slice_info['aditional3']);
                         $tdattribs = $CurItem->get_item();
                         $CurItem->setformat ($this->slice_info['odd_row_format']);
-                        $out .= "<td valign=top rowspan=".$event['span']." $tdattribs>"
+                        $out .= "<td valign=\"top\" rowspan=\"".$event['span']."\" $tdattribs>"
                             .$CurItem->get_item()."</td>";
-                    }
-                    else if (!$event["iid"])
-                        $out .= "<td class='empty'></td>";
+                    } else if (!$event["iid"])
+                        $out .= "<td class=\"empty\"></td>";
                 }
 
                 $CurItem->setformat ($this->resolve_calendar_aliases($footer,$cell));
@@ -812,40 +889,46 @@ class itemview {
                 $firstcell = $row * $row_len - $firstday;
                 for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
                     $events = $calendar[$cell];
-                    if ($this->slice_info['even_odd_differ'] && count($events) == 0)
+                    if ($this->slice_info['even_odd_differ'] && count($events) == 0) {
                         $header = $this->slice_info['aditional'];
-                    else $header = $this->slice_info['category_format'];
+                    } else {
+                        $header = $this->slice_info['category_format'];
+                    }
                     $label = $cell >= $min_cell && $cell <= $max_cell ? $cell : "";
                     $CurItem->setformat ($this->resolve_calendar_aliases($header,$label));
                     $outrow .= $CurItem->get_item();
                 }
-                if ($outrow) $out .= "<tr>$outrow</tr>";
-
-                if ($this->slice_info['odd_row_format'])
-                for ($ievent = 0; $ievent < $max_events; ++$ievent) {
-                    $out .= "<tr>";
-                    for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
-                        $event = $calendar[$cell][$ievent];
-                        if ($event["iid"] && $event["start"]) {
-                            $this->set_columns($CurItem, $content, $event['iid']);
-                            $CurItem->setformat($this->slice_info['aditional3']);
-                            $tdattribs = $CurItem->get_item();
-                            $CurItem->setformat ($this->slice_info['odd_row_format']);
-                            $out .= "<td valign=top colspan=".$event['span']." $tdattribs>"
-                                .$CurItem->get_item()."</td>";
-                        }
-                        else if (!$event["iid"])
-                            $out .= "<td class='empty'></td>";
-                    }
-                    $out .= "</tr>";
+                if ($outrow) {
+                    $out .= "<tr>$outrow</tr>";
                 }
 
+                if ($this->slice_info['odd_row_format']) {
+                    for ($ievent = 0; $ievent < $max_events; ++$ievent) {
+                        $out .= "<tr>";
+                        for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
+                            $event = $calendar[$cell][$ievent];
+                            if ($event["iid"] && $event["start"]) {
+                                $this->set_columns($CurItem, $content, $event['iid']);
+                                $CurItem->setformat($this->slice_info['aditional3']);
+                                $tdattribs = $CurItem->get_item();
+                                $CurItem->setformat ($this->slice_info['odd_row_format']);
+                                $out .= "<td valign=top colspan=".$event['span']." $tdattribs>"
+                                    .$CurItem->get_item()."</td>";
+                            } else if (!$event["iid"]) {
+                                $out .= "<td class='empty'></td>";
+                            }
+                        }
+                        $out .= "</tr>";
+                    }
+                }
                 $outrow = "";
                 for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
                     $events = $calendar[$cell];
-                    if ($this->slice_info['even_odd_differ'] && count($events) == 0)
+                    if ($this->slice_info['even_odd_differ'] && count($events) == 0) {
                         $footer = $this->slice_info['aditional2'];
-                    else $footer = $this->slice_info['category_bottom'];
+                    } else {
+                        $footer = $this->slice_info['category_bottom'];
+                    }
                     $label = $cell >= $min_cell && $cell <= $max_cell ? $cell : "";
                     $CurItem->setformat ($this->resolve_calendar_aliases($footer,$label));
                     $outrow .= $CurItem->get_item();
@@ -863,38 +946,56 @@ class itemview {
 //                            end of calendar view
 // ----------------------------------------------------------------------------
 
-  // compact view
+  /** print_view function
+   *  compact view
+   * @param $flag
+   */
   function print_view($flag="CACHE") {
-    if ( $flag == "CACHE" )
-      echo $this->get_output_cached("view");
-     else
-      echo $this->get_output("view");
+      if ( $flag == "CACHE" ) {
+          echo $this->get_output_cached("view");
+      } else {
+          echo $this->get_output("view");
+      }
   }
 
-  // fulltext of one item
+  /** print_item function
+   *  fulltext of one item
+   * @param $flag
+   */
   function print_item($flag="CACHE") {
-    if ( $flag == "CACHE" )
-      echo $this->get_output_cached("fulltext");
-     else
-      echo $this->get_output("fulltext");
+      if ( $flag == "CACHE" ) {
+          echo $this->get_output_cached("fulltext");
+      } else {
+          echo $this->get_output("fulltext");
+      }
   }
 
-  // multiple items as fulltext one after one
+  /** print_itemlist function
+   *  multiple items as fulltext one after one
+   * @param $flag
+   */
   function print_itemlist($flag="CACHE") {
-    if ( $flag == "CACHE" )
-      echo $this->get_output_cached("itemlist");
-     else
-      echo $this->get_output("itemlist");
+      if ( $flag == "CACHE" ) {
+          echo $this->get_output_cached("itemlist");
+      } else {
+          echo $this->get_output("itemlist");
+      }
   }
 
-  // discusion thread or fulltext or one comment
+  /** print_discussion function
+   *  discusion thread or fulltext or one comment
+   * @param $flag
+   */
   function print_discussion($flag="CACHE") {
-    if ( $flag == "CACHE" )
-      echo $this->get_output_cached("discussion");
-     else
-      echo $this->get_output("discussion");
+      if ( $flag == "CACHE" ) {
+          echo $this->get_output_cached("discussion");
+      } else {
+          echo $this->get_output("discussion");
+      }
   }
-
+  /** idcount function
+   *
+   */
   function idcount() {
         return $this->zids->count();
   }

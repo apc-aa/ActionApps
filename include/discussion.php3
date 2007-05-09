@@ -1,22 +1,28 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 // discussion.php3 - discussion utility functions
@@ -31,10 +37,15 @@ define ("D_CORNER_IMG", 3);
 define ("D_SPACE_IMG",  4);
 define ("D_T_IMG",      5);
 define ("D_ITEM",       6);
-
+/** PrintImg function
+ * @param $src
+ * @param $width = 0
+ * @param $height = 0
+ * @param $path = 'rel'
+ */
 function PrintImg($src, $width=0, $height=0, $path='rel') {
-    $width  = $width ? "width=$width" : "";
-    $height = $height ? "height=$height" : "";
+    $width  = $width ? "width=\"$width\"" : "";
+    $height = $height ? "height=\"$height\"" : "";
     $img    = (($path=='rel') ? "../images/$src" : AA_INSTAL_PATH."images/$src");
     return "<img src=\"$img\" $width $height border='0'></img>";
 }
@@ -47,13 +58,20 @@ $imgsrc = array(
     D_SPACE_IMG  => PrintImg("blank.gif",12,21),
     D_T_IMG      => PrintImg("t.gif",9,21),
     D_ITEM       => "");
-
+/** GetImageSrc function
+ * @param $img
+ */
 function GetImageSrc($img) {
     global $imgsrc;
     return $imgsrc[$img];
 }
 
-/** Get discussion content from database belong to item_id */
+/** QueryDiscussionZIDs function
+ *  Get discussion content from database belong to item_id
+ * @param $item_id
+ * @param $ids = ""
+ * @param $order = 'timeorder'
+ */
 function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
     if ( !$item_id ) {
         return false;
@@ -77,10 +95,17 @@ function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
     }
     return new zids($ret, 'p');
 }
-
+/** GetDiscussionContent function
+ * @param $zids
+ * @param $state = true
+ * @param $html_flag = false
+ * @param $clean_url = ''
+ */
 function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='') {
     /** Fills Abstract data srtructure for Constants */
-    if ( !$zids ) return false;
+    if ( !$zids ) {
+        return false;
+    }
     $db = getDB();
 
     $SQL = 'SELECT * FROM discussion WHERE '. $zids->sqlin('id');
@@ -126,7 +151,12 @@ function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='
     freeDB($db);
     return $d_content;
 }
-
+/** setDiscUrls function
+ * @param $col
+ * @param $clean_url
+ * @param $item_id
+ * @param $d_id = null
+ */
 function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
     $tmp_disc_url = get_url($clean_url,"nocache=invalidate&sh_itm=$item_id");
     $col["d_disc_url......"][0]['value'] = $tmp_disc_url."#disc";
@@ -138,7 +168,14 @@ function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
     }
 }
 
-
+/** GetDiscussionContentSQL function
+ * @param $SQL
+ * @param $item_id
+ * @param $ids
+ * @param $state
+ * @param $html_flag
+ * @param $clean_url
+ */
 function GetDiscussionContentSQL($SQL, $item_id, $ids, $state, $html_flag, $clean_url) {
     global $db;
     $db->tquery($SQL);
@@ -172,14 +209,25 @@ function GetDiscussionContentSQL($SQL, $item_id, $ids, $state, $html_flag, $clea
     }
     return $d_content;
 }
-
-/** Set the right content for a checkbox */
+/** SetCheckboxContent function
+ * Set the right content for a checkbox
+ * @param $content
+ * @param $d_id
+ * @param $cnt
+ */
 function SetCheckboxContent(&$content, $d_id, $cnt) {
     $content[$d_id]["d_checkbox......"][0]['value'] =
-        "<input type=\"checkbox\" name=c_".$cnt." ><input type=hidden name=h_".$cnt." value=x".$d_id."> ";
+        "<input type=\"checkbox\" name=\"c_".$cnt."\" ><input type=\"hidden\" name=\"h_".$cnt."\" value=\"x".$d_id."\"> ";
 }
 
-/** Set the right content for images */
+/** SetImagesContent function
+ * Set the right content for images
+ * @param $content
+ * @param $d_id
+ * @param $images
+ * @param $showimages
+ * @param $imgtags
+ */
 function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
     if ($showimages) {
         while (list(, $img) = each($images)) {
@@ -190,13 +238,16 @@ function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
     }
     $content[$d_id]["d_treeimages...."][0]['value'] = $imgs;
 }
-
+/** GetButtons function
+ * @param $empty
+ * @param $script_loc
+ */
 function GetButtons($empty, $script_loc) {
     if (!$empty) {
-        $out.= "<input type=button name=sel_ids value=\"" ._m("Show selected"). "\" onClick=showSelectedComments() class=\"discbuttons\">
-                <input type=button name=all_ids value=\"" ._m("Show all") ."\" onClick=document.location=\"".con_url($script_loc,"nocache=invalidate&all_ids=1")."\" class=\"discbuttons\">";
+        $out.= "<input type=\"button\" name=\"sel_ids\" value=\"" ._m("Show selected"). "\" onClick=showSelectedComments() class=\"discbuttons\">
+                <input type=\"button\" name=\"all_ids\" value=\"" ._m("Show all") ."\" onClick=document.location=\"".con_url($script_loc,"nocache=invalidate&all_ids=1")."\" class=\"discbuttons\">";
     }
-    $out.= " <input type=button name=add_disc value=\"". _m("Add new"). "\" onClick=document.location=\"".con_url($script_loc,"nocache=invalidate&add_disc=1")."\" class=\"discbuttons\">";
+    $out.= " <input type=\"button\" name=\"add_disc\" value=\"". _m("Add new"). "\" onClick=document.location=\"".con_url($script_loc,"nocache=invalidate&add_disc=1")."\" class=\"discbuttons\">";
     return $out;
 }
 
@@ -222,7 +273,9 @@ function GetDiscussionAliases() {
 
     return $aliases;
 }
-
+/** GetdiscussionFormat function
+ * @param $view_info
+ */
 function GetDiscussionFormat(&$view_info) {
     $VIEW_TYPES_INFO = getViewTypesInfo();
 
@@ -236,13 +289,13 @@ function GetDiscussionFormat(&$view_info) {
     $format['slice_id']     = $view_info['slice_id'];
     $format['d_form']       = $view_info['remove_string'];
     $format['d_spacer']     = ($view_info['aditional']  ? $view_info['aditional'] :
-                                                         '<img src="'.AA_INSTAL_PATH.'images/blank.gif" width=20 height=1 border="0">');
+                                                         '<img src="'.AA_INSTAL_PATH.'images/blank.gif" width="20" height="1" border="0">');
     $format['d_sel_butt']   = ($view_info['aditional2'] ? $view_info['aditional2'] :
-                                                         '<input type=button name=sel_ids value="' ._m("Show selected"). '" onClick=showSelectedComments() class="discbuttons">');
+                                                         '<input type="button" name="sel_ids" value="' ._m("Show selected"). '" onClick="showSelectedComments()" class="discbuttons">');
     $format['d_all_butt']   = ($view_info['aditional3'] ? $view_info['aditional3'] :
-                                                         '<input type=button name=all_ids value="' ._m("Show all"). '" onClick=showAllComments() class="discbuttons">');
+                                                         '<input type="button" name="all_ids" value="' ._m("Show all"). '" onClick="showAllComments()" class="discbuttons">');
     $format['d_add_butt']   = ($view_info['aditional4'] ? $view_info['aditional4'] :
-                                                         '<input type=button name=add_disc value="' ._m("Add new"). '" onClick=showAddComments() class="discbuttons">');
+                                                         '<input type="button" name="add_disc" value="' ._m("Add new"). '" onClick="showAddComments()" class="discbuttons">');
     $format['images'] = array(
                            D_VLINE_IMG  => $view_info['img1'],
                            D_CORNER_IMG => $view_info['img2'],
@@ -252,7 +305,10 @@ function GetDiscussionFormat(&$view_info) {
     return $format;
 }
 
-/** Create discussion tree from d_content */
+/** GetDiscussionTree function
+ *  Create discussion tree from d_content
+ * @param $d_content
+ */
 function GetDiscussionTree(&$d_content) {
     if (!$d_content) {
         return;
@@ -275,7 +331,14 @@ function GetDiscussionTree(&$d_content) {
 }
 
 
-/** Create array of images */
+/** GetDiscussionThread function
+ * Create array of images
+ * @param $tree
+ * @param $d_id
+ * @param $depth
+ * @param $outcome
+ * @param $images = ""
+ */
 function GetDiscussionThread(&$tree, $d_id, $depth, &$outcome, $images="") {
     if ($d_id != "0") {
         for ($i=1; $i<$depth-1; $i++)
@@ -303,7 +366,11 @@ function GetDiscussionThread(&$tree, $d_id, $depth, &$outcome, $images="") {
     }
 }
 
-/** delete subtree of d_id - not used yet */
+/** DeleteTree function
+ * delete subtree of d_id - not used yet
+ * @param $tree
+ * @param $d_id
+ */
 function DeleteTree(&$tree, $d_id) {
     global $db;
 
@@ -317,7 +384,11 @@ function DeleteTree(&$tree, $d_id) {
     }
 }
 
-// get parent of node $d_id in tree
+/** GetParent function
+ * get parent of node $d_id in tree
+ * @param $tree
+ * @param $d_id
+ */
 function GetParent(&$tree, $d_id) {
     if (!$tree) {
         return;
@@ -331,7 +402,12 @@ function GetParent(&$tree, $d_id) {
     }
 }
 
-/** Delete one comment */
+/** DeleteNode function
+ * Delete one comment
+ * @param $tree
+ * @param $d_content
+ * @param $d_id
+ */
 function DeleteNode(&$tree, &$d_content, $d_id) {
     global $db;
     $db->tquery("DELETE FROM discussion WHERE id='".q_pack_id($d_id)."'");
@@ -346,15 +422,17 @@ function DeleteNode(&$tree, &$d_content, $d_id) {
     }
 }
 
-/** Update a count of discussion comments in the view table
+/** updateDiscussionCount function
+ * Update a count of discussion comments in the view table
  * (called after adding|deleting|hiding|approving comment)
+ * @param $item_id
  */
 function updateDiscussionCount($item_id) {
     global $db;
 
-    $all = $hide = 0;
+    $all       = $hide = 0;
     $p_item_id = q_pack_id($item_id);
-    $SQL= "SELECT * FROM discussion WHERE item_id='$p_item_id'";
+    $SQL       = "SELECT * FROM discussion WHERE item_id='$p_item_id'";
     $db->tquery($SQL);
     while ($db->next_record()) {
         $all++;
@@ -369,7 +447,9 @@ function updateDiscussionCount($item_id) {
 
 // -----------------------------------------------------------------------------------------
 
-/** used just for help display in admin/se_view.php3 */
+/** GetDiscussion2MailAliases function
+ *  used just for help display in admin/se_view.php3
+ */
 function GetDiscussion2MailAliases() {
     $aliases["_#ITEMPAR3"] = GetAlias("", "", _m("3rd parameter filled in DiscussionMailList field"));
     for ($i = 4; $i < 10; $i ++) {
@@ -379,11 +459,14 @@ function GetDiscussion2MailAliases() {
 }
 
 // -----------------------------------------------------------------------------------------
-/** Sends new discussion items to one mail address
+/** send2mailList function
+ *  Sends new discussion items to one mail address
  *   if a field with name DiscussionMailList
  *   exists and is filled with these parameters separated by ":" (use "#:" instead of verbatim ":")
  *
  * view_id:mail_address:param3:param4:...
+ * @param $d_item_id
+ * @param $new_id
 */
 function send2mailList($d_item_id, $new_id) {
     global $db;
@@ -446,10 +529,18 @@ function send2mailList($d_item_id, $new_id) {
                 $mail = new HtmlMail;
                 $mail->setSubject($mail["subject"]);
                 $mail->setHtml($mail["body"], html2text($mail["body"]));
-                if ($mail["from"])      $mail->setHeader("From",      $mail["from"]);
-                if ($mail["reply_to"])  $mail->setHeader("Reply-To",  $mail["reply_to"]);
-                if ($mail["errors_to"]) $mail->setHeader("Errors-To", $mail["errors_to"]);
-                if ($mail["sender"])    $mail->setHeader("Sender",    $mail["sender"]);
+                if ($mail["from"]) {
+                    $mail->setHeader("From",      $mail["from"]);
+                }
+                if ($mail["reply_to"]) {
+                    $mail->setHeader("Reply-To",  $mail["reply_to"]);
+                }
+                if ($mail["errors_to"]) {
+                    $mail->setHeader("Errors-To", $mail["errors_to"]);
+                }
+                if ($mail["sender"]) {
+                    $mail->setHeader("Sender",    $mail["sender"]);
+                }
 
                 $db->tquery("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id
                              WHERE item.id='".q_pack_id($d_item_id)."'");

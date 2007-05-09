@@ -1,27 +1,31 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/** se_fulltext.php3 - assigns html format for fulltext view
+ *   expected $slice_id for edit slice
+ *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
-// se_fulltext.php3 - assigns html format for fulltext view
-// expected $slice_id for edit slice
-// optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
@@ -39,7 +43,10 @@ if (!IfSlPerm(PS_HISTORY)) {
     MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to view history"), "admin");
     exit;
 }
-
+/** IsHistoryActionPerm function
+ * @param $action
+ * @return false
+ */
 function IsHistoryActionPerm($action) {
     return false;
 }
@@ -48,8 +55,10 @@ function IsHistoryActionPerm($action) {
 //id   	 resource_id   	 type   	 user   	 time
 //Celé texty  	 id   	 change_id   	 selector   	 priority   	 value   	 type
 
-/** List of fields, which will be listed in searchbar in Links Manager (search)
+/** GetHistoryFields function
+ * List of fields, which will be listed in searchbar in Links Manager (search)
  * (modules/links/index.php3)
+ * @return array
  */
 function GetHistoryFields() {  // function - we need trnslate _m() on use (not at include time)
     return array(
@@ -65,7 +74,10 @@ function GetHistoryFields() {  // function - we need trnslate _m() on use (not a
                );
 }
 
-/** Predefined aliases for links. For another aliases use 'inline' aliases. */
+/** GetHistoryAliases function
+ * Predefined aliases for links. For another aliases use 'inline' aliases.
+ * @return array
+ */
 function GetHistoryAliases() {  // function - we need trnslate _m() on use (not at include time)
     return array(
     "_#HI_CH_ID" => GetAliasDef( "f_t", "change_id",  _m('Change ID')),
@@ -162,7 +174,7 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 $slice       = AA_Slices::getSlice($module_id);
 
 $manager_settings = array(
-     'show'     =>  MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+     'show'      =>  MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar' => array(
          'fields'               => GetHistoryFields(),
          'search_row_count_min' => 1,
@@ -177,15 +189,15 @@ $manager_settings = array(
      'itemview'  => array(
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
          'format'               => array(                           // optionaly to manager_vid you can set format array
-             'compact_top'      => "<table border=0 cellspacing=0 cellpadding=5>",
+             'compact_top'      => "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">",
              'category_sort'    => false,
              'category_format'  => "",
              'category_top'     => "",
              'category_bottom'  => "",
              'even_odd_differ'  => false,
              'even_row_format'  => "",
-//           'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#HI_CH_ID]" value=""></td><td class=tabtxt><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
-             'odd_row_format'   => '<tr class=tabtxt><td width="30"><input type="checkbox" name="chb[_#HI_CH_ID]" value=""></td><td><strong>{item:{_#HI_ITEM_}:_#HEADLINE} / _#HI_FIELD</strong><br>_#HI_VALUE</td><td>_#HI_USER_ - _#HI_TIME_</td></tr>
+//           'odd_row_format'   => '<tr class="tabtxt"><td width="30"><input type="checkbox" name="chb[_#HI_CH_ID]" value=""></td><td class="tabtxt"><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class="tabsmall">{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
+             'odd_row_format'   => '<tr class="tabtxt"><td width="30"><input type="checkbox" name="chb[_#HI_CH_ID]" value=""></td><td><strong>{item:{_#HI_ITEM_}:_#HEADLINE} / _#HI_FIELD</strong><br>_#HI_VALUE</td><td>_#HI_USER_ - _#HI_TIME_</td></tr>
              ',
              'compact_remove'   => '',
              'compact_bottom'   => "</table>",

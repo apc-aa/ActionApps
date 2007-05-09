@@ -1,22 +1,28 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 /** Saver / Grabber API
@@ -37,7 +43,13 @@ class AA_Saver {
     var $slice_id;           /** id of destination slice */
     var $store_mode;         /** store-policy - how to store - overwrite | insert_if_new */
     var $id_mode;            /** id-policy    - how to construct id - old | new | combined */
-
+    /** AA_Saver function
+     * @param $grabber
+     * @param $transformations
+     * @param $slice_id
+     * @param $store_mode
+     * @param $id_mode
+     */
     function AA_Saver(&$grabber, &$transformations, $slice_id=null, $store_mode='overwrite', $id_mode='old') {
         $this->grabber         = $grabber;
         $this->transformations = $transformations;
@@ -46,7 +58,9 @@ class AA_Saver {
         $this->id_mode         = $id_mode;
     }
 
-    /** Now import all items to the slice */
+    /** run function
+     * Now import all items to the slice
+     */
     function run() {
         global $debugfeed;
 
@@ -74,7 +88,6 @@ class AA_Saver {
             // set the item to be recevied from remote node
             $content4id->setItemID($new_item_id);
 
-
             // @todo - move to translations
             if ( !is_null($this->slice_id) ) {
                 // for AA_Grabber_Form we have the slice_id already filled
@@ -88,16 +101,21 @@ class AA_Saver {
             }
 
 
-
-            if ($debugfeed >= 3) print("\n<br>      ". $content4id->getValue('headline........'));
-            if ($debugfeed >= 8) { print("\n<br>xmlUpdateItems:content4id="); huhl($content4id); }
+            if ($debugfeed >= 3) {
+                print("\n<br>      ". $content4id->getValue('headline........'));
+            }
+            if ($debugfeed >= 8) {
+                print("\n<br>xmlUpdateItems:content4id="); huhl($content4id);
+            }
 
             // id_mode - overwrite or insert_if_new
             // (the $new_item_id should not be changed by storeItem)
             if (!($new_item_id = $content4id->storeItem($this->store_mode))) {     // invalidatecache, feed
                 print("\n<br>AA_Saver->run(): storeItem failed or skiped duplicate");
             } else {
-                if ($debugfeed >= 1) print("\n<br>  + stored OK: ". $content4id->getValue('headline........'));
+                if ($debugfeed >= 1) {
+                    print("\n<br>  + stored OK: ". $content4id->getValue('headline........'));
+                }
                 // Update relation table to show where came from
                 if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
                     AddRelationFeed($new_item_id, $content4id->getItemID());
@@ -107,7 +125,8 @@ class AA_Saver {
         $this->grabber->finish();    // maybe some finalization in grabber
     }
 
-    /** Toexecutelater - special function called from toexecute class
+    /** toexecutelater function
+     *  Toexecutelater - special function called from toexecute class
      *  - used for queued tasks (runed from cron)
      *  You can use $toexecute->later($saver, array(), 'feed_external') instead
      *  of calling $saver->run() - the saving will be planed for future
@@ -126,42 +145,59 @@ class AA_Saver {
 class AA_Grabber {
     var $messages = array();
 
-    /** Name of the grabber - used for grabber selection box */
+    /** name function
+     *  Name of the grabber - used for grabber selection box
+     */
     function name() {}
 
-    /** Description of the grabber - used as help text for the users.
+    /** description function
+     *  Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
     function description() {}
 
-    /** HTML code for parameters - defines parameters of this grabber.
+    /** htmlSetting function
+     *  HTML code for parameters - defines parameters of this grabber.
      *  Each grabber could have its own parameters (like separator for CSV, ...)
+     * @param $input_prefix
+     * @param $params
      */
     function htmlSetting($input_prefix, $params) {}
 
-    /** Method called by the AA_Saver to get next item from the data input */
+    /** getItem function
+     *  Method called by the AA_Saver to get next item from the data input
+     */
     function getItem() {}
 
-    /** Possibly preparation of grabber - it is called directly before getItem()
+    /** prepare function
+     *  Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {}
 
-    /** Function called by AA_Saver after we get the last item from the data
+    /** finish function
+     *  Function called by AA_Saver after we get the last item from the data
      *  input
      */
     function finish()  {}
 
-    /** Records Error/Information messaage */
+    /** message function
+     *  Records Error/Information message
+     * @param $text
+     */
     function message($text) {
         $this->messages[] = $text;
     }
 
-    /** Print Error/Information messaages */
+    /** report function
+     * Print Error/Information messaages
+     */
     function report()       {
         return join('<br>', $this->messages);
     }
-
+    /** clear_report function
+     *
+     */
     function clear_report() {
         unset($this->messages);
         $this->messages = array();
@@ -175,28 +211,42 @@ class AA_Grabber {
  */
 class AA_Grabber_Csv {
 
-    /** Name of the grabber - used for grabber selection box */
-    function name() { return _m('CSV'); }
+    /** name function
+     * Name of the grabber - used for grabber selection box
+     */
+    function name() {
+        return _m('CSV');
+    }
 
-    /** Description of the grabber - used as help text for the users.
+    /** description function
+     *  Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    function description() { return _m('Import data from CSV (Comma Separated Values) format'); }
+    function description() {
+        return _m('Import data from CSV (Comma Separated Values) format');
+    }
 
-    /** HTML code for parameters - defines parameters of this grabber.
+    /** htmlSetting function
+     *  HTML code for parameters - defines parameters of this grabber.
      *  Each grabber could have its own parameters (like separator for CSV, ...)
+     * @param $input_prefix
+     * @param $params
      */
     function htmlSetting($input_prefix, $params) {}
 
-    /** Method called by the AA_Saver to get next item from the data input */
+    /** getItem function
+     * Method called by the AA_Saver to get next item from the data input
+     */
     function getItem() {}
 
-    /** Possibly preparation of grabber - it is called directly before getItem()
+    /** prepare function
+     *  Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {}
 
-    /** Function called by AA_Saver after we get the last item from the data
+    /** finish function
+     *  Function called by AA_Saver after we get the last item from the data
      *  input
      */
     function finish()  {}
@@ -217,7 +267,11 @@ class AA_Grabber_Aarss extends AA_Grabber {
     var $l_categs;
     var $r_slice_id;
     var $fire;
-
+    /** AA_Grabber_Aarss function
+     * @param $feed_id
+     * @param $feed
+     * @param $fire
+     */
     function AA_Grabber_Aarss($feed_id, &$feed, $fire) {
         global $debugfeed;
 
@@ -230,22 +284,39 @@ class AA_Grabber_Aarss extends AA_Grabber {
         $this->fire       = $fire;
     }
 
-
+    /** name function
+     *
+     */
     function name() {
         return _m("AA RSS");
     }
-
+    /** description function
+     *
+     */
     function description() {
         return _m("Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)");
     }
-
-    function setUrl($url)    { $this->feed['server_url']  = $url; }
-    function setTime($time)  { $this->feed['newest_item'] = $time; }
-
+    /** setUrl function
+     * @param $url
+     */
+    function setUrl($url) {
+        $this->feed['server_url']  = $url;
+    }
+    /** setTime function
+     * @param $time
+     */
+    function setTime($time) {
+        $this->feed['newest_item'] = $time;
+    }
+    /** _getRssData function
+     *
+     */
     function _getRssData() {
         return http_fetch($this->feed['server_url']);
     }
-
+    /** _getApcData function
+     *
+     */
     function _getApcData() {
         // for APC feeds we need to list all categories, which we want receive
         $this->ext_categs = GetExternalCategories($this->feed_id); // we will need it later
@@ -276,7 +347,9 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         return xml_fetch($this->feed['server_url'], ORG_NAME, $this->feed['password'], $this->feed['user_id'], $this->r_slice_id, $this->feed['newest_item'], $categories2fed);
     }
-
+    /** _getExactData function
+     *
+     */
     function _getExactData() {
         global $debugfeed;
 
@@ -286,7 +359,9 @@ class AA_Grabber_Aarss extends AA_Grabber {
         $local_list->setFromSlice('', $slice);  // no conditions - all items
         $local_pairs = $local_list->getPairs();
 
-        if ($debugfeed > 8) { huhl('_getExactData() - Local pairs:', $local_pairs); }
+        if ($debugfeed > 8) {
+            huhl('_getExactData() - Local pairs:', $local_pairs);
+        }
 
         $base["node_name"]       = ORG_NAME;
         $base["password"]        = $this->feed['password'];
@@ -304,7 +379,9 @@ class AA_Grabber_Aarss extends AA_Grabber {
         $remote_list->setList(http_fetch($this->feed['server_url'], $init));
         $remote_pairs = $remote_list->getPairs();
 
-        if ($debugfeed > 8) { huhl('_getExactData() - Remote pairs:', $remote_pairs); }
+        if ($debugfeed > 8) {
+            huhl('_getExactData() - Remote pairs:', $remote_pairs);
+        }
 
         // Get all ids, which was updated later than items in local slice
         $ids = array();   // initialize
@@ -314,7 +391,9 @@ class AA_Grabber_Aarss extends AA_Grabber {
             }
         }
 
-        if ($debugfeed >= 2) { huhl(' Local items: ', count($local_pairs), ' Remote items: ', count($remote_pairs), ' Asked for update: ', count($ids)); }
+        if ($debugfeed >= 2) {
+            huhl(' Local items: ', count($local_pairs), ' Remote items: ', count($remote_pairs), ' Asked for update: ', count($ids));
+        }
 
         // No items to fed?
         if (count($ids) <= 0) {
@@ -324,12 +403,16 @@ class AA_Grabber_Aarss extends AA_Grabber {
         $finish        = $base;
         $finish['ids'] = implode('-',$ids);
 
-        if ($debugfeed > 8) { huhl('_getExactData() - http_fetch:', $this->feed['server_url'], $finish); }
+        if ($debugfeed > 8) {
+            huhl('_getExactData() - http_fetch:', $this->feed['server_url'], $finish);
+        }
 
         return http_fetch($this->feed['server_url'], $finish);
     }
 
-    /** Fetch data and parse it **/
+    /** prepare function
+     *  Fetch data and parse it
+     */
     function prepare() {
         global $DEFAULT_RSS_MAP, $debugfeed;
 
@@ -370,7 +453,9 @@ class AA_Grabber_Aarss extends AA_Grabber {
         // if an error occured, write it to the LOG
         if (substr($xml_data,0,1) != "<") {
             writeLog("CSN","Feeding mode: $xml_data");
-            if ($debugfeed >= 1) print("\n<br>$feed_debug_name:bad data returned: $xml_data");
+            if ($debugfeed >= 1) {
+                print("\n<br>$feed_debug_name:bad data returned: $xml_data");
+            }
             return false;
         }
 
@@ -379,11 +464,13 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         if (!( $this->aa_rss = aa_rss_parse( $xml_data ))) {
             writeLog("CSN","Feeding mode: Unable to parse XML data");
-            if ($debugfeed >= 1) print("\n<br>$feed_debug_name:$feed[server_url]:unparsable: <hr>".htmlspecialchars($xml_data)."<hr>");
+            if ($debugfeed >= 1) print("\n<br>$feed_debug_name:".$feed['server_url'].":unparsable: <hr>".htmlspecialchars($xml_data)."<hr>");
             return false;
         }
 
-        if ($debugfeed >= 5) { print("\n<br>Parses ok"); }
+        if ($debugfeed >= 5) {
+            print("\n<br>Parses ok");
+        }
 
         //  --- output parsed - great! - we are going to store
 
@@ -427,7 +514,9 @@ class AA_Grabber_Aarss extends AA_Grabber {
         }
 
     }
-
+    /** getItem function
+     *
+     */
     function getItem() {
         if (!is_array($this->aa_rss['items'])) {
             return false;
@@ -486,7 +575,9 @@ class AA_Grabber_Aarss extends AA_Grabber {
         $ic->setItemId($item_id);
         return $ic;
     }
-
+    /** finish function
+     *
+     */
     function finish() {
         if ($this->feed['feed_type'] == FEEDTYPE_APC) {
             $db = getDB();

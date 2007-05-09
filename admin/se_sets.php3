@@ -1,29 +1,33 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/** se_sets.php3 - creates sets
+ *   expected $slice_id for edit slice
+ *   optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
+ *
+ *   not nic - quick & dirty solution, for now. Will be rewritten.
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
-// se_sets.php3 - creates sets
-// expected $slice_id for edit slice
-// optionaly $Msg to show under <h1>Hedline</h1> (typicaly: update successful)
-
-// not nic - quick & dirty solution, for now. Will be rewritten.
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
@@ -56,7 +60,7 @@ if ( $update ) {
         ValidateInput("name3",  _m("Name 3"),      $name3,  $err, false, "text");
         ValidateInput("cond3",  _m("Condition 3"), $cond3,  $err, false, "text");
         ValidateInput("objid3", _m("Object ID 3"), $objid3, $err, false, "text");
-        
+
         if ( count($err) > 1) {
             break;
         }
@@ -77,17 +81,17 @@ if ( $update ) {
             $set2->setName($name2);
             $set2->setOwner($slice_id);
             // those id ase marked so we can use it as group in Reader permissions
-            $set2->setId($objid2 ? $objid2 : new_id(1));  
+            $set2->setId($objid2 ? $objid2 : new_id(1));
             $set2->save();
         }
-        
+
         if ($cond3 AND $name3) {
             $set3 = new AA_Set();
             $set3->addCondsFromString($cond3);
             $set3->setName($name3);
             $set3->setOwner($slice_id);
             // those id ase marked so we can use it as group in Reader permissions
-            $set3->setId($objid3 ? $objid3 : new_id(1));  
+            $set3->setId($objid3 ? $objid3 : new_id(1));
             $set3->save();
         }
 
@@ -100,12 +104,12 @@ if ( $update ) {
             $set4->setId($objid4 ? $objid4 : new_id(1));
             $set4->save();
         }
-        
-        
+
+
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
     } while (false);
-    
+
     if ( count($err) <= 1 ) {
         $Msg = MsgOK(_m("Sets stored successfully"));
     }
@@ -113,14 +117,14 @@ if ( $update ) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo _m("Admin - Item Sets");?></TITLE>
-</HEAD>
+<title><?php echo _m("Admin - Item Sets");?></title>
+</head>
 
 <?php
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin", "sets");
 
-echo "<H1><B>" . _m("Admin - Item Sets") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - Item Sets") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
@@ -129,7 +133,7 @@ $form_buttons = array ("update",
                       );
 
 ?>
-<form name=f method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="f" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
 FrmTabCaption(_m("Sets"), '','',$form_buttons, $sess, $slice_id);
 
@@ -140,7 +144,7 @@ foreach( $set_ids as $i => $set_id ) {
     if ( is_null($set)) {
         continue;
     }
-    $k = $i+1; 
+    $k = $i+1;
     FrmHidden("objid$k", $set->getId());
     FrmInputText("name$k", _m("Set name %1",  array($k)), $set->getName());
     FrmTextArea("cond$k", _m("Conditions %1", array($k)), $set->getCondsAsString());
@@ -153,7 +157,7 @@ for ( $i=$k+1; $i<5 ;$i++) {
 
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
-</FORM>
+</form>
 <?php
 HtmlPageEnd();
 page_close()

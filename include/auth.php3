@@ -3,42 +3,48 @@
  * Auth feature (mod_auth_mysql) related functions:
  * Event handlers and maintenance.
  *
- * @package ReaderInput
- * @version $Id$
- * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications
-*/
-/*
-Copyright (C) 1999-2003 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   ReaderInput
+ * @version   $Id$
+ * @author    Jakub Adamek, Econnect
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 2002-3 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 //require_once "config.php3";
 require_once AA_INC_PATH."util.php3";
 
-if (!is_object( $db )) $db = new DB_AA;
+if (!is_object( $db )) {
+    $db = new DB_AA;
+}
 
 // status codes:
 define("SC_ACTIVE", 1);
 define("SC_HOLDING_BIN", 2);
 
 // --------------------------------------------------------------------------
-/** Updates the mysql_auth tables <em>auth_user</em> and <em>auth_group</em>.
+/** AuthDeleteReaders function
+*   Updates the mysql_auth tables <em>auth_user</em> and <em>auth_group</em>.
 *   @param array $item_ids non-quoted packed IDs
+*   @param $slice_id
 */
 function AuthDeleteReaders( $item_ids, $slice_id ) {
     global $db;
@@ -61,8 +67,10 @@ function AuthDeleteReaders( $item_ids, $slice_id ) {
 }
 
 // --------------------------------------------------------------------------
-/** Updates the mysql_auth tables <em>auth_user</em> and <em>auth_group</em>.
+/** AuthUpdateReaders function
+*   Updates the mysql_auth tables <em>auth_user</em> and <em>auth_group</em>.
 *   @param array $item_ids non-quoted packed IDs
+*   @param $slice_id
 */
 function AuthUpdateReaders( $item_ids, $slice_id ) {
     $sl_type             = AA_Slices::getSliceProperty($slice_id, 'type');
@@ -88,7 +96,10 @@ function AuthUpdateReaders( $item_ids, $slice_id ) {
     }
     AuthMaintenance();
 }
-
+/** AuthGetReadersData function
+ * @param $slice_id
+ * @param $restrict_zids = false
+ */
 function AuthGetReadersData($slice_id, $restrict_zids=false) {
     $auth_field_group = AA_Slices::getSliceProperty($slice_id, 'auth_field_group');
     $zids  = QueryZIDs( array($slice_id), '', '', 'ALL', 0, $restrict_zids);
@@ -97,7 +108,8 @@ function AuthGetReadersData($slice_id, $restrict_zids=false) {
 }
 
 // --------------------------------------------------------------------------
-/** Adds readers moved automatically from Pending to Active, deletes readers moved from
+/** AuthMaintenance function
+*   Adds readers moved automatically from Pending to Active, deletes readers moved from
 *   Active to Expired. Does some sanity checks also. Writes the results to
 *   the table <em>auth_log</em>.
 *
@@ -203,7 +215,9 @@ function AuthMaintenance() {
 }
 
 // --------------------------------------------------------------------------
-
+/** AuthDeleteReader function
+ * @param $username
+ */
 function AuthDeleteReader($username) {
     global $db;
     $db->query("DELETE FROM auth_user WHERE username='".addslashes($username)."'");
@@ -211,7 +225,11 @@ function AuthDeleteReader($username) {
 }
 
 // --------------------------------------------------------------------------
-
+/** AuthUpdateReader function
+ * @param $username
+ * @param $password
+ * @param $groups
+ */
 function AuthUpdateReader($username, $password, $groups) {
     global $db;
     $db->query("REPLACE INTO auth_user (username, passwd, last_changed)
@@ -220,7 +238,9 @@ function AuthUpdateReader($username, $password, $groups) {
 }
 
 // --------------------------------------------------------------------------
-
+/** AuthIsActive function
+ * @param $reader
+ */
 function AuthIsActive($reader) {
     return ($reader->getValue('status_code.....') == SC_ACTIVE) AND
            ($reader->getValue('publish_date....') <= time()) AND
@@ -230,10 +250,13 @@ function AuthIsActive($reader) {
 
 // --------------------------------------------------------------------------
 
-/** Writes user's groups to the database.
+/** AuthUpdateGroups function
+*   Writes user's groups to the database.
 *   You can specify multiple groups for the user in two ways:
 *      - pass $groups as array( 0 => array('value' => ...),
 *      - separate groups in $proups string by semicolon ';'
+*   @param $username
+*   @param $groups
 */
 function AuthUpdateGroups($username, $groups = array()) {
     global $db;
@@ -252,7 +275,10 @@ function AuthUpdateGroups($username, $groups = array()) {
 }
 
 // --------------------------------------------------------------------------
-
+/** AuthSelect function
+ * @param $auth_field_group
+ * @return string
+ */
 function AuthSelect($auth_field_group) {
     return "
     SELECT publish_date, expiry_date, status_code, groups.text AS groups,
@@ -268,7 +294,12 @@ function AuthSelect($auth_field_group) {
 
 // --------------------------------------------------------------------------
 
-/** Called from Event_ItemsAfterPropagateConstantChanges(). */
+/** AuthChangeGroups function
+ * Called from Event_ItemsAfterPropagateConstantChanges().
+ * @param $constant_id
+ * @param $oldvalue
+ * @param $newvalue
+ */
 function AuthChangeGroups($constant_id, $oldvalue, $newvalue) {
     global $db_usernames;
     if (!is_object($db_usernames)) {

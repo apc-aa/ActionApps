@@ -1,23 +1,31 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
+
 
 /** PageCache class used for caching informations into database
  *  uses table:
@@ -36,15 +44,19 @@ require_once AA_INC_PATH."varset.php3";
 class PageCache  {
     var $cacheTime     = 600; // number of seconds to store cached informations
 
-    /** PageCache class constructor */
+    /** PageCache function
+     *  PageCache class constructor
+     * @param $ct
+     */
     function PageCache($ct = 600) {
         $this->cacheTime = $ct;
     }
 
-    /** Private method - serialized specified global variables
+    /** getKeyString function
+     *  Private method - serialized specified global variables
      *  Returns keystring
-     *  $keyVars - array of names of global variables which identifies cached
-     *             information
+     *  @param $keyVars - array of names of global variables which identifies cached
+     *                    information
      */
     function getKeystring($keyVars) {
         foreach ( (array)$keyVars as $var ) {
@@ -53,16 +65,26 @@ class PageCache  {
         return $ks;
     }
 
-    /** Returns cached informations or false */
+    /** get function
+     *  Returns cached informations or false
+     * @param $keyString
+     * @param $action
+     */
     function get($keyString, $action='get') {
-        if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->get(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache action:'.$action, 'Pagecach end' );
+        if ( $GLOBALS['debug'] ) {
+            huhl("<br>Pagecache->get(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache action:'.$action, 'Pagecach end' );
+        }
         if ( ENABLE_PAGE_CACHE ) {
             if ( $action == 'invalidate' ) {
                 $this->invalidateById( $this->getKeyId($keyString) );
-                if ( $GLOBALS['debug'] ) huhl("<br>Pagecache: invlaidating");
+                if ( $GLOBALS['debug'] ) {
+                    huhl("<br>Pagecache: invlaidating");
+                }
                 return false;
             } elseif (is_numeric($action) ) {  // nocache=1
-                if ( $GLOBALS['debug'] ) huhl("<br>Pagecache: return false - nocache");
+                if ( $GLOBALS['debug'] ) {
+                    huhl("<br>Pagecache: return false - nocache");
+                }
                 return false;
             }
             return $this->getById( $this->getKeyId($keyString) );
@@ -70,13 +92,18 @@ class PageCache  {
         return false;
     }
 
-    /** Calls $function with $params and returns its return value. The result
+    /** cacheDb function
+     *  Calls $function with $params and returns its return value. The result
      *  value is then stored into pagecache (database), so next call
      *  of the $function (also from another script) with the same parameters
      *  is returned from cache - function is not performed.
      *  Use this feature mainly for repeating, time consuming functions!
      *  You could use also object methods - then the $function parameter should
      *  be array (see http://php.net/manual/en/function.call-user-func.php)
+     * @param $function
+     * @param $params
+     * @param $str2find
+     * @param $action
      */
     function cacheDb($function, $params, $str2find, $action='get') {
         $keyString = (serialize($function).serialize($params));
@@ -90,8 +117,13 @@ class PageCache  {
         return $res;
     }
 
-    /** Look in memory (contentcache) for the result. If not found, use database
+    /** cacheMemDb function
+     *  Look in memory (contentcache) for the result. If not found, use database
      *  (pagecache). The result is stored into memory as well as to the database
+     * @param $function
+     * @param $params
+     * @param $str2find
+     * @param $action
      */
     function cacheMemDb($function, $params, $str2find, $action='get') {
         global $contentcache;
@@ -104,13 +136,20 @@ class PageCache  {
         return $res;
     }
 
-    /** Wrapper for contentcache->get_result */
+    /** cacheMem function
+     *  Wrapper for contentcache->get_result
+     * @param $function
+     * @param $params
+     */
     function cacheMem($function, $params) {
         global $contentcache;
         return $contentcache->get_result( $function, $params );
     }
 
-    /** Get cache content by ID (not keystring) */
+    /** getById function
+     *  Get cache content by ID (not keystring)
+     * @param $keyid
+     */
     function getById($keyid) {
         $ret   = false;
         $db    = getDB();
@@ -125,21 +164,32 @@ class PageCache  {
         return $ret;
     }
 
-    /** Returns database identifier of the cache value (MD5 of keystring) */
+    /** getKeyId function
+     *  Returns database identifier of the cache value (MD5 of keystring)
+     * @param $keyString
+     */
     function getKeyId($keyString) {
         return md5($keyString);
     }
 
-    /** Cache informations based on $keyString
+    /** store function
+     *  Cache informations based on $keyString
      *  Returns database identifier of the cache value (MD5 of keystring)
+     * @param $keyString
+     * @param $content
+     * @param $str2find
      */
     function store($keyString, $content, $str2find) {
         global $cache_nostore;
-        if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache str2find:'.$str2find->getStr2find(), '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
+        if ( $GLOBALS['debug'] ) {
+            huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache str2find:'.$str2find->getStr2find(), '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
+        }
         if (ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
             $keyid  = $this->getKeyId($keyString);
-            if ( $GLOBALS['debug'] ) huhl("<br>Pagecache->store(): - storing");
+            if ( $GLOBALS['debug'] ) {
+                huhl("<br>Pagecache->store(): - storing");
+            }
             $varset = new Cvarset( array( 'content' => $content,
                                           'stored'  => time()));
             $varset->addkey('id', 'text', $keyid);
@@ -165,7 +215,10 @@ class PageCache  {
         return $keyid;
     }
 
-    /** Remove specified ids from cache */
+    /** invalidateById function
+     *  Remove specified ids from cache
+     * @param $keys
+     */
     function invalidateById( $keys ) {
         $keystring = join("','", (array)$keys);
         if ( $keystring != '' ) {
@@ -175,14 +228,18 @@ class PageCache  {
         }
     }
 
-    /** Clears all old cached data */
+    /** purge function
+     *  Clears all old cached data
+     */
     function purge() {
         $tm   = time();
         $keys = GetTable2Array("SELECT id FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'", '', 'id');
         $this->invalidateById( $keys );
     }
 
-    /** Remove cached informations for all rows which have the $cond in str2find
+    /** invalidateFor function
+     *  Remove cached informations for all rows which have the $cond in str2find
+     * @param $cond
      */
     function invalidateFor($cond) {
         // We do not want to report errors here. Sometimes this SQL leads to:
@@ -205,7 +262,9 @@ class PageCache  {
         $this->invalidateById( $keys );
     }
 
-    /** Remove cached informations for all rows */
+    /** invalidate function
+     *  Remove cached informations for all rows
+     */
     function invalidate() {
         $db  = getDB();
         $SQL = "DELETE FROM pagecache";
@@ -222,12 +281,19 @@ class PageCache  {
  */
 class CacheStr2find {
     var $ids = array();   /** */
-
+    /** CacheStr2find function
+     * @param $ids
+     * @param $type
+     */
     function CacheStr2find( $ids=null, $type='slice_id') {
         $this->add($ids, $type);
     }
 
-    /** Add ids (array) of specified type (common to all added ids) */
+    /** add function
+     *  Add ids (array) of specified type (common to all added ids)
+     * @param $ids
+     * @param $type
+     */
     function add($ids, $type='slice_id') {
         if ( !$ids ) {
             return;
@@ -236,7 +302,9 @@ class CacheStr2find {
             $this->ids["$type=$id"] = true;   // match type-id pair
         }
     }
-
+    /** add_str2find function
+     * @param $str2find
+     */
     function add_str2find($str2find) {
         if (strtolower(get_class($str2find)) == 'cachestr2find') {
             foreach ($str2find->ids as $k => $v) {
@@ -244,12 +312,16 @@ class CacheStr2find {
             }
         }
     }
-
+    /** clear function
+     *
+     */
     function clear() {
         unset($this->ids);
         $this->ids = array();
     }
-
+    /** store function
+     * @param $keyid
+     */
     function store($keyid) {
         $varset = new Cvarset( array( 'pagecache_id' => $keyid,
                                       'str2find'  => ''));
@@ -259,7 +331,9 @@ class CacheStr2find {
             $varset->doInsert('pagecache_str2find');
         }
     }
-
+    /** getStr2find function
+     *
+     */
     function getStr2find() {
         $out = '';
         foreach ((array)$this->ids as $id => $v) {

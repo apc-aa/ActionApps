@@ -1,15 +1,38 @@
 <?php
-/** $Id$
- *
+/**
  * Application wide configuration options
  *
- * This is the Action Application main configuration file. In fact, this file
- * is a php script which is included into every php program, thus, php syntax
- * is used. This basically means that this file defines constants in the form:
+ * This is the ActionApps main configuration file. In fact, this file is a PHP
+ * script which is included into every AA page, thus, php syntax is used.
+ * This basically means that this file defines constants in the form:
+ *
  *        $name = "value";
  *    or in the form
  *        define("name", "value);
- */
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
+*/
 
 /** AA_SITE_PATH defines the webserver's home directory. It must be an absolute
  *  path from the root. Make sure to terminate this path with a slash!
@@ -65,13 +88,13 @@ define("ORG_NAME","An APC Member");
 
 
 /** DB Access Configuration */
-  define("DB_HOST", "my.domain.org"); // server on which the database (MySQL) is
-                                      // often you can use "localhost" here
-  define("DB_NAME",    "aadb");       // Name of database
-  define("DB_USER",    "aadbuser");   // User name for database access
-  define("DB_PASSWORD","test.pw");    // Database password
-  define("DB_TYPE", "db_mysql");      // you can (in theory) use also another
-                                      // databases like db_odbc, db_mssql, ...
+define("DB_HOST", "my.domain.org"); // server on which the database (MySQL) is
+                                  // often you can use "localhost" here
+define("DB_NAME",    "aadb");       // Name of database
+define("DB_USER",    "aadbuser");   // User name for database access
+define("DB_PASSWORD","test.pw");    // Database password
+define("DB_TYPE", "db_mysql");      // you can (in theory) use also another
+                                  // databases like db_odbc, db_mssql, ...
 
 /** MySQL 4.1 is able to use different character sets for the communication.
  *  Standard for MySQL client communication in PHP5 is UTF (probably), but if
@@ -83,8 +106,8 @@ define("ORG_NAME","An APC Member");
  *     define("DB_COLLATION_CONNECTION", "cp1250_czech_cs");
  *  Default is: commented out
  */
-  define("DB_CHARACTER_SET", "cp1250");
-  define("DB_COLLATION_CONNECTION", "cp1250_czech_cs");
+define("DB_CHARACTER_SET", "cp1250");
+define("DB_COLLATION_CONNECTION", "cp1250_czech_cs");
 
 
 /** Use MySQL non-persistent database connect (mysql_connect())
@@ -101,20 +124,20 @@ define('AA_USE_NON_PERSISTENT_CONNECT', false);
  *  default is "sql" - all user permissions are stored in sql database.
  *  You probably do not need to change this setting
  */
-  define("PERM_LIB", "sql");
+define("PERM_LIB", "sql");
 
-  /** LDAP Configuration
-   *  You need to configure it only if you use "ldap" permission system
-   *  (@see PERM_LIB above)
-   */
-  // define("LDAP_HOST", "localhost");
-  // define("LDAP_BINDDN", "cn=aauser,ou=AA");
-  // define("LDAP_BINDPW", "somepasswd");  // password
-  // define("LDAP_BASEDN", "ou=AA");
-  // define("LDAP_PEOPLE", "ou=People,ou=AA");
-  // define("LDAP_GROUPS", "ou=AA");
-  // define("LDAP_ACLS", "ou=ACLs,ou=AA");
-  // define("LDAP_PORT", 389);            // standard LDAP port: 389
+/** LDAP Configuration
+*  You need to configure it only if you use "ldap" permission system
+*  (@see PERM_LIB above)
+*/
+// define("LDAP_HOST", "localhost");
+// define("LDAP_BINDDN", "cn=aauser,ou=AA");
+// define("LDAP_BINDPW", "somepasswd");  // password
+// define("LDAP_BASEDN", "ou=AA");
+// define("LDAP_PEOPLE", "ou=People,ou=AA");
+// define("LDAP_GROUPS", "ou=AA");
+// define("LDAP_ACLS", "ou=ACLs,ou=AA");
+// define("LDAP_PORT", 389);            // standard LDAP port: 389
 
 /** Default language file
  *  Language files are stored in include/lang/ directory. At this time you can
@@ -141,20 +164,20 @@ define('TOEXECUTE_ALLOWED_TIME', 59.0);
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#fileupload )
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1118 )
  */
-  /**  max size of file in file/picture uploading */
-  define("IMG_UPLOAD_MAX_SIZE", "400000");
-  /** url to image/file directory */
-  define("IMG_UPLOAD_URL", AA_HTTP_DOMAIN."img_upload/");
-  /** path from server root to image/file directory */
-  define("IMG_UPLOAD_PATH", AA_SITE_PATH."img_upload/");
-  /** mkdir perms - AA creates new directory for each slice in image/file upload
-   *  directory specified above. Each slice then have its own subdirectory.
-   *  Default is 774 */
-  define("IMG_UPLOAD_DIR_MODE",  octdec('0774'));
-  /** perms for uploaded file. If not specified, the permissions are left, as
-   *  is after the upload (based on configuration of your server
-   *  Default is: commented out */
-  // define('IMG_UPLOAD_FILE_MODE', octdec('0664'));
+/**  max size of file in file/picture uploading */
+define("IMG_UPLOAD_MAX_SIZE", "400000");
+/** url to image/file directory */
+define("IMG_UPLOAD_URL", AA_HTTP_DOMAIN."img_upload/");
+/** path from server root to image/file directory */
+define("IMG_UPLOAD_PATH", AA_SITE_PATH."img_upload/");
+/** mkdir perms - AA creates new directory for each slice in image/file upload
+*  directory specified above. Each slice then have its own subdirectory.
+*  Default is 774 */
+define("IMG_UPLOAD_DIR_MODE",  octdec('0774'));
+/** perms for uploaded file. If not specified, the permissions are left, as
+*  is after the upload (based on configuration of your server
+*  Default is: commented out */
+// define('IMG_UPLOAD_FILE_MODE', octdec('0664'));
 
 /** Maximum size of files included by {include(file)} inline alias */
 define("INCLUDE_FILE_MAX_SIZE", "400000");
@@ -167,56 +190,56 @@ define("INCLUDE_FILE_MAX_SIZE", "400000");
 define("SCROLLER_LENGTH", 3);
 
 /** Select color profile for administation pages */
-  // WebNetworks profile (green - default)
-  define("COLOR_TABBG",     "#A8C8B0");           // background of tables
-  define("COLOR_TABTITBG",  "#589868");           // background of table titles
-  define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
-                                  // you can redefine the colors in styles too
-  define("ADMIN_CSS",       "admin.css");         // style for admin interface
-  define("ADM_SLICE_CSS",   "adm_slice.css");     // style for public view of
-                                                  // not encapsulated slices
+// WebNetworks profile (green - default)
+define("COLOR_TABBG",     "#A8C8B0");           // background of tables
+define("COLOR_TABTITBG",  "#589868");           // background of table titles
+define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
+                              // you can redefine the colors in styles too
+define("ADMIN_CSS",       "admin.css");         // style for admin interface
+define("ADM_SLICE_CSS",   "adm_slice.css");     // style for public view of
+                                              // not encapsulated slices
 
-  /* ## IGC profile ##
-  define("COLOR_TABBG",     "#A8C8B0");           // background of tables
-  define("COLOR_TABTITBG",  "#589868");           // background of table titles
-  define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
-                                  // you can redefine the colors in styles too
-  define("ADMIN_CSS",       "admin-igc.css");     // style for admin interface
-  define("ADM_SLICE_CSS",   "adm_slice-igc.css"); // style for public view of
-                                                  // not encapsulated slices */
+/* ## IGC profile ##
+define("COLOR_TABBG",     "#A8C8B0");           // background of tables
+define("COLOR_TABTITBG",  "#589868");           // background of table titles
+define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
+                              // you can redefine the colors in styles too
+define("ADMIN_CSS",       "admin-igc.css");     // style for admin interface
+define("ADM_SLICE_CSS",   "adm_slice-igc.css"); // style for public view of
+                                              // not encapsulated slices */
 
-  /* ## Comlink profile ##
-  define("COLOR_TABBG",     "#A8C8B0");           // background of tables
-  define("COLOR_TABTITBG",  "#589868");           // background of table titles
-  define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
-                                  // you can redefine the colors in styles too
-  define("ADMIN_CSS",       "admin-cml.css");     // style for admin interface
-  define("ADM_SLICE_CSS",   "adm_slice-cml.css"); // style for public view of
-                                                  // not encapsulated slices */
+/* ## Comlink profile ##
+define("COLOR_TABBG",     "#A8C8B0");           // background of tables
+define("COLOR_TABTITBG",  "#589868");           // background of table titles
+define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
+                              // you can redefine the colors in styles too
+define("ADMIN_CSS",       "admin-cml.css");     // style for admin interface
+define("ADM_SLICE_CSS",   "adm_slice-cml.css"); // style for public view of
+                                              // not encapsulated slices */
 
-  /* ## Econnects profile ##
-  define("COLOR_TABBG",     "#EBDABE");           // background of tables
-  define("COLOR_TABTITBG",  "#584011");           // background of table titles
-  define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
-                                  // you can redefine the colors in styles too
-  define("ADMIN_CSS",       "admin-ecn.css");     // style for admin interface
-  define("ADM_SLICE_CSS",   "adm_slice.css");     // style for public view of
-                                                  // not encapsulated slices */
+/* ## Econnects profile ##
+define("COLOR_TABBG",     "#EBDABE");           // background of tables
+define("COLOR_TABTITBG",  "#584011");           // background of table titles
+define("COLOR_BACKGROUND","#F5F0E7");           // admin pages background
+                              // you can redefine the colors in styles too
+define("ADMIN_CSS",       "admin-ecn.css");     // style for admin interface
+define("ADM_SLICE_CSS",   "adm_slice.css");     // style for public view of
+                                              // not encapsulated slices */
 
 /** Page cache setting
  *  pages with items/views/slices/sites are automaticaly cached by AA
  *  The caching system is quite smart - it caches only unchanged pages.
  *  However, You can switch caching off. */
-  define( "ENABLE_PAGE_CACHE", true );
+define( "ENABLE_PAGE_CACHE", true );
 
-  /** CACHE_TTL defines the time in seconds the page will be stored in cache
-   *  (Time To Live) - in fact it can be infinity because of automatic cache
-   *  flushing on page change (but then there will be problem with item
-   *  expiration). Typically this is 600, i.e. 10 minutes, but 1 day (86400)
-   *  makes for faster serving
-   *  See: http://actionapps.org/en/Troubleshooting_and_Optimization#Caching
-   */
-  define("CACHE_TTL", 600 );
+/** CACHE_TTL defines the time in seconds the page will be stored in cache
+*  (Time To Live) - in fact it can be infinity because of automatic cache
+*  flushing on page change (but then there will be problem with item
+*  expiration). Typically this is 600, i.e. 10 minutes, but 1 day (86400)
+*  makes for faster serving
+*  See: http://actionapps.org/en/Troubleshooting_and_Optimization#Caching
+*/
+define("CACHE_TTL", 600 );
 
 
 /** Convertors - you can install it and then use
@@ -302,18 +325,18 @@ define("DOCUMENTATION_URL", "http://actionapps.org/aa/doc");
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#1106 )
  *  ( @see http://apc-aa.sourceforge.net/faq/index.shtml#fileman )
  */
-  /** mkdir perms, set by variable because constants don't work with octal
-   *  values */
-  define('FILEMAN_MODE_DIR', octdec('0770'));
-  /** create file perms */
-  define('FILEMAN_MODE_FILE', octdec('0664'));
-  /** in this directory individual slice directories and directory "templates"
-   *  are created  */
-  define("FILEMAN_BASE_DIR",AA_SITE_PATH."apc-aa-files/");
-  /** URL path to the base directory */
-  define("FILEMAN_BASE_URL",AA_HTTP_DOMAIN."apc-aa-files/");
-  /** time in seconds to allow to upload big files */
-  define("FILEMAN_UPLOAD_TIME_LIMIT", 600);
+/** mkdir perms, set by variable because constants don't work with octal
+*  values */
+define('FILEMAN_MODE_DIR', octdec('0770'));
+/** create file perms */
+define('FILEMAN_MODE_FILE', octdec('0664'));
+/** in this directory individual slice directories and directory "templates"
+*  are created  */
+define("FILEMAN_BASE_DIR",AA_SITE_PATH."apc-aa-files/");
+/** URL path to the base directory */
+define("FILEMAN_BASE_URL",AA_HTTP_DOMAIN."apc-aa-files/");
+/** time in seconds to allow to upload big files */
+define("FILEMAN_UPLOAD_TIME_LIMIT", 600);
 
 /** XMGETTEXT language files - this setting is needed only for AA developers
  *  who want to run xmgettext (see misc/mgettext/index.php3). */

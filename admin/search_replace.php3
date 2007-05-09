@@ -3,28 +3,28 @@
  * Form displayed in popup window allowing search and replace item content
  * for specified items
  *
- * @version $Id$
- * @author Honza Malik <honza.malik@ecn.cz>
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @param $chb[] - array of selected users (in reader management slice)
- */
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once "../include/init_page.php3";
@@ -46,23 +46,44 @@ define('SEARCH_REPLACE_PREFIX', 'transform');
 class AA_Transformation {
     var $messages   = array();
     var $parameters = array();
-
+/** name function
+ *
+ */
     function name()         {}
+/** description function
+ *
+ */
     function description()  {}
+/** transform function
+ *
+ */
     function transform()    {}
+/** parameters function
+ * @return array
+ */
     function parameters()   { return array(); }
 
-    /** Construct name of input form variable
+    /** _getVarname function
+     *  Construct name of input form variable
      *  It consist of classname, so we are able to guess which variable
      *  is used for which class (child of AA_Transformation). It also contain
      *  $input_id, so we are able to have more than one instance of the class
      *  in one form
+     * @param $name
+     * @param $input_id
+     * @param $classname
+     * @return string
      */
     function _getVarname($name, $input_id, $classname) {
         return $input_id. substr($classname,18).$name;
     }
 
-    /** Grabs only variables, which is intended for class $classname */
+    /** getRequestVariables function
+     * Grabs only variables, which is intended for class $classname
+     * @param $input_id
+     * @param $classname
+     * @return string
+     */
     function getRequestVariables($input_id, $classname) {
         $ret = array();
         if ( substr($classname,0,18) != 'AA_Transformation_' ) {
@@ -78,26 +99,39 @@ class AA_Transformation {
         return $ret;
     }
 
-    /** Records Error/Information messaage */
+    /** message function
+     * Records Error/Information messaage
+     * @param $text
+     */
     function message($text) {
         $this->messages[] = $text;
     }
 
-    /** Print Error/Information messaages */
+    /** report function
+     * Print Error/Information messaages
+     */
     function report()       {
         return join('<br>', $this->messages);
     }
-
+    /** clear_report function
+     *
+     */
     function clear_report() {
         unset($this->messages);
         $this->messages = array();
     }
-
+    /** getParam function
+     * @param $param_name
+     * @return $this->$param_name
+     */
     function getParam($param_name) {
 //        return $this->parameters[$param_name]->getValue();
         return $this->$param_name;
     }
-
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
     function htmlSetting($input_prefix, $params) {
         ob_start();
         FrmTabCaption();
@@ -182,20 +216,30 @@ class AA_Transformation_Value extends AA_Transformation {
 
     var $new_flag;
     var $new_content;
-
+    /** AA_Transformation_Value function
+     * @param $param
+     */
     function AA_Transformation_Value($param) {
         $this->new_flag    = $param['new_flag'];
         $this->new_content = $param['new_content'];
     }
-
+    /** name function
+     * @return message
+     */
     function name() {
         return _m("Fill by value");
     }
-
+    /** description function
+     * @return message
+     */
     function description() {
         return _m("Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {switch()...}, ...");
     }
-
+    /** transform function
+     * @param $field_id
+     * @param $content4id (by link)
+     * @return array
+     */
     function transform($field_id, &$content4id) {
         $slice = AA_Slices::getSlice($content4id->getSliceID());
         $item = new AA_Item($content4id->getContent(),$slice->aliases());
@@ -210,7 +254,10 @@ class AA_Transformation_Value extends AA_Transformation {
 
         return array( 0 => array('value' => $text, 'flag' => $flag ));
     }
-
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
     function htmlSetting($input_prefix, $params) {
         $flag_options = array('h' => _m('HTML'),
                               't' => _m('Plain text'),
@@ -243,20 +290,29 @@ class AA_Transformation_AddValue extends AA_Transformation {
 
     var $new_flag;
     var $new_content;
-
+    /** AA_Transformation_AddValue function
+     * @param $param
+     */
     function AA_Transformation_AddValue($param) {
         $this->new_flag    = $param['new_flag'];
         $this->new_content = $param['new_content'];
     }
-
+    /** name function
+     * @return message
+     */
     function name() {
         return _m("Add value to field");
     }
-
+    /** description function
+     * @return message
+     */
     function description() {
         return _m("Add new value to current content of field, so the field becames multivalue.<br>You can use any AA expressions like {switch()...}, ... for new value.");
     }
-
+    /** transform function
+     * @param $field_id
+     * @param $content4id (by link)
+     */
     function transform($field_id, &$content4id) {
         $slice = AA_Slices::getSlice($content4id->getSliceID());
         $item = new AA_Item($content4id->getContent(),$slice->aliases());
@@ -271,7 +327,10 @@ class AA_Transformation_AddValue extends AA_Transformation {
         return array_merge($content4id->getValues($field_id), $new_value);
     }
 
-
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
     function htmlSetting($input_prefix, $params) {
         $flag_options = array('h' => _m('HTML'),
                               't' => _m('Plain text'),
@@ -300,13 +359,20 @@ class AA_Strreplace {
     var $method;
     var $pattern;
     var $replacements; // array
-
+    /** AA_Strreplace function
+     * @param $method
+     * @param $pattern
+     * @param $replacements
+     */
     function AA_Strreplace( $method, $pattern, $replacements ) {
         $this->method       = $method;
         $this->pattern      = $pattern;
         $this->replacements = $replacements;
     }
-
+    /** matches function
+     * @param $text
+     * @return string/false
+     */
     function matches($text) {
         switch ($this->method) {
             case 'regexp':  return (preg_match($pattern, $text) > 0);
@@ -314,7 +380,12 @@ class AA_Strreplace {
         }
         return false;
     }
-
+    /** replace function
+     * @param $value
+     * @param $flag
+     * @param $item (by link)
+     * @return array
+     */
     function replace($value, $flag, &$item) {
         $ret = array();
         foreach ( $this->replacements as $replacement) {
@@ -329,19 +400,30 @@ class AA_Strreplace {
 }
 
 class AA_Transformation_Translate extends AA_Transformation {
+    /** AA_Transformation_Translate function
+     * @param $param
+     */
     function AA_Transformation_Translate($param) {
         $this->new_flag    = $param['new_flag'];
         $this->translation = $param['translation'];
     }
-
+    /** name function
+     * @return message
+     */
     function name() {
         return _m("Translate");
     }
-
+    /** description function
+     * @return message
+     */
     function description() {
         return _m("Translates one value after other according to translation table. The result is multivalue, since each value of multivalue field is translated seperately.");
     }
-
+    /** transform function
+     * @param $field_id
+     * @param $content4id (by link)
+     * @return array/false
+     */
     function transform($field_id, &$content4id) {
         if (!$this->translation) {
             $this->message(_m('No translations specified.'));
@@ -373,7 +455,9 @@ class AA_Transformation_Translate extends AA_Transformation {
         }
         return $ret;
     }
-
+    /** _parseTranslation function
+     * @return $translations array
+     */
     function & _parseTranslation() {
         $translations = array();
         foreach (explode("\n",$this->translation) as $row) {
@@ -392,7 +476,10 @@ class AA_Transformation_Translate extends AA_Transformation {
         }
         return $translations;
     }
-
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
     function htmlSetting($input_prefix, $params) {
         $flag_options = array('h' => _m('HTML'),
                               't' => _m('Plain text'),
@@ -419,18 +506,28 @@ class AA_Transformation_Translate extends AA_Transformation {
 class AA_Transformation_CopyField extends AA_Transformation {
 
     var $field2copy;
+    /** AA_Transformation_CopyField function
+     * @param $param
+     */
     function AA_Transformation_CopyField($param) {
         $this->field2copy = $param['field2copy'];
     }
-
+    /** name function
+     * @return message
+     */
     function name() {
         return _m("Copy field");
     }
-
+    /** description function
+     * @return message
+     */
     function description() {
         return _m('If you select the field here, the "New content" text is not used. Selected field will be copied to the "Field" (including multivalues)');
     }
-
+    /** transform function
+     * @param $field_id
+     * @param $content4id (by link)
+     */
     function transform($field_id, &$content4id) {
         if (($this->field2copy == 'no_field') OR !$field_id OR ($field_id == 'no_field')) {
             $this->message(_m('Source or destination field is not specified.'));
@@ -439,7 +536,10 @@ class AA_Transformation_CopyField extends AA_Transformation {
         // get content from $field2copy field of current item
         return $content4id->getValues($this->field2copy);
     }
-
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
     function htmlSetting($input_prefix, $params) {
         ob_start();
         FrmTabCaption();
@@ -541,7 +641,7 @@ if ( !IsSuperadmin() ) {
 
 // create field_select array for field selection
 $field_select['no_field'] = _m('Select field...');
-$fields = $slice->fields('record');
+$fields                   = $slice->fields('record');
 foreach ($fields as $fld_id => $fld) {
     if ( !$restricted_fields[$fld_id] ) {
         $field_select[$fld_id] = $fld['name']. ' ('. $fld_id. ')';

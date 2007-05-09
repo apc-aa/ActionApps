@@ -1,28 +1,34 @@
 <?php
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/** se_mapping.php3 - mapping fields settings
+ *
+ *    expected $slice_id for edit slice
+ *    optionaly $from_slice_id for selected imported slice
+ *    optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
-// se_mapping.php3 - mapping fields settings
-
-// expected $slice_id for edit slice
-// optionaly $from_slice_id for selected imported slice
-// optionaly $Msg to show under <h1>Headline</h1> (typicaly: Fields' mapping update)
 
 require_once "../include/init_page.php3";
 
@@ -130,8 +136,8 @@ foreach ($to_fields as  $k => $v) {
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Admin - Content Pooling - Fields' Mapping");?></TITLE>
-<SCRIPT Language="JavaScript"><!--
+ <title><?php echo _m("Admin - Content Pooling - Fields' Mapping");?></title>
+<script Language="JavaScript"><!--
 
 function InitPage() {}
 
@@ -173,17 +179,17 @@ function Submit() {
   document.f.submit();
 }
 // -->
-</SCRIPT>
+</script>
 
-</HEAD>
-<BODY>
+</head>
+<body>
 <?php
 
 $useOnLoad = true;
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","mapping");
 
-echo "<H1><B>" . _m("Admin - Content Pooling - Fields' Mapping") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - Content Pooling - Fields' Mapping") . "</b></h1>";
 PrintArray($err);
 echo stripslashes($Msg);
 
@@ -195,12 +201,12 @@ $form_buttons = array("ext_slice"=>array("type"=>"hidden",
                                        "add"=>'onclick="Submit()"'),
                       "cancel"=>array("url"=>"se_fields.php3"));
 ?>
-<form enctype="multipart/form-data" method=post name="f" action="<?php echo $sess->url(self_base() . "se_mapping2.php3")?>">
+<form enctype="multipart/form-data" method="post" name="f" action="<?php echo $sess->url(self_base() . "se_mapping2.php3")?>">
 <?php
 FrmTabCaption(_m("Content Pooling - Fields' mapping"),'','',$form_buttons, $sess, $slice_id);
 ?>
         <tr>
-          <td align=left class=tabtxt align=center><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>
+          <td align="left" class="tabtxt" align="center"><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>
           <?php FrmSelectEasy("from_slice_id", $impslices, $from_slice_id, "OnChange=\"ChangeFromSlice()\""); ?></td>
          </tr>
 <?php
@@ -209,13 +215,13 @@ FrmTabSeparator(_m("Fields' mapping"));
     <tr><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
         <tr>
-          <td class=tabtxt align=center><b><?php echo _m("To") ?></b></td>
-          <td class=tabtxt align=center><b><?php echo _m("From") ?></b></td>
-          <td class=tabtxt align=center><b><?php echo _m("Value") ?></b></td>
+          <td class="tabtxt" align="center"><b><?php echo _m("To") ?></b></td>
+          <td class="tabtxt" align="center"><b><?php echo _m("From") ?></b></td>
+          <td class="tabtxt" align="center"><b><?php echo _m("Value") ?></b></td>
         </tr>
 <?php
 foreach ($to_fields as $f_id => $f_name) {
-    echo "<tr><td class=tabtxt><b>$f_name</b></td>\n";
+    echo "<tr><td class=\"tabtxt\"><b>$f_name</b></td>\n";
     echo "<td>";
     $val = "";
 
@@ -240,13 +246,13 @@ foreach ($to_fields as $f_id => $f_name) {
             break;
     }
     FrmSelectEasy("fmap[$f_id]",$from_fields,$sel);
-    echo "</td><td class=tabtxt> <input type=text name=\"fval[$f_id]\" value=\"$val\"></input></td>";
+    echo "</td><td class=\"tabtxt\"> <input type=\"text\" name=\"fval[$f_id]\" value=\"$val\"></input></td>";
     echo "</tr>\n";
 }
 FrmTabEnd($form_buttons, $sess, $slice_id);
-
 ?>
-</FORM>
+</form>
 <?php
 HtmlPageEnd();
-page_close()?>
+page_close();
+?>

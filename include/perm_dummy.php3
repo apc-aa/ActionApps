@@ -1,113 +1,201 @@
 <?php  // perm_dummy - pure permission functions - anyone can do anything
-//$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 
-//## API functions //##
 
+//## API functions //##
+/** AuthenticateUsername function
+ * @param $username
+ * @param $password
+ * @param $flags
+ */
 function AuthenticateUsername($username, $password, $flags = 0) {
   return "foobar";
 }
-
+/** AddUser function
+ * @param $user
+ * @param $flags
+ */
 function AddUser($user, $flags = 0) {
   return "foobar";
 }
-
-function DelUser ($user_id, $flags = 0) {
+/** DelUser function
+ * @param $user_id
+ * @param $flags
+ */
+function DelUser($user_id, $flags = 0) {
   return true;
 }
-
-function GetUser ($user_id, $flags = 0) {
+/** GetUser function
+ * @param $user_id
+ * @param $flags
+ */
+function GetUser($user_id, $flags = 0) {
   return array("");
 }
-
-function ChangeUser ($user_id, $flags = 0) {
+/** ChangeUser
+ * @param $user_id
+ * @param $flags
+ */
+function ChangeUser($user_id, $flags = 0) {
   return true;
 }
-
-function FindUsers ($pattern, $flags = 0) {
+/** FindUsers function
+ * @param $pattern
+ * @param $flags
+ */
+function FindUsers($pattern, $flags = 0) {
   return array("");
 }
-
-function GetMembership ($id, $flags = 0) {
+/** GetMembership function
+ * @param $id
+ * @param $flags
+ */
+function GetMembership($id, $flags = 0) {
   return array("");
 }
-
-function AddGroup ($group, $flags = 0) {
+/** AddGroup function
+ * @param $group
+ * @param $flags
+ */
+function AddGroup($group, $flags = 0) {
   return "foobar";
 }
-
-function DelGroup ($group_id, $flags = 0) {
+/** DelGroup function
+ * @param $group_id
+ * @param $flags
+ */
+function DelGroup($group_id, $flags = 0) {
   return true;
 }
-
-function GetGroup ($group_id, $flags = 0) {
+/** GetGroup function
+ * @param $group_id
+ * @param $flags
+ */
+function GetGroup($group_id, $flags = 0) {
   return array("");
 }
-
-function ChangeGroup ($group_id, $flags = 0) {
+/** ChangeGroup function
+ * @param $group_id
+ * @param $flags
+ */
+function ChangeGroup($group_id, $flags = 0) {
   return true;
 }
-
-
-function FindGroups ($pattern, $flags = 0) {
+/** FindGroups function
+ * @param $pattern
+ * @param $flags
+ */
+function FindGroups($pattern, $flags = 0) {
   return array("");
 }
-
-function AddGroupMember ($group_id, $id, $flags = 0) {
+/** AddGroupMember function
+ * @param $group_id
+ * @param $id
+ * @param $flags
+ */
+function AddGroupMember($group_id, $id, $flags = 0) {
   return true;
 }
-
-function DelGroupMember ($group_id, $id, $flags = 0) {
+/** DelGroupMember function
+ * @param $group_id
+ * @param $id
+ * @param $flags
+ */
+function DelGroupMember($group_id, $id, $flags = 0) {
   return true;
 }
-
-function GetGroupMembers ($group_id, $flags = 0) {
+/** GetGroupMembers function
+ * @param $group_id
+ * @param $flags
+ */
+function GetGroupMembers($group_id, $flags = 0) {
   return array("");
 }
-
-function AddPermObject ($objectID, $objectType, $flags = 0) {
+/** AddPermObject function
+ * @param $objectID
+ * @param $objectType
+ * @param $flags
+ */
+function AddPermObject($objectID, $objectType, $flags = 0) {
   return true;
 }
-
-function DelPermObject ($objectID, $objectType, $flags = 0) {
+/** DelPermObject function
+ * @param $objectID
+ * @param $objectType
+ * @param $flags
+ */
+function DelPermObject($objectID, $objectType, $flags = 0) {
   return true;
 }
-
+/** AddPerm function
+ * @param $id
+ * @param $objectID
+ * @param $objectType
+ * @param $perm
+ * @param $flags
+ */
 function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
   return true;
 }
-
-function DelPerm ($id, $objectID, $objectType, $flags = 0) {
+/** DelPerm function
+ * @param $id
+ * @param $objectID
+ * @param $objectType
+ * @param $flags
+ */
+function DelPerm($id, $objectID, $objectType, $flags = 0) {
   return true;
 }
-
-function ChangePerm ($id, $objectID, $objectType, $perm, $flags = 0) {
+/** ChangePerm function
+ * @param $id
+ * @param $objectID
+ * @param $objectType
+ * @param $perm
+ * @param $flags
+ */
+function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
   return true;
 }
-
-function GetObjectPerms ($objectID, $objectType, $flags = 0) {
+/** GetObjectPerms function
+ * @param $objectID
+ * @param $objectType
+ * @param $flags
+ */
+function GetObjectPerms($objectID, $objectType, $flags = 0) {
   return array("");
 }
-
-function GetIDPerms ($id, $objectType, $flags = 0) {
+/** GetIDPerms function
+ * @param $id
+ * @param $objectType
+ * @param $flags
+ */
+function GetIDPerms($id, $objectType, $flags = 0) {
   return array("");
 }
 ?>

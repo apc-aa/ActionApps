@@ -1,22 +1,29 @@
 <?php  //slice_id expected
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once "../include/init_page.php3";
@@ -88,22 +95,25 @@ function CountItemsInBins() {
     $db->tquery("SELECT status_code, count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                  GROUP BY status_code");
-    while ( $db->next_record() )
-        $ret[ 'folder'. $db->f('status_code') ] = $db->f('cnt');
+                 while ( $db->next_record() ) {
+                     $ret[ 'folder'. $db->f('status_code') ] = $db->f('cnt');
+                 }
 
     $db->tquery("SELECT count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                    AND status_code=1
                    AND expiry_date <= '$now' ");
-    if ( $db->next_record() )
-        $ret['expired'] = $db->f('cnt');
+                   if ( $db->next_record() ) {
+                       $ret['expired'] = $db->f('cnt');
+                   }
 
     $db->tquery("SELECT count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                    AND status_code=1
                    AND publish_date > '$now' ");
-    if ( $db->next_record() )
-        $ret['pending'] = $db->f('cnt');
+                   if ( $db->next_record() ) {
+                       $ret['pending'] = $db->f('cnt');
+                   }
 
     $ret['app'] = $ret['folder1']-$ret['pending']-$ret['expired'];
     return $ret;
@@ -117,11 +127,11 @@ $module_id = $slice_id;
 
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice       = AA_Slices::getSlice($module_id);
-$bin_def = array( 'app'    => array('cond'=>'ACTIVE'),
-                  'appb'   => array('cond'=>'PENDING'),
-                  'appc'   => array('cond'=>'EXPIRED'),
-                  'hold'   => array('cond'=>'HOLDING'),
-                  'trash'  => array('cond'=>'TRASH')
+$bin_def     = array( 'app'    => array('cond'=>'ACTIVE'),
+                  'appb'       => array('cond'=>'PENDING'),
+                  'appc'       => array('cond'=>'EXPIRED'),
+                  'hold'       => array('cond'=>'HOLDING'),
+                  'trash'      => array('cond'=>'TRASH')
                 );
 
 $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
@@ -133,7 +143,7 @@ if ( !$perm_edit_all && !$perm_edit_self) {
 }
 
 $manager_settings = array(
-     'show'     =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+     'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar' => array(
          'fields'               => $slice->fields('search'),
          'search_row_count_min' => 1,
@@ -153,7 +163,7 @@ $manager_settings = array(
          'get_content_funct'    => 'GetItemContent'
                          ),
      'actions_perm_function' => 'IsActionPerm',
-     'actions'   => array(
+     'actions'    => array(
          'Activate'    => array('function'   => 'Item_MoveItem',
                                 'func_param' => 1,
                                 'name'       => _m('Move to Active'),

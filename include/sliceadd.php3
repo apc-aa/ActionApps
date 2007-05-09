@@ -1,24 +1,32 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
 */
-
+/** cmp function
+ * @param $a
+ * @param $b
+ */
 function cmp($a, $b) {
   return strcmp($a["name"], $b["name"]);
 }
@@ -52,7 +60,7 @@ if (isset( $templates ) AND is_array( $templates ) AND isset( $temp_slices ) AND
 
 if ( isset( $templates ) AND is_array( $templates )) {
     usort($templates, "cmp");
-    echo "<tr><td width=\"20%\" class=tabtxt><b>". _m("Template") ."</b>";
+    echo "<tr><td width=\"20%\" class=\"tabtxt\"><b>". _m("Template") ."</b>";
     echo "</td><td width=\"60%\"><select name=\"template_id\">";
     foreach ($templates as $v) {
         echo "<option value=\"". htmlspecialchars($v['value'])."\"";
@@ -66,12 +74,12 @@ if ( isset( $templates ) AND is_array( $templates )) {
     }
     echo '<input type="hidden" name="no_slice_id" value="1"></td></tr>';
 } else {
-    echo "<tr><td class=tabtxt colspan=2>". _m("No templates") ."</td></tr>";
+    echo "<tr><td class=\"tabtxt\" colspan=\"2\">". _m("No templates") ."</td></tr>";
 }
 
 if ( isset( $temp_slices ) AND is_array( $temp_slices )) {
     usort($temp_slices, "cmp");
-    $out =  "<tr><td class=tabtxt><b>". _m("Slice") ."</b>";
+    $out =  "<tr><td class=\"tabtxt\"><b>". _m("Slice") ."</b>";
     $out .= "</td>\n <td><select name=\"template_id2\">";
     foreach ($temp_slices as $v) {
         if ( substr( $v['value'], 0, 32 ) == '41415f436f72655f4669656c64732e2e' ) {
@@ -90,7 +98,7 @@ if ( isset( $temp_slices ) AND is_array( $temp_slices )) {
         echo '</td></tr>';
     }
 } else {
-    echo "<tr><td class=tabtxt colspan=2>". _m("No slices") ."</td></tr>";
+    echo "<tr><td class=\"tabtxt\" colspan=\"2\">". _m("No slices") ."</td></tr>";
 }
 
 ?>

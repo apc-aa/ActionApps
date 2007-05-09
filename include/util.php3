@@ -1,24 +1,29 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This programp is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
 //
 // Miscellaneous utility functions
 //
@@ -29,38 +34,61 @@ require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."logs.php3";
 require_once AA_INC_PATH."go_url.php3";
 require_once AA_INC_PATH."statestore.php3";
-
+/** get_aa_url function
+ * @param $href
+ * @param $session
+ */
 function get_aa_url($href, $session=true) {
     global $sess;
     return ($session AND is_object($sess)) ? $sess->url(AA_INSTAL_PATH.$href) : AA_INSTAL_PATH.$href;
 }
-
+/** get_admin_url function
+ * @param $href
+ * @param $session
+ */
 function get_admin_url($href, $session=true) {
     return get_aa_url("admin/$href", $session);
 }
 
-/** returns url for $morehlp parameter in Frm* functions */
+/** get_help_url function
+ *  returns url for $morehlp parameter in Frm* functions
+ * @param $href
+ * @param $anchor
+ */
 function get_help_url($href, $anchor) {
     return $href."#".$anchor;
 }
 
-/** Get <a href> tag */
+/** a_href function
+ *  Get <a href> tag
+ * @param $url
+ * @param $txt
+ */
 function a_href($url, $txt) {
     return "<a href=\"$url\">$txt</a>";
 }
 
-// Expand return_url, possibly adding a session to it
+/** expand_return_url function
+ * Expand return_url, possibly adding a session to it
+ * @param $session
+ */
 function expand_return_url($session=true) {
     global $return_url, $sess;
     return ($session AND is_object($sess)) ? $sess->url($return_url) : $return_url;
 }
 
-// This function goes to either $return_url if set, or to $url
-// if $usejs is set, then it will use inline Javascript, its not clear why this is done
-//    sometimes (item.php3) but not others.
-// if $session is set, then any session variable will be added, to the return_url case to allow for quicker 2nd access
-//    session is always added to the other case
-// if $add_param are set, then they are added to the cases EXCEPT return_url
+/** go_return_or_url function
+ *  This function goes to either $return_url if set, or to $url
+ * if $usejs is set, then it will use inline Javascript, its not clear why this is done
+ *    sometimes (item.php3) but not others.
+ * if $session is set, then any session variable will be added, to the return_url case to allow for quicker 2nd access
+ *    session is always added to the other case
+ * if $add_param are set, then they are added to the cases EXCEPT return_url
+ * @param $url
+ * @param $usejs
+ * @param $session
+ * @param $add_param
+ */
 function go_return_or_url($url, $usejs, $session, $add_param="") {
     global $return_url,$sess;
     if ($return_url) {
@@ -71,18 +99,28 @@ function go_return_or_url($url, $usejs, $session, $add_param="") {
     // Note if no $url or $return_url then drops through - this is used in index.php3
 }
 
-/** Adds slash at the end of a directory name if it is not yet there. */
+/** endslash function
+ *  Adds slash at the end of a directory name if it is not yet there.
+ * @param $s
+ */
 function endslash(&$s) {
     if (strlen ($s) && substr ($s,-1) != "/")
         $s .= "/";
 }
 
-/** Wraps the in_array function, which was introduced only in PHP 4. */
+/** my_in_array function
+ *  Wraps the in_array function, which was introduced only in PHP 4.
+ * @param $needle
+ * @param $array
+ */
 function my_in_array($needle, $array) {
     return in_array($needle, $array);
 }
 
-/** To use this function, the file "debuglog.txt" must exist and have writing permission for the www server */
+/** debuglog function
+ *  To use this function, the file "debuglog.txt" must exist and have writing permission for the www server
+ * @param $text
+ */
 function debuglog($text) {
     require_once AA_INC_PATH."files.class.php3";  // file wrapper
     $file = &AA_File_Wrapper::wrapper(AA_INC_PATH."logs.txt");
@@ -92,7 +130,11 @@ function debuglog($text) {
     }
 }
 
-// adds all items from source to target, but doesn't overwrite items
+/** array_add function
+ *  adds all items from source to target, but doesn't overwrite items
+ * @param $source
+ * @param $target
+ */
 function array_add($source, &$target) {
     foreach ( (array)$source as $k => $v) {
         if (!isset($target[$k])) {
@@ -102,12 +144,16 @@ function array_add($source, &$target) {
         }
     }
 }
-
+/** self_complete_url function
+ *
+ */
 function self_complete_url() {
     return self_server().$GLOBALS['REQUEST_URI'];
 }
 
-// returns server name with protocol and port
+/** self_server function
+ *  returns server name with protocol and port
+ */
 function self_server() {
     global $HTTP_HOST, $SERVER_NAME, $HTTPS, $SERVER_PORT;
     if ( isset($HTTPS) && $HTTPS == 'on' ) {
@@ -129,29 +175,39 @@ function self_server() {
     return("$PROTOCOL://$sname$port");
 }
 
-// returns server name with protocol, port and current directory of php script
+/** self_base function
+ * returns server name with protocol, port and current directory of php script
+ */
 function self_base() {
     global $PHP_SELF;
     return (self_server(). ereg_replace("/[^/]*$", "", $PHP_SELF) . "/");
 }
 
-/** On some serevers isn't defined DOCUMENT_URI
-    (canaca.com 2003-09-19 - Apache/1.3.27 (Unix) (Red-Hat/Linux), Honza) */
+/** document_uri function
+ *  On some servers isn't defined DOCUMENT_URI
+ *   (canaca.com 2003-09-19 - Apache/1.3.27 (Unix) (Red-Hat/Linux), Honza)
+ */
 function document_uri() {
     return get_if($_SERVER['DOCUMENT_URI'],$_SERVER['SCRIPT_URL']);
 }
 
-// returns server name with protocol, port and current directory of shtml file
+/** shtml_base function
+ *  returns server name with protocol, port and current directory of shtml file
+ */
 function shtml_base() {
     return (self_server(). ereg_replace("/[^/]*$", "", document_uri()) . "/");
 }
 
-// returns url of current shtml file
+/** shtml_url function
+ * returns url of current shtml file
+ */
 function shtml_url() {
     return (self_server(). document_uri());
 }
 
-/** returns query string passed to shtml file (variables are not quoted) */
+/** shtml_query_string function
+ *  returns query string passed to shtml file (variables are not quoted)
+ */
 function shtml_query_string() {
     global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $REQUEST_URI;
     // there is problem (at least with $QUERY_STRING_UNESCAPED), when
@@ -167,13 +223,19 @@ function shtml_query_string() {
     return magic_strip($ret_string);
 }
 
-// skips terminating backslashes
+/** DeBackslash function
+ *  skips terminating backslashes
+ * @param $txt
+ */
 function DeBackslash($txt) {
     return str_replace('\\', "", $txt);        // better for two places
 }
 
-//explodes $param by ":". The "#:" means true ":" - don't separate
-// Returns array
+/** ParamExplode function
+ * explodes $param by ":". The "#:" means true ":" - don't separate
+ * @param $param
+ * @return array
+ */
 function ParamExplode($param) {
     $a = str_replace("#:", "__-__.", $param);    // dummy string
     $b = str_replace("://", "__-__2", $a);       // replace all <http>:// too
@@ -183,10 +245,13 @@ function ParamExplode($param) {
     return explode("##Sx", $e);
 }
 
-/** Parses class parameters from the string, which is stored in the database
+/** ParseClassProperties function
+ *  Parses class parameters from the string, which is stored in the database
  *  Typical use is for fields.input_show_func, where parameters are stored
  *  as string in the form: fnc:const:param
- *  @returns asociative array of parameters, the name of parameters is given
+ * @param $param
+ * @param $class_mask
+ *  @return asociative array of parameters, the name of parameters is given
  *  by the class itself ($class_mask . fnc).
  */
 function ParseClassProperties($param, $class_mask) {
@@ -209,19 +274,25 @@ function ParseClassProperties($param, $class_mask) {
     }
     return $ret;
 }
-
+/** ParamImplode function
+ * @param $param
+ */
 function ParamImplode($param) {
     array_walk($param, create_function('&$v,$k', '$v = str_replace(":", "#:", $v);'));
     return implode(":", $param);
 }
 
-/** Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
-*   to GLOBALS.
-*/
+/** add_vars function
+ *  Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
+ *   to GLOBALS.
+ * @param $query_string
+ */
 function add_vars($query_string="") {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
 
-    if ( !$varstring ) return;
+    if ( !$varstring ) {
+        return;
+    }
     if ( ($pos = strpos('#', $varstring)) === true ) {  // remove 'fragment' part
         $varstring = substr($varstring,0,$pos);
     }
@@ -235,8 +306,10 @@ function add_vars($query_string="") {
     array_merge_append($GLOBALS, $aa_query_arr);
 }
 
-/** Removes starting and closing quotes from array index
- *   arr["key"]=...   transforms to arr[key]=...       */
+/** NormalizeArrayIndex function
+ *  Removes starting and closing quotes from array index
+ *  @param $arr["key"]=...   transforms to arr[key]=...
+ */
 function NormalizeArrayIndex($arr) {
     if (!is_array($arr)) {
         return $arr;
@@ -251,9 +324,12 @@ function NormalizeArrayIndex($arr) {
     return $ret;
 }
 
-/** Adds second array to the first one - values are appended to the array, if
+/** array_merge_append function
+ *  Adds second array to the first one - values are appended to the array, if
  *  uses the same key (regardless if string or numeric!)
- *  Example:
+ * @param $array
+ * @param $newValues
+ *  @example:
  *    array_merge_append( $conds[0]['value']=x, $conds[0][operator]=LIKE )
  *    results in $conds[0] = array( 'value'=>'x', 'operator'=>'LIKE' )
  *  no PHP function do it ($a+$b nor array_merge()  array_merge_recursive())
@@ -269,13 +345,19 @@ function array_merge_append(&$array, $newValues) {
     return $array;
 }
 
-// function to double backslashes and apostrofs
+/** quote function
+ * function to double backslashes and apostrofs
+ * @param $str
+ */
 function quote($str) {
   return addslashes($str);
 }
 
 
-// function addslashes enhanced by array processing
+/** AddslashesArray function
+ * function addslashes enhanced by array processing
+ * @param $val
+ */
 function AddslashesArray($val) {
   if (!is_array($val)) {
     return addslashes($val);
@@ -295,54 +377,81 @@ function StripslashesArray($val) {
     return $ret;
 }
 
-// function for processing posted or get variables
-// adds quotes, if magic_quotes are switched off
-// except of variables in $skip array (usefull for 'encap' for example)
+/** QuoteVars function
+ * function for processing posted or get variables
+ * adds quotes, if magic_quotes are switched off
+ * except of variables in $skip array (usefull for 'encap' for example)
+ * @param $method
+ * @param $skip
+ */
 function QuoteVars($method="get", $skip='') {
 
-  if ( get_magic_quotes_gpc() )
-    return;
+    if ( get_magic_quotes_gpc() ) {
+        return;
+    }
 
   $transfer = ( ($method == "get") ? "HTTP_GET_VARS" : "HTTP_POST_VARS");
-  if ( !isset($GLOBALS[$transfer]) OR !is_array($GLOBALS[$transfer]))
+  if ( !isset($GLOBALS[$transfer]) OR !is_array($GLOBALS[$transfer])) {
     return;
+  }
   reset( $GLOBALS[$transfer] );
   while ( list($varname,$value) = each( $GLOBALS[$transfer] ))
-    if ( !is_array($skip) || !isset($skip[$varname]) )
+  if ( !is_array($skip) || !isset($skip[$varname]) ) {
       $GLOBALS[$varname] = AddslashesArray($value);
+  }
 }
 
-// function to reverse effect of "magic quotes"
-// not needed in MySQL and get_magic_quotes_gpc()==1
+/** dequote function
+ * function to reverse effect of "magic quotes"
+ * not needed in MySQL and get_magic_quotes_gpc()==1
+ * @param $str
+ */
 function dequote($str) {
     return $str;
 }
 
-// prints content of a (multidimensional) array
+/** p_arr_m function
+ * prints content of a (multidimensional) array
+ * @param $arr
+ * @param $level
+ */
 function p_arr_m($arr, $level = 0) {
    if ( !isset($arr) OR !is_array($arr)) {
-     for ($i = 0; $i < $level; $i++) { echo "&nbsp;&nbsp;&nbsp;"; };
+     for ($i = 0; $i < $level; $i++) {
+        echo "&nbsp;&nbsp;&nbsp;";
+     }
          echo ( isset($arr) ? " Not array: $arr <br>" : " (Empty Array) <br>");
      return;
-   };
+   }
    while (list($key, $val) = each($arr)) {
       if ( is_array($val) ) {
-         for ($i = 0; $i < $level; $i++) { echo "&nbsp;&nbsp;&nbsp;"; };
+         for ($i = 0; $i < $level; $i++) {
+            echo "&nbsp;&nbsp;&nbsp;";
+         }
          echo htmlspecialchars($key) . " (Array) <br>";
-         p_arr_m ($val, $level + 1);
+         p_arr_m($val, $level + 1);
       } else {
-         for ($i = 0; $i < $level; $i++) { echo "&nbsp;&nbsp;&nbsp;"; };
+         for ($i = 0; $i < $level; $i++) {
+            echo "&nbsp;&nbsp;&nbsp;";
+         }
          echo htmlspecialchars($key) . " => " . htmlspecialchars($val) . "<br>";
       }
    }
 }
 
-// debug function, prints hash size,  keys and values of hash
+/** p_arr function
+ * debug function, prints hash size,  keys and values of hash
+ * @param $a
+ * @param $name
+ */
 function p_arr($a,$name="given array") {
     p_arr_m($a);
 }
 
-// returns new unpacked md5 unique id, except these which can  force unexpected end of string
+/** new_id function
+ *  returns new unpacked md5 unique id, except these which can  force unexpected end of string
+ * @param $mark
+ */
 function new_id($mark=0){
     do {
         $id = md5(uniqid('hugo'));
@@ -363,14 +472,20 @@ function new_id($mark=0){
     return $id;
 }
 
-/** Returns true, if the $id is marked by $mark - @see new_id() */
+/** is_marked_by funcion
+ * @param $id
+ * @param $mark
+ *  @return true, if the $id is marked by $mark - @see new_id()
+ */
 function is_marked_by($id, $mark) {
     // now only supports mark 1-15
     return (substr($id, $mark*2-1, 2) == '27');
 }
 
 
-/** Returns a unique id from a string.
+/** string2id function
+ * @param $str
+ *  @return a unique id from a string.
  *  Note that it will always return the same id from the same string so it
  *  can be used to compare the hashes as well as create new item id (combining
  *  item id of fed item and slice_id, for example - @see xml_fetch.php3)
@@ -385,8 +500,11 @@ function string2id($str) {
     return $id;
 }
 
-// returns packed md5 id, not quoted !!!
-// Note that pack_id is used in many places where it is NOT 128 bit ids.
+/** pack_id function
+ * @param $unpacked_id
+ * @return packed md5 id, not quoted !!!
+ * Note that pack_id is used in many places where it is NOT 128 bit ids.
+ */
 function pack_id($unpacked_id) {
     global $errcheck;
     // Give up tracking this, too many errors in Honza's code!
@@ -397,7 +515,10 @@ function pack_id($unpacked_id) {
     return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
 }
 
-// returns unpacked md5 id
+/** unpack_id
+ * @param $packed_id
+ * @return unpacked md5 id
+ */
 function unpack_id($packed_id){
     if ((string)$packed_id == "0") {
         return "0";
@@ -406,8 +527,9 @@ function unpack_id($packed_id){
     return (string)$foo;
 }
 
-/** returns current date/time as timestamp;
- *  $step - time could be returned in steps (good for database query speedup)
+/** now function
+ *  returns current date/time as timestamp;
+ *  @param $step - time could be returned in steps (good for database query speedup)
  */
 function now($step=false) {
     return (($step!='step') ?
@@ -416,7 +538,10 @@ function now($step=false) {
 }
 
 
-// returns number of second since 1970 from date in MySQL format
+/** date2sec function
+ * @param $dat
+ * @return number of seconds since 1970 to date in MySQL format
+ */
 function date2sec($dat) {
     if ( Ereg("^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})", $dat, $d)) {
         return MkTime($d[4], $d[5], $d[6], $d[2], $d[3], $d[1]);
@@ -424,7 +549,9 @@ function date2sec($dat) {
     return 0;
 }
 
-// function which detects the browser
+/** detect_browser function
+ * function which detects the browser
+ */
 function detect_browser() {
   global $HTTP_USER_AGENT, $BName, $BVersion, $BPlatform;
 
@@ -452,45 +579,66 @@ function detect_browser() {
   else{$BName = "Unknown"; $BVersion="Unknown";}
 
   // System
-  if (eregi("win32",$HTTP_USER_AGENT))
+  if (eregi("win32",$HTTP_USER_AGENT)) {
     $BPlatform = "Windows";
-  elseif ((eregi("(win)([0-9]{2})",$HTTP_USER_AGENT,$match)) || (eregi("(windows) ([0-9]{2})",$HTTP_USER_AGENT,$match)))
+  }
+  elseif ((eregi("(win)([0-9]{2})",$HTTP_USER_AGENT,$match)) || (eregi("(windows) ([0-9]{2})",$HTTP_USER_AGENT,$match))) {
     $BPlatform = "Windows $match[2]";
-  elseif (eregi("(winnt)([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
+  }
+  elseif (eregi("(winnt)([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) {
     $BPlatform = "Windows NT $match[2]";
-  elseif (eregi("(windows nt)( ){0,1}([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
+  }
+  elseif (eregi("(windows nt)( ){0,1}([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) {
     $BPlatform = "Windows NT $match[3]";
-  elseif (eregi("linux",$HTTP_USER_AGENT))
+  }
+  elseif (eregi("linux",$HTTP_USER_AGENT)) {
     $BPlatform = "Linux";
-  elseif (eregi("mac",$HTTP_USER_AGENT))
+  }
+  elseif (eregi("mac",$HTTP_USER_AGENT)) {
     $BPlatform = "Macintosh";
-  elseif (eregi("(sunos) ([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
+  }
+  elseif (eregi("(sunos) ([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) {
     $BPlatform = "SunOS $match[2]";
-  elseif (eregi("(beos) r([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match))
+  }
+  elseif (eregi("(beos) r([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) {
     $BPlatform = "BeOS $match[2]";
-  elseif (eregi("freebsd",$HTTP_USER_AGENT))
+  }
+  elseif (eregi("freebsd",$HTTP_USER_AGENT)) {
     $BPlatform = "FreeBSD";
-  elseif (eregi("openbsd",$HTTP_USER_AGENT))
+  }
+  elseif (eregi("openbsd",$HTTP_USER_AGENT)) {
     $BPlatform = "OpenBSD";
-  elseif (eregi("irix",$HTTP_USER_AGENT))
+  }
+  elseif (eregi("irix",$HTTP_USER_AGENT)) {
     $BPlatform = "IRIX";
-  elseif (eregi("os/2",$HTTP_USER_AGENT))
+  }
+  elseif (eregi("os/2",$HTTP_USER_AGENT)) {
     $BPlatform = "OS/2";
-  elseif (eregi("plan9",$HTTP_USER_AGENT))
+  }
+  elseif (eregi("plan9",$HTTP_USER_AGENT)) {
     $BPlatform = "Plan9";
-  elseif (eregi("unix",$HTTP_USER_AGENT) || eregi("hp-ux",$HTTP_USER_AGENT))
+  }
+  elseif (eregi("unix",$HTTP_USER_AGENT) || eregi("hp-ux",$HTTP_USER_AGENT)) {
     $BPlatform = "Unix";
-  elseif (eregi("osf",$HTTP_USER_AGENT))
+  }
+  elseif (eregi("osf",$HTTP_USER_AGENT)) {
     $BPlatform = "OSF";
+  }
   else{$BPlatform = "Unknown";}
 
-  if ($GLOBALS[debug]) huhl("$HTTP_USER_AGENT => $BName,$BVersion,$BPlatform");
+  if ($GLOBALS['debug']) {
+      huhl("$HTTP_USER_AGENT => $BName,$BVersion,$BPlatform");
+  }
 }
 
-/** variable count of variables */
+/** debug function
+ *  variable count of variables
+ */
 function debug() {
     // could be toggled from Item Manager left menu 'debug' (by Superadmins!)
-    if ( $_COOKIE['aa_debug'] != 1 ) return;
+    if ( $_COOKIE['aa_debug'] != 1 ) {
+        return;
+    }
     echo "<pre>\n";
     $messages = func_get_args();
     foreach ( $messages as $msg ) {
@@ -500,7 +648,11 @@ function debug() {
     echo "</pre>\n";
 }
 
-// debug function for printing debug messages
+/** huh function
+ * debug function for printing debug messages
+ * @param $msg
+ * @param $name
+ */
 function huh($msg, $name="") {
     global $debugtimes,$debugtimestart;
     if ($debugtimes) {
@@ -517,7 +669,10 @@ function huh($msg, $name="") {
     }
 }
 
-// debug function for printing debug messages escaping HTML
+/** huhw function
+ * debug function for printing debug messages escaping HTML
+ * @param $msg
+ */
 function huhw($msg) {
     if (!$GLOBALS['debug'] ) {
         return;
@@ -525,8 +680,20 @@ function huhw($msg) {
     echo "<br>\n". HTMLspecialChars($msg);
 }
 
-// Report only if errcheck is set, this is used to test for errors to speed debugging
-// Use to catch cases in the code which shouldn't exist, but are handled anyway.
+/** huhe function
+ * Report only if errcheck is set, this is used to test for errors to speed debugging
+ * Use to catch cases in the code which shouldn't exist, but are handled anyway.
+ * @param $a
+ * @param $b
+ * @param $c
+ * @param $d
+ * @param $e
+ * @param $f
+ * @param $g
+ * @param $h
+ * @param $i
+ * @param $j
+ */
 function huhe($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
     global $errcheck;
     if ($errcheck) {
@@ -534,7 +701,10 @@ function huhe($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
         if ($GLOBALS["trace"] || $GLOBALS["debug"]) { trace("p"); }
     }
 }
-// Only called from within huhl
+/** huhlo function
+ *  Only called from within huhl
+ * @param $a
+ */
 function huhlo($a) {
     if (isset($a)) {
         if (is_object($a) && is_callable(array($a,"printobj"))) {
@@ -548,14 +718,28 @@ function huhlo($a) {
 if ( !$timestart ) {
     $timestart = get_microtime();
 }
-
+/** get_microtime function
+ *
+ */
 function get_microtime() {
     list($usec, $sec) = explode(" ",microtime());
     return ((float)$usec + (float)$sec);
 }
 
 // Set a starting timestamp, if checking times, huhl can report
-// Debug function to print debug messages recursively - handles arrays
+/** huhl function
+ * Debug function to print debug messages recursively - handles arrays
+ * @param $a
+ * @param $b
+ * @param $c
+ * @param $d
+ * @param $e
+ * @param $f
+ * @param $g
+ * @param $h
+ * @param $i
+ * @param $j
+ */
 function huhl($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
     global $debugtimes,$debugtimestart;
     if (isset($a)) {
@@ -579,7 +763,9 @@ function huhl($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
         print("</listing>\n");
     }
 }
-
+/** huhsess function
+ * @param $msg
+ */
 function huhsess($msg="") {
     global $sess;
     foreach (array_keys($sess->pt) as $i) {
@@ -588,7 +774,10 @@ function huhsess($msg="") {
     huhl($msg,$sessvars);
 }
 
-//Prints all values from array
+/** PrintArray function
+ * @param $a
+ * Prints all values from array
+ */
 function PrintArray($a) {
     if (is_array($a)) {
         while ( list( $key, $val ) = each( $a ) ) {
@@ -601,17 +790,27 @@ function PrintArray($a) {
     }
 }
 
-//Prepare OK Message
+/** MsgOK function
+ * Prepare OK Message
+ * @param $txt
+ */
 function MsgOK($txt){
-    return "<div class=okmsg>$txt</div>";
+    return "<div class=\"okmsg\">$txt</div>";
 }
 
-//Prepare Err Message
+/** MsgERR function
+ * Prepare Err Message
+ * @param $txt
+ */
 function MsgERR($txt){
-    return "<div class=err>$txt</div>";
+    return "<div class=\"err\">$txt</div>";
 }
 
-// function for unpacking string in edit_fields and needed_fields in database to array
+/** UnpackFieldsToArray function
+ * function for unpacking string in edit_fields and needed_fields in database to array
+ * @param $packed
+ * @param $fields
+ */
 function UnpackFieldsToArray($packed, $fields) {
     $i=0;
     $arr = array();
@@ -621,9 +820,13 @@ function UnpackFieldsToArray($packed, $fields) {
     return $arr;
 }
 
-/** Function fills the array from constants table
- *  @param $column - column used as values. We can use 'name' as well as
+/** GetConstants function
+ *  Function fills the array from constants table
+ * @param $group
+ * @param $order
+ * @param $column - column used as values. We can use 'name' as well as
  *                   'const_name' for name of fields
+ * @param $keycolumn
  */
 function GetConstants($group, $order='pri', $column='name', $keycolumn='value') {
     // we can use 'const_name' instedad of real name of the column 'name' => translate
@@ -638,9 +841,15 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
     $const_fields = array('id'=>1,'group_id'=>1,'name'=>1,'value'=>1,'class'=>1,'pri'=>1,'ancestors'=>1,'description'=>1,'short_id'=>1);
 
     $db = getDB();
-    if (  $const_fields[$db_order] )     { $order_by  = "ORDER BY $db_order"; }
-    if ( !$const_fields[$db_column] )    { $db_column    = 'name';  $column    = 'name'; }
-    if ( !$const_fields[$db_keycolumn] ) { $db_keycolumn = 'value'; $keycolumn = 'value'; }
+    if (  $const_fields[$db_order] ) {
+        $order_by  = "ORDER BY $db_order";
+    }
+    if ( !$const_fields[$db_column] ) {
+        $db_column    = 'name';  $column    = 'name';
+    }
+    if ( !$const_fields[$db_keycolumn] ) {
+        $db_keycolumn = 'value'; $keycolumn = 'value';
+    }
     $fields = ($db_column==$db_keycolumn ? $db_column : "$db_keycolumn, $db_column");
 
     $SQL = "SELECT $fields FROM constant WHERE group_id='$group' $order_by";
@@ -654,14 +863,18 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value') 
             $key .= ' ';                   // add space in order we get unique keys
         }
         $already_key[$key] = true;       // mark the $key
-        $val = GrabConstantColumn($db, $column);
-        $arr[$key] = $val['value'];
+        $val               = GrabConstantColumn($db, $column);
+        $arr[$key]         = $val['value'];
     }
     freeDB($db);
     return $arr;
 }
 
-// gets fields from main table of the module
+/** GetModuleInfo function
+ * gets fields from main table of the module
+ * @param $module_id
+ * @param $type
+ */
 function GetModuleInfo($module_id, $type) {
     global $MODULES;
     if (!$module_id) {
@@ -679,14 +892,19 @@ function GetModuleInfo($module_id, $type) {
     return $ret;
 }
 
-// gets slice fields
+/** GetSliceInfo function
+ *  gets slice fields
+ * @param $slice_id
+ */
 function GetSliceInfo($slice_id) {
     return GetModuleInfo($slice_id,'S');
 }
 
-/** function converts table from SQL query to array
- *  $key    - return array's key - 'NoCoLuMn' | '' | 'aa_first' | <database_column> | 'unpack:<database_column>'
- *  $values - return array's val - 'aa_all' |
+/** GetTable2Array function
+ *  function converts table from SQL query to array
+ * @param $SQL
+ * @param $key    - return array's key - 'NoCoLuMn' | '' | 'aa_first' | <database_column> | 'unpack:<database_column>'
+ * @param $values - return array's val - 'aa_all' |
  *                                 'aa_mark' |
  *                                 'aa_fields' |
  *                                 <database_column> |
@@ -734,14 +952,19 @@ class AA_Components extends AA_Object {
      *          we could generate Parameter wizard (and validation) from those
      *          informations
      */
+     /** getClassProperties function
+      *
+      */
     function getClassProperties()  {
         // array of AA parameters (can't be object's data, since we need
         // to call it staticaly (as class method)
         return array();
     }
 
-    /** Return names of all known AA classes, which begins with $mask
+    /** getClassNames function
+     *  Return names of all known AA classes, which begins with $mask
      *  static function
+     * @param $mask
      */
     function getClassNames($mask) {
         $right_classes = array();
@@ -753,7 +976,11 @@ class AA_Components extends AA_Object {
         }
         return $right_classes;
     }
-
+    /** getSelectionCode function
+     * @param $mask
+     * @param $input_id
+     * @param $params
+     */
     function getSelectionCode($mask, $input_id, &$params) {
         $options      = array('AA_Empty' => _m('select ...'));
         $html_options = array('AA_Empty' => '');
@@ -775,24 +1002,40 @@ class AA_Widget extends AA_Components {
     /** $parameters - Array of AA_Property used for the widget
     *   inherited from AA_Components
     */
-
+    /** name function
+     *
+     */
     function name()         {}
 //    function description()  {}
 }
 
 /** Textarea widget */
 class AA_Widget_Txt extends AA_Widget {
-
+    /** AA_Widget_Txt function
+     *
+     */
     function AA_Widget_Txt() {
     }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Text Area'); }   // widget name
-    function multiple()     { return false;           }   // returns multivalue or single value
+     /** name function
+      *
+      */
+    function name() {
+        return _m('Text Area');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;// returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties() {       //  id             name          type   multi  persistent validator, required, help, morehelp, example
         return array (
             'fnc'       => new AA_Property( 'fnc',       _m("Widget"),    'text', false, true, 'alpha'),
@@ -807,10 +1050,19 @@ class AA_Widget_Tpr extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Textarea with Presets'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Textarea with Presets');   // widget name
+    }
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     * Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'const' => true,
@@ -821,17 +1073,28 @@ class AA_Widget_Tpr extends AA_Widget {
 
 /** Rich Edit Text Area widget */
 class AA_Widget_Edt extends AA_Widget {
-
+    /** AA_Widget_Edt function
+     *
+     */
     function AA_Widget_Edt() {
     }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Rich Edit Text Area'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Rich Edit Text Area');   // widget name
+    }
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array (                       //  id                name             type   multi  persist validator, required, help, morehelp, example
             'fnc'          => new AA_Property( 'fnc',          _m("Widget"),       'text', false, true, 'alpha'),
@@ -844,17 +1107,31 @@ class AA_Widget_Edt extends AA_Widget {
 
 /** Text Field widget */
 class AA_Widget_Fld extends AA_Widget {
-
+    /** AA_Widget_Fld function
+     *
+     */
     function AA_Widget_Fld() {
     }
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Text Field'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Text Field');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;    // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array (                        //  id                  name               type    multi  persist validator, required, help,                                         morehelp, example
             'fnc'            => new AA_Property( 'fnc',            _m("Widget"),         'text', false, true, 'alpha'),
@@ -869,10 +1146,22 @@ class AA_Widget_Mfl extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Multiple Text Field'); }   // widget name
-    function multiple()     { return true;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Multiple Text Field');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return true;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'param' => true
@@ -885,10 +1174,22 @@ class AA_Widget_Pre extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Text Field with Presets'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Text Field with Presets');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     * Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'const' => true,
@@ -902,10 +1203,22 @@ class AA_Widget_Sel extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Select Box'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Select Box');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'const' => true,
@@ -919,10 +1232,22 @@ class AA_Widget_Rio extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Radio Button'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Radio Button');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'const' => true,
@@ -936,10 +1261,22 @@ class AA_Widget_Dte extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Date'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Date');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'param' => true
@@ -952,10 +1289,22 @@ class AA_Widget_Chb extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Check Box'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Check Box');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true   // @todo - replace 'true' by parameter specification
                     );
@@ -967,10 +1316,22 @@ class AA_Widget_Mch extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Multiple Checkboxes'); }   // widget name
-    function multiple()     { return true;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Multiple Checkboxes');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return true;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'const' => true,
@@ -984,10 +1345,22 @@ class AA_Widget_Mse extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Multiple Selectbox'); }   // widget name
-    function multiple()     { return true;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Multiple Selectbox');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return true;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'const' => true,
@@ -1001,10 +1374,22 @@ class AA_Widget_Wi2 extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Two Boxes'); }   // widget name
-    function multiple()     { return true;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Two Boxes');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return true;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'const' => true,
@@ -1018,10 +1403,22 @@ class AA_Widget_Fil extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('File Upload'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('File Upload');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'param' => true
@@ -1034,10 +1431,19 @@ class AA_Widget_Iso extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Related Item Window'); }   // widget name
-    function multiple()     { return true;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Related Item Window');   // widget name
+    }
+    function multiple() {
+        return true;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'const' => true,
@@ -1051,10 +1457,19 @@ class AA_Widget_Nul extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Do not show'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Do not show');   // widget name
+    }
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
     function getClassProperties()  {
         return array( 'fnc'   => true   // @todo - replace 'true' by parameter specification
                     );
@@ -1066,11 +1481,23 @@ class AA_Widget_Hco extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Hierachical constants'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Hierachical constants');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
-    function getClassProperties()  {
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
+     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'const' => true,
                       'param' => true
@@ -1083,11 +1510,23 @@ class AA_Widget_Pwd extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Password and Change password'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Password and Change password');
+    }   // widget name
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
-    function getClassProperties()  {
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
+     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'param' => true
                     );
@@ -1099,11 +1538,23 @@ class AA_Widget_Hid extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Hidden field'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Hidden field');
+    }   // widget name
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
-    function getClassProperties()  {
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
+     function getClassProperties()  {
         return array( 'fnc'   => true   // @todo - replace 'true' by parameter specification
                     );
     }
@@ -1114,11 +1565,23 @@ class AA_Widget_Lup extends AA_Widget {
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
-    function name()         { return _m('Local URL Picker'); }   // widget name
-    function multiple()     { return false;       }   // returns multivalue or single value
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Local URL Picker');   // widget name
+    }
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
 
-    /** Used parameter format (in fields.input_show_func table)  */
-    function getClassProperties()  {
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
+     function getClassProperties()  {
         return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
                       'param' => true
                     );
@@ -1186,7 +1649,20 @@ class AA_Property {
 
     /** array of constants used for selections (selectbox, radio, ...) */
     var $const_arr;
-
+    /** AA_Property function
+     * @param $id
+     * @param $name
+     * @param $type
+     * @param $multi
+     * @param $persistent
+     * @param $validator
+     * @param $required
+     * @param $input_help
+     * @param $input_morehlp
+     * @param $example
+     * @param $show_content_type_switch
+     * @param $content_type_switch_default
+     */
     function AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN) {
         $this->id                          = $id;
         $this->name                        = $name;
@@ -1202,13 +1678,42 @@ class AA_Property {
         $this->content_type_switch_default = $content_type_switch_default;
         $this->const_arr                   = (is_array($validator) AND ($validator[0]=='enum')) ? $validator[1] : array();
     }
-
-    function getId()        { return $this->id;  }
-    function getName()      { return $this->name;  }
-    function getType()      { return $this->type;  }
-    function isObject()     { return !in_array($this->type, array('text', 'int', 'bool', 'float')); }
-    function isArray()      { return $this->multi; }
-    function isPersistent() { return $this->persistent; }
+    /** getId function
+     *
+     */
+    function getId() {
+        return $this->id;
+    }
+    /** getName function
+     *
+     */
+    function getName() {
+        return $this->name;
+    }
+    /** getType function
+     *
+     */
+    function getType() {
+        return $this->type;
+    }
+    /** isObject function
+     *
+     */
+    function isObject() {
+        return !in_array($this->type, array('text', 'int', 'bool', 'float'));
+    }
+    /** isArray function
+     *
+     */
+    function isArray() {
+        return $this->multi;
+    }
+    /** isPersistent function
+     *
+     */
+    function isPersistent() {
+        return $this->persistent;
+    }
 }
 
 /** AA_Variable class defines one variable in AA. It is describes the datatype,
@@ -1226,7 +1731,9 @@ class AA_Variable extends AA_Property {
 
     /** Current value of $type. The value must be convertable to AA_Value - @see type */
     var $value;
-
+    /** setValue function
+     * @param $value
+     */
     function setValue($value) {
         if ( !is_null($this->validator) AND $this->validator->validate($value)) {
             $this->value = new AA_Value($value);
@@ -1243,17 +1750,22 @@ class AA_Formatter {
 
     /// Static ///
 
-    /** @return bit field representig, which formatters we want to show. 65535
-    *   means "all standard formatters", which means all 16 standard formatters.
-    *   We use just two, at this moment - HTML (=1) and PLAIN (=2)
-    *   (we will continue on bit basis, so next formatter would be xxx (=4))
-    */
+    /** getStandardFormattersBitfield function
+     * @param $html_show
+     *  @return bit field representig, which formatters we want to show. 65535
+     *   means "all standard formatters", which means all 16 standard formatters.
+     *   We use just two, at this moment - HTML (=1) and PLAIN (=2)
+     *   (we will continue on bit basis, so next formatter would be xxx (=4))
+     */
     function getStandardFormattersBitfield($html_show) {
         // @todo move to const in php5
         return 65535;
     }
 
-    /** @return (bit) id of the formatter_type (HTML or PLAIN, at this moment) */
+    /** getFlag function
+     * @param $formatter_type
+     *  @return (bit) id of the formatter_type (HTML or PLAIN, at this moment)
+     */
     function getFlag($formatter_type) {
         return ($formatter_type == 'HTML') ? 1 : 2;
     }
@@ -1267,62 +1779,85 @@ class AA_Field {
 
     /** Default widget - as parsed from field data (input_show_func) */
     var $widget;
-
+    /** AA_Field function
+     * @param $data
+     */
     function AA_Field($data) {
         $this->data   = is_array($data) ? $data : array();
         $this->widget = null;
     }
 
-    /** @returns the table and column, where the field is stored */
+    /** storageColumn function
+     * @return the table and column, where the field is stored
+     */
     function storageColumn() {
         return $this->data['in_item_tbl'] ? $this->data['in_item_tbl'] :  ($this->data['text_stored'] ? 'text' : 'number');
     }
 
-    /** @returns the table and column, where the field is stored */
+    /** storageTable function
+     * @return the table and column, where the field is stored
+     */
     function storageTable() {
         return $this->data['in_item_tbl'] ? 'item' : 'content';
     }
 
-    /** @return field data */
+    /** getProperty function
+     *  @return field data
+     */
     function getProperty($property) {
         return $this->data[$property];
     }
 
-    /** @return id of the field */
-    function getId() {    return $this->getProperty('id');              }
+    /** getId
+     * @return id of the field
+     */
+    function getId() {
+        return $this->getProperty('id');
+    }
 
-    /** @return name of the field */
-    function getName() {  return $this->getProperty('name');            }
+    /** getName function
+     * @return name of the field
+     */
+    function getName() {
+        return $this->getProperty('name');
+    }
 
-    /** @return boolean value if the field is requierd  (must be filled) */
-    function required() { return (bool) $this->getProperty('required'); }
-
+    /** required function
+     * @return boolean value if the field is requierd  (must be filled)
+     */
+    function required() {
+        return (bool) $this->getProperty('required');
+    }
+    /** getWidget function
+     *
+     */
     function getWidget() {
         if ( is_null($this->widget) ) {
-
-                function setFromField(&$field) {
-                if (isset($field) AND is_array($field)) {
-                    $this->id            = $field['id'];
-                    $this->varname       = varname4form($this->id);
-                    $this->name          = $field['name'];
-                    $this->input_before  = $field['input_before'];
-                    $this->required      = $field['required'];
-                    $this->input_help    = $field['input_help'];
-                    $this->input_morehlp = $field['input_morehlp'];
-                    $funct = ParamExplode($field["input_show_func"]);
-                    $this->input_type    = AA_Stringexpand::unalias($funct[0]);
-                    $this->param         = array_slice( $funct, 1 );
-                    $this->html_rb_show  = $field["html_show"];
-                    if ( isset($field["const_arr"]) ) {
-                        $this->const_arr  = $field["const_arr"];
-                    }
-                }
-            }
+   //        function setFromField(&$field) {
+   //            if (isset($field) AND is_array($field)) {
+   //                $this->id            = $field['id'];
+   //                $this->varname       = varname4form($this->id);
+   //                $this->name          = $field['name'];
+   //                $this->input_before  = $field['input_before'];
+   //                $this->required      = $field['required'];
+   //                $this->input_help    = $field['input_help'];
+   //                $this->input_morehlp = $field['input_morehlp'];
+   //                $funct = ParamExplode($field["input_show_func"]);
+   //                $this->input_type    = AA_Stringexpand::unalias($funct[0]);
+   //                $this->param         = array_slice( $funct, 1 );
+   //                $this->html_rb_show  = $field["html_show"];
+   //                if ( isset($field["const_arr"]) ) {
+   //                    $this->const_arr  = $field["const_arr"];
+   //                }
+   //            }
+   //        }
 
             $this->widget = &AA_Widget::factory($somethinnnnng); // @todo
         }
     }
-
+    /** getAliases function
+     *
+     */
     function getAliases() {
         $ret = array();
         if ($this->data['alias1']) {
@@ -1338,7 +1873,9 @@ class AA_Field {
         return $ret;
     }
 
-    /** function finds group_id in field.input_show_func parameter */
+    /** getConstantGroup function
+     * function finds group_id in field.input_show_func parameter
+     */
     function getConstantGroup() {
         $showfunc   = ParseClassProperties($this->data['input_show_func'], 'AA_Widget_');
         // does this field use constants? Isn't it slice?
@@ -1348,12 +1885,16 @@ class AA_Field {
         return false;
     }
 
-    /** deprecated - for backward compatibility only */
+    /** getRecord function
+     *  @deprecated - for backward compatibility only
+     */
     function getRecord() {
         return $this->data;
     }
 
-    /** @returns text | numeric | date | constants */
+    /** getSearchType function
+     * @return text | numeric | date | constants
+     */
     function getSearchType() {
         $showfunc   = ParseClassProperties($this->data['input_show_func'], 'AA_Widget_');
         $field_type = 'numeric';
@@ -1384,11 +1925,16 @@ class AA_Field {
     *       aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
     */
+    /** getId4Form function
+     * @param $item_id
+     */
     function getId4Form($item_id) {
         return "aa[i$item_id][". str_replace('.','_',$this->getId()).'][]';
     }
 
-    /**
+    /** getWidgetAjaxHtml function
+    * @param $item_id
+    * @param $aa_value
     *   @todo create validator on input_validate
     */
     function getWidgetAjaxHtml($item_id, $aa_value) {
@@ -1409,7 +1955,9 @@ class AA_Field {
         return $this->fields->getWidgetAjaxHtml($field_id, $aa_value);
     }
 
-    /** @returns true if constants are from slice */
+    /** _areSliceConstants function
+     *  @return true if constants are from slice
+     */
     function _areSliceConstants($name) {
         // prefix indicates select from items
         return ( substr($name,0,7) == "#sLiCe-" );
@@ -1437,7 +1985,10 @@ class AA_Fields {
 
     /** Array of aliases - for caching purposes */
     var $aliases;
-
+    /** AA_Fields function
+     * @param $master_id
+     * @param $collection
+     */
     function AA_Fields($master_id, $collection = 0) {
         $this->master_id  = $master_id;
         $this->fields     = null;
@@ -1455,6 +2006,9 @@ class AA_Fields {
      *                           setting
      *  @see sliceobj:slice->fields()
      */
+     /** load function
+      * @param $force
+      */
     function load($force=false) {
         if ( !$force AND !is_null($this->fields) ) {
             return;
@@ -1480,25 +2034,37 @@ class AA_Fields {
         freeDB($db);
     }
 
-    /** returns the field (copy - just because of syntax - it is not possible
+    /** getField function
+     *  @return the field (copy - just because of syntax - it is not possible
      *  to return null in &function())
+     * @param $field_id
      */
     function getField($field_id) {
         $this->load();
         return isset($this->fields[$field_id]) ? $this->fields[$field_id] : null;
     }
-
+    /** getProperty function
+     * @param $field_id
+     * @param $property
+     */
     function getProperty($field_id, $property) {
         $this->load();
         return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getProperty($property) : null;
     }
-
+    /** getWidgetAjaxHtml function
+     * @param $field_id
+     * @param $item_id
+     * @param $aa_value
+     */
     function getWidgetAjaxHtml($field_id, $item_id, $aa_value) {
         $this->load();
         return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getWidgetAjaxHtml($item_id, $aa_value) : '';
     }
 
-
+    /** getAliases function
+     * @param $additional
+     * @param $type
+     */
     function getAliases($additional='', $type='') {
         if ( !is_null($this->aliases) ) {
             return $this->aliases;
@@ -1537,7 +2103,9 @@ class AA_Fields {
         return($this->aliases);
     }
 
-    // returns field id of field which stores category (usually "category........")
+    /** getCategoryFieldId function
+     *  returns field id of field which stores category (usually "category........")
+     */
     function getCategoryFieldId() {
         $this->load();
         $no = 10000;
@@ -1556,7 +2124,9 @@ class AA_Fields {
     }
 
 
-    /** deprecated - for backward compatibility only */
+    /** getRecordArray function
+     *  deprecated - for backward compatibility only
+     */
     function getRecordArray() {
         $this->load();
         $ret = array();
@@ -1565,12 +2135,16 @@ class AA_Fields {
         }
         return $ret;
     }
-
+    /** getPriorityArray function
+     *
+     */
     function getPriorityArray() {
         $this->load();
         return $this->prifields;
     }
-
+    /** getSearchArray function
+     *
+     */
     function getSearchArray() {
         $this->load();
         $i = 0;
@@ -1584,17 +2158,21 @@ class AA_Fields {
         return $ret;
     }
 
-    /** Returns true, if the passed field id looks like slice setting field
+    /** isSliceField function
+     *  Returns true, if the passed field id looks like slice setting field
      *  "slice fields" are not used for items, but rather for slice setting.
      *  Such fields are destinguished by underscore on first letter of field_id
      *  - static class function
+     * @param $field_id
      */
     function isSliceField($field_id) {
         return $field_id AND ($field_id{0} == '_');
     }
 
-    /** Returns true, if the passed field id looks like field id
+    /** isField function
+     *  Returns true, if the passed field id looks like field id
      *  - static class function
+     * @param $field_id
      *  @todo - pass also $module_id and look directly into module, if the field
      *          is really field in slecific slice/module
      */
@@ -1612,8 +2190,11 @@ class AA_Fields {
     }
 
 
-    /** Create field id from type and number
+    /** createFieldId function
+     *  Create field id from type and number
      *  - static class function
+     * @param $ftype
+     * @param $no
      */
     function createFieldId($ftype, $no="0") {
         if ((string)$no == "0") {
@@ -1622,23 +2203,29 @@ class AA_Fields {
         return $ftype. substr("................$no", -(16-strlen($ftype)));
     }
 
-    /** get field type from id (works also for AA_Core_Fields (without dots))
+    /** getFieldType function
+     *  get field type from id (works also for AA_Core_Fields (without dots))
      *  - static class function
+     * @param $id
      */
     function getFieldType($id) {
         $dot_pos = strpos($id, ".");
         return ($dot_pos === false) ? $id : substr($id, 0, $dot_pos);
     }
 
-    /** get field number from id ('.', '0', '1', '12', ... )
+    /** getFieldNo function
+     *  get field number from id ('.', '0', '1', '12', ... )
      *  - static class function
+     * @param $id
      */
     function getFieldNo($id) {
         return (string)substr(strrchr($id,'.'), 1);
     }
 
-    /** creates slice field
+    /** createSliceField function
+     *  creates slice field
      *  - static class function
+     * @param $type
      */
     function createSliceField($type) {
         $varset = new CVarset();
@@ -1685,7 +2272,8 @@ class AA_Fields {
 }
 
 
-/** Returns list of fields which belongs to the slice
+/** GetSliceFields function
+ *  @return list of fields which belongs to the slice
  *  The result is in two arrays - $fields    (key is field_id)
  *                              - $prifields (just field_id sorted by priority)
  *  @param $slice_id       - id of slice for which you want to get fields array
@@ -1711,7 +2299,12 @@ function GetSliceFields($slice_id, $slice_fields = false) {
     freeDB($db);
     return array($fields, $prifields);
 }
-
+/** GetFields4Select function
+ * @param $slice_id
+ * @param $slice_fields
+ * @param $order
+ * @param $add_empty
+ */
 function GetFields4Select($slice_id, $slice_fields = false, $order = 'name', $add_empty = false) {
     $p_slice_id = q_pack_id($slice_id);
     $db = getDB();
@@ -1738,7 +2331,11 @@ function GetFields4Select($slice_id, $slice_fields = false, $order = 'name', $ad
 
 // -------------------------------------------------------------------------------
 
-// helper function for GetItemContent and such functions
+/** itemContent_getWhere function
+ *  helper function for GetItemContent and such functions
+ * @param $zids
+ * @param $use_short_ids
+ */
 function itemContent_getWhere($zids, $use_short_ids=false) {
     // convert array or single value to zids
     if ( !is_object($zids) ) {
@@ -1751,31 +2348,38 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
     return array( $sel_in, $settags );
 }
 
-/** Basic function to get item content. Use this function, not direct SQL queries.
-*
-*   @param bool  $ignore_reading_password
-*       Use carefully only when you are sure the data is used safely and not viewed
-*       to unauthorized persons.
-*   @param array $fields2get
-*       restrict return fields only to listed fields (so the content4id array
-*       is not so big)
-*       like: array('headline........', 'category.......1')
-*       (only content table fields are restricted (yet))
-*/
+/** GetItemContent function
+ * Basic function to get item content. Use this function, not direct SQL queries.
+ * @param $zids
+ * @param $use_short_ids
+ *   @param bool  $ignore_reading_password
+ *       Use carefully only when you are sure the data is used safely and not viewed
+ *       to unauthorized persons.
+ *   @param array $fields2get
+ *       restrict return fields only to listed fields (so the content4id array
+ *       is not so big)
+ *       like: array('headline........', 'category.......1')
+ *       (only content table fields are restricted (yet))
+ */
 function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
     $db = getDB();
 
     // construct WHERE clause
     list($sel_in, $settags) = itemContent_getWhere($zids, $use_short_ids);
-    if (!$sel_in) { freeDB($db); trace("-"); return false; }
+    if (!$sel_in) {
+        freeDB($db);
+        trace("-");
+        return false;
+    }
 
     // get content from item table
     $delim = "";
 
     if ( is_object($zids) ) {
-        if ( $zids->onetype() == 's' )
+        if ( $zids->onetype() == 's' ) {
             $use_short_ids = true;
+        }
     }
 
     // if the output fields are restricted, restrict also item fields
@@ -1794,7 +2398,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     }
 
     $id_column = ($use_short_ids ? "short_id" : "id");
-    $SQL = "SELECT $item_fields FROM item WHERE item.$id_column $sel_in";
+    $SQL       = "SELECT $item_fields FROM item WHERE item.$id_column $sel_in";
     $db->tquery($SQL);
 
     $n_items = 0;
@@ -1805,7 +2409,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             $reading_password = AA_Slices::getSliceProperty(unpack_id128($db->f("slice_id")),'reading_password');
         }
 
-        $reading_permitted = ($ignore_reading_password OR !$reading_password OR ($reading_password == md5($GLOBALS["slice_pwd"])));
+        $reading_permitted            = ($ignore_reading_password OR !$reading_password OR ($reading_password == md5($GLOBALS["slice_pwd"])));
         $item_permitted[$db->f("id")] = $reading_permitted;
 
         $n_items = $n_items+1;
@@ -1831,7 +2435,11 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     }
 
     // Skip the rest if no items found
-    if ($n_items == 0) { freeDB($db); trace("-"); return null; }
+    if ($n_items == 0) {
+        freeDB($db);
+        trace("-");
+        return null;
+    }
 
     // If its a tagged id, then set the "idtag..........." field
     if ($settags) {
@@ -1903,21 +2511,27 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     return $content;   // Note null returned above if no items found
 }
 
-// fills content arr with current content of $sel_in items (comma separated short ids)
+/** GetItemContent_Short function
+ *  fills content arr with current content of $sel_in items (comma separated short ids)
+ * @param $ids
+ */
 function GetItemContent_Short($ids) {
     GetItemContent($ids, true);
 }
 
-/** The same as GetItemContent function, but it returns just id and short_id
+/** GetItemContentMinimal function
+ *  The same as GetItemContent function, but it returns just id and short_id
  *  (or other fields form item table - specified in $fields2get) for the item
  *  (used in URL listing view @see view_type['urls']).
  *  If $fields2get is specified, it MUST contain at least 'id'.
+ * @param $zids
+ * @param $fields2get
  */
 function GetItemContentMinimal($zids, $fields2get=false) {
   if ( !$fields2get ) {
       $fields2get = array( 'id', 'short_id' );
   }
-  $db = getDB();
+  $db      = getDB();
   $columns = join(',',$fields2get);
 
   // construct WHERE clause
@@ -1925,7 +2539,7 @@ function GetItemContentMinimal($zids, $fields2get=false) {
   if ($sel_in) {
       // get content from item table
       $delim = "";
-      $SQL = "SELECT $columns FROM item WHERE id $sel_in";
+      $SQL   = "SELECT $columns FROM item WHERE id $sel_in";
       $db->tquery($SQL);
       $n_items = 0;
       while ( $db->next_record() ) {
@@ -1940,7 +2554,10 @@ function GetItemContentMinimal($zids, $fields2get=false) {
   freeDB($db);
   return ($n_items == 0) ? null : $content;   // null returned if no items found
 }
-
+/** GrabConstantColumn function
+ * @param $db
+ * @param $column
+ */
 function GrabConstantColumn(&$db, $column) {
     switch ($column) {
         case "name":        return array( "value"=> $db->f("name") );
@@ -1957,9 +2574,14 @@ function GrabConstantColumn(&$db, $column) {
     return array();
 }
 
-/** Fills Abstract data srtructure for Constants */
+/** GetConstantContent function
+ *  Fills Abstract data srtructure for Constants
+ * @param $zids
+ */
 function GetConstantContent( $zids ) {
-  if ( !$zids ) return false;
+    if ( !$zids ) {
+        return false;
+    }
   $db = getDB();
 
   $SQL = 'SELECT * FROM constant WHERE short_id '. $zids->sqlin(false);
@@ -1983,7 +2605,13 @@ function GetConstantContent( $zids ) {
   return $content;
 }
 
-/** Just helper function for storing data from database to Abstract Data Structure */
+/** StoreTable2Content function
+ *  Just helper function for storing data from database to Abstract Data Structure
+ * @param $content
+ * @param $SQL
+ * @param $prefix
+ * @param $id_field
+ */
 function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
     $data = GetTable2Array($SQL, 'NoCoLuMn', 'aa_fields');
     if ( is_array($data) ) {
@@ -1997,7 +2625,10 @@ function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
 }
 
 // -------------------------------------------------------------------------------
-
+/** GetHeadlineFieldID function
+ * @param $sid
+ * @param $slice_field
+ */
 function GetHeadlineFieldID($sid, $slice_field="headline.") {
   $db = getDB();
 
@@ -2013,18 +2644,25 @@ function GetHeadlineFieldID($sid, $slice_field="headline.") {
 }
 
 // -------------------------------------------------------------------------------
-// returns group_id from $show_input_func string
+/** GetCategoryGroupId function
+ * returns group_id from $show_input_func string
+ * @param $input_show_func
+ */
 function GetCategoryGroupId($input_show_func) {
     $arr = explode( ":", $input_show_func);
     return $arr[1];
 }
 
-// find group_id for constants of the slice
+/** GetCategoryGroup function
+ * find group_id for constants of the slice
+ * @param $slice_id
+ * @param $field
+ */
 function GetCategoryGroup($slice_id, $field='') {
     global $db;
 
     $condition = $field ? "id = '$field'" : "id LIKE 'category%'";
-    $SQL  = "SELECT input_show_func FROM field
+    $SQL       = "SELECT input_show_func FROM field
               WHERE slice_id='". q_pack_id($slice_id) ."'
                 AND $condition
                 ORDER BY id";  // first should be category........,
@@ -2039,7 +2677,10 @@ function GetCategoryGroup($slice_id, $field='') {
 
 // -------------------------------------------------------------------------------
 
-// get id from item short id
+/** GetId4Sid function
+ * get id from item short id
+ * @param $sid
+ */
 function GetId4Sid($sid) {
     global $db;
 
@@ -2053,7 +2694,10 @@ function GetId4Sid($sid) {
 
 // -------------------------------------------------------------------------------
 
-// get short item id item short id
+/** GetSid4Id function
+ * get short item id item short id
+ * @param $iid
+ */
 function GetSid4Id($iid) {
     global $db;
 
@@ -2067,7 +2711,9 @@ function GetSid4Id($iid) {
 
 // -------------------------------------------------------------------------------
 
-// Parses the string xxx:yyyy (database stored func) to arr[fce]=xxx [param]=yyyy
+/** ParseFnc function
+ * Parses the string xxx:yyyy (database stored func) to arr[fce]=xxx [param]=yyyy
+ */
 function ParseFnc($s) {
     $pos = strpos($s,":");
     if ( $pos ) {
@@ -2079,12 +2725,16 @@ function ParseFnc($s) {
     return $arr;
 }
 
-// returns html safe code (used for preparing variable to print in form)
+/** safe function
+ * @return html safe code (used for preparing variable to print in form)
+ */
 function safe( $var ) {
     return htmlspecialchars( magic_strip($var) );  // stripslashes function added because of quote varibles sended to form before
 }
 
-// is the browser able to show rich edit box? (using triedit.dll)
+/** richEditShowable function
+ * is the browser able to show rich edit box? (using triedit.dll)
+ */
 function richEditShowable() {
     global $BName, $BVersion, $BPlatform;
     global $showrich;
@@ -2095,12 +2745,13 @@ function richEditShowable() {
     // Note that RawRichEditTextarea could force iframe for certain BPlatform
 }
 
-/**
-* Prints HTML start page tags (html begin, encoding, style sheet, but no title).
-* Chooses the right encoding by get_mgettext_lang().
-* @param string $stylesheet  if empty, no StyleSheet tag is printed
-* @param bool   $js_lib      if true, includes js_lib.js javascript
-*/
+/** HtmlPageBegin function
+ * Prints HTML start page tags (html begin, encoding, style sheet, but no title).
+ * Chooses the right encoding by get_mgettext_lang().
+ * @param string $stylesheet  if empty, no StyleSheet tag is printed
+ * @param bool   $js_lib      if true, includes js_lib.js javascript
+ * @param $lang
+ */
 function HtmlPageBegin($stylesheet='default', $js_lib=false, $lang=null) {
     if ($stylesheet == "default") {
         $stylesheet = AA_INSTAL_PATH .ADMIN_CSS;
@@ -2137,7 +2788,9 @@ function HtmlPageEnd() {
 </body>
 </html>";
 }
-
+/** getHtmlPage function
+ * @param $param
+ */
 function getHtmlPage($param='') {
     $ret  = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
     $ret .= "\n<html>\n<head>";
@@ -2155,15 +2808,19 @@ function getHtmlPage($param='') {
     $ret .= "\n</body>\n</html>";
     return $ret;
 }
-
+/** FrmHtmlPage function
+ * @param $param
+ */
 function FrmHtmlPage($param='') {
     echo getHtmlPage($param);
 }
 
-// Displays page with message and link to $url
-//   url - where to go if user clicks on Back link on this message page
-//   msg - displayed message
-//   dummy - was used in past, now you should use MsgPageMenu from msgpage.php3
+/** MsgPage function
+ * Displays page with message and link to $url
+ * @param $url - where to go if user clicks on Back link on this message page
+ * @param $msg - displayed message
+ * @param $dummy - was used in past, now you should use MsgPageMenu from msgpage.php3
+ */
 function MsgPage($url, $msg, $dummy="standalone") {
   HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
@@ -2174,14 +2831,14 @@ function MsgPage($url, $msg, $dummy="standalone") {
   if ( isset($msg) AND is_array($msg))
     PrintArray($msg);
    else
-    echo "<P>$msg</p><br><br>";
+    echo "<p>$msg</p><br><br>";
   echo "<a href=\"$url\">"._m("Back")."</a>";
   echo "</body></html>";
   page_close();
   exit;
 }
 
-/**
+/** CountHit function
  * Fulltext is viewed - count hit
  *
  * UPDATE - hits logged to table log. With COUNTHIT_PROBABILITY
@@ -2229,34 +2886,42 @@ function CountHit($id) {
     }
 }
 
-
-function is_field_type_numerical ($field_type) {
+/** is_field_type_numerical function
+ * @param $field_type
+ */
+function is_field_type_numerical($field_type) {
     $number_db_types = array ("float","double","decimal","int", "timestamp");
     reset ($number_db_types);
 
     while (list (,$n_col) = each ($number_db_types))
-        if (strstr ($field_type, $n_col))
+        if (strstr ($field_type, $n_col)) {
             return true;
+        }
 
     return false;
 }
 
 // -----------------------------------------------------------------------------
-/** Copies rows within a table changing only given columns and omitting given columns.
-*   @author Jakub Adï¿½ek
-*	@return bool  true if all additions succeed, false otherwise
-*
-*   @param string $table    table name
-*   @param string $where    where condition (filter)
-*   @param array  $set_columns  array ($column_name => $value, ...) - fields the value of which will be changed
-*   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
-*   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
-*/
+/** CopyTableRows function
+ *  Copies rows within a table changing only given columns and omitting given columns.
+ *   @author Jakub Adámek
+ *   @return bool  true if all additions succeed, false otherwise
+ *
+ *   @param string $table    table name
+ *   @param string $where    where condition (filter)
+ *   @param array  $set_columns  array ($column_name => $value, ...) - fields the value of which will be changed
+ *   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
+ *   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
+ */
 function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
-    if (!$omit_columns) $omit_columns = array();
-    if (!$id_columns) $id_columns = array();
+    if (!$omit_columns) {
+        $omit_columns = array();
+    }
+    if (!$id_columns) {
+        $id_columns = array();
+    }
 
-    if ($GLOBALS[debug]) {
+    if ($GLOBALS['debug']) {
         echo "CopyTableRows: SELECT * FROM $table WHERE $where<br>
         set_columns = ";
         print_r ($set_columns);
@@ -2265,17 +2930,21 @@ function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_col
         echo "<br>";
     }
 
-    $db = getDB();
+    $db     = getDB();
     $varset = new CVarset();
 
     $columns = $db->metadata($table);
     freeDB($db);
 
-    if ($GLOBALS[debug]) $rows = 0;
+    if ($GLOBALS['debug']) {
+        $rows = 0;
+    }
 
     $data = GetTable2Array("SELECT * FROM $table WHERE $where", "NoCoLuMn");
 
-    if ($GLOBALS[debug]) { echo "data: "; print_r ($data); echo "<br>"; }
+    if ($GLOBALS['debug']) {
+        echo "data: "; print_r ($data); echo "<br>";
+    }
 
     if (!is_array($data)) {
         return true;
@@ -2288,24 +2957,26 @@ function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_col
 
         // create the varset
         while (list (,$col) = each ($columns)) {
-            if (my_in_array ($col["name"], $omit_columns))
+            if (my_in_array($col["name"], $omit_columns))
                 continue;
 
-            if (is_field_type_numerical ($col["type"]))
+            if (is_field_type_numerical($col["type"]))
                  $type = "number";
             else $type = "text";
 
             // look into $set_columns
             if (isset ($set_columns[$col["name"]]))
                  $val = $set_columns[$col["name"]];
-            else if (my_in_array ($col["name"], $id_columns))
+            else if (my_in_array($col["name"], $id_columns))
                  $val = q_pack_id(new_id());
             else $val = $datarow[$col["name"]];
 
-            $varset->set ($col["name"],$val,$type);
+            $varset->set($col["name"],$val,$type);
         }
 
-        if ($GLOBALS[debug]) { echo "Row $rows<br>"; $rows ++; }
+        if ($GLOBALS['debug']) {
+            echo "Row $rows<br>"; $rows ++;
+        }
 
         if (!tryQuery("INSERT INTO $table ".$varset->makeINSERT())) {
             return false;
@@ -2315,7 +2986,10 @@ function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_col
 }
 
 // -----------------------------------------------------------------------------
-
+/** get_last_insert_id function
+ * @param $db
+ * @param $table
+ */
 function get_last_insert_id($db, $table) {
     $db->tquery("SELECT LAST_INSERT_ID() AS lid FROM $table");
     $db->next_record();
@@ -2324,35 +2998,57 @@ function get_last_insert_id($db, $table) {
 
 // -----------------------------------------------------------------------------
 
-/** returns the suffix part of the filename (beginning with the last dot (.) in the filename) */
-function filesuffix ($filename) {
-    if (!strstr ($filename,".")) return "";
+/** filesuffix function
+ *  returns the suffix part of the filename (beginning with the last dot (.) in the filename)
+ * @param $filename
+ */
+function filesuffix($filename) {
+    if (!strstr ($filename,".")) {
+        return "";
+    }
     $i = strlen($filename);
-    while ($filename[$i] != ".") $i --;
+    while ($filename[$i] != ".") {
+        $i --;
+    }
     return substr ($filename,$i+1);
 }
-
-function filepath ($filename) {
-    if (!strstr ($filename,"/")) return "./";
+/** filepath function
+ *
+ */
+function filepath($filename) {
+    if (!strstr ($filename,"/")) {
+        return "./";
+    }
     $i = strlen($filename);
     while ($filename[$i] != "/") $i --;
     return substr ($filename,0,$i+1);
 }
-
-function filename ($filename) {
-    if (!strstr ($filename,"/")) return "./";
+/** filename function
+ * @param $filename
+ */
+function filename($filename) {
+    if (!strstr ($filename,"/")) {
+        return "./";
+    }
     $i = strlen($filename);
-    while ($filename[$i] != "/") $i --;
+    while ($filename[$i] != "/") {
+        $i --;
+    }
     return substr ($filename,$i+1);
 }
-
+/** GetTimeZone function
+ *
+ */
 function GetTimeZone() {
     $d = getdate();
     return (mktime ($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year'])
         - gmmktime ($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year'])) / 3600;
 }
 
-/** generates random string of given length (useful as MD5 salt) */
+/** gensalt function
+ * generates random string of given length (useful as MD5 salt)
+ * @param $saltlen
+ */
 function gensalt($saltlen)
 {
     srand((double) microtime() * 1000000);
@@ -2363,13 +3059,20 @@ function gensalt($saltlen)
     return $salt;
 }
 
-/** Moves uploaded file to given directory and (optionally) changes permissions
+/** aa_move_uploaded_file function
+ *  Moves uploaded file to given directory and (optionally) changes permissions
+ * @param $varname
+ * @param $destdir
+ * @param $perms
+ * @param $filename
  *   @return string  error description or empty string
  */
 function aa_move_uploaded_file($varname, $destdir, $perms = 0, $filename = null)
 {
     endslash($destdir);
-    if (!$GLOBALS[$varname]) return "No $varname?";
+    if (!$GLOBALS[$varname]) {
+        return "No $varname?";
+    }
     if ($filename == "") {
         // get filename and replace bad characters
         $filename = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$varname."_name"]);
@@ -2397,9 +3100,13 @@ function aa_move_uploaded_file($varname, $destdir, $perms = 0, $filename = null)
 
 // ---------------------------------------------------------------------------------------------
 
-// like PHP split, but additionally provides $escape_pattern to stand for occurences of $pattern,
-// e.g. split_escaped (":", "a#:b:c", "#:") returns array ("a:b","c")
-
+/** split_escaped function
+ *  like PHP split, but additionally provides $escape_pattern to stand for occurences of $pattern,
+ *  e.g. split_escaped (":", "a#:b:c", "#:") returns array ("a:b","c")
+ * @param $pattern
+ * @param $string
+ * @param $escape_pattern
+ */
 function split_escaped($pattern, $string, $escape_pattern) {
     $dummy = "~#$?_";
     while (strpos($string, $dummy) !== false) {
@@ -2412,7 +3119,11 @@ function split_escaped($pattern, $string, $escape_pattern) {
     }
     return $strings;
 }
-
+/** join_escaped function
+ * @param $pattern
+ * @param $strings
+ * @param $escape_pattern
+ */
 function join_escaped($pattern, $strings, $escape_pattern) {
     foreach ((array)$strings as $val) {
         if ($retval) {
@@ -2422,7 +3133,10 @@ function join_escaped($pattern, $strings, $escape_pattern) {
     }
     return $retval;
 }
-
+/** join_and_quote function
+ * @param $pattern
+ * @param $strings
+ */
 function join_and_quote( $pattern, $strings ) {
     foreach ((array)$strings as $string) {
         if ($retval) {
@@ -2433,40 +3147,59 @@ function join_and_quote( $pattern, $strings ) {
     return $retval;
 }
 
-/** stripslashes if magic quotes are set */
+/** magic_strip function
+ *  stripslashes if magic quotes are set
+ * @param $val
+ */
 function magic_strip($val) {
     return get_magic_quotes_gpc() ? StripslashesArray($val) : $val;
 }
-
+/** magic_add function
+ * @param $str
+ */
 function magic_add($str) {
     return (get_magic_quotes_gpc() ? $str : addslashes($str));
 }
-
+/** isdigit function
+ * @param $c
+ */
 function isdigit($c) {
     return $c >= "0" && $c <= "9";
 }
-
+/** isalpha function
+ * @param $c
+ */
 function isalpha($c) {
     return ($c >= "a" && $c <= "z") || ($c >= "A" && $c <= "Z");
 }
-
+/** isalnum function
+ * @param $c
+ */
 function isalnum($c) {
     return ($c >= "0" && $c <= "9") || ($c >= "a" && $c <= "z") || ($c >= "A" && $c <= "Z");
 }
-
+/** gdf_error function
+ * @param $x
+ */
 function gfd_error($x) {
     echo "Unrecognized date format charcacter $x";
     exit;
 }
 
-/*  Returns the Unix timestamp counted from the formatted date string.
-    Does not check the date format, rather returns nonsence values for
-    wrong date strings.
-    Uses non-format letters as separators only,
-    i.e. "2.3.2002" is parsed the same as "2/3/2002" or even "2;3#2002". */
-function get_formatted_date ($datestring, $format) {
+/**  get_formatted_date function
+ * @param $datestring
+ * @param $format
+ *   @return the Unix timestamp counted from the formatted date string.
+ *   Does not check the date format, rather returns nonsence values for
+ *   wrong date strings.
+ *   Uses non-format letters as separators only,
+ *   i.e. "2.3.2002" is parsed the same as "2/3/2002" or even "2;3#2002".
+ */
+function get_formatted_date($datestring, $format) {
     // don't work with empty string
-    if (!$datestring) return "";
+    if (!$datestring) {
+        return "";
+    }
 
     // Split the date into parts consisting only of digits or only of letters
     for ($i = 0; $i < strlen ($datestring); $i++) {
@@ -2534,7 +3267,9 @@ function get_formatted_date ($datestring, $format) {
 
     //echo "hour $hour minute $minute second $second month $month day $day year $year pm $pm";
 
-    if ($use_pm && $pm) $hour += 12;
+    if ($use_pm && $pm) {
+        $hour += 12;
+    }
 
     // mktime replaces missing values by today's values
     if (!isset ($year)) {
@@ -2548,12 +3283,18 @@ function get_formatted_date ($datestring, $format) {
     }
     else return mktime ( $hour, $minute, $second, $month, $day, $year);
 }
-
-function setdefault (&$var, $default) {
-    if (!isset ($var)) $var = $default;
+/** setdefault function
+ * @param $var
+ * @param $default
+ */
+function setdefault(&$var, $default) {
+    if (!isset ($var)) {
+        $var = $default;
+    }
 }
 
-/** Cooperates with the script post2shtml.php3 (see more doc there),
+/** add_post2shtml_vars function
+ * Cooperates with the script post2shtml.php3 (see more doc there),
  * which allows to easily post variables
  * to PHP scripts SSI-included in a .shtml page.
  *
@@ -2563,17 +3304,20 @@ function setdefault (&$var, $default) {
  *
  * @author Jakub Adamek, Econnect, December 2002
  */
-function add_post2shtml_vars ($delete = true) {
+function add_post2shtml_vars($delete = true) {
     global $post2shtml_id;
     global $debugfill;
     add_vars();
-    if (!$post2shtml_id) return;
+    if (!$post2shtml_id) {
+        return;
+    }
     $db = getDB();
     $db->query("SELECT * FROM post2shtml WHERE id='$post2shtml_id'");
     $db->next_record();
     $vars = unserialize ($db->f("vars"));
-    if ($delete)
+    if ($delete) {
         $db->query("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
+    }
     freeDB($db);
     $var_types = array ("post","get","files","cookie");
 
@@ -2590,8 +3334,10 @@ function add_post2shtml_vars ($delete = true) {
     }
 }
 
-/** List of email types with translated description.
-    You should never list email types directly, always call this function. */
+/** get_email_types function
+ *  List of email types with translated description.
+ *  You should never list email types directly, always call this function.
+ */
 function get_email_types() {
     return array (
         "alerts alert" => _m("alerts alert"),
@@ -2601,13 +3347,18 @@ function get_email_types() {
     );
 }
 
-/// @return array month names
+/** monthnames function
+ *  @return array month names
+ */
 function monthNames() {
     return array( 1 => _m('January'), _m('February'), _m('March'), _m('April'), _m('May'), _m('June'),
         _m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December'));
 }
 
-/** Creates values for a select box showing some param wizard section. */
+/** getSelectBoxFromParamWizard function
+ *  Creates values for a select box showing some param wizard section.
+ * @param $var
+ */
 function getSelectBoxFromParamWizard($var) {
     foreach ($var["items"] as $value => $prop) {
         $retval[$value] = $prop["name"];
@@ -2620,19 +3371,28 @@ function getSelectBoxFromParamWizard($var) {
 // Usage: $db = getDB(); ..do stuff with sql ... freeDB($db)
 //
 $spareDBs = array();
-
+/** getDB function
+ *
+ */
 function getDB() {
     global $spareDBs;
-    if (!($db = array_pop($spareDBs)))
+    if (!($db = array_pop($spareDBs))) {
         $db = new DB_AA;
+    }
     return $db;
 }
+/** freeDB function
+ * @param $db
+ */
 function freeDB($db) {
     global $spareDBs;
     array_push($spareDBs,$db);
 }
 
-// Try a query, displaying debugging if $debug, return true on success, false on failure
+/** tryQuery function
+ *  Try a query, displaying debugging if $debug, return true on success, false on failure
+ * @param $SQL
+ */
 function tryQuery($SQL) {
     $db = getDB();
     $res = $db->tquery($SQL);
@@ -2640,8 +3400,11 @@ function tryQuery($SQL) {
     return $res;
 }
 
-// Return an array of fields, skipping numeric ones
-// See also GetTable2Array
+/** DBFields function
+ * @param $db
+ * @return an array of fields, skipping numeric ones
+ * @see also GetTable2Array
+ */
 function DBFields(&$db) {
     $a = array();
     foreach ( $db->Record as $key => $val ) {
@@ -2651,7 +3414,12 @@ function DBFields(&$db) {
     }
     return $a;
 }
-
+/** ShowWizardFrames function
+ * @param $aa_url
+ * @param $wizard_url
+ * @param $title
+ * @param $noframes_html
+ */
 function ShowWizardFrames($aa_url, $wizard_url, $title, $noframes_html="") {
     require_once AA_BASE_PATH."post2shtml.php3";
     global $post2shtml_id;
@@ -2663,7 +3431,7 @@ function ShowWizardFrames($aa_url, $wizard_url, $title, $noframes_html="") {
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
 </head>
 
-<frameset cols="*,300" frameborder="YES" border="1" framespacing="0">
+<frameset cols="*,300" frameborder="yes" border="1" framespacing="0">
     <frame src="'.$aa_url.'&called_from_wizard=1" name="aaFrame">
     <frame src="'.con_url($wizard_url,"post2shtml_id=$post2shtml_id").'" name="wizardFrame">
 </frameset>
@@ -2673,11 +3441,20 @@ function ShowWizardFrames($aa_url, $wizard_url, $title, $noframes_html="") {
 </html>';
 }
 
-/** Shows JavaScript which updates the Wizard frame, if it exists. */
+/** ShowRefreshWizardJavaScript function
+ *  Shows JavaScript which updates the Wizard frame, if it exists.
+ */
 function ShowRefreshWizardJavaScript() {
     FrmJavascript( 'if (top.wizardFrame != null) top.wizardFrame.wizard_form.submit();' );
 }
-
+/** GetAAImage function
+ * @param $filename
+ * @param $alt
+ * @param $width
+ * @param $height
+ * @param $add
+ * @param $add_path
+ */
 function GetAAImage($filename, $alt='', $width=0, $height=0, $add='', $add_path='') {
     $image_path = AA_BASE_PATH.   $add_path. "images/$filename";
     $image_url  = AA_INSTAL_PATH. $add_path. "images/$filename";
@@ -2690,12 +3467,21 @@ function GetAAImage($filename, $alt='', $width=0, $height=0, $add='', $add_path=
     }
     return "<img border=\"0\" src=\"$image_url\" alt=\"$alt\" $title $size $add>";
 }
-
+/** GetModuleImage function
+ * @param $module
+ * @param $filename
+ * @param $alt
+ * @param $width
+ * @param $height
+ * @param $add
+ */
 function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='') {
     return GetAAImage($filename, $alt, $width, $height, $add, "modules/$module/");
 }
 
-/// On many places in Admin panel, it is secure to read sensitive data => use this function
+/** FetchSliceReadingPassword function
+ * On many places in Admin panel, it is secure to read sensitive data => use this function
+ */
 function FetchSliceReadingPassword() {
     global $slice_id, $slice_pwd, $db;
     $db->query("SELECT reading_password FROM slice WHERE id='".q_pack_id($slice_id)."'");
@@ -2705,13 +3491,21 @@ function FetchSliceReadingPassword() {
 }
 
 $tracearr = array();
-// Support function for debugging, because of the lack of a stacktrace in PHP
-// $d = + for entering a function - for leaving = for a checkpoint.
+/** trace function
+ * Support function for debugging, because of the lack of a stacktrace in PHP
+ * @param $d = + for entering a function - for leaving = for a checkpoint.
+ * @param $v
+ * @param $c
+ */
 function trace($d,$v="NONE",$c="") {
     global $tracearr,$traceall;
-    if ($traceall) huhl("TRACE: $d:",$v," ",$c);
+    if ($traceall) {
+        huhl("TRACE: $d:",$v," ",$c);
+    }
 // Below here you can put variables you want traced
-    if ($traceall) huhl("TRACE:slice_id=",$slice_id);
+    if ($traceall) {
+        huhl("TRACE:slice_id=",$slice_id);
+    }
 // end variables
     switch ($d) {
     case "+": array_push($tracearr,$v,$c); break;
@@ -2738,7 +3532,8 @@ class contentcache {
     // used for global cache of contents
     var $content;
 
-    /** "class function" obviously called as contentcache::global_instance();
+    /** global_instance function
+     *  "class function" obviously called as contentcache::global_instance();
      *  This function makes sure, there is global instance of the class
      */
     function global_instance() {
@@ -2747,7 +3542,8 @@ class contentcache {
         }
     }
 
-    /** Calls $function with $params and returns its return value. The result
+    /** get_result function
+     *  Calls $function with $params and returns its return value. The result
      *  value is then stored into cache, so next call of the $function with the
      *  same parameters is returned from cache - function is not performed.
      *  Use this feature mainly for repeating, time consuming functions!
@@ -2776,21 +3572,32 @@ class contentcache {
         return $val;
     }
 
-    // set new value for key $key
+    /** set function
+     *  set new value for key $key
+     * @param $access_code
+     * @param $val
+     */
     function set($access_code, &$val) {
         $this->content[md5($access_code)] = $val;
     }
 
-    /** Get value for $access_code.
-     *  Returns false if the value is not cached for the $access_code (use ===)
+    /** get function
+     *  Get value for $access_code.
+     * @param $access_code
+     *  @return false if the value is not cached for the $access_code (use ===)
      */
     function get($access_code) {
         $key = md5($access_code);
-        if ( isset($this->content[$key]) )  return $this->content[$key];
+        if ( isset($this->content[$key]) ) {
+            return $this->content[$key];
+        }
         return false;
     }
 
-    // clear key or all content from contentcache
+    /** clear function
+     * clear key or all content from contentcache
+     * @param $key
+     */
     function clear($key="") {
         if ($key) {
             unset($this->content[$key]);
@@ -2826,7 +3633,8 @@ class contentcache {
  */
 class toexecute {
 
-    /** "class function" obviously called as toexecute::global_instance();
+    /** global_instance function
+     *  "class function" obviously called as toexecute::global_instance();
      *  This function makes sure, there is global instance of the class
      */
     function global_instance() {
@@ -2835,11 +3643,17 @@ class toexecute {
         }
     }
 
-    /** Stores the object and params to the database for later execution.
+    /** later function
+     *  Stores the object and params to the database for later execution.
      *  Such task is called from cron (the order depends on priority)
      *  selector is used for identifying class of task - used for deletion
      *  of duplicated task
-     *  Example: we need to recount all links in allcategories (Links module),
+     * @param $object
+     * @param $params
+     * @param $seletor
+     * @param $priority
+     * @param $time
+     *  @example: we need to recount all links in allcategories (Links module),
      *           so we need to cancel all older "recount" tasks, since it will
      *           be dubled in the queue (we call cancel_all() method for it)
      */
@@ -2862,12 +3676,16 @@ class toexecute {
          }
          return true;
     }
-
+    /** cancel_all function
+     * @param $selector
+     */
     function cancel_all($selector) {
         $varset = new Cvarset;
         $varset->doDeleteWhere('toexecute',"selector='".quote($selector)."'");
     }
-
+    /** execute function
+     * @param $allowed_time
+     */
     function execute($allowed_time = 0) {  // standard run is 10 s
 
         if ( !$allowed_time ) {
@@ -2903,7 +3721,9 @@ class toexecute {
                 $varset->doUpdate('toexecute');
 
                 $object = unserialize($task['object']);
-                if ( $GLOBALS['debug'] ) {huhl($object);}
+                if ( $GLOBALS['debug'] ) {
+                    huhl($object);
+                }
                 $retcode = $this->execute_one($object, unserialize($task['params']));
 
                 // Task is done - remove it from queue
@@ -2913,7 +3733,10 @@ class toexecute {
             }
         }
     }
-
+    /** execute_one function
+     * @param $object
+     * @param $params
+     */
     function execute_one(&$object, $params) {
         if ( !is_object($object) ) {
             return 'No object'; // Error
@@ -2926,14 +3749,20 @@ class toexecute {
 // end of toexecute class
 }
 
-/** If $value is set, returns $value - else $else */
+/** get_if function
+ *  If $value is set, returns $value - else $else
+ * @param $value
+ * @param $else
+ * @param $else2
+ */
 function get_if($value, $else, $else2='aa_NoNe') {
     return $value ? $value :
            ($else ? $else :
            (($else2=='aa_NoNe') ? $else : $else2));
 }
 
-/** Version of AA - automaticaly included also date and revision of util.php3
+/** aa_version function
+ *  Version of AA - automaticaly included also date and revision of util.php3
  *  file, for better version informations
  */
 function aa_version() {
@@ -2943,10 +3772,17 @@ function aa_version() {
 class CookieManager {
     //  we are adding prefix AA_ - at least it prevents conflicts between GET
     //  and COOKIES variables of the same name
+    /** set function
+     * @param $name
+     * @param $value
+     * @param $time
+     */
     function set($name, $value, $time=null) {
         setcookie('AA_'.$name, $value, $time ? time() + $time : 0, '/', $_SERVER['HTTP_HOST']);
     }
-
+    /** get function
+     * @param $name
+     */
     function get($name) {
         return $_COOKIE['AA_'.$name];
     }
@@ -2956,26 +3792,49 @@ class AA_ChangeProposal {
     var $resource_id;
     var $selector;
     var $values;    // array of values
-
+    /** AA_ChangeProposal function
+     * @param $resource_id
+     * @param $selector
+     * @param $values
+     */
     function AA_ChangeProposal($resource_id, $selector, $values) {
         $this->resource_id = $resource_id;
         $this->selector    = $selector;
         $this->values      = $values;
     }
-
-    function getResourceId() { return($this->resource_id); }
-    function getSelector()   { return($this->selector);    }
-    function getValues()     { return($this->values);      }
+    /** getResourceId function
+     *
+     */
+    function getResourceId() {
+        return($this->resource_id);
+    }
+    /** getSelector function
+     *
+     */
+    function getSelector() {
+        return($this->selector);
+    }
+    /** getValues function
+     *
+     */
+    function getValues() {
+        return($this->values);
+    }
 }
 
 
 class AA_GeneralizedArray {
     var $arr;
-
+    /** AA_GeneralizedArray function
+     *
+     */
     function AA_GeneralizedArray() {
         $this->arr = array();
     }
-
+    /** add function
+     * @param $value
+     * @param $coordinates
+     */
     function add($value, $coordinates) {
         $arr =& $this->arr;
         // make sure the position exist
@@ -2988,7 +3847,9 @@ class AA_GeneralizedArray {
         }
         $arr = array_merge($arr, array($value));
     }
-
+    /** getValues function
+     * @param $coordinates
+     */
     function getValues($coordinates) {
         $arr =& $this->arr;
         // make sure the position exist
@@ -3002,22 +3863,31 @@ class AA_GeneralizedArray {
         $ret = $arr;   // do not return reference
         return $ret;
     }
-
+    /** getArray function
+     *
+     */
     function getArray() {
         return $this->arr;
     }
 }
 
 class AA_ChangesMonitor {
-
+    /** addProposal function
+     * @param $change_proposal
+     */
     function addProposal($change_proposal) {
         return $this->_add($change_proposal, 'proposal');
     }
-
+    /** addHistory function
+     * @param $change_proposal
+     */
     function addHistory($change_proposal) {
         return $this->_add($change_proposal, 'history');
     }
-
+    /** _add function
+     * @param $change_proposal
+     * @param $type
+     */
     function _add($change_proposal, $type) {
         global $auth;
 
@@ -3042,7 +3912,9 @@ class AA_ChangesMonitor {
         }
         return true;
     }
-
+    /** deleteProposal
+     * @param $change_id
+     */
     function deleteProposal($change_id) {
         $varset = new CVarset;
         $varset->doDeleteWhere('change_record', "change_id = '".quote($change_id). "'");
@@ -3050,7 +3922,10 @@ class AA_ChangesMonitor {
         $varset->addkey("id", "text", $change_id);
         $varset->doDelete('change');
     }
-
+    /** deleteProposalForSelector function
+     * @param $resource_id
+     * @param $selector
+     */
     function deleteProposalForSelector($resource_id, $selector) {
         $changes_ids = GetTable2Array("SELECT DISTINCT change_id  FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
                                          WHERE `change`.resource_id = '".quote($resource_id)."' AND `change`.type = 'proposal' AND `change_record`.selector = '".quote($selector)."'", '', 'change_id');
@@ -3061,19 +3936,26 @@ class AA_ChangesMonitor {
         }
     }
 
-    /** returns all proposals for given resource (like item_id)
+    /** getProposals function
+     *  @return all proposals for given resource (like item_id)
      *  return value is array ordered by time of proposal
+     * @param $resource_ids
      */
     function getProposals($resource_ids) {
         return $this->_get($resource_ids, 'proposal');
     }
-
+    /** getHistory function
+     * @param $resource_ids
+     */
     function getHistory($resource_ids) {
         return $this->_get($resource_ids, 'history');
     }
 
-    /** returns all proposals for given resource (like item_id)
+    /** _get function
+     * @return all proposals for given resource (like item_id)
      *  return value is array ordered by time of proposal
+     * @param $resource_ids
+     * @param $type
      */
     function _get($resource_ids, $type) {
         $garr = new AA_GeneralizedArray();
@@ -3100,7 +3982,9 @@ class AA_ChangesMonitor {
         }
         return $garr;
     }
-
+    /** getProposalByID function
+     * @param $change_id
+     */
     function getProposalByID($change_id) {
         $garr = new AA_GeneralizedArray();
         if ( !$change_id ) {
@@ -3123,7 +4007,9 @@ class AA_ChangesMonitor {
         return $garr->getArray();
     }
 }
-
+/** IsSpamText function
+ * @param $text
+ */
 function IsSpamText($text) {
     $link_count  = substr_count(strtoupper($text), 'HTTP');
     $text_length = strlen($text);

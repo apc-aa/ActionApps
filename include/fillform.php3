@@ -1,30 +1,35 @@
 <?php
-/*
+/**
  * Extracted from fillform.php3 to allow inclusion from site module
- */
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * @package UserInput
- * @version $Id$
- * @author Mitra based on code from fillform.php3 by Jakub Adamek <jakubadamek@ecn.cz>
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Mitra based on code from fillform.php3 by Jakub Adamek <jakubadamek@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
+/** fillFormFromVars function
+ * @param $fillConds
+ */
 function fillFormFromVars($fillConds) {
     global $err;
 
@@ -34,7 +39,7 @@ function fillFormFromVars($fillConds) {
     add_post2shtml_vars();
 
     // core JavaScript functions
-    $res = getFrmJavascriptFile('javascript/fillform.js');
+    $res  = getFrmJavascriptFile('javascript/fillform.js');
     $res .= (isset($fillConds) ? fillConds() : fillForm());
     return $res;
 }
@@ -43,7 +48,9 @@ function fillFormFromVars($fillConds) {
 // ----------------------------------------------------------------------------
 /* * * * * * * * * * * FILL FORM * * * * * * * * * */
 
-
+/** safeChars function
+ * @param $str
+ */
 function safeChars($str) {
     for ($i=0; $i < strlen ($str); ++$i) {
         if ($str[$i] == "\n") {
@@ -57,10 +64,11 @@ function safeChars($str) {
 }
 
 
-/** Finds the item content and calls fillFormWithContent.
-*   Prooves permissions to update an item.
-*   Returns string of HTML and Javascript for echoing
-*/
+/** fillForm function
+ *   Finds the item content and calls fillFormWithContent.
+ *   Prooves permissions to update an item.
+ *   Returns string of HTML and Javascript for echoing
+ */
 function fillForm() {
     global $my_item_id, $slice_id, $oldcontent4id;
     // get slice_id if not specified - try get it from $my_item_id
@@ -175,7 +183,10 @@ function fillForm() {
     single quote - of course it depends on used char-encoding and therefore
     is hard to solve. I have forbidden id and slice_id to appear and hope this
     is enough. */
-/* Returns HTML and Javascript for echoing */
+/** fillFormWithContent
+ *  Returns HTML and Javascript for echoing
+ * @param $oldcontent4id
+ */
 function fillFormWithContent($oldcontent4id) {
     global $form, $suffix, $conds, $dateConds, $my_item_id, $checkbox;
 
@@ -222,16 +233,17 @@ function fillFormWithContent($oldcontent4id) {
     return getFrmJavascript($js);
 }
 
-/** Confirms email on Reader management slices because the parameter $aw
-*   is sent only in Welcome messages.
-*   Returns true if email exists and not yet confirmed, false otherwise.
-*/
+/** confirm_email function
+ *   Confirms email on Reader management slices because the parameter $aw
+ *   is sent only in Welcome messages.
+ *   Returns true if email exists and not yet confirmed, false otherwise.
+ */
 function confirm_email() {
     global $slice_id;
 
     require_once AA_INC_PATH."itemfunc.php3";
     $db = getDB();
-    $db->query (
+    $db->query(
         "SELECT item.id FROM content INNER JOIN item
          ON content.item_id = item.id
          WHERE item.slice_id='".q_pack_id($slice_id)."'
@@ -256,7 +268,9 @@ function confirm_email() {
                 "UPDATE content SET text='1'
                 WHERE field_id = '".FIELDID_MAIL_CONFIRMED."'
                 AND item_id = '".q_pack_id($item_id)."'");
-            if ($debug) echo "<!--OK: email confirmed-->";
+            if ($debug) {
+                echo "<!--OK: email confirmed-->";
+            }
             freeDB($db);
             return true;
         }
@@ -264,7 +278,9 @@ function confirm_email() {
     freeDB($db);
     return false;
 }
-
+/** unsubscribe_reader function
+ *
+ */
 function unsubscribe_reader() {
     global $slice_id;
 
@@ -296,7 +312,9 @@ function unsubscribe_reader() {
                 "UPDATE content SET text=''
                 WHERE field_id = '".$field_id."'
                 AND item_id = '".q_pack_id($item_id)."'");
-            if ($debug) echo "<!--OK: f $field_id unsubscribed-->";
+            if ($debug) {
+                echo "<!--OK: f $field_id unsubscribed-->";
+            }
             freeDB($db);
             return true;
         }
@@ -307,9 +325,10 @@ function unsubscribe_reader() {
 
 // ----------------------------------------------------------------------------
 /* * * * * * * * * * * FILL CONDS * * * * * * * * * */
-/** gives JavaScript filling the AA date 3 selectboxes
-    params: $mydate .. UNIX timestamp
-            $dateField .. field name
+/** fillConds function
+ *  gives JavaScript filling the AA date 3 selectboxes
+ *  params: $mydate .. UNIX timestamp
+ *          $dateField .. field name
 */
 function fillConds() {
     global $form, $conds, $dateConds;
@@ -368,6 +387,4 @@ function fillConds() {
     }
     return getFrmJavascript($js);
 }
-
-
 ?>

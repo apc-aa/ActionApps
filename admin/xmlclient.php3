@@ -1,23 +1,4 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
 
 /** Cross-Server Networking - client module
  *
@@ -41,29 +22,67 @@ http://www.apc.org/
  *
  *   This program can be called as for example:
  *   apc-aa/admin/xmlclient.php3?debugfeed=9&rssfeed_id=16
- */
+ *
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
+*/
+
 
 // handle with PHP magic quotes - quote the variables if quoting is set off
+/** Myaddslashes function
+ * @param $val
+ * @param $n = 1
+ * @return add-slashed $val
+ */
 function Myaddslashes($val, $n=1) {
   if (!is_array($val)) {
     return addslashes($val);
   }
-  for (reset($val); list($k, $v) = each($val); )
+  for (reset($val); list($k, $v) = each($val); ) {
     $ret[$k] = Myaddslashes($v, $n+1);
+  }
   return $ret;
 }
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
-      $$k = Myaddslashes($v);
+  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS)) {
+      for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) {
+          $$k = Myaddslashes($v);
+      }
+  }
+  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS)) {
+      for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) {
+          $$k = Myaddslashes($v);
+      }
+  }
+  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS)) {
+      for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) {
+          $$k = Myaddslashes($v);
+      }
+  }
 }
 
 
@@ -82,7 +101,9 @@ require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."sliceobj.php3";
 require_once AA_INC_PATH."grabber.class.php3";
 
-if ($debugfeed >= 8) print("\n<br>XMLCLIENT STARTING");
+if ($debugfeed >= 8) {
+    print("\n<br>XMLCLIENT STARTING");
+}
 
 // prepare Get variables
 
@@ -106,13 +127,20 @@ class AA_Feed {
      *       - display - only display the data from the feed
      */
     var $fire;
-
+    /** AA_Feed function
+     * @param $grabber = null
+     * @param $destination_slice_id = null
+     * @param $fire = 'write'
+     */
     function AA_Feed($grabber=null, $destination_slice_id=null, $fire='write') {
         $this->grabber              = $grabber;
         $this->destination_slice_id = $destination_slice_id;
         $this->fire                 = $fire;
     }
-
+    /** loadRSSFeed function
+     * @param $id
+     * @param $url = null
+     */
     function loadRSSFeed($id, $url=null) {
         $SQL = "SELECT feed_id, server_url, name, slice_id FROM rssfeeds WHERE feed_id='$id'";
         $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
@@ -128,7 +156,10 @@ class AA_Feed {
         }
     }
 
-
+    /** loadAAFeed function
+     * @param $id
+     * @param $time = null
+     */
     function loadAAFeed($id, $time=null) {
         $SQL = "SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode
                   FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name AND feed_id='$id'";
@@ -143,12 +174,13 @@ class AA_Feed {
         }
     }
 
-    /** Process one feed RSS, or APC AA RSS, or CSV or ... - based on AA_Grabber
+    /** feed function
+     * Process one feed RSS, or APC AA RSS, or CSV or ... - based on AA_Grabber
      *  @param  $feed_id   - id of feed (it is autoincremented number from 1 ...
      *                     - RSS and APC feeds could have the same id :-(
-     *          $feed      - feed definition array (server_url, password, ...)
-     *          $debugfeed - just for debuging purposes
-     *          $fire      - write   - feed and write the items to the databse
+     *  @param  $feed      - feed definition array (server_url, password, ...)
+     *  @param  $debugfeed - just for debuging purposes
+     *  @param  $fire      - write   - feed and write the items to the databse
      *                       test    - proccesd without write anything to the database
      *                       display - only display the data from the feed
      */

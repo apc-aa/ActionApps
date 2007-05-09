@@ -6,27 +6,31 @@
  *
  * Should be included to other scripts (as /admin/index.php3)
  *
- * @version $Id$
- * @author Honza Malik <honza.malik@ecn.cz>
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
-*/
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once AA_INC_PATH . "searchbar.class.php3";
@@ -68,7 +72,10 @@ class AA_Manager extends storable_class {
     //             - we want to have it fresh (from constructor and $settings))
     var $persistent_slots = array('searchbar', 'scroller', 'msg');
 
-    /** Used parameter format (in fields.input_show_func table)  */
+    /** getPersistentProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     * @param $class
+     */
     function getPersistentProperties($class=null) {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         // class parameter is needed, because generic static classs method
         // in storable_class is not able to detect, what type of class it is in
@@ -80,7 +87,7 @@ class AA_Manager extends storable_class {
             );
     }
 
-    /**
+    /** AA_Manager function
      * constructor - initializes manager - creates scroller, searchbar, ...
      * based on $settings structure
      *
@@ -99,8 +106,9 @@ class AA_Manager extends storable_class {
             $this->actions_hint_url = $settings['actions_hint_url'];
         }
 
-        if ( $settings['switches'] )      // define switches, if we have to
+        if ( $settings['switches'] ) {      // define switches, if we have to
             $this->switches = $settings['switches'];
+        }
 
         // create searchbar, if we have to ------------------------------------
         if ( $settings['searchbar'] ) {
@@ -155,8 +163,13 @@ class AA_Manager extends storable_class {
     }
 
 
-    /** Fills format array with manager default design and ensures, the aliases are
+    /** setDesing function
+     *  Fills format array with manager default design and ensures, the aliases are
      *  properly. If aliases there are not needed aliases, the function will add it
+     * @param $format_strings
+     * @param $aliases
+     * @param $manager_vid
+     * @param $module_id
      */
     function setDesign(&$format_strings, &$aliases, $manager_vid, $module_id) {
         if ( $manager_vid ) {
@@ -184,7 +197,10 @@ class AA_Manager extends storable_class {
         }
     }
 
-    /** initial manager setting from user's profile */
+    /** setFromProfile function
+     *  initial manager setting from user's profile
+     * @param $profile
+     */
     function setFromProfile(&$profile) {
         // set default admin interface settings from user's profile
 
@@ -197,7 +213,7 @@ class AA_Manager extends storable_class {
     }
 
 
-    /**
+    /** getConds function
      * Get conditios (conds[] array) for *_QueryIDs from scroller
      */
     function getConds() {
@@ -207,7 +223,7 @@ class AA_Manager extends storable_class {
         return false;
     }
 
-    /**
+    /** getSort function
      * Get sort[] array for *_QueryIDs from scroller
      */
     function getSort() {
@@ -217,14 +233,16 @@ class AA_Manager extends storable_class {
         return false;
     }
 
-    /** Resets the searchbar (both - Search as well as Order)  */
+    /** reserSearchBar function
+     *  Resets the searchbar (both - Search as well as Order)
+     */
     function resetSearchBar() {
         if ( $this->searchbar ) {
             $this->searchbar->resetSearchAndOrder();
         }
     }
 
-    /**
+    /** addOrderBar function
      * Adds new Order bar(s)
      * @param  array $sort[] = array( <field> => <a|d> )
      *               value other than 'a' means DESCENDING
@@ -237,7 +255,7 @@ class AA_Manager extends storable_class {
     }
 
 
-    /**
+    /** addSearchBar function
      * Adds new Search bar(s)
      * @param  array $conds[] = array ( <field> => 1, 'operator' => <operator>,
      *                                  'value' => <search_string> )
@@ -248,7 +266,10 @@ class AA_Manager extends storable_class {
             $this->searchbar->addSearch($conds);
     }
 
-    /** Sets listing length - number of items per page */
+    /** setListlen function
+     *  Sets listing length - number of items per page
+     * @param $listlen
+     */
     function setListlen( $listlen ) {
         if ( $this->scroller AND ($listlen > 0) ) {
             $this->scroller->metapage = $listlen;
@@ -256,13 +277,16 @@ class AA_Manager extends storable_class {
         }
     }
 
-    /** Go to specified page (obviously 1) in scroller  */
+    /** go2page function
+     *  Go to specified page (obviously 1) in scroller
+     * @param $page
+     */
     function go2page( $page ) {
         if ( $this->scroller AND ($page > 0) )
             $this->scroller->go2page($page);
     }
 
-    /**
+    /** performActions function
      *
      */
     function performActions() {
@@ -335,9 +359,10 @@ class AA_Manager extends storable_class {
         }
     }
 
-    /**
+    /** printHtmlPageBegin function
      * Print HTML start page tags (html begin, encoding, style sheet, title
      * and includes necessary javascripts for manager
+     * @param $head_end
      */
     function printHtmlPageBegin( $head_end = false) {
         // Print HTML start page (html begin, encoding, style sheet, no title)
@@ -349,7 +374,7 @@ class AA_Manager extends storable_class {
             echo "\n</head>\n";
     }
 
-    /**
+    /** printSearchbarBegin function
      * Prints begin of search form with searchbar (you can then add more code
      * to searchbar after callin this function. Then you MUST close the form
      * with printSearchbarEnd() function
@@ -362,24 +387,25 @@ class AA_Manager extends storable_class {
             $this->searchbar->printBar();
     }
 
-    /**
+    /** printSearchbarEnd function
      * Prints end of search form with searchbar (@see printSearchbarBegin())
      */
     function printSearchbarEnd() {
             echo "</form><p></p>"; // workaround for align=left bug
     }
 
-    /**
+    /** printItems function
      * Prints item/link/... table with scroller, actions, ...
+     * @param $zids
      */
     function printItems($zids) {
         global $sess;
-        echo '<form name=itemsform method=post action="'. $_SERVER['PHP_SELF'] .'">';
+        echo '<form name="itemsform" method="post" action="'. $_SERVER['PHP_SELF'] .'">';
         $sess->hidden_session();
 
         $ids_count = $zids->count();
         if ( $ids_count == 0 ) {
-            echo "<div class=tabtxt>". $this->itemview->unaliasWithScrollerEasy($this->messages['noitem_msg']). "</div></form><br>";
+            echo "<div class=\"tabtxt\">". $this->itemview->unaliasWithScrollerEasy($this->messages['noitem_msg']). "</div></form><br>";
             return $ids_count;
         }
 
@@ -396,14 +422,14 @@ class AA_Manager extends storable_class {
         $this->scroller->countPages( $ids_count );
 
         if (($this->scroller->pageCount() > 1) || ($action_selected != "0")) {
-            echo "<table border=0 cellpadding=3>
+            echo "<table border=\"0\" cellpadding=\"3\">
                    <tr>
-                    <td class=tabtxt>";
+                    <td class=\"tabtxt\">";
         }
 
         if ($action_selected != "0") {
-            echo '<input type=hidden name=akce value="">';          // filled by javascript - contains action to perform
-            echo '<input type=hidden name="akce_param" value="">';  // if we need some parameteres to the action, store it here
+            echo '<input type="hidden" name="akce" value="">';          // filled by javascript - contains action to perform
+            echo '<input type="hidden" name="akce_param" value="">';  // if we need some parameteres to the action, store it here
 
             if ( isset( $this->actions ) AND is_array( $this->actions ) ) {
                 $i=1;  // we start on 1 because first option is "Select action:"
@@ -424,8 +450,8 @@ class AA_Manager extends storable_class {
             }
 
             if ( $options ) {
-                echo "<img src='".AA_INSTAL_PATH."images/arrow_ltr.gif'>
-                    <a href='javascript:SelectVis()'>". _m('Select all')."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
+                echo "<img src=\"".AA_INSTAL_PATH."images/arrow_ltr.gif\">
+                    <a href=\"javascript:SelectVis()\">". _m('Select all')."</a>&nbsp;&nbsp;&nbsp;&nbsp;";
 
                   // click "go" does not use markedform, it uses itemsfrom above...
                   // maybe this action is not used.
@@ -437,7 +463,7 @@ class AA_Manager extends storable_class {
                 }
 
                 echo '&nbsp;&nbsp;<a href="javascript:MarkedActionGo()"
-                      class=leftmenuy>'. _m('Go') . '</a>';
+                      class="leftmenuy">'. _m('Go') . '</a>';
 
                   // we store open_url parameter to js variable for
                   // MarkedActionGo() function
@@ -452,8 +478,8 @@ class AA_Manager extends storable_class {
 
         if (($this->scroller->pageCount() > 1) || ($action_selected != "0")) {
             if ($this->scroller->pageCount() > 1) {
-                echo '</td></tr><tr height=3><td></td></tr>
-                    <tr><td class=tabtxt><b>'. _m('Items Page') .":&nbsp;&nbsp;";
+                echo '</td></tr><tr height="3"><td></td></tr>
+                    <tr><td class="tabtxt"><b>'. _m('Items Page') .":&nbsp;&nbsp;";
                 $this->scroller->pnavbar();
                 echo "</b>";
             }
@@ -464,7 +490,9 @@ class AA_Manager extends storable_class {
         return $ids_count;
     }
 
-    /** Prints return values from action functions and clears the messages */
+    /** printAndClearMessages function
+     *  Prints return values from action functions and clears the messages
+     */
     function printAndClearMessages() {
         PrintArray( $this->msg );
         unset( $this->msg );

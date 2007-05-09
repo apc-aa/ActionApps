@@ -1,22 +1,26 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/** PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 // expected $view_id for editing specified view
@@ -52,7 +56,11 @@ if ( $del ) {
 
     $Msg = MsgOK(_m("View successfully deleted"));
 }
-
+/** PrintViewRow function
+ * @param $id
+ * @param $name
+ * @param $type
+ */
 function PrintViewRow($id, $name, $type) {
     global $sess;
     $VIEW_TYPES = getViewTypes();
@@ -61,13 +69,13 @@ function PrintViewRow($id, $name, $type) {
     $edit_url = con_url($sess->url("./se_view.php3"), "view_id=$id&view_type=$type");
     $view_url = AA_INSTAL_URL. "view.php3?vid=$id";
 
-    echo "<tr class=tabtxt>
-            <td class=tabtxt><a href=\"$edit_url\">$id</a></td>
-            <td class=tabtxt>". $VIEW_TYPES[$type]["name"] ."</td>
-            <td class=tabtxt>$name</td>
-            <td class=tabtxt><a href=\"$edit_url\">". _m("Edit") . "</a></td>
-            <td class=tabtxt><a href=\"$view_url\" title=\"". _m('show this view') ."\">". _m("Show") . "</a></td>
-            <td class=tabtxt><a href=\"javascript:GoIfConfirmed('".
+    echo "<tr class=\"tabtxt\">
+            <td class=\"tabtxt\"><a href=\"$edit_url\">$id</a></td>
+            <td class=\"tabtxt\">". $VIEW_TYPES[$type]["name"] ."</td>
+            <td class=\"tabtxt\">$name</td>
+            <td class=\"tabtxt\"><a href=\"$edit_url\">". _m("Edit") . "</a></td>
+            <td class=\"tabtxt\"><a href=\"$view_url\" title=\"". _m('show this view') ."\">". _m("Show") . "</a></td>
+            <td class=\"tabtxt\"><a href=\"javascript:GoIfConfirmed('".
                           $sess->url(con_url("./se_views.php3", "del=1&vid=". urlencode($id))) ."','".
                           _m("Are you sure you want to delete selected view?") ."')\">". _m("Delete") ."</a></td>
            </tr>";
@@ -80,7 +88,7 @@ function GetViewJSArray( $sid, $id, $name, $i ) {
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-echo "<TITLE>". _m("Admin - design View") ."</TITLE>";
+echo "<title>". _m("Admin - design View") ."</title>";
 FrmJavascriptFile('javascript/js_lib.js');
 $js = '
      function SelectViewSlice() {
@@ -101,24 +109,24 @@ $js = '
      ';
 
 FrmJavascript($js);
-echo "</HEAD>\n";
+echo "</head>\n";
 
 $useOnLoad = ($new_compact ? true : false);
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","views");
 
-echo "<H1><B>" . _m("Admin - design View") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - design View") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
-echo '<form name="fvtype" method=post action="'. $sess->url("./se_view.php3"). '">';
+echo '<form name="fvtype" method=\"post\" action="'. $sess->url("./se_view.php3"). '">';
 
 FrmTabCaption(_m("Defined Views"));
 
 // -- get all views --
 $SQL = "SELECT * FROM view ORDER BY id";
 $db->query($SQL);
-$i=0;
+$i   = 0;
 while ( $db->next_record() ) {
     $view_sid = unpack_id128($db->f('slice_id'));
     if ( $view_sid == $slice_id ) {   // list views for this slice
@@ -135,35 +143,35 @@ echo "</td>
      </tr>";
     FrmTabseparator(_m("Create new view"));
 echo "
-      <tr class=tabtxt>
+      <tr class=\"tabtxt\">
         <td>"._m("by&nbsp;type:")."</td>
-        <td align=right><select name='view_type'>";
+        <td align=\"right\"><select name=\"view_type\">";
 
 foreach ( getViewTypes() as $k => $v) {
-    echo "<option value='$k'> ". htmlspecialchars($v["name"]) ." </option>";
+    echo "<option value=\"$k\"> ". htmlspecialchars($v["name"]) ." </option>";
 }
 echo "</select></td>
-        <td><input type=submit name=new value='". _m("New") ."'></td>
+        <td><input type=\"submit\" name=\"new\" value=\"". _m("New") ."\"></td>
      </tr>";
 
   // row for new view creaded from template
-echo "<tr class=tabtxt>
+echo "<tr class=\"tabtxt\">
         <td>"._m("by&nbsp;template:")."</td>
-        <td align=right>
-         <select name='view_slice' OnChange='SelectViewSlice()'>";
+        <td align=\"right\">
+         <select name=\"view_slice\" OnChange=\"SelectViewSlice()\">";
   // slice selection
 foreach ( $g_modules as $k => $v) {
     if ( ($v['type'] != 'S') OR !$sliceWview[$k] ) {
         continue;                      // we can feed just between slices ('S')
     }
     $selected = ( (string)$slice_id == (string)$k ) ? "selected" : "";
-    echo "<option value='x$k' $selected>". safe($v['name']) ."</option>\n";
+    echo "<option value=\"x$k\" $selected>". safe($v['name']) ."</option>\n";
 }
-echo "   </select>&nbsp;<select name='view_view'>
+echo "   </select>&nbsp;<select name=\"view_view\">
           <option> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>
          </select>
          </td>
-        <td><input type=submit name='new_templ' value='". _m("New") ."'></td>
+        <td><input type=\"submit\" name=\"new_templ\" value=\"". _m("New") ."\"></td>
      </tr>
     </table>
 </td>

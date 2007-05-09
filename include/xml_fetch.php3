@@ -1,22 +1,30 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 //
 // Cross-Server Networking - xml_aa_rss fetch function
@@ -30,20 +38,22 @@ require_once AA_INC_PATH."grabber.class.php3";
 require_once AA_INC_PATH."files.class.php3";  // file wrapper;
 
 
-/**  Fetch xml data from $url through http.
+/**  xml_fetch function
+ *   Fetch xml data from $url through http.
  *   This function is used by the rss aa module client as well as by the admin
  *   interface.
+ * @param $url
  *   @param $node_name       - the name of the node making the request
- *          $password        - the password of the node
- *          $user            - a user at the remote node. This is the user who
+ *   @param $password        - the password of the node
+ *   @param $user            - a user at the remote node. This is the user who
  *                             is trying to establish a feed or who established
  *                             the feed
- *          $slice_id        - The id of the local slice from which a feed is
+ *   @param $slice_id        - The id of the local slice from which a feed is
  *                             requested
- *          $start_timestamp - a timestamp which indicates the creation time
+ *   @param $start_timestamp - a timestamp which indicates the creation time
  *                             of the first item to be sent.
  *                             (www.w3.org/TR/NOTE-datetime format)
- *          $categories      - a list of local categories ids separated by space
+ *   @param $categories      - a list of local categories ids separated by space
  *                             (can be empty)
  */
 function xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timestamp, $categories) {
@@ -56,7 +66,11 @@ function xml_fetch($url, $node_name, $password, $user, $slice_id, $start_timesta
     return http_fetch($url,$d);
 }
 
-/** A generic fetching routine that takes an array of params (possibly empty) */
+/** http_fetch function
+ *  A generic fetching routine that takes an array of params (possibly empty)
+ * @param $url
+ * @param $d
+ */
 function http_fetch($url, $d=null) {
     if (isset($d)) {
         $param = array();
@@ -69,14 +83,24 @@ function http_fetch($url, $d=null) {
             $url = $url."?".$tl;
         }
     }
-    if ($GLOBALS['debugfeed'] >= 8) print("http_fetch:$url\n");
+    if ($GLOBALS['debugfeed'] >= 8) {
+        print("http_fetch:$url\n");
+    }
     $file = &AA_File_Wrapper::wrapper($url);
     // $file->contents(); opens the stream, reads the data and close the stream
     $data = $file->contents();
-    if ($GLOBALS['debugfeed'] >= 8) huhl('data obtained:', $data);
+    if ($GLOBALS['debugfeed'] >= 8) {
+        huhl('data obtained:', $data);
+    }
     return trim($data);
 }
-
+/** translteFeedCatid2Value function
+ * @param $remote_cat_id
+ * @param $remote_cat_value
+ * @param $ext_categs
+ * @param $l_categs
+ * @param $all_categories
+ */
 function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, &$ext_categs, &$l_categs, $all_categories) {
 
     // we have set mapping for this category
@@ -95,13 +119,14 @@ function translteFeedCatid2Value($remote_cat_id, $remote_cat_value, &$ext_categs
     return array( $l_categs[$local_cat_id]['value'], $approved );
 }
 
-/** Translates remote categories to local one using external ext_categs array
- *  $cat_field_id   - field id for category (category.......1)
- *  $item           - data for current item. This will be updated by the values
+/** translateCategories function
+ *  Translates remote categories to local one using external ext_categs array
+ * @param $cat_field_id   - field id for category (category.......1)
+ * @param $item           - data for current item. This will be updated by the values
  *                    for new categories ( $cat_field_id )
- *  $ext_categs     - remote categories array (structure with name, value,
+ * @param $ext_categs     - remote categories array (structure with name, value,
  *                    target_category_id, approved)
- *  $l_categs       - local categories array [id] => (name, value, parent_id)
+ * @param $l_categs       - local categories array [id] => (name, value, parent_id)
  */
 function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) {
 
@@ -152,8 +177,14 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
     return $return_approved;
 }
 
-/** Update the slice categories in the ef_categories table, that is, if the set
+/** updateCategories function
+ *  Update the slice categories in the ef_categories table, that is, if the set
  *  of possible slice categories has changed
+ * @param $feed_id
+ * @param $l_categs
+ * @param $ext_categs
+ * @param $cat_refs
+ * @param $categs
  */
  function updateCategories($feed_id, &$l_categs, &$ext_categs,&$cat_refs, &$categs) {
      global $debugfeed;
@@ -165,15 +196,15 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
 
              if ($ext_categs[$r_cat_id])  {
                  // remote category is in the ef_categories table, so update name and value
-                 $SQL = "UPDATE ef_categories SET category_name='".$category[name]."',
-                         category='".$category[value]."'
+                 $SQL = "UPDATE ef_categories SET category_name='".$category['name']."',
+                         category='".$category['value']."'
                          WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
                  if ($debugfeed >= 8) print("\n<br>$SQL");
                  $db->query($SQL);
              } else {
-                 $l_cat_id = MapDefaultCategory($l_categs,$category[value], $category[catparent]);
-                 $SQL = "INSERT INTO ef_categories VALUES ('".$category[value]."','".$category[name]."',
-                         '".q_pack_id($category[id])."','".$feed_id."','".q_pack_id($l_cat_id)."','0')";
+                 $l_cat_id = MapDefaultCategory($l_categs,$category['value'], $category['catparent']);
+                 $SQL = "INSERT INTO ef_categories VALUES ('".$category['value']."','".$category['name']."',
+                         '".q_pack_id($category['id'])."','".$feed_id."','".q_pack_id($l_cat_id)."','0')";
                  if ($debugfeed >= 8) print("\n<br>$SQL");
                  $db->query($SQL);
              }
@@ -187,14 +218,23 @@ function translateCategories( $cat_field_id, &$item, &$ext_categs, &$l_categs ) 
                  continue;
              }
              $SQL = "DELETE FROM ef_categories WHERE feed_id='$feed_id' AND category_id='".q_pack_id($r_cat_id)."'";
-             if ($debugfeed >= 8) print("\n<br>$SQL");
+             if ($debugfeed >= 8) {
+                 print("\n<br>$SQL");
+             }
              $db->query($SQL);
          }
      }
      freeDB($db);
  }
 
-/** Update the fields mapping from the remote slice to the local slice */
+/** updateFieldsMapping function
+ *  Update the fields mapping from the remote slice to the local slice
+ * @param $feed_id
+ * @param $l_slice_id
+ * @param $r_slice_id
+ * @param $field_refs
+ * @param $fields
+ */
 function updateFieldsMapping($feed_id, $l_slice_id, $r_slice_id, &$field_refs, &$fields) {
     global $debugfeed;
 
@@ -214,7 +254,9 @@ function updateFieldsMapping($feed_id, $l_slice_id, $r_slice_id, &$field_refs, &
                             WHERE from_slice_id='$p_r_slice_id'
                             AND to_slice_id='$p_l_slice_id'
                             AND from_field_id='$r_field_id'";
-                    if ($debugfeed >= 8) print("\n<br>$SQL");
+                    if ($debugfeed >= 8) {
+                        print("\n<br>$SQL");
+                    }
                     $db->query($SQL);
                 }
             } else {
@@ -242,12 +284,13 @@ function updateFieldsMapping($feed_id, $l_slice_id, $r_slice_id, &$field_refs, &
     freeDB($db);
 }
 
-/** Process one feed RSS or APC
+/** onefeed function
+ *  Process one feed RSS or APC
  *  @param  $feed_id   - id of feed (it is autoincremented number from 1 ...
  *                     - RSS and APC feeds could have the same id :-(
- *          $feed      - feed definition array (server_url, password, ...)
- *          $debugfeed - just for debuging purposes
- *          $fire      - write   - feed and write the items to the databse
+ *  @param  $feed      - feed definition array (server_url, password, ...)
+ *  @param  $debugfeed - just for debuging purposes
+ *  @param  $fire      - write   - feed and write the items to the databse
  *                       test    - proccesd without write anything to the database
  *                       display - only display the data from the feed
  *
@@ -260,12 +303,17 @@ function onefeed($feed_id, $feed, $debugfeed, $fire = 'write') {
         $saver        = new AA_Saver($grabber, $translations, $slice_id);
         $saver->run();
     }
-    if ($debugfeed >= 8) print("\n<br>onefeed: done");
+    if ($debugfeed >= 8) {
+        print("\n<br>onefeed: done");
+    }
 }
 
-// Consider value, and return array depending on whether it is HTML or not
-// Assumes that RSS1.0 will be explicit, RSS 0.9 and RSS2.0
-// should check
+/** field2arr function
+ * Consider value, and return array depending on whether it is HTML or not
+ * Assumes that RSS1.0 will be explicit, RSS 0.9 and RSS2.0
+ * should check
+ * @param $field
+ */
 function field2arr($field) {
     global $rss_version;
     if ((strpos($rss_version, '2.') !== false) OR (strpos($rss_version, '0.9') !== false)) {
@@ -276,26 +324,40 @@ function field2arr($field) {
     return array(value => $field, flag => $flag);
 }
 
-// Return array suitable for insertion into content4id[aaa....]
-// Recognized special cases of values to tell it how to find, the field, or
-// how to interpret it.
+/** map1field function
+ *  @return array suitable for insertion into content4id[aaa....]
+ * Recognized special cases of values to tell it how to find, the field, or
+ * how to interpret it.
+ * @param $value
+ * @param $item
+ * @param $channel
+ */
 function map1field($value,$item,$channel) {
     global $debugfeed;
-    if ($debugfeed >= 8) print("\n<br>xmlclient:map1field:$value");
+    if ($debugfeed >= 8) {
+        print("\n<br>xmlclient:map1field:$value");
+    }
     if (ereg("(.*)\|(.*)",$value,$vals)) {  // Process alternatives, first if non-blank else second
         $try1 = map1field($vals[1],$item,$channel);
         if ($try1[0]['value']) { return $try1; }
         return map1field($vals[2],$item,$channel);
     } elseif (ereg("^DATE\((.*)\)$",$value,$vals)) { // Postprocess to turn into unix
         $try1 = map1field($vals[1],$item,$channel);
-        if ($debugfeed >= 9) huhl($try1);
-        if (isset($try1) && is_array($try1) && $try1[0]['value'])
+        if ($debugfeed >= 9) {
+            huhl($try1);
+        }
+        if (isset($try1) && is_array($try1) && $try1[0]['value']) {
         // Often won't work cos not iso8601
         // Wed, 25 Feb 2004 17:19:37 EST   - BAD
         // 2004-02-25 17:19:37+10:00   GOOD
-        $try1[0]['value'] =  iso8601_to_unixstamp($try1[0]['value']);
-        if ($try1[0]['value'] == -1) $try1[0]['value'] = null;
-        if ($debugfeed >= 9) huhl($try1);
+                $try1[0]['value'] =  iso8601_to_unixstamp($try1[0]['value']);
+        }
+        if ($try1[0]['value'] == -1) {
+            $try1[0]['value'] = null;
+        }
+        if ($debugfeed >= 9) {
+            huhl($try1);
+        }
         return $try1;
     } elseif ($value == "NOW") {
         return array(0 => array('value' => time(), 'flag' => 0));
@@ -314,7 +376,10 @@ function map1field($value,$item,$channel) {
     }
 }
 
-// Extract the content from where the parser put it, and return as a value array.
+/** contentvalue function
+ *  Extract the content from where the parser put it, and return as a value array.
+ * @param $item
+ */
 function contentvalue($item) {
     $flag="";
     if (isset($item['content'][HTML])) { // HTML is constant!!!

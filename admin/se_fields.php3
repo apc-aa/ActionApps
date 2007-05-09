@@ -1,23 +1,30 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
+
 
 // expected $slice_id for edit slice, nothing for adding slice
 // optional slice_fields = 1 (for slice fields)
@@ -44,6 +51,16 @@ $varset = new Cvarset();
 $field_types = GetTable2Array("SELECT * FROM field
                                 WHERE slice_id='AA_Core_Fields..'");
 
+/** ShowField function
+ * @param $id
+ * @param $name
+ * @param $pri
+ * @param $required
+ * @param $show
+ * @param $type=""
+ * @param $alias=""
+ * @param $separate=false
+ */
 function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $separate=false) {
     global $sess, $field_types, $AA_CP_Session;
     $name = safe($name); $pri=safe($pri);
@@ -66,7 +83,7 @@ function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $sep
         echo "<td>$id</td>";
     }
     echo "
-        <td><input type=\"Text\" name=\"pri[$id]\" size=4 maxlength=4 value=\"$pri\"></td>
+        <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
         <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
     if ( $type=="new") {
@@ -185,8 +202,8 @@ $s_fields = GetTable2Array($SQL);
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Admin - configure Fields");?></TITLE>
- <SCRIPT Language="JavaScript"><!--
+ <title><?php echo _m("Admin - configure Fields");?></title>
+ <script Language="JavaScript"><!--
    function DeleteField(id) {
      if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>"))
        return
@@ -194,14 +211,14 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
      document.location=url + "&fid=" + escape(id);
    }
 // -->
-</SCRIPT>
+</script>
 
-</HEAD>
+</head>
 <?php
   require_once AA_INC_PATH."menu.php3";
   showMenu($aamenus, "sliceadmin", $slice_fields ? 'slice_fields' : 'fields');
 
-  echo "<H1><B>" . _m("Admin - configure Fields") . "</B></H1>";
+  echo "<h1><b>" . _m("Admin - configure Fields") . "</b></h1>";
   PrintArray($err);
   echo $Msg;
 
@@ -209,21 +226,21 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 ?>
 
-<form method=post action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
 <?php
 $form_buttons = array("update", "cancel"=>array("url"=>"se_fields.php3"));
 FrmTabCaption(_m("Fields"), '','', $form_buttons, $sess, $slice_id);
 ?>
 <tr>
- <td class=tabtxt align=center><b><?php echo _m("Field") ?></b></td>
- <td class=tabtxt align=center><b><?php echo _m("Id") ?></b></td>
- <td class=tabtxt align=center><b><?php echo _m("Priority") ?></b></td>
- <td class=tabtxt align=center><b><?php echo _m("Required") ?></b></td>
- <td class=tabtxt align=center><b><?php echo _m("Show") ?></b></td>
- <td class=tabtxt colspan=2>&nbsp;</td>
- <td class=tabtxt align=center><b><?php echo _m("Aliases")?></b></td>
+ <td class="tabtxt" align="center"><b><?php echo _m("Field") ?></b></td>
+ <td class="tabtxt" align="center"><b><?php echo _m("Id") ?></b></td>
+ <td class="tabtxt" align="center"><b><?php echo _m("Priority") ?></b></td>
+ <td class="tabtxt" align="center"><b><?php echo _m("Required") ?></b></td>
+ <td class="tabtxt" align="center"><b><?php echo _m("Show") ?></b></td>
+ <td class="tabtxt" colspan="2">&nbsp;</td>
+ <td class="tabtxt" align="center"><b><?php echo _m("Aliases")?></b></td>
 </tr>
-<tr><td colspan=8><hr></td></tr>
+<tr><td colspan="8"><hr></td></tr>
 <?php
 if ( isset($s_fields) and is_array($s_fields)) {
     foreach ( $s_fields as $v) {
@@ -245,4 +262,5 @@ FrmTabEnd( $form_buttons, $sess, $slice_id);
 echo '</form>';
 
 HtmlPageEnd();
-page_close()?>
+page_close();
+?>

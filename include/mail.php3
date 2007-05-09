@@ -1,22 +1,29 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Jakub Adámek, Econnect
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 // (c) Jakub Adámek, Econnect, December 2002
@@ -30,9 +37,12 @@ require_once AA_INC_PATH."validate.php3";
 
 class HtmlMail extends htmlMimeMail {
 
-    /** Prepares the mail for sending
+    /** setFromTemplate function
+     *  Prepares the mail for sending
      *  The e-mail template is taken from database and all aliases
      *  in the template are expanded acording tho $item
+     * @param $mail_id
+     * @param $item
      */
     function setFromTemplate($mail_id, $item) {
         global  $LANGUAGE_CHARSETS;
@@ -57,8 +67,10 @@ class HtmlMail extends htmlMimeMail {
         $this->setCharset($LANGUAGE_CHARSETS[$record["lang"]]);
     }
 
-    /** Send prepared e-mail to adresses specified in the $to array.
+    /** sendLater function
+     *  Send prepared e-mail to adresses specified in the $to array.
      *  The e-mail is queued it toexecute queue before sending (not imediate)
+     * @param $to
      */
     function sendLater($to) {
         $toexecute = new toexecute;
@@ -84,7 +96,11 @@ class HtmlMail extends htmlMimeMail {
         return $sent;
     }
 
-    /// This function fits a record from the @c email table.
+    /** setBasicHeaders function
+     *  This function fits a record from the @c email table.
+     * @param $record
+     * @param $default
+     */
     function setBasicHeaders($record, $default) {
         $headers = array (
             "From"        => "header_from",
@@ -107,29 +123,39 @@ class HtmlMail extends htmlMimeMail {
         $this->setReturnPath($return_path);
     }
 
-    // header encoding does not seem to work correctly
+    /** _encodeHeader function
+     *  header encoding does not seem to work correctly
+     * @param $input
+     * @param $charset
+     */
     function _encodeHeader($input, $charset = 'ISO-8859-1') {
         return $input;
     }
-
+    /** setCharset function
+     * @param $charset
+     */
     function setCharset($charset) {
         $this->setHeadCharset($charset);
         $this->setHtmlCharset($charset);
         $this->setTextCharset($charset);
     }
 
-    /** Toexecutelater - special function called from toexecute class
+    /** toexecutelater function
+     *  Toexecutelater - special function called from toexecute class
      *  - used for queued tasks (runed form cron)
+     * @param $to
      */
     function toexecutelater($to) {
         return $this->send($to);
     }
 };
 
-/** Strips the HTML tags and lot more to get a plain text mail version.
-*   Replaces URL links by the link in compound brackets behind the linked text.
-*   Removes diacritics.
-*/
+/** html2text function
+ *  Strips the HTML tags and lot more to get a plain text mail version.
+ *   Replaces URL links by the link in compound brackets behind the linked text.
+ *   Removes diacritics.
+ * @param $html
+ */
 function html2text($html) {
 
     // reverse to htmlentities
@@ -140,7 +166,7 @@ function html2text($html) {
     }
 
     // Strip diacritics
-    $html = strtr( $html, "áäèïéìíåòóöøšúùüıÁÄÈÏÉÌÍÅÒÓÖØŠÚÙÜİ",
+    $html = strtr( $html, "áäèïéìíåòóöø¹»úùüı¾ÁÄÈÏÉÌÍÅÒÓÖØ©«ÚÙÜİ®",
                           "aacdeeilnoorstuuuyzAACDEEILNOORSTUUUYZ");
 
     // Replace URL references <a href="http://xy">Link</a> => Link {http://xy}
@@ -197,14 +223,14 @@ function html2text($html) {
 }
 
 // -----------------------------------------------------------------------------
-/**
+/** send_mail_from_table function
 * (c) Jakub Adamek, Econnect, December 2002
 * Sends email from the table "email" to the address given.
 * First resolves the aliases, working even with the {} inline commands.
 *
-* @param int $mail_id     id from the email table
-*        mixed $to        email address or an array of email addresses
-*        array $aliases   (optional) array of alias => text
+* @param  int $mail_id     id from the email table
+* @param  mixed $to        email address or an array of email addresses
+* @param  array $aliases   (optional) array of alias => text
 * @return int count of successfully sent emails
 */
 function send_mail_from_table($mail_id, $to, $aliases="") {
@@ -225,9 +251,13 @@ function send_mail_from_table($mail_id, $to, $aliases="") {
     return send_mail_from_table_inner($mail_id, $to, $item);
 }
 
-/** Sends mail defined in e-mail template id $mail_id to all $recipients.
+/** send_mail_to_reader function
+ *  Sends mail defined in e-mail template id $mail_id to all $recipients.
  *  Mail template is unaliased using aliases and data form item identified by
  *  $zids (often Reader item). The recipients are Reders itself, by default.
+ * @param $mail_id
+ * @param $zids
+ * @param $recipient
  */
 function send_mail_to_reader($mail_id, $zids, $recipient='aa_field_email') {
     $mail_count = 0;
@@ -239,8 +269,12 @@ function send_mail_to_reader($mail_id, $zids, $recipient='aa_field_email') {
     return $mail_count;
 }
 
-/** Sends mail defined in e-mail template id $mail_id to all e-mails listed
+/** send_mail_from_table_inner function
+ *  Sends mail defined in e-mail template id $mail_id to all e-mails listed
  *  in $to (array or string) and unalias aliases according to $item
+ * @param $mail_id
+ * @param $to
+ * @param $item
  */
 function send_mail_from_table_inner($mail_id, $to, $item) {
     // email has the templates in it

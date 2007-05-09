@@ -1,23 +1,32 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
+
 
 //
 // Functions for parsing XML documents used in item exchange system (like
@@ -27,7 +36,11 @@ http://www.apc.org/
 define("WDDX_DUPLICATED", 1);
 define("WDDX_BAD_PACKET", 2);
 
-// is packet already stored in database?
+/** IsDuplicated function
+ *  is packet already stored in database?
+ * @param $packet
+ * @param $db
+ */
 function IsDuplicated( $packet, $db ) {
     if ( is_array($packet) || is_object($packet)) {
         $packet = serialize($packet);
@@ -37,7 +50,12 @@ function IsDuplicated( $packet, $db ) {
     return ( $db->next_record() ? 1 : 0 );
 }
 
-// is packet already stored in database?
+/** RegisterItem function
+ *  is packet already stored in database?
+ * @param $id
+ * @param $packet
+ * @param $db
+ */
 function RegisterItem( $id, $packet, $db ) {
     if (is_array($packet) || is_object($packet)) {
         $packet = serialize($packet);
@@ -46,7 +64,13 @@ function RegisterItem( $id, $packet, $db ) {
     $db->query($SQL);
 }
 
-// gets one item stored in WDDX format and stored it in database
+/** StoreWDDX2DB function
+ * gets one item stored in WDDX format and stored it in database
+ * @param $packet
+ * @param $slice_id
+ * @param $fields
+ * @param $bin2fill
+ */
 function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
     global $db, $itemvarset, $varset;
 

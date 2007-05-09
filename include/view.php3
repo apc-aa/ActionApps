@@ -1,24 +1,31 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-
 require_once AA_INC_PATH . "mgettext.php3";
 require_once AA_INC_PATH . "itemview.php3";
 require_once AA_INC_PATH . "viewobj.php3";
@@ -31,7 +38,9 @@ require_once AA_INC_PATH."mlx.php";
 // ----------------------------------------------------------------------------
 //                         view functions
 // ----------------------------------------------------------------------------
-
+/** GetAliasesFromUrl function
+ * @param $als
+ */
 function GetAliasesFromUrl($als) {
     $ret = array();
     if (is_array($als) ) {
@@ -50,7 +59,8 @@ class ViewCommand {
     var $command;      /** type of the command (like x, c, d, v, ...) */
     var $parameters;   /** command parameters */
 
-    /** constructor
+    /** ViewCommand function
+     *  constructor
      *  @param $command the letter indicating the command (x, c, d, v, ...)
      *  @param $parameters array of command patameters
      */
@@ -58,14 +68,30 @@ class ViewCommand {
         $this->command    = $command;
         $this->parameters = $parameters;
     }
-
+    /** addParameters function
+     * @param $parameters
+     */
     function addParameters($parameters) {
         $this->parameters = array_merge($this->parameters, $parameters);
     }
-
-    function getCommand()                 { return $this->command; }
-    function getParameter($index)         { return $this->parameters[$index]; }
-    function getParameterArray($offset=0) { return array_slice($this->parameters, $offset); }
+    /** getCommand function
+     *
+     */
+    function getCommand() {
+        return $this->command;
+    }
+    /** getParameter function
+     * @param $index
+     */
+    function getParameter($index) {
+        return $this->parameters[$index];
+    }
+    /** getParameterArray function
+     * @param $offset
+     */
+    function getParameterArray($offset=0) {
+        return array_slice($this->parameters, $offset);
+    }
 
 
 }
@@ -74,25 +100,52 @@ class ViewCommand {
 class AA_View_Commands {
     var $commands;     /** array of obkects of ViewCommand class */
 
-    /** constructor - calls parseCommand() */
+    /** AA_View_Commands function
+     *  constructor - calls parseCommand()
+     * @param $cmd
+     * @param $als
+     */
     function AA_View_Commands($cmd, $als=false) {
         $this->commands = array();
         $this->parseCommand($cmd, $als);
     }
 
-    /** returns command given by command letter (say 'd') */
+    /** get function
+     *  @return command given by command letter (say 'd')
+     * @param $command
+     */
     function get($command) {
         return $this->commands[$command];
     }
 
-    /** returns number of commands in the set */
-    function count()   { return count($this->commands);   }
-    function reset()   { return reset($this->commands);   }
-    function next()    { return next($this->commands);    }
-    function current() { return current($this->commands); }
+    /** count function
+     *  returns number of commands in the set
+     */
+    function count() {
+        return count($this->commands);
+    }
+    /** reset function
+     *
+     */
+    function reset() {
+        return reset($this->commands);
+    }
+    /** next function
+     *
+     */
+    function next() {
+        return next($this->commands);
+    }
+    /** current function
+     *
+     */
+    function current() {
+        return current($this->commands);
+    }
 
 
-    /** add new command to the command set
+    /** addCommand function
+     *  add new command to the command set
      *  @param $command the letter indicating the command (x, c, d, v, ...)
      *  @param $parameters array of command patameters
      */
@@ -106,7 +159,7 @@ class AA_View_Commands {
         }
     }
 
-    /**
+    /** parseCommand function
      * Separates 'cmd' parameters for current view into array.
      *
      * Parameters are separated by '-'. To escape '-' character use '--' (then it
@@ -119,7 +172,9 @@ class AA_View_Commands {
      */
     function parseCommand($cmd, $als=false) {
 
-        if ( $GLOBALS['debug'] ) huhl("<br>ParseCommand - cmd:", $cmd);
+        if ( $GLOBALS['debug'] ) {
+            huhl("<br>ParseCommand - cmd:", $cmd);
+        }
 
         // cmd could be array - in this case more commands are passed to view
         // Ussage: cmd[89][]=c-1-On&cmd[89][]=c-2-Cars&cmd[89][]=x-89-2233-5244
@@ -140,7 +195,7 @@ class AA_View_Commands {
 
 }
 
-/**
+/** ParseSettings function
  * Separates 'set' parameters for current view into array. To escape ','
  *                 character uses ',,'.
  * @param string $set set[<vid>] string from url. 'set' parameters are in form
@@ -161,7 +216,10 @@ function ParseSettings($set) {
     return $ret;
 }
 
-/** Converts a query string into a data view_params data structure */
+/** ParseViewParameters function
+ *  Converts a query string into a data view_params data structure
+ * @param $query_string
+ */
 function ParseViewParameters($query_string="") {
     global $cmd, $set, $vid, $als, $slice_id, $debug;
     global $x;   // url parameter - used for cmd[]=x-111-url view parameter
@@ -255,22 +313,42 @@ function ParseViewParameters($query_string="") {
 
 
     // the parameters for discussion comes (quite not standard way) from globals
-    if ( !$arr["all_ids"] )     $arr["all_ids"]     = $GLOBALS['all_ids'];
-    if ( !$arr["ids"] )         $arr["ids"]         = $GLOBALS['ids'];
-    if ( !$arr["sel_ids"] )     $arr["sel_ids"]     = $GLOBALS['sel_ids'];
-    if ( !$arr["add_disc"] )    $arr["add_disc"]    = $GLOBALS['add_disc'];
-    if ( !$arr["sh_itm"] )      $arr["sh_itm"]      = $GLOBALS['sh_itm'];
-    if ( !$arr["parent_id"] )   $arr["parent_id"]   = $GLOBALS['parent_id'];
+    if ( !$arr["all_ids"] ) {
+        $arr["all_ids"]     = $GLOBALS['all_ids'];
+    }
+    if ( !$arr["ids"] ) {
+        $arr["ids"]         = $GLOBALS['ids'];
+    }
+    if ( !$arr["sel_ids"] ) {
+        $arr["sel_ids"]     = $GLOBALS['sel_ids'];
+    }
+    if ( !$arr["add_disc"] ) {
+        $arr["add_disc"]    = $GLOBALS['add_disc'];
+    }
+    if ( !$arr["sh_itm"] ) {
+        $arr["sh_itm"]      = $GLOBALS['sh_itm'];
+    }
+    if ( !$arr["parent_id"] ) {
+        $arr["parent_id"]   = $GLOBALS['parent_id'];
+    }
 
     // IDs of discussion items for discussion list
-    if ( !$arr["disc_ids"] )    $arr["disc_ids"]    = $GLOBALS['disc_ids'];
+    if ( !$arr["disc_ids"] ) {
+        $arr["disc_ids"]    = $GLOBALS['disc_ids'];
+    }
 
     // used for discussion list view
-    if ( !$arr["disc_type"] )   $arr["disc_type"]   = $GLOBALS['disc_type'];
+    if ( !$arr["disc_type"] ) {
+        $arr["disc_type"]   = $GLOBALS['disc_type'];
+    }
 
     // used for Links module - categories and links
-    if ( !$arr["cat"] )         $arr["cat"]         = $GLOBALS['cat'];
-    if ( !$arr["show_subcat"] ) $arr["show_subcat"] = $GLOBALS['show_subcat'];
+    if ( !$arr["cat"] ) {
+        $arr["cat"]         = $GLOBALS['cat'];
+    }
+    if ( !$arr["show_subcat"] ) {
+        $arr["show_subcat"] = $GLOBALS['show_subcat'];
+    }
 
     $arr['als']         = GetAliasesFromUrl($GLOBALS['als']);
     $arr['vid']         = $vid;
@@ -279,14 +357,21 @@ function ParseViewParameters($query_string="") {
     //  $arr['item_ids'] = $item_ids;
     $arr['zids']        = $zids;
 
-    if ( $debug ) huhl($arr);
+    if ( $debug ) {
+        huhl($arr);
+    }
 
     return $arr;
 }
 
 
-/**
+/** ResolveCondsConflict function
  * Helper function for GetViewConds() - resolves database x url conds conflict
+ * @param $conds
+ * @param $fld
+ * @param $op
+ * @param $val
+ * @param $param
  */
 function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
     if ($fld AND $op) {
@@ -296,7 +381,7 @@ function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
     }
 }
 
-/**
+/** GetViewConds function
  * Fills array with conditions defined through
  * 'Slice Admin' -> 'Design View - Edit' -> 'Conditions' setting
  * @param array $view_info view definition from database in asociative array
@@ -308,7 +393,9 @@ function ResolveCondsConflict(&$conds, $fld, $op, $val, $param) {
 function GetViewConds($view_info, $param_conds) {
     // param_conds - redefines default condition values by url parameter (cmd[]=c)
 
-    if ( $GLOBALS['debug'] ) huhl("<br>(GetViewConds) param_conds=",$param_conds);
+    if ( $GLOBALS['debug'] ) {
+        huhl("<br>(GetViewConds) param_conds=",$param_conds);
+    }
 
     ResolveCondsConflict($conds, $view_info['cond1field'], $view_info['cond1op'], $view_info['cond1cond'],  $param_conds[1]);
     ResolveCondsConflict($conds, $view_info['cond2field'], $view_info['cond2op'], $view_info['cond2cond'],  $param_conds[2]);
@@ -321,7 +408,10 @@ function GetViewConds($view_info, $param_conds) {
 
     return $conds;
 }
-
+/** GetViewSort function
+ * @param $view_info
+ * @param $param_sort
+ */
 function GetViewSort(&$view_info, $param_sort=null) {
     global $VIEW_SORT_DIRECTIONS;
     // translate sort codes (we use numbers in views from historical reason)
@@ -355,7 +445,8 @@ function GetViewSort(&$view_info, $param_sort=null) {
     return $sort;
 }
 
-/** Parses banner url parameter (for view.php3 as well as for slice.php3
+/** ParseBannerParam function
+ *  Parses banner url parameter (for view.php3 as well as for slice.php3
  *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]
  *  (@see {@link http://apc-aa.sourceforge.net/faq/#219})
  */
@@ -372,7 +463,14 @@ function ParseBannerParam($banner_param) {
     }
     return $ret;
 }
-
+/** GetListLength function
+ * @param $listlen
+ * @param $to
+ * @param $from
+ * @param $page
+ * @param $idscount
+ * @param $random
+ */
 function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
     $list_from = max(0, $from-1);    // user counts items from 1, we from 0
     $list_to   = max(0, $to-1);      // user counts items from 1, we from 0
@@ -399,7 +497,10 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 }
 
 
-// Expand a set of view parameters, and return the view
+/** GetView function
+ *  Expand a set of view parameters, and return the view
+ * @param $view_param
+ */
 function GetView($view_param) {
     global $nocache, $debug;
     //create keystring from values, which exactly identifies resulting content
@@ -494,7 +595,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
     $cache_sid = $slice_id;     // pass back to GetView (passed by reference)
 
     // ---- display content in according to view type ----
-    if ($debug) huhl("GetViewFromDB:view_info=",$view_info);
+    if ($debug) {
+        huhl("GetViewFromDB:view_info=",$view_info);
+    }
     trace("=","GetViewFromDB",$view_info['type']);
     switch( $view_info['type'] ) {
         case 'full':  // parameters: zids, als
@@ -684,7 +787,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
                 if ($debug) huhl("Retagged zids=",$zids2);
             }
 
-            if ($debug) huhl("GetViewFromDB: Filtered ids=",$zids2);
+            if ($debug) {
+                huhl("GetViewFromDB: Filtered ids=",$zids2);
+            }
 
             $format = $view->getViewFormat($selected_item);
             $format['calendar_month'] = $month;

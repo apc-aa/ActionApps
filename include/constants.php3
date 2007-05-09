@@ -1,22 +1,28 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once AA_INC_PATH."mgettext.php3";
@@ -25,16 +31,36 @@ require_once AA_INC_PATH."mgettext.php3";
 // Used constants. Do not edit if you are not developer.
 //
 
-/** Field definition shortcut (used in constants.php3 for CONSTANT_FILEDS) */
+/** GetFieldDef function
+ * Field definition shortcut (used in constants.php3 for CONSTANT_FILEDS)
+ * @param $name
+ * @param $field
+ * @param $operators = 'text'
+ * @param $table = false
+ * @param $search_pri = false
+ * @param $order_pri = false
+ * @return array
+ */
 function GetFieldDef( $name, $field, $operators='text', $table=false, $search_pri=false, $order_pri=false) {
     $ret = array('name' => $name, 'field' => $field, 'operators' => $operators);
-    if ( $table )      $ret['table']      = $table;
-    if ( $search_pri ) $ret['search_pri'] = $search_pri;  // searchbar priority (false = "do not show in searchbar")
-    if ( $order_pri )  $ret['order_pri']  = $order_pri;   // orderbar  priority (false = "do not show in orderbar")
+    if ( $table ) {
+        $ret['table']      = $table;
+    }
+    if ( $search_pri ) {
+        $ret['search_pri'] = $search_pri;  // searchbar priority (false = "do not show in searchbar")
+    }
+    if ( $order_pri ) {
+        $ret['order_pri']  = $order_pri;   // orderbar  priority (false = "do not show in orderbar")
+    }
     return $ret;
 }
 
-/** Alias definition shortcut */
+/** GetAliasDef function
+ * Alias definition shortcut
+ * @param $fce
+ * @param $field = ''
+ * @param $hlp = ''
+ */
 function GetAliasDef( $fce, $field='', $hlp='') {
     return array('fce' => $fce, 'param' => $field, 'hlp' => $hlp);
 }
@@ -46,7 +72,13 @@ class AA_Alias {
     var $field_id;
     var $parameters;
     var $hlp;
-
+    /** AA_Alias function
+     * @param $alias
+     * @param $field_id
+     * @param $funct
+     * @param $parameters = null
+     * @param $hlp = ''
+     */
     function AA_Alias($alias, $field_id, $funct, $parameters=null, $hlp='') {
         $this->alias       = $alias;
         $this->funct       = $funct;
@@ -54,12 +86,16 @@ class AA_Alias {
         $this->parameters  = empty($parameters) ? array() : $parameters;
         $this->hlp         = $hlp;
     }
-
+    /** getArray function
+     * @return array
+     */
     function getArray() {
         $fce = ParamImplode(array_merge(array($this->funct),$this->parameters));
         return array('fce' => $fce, 'param' => $this->field_id, 'hlp' => $this->hlp);
     }
-
+    /** getAlias function
+     * @return $this->alias
+     */
     function getAlias() {
         return $this->alias;
     }
@@ -67,19 +103,28 @@ class AA_Alias {
 
 class AA_Aliases {
     var $aliases;
-
+    /** AA_Aliases function
+     *
+     */
     function AA_Aliases() {
         $this->aliases = array();
     }
-
+    /** addAlias function
+     * @param $alias (by link)
+     */
     function addAlias(&$alias) {
         $this->aliases[] = $alias;
     }
-
+    /** addTextAlias
+     * @param $alias_name
+     * @param $text
+     */
     function addTextAlias($alias_name, $text) {
         $this->addAlias(new AA_Alias($alias_name, "id..............", 'f_t', array($text, 'asis')));
     }
-
+    /** getArray function
+     *
+     */
     function getArray() {
         $ret = array();
         foreach ($this->aliases as $alias) {
@@ -189,7 +234,7 @@ $LANGUAGE_CHARSETS = array ("cz" => "windows-1250",
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * @global array $LANGUAGE_NAMES
 */
-$LANGUAGE_NAMES = array ("cz" => "Èeština",
+$LANGUAGE_NAMES = array ("cz" => "Èe¹tina",
                          "en" => "English",
                          "es" => "Español",
                          "de" => "Deutsch",
@@ -232,13 +277,13 @@ define("EDIT_ITEM_COUNT", 20);
 define("QUERY_DATE_STEP", 1000);
 
 
-define("DEFAULT_FULLTEXT_HTML", '<BR><FONT SIZE=+2 COLOR=blue>_#HEADLINE</FONT>'
-                               .'<BR><B>_#PUB_DATE</B> <BR>_#FULLTEXT');
+define("DEFAULT_FULLTEXT_HTML", '<br><font size="+2" color="blue">_#HEADLINE</FONT>'
+                               .'<br><b>_#PUB_DATE</b> <br>_#FULLTEXT');
 define("DEFAULT_ODD_HTML",
-     '<font face=Arial color=#808080 size=-2>_#PUB_DATE - </font>'
-    .'<font color=red><strong><a href=_#HDLN_URL>_#HEADLINE</a></strong></font>'
-    .'<font color=#808080 size=-1><br>_#PLACE###(<a href="_#SRC_URL#">_#SOURCE##</a>) - </font>'
-    .'<font color=black size=-1>_#ABSTRACT<br></font><br>');
+     '<font face="Arial" color="#808080" size="-2">_#PUB_DATE - </font>'
+    .'<font color="red"><strong><a href="_#HDLN_URL">_#HEADLINE</a></strong></font>'
+    .'<font color="#808080" size="-1"><br>_#PLACE###(<a href="_#SRC_URL#">_#SOURCE##</a>) - </font>'
+    .'<font color="black" size="-1">_#ABSTRACT<br></font><br>');
 define("DEFAULT_EVEN_HTML", "");
 define("DEFAULT_TOP_HTML", "<br>");
 define("DEFAULT_BOTTOM_HTML", "<br>");
@@ -341,7 +386,9 @@ define( "REL_FLAG_FEED", 2 );    // 2 - just to be compatible with content table
 
 /** view table flags */
 define( "VIEW_FLAG_COMMENTS", 1 );    // display HTML comments before and after the view
-
+/** inputFeedModes function
+ * @return array
+ */
 function inputFeedModes() {
   return array( STATE_FEEDABLE               => _m("Feed"),
                 STATE_UNFEEDABLE             => _m("Do not feed"),
@@ -350,13 +397,24 @@ function inputFeedModes() {
                 STATE_FEEDABLE_UPDATE_LOCKED => _m("Feed & update & lock")
               );
 }
-
+/** GetViewFieldDef function
+ * @param $validate
+ * @param $insert
+ * @param $type
+ * @param $input
+ * @param $value = false
+ * @return array
+ */
 function GetViewFieldDef( $validate, $insert, $type, $input, $value=false ) {
     $ret = array( "validate"=>$validate, "insert"=>$insert, "type"=>$type, "input"=>$input );
-    if ( $value ) $ret['value'] =  $value;
+    if ( $value ) {
+        $ret['value'] =  $value;
+    }
     return $ret;
 }
-
+/** getViewFields function
+ * @return array
+ */
 function getViewFields() {
     // se_views.php3 - view field definition
     /* Jakub added a special field "function:function_name" which calls function show_function_name() to show a special form part and store_function_name() to store form data. */
@@ -412,7 +470,8 @@ function getViewFields() {
     return $VIEW_FIELDS;
 }
 
-/** View types is an array. The basic format is
+/** getViewTypes function
+*       View types is an array. The basic format is
 *       view_type => array (
 *           "view_field (one from $VIEW_FIELDS, see above)" => "label", ...)
 *
@@ -423,8 +482,9 @@ function getViewFields() {
 *           "input" => "overrides the input function from $VIEW_FIELDS")
 *
 *   See the "digest" view below for an example.
+*   @return array
 */
-function getViewTypes () {
+function getViewTypes() {
     return   array(
         'list' => array( "name" => _m("Item listing"),
                          "before" => _m("Top HTML") ,
@@ -776,7 +836,9 @@ function getViewTypes () {
                         ),
     );
 }
-
+/** getViewTypesInfo function
+ * @return array
+ */
 function getViewTypesInfo() {
     // modification - options for modification field of views
     // alias  - which aliases to show
@@ -877,8 +939,10 @@ define("AA_BIN_ALL",     31);   // all bins (AA_BIN_ACTIVE|AA_BIN_PENDING|...)
 
 /** HTMLArea constants */
 define("AA_HTMLAREA_SPELL_CGISCRIPT",""); // path for spellchecker cgi script (read misc/htmlarea/readme.aa)
-
-function getFilemanAccesses ()
+/** getFilemanAccesses function
+ * @return array
+ */
+function getFilemanAccesses()
 { return array (
     "0" => _m("Superadmin"),
 //    "EDITOR" => _m("Slice Editor"),

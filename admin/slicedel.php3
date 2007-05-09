@@ -1,22 +1,27 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 // expected $slice_id for edit slice, nothing for adding slice
@@ -35,21 +40,26 @@ if (!IsSuperadmin()) {
     MsgPageMenu($sess->url(self_base())."index.php3", _m("You don't have permissions to delete slice."), "admin");
     exit;
 }
-
+/** PrintSlice function
+ * @param $id
+ * @param $name
+ * @param $type
+ * @return prints a table row with a checkbox and a link
+ */
 function PrintSlice($id, $name, $type) {
   global $sess, $MODULES;
 
   $name=safe($name); $id=safe($id);
   $url = (($type=='S') ? './slicedel2.php3' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
 
-  echo "<tr class=tabtxt><td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td><td>$name</td>
-          <td class=tabtxt><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td></tr>";
+  echo "<tr class=\"tabtxt\"><td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td><td>$name</td>
+          <td class=\"tabtxt\"><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td></tr>";
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Admin - Delete Slice");?></TITLE>
- <SCRIPT Language="JavaScript"><!--
+ <title><?php echo _m("Admin - Delete Slice");?></title>
+ <script Language="JavaScript"><!--
    function DeleteSlice(id,url2go) {
      if ( !confirm("<?php echo _m("Do you really want to delete this slice and all its fields and all its items?"); ?>"))
        return
@@ -57,8 +67,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
      document.location=url+'&del='+id;
    }
 // -->
-</SCRIPT>
-</HEAD>
+</script>
+</head>
 <?php
 
 $useOnLoad = ($new_compact ? true : false);
@@ -66,12 +76,12 @@ $useOnLoad = ($new_compact ? true : false);
 require_once menu_include();   //show navigation column depending on $show
 showMenu($aamenus, "aaadmin","slicedel");
 
-echo "<H1><B>" . _m("Admin - Delete Slice") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - Delete Slice") . "</b></h1>";
 echo $Msg;
 // echo _m("<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>");
 
 ?>
-<form name=f method=post action="<?php echo $sess->url(self_base() . "slicedel2.php3")?>">
+<form name="f" method="post" action="<?php echo $sess->url(self_base() . "slicedel2.php3")?>">
 <?php
 
 

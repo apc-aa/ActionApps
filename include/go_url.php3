@@ -4,39 +4,48 @@
  * Formly this function was a part of util.php3 but in some pages
  * we don't want to include the whole util.
  *
- * @package Utils
- * @version $Id$
- * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Utils
+ * @version   $Id$
+ * @author    Jakub Adamek, Econnect
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (c) 2002-3 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-/*
-Copyright (C) 1999-2003 Association for Progressive Communications
-http://www.apc.org/
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/** Escapes url for usage on HTML page
+/** con_url function
+ *  Escapes url for usage on HTML page
  *  - it is better to use get_url() function and then escape the url before
- *  printing */
+ *  printing
+ * @param $url
+ * @param $params
+ */
 function con_url($url, $params) {
     return htmlentities(get_url($url, $params));
 }
 
-/** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
- *  using apropriate ? or &. */
+/** get_url function
+ *  Appends any number of QUERY_STRING parameters (separated by &) to given URL,
+ *  using apropriate ? or &.
+ * @param $url
+ * @param $params
+ */
 function get_url($url, $params) {
     list($path, $fragment) = explode( '#', $url, 2 );
     $param_string = '';
@@ -59,7 +68,12 @@ function get_url($url, $params) {
     return $path . (strstr($path, '?') ? "&" : "?"). $param_string. ($fragment ? '#'.$fragment : '') ;
 }
 
-/// Move to another page (must be before any output from script)
+/** go_url function
+ * Move to another page (must be before any output from script)
+ * @param $url
+ * @param $add_param
+ * @param $usejs
+ */
 function go_url($url, $add_param="", $usejs=false) {
     global $sess, $rXn;
     if (is_object($sess)) {
@@ -84,8 +98,11 @@ function go_url($url, $add_param="", $usejs=false) {
     exit;
 }
 
-/** POST data to the url (usin POST request and returns resulted data
- *  @retuns array $result[]
+/** HttpPostRequest function
+ *  POST data to the url (usin POST request and returns resulted data
+ * @param $url
+ * @param $data
+ * @return array $result[]
  */
 function HttpPostRequest($url, $data = array() ) {
     $request = parse_url($url);

@@ -1,23 +1,28 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/** PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
+
 
 // expected $uid - user id we have to edit profile for
 
@@ -89,7 +94,7 @@ $SORTORDER_TYPES = array( '+'=>_m("Ascending"), '-' => _m("Descending") );
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
- <TITLE><?php echo _m("Admin - user Profiles");?></TITLE>
+ <title><?php echo _m("Admin - user Profiles");?></title>
 <script language="JavaScript"><!--
   function addrule(n) {
     var si;
@@ -110,19 +115,19 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   }
 //-->
 </script>
-</HEAD>
+</head>
 <?php
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin","");
 
-echo "<H1><B>" . _m("Admin - user Profiles") . "</B></H1>";
+echo "<h1><b>" . _m("Admin - user Profiles") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
 echo "
  <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
   <tr>
-   <td class=tabtit><b>&nbsp;". _m("Rules") ." - $uid</b></td>
+   <td class=\"tabtit\"><b>&nbsp;". _m("Rules") ." - $uid</b></td>
   </tr>
   <tr>
    <td>
@@ -138,13 +143,13 @@ if ( isset($rules) AND is_array($rules) ) {
 
 echo "</table>
   <tr>
-   <td class=tabtit><b>&nbsp;". _m("Add Rule") ."</b></td>
+   <td class=\"tabtit\"><b>&nbsp;". _m("Add Rule") ."</b></td>
   </tr>
   <tr>
    <td>
-    <form name=fr>
+    <form name=\"fr\">
      <table border=\"0\" cellspacing=\"0\" cellpadding=\"4\" width=\"100%\" bgcolor=\"". COLOR_TABBG ."\">
-      <tr class=tabtxt align=center>
+      <tr class=\"tabtxt\" align=\"center\">
        <td><b>". _m("Rule") . "</b></td>
        <td><b>". _m("Field") . "</b></td>
        <td><b>". _m("Function") . "</b></td>
@@ -168,18 +173,19 @@ PrintSetRule(8,'predefine',   1,$inputDefaultTypes, 1,1,_m("predefine value of t
 
 echo "</table>
     </form>
-    <form name=sf action='se_profile.php3'>
-      <input type='hidden' name='uid' value='$uid'>
-      <input type='hidden' name='add' value='1'>
-      <input type='hidden' name='property'>
-      <input type='hidden' name='param'>
-      <input type='hidden' name='field_id'>
-      <input type='hidden' name='fnction'>
-      <input type='hidden' name='html'>";
+    <form name=\"sf\" action='se_profile.php3'>
+      <input type=\"hidden\" name=\"uid\" value='$uid'>
+      <input type=\"hidden\" name=\"add\" value='1'>
+      <input type=\"hidden\" name=\"property\">
+      <input type=\"hidden\" name=\"param\">
+      <input type=\"hidden\" name=\"field_id\">
+      <input type=\"hidden\" name=\"fnction\">
+      <input type=\"hidden\" name=\"html\">";
       $sess->hidden_session();
 echo "</form>
     </td>
    </tr>
   </table>";
 HTMLPageEnd();
-page_close()?>
+page_close();
+?>

@@ -1,36 +1,37 @@
 <?php
-//$Id$
-/*
-Copyright (C) 2001 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**  This page is called from sliceexp.php3 to generate the exported text.
+ *
+ *    slices: an associative array variable of all the slices to be exported,
+ *    the index is the slice ID.
+ *    The value for each slice is an associative array again,
+ *    it contains all the members of one slice.
+ *    The fields for each slice are one member of the
+ *    slice array, in the form of a third-level associative array.
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Jakub Adámek, Pavel Jisl
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
-/*
-    Author: Jakub Adámek, Pavel Jisl
-
-    This page is called from sliceexp.php3 to generate the exported text.
-
-    slices: an associative array variable of all the slices to be exported,
-    the index is the slice ID.
-    The value for each slice is an associative array again,
-    it contains all the members of one slice.
-    The fields for each slice are one member of the
-    slice array, in the form of a third-level associative array.
-*/
 
 require_once AA_INC_PATH . "searchlib.php3";
 require_once AA_INC_PATH . "sliceobj.php3";
@@ -44,7 +45,16 @@ function getRecord(&$array, &$record) {
     }
 }
 
-// Export information about the slice
+/** exportOneSliceStruct function
+ * Export information about the slice
+ * @param $slobj
+ * @param $b_export_type
+ * @param $new_slice_id
+ * @param $b_export_gzip
+ * @param $temp_file
+ * @param $b_export_hex
+ * @return writes to file
+ */
 function exportOneSliceStruct($slobj, $b_export_type, $new_slice_id, $b_export_gzip, $temp_file,$b_export_hex) {
     global $db, $sess;
 
@@ -103,7 +113,14 @@ function exportOneSliceStruct($slobj, $b_export_type, $new_slice_id, $b_export_g
 }
 
 
-// Export each view
+/** exportOneSliceViews function
+ *  Export each view
+ * @param $slobj
+ * @param $b_export_gzip
+ * @param $temp_file
+ * @param $b_export_hex
+ * @return writes to file
+ */
 function exportOneSliceViews($slobj, $b_export_gzip, $temp_file, $b_export_hex) {
     $a = " ";
     if (!($slova = $slobj->views())) {
@@ -114,7 +131,7 @@ function exportOneSliceViews($slobj, $b_export_gzip, $temp_file, $b_export_hex) 
         unset($slova[$k]->fields['deleted']);
     }
     if ($b_export_hex) {
-        $a .= " coding=\"serialize".($b_export_gzip ? "gzip" : "")."\"";
+        $a     .= " coding=\"serialize".($b_export_gzip ? "gzip" : "")."\"";
         $e_temp = serialize($slova);
         $e_temp = $b_export_gzip ? gzcompress($e_temp) : $e_temp;
         $e_temp = HTMLEntities(base64_encode($e_temp));
@@ -164,8 +181,22 @@ function exportOneSliceData($slobj, $b_export_gzip, $temp_file, $b_export_spec_d
     }
 }
 
-// Generate the output and write to a temporary file
-// I'm assuming $export_slices contains UNPACKED slice ids
+/** exporter function
+ *  Generate the output and write to a temporary file
+ *  I'm assuming $export_slices contains UNPACKED slice ids
+ * @param $b_export_type
+ * @param $slice_id
+ * @param $b_export_gzip
+ * @param $export_slices
+ * @param $new_slice_id
+ * @param $b_export_struct
+ * @param $b_export_data
+ * @param $b_export_spec_date
+ * @param $b_export_from_date
+ * @param $b_export_to_date
+ * @param $b_export_hex
+ * @param $b_export_views
+ */
 function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $new_slice_id, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views)
 {
     global $db, $sess;
@@ -193,7 +224,9 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $ne
     }
     fwrite($temp_file, "</comment>\n");
 
-    if ($b_export_gzip != 1) { $b_export_gzip = 0; }
+    if ($b_export_gzip != 1) {
+        $b_export_gzip = 0;
+    }
 
     foreach ($export_slices as $sid) {
         $slobj = AA_Slices::getSlice($sid);
@@ -229,12 +262,27 @@ function exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $ne
     fwrite($temp_file, "</sliceexport>");
     return $temp_file;
 }
-
+/** exportToFile function
+ * @param $b_export_type
+ * @param $slice_id
+ * @param $b_export_gzip
+ * @param $export_slices
+ * @param $new_slice_id
+ * @param $b_export_struct
+ * @param $b_export_data
+ * @param $b_export_spec_date
+ * @param $b_export_from_date
+ * @param $b_export_to_date
+ * @param $b_export_hex
+ * @param $b_export_views
+ */
 function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $new_slice_id, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views)
 // Export data to file:
 //   Opens browser's dialog to write file to disk...
 {
-    if ($b_export_gzip != 1) { $b_export_gzip = 0; }
+    if ($b_export_gzip != 1) {
+        $b_export_gzip = 0;
+    }
 
     $temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $new_slice_id, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views);
 
@@ -250,23 +298,38 @@ function exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices,
      }
     fclose($temp_file);
 }
-
+/** exportToForm function
+ * @param $b_export_type
+ * @param $slice_id
+ * @param $b_export_gzip
+ * @param $export_slices
+ * @param $new_slice_id
+ * @param $b_export_struct
+ * @param $b_export_data
+ * @param $b_export_spec_date
+ * @param $b_export_from_date
+ * @param $b_export_to_date
+ * @param $b_export_hex
+ * @param $b_export_views
+ */
 function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $new_slice_id, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views)
 // Export data to text area in browser's window ...
 {
 
-    if ($b_export_gzip != 1) { $b_export_gzip = 0; }
+    if ($b_export_gzip != 1) {
+        $b_export_gzip = 0;
+    }
 
     $temp_file = exporter($b_export_type, $slice_id, $b_export_gzip, $export_slices, $new_slice_id, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views);
 
     rewind($temp_file);
 
     echo "
-        <tr><td class = tabtxt>
-        <FORM>
+        <tr><td class=\"tabtxt\">
+        <form>
         <p><b>".  _m("Save this text. You may use it to import the slices into any ActionApps:") ."</b>
         </P>
-        <TEXTAREA COLS = 80 ROWS = 20>";
+        <textarea cols=\"80\" rows=\"20\">";
 
 //		fpassthru($export_file);
 
@@ -276,9 +339,9 @@ function exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices,
          }
         fclose($temp_file);
 
-    echo "</TEXTAREA>
-        </FORM>
-        </P>
+    echo "</textarea>
+        </form>
+        </p>
         </tr></td>";
 }
 page_close();

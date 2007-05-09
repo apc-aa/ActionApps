@@ -1,28 +1,33 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**  expected at least $slice_id
+ *   user calling is with $edit for edit item
+ *   optionaly encap="false" if this form is not encapsulated into *.shtml file
+ *   optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
-// expected at least $slice_id
-// user calling is with $edit for edit item
-// optionaly encap="false" if this form is not encapsulated into *.shtml file
-// optionaly free and freepwd for anonymous user login (free == login, freepwd == password)
 
 $encap = ( ($encap=="false") ? false : true );
 
@@ -45,8 +50,9 @@ if ( file_exists( AA_INC_PATH."usr_validate.php3" ) ) {
 
 FetchSliceReadingPassword();
 
-if ($encap) add_vars();        // adds values from QUERY_STRING_UNESCAPED
-                               //       and REDIRECT_STRING_UNESCAPED - from url
+if ($encap) {
+    add_vars();        // adds values from QUERY_STRING_UNESCAPED
+}                             //       and REDIRECT_STRING_UNESCAPED - from url
 
 QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote variables
                                         // but skip (already edited) encap variable
@@ -71,8 +77,11 @@ if ($cancel) {
     }
 }
 
-if ($update) { $action = "update"; }
-else         { $action = "edit"; }
+if ($update) {
+    $action = "update";
+} else {
+    $action = "edit";
+}
 
 // ValidateContent4Id() sets GLOBAL!! variables:
 //   $show_func_used   - list of show func used in the form

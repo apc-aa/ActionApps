@@ -1,22 +1,29 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 // expected at least $slice_id
@@ -60,7 +67,13 @@ function GetHidden($itemform_id) {
     }
 }
 */
-
+/** CloseDialog function
+ * @param $zid=null
+ * @param $openervar=null
+ * @param $insert=true
+ * @param $url2go=null
+ *
+ */
 function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null) {
     global $tsp; // defined in constants.php3
     // Used for adding item to another slice from itemedit's popup.
@@ -88,7 +101,9 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
 
 FetchSliceReadingPassword();
 
-if ($encap) add_vars();        // adds values from QUERY_STRING_UNESCAPED
+if ($encap) {
+    add_vars();        // adds values from QUERY_STRING_UNESCAPED
+}
                                //       and REDIRECT_STRING_UNESCAPED - from url
 
 QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote variables
@@ -105,8 +120,12 @@ QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote var
 //     only this script accepts r_hidden variable
 //     - if it don't match - unset($r_hidden) (see init_page.pgp3)
 
-if ( $ins_preview ) { $insert = true; $preview=true; }
-if ( $upd_preview ) { $update = true; $preview=true; }
+if ( $ins_preview ) {
+    $insert = true; $preview=true;
+}
+if ( $upd_preview ) {
+    $update = true; $preview=true;
+}
 
 
 $add = !( $update OR $cancel OR $insert OR $edit );
@@ -122,10 +141,15 @@ if ($cancel) {
     }
 }
 
-if ($add)        { $action = "add";    }
-elseif ($insert) { $action = "insert"; }
-elseif ($update) { $action = "update"; }
-else             { $action = "edit"; }
+if ($add) {
+    $action = "add";
+} elseif ($insert) {
+    $action = "insert";
+} elseif ($update) {
+    $action = "update";
+} else {
+    $action = "edit";
+}
 
 // ValidateContent4Id() sets GLOBAL!! variables:
 //   $show_func_used   - list of show func used in the form
@@ -254,7 +278,9 @@ if ($lang_control) {
 }
 // end mimo changes
 
-if ($GLOBALS['debug']) huhl($content4id);
+if ($GLOBALS['debug']) {
+    huhl($content4id);
+}
 
 // print begin ---------------------------------------------------------------
 if ( !$encap ) {
@@ -286,7 +312,9 @@ if ( $inputform_settings['form4update'] ) {
 
 
 
-if ( $vid ) $inputform_settings['template'] = $vid;
+if ( $vid ) {
+    $inputform_settings['template'] = $vid;
+}
 
 //AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access
 $form = new inputform($inputform_settings);

@@ -6,29 +6,31 @@
  * into a table, if any handler waits for the event. If so, all matched
  * handlers are called.
  *
- * @package UserInput
- * @version $Id$
- * @author Honza Malik <honza.malik@ecn.cz>, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (c) 2002-3 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-/*
-Copyright (C) 1999-2003 Association for Progressive Communications
-http://www.apc.org/
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
 
 require_once AA_INC_PATH."auth.php3";
 require_once AA_INC_PATH."mailman.php3";
@@ -45,12 +47,19 @@ require_once AA_INC_PATH."mlx.php";
 class aahandler {
     var $funct;    // handler function - function to call is conditions are met
     var $conds;
-
+    /** aahandler function
+     * @param $funct
+     * @param $conds
+     */
     function aahandler( $funct, $conds ) {
         $this->funct = $funct;
         $this->conds = $conds;
     }
-
+    /** matches function
+     * @param $type
+     * @param $slice
+     * @param $slice_type
+     */
     function matches( $type, $slice, $slice_type ) {
         if ( !(isset($this->conds) AND is_array($this->conds)) ) {
             return true;   // no conditions are set for handler - do it allways
@@ -63,7 +72,15 @@ class aahandler {
         return true;       // all defined conditions matches
     }
 
-    /** Process the event - it is the time of event */
+    /** process function
+     *  Process the event - it is the time of event
+     * @param $type
+     * @param $slice
+     * @param $slice_type
+     * @param $ret_params
+     * @param $params
+     * @param $params2
+     */
     function process($type, $slice, $slice_type, &$ret_params, $params, $params2) {
         $function = $this->funct;
         return $function($type, $slice, $slice_type, $ret_params, $params, $params2);
@@ -108,7 +125,12 @@ class aaevent {
         }
     }
 
-    /** Fills the handlers array from database */
+    /** get_handlers function
+     *  Fills the handlers array from database
+     * @param $type
+     * @param $class
+     * @param $selector
+     */
     function get_handlers($type, $class, $selector) {
         // TODO - read the events from database instead of this static definition
         $this->handlers   = array();
@@ -138,7 +160,12 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_NEW',         'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
     }
 
-    /** Fills the handlers array from database */
+    /** get_handlers_newwwwww function
+     *  Fills the handlers array from database
+     * @param $type
+     * @param $class
+     * @param $selector
+     */
     function get_handlers_newwwwww($type, $class, $selector) {
         $db = getDB();
         $SQL = "SELECT reaction, params FROM event WHERE type='".quote($type)."'";
@@ -165,16 +192,35 @@ class aaevent {
  */
 class NewDiscussionCommentEvent {
     var $email;
+    /** NewDiscussionCommentEvent function
+     * @param $params
+     * @param $type
+     * @param $class
+     * @param $selector
+     */
     function NewDiscussionCommentEvent( $params, $type, $class, $selector ) {
         $email = unserialize($params);
     }
 
-    /** not necessary - implemented in get_handlers method in database layer */
+    /** matches function
+     *  not necessary - implemented in get_handlers method in database layer
+     * @param $type
+     * @param $slice
+     * @param $slice_type
+     */
     function matches( $type, $slice, $slice_type ) {
         return true;
     }
 
-    /** Process the event - it is the time of event */
+    /** process function
+     *  Process the event - it is the time of event
+     * @param $type
+     * @param $slice
+     * @param $slice_type
+     * @param $ret_params
+     * @param $params
+     * @param $params2
+     */
     function process($type, $slice, $slice_type, &$ret_params, $params, $params2) {
 
 
@@ -206,7 +252,13 @@ class NewDiscussionCommentEvent {
     }
 }
 
-
+/** GetNotifications function
+ * @param $type
+ * @param $class
+ * @param $selector
+ * @param $reaction
+ * @param $params
+ */
 function GetNotifications($type, $class, $selector, $reaction=null, $params=null) {
     $type     = quote($type);
     $class    = quote($class);
@@ -223,7 +275,13 @@ function GetNotifications($type, $class, $selector, $reaction=null, $params=null
     $notifications = GetTable2Array($SQL, 'NoCoLuMn', 'params');
     return $notifications ? array_unique((array)$notifications) : array();
 }
-
+/** AddNotification function
+ * @param $type
+ * @param $class
+ * @param $selector
+ * @param $reaction
+ * @param $params
+ */
 function AddNotification($type, $class, $selector, $reaction, $params) {
 
     // check if user already is not set for this item
@@ -244,7 +302,14 @@ function AddNotification($type, $class, $selector, $reaction, $params) {
 
 /** ------------- Handlers --------------*/
 
-
+/** Event_ItemNewComment function
+ * @param $type
+ * @param $item_id
+ * @param $slice_type
+ * @param $disc_id
+ * @param $foo
+ * @param $foo2
+ */
 function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $foo2 ) {
 
     $emails = GetNotifications($type, $slice_type, $item_id);
@@ -293,9 +358,16 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
 }
 
 
-/** Called after inserting a new item.
-*   $itemContent is sent by reference but for better performance only.
-*/
+/** Event_ItemAfterInsert function
+ *   Called after inserting a new item.
+ *   $itemContent is sent by reference but for better performance only.
+ * @param $type
+ * @param $slice_id
+ * @param $slice_type
+ * @param $itemContent
+ * @param $foo
+ * @param $foo2
+ */
 function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
     $item_id = $itemContent->getItemID();
     AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
@@ -311,9 +383,16 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $f
     return true;
 }
 
-/** Called after updating an existing item.
-*   $itemContent is sent by reference but for better performance only.
-*/
+/** Event_ItemAfterUpdate function
+ *   Called after updating an existing item.
+ *   $itemContent is sent by reference but for better performance only.
+ * @param $type
+ * @param $slice_id
+ * @param $slice_type
+ * @param $itemContent
+ * @param $oldItemContent
+ * @param $foo2
+ */
 function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
     $item_id = $itemContent->getItemID();
     AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
@@ -329,16 +408,29 @@ function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $o
 }
 
 
-/** Called after inserting of new discussion comment
-*   $itemContent is sent by reference but for better performance only.
-*/
+/** Event_CommentAfterInsert function
+ *   Called after inserting of new discussion comment
+ *   $itemContent is sent by reference but for better performance only.
+ * @param $type
+ * @param $slice_id
+ * @param $slice_type
+ * @param $itemContent
+ * @param $oldItemContent
+ * @param $foo2
+ */
 function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
 
 }
 
-/** Called on updating an existing item.
-*   @param object $itemContent is sent by reference - you can change the data
-*/
+/** Event_ItemBeforeUpdate
+ *   Called on updating an existing item.
+ * @param $type
+ * @param $slice_id
+ * @param $slice_type
+ * @param object $itemContent is sent by reference - you can change the data
+ * @param $oldItemContent
+ * @param $foo2
+ */
 function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
     $item_id = $itemContent->getItemID();
     // Delete reader from Auth tables because if the username changes,
@@ -347,16 +439,28 @@ function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, &$itemContent, $
     return true;
 }
 
-/** Called on inserting a new item.
-*   @param object $itemContent is sent by reference - you can change the data
-*/
+/** Event_ItemBeforeInsert function
+ *   Called on inserting a new item.
+ * @param $type
+ * @param $slice_id
+ * @param $slice_type
+ * @param object $itemContent is sent by reference - you can change the data
+ * @param $foo
+ * @param $foo2
+ */
 function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
     return true;
 }
 
-/** Called on deleting several items.
-*   @param object $item_ids is sent by reference but for better performance only
-*/
+/** Event_ItemsBeforeDelete function
+ *   Called on deleting several items.
+ * @param $type
+ * @param $slice_id
+ * @param $slice_type
+ * @param object $item_ids is sent by reference but for better performance only
+ * @param $foo
+ * @param $foo2
+ */
 function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, &$item_ids, $foo, $foo2 ) {
     /* It is not really necessary to delete the readers from Auth tables,
        because they should be deleted on moving to Trash bin. But it is
@@ -369,37 +473,58 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, &$item_ids, $fo
     return true;
 }
 
-/** Called after moving items to another bin (changing status code). */
+/** Event_ItemsMoved function
+ * Called after moving items to another bin (changing status code).
+ * @param $type
+ * @param $slice_id
+ * @param $slice_type
+ * @param $item_ids
+ * @param $new_status
+ * @param $foo2
+ */
 function Event_ItemsMoved( $type, $slice_id, $slice_type, &$item_ids, $new_status, $foo2 ) {
     AuthUpdateReaders( $item_ids, $slice_id );
     MailmanCreateSynchroFiles( $slice_id );
 }
 
-/** Called on propagating a change in a constant value.
- *  @param string $newvalue, $oldvalue Both have added slashes (e.g. from a form).
- *  @param string $constant_id Unpacked ID of constant from the constant table.
+/** Event_ConstantBeforeUpdate function
+ *  Called on propagating a change in a constant value.
+ * @param $type
+ * @param $slice_id
+ * @param $slice_type
+ * @param string $newvalue, $oldvalue Both have added slashes (e.g. from a form).
+ * @param $oldvalue
+ * @param string $constant_id Unpacked ID of constant from the constant table.
  */
 function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ) {
     return true;
 };
 
-/** Called after propagating a change in a constant value.
-*   @param string $newvalue, $oldvalue Both have added slashes (e.g. from a form).
-*   @param string $constant_id Unpacked ID of constant from the constant table.
-*/
+/** Event_ConstantUpdated function
+ *  Called after propagating a change in a constant value.
+ * @param $type
+ * @param $slice_id
+ * @param $slice_type
+ * @param string $newvalue, $oldvalue Both have added slashes (e.g. from a form).
+ * @param $oldvalue
+ * @param string $constant_id Unpacked ID of constant from the constant table.
+ */
 function Event_ConstantUpdated( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ) {
     AuthChangeGroups($constant_id, $oldvalue, $newvalue);
     MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue );
 }
 
 
-/** Creates 'general' categories (if not created yet) when new link type belongs
+/** Event_AddLinkGlobalCat function
+ *  Creates 'general' categories (if not created yet) when new link type belongs
  *  to 'global categories'. Then it modifies category set, where to assign link
- *
- *  @param array  &$ret_params  - category set, where to assign link - modified
- *                                array[] = category_id
- *  @param string  $params      - global category name or false
- *  @param string  $params2     - old (previous) global category name or false
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param array  &$ret_params  - category set, where to assign link - modified
+ *                               array[] = category_id
+ * @param string  $params      - global category name or false
+ * @param string  $params2     - old (previous) global category name or false
  */
 function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     global $db, $LINK_TYPE_CONSTANTS;
@@ -410,8 +535,9 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 
     // if new link type is not general (global) category or general category
     // was already set - return
-    if ( !( trim($name)) OR trim($oldname) )
+    if ( !( trim($name)) OR trim($oldname) ) {
         return false;
+    }
 
     // get all informations about general categories
     $SQL = "SELECT pri, description, name FROM constant
@@ -451,8 +577,8 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
                 continue;
             }
             $cat_on_path = explode(',', $cpath);
-            $curr_path = '';
-            $i=0;
+            $curr_path   = '';
+            $i           = 0;
             unset($reverse_cat);
             unset($reverse_path);
             foreach ( $cat_on_path as $subcat ) {
@@ -510,8 +636,10 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     return true;
 }
 
-/** Send email with answer to Dropin staff with the answer (from item)
- *  @param object  &$ret_params  - ItemContent object with new values
+/** SendFilledItem function
+ *  Send email with answer to Dropin staff with the answer (from item)
+ * @param object  &$ret_params  - ItemContent object with new values
+ * @param $email_template
  */
 function SendFilledItem(&$ret_params, $email_template) {
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
@@ -527,31 +655,78 @@ function SendFilledItem(&$ret_params, $email_template) {
     return false;
 }
 
-/** Send email with answer to Dropin staff with the answer (from item) */
+/** Event_ItemUpdated_DropIn function
+ * Send email with answer to Dropin staff with the answer (from item)
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param $ret_params
+ * @param $params
+ * @param $params2
+ */
 function Event_ItemUpdated_DropIn( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 8);
 }
 
-/** Send email with answer to Aperio staff with the answer (from item) */
+/** Event_ItemUpdated_Aperio function
+ * Send email with answer to Aperio staff with the answer (from item)
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param $ret_params
+ * @param $params
+ * @param $params2
+ */
 function Event_ItemUpdated_Aperio( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 49);
 }
 
-/** Send email with answer to Aperio staff with the answer (from item) */
+/** Event_ItemUpdated_Aperio_porod function
+ * Send email with answer to Aperio staff with the answer (from item)
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param $ret_params
+ * @param $params
+ * @param $params2
+ */
 function Event_ItemUpdated_Aperio_porod( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 50);
 }
 
-/** Send email with answer to Aperio staff with the answer (from item) */
+/** Event_ItemUpdated_Aperio_porad function
+ * Send email with answer to Aperio staff with the answer (from item)
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param $ret_params
+ * @param $params
+ * @param $params2
+ */
 function Event_ItemUpdated_Aperio_porad( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 62);
 }
 
-/** Send email with answer to Aperio staff with the answer (from item) */
+/** Event_ItemUpdated_Ekoinfocentrum function
+ * Send email with answer to Aperio staff with the answer (from item)
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param $ret_params
+ * @param $params
+ * @param $params2
+ */
 function Event_ItemUpdated_Ekoinfocentrum( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 53);
 }
-
+/** Event_ItemAfterInsert_NszmAkce function
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param $ret_params
+ * @param $foo
+ * @param $foo2
+ */
 function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     $short_id  = $ret_params->getValue('short_id........');              // item's short_id is in params
     $akce_id   = trim($ret_params->getValue('unspecified.....'));              // akce_id
@@ -565,7 +740,14 @@ function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_pa
     }
     return false;
 }
-
+/** Event_ItemAfterInsert_NszmPruzkum function
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param $ret_params
+ * @param $foo
+ * @param $foo2
+ */
 function Event_ItemAfterInsert_NszmPruzkum( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
     $email1   = trim($ret_params->getValue('address.........'));

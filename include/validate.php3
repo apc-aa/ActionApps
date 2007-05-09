@@ -2,35 +2,41 @@
 /**
  * Class AA_Validate
  *
- * @package UserInput
- * @version $Id$
- * @author Honza Malik, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
-/*
-Copyright (C) 1999-2003 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/**
-*  Validate users input. Error is reported in $err array
-*  @param $variable could be array or not
-*  You can add parameters to $type divided by ":".
-*/
+/** ValidateInput function
+ *  Validate users input. Error is reported in $err array
+ * @param $variableName
+ * @param $inputName
+ * @param $variable could be array or not
+ * @param $err
+ * @param $needed
+ * @param $type
+ *  You can add parameters to $type divided by ":".
+ */
 function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all") {
     foreach ((array)$variable as $var) {
         $valid = _ValidateSingleInput($variableName, $inputName, $var, &$err, $needed, $type);
@@ -57,9 +63,10 @@ define('VALIDATE_ERROR_NOT_IN_LIST',      409);
  */
 class AA_Validate {
 
-    /** Returns validators for standard data types
-    *   @param $v_type is string, or array($type,$parameter)
-    */
+    /** factory function
+     *  Returns validators for standard data types
+     *   @param $v_type is string, or array($type,$parameter)
+     */
     function &factory($v_type) {
         static $standard_validators = array();
 
@@ -96,7 +103,12 @@ class AA_Validate {
         return $standard_validators[$sv_key];
     }
 
-    /** static class function - called as AA_Validate::validate('email'); */
+    /** validate function
+     *  static class function - called as AA_Validate::validate('email');
+     * @param $var
+     * @param $type
+     * @param $default
+     */
     function validate(&$var, $type, $default='AA_noDefault') {
         $validator = AA_Validate::factory($type);
         if ( is_null( $validator ) ) {
@@ -106,8 +118,13 @@ class AA_Validate {
     }
 
 
-    /** Method returns or sets last itemContent error
-     *  The trick for static class variables is used */
+    /** lastErr function
+     *  Method returns or sets last itemContent error
+     *  The trick for static class variables is used
+     * @param $err_id
+     * @param $err_msg
+     * @param $getmsg
+     */
     function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
         static $lastErr;
         static $lastErrMsg;
@@ -118,13 +135,20 @@ class AA_Validate {
         return $getmsg ? $lastErrMsg : $lastErr;
     }
 
-    /** Return last error message - it is grabbed from static variable
+    /** lastErrMsg function
+     * @return last error message - it is grabbed from static variable
      *  of lastErr() method */
     function lastErrMsg() {
         return AA_Validate::lastErr(null, null, true);
     }
 
-    /** Protected static method - used only from AA_Validate_* objects */
+    /** bad function
+     *  Protected static method - used only from AA_Validate_* objects
+     * @param $var
+     * @param $err_id
+     * @param $err_msg
+     * @param $default
+     */
     function bad(&$var, $err_id, $err_msg, $default) {
         AA_Validate::lastErr($err_id, $err_msg);
         if ( $default != 'AA_noDefault' ) {
@@ -145,12 +169,18 @@ class AA_Validate_Int extends AA_Validate {
 
     /** Maximum number */
     var $max;
-
+    /** AA_Validate_Int function
+     * @param $min
+     * @param $max
+     */
     function AA_Validate_Int($min=null, $max=null) {
         $this->min = $min;
         $this->max = $max;
     }
-
+    /** validate function
+     * @param $var
+     * @param $default
+     */
     function validate(&$var, $default='AA_noDefault') {
         if ((string)$var !== (string)(int)$var) {
             return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No integer value'), $default);
@@ -176,12 +206,18 @@ class AA_Validate_Float extends AA_Validate {
 
     /** Maximum number */
     var $max;
-
+    /** AA_Validate_Float
+     * @param $min
+     * @param $max
+     */
     function AA_Validate_Float($min=null, $max=null) {
         $this->min = $min;
         $this->max = $max;
     }
-
+    /** validate function
+     * @param $var
+     * @param $default
+     */
     function validate(&$var, $default='AA_noDefault') {
         if ( !is_float($var) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $default);
@@ -209,13 +245,20 @@ class AA_Validate_Regexp extends AA_Validate {
     /** Defines possible return error id and messages, if the variable do not matches */
     var $default_error_id;
     var $default_error_msg;
-
+    /** AA_Validate_Regexp function
+     * @param $regular_expression
+     * @param $err_id
+     * @param $err_msg
+     */
     function AA_Validate_Regexp( $regular_expression, $err_id=null, $err_msg=null ) {
         $this->regular_expression = $regular_expression;
         $this->default_error_id  = is_null($err_id)  ? VALIDATE_ERROR_NOT_MATCH : $err_id;
         $this->default_error_msg = is_null($err_msg) ? _m('Wrong value')        : $err_msg;
     }
-
+    /** validate function
+     * @param $var
+     * @param $default
+     */
     function validate(&$var, $default='AA_noDefault') {
         return preg_match($this->regular_expression, $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_NOT_IN_LIST, _m('Not in the list of possible values'), $default);
     }
@@ -233,11 +276,16 @@ class AA_Validate_Enum extends AA_Validate {
     /** Defines possible return error id and messages, if the variable do not matches */
     var $default_error_id;
     var $default_error_msg;
-
+    /** AA_Validate_Regexp function
+     * @param $possible_values
+     */
     function AA_Validate_Regexp( $possible_values ) {
         $this->possible_values = $possible_values;
     }
-
+    /** validate function
+     * @param $var
+     * @param $default
+     */
     function validate(&$var, $default='AA_noDefault') {
         return isset($this->possible_values[$var]) ? true : AA_Validate::bad($var, $this->default_error_id, $this->default_error_msg, $default);
     }
@@ -245,9 +293,14 @@ class AA_Validate_Enum extends AA_Validate {
 
 /** Test for login name value */
 class AA_Validate_Login extends AA_Validate {
-
+    /** AA_Validate_Login function
+     *
+     */
     function AA_Validate_Login() {}
-
+    /** validate function
+     * @param $var
+     * @param $default
+     */
     function validate(&$var, $default='AA_noDefault') {
         $len = strlen($var);
         if ( $len<3 ) {
@@ -262,9 +315,14 @@ class AA_Validate_Login extends AA_Validate {
 
 /** Test for password */
 class AA_Validate_Password extends AA_Validate {
-
+    /** AA_Validate_Password function
+     *
+     */
     function AA_Validate_Password() {}
-
+    /** validate function
+     * @param $var
+     * @param $default
+     */
     function validate(&$var, $default='AA_noDefault') {
         $len = strlen($var);
         if ( $len<5 ) {
@@ -287,12 +345,18 @@ class AA_Validate_Unique extends AA_Validate {
 
     /** Scope, where to search - username | slice | allslices */
     var $scope;
-
+    /** AA_Validate_Unique function
+     * @param $scope
+     * @param $field_id
+     */
     function AA_Validate_Unique($scope, $field_id) {
         $this->scope    = $scope ? $scope : 'slice';
         $this->field_id = $field_id;
     }
-
+    /** validate function
+     * @param $var
+     * @param $default
+     */
     function validate(&$var, $default='AA_noDefault') {
         if ( !AA_Fields::isField($this->field_id) ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $default);
@@ -330,12 +394,18 @@ class AA_Validate_E_Unique extends AA_Validate {
 
     /** Scope, where to search - username | slice | allslices */
     var $scope;
-
+    /** AA_Validate_E_Unique function
+     * @param $scope
+     * @param $field_id
+     */
     function AA_Validate_E_Unique($scope, $field_id) {
         $this->scope    = $scope ? $scope : 'slice';
         $this->field_id = $field_id;
     }
-
+    /** validate function
+     * @param $var
+     * @param $default
+     */
     function validate(&$var, $default='AA_noDefault') {
         if ( !AA_Validate::validate($var, 'email', $default) ) {
             return false;
@@ -349,18 +419,28 @@ class AA_Validate_E_Unique extends AA_Validate {
  *  @todo Realy validate URL
  */
 class AA_Validate_All extends AA_Validate {
-
+    /** AA_Validate_All function
+     *
+     */
     function AA_Validate_All() {}
-
+    /** validate function
+     * @param $var
+     * @param $default
+     */
     function validate(&$var, $default='AA_noDefault') {
         return true;
     }
 }
 
 
-/**
+/** _ValidateSingleInput function
 *  Validate users input. Error is reported in $err array
+* @param $variableName
+* @param $inputName
 *  @param $variable is not array
+* @param $err
+* @param $needed
+* @param $type
 *  You can add parameters to $type divided by ":".
 */
 function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $needed, $type) {
@@ -418,7 +498,7 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
     return $ret;
 }
 
-/**
+/** get_javascript_field_validation function
 * used in tabledit.php3 and itemedit.php3
 */
 function get_javascript_field_validation() {
@@ -482,4 +562,4 @@ function get_javascript_field_validation() {
             else return true;
         }";
 }
-
+?>

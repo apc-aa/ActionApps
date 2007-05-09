@@ -1,22 +1,30 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 //
@@ -56,13 +64,15 @@ $module2abbrev = array(
 // 5 - http://www.aaronsw.com/weblog/index.xml
 // 6 -
 
-/** Converts data to right character encoding (grabbed from slice setting)
+/** decode function
+  * Converts data to right character encoding (grabbed from slice setting)
   * Older versions of AA RSS feeds do not contain XML encoding setting and uses
   * iso-8859-1. New versions (>=2.8) uses encoding setting and utf-8
   * which is correct also for non iso-8859-1 languages
   * There must be two global variables defined
   * - $g_source_encoding  - encoding of input XML data
   * - g_slice_encoding    - destination encoding
+  * @param $v
   */
 function decode($v) {
     static $encoder;
@@ -72,7 +82,10 @@ function decode($v) {
     return $encoder->Convert($v, $GLOBALS['g_source_encoding'], $GLOBALS['g_slice_encoding']);
 }
 
-/** Function decides if the string could be utf-8 or not */
+/** seems_utf8 function
+ *  Function decides if the string could be utf-8 or not
+ * @param $str
+ */
 function seems_utf8($str) {
     for ($i=0; $i<strlen($str); $i++) {
         if (ord($str[$i]) < 0x80) continue; // 0bbbbbbb
@@ -90,18 +103,29 @@ function seems_utf8($str) {
     }
     return true;
 }
-
+/** nsName2abbrevname function
+ * @param $name
+ */
 function nsName2abbrevname($name) {
     global $module2abbrev; // Static array above
     ereg("(.+):([^:]+)",$name,$nameparts);
-    if ($ab = $module2abbrev[$nameparts[1]]) return $ab.":".$nameparts[2];
+    if ($ab = $module2abbrev[$nameparts[1]]) {
+        return $ab.":".$nameparts[2];
+    }
     return $name;
 }
+/** nsAbbrev2name function
+ * @param $abbrev
+ */
 function nsAbbrev2name($abbrev) {
     global $module2abbrev; // static array above
     return array_search($abbrev,$module2abbrev);
 }
-
+/** startElement function
+ * @param $parser
+ * @param $name
+ * @param $attrs
+ */
 function startElement($parser, $name, $attrs) {
   global $cur_tag,
          $rdf_modules,
@@ -114,7 +138,9 @@ function startElement($parser, $name, $attrs) {
   $cur_tag .= "^".nsName2abbrevname($name);
   $RDF = nsAbbrev2name("RDF");   // For matching with NameSpace expanded attributes
 
-  if ($GLOBALS['debugfeed'] >=8) print("\nStartElement:$cur_tag");
+  if ($GLOBALS['debugfeed'] >=8) {
+      print("\nStartElement:$cur_tag");
+  }
   switch ($cur_tag) {
     case "^RSS" :       // rss header, read version
         $rss_version = $attrs["VERSION"]; break;
@@ -126,14 +152,14 @@ function startElement($parser, $name, $attrs) {
       $channel_uri = attr2id($attrs["$RDF:ABOUT"]); break;
 
     case "^RDF:RDF^RSS:CHANNEL^AA:CATEGORIES^RDF:BAG^RDF:LI":               // list of categories AA specific
-      $channel[categories][substr(strrchr($attrs["$RDF:RESOURCE"],"/"),1)] = 1; break;
+      $channel['categories'][substr(strrchr($attrs["$RDF:RESOURCE"],"/"),1)] = 1; break;
 
     case "^RDF:RDF^RSS:CHANNEL^AA:FIELDS^RDF:BAG^RDF:LI":                   // list of fields AA specific
-        $channel[fields][substr($attrs["$RDF:RESOURCE"],-16)] = 1;
+        $channel['fields'][substr($attrs["$RDF:RESOURCE"],-16)] = 1;
       break;
 
     case "^RDF:RDF^RSS:CHANNEL^RSS:ITEMS^RDF:SEQ^RDF:LI":                       // list of items
-     $channel[items][attr2id($attrs["$RDF:RESOURCE"])] = 1; break;
+     $channel['items'][attr2id($attrs["$RDF:RESOURCE"])] = 1; break;
 
     case "^RDF:RDF^AA:CATEGORY":                                        // category URI AA specific
       $category_uri = substr(strrchr($attrs["$RDF:ABOUT"],"/"),1); break;
@@ -161,7 +187,7 @@ function startElement($parser, $name, $attrs) {
       $content_format = array_search(HTML,$CONTENT_FORMATS);  break;
 
     case "^RDF:RDF^RSS:ITEM^AA:CATEGORIES^RDF:BAG^RDF:LI":                  // list of categories into which an item belongs AA Specific
-      $item[categories][] = substr(strrchr($attrs["$RDF:RESOURCE"],"/"),1); break;
+      $item['categories'][] = substr(strrchr($attrs["$RDF:RESOURCE"],"/"),1); break;
 
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
       $fielddata = array(value=>"", flag=>0);
@@ -174,7 +200,10 @@ function startElement($parser, $name, $attrs) {
       $fielddata_content_format = $attrs["$RDF:RESOURCE"]; break;
   }
 }
-
+/** endElement function
+ * @param $parser
+ * @param $name
+ */
 function endElement($parser, $name) {
   global $CONTENT_FORMATS,    //csn_util.php3: Array url (e.g. "http://www.isi.edu ... test/html") to int (HTML=0, PLAIN=1)
          $cur_tag,
@@ -186,25 +215,27 @@ function endElement($parser, $name) {
          $fielddata_uri, $fielddata, $fielddata_content_format,
          $fulltext_content;
 
-  if ($GLOBALS['debugfeed'] >=8) print("\nendElement:$cur_tag");
+    if ($GLOBALS['debugfeed'] >=8) {
+        print("\nendElement:$cur_tag");
+    }
   switch ($cur_tag) {
     case "^RDF:RDF":
       break;
 
     case "^RSS^CHANNEL":
     case "^RDF:RDF^RSS:CHANNEL":
-      if (!($channel_uri)) $channel_uri = string2id($channel[title]);   // RSS 0.9
-      $aa_rss[channels][$channel_uri] = $channel;
+      if (!($channel_uri)) $channel_uri = string2id($channel['title']);   // RSS 0.9
+      $aa_rss['channels'][$channel_uri] = $channel;
       $channel="";
       break;
 
     case "^RDF:RDF^AA:CATEGORY":
-      $aa_rss[categories][$category_uri] = $category;
+      $aa_rss['categories'][$category_uri] = $category;
       $category="";
       break;
 
     case "^RDF:RDF^AA:FIELD":
-      $aa_rss[fields][$field_uri] = $field;
+      $aa_rss['fields'][$field_uri] = $field;
       $field="";
       break;
 
@@ -215,18 +246,18 @@ function endElement($parser, $name) {
         while (list($k,$v) =each($item['dc']))
             $item['dc'][$k] = decode($v);
       if (!($item_uri)) { $item_uri = string2id($item['title'] . $item["link"] . $item['description']); } // RSS 0.9
-      $aa_rss[items][$item_uri] = $item;
+      $aa_rss['items'][$item_uri] = $item;
       $item="";
       break;
 
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
-      $fielddata[format] = $CONTENT_FORMATS[$fielddata_content_format];
-      $item[fields_content][$fielddata_uri][] = $fielddata;
+      $fielddata['format'] = $CONTENT_FORMATS[$fielddata_content_format];
+      $item['fields_content'][$fielddata_uri][] = $fielddata;
       break;
 
     case "^RDF:RDF^RSS:ITEM^CONTENT:ENCODED":  //EG5
     case "^RDF:RDF^RSS:ITEM^CONTENT:ITEMS^RDF:BAG^RDF:LI^CONTENT:ITEM":
-      $item[content][$CONTENT_FORMATS[$content_format]] = $fulltext_content;
+      $item['content'][$CONTENT_FORMATS[$content_format]] = $fulltext_content;
       $fulltext_content="";
       break;
   }
@@ -234,7 +265,10 @@ function endElement($parser, $name) {
   $caret_pos = strrpos($cur_tag, '^');
   $cur_tag = substr($cur_tag, 0, $caret_pos);
  }
-
+/** charD function
+ * @param $parser
+ * @param $data
+ */
 function charD($parser, $data) {
  global $cur_tag,
          $aa_rss, $channel, $category, $field, $item,
@@ -289,19 +323,24 @@ function charD($parser, $data) {
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^RDF:VALUE":
         $fielddata['value'] .= decode($data); break;
     case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^AA:FIELDFLAGS":
-        $fielddata[flag] = $data; break;
+        $fielddata['flag'] = $data; break;
   }
 }
 
-// Parse feed, return array or false on failure
-// $GLOBALS['g_slice_encoding'] - destination slice encoding - must be set
+/** aa_rss_parse function
+ *  Parse feed, return array or false on failure
+ * $GLOBALS['g_slice_encoding'] - destination slice encoding - must be set
+ * @param $xml_data
+ */
 function aa_rss_parse($xml_data) {
     global $aa_rss,
     $cur_tag, $aa_rss, $channel, $category, $field, $item,
     $fulltext_content, $fielddata,$content_format;
 
 
-    if ($GLOBALS['debugfeed'] >=8) huhl("aa_rss_parse:Parsing ...");
+    if ($GLOBALS['debugfeed'] >=8) {
+        huhl("aa_rss_parse:Parsing ...");
+    }
 
 
     // get encoding from the xml document: it is used in decode() function above

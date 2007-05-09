@@ -1,25 +1,31 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/**  Cross-Server Networking - module server
+/**
+ *
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
+ *
+ *  Cross-Server Networking - module server
  *
  * expected:
  *    $node_name           - the name of the node making the request
@@ -34,26 +40,38 @@ http://www.apc.org/
 
 
 // handle with PHP magic quotes - quote the variables if quoting is set off
+/** Myaddslashes function
+ * @param $val
+ * @param $n=1
+ * @return quoted string
+ */
 function Myaddslashes($val, $n=1) {
-  if (!is_array($val)) {
-    return addslashes($val);
-  }
-  for (reset($val); list($k, $v) = each($val); )
-    $ret[$k] = Myaddslashes($v, $n+1);
-  return $ret;
+    if (!is_array($val)) {
+      return addslashes($val);
+    }
+    for (reset($val); list($k, $v) = each($val); ) {
+      $ret[$k] = Myaddslashes($v, $n+1);
+    }
+    return $ret;
 }
 
 if (!get_magic_quotes_gpc()) {
   // Overrides GPC variables
-  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
-      $$k = Myaddslashes($v);
+    if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS)) {
+        for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) {
+            $$k = Myaddslashes($v);
+        }
+    }
+    if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS)) {
+        for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) {
+            $$k = Myaddslashes($v);
+        }
+    }
+    if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS)) {
+        for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ){
+            $$k = Myaddslashes($v);
+        }
+    }
 }
 
 require_once "../include/config.php3";
@@ -93,6 +111,11 @@ $XML_BEGIN = '<'.'?xml version="1.0" encoding="UTF-8"?'. ">\n".
   * form other than iso-8895-1 charsets to UTF-8, yet, so we have to use special
   * another conversion class for it
   */
+/** code function
+ * @param $v
+ * @param $cdata=false
+ * @return converted string
+ */
 function code($v, $cdata=false) {
     static $encoder;
     if ( !$encoder ) {
@@ -104,24 +127,40 @@ function code($v, $cdata=false) {
     // no htmlspecialchars, here
     return '<![CDATA['.$encoder->Convert($v, $GLOBALS['g_slice_encoding'], 'utf-8').']]>';
 }
-
+/** GetFlagFormat function
+ * @param $flag
+ * @return "HTML"/"PLAIN"
+ */
 function GetFlagFormat($flag) {
     return ($flag & HTML_FORMAT) ? "HTML" : "PLAIN";
 }
-
+/** Error function
+ * @param $str
+ * @return prints $str and exit()s
+ */
 function Error($str) {
     echo "$str";
     exit();
 }
 
-/** Check the node_name and password against the nodes table's data */
+/** CheckNameAndPassword function
+ * Check the node_name and password against the nodes table's data
+ * @param $node_name
+ * @param $password
+ * @return bool
+ */
 function CheckNameAndPassword( $node_name, $password ) {
     global $db;
     $db->query("SELECT password FROM nodes WHERE name='$node_name'");
     return ($db->next_record() AND ($db->f('password') == $password));
 }
 
-/** Find correct feeding slices */
+/** GetFeedingSlices function
+ * Find correct feeding slices
+ * @param $node_name
+ * @param $user
+ * @return array of slice ids
+ */
 function GetFeedingSlices( $node_name, $user) {
     global $db;
 
@@ -133,8 +172,13 @@ function GetFeedingSlices( $node_name, $user) {
     return $slices;
 }
 
-/** looks up permissions for the slice $slice_id,
-  * the user $user of node node_name in the table ef permissions
+/** CheckFeedingPermissions function
+  * looks up permissions for the slice $slice_id,
+  * the user $user of node node_name in the table of permissions
+  * @param $slice_id
+  * @param $node_name
+  * @param $user
+  * @return next_record from db of permissions
   */
 function CheckFeedingPermissions( $slice_id, $node_name, $user ) {
     global $db;
@@ -143,7 +187,13 @@ function CheckFeedingPermissions( $slice_id, $node_name, $user ) {
                                                       AND (user='$user' OR user='')");
     return $db->next_record();
 }
-
+/** GetXMLFields function
+ * @param $slice_id
+ * @param $slice_fields (by link)
+ * @param $xml_fields_refs (by link)
+ * @param $xml_fields (by link)
+ * @return modified vars above
+ */
 function GetXMLFields( $slice_id, &$slice_fields, &$xml_fields_refs, &$xml_fields) {
     $xml_fields_refs.="\t<aa:fields><rdf:Bag>\n";
 
@@ -156,13 +206,20 @@ function GetXMLFields( $slice_id, &$slice_fields, &$xml_fields_refs, &$xml_field
     }
     $xml_fields_refs.="\t</rdf:Bag></aa:fields>\n";
 }
-
+/** GetXMLCategories
+ * @param $slice_id
+ * @param $xml_categories_refs (by link)
+ * @param $xml_categories (by link)
+ * @return modified vars above
+ */
 function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
     global $db;
 
     $group_id = GetCategoryGroup($slice_id);
-    if (!$group_id) return;
-    $SQL= "SELECT id, name, value, class FROM constant WHERE group_id='$group_id'";
+    if (!$group_id) {
+        return;
+    }
+    $SQL = "SELECT id, name, value, class FROM constant WHERE group_id='$group_id'";
     $db->query($SQL);
 
     $xml_categories_refs.="\t<aa:categories><rdf:Bag>\n";
@@ -178,7 +235,14 @@ function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
     }
     $xml_categories_refs.="\t</rdf:Bag></aa:categories>\n";
 }
-
+/** GetXMLChannel function
+ * @param $slice_id
+ * @param $xml_fields_refs (by link)
+ * @param $xml_categories_refs (by link)
+ * @param $xml_items_refs (by link)
+ * @param $time
+ * @return prints xml <channel>
+ */
 function GetXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$xml_items_refs, $time) {
     $slice = AA_Slices::getSlice($slice_id);
     echo "\t<channel rdf:about=\"".AA_INSTAL_URL."slices/$slice_id\">\n".
@@ -192,14 +256,26 @@ function GetXMLChannel( $slice_id, &$xml_fields_refs, &$xml_categories_refs, &$x
                    $xml_items_refs.
                    "\t</channel>\n";
 }
-
+/** GetBaseFieldContent function
+ * @param $slice_fields (by link)
+ * @param $ftype
+ * @param $content4id (by link)
+ * @return content
+ */
 function GetBaseFieldContent(&$slice_fields, $ftype, &$content4id) {
-    if ($ftype=="") return "";
+    if ($ftype=="") {
+        return "";
+    }
     $f    = GetBaseFieldId($slice_fields,$ftype);
     $cont = $content4id[$f][0];
     return ($cont['flag'] & HTML_FLAG) ? strip_tags($cont['value']) : $cont['value'];
 }
-
+/** GetXMLFieldData function
+ * @param $slice_id
+ * @param $field_id
+ * @param $content4id (by link)
+ * @return fielddata xml tags
+ */
 function GetXMLFieldData($slice_id, $field_id, &$content4id) {
     global $FORMATS;
 
@@ -210,7 +286,9 @@ function GetXMLFieldData($slice_id, $field_id, &$content4id) {
         $cont_vals[0]['value'] = unpack_id128($cont_vals[0]['value']);
     }
 
-    if (!$cont_vals || !is_array($cont_vals))  return;
+    if (!$cont_vals || !is_array($cont_vals)) {
+        return;
+    }
 
     foreach ($cont_vals as $v) {
         $flag_format = GetFlagFormat($v['flag']);
@@ -224,7 +302,14 @@ function GetXMLFieldData($slice_id, $field_id, &$content4id) {
    return $out;
 }
 
-/** Get one item */
+/** GetXMLItem function
+ * Get one item
+ * @param $slice_id
+ * @param $item_id
+ * @param $content4id (by link)
+ * @param $slice_fields (by link)
+ * @return $xml_items
+ */
 function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
     global $FORMATS, $MAP_DC2AA;
     static $value2const_id;
@@ -319,13 +404,23 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
                  "\t</item>\n";
     return $xml_items;
 }
-
+/** CreateXMLItems function
+ * @param $slice_id
+ * @param $items_ids (by link)
+ * @param $content (by link)
+ * @param $slice_fields (by link)
+ * @return prints a result of the GetXMLItem() function for all items
+ *
+ */
 function CreateXMLItems($slice_id, &$items_ids, &$content, &$slice_fields) {
     foreach ($items_ids as $id)  {
         echo GetXMLItem($slice_id, $id, $content[$id], $slice_fields);
     }
 }
-
+/** GetXMLItemsRefs function
+ * @param $item_ids (by link)
+ * @return prints <items> and <rdf> tags for each item
+ */
 function GetXMLItemsRefs(&$items_ids) {
     $out .="\t<items><rdf:Seq>\n";
     foreach ( $items_ids as $id) {
@@ -335,8 +430,15 @@ function GetXMLItemsRefs(&$items_ids) {
     return $out;
 }
 
-/** Takes array of item ids and returns only the item ids which belongs to any
+/** RestrictIdsByCategory function
+ * Takes array of item ids and returns only the item ids which belongs to any
  *  of specified categories
+ * @param $ids (by link)
+ * @param $categories (by link)
+ * @param $slice_id
+ * @param $content (by link)
+ * @param $cat_field
+ * @return ids
  */
 function RestrictIdsByCategory( &$ids, &$categories, $slice_id, &$content, $cat_field ) {
     $new_ids = array();
@@ -396,8 +498,8 @@ if (!$slice_id) {
     echo $XML_BEGIN;
     foreach ($slice_ids as $sl_id) {
         $GLOBALS['g_slice_encoding'] = getSliceEncoding($sl_id);
-        list( $slice_fields,) = GetSliceFields( $sl_id );
-        $xml_categories_refs = $xml_fields_refs = "";      // clear fields and categories for this channel
+        list( $slice_fields,)        = GetSliceFields( $sl_id );
+        $xml_categories_refs         = $xml_fields_refs = "";      // clear fields and categories for this channel
         GetXMLFields(     $sl_id, $slice_fields, $xml_fields_refs,  $xml_fields);   // get fields
         GetXMLCategories( $sl_id, $xml_categories_refs, $xml_categories ); //get categories
         echo GetXMLChannel( $sl_id, $xml_fields_refs, $xml_categories_refs, $xml_items_refs, $time); // echo channel
@@ -443,7 +545,7 @@ if ($ids) {
     $zids          = QueryZIDs( array($slice_id), $conds, '', 'ALL', 0, $restrict_zids);
     $ids           = $zids->longids();
     if ($ids) {
-        $content = GetItemContent($ids);     // get the content of all items
+        $content        = GetItemContent($ids);     // get the content of all items
         $xml_items_refs = GetXMLItemsRefs($ids);
     }
 

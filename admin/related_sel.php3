@@ -1,28 +1,37 @@
 <?php
-//$Id$
-/*
-Copyright (C) 1999, 2000 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+/**
+ *
+ *   sid expected - slice_id where to search
+ *   var_id expected - id of variable in calling form, which should be filled
+ *   mode expected - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
+ *   design expected - boolean - use standard or admin design
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
-// sid expected - slice_id where to search
-// var_id expected - id of variable in calling form, which should be filled
-// mode expected - which buttons to show ([A][M][B] - 'add' 'add mutual' 'add backward'
-// design expected - boolean - use standard or admin design
+
+
 
 $save_hidden = true;   // do not delete r_hidden session variable in init_page!
 
@@ -65,7 +74,9 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 $slice       = AA_Slices::getSlice($module_id);
 
 /* prepare view format for manager class */
-  if (!$mode ) { $mode='AMB'; }
+if (!$mode ) {
+    $mode='AMB';
+}
 
 for ( $i=0; $i<strlen($mode); $i++) {
     $m1 = substr($mode,$i,1);
@@ -102,8 +113,8 @@ $conds_ro = String2Conds( rawurldecode($showcondsro) );
 $conds_rw = String2Conds( rawurldecode($showcondsrw) );
 
 $manager_settings = array(
-     'show'     =>  MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,
-     'searchbar' => array(
+     'show'       =>  MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,
+     'searchbar'  => array(
          'fields'               => $slice->fields('search'),
          'search_row_count_min' => 1,
          'order_row_count_min'  => 1,
@@ -190,7 +201,7 @@ $manager->printItems($zids);   // print links and actions
 $r_state['related']['manager'] = $manager->getState();
 
 echo '<table width="100%" border="0" cellspacing="0" cellpadding="1" bgcolor="'. COLOR_TABTITBG ."\" align=\"center\">
-<tr><td align=center><input type=button value='". _m("Back") ."' onclick='window.close()'></td></tr></table>";
+<tr><td align=\"center\"><input type=\"button\" value='". _m("Back") ."' onclick='window.close()'></td></tr></table>";
 
 HtmlPageEnd();
 page_close();

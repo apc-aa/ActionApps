@@ -3,34 +3,38 @@
  * Mailman feature related functions:
  * Event handlers.
  *
- * @package ReaderInput
- * @version $Id$
- * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications
-*/
-/*
-Copyright (C) 1999-2003 Association for Progressive Communications
-http://www.apc.org/
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program (LICENSE); if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * PHP versions 4 and 5
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   ReaderInput
+ * @version   $Id$
+ * @author    Jakub Adámek, Econnect
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      http://www.apc.org/ APC
+ *
 */
 
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
 
-if (!is_object( $db )) $db = new DB_AA;
+if (!is_object( $db )) {
+    $db = new DB_AA;
+}
 
 // status codes:
 define("SC_ACTIVE", 1);
@@ -38,11 +42,12 @@ define("SC_HOLDING_BIN", 2);
 
 // --------------------------------------------------------------------------
 
-/** Finds all reader-mailing list assignments for the given slice.
-*   Creates one file for each mailing list, named the same as the list.
-*   If no users are subscribed to a list, an empty file is created.
-*/
-function MailmanCreateSynchroFiles ($slice_id) {
+/** MailmanCreateSynchroFiles function
+ *   Finds all reader-mailing list assignments for the given slice.
+ *   Creates one file for each mailing list, named the same as the list.
+ *   If no users are subscribed to a list, an empty file is created.
+ */
+function MailmanCreateSynchroFiles($slice_id) {
     global $db, $MAILMAN_SYNCHRO_DIR;
 
     if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
@@ -107,7 +112,11 @@ function MailmanCreateSynchroFiles ($slice_id) {
 }
 
 // --------------------------------------------------------------------------
-
+/** MailmanConstantsChanged function
+ * @param $constant_id
+ * @param $oldvalue
+ * @param $newvalue
+ */
 function MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue ) {
     global $db;
     $db->query("SELECT group_id FROM constant WHERE id='".q_pack_id($constant_id)."'");
