@@ -302,7 +302,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
                     $item['js'] = str_replace("{exact_href}",$href,$item['js']);
                     $href       = "javascript:".$item['js'];
                 }
-                echo '<a href="'.$href.'" class=\"leftmenuy\">'.$item["label"]."</a>\n";
+                echo '<a href="'.$href.'" class="leftmenuy">'.$item["label"]."</a>\n";
             } elseif ( !$item["hide"] ) {
                 echo "<span class=\"leftmenun\">".$item["label"]."</span>\n";
             }
@@ -317,8 +317,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
  * @param $aamenu
  * @param $active
  */
-function showSubmenu(&$aamenu, $active)
-{
+function showSubmenu(&$aamenu, $active) {
     global $debug;
     if ($debug) { echo "<p><font color=\"purple\">showSubmenu:active=$active</font></p>\n"; }
     echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="left" class="leftmenu">'."\n";
@@ -326,9 +325,9 @@ function showSubmenu(&$aamenu, $active)
     $aamenuitems = $aamenu["items"];
     showSubMenuRows( $aamenuitems, $active );
 
-    echo '<tr><td class=\"leftmenu\">&nbsp;</td></tr>
-          <tr><td class=\"leftmenu\" height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
-          <tr><td class=\"copymsg\" ><small>'. _m("Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
+    echo '<tr><td class="leftmenu">&nbsp;</td></tr>
+          <tr><td class="leftmenu" height="'.$aamenu["bottom_td"].'">&nbsp;</td></tr>
+          <tr><td class="copymsg"><small>'. _m("Copyright (C) 2001 the <a href=\"http://www.apc.org\">Association for Progressive Communications (APC)</a>") .'</small></td></tr>
           </table>'."\n";
 }
 /** CreateMenuItem function
