@@ -142,6 +142,45 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Defines named expression. You can use it for creatin on-line alieases, you
+ *  can use it for passing parameters between views, ...
+ *  The {define:name:expr} must be processed before the {var:name} is processed
+ *  when the page is generated
+ *  You can use parameters with {var:name:param1:param2:...:...}
+ *  the expression then will use _#1, _#2, ... for each parameter, just like:
+ *  {define:username:My name is#: _#1} and ussage {var:username:Joseph}
+ *  stored already in the pagecache
+ *  @param $parameters - field id and other modifiers to the field
+ */
+class AA_Stringexpand_Define extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // cache is used by expand function itself
+
+    function expand($name, $expression) {
+        global $contentcache;
+        $contentcache->set("define:$name", $expression);
+        return "";
+    }
+}
+
+/** Prints defined named expression. Used with conjunction {define:..}
+ *  @see AA_Stringexpand_Define for more info
+ *  @param $parameters - field id and other modifiers to the field
+ */
+class AA_Stringexpand_Var extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // cache is used by expand function itself
+
+    function expand() {
+        global $contentcache;
+        $arg_list = func_get_args();   // must be asssigned to the variable
+        // replace inputform field
+        $expression = $contentcache->get('define:'.$arg_list[0]);
+        // @todo - replace parameters
+        return $expression;
+    }
+}
+
 
 /** Expands {formbreak:xxxxxx:yyyy:....} alias - split of inputform into parts
  *  @param $part_name - name of the part (like 'Related Articles').
@@ -626,6 +665,36 @@ function getConstantValue($group, $what, $field_name) {
                 break;
         }
 }
+
+
+/** How unaliasing and QuoteColons() works
+ *
+ *  The unaliasing works this way:
+ *
+ *    Ex: some text {ifset:{_#HEADLINE}:<h1>_#1</h1>} here
+ *    //  say that healdline is "I'm headline (with {brackets})")
+ *
+ *  1) unalias innermost curly brackets.
+ *     It is {_#HEADLINE}, so the by unaliasing this we get:
+ *
+ *    Ex:  I'm headline (with {brackets})
+ *
+ *     But we do not want to put such string instead of {_#HEADLINE}, since then
+ *     would be the inner most curly brackets the {brackets} string. We do not
+ *     want to unalias inside headline text, so we replace all the control
+ *     characters by substitutes (@see $QuoteArray)
+ *
+ *    Ex: some text {ifset:I'm headline _AA_OpEnPaR_with _AA_OpEnBrAcE_brackets_AA_ClOsEbRaCe__AA_ClOsEpAr_:<h1>_#1</h1>} here
+ *
+ *  2) Then we continue with standard unaliasing for inner most curly brackets,
+ *     so we get:
+ *
+ *    Ex: some text <h1>I'm headline _AA_OpEnPaR_with _AA_OpEnBrAcE_brackets_AA_ClOsEbRaCe__AA_ClOsEpAr_</h1> here
+ *
+ *  3) after all we replace back all the substitutes:
+ *
+ *    Ex: some text <h1>I'm headline (with {brackets})</h1> here
+ */
 
 // Do not change strings used, as they can be used to force an escaped character
 // in something that would normally expand it
@@ -1739,10 +1808,10 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
             $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
             $repre_value = get_if($repre_value, '--');
             $iid         = $item->getItemID();
-            $fid         = unpack_id($field_id);
-            $ret .= "<div class=\"ajax_container\" id=\"ajaxc_{$iid}_{$fid}\" onclick=\"displayInput('ajaxv_{$iid}_{$fid}', '$iid', '$field_id')\">\n";
-            $ret .= " <div class=\"ajax_value\" id=\"ajaxv_{$iid}_{$fid}\" aaalias=\"$alias_name\">$repre_value</div>\n";
-            $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_{$iid}_{$fid}\"></div>\n";
+            $input_id    = AA_Field::getId4Form($iid, $field_id);
+            $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\">\n";
+            $ret .= " <div class=\"ajax_value\" id=\"ajaxv_$input_id\" aaalias=\"".htmlspecialchars($alias_name)."\">$repre_value</div>\n";
+            $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_$input_id\"></div>\n";
 
     /*        $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_{$iid}_{$fid}\">
                          $zmena_cmd
@@ -1778,7 +1847,7 @@ class AA_Stringexpand {
     /** additionalCacheParam function
      *  Some stringexpand functions uses global parameters, so it is not posible
      *  to use cache for results based just on expand() parameters. We need to
-     *  add following parameters. In mast cases you do not need to override this
+     *  add following parameters. In most cases you do not need to override this
      *  function
      */
     function additionalCacheParam() {
@@ -1813,7 +1882,7 @@ class AA_Stringexpand {
 }
 
 /** Special parent class for all stringexpand functions, where no cache
- *  is needed (probably very easy functions
+ *  is needed (probably very easy functions)
  */
 class AA_Stringexpand_Nevercache extends AA_Stringexpand {
     /** additionalCacheParam function
