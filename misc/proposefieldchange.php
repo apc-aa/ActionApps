@@ -31,6 +31,17 @@ require_once AA_INC_PATH."convert_charset.class.php3";
 
 error_reporting(E_ERROR | E_PARSE);
 
+
+function StripslashesDeep($value) {
+    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
+}
+
+if ( get_magic_quotes_gpc() ) {
+    $_POST    = StripslashesDeep($_POST);
+    $_GET     = StripslashesDeep($_GET);
+    $_COOKIE  = StripslashesDeep($_COOKIE);
+}
+
 class AA_V {
     function p($var=null) {
         AA_V::_unquote();
@@ -81,13 +92,14 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
     $newcontent4id->setItemID($item_id);
     $newcontent4id->setSliceID($sli_id);
     $updated_items = 0;
-    if ($newcontent4id->storeItem( 'update', $invalidate, false)) {    // invalidatecache, not feed
+    if ($newcontent4id->storeItem( 'update', array($invalidate, false))) {    // invalidatecache, not feed
         $updated_items++;
     }
 }
 
 function GetRepreValue($item_id, $field_id, $alias_name) {
-    $item        = AA_Item::getItem(new zids($item_id));
+    // get the item directly from the database
+    $item        = AA_Item::getItem(new zids($item_id), true);
     $repre_value = $alias_name ? $item->subst_alias('_#'.$alias_name) : $item->getval($field_id);
     return get_if($repre_value, '--');
 }
@@ -110,16 +122,58 @@ if ( AA_V::P('bsc') == 1 ) {
     }
     echo "Upraveno $updated záznamù";
 }
-elseif (AA_V::P('form') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
+// new approach using standard AA widgets and form variables
+elseif ($_POST['aaaction']=='DOCHANGE') {
+
+    list($item_id, $field_id) = AA_Field::parseId4Form($_POST['input_id']);
+    $item   = AA_Item::getItem(new zids($item_id));
+    $slice  = AA_Slices::getSlice($item->getSliceId());
+
+    // Use right language (from slice settings) - languages are used for button texts, ...
+    $lang    = $slice->getLang();
+    $charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
+    bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_output_lang.php3");
+
+    $encoder       = new ConvertCharset;
+    $field_content = array();
+    // fill content array
+    foreach ($_POST['content'] as $val) {
+        $field_content[] = array('value'=>$encoder->Convert($val, 'utf-8', $charset), 'flag'=>0);
+    }
+
+    UpdateFieldContent($item_id, $field_id, $field_content);
+    $changes = new AA_ChangesMonitor();
+    $changes->deleteProposalForSelector($item_id, $field_id);
+
+    $repre_value = GetRepreValue($item_id, $field_id, $_POST['alias_name']);
+    echo $encoder->Convert($repre_value, $charset, 'utf-8');
+}
+elseif ($_POST['aaaction']=='DISPLAYINPUT') {
     $item        = AA_Item::getItem(new zids(AA_V::P('item_id')));
     $iid         = $item->getItemID();
-    $field_id    = AA_V::P('field_id');
-    $fid         = unpack_id($field_id);
-    $combi_id    = $iid. '_'. $fid;
-//    $widget_html = $item->getWidgetHtml($fid);
-    $value       = safe($item->getval(AA_V::P('field_id')));
-    $repre_value = safe(GetRepreValue(AA_V::P('item_id'), AA_V::P('field_id'), AA_V::P('alias_name')));
-    switch ($item->getSliceId()."-".$field_id) {
+    $slice       = AA_Slices::getSlice($item->getSliceId());
+
+    // Use right language (from slice settings) - languages are used for button texts, ...
+    $lang        = $slice->getLang();
+    $charset     = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
+    bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_output_lang.php3");
+
+    // we are posting only the alias name - otherwise the alias is expanded
+    $alias       = (($_POST['alias_name'] == '') ? '' : '_#'.$_POST['alias_name']);
+    $widget_html = $slice->getWidgetAjaxHtml($_POST['field_id'], $iid, $alias);
+
+    if ($iid == '9ef70aaad95b8abdd54f2f625c902346') {
+        setcookie("TestCookie", 'teal test', time()+3600);
+        $str = '{user},{user:id},{user:name},{user:password},{user:_#HEADLINE}';
+        echo AA_Stringexpand::unalias($str);
+    }
+
+
+    $encoder = new ConvertCharset;
+    echo $encoder->Convert($widget_html, $charset, 'utf-8');
+
+
+/*    switch ($item->getSliceId()."-".$field_id) {
         case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......1':
         case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......2':
         case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......3':
@@ -135,8 +189,28 @@ elseif (AA_V::P('form') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
                           <option value="3"'.(($value==3) ? ' selected' : '') .'>neutrální</option>
                           <option value="4"'.(($value==4) ? ' selected' : '') .'>nehodnoceno</option>
                           <option value="5"'.(($value==5) ? ' selected' : '') .'>informativní</option>
+                          <option value=""'. (($value=='') ? ' selected' : '') .'>nevyplnìno</option>
                       </select>';
             break;
+        case '83d16238c1ea645f7eb95ccb301069a6-switch.........2':
+        case '83d16238c1ea645f7eb95ccb301069a6-switch.........3':
+            $widget = '<select id="ajaxi_'.$combi_id.'">
+                          <option value="1"'.(($value==1) ? ' selected' : '') .'>Ano</option>
+                          <option value="0"'.(($value==0) ? ' selected' : '') .'>Ne</option>
+                      </select>';
+            break;
+
+        case '36fd8c2301d1a4bfe8506dcebbd243cb-year...........1':
+            $values = $item->getValues();
+            foreach ((array)$values as $val) {
+                $value_hash[$val['value']] = true;
+            }
+            $widget = '<select id="ajaxi_'.$combi_id.'" multiple="multiple">
+                          <option value="2005"'.($value_hash[2005] ? ' selected' : '') .'>2005</option>
+                          <option value="2006"'.($value_hash[2006] ? ' selected' : '') .'>2006</option>
+                          <option value="2007"'.($value_hash[2007] ? ' selected' : '') .'>2007</option>
+                      </select>';
+
         default:
             $widget = "<input type=\"text\" size=\"80\" id=\"ajaxi_$combi_id\" value=\"$value\">";
     }
@@ -146,6 +220,8 @@ elseif (AA_V::P('form') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
     $ret        .= " <input type=\"hidden\" id=\"ajaxh_$combi_id\" value=\"$repre_value\">";
     $encoder = new ConvertCharset;
     echo $encoder->Convert($ret, 'windows-1250', 'utf-8');
+    */
+
 }
 elseif (AA_V::P('cancel_changes') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
     $changes = new AA_ChangesMonitor();

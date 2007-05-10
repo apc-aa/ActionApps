@@ -999,6 +999,12 @@ class AA_Components extends AA_Object {
 // AA_Widget should became abstract in php5
 class AA_Widget extends AA_Components {
 
+    /** array of possible values (for selectbox, two boxes, ...) */
+    var $_const_arr = null;
+
+    /** array(value => true) of all selected values - just for caching */
+    var $_selected = null;
+
     /** $parameters - Array of AA_Property used for the widget
     *   inherited from AA_Components
     */
@@ -1006,7 +1012,194 @@ class AA_Widget extends AA_Components {
      *
      */
     function name()         {}
-//    function description()  {}
+    //    function description()  {}
+
+
+     /** Fills array used for list selection. Fill it from constant group or
+      * slice.
+      * It never refills the array (and we relly on this fact in the code)
+      * This function is rewritten fill_const_arr().
+      */
+    function & getConstArr() {
+        if ( isset($this->_const_arr) AND is_array($this->_const_arr) ) {  // already filled
+            return $this->_const_arr;
+        }
+
+        // not filled, yet - so fill it
+        $this->_const_arr = array();  // Initialize
+
+        // commented out - used for Related Item Window values
+        // $zids = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
+        $zids = false;
+        $ids_arr = false;
+
+        $constgroup       = $this->getProperty('const');
+        $filter_conds     = $this->getProperty('filter_conds');
+        $sort_by          = $this->getProperty('sort_by');
+        $slice_field      = $this->getProperty('slice_field');
+
+        if ( !$this->getProperty('const')) {  // no constants or slice defined
+            return $this->_const_arr;         //  = array();
+        }
+        // "#sLiCe-" prefix indicates select from items
+        elseif ( substr($constgroup,0,7) == "#sLiCe-" ) {
+
+            $bin_filter       = $this->getProperty('bin_filter', AA_BIN_ACT_PEND);
+            $tag_prefix       = $this->getProperty('tag_prefix');  // tag_prfix is deprecated - should not be used
+
+            $sid              = substr($constgroup, 7);
+            /** Get format for which represents the id
+             *  Could be field_id (then it is grabbed from item and truncated to 50
+             *  characters, or normal AA format string.
+             *  Headline is default (if empty "$slice_field" is passed)
+             */
+            if (!$slice_field) {
+                $slice_field = GetHeadlineFieldID($sid, "headline.");
+                if (!$slice_field) {
+                    return $this->_const_arr; //  = array();
+                }
+            }
+            $format           = AA_Fields::isField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+
+            $this->_const_arr = GetFormatedItems( $sid, $format, $zids, $bin_filter, $filter_conds, $sort_by, $tag_prefix);
+            return $this->_const_arr;
+        }
+        else {
+            $this->_const_arr = GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by);
+        }
+        if ( !isset($this->_const_arr) OR !is_array($this->_const_arr) ) {
+            $this->_const_arr = array();
+        }
+        return $this->_const_arr;
+    }
+
+
+    /** returns $ret_val if given $option is selected for current field
+     *  This method is rewritten if_selected() method form formutil.php3
+     */
+    function ifSelected($option, $ret_val) {
+        return $this->_selected[(string)$option] ? $ret_val : '';
+    }
+
+    /**
+     *  This method is rewritten _fillSelected() method form formutil.php3
+     */
+    function _fillSelected($aa_value) {
+        if ( is_null($this->_selected) ) {  // not cached yet => create selected array
+            for ($i=0 ; $i < $aa_value->valuesCount(); $i++) {
+                $val = $aa_value->getValue($i);
+                if ( $val ) {
+                    $this->_selected[(string)$val] = true;
+                }
+            }
+        }
+    }
+
+
+    /** returns select options created from given array
+     *  This method is rewritten get_options() method form formutil.php3
+     */
+    function getOptions( $aa_value, $use_name=false, $testval=false, $restrict='all', $add_empty=false, $do_not_select=false) {
+        $selectedused  = false;
+        $select_string = ( $do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
+
+        $already_selected = array();     // array where we mark selected values
+        $pair_used        = array();     // array where we mark used pairs
+        $this->_fillSelected($aa_value); // fill selected array by all values in order we can print invlaid values later
+
+        $arr = $this->getConstArr();
+        if (is_array($arr)) {
+            foreach ( $arr as $k => $v ) {
+                if ($use_name) {
+                    // special parameter to use values instead of keys
+                    $k = $v;
+                }
+
+                // ignore pairs (key=>value) we already used
+                if ($pair_used[$k."aa~$v"]) {
+                    continue;
+                }
+                $pair_used[$k."aa~$v"] = true;   // mark this pair - do not use it again
+
+                $select_val = $testval ? $v : $k;
+                $selected   = $this->ifSelected($select_val, $select_string);
+                if ($selected != '') {
+                    $selectedused = true;
+                    $already_selected[(string)$select_val] = true;  // flag
+                }
+                if ( ($restrict == 'selected')   AND !$selected ) continue;  // do not print this option
+                if ( ($restrict == 'unselected') AND $selected  ) continue;  // do not print this option
+                $ret .= "<option value=\"". htmlspecialchars($k) ."\" $selected>".htmlspecialchars($v)."</option>";
+            }
+        }
+
+        // now add all values, which is not in the array, but field has this value
+        // (this is slice inconsistence, which could go from feeding, ...)
+        if ( isset( $this->_selected ) AND is_array( $this->_selected ) AND ($restrict != 'unselected')) {
+            foreach ( $this->_selected as $k =>$v ) {
+                if ( !$already_selected[$k] ) {
+                    $ret .= "<option value=\"". htmlspecialchars($k) ."\" selected class=\"sel_missing\">".htmlspecialchars($k)."</option>";
+                    $selectedused = true;
+                }
+            }
+        }
+        if ( $add_empty ) {
+            $emptyret = '<option value=""';
+            if ($selectedused == false) {
+                $emptyret .= ' selected class="sel_on"';
+            }
+            $emptyret .= '> </option>';
+            $ret       = $emptyret . $ret;
+        }
+        return $ret;
+    }
+
+
+
+    /** @return widget HTML for using as AJAX component
+     *  @param  $aa_variable - the variable holding the value to display
+     *  @param  $repre_value - current code used for representation of the
+     *                         variable
+     */
+    function getAjaxHtml($aa_variable, $repre_value) {
+
+        $input_id    = $aa_variable->getId();
+        $ret   = '';
+
+        // This widget uses constants - show selectbox!
+        if ($this->getProperty('const')) {
+            $input_name   = $input_id ."[]";
+            $use_name     = $this->getProperty('use_name', false);
+            $multiple     = $this->multiple() ? ' multiple' : '';
+            $required     = $aa_variable->isRequired();
+
+            $ret  = "<select name=\"$input_name\" id=\"$input_name\"$multiple>";
+            $ret .= $this->getOptions( $aa_variable->getAaValue(), $use_name, false, 'all', !$required );
+            $ret .= "</select>";
+        } else {
+            $delim = '';
+            for ( $i = 0; $i < $aa_variable->valuesCount(); $i++ ) {
+                $input_name   = $input_id ."[$i]";
+                $input_value  = htmlspecialchars($aa_variable->getValue($i));
+                $ret         .= "$delim\n<input type=\"text\" size=\"80\" id=\"$input_name\" value=\"$input_value\">";
+                $delim        = '<br />';
+            }
+            // no input was printed, we need to print one
+            if ( !$ret ) {
+                $ret         = "\n<input type=\"text\" size=\"80\" id=\"". $input_id ."[0]\" value=\"\">";
+            }
+        }
+
+        return $this->_finalizaAjaxHtml($ret, $input_id, $repre_value);
+    }
+
+    /* Creates all common ajax editing buttons to be used by different inputs */
+    function _finalizaAjaxHtml($widget_html, $input_id, $repre_value) {
+        $widget_html  .= "<input type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"DoChange('$input_id')\">"; //ULOŽIT ZM?NU
+        $widget_html  .= "<input type=\"button\" value=\"". _m('Cancel') ."\" onclick=\"$('ajaxv_$input_id').update(". '$F(\'ajaxh_'.$input_id.'\'))'."; $('ajaxv_$input_id').setAttribute('aaedit', '0');\">";
+        $widget_html  .= " <input type=\"hidden\" id=\"ajaxh_$input_id\" value=\"".htmlspecialchars($repre_value)."\">";
+        return $widget_html;
+    }
 }
 
 /** Textarea widget */
@@ -1014,7 +1207,10 @@ class AA_Widget_Txt extends AA_Widget {
     /** AA_Widget_Txt function
      *
      */
-    function AA_Widget_Txt() {
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Txt($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
     }
 
     /** - static member functions
@@ -1036,17 +1232,48 @@ class AA_Widget_Txt extends AA_Widget {
     /** getClassProperties function
      *  Used parameter format (in fields.input_show_func table)
      */
-    function getClassProperties() {       //  id             name          type   multi  persistent validator, required, help, morehelp, example
-        return array (
-            'fnc'       => new AA_Property( 'fnc',       _m("Widget"),    'text', false, true, 'alpha'),
-            'row_count' => new AA_Property( 'row_count', _m("Row Count"), 'int',  false, true, 'int', false, '', '', 20),
+    function getClassProperties() {
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int', false, '', '', 20)
             );
 
     }
+
+    function getAjaxHtml($aa_variable, $repre_value) {
+        $input_id  = $aa_variable->getId();
+        $row_count = $this->getProperty('row_count', 4);
+
+        $ret   = '';
+        $delim = '';
+        for ( $i = 0; $i < $aa_variable->valuesCount(); $i++ ) {
+            $input_name   = $input_id ."[$i]";
+            $input_value  = htmlspecialchars($aa_variable->getValue($i));
+            $ret         .= "$delim\n<textarea id=\"$input_name\" name=\"$input_name\" rows=\"$row_count\" style=\"width:100%\">$input_value</textarea>";
+            $delim        = '<br />';
+        }
+
+        // no input was printed, we need to print one
+        if ( !$ret ) {
+            $input_name  = $input_id ."[0]";
+            $ret         = "\n<textarea id=\"$input_name\" name=\"$input_name\" rows=\"$row_count\" style=\"width:100%\"></textarea>";
+        }
+
+        return $this->_finalizaAjaxHtml($ret, $input_id, $repre_value);
+    }
+
 }
 
 /** Textarea with Presets widget */
 class AA_Widget_Tpr extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Tpr($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1064,10 +1291,12 @@ class AA_Widget_Tpr extends AA_Widget {
      * Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'const' => true,
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'text', false, true, 'text', false, _m("Constants (or slice) which is used for value selection")),
+            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
+            'column_count'           => new AA_Property( 'column_count',           _m("Column count"),         'int',  false, true, 'int',  false, '', '', 70)
+            );
     }
 }
 
@@ -1076,7 +1305,10 @@ class AA_Widget_Edt extends AA_Widget {
     /** AA_Widget_Edt function
      *
      */
-    function AA_Widget_Edt() {
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Edt($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
     }
 
     /** - static member functions
@@ -1096,11 +1328,11 @@ class AA_Widget_Edt extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array (                       //  id                name             type   multi  persist validator, required, help, morehelp, example
-            'fnc'          => new AA_Property( 'fnc',          _m("Widget"),       'text', false, true, 'alpha'),
-            'row_count'    => new AA_Property( 'row_count',    _m("row count"),    'int',  false, true, 'int', false, '', '', 10),
-            'column_count' => new AA_Property( 'column_count', _m("column count"), 'int',  false, true, 'int', false, '', '', 70),
-            'type'         => new AA_Property( 'type',         _m("column count"), 'text', false, true, array('enum',array('class'=>'class', 'iframe'=>'iframe')), false, _m("type: class (default) / iframe"), '', 'class')
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
+            'column_count'           => new AA_Property( 'column_count',           _m("Column count"),         'int',  false, true, 'int',  false, '', '', 70),
+            'area_type'              => new AA_Property( 'area_type',              _m("Type"),                 'text', false, true, array('enum',array('class'=>'class', 'iframe'=>'iframe')), false, _m("type: class (default) / iframe"), '', 'class')
             );
     }
 }
@@ -1110,8 +1342,39 @@ class AA_Widget_Fld extends AA_Widget {
     /** AA_Widget_Fld function
      *
      */
-    function AA_Widget_Fld() {
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Fld($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
     }
+
+    /** @return widget HTML for using as AJAX component
+     *  @param  $aa_variable - the variable holding the value to display
+     *  @param  $repre_value - current code used for representation of the
+     *                         variable
+     */
+    function getAjaxHtml($aa_variable, $repre_value) {
+        $input_id    = $aa_variable->getId();
+
+        $max_characters = $this->getProperty('max_characters', 254);
+        $width          = $this->getProperty('width', 60);
+
+        $ret   = '';
+        $delim = '';
+        for ( $i = 0; $i < $aa_variable->valuesCount(); $i++ ) {
+            $input_name   = $input_id ."[$i]";
+            $input_value  = htmlspecialchars($aa_variable->getValue($i));
+            $ret         .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"$input_name\" value=\"$input_value\">";
+            $delim        = '<br />';
+        }
+        // no input was printed, we need to print one
+        if ( !$ret ) {
+            $ret         = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"". $input_id ."[0]\" value=\"\">";
+        }
+
+        return $this->_finalizaAjaxHtml($ret, $input_id, $repre_value);
+    }
+
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -1133,16 +1396,23 @@ class AA_Widget_Fld extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array (                        //  id                  name               type    multi  persist validator, required, help,                                         morehelp, example
-            'fnc'            => new AA_Property( 'fnc',            _m("Widget"),         'text', false, true, 'alpha'),
-            'max_characters' => new AA_Property( 'max_characters', _m("max characters"), 'int',  false, true, 'int', false, _m("max count of characters entered (maxlength parameter)"), '', 254),
-            'width'          => new AA_Property( 'width',          _m("width"),          'int',  false, true, 'int', false, _m("width of the field in characters (size parameter)"),     '',  30)
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'max_characters'         => new AA_Property( 'max_characters',         _m("Max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
+            'width'                  => new AA_Property( 'width',                  _m("Width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  30)
             );
     }
 }
 
 /** Multiple Text Field widget */
 class AA_Widget_Mfl extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Mfl($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1163,14 +1433,23 @@ class AA_Widget_Mfl extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'show_buttons'           => new AA_Property( 'show_buttons',           _m("Buttons to show"),      'text', false, true, 'text', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important."), '', 'MDAC'),
+            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10)
+            );
     }
 }
 
 /** Text Field with Presets widget */
 class AA_Widget_Pre extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Pre($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1191,15 +1470,32 @@ class AA_Widget_Pre extends AA_Widget {
      * Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'const' => true,
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'text', false, true, 'text', false, _m("Constants (or slice) which is used for value selection")),
+            'max_characters'         => new AA_Property( 'max_characters',         _m("max characters"),       'int',  false, true, 'int',  false, _m("max count of characters entered (maxlength parameter)"), '', 254),
+            'width'                  => new AA_Property( 'width',                  _m("width"),                'int',  false, true, 'int',  false, _m("width of the field in characters (size parameter)"),     '',  30),
+            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'text', false, true, 'text', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
+            'use_name'               => new AA_Property( 'use_name',               _m("Use name"),             'bool', false, true, 'bool', false, _m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"), '', '0'),
+            'adding'                 => new AA_Property( 'adding',                 _m("Adding"),               'bool', false, true, 'bool', false, _m("adding the selected items to input field comma separated"), '', '0'),
+            'second_field'           => new AA_Property( 'second_field',           _m("Second Field"),         'text', false, true, 'text', false, _m("field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)"), '', "source_href....."),
+            'add2constant'           => new AA_Property( 'add2constant',           _m("Add to Constant"),      'bool', false, true, 'bool', false, _m("if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"), '', "0"),
+            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
+            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'text', false, true, 'text', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'text', false, true, 'text', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
+            );
     }
 }
 
 /** Select Box widget */
 class AA_Widget_Sel extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Sel($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1220,15 +1516,27 @@ class AA_Widget_Sel extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'const' => true,
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'text', false, true, 'text', false, _m("Constants (or slice) which is used for value selection")),
+            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'text', false, true, 'text', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
+            'use_name'               => new AA_Property( 'use_name',               _m("Use name"),             'bool', false, true, 'bool', false, _m("if set (=1), then the name of selected constant is used, insted of the value. Default is 0"), '', '0'),
+            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
+            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'text', false, true, 'text', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'text', false, true, 'text', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
+            );
     }
 }
 
 /** Radio Button widget */
 class AA_Widget_Rio extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Rio($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1249,15 +1557,28 @@ class AA_Widget_Rio extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'const' => true,
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'text', false, true, 'text', false, _m("Constants (or slice) which is used for value selection")),
+            'columns'                => new AA_Property( 'columns',                _m("Columns"),              'int',  false, true, 'int',  false, _m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."), '', 3),
+            'move_right'             => new AA_Property( 'move_right',             _m("Move right"),           'bool', false, true, 'bool', false, _m("Should the function move right or down to the next value?"), '', "1"),
+            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'text', false, true, 'text', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
+            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
+            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'text', false, true, 'text', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'text', false, true, 'text', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d")
+            );
     }
 }
 
 /** Date widget */
 class AA_Widget_Dte extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Dte($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1278,14 +1599,50 @@ class AA_Widget_Dte extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'start_year'             => new AA_Property( 'start_year',             _m("Starting Year"),        'int',  false, true, 'int',  false, _m("The (relative) start of the year interval"), '', "1"),
+            'end_year'               => new AA_Property( 'end_year',               _m("Ending Year"),          'int',  false, true, 'int',  false, _m("The (relative) end of the year interval"), '', "10"),
+            'relative'               => new AA_Property( 'relative',               _m("Relative"),             'bool', false, true, 'bool', false, _m("If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute."), '', "1"),
+            'show_time'              => new AA_Property( 'show_time',              _m("Show time"),            'bool', false, true, 'bool', false, _m("show the time box? (1 means Yes, undefined means No)"), '', "1")
+            );
     }
 }
 
 /** Check Box widget */
 class AA_Widget_Chb extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Chb($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
+    /** @return widget HTML for using as AJAX component
+     *  @param  $aa_variable - the variable holding the value to display
+     *  @param  $repre_value - current code used for representation of the
+     *                         variable
+     */
+    function getAjaxHtml($aa_variable, $repre_value) {
+        $input_id    = $aa_variable->getId();
+
+        $ret   = '';
+        $delim = '';
+        for ( $i = 0; $i < $aa_variable->valuesCount(); $i++ ) {
+            $input_name   = $input_id ."[$i]";
+            $input_value  = htmlspecialchars($aa_variable->getValue($i));
+            $ret         .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_name\" value=\"1\"". ($input_value ? " checked" : '').">";
+            $delim        = '<br />';
+        }
+        // no input was printed, we need to print one
+        if ( !$ret ) {
+            $input_name   = $input_id ."[0]";
+            $ret         .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_name\" value=\"1\">";
+        }
+
+        return $this->_finalizaAjaxHtml($ret, $input_id, $repre_value);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1306,13 +1663,21 @@ class AA_Widget_Chb extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true   // @todo - replace 'true' by parameter specification
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha')
                     );
     }
 }
 
 /** Multiple Checkboxes widget */
 class AA_Widget_Mch extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Mch($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1333,15 +1698,28 @@ class AA_Widget_Mch extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'const' => true,
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'text', false, true, 'text', false, _m("Constants (or slice) which is used for value selection")),
+            'columns'                => new AA_Property( 'columns',                _m("Columns"),              'int',  false, true, 'int',  false, _m("Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table."), '', 3),
+            'move_right'             => new AA_Property( 'move_right',             _m("Move right"),           'bool', false, true, 'bool', false, _m("Should the function move right or down to the next value?"), '', "1"),
+            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'text', false, true, 'text', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
+            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
+            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'text', false, true, 'text', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'text', false, true, 'text', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d")
+            );
     }
 }
 
 /** Multiple Selectbox widget */
 class AA_Widget_Mse extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Mse($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1362,15 +1740,27 @@ class AA_Widget_Mse extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'const' => true,
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'text', false, true, 'text', false, _m("Constants (or slice) which is used for value selection")),
+            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
+            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'text', false, true, 'text', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
+            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
+            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'text', false, true, 'text', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'text', false, true, 'text', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d")
+            );
     }
 }
 
 /** Two Boxes widget */
 class AA_Widget_Wi2 extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Wi2($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1391,15 +1781,29 @@ class AA_Widget_Wi2 extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'const' => true,
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'text', false, true, 'text', false, _m("Constants (or slice) which is used for value selection")),
+            'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10),
+            'offer_label'            => new AA_Property( 'offer_label',            _m("Title of \"Offer\" selectbox"), 'text', false, true, 'text', false, '','', _m("Our offer")),
+            'selected_label'         => new AA_Property( 'selected_label',         _m("Title of \"Selected\" selectbox"), 'text', false, true, 'text', false, '','', _m("Selected")),
+            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'text', false, true, 'text', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
+            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
+            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'text', false, true, 'text', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'text', false, true, 'text', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d")
+            );
     }
 }
 
 /** File Upload widget */
 class AA_Widget_Fil extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Fil($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1420,14 +1824,24 @@ class AA_Widget_Fil extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'allowed_ftypes'         => new AA_Property( 'allowed_ftypes',         _m("Allowed file types"),   'text', false, true, 'text', false, '', '', "image/*"),
+            'label'                  => new AA_Property( 'label',                  _m("Label"),                'text', false, true, 'text', false, _m("To be printed before the file upload field"), '', _m("File: ")),
+            'hint'                   => new AA_Property( 'hint',                   _m("Hint"),                 'text', false, true, 'text', false, _m("appears beneath the file upload field"), '', _m("You can select a file ..."))
+            );
     }
 }
 
 /** Related Item Window widget */
 class AA_Widget_Iso extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Iso($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1445,15 +1859,32 @@ class AA_Widget_Iso extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'const' => true,
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'text', false, true, 'text', false, _m("Constants (or slice) which is used for value selection")),
+            'row_count'              => new AA_Property( 'row_count',              _m("Row count in the list"),'int',  false, true, 'int',  false, '', '', 15),
+            'show_actions'           => new AA_Property( 'show_actions',           _m("Actions to show"),      'text', false, true, 'text', false, _m("Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important."), '', 'AMB'),
+            'admin_design'           => new AA_Property( 'admin_design',           _m("Admin design"),         'bool', false, true, 'bool', false, _m("If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)."), '' , '0'),
+            'tag_prefix'             => new AA_Property( 'tag_prefix',             _m("Tag Prefix"),           'text', false, true, 'text', false, _m("Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details."), '', 'AMB'),
+            'show_buttons'           => new AA_Property( 'show_buttons',           _m("Buttons to show"),      'text', false, true, 'text', false, _m("Which action buttons to show:<br>M - Move (up and down)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert new item in related slice and make it related<br>E - Edit related item<br>Use 'DR' (default), 'MDRNE', just 'N' or any other combination. The order of letters M,D,R,N,E is not important."), '', 'MDR'),
+            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
+            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'text', false, true, 'text', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'text', false, true, 'text', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
+            'filter_conds_changeable'=> new AA_Property( 'filter_conds_changeable',_m("Filtering conditions - changeable"), 'text', false, true, 'text', false, _m("Conditions for filtering items in related items window. This conds user can change."), '', "conds[0][source..........]=Econnect"),
+            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'text', false, true, 'text', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........')
+            );
     }
 }
 
 /** Do not show widget */
 class AA_Widget_Nul extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Nul($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1471,13 +1902,21 @@ class AA_Widget_Nul extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties()  {
-        return array( 'fnc'   => true   // @todo - replace 'true' by parameter specification
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
                     );
     }
 }
 
 /** Hierachical constants widget */
 class AA_Widget_Hco extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Hco($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1498,15 +1937,28 @@ class AA_Widget_Hco extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
      function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'const' => true,
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'text', false, true, 'text', false, _m("Constants (or slice) which is used for value selection")),
+            'level_count'            => new AA_Property( 'level_count',            _m("Level count"),          'int',  false, true, 'int',  false, _m("Count of level boxes"), '', "3"),
+            'box_width'              => new AA_Property( 'box_width',              _m("Box width"),            'int',  false, true, 'int',  false, _m("Width in characters"), '', "60"),
+            'target_size'            => new AA_Property( 'target_size',            _m("Size of target"),       'int',  false, true, 'int',  false, _m("Lines in the target select box"), '', '5'),
+            'horizontal'             => new AA_Property( 'horizontal',             _m("Horizontal"),           'bool', false, true, 'bool', false, _m("Show levels horizontally"), '', '1'),
+            'first_selectable_level' => new AA_Property( 'first_selectable_level', _m("First selectable"),     'int',  false, true, 'int',  false, _m("First level which will have a Select button"), '', '0'),
+            'level_names'            => new AA_Property( 'level_names',            _m("Level names"),          'text', false, true, 'text', false, _m("Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..."), '', _m("Top level~Second level~Keyword"))
+            );
     }
 }
 
 /** Password and Change password widget */
 class AA_Widget_Pwd extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Pwd($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1527,14 +1979,27 @@ class AA_Widget_Pwd extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
      function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'width'                  => new AA_Property( 'width',                  _m("Width"),                         'int',  false, true, 'int',  false, _m("width of the three fields in characters (size parameter)"),     '',  60),
+            'change_label'           => new AA_Property( 'change_label',           _m("Label for Change Password"),     'text', false, true, 'text', false, _m("Replaces the default 'Change Password'"), '', _m("Change your password")),
+            'retype_label'           => new AA_Property( 'retype_label',           _m("Label for Retype New Password"), 'text', false, true, 'text', false, _m("Replaces the default \"Retype New Password\""), '', _m("Retype the new password")),
+            'delete_label'           => new AA_Property( 'delete_label',           _m("Label for Delete Password"),     'text', false, true, 'text', false, _m("Replaces the default \"Delete Password\""), '', _m("Delete password (set to empty)")),
+            'change_hint'            => new AA_Property( 'change_hint',            _m("Help for Change Password"),      'text', false, true, 'text', false, _m("Help text under the Change Password box (default: no text)"), '', _m("To change password, enter the new password here and below")),
+            'retype_hint'            => new AA_Property( 'retype_hint',            _m("Help for Retype New Password"),  'text', false, true, 'text', false, _m("Help text under the Retype New Password box (default: no text)"), '', _m("Retype the new password exactly the same as you entered into \"Change Password\".")),
+            );
     }
 }
 
 /** Hidden field widget */
 class AA_Widget_Hid extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Hid($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1555,13 +2020,21 @@ class AA_Widget_Hid extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
      function getClassProperties()  {
-        return array( 'fnc'   => true   // @todo - replace 'true' by parameter specification
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
                     );
     }
 }
 
 /** Local URL Picker widget */
 class AA_Widget_Lup extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function AA_Widget_Lup($params) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -1582,9 +2055,10 @@ class AA_Widget_Lup extends AA_Widget {
      *  Used parameter format (in fields.input_show_func table)
      */
      function getClassProperties()  {
-        return array( 'fnc'   => true,   // @todo - replace 'true' by parameter specification
-                      'param' => true
-                    );
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'fnc'                    => new AA_Property( 'fnc',                    _m("Widget"),               'text', false, true, 'alpha'),
+            'url'                    => new AA_Property( 'url',                    _m("URL"),                  'text', false, true, 'text', false, _m("The URL of your local web server from where you want to start browsing for a particular URL."), '', _m("http#://www.ecn.cz/articles/solar.shtml"))
+            );
     }
 }
 
@@ -1678,39 +2152,38 @@ class AA_Property {
         $this->content_type_switch_default = $content_type_switch_default;
         $this->const_arr                   = (is_array($validator) AND ($validator[0]=='enum')) ? $validator[1] : array();
     }
-    /** getId function
-     *
-     */
+
+    /** getId function */
     function getId() {
         return $this->id;
     }
-    /** getName function
-     *
-     */
+
+    /** getName function */
     function getName() {
         return $this->name;
     }
-    /** getType function
-     *
-     */
+
+    /** getType function */
     function getType() {
         return $this->type;
     }
-    /** isObject function
-     *
-     */
+
+    /** isObject function */
     function isObject() {
         return !in_array($this->type, array('text', 'int', 'bool', 'float'));
     }
-    /** isArray function
-     *
-     */
-    function isArray() {
+
+    /** isMulti function */
+    function isMulti() {
         return $this->multi;
     }
-    /** isPersistent function
-     *
-     */
+
+    /** isRequired function */
+    function isRequired() {
+        return $this->required;
+    }
+
+    /** isPersistent function */
     function isPersistent() {
         return $this->persistent;
     }
@@ -1730,16 +2203,32 @@ class AA_Property {
 class AA_Variable extends AA_Property {
 
     /** Current value of $type. The value must be convertable to AA_Value - @see type */
-    var $value;
+    var $value=null;
     /** setValue function
      * @param $value
      */
+    function AA_Variable($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN, $aa_value=null) {
+        $this->value = $aa_value;
+        parent::AA_Property($id, $name, $type, $multi, $persistent, $validator, $required, $input_help, $input_morehlp, $example, $show_content_type_switch, $content_type_switch_default);
+    }
+
     function setValue($value) {
         if ( !is_null($this->validator) AND $this->validator->validate($value)) {
             $this->value = new AA_Value($value);
         }
     }
 
+    function getValue($i) {
+        return $this->value->getValue($i);
+    }
+
+    function getAaValue() {
+        return $this->value;
+    }
+
+    function valuesCount() {
+        return (is_null($this->value) ? 0 : $this->value->valuesCount());
+    }
 }
 
 
@@ -1762,8 +2251,13 @@ class AA_Formatter {
         return 65535;
     }
 
+    /** no formaters */
+    function getNoneFormattersBitfield() {
+        return 0;
+    }
+
     /** getFlag function
-     * @param $formatter_type
+     *  @param $formatter_type
      *  @return (bit) id of the formatter_type (HTML or PLAIN, at this moment)
      */
     function getFlag($formatter_type) {
@@ -1772,6 +2266,7 @@ class AA_Formatter {
 }
 
 class AA_Field {
+
     /** asociative array of field data as defined in field table
     *   (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored)
     */
@@ -1779,8 +2274,9 @@ class AA_Field {
 
     /** Default widget - as parsed from field data (input_show_func) */
     var $widget;
+
     /** AA_Field function
-     * @param $data
+     *  @param $data
      */
     function AA_Field($data) {
         $this->data   = is_array($data) ? $data : array();
@@ -1788,14 +2284,14 @@ class AA_Field {
     }
 
     /** storageColumn function
-     * @return the table and column, where the field is stored
+     *  @return the table and column, where the field is stored
      */
     function storageColumn() {
         return $this->data['in_item_tbl'] ? $this->data['in_item_tbl'] :  ($this->data['text_stored'] ? 'text' : 'number');
     }
 
     /** storageTable function
-     * @return the table and column, where the field is stored
+     *  @return the table and column, where the field is stored
      */
     function storageTable() {
         return $this->data['in_item_tbl'] ? 'item' : 'content';
@@ -1831,7 +2327,7 @@ class AA_Field {
     /** getWidget function
      *
      */
-    function getWidget() {
+    function & getWidget() {
         if ( is_null($this->widget) ) {
    //        function setFromField(&$field) {
    //            if (isset($field) AND is_array($field)) {
@@ -1852,8 +2348,9 @@ class AA_Field {
    //            }
    //        }
 
-            $this->widget = &AA_Widget::factory($somethinnnnng); // @todo
+            $this->widget = AA_Widget::factoryByString('AA_Widget_', $this->data['input_show_func']);
         }
+        return $this->widget;
     }
     /** getAliases function
      *
@@ -1910,6 +2407,45 @@ class AA_Field {
         return $field_type;
     }
 
+    /** getWidgetAjaxHtml function
+    * @param $item_id
+    * @param $aa_value
+    *   @todo create validator on input_validate
+    */
+    function getWidgetAjaxHtml($item_id, $visual='') {
+        $widget = $this->getWidget();
+        // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN) {
+        $item   = AA_Item::getItem($item_id);
+
+        $aa_variable = new AA_Variable( AA_Field::getId4Form($item_id, $this->getId()),
+                                        $this->getName(),
+                                        $this->getProperty('text_stored') ? 'text' : 'int',
+                                        $widget->multiple(),
+                                        false,                   // persistent @todo
+                                        null,              // $validator - @todo create validator
+                                        $this->required(),
+                                        $this->getProperty('input_help'),
+                                        $this->getProperty('input_morehlp'),
+                                        null,               // $example;
+                                        $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
+                                        AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
+                                        $item->getAaValue($this->getId()));
+
+        $repre_value = $item->subst_alias($visual ? $visual : $this->getId());
+        return $widget->getAjaxHtml($aa_variable, get_if($repre_value, '--'));
+    }
+
+    /** _areSliceConstants function
+     *  @return true if constants are from slice
+     */
+    function _areSliceConstants($name) {
+        // prefix indicates select from items
+        return ( substr($name,0,7) == "#sLiCe-" );
+    }
+
+
+    /// Static methods ///
+
     /** ID of the field input - used for name atribute of input tag (or so)
     *   Format is:
     *       aa[i<long_item_id>][modified_field_id][]
@@ -1920,47 +2456,29 @@ class AA_Field {
     *                                    <number> is used to add more than one
     *                                    item at the time
     *      modified_field_id is field_id, where all dots are replaced by '_'
-    *      we always add [] at the end, so it becames arra at the end
+    *      we always add [] at the end, so it becames array at the end
     *   Example:
     *       aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
     */
-    /** getId4Form function
-     * @param $item_id
-     */
-    function getId4Form($item_id) {
-        return "aa[i$item_id][". str_replace('.','_',$this->getId()).'][]';
+    function getId4Form($item_id, $field_id) {
+        return "aa[i$item_id][". str_replace('.','_', $field_id).']';
     }
 
-    /** getWidgetAjaxHtml function
-    * @param $item_id
-    * @param $aa_value
-    *   @todo create validator on input_validate
-    */
-    function getWidgetAjaxHtml($item_id, $aa_value) {
-        // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN) {
-        $aa_variable = new AA_Variable( $this->getId4Form($item_id),
-                                        $this->getName(),
-                                        $this->getProperty('text_stored') ? 'text' : 'int',
-                                                           // multi @todo
-                                                           // persistent @todo
-                                        null,              // $validator - @todo create validator
-                                        $this->required(),
-                                        $this->getProperty('input_help'),
-                                        $this->getProperty('input_morehlp'),
-                                        $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
-                                        AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
-                                        $aa_value);
-
-        return $this->fields->getWidgetAjaxHtml($field_id, $aa_value);
+    /** Converts field id as used in the AA form to real field id, like:
+     *  post_date______1  ==>  post_date......1
+     */
+    function getFieldIdFromVar($dirty_field_id) {
+        return str_replace('._', '..', str_replace('__', '..', $dirty_field_id));
     }
 
-    /** _areSliceConstants function
-     *  @return true if constants are from slice
-     */
-    function _areSliceConstants($name) {
-        // prefix indicates select from items
-        return ( substr($name,0,7) == "#sLiCe-" );
+    /** returns array(item_id,field_id) from name of variable used on AA form */
+    function parseId4Form($input_id) {
+        // aa[i<item_id>][<field_id>][]
+        $parsed   = explode(']', $input_id);
+        $item_id  = substr($parsed[0],4);
+        $field_id = AA_Field::getFieldIdFromVar(substr($parsed[1],1));
+        return array($item_id,$field_id);
     }
 }
 
@@ -2056,9 +2574,9 @@ class AA_Fields {
      * @param $item_id
      * @param $aa_value
      */
-    function getWidgetAjaxHtml($field_id, $item_id, $aa_value) {
+    function getWidgetAjaxHtml($field_id, $item_id, $visual='') {
         $this->load();
-        return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getWidgetAjaxHtml($item_id, $aa_value) : '';
+        return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getWidgetAjaxHtml($item_id, $visual) : '';
     }
 
     /** getAliases function
@@ -4010,12 +4528,19 @@ class AA_ChangesMonitor {
 /** IsSpamText function
  * @param $text
  */
-function IsSpamText($text) {
+function IsSpamText($text, $tolerance=4) {
+    // we do not accept any text using something like:
+    //     [url=http://example.net]Example.net[/url]
+    if (substr_count(strtolower($text), '[/url]')) {
+        return true;
+    }
+
     $link_count  = substr_count(strtoupper($text), 'HTTP');
     $text_length = strlen($text);
 
+
     // four links are OK always
-    if ( $link_count < 5 ) {
+    if ( $link_count < ($tolerance+1) ) {
         return false;
     }
 
