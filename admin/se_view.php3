@@ -146,7 +146,7 @@ function store_digest_filters() {
  * @param $order_fields
  * @param $easy_order=false
  */
-function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false) {
+function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=false) {
     global $vw_data;
     $name=safe($name); $txt=safe($txt);
 
@@ -161,6 +161,9 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false) {
     // direction variable name - construct from $name
     $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
     FrmSelectEasy($dirvarname, $order_type, $vw_data[$dirvarname]);
+    if ( $group ) {
+        FrmSelectEasy("gb_header", array (_m("Whole text"),_m("1st letter"),"2 "._m("letters"),"3 "._m("letters")), $vw_data['gb_header']);
+    }
     PrintMoreHelp(DOCUMENTATION_URL);
     //  PrintHelp($hlp);
     echo "</td></tr>\n";
@@ -431,6 +434,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
         case "chbox":   FrmInputChBox( $k, $label, $value); break;
         case "cond":    ConditionFrm(  $k, $label, $value); break;
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
+        case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy', true); break;
         case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help, DOCUMENTATION_URL); break;
         case "none":    break;
     }

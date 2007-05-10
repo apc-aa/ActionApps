@@ -114,6 +114,7 @@ class view {
     function getViewFormat($selected_item='') {
         $format                        = array();
         $format['group_by']            = $this->fields['group_by1'];
+        $format['gb_header']           = $this->fields['gb_header'];
         $format['category_format']     = $this->fields['group_title'];
         $format['category_bottom']     = $this->fields['group_bottom'];
         $format['compact_top']         = $this->fields['before'];

@@ -426,8 +426,9 @@ function getViewFields() {
     $VIEW_FIELDS["odd"]             = GetViewFieldDef("text",  "quoted", "text",  "areabig");
     $VIEW_FIELDS["row_delimiter"]   = GetViewFieldDef("text",  "quoted", "text",  "area");
     $VIEW_FIELDS["after"]           = GetViewFieldDef("text",  "quoted", "text",  "area"   );
-    $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text",  "quoted", "text",  "order"  );
+    $VIEW_FIELDS["group_by1"]       = GetViewFieldDef("text",  "quoted", "text",  "group"  );
     $VIEW_FIELDS["g1_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
+    $VIEW_FIELDS["gb_header"]       = GetViewFieldDef("",      "quoted", "number","none"   );
     $VIEW_FIELDS["group_by2"]       = GetViewFieldDef("text",  "quoted", "text",  "order"  );
     $VIEW_FIELDS["g2_direction"]    = GetViewFieldDef("",      "quoted", "number","none"   );
     $VIEW_FIELDS["group_title"]     = GetViewFieldDef("text",  "quoted", "text",  "area"   );
@@ -506,6 +507,7 @@ function getViewTypes() {
                          "o2_direction" => " " ,
                          "group_by1" => _m("Group by") ,
                          "g1_direction" => " " ,
+                         "gb_header" => " " ,
     //                     "group_by2" => _m("Group by") ,
     //                     "g2_direction" => " " ,
                          "group_title" => _m("Group title format") ,
@@ -608,6 +610,7 @@ function getViewTypes() {
                           "o2_direction" => " " ,
                           "group_by1" => _m("Group by") ,
                           "g1_direction" => " " ,
+                          "gb_header" => " " ,
                           "group_title" => _m("Group title format") ,
                           "group_bottom" => _m("Group bottom format") ,
                           "cond1field" => _m("Condition 1") ,
@@ -728,6 +731,7 @@ function getViewTypes() {
                            "o2_direction" => " " ,
                            "group_by1" => _m("Group by") ,
                            "g1_direction" => " " ,
+                           "gb_header" => " " ,
                            "group_title" => _m("Group title format") ,
                            "group_bottom" => _m("Group bottom format") ,
                            "listlen" => _m("Max number of items"),
@@ -778,6 +782,7 @@ function getViewTypes() {
                           "o2_direction" => " " ,
                           "group_by1" => _m("Group by") ,
                           "g1_direction" => " " ,
+                          "gb_header" => " " ,
                           "group_title" => _m("Group title format") ,
                           "group_bottom" => _m("Group bottom format") ,
                           "cond1field" => _m("Condition 1") ,
@@ -809,6 +814,7 @@ function getViewTypes() {
                                "o2_direction" => " " ,
                                "group_by1" => _m("Group by") ,
                                "g1_direction" => " " ,
+                               "gb_header" => " " ,
                                "group_title" => _m("Group title format") ,
                                "group_bottom" => _m("Group bottom format") ,
                                "cond1field" => _m("Condition 1") ,
