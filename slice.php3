@@ -42,7 +42,7 @@ http://www.apc.org/
 //timeorder           // rev - reverse publish date order
                      // (less priority than "order")
 //no_scr              // if true, no scroller is displayed
-//all_scr             // if true, scroller shows also 'All no scroller is displayed
+//all_scr             // if true, scroller shows also 'All'
 //scr_go              // sets scroller to specified page
 //scr_url             // redefines the page where the scroller should go (it is
                      // usefull if you include slice.php3 from another php script)
@@ -214,11 +214,7 @@ if (!$slice_info OR $slice_info['deleted']>0) {
 }
 
 // Use right language (from slice settings) - languages are used for scroller (Next, ...)
-$lang_file = substr($slice_info['lang_file'], 0, 2);
-if (!$LANGUAGE_NAMES[$lang_file]) {
-    $lang_file = "en";
-}
-bind_mgettext_domain(AA_INC_PATH."lang/".$lang_file."_output_lang.php3");
+bind_mgettext_domain(AA_INC_PATH."lang/".$slice->getLang()."_output_lang.php3");
 
 if (!$slice_info['even_odd_differ']) {
     $slice_info['even_row_format'] = "";
@@ -361,7 +357,10 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
 // compact view ----------------------------------------------------------------
 if (!is_object($scr)) {
     $sess->register('scr');
-    $scr_url_param = ($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap))."&amp;";
+    if ( isset($als) AND is_array($als)) {
+        $scr_als_param = '&amp;'. htmlentities(HttpGetParameters(array('als'=>$als)));
+    }
+    $scr_url_param = ($scr_url ? $sess->url("$scr_url") : $sess->MyUrl($slice_id, $encap)).$scr_als_param."&amp;";
     $scr = new easy_scroller( 'scr', $scr_url_param, $slice_info['d_listlen'], 0);
 }
 // display 'All' option in scroller
