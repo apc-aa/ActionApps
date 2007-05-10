@@ -40,24 +40,24 @@ function con_url($url, $params) {
     return htmlentities(get_url($url, $params));
 }
 
-/** get_url function
- *  Appends any number of QUERY_STRING parameters (separated by &) to given URL,
- *  using apropriate ? or &.
- * @param $url
- * @param $params
- */
-function get_url($url, $params) {
-    list($path, $fragment) = explode( '#', $url, 2 );
+/** makes url parameters to use with GET request from given parameters */
+function HttpGetParameters($parameters) {
     $param_string = '';
-    if (!is_array($params)) {
-        $param_string = $params;
+    if (!is_array($parameters)) {
+        $param_string = $parameters;
     } else {
         $delimiter = '';
-        foreach ($params as $variable => $value) {
-            // you can use it in two ways:
+        foreach ($parameters as $variable => $value) {
+            // you can use it in three ways:
             //   1) $params = array('a=1', 'text=OK%20boy')
             //   2) $params = array('a' => 1, 'b' => 'OK boy')
-            if ( is_numeric($variable)) {
+            //   3) $params = array('als' => array('MY_ALIAS'=>x), 'b' => 'OK boy')
+            if ( is_array($value) ) {
+                foreach ($value as $inner_key => $inner_value) {
+                    $param_string .= $delimiter. $variable. '['.rawurlencode($inner_key). ']='. rawurlencode($inner_value);
+                    $delimiter     = '&';
+                }
+            } elseif ( is_numeric($variable)) {
                 $param_string .= $delimiter. $value;
             } else {
                 $param_string .= $delimiter. rawurlencode($variable). '='. rawurlencode($value);
@@ -65,6 +65,15 @@ function get_url($url, $params) {
             $delimiter     = '&';
         }
     }
+    return $param_string;
+}
+
+/** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
+ *  using apropriate ? or &. */
+function get_url($url, $params) {
+    list($path, $fragment) = explode( '#', $url, 2 );
+
+    $param_string = HttpGetParameters($params);
     return $path . (strstr($path, '?') ? "&" : "?"). $param_string. ($fragment ? '#'.$fragment : '') ;
 }
 

@@ -568,7 +568,7 @@ class AA_Sortorder {
 
 /** getSortFromUrl function
  *  Returns sort[] array used by QueryZids functions
- *  $sort - sort definition in varios formats:
+ *  $sort - sort definition in various formats:
  *     1)   sort = headline........-
  *     2)   sort[0] = headline........-
  *     3)   sort[0][headline........]=d

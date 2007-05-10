@@ -158,6 +158,8 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_UPDATED',     'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_NEW',         'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',array('type' => 'ITEM_UPDATED',     'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',array('type' => 'ITEM_NEW',         'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
     }
 
     /** get_handlers_newwwwww function
@@ -727,6 +729,12 @@ function Event_ItemUpdated_Ekoinfocentrum( $type, $slice, $slice_type, &$ret_par
  * @param $foo
  * @param $foo2
  */
+/** Send email with answer to Profem user with the answer (from item) */
+function Event_ItemUpdated_Profem( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
+    return SendFilledItem($ret_params, 64);
+}
+
+
 function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     $short_id  = $ret_params->getValue('short_id........');              // item's short_id is in params
     $akce_id   = trim($ret_params->getValue('unspecified.....'));              // akce_id

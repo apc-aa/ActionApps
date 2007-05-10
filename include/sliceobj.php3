@@ -180,9 +180,10 @@ class AA_Slice {
      * @param $item_id
      * @param $aa_value
      */
-    function getWidgetAjaxHtml($field_id, $item_id, $aa_value) {
-        return $this->fields->getWidgetAjaxHtml($field_id, $item_id, $aa_value);
+    function getWidgetAjaxHtml($field_id, $item_id, $visual='') {
+        return $this->fields->getWidgetAjaxHtml($field_id, $item_id, $visual);
     }
+
     /** getLang function
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */

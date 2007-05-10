@@ -98,7 +98,7 @@ class ViewCommand {
 
 /** Class for storing set of url commands for view  */
 class AA_View_Commands {
-    var $commands;     /** array of obkects of ViewCommand class */
+    var $commands;     /** array of objects of ViewCommand class */
 
     /** AA_View_Commands function
      *  constructor - calls parseCommand()
@@ -184,7 +184,23 @@ class AA_View_Commands {
             // substitute url aliases in cmd
             if (isset($als) AND is_array($als)) {
                 foreach ($als as $k => $v) {
-                    $cmd_part = str_replace($k, $v, $cmd_part);
+                    // we are replacing the aliases in the url, so you can write
+                    // something like {view.php3?vid=12&cmd[]=x-34-CAMPAIGN&als[CAMPAIGN]=42525}
+                    // which displays item 42525. als[] could come through url, also.
+                    // Be carefull with alias names - It is good idea to use longer
+                    // aliases (say 8 characters), because you can come into trouble
+                    // if you use say als[x], because then all 'x'es are replaced in
+                    // cmd including the first x in cmd[]=x-34-..
+
+                    // you can use also _#CAMPAIGN in url:
+                    // {view.php3?vid=12&cmd[]=x-34-_%23CAMPAIGN&als[CAMPAIGN]=42525}
+                    // (%23 is urlencoded %23)
+                    if (substr($k,0,2) != '_#') {
+                        $k2 = '_#'.$k;
+                    }
+                    $cmd_part = str_replace($k2, $v, $cmd_part);
+
+                    $cmd_part = str_replace($k,  $v, $cmd_part);
                 }
             }
 

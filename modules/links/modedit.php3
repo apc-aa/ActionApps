@@ -169,6 +169,7 @@ list( $name, $slice_url, $lang_file, $owner, $deleted, $slice_owners ) =
 // load module specific data
 $SQL= " SELECT * FROM links WHERE id='$p_source_id'";
 
+$db->query($SQL);
 if ($db->next_record()) {
     while (list($key,$val,,) = each($db->Record)) {
         if (!is_numeric($key)) {

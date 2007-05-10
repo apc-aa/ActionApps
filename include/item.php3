@@ -504,7 +504,7 @@ class AA_Item {
      */
     function getWidgetAjaxHtml($field_id) {
         $tmpobj = AA_Slices::getSlice($this->getSliceID());
-        return $tmpobj->getWidgetAjaxHtml($field_id, $this->getItemID(), $this->getAaValue($field_id));
+        return $tmpobj->getWidgetAjaxHtml($field_id, $this->getItemID());
     }
 
     /** getbaseurl function
@@ -1584,8 +1584,9 @@ class AA_Item {
      *
      *  Creates item object just from item id and fills all necessary structures
      *  @param  zid     - an item id - zid object, unpacked or short id
+     *  @param  renew   - regenerate the item form database
      */
-    function getItem($zid) {
+    function getItem($zid, $renew=false) {
         /** array of all items grabbed from database during rendering of the
          *  page
          */
@@ -1597,14 +1598,17 @@ class AA_Item {
             return false;
         }
         $zid = (strtolower(get_class($zid))=='zids') ? $zid : new zids($zid);
-
-        // is it cached inder its id (we expect short id here)
-        if ( isset($_i[$zid->id(0)]) ) {
-            return $_i[$zid->id(0)];
-        }
-        // but maybe it is long id, so we look for translation to short one
-        if ( isset($_l2s[$zid->id(0)]) AND isset($_i[$_l2s[$zid->id(0)]]) ) {
-            return $_i[$_l2s[$zid->id(0)]];
+        
+        // Do we want to count with inner cache (probably yes)
+        if (!$renew) { 
+            // is it cached inder its id (we expect short id here)
+            if ( isset($_i[$zid->id(0)]) ) {
+                return $_i[$zid->id(0)];
+            }
+            // but maybe it is long id, so we look for translation to short one
+            if ( isset($_l2s[$zid->id(0)]) AND isset($_i[$_l2s[$zid->id(0)]]) ) {
+                return $_i[$_l2s[$zid->id(0)]];
+            }
         }
 
         // no cached - get it from database

@@ -86,7 +86,7 @@ class storable_class {
             $property_id   = $property->getId();
             $property_type = $property->getType();
             $propery_value = $this->$property_id;
-            if ($property->isArray()) {
+            if ($property->isMulti()) {
                 if ( !is_array($propery_value) ) {
                     $propery_value = array();
                 }
@@ -129,7 +129,7 @@ class storable_class {
         foreach (call_user_func_array(array($class, 'getPersistentProperties'), array($class)) as $property) {
             $property_id   = $property->getId();
             $property_type = $property->getType();
-            if ($property->isArray()) {
+            if ($property->isMulti()) {
                 if ( is_array($this->$property_id) ) {
                     foreach($this->$property_id as $k => $v) {
                         $ret[$property_id][$k] = is_object($v) ? $v->getState() : $v;
@@ -193,6 +193,19 @@ class AA_Object extends storable_class {
     /** setOwner function
      * @param $owner_id
      */
+    function AA_Object($params) {
+        // ask class, which parameters uses and fill it
+        // call AA_Widget_Txt::getClassProperties()), for example
+
+        $i=0;
+        $class = get_class($this);
+        foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $name =>$property) {
+            if (isset($params[$i])) {
+                $this->$name = $params[$i++];
+            }
+        }
+    }
+
     function setOwner($owner_id) {
         $this->aa_owner = $owner_id;
     }
@@ -209,6 +222,10 @@ class AA_Object extends storable_class {
         $this->aa_id = $id;
     }
 
+    function getProperty($property_id, $default=null) {
+        return is_null($default) ? $this->$property_id : (($this->$property_id == '')? $default : $this->$property_id);
+    }
+
     /** save function
      *  Save the object to the database
      */
@@ -219,7 +236,7 @@ class AA_Object extends storable_class {
         foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $property) {
             $property_id   = $property->getId();
             $property_type = $property->getType();
-            if ($property->isArray()) {
+            if ($property->isMulti()) {
                 if ( is_array($this->$property_id) ) {
                     // all keys are numeric
                     foreach($this->$property_id as $k => $v) {
@@ -259,7 +276,7 @@ class AA_Object extends storable_class {
         // we have to ask database for subobjects, because it gives us the ids
         // as stored in database, not the ids of current subobjects, which could
         // be different. The $this->getSubObjects() donot help us here!
-        $to_delete = array_merge($to_delete, explode(',',$this->getProperty($to_delete[0], 'aa_subobjects')));
+        $to_delete = array_merge($to_delete, explode(',',$this->loadProperty($to_delete[0], 'aa_subobjects')));
         $varset    = new CVarset;
 
         $sqlin     = Cvarset::sqlin('object_id', $to_delete);
@@ -392,21 +409,31 @@ class AA_Object extends storable_class {
      * @param $name
      * @param $params
      */
-    function &factoryByName($mask, $name, $params=null) {
-        return AA_Object::factory($mask. ucwords(strtolower($name)), $params);
+    function &factoryByName($class_mask, $name, $params=null) {
+        return AA_Object::factory($class_mask. ucwords(strtolower($name)), $params);
     }
     /** getProperty function
      * @param $id
      * @param $property
      */
-    function getProperty($id, $property) {
+
+    function &factoryByString($class_mask, $string) {
+        // we do not use ParamExplode() - I  do not like the http:// replacement there
+        $a      = str_replace("#:", "__-__.", $string);    // dummy string
+        $b      = str_replace(":", "##Sx", $a);            // Separation string is //#Sx
+        $c      = str_replace("__-__.", ":", $b);         // change "#:" to ":"
+        $params = explode("##Sx", $c);
+        return AA_Object::factory($class_mask. ucwords(strtolower($params[0])), $params);
+    }
+
+    function loadProperty($id, $property) {
         return GetTable2Array("SELECT value FROM object_text WHERE object_id = '$id' AND property = '$property'", 'aa_first', 'value');
     }
     /** getObjectType
      * @param $id
      */
     function getObjectType($id) {
-        return AA_Object::getProperty($id, 'aa_type');
+        return AA_Object::loadProperty($id, 'aa_type');
     }
     /** load function
      * @param $id
@@ -438,7 +465,7 @@ class AA_Object extends storable_class {
                     continue;
                 }
                 $property    = $properties[$property_id];
-                if ( $property->isArray() ) {
+                if ( $property->isMulti() ) {
                     $p = (array)$obj->$property_id;
                     $p[] = ($property->isObject() ? AA_Object::load($v['value'], $property->getType()) : $v['value']);
                     $obj->$property_id   = $p;
@@ -456,7 +483,7 @@ class AA_Object extends storable_class {
                 if ( !is_object($properties[$property_id]) ) {
                     continue;
                 }
-                if ( $property->isArray() ) {
+                if ( $property->isMulti() ) {
                     $p = (array)$obj->$property_id;
                     $p[] = ($property->isObject() ? AA_Object::load($v['value'], $property->getType()) : $v['value']);
                     $obj->$property_id   = $p;
@@ -474,7 +501,7 @@ class AA_Object extends storable_class {
                 if ( !is_object($properties[$property_id]) ) {
                     continue;
                 }
-                if ( $property->isArray() ) {
+                if ( $property->isMulti() ) {
                     $p = (array)$obj->$property_id;
                     $p[] = ($property->isObject() ? AA_Object::load($v['value'], $property->getType()) : $v['value']);
                     $obj->$property_id   = $p;

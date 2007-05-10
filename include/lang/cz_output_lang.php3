@@ -10,6 +10,13 @@
 
 $mgettext_lang = "cz";
 
+
+$_m["Cancel"]
+ = "Storno";
+
+$_m["SAVE CHANGE"]
+ = "ULOŽIT ZMÌNU";
+
 # Unused messages
 $_m["Constant unique id"]
  = "Identifikaèní èíslo hodnoty";

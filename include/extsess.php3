@@ -81,7 +81,7 @@ class DB_AA extends DB_Sql {
     function query_nohalt($SQL) {
         $store_halt          = $this->Halt_On_Error;
         $this->Halt_On_Error = 'no';
-        $retval              = $this->dquery($SQL);
+        $retval              = $this->tquery($SQL);
         $this->Halt_On_Error = $store_halt;
         return $retval;
     }

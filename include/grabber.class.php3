@@ -692,7 +692,7 @@ class AA_Grabber_Form {
                     }
                 }
                 // create full_text......1 from full_text______1
-                $field_id = str_replace('._', '..', str_replace('__', '..', $dirty_field_id));
+                $field_id = AA_Field::getFieldIdFromVar($dirty_field_id);
                 $item->setFieldValue($field_id, $fld_value_arr);
             }
             $this->_items[] = $item;

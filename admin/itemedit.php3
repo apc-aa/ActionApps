@@ -48,9 +48,6 @@ require_once AA_INC_PATH."sliceobj.php3";
 //mimo include mlx functions
 require_once AA_INC_PATH."mlx.php";
 
-$debug=1;
-$debugtimes=1;
-
 if ( file_exists( AA_INC_PATH."usr_validate.php3" ) ) {
     require_once AA_INC_PATH."usr_validate.php3";
 }
@@ -201,8 +198,6 @@ if ( ($insert || $update) AND (count($err)<=1) AND is_array($prifields) ) {
     // added_to_db contains id
     // removed $oldcontent4id (see ItemContent::storeItem)
     $added_to_db = $content4id->storeItem($insert ? 'insert' : 'update');     // invalidatecache, feed
-
-    exit;
 
     if (count($err) <= 1) {
         page_close();

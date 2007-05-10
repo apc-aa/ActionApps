@@ -1,3 +1,44 @@
+05/10/07 - much improved AJAX editing - The input types are slowly moved to
+(honzam)   AA_Widget class. Ajax editing currently uses this approach.
+           {ajax:<item_id>:<field_id>} allows to display correct input type
+           (widget) based on the setting of the field.
+           Not all widgets are currently rewritten for using in AJAX editing,
+           but there is defined fallback mechanism for all the widgets, so all
+           the fields are editable with correct options (including constants,
+           slice items selects, ...).
+           Also parameters for each widget are moved directly to AA_Widget_*
+           classes as AA_Property. It will allow to add new widgets just by
+           defining new class (based on AA_ Widget). All will work automaticaly
+           including Param Wizard, ...
+         - (mass) Modify content feature of item maneger now allows to select
+           not only current items or user selection, but also all itmes
+           in slice, all trahsed items, ...
+         - new experimental "named expression" syntax:
+              {define:name:expr} and {var:name:parms...}
+           The {define:name:expr} must be processed before the {var:name} is
+           processed when the page is generated. You can use parameters with
+           {var:name:param1:param2:...:...} the expression then will use
+           _#1, _#2, ... for each parameter, just like:
+             {define:username:My name is#: _#1} and ussage {var:username:Joseph}
+           You can use it for
+              - creating on-line "aliases",
+              - passing parameters between nested views,
+              - ...
+         - it is possible to "group by" using only first 1, 2, or 3, letters
+           of the field in views
+         - better spam filter in discussions - http links are not allowed
+           for some fields (like subject, author, ...)
+         - fixed problem with using page scroller on page, which uses slice.php3
+           and als[] aliases. The aliases are not lost on other pages, now.
+         - storeItem() function now uses $flags array instead of separate
+           function parameters, which is easier to maintain.
+           The new flag "throw_events" introduced - allows to skip thowing event
+           on item insert/update (good for mass import of items)
+         - chracterset conversion scripts are updated to the latest version,
+           which fixes one bug in UTF-8 encoding
+         - fixed problem with "call time pass by reference" warning of PHP
+         - cookies manipulation javascript functions moved to aajslib.php3,
+           so it is accessible also on user pages
 05/09/07 - ActionApps code clean-up.
 (honzam)    - added comments for functions, classes, ...
             - cleaner code used, identation of 4 spaces used in every script,...
