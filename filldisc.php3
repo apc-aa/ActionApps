@@ -94,9 +94,22 @@ $err["Init"] = "";       // error array (Init - just for initializing variable)
 
 
 // test for spam
-$discussion_fields = array('d_parent','d_item_id','d_subject','d_author','d_e_mail','d_body','d_state','d_flag','d_free1','d_free2','d_url_address','d_url_description');
-foreach ($discussion_fields as $field) {
-    if ( IsSpamText($$field) ) {
+$discussion_fields = array (
+    'd_parent'         => 0,   // allowed number of 'http' substings
+    'd_item_id'        => 0,
+    'd_subject'        => 0,
+    'd_author'         => 0,
+    'd_e_mail'         => 0,
+    'd_body'           => 4,
+    'd_state'          => 0,
+    'd_flag'           => 0,
+    'd_free1'          => 4,
+    'd_free2'          => 4,
+    'd_url_address'    => 1,
+    'd_url_description'=> 0
+    );
+foreach ($discussion_fields as $field => $tolerance) {
+    if ( IsSpamText($$field, $tolerance) ) {
          echo _m("Not accepted, sorry. Looks like spam.");
          exit;
     }
