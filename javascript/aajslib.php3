@@ -205,27 +205,6 @@ function convertToForm(divtag, item_id, fid) {
 
 */
 
-function displayInput(valdivid, item_id, fid) {
-    // already editing ?
-    if ( $(valdivid).readAttribute('aaedit') == '1') {
-        return;
-    }
-    var alias_name = $(valdivid).readAttribute('aaalias');
-
-    $(valdivid).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
-    new Ajax.Request( AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
-        parameters: { field_id:   fid,
-                      item_id:    item_id,
-                      alias_name: alias_name,
-                      form:       1
-                     },
-        onSuccess: function(transport) {
-            $(valdivid).update(transport.responseText);  // new value
-            $(valdivid).setAttribute('aaedit', '1');
-        }
-    });
-}
-
 function proposeChange(combi_id, item_id, fid, change) {
     var valdivid   = 'ajaxv_'+combi_id;
     var alias_name = $(valdivid).readAttribute('aaalias');
@@ -237,7 +216,7 @@ function proposeChange(combi_id, item_id, fid, change) {
         parameters: { field_id:   fid,
                       item_id:    item_id,
                       alias_name: alias_name,
-                      content:    $('ajaxi_'+combi_id).value,     // encodeURIComponent(document.getElementById('ajaxi_'+combi_id).value)
+                      content:    $F('ajaxi_'+combi_id),     // encodeURIComponent(document.getElementById('ajaxi_'+combi_id).value)
                       do_change:  do_change
                      },
         onSuccess: function(transport) {
@@ -252,6 +231,30 @@ function proposeChange(combi_id, item_id, fid, change) {
         }
     });
 }
+
+/** grabs Item_id from aa variable in AA form */
+//function GetItemIdFromId4Form(input_id) {
+//    // aa[i<item_id>][<field_id>][]
+//    var parsed = input_id.split("]");
+//    return parsed[0].substring(4);
+//}
+//
+///** Grabs Field id from aa variable in AA form */
+//function GetFieldIdFromId4Form(input_id) {
+//    // aa[i<item_id>][<field_id>][]
+//    var parsed = input_id.split("]");
+//    var dirty_field_id = parsed[1].substring(1);
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('__', '..');
+//    dirty_field_id = dirty_field_id.replace('._', '..');
+//    return dirty_field_id;
+//}
 
 function AcceptChange(change_id, divid) {
    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
@@ -278,4 +281,125 @@ function CancelChanges(item_id, fid, divid) {
     });
 }
 
+
+function isArray(obj) {
+   return (obj.constructor.toString().indexOf("Array") != -1);
+}
+
+function displayInput(valdivid, item_id, fid) {
+    // already editing ?
+    if ( $(valdivid).readAttribute('aaedit') == '1') {
+        return;
+    }
+    var alias_name = $(valdivid).readAttribute('aaalias');
+
+    $(valdivid).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
+    new Ajax.Request( AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
+        parameters: { field_id:   fid,
+                      item_id:    item_id,
+                      alias_name: alias_name,
+                      aaaction:   'DISPLAYINPUT'
+                     },
+        onSuccess: function(transport) {
+            $(valdivid).update(transport.responseText);  // new value
+            $(valdivid).setAttribute('aaedit', '1');
+        }
+    });
+}
+
+/** This function replaces the older one - proposeChange
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function DoChange(input_id) {
+    var valdivid   = 'ajaxv_'+input_id;
+    var alias_name = $(valdivid).readAttribute('aaalias');
+    var content    = Array();
+    var i          = 0;
+
+    if ( $(input_id+'[]') != null ) {
+        if (typeof($F(input_id+'[]')) == 'undefined') { // unchecked checkbox is undefined
+            content.push('0');
+        } else if (isArray($F(input_id+'[]'))) {
+            content = content.concat($F(input_id+'[]'));
+        } else {
+            content.push($F(input_id+'[]'));
+        }
+    }
+
+    while ( $(input_id+'['+ i +']') != null) {
+        if (typeof($F(input_id+'['+ i +']')) == 'undefined') { // unchecked checkbox is undefined
+            content.push('0');
+        } else if (isArray($F(input_id+'['+ i +']'))) {
+            content = content.concat($F(input_id+'['+ i +']'));
+        } else {
+            content.push($F(input_id+'['+ i +']'));
+        }
+        i++;
+    }
+
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
+        parameters: { input_id:   input_id,
+                      alias_name: alias_name,
+                      aaaction:   'DOCHANGE',
+                      'content[]':    content    // encodeURIComponent(document.getElementById('ajaxi_'+combi_id).value)
+                     },
+        onSuccess: function(transport) {
+            $('ajaxv_'+input_id).update(transport.responseText);  // new value
+            $('ajaxch_'+input_id).update('');
+            $(valdivid).setAttribute("aaedit", "0");
+        }
+    });
+}
+
+
+/* Cookies */
+
+function SetCookie(name, value) {
+   var expires = new Date();
+   expires.setTime (expires.getTime() + (1000 * 60 * 60 * 24 * 1)); // a day
+   document.cookie = name + "=" + escape(value) +
+                      "; expires=" + expires.toGMTString() +
+                      "; path=/";
+    // + ((expires == null) ? "" : ("; expires=" + expires.toGMTString()))
+    // + ((path == null)    ? "" : ("; path=" + path))
+    // + ((domain == null)  ? "" : ("; domain=" + domain))
+    // + ((secure == true)  ? "; secure" : "");
+}
+
+function getCookieVal(offset) {
+    var endstr = document.cookie.indexOf(";", offset);
+    if (endstr == -1)
+        endstr = document.cookie.length;
+    return unescape(document.cookie.substring(offset, endstr));
+}
+
+function GetCookie(name) {
+    var arg = name + "=";
+    var alen = arg.length;
+    var clen = document.cookie.length;
+    var i = 0;
+    while (i < clen) {
+        var j = i + alen;
+        if (document.cookie.substring(i, j) == arg)
+        return getCookieVal(j);
+        i = document.cookie.indexOf(" ", i) + 1;
+        if (i == 0) break;
+    }
+    return null;
+}
+
+function DeleteCookie(name) {
+    var exp = new Date();
+    exp.setTime (exp.getTime() - 1);
+    var cval = GetCookie (name);
+    document.cookie = name + "=" + cval + "; expires=" + exp.toGMTString() + "; path=/";
+}
+
+function ToggleCookie(name,val) {
+    if ( GetCookie(name) != val )
+        SetCookie(name,val);
+    else
+        DeleteCookie(name);
+}
 
