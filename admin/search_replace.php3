@@ -569,9 +569,11 @@ if ( !$fill ) {               // for the first time - directly from item manager
     if ( $fill ) {    // we really want to fill fields
         if ($_GET[SEARCH_REPLACE_PREFIX] AND (strpos($_GET[SEARCH_REPLACE_PREFIX], 'AA_Transformation_')===0)) {
             $transformation = AA_Components::factory($_GET[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_GET[SEARCH_REPLACE_PREFIX]));
-            $zids    = ( ($group == 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
-            $updated_items = 0;  // number of updated items
+            $zids           = ( ($group == 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
+            $updated_items  = 0;  // number of updated items
+
             for ( $i=0; $i<=$zids->count(); $i++ ) {
+
                 $content4id    = new ItemContent($zids->zid($i));
                 $sli_id  = $content4id->getSliceID();
                 $item_id = $content4id->getItemID();
@@ -589,7 +591,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
 
                 $newcontent4id->setItemID($item_id);
                 $newcontent4id->setSliceID($sli_id);
-                if ($newcontent4id->storeItem( 'update', false, false)) {    // not invalidatecache, not feed
+                if ($newcontent4id->storeItem( 'update', array(false, false, false))) {    // not invalidatecache, not feed, no events
                     $updated_items++;
                 }
                 $slices2invalidate[$sli_id] = $sli_id;
@@ -598,8 +600,13 @@ if ( !$fill ) {               // for the first time - directly from item manager
                 foreach($slices2invalidate as $sli_id) {
                     $GLOBALS['pagecache']->invalidateFor("slice_id=$sli_id");
                 }
+
+                // we disabled events, so at the end we should update auth data
+                // for Reader Management slice
+                AuthMaintenance();
             }
         }
+
         $Msg     = MsgOK(_m("Items selected: %1, Items sucessfully updated: %2",
                                            array($zids->count(), $updated_items)));
         if ((string)$group == (string)"sel_item") {

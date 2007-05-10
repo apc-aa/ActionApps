@@ -955,10 +955,13 @@ class AA_Inputfield {
             $this->echoo( "&nbsp;*" );
         }
     }
+
     function help($hlp) {
         if ( $hlp ) {
             $this->echoo( "<div class=\"tabhlp\">$hlp</div>" );
         }
+    }
+
     function morehelp($hlp) {
         if ( $hlp ) {
             $this->echoo( "&nbsp;<a href=".safe($hlp)." target='_blank'>?</a>" );
@@ -2950,7 +2953,7 @@ function IncludeManagerJavascript() {
         var aa_live_checkbox_file = "'. $sess->url(AA_INSTAL_PATH. "live_checkbox.php3") .'";
         var aa_live_change_file   = "'. $sess->url(AA_INSTAL_PATH. "live_change.php3") .'"; ');
     FrmJavascriptFile( 'javascript/manager.js' );
-    FrmJavascriptFile( 'javascript/ajax.js' );
+    FrmJavascriptFile( 'javascript/aajslib.php3' );
 }
 
 /** getRadioBookmarkRow function
@@ -3042,7 +3045,12 @@ function FrmItemGroupSelect( &$items, &$searchbar, $list_type, $messages, $addit
                 $out .= getRadioBookmarkRow( $v, $k, $list_type, $messages['view_items'], true, is_array($bookparams) ? $bookparams['id'] : null);
             }
         }
-        $out .= getRadioBookmarkRow( _m('All active items'), '', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All active items'),         'AA_BIN_ACTIVE', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All items'),                'AA_ALL', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All pending items'),        'AA_BIN_PENDING', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All expired items'),        'AA_BIN_EXPIRED', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All items in holding bin'), 'AA_BIN_HOLDING', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All items in trash bin'),   'AA_BIN_TRASH', $list_type, $messages['view_items']);
     }
     // aditional group (test one, for examle)
     if ( isset($additional) AND is_array($additional) ) {
@@ -3065,14 +3073,21 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
         $zids = new zids(null, 'l');
         $zids->set_from_item_arr($items);
     } else {                   // user defined by bookmark
-        if ( $group == '' ) {
-            // all active items in the slice
-            $conds = false;
-        } else {
-            $searchbar->setFromBookmark($group);
-            $conds = $searchbar->getConds();
+        switch ($group) {
+            case 'AA_ALL':         $conds = false; $bins = AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH;  break;
+            case 'AA_BIN_PENDING': $conds = false; $bins = AA_BIN_PENDING; break;
+            case 'AA_BIN_EXPIRED': $conds = false; $bins = AA_BIN_EXPIRED; break;
+            case 'AA_BIN_ACTIVE':  $conds = false; $bins = AA_BIN_ACTIVE;  break;
+            case 'AA_BIN_HOLDING': $conds = false; $bins = AA_BIN_HOLDING; break;
+            case 'AA_BIN_TRASH':   $conds = false; $bins = AA_BIN_TRASH;   break;
+            case 'AA_BIN_ACTIVE':
+            case '':               $conds = false; $bins = AA_BIN_ACTIVE;  break;
+            default:
+                $searchbar->setFromBookmark($group);
+                $conds = $searchbar->getConds();
+                $bins  = AA_BIN_ACTIVE;
         }
-        $zids  = QueryZIDs( array($slice_id), $conds );
+        $zids  = QueryZIDs( array($slice_id), $conds, '',  $bins);
     }
     return $zids;
 }
