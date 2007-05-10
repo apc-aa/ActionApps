@@ -39,7 +39,7 @@
  */
 function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $type="all") {
     foreach ((array)$variable as $var) {
-        $valid = _ValidateSingleInput($variableName, $inputName, $var, &$err, $needed, $type);
+        $valid = _ValidateSingleInput($variableName, $inputName, $var, $err, $needed, $type);
         if ( !$valid ) {
             break;
         }
