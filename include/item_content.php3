@@ -33,6 +33,7 @@ require_once AA_INC_PATH."feeding.php3";
 /**
  * AA_Value - Holds information about one value - could be multiple,
  *            could contain flags...
+ *          - the values are always plain (= no quoting, no htmlspecialchars...)
  */
 class AA_Value {
     /** array of the values */
@@ -54,8 +55,8 @@ class AA_Value {
             }
             $this->flag = !is_null($flag) ? $flag : get_if($value[0]['flag'], 0);
         } elseif ( !is_null($value) ) {
-            $this->val  = $value;
-            $this->flag = !is_null($flag) ? $flag : 0;
+            $this->val[] = $value;
+            $this->flag  = !is_null($flag) ? $flag : 0;
         }
     }
 
@@ -70,6 +71,17 @@ class AA_Value {
     /** clear function
      *
      */
+    /** Returns the value for a field. If it is a multi-value
+    *   field, this is the first value. */
+    function getFlag($i=0) {
+        return $this->flag;
+    }
+
+    /** Returns number of values */
+    function valuesCount() {
+        return count($this->val);
+    }
+
     function clear() {
         $this->val  = array();
         $this->flag = 0;
@@ -326,7 +338,7 @@ class ItemContent {
      * @param $field_id
      */
     function getAaValue($field_id) {
-        return new AA_Value( $this->getValue($field_id) );
+        return new AA_Value( $this->content[$field_id] );
     }
     /** getValues function
      * @param $field_id
@@ -525,7 +537,7 @@ class ItemContent {
 
         $this->setItemID($id);
         $this->setSliceID($slice_id);
-        $added_to_db = $this->storeItem( $insert ? 'insert' : 'update', $invalidatecache, false);     // invalidatecache, feed
+        $added_to_db = $this->storeItem($insert ? 'insert' : 'update', array($invalidatecache, false));     // invalidatecache, feed
 
         return $added_to_db ? array(0=> ($insert ? INSERT : UPDATE) ,1=>$id) : false;
     }
@@ -563,13 +575,21 @@ class ItemContent {
      *      insert_if_new - the item is stored only if the item with this id
      *                      ($this->getItemID()) is not in the database.
      *                      Otherwise it is skiped (not stored)
-     *    @param bool   $invalidatecache   should we invalidate the cache for the
-     *                                     slice?
-     *    @param bool   $feed     procces feeding (as in in the slice setting)?
+     *    @param array  $flags    additional item processing flags.:
+     *                  $flags[0] - invalidatecache - should we invalidate
+     *                                                 the cache for the slice?
+     *
+     *                  $flags[1] - feed            - procces feeding (as in in
+     *                                                the slice setting)?
+     *                  $flags[2] - throw_events    - issue update/insert event?
      *    @param string $context  special parameter used for thumbnails
      */
-    function storeItem( $mode, $invalidatecache=true, $feed=true, $context='direct' ) {
+    function storeItem( $mode, $flags = array(), $context='direct' ) {
         global $event, $itemvarset;
+
+        $invalidatecache = isset($flags[0]) ? $flags[0] : true;
+        $feed            = isset($flags[1]) ? $flags[1] : true;
+        $throw_events    = isset($flags[2]) ? $flags[2] : true;
 
         $itemvarset = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
 
@@ -709,10 +729,12 @@ class ItemContent {
             FeedItem($id);
         }
 
-        if ($mode == 'insert') {
-            $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
-        } else {
-            $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
+        if ($throw_events) {
+            if ($mode == 'insert') {
+                $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
+            } else {
+                $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
+            }
         }
         if ($debugsi) {
             huhl("StoreItem err=",$err);

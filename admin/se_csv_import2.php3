@@ -220,7 +220,7 @@ class AA_Csv_Importer {
 
             if (!$err) {
                 $itemContent->setSliceID($this->slice_id);
-                $added_to_db = $itemContent->storeItem($this->actionIfItemExists, false);     // not invalidate cache
+                $added_to_db = $itemContent->storeItem($this->actionIfItemExists, array(false));     // not invalidate cache
                 if ($added_to_db == false) {
                     $err = _m("Cannot store item to DB"). ' '. ItemContent::LastErrMsg();
                 }

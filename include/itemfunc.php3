@@ -641,7 +641,7 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert, $invalidateca
     $content4id = new ItemContent($content4id);
     $content4id->setItemID($id);
     $content4id->setSliceID($slice_id);
-    return $content4id->storeItem( $insert ? 'insert' : 'update', $invalidatecache, $feed, $context);     // invalidatecache, feed
+    return $content4id->storeItem( $insert ? 'insert' : 'update', array($invalidatecache, $feed), $context);     // invalidatecache, feed
 } // end of StoreItem
 
 // -----------------------------------------------------------------------------
