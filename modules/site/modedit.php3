@@ -195,7 +195,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     ModW_HiddenRSpotId();
     FrmStaticText(_m("Id"), $module_id, false);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
-    $include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/site/site.php3?site_id=$module_id\"-->";
+    $include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/site/site.php3?site_id=$module_id\"--&gt;";
     FrmInputText("slice_url", _m("URL"), $slice_url, 254, 25, false,
     _m("The file will probably contain just the following include:"). "$include_cmd" );
     FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
