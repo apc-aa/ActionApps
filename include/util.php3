@@ -1095,18 +1095,17 @@ class AA_Widget extends AA_Components {
         }
     }
 
-
-    /** returns select options created from given array
+    /** returns options array with marked selected oprtions, missing options,...
      *  This method is rewritten get_options() method form formutil.php3
      */
-    function getOptions( $aa_value, $use_name=false, $testval=false, $restrict='all', $add_empty=false, $do_not_select=false) {
+    function getOptions( $aa_value, $use_name=false, $testval=false, $add_empty=false) {
         $selectedused  = false;
-        $select_string = ( $do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
 
         $already_selected = array();     // array where we mark selected values
         $pair_used        = array();     // array where we mark used pairs
-        $this->_fillSelected($aa_value); // fill selected array by all values in order we can print invlaid values later
+        $this->_fillSelected($aa_value); // fill selected array by all values in order we can print invalid values later
 
+        $ret = array();
         $arr = $this->getConstArr();
         if (is_array($arr)) {
             foreach ( $arr as $k => $v ) {
@@ -1122,39 +1121,77 @@ class AA_Widget extends AA_Components {
                 $pair_used[$k."aa~$v"] = true;   // mark this pair - do not use it again
 
                 $select_val = $testval ? $v : $k;
-                $selected   = $this->ifSelected($select_val, $select_string);
-                if ($selected != '') {
+                $selected   = $this->ifSelected($select_val, true);
+                if ($selected) {
                     $selectedused = true;
                     $already_selected[(string)$select_val] = true;  // flag
                 }
-                if ( ($restrict == 'selected')   AND !$selected ) continue;  // do not print this option
-                if ( ($restrict == 'unselected') AND $selected  ) continue;  // do not print this option
-                $ret .= "<option value=\"". htmlspecialchars($k) ."\" $selected>".htmlspecialchars($v)."</option>";
+                $ret[] = array('k'=>$k, 'v'=>$v, 'selected' =>  ($selected ? true : false), 'mis' => false);
             }
         }
 
         // now add all values, which is not in the array, but field has this value
         // (this is slice inconsistence, which could go from feeding, ...)
-        if ( isset( $this->_selected ) AND is_array( $this->_selected ) AND ($restrict != 'unselected')) {
+        if ( isset( $this->_selected ) AND is_array( $this->_selected ) ) {
             foreach ( $this->_selected as $k =>$v ) {
                 if ( !$already_selected[$k] ) {
-                    $ret .= "<option value=\"". htmlspecialchars($k) ."\" selected class=\"sel_missing\">".htmlspecialchars($k)."</option>";
+                    $ret[] = array('k'=>$k, 'v'=>$v, 'selected' => true, 'mis' => true);
                     $selectedused = true;
                 }
             }
         }
         if ( $add_empty ) {
-            $emptyret = '<option value=""';
-            if ($selectedused == false) {
-                $emptyret .= ' selected class="sel_on"';
-            }
-            $emptyret .= '> </option>';
-            $ret       = $emptyret . $ret;
+            // put empty oprion to the front
+            array_unshift($ret, array('k'=>'', 'v'=>'', 'selected' => !$selectedused, 'mis' => false));
         }
         return $ret;
     }
 
+    /** returns select options created from given array
+     *  This method is rewritten get_options() method form formutil.php3
+     */
+    function getSelectOptions( &$options, $restrict='all', $do_not_select=false) {
 
+        $select_string = ( $do_not_select ? ' class="sel_on"' : ' selected class="sel_on"');
+
+        $ret = '';
+        foreach ( $options as $option ) {
+            if ( ($restrict == 'selected')   AND !$option['selected'] ) {
+                continue;  // do not print this option
+            }
+            if ( ($restrict == 'unselected') AND $option['selected'] ) {
+                continue;  // do not print this option
+            }
+            $selected = $option['selected'] ? $select_string : '';
+            $missing  = $option['mis']      ? 'class="sel_missing"' : '';
+            $ret     .= "<option value=\"". htmlspecialchars($option['k']) ."\" $selected $missing>".htmlspecialchars($option['v'])."</option>";
+        }
+        return $ret;
+    }
+
+    /**
+    * Prints html tag <input type="radio" or ceckboxes .. to 2-column table
+    * - for use internal use of FrmInputMultiChBox and FrmInputRadio
+    */
+    function getInMatrix($records, $ncols, $move_right) {
+        if (is_array($records)) {
+            if (! $ncols) {
+                return implode('', $records);
+            }
+            $nrows = ceil (count ($records) / $ncols);
+            $ret = '<table border="0" cellspacing="0">';
+            for ($irow = 0; $irow < $nrows; $irow ++) {
+                $ret .= '<tr>';
+                for ($icol = 0; $icol < $ncols; $icol ++) {
+                    $pos = ( $move_right ? $ncols*$irow+$icol : $nrows*$icol+$irow );
+                    $ret .= '<td>'. get_if($records[$pos], "&nbsp;") .'</td>';
+                }
+                $ret .= '</tr>';
+            }
+            $ret .= '</table>';
+        }
+        return $ret;
+    }
 
     /** @return widget HTML for using as AJAX component
      *  @param  $aa_variable - the variable holding the value to display
@@ -1173,9 +1210,10 @@ class AA_Widget extends AA_Components {
             $multiple     = $this->multiple() ? ' multiple' : '';
             $required     = $aa_variable->isRequired();
 
-            $ret  = "<select name=\"$input_name\" id=\"$input_name\"$multiple>";
-            $ret .= $this->getOptions( $aa_variable->getAaValue(), $use_name, false, 'all', !$required );
-            $ret .= "</select>";
+            $ret      = "<select name=\"$input_name\" id=\"$input_name\"$multiple>";
+            $options  = $this->getOptions($aa_variable->getAaValue(), $use_name, false, !$required);
+            $ret     .= $this->getSelectOptions( $options );
+            $ret     .= "</select>";
         } else {
             $delim = '';
             for ( $i = 0; $i < $aa_variable->valuesCount(); $i++ ) {
@@ -1195,9 +1233,9 @@ class AA_Widget extends AA_Components {
 
     /* Creates all common ajax editing buttons to be used by different inputs */
     function _finalizaAjaxHtml($widget_html, $input_id, $repre_value) {
-        $widget_html  .= "<input type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"DoChange('$input_id')\">"; //ULOŽIT ZM?NU
-        $widget_html  .= "<input type=\"button\" value=\"". _m('Cancel') ."\" onclick=\"$('ajaxv_$input_id').update(". '$F(\'ajaxh_'.$input_id.'\'))'."; $('ajaxv_$input_id').setAttribute('aaedit', '0');\">";
-        $widget_html  .= " <input type=\"hidden\" id=\"ajaxh_$input_id\" value=\"".htmlspecialchars($repre_value)."\">";
+        $widget_html  .= "\n<input type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"DoChange('$input_id')\">"; //ULOŽIT ZMÌNU
+        $widget_html  .= "\n<input type=\"button\" value=\"". _m('Cancel') ."\" onclick=\"$('ajaxv_$input_id').update(". '$F(\'ajaxh_'.$input_id.'\'))'."; $('ajaxv_$input_id').setAttribute('aaedit', '0');\">";
+        $widget_html  .= "\n<input type=\"hidden\" id=\"ajaxh_$input_id\" value=\"".htmlspecialchars($repre_value)."\">";
         return $widget_html;
     }
 }
@@ -1374,7 +1412,6 @@ class AA_Widget_Fld extends AA_Widget {
 
         return $this->_finalizaAjaxHtml($ret, $input_id, $repre_value);
     }
-
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -1709,6 +1746,41 @@ class AA_Widget_Mch extends AA_Widget {
             'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'text', false, true, 'text', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d")
             );
     }
+
+    /** Returns one checkbox tag - Used in inputMultiChBox */
+    function getOneChBoxTag($option, $name, $add='') {
+        $ret = "\n<nobr><input type=\"checkbox\" name=\"$name\" id=\"$name\" value=\"".
+                   htmlspecialchars($option['k']) ."\" $add";
+        if ( $option['selected'] ) {
+            $ret .= " checked";
+        }
+        $ret .= ">".htmlspecialchars($option['v'])."</nobr>";
+        return $ret;
+    }
+
+    /** @return widget HTML for using as AJAX component
+     *  @param  $aa_variable - the variable holding the value to display
+     *  @param  $repre_value - current code used for representation of the
+     *                         variable
+     */
+    function getAjaxHtml($aa_variable, $repre_value) {
+
+        $input_id    = $aa_variable->getId();
+        $ret   = '';
+
+        $use_name     = $this->getProperty('use_name', false);
+        $required     = $aa_variable->isRequired();
+
+        $options      = $this->getOptions($aa_variable->getAaValue(), $use_name);
+        $htmlopt      = array();
+        for ( $i=0 ; $i < count($options); $i++) {
+            $htmlopt[]  = $this->getOneChBoxTag($options[$i], $input_id ."[$i]");
+        }
+
+        $ret = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false));
+        return $this->_finalizaAjaxHtml($ret, $input_id, $repre_value);
+    }
+
 }
 
 /** Multiple Selectbox widget */
@@ -2324,6 +2396,7 @@ class AA_Field {
     function required() {
         return (bool) $this->getProperty('required');
     }
+
     /** getWidget function
      *
      */
@@ -2459,6 +2532,23 @@ class AA_Field {
     *      we always add [] at the end, so it becames array at the end
     *   Example:
     *       aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
+    *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
+    *   Format is:
+    *       aa[i<long_item_id>][modified_field_id][]
+    *   Note:
+    *      first brackets contain
+    *          'u'+long_item_id when item is edited (the field is rewriten, rest
+    *                           of item is untouched)
+    *          'i'+long_item_id when item is edited (the value is added to current
+    *                           value of the field, rest of item is untouched)
+    *          'n<number>_long_slice_id' if you want to add the item to slice_id
+    *                                    <number> is used to add more than one
+    *                                    item at the time
+    *      modified_field_id is field_id, where all dots are replaced by '_'
+    *      we always add [] at the end, so it becames array at the end
+    *   Example:
+    *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
+    *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
     */
     function getId4Form($item_id, $field_id) {
