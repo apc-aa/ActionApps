@@ -166,6 +166,24 @@ $tablelist = array(   'active_sessions' => "(
                           last_changed int(11) NOT NULL default '0',
                           PRIMARY KEY  (username)
                       )",
+                      'change' => "(
+                          `id` varbinary(32) NOT NULL default '                                ',
+                          `resource_id` varbinary(32) NOT NULL default '                                ',
+                          `type` char(20) default NULL,
+                          `user` char(60) default NULL,
+                          `time` bigint(20) NOT NULL default '0',
+                          PRIMARY KEY  (`id`),
+                          KEY `type_resource_time` (`type`,`resource_id`,`time`)
+                      )",
+                      'change_record' => "(
+                          `id` bigint(20) NOT NULL auto_increment,
+                          `change_id` varbinary(32) NOT NULL default '                                ',
+                          `selector` varbinary(255) default NULL,
+                          `priority` int(11) NOT NULL default '0',
+                          `value` longtext NOT NULL,
+                          `type` varchar(32) NOT NULL default '',
+                          PRIMARY KEY  (`id`)
+                      )",
                       'constant' => "(
                           id varbinary(16) NOT NULL default '',
                           group_id varbinary(16) NOT NULL default '',
@@ -191,12 +209,12 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (group_id)
                       )",
                       'content' => "(
-                          item_id varbinary(16) NOT NULL default '',
-                          field_id varbinary(16) NOT NULL default '',
+                          item_id varbinary(16) NOT NULL default '                ',
+                          field_id varbinary(16) NOT NULL default '                ',
                           number bigint(20) default NULL,
                           `text` mediumtext,
                           flag smallint(6) default NULL,
-                          KEY `text` (`text`(10)),
+                          KEY `text` (`text`(12)),
                           KEY item_id (item_id,field_id,`text`(16))
                      )",
                      'cron' => "(
@@ -374,9 +392,9 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (name)
                       )",
                       'item' => "(
-                          id varbinary(16) NOT NULL default '',
+                          id varbinary(16) NOT NULL default '                ',
                           short_id int(11) NOT NULL auto_increment,
-                          slice_id varbinary(16) NOT NULL default '',
+                          slice_id varbinary(16) NOT NULL default '                ',
                           status_code smallint(5) NOT NULL default '0',
                           post_date bigint(20) NOT NULL default '0',
                           publish_date bigint(20) default NULL,
@@ -391,10 +409,11 @@ $tablelist = array(   'active_sessions' => "(
                           disc_app int(11) default '0',
                           externally_fed char(150) NOT NULL default '',
                           moved2active int(10) NOT NULL default '0',
-                          PRIMARY KEY  (id),
-                          KEY short_id (short_id),
-                          KEY slice_id_2 (slice_id,status_code,publish_date),
-                          KEY expiry_date (expiry_date)
+                          PRIMARY KEY  (`id`),
+                          UNIQUE KEY `short_id` (`short_id`),
+                          KEY `slice_id_2` (`slice_id`,`status_code`,`publish_date`),
+                          KEY `expiry_date` (`expiry_date`),
+                          KEY `publish_date` (`publish_date`)
                       )",
                       'jump' => "(
                           slice_id varbinary(16) NOT NULL default '',
@@ -529,12 +548,13 @@ $tablelist = array(   'active_sessions' => "(
                       'log' => "(
                           id int(11) NOT NULL auto_increment,
                           `time` bigint(20) NOT NULL default '0',
-                          `user` varchar(60) NOT NULL default '',
-                          `type` varchar(10) NOT NULL default '',
+                          `user` varchar(60) default NULL,
+                          `type` varchar(10) default NULL,
                           selector varchar(255) default NULL,
                           params varchar(128) default NULL,
                           PRIMARY KEY  (id),
-                          KEY `time` (`time`)
+                          KEY `time` (`time`),
+                          KEY `type_time` (`type`,`time`)
                       )",
                       'membership' => "(
                           groupid int(11) NOT NULL default '0',
@@ -611,38 +631,38 @@ $tablelist = array(   'active_sessions' => "(
                           KEY digest (digest)
                       )",
                       'object_float' => "(
-                          `id` bigint(20) NOT NULL auto_increment,
-                          `object_id` varbinary(32) NOT NULL default '',
-                          `property` varbinary(16) NOT NULL default '',
+                          `id` bigint(20) NOT NULL auto_increment',
+                          `object_id` varbinary(32) NOT NULL default '                                ',
+                          `property` varbinary(16) NOT NULL default '                ',
                           `priority` smallint(20) default NULL,
                           `value` double default NULL,
                           `flag` smallint(6) default NULL,
                           PRIMARY KEY  (`id`),
                           KEY `item_id` (`object_id`,`property`,`value`),
-                          KEY `integer` (`value`)
-                        )",
+                          KEY `property` (`property`,`value`)
+                      )",
                       'object_integer' => "(
-                          `id` bigint(20) NOT NULL auto_increment,
-                          `object_id` varbinary(32) NOT NULL default '',
-                          `property` varbinary(16) NOT NULL default '',
+                          `id` bigint(20) NOT NULL auto_increment',
+                          `object_id` varbinary(32) NOT NULL default '                                ',
+                          `property` varbinary(16) NOT NULL default '                ',
                           `priority` smallint(20) default NULL,
                           `value` bigint(20) default NULL,
                           `flag` smallint(6) default NULL,
                           PRIMARY KEY  (`id`),
                           KEY `item_id` (`object_id`,`property`,`value`),
-                          KEY `integer` (`value`)
-                        )",
+                          KEY `property` (`property`,`value`)
+                      )",
                       'object_text' => "(
-                          `id` bigint(20) NOT NULL auto_increment,
-                          `object_id` varbinary(32) NOT NULL default '',
-                          `property` varbinary(16) NOT NULL default '',
+                          `id` bigint(20) NOT NULL auto_increment',
+                          `object_id` varbinary(32) NOT NULL default '                                ',
+                          `property` varbinary(16) NOT NULL default '                ',
                           `priority` smallint(20) default NULL,
                           `value` longtext,
                           `flag` smallint(6) default NULL,
                           PRIMARY KEY  (`id`),
-                          KEY `text` (`value`(10)),
-                          KEY `item_id` (`object_id`,`property`,`value`(16))
-                        )",
+                          KEY `object_id` (`object_id`,`property`,`value`(16)),
+                          KEY `property` (`property`,`value`(10))
+                      )",
                       'pagecache' => "(
                           id varbinary(32) NOT NULL default '',
                           content longtext,
@@ -875,7 +895,7 @@ $tablelist = array(   'active_sessions' => "(
                           id int(11) NOT NULL auto_increment,
                           `type` varbinary(10) NOT NULL default '',
                           `password` varbinary(255) NOT NULL default '',
-                          uid varbinary(40) NOT NULL default '',
+                          `uid` varbinary(40) NOT NULL,
                           mail char(40) NOT NULL default '',
                           name char(80) NOT NULL default '',
                           description char(255) NOT NULL default '',
@@ -907,6 +927,7 @@ $tablelist = array(   'active_sessions' => "(
                           o2_direction tinyint(3) unsigned default NULL,
                           group_by1 varbinary(16) default NULL,
                           g1_direction tinyint(3) unsigned default NULL,
+                          `gb_header` tinyint(4) default NULL,
                           group_by2 varbinary(16) default NULL,
                           g2_direction tinyint(3) unsigned default NULL,
                           cond1field varbinary(16) default NULL,
