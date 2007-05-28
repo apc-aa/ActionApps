@@ -72,22 +72,7 @@ var AA_Config = {
 }
 
 <?php
-readfile($dir. 'base.js'      ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-readfile($dir. 'string.js'    ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-
-readfile($dir. 'enumerable.js'); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-
-readfile($dir. 'array.js'     ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-readfile($dir. 'hash.js'      ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-readfile($dir. 'range.js'     ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-
-readfile($dir. 'ajax.js'      ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-readfile($dir. 'dom.js'       ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-readfile($dir. 'selector.js'  ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-readfile($dir. 'form.js'      ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-readfile($dir. 'event.js'     ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-readfile($dir. 'position.js'  ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-
+readfile($dir. 'prototype.js' ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
 readfile($dir. 'tooltip.js'   );
 ?>
 
@@ -316,9 +301,10 @@ function DoChange(input_id) {
     var alias_name = $(valdivid).readAttribute('aaalias');
     var content    = Array();
     var i          = 0;
+    var add_empty  = false;
 
     if ( $(input_id+'[]') != null ) {
-        if (typeof($F(input_id+'[]')) == 'undefined') { // unchecked checkbox is undefined
+        if ( (typeof($F(input_id+'[]')) == 'undefined') || ($F(input_id+'[]')==null)) { // unchecked checkbox is undefined
             content.push('0');
         } else if (isArray($F(input_id+'[]'))) {
             content = content.concat($F(input_id+'[]'));
@@ -328,8 +314,8 @@ function DoChange(input_id) {
     }
 
     while ( $(input_id+'['+ i +']') != null) {
-        if (typeof($F(input_id+'['+ i +']')) == 'undefined') { // unchecked checkbox is undefined
-            content.push('0');
+        if ((typeof($F(input_id+'['+ i +']')) == 'undefined') || ($F(input_id+'['+ i +']')==null) ) { // unchecked checkbox is undefined
+            add_empty = true;
         } else if (isArray($F(input_id+'['+ i +']'))) {
             content = content.concat($F(input_id+'['+ i +']'));
         } else {
@@ -337,7 +323,11 @@ function DoChange(input_id) {
         }
         i++;
     }
+    if ( add_empty && content.count < 1 ) {
+        content.push('');  // it is different from push('0') above, because single chbox is 1|0, but multi is value..value|''
+    }
 
+    $(valdivid).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
     new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
         parameters: { input_id:   input_id,
                       alias_name: alias_name,
