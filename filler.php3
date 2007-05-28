@@ -65,8 +65,8 @@ function StripslashesDeep($value) {
     return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
 }
 
-// global variables should be quoted (since old AA code rely on that fact), 
-// however the new code should use $_POST, which are NOT quoted 
+// global variables should be quoted (since old AA code rely on that fact),
+// however the new code should use $_POST, which are NOT quoted
 
 if (!get_magic_quotes_gpc()) {
     // Overrides GPC variables
@@ -184,7 +184,7 @@ if ( $answer )    {
 if ( isset($_POST['aa']) ) {
     $grabber = new AA_Grabber_Form();
     $translations = null;
-    $saver        = new AA_Saver($grabber, $translations, null, 'insert_if_new', 'new');
+    $saver        = new AA_Saver($grabber, $translations, null, 'by_grabber');
     $saver->run();
     SendOkPage( array("success" => "insert" ));
     exit;

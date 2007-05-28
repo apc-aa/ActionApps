@@ -41,7 +41,7 @@ class AA_Saver {
     var $grabber;            /** the object which deliveres the data */
     var $transformations;    /** describes, what to do with data before storing */
     var $slice_id;           /** id of destination slice */
-    var $store_mode;         /** store-policy - how to store - overwrite | insert_if_new */
+    var $store_mode;         /** store-policy - how to store - overwrite | insert_if_new | by_grabber */
     var $id_mode;            /** id-policy    - how to construct id - old | new | combined */
     /** AA_Saver function
      * @param $grabber
@@ -71,7 +71,10 @@ class AA_Saver {
                 print("\n<br>AA_Saver->run(): we have item to store, hurray! -- ". $content4id->getItemID());
             }
 
-            switch ($this->id_mode) {
+            $id_mode    = ($this->store_mode == 'by_grabber') ? $this->grabber->getIdMode()    : $this->id_mode;
+            $store_mode = ($this->store_mode == 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
+
+            switch ($id_mode) {
                 // Create new item id (always the same for item-slice pair)
                 case 'combined' : $new_item_id = string2id($content4id->getItemID(). $this->slice_id); break;
 
@@ -110,7 +113,7 @@ class AA_Saver {
 
             // id_mode - overwrite or insert_if_new
             // (the $new_item_id should not be changed by storeItem)
-            if (!($new_item_id = $content4id->storeItem($this->store_mode))) {     // invalidatecache, feed
+            if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
                 print("\n<br>AA_Saver->run(): storeItem failed or skiped duplicate");
             } else {
                 if ($debugfeed >= 1) {
@@ -168,6 +171,22 @@ class AA_Grabber {
      *  Method called by the AA_Saver to get next item from the data input
      */
     function getItem() {}
+
+    /** If AA_Saver::store_mode is 'by_grabber' then this method tells Saver,
+     *  how to store the item.
+     *  @see also getStoreMode() method
+     */
+    function getIdMode() {
+        return 'new';
+    }
+
+    /** If AA_Saver::store_mode is 'by_grabber' then this method tells Saver,
+     *  how to store the item.
+     *  @see also getIdMode() method
+     */
+    function getStoreMode() {
+        return 'insert_if_new';
+    }
 
     /** prepare function
      *  Possibly preparation of grabber - it is called directly before getItem()
@@ -599,18 +618,23 @@ class AA_Grabber_Aarss extends AA_Grabber {
 *       aa[i<long_item_id>][modified_field_id][]
 *   Note:
 *      first brackets contain
-*          'i'+long_item_id when item is edited or
+*          'u'+long_item_id when item is edited (the field is rewriten, rest
+*                           of item is untouched)
+*          'i'+long_item_id when item is edited (the value is added to current
+*                           value of the field, rest of item is untouched)
 *          'n<number>_long_slice_id' if you want to add the item to slice_id
 *                                    <number> is used to add more than one
 *                                    item at the time
 *      modified_field_id is field_id, where all dots are replaced by '_'
 *      we always add [] at the end, so it becames array at the end
 *   Example:
-*       aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
+*       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
+*       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
 *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
 */
 class AA_Grabber_Form {
     var $_items;
+    var $_last_store_mode;
 
     function AA_Grabber_Form() {
         $_items = array();
@@ -629,13 +653,35 @@ class AA_Grabber_Form {
      */
     function htmlSetting($input_prefix, $params) {}
 
+    /** If AA_Saver::store_mode is 'by_grabber' then this method tells Saver,
+     *  how to store the item.
+     *  @see also getStoreMode() method
+     */
+    function getIdMode() {
+        return 'old';
+    }
+
+    /** If AA_Saver::store_mode is 'by_grabber' then this method tells Saver,
+     *  how to store the item.
+     *  @see also getIdMode() method
+     */
+    function getStoreMode() {
+        switch ($this->_last_store_mode) {
+            case 'add':    return 'add';
+            case 'update': return 'update';
+        }
+        // case 'new':
+        return 'insert';
+    }
+
     /** Method called by the AA_Saver to get next item from the data input */
     function getItem() {
-        if (!($itemcontent = current($this->_items))) {
+        if (!($tostore = current($this->_items))) {
             return false;
         }
         next($this->_items);
-        return $itemcontent;
+        $this->_last_store_mode = $tostore[1];
+        return $tostore[0];
     }
 
     /** Possibly preparation of grabber - it is called directly before getItem()
@@ -654,19 +700,42 @@ class AA_Grabber_Form {
         $id_trans_table = array();
 
         $aa = $_POST['aa'];
+
+        // just prepare ids, in order we can expand
+        // You can use _#n1_623553373823736362372726 as value, which stands for
+        // item id of the item
+        foreach ( $aa as $dirty_item_id => $item_fields) {
+            if ( $dirty_item_id{0} == 'n' ) {
+                $id_trans_table['_#'.$dirty_item_id] = new_id();
+            }
+        }
+        $trans_item_alias = array_keys($id_trans_table);
+        $trans_item_ids   = array_values($id_trans_table);
+
         foreach ( $aa as $dirty_item_id => $item_fields) {
 
             // common fields
             if ($dirty_item_id == 'all' ) {
                 continue;
             }
-            // edited item
+            // edited item - update = field content is changed to new value
+            elseif ( $dirty_item_id{0} == 'u' ) {
+                $item_id    = substr($dirty_item_id, 1);
+                $store_mode = 'update';
+                $item = AA_Item::getItem($item_id);
+                $item_fields['slice_id________'] = pack_id($item->getSliceId());
+            }
+            // edited item - insert = field content is added to the existing content of the field
             elseif ( $dirty_item_id{0} == 'i' ) {
-                $item_id = substr($dirty_item_id, 1);
+                $item_id    = substr($dirty_item_id, 1);
+                $store_mode = 'add';
+                $item = AA_Item::getItem($item_id);
+                $item_fields['slice_id________'] = pack_id($item->getSliceId());
             }
             // new items
             else {
-                $item_id       = new_id();
+                $item_id    = $id_trans_table['_#'.$dirty_item_id];
+                $store_mode = 'new';
 
                 //grabb slice_id of new item
                 $item_slice_id = substr($dirty_item_id, strpos($dirty_item_id, '_')+1);
@@ -688,6 +757,7 @@ class AA_Grabber_Form {
                 $fld_value_arr = array();
                 foreach ( (array)$val_array as $key => $value ) {
                     if (is_numeric($key)) {
+                        $value = str_replace($trans_item_alias, $trans_item_ids, $value);
                         $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
                     }
                 }
@@ -695,7 +765,7 @@ class AA_Grabber_Form {
                 $field_id = AA_Field::getFieldIdFromVar($dirty_field_id);
                 $item->setFieldValue($field_id, $fld_value_arr);
             }
-            $this->_items[] = $item;
+            $this->_items[] = array($item, $store_mode);
         }
         reset ($this->_items);
     }
