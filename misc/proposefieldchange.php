@@ -162,11 +162,11 @@ elseif ($_POST['aaaction']=='DISPLAYINPUT') {
     $alias       = (($_POST['alias_name'] == '') ? '' : '_#'.$_POST['alias_name']);
     $widget_html = $slice->getWidgetAjaxHtml($_POST['field_id'], $iid, $alias);
 
-    if ($iid == '9ef70aaad95b8abdd54f2f625c902346') {
-        setcookie("TestCookie", 'teal test', time()+3600);
-        $str = '{user},{user:id},{user:name},{user:password},{user:_#HEADLINE}';
-        echo AA_Stringexpand::unalias($str);
-    }
+//    if ($iid == '9ef70aaad95b8abdd54f2f625c902346') {
+//        setcookie("TestCookie", 'teal test', time()+3600);
+//        $str = '{user},{user:id},{user:name},{user:password},{user:_#HEADLINE}';
+//        echo AA_Stringexpand::unalias($str);
+//    }
 
 
     $encoder = new ConvertCharset;

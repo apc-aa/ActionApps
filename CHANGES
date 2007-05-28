@@ -1,3 +1,20 @@
+05/28/07 - multiple checkboxes input type has its own ajax output
+(honzam) - new url parameter AAnoSORT (set[]=sort-AAnoSORT) for view.php3, which
+           cut the sort setting in view off
+         - annonymous filler now supports new possibility to update already
+           filled items through aa[u536353...] syntax
+           (see changes on 04/15/07 for description)
+         - better quoting if the displayed text in {htmltoggle} and
+           {htmlajaxtoggle}, so the displayed text should not break
+           the javascript
+         - database structure updated to last verson in sql_update.php3 script
+            - better support for MySQL 5.0,
+            - field for grouping items in views by first letter, ...
+         - fixed typo in searchbar (admin interface), so it is functional again
+         - prototype (javascript library for AJAX, DHTML, ...) updated
+           to version 1.5.1
+05/16/07 - fixed help text for site include (thanks to Adam Sanchez)
+(honzam)
 05/10/07 - much improved AJAX editing - The input types are slowly moved to
 (honzam)   AA_Widget class. Ajax editing currently uses this approach.
            {ajax:<item_id>:<field_id>} allows to display correct input type
@@ -8,18 +25,18 @@
            slice items selects, ...).
            Also parameters for each widget are moved directly to AA_Widget_*
            classes as AA_Property. It will allow to add new widgets just by
-           defining new class (based on AA_ Widget). All will work automaticaly
+           defining new class (based on AA_ Widget). All will work automatically
            including Param Wizard, ...
-         - (mass) Modify content feature of item maneger now allows to select
-           not only current items or user selection, but also all itmes
-           in slice, all trahsed items, ...
+         - (mass) Modify content feature of item manager now allows to select
+           not only current items or user selection, but also all items
+           in slice, all trashed items, ...
          - new experimental "named expression" syntax:
               {define:name:expr} and {var:name:parms...}
            The {define:name:expr} must be processed before the {var:name} is
            processed when the page is generated. You can use parameters with
            {var:name:param1:param2:...:...} the expression then will use
            _#1, _#2, ... for each parameter, just like:
-             {define:username:My name is#: _#1} and ussage {var:username:Joseph}
+              {define:username:My name is#: _#1} and usage {var:username:Joseph}
            You can use it for
               - creating on-line "aliases",
               - passing parameters between nested views,
@@ -32,53 +49,58 @@
            and als[] aliases. The aliases are not lost on other pages, now.
          - storeItem() function now uses $flags array instead of separate
            function parameters, which is easier to maintain.
-           The new flag "throw_events" introduced - allows to skip thowing event
-           on item insert/update (good for mass import of items)
-         - chracterset conversion scripts are updated to the latest version,
+           The new flag "throw_events" introduced - allows to skip throwing
+           event on item insert/update (good for mass import of items)
+         - characterset conversion scripts are updated to the latest version,
            which fixes one bug in UTF-8 encoding
          - fixed problem with "call time pass by reference" warning of PHP
          - cookies manipulation javascript functions moved to aajslib.php3,
            so it is accessible also on user pages
 05/09/07 - ActionApps code clean-up.
 (honzam)    - added comments for functions, classes, ...
-            - cleaner code used, identation of 4 spaces used in every script,...
+            - cleaner code used, indentation of 4 spaces used in every script...
             - the sources should be compliant to ActionApps coding standards
               (http://actionapps.org/aa/doc/coding.html)
            Thanks to Lukas Panek.
 04/15/07 - new version of filling items from form - through aa[] array allowing
 (honzam)   multiple items to store at once. The format of the data is followiing
-                 aa[i<long_item_id>][modified_field_id][]
+                 aa[u<long_item_id>][modified_field_id][]
            Note:
-           First brackets contain
-              'i'+long_item_id when item is edited or
-              'n<number>_long_slice_id' if you want to add the item to slice_id
-                                        <number> is used to add more than one
-                                        item at the time
+              first brackets contain
+                  'u'+long_item_id when item is edited (the field is rewriten,
+                                   rest of item is untouched)
+                  'i'+long_item_id when item is edited (the value is added to
+                                   current value of the field, rest of item is
+                                   untouched)
+                  'n<number>_long_slice_id' if you want to add the item to
+                                            slice_id <number> is used to add
+                                            more than one item at the time
               modified_field_id is field_id, where all dots are replaced by '_'
               we always add [] at the end, so it becames array at the end
            Example:
-              aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
+               aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
+               aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
               aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
          - new AA_Item class which is able to cache items during page display.
            It should reduce number of SQL queries during page creation
-         - more time informations on SQL queries for debugtime option
+         - more time information on SQL queries for debugtime option
          - new class AA_Includer which will automatically include required class
            definitions (user defined actions/functions) for you in the future
            (not finished, yet).
-         - some query optimalization for GetItemContent()
+         - some query optimization for GetItemContent()
          - make sure that $_GET, _$POST, $_COOKIES are always unquoted
            (check in init_page.php3)
 03/29/07 - increased max size of val field in active_sessions (to mediumtext)
 (brazda)
 03/06/07 - new {formbreaktop:...} and {formbreakbottom:...} commands for
-(honzam)   spliting inputform into parts - the ussage is the same
+(honzam)   splitting inputform into parts - the ussage is the same
            as {formbreak:...}, but the tabs are displayed only on top or bottom,
            respectively
          - fixed bug of not working user administration, when all reader slices
            are marked as deleted
          - new possibility to use utf8 encoding in site module
            (en-utf8_site_lang.php3)
-02/28/07 - AA synchronization script in AA Cenral now is able to stynchronize
+02/28/07 - AA synchronization script in AA Central now is able to synchronize
 (honzam)   two remote slices. It works, but we need UI improvements and testing
 02/25/07 - started work on Central - the place, from which you can control many
 (honzam)   installed AAs. The first script part is used for synchronization
@@ -107,7 +129,7 @@
            for hide/show part of the page (like {htmltoggle}), but the hidden
            code is loaded into the page right after user demand (click)
            It creates the link text1 (or text2) and two divs, where only one is
-           visible at the time - first is displayed as defaut, the second is
+           visible at the time - first is displayed as default, the second is
            loaded by AJAX call on demand from specified url. The URL should be
            on the same server.
            The /javascript/aajslib.php3 shoud be included to the page by
@@ -116,7 +138,7 @@
              {htmlajaxtoggle:more &gt;&gt;:Econnect:less &gt;&gt;:/aboutEcn.htm}
          - new else_text option for {ifset:<condition>:<text>:<else_text>}
            - displayed, when the condition is not empty
-         - New {slice:name} function which displayes slice name :-)
+         - New {slice:name} function which displays slice name :-)
          - fixed problem with additional newlines in e-mails sent by AA
 02/06/07 - new possibility to grant AA permissions to only subset of users from
 (honzam)   Reader Slice. The "Reader Set" is defined by normal conditions, so
