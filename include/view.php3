@@ -435,6 +435,9 @@ function GetViewSort(&$view_info, $param_sort=null) {
 
     $sort = false;
     if ($param_sort['sort']) {
+        if ( $param_sort['sort'] == 'AAnoSORT' ) {
+            return false;
+        }
         $order    = new AA_Sortorder;
         $order->addSortFromString($param_sort['sort']);
         $sort = $order->getOrder();
