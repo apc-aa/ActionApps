@@ -631,7 +631,7 @@ $tablelist = array(   'active_sessions' => "(
                           KEY digest (digest)
                       )",
                       'object_float' => "(
-                          `id` bigint(20) NOT NULL auto_increment',
+                          `id` bigint(20) NOT NULL auto_increment,
                           `object_id` varbinary(32) NOT NULL default '                                ',
                           `property` varbinary(16) NOT NULL default '                ',
                           `priority` smallint(20) default NULL,
@@ -642,7 +642,7 @@ $tablelist = array(   'active_sessions' => "(
                           KEY `property` (`property`,`value`)
                       )",
                       'object_integer' => "(
-                          `id` bigint(20) NOT NULL auto_increment',
+                          `id` bigint(20) NOT NULL auto_increment,
                           `object_id` varbinary(32) NOT NULL default '                                ',
                           `property` varbinary(16) NOT NULL default '                ',
                           `priority` smallint(20) default NULL,
@@ -653,7 +653,7 @@ $tablelist = array(   'active_sessions' => "(
                           KEY `property` (`property`,`value`)
                       )",
                       'object_text' => "(
-                          `id` bigint(20) NOT NULL auto_increment',
+                          `id` bigint(20) NOT NULL auto_increment,
                           `object_id` varbinary(32) NOT NULL default '                                ',
                           `property` varbinary(16) NOT NULL default '                ',
                           `priority` smallint(20) default NULL,
@@ -1646,7 +1646,7 @@ if ( $dbcreate ) {
     // remove COMMENTS (MySQL 3 do not support it
     $def = preg_replace("/COMMENT\s+\'[^']+\'/im", "", $def);
 
-    $SQL = "  CREATE TABLE IF NOT EXISTS $t $def";
+    $SQL = "  CREATE TABLE IF NOT EXISTS `$t` $def";
     safe_echo($SQL);
     myquery($db, $SQL );
   }
