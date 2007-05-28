@@ -171,11 +171,12 @@ class aaprofile {
         $fnc = ParseFnc(substr($value,2));  // all default should have fnc:param format
         if ( $fnc ) {                       // call function
             $fncname = 'default_fnc_' . $fnc["fnc"];
-            $x = array( $fncname($fnc["param"]), ($value[0] == '1') );
-            return $x;
-        } else {
-            return array();
+            if (is_callable($fncname)) {
+                $x = array( $fncname($fnc["param"]), ($value[0] == '1') );
+                return $x;
+            }
         }
+        return array();
     }
 
     /** delUserProfile function

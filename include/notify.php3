@@ -72,7 +72,7 @@ function email_notify($slice_id, $event, $item_id, $extra = ""){
     $s = $db->f('s');
     $b = $db->f('b');
   } else {
-    die ("bad slice_id");
+    die ("email_notify(): bad slice_id ($slice_id)");
   }
 
   // determine subject of message

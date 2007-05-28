@@ -1,3 +1,14 @@
+05/28/07 - new Optimize_db_feed_inconsistency action in AA -> Optimize, which
+(honzam)   tests, if feeds table do not contain relations to non existant
+           slices. Also fixed for use with PHP4.
+         - inner node feeding setting page now displays wrong assignments to non
+           existant slice (database inconsistence after slice deletion)
+         - fixed problems with PHP4
+            - _AA_CoLoN_, ... was not correctly unescaped, so such strange
+              strings were displayed on the output
+            - class names are in lower case in php4, so functions (input types)
+              selection did not work correctly
+         - fixed typos in sql_update.php3
 05/28/07 - multiple checkboxes input type has its own ajax output
 (honzam) - new url parameter AAnoSORT (set[]=sort-AAnoSORT) for view.php3, which
            cut the sort setting in view off
