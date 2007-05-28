@@ -1337,17 +1337,14 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
  *  Expand a single, syntax element
  * @param $out
  * @param $level
- * @param $maxlevel
  * @param $item
  * @param $itemview
  * @param $aliases
  */
-function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
+function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
 
     global $contentcache, $als, $debug, $errcheck;
 
-    $maxlevel = max($maxlevel, $level); // stores maximum deep of nesting {}
-                                        // used just for speed optimalization (QuoteColons)
     // See http://apc-aa.sourceforge.net/faq#aliases for details
     // bracket could look like:
     // {alias:[<field id>]:<f_* function>[:parameters]} - return result of f_*
@@ -1390,20 +1387,19 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         huhe("Warning: $out: $parts[1] is not a field, don't wrap it in { } ");
       }
       $fce     = $parts[2];
-      return QuoteColons($level, $maxlevel, $item->$fce($parts[1], $parts[3]));
+      return QuoteColons($level, 1, $item->$fce($parts[1], $parts[3]));
       // QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( substr($out, 0, 7) == "switch(" ) {
       // replace switches
-      return QuoteColons($level, $maxlevel, parseSwitch( substr($out,7) ));
+      return QuoteColons($level, 1, parseSwitch( substr($out,7) ));
       // QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( substr($out, 0, 5) == "math(" ) {
       // replace math
-      return QuoteColons($level, $maxlevel,
+      return QuoteColons($level, 1,
         parseMath( // Need to unalias in case expression contains _#XXX or ( )
-            new_unalias_recurent(substr($out,5),"",0,
-                        $maxlevel,$item,$itemview,$aliases)) );
+            new_unalias_recurent(substr($out,5),"",0,1,$item,$itemview,$aliases)) );
 
     }
     elseif( substr($out, 0, 8) == "include(" ) {
@@ -1412,7 +1408,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
         return "";
       }
         $fileout = expandFilenameWithHttp(substr($out, 8, $pos-8));
-        return QuoteColons($level, $maxlevel, $fileout);
+        return QuoteColons($level, 1, $fileout);
         // QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( substr($out, 0, 8) == "include:") {
@@ -1464,7 +1460,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             if ($errcheck) huhl("Trying to expand include, but no valid hint in $out");
             return("");
         }
-        return QuoteColons($level, $maxlevel, $fileout);
+        return QuoteColons($level, 1, $fileout);
         // QuoteColons used to mark colons, which is not parameter separators.
     }
     elseif( ereg("^scroller:?([^}]*)$", $out, $parts)) {
@@ -1502,7 +1498,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     }
     elseif ( substr($out, 0,10) == "view.php3?" ) {
         // view do not use colons as separators => dequote before callig
-        return QuoteColons($level, $maxlevel, GetView(ParseViewParameters(DeQuoteColons(substr($out,10) ))));
+        return QuoteColons($level, 1, GetView(ParseViewParameters(DeQuoteColons(substr($out,10) ))));
     }
     // This is a little hack to enable a field to contain expandable { ... } functions
     // if you don't use this then the field will be quoted to protect syntactical characters
@@ -1526,7 +1522,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                 $param = array_map('DeQuoteColons',ParamExplode($parts[2]));
                 $ebres = call_user_func_array($fnctn, (array)$param);
             }
-            return QuoteColons($level, $maxlevel, $ebres);
+            return QuoteColons($level, 1, $ebres);
         }
 
         // main stringexpand functions.
@@ -1540,17 +1536,17 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             } else {
                 $res = $contentcache->get_result(array($stringexpand, 'expand'), $param, $additional_params);
             }
-            return QuoteColons($level, $maxlevel, $res);
+            return QuoteColons($level, 1, $res);
         }
         // else - continue
     }
     if (isset($item) ) {
         if (($out == "unpacked_id.....") || ($out == "id..............")) {
-            return QuoteColons($level, $maxlevel, $item->getItemID());
+            return QuoteColons($level, 1, $item->getItemID());
         } elseif ($out == "slice_id........") {
-            return QuoteColons($level, $maxlevel, $item->getSliceID());
+            return QuoteColons($level, 1, $item->getSliceID());
         } elseif ( AA_Fields::isField($out) ) {
-            return QuoteColons($level, $maxlevel, $item->f_h($out,"-"));
+            return QuoteColons($level, 1, $item->f_h($out,"-"));
             // QuoteColons used to mark colons, which is not parameter separators.
         }
         // look for {const_*:} for changing viewing type of constants
@@ -1565,7 +1561,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
                group $group_id */
             $value = getConstantValue($group_id, $what, $item->getval($parts[0]));
 
-            return QuoteColons($level, $maxlevel, $value);
+            return QuoteColons($level, 1, $value);
         }
     }
     // Look and see if its in the state variable in module site
@@ -1574,25 +1570,24 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
     // anything inside the value, and then makes sure any remaining quotes
     // don't interfere with caller
     if (isset($GLOBALS['apc_state'][$out])) {
-        return QuoteColons($level, $maxlevel, new_unalias_recurent($GLOBALS['apc_state'][$out],"",$level+1,$maxlevel,$item,$itemview,$aliases));
+        return QuoteColons($level, 1, new_unalias_recurent($GLOBALS['apc_state'][$out],"",$level+1, 1,$item,$itemview,$aliases));
     }
     // Pass these in URLs like als[foo]=bar,
     // Note that 8 char aliases like als[foo12345] will expand with _#foo12345
     elseif (isset($als[$out])) {
-        return QuoteColons($level, $maxlevel,
-            new_unalias_recurent($als[$out],"",$level+1,
-                $maxlevel,$item,$itemview,$aliases));
+        return QuoteColons($level, 1,
+            new_unalias_recurent($als[$out],"",$level+1,1,$item,$itemview,$aliases));
     }
     elseif (isset($aliases[$out])) {   // look for an alias (this is used by mail)
-        return QuoteColons($level, $maxlevel, $aliases[$out]);
+        return QuoteColons($level, 1, $aliases[$out]);
     }
     // Look for {_#.........} and expand now, rather than wait till top
     elseif (isset($item) && (substr($out,0,2) == "_#")) {
-        return QuoteColons($level, $maxlevel,$item->substitute_alias_and_remove($out));
+        return QuoteColons($level, 1,$item->substitute_alias_and_remove($out));
     }
     // first char of alias is @ - make loop to view all values from field
     elseif ( (substr($out,0,1) == "@") OR (substr($out,0,5) == "list:")) {
-        return QuoteColons($level, $maxlevel, parseLoop($out, $item));
+        return QuoteColons($level, 1, parseLoop($out, $item));
     }
     elseif (substr($out,0,8) == "mlx_view") {
         if(!$GLOBALS['mlxView']) {
@@ -1610,7 +1605,7 @@ function expand_bracketed(&$out,$level,&$maxlevel,$item,$itemview,$aliases) {
             huhl("Couldn't expand: \"{$out}\"");
             //trace("p");
         }
-        return QuoteColons($level, $maxlevel, "{" . $out . "}");
+        return QuoteColons($level, 1, "{" . $out . "}");
     }
 }
 
@@ -1664,20 +1659,17 @@ class AA_Stringexpand_Keystring extends AA_Stringexpand_Nevercache {
  */
 class AA_Unalias_Callback {
     var $level;
-    var $maxlevel;
     var $item;
     var $itemview;
     var $aliases;
     /** AA_Unalias_Callback function
      * @param $level
-     * @param $maxlevel
      * @param $item
      * @param $itemview
      * @param $aliases
      */
-    function AA_Unalias_Callback( $level, &$maxlevel, $item, $itemview, $aliases ) {
+    function AA_Unalias_Callback( $level, $item, $itemview, $aliases ) {
         $this->level    = $level;
-        $this->maxlevel = $maxlevel;
         $this->item     = $item;
         $this->itemview = $itemview;
         $this->aliases  = $aliases;
@@ -1686,7 +1678,7 @@ class AA_Unalias_Callback {
      * @param $match
      */
     function expand_bracketed_callback($match) {
-        return expand_bracketed($match[1], $this->level,$this->maxlevel,$this->item,$this->itemview,$this->aliases);
+        return expand_bracketed($match[1], $this->level,$this->item,$this->itemview,$this->aliases);
     }
 }
 
@@ -1703,24 +1695,21 @@ class AA_Unalias_Callback {
  * @param $itemview
  * @param $aliases
  */
-function new_unalias_recurent(&$text, $remove, $level, &$maxlevel, $item=null, $itemview=null, $aliases=null ) {
+function new_unalias_recurent(&$text, $remove, $level, $maxlevel, $item=null, $itemview=null, $aliases=null ) {
     global $debug;
 
     // make sure, that $contentcache is defined - we will use it in expand_bracketed()
     contentcache::global_instance();
 
-    $maxlevel = max($maxlevel, $level); // stores maximum deep of nesting {}
-                                        // used just for speed optimalization (QuoteColons)
-
     // Note ereg was 15 seconds on one multi-line example cf .002 secs
     //    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
 
-    $callback = new AA_Unalias_Callback($level+1,$maxlevel,$item,$itemview,$aliases);
+    $callback = new AA_Unalias_Callback($level+1,$item,$itemview,$aliases);
     while (preg_match('/[{]([^{}]+)[}]/s',$text)) {
+        // well it is not exactly maxlevel - it just means, we need to unquote colons
+        $maxlevel = 1;
         $text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback,'expand_bracketed_callback'), $text);
     }
-
-    $maxlevel = $callback->maxlevel;
 
     if (isset($item)) {
         return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text, explode("##",$remove)));
