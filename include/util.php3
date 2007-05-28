@@ -968,9 +968,12 @@ class AA_Components extends AA_Object {
      */
     function getClassNames($mask) {
         $right_classes = array();
+
+        // php4 returns classes all in lower case :-(
+        $mask          = strtolower($mask);
         $mask_length   = strlen($mask);
         foreach (get_declared_classes() as $classname) {
-            if ( substr($classname,0,$mask_length) == $mask ) {
+            if ( substr(strtolower($classname),0,$mask_length) == $mask ) {
                 $right_classes[] = $classname;
             }
         }
