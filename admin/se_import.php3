@@ -68,6 +68,12 @@ $SQL        = "SELECT name, id FROM feeds, slice LEFT JOIN feedperms ON slice.id
                   AND feeds.from_id='$p_slice_id' ORDER BY name";
 $exported   = GetTable2Array($SQL, 'unpack:id', 'name');
 
+              // lookup for inconcistence in the database
+              // feeding into nonexistant database
+$SQL        = "SELECT to_id FROM feeds LEFT JOIN slice ON feeds.to_id=slice.id
+                    WHERE feeds.from_id='$p_slice_id' AND slice.id IS NULL";
+$wrong_exp  = GetTable2Array($SQL, 'unpack:to_id', 'unpack:to_id');
+
               // export_to_all setting
 $SQL        = "SELECT export_to_all FROM slice WHERE slice.id='$p_slice_id'";
 $export_to_all = GetTable2Array($SQL, 'aa_first', 'export_to_all');
@@ -111,7 +117,7 @@ function UpdateImportExport(slice_id)
 <?php
   $useOnLoad = true;
   require_once AA_INC_PATH."menu.php3";
-  showMenu ($aamenus, "sliceadmin", "import");
+  showMenu($aamenus, "sliceadmin", "import");
 
   echo "<h1><b>" . _m("Admin - configure Content Pooling") . "</b></h1>";
   PrintArray($err);
@@ -135,14 +141,17 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <td align="center" valign="TOP">
 <select name="export_n" size="8" class="tabtxt">
   <?php
-  reset($all_slices);
   if ( isset($export_to) AND is_array($export_to)) {
-    while (list($s_id,$name) = each($all_slices))
-      if ( $export_to[$s_id] == "" )
-        echo "<option value=\"$s_id\"> $name </option>";
-  }else
-    while (list($s_id,$name) = each($all_slices))
-      echo "<option value=\"$s_id\"> $name </option>";
+      foreach ($all_slices as $s_id => $name) {
+          if ( $export_to[$s_id] == "" ) {
+              echo "<option value=\"$s_id\"> $name </option>";
+          }
+      }
+  } else {
+      foreach ($all_slices as $s_id => $name) {
+          echo "<option value=\"$s_id\"> $name </option>";
+      }
+  }
   ?>
 </select></td>
 <td><input type="button" value="  >>  " onClick = "MoveSelected('document.f.export_n','document.f.export_y')" align="center">
@@ -151,8 +160,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
 <select name="export_y" size="8" class="tabtxt" multiple>
   <?php
   if ( isset($export_to) AND is_array($export_to)) {
-      reset($export_to);
-      while (list($s_id,$name) = each($export_to)) {
+      foreach ($export_to as $s_id => $name) {
           echo "<option value=\"$s_id\"> $name </option>";
       }
   }    ?>
@@ -164,6 +172,9 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
   FrmInputChBox("export_to_all", _m("Enable export to any slice"), $export_to_all, true, "OnClick=\"ExportAllClick()\"");
   if ( isset($exported) AND is_array($exported) ) {
       FrmStaticText(_m("Currently exported to"), join("<br>",$exported), false, '', '', false);
+  }
+  if ( isset($wrong_exp) AND is_array($wrong_exp) ) {
+      FrmStaticText(_m("Wrong export (non existant slice!):"), join("<br>",$wrong_exp), false, '', '', false);
   }
 ?>
 </table></td></tr>
