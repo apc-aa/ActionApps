@@ -174,6 +174,93 @@ class Optimize_db_relation_dups extends Optimize {
 }
 
 
+/** Testing if feeds table do not contain relations to non existant slices
+ */
+class Optimize_db_feed_inconsistency extends Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Feeds table inconsistent records");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("Testing if feeds table do not contain relations to non existant slices (after slice deletion)");
+    }
+
+    /** Test function
+    * tests for duplicate entries
+    * @return bool
+    */
+    function test() {
+        $ret = true;
+
+        // test wrong destination slices
+        $SQL = "SELECT from_id,to_id FROM feeds LEFT JOIN slice ON feeds.to_id=slice.id
+                WHERE slice.id IS NULL";
+        $err = GetTable2Array($SQL, "unpack:from_id", 'unpack:to_id');
+        if (is_array($err) AND count($err) > 0) {
+            foreach ($err as $from_id => $to_id) {
+                $this->message( _m('Wrong destination slice id: %1 -> %2', array(AA_Slices::getName($from_id), $to_id)));
+            }
+            $ret = false;
+        }
+
+        // test wrong source slices
+        $SQL = "SELECT from_id,to_id FROM feeds LEFT JOIN slice ON feeds.from_id=slice.id
+                WHERE slice.id IS NULL";
+        $err = GetTable2Array($SQL, "unpack:from_id", 'unpack:to_id');
+        if (is_array($err) AND count($err) > 0) {
+            foreach ($err as $from_id => $to_id) {
+                $this->message( _m('Wrong source slice id: %1 -> %2', array($from_id, AA_Slices::getName($to_id))));
+            }
+            $ret = false;
+        }
+        if ($ret ) {
+            $this->message(_m('No wrong references found, hurray!'));
+        }
+        return $ret;
+    }
+
+    /** Name function
+    * @return bool
+    */
+    function repair() {
+        $db  = getDb();
+
+        // test wrong destination slices
+        $SQL = "SELECT to_id FROM feeds LEFT JOIN slice ON feeds.to_id=slice.id WHERE slice.id IS NULL";
+        $err = GetTable2Array($SQL, '', 'unpack:to_id');
+
+        if (is_array($err) AND count($err)>0 ) {
+            foreach ($err as $wrong_slice_id) {
+                $SQL = 'DELETE FROM `feeds` WHERE `to_id`=\''.q_pack_id($wrong_slice_id).'\'';
+                $db->query($SQL);
+            }
+        }
+
+        // test wrong source slices
+        $SQL = "SELECT from_id FROM feeds LEFT JOIN slice ON feeds.from_id=slice.id WHERE slice.id IS NULL";
+        $err = GetTable2Array($SQL, '', 'unpack:from_id');
+
+        if (is_array($err) AND count($err)>0 ) {
+            foreach ($err as $wrong_slice_id) {
+                $SQL = 'DELETE FROM `feeds` WHERE `from_id`=\''.q_pack_id($wrong_slice_id).'\'';
+                $db->query($SQL);
+            }
+        }
+
+        freeDb($db);
+        return true;
+    }
+}
+
+
+
 /** Fix user login problem, constants editiong problem, ...
  *  Replaces binary fields by varbinary and removes trailing zeros
  *  Needed for MySQL > 5.0.17
@@ -513,13 +600,14 @@ class Optimize_copy_content extends Optimize {
 
 $Msg = '';
 
-if ($_GET['test'] AND (strpos($_GET['test'], 'Optimize_')===0)) {
+// php4 returns class names in lower case, so we need itin lower case
+if ($_GET['test'] AND (strpos(strtolower($_GET['test']), 'optimize_')===0)) {
     $optimizer = AA_Components::factory($_GET['test']);
     $optimizer->test();
     $Msg .= $optimizer->report();
 }
 
-if ($_GET['repair'] AND (strpos($_GET['repair'], 'Optimize_')===0)) {
+if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'optimize_')===0)) {
     $optimizer = AA_Components::factory($_GET['repair']);
     $optimizer->repair();
     $Msg .= $optimizer->report();
@@ -535,8 +623,8 @@ foreach (AA_Components::getClassNames('Optimize_') as $optimize_class) {
     $optimize_descriptions[] = "
     <div>
       <div style=\"float: right;\">
-        <a href=\"?test=$optimize_class\">Test</a>
-        <a href=\"?repair=$optimize_class\">Repair</a>
+        <a href=\"". $sess->url("?test=$optimize_class") ."\">Test</a>
+        <a href=\"". $sess->url("?repair=$optimize_class") ."\">Repair</a>
       </div>
       <div>$description</div>
     </div>";
