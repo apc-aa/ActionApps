@@ -614,7 +614,7 @@ class AA_Searchbar extends storable_class {
         echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>".
               str_replace(' ','&nbsp;',$searchtext). "</b></td><td>";
         FrmSelectEasy("srchbr_order[$bar]", $this->order_fields, $fld);
-        echo '</td><td colspan="2" class=\"leftmenuy\">';
+        echo '</td><td colspan="2" class="leftmenuy">';
         FrmChBoxEasy("srchbr_order_dir[$bar]", $dir=='d');
         echo _m('Descending'). "</td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td></tr>";
     }
@@ -626,11 +626,11 @@ class AA_Searchbar extends storable_class {
 
                <td colspan=\"3\">
                <a href=\"javascript:document.".$this->form_name. ".submit()\">". _m('Search') ."</a> /
-               <a href=\"javascript:SearchBarAction(\"".$this->form_name. "\", \"clearsearch\", false, false)\">". _m('Clear') ."</a>
+               <a href=\"javascript:SearchBarAction('".$this->form_name. "', 'clearsearch', false, false)\">". _m('Clear') ."</a>
                </td>
                <td colspan=\"2\">
-                <a href=\"javascript:SearchBarAction(\"".$this->form_name. "\", \"bookmark\", \""._m('Stored search name') ."\",".
-                    ( !IfSlPerm(PS_BOOKMARK) ? "false" : '"'. _m('You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?').'"') .")\">". _m('Store') ."</a>";
+                <a href=\"javascript:SearchBarAction('".$this->form_name. "', 'bookmark', '"._m('Stored search name') ."',".
+                    ( !IfSlPerm(PS_BOOKMARK) ? "false" : "'". _m('You have the permission to add stored search globaly. Do you want to add this query as global (common to all slice users)?')."'") .")\">". _m('Store') ."</a>";
               echo "</td>";
 
               if ($this->hint != "") {
@@ -648,12 +648,12 @@ class AA_Searchbar extends storable_class {
                <td colspan=\"2\"><b>". _m('Stored searches') ."</b></td>
                <td>".
                $this->bookmarks->getSelectbox() .
-               " <a href=\"javascript:SearchBarAction(\"".$this->form_name ."\", \"bookmarkgo\",     false, false)\">". _m('View')   ."</a>
+               " <a href=\"javascript:SearchBarAction('".$this->form_name ."', 'bookmarkgo',     false, false)\">". _m('View')   ."</a>
                </td>
                <td colspan=\"4\">
-                 <span class=\"smalltext\"><a href=\"javascript:SearchBarActionConfirm(\"".$this->form_name ."\", \"bookmarkupdate\", \"". _m("Are you sure to refine current search?") ."\")\">". _m('Update') ."</a> /
-                 <a href=\"javascript:SearchBarAction(\"".$this->form_name ."\", \"bookmarkrename\", \"". _m("Enter new name") ."\", false)\">". _m('Rename') ."</a> /
-                 <a href=\"javascript:SearchBarActionConfirm(\"".$this->form_name ."\", \"bookmarkdelete\", \""._m("Are you sure to delete selected search?")."\")\">". _m('Delete') ."</a></span>
+                 <span class=\"smalltext\"><a href=\"javascript:SearchBarActionConfirm('".$this->form_name ."', 'bookmarkupdate', '". _m("Are you sure to refine current search?") ."')\">". _m('Update') ."</a> /
+                 <a href=\"javascript:SearchBarAction('".$this->form_name ."', 'bookmarkrename', '". _m("Enter new name") ."', false)\">". _m('Rename') ."</a> /
+                 <a href=\"javascript:SearchBarActionConfirm('".$this->form_name ."', 'bookmarkdelete', '"._m("Are you sure to delete selected search?")."')\">". _m('Delete') ."</a></span>
                </td>
               </tr>";
     }
@@ -665,7 +665,7 @@ class AA_Searchbar extends storable_class {
     function printBar() {
         global $slice_id;
 
-        echo '<input type="hidden" name="srchbr_akc"e value="1">
+        echo '<input type="hidden" name="srchbr_akce" value="1">
               <table width="100%" border="0" cellspacing="5" cellpadding="0"
               class="leftmenu" bgcolor="'. COLOR_TABBG .'">';
 
