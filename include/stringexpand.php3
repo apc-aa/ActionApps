@@ -435,15 +435,14 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
  */
 class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
-    /** expand function
-     * @param $switch_state_1
-     * @param $code_1
-     * @param $switch_state_2
-     * @param $code_2
-     */
+
     function expand($switch_state_1, $code_1, $switch_state_2, $code_2) {
+        // we can't use apostrophes and quotes in href="javacript:..." attribute
+        $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
+        $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
+
         $uniqid = uniqid();
-        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1', 'toggle_1_$uniqid', '$switch_state_2', 'toggle_2_$uniqid')\">$switch_state_1</a>\n";
+        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid')\">$switch_state_1</a>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
         return $ret;
@@ -464,15 +463,14 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
  *                           on demand (click on the link)
  */
 class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
-    /** expand function
-     * @param $switch_state_1
-     * @param $code_1
-     * @param $switch_state_2
-     * @param $url
-     */
+
     function expand($switch_state_1, $code_1, $switch_state_2, $url) {
+        // we can't use apostrophes and quotes in href="javacript:..." attribute
+        $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
+        $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
+
         $uniqid = uniqid();
-        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:AA_HtmlAjaxToggle('toggle_link_$uniqid', '$switch_state_1', 'toggle_1_$uniqid', '$switch_state_2', 'toggle_2_$uniqid', '$url')\">$switch_state_1</a>\n";
+        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:AA_HtmlAjaxToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid', '$url')\">$switch_state_1</a>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\"></div>\n";
         return $ret;
