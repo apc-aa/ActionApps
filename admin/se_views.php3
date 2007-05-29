@@ -119,7 +119,7 @@ echo "<h1><b>" . _m("Admin - design View") . "</b></h1>";
 PrintArray($err);
 echo $Msg;
 
-echo '<form name="fvtype" method=\"post\" action="'. $sess->url("./se_view.php3"). '">';
+echo '<form name="fvtype" method="post" action="'. $sess->url("./se_view.php3"). '">';
 
 FrmTabCaption(_m("Defined Views"));
 
