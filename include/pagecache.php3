@@ -223,8 +223,8 @@ class PageCache  {
         $keystring = join("','", (array)$keys);
         if ( $keystring != '' ) {
             $varset = new Cvarset();
-            $varset->doDeleteWhere('pagecache', "id IN ('$keystring')", true);
-            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id IN ('$keystring')", true);
+            $varset->doDeleteWhere('pagecache', "id IN ('$keystring')", 'nohalt');
+            $varset->doDeleteWhere('pagecache_str2find', " pagecache_id IN ('$keystring')", 'nohalt');
         }
     }
 

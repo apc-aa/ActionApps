@@ -1,3 +1,5 @@
+05/29/07 - fixed some typos (so view editing works again)
+(honzam)
 05/28/07 - new Optimize_db_feed_inconsistency action in AA -> Optimize, which
 (honzam)   tests, if feeds table do not contain relations to non existant
            slices. Also fixed for use with PHP4.
