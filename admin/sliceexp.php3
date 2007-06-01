@@ -52,8 +52,11 @@ if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 */
 
 set_time_limit( 120 );
+
+$exporter = new AA_Slice_Exporter($b_export_type, $b_export_gzip, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date, $b_export_hex, $b_export_views, $b_export_to_utf);
+
 if (isset($b_export_to_file)) {
-    exportToFile($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views);
+    $exporter->exportToFile($slice_id, $export_slices, $SliceID);
     exit;
 } else {
     // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -135,8 +138,8 @@ if (isset($b_export_to_file)) {
 </head>
 <body>
 <?php
-  require_once menu_include();   //show navigation column depending on $show
-  showMenu ($aamenus, "aaadmin","sliceexp");
+    require_once menu_include();   //show navigation column depending on $show
+    showMenu($aamenus, "aaadmin","sliceexp");
 ?>
 
 <h1><b><?php echo _m("Export slice structure") ?></b></h1>
@@ -145,7 +148,7 @@ if (isset($b_export_to_file)) {
 
 FrmTabCaption(_m("Export slice structure"));
 
-if ($SHOWTEXT == ""):
+if ($SHOWTEXT == "") {
 
 ?>
     <form name="f" method="post" action="<?php echo $sess->url("sliceexp.php3") ?>" onsubmit="return validate2();">
@@ -171,6 +174,7 @@ if ($SHOWTEXT == ""):
         <?php } ?>
         <input type="checkbox" name="b_export_hex" value="1" checked><?php echo _m("HEX output") ?><br>
         <input type="checkbox" name="b_export_to_file" value="1"><?php echo _m("Store exported data in file") ?><br><br>
+        <input type="checkbox" name="b_export_to_utf" value="1"><?php echo _m("Convert to UTF") ?><br><br>
         <table>
         <tr>
             <td class="tabtxt"><input type="checkbox" name="b_export_spec_date" value="1"><?php echo _m("Export data from specified dates: ") ?></td>
@@ -194,9 +198,9 @@ if ($SHOWTEXT == ""):
                 <table width="200"><tr><td width="100%">
                 <SELECT name="export_slices[]" size="8" class="tabtxt" multiple>
                 <?php
-                    reset($all_slices);
-                    while (list($s_id,$name) = each($all_slices))
+                    foreach ($all_slices as $s_id => $name) {
                         echo "<option value=\"$s_id\"> $name </option>";
+                    }
                 ?>
                 </select>
                 </td></tr>
@@ -217,9 +221,9 @@ if ($SHOWTEXT == ""):
     </form>
     </tr></td>
 <?php
-else:
-    exportToForm($b_export_type, $slice_id, $b_export_gzip, $export_slices, $SliceID, $b_export_struct, $b_export_data, $b_export_spec_date, $b_export_from_date, $b_export_to_date,$b_export_hex,$b_export_views);
-endif;
+} else {
+    $exporter->exportToForm( $slice_id, $export_slices, $SliceID );
+}
 ?>
 
 </table>

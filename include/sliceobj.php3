@@ -192,6 +192,13 @@ class AA_Slice {
         return isset($GLOBALS['LANGUAGE_NAMES'][$lang_file]) ? $lang_file : substr(DEFAULT_LANG_INCLUDE, 0, 2);
     }
 
+    /** getCharset function
+     *  Returns character encoding for the slice ('windows-1250', ...)
+     */
+    function getCharset()     {
+        return $GLOBALS["LANGUAGE_CHARSETS"][$this->getLang()];   // like 'windows-1250'
+    }
+
     /** sql_id function
      *  Return an id in a form that can be passed to sql, (needs outer quotes)
      */

@@ -175,6 +175,16 @@ class ConvertCharset {
     var $RecognizedEncoding; //This value keeps information if string contains multibyte chars.
     var $Entities; // This value keeps information if output should be with numeric entities.
 
+
+    /** Default conversions for this convertor */
+    var $from_charset;
+    var $to_varset;
+
+    function ConvertCharset($from_charset = null, $to_varset = null) {
+        $this->from_charset = $from_charset;
+        $this->to_varset    = $to_varset;
+    }
+
     /**
      * CharsetChange::NumUnicodeEntity()
      *
@@ -385,8 +395,16 @@ class ConvertCharset {
      * @return string Converted string in brand new encoding :)
      * @version 1.1 BETA 2003-10-21 01:09
      **/
-    function Convert($StringToChange, $FromCharset, $ToCharset, $TurnOnEntities = false)
-    {
+    function Convert($StringToChange, $FromCharset = null, $ToCharset = null, $TurnOnEntities = false) {
+
+        // get default conversions, if it is not specified in parameter
+        if ( is_null($FromCharset) ) {
+            $FromCharset = $this->from_charset;
+        }
+        if ( is_null($ToCharset) ) {
+            $ToCharset   = $this->to_charset;
+        }
+
         /** Check are there all variables **/
         if ($StringToChange == "") {
             print $this->DebugOutput(0, 3, "\$StringToChange");

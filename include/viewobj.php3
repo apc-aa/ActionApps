@@ -252,7 +252,7 @@ class AA_Views {
         $a = array();
         if ($slice_id) {
             $views = AA_Views::global_instance();
-            $SQL   = "SELECT id FROM view WHERE ". q_pack_id($slice_id);
+            $SQL   = "SELECT id FROM view WHERE slice_id='". q_pack_id($slice_id) ."'";
             $v_arr = GetTable2Array($SQL, 'NoCoLuMn', 'id');
             if (is_array($v_arr)) {
                 foreach ($v_arr as $id) {

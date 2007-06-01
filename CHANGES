@@ -1,3 +1,6 @@
+06/01/07 - export slice now allows convert exported data to utf-8
+(honzam)   It is handy if you are switching slices to another server, where
+           AA uses newer - utf-8 character encoding.
 05/29/07 - fixed some typos (so view editing works again)
 (honzam)
 05/28/07 - new Optimize_db_feed_inconsistency action in AA -> Optimize, which

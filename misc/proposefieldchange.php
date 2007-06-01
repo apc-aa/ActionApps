@@ -131,7 +131,7 @@ elseif ($_POST['aaaction']=='DOCHANGE') {
 
     // Use right language (from slice settings) - languages are used for button texts, ...
     $lang    = $slice->getLang();
-    $charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
+    $charset = $slice->getCharset();   // like 'windows-1250'
     bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_output_lang.php3");
 
     $encoder       = new ConvertCharset;
