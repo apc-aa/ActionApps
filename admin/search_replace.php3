@@ -86,7 +86,7 @@ class AA_Transformation {
      */
     function getRequestVariables($input_id, $classname) {
         $ret = array();
-        if ( substr($classname,0,18) != 'AA_Transformation_' ) {
+        if ( strtolower(substr($classname,0,18)) != 'aa_transformation_' ) {  // to lower - php4 fix
             return $ret;
         }
         $prefix = $input_id. substr($classname,18);
@@ -567,9 +567,11 @@ if ( !$fill ) {               // for the first time - directly from item manager
 } else {
     $items     = $r_sr_state['items'];  // session variable holds selected items fmom item manager
     if ( $fill ) {    // we really want to fill fields
-        if ($_GET[SEARCH_REPLACE_PREFIX] AND (strpos($_GET[SEARCH_REPLACE_PREFIX], 'AA_Transformation_')===0)) {
+        $zids = new zids;
+        if ($_GET[SEARCH_REPLACE_PREFIX] AND (strpos(strtolower($_GET[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')===0)) {   // strtolower is fix for php4, where case of any class is small
             $transformation = AA_Components::factory($_GET[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_GET[SEARCH_REPLACE_PREFIX]));
             $zids           = ( ($group == 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
+
             $updated_items  = 0;  // number of updated items
 
             for ( $i=0; $i<=$zids->count(); $i++ ) {
@@ -584,6 +586,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
                 $newcontent4id = new ItemContent();
                 // transform retuns normal multivalue array ([][value]=...)
                 $field_content = $transformation->transform($field_id, $content4id);
+
                 if ( empty($field_content) ) {
                     continue;
                 }
