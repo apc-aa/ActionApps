@@ -1,3 +1,6 @@
+06/07/07 - fixed "Modify Content" action in Item Managrer to work with PHP4
+(honzam) - fixed Alerts admin page buton - it didn't work after clean-up
+           (typo problem)
 06/01/07 - export slice now allows convert exported data to utf-8
 (honzam)   It is handy if you are switching slices to another server, where
            AA uses newer - utf-8 character encoding.
