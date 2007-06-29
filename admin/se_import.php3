@@ -128,7 +128,7 @@ $form_buttons = array ("upd" => array("type"=>"button", "value"=>_m("Update"), "
                        "cancel"=>array("url"=>"se_fields.php3"));
 
 ?>
-<form method="post" name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
   FrmTabCaption(_m("Enable export to slice:"));
 ?>

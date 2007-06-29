@@ -21,12 +21,12 @@ require_once AA_INC_PATH."formutil.php3";
 
 @session_start();
 /* Register a session. */
-if (!isset($HTTP_SESSION_VARS['apcaa_test_count'])) {
+if (!isset($_SESSION['apcaa_test_count'])) {
     $apcaa_test_count = 0;
     session_register('apcaa_test_count');
 }
 
-$apcaa_test_count = &$HTTP_SESSION_VARS['apcaa_test_count'];
+$apcaa_test_count = &$_SESSION['apcaa_test_count'];
 
 /* We want to be as verbose as possible here. */
 error_reporting(E_ALL);
@@ -166,15 +166,15 @@ if ($peardb) {
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">';
 
 /* Handle special modes */
-if (isset($HTTP_GET_VARS['mode'])) {
-    switch ($HTTP_GET_VARS['mode']) {
+if (isset($_GET['mode'])) {
+    switch ($_GET['mode']) {
     case 'phpinfo':
         phpinfo();
         exit;
         break;
 
     case 'unregister':
-        $HTTP_SESSION_VARS['apcaa_test_count'] = null;
+        $_SESSION['apcaa_test_count'] = null;
         session_unregister('apcaa_test_count');
         ?>
         <html>

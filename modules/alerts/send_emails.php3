@@ -72,7 +72,7 @@ function showCollectionAddOns() {
     // SEND EMAILS
 
     echo '<br>
-    <form name="fire_form" method="post" action="'.$sess->url($GLOBALS["PHP_SELF"]).'">';
+    <form name="fire_form" method="post" action="'.$sess->url($_SERVER["PHP_SELF"]).'">';
     FrmTabCaption( _m('Send alerts'));
 
     if ($fire["fire"]) {

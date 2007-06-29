@@ -332,7 +332,7 @@ $form_buttons = array("update" => array("type"=>"hidden","value"=>"1"),
                      );
 
 echo "
-<form enctype=\"multipart/form-data\" method=\"post\" action=\"". $sess->url($PHP_SELF) ."\" name=\"f\">";
+<form enctype=\"multipart/form-data\" method=\"post\" action=\"". $sess->url($_SERVER['PHP_SELF']) ."\" name=\"f\">";
 FrmTabCaption(_m("Field properties"). ': '. safe($fld['name']. ' ('.$fld['id']. ')'),
               '','',$form_buttons, $sess, $slice_id);
 

@@ -36,7 +36,7 @@
   }
 
 ?>
-<form method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
  <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
   <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Groups")?></b></td></tr>
   <tr><td>

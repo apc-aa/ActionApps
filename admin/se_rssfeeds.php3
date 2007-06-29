@@ -162,7 +162,7 @@ function checkData() {
   PrintArray($err);
   echo $Msg;
 ?>
-<form method="post" name="f" action="<?php echo $sess->url($PHP_SELF) ?>" onSubmit="return checkData()">
+<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>" onSubmit="return checkData()">
 <?php
 
   FrmTabCaption(_m("Remote RSS Feed administration"));

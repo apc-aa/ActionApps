@@ -64,7 +64,7 @@ QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote var
 // order we have only one - good - filling code and not two
 //   GetHidden($itemform_id);  // unpacks variables from $r_hidden session var.
 //   unset($r_hidden[$itemform_id]);
-//$r_hidden["hidden_acceptor"] = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $PHP_SELF);
+//$r_hidden["hidden_acceptor"] = (($DOCUMENT_URI != "") ? $DOCUMENT_URI : $_SERVER['PHP_SELF']);
 //     only this script accepts r_hidden variable
 //     - if it don't match - unset($r_hidden) (see init_page.pgp3)
 
@@ -151,8 +151,8 @@ if (!$encap) {
 }
 
 $inputform_settings['messages']            = array('err' => $err);
-$inputform_settings['form_action']         = ($DOCUMENT_URI != "" ? $DOCUMENT_URI :
-                                             $PHP_SELF . ($return_url ? "?return_url=".urlencode($return_url) : ''));
+$inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI'] :
+                                             $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".urlencode($return_url) : ''));
 $inputform_settings['form4update']         = true;
 $inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
                                               ($return_url=='close_dialog' ? get_admin_url("itemedit.php3?slice_id=$slice_id&cancel=1&return_url=close_dialog") :

@@ -109,7 +109,7 @@ echo "<h1><b>" . _m("Items managment - Discussion comments managment - Edit comm
 PrintArray($err);
 echo $Msg;
 ?>
-  <form method="post" action="<?php echo $sess->url($PHP_SELF . "?d_id=".$d_id) ?>">
+  <form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF'] . "?d_id=".$d_id) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Edit comment") ?></b></td></tr>
 <tr><td>

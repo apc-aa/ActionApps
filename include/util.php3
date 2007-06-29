@@ -155,23 +155,22 @@ function self_complete_url() {
  *  returns server name with protocol and port
  */
 function self_server() {
-    global $HTTP_HOST, $SERVER_NAME, $HTTPS, $SERVER_PORT;
-    if ( isset($HTTPS) && $HTTPS == 'on' ) {
+    if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ) {
         $PROTOCOL='https';
-        if ($SERVER_PORT != "443") {
-            $port = ":$SERVER_PORT";
+        if ($_SERVER['SERVER_PORT'] != "443") {
+            $port = ':'. $_SERVER['SERVER_PORT'];
         }
     } else {
         $PROTOCOL='http';
-        if ($SERVER_PORT != "80") {
-            $port = ":$SERVER_PORT";
+        if ($_SERVER['SERVER_PORT'] != "80") {
+            $port = ':'. $_SERVER['SERVER_PORT'];
         }
     }
     // better to use HTTP_HOST - if we use SERVER_NAME and we try to open window
     // by javascript, it is possible that the new window will be opened in other
     // location than window.opener. That's  bad because accessing window.opener
     // then leads to access denied javascript error (in IE at least)
-    $sname = ($HTTP_HOST ? $HTTP_HOST : $SERVER_NAME);
+    $sname = ($_SERVER['HTTP_HOST'] ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']);
     return("$PROTOCOL://$sname$port");
 }
 
@@ -179,8 +178,7 @@ function self_server() {
  * returns server name with protocol, port and current directory of php script
  */
 function self_base() {
-    global $PHP_SELF;
-    return (self_server(). ereg_replace("/[^/]*$", "", $PHP_SELF) . "/");
+    return (self_server(). ereg_replace("/[^/]*$", "", $_SERVER['PHP_SELF']) . "/");
 }
 
 /** document_uri function
@@ -209,16 +207,15 @@ function shtml_url() {
  *  returns query string passed to shtml file (variables are not quoted)
  */
 function shtml_query_string() {
-    global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $REQUEST_URI;
-    // there is problem (at least with $QUERY_STRING_UNESCAPED), when
+    // there is problem (at least with QUERY_STRING_UNESCAPED), when
     // param=a%26a&second=2 is returned as param=a\\&a\\&second=2 - we can't
     // expode it! - that's why we use $REQUEST_URI, if possible
 
-    $ret_string = ($REQUEST_URI AND strpos($REQUEST_URI, '?')) ?
-                            substr($REQUEST_URI, strpos($REQUEST_URI, '?')+1) :
-                  ( isset($REDIRECT_QUERY_STRING_UNESCAPED)    ?
-                            stripslashes($REDIRECT_QUERY_STRING_UNESCAPED) :
-                            stripslashes($QUERY_STRING_UNESCAPED) );
+    $ret_string = ($_SERVER['REQUEST_URI'] AND strpos($_SERVER['REQUEST_URI'], '?')) ?
+                            substr($_SERVER['REQUEST_URI'], strpos($_SERVER['REQUEST_URI'], '?')+1) :
+                  ( isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])    ?
+                            stripslashes($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED']) :
+                            stripslashes($_SERVER['QUERY_STRING_UNESCAPED']) );
     // get off magic quotes
     return magic_strip($ret_string);
 }
@@ -359,22 +356,11 @@ function quote($str) {
  * @param $val
  */
 function AddslashesArray($val) {
-  if (!is_array($val)) {
-    return addslashes($val);
-  }
-  foreach ($val as $k => $v)
-    $ret[$k] = AddslashesArray($v);
-  return $ret;
+    return is_array($value) ? array_map('AddslashesArray', $value) : addslashes($value);
 }
 
 function StripslashesArray($val) {
-    if (!is_array($val)) {
-       return stripslashes($val);
-    }
-    foreach ($val as $k => $v) {
-        $ret[stripslashes($k)] = StripslashesArray($v);
-    }
-    return $ret;
+    return is_array($value) ? array_map('StripslashesArray', $value) : stripslashes($value);
 }
 
 /** QuoteVars function
@@ -386,19 +372,14 @@ function StripslashesArray($val) {
  */
 function QuoteVars($method="get", $skip='') {
 
-    if ( get_magic_quotes_gpc() ) {
-        return;
+    if ( !get_magic_quotes_gpc() ) {
+        $arr = ($method == "get") ? $_GET : $_POST;
+        foreach ($arr as $k => $v) {
+            if ( !is_array($skip) OR !isset($skip[$k]) ) {
+                $GLOBALS[$k] = AddslashesArray($v);
+            }
+        }
     }
-
-  $transfer = ( ($method == "get") ? "HTTP_GET_VARS" : "HTTP_POST_VARS");
-  if ( !isset($GLOBALS[$transfer]) OR !is_array($GLOBALS[$transfer])) {
-    return;
-  }
-  reset( $GLOBALS[$transfer] );
-  while ( list($varname,$value) = each( $GLOBALS[$transfer] ))
-  if ( !is_array($skip) || !isset($skip[$varname]) ) {
-      $GLOBALS[$varname] = AddslashesArray($value);
-  }
 }
 
 /** dequote function
@@ -553,81 +534,81 @@ function date2sec($dat) {
  * function which detects the browser
  */
 function detect_browser() {
-  global $HTTP_USER_AGENT, $BName, $BVersion, $BPlatform;
+  global $BName, $BVersion, $BPlatform;
 
   // Browser
-  if (eregi("(msie) ([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
+  if (eregi("(msie) ([0-9]{1,2}.[0-9]{1,3})",$_SERVER['HTTP_USER_AGENT'],$match))
     { $BName = "MSIE"; $BVersion=$match[2]; }
-  elseif (eregi("(opera) ([0-9]{1,2}.[0-9]{1,3}){0,1}",$HTTP_USER_AGENT,$match) || eregi("(opera/)([0-9]{1,2}.[0-9]{1,3}){0,1}",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(opera) ([0-9]{1,2}.[0-9]{1,3}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match) || eregi("(opera/)([0-9]{1,2}.[0-9]{1,3}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match))
     { $BName = "Opera"; $BVersion=$match[2]; }
-  elseif (eregi("(konqueror)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(konqueror)/([0-9]{1,2}.[0-9]{1,3})",$_SERVER['HTTP_USER_AGENT'],$match))
     { $BName = "Konqueror"; $BVersion=$match[2]; }
-  elseif (eregi("(lynx)/([0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2})",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(lynx)/([0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2})",$_SERVER['HTTP_USER_AGENT'],$match))
     { $BName = "Lynx"; $BVersion=$match[2]; }
-  elseif (eregi("(links) \(([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(links) \(([0-9]{1,2}.[0-9]{1,3})",$_SERVER['HTTP_USER_AGENT'],$match))
     { $BName = "Links"; $BVersion=$match[2]; }
-  elseif (eregi("(netscape6)/(6.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(netscape6)/(6.[0-9]{1,3})",$_SERVER['HTTP_USER_AGENT'],$match))
     { $BName = "Netscape"; $BVersion=$match[2]; }
-  elseif (eregi("Gecko/",$HTTP_USER_AGENT))
+  elseif (eregi("Gecko/",$_SERVER['HTTP_USER_AGENT']))
     { $BName = "Mozilla"; $BVersion="6";}
-  elseif (eregi("mozilla/5",$HTTP_USER_AGENT))
+  elseif (eregi("mozilla/5",$_SERVER['HTTP_USER_AGENT']))
     { $BName = "Netscape"; $BVersion="Unknown"; }
-  elseif (eregi("(mozilla)/([0-9]{1,2}.[0-9]{1,3})",$HTTP_USER_AGENT,$match))
+  elseif (eregi("(mozilla)/([0-9]{1,2}.[0-9]{1,3})",$_SERVER['HTTP_USER_AGENT'],$match))
     { $BName = "Netscape"; $BVersion=$match[2]; }
-  elseif (eregi("w3m",$HTTP_USER_AGENT))
+  elseif (eregi("w3m",$_SERVER['HTTP_USER_AGENT']))
     { $BName = "w3m"; $BVersion="Unknown"; }
   else{$BName = "Unknown"; $BVersion="Unknown";}
 
   // System
-  if (eregi("win32",$HTTP_USER_AGENT)) {
+  if (eregi("win32",$_SERVER['HTTP_USER_AGENT'])) {
     $BPlatform = "Windows";
   }
-  elseif ((eregi("(win)([0-9]{2})",$HTTP_USER_AGENT,$match)) || (eregi("(windows) ([0-9]{2})",$HTTP_USER_AGENT,$match))) {
+  elseif ((eregi("(win)([0-9]{2})",$_SERVER['HTTP_USER_AGENT'],$match)) || (eregi("(windows) ([0-9]{2})",$_SERVER['HTTP_USER_AGENT'],$match))) {
     $BPlatform = "Windows $match[2]";
   }
-  elseif (eregi("(winnt)([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) {
+  elseif (eregi("(winnt)([0-9]{1,2}.[0-9]{1,2}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match)) {
     $BPlatform = "Windows NT $match[2]";
   }
-  elseif (eregi("(windows nt)( ){0,1}([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) {
+  elseif (eregi("(windows nt)( ){0,1}([0-9]{1,2}.[0-9]{1,2}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match)) {
     $BPlatform = "Windows NT $match[3]";
   }
-  elseif (eregi("linux",$HTTP_USER_AGENT)) {
+  elseif (eregi("linux",$_SERVER['HTTP_USER_AGENT'])) {
     $BPlatform = "Linux";
   }
-  elseif (eregi("mac",$HTTP_USER_AGENT)) {
+  elseif (eregi("mac",$_SERVER['HTTP_USER_AGENT'])) {
     $BPlatform = "Macintosh";
   }
-  elseif (eregi("(sunos) ([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) {
+  elseif (eregi("(sunos) ([0-9]{1,2}.[0-9]{1,2}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match)) {
     $BPlatform = "SunOS $match[2]";
   }
-  elseif (eregi("(beos) r([0-9]{1,2}.[0-9]{1,2}){0,1}",$HTTP_USER_AGENT,$match)) {
+  elseif (eregi("(beos) r([0-9]{1,2}.[0-9]{1,2}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match)) {
     $BPlatform = "BeOS $match[2]";
   }
-  elseif (eregi("freebsd",$HTTP_USER_AGENT)) {
+  elseif (eregi("freebsd",$_SERVER['HTTP_USER_AGENT'])) {
     $BPlatform = "FreeBSD";
   }
-  elseif (eregi("openbsd",$HTTP_USER_AGENT)) {
+  elseif (eregi("openbsd",$_SERVER['HTTP_USER_AGENT'])) {
     $BPlatform = "OpenBSD";
   }
-  elseif (eregi("irix",$HTTP_USER_AGENT)) {
+  elseif (eregi("irix",$_SERVER['HTTP_USER_AGENT'])) {
     $BPlatform = "IRIX";
   }
-  elseif (eregi("os/2",$HTTP_USER_AGENT)) {
+  elseif (eregi("os/2",$_SERVER['HTTP_USER_AGENT'])) {
     $BPlatform = "OS/2";
   }
-  elseif (eregi("plan9",$HTTP_USER_AGENT)) {
+  elseif (eregi("plan9",$_SERVER['HTTP_USER_AGENT'])) {
     $BPlatform = "Plan9";
   }
-  elseif (eregi("unix",$HTTP_USER_AGENT) || eregi("hp-ux",$HTTP_USER_AGENT)) {
+  elseif (eregi("unix",$_SERVER['HTTP_USER_AGENT']) || eregi("hp-ux",$_SERVER['HTTP_USER_AGENT'])) {
     $BPlatform = "Unix";
   }
-  elseif (eregi("osf",$HTTP_USER_AGENT)) {
+  elseif (eregi("osf",$_SERVER['HTTP_USER_AGENT'])) {
     $BPlatform = "OSF";
   }
   else{$BPlatform = "Unknown";}
 
   if ($GLOBALS['debug']) {
-      huhl("$HTTP_USER_AGENT => $BName,$BVersion,$BPlatform");
+      huhl("$_SERVER['HTTP_USER_AGENT'] => $BName,$BVersion,$BPlatform");
   }
 }
 

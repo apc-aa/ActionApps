@@ -217,14 +217,14 @@ function sess_return_url($url) {
  * @param $r1
  */
 function make_return_url($r1="") {
-    global $return_url, $REQUEST_URI, $sess;
+    global $return_url, $sess;
     if ($r1) {
         return $r1;
     } elseif ($return_url) {
         return $return_url;
     } elseif (!$sess) {   // If there is no $sess, then we need a return url, default to self, including parameters
         // but remove any left over AA_CP_Session, it will be re-added if needed
-        return preg_match("/(.*)([?&])AA_CP_Session=[0-9a-f]{32}(.*)/",$REQUEST_URI,$parts) ? ($parts[1]. $parts[2]. $parts[3]) : $REQUEST_URI;
+        return preg_match("/(.*)([?&])AA_CP_Session=[0-9a-f]{32}(.*)/",$_SERVER['REQUEST_URI'],$parts) ? ($parts[1]. $parts[2]. $parts[3]) : $_SERVER['REQUEST_URI'];
     }
     return '';
 }
@@ -1598,9 +1598,9 @@ class AA_Item {
             return false;
         }
         $zid = (strtolower(get_class($zid))=='zids') ? $zid : new zids($zid);
-        
+
         // Do we want to count with inner cache (probably yes)
-        if (!$renew) { 
+        if (!$renew) {
             // is it cached inder its id (we expect short id here)
             if ( isset($_i[$zid->id(0)]) ) {
                 return $_i[$zid->id(0)];

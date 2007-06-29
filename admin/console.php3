@@ -58,7 +58,7 @@ if ($code) {
 
 // ------------------------------------------------------------------------------------------
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 
     <table width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="#00638C" align="center" >
         <tr><td>

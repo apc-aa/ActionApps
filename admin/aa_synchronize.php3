@@ -68,7 +68,7 @@ $form_buttons = array ("submit");
 //$destinations = array_flip(array_unique($COLNODO_DOMAINS));
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption('', '','', $form_buttons, $sess, $slice_id);
 FrmStaticText(_m('Template ActionApps (current)'), $this_colnodo_domain);

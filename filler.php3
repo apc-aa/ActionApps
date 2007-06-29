@@ -56,7 +56,11 @@ http://www.apc.org/
 
 $debugfill=$GLOBALS[debugfill];
 
-// handle with PHP magic quotes - quote the variables if quoting is set off
+/**
+ * Handle with PHP magic quotes - quote the variables if quoting is set off
+ * @param mixed $value the variable or array to quote (add slashes)
+ * @return mixed the quoted variables (with added slashes)
+ */
 function AddslashesDeep($value) {
     return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
 }
@@ -70,20 +74,14 @@ function StripslashesDeep($value) {
 
 if (!get_magic_quotes_gpc()) {
     // Overrides GPC variables
-    if (is_array($HTTP_GET_VARS)) {
-        foreach ($HTTP_GET_VARS as $k => $v) {
-            $$k = AddslashesDeep($v);
-        }
+    foreach ($_GET as $k => $v) {
+        $kk = AddslashesDeep($v);
     }
-    if (is_array($HTTP_POST_VARS)) {
-        foreach ($HTTP_POST_VARS as $k => $v) {
-            $$k = AddslashesDeep($v);
-        }
+    foreach ($_POST as $k => $v) {
+        $kk = AddslashesDeep($v);
     }
-    if (is_array($HTTP_COOKIE_VARS)) {
-        foreach ($HTTP_COOKIE_VARS as $k => $v) {
-            $$k = AddslashesDeep($v);
-        }
+    foreach ($_COOKIE as $k => $v) {
+        $kk = AddslashesDeep($v);
     }
 }
 
@@ -116,12 +114,12 @@ require_once AA_INC_PATH."grabber.class.php3";
 
 function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
-    $GLOBALS["HTTP_POST_VARS"]["result"] = $txt;
+    $_POST["result"]        = $txt;
     // allows fillform to use this data
-    $GLOBALS["HTTP_POST_VARS"]["oldcontent4id"] = StripslashesArray($GLOBALS["content4id"]);
+    $_POST["oldcontent4id"] = StripslashesArray($GLOBALS["content4id"]);
     if (!$url) huhe("Warning: no Url on anonymous form (could be  ok_url or err_url missing");
     $GLOBALS["shtml_page"] = $url;
-    if ($GLOBALS[debugfill]) huhl("Filler:UseShowResult");
+    if ($GLOBALS['debugfill']) huhl("Filler:UseShowResult");
     require_once "post2shtml.php3"; // Beware this doesn't just define functions!
     exit;
 }
@@ -165,7 +163,7 @@ function SendOkPage($txt) {
     global $debugfill;
     if ($debugfill) huhl("Filler:SendOkPage:",$txt);
     if (!$GLOBALS["ok_url"]) {
-        go_url($GLOBALS['HTTP_REFERER']);
+        go_url($_SERVER['HTTP_REFERER']);
     } elseif (!$GLOBALS["use_post2shtml"]) {
         go_url($GLOBALS["ok_url"]);
     } else {
@@ -291,7 +289,7 @@ if ($insert) {
         break;
     case ANONYMOUS_EDIT_HTTP_AUTH:
         // For HTTP_AUTH permissions the reader is found in fillform.php3.
-        // Here we don't get the $_SERVER["REMOTE_USER"] information.
+        // Here we don't get the $_SERVER["PHP_AUTH_USER"] information.
         $permok = true;
         break;
     case ANONYMOUS_EDIT_PASSWORD:

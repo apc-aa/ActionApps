@@ -35,7 +35,7 @@
  *
  */
 function PrintModuleSelection() {
-    global $slice_id, $g_modules, $sess, $PHP_SELF, $db, $MODULES;
+    global $slice_id, $g_modules, $sess, $db, $MODULES;
 
     if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
 
@@ -98,7 +98,7 @@ function PrintModuleSelection() {
             $js .= "\t+'<option value=\"new\" selected>". _m("New slice") + "'";
         }
         $js .= ";
-        document.write('<select name=\"slice_id\" onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url($PHP_SELF),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
+        document.write('<select name=\"slice_id\" onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url($_SERVER['PHP_SELF']),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
         document.write(modulesOptions);
         document.write('</select>');\n";
         FrmJavascriptCached($js, 'modules');
@@ -202,7 +202,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
         echo '
               </td>
               <td width="20%" class="navbar" valign="bottom">
-                <form name="nbform" enctype="multipart/form-data" method="post" action="'. $sess->url($PHP_SELF) .'" style="display:inline">
+                <form name="nbform" enctype="multipart/form-data" method="post" action="'. $sess->url($_SERVER['PHP_SELF']) .'" style="display:inline">
                 &nbsp; ';
         if (is_array($g_modules) AND (count($g_modules) > 1)) {
             echo _m("Switch to:") ."&nbsp; ";

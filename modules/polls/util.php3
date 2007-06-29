@@ -341,7 +341,7 @@ function printAliases(){
 
 function registerVote($poll, $vote) {
   global $db;
-  global $REMOTE_ADDR;
+
   $vote_invalid = "";
   $current_time = time();
 
@@ -358,14 +358,14 @@ function registerVote($poll, $vote) {
         unset($ip_lock);
       }
     }
-    $SQL = "SELECT * FROM polls_ip_lock WHERE (pollID='". $poll["pollID"]."') AND (votersIP = '".$REMOTE_ADDR."')";
+    $SQL = "SELECT * FROM polls_ip_lock WHERE (pollID='". $poll["pollID"]."') AND (votersIP = '".$_SERVER['REMOTE_ADDR']."')";
     $db->query($SQL);
         $count=0;
         while ($db->next_record()){
           $count++;
         }
     if ($count == 0) {
-      $SQL = "INSERT INTO polls_ip_lock (pollID, voteID, votersIP, timeStamp) VALUES ('".$poll["pollID"]."', '".$vote."', '".$REMOTE_ADDR."', '".$current_time."')";
+      $SQL = "INSERT INTO polls_ip_lock (pollID, voteID, votersIP, timeStamp) VALUES ('".$poll["pollID"]."', '".$vote."', '".$_SERVER['REMOTE_ADDR']."', '".$current_time."')";
       $db->query($SQL);
     } else {
       $vote_invalid = "IP";
@@ -387,12 +387,12 @@ function registerVote($poll, $vote) {
     }
   // end Cookies
   }
-//  echo "your ip: $REMOTE_ADDR vote_invalid: $vote_invalid";
+//  echo "your ip: $_SERVER['REMOTE_ADDR'] vote_invalid: $vote_invalid";
   if ($vote_invalid == "") {
     $SQL = "UPDATE polls_data SET optionCount=optionCount+1 WHERE (pollID='".$poll["pollID"]."') AND (voteID='".$vote."')";
     $db->query($SQL);
     if ($poll["Logging"] == 1) {
-      $SQL = "INSERT INTO polls_log (pollID, voteID, votersIP, timeStamp) VALUES ('".$poll["pollID"]."', '".$vote."', '".$REMOTE_ADDR."', '".$current_time."')";
+      $SQL = "INSERT INTO polls_log (pollID, voteID, votersIP, timeStamp) VALUES ('".$poll["pollID"]."', '".$vote."', '".$_SERVER['REMOTE_ADDR']."', '".$current_time."')";
       $db->query($SQL);
     }
   }

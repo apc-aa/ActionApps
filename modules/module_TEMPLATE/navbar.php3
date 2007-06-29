@@ -42,7 +42,7 @@ if ( $editor_page ) {
 // modules are in directory one level deeper than scripts in /admin/...
 // if the '/admin' is in path, this navbar is called just after swithing to
 // this module - it is called from slice's /admin directory
-$nb_backpath = ( (strpos($PHP_SELF, '/admin/') > 0 ) ? '' : '../' );
+$nb_backpath = ( (strpos($_SERVER['PHP_SELF'], '/admin/') > 0 ) ? '' : '../' );
 
 $nb_manager = ( $editor_page ?
   '<span class=nbdisable>'. _m("Code&nbsp Manager") .'</span>':

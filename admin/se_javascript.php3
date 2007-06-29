@@ -48,7 +48,7 @@ if (get_magic_quotes_gpc() && $javascript) {
 }
 
 if ($p_slice_id && $update) {
-    tryQuery("UPDATE slice SET javascript=\"".myaddslashes($javascript)."\"
+    tryQuery("UPDATE slice SET javascript=\"". quote($javascript)."\"
         WHERE id='$p_slice_id'");
 } else {
     $db = getDB();
@@ -71,7 +71,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;
 ?>
-<form method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
   FrmTabCaption(_m("JavaScript for fields"));
 ?>

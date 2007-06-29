@@ -182,7 +182,7 @@ if ($update) {
         if (count($err) <= 1) {
             $Msg = MsgOK(_m("Fields update successful"));
             if ($name["New_Field"]) {
-                $url2go = $slice_fields ? get_url($PHP_SELF,'slice_fields=1') : $PHP_SELF;
+                $url2go = $slice_fields ? get_url($_SERVER['PHP_SELF'],'slice_fields=1') : $_SERVER['PHP_SELF'];
                 go_url($sess->url($url2go));  // reload to incorporate new field
             }
         }
@@ -226,7 +226,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 
 ?>
 
-<form method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 $form_buttons = array("update", "cancel"=>array("url"=>"se_fields.php3"));
 FrmTabCaption(_m("Fields"), '','', $form_buttons, $sess, $slice_id);

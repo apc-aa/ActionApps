@@ -26,33 +26,25 @@ http://www.apc.org/
 // this script updates the database to last structure, create all tables, ...
 // can be used for upgrade from apc-aa v. >= 1.5 or for create new database
 
-// handle with PHP magic quotes - quote the variables if quoting is set off
-function Myaddslashes($val, $n=1) {
-    if (!is_array($val)) {
-        return addslashes($val);
-    }
-    foreach ($val as $k => $v) {
-        $ret[$k] = Myaddslashes($v, $n+1);
-    }
-    return $ret;
+/**
+ * Handle with PHP magic quotes - quote the variables if quoting is set off
+ * @param mixed $value the variable or array to quote (add slashes)
+ * @return mixed the quoted variables (with added slashes)
+ */
+function AddslashesDeep($value) {
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
 }
 
 if (!get_magic_quotes_gpc()) {
     // Overrides GPC variables
-    if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS)) {
-        foreach ($HTTP_GET_VARS as $k => $v) {
-            $$k = Myaddslashes($v);
-        }
+    foreach ($_GET as $k => $v) {
+        $kk = AddslashesDeep($v);
     }
-    if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS)) {
-        foreach ($HTTP_POST_VARS as $k => $v) {
-            $$k = Myaddslashes($v);
-        }
+    foreach ($_POST as $k => $v) {
+        $kk = AddslashesDeep($v);
     }
-    if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS)) {
-        foreach ($HTTP_COOKIE_VARS as $k => $v) {
-            $$k = Myaddslashes($v);
-        }
+    foreach ($_COOKIE as $k => $v) {
+        $kk = AddslashesDeep($v);
     }
 }
 
@@ -1455,7 +1447,7 @@ if ( !$update AND !$restore AND !$restore_now) {
   <p><font color="red">However, it is strongly recommended backup your current
   database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u '.DB_USER.' -p --opt '.DB_NAME.' &gt; ./aadb/aadb.sql</code></p>
 
-  <form name=f action="' .$PHP_SELF .'" method=post>
+  <form name=f action="' .$_SERVER['PHP_SELF'] .'" method=post>
   <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">
   <tr><td class=tabtit><b>&nbsp;APC-AA database update options</b>
   </td>
@@ -1530,7 +1522,7 @@ if ( substr( DB_PASSWORD, 0, 5 ) != $dbpw5 ) {
 
     <h1>APC AA</h1>
 
-    <form name=f action="' .$PHP_SELF .'" >
+    <form name=f action="' .$_SERVER['PHP_SELF'] .'" >
     <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">
     <tr><td class=tabtit><b>&nbsp;Bad password. Please fill "first five characters from aa database password (DB_PASSWORD in config.php3 file)".</b></td></tr>
     <tr><td align="center">
@@ -1556,7 +1548,7 @@ if ( $restore ) {
     <h1>APC-AA database restore</h1>
 
     <p>This script DELETES all the current tables (slice, item, ...) and then renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...). So, there MUST be bck_* tables if you want to have some content in database.</p>
-    <form name=f action="' .$PHP_SELF .'">
+    <form name=f action="' .$_SERVER['PHP_SELF'] .'">
     <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">
     <tr><td class=tabtit><b>&nbsp;Are you sure you want to restore tables?</b></td></tr>
     <tr><td align="center">

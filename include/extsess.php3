@@ -123,8 +123,8 @@ class AA_SL_Session extends Session {
      * @param $noquery
      */
     function MyUrl($SliceID, $Encap=false, $noquery=false) {
-        global $HTTP_HOST, $HTTPS, $SCRIPT_NAME, $REDIRECT_SCRIPT_NAME, $scr_url;
-        if (isset($HTTPS) && $HTTPS == 'on') {
+        global $scr_url;
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
             // You will need to fix suexec as well, if you use Apache and CGI PHP
             $PROTOCOL='https';
         } else {
@@ -132,11 +132,11 @@ class AA_SL_Session extends Session {
         }
         // PHP used in CGI mode and ./configure --enable-force-cgi-redirect
         if ($scr_url) {  // if included into php script
-            $foo = $PROTOCOL. "://". $HTTP_HOST.$scr_url;
-        } elseif (isset($REDIRECT_SCRIPT_NAME)) {
-            $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_SCRIPT_NAME;
+            $foo = $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$scr_url;
+        } elseif (isset($_SERVER['REDIRECT_SCRIPT_NAME'])) {
+            $foo = $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$_SERVER['REDIRECT_SCRIPT_NAME'];
         } else {
-            $foo = $PROTOCOL. "://". $HTTP_HOST.$SCRIPT_NAME;
+            $foo = $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
         }
 
         switch ($this->mode) {
@@ -179,7 +179,6 @@ class AA_CP_Session extends Session {
      * @param $sid
      */
     function start($sid = "") {
-        global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $HTTP_HOST, $HTTPS;
         $name = $this->that_class;
         $this->that = new $name;
         $this->that->ac_start();
@@ -189,21 +188,21 @@ class AA_CP_Session extends Session {
         if (isset($this->fallback_mode)
             && ("get" == $this->fallback_mode )
             && ("cookie" == $this->mode )
-            && (!isset($HTTP_COOKIE_VARS[$this->name]))) {
+            && (!isset($_COOKIE[$this->name]))) {
 
-            if (isset($HTTP_GET_VARS[$this->name])) {
+            if (isset($_GET[$this->name])) {
                 $this->mode = $this->fallback_mode;
             } else {
                 header("HTTP/1.1 Status: 302 Moved Temporarily");
                 $this->get_id($sid);
                 $this->mode = $this->fallback_mode;
-                if (isset($HTTPS) && $HTTPS == 'on') {
+                if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                     // You will need to fix suexec as well, if you use Apache and CGI PHP
                     $PROTOCOL='https';
                 } else {
                     $PROTOCOL='http';
                 }
-                header("Location: ". $PROTOCOL. "://". $HTTP_HOST.$this->self_url());
+                header("Location: ". $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$this->self_url());
                 exit;
             }
         }

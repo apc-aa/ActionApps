@@ -139,7 +139,7 @@ if ($slice_id == "") {
 }
 
 ?>
-<form method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 
 FrmTabCaption(_m("Slice"), '','', $form_buttons, $sess, $slice_id);
@@ -148,7 +148,7 @@ FrmStaticText(_m("Id"), $slice_id);
 FrmInputText("name", _m("Title"), $name, 99, 25, true);
 FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, 254, 25, false);
 FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5, false);
-$ssiuri = ereg_replace("/admin/.*", "/slice.php3", $PHP_SELF);
+$ssiuri = ereg_replace("/admin/.*", "/slice.php3", $_SERVER['PHP_SELF']);
 echo "<tr><td colspan=\"2\">" . _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") . "<BR><pre>" .
      "&lt;!--#include virtual=&quot;" . $ssiuri . "?slice_id=" . $slice_id . "&quot;--&gt;</pre></td></tr>";
 

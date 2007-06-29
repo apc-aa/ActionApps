@@ -45,27 +45,26 @@ http://www.apc.org/
 // for more info see AA FAQ: http://apc-aa.sourceforge.net/faq/index.shtml#219
 
 
-// handle with PHP magic quotes - quote the variables if quoting is set off
-function Myaddslashes($val, $n=1) {
-  if (!is_array($val)) {
-    return addslashes($val);
-  }
-  for (reset($val); list($k, $v) = each($val); )
-    $ret[$k] = Myaddslashes($v, $n+1);
-  return $ret;
+/**
+ * Handle with PHP magic quotes - quote the variables if quoting is set off
+ * @param mixed $value the variable or array to quote (add slashes)
+ * @return mixed the quoted variables (with added slashes)
+ */
+function AddslashesDeep($value) {
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
 }
 
 if (!get_magic_quotes_gpc()) {
-  // Overrides GPC variables
-  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS))
-    for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS))
-    for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); )
-      $$k = Myaddslashes($v);
-  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS))
-    for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); )
-      $$k = Myaddslashes($v);
+    // Overrides GPC variables
+    foreach ($_GET as $k => $v) {
+        $kk = AddslashesDeep($v);
+    }
+    foreach ($_POST as $k => $v) {
+        $kk = AddslashesDeep($v);
+    }
+    foreach ($_COOKIE as $k => $v) {
+        $kk = AddslashesDeep($v);
+    }
 }
 
 require_once "./include/config.php3";

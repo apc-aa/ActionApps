@@ -193,7 +193,7 @@ function ChangeFieldID($old_id, $new_id)
     $db = getDB();
     $db->query("SELECT id FROM item WHERE slice_id='$p_slice_id'");
     while ($db->next_record()) {
-        $item_ids[] = myaddslashes($db->f("id"));
+        $item_ids[] = quote($db->f("id"));
     }
     freeDB($db);
     if (count($item_ids)) {
@@ -252,7 +252,7 @@ if ($update) {
 }
 
 echo "
-<form method=\"post\" action='".$sess->url($PHP_SELF)."'>";
+<form method=\"post\" action='".$sess->url($_SERVER['PHP_SELF'])."'>";
 FrmTabCaption(_m("Admin - change Field IDs"));
 
 echo"<tr><td class=\"tabtxt\">"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>

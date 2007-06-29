@@ -113,46 +113,50 @@ function GetBaseCategoryPath( $lid ) {
 //   whole - if set, make links to all categories
 
 function NamePath($skip, $path, $translate, $separator = " > ", $url="", $whole=false, $target="") {
-  $target_atrib = $target != "" ? " target=\"$target\" " : "";
-  $ids = explode(",",$path);
-  if ( isset($ids) AND is_array($ids)) {
-    $last=end($ids);
-    reset($ids);
-    if ( $url ) {
-      while (list(,$catid) = each($ids)) {
-        if (--$skip >= 0)
-          continue;
-        if ( ($catid != $last) OR $whole )  // do not make link for last category
-          $name .= $delimiter."<a href=\"$url$catid\" $target_atrib>".$translate[$catid]."</a>";
-         else
-          $name .= $delimiter.$translate[$catid];
-        $delimiter = $separator;
-      }
-    }else{
-      while (list(,$catid) = each($ids)) {
-        if (--$skip >= 0)
-          continue;
-        $name .= $delimiter.$translate[$catid];
-        $delimiter = $separator;
-      }
+    $target_atrib = $target != "" ? " target=\"$target\" " : "";
+    $ids = explode(",",$path);
+    if ( isset($ids) AND is_array($ids)) {
+        $last=end($ids);
+        reset($ids);
+        if ( $url ) {
+            while (list(,$catid) = each($ids)) {
+                if (--$skip >= 0) {
+                    continue;
+                }
+                if ( ($catid != $last) OR $whole ) { // do not make link for last category
+                    $name .= $delimiter."<a href=\"$url$catid\" $target_atrib>".$translate[$catid]."</a>";
+                } else {
+                    $name .= $delimiter.$translate[$catid];
+                }
+                $delimiter = $separator;
+            }
+        } else {
+            while (list(,$catid) = each($ids)) {
+                if (--$skip >= 0) {
+                    continue;
+                }
+                $name .= $delimiter.$translate[$catid];
+                $delimiter = $separator;
+            }
+        }
     }
-  }
-  return $name;
+    return $name;
 }
 
 // Returns HTML code for image link to specified url
 function AHrefImg($url, $src, $width="", $height="", $alt="") {
-  if ($url)
-    return "<a href=\"$url\"><img src=\"$src\" width=\"$width\" height=\"$height\" alt=\"$alt\" border=\"0\"></a>";
-  return "<img src=\"$src\" width=\"$width\" height=\"$height\" alt=\"$alt\" border=\"0\">";
+    if ($url) {
+        return "<a href=\"$url\"><img src=\"$src\" width=\"$width\" height=\"$height\" alt=\"$alt\" border=\"0\"></a>";
+    }
+    return "<img src=\"$src\" width=\"$width\" height=\"$height\" alt=\"$alt\" border=\"0\">";
 }
 
 // returns url of requested file
 function ThisFileName() {
-  if ( $GLOBALS['SERVER_PROTOCOL']=='INCLUDED' ) {
-    return $GLOBALS['DOCUMENT_URI'];
-  }
-  return $GLOBALS['PHP_SELF'];
+    if ( $_SERVER['SERVER_PROTOCOL']=='INCLUDED' ) {
+        return $_SERVER['DOCUMENT_URI'];
+    }
+    return $_SERVER['PHP_SELF'];
 }
 
 function FillCategoryInfo($category) {
@@ -160,8 +164,8 @@ function FillCategoryInfo($category) {
     $SQL= "SELECT * FROM links_categories WHERE id = $category";
     $db->query($SQL);
     if ($db->next_record()) {
-        $r_category_id       = $db->f(id);
-        $r_category_path     = $db->f(path);
+        $r_category_id       = $db->f('id');
+        $r_category_path     = $db->f('path');
     }
 }
 

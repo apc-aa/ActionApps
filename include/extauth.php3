@@ -53,9 +53,9 @@ class AA_CP_Auth extends Auth {
      *
      */
     function auth_loginform() {
-        global $sess, $_PHPLIB, $HTTP_POST_VARS, $anonymous_user;
-        $username = $HTTP_POST_VARS["username"];  // there was problem with variables
-        $password = $HTTP_POST_VARS["password"];  // in cookies - if someone writes
+        global $sess, $_PHPLIB, $anonymous_user;
+        $username = $_POST["username"];  // there was problem with variables
+        $password = $_POST["password"];  // in cookies - if someone writes
                                                   // to cookies username, then the
                                                   // cookies username is used - error
 
@@ -65,9 +65,8 @@ class AA_CP_Auth extends Auth {
      *
      */
     function auth_validatelogin() {
-        global $HTTP_POST_VARS;
-        $username = $HTTP_POST_VARS["username"];  // there was problem with variables
-        $password = $HTTP_POST_VARS["password"];  // in cookies - if someone writes
+        $username = $_POST["username"];  // there was problem with variables
+        $password = $_POST["password"];  // in cookies - if someone writes
                                                 // to cookies username, then the
                                                 // cookies username is used - error
         if (isset($username)){

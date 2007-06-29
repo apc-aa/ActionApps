@@ -124,7 +124,7 @@ echo "$Msg <br>";
 
 // ------- Caption -----------
 
-echo '<form name="inputform" method=post action="'. $sess->url($PHP_SELF) .'">';
+echo '<form name="inputform" method=post action="'. $sess->url($_SERVER['PHP_SELF']) .'">';
 FrmTabCaption(_m("Select constants"), '','', '', $sess, $slice_id);
 echo $aainput->get();
 

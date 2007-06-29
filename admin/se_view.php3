@@ -227,16 +227,11 @@ $p_slice_id  = q_pack_id($slice_id);
 // fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
 // adds wrong $view_type variable to $_SERVER array, which then redefine
 // the $view_type from $_POST array
-$view_type = $HTTP_POST_VARS['view_type'] ? $HTTP_POST_VARS['view_type'] : $HTTP_GET_VARS['view_type'];
+$view_type = $_POST['view_type'] ? $_POST['view_type'] : $_GET['view_type'];
 
 $VIEW_FIELDS     = getViewFields();
 $VIEW_TYPES      = getViewTypes();
 $VIEW_TYPES_INFO = getViewTypesInfo();
-
-// fix for Zeus webserver, which (at least in version 4.2 on PHP 4.3.1/SunOS)
-// adds wrong $view_type variable to $_SERVER array, which then redefine
-// the $view_type from $_POST array
-$view_type = $HTTP_POST_VARS['view_type'] ? $HTTP_POST_VARS['view_type'] : $HTTP_GET_VARS['view_type'];
 
 if ( $update ) {
     do {
@@ -389,7 +384,7 @@ $form_buttons = array( 'update',
                       );
 
 // Print View Form ----------
-echo "<form name=\"f\" method=\"post\" action=\"$PHP_SELF\">";
+echo "<form name=\"f\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">";
 FrmTabCaption( _m("Defined Views"), '', '', $form_buttons, $sess, $slice_id);
 
 $view_url = AA_INSTAL_URL. "view.php3?vid=$view_id";
@@ -460,7 +455,7 @@ FrmTabEnd();
 echo "</form><br>";
 
 if ( $view_id ) {
-  $ssiuri = ereg_replace("/admin/.*", "/view.php3", $PHP_SELF);
+  $ssiuri = ereg_replace("/admin/.*", "/view.php3", $_SERVER['PHP_SELF']);
   echo _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") ."<br><pre>&lt;!--#include virtual=&quot;" . $ssiuri .
        "?vid=$view_id&quot;--&gt;</pre>";
 }

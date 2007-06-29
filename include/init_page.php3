@@ -48,38 +48,26 @@ function menu_include() {
     return AA_BASE_PATH. ($menu ? $menu : 'include/menu.php3');
 }
 
-/** Myaddslashes function
- * handle with PHP magic quotes - quote the variables if quoting is set off
- * @param $val
- * @param $n
+/**
+ * Handle with PHP magic quotes - quote the variables if quoting is set off
+ * @param mixed $value the variable or array to quote (add slashes)
+ * @return mixed the quoted variables (with added slashes)
  */
-function Myaddslashes($val, $n=1) {
-    if (!is_array($val)) {
-        return addslashes($val);
-    }
-    for (reset($val); list($k, $v) = each($val); ) {
-        $ret[$k] = Myaddslashes($v, $n+1);
-    }
-    return $ret;
+function AddslashesDeep($value) {
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
 }
 
 if (!get_magic_quotes_gpc()) {
-  // Overrides GPC variables
-  if ( isset($HTTP_GET_VARS) AND is_array($HTTP_GET_VARS)) {
-      for (reset($HTTP_GET_VARS); list($k, $v) = each($HTTP_GET_VARS); ) {
-          $$k = Myaddslashes($v);
-      }
-  }
-  if ( isset($HTTP_POST_VARS) AND is_array($HTTP_POST_VARS)) {
-      for (reset($HTTP_POST_VARS); list($k, $v) = each($HTTP_POST_VARS); ) {
-          $$k = Myaddslashes($v);
-      }
-  }
-  if ( isset($HTTP_COOKIE_VARS) AND is_array($HTTP_COOKIE_VARS)) {
-      for (reset($HTTP_COOKIE_VARS); list($k, $v) = each($HTTP_COOKIE_VARS); ) {
-          $$k = Myaddslashes($v);
-      }
-  }
+    // Overrides GPC variables
+    foreach ($_GET as $k => $v) {
+        $kk = AddslashesDeep($v);
+    }
+    foreach ($_POST as $k => $v) {
+        $kk = AddslashesDeep($v);
+    }
+    foreach ($_COOKIE as $k => $v) {
+        $kk = AddslashesDeep($v);
+    }
 }
 
 // global variables should be quoted (since old AA code rely on that fact),
@@ -172,7 +160,7 @@ $sess->register("r_hidden");
 
 // sometimes we need not to unset hidden - popup for related stories ...
 // only acceptor can read values. For others they are destroyed.
-$my_document_uri = $DOCUMENT_URI ? $DOCUMENT_URI : $PHP_SELF;
+$my_document_uri = $_SERVER['DOCUMENT_URI'] ? $_SERVER['DOCUMENT_URI'] : $_SERVER['PHP_SELF'];
 if ( !$save_hidden AND ($unset_r_hidden OR $r_hidden["hidden_acceptor"] != $my_document_uri)) {
     unset( $r_hidden );
 }
@@ -243,13 +231,13 @@ if (!$no_slice_id) {
    using the Select Slice box.
 */
     if ( $module_type_changed && !$jumping ) {
-        $page = filename($PHP_SELF);
+        $page = filename($_SERVER['PHP_SELF']);
         $hdd_dir = AA_INC_PATH."../".$MODULES[$module_type]['directory'];
         $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
         if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') OR ($module_type=='J') ) {
             $page = "index.php3";
         }
-        if ($web_dir.$page != $PHP_SELF) {
+        if ($web_dir.$page != $_SERVER['PHP_SELF']) {
             $page = $sess->url($web_dir.$page."?slice_id=$slice_id");
             page_close();
             go_url($page);

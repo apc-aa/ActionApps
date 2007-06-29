@@ -102,7 +102,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class="tabtit"><b>&nbsp;<?php echo _m("New user")?></b>
 </td>

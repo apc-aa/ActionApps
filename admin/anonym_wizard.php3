@@ -193,7 +193,7 @@ $form_buttons=array("show_form" => array("value"=>_m("Show Form"),
                     "cancel"    => array("url"  =>"se_fields.php3"));
 
 echo '
-<form method="post" action="'.$sess->url($PHP_SELF).'#form_content">';
+<form method="post" action="'.$sess->url($_SERVER['PHP_SELF']).'#form_content">';
 
 $helplink = ' <a href="'.AA_INSTAL_PATH.'doc/anonym.html#wizard">'. GetAAImage("help100_simple.gif", _m("Help")).'<b>'._m("Help - Documentation").'</b></a>';
 FrmTabCaption(_m("URLs shown after the form was sent"). $helplink,'','',$form_buttons, $sess, $slice_id);

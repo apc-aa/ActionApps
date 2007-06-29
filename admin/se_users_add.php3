@@ -58,7 +58,7 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
                                           "value" => _m("Back")));
 
 ?>
-<form method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 /*
 <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">

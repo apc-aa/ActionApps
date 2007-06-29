@@ -653,7 +653,7 @@ $form_buttons   = array ();
 //$destinations = array_flip(array_unique($COLNODO_DOMAINS));
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m('Optimalizations'), '','', $form_buttons, $sess, $slice_id);
 foreach ( $optimize_names as $i => $name ) {

@@ -7,7 +7,7 @@ require_once AA_INC_PATH."varset.php3";
 require_once AA_BASE_PATH."modules/links/constants.php3";
 require_once AA_BASE_PATH."modules/links/util.php3";           // module specific utils
 
-$r_state['linkedit']['old'] = $HTTP_POST_VARS;  // in case of bad input
+$r_state['linkedit']['old'] = $_POST;  // in case of bad input
 unset($r_msg);
 unset($r_err);
 // Function definitions --------------------------------------------------------

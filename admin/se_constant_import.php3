@@ -108,7 +108,7 @@ $form_buttons = array("update",
                       "return_url"=> array("value"=>$return_url),
                       "fid"       => array("value"=>$fid));
 ?>
-<form method="post" name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("Constants"), '', '', $form_buttons, $sess, $slice_id);
 FrmInputText('new_group_id', _m("Constant Group"), $new_group_id, 16, 16);

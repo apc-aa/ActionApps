@@ -246,7 +246,7 @@ $SQL .= " ORDER BY $r_admin_order ". ($r_admin_order_dir == "d" ? "DESC" : "ASC"
 // user definend sorting and filtering (add by setu 2002-0206)
 if ($sort_filter != "0") {
     // action URL with return_url if $return_url is set.
-    echo '<form name=filterform method=post action="'. $sess->url($PHP_SELF). '">
+    echo '<form name=filterform method=post action="'. $sess->url($_SERVER['PHP_SELF']). '">
     <table width="490" border="0" cellspacing="0" cellpadding="0"
     class=leftmenu bgcolor="'. COLOR_TABBG .'">';
 
@@ -265,7 +265,7 @@ if ($sort_filter != "0") {
 
 
 echo "
-<form name=itemsform method=post action=\"". $sess->url($PHP_SELF)."\">
+<form name=itemsform method=post action=\"". $sess->url($_SERVER['PHP_SELF'])."\">
 <input type=\"hidden\" name=\"action\" value=\"\">"; // filled by javascript function SubmitItem
 if ($r_admin_order_dir == "d") {
     echo "    <input type=\"hidden\" name=\"admin_order_dir\" value=\"on\">";

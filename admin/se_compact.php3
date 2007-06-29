@@ -190,7 +190,7 @@ function EnableClick(cond,what) {
                                             'add' => 'onclick="Defaults()"'));
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
   FrmTabCaption(_m("HTML code for index view"), '','', $form_buttons, $sess, $slice_id);
 

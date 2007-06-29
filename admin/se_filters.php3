@@ -259,7 +259,7 @@ function UpdateFilters(slice_id, import_id) {
                 "cancel"       =>array("url"   =>"se_fields.php3"))
 
 ?>
-<form method="post" name="f" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
   FrmTabCaption(_m("Content Pooling - Configure Filters"),'','',$form_buttons, $sess, $slice_id);
 ?>

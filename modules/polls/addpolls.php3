@@ -132,7 +132,7 @@ require_once AA_BASE_PATH."modules/polls/menu.php3";
 showMenu($aamenus, "addpoll", "main");
 
 ?>
-<form name="inputform" method=post onSubmit="BeforeSubmit();" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="inputform" method=post onSubmit="BeforeSubmit();" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <p>
 <h1><? if ($polledit) { echo _m("Edit poll with id ".$poll_id); } else {echo _m("Add poll");} ?></h1>
 <p>

@@ -196,7 +196,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   PrintArray($err);
   echo $Msg;
 
-  echo '<form method=post action="'. $sess->url($PHP_SELF) .'">';
+  echo '<form method=post action="'. $sess->url($_SERVER['PHP_SELF']) .'">';
 
   FrmTabCaption( _m('Module Links data') );
   $include_cmd = "<!--#include virtual=\"". AA_INSTAL_PATH ."modules/links/links.php3?link_id=$module_id\"-->";

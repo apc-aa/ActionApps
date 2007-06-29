@@ -142,7 +142,7 @@ function caption($s) {
 }
 
 echo '
-<form name="mailman_create_list" method="post" action="'.$sess->url($PHP_SELF).'"
+<form name="mailman_create_list" method="post" action="'.$sess->url($_SERVER['PHP_SELF']).'"
     onsubmit="return this.list_name.value != \'\' && this.admin_email.value != \'\'
     && this.admin_password.value != \'\'">
 <input type="hidden" name="slice_id" value="'.$slice_id.'">

@@ -198,7 +198,7 @@ echo '<title> '. _m("Email Notifications of Events"). '</title></head>';
 
 ?>
 
-<form method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 
     FrmTabCaption(_m("Email Notifications of Events"),'','',$form_buttons, $sess, $slice_id);

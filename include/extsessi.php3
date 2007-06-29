@@ -138,8 +138,8 @@ class AA_SL_Session extends Session {
      * @param $noquery
      */
     function MyUrl($SliceID=0, $Encap=true, $noquery=false){  //SliceID is here just for compatibility with MyUrl function in extsess.php3
-        global $HTTP_HOST, $HTTPS, $DOCUMENT_URI, $REQUEST_URI, $REDIRECT_DOCUMENT_URI, $SCRIPT_URL, $scr_url;
-        if (isset($HTTPS) && $HTTPS == 'on') {
+        global $scr_url;
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
             // You will need to fix suexec as well, if you use Apache and CGI PHP
             $PROTOCOL='https';
         } else {
@@ -147,16 +147,16 @@ class AA_SL_Session extends Session {
         }
 
         if( $scr_url ) {  // if included into php script
-            $foo = $PROTOCOL. "://". $HTTP_HOST.$scr_url;
-        } elseif (isset($REDIRECT_DOCUMENT_URI)) {  // CGI --enable-force-cgi-redirect
-            $foo = $PROTOCOL. "://". $HTTP_HOST.$REDIRECT_DOCUMENT_URI;
-        } elseif (isset($DOCUMENT_URI)) {
-            $foo = $PROTOCOL. "://". $HTTP_HOST.$DOCUMENT_URI;
-        } elseif (isset($REQUEST_URI)) {
-         $url_parsed = parse_url($REQUEST_URI);
-         $foo = $PROTOCOL. "://". $HTTP_HOST.$url_parsed['path'];
+            $foo = $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$scr_url;
+        } elseif (isset($_SERVER['REDIRECT_DOCUMENT_URI'])) {  // CGI --enable-force-cgi-redirect
+            $foo = $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$_SERVER['REDIRECT_DOCUMENT_URI'];
+        } elseif (isset($_SERVER['DOCUMENT_URI'])) {
+            $foo = $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$_SERVER['DOCUMENT_URI'];
+        } elseif (isset($_SERVER['REQUEST_URI'])) {
+         $url_parsed = parse_url($_SERVER['REQUEST_URI']);
+         $foo = $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$url_parsed['path'];
         } else {
-            $foo = $PROTOCOL. "://". $HTTP_HOST.$SCRIPT_URL;
+            $foo = $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_URL'];
         }
 
         switch ($this->mode) {
@@ -172,19 +172,18 @@ class AA_SL_Session extends Session {
     }
 
     /** expand_getvars function
-     *  adds variables passesd by QUERY_STRING_UNESCAPED to HTTP_GET_VARS
+     *  adds variables passesd by QUERY_STRING_UNESCAPED to $_GET
      *  SSI patch - passes variables to SSIed script
      */
     function expand_getvars() {
-        global $QUERY_STRING_UNESCAPED, $REDIRECT_QUERY_STRING_UNESCAPED, $HTTP_GET_VARS, $REQUEST_URI;
-        if (isset($REDIRECT_QUERY_STRING_UNESCAPED)) {
-            $varstring = $REDIRECT_QUERY_STRING_UNESCAPED;
+        if (isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])) {
+            $varstring = $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
             // $REDIRECT_QUERY_STRING_UNESCAPED
             //  - necessary for cgi version compiled with --enable-force-cgi-redirect
-        } elseif ( isset($QUERY_STRING_UNESCAPED) ) {
-          $varstring = $QUERY_STRING_UNESCAPED;
+        } elseif ( isset($_SERVER['QUERY_STRING_UNESCAPED']) ) {
+          $varstring = $_SERVER['QUERY_STRING_UNESCAPED'];
         } else {
-          $url_parsed = parse_url($REQUEST_URI);
+          $url_parsed = parse_url($_SERVER['REQUEST_URI']);
           $varstring = $url_parsed['query'];
         }
 
@@ -195,7 +194,7 @@ class AA_SL_Session extends Session {
             $b    = explode ('=', $a [$i]);
             $b[0] = DeBackslash2($b[0]);
             $b[1] = DeBackslash2($b[1]);
-            $HTTP_GET_VARS[urldecode($b [0])]= urldecode($b [1]);
+            $_GET[urldecode($b[0])]= urldecode($b[1]);
             $i++;
         }
         return $i;
@@ -204,7 +203,6 @@ class AA_SL_Session extends Session {
      * @param $id
      */
     function get_id($id = "") {
-        global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $QUERY_STRING;
         $newid=true;
 
         $this->name = $this->cookiename==""?$this->classname:$this->cookiename;
@@ -214,10 +212,10 @@ class AA_SL_Session extends Session {
             switch ($this->mode) {
                 case "get":
                     $this->expand_getvars(); // ssi patch
-                    $id = isset($HTTP_GET_VARS[$this->name]) ? $HTTP_GET_VARS[$this->name] : "";
+                    $id = isset($_GET[$this->name]) ? $_GET[$this->name] : "";
                     break;
                 case "cookie":
-                    $id = isset($HTTP_COOKIE_VARS[$this->name]) ? $HTTP_COOKIE_VARS[$this->name] : "";
+                    $id = isset($_COOKIE[$this->name]) ? $_COOKIE[$this->name] : "";
                     break;
                 default:
                     die("This has not been coded yet.");
@@ -240,10 +238,10 @@ class AA_SL_Session extends Session {
                 }
                 break;
             case "get":
-                if ( isset($QUERY_STRING) ) {
-                    $QUERY_STRING = ereg_replace(
+                if ( isset($_SERVER['QUERY_STRING']) ) {
+                    $_SERVER['QUERY_STRING'] = ereg_replace(
                     "(^|&)".quotemeta(urlencode($this->name))."=".$id."(&|$)",
-                    "\\1", $QUERY_STRING);
+                    "\\1", $_SERVER['QUERY_STRING']);
                 }
                 break;
             default:
@@ -256,7 +254,6 @@ class AA_SL_Session extends Session {
      * @param $sid
      */
     function start($sid = "") {
-        global $HTTP_COOKIE_VARS, $HTTP_GET_VARS, $HTTP_HOST, $HTTPS;
         $this->expand_getvars(); // ssi patch
         $name = $this->that_class;
         $this->that = new $name;
@@ -267,21 +264,21 @@ class AA_SL_Session extends Session {
         if (isset($this->fallback_mode)
             && ("get" == $this->fallback_mode )
             && ("cookie" == $this->mode )
-            && (!isset($HTTP_COOKIE_VARS[$this->name]))) {
+            && (!isset($_COOKIE[$this->name]))) {
 
-            if (isset($HTTP_GET_VARS[$this->name])) {
+            if (isset($_GET[$this->name])) {
                 $this->mode = $this->fallback_mode;
             } else {
                 //header("Status: 302 Moved Temporarily");
                 $this->get_id($sid);
                 $this->mode = $this->fallback_mode;
-                if (isset($HTTPS) && $HTTPS == 'on') {
+                if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                     // You will need to fix suexec as well, if you use Apache and CGI PHP
                     $PROTOCOL='https';
                 } else {
                     $PROTOCOL='http';
                 }
-                //header("Location: ". $PROTOCOL. "://". $HTTP_HOST.$this->self_url());
+                //header("Location: ". $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$this->self_url());
                 exit;
             }
         }

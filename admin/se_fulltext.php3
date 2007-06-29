@@ -137,7 +137,7 @@ $form_buttons = array ("update",
                                           'add'   => 'onclick="Defaults()"'));
 
 ?>
-<form name="f" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("HTML code for fulltext view"), '','', $form_buttons, $sess, $slice_id);
 FrmTextarea("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, 4, 60, false,

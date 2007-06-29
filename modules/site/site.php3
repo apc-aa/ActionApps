@@ -31,8 +31,7 @@ require_once AA_INC_PATH."item.php3"; // So site_ can create an item
 $timestart = get_microtime();
 
 function IsInDomain( $domain ) {
-    global $HTTP_HOST;
-    return (($HTTP_HOST == $domain)  || ($HTTP_HOST == 'www.'.$domain));
+    return (($_SERVER['HTTP_HOST'] == $domain)  || ($_SERVER['HTTP_HOST'] == 'www.'.$domain));
 }
 
 // ----------------- function definition end -----------------------------------

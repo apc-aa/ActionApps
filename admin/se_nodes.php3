@@ -150,7 +150,7 @@ function Cancel() {
 
 ?>
 
-<form method="post" name="frm" action="<?php echo $sess->url($PHP_SELF) ?>" onsubmit="return checkData()">
+<form method="post" name="frm" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>" onsubmit="return checkData()">
 <?php
 
     FrmTabCaption(_m("Remote node administration"));

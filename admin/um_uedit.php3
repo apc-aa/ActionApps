@@ -56,7 +56,7 @@ if (!IfSlPerm(PS_NEW_USER)) {
 
 if ( ($submit_action == "usr_del") AND $selected_user ) {
     DelUser( $selected_user );    // default is to delete any references as well
-    go_url( $sess->url($PHP_SELF) );
+    go_url( $sess->url($_SERVER['PHP_SELF']) );
 }
 
 $sess->register("rusr");
@@ -149,7 +149,7 @@ if ( $add_submit OR ($submit_action == "update_submit")) {
 
     if ( count($err) <= 1 ) {
         $Msg = MsgOK( $add_submit ? _m("User successfully added to permission system") : _m("User data modified"));
-        go_url( get_url($sess->url($PHP_SELF), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
+        go_url( get_url($sess->url($_SERVER['PHP_SELF']), 'usr_edit=1&selected_user='. urlencode($selected_user)), $Msg);
     }
 }
 
@@ -215,7 +215,7 @@ echo $Msg;
 FrmTabCaption(_m("Users"));
 ?>
  <tr><td>
-   <form method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+   <form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
      <tr>
             <td width="20%">&nbsp;</td>
@@ -231,7 +231,7 @@ FrmTabCaption(_m("Users"));
 FrmTabSeparator("");
 ?>
  <tr>
-  <td><form name="f2" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+  <td><form name="f2" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
     <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>" align="center">
      <tr>
             <td width="20%" class="tabtxt"><b><?php echo _m("User") ?></b></td>
@@ -279,7 +279,7 @@ do {
 
 ?>
 <br />
-<form name="fx" method="post" action="<?php echo $sess->url($PHP_SELF) ?>">
+<form name="fx" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 
 // User data ---------------------------------------------------

@@ -10,7 +10,7 @@ require_once AA_BASE_PATH."modules/links/cattree.php3";        // for event hand
 require_once AA_BASE_PATH."modules/links/link.class.php3";     // link object
 
 unset($r_state['linkedit']);
-$r_state['linkedit']['old'] = $HTTP_POST_VARS;  // in case of bad input
+$r_state['linkedit']['old'] = $_POST;  // in case of bad input
 unset($r_msg);
 unset($r_err);
 
