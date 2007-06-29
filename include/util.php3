@@ -355,11 +355,11 @@ function quote($str) {
  * function addslashes enhanced by array processing
  * @param $val
  */
-function AddslashesArray($val) {
+function AddslashesArray($value) {
     return is_array($value) ? array_map('AddslashesArray', $value) : addslashes($value);
 }
 
-function StripslashesArray($val) {
+function StripslashesArray($value) {
     return is_array($value) ? array_map('StripslashesArray', $value) : stripslashes($value);
 }
 
@@ -608,7 +608,7 @@ function detect_browser() {
   else{$BPlatform = "Unknown";}
 
   if ($GLOBALS['debug']) {
-      huhl("$_SERVER['HTTP_USER_AGENT'] => $BName,$BVersion,$BPlatform");
+      huhl($_SERVER['HTTP_USER_AGENT']. " => $BName,$BVersion,$BPlatform");
   }
 }
 
