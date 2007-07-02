@@ -635,7 +635,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                     $zids3 = new zids($zids->longids());
                     $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id,
                                     $conds, '', $slice->getProperty('group_by'),"ACTIVE", $slices, '', 0,
-                                    '',$GLOBALS['nocache'], "vid=$vid t=full i=".serialize($zids3));
+                                    '',$GLOBALS['nocache'], "vid=$vid t=full i="); //.serialize($zids3));
                     $zids->a    = $zids3->a;
                     $zids->type = $zids3->type;
                 }
