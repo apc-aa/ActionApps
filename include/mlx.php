@@ -70,7 +70,7 @@ if(!defined('MLX_TRACE')) {
     risk (btw, I dont think this caching brings alot better
     performance) **/
 if(!defined('MLX_NOVIEWCACHE')) {
-    define ('MLX_NOVIEWCACHE',1);
+    define ('MLX_NOVIEWCACHE',0);
 }
 
 if(!defined('MLX_OPTIMIZE')) {
@@ -530,6 +530,7 @@ class MLXView
         if($slice_id) {
             unset($GLOBALS['MLX_TRANSLATIONS'][(string)$slice_id]);
         }
+//          __mlx_dbg(var_dump(func_get_args(),true),__FUNCTION__);
         $supported_modes = array("MLX","ONLY","ALL");
         if($mlx) {
             $arr = explode("-",$mlx);
@@ -560,8 +561,9 @@ class MLXView
                     'value'=>$value,
                     'operator'=>"=");
                 break;
-//			__mlx_dbg($conds,"conds");
+// 		__mlx_dbg($conds,"conds".__FUNCTION__);
             default:
+//                 __mlx_dbg(var_dump(func_get_args(),true),__FUNCTION__);
                 break;
         }
     }
@@ -590,30 +592,52 @@ class MLXView
         $defaultCondsOperator,$nocache,$cachekeyextra="")
     {
         global $pagecache, $QueryIDsCount, $debug;
-
+//         static $qCache = array();
         if($this->mode != "MLX") {
             return;
         }
         if($zidsObj->count() == 0) {
             return;
         }
-
+        if(MLX_TRACE) {
+            $timestart = get_microtime();
+//             __mlx_dbg(var_dump($this,true),__FUNCTION__);
+//             __mlx_dbg(var_dump(func_get_args(),true),__FUNCTION__);
+        }
+        
         $nocache = $nocache || MLX_NOVIEWCACHE || $GLOBALS['nocache'] || $GLOBALS['mlxnoviewcache'];
-
+	// try cache 
         if(!$nocache) {
             #create keystring from values, which exactly identifies resulting content
-            $keystr = $this->mode.serialize($this->language).$ctrlSliceID.$slice_id
-                . serialize($conds). serialize($sort)
-                . $group_by. $type. serialize($slices). $neverAllItems
-                . ((isset($restrict_zids) && is_object($restrict_zids)) ?
-                    serialize($restrict_zids) : "")
-                . $defaultCondsOperator . $cachekeyextra;
+            $keystr = md5($this->mode.serialize($this->language)
+                . ':'.serialize($zidsObj) .':'.$ctrlSliceID.':'.$slice_id
+                . ':'.serialize($conds). ':' . serialize($sort)
+                . ':'.$group_by.':'.$type.':'.serialize($slices).':'.$neverAllItems
+//                 . ((isset($restrict_zids) && is_object($restrict_zids)) ?
+//                     serialize($restrict_zids) : "")
+                . ':'.serialize($restrict_zids) 
+                . ':'.$defaultCondsOperator .':'. $cachekeyextra);
+            
+//             __mlx_dbg(func_get_args(),__FUNCTION__);
+
+//             if($qCache[$keystr]) {
+//                 if(MLX_TRACE) {
+//                     __mlx_trace("using mem cache for ".$keystr);
+//                 }
+// 		$zidsObj = $qCache[$keystr];
+//                 return;
+// 	    }
+		
 
             $str2find = new CacheStr2find($ctrlSliceID, 'slice_id');
             if ( $res = CachedSearch( !$nocache, $keystr )) {
                 if(MLX_TRACE) {
-                    __mlx_trace("using cache for $keystr");
+//                     __mlx_trace("using sql cache for ".$keystr);
+                    $timeend = get_microtime();
+                    $time    = $timeend - $timestart;
+                    __mlx_trace(__FUNCTION__." sql cache $keystr generation time: $time");
                 }
+                $QueryIDsCount = count($res->a);
                 $zidsObj->refill( $res->a );
                 return;
             }
@@ -628,25 +652,25 @@ class MLXView
         while(list($upContId,$count) = each($arr)) {
             if($count > 1) // already primary
                 continue;
-                if(MLX_TRACE) {
-                    __mlx_dbg(unpack_id128($upContId),"ContentID");
-                }
-            //speedup
-            if(MLX_OPTIMIZE > 5) {
-                reset($translations);
-                $sql = "SELECT * from `content`"
-                    ." WHERE `text`='".quote($upContId)."'"
-                    ." AND field_id='".current($translations)."' LIMIT 1";
-                $db->tquery($sql);
-                if($db->num_rows() > 0) {
-                    if($GLOBALS['mlxdbg']) {
-                        huhl($sql);
-                        __mlx_dbg($db->Record,"MLXQUICK");
-                    }
-                    $arr[(string)$upContId]++;
-                    continue;
-                }
+            if(MLX_TRACE) {
+                __mlx_dbg(unpack_id128($upContId),"ContentID");
             }
+            //speedup
+//             if(MLX_OPTIMIZE > 5) {
+//                 reset($translations);
+//                 $sql = "SELECT * from `content`"
+//                     ." WHERE `text`='".quote($upContId)."'"
+//                     ." AND field_id='".current($translations)."' LIMIT 1";
+//                 $db->tquery($sql);
+//                 if($db->num_rows() > 0) {
+//                     if($GLOBALS['mlxdbg']) {
+//                         huhl($sql);
+//                         __mlx_dbg($db->Record,"MLXQUICK");
+//                     }
+//                     $arr[(string)$upContId]++;
+//                     continue;
+//                 }
+//             }
             //conservative
             $sql = "SELECT  c2.field_id,c2.text FROM `content` AS c1" //`field_id`,`text`
 //				." LEFT JOIN `content` AS c2 ON ("
@@ -695,8 +719,20 @@ class MLXView
         $QueryIDsCount = count($arr);
         $zidsObj->a    = array_keys($arr);
         if ( !$nocache ) {
+//             $qCache[$keystr] = $zidsObj;
             $pagecache->store($keystr, serialize($zidsObj), $str2find);
         }
+        if(MLX_TRACE) {
+            $timeend = get_microtime();
+            $time    = $timeend - $timestart;
+            __mlx_trace(__FUNCTION__." $keystr generation time: $time");
+            if(!$GLOBALS['TIMINGS']['MLX']) {
+                $GLOBALS['TIMINGS']['MLX'] = array('MLX:'.__FUNCTION__,$time);
+            } else {
+                $GLOBALS['TIMINGS']['MLX'][1] += $time;
+            }
+        }
+
     }
     /** getAlternatives function
      *   at the moment this is not useful unless you write your own
@@ -760,7 +796,14 @@ class MLXView
         }
         $ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id128($slice_id)];
         if(!$ctrlSliceID) {
-            return "MLXView::getAlternatives no ctrlSliceID";
+//             $GLOBALS['errcheck'] = true;
+//              __mlx_dbg(func_get_args(),__FUNCTION__);
+            $sliceobj = AA_Slices::getSlice(unpack_id128($slice_id));
+            $ctrlSliceID = $sliceobj->getProperty(MLX_SLICEDB_COLUMN);
+            if(!$ctrlSliceID) {
+                return "MLXView::getTranslations no ctrlSliceID";
+            }
+            $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id128($slice_id)] = unpack_id128($ctrlSliceID); 
         }
         $translations = $this->getPrioTranslationFields($ctrlSliceID);
         $db  = getDB();
