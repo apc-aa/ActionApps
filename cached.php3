@@ -46,7 +46,9 @@ header('Last-Modified: ' . $mod_gmt);
 header('Cache-Control: public');
 header('Cache-Control: max-age=' . $allowcache_expire);
 header('Content-Type: application/x-javascript');
-
+if(!$keystr) {
+    $keystr = $_REQUEST['keystr'];
+}
 echo $GLOBALS['pagecache']->getById($keystr);
 
 ?>
