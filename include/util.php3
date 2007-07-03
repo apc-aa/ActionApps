@@ -211,11 +211,11 @@ function shtml_query_string() {
     // param=a%26a&second=2 is returned as param=a\\&a\\&second=2 - we can't
     // expode it! - that's why we use $REQUEST_URI, if possible
 
-    $ret_string = ($_SERVER['REQUEST_URI'] AND strpos($_SERVER['REQUEST_URI'], '?')) ?
-                            substr($_SERVER['REQUEST_URI'], strpos($_SERVER['REQUEST_URI'], '?')+1) :
+    $ret_string = ($_SERVER['REQUEST_URI'] AND strpos($_SERVER['REQUEST_URI'],'?')) ?
+                        substr($_SERVER['REQUEST_URI'],strpos($_SERVER['REQUEST_URI'], '?')+1) :
                   ( isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])    ?
-                            stripslashes($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED']) :
-                            stripslashes($_SERVER['QUERY_STRING_UNESCAPED']) );
+                        stripslashes($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED']) :
+                        stripslashes($_SERVER['QUERY_STRING_UNESCAPED']) );
     // get off magic quotes
     return magic_strip($ret_string);
 }
