@@ -57,12 +57,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 if ($mode == "edit" || $mode == "test") {
     $db->query("SELECT * FROM rssfeeds WHERE name='$sel_rssfeed_name' AND slice_id = '$qp_slice_id'");
     if ($db->next_record()) {
-        $testfeed = $db->Record;
+        $testfeed              = $db->Record;
         $testfeed["feed_type"] = FEEDTYPE_RSS;
-        $old_rssfeed_name = $sel_rssfeed_name;
-        $rssfeed_name = $db->f(name);
-        $server_url = $db->f(server_url);
-        $new_mode="update";
+        $old_rssfeed_name      = $sel_rssfeed_name;
+        $rssfeed_name          = $db->f('name');
+        $server_url            = $db->f('server_url');
+        $new_mode              = "update";
     }
 } else {
     switch ($mode) {
@@ -77,9 +77,9 @@ if ($mode == "edit" || $mode == "test") {
                 $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
             } else {
                 $catVS = new Cvarset();
-                $catVS->add("slice_id", "unpacked", $slice_id);
-                $catVS->add("name", "quoted", $rssfeed_name);
-                $catVS->add("server_url","quoted",$server_url);
+                $catVS->add("slice_id",  "unpacked", $slice_id);
+                $catVS->add("name",      "quoted",   $rssfeed_name);
+                $catVS->add("server_url","quoted",   $server_url);
                 $SQL = "INSERT INTO rssfeeds" . $catVS->makeINSERT();
                 if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
                     $err["DB"] .= MsgErr("Can't add RSS Feed $rssfeed_name");
@@ -89,9 +89,9 @@ if ($mode == "edit" || $mode == "test") {
 
         case "update" :
             $catVS = new Cvarset();
-            $catVS->add("name", "quoted", $rssfeed_name);
-            $catVS->add("server_url","quoted",$server_url);
-            $SQL = "INSERT INTO rssfeeds" . $catVS->makeINSERT();
+            $catVS->add("name",      "quoted", $rssfeed_name);
+            $catVS->add("server_url","quoted", $server_url);
+            $SQL = "INSERT INTO rssfeeds" .    $catVS->makeINSERT();
             $db->query("UPDATE rssfeeds SET ". $catVS->makeUPDATE()
               ." WHERE name='$old_rssfeed_name' AND slice_id = '$qp_slice_id'");
             break;
@@ -116,36 +116,40 @@ while ($db->next_record()) {
 function InitPage() {}
 
 function SelectValue(sel) {
-  svindex = eval(sel).selectedIndex;
-  if (svindex != -1) { return eval(sel).options[svindex].value; }
-  return null;
+    svindex = eval(sel).selectedIndex;
+    if (svindex != -1) { 
+        return eval(sel).options[svindex].value; 
+    }
+    return null;
 }
 
-function Submit(mode) {
-  if (mode== 'add') {
-    document.f.mode.value = mode;
-    document.f.submit();
-  } else {
-
-  sel = SelectValue('document.f.rssfeeds')
-  if (sel == null)
-    alert('<?php echo _m("No selected rssfeed"); ?>')
-  else {
-    if (mode == 'delete')
-      if (!confirm('<?php echo _m("Are you sure you want to delete the rssfeed?"); ?>'))
-        return
-    document.f.sel_rssfeed_name.value = sel
-    document.f.mode.value = mode;
-    document.f.submit();
-  }
- }
+function SubmitForm(mode) {
+    if (mode== 'add') {
+        document.f.mode.value = mode;
+        document.f.submit();
+    } else {
+        sel = SelectValue('document.f.rssfeeds');
+        if (sel == null) { 
+            alert('<?php echo _m("No selected rssfeed"); ?>');
+        } else {
+            if (mode == 'delete') {
+                if (!confirm('<?php echo _m("Are you sure you want to delete the rssfeed?"); ?>')) {
+                    return;
+                }
+            }
+            document.f.sel_rssfeed_name.value = sel;
+            document.f.mode.value = mode;
+            document.f.submit();
+        }
+    }
 }
 
 function checkData() {
-  if (document.f.rssfeed_name.value=="") {
-     alert('<?php echo _m("Error: RSS node empty"); ?>')
-     return false
-  }
+    if (document.f.rssfeed_name.value=="") {
+        alert('<?php echo _m("Error: RSS node empty"); ?>');
+        return false;
+    }
+    document.f.submit();
 }
 
 // -->
@@ -156,13 +160,13 @@ function checkData() {
 <?php
   $useOnLoad = true;
   require_once AA_INC_PATH."menu.php3";
-  showMenu ($aamenus, "sliceadmin","rssfeeds");
+  showMenu($aamenus, "sliceadmin","rssfeeds");
 
   echo "<h1><b>" . _m("Remote RSS Feed administration") . "</b></h1>";
   PrintArray($err);
   echo $Msg;
 ?>
-<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>" onSubmit="return checkData()">
+<form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 
   FrmTabCaption(_m("Remote RSS Feed administration"));
@@ -179,11 +183,11 @@ function checkData() {
       ?>
       </select>
     <tr><td colspan="2" align="center">
-      <input type="button" value="<?php echo _m("Edit") ?>" onClick = "Submit('edit')" >
-      <input type="button" VALUE="<?php echo _m("Delete") ?>" onClick = "Submit('delete')">
-      <input type="button" VALUE="<?php echo _m("Add") ?>" onClick = "Submit('add')">
-      <input type="button" VALUE="<?php echo _m("Test") ?>" onClick = "Submit('test')">
-      <input type="button" VALUE="<?php echo _m("Map") ?>" onClick = "Submit('map')">
+      <input type="button" value="<?php echo _m("Edit") ?>" onClick = "SubmitForm('edit')" >
+      <input type="button" VALUE="<?php echo _m("Delete") ?>" onClick = "SubmitForm('delete')">
+      <input type="button" VALUE="<?php echo _m("Add") ?>" onClick = "SubmitForm('add')">
+      <input type="button" VALUE="<?php echo _m("Test") ?>" onClick = "SubmitForm('test')">
+      <input type="button" VALUE="<?php echo _m("Map") ?>" onClick = "SubmitForm('map')">
      </td></tr>
 <?php
   FrmTabSeparator($new_mode=="insert" ? _m("Add new rssfeed") : _m("Edit rssfeed data"));
@@ -198,7 +202,7 @@ function checkData() {
 </tr>
 <?php
 
-  FrmTabEnd(array("submit", "cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
+  FrmTabEnd(array("send"=>array('type'=>'button', 'value'=>_m('Send'), 'add'=>'onClick="checkData()"'), "cancel"=>array("url"=>"se_fields.php3")), $sess, $slice_id);
 
 ?>
 </form>
