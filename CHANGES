@@ -1,9 +1,11 @@
+07/30/07 - fixed javascript problem in "Slice Admin" -> "RSS Feeds", so delete 
+(honzam)   and edit works again.
 07/02/07 - fixed MLX view caching - enable with define ('MLX_NOVIEWCACHE',0);
 (mimo)   - fixed mlx mini view generator (aka getTranslations)
            now handles MLXView::getTranslations no ctrlSliceID
-	 - enabling MLXTRACE now gives timing info
-	 - slight change to what view.php3 passes to mlx->postqueryzids
-	 - using $_REQUEST to get $keystr in cached.php3 - register_globals
+         - enabling MLXTRACE now gives timing info
+	     - slight change to what view.php3 passes to mlx->postqueryzids
+	     - using $_REQUEST to get $keystr in cached.php3 - register_globals
 06/07/07 - fixed "Modify Content" action in Item Managrer to work with PHP4
 (honzam) - fixed Alerts admin page buton - it didn't work after clean-up
            (typo problem)
