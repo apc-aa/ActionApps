@@ -84,6 +84,11 @@ require_once AA_INC_PATH."validate.php3";
 
 $err["Init"] = "";       // error array (Init - just for initializing variable)
 
+// trap field for spammer bots
+if ( $answer )    {
+     echo _m("Not accepted, sorry. Looks like spam.");
+     exit;
+}
 
 // test for spam
 $discussion_fields = array (
