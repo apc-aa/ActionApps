@@ -92,7 +92,7 @@ class DB_AA extends DB_Sql {
         if ($this->Halt_On_Error == "no") {
             return;
         }
-        printf("</td></table><b>Database error:</b> %s<br>\n", $msg);
+        printf("<b>Database error:</b> %s<br>\n", $msg);
         printf("<b>Error Number (description)</b>: %s (%s)<br>\n", $this->Errno, $this->Error);
         echo("Please contact ". ERROR_REPORTING_EMAIL ." and report the ");
         printf("exact error message.<br>\n");

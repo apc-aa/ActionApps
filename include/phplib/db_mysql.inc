@@ -365,7 +365,7 @@ class DB_Sql {
   }
 
   function haltmsg($msg) {
-    printf("</td></tr></table><b>Database error:</b> %s<br>\n", $msg);
+    printf("<b>Database error:</b> %s<br>\n", $msg);
     printf("<b>MySQL Error</b>: %s (%s)<br>\n",
       $this->Errno,
       $this->Error);
