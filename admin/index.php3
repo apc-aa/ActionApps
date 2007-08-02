@@ -127,12 +127,6 @@ $module_id = $slice_id;
 
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice       = AA_Slices::getSlice($module_id);
-$bin_def     = array( 'app'    => array('cond'=>'ACTIVE'),
-                  'appb'       => array('cond'=>'PENDING'),
-                  'appc'       => array('cond'=>'EXPIRED'),
-                  'hold'       => array('cond'=>'HOLDING'),
-                  'trash'      => array('cond'=>'TRASH')
-                );
 
 $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
@@ -255,7 +249,13 @@ if (! $perm_edit_all ) {
                       'posted_by.......' => 1 );
 }
 
-$zids = QueryZIDs( array($slice_id), $conds, $sort, $bin_def[$r_state['bin']]['cond']);
+$BIN_CONDS   = array( 'app'    => AA_BIN_ACTIVE,
+                      'appb'   => AA_BIN_PENDING,
+                      'appc'   => AA_BIN_EXPIRED,
+                      'hold'   => AA_BIN_HOLDING,
+                      'trash'  => AA_BIN_TRASH
+                    );             
+$zids = QueryZIDs( array($slice_id), $conds, $sort, $BIN_CONDS[$r_state['bin']]);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form
