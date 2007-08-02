@@ -421,6 +421,38 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
     }
 }
 
+/** Expands {lastedit:[<date_format>:[<slice_id>]]} and displays the date of 
+ *  last modificaton of any item in the slice
+ *  the user.
+ *  @param $date_format - the format in which you want to see the date
+ *                        @see date() function of php http://php.net/date
+ *                        like {lastedit:m/d/y H#:i}
+ *  @param $slice_id    - the slice which should be checked for last 
+ *                        modification. If no slice is specified, then check
+ *                        all the slices
+ */
+class AA_Stringexpand_Lastedit extends AA_Stringexpand {
+    
+    /** expand function
+     * @param $format
+     * @param $slice_id
+     */
+    function expand($format='j. n. Y', $slice_id='') {
+        $where    = '';
+        if ($slice_id AND (guesstype($slice_id) == 'l')) {
+            $where = "WHERE slice_id='".q_pack_id($slice_id)."'";
+        }
+        $db  = getDB();
+        $SQL = "SELECT last_edit FROM item $where ORDER BY last_edit DESC LIMIT 0,1";
+        $db->tquery($SQL);
+        // timestamp
+        $lastedit = $db->next_record() ? $db->f("last_edit") : 0;
+        freeDB($db);
+        return date($format,$lastedit);
+    }
+}
+
+
 /** Expands {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>} like:
  *          {htmltoggle:more >>>:Econnect:less <<<:Econnect is ISP for NGOs...}
  *  It creates the link text1 (or text2) and two divs, where only one is visible
@@ -680,7 +712,8 @@ function getConstantValue($group, $what, $field_name) {
  *     But we do not want to put such string instead of {_#HEADLINE}, since then
  *     would be the inner most curly brackets the {brackets} string. We do not
  *     want to unalias inside headline text, so we replace all the control
- *     characters by substitutes (@see $QuoteArray)
+ *     characters by substitutes 
+ *     (@see AA_Stringexpand::quoteColons():$QUOTED_ARRAY, $UNQUOTED_ARRAY)
  *
  *    Ex: some text {ifset:I'm headline _AA_OpEnPaR_with _AA_OpEnBrAcE_brackets_AA_ClOsEbRaCe__AA_ClOsEpAr_:<h1>_#1</h1>} here
  *
@@ -694,14 +727,6 @@ function getConstantValue($group, $what, $field_name) {
  *    Ex: some text <h1>I'm headline (with {brackets})</h1> here
  */
 
-// Do not change strings used, as they can be used to force an escaped character
-// in something that would normally expand it
-$QuoteArray = array(":" => "_AA_CoLoN_",
-        "(" => "_AA_OpEnPaR_", ")" => "_AA_ClOsEpAr_",
-        "{" => "_AA_OpEnBrAcE_", "}" => "_AA_ClOsEbRaCe_");
-$UnQuoteArray = array_flip($QuoteArray);
-
-
 /** QuoteColons function
  *  Substitutes all colons with special AA string and back depending on unalias
  *  nesting. Used to mark characters :{}() which are content, not syntax
@@ -711,14 +736,14 @@ $UnQuoteArray = array_flip($QuoteArray);
  * @param $text
  */
 function QuoteColons($level, $maxlevel, $text) {
-    global $QuoteArray, $UnQuoteArray;  // Global so not built at each call
+//    global $QuoteArray, $UnQuoteArray;  // Global so not built at each call
     if ( $level > 0 ) {                 // there is no need to substitute on level 1
-        return strtr($text, $QuoteArray);
+        return AA_Stringexpand::quoteColons($text);
     }
 
     // level 0 - return from unalias - change all back to ':'
     if ( ($level == 0) AND ($maxlevel > 0) ) { // maxlevel - just for speed optimalization
-        return strtr($text, $UnQuoteArray);
+        return AA_Stringexpand::dequoteColons($text);
     }
     return $text;
 }
@@ -729,7 +754,7 @@ function QuoteColons($level, $maxlevel, $text) {
  * @param $text
  */
 function DeQuoteColons($text) {
-    return strtr($text, $GLOBALS['UnQuoteArray']);
+    return AA_Stringexpand::dequoteColons($text);
 }
 
 /*
@@ -1819,6 +1844,7 @@ class AA_Stringexpand {
     /** item, for which we are stringexpanding
      *  Not used fot many expand functions
      */
+     
     var $item;
     /** AA_Stringexpand function
      * @param $item
@@ -1826,11 +1852,12 @@ class AA_Stringexpand {
     function AA_Stringexpand($item) {
         $this->item = $item;
     }
+    
     /** expand function
      */
     function expand() {
     }
-
+    
     /** additionalCacheParam function
      *  Some stringexpand functions uses global parameters, so it is not posible
      *  to use cache for results based just on expand() parameters. We need to
@@ -1841,6 +1868,34 @@ class AA_Stringexpand {
         return '';
     }
 
+    /** quoteColons function
+     *  static function
+     *  Substitutes all colons with special AA string and back depending on unalias
+     *  nesting. Used to mark characters :{}() which are content, not syntax
+     *  elements
+     * @param $level
+     * @param $maxlevel
+     * @param $text
+     */
+    function quoteColons($text, $reverse=false ) {
+        // static so not built at each call
+        // Do not change strings used, as they can be used to force an escaped character
+        // in something that would normally expand it
+        static $UNQUOTED_ARRAY = array(":", "(", ")", "{", "}");
+        static $QUOTED_ARRAY   = array("_AA_CoLoN_", "_AA_OpEnPaR_", "_AA_ClOsEpAr_", "_AA_OpEnBrAcE_", "_AA_ClOsEbRaCe_");
+
+        return $reverse ? str_replace($QUOTED_ARRAY, $UNQUOTED_ARRAY, $text) : str_replace($UNQUOTED_ARRAY, $QUOTED_ARRAY, $text);
+    }
+
+    /** dequoteColons function - reverse function to quoteColons();
+     *  static function
+     *  Substitutes special AA 'colon' string back to colon ':' character
+     * @param $text
+     */
+    function dequoteColons($text) {
+        return AA_Stringexpand::quoteColons($text, true);
+    }
+    
     /** unalias function
      *  static function
      * @param $text
@@ -1854,6 +1909,7 @@ class AA_Stringexpand {
         $GLOBALS['g_formpart'] = 0;  // used for splited inputform into parts
         return new_unalias_recurent($text, $remove, $level, $maxlevel, $item ); // Note no itemview param
     }
+    
     /** unaliasArray function
      * @param $arr
      * @param $remove
@@ -1905,4 +1961,16 @@ class AA_Stringexpand_Unpack extends AA_Stringexpand_Nevercache {
     }
 }
 
+class AA_Stringexpand_Packid extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $unpacked_id
+     */
+    function expand($unpacked_id='') {
+        if ($unpacked_id) {// Note was + instead {32}
+            return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
+        }
+    }
+}
 ?>
