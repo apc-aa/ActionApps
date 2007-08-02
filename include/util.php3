@@ -2727,6 +2727,7 @@ class AA_Fields {
         }
         return $ret;
     }
+    
     /** getPriorityArray function
      *
      */

@@ -117,8 +117,7 @@ function PrintModuleSelection() {
  * @param $showMain -- show the main menu (top navigation bar) ?
  * @param $showSub -- show the submenu (left navigation bar) ?
  */
-function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $showSub = 1)
-{
+function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, $showSub = true) {
     global $slice_id, $useOnLoad, $sess, $db, $auth;
     global $menu_function;
     global $debug;
@@ -204,9 +203,6 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = 1, $sh
               <td width="20%" class="navbar" valign="bottom">
                 <form name="nbform" enctype="multipart/form-data" method="post" action="'. $sess->url($_SERVER['PHP_SELF']) .'" style="display:inline">
                 &nbsp; ';
-        if (is_array($g_modules) AND (count($g_modules) > 1)) {
-            echo _m("Switch to:") ."&nbsp; ";
-        }
         echo "\n";
         PrintModuleSelection();
         echo '

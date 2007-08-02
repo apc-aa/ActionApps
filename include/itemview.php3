@@ -534,6 +534,7 @@ class itemview {
     $function2call = $this->get_content_funct;
     trace("=","",$view_type." pre call to ".$function2call);
     // Create an array of content, indexed by either long or short id (not tagged id)
+
     $content = $function2call($foo_zids);
 
     trace("=","",$view_type." after content");

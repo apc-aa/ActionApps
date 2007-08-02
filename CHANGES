@@ -1,3 +1,30 @@
+08/01/07 - new "Central" admin interface visible for superadmins. It can store 
+(honzam)   multiple configurations of AA, so you can manage more AAs 
+           and databases from one place. Currently it allows to manage 
+           the configurations (add, edit, delete) and also do sql_update.php3
+           on multiple (selected) AAs   
+         - new table central_conf created in sql_update.php3 script - used 
+           by "Central"
+         - new robots.txt file for more secure setting of the AA install
+           (Thanks to carlos Alberto RR <carlos@colnodo.apc.org>)
+         - new f_z alias function which get the size or type of the file 
+           (Thanks to Adam Sanchez)
+         - new expand function {lastedit:[<date_format>:[<slice_id>]]} 
+           which displays the date of last modificaton of any item in the slice.
+           The format of date is the sane as used in PHP date() function 
+           (see http://php.net/date). slice_id could be ommited - then check 
+           all the slices in AA. Thanks belongs to Adam Sanchez.
+         - more spam checking for in discussions - you can use the "answer" 
+           field solution in the same way as with anonymous form for items
+         - small refactoring of QuoteColons() in strinexpand.php3 - moved 
+           to AA_Stringexpand::quoteColons($text) where it belongs.
+         - small refactoring in ItemManager - bins internaly uses bit 
+           representation insted of string
+         - fixes in AA synchronization script
+         - fixed some SQL queries in sql_update.php3, to not produce errors 
+           in last versions of MySQL
+         - fix database error messages to not produce invalid html code 
+         - small fix in tabledit
 07/30/07 - fixed javascript problem in "Slice Admin" -> "RSS Feeds", so delete 
 (honzam)   and edit works again.
 07/02/07 - fixed MLX view caching - enable with define ('MLX_NOVIEWCACHE',0);
