@@ -112,7 +112,7 @@ class AA_Actionapps {
         }
     }
     
-    /** This commend synchronizes the slices base on sync[] array 
+    /** This command synchronizes the slices base on sync[] array 
      *  @return the report on the synchronization 
      */
     function synchronize($sync_commands) {
@@ -324,10 +324,10 @@ class AA_Difference {
                 $diff[] = new AA_Difference('DIFFERENT', _m('There is no such key (%1) in destination slice for %2', array($key, $name)), new AA_Sync_Action('UPDATE', $name."->$key", $value));
             }
             elseif ($value != $destination_arr[$key]) {
-                $code = '{htmltoggle:&gt;&gt;::&lt;&lt;:
-                       <div style="background-color#:#FFE0E0;border#: solid 1px #F88;">'.AaSafe(safe($destination_arr[$key])).'</div>
+                $code = '{htmltoggle:&gt;&gt;::&lt;&lt;:'. AA_Stringexpand::quoteColons('
+                       <div style="background-color:#FFE0E0;border: solid 1px #F88;">'.safe($destination_arr[$key]).'</div>
                        <br>
-                       <div style="background-color#:#E0E0FF;border#: solid 1px #88F;">'.AaSafe(safe($value)).'</div>}';
+                       <div style="background-color:#E0E0FF;border: solid 1px #88F;">'.safe($value).'</div>'). '}';
                 $diff[] = new AA_Difference('DIFFERENT', _m('The value for key %1 in %2 array is different %3', array($key, $name, AA_Stringexpand::unalias($code))), new AA_Sync_Action('UPDATE', $name."->$key", $value));
                 // we need to clear the destination array in order we can know, 
                 // that there are some additional keys in it (compated to template)
@@ -350,13 +350,6 @@ class AA_Difference {
         }
         return $diff;
     }
-}
-
-/** Makes the string safe for AA stringexpand
- *  @todo do it better - it is not functional since the characters are changed
- */
-function AaSafe($string) {
-    return str_replace(array(':','{','}'), array('#:','#[','#]'), $string);
 }
 
 /** Class which defines synchronization actions */
@@ -393,6 +386,11 @@ class AA_Sync_Action {
         /** @todo convert to class variable after move to PHP5 */
         global $slice_id_cache;
         
+        // commands are stored as tree - like: 
+        // Configuración->field->category........  
+        // Configuración in name of slice - we use slice name as identifier 
+        // here, because slice_id is different in remote slices and we want 
+        // to synchronize the slices of the same name
         $cmd = explode('->', $this->identifier);
         if ( !isset($slice_id_cache[$cmd[0]])) {
             $slice_id_cache[$cmd[0]] = GetTable2Array("SELECT id FROM slice WHERE name='".quote($cmd[0])."'", 'aa_first', 'unpack:id');
@@ -413,7 +411,10 @@ class AA_Sync_Action {
                     } else {
                         // whole slice record
                         foreach ( $this->params as $key => $val ) {
-                            $varset->add($key, 'text', $val);
+                            // it makes no sense to update id (also, the id is alredy set a few rows above)
+                            if ($key != 'id') {
+                                $varset->add($key, 'text', $val);
+                            }
                         }
                     }
                     $varset->doUpdate('slice');
@@ -423,16 +424,19 @@ class AA_Sync_Action {
                     /** @todo Add it to the module table, as well */
                     $varset->addkey('id', 'unpacked', new_id());
                     foreach ( $this->params as $key => $val ) {
-                        $varset->add($key, 'text', $val);
+                        // it makes no sense to update id (also, the id is alredy set a few rows above)
+                        if ($key != 'id') {
+                            $varset->add($key, 'text', $val);
+                        }
                     }
                     $varset->doInsert('slice');
                     return _m('Slice %1 Inserted', array($cmd[0]));
                 }
                 /** @todo DELETE */
-                return _m('Operation not supprted, yet - Slice %1', array($cmd[0]));
+                return _m('Operation %1 not supported, yet - Slice %2', array($this->type, $cmd[0]));
             case 'field':
                 if (!isset($cmd[2])) {
-                    return _m('Operation not supprted, yet - Slice->Field %1->%2', array($cmd[0],$cmd[2]));
+                    return _m('Wrong command - Field id is not defined - Slice->Field %1->%2', array($cmd[0],$cmd[2]));
                 }
                 $fid = $cmd[2];
                 if ( $this->type == 'UPDATE' ) {
@@ -440,11 +444,17 @@ class AA_Sync_Action {
                     $varset->addkey('id',       'text',   $fid);
                     if ( isset($cmd[3]) ) {
                         // single value
-                        $varset->add($cmd[3], 'text', $this->params);
+                        if (($cmd[3] != 'id') AND ($cmd[3] != 'slice_id')) {
+                            // it makes no sense to update id (also, the id is alredy set a few rows above)
+                            $varset->add($cmd[3], 'text', $this->params);
+                        }
                     } else {
                         // whole slice record
                         foreach ( $this->params as $key => $val ) {
-                            $varset->add($key, 'text', $val);
+                            // it makes no sense to update id (also, the id is alredy set a few rows above)
+                            if (($key != 'id') AND ($key != 'slice_id')) {
+                                $varset->add($key, 'text', $val);
+                            }
                         }
                     }
                     $varset->doUpdate('field');
@@ -454,7 +464,10 @@ class AA_Sync_Action {
                     $varset->addkey('slice_id', 'quoted', $qp_slice_id);
                     $varset->addkey('id', 'text', $fid);
                     foreach ( $this->params as $key => $val ) {
-                        $varset->add($key, 'text', $val);
+                        // it makes no sense to update id (also, the id is alredy set a few rows above)
+                        if (($key != 'id') AND ($key != 'slice_id')) {
+                            $varset->add($key, 'text', $val);
+                        }
                     }
                     $varset->doInsert('field');
                     return _m('Field %1 inserted into slice %2', array($fid, $cmd[0]));
@@ -468,7 +481,7 @@ class AA_Sync_Action {
                 return _m("Unknown action (%1) for field %2 in slice %3", array($this->type, $fid, $cmd[0]));
             case 'view':
                 if (!isset($cmd[2])) {
-                    return _m('Operation not supprted, yet - Slice->View %1->%2', array($cmd[0],$cmd[2]));
+                    return _m('Wrong command - View id is not defined - Slice->View %1->%2', array($cmd[0],$cmd[2]));
                 }
                 $vid = $cmd[2];
                 if ( $this->type == 'UPDATE' ) {
@@ -476,11 +489,17 @@ class AA_Sync_Action {
                     $varset->addkey('id',       'text',   $vid);
                     if ( isset($cmd[3]) ) {
                         // single value
-                        $varset->add($cmd[3], 'text', $this->params);
+                        if (($cmd[3] != 'id') AND ($cmd[3] != 'slice_id')) {
+                            // it makes no sense to update id (also, the id is alredy set a few rows above)
+                            $varset->add($cmd[3], 'text', $this->params);
+                        }
                     } else {
                         // whole slice record
                         foreach ( $this->params as $key => $val ) {
-                            $varset->add($key, 'text', $val);
+                            // it makes no sense to update id (also, the id is alredy set a few rows above)
+                            if (($key != 'id') AND ($key != 'slice_id')) {
+                                $varset->add($key, 'text', $val);
+                            }
                         }
                     }
                     $varset->doUpdate('view');
@@ -490,7 +509,10 @@ class AA_Sync_Action {
                     $varset->addkey('slice_id', 'quoted', $qp_slice_id);
                     $varset->addkey('id', 'text', $vid);
                     foreach ( $this->params as $key => $val ) {
-                        $varset->add($key, 'text', $val);
+                        // it makes no sense to update id (also, the id is alredy set a few rows above)
+                        if (($key != 'id') AND ($key != 'slice_id')) {
+                            $varset->add($key, 'text', $val);
+                        }
                     }
                     $varset->doInsert('view');
                     return _m('View %1 inserted into slice %2', array($vid, $cmd[0]));
@@ -504,44 +526,102 @@ class AA_Sync_Action {
                 return _m("Unknown action (%1) for view %2 in slice %3", array($this->type, $vid, $cmd[0]));
             case 'email':
                 if (!isset($cmd[2])) {
-                    return _m('Operation not supprted, yet - Slice->Email %1->%2', array($cmd[0],$cmd[2]));
+                    return _m('Wrong command - View id is not defined - Slice->Email %1->%2', array($cmd[0],$cmd[2]));
                 }
                 $emailid = $cmd[2];
                 if ( $this->type == 'UPDATE' ) {
-                    $varset->addkey('slice_id',        'quoted', $qp_slice_id);
-                    $varset->addkey('owner_module_id', 'text',   $emailid);
+                    $varset->addkey('owner_module_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id',              'text',   $emailid);
                     if ( isset($cmd[3]) ) {
                         // single value
-                        $varset->add($cmd[3], 'text', $this->params);
+                        if (($cmd[3] != 'owner_module_id') AND ($cmd[3] != 'id')) {
+                            // it makes no sense to update id (also, the id is alredy set a few rows above)
+                            $varset->add($cmd[3], 'text', $this->params);
+                        }
                     } else {
                         // whole slice record
                         foreach ( $this->params as $key => $val ) {
-                            $varset->add($key, 'text', $val);
+                            // it makes no sense to update id (also, the id is alredy set a few rows above)
+                            if (($key != 'owner_module_id') AND ($key != 'id')) {
+                                $varset->add($key, 'text', $val);
+                            }
                         }
                     }
                     $varset->doUpdate('email');
                     return _m('Email %1 in slice %2 updated', array($emailid, $cmd[0]));
                 }
                 if ( $this->type == 'NEW' ) {
-                    $varset->addkey('slice_id', 'quoted', $qp_slice_id);
-                    $varset->addkey('id', 'text', $emailid);
+                    $varset->addkey('owner_module_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id',              'text',   $emailid);
                     foreach ( $this->params as $key => $val ) {
-                        $varset->add($key, 'text', $val);
+                        // it makes no sense to update id (also, the id is alredy set a few rows above)
+                        if (($key != 'owner_module_id') AND ($key != 'id')) {
+                            $varset->add($key, 'text', $val);
+                        }
                     }
                     $varset->doInsert('email');
                     return _m('Email %1 inserted into slice %2', array($emailid, $cmd[0]));
                 }
                 if ( $this->type == 'DELETE' ) {
-                    $varset->addkey('slice_id', 'quoted', $qp_slice_id);
-                    $varset->addkey('id',       'text',   $emailid);
+                    $varset->addkey('owner_module_id', 'quoted', $qp_slice_id);
+                    $varset->addkey('id',              'text',   $emailid);
                     $varset->doDelete('email');
                     return _m('Email %1 deleted from slice %2', array($emailid, $cmd[0]));
                 }
                 return _m("Unknown action (%1) for email %2 in slice %3", array($this->type, $emailid, $cmd[0]));
-            case 'constant':  /** @todo work with constant */ 
+            case 'constant':  /** @todo work with constant */
         }
         return _m("Unknown action for data %1 in slice %2", array($cmd[1], $cmd[0]));
     }
+}
+
+/** Central_GetAaContent function for loading content of AA configuration 
+ *  for manager class 
+ *  
+ * Loads data from database for given AA ids (called in itemview class)
+ * and stores it in the 'Abstract Data Structure' for use with 'item' class
+ *
+ * @see GetItemContent(), itemview class, item class
+ * @param array $zids array if ids to get from database
+ * @return array - Abstract Data Structure containing the links data
+ *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
+ */
+function Central_GetAaContent($zids) {
+    $content = array();
+
+    // construct WHERE clausule
+    $sel_in = $zids->sqlin( false );
+    $SQL = "SELECT * FROM central_conf WHERE id $sel_in";
+    StoreTable2Content($content, $SQL, '', 'id');
+    return $content;
+}
+ 
+/** Central_QueryZids - Finds link IDs for links according to given  conditions
+ *  @param array  $conds    - search conditions (see FAQ)
+ *  @param array  $sort     - sort fields (see FAQ)
+ *  @param string $type     - bins as known from items
+ *       AA_BIN_ACTIVE | AA_BIN_HOLDING | AA_BIN_TRASH | AA_BIN_ALL
+ *  @global int  $QueryIDsCount - set to the count of IDs returned
+ *  @global bool $debug=1       - many debug messages
+ *  @global bool $nocache       - do not use cache, even if use_cache is set
+ */
+function Central_QueryZids($conds, $sort="", $type="app") {
+    global $debug;                 // displays debug messages
+    global $nocache;               // do not use cache, if set
+
+    if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
+
+    $metabase  = new AA_Metabase;
+
+    $fields      = $metabase->getSearchArray('central_conf');
+    $join_tables = array();   // not used in this function
+
+    $SQL  = 'SELECT DISTINCT id FROM central_conf WHERE ';
+    $SQL .= CreateBinCondition($type, 'central_conf');
+    $SQL .= MakeSQLConditions($fields, $conds, $fields, $join_tables); 
+    $SQL .= MakeSQLOrderBy($fields, $sort, $join_tables);
+
+    return GetZidsFromSQL($SQL, 'id');
 }
 
 ?>

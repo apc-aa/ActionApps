@@ -74,7 +74,7 @@ if ($_POST['synchronize']) {
             $sync_result[$aas[$dest_aa]->org_name()] = $aas[$dest_aa]->synchronize($_POST['sync']);
         }
     }
-    print_r($sync_result);
+    p_arr($sync_result);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
