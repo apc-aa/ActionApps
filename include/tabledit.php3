@@ -154,7 +154,9 @@ class tabledit {
 
         // update EDIT
         if ($this->cmd["show_new"]) {
-            unset($tecmd["edit"]);
+            if (isset($tecmd["edit"])) {
+                unset($tecmd["edit"]);
+            }
             unset($this->cmd["edit"]);
         }
         $edit = $this->cmd["edit"];
