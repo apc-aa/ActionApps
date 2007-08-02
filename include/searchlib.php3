@@ -997,7 +997,7 @@ function CachedSearch($cache_condition, $keystr) {
  *                                   selected items (then set the number to 1)
  * @return zids from SQL query;
  */
-function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_str2find,
+function GetZidsFromSQL( $SQL, $col, $cache_condition=false, $keystr='', $cache_str2find='',
                          $zid_type='s', $empty_result_condition=false,
                          $sort_zids=null, $group_limit=null ) {
     global $pagecache, $QueryIDsCount, $debug;
@@ -1042,7 +1042,7 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition, $keystr, $cache_str2find,
  * @param $bin
  * @param $ignore_expiry_date
  */
-function CreateBinCondition($bin, $ignore_expiry_date=false) {
+function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
     // now is rounded in order the time is in steps - it is better for search
     // caching - SQL is THE SAME during one time step
     $now = now('step');            // round up
@@ -1072,36 +1072,36 @@ function CreateBinCondition($bin, $ignore_expiry_date=false) {
     if ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH)) {
         $SQL .= ' 1=1 ';
     } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
-        $SQL .= ' item.status_code=1 ';
+        $SQL .= " $table.status_code=1 ";
     } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_PENDING)) {
-        //      $SQL .= " item.status_code=1 AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
-        $SQL .= " item.status_code=1 AND (item.expiry_date > '$now') ";
+        //      $SQL .= " $table.status_code=1 AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
+        $SQL .= " $table.status_code=1 AND ($table.expiry_date > '$now') ";
     } else {
         $SQL2 = '';
         if ($numeric_bin & AA_BIN_ACTIVE) {
-            $SQL2 .= " ( item.status_code=1 AND (item.publish_date <= '$now') ";
+            $SQL2 .= " ( $table.status_code=1 AND ($table.publish_date <= '$now') ";
             /* condition can specify expiry date (good for archives) */
             if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
-                //              $SQL2 .= " AND (item.expiry_date > '$now' OR item.expiry_date IS NULL) ";
-                $SQL2 .= " AND (item.expiry_date > '$now') ";
+                //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
+                $SQL2 .= " AND ($table.expiry_date > '$now') ";
             }
             $SQL2 .= ' )';
         }
         if ($numeric_bin & AA_BIN_EXPIRED) {
             if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " (item.status_code=1 AND item.expiry_date <= '$now') ";
+            $SQL2 .= " ($table.status_code=1 AND $table.expiry_date <= '$now') ";
         }
         if ($numeric_bin & AA_BIN_PENDING) {
             if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " (item.status_code=1 AND item.publish_date > '$now') ";
+            $SQL2 .= " ($table.status_code=1 AND $table.publish_date > '$now') ";
         }
         if ($numeric_bin & AA_BIN_HOLDING) {
             if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " (item.status_code=2) ";
+            $SQL2 .= " ($table.status_code=2) ";
         }
         if ($numeric_bin & AA_BIN_TRASH) {
             if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " (item.status_code=3) ";
+            $SQL2 .= " ($table.status_code=3) ";
         }
         $SQL .= " ( ".$SQL2 ." ) ";
     }
@@ -1423,7 +1423,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         }
     }
 
-    $SQL .= CreateBinCondition($type, $ignore_expiry_date);
+    $SQL .= CreateBinCondition($type, 'item', $ignore_expiry_date);
 
     if ( isset($select_conds) AND is_array($select_conds)) {     // conditions -----
         $SQL .= " AND (" . implode (") AND (", $select_conds) .") ";

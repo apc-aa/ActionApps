@@ -57,7 +57,6 @@ function get_aamenus() {
            $r_state,
            $AA_CP_Session,
            $profile;
-    trace("+","get_aamenus");
 
     $aamenus["view"] = array (
         "label"       => _m("View site"),
@@ -88,7 +87,6 @@ function get_aamenus() {
         "level"   => "main",
         "submenu" => "sliceadmin_submenu");
 
-    trace("=","","Creating main menu");
     $aamenus["aaadmin"] = array (
         "label"   => _m("AA"),
         "title"   => _m("AA Administration"),
@@ -96,6 +94,14 @@ function get_aamenus() {
         "cond"    => IfSlPerm(PS_NEW_USER),
         "level"   => "main",
         "submenu" => "aaadmin_submenu");
+
+    $aamenus["central"] = array (
+        "label"   => _m("Central"),
+        "title"   => _m("AA Central"),
+        "href"    => "central/index.php3",
+        "cond"    => IsSuperadmin(),
+        "level"   => "main",
+        "submenu" => "central_submenu");
 
     /** Second-level (left) menu description:
      *  bottom_td       empty space under the menu
@@ -116,7 +122,6 @@ function get_aamenus() {
      *      no_slice_id don't add slice_id to the URL
      */
 
-    trace("=","","Creating submenu");
     $aamenus ["sliceadmin_submenu"] = array (
         "bottom_td" => 50,
         "level"     => "submenu",
@@ -160,8 +165,6 @@ function get_aamenus() {
         "email"         => array("cond"=>IfSlPerm(PS_USERS),    "href"=>"admin/tabledit.php3?set_tview=email", "label"=>_m("Email templates")),
     ));
 
-    trace("=","","Getting slice info");
-
     $slice = AA_Slices::getSlice($slice_id);
     if ( $slice->getProperty("mailman_field_lists")) {
         $aamenus ["sliceadmin_submenu"]["items"]["mailman_create_list"] = array (
@@ -189,8 +192,6 @@ function get_aamenus() {
             "line"      => ""
     ));
 
-    trace("=","","Pre PS_EDIT_ALL_ITEMS");
-
     if ($slice_id && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
 
         $db = new DB_AA;
@@ -210,7 +211,6 @@ function get_aamenus() {
                                     "label" => _m("Send emails"),
                                     "no_slice_id"=>1);
         }
-        trace("=","","module ids slice_id=".$slice_id);
         $db->query("SELECT DISTINCT AC.module_id, module.name FROM alerts_collection AC
             INNER JOIN module ON AC.module_id = module.id
             INNER JOIN alerts_collection_filter ACF ON AC.id = ACF.collectionid
@@ -219,12 +219,29 @@ function get_aamenus() {
             WHERE view.slice_id = '".q_pack_id($slice_id)."'");
         AddAlertsModules($items, $db, _m("Alerts Sent"), _m("List of Alerts modules sending items from this slice."));
     }
+    
+    $aamenus["central_submenu"] = array(
+        "bottom_td" => 200,
+        "level"     => "submenu",
+        "items"     => array(
+            "header1"   => _m("Folders"),
+            "app"       => array("cond"=>1,                           "href"=>"central/index.php3?Tab=app",                                   "label"=>"<img src='../images/ok.gif' border=0>"._m("Active")." (". $r_state['bin_cnt']['folder1'] .")"),
+            "hold"      => array("cond"=>1,                           "href"=>"central/index.php3?Tab=hold",                                  "label"=>"<img src='../images/edit.gif' border=0>"._m("Hold bin")." (". $r_state['bin_cnt']['folder2'] .")"),
+            "trash"     => array("cond"=>1,                           "href"=>"central/index.php3?Tab=trash",                                 "label"=>"<img src='../images/delete.gif' border=0>"._m("Trash bin")." (". $r_state['bin_cnt']['folder3'] .")"),
+
+            "header2"   => _m("Misc"),
+            "addaa"     => array("cond"=>IsSuperadmin(),              "href"=>"central/tabledit.php3?cmd[centraledit][show_new]=1",          "label"=>"<img src='../images/add.gif' border=0>"._m("Add AA")),
+            "item6"     => array("cond"=>IsSuperadmin(),              "href"=>"central/index.php3?DeleteTrash=1",                           "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"),
+            "debug"     => array("cond"=>IsSuperadmin(),              "js"  =>"ToggleCookie('aa_debug','1')", "hide"=>!IsSuperadmin(),      "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))),
+            "line"      => ""
+    ));
+    
 
     // left menu for aaadmin is common to all modules, so it is shared
     require_once AA_INC_PATH."menu_aa.php3";
-    trace("-");
     return $aamenus;
 }
+
 /** AddAlertsModules function
  * @param $submenu
  * @param $db

@@ -508,12 +508,15 @@ class AA_Metabase {
      *
      */
     function AA_Metabase() {
-        $this->tables            = array('item' => array('id', 'short_id', 'slice_id', 'status_code', 'post_date', 'publish_date', 'expiry_date', 'highlight', 'posted_by', 'edited_by', 'last_edit', 'display_count', 'flags', 'disc_count', 'disc_app', 'externally_fed', 'moved2active'));
+        $this->tables            = array('item'         => array('id', 'short_id', 'slice_id', 'status_code', 'post_date', 'publish_date', 'expiry_date', 'highlight', 'posted_by', 'edited_by', 'last_edit', 'display_count', 'flags', 'disc_count', 'disc_app', 'externally_fed', 'moved2active'),
+                                         'central_conf' => array('id', 'dns_conf', 'dns_serial', 'dns_web', 'dns_mx', 'dns_db', 'dns_prim', 'dns_sec', 'web_conf', 'web_path', 'db_server', 'db_name', 'db_user', 'db_pwd', 'AA_SITE_PATH', 'AA_BASE_DIR', 'AA_HTTP_DOMAIN', 'AA_ID', 'ORG_NAME', 'ERROR_REPORTING_EMAIL', 'ALERTS_EMAIL', 'IMG_UPLOAD_MAX_SIZE', 'IMG_UPLOAD_URL', 'IMG_UPLOAD_PATH', 'SCROLLER_LENGTH', 'FILEMAN_BASE_DIR', 'FILEMAN_BASE_URL', 'FILEMAN_UPLOAD_TIME_LIMIT', 'AA_ADMIN_USER', 'AA_ADMIN_PWD', 'status_code'));
+        
         $this->item_translations = array();
         foreach ($this->tables['item'] as $column) {
             $this->item_translations[AA_Fields::createFieldId($column)] = $column;
         }
     }
+    
     /** addTableFromSql function
      * @param $tablename
      * @param $create_SQL
@@ -522,12 +525,57 @@ class AA_Metabase {
         $this->tables[$tablename] = new AA_Metabase_Table;
         $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
     }
+    
+    /** getSearchArray function
+     *
+     */
+    function getSearchArray($table) {
+        $i = 0;
+        foreach ( $this->tables[$table] as $field_id ) { // in priority order
+            $field_type = 'text';    // @todo - get the type from field type
+            // we can hide the field, if we put in fields.search_pri=0
+            $search_pri = ++$i;
+                               //          $name,     $field,    $operators, $table, $search_pri, $order_pri
+            $ret[$field_id] = GetFieldDef( $field_id, $field_id, $field_type, false, $search_pri, $search_pri);
+        }
+        return $ret;
+    }
+    
+    /** Get tabledit cofiguration for easy edit and add to the table */
+    function getTableditConf($table) {
+        $ret = array (
+            "table"     => $table,
+            "type"      => "edit",
+//          "mainmenu"  => "modadmin",
+//          "submenu"   => "design",
+            "readonly"  => false,
+            "addrecord" => false,
+//          "cond"      => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_MODP_EDIT_DESIGN),
+//          "title"     => $title,
+//          "caption"   => $title,
+            "attrs"     => array ("table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"),
+//          "gotoview"  => "polls_designs_edit",
+        );
+        foreach ( $this->tables[$table] as $field_id ) { // in priority order
+            $field_type = 'text';    // @todo - get the type from field type
+            $ret['fields'][$field_id] = array('caption' => $field_id,
+                                              'view'    => array('type' => $field_type)
+                                             );
+            // @todo - do better check - based on table setting
+            if ($field_id = 'id') {
+                $ret['fields'][$field_id]['view']['readonly'] = true;
+            }
+        }
+        return $ret;
+    }
+
     /** itemTableField function
      * @param $field_id
      */
     function itemTableField($field_id) {
         return empty($field_id) ? false : get_if($this->item_translations[$field_id], false);
     }
+    
     /** itemFields4Sql function
      * @param $fields2get
      */
