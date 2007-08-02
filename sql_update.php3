@@ -176,6 +176,41 @@ $tablelist = array(   'active_sessions' => "(
                           `type` varchar(32) NOT NULL default '',
                           PRIMARY KEY  (`id`)
                       )",
+                      'central_conf' => "(
+                          `id` int(10) unsigned NOT NULL auto_increment,
+                          `dns_conf` varbinary(255) NOT NULL default '',
+                          `dns_serial` int(11) NOT NULL default '0',
+                          `dns_web` varbinary(15) NOT NULL default '',
+                          `dns_mx` varbinary(15) NOT NULL default '',
+                          `dns_db` varbinary(15) NOT NULL default '',
+                          `dns_prim` varbinary(255) NOT NULL default '',
+                          `dns_sec` varbinary(255) NOT NULL default '',
+                          `web_conf` varbinary(255) NOT NULL default '',
+                          `web_path` varbinary(255) NOT NULL default '',
+                          `db_server` varbinary(255) NOT NULL default '',
+                          `db_name` varbinary(255) NOT NULL default '',
+                          `db_user` varbinary(255) NOT NULL default '',
+                          `db_pwd` varbinary(255) NOT NULL default '',
+                          `AA_SITE_PATH` varbinary(255) NOT NULL default '',
+                          `AA_BASE_DIR` varbinary(255) NOT NULL default '',
+                          `AA_HTTP_DOMAIN` varbinary(255) NOT NULL default '',
+                          `AA_ID` varbinary(32) NOT NULL default '',
+                          `ORG_NAME` varbinary(255) NOT NULL default '',
+                          `ERROR_REPORTING_EMAIL` varbinary(255) NOT NULL default '',
+                          `ALERTS_EMAIL` varbinary(255) NOT NULL default '',
+                          `IMG_UPLOAD_MAX_SIZE` bigint(20) NOT NULL default '0',
+                          `IMG_UPLOAD_URL` varbinary(255) NOT NULL default '',
+                          `IMG_UPLOAD_PATH` varbinary(255) NOT NULL default '',
+                          `SCROLLER_LENGTH` int(11) NOT NULL default '0',
+                          `FILEMAN_BASE_DIR` varbinary(255) NOT NULL default '',
+                          `FILEMAN_BASE_URL` varbinary(255) NOT NULL default '',
+                          `FILEMAN_UPLOAD_TIME_LIMIT` int(11) NOT NULL default '0',
+                          `AA_ADMIN_USER` varbinary(30) NOT NULL default '',
+                          `AA_ADMIN_PWD` varbinary(30) NOT NULL default '',
+                          `status_code` smallint(5) NOT NULL default '0',
+                          PRIMARY KEY  (`id`),
+                          KEY `AA_ID` (`AA_ID`)
+                      )",
                       'constant' => "(
                           id varbinary(16) NOT NULL default '',
                           group_id varbinary(16) NOT NULL default '',
@@ -1580,10 +1615,10 @@ if ( $restore_now ) {
   $store_halt = $db->Halt_On_Error;
   $db->Halt_On_Error = "report";
   while ( list($t) = each( $tablelist ) ) {
-    $SQL = "DROP TABLE IF EXISTS $t";
+    $SQL = "DROP TABLE IF EXISTS `$t`";
     safe_echo($SQL);
     myquery($db, $SQL);
-    $SQL = "ALTER TABLE bck_$t RENAME $t";
+    $SQL = "ALTER TABLE `bck_$t` RENAME `$t`";
     safe_echo($SQL);
     myquery($db, $SQL);
   }
@@ -1616,7 +1651,7 @@ if ( $dbcreate ) {
   echo '<h2>Delete temporary tables if exists</h2>';
   reset( $tablelist );
   while ( list($t) = each( $tablelist ) ) {
-    $SQL = "DROP TABLE IF EXISTS tmp_$t";
+    $SQL = "DROP TABLE IF EXISTS `tmp_$t`";
     safe_echo($SQL);
     myquery($db, $SQL);
   }
@@ -1627,7 +1662,7 @@ if ( $dbcreate ) {
     // remove COMMENTS (MySQL 3 do not support it
     $def = preg_replace("/COMMENT\s+\'[^']+\'/im", "", $def);
 
-    $SQL = "  CREATE TABLE IF NOT EXISTS tmp_$t $def";
+    $SQL = "  CREATE TABLE IF NOT EXISTS `tmp_$t` $def";
     safe_echo($SQL);
     myquery($db, $SQL );
   }
@@ -1668,7 +1703,7 @@ if ( $copyold ) {
       }
       if ( $field_list == "")
         $field_list = "*" ;
-      $SQL = "INSERT INTO tmp_$t SELECT $field_list FROM $t";
+      $SQL = "INSERT INTO `tmp_$t` SELECT $field_list FROM `$t`";
       safe_echo($SQL);
       myquery($db, $SQL);
     }
@@ -1688,19 +1723,19 @@ if ( $dbcreate ) {
 
   while ( list($t) = each( $tablelist ) ) {
     if ( $backup ) {
-      $SQL = "DROP TABLE IF EXISTS bck_$t";
+      $SQL = "DROP TABLE IF EXISTS `bck_$t`";
       safe_echo($SQL);
       myquery($db, $SQL);
 
-      $SQL = "ALTER TABLE $t RENAME bck_$t";
+      $SQL = "ALTER TABLE `$t` RENAME `bck_$t`";
       safe_echo($SQL);
       myquery($db, $SQL);
     }
-    $SQL = "DROP TABLE IF EXISTS $t";
+    $SQL = "DROP TABLE IF EXISTS `$t`";
     safe_echo($SQL);
     myquery($db, $SQL);
 
-    $SQL = "ALTER TABLE tmp_$t RENAME $t";
+    $SQL = "ALTER TABLE `tmp_$t` RENAME `$t`";
     safe_echo($SQL);
     myquery($db, $SQL);
   }
