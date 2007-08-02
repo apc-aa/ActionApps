@@ -708,6 +708,14 @@ array("name"=>_m("Local URL Pick"),
 $FIELD_FUNCTIONS = array ("name"=>_m("Function"),
 "hint"=>_m("How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen."),
 "items"=>array(
+////alejo
+"f_z"=>array("name"=>_m("file information"),
+   "desc"=>_m("prints <i>the field</i> as file information, its size or type"),
+   "params"=>array(
+       array("name"=>_m("information"),
+       "desc"=>_m("specifies returned information: <br> - <i>size</i> - returns size of file in kB o MB<br> - <i>type</i> - returns type of file)"),
+       "type"=>"STR",
+       "example"=>"size"))),
 "f_0"=>array("name"=>_m("null function"),
     "desc"=>_m("prints nothing")),
 "f_a"=>array("name"=>_m("abstract"),
