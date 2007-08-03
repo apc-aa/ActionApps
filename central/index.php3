@@ -26,6 +26,8 @@
  *
 */
 
+// only_action option!
+
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH . "varset.php3";
 require_once AA_INC_PATH . "formutil.php3";
@@ -42,37 +44,6 @@ require_once AA_BASE_PATH. "central/include/actions.php3";
  * @param  string  $action action to be displayed (in selectbox) / performed
  * @return bool    true if user has the permission
  */
-
-function IsActionPerm($action) {
-    $display_actions = ($GLOBALS['r_state']['action_selected'] != "0");
-    $current_bin     =  $GLOBALS['r_state']['bin'];
-
-    switch($action) {
-        case 'Activate':    return  $display_actions &&
-                                    IsSuperadmin() &&
-                                    ($current_bin != 'app') &&
-                                    ($current_bin != 'appb') &&
-                                    ($current_bin != 'appc');
-        case 'Folder2':     return  $display_actions &&            // Folder2 is Holding bin - prepared for more than three bins
-                                    IsSuperadmin() &&
-                                    ($current_bin != 'hold');
-        case 'Folder3':     return  $display_actions &&            // Folder3 is Trash
-                                    IsSuperadmin() &&
-                                    ($current_bin != 'trash');
-        case 'Sqlupdate':   return  IsSuperadmin();                             
-        case 'Linkcheck':   return  IsSuperadmin();                             
-        case 'Feed':        return  ($GLOBALS['r_state']['feed_selected'] != "0");
-//        case 'Move2Slice':  return  IfSlPerm(PS_DELETE_ITEMS);
-        case 'Preview':     return  ($GLOBALS['r_state']['view_selected'] != "0");
-        case 'FillField':   return  IfSlPerm(PS_EDIT_ALL_ITEMS);
-        case 'Delete':      return  IfSlPerm(PS_DELETE_ITEMS) &&
-                                    ($current_bin == 'trash');
-        //--  switches      ------
-        case 'DeleteTrash': return  IsSuperadmin();
-        case 'Tab':         return  true;
-    }
-    return false;
-}
 
 function CountItemsInBins() {
     $db = getDB();
@@ -95,6 +66,22 @@ if ( !IsSuperadmin() ) {
 $module_id = '43656e7472616c2d41412d61646d696e';   
 $metabase  = new AA_Metabase;
 
+$actions   = new AA_Manageractions;
+$actions->addAction(new AA_Manageraction_Central_MoveItem('Activate', 1));
+$actions->addAction(new AA_Manageraction_Central_MoveItem('Folder2',  2));
+$actions->addAction(new AA_Manageraction_Central_MoveItem('Folder3',  3));
+$actions->addAction(new AA_Manageraction_Central_Sqlupdate('Sqlupdate'));
+$actions->addAction(new AA_Manageraction_Central_Linkcheck('Linkcheck'));
+$actions->addAction(new AA_Manageraction_Central_DeleteTrash('DeleteTrashAction',true));
+ 
+$switches  = new AA_Manageractions;
+
+// no problem to write tabs as one action, but we use 3
+$switches->addAction(new AA_Manageraction_Central_Tab('Tab1', 'app'));
+$switches->addAction(new AA_Manageraction_Central_Tab('Tab2', 'hold'));
+$switches->addAction(new AA_Manageraction_Central_Tab('Tab3', 'trash'));
+$switches->addAction(new AA_Manageraction_Central_DeleteTrash('DeleteTrash',false));
+
 function GetCentralAliases() {
     // fields: array('id', 'dns_conf', 'dns_serial', 'dns_web', 'dns_mx', 'dns_db', 'dns_prim', 'dns_sec', 'web_conf', 'web_path', 'db_server', 'db_name', 'db_user', 'db_pwd', 'AA_SITE_PATH', 'AA_BASE_DIR', 'AA_HTTP_DOMAIN', 'AA_ID', 'ORG_NAME', 'ERROR_REPORTING_EMAIL', 'ALERTS_EMAIL', 'IMG_UPLOAD_MAX_SIZE', 'IMG_UPLOAD_URL', 'IMG_UPLOAD_PATH', 'SCROLLER_LENGTH', 'FILEMAN_BASE_DIR', 'FILEMAN_BASE_URL', 'FILEMAN_UPLOAD_TIME_LIMIT', 'AA_ADMIN_USER', 'AA_ADMIN_PWD', 'status_code'));
     $aliases["_#ORG_NAME"] = GetAliasDef( "f_h", "ORG_NAME",       'ORG_NAME');
@@ -106,7 +93,6 @@ function GetCentralAliases() {
     $aliases["_#AA_BASE_"] = GetAliasDef( "f_h", "AA_BASE_DIR",    'AA_BASE_DIR');
     return $aliases;
 }
-
 
 $manager_settings = array(
      'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
@@ -139,6 +125,10 @@ $manager_settings = array(
                                       <td class=tabtxt>_#DB_SERVE - _#DB_NAME_</td>
                                       <td class=tabtxt>_#HTTP_DOM_#AA_BASE_</td>
                                     </tr>
+                                    <tr class="tabtxt">
+                                      <td>&nbsp;</td>
+                                      <td class="tabtxt" colspan="4"><a href="{sessurl:?akce=Sqlupdate&chb[_#ID______]=1}">'._m('sql_upadte NOW!') .'</a></td>
+                                    </tr>
                                    ',
              'compact_remove'   => "",
              'compact_bottom'   => "</table>",
@@ -147,49 +137,9 @@ $manager_settings = array(
          'aliases'              => GetCentralAliases(),
          'get_content_funct'    => 'Central_GetAaContent'
                          ),
-     'actions_perm_function' => 'IsActionPerm',
-     'actions'    => array(
-         'Activate'    => array('function'   => 'Central_MoveItem',
-                                'func_param' => 1,
-                                'name'       => _m('Move to Active'),
-                               ),
-         'Folder2'     => array('function'   => 'Central_MoveItem',
-                                'func_param' => 2,
-                                'name'       => _m('Move to Holding bin'),
-                               ),
-         'Folder3'     => array('function'   => 'Central_MoveItem',
-                                'func_param' => 3,
-                                'name'       => _m('Move to Trash'),
-                               ),
-         'Sqlupdate'   => array('function'   => 'Central_Sqlupdate',
-                                'name'       => _m('Update database (sql_update)'),
-                               ),
-         'Linkcheck'   => array('function'   => 'Central_Linkcheck',
-                                'name'       => _m('Check the AA availability'),
-                               ),
-//         'Move2Slice'  => array('function'   => 'Item_Move2Slice',
-//                                'func_param' => &$slice,
-//                                'name'       => _m('Move to Slice'),
-//                                'open_url'   => $sess->url("move_to.php3"),
-//                               ),
-                          // no function - this function just opens preview
-         'FillField'   => array('name'       => _m('Modify content'),
-                                'open_url'   => $sess->url("search_replace.php3"),
-                                'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
-                               ),
-         'Email'       => array('name'       => _m('Send email'),
-                                'open_url'   => $sess->url("write_mail.php3"),
-                                'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
-                               ),
-         'Delete'      => array('function'   => 'Central_DeleteTrash',
-                                'func_param' => 'selected',
-                                'name'       => _m('Remove (delete from database)'),
-                               )
-                         ),
-     'switches'  => array(
-         'DeleteTrash' => array('function'   => 'Central_DeleteTrash'),
-         'Tab'         => array('function'   => 'Central_Tab'),
-                         ),
+     'actions'   => $actions,
+     'switches'  => $switches,
+     'bin'       => 'app',
      'messages'  => array(
          'title'       => _m('ActionApps Central')
                          )
@@ -205,7 +155,6 @@ if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
     unset($r_state);
     // set default admin interface settings from user's profile
     $r_state["module_id"]       = $module_id;
-    $r_state['bin']             = 'app';
     $sess->register('r_state');
 
     $manager->setFromProfile($profile);
@@ -217,12 +166,13 @@ if ($r_state['manager']) {        // do not set state for the first time calling
 
 $manager->performActions();
 
+// need for menu
 $r_state['bin_cnt'] = CountItemsInBins();
 
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
 
 require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "central", $r_state['bin'], $navbar != "0", $leftbar != "0");
+showMenu($aamenus, "central", $manager->getBin(), $navbar != "0", $leftbar != "0");
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
@@ -231,7 +181,7 @@ $BIN_CONDS   = array( 'app'    => (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDI
                       'hold'   => AA_BIN_HOLDING,
                       'trash'  => AA_BIN_TRASH
                     );             
-$zids = Central_QueryZids($conds, $sort, $BIN_CONDS[$r_state['bin']]);
+$zids = Central_QueryZids($conds, $sort, $BIN_CONDS[$manager->getBin()]);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form
