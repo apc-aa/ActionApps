@@ -950,19 +950,45 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
     }
 }
 
-// allows you to call view with conds:
-// {view.php3?vid=9&cmd[9]=c-1-{conds:{_#VALUE___}}}
-// or
-// {view.php3?vid=9&cmd[9]=c-1-{conds:category.......1}}
+
+
+
+// class AA_Stringexpand_Increase extends AA_Stringexpand {
+//     /** expand function
+//      * @param $text
+//      */
+//     function expand($id, $field_id) {
+//         echo "<script language=\"JavaScript\" src=\"/aaa/javascript/increse.php?item_id=$id&field_id=$field_id\" type=\"text/javascript\"></script>";
+//     }
+// }
+
+
+
+
+/** Allows you to call view with conds:
+ *    {view.php3?vid=9&cmd[9]=c-1-{conds:{_#VALUE___}}}
+ *  or
+ *    {view.php3?vid=9&cmd[9]=c-1-{conds:category.......1}}
+ *  or 
+ *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:category.......3:1}}
+ *    see the third parameter (1) in the last example!
+ *    
+ *  The syntax is: 
+ *     {conds:<field or text>[:<do not url encode>]}
+ *  <do not url encode> the conds are by default url encoded 
+ *  (%22My%20category%22) so it can be used as parameter to view. However - we 
+ *  do not need url encoding for {ids } construct, so for ussage with {ids}
+ *  use the last parameter and set it to 1 
+ */
 class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
     /** expand function
      * @param $text
      */
-    function expand($text='') {
+    function expand($text='', $no_url_encode=false) {
         if ( !AA_Fields::isField($text) ) {
-            return AA_Stringexpand_Conds::_textToConds($text);
+            return AA_Stringexpand_Conds::_textToConds($text, $no_url_encode);
         }
 
         if ( is_null($this->item) ) {
@@ -977,14 +1003,17 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
             if ( empty($val['value']) ) {
                 continue;
             }
-            $ret  .= $delim. AA_Stringexpand_Conds::_textToConds($val['value']);
-            $delim = '%20OR%20';
+            $ret  .= $delim. AA_Stringexpand_Conds::_textToConds($val['value'], $no_url_encode);
+            $delim = $no_url_encode ? ' OR ' : '%20OR%20';
         }
         return empty($ret) ? 'AA_NeVeRtRuE' : $ret;
     }
 
     /** Static */
-    function _textToConds($text) {
+    function _textToConds($text, $no_url_encode) {
+        if ($no_url_encode) {
+            return '"'. str_replace('-', '--', $text) .'"';
+        }
         return '%22'. str_replace(array('-',' '), array('--','%20'), $text) .'%22';
     }
 }
