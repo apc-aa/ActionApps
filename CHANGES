@@ -1,3 +1,11 @@
+08/03/07 - AA_Manager class which takes care about all managers - Item Manager, 
+(honzam)   Links Manager, ... now support new API for actions (AA_Manageraction) 
+         - Central manager switched to use new acion API - AA_Manageraction. 
+           We plan to rewrite all the actions (for item and links) to that new 
+           API and remove the code for the old approach   
+         - synchronize scripts added to central admin interface 
+         - linkchecker do not produce warnings, if the domain do not exist
+         - removed unused function p_arr  
 08/01/07 - new "Central" admin interface visible for superadmins. It can store 
 (honzam)   multiple configurations of AA, so you can manage more AAs 
            and databases from one place. Currently it allows to manage 
