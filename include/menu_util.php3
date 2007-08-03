@@ -175,7 +175,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
               '</td>
               <td width="20%" align="right" class="navbar">
                 <form name="logoutform" method="post" action="'. get_admin_url('logout.php3').'">';
-        showMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3', false, $slice_id);
+        echo GetMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3', false, $slice_id);
         echo '
                    <input type="submit" name="logout" value="'._m('logout').'">&nbsp;
                 </form>
@@ -187,14 +187,16 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
         $delim = '';
         foreach ($smmenus as $aamenu =>$aamenuprop) {
             if ($aamenuprop["level"] == "main") {
-                echo $delim;
-                $delim = ' | ';
-                showMenuLink($aamenu == $activeMain,
-                             $aamenuprop['label'],
-                             isset($aamenuprop["cond"]) ? $aamenuprop["cond"] : true,
-                             $aamenuprop["href"],
-                             $aamenuprop["exact_href"],
-                             $slice_id);
+                $link  = GetMenuLink($aamenu == $activeMain,
+                                     $aamenuprop['label'],
+                                     isset($aamenuprop["cond"]) ? $aamenuprop["cond"] : true,
+                                     $aamenuprop["href"],
+                                     $aamenuprop["exact_href"],
+                                     $slice_id);
+                if ($link) {
+                    echo $delim. $link;
+                    $delim = ' | ';
+                }
             }
         }
 
@@ -232,7 +234,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
               ';
     trace("-");
 }
-/** showMenuLink
+/** GetMenuLink
  * @param $active
  * @param $label
  * @param $cond
@@ -240,21 +242,23 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
  * @param $exact_href
  * @param $slice_id
  */
-function showMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) {
+function GetMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) {
     if ($active) {
-        echo "<span class=\"nbactive\">$label</span>\n";
+        return "<span class=\"nbactive\">$label</span>\n";
     }
-    elseif ($slice_id AND $cond) {
+    if ($slice_id AND $cond) {
         $href = $exact_href;
         if (!$href) {
             $href = get_aa_url($aa_href);
         }
         $href = con_url($href, "slice_id=$slice_id");
-        echo a_href($href, "<span class=\"nbenable\">$label</span>");
-    } else {
-        echo "<span class=\"nbdisable\">$label</span>";
-    }
+        return a_href($href, "<span class=\"nbenable\">$label</span>");
+    } 
+    // maked invisible which is better, I think. Honza 2007-08-02
+    // return "<span class=\"nbdisable\">$label</span>";
+    return '';
 }
+
 /** showSubMenuRows function
  * @param $aamenuitems
  * @param $active
