@@ -44,8 +44,8 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <BODY>
 <?php
 $useOnLoad = true;
-//require_once AA_INC_PATH."menu.php3";
-//showMenu($aamenus, "aaadmin", "synchronize");
+require_once AA_INC_PATH."menu.php3";
+showMenu($aamenus, "central", "synchronize");
 
 echo "<H1><B>" . _m("Central - Synchronize ActionApps (1/3) - Source ActionApps") . "</B></H1>";
 PrintArray($err);

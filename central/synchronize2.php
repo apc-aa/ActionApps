@@ -74,7 +74,7 @@ if ($_POST['synchronize']) {
             $sync_result[$aas[$dest_aa]->org_name()] = $aas[$dest_aa]->synchronize($_POST['sync']);
         }
     }
-    p_arr($sync_result);
+    huhl($sync_result);
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -86,8 +86,8 @@ FrmJavascriptFile('javascript/aajslib.php3');
 <BODY>
 <?php
 $useOnLoad = true;
-//require_once AA_INC_PATH."menu.php3";
-//showMenu($aamenus, "aaadmin", "synchronize");
+require_once AA_INC_PATH."menu.php3";
+showMenu($aamenus, "central", "synchronize");
 
 echo "<H1><B>" . _m("Central - Synchronize ActionApps (2/3) - Slices to Synchronize") . "</B></H1>";
 PrintArray($err);
