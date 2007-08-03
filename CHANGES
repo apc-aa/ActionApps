@@ -4,8 +4,22 @@
            We plan to rewrite all the actions (for item and links) to that new 
            API and remove the code for the old approach   
          - synchronize scripts added to central admin interface 
+         - {conds} command obtains third parameter, which do not url encode 
+           the condition, so for the view you have to use the old version 
+           without the third parameter:
+             {view.php3?vid=9&cmd[9]=c-1-{conds:category.......1}},
+           but for {ids..}, where we do not expect urlencoded strings you have
+           to add third parameter, like: 
+             {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:category.......3:1}}
+         - The links, which are not active in AA Admin interface is now 
+           completely hidden (like the "AA" link for Editors)
+         - disabled "Update modules table" option in sql_update.php3 since it 
+           clears the priority field
+         - the field "Upload URL" on "Slice Admin" -> "Slice" page is hidden, 
+           since it is not working, yet.         
+         - fixed Hirachical constant editor - now works again
          - linkchecker do not produce warnings, if the domain do not exist
-         - removed unused function p_arr  
+         - removed unused function p_arr
 08/01/07 - new "Central" admin interface visible for superadmins. It can store 
 (honzam)   multiple configurations of AA, so you can manage more AAs 
            and databases from one place. Currently it allows to manage 

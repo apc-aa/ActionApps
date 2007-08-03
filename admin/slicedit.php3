@@ -152,7 +152,8 @@ $ssiuri = ereg_replace("/admin/.*", "/slice.php3", $_SERVER['PHP_SELF']);
 echo "<tr><td colspan=\"2\">" . _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") . "<BR><pre>" .
      "&lt;!--#include virtual=&quot;" . $ssiuri . "?slice_id=" . $slice_id . "&quot;--&gt;</pre></td></tr>";
 
-FrmInputText("upload_url", _m("Upload URL"), $slice_url, 254, 25, false, _m('Url of uploaded files is %1 by default. You can change it by setting this parameter.<br>Note: This do not change the place, wheer the file is stored - you can just use another virtualhost name, for example.', array(IMG_UPLOAD_URL)));
+// not functional, yet     
+// FrmInputText("upload_url", _m("Upload URL"), $slice_url, 254, 25, false, _m('Url of uploaded files is %1 by default. You can change it by setting this parameter.<br>Note: This do not change the place, wheer the file is stored - you can just use another virtualhost name, for example.', array(IMG_UPLOAD_URL)));
 FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
 if ( !$owner ) {
     FrmInputText("new_owner", _m("New Owner"), $new_owner, 99, 25, false);
