@@ -1649,7 +1649,7 @@ class AA_Inputfield {
 
         $this->echoo("
             <table border=\"0\" cellpadding=\"2\" width=\"100%\"><tr>
-            <td align=\"center\"><b><span class=\"redtext\">"._m("Selected").":<span></b><br><br><input type=\"button\" value=\""._m("Delete")."' onclick='hcDelete(\"$name\"); ".$delete_button_trigger."\"></td>
+            <td align=\"center\"><b><span class=\"redtext\">"._m("Selected").":<span></b><br><br><input type=\"button\" value=\""._m("Delete")."\" onclick='hcDelete(\"$name\"); $delete_button_trigger'></td>
             <td>");
         $out = "<select name=\"$name\" multiple size=\"$rows\"".getTriggers("select",$name).">";
             if (is_array($val)) {
