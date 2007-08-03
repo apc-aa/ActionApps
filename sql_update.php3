@@ -1351,9 +1351,12 @@ $SQL_view_templates['static']     ="view SET slice_id='AA_Core_Fields..', name='
 $SQL_view_templates['full']       ="view SET slice_id='AA_Core_Fields..', name='Fulltext view', type='full', `before`='<!-- Fulltext view is for viewing long items. It shows only one selected item with abstract and fulltext. -->\r\n\r\n<!-- top of the page -->\r\n<br>', even=NULL, odd='<h2><b>_#HEADLINE</b></h2>\r\n_#PUB_DATE, _#AUTHOR__\r\n<br>\r\n_#FULLTEXT<br>\r\n<div align=\"right\"><a href=\"javascript:history.go(-1)\">Back</a></div>\r\n', even_odd_differ=NULL, after='', remove_string=NULL, group_title=NULL, order1=NULL, o1_direction=NULL, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=NULL, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<p>No item found.</p>', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'";
 
 
+// this is wrong! it deletes the priority field! Disabled for now.
+/*
 $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner, 0 FROM slice";
 $SQL_update_modules[] = "REPLACE INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'http://example.org/index.shtml', 'en_site_lang.php3', $now, '', '', 0)";
 $SQL_update_modules[] = "REPLACE INTO site    (id, state_file, structure, flag) VALUES ('SiteTemplate....', 'template.php3', '".'O:8:"sitetree":2:{s:4:"tree";a:1:{i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:1:{i:0;s:1:"1";}s:2:"ch";N;s:1:"f";i:0;}}s:8:"start_id";s:1:"1";}'."', 0)";
+*/
 
 // Add the rows to cron only if no row with the script exists
 $SQL_cron[] = array (
@@ -1513,8 +1516,9 @@ if ( !$update AND !$restore AND !$restore_now) {
                 "Add 'id' and 'short_id' definitions to fields tabl for each slice, where the definition is missing. It allows searchbar in Item Manager to create filter also on Short id field, ...","");
   FrmInputChBox("fixmissingfields", "Fix missing fields fields", true, false, "", 1, false,
                 "Add missing mandatory fields in slices (status_code.....)","");
-  FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false,
-                "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice). The default site and poll module is also created/renewed with this option.","");
+// this is wrong! it deletes the priority field! Disabled for now.
+//  FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false,
+//                "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice). The default site and poll module is also created/renewed with this option.","");
   FrmInputChBox("cron", "Add entries to Cron", true, false, "", 1, false,
                 "Alerts, cross server networking and database optimization are run by cron.php3, their entries are added to table cron if not yet there.");
   FrmInputChBox("generic_emails", "Add generic email templates", true, false, "", 1, false,
@@ -1859,6 +1863,8 @@ if ( $view_templates ) {
     }
 }
 
+// this is wrong! it deletes the priority field! Disabled for now.
+/* 
 if ( $update_modules ) {
   echo '<h2>Updating Modules table</h2>';
   reset( $SQL_update_modules );
@@ -1867,6 +1873,7 @@ if ( $update_modules ) {
     myquery($db, $SQL );
   }
 }
+*/
 
 if ( $cron ) {
   echo '<h2>Adding to Cron table</h2>';
