@@ -53,6 +53,7 @@ class AA_Manager extends storable_class {
     var $messages;        // various language messages (like page title, ...)
     var $itemview;        // itemview object
     var $show;            // what controls show (scroller, searchbar, ...)
+    var $bin;             // stores the bin in which we are - string
 
     var $msg;             // stores return code from action functions
 
@@ -70,7 +71,7 @@ class AA_Manager extends storable_class {
     // required - object's slots to save in session
     //            (no itemview, actions, switches, messages, searchbar_funct
     //             - we want to have it fresh (from constructor and $settings))
-    var $persistent_slots = array('searchbar', 'scroller', 'msg');
+    var $persistent_slots = array('searchbar', 'scroller', 'msg', 'bin');
 
     /** getPersistentProperties function
      *  Used parameter format (in fields.input_show_func table)
@@ -84,6 +85,7 @@ class AA_Manager extends storable_class {
             'searchbar' => new AA_Property( 'searchbar', _m("Searchbar"), 'AA_Searchbar', false, true),
             'scroller'  => new AA_Property( 'scroller',  _m("Scroller"),  'AA_Scroller',  false, true),
             'msg'       => new AA_Property( 'msg',       _m("Msg"),       'text',         true,  true),
+            'bin'       => new AA_Property( 'bin',       _m("Bin"),       'text',         false, true),
             );
     }
 
@@ -127,6 +129,8 @@ class AA_Manager extends storable_class {
             }
         }
 
+        $this->bin = isset($settings['bin']) ? $settings['bin'] : 'app';
+        
         // create page scroller -----------------------------------------------
         $scroller = new AA_Scroller('st',sess_return_url($_SERVER['PHP_SELF']));
         // could be redefined by view (see ['itemview']['manager_vid'])
@@ -195,6 +199,16 @@ class AA_Manager extends storable_class {
                 $format_strings["compact_bottom"]  = '</table>';
             }
         }
+    }
+    
+    /** sets the bin, where we are */
+    function setBin($bin) {
+        $this->bin = $bin;
+    }
+
+    /** gets the bin, where we are */
+    function getBin() {
+        return $this->bin;
     }
 
     /** setFromProfile function
@@ -325,34 +339,58 @@ class AA_Manager extends storable_class {
             $this->searchbar->update();
         }
 
-        $action2do = $this->actions[$akce];
-        $actions_perm_function = $this->actions_perm_function;
-
-        if ( $akce AND $action2do AND $actions_perm_function($akce) ) {
-            $function   = $action2do['function'];   // programmer defined action to do
-            $func_param = $action2do['func_param']; // aditional parameter for the 'function'
-            if ( $function AND isset($chb) AND is_array($chb) ) {
-                if ( $action2do['type'] == 'one_by_one' ) {
-                    // call action-function for each checked item
-                    foreach ( $chb as $item_id => $foo ) {
-                        $this->msg[] = $function($func_param, $item_id, $_REQUEST['akce_param']);
+        // new approach uses AA_Manageractions
+        if (is_object($this->actions)) {
+            $actions   = $this->actions;
+            $action2do = $actions->getAction($akce);
+            if ( $akce AND $action2do AND $action2do->isPerm($this)) {
+                $this->msg[] = $action2do->perform($this, $GLOBALS['r_state'], $chb, $_REQUEST['akce_param']);
+            }
+        // older approach - @todo should be removed after we rewrite all managers 
+        } else {
+            $action2do = $this->actions[$akce];
+            $actions_perm_function = $this->actions_perm_function;
+    
+            if ( $akce AND $action2do AND $actions_perm_function($akce) ) {
+                $function   = $action2do['function'];   // programmer defined action to do
+                $func_param = $action2do['func_param']; // aditional parameter for the 'function'
+                if ( $function AND isset($chb) AND is_array($chb) ) {
+                    if ( $action2do['type'] == 'one_by_one' ) {
+                        // call action-function for each checked item
+                        foreach ( $chb as $item_id => $foo ) {
+                            $this->msg[] = $function($func_param, $item_id, $_REQUEST['akce_param']);
+                        }
+                    } else {
+                        // call action-function for whole list of checked items
+                        $this->msg[] = $function($func_param, $chb, $_REQUEST['akce_param']);
                     }
-                } else {
-                    // call action-function for whole list of checked items
-                    $this->msg[] = $function($func_param, $chb, $_REQUEST['akce_param']);
                 }
             }
         }
+        
+        // new approach uses AA_Manageractions
+        if (is_object($this->switches)) {
+            $switches     = $this->switches;
+            $switches_arr = $switches->getArray();
+            foreach ( $switches_arr as $sw => $switch ) {
+                if ( isset($_GET[$sw]) AND $switch->isPerm($this)) {
+                    $this->msg[] = $switch->perform($this, $GLOBALS['r_state'], $chb, $_GET[$sw]);
+                }
+            }
 
-        // now perform switches (url parameteres - not in 'akce' field
-        // (like listlen=100, Tab=app, ...)
-        if ( isset($this->switches) AND is_array($this->switches) ) {
-            foreach ( $this->switches as $sw => $val ) {
-                $actions_perm_function = $this->actions_perm_function;
-                if ( isset($_GET[$sw]) AND $actions_perm_function($sw) ) {
-                    if ( $val['function'] ) {
-                        $function = $val['function'];
-                        $this->msg[] = $function($_GET[$sw], $val['func_param'], "");
+        // older approach - @todo should be removed after we rewrite all managers 
+        } else {
+    
+            // now perform switches (url parameteres - not in 'akce' field
+            // (like listlen=100, Tab=app, ...)
+            if ( isset($this->switches) AND is_array($this->switches) ) {
+                foreach ( $this->switches as $sw => $val ) {
+                    $actions_perm_function = $this->actions_perm_function;
+                    if ( isset($_GET[$sw]) AND $actions_perm_function($sw) ) {
+                        if ( $val['function'] ) {
+                            $function = $val['function'];
+                            $this->msg[] = $function($_GET[$sw], $val['func_param'], "");
+                        }
                     }
                 }
             }
@@ -431,20 +469,45 @@ class AA_Manager extends storable_class {
             echo '<input type="hidden" name="akce" value="">';          // filled by javascript - contains action to perform
             echo '<input type="hidden" name="akce_param" value="">';  // if we need some parameteres to the action, store it here
 
-            if ( isset( $this->actions ) AND is_array( $this->actions ) ) {
-                $i=1;  // we start on 1 because first option is "Select action:"
-                while ( list( $action, $param ) = each ($this->actions) ) {
-                    $actions_perm_function = $this->actions_perm_function;
-                    if ( $actions_perm_function( $action ) ) {
-                        $options .= '<option value="'. htmlspecialchars($action).'"> '.
-                                                       htmlspecialchars($param['name'] . ($param['open_url'] ? '...' : ''));
-                        if ( $param['open_url'] )  { // we have to open window
-                            $javascr .= "\n markedactionurl[$i] = '". $param['open_url'] ."';";
-                            if ( $param['open_url_add'] )  { // we have to open window
-                                $javascr .= "\n markedactionurladd[$i] = '". $param['open_url_add'] ."';";
+            // new approach uses AA_Manageractions
+            if (is_object($this->actions)) {
+                $actions    = $this->actions;
+                $action_arr = $actions->getArray();
+                $i       = 1;  // we start on 1 because first option is "Select action:"
+                $options = '';
+                
+                foreach( $action_arr as $action_id => $action ) {
+                    if ( $action->isPerm($this)) {
+                        $options .= '<option value="'. htmlspecialchars($action->getId()).'"> '.
+                                                       htmlspecialchars($action->getName() . ($action->getOpenUrl() ? '...' : ''));
+                        if ( $action->getOpenUrl() )  { // we have to open window
+                            $javascr .= "\n markedactionurl[$i] = '". $action->getOpenUrl() ."';";
+                            if ( $action->getOpenUrlAdd() )  { // we have to open window
+                                $javascr .= "\n markedactionurladd[$i] = '". $action->getOpenUrlAdd() ."';";
                             }
                         }
                         $i++;
+                    }
+                }
+                
+            // older approach - @todo should be removed after we rewrite all managers 
+            } else {
+            
+                if ( isset( $this->actions ) AND is_array( $this->actions ) ) {
+                    $i=1;  // we start on 1 because first option is "Select action:"
+                    while ( list( $action, $param ) = each ($this->actions) ) {
+                        $actions_perm_function = $this->actions_perm_function;
+                        if ( $actions_perm_function( $action ) ) {
+                            $options .= '<option value="'. htmlspecialchars($action).'"> '.
+                                                           htmlspecialchars($param['name'] . ($param['open_url'] ? '...' : ''));
+                            if ( $param['open_url'] )  { // we have to open window
+                                $javascr .= "\n markedactionurl[$i] = '". $param['open_url'] ."';";
+                                if ( $param['open_url_add'] )  { // we have to open window
+                                    $javascr .= "\n markedactionurladd[$i] = '". $param['open_url_add'] ."';";
+                                }
+                            }
+                            $i++;
+                        }
                     }
                 }
             }
