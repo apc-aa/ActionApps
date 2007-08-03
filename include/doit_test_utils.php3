@@ -41,14 +41,4 @@ function ptest( $boolean, $label) {
 
   $boolean ? $num_pass++ : $num_fail++;
 }
-/** p_array function
- * @param $haystack
- */
-function p_array($haystack)
-{
-  for ($i=0;$i<count($haystack);$i++)
-    echo $haystack[$i];
-
-  echo "\n";
-}
 ?>

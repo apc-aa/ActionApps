@@ -1559,11 +1559,11 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
     $db = new DB_AA;
     if ( $debug ) {
       echo "<br>Conds:<br>";
-      p_arr_m($conds);
+      huhl($conds);
       echo "<br><br>Sort:<br>";
-      p_arr_m($sort);
+      huhl($sort);
       echo "<br><br>Slices:<br>";
-      p_arr_m($slices);
+      huhl($slices);
     }
 
     // parse conditions ----------------------------------

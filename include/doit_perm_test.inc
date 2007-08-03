@@ -143,7 +143,6 @@
 #   echo "\n";
 #   echo "FINAL list_groups: ";
 #   echo $list_groups;
-#   p_array($list_groups);
 
 // DelGroupMember
 

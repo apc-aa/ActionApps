@@ -391,44 +391,6 @@ function dequote($str) {
     return $str;
 }
 
-/** p_arr_m function
- * prints content of a (multidimensional) array
- * @param $arr
- * @param $level
- */
-function p_arr_m($arr, $level = 0) {
-   if ( !isset($arr) OR !is_array($arr)) {
-     for ($i = 0; $i < $level; $i++) {
-        echo "&nbsp;&nbsp;&nbsp;";
-     }
-         echo ( isset($arr) ? " Not array: $arr <br>" : " (Empty Array) <br>");
-     return;
-   }
-   while (list($key, $val) = each($arr)) {
-      if ( is_array($val) ) {
-         for ($i = 0; $i < $level; $i++) {
-            echo "&nbsp;&nbsp;&nbsp;";
-         }
-         echo htmlspecialchars($key) . " (Array) <br>";
-         p_arr_m($val, $level + 1);
-      } else {
-         for ($i = 0; $i < $level; $i++) {
-            echo "&nbsp;&nbsp;&nbsp;";
-         }
-         echo htmlspecialchars($key) . " => " . htmlspecialchars($val) . "<br>";
-      }
-   }
-}
-
-/** p_arr function
- * debug function, prints hash size,  keys and values of hash
- * @param $a
- * @param $name
- */
-function p_arr($a,$name="given array") {
-    p_arr_m($a);
-}
-
 /** new_id function
  *  returns new unpacked md5 unique id, except these which can  force unexpected end of string
  * @param $mark
@@ -3987,7 +3949,7 @@ function freeDB($db) {
  * @param $SQL
  */
 function tryQuery($SQL) {
-    $db = getDB();
+    $db  = getDB();
     $res = $db->tquery($SQL);
     freeDB($db);
     return $res;

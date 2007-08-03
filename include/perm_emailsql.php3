@@ -259,12 +259,6 @@ function GetMembership($id, $flags = 0) {
         if (! in_array($row['id'],array($all_groups))) {
           $last_groups[] = $row["id"];
           $all_groups[]  = $row["id"];
-   /*
-          echo "L";
-          p_array( $last_groups);
-          echo "A";
-          p_array( $all_groups);
-          */
      }
     }
 
@@ -274,7 +268,6 @@ function GetMembership($id, $flags = 0) {
   //  echo "FA";
 // $return[] = sort( $all_groups );
 //  echo "R";
-//  p_array ($return);
   return $all_groups;
 }
 
