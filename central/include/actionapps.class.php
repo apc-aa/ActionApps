@@ -34,8 +34,6 @@ require_once AA_INC_PATH. 'files.class.php3';
  * AA_Actionapps class - holds information about one AA installation
  */
 class AA_Actionapps {
-    /** url of remote AAs - like "http://example.org/apc-aa/"  */
-    var $comunicator_url;       // AA_Searchbar object
 
     /** username of "access" user
      *  We use the access user acount to get informations about remote AA and
@@ -43,34 +41,65 @@ class AA_Actionapps {
      *  remote AA (superuser is enough :-)
      */
 
-    /** username of access user */
-    var $access_name;
-
-    /** password of access user */
-    var $access_password;
-
+    /** local data (central_conf table) in ItemContent structure */
+    var $local_data;
+    
     /** cached remote session ID */
     var $_remote_session_id;
 
     /** cached remote data - like AA name, ... */
     var $_cached;
-
-    function AA_Actionapps($name, $base_url, $access_name, $access_password) {
-        $this->comunicator_url     = Files::makeFile($base_url, 'central/responder.php');
-        $this->access_name         = $access_name;
-        $this->access_password     = $access_password;
+    
+    /** constructor - create AA_Actionapps object from ItemContent object 
+     *  grabbed from central_conf table. 
+     *  There are following fields: 
+     *    'id', 'dns_conf', 'dns_serial', 'dns_web', 'dns_mx', 'dns_db', 
+     *    'dns_prim', 'dns_sec', 'web_conf', 'web_path', 'db_server', 'db_name',
+     *    'db_user', 'db_pwd', 'AA_SITE_PATH', 'AA_BASE_DIR', 'AA_HTTP_DOMAIN', 
+     *    'AA_ID', 'ORG_NAME', 'ERROR_REPORTING_EMAIL', 'ALERTS_EMAIL', 
+     *    'IMG_UPLOAD_MAX_SIZE', 'IMG_UPLOAD_URL', 'IMG_UPLOAD_PATH', 
+     *    'SCROLLER_LENGTH', 'FILEMAN_BASE_DIR', 'FILEMAN_BASE_URL', 
+     *    'FILEMAN_UPLOAD_TIME_LIMIT', 'AA_ADMIN_USER', 'AA_ADMIN_PWD', 
+     *    'status_code'));    
+     */ 
+    function AA_Actionapps($content4id) {
+        $this->local_data          = $content4id;
         $this->_remote_session_id  = null;
         $this->_cached             = array();
-        // it is possible to get org_name also by asking remote AAs, but this way it is quicker
-        $this->_cached['org_name'] = $name;   
     }
 
+    /** url of remote AAs - like "http://example.org/apc-aa/"  */
+    function getComunicatorUrl() {
+        return Files::makeFile($this->getValue('AA_HTTP_DOMAIN'). $this->getValue('AA_BASE_DIR'), 'central/responder.php');
+    }
+
+    /** username of access user */
+    function getAccessUsername() {
+        return $this->getValue('AA_ADMIN_USER');
+    }
+    
+    /** password of access user */
+    function getAccessPassword() {
+        return $this->getValue('AA_ADMIN_PWD');
+    }
+    
+    /** get value from localy stored data (central_conf) */
+    function getValue($field) {
+        $ic = $this->local_data;
+        return $ic->getValue($field);
+    }
+    
+
+    /** name of AA as in local table*/
+    function getName() {
+        return $this->getValue('ORG_NAME'). ' ('. $this->getValue('AA_HTTP_DOMAIN'). $this->getValue('AA_BASE_DIR'). ')';
+    }
     
     /** @return ORG_NAME of remote AAs
      *  Currently this function is not needed, since name of AA is pased 
      *  by constructor (which is much quicker)
      */ 
-    function org_name() {
+    function requestAAName() {
         if ( is_null($this->_cached['org_name'])) {
             $response = $this->getResponse( new AA_Request('Get_Aaname') );
             if ($response->isError()) {
@@ -88,7 +117,7 @@ class AA_Actionapps {
     /** @return all slice names form remote AA
      *  mention, that the slices are identified by !name! not id for synchronization
      */
-    function slices() {
+    function requestSlices() {
         $response = $this->getResponse( new AA_Request('Get_Slices') );
         if ($response->isError()) {
             return array();
@@ -101,7 +130,7 @@ class AA_Actionapps {
      *  (like slice properties, fields, views, ...). It is returned for all the
      *  slices in array
      */
-    function sliceDefinitions($slice_names) {
+    function requestSliceDefinitions($slice_names) {
         // We will use rather one call which returns all the data for all the 
         // slices, since it is much quicker than separate call for each slice 
         $response = $this->getResponse( new AA_Request('Get_Slice_Defs', array('slice_names'=>$slice_names)) );
@@ -135,13 +164,13 @@ class AA_Actionapps {
             }
         }
         // _remote_session_id is set
-        $url = get_url($this->comunicator_url, array('AA_CP_Session'=>$this->_remote_session_id));
+        $url = get_url($this->getComunicatorUrl(), array('AA_CP_Session'=>$this->_remote_session_id));
         return AA_Actionapps::_ask($url, $request);
     }
 
     function _authenticate() {
 
-        $response = AA_Actionapps::_ask(get_url($this->comunicator_url, array('free' => $this->access_name, 'freepwd' =>$this->access_password)), new AA_Request('Get_Sessionid'));
+        $response = AA_Actionapps::_ask(get_url($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword())), new AA_Request('Get_Sessionid'));
         if ( !$response->isError() ) {
             $this->_remote_session_id = $response->getResponse();
         }
@@ -149,6 +178,22 @@ class AA_Actionapps {
     }
 
     /// Static methods
+    /** create array of all Approved AAs from central database */
+    function getArray() {
+        
+        $ret    = array();
+        $conds  = array();
+        $sort[] = array('ORG_NAME' => 'a');
+        $zids   = Central_QueryZids($conds, $sort, AA_BIN_APPROVED);
+        $aa_ic  = Central_GetAaContent($zids);
+        
+        foreach ($aa_ic as $k => $content4id) {
+            $ret[$k] = new AA_Actionapps(new ItemContent($content4id));
+        }
+        return $ret;
+    }
+    
+    
     function _ask($url, $request) {
 //        huhl($url, $request);
         $result = HttpPostRequest($url, $request->requestArr());
@@ -269,11 +314,11 @@ class AA_Slice_Definition {
     function compareWith($dest_def) {
         /** @todo chack the state, when the name contains "->" */
         $slice_name = $dest_def->slice_data['name'];
-        $diff =                    AA_Difference::_compareArray($this->slice_data,     $dest_def->slice_data,     $slice_name.'->slice');
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->fields_data,    $dest_def->fields_data,    $slice_name.'->field'));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->views_data,     $dest_def->views_data,     $slice_name.'->view'));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->emails_data,    $dest_def->emails_data,    $slice_name.'->email'));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->constants_data, $dest_def->constants_data, $slice_name.'->constant'));
+        $diff =                    AA_Difference::_compareArray($this->slice_data,     $dest_def->slice_data,     $slice_name.'->slice', array('id'));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->fields_data,    $dest_def->fields_data,    $slice_name.'->field', array('slice_id')));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->views_data,     $dest_def->views_data,     $slice_name.'->view', array('slice_id')));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->emails_data,    $dest_def->emails_data,    $slice_name.'->email', array('owner_module_id')));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->constants_data, $dest_def->constants_data, $slice_name.'->constant', array()));
         return $diff;
     }
 }
@@ -302,7 +347,7 @@ class AA_Difference {
     
     /// Static
 
-    function _compareArray($template_arr, $destination_arr, $name) {
+    function _compareArray($template_arr, $destination_arr, $name, $ignore) {
         $diff = array();
         if (! is_array($template_arr) AND is_array($destination_arr)) {
             return array( 0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', array($name)), new AA_Sync_Action('DELETE', $name)));
@@ -314,8 +359,15 @@ class AA_Difference {
             return array( 0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', array($name))));
         }
         foreach ($template_arr as $key => $value) {
+            // some fields we do not want to compare (like slice_ids)
+            if (in_array($key, $ignore)) {
+                // we need to clear the destination array in order we can know, 
+                // that there are some additional keys in it (compated to template)
+                unset($destination_arr[$key]);
+                continue;
+            }
             if (is_array($value)) {
-                $diff = array_merge($diff, AA_Difference::_compareArray($value,$destination_arr[$key], $name."->$key")); 
+                $diff = array_merge($diff, AA_Difference::_compareArray($value,$destination_arr[$key], $name."->$key", $ignore)); 
                 // we need to clear the destination array in order we can know, 
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
@@ -340,7 +392,7 @@ class AA_Difference {
             // there are no such keys in template 
             if ( is_array($value) ) {
                 // I know - we can define the difference right here, but it is better to use the same method as above
-                $diff = array_merge($diff, AA_Difference::_compareArray('',$destination_arr[$key], $name."->$key"));
+                $diff = array_merge($diff, AA_Difference::_compareArray('',$destination_arr[$key], $name."->$key", $ignore));
             } else {
                 $diff[] = new AA_Difference('DELETED', _m('There is no such key (%1) in template slice for %2', array($key, $name)), new AA_Sync_Action('UPDATE', $name."->$key", ''));
             }
@@ -372,7 +424,8 @@ class AA_Sync_Action {
     function printToForm() {
         $packed_action = serialize($this);
         echo '<div>';
-        FrmChBoxEasy('sync[]', in_array($packed_action, (array)$_POST['sync']), '', $packed_action);
+        $state = isset($_POST['sync']) ? in_array($packed_action, (array)$_POST['sync']) : true;
+        FrmChBoxEasy('sync[]', $state, '', $packed_action);
         switch ( $this->type ) {
             case 'DELETE': echo _m("Delete"); break;
             case 'NEW':    echo _m("Create new"); break;
@@ -588,12 +641,17 @@ class AA_Sync_Action {
  */
 function Central_GetAaContent($zids) {
     $content = array();
+    $ret     = array();
 
     // construct WHERE clausule
     $sel_in = $zids->sqlin( false );
     $SQL = "SELECT * FROM central_conf WHERE id $sel_in";
     StoreTable2Content($content, $SQL, '', 'id');
-    return $content;
+    // it is unordered, so we have to sort it:
+    for($i=0; $i<$zids->count(); $i++ ) {
+        $ret[(string)$zids->id($i)] = $content[$zids->id($i)];
+    }
+    return $ret;
 }
  
 /** Central_QueryZids - Finds link IDs for links according to given  conditions

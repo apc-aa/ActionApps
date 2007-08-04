@@ -939,6 +939,7 @@ define("MGR_SB_BOOKMARKS", 16);  // show bookmarks in searchbar
 define("AA_BIN_ACTIVE",   1);
 define("AA_BIN_PENDING",  2);
 define("AA_BIN_EXPIRED",  4);
+define("AA_BIN_APPROVED", 7);   // AA_BIN_ACTIVE|AA_BIN_PENDING|AA_BIN_EXPIRED
 define("AA_BIN_HOLDING",  8);
 define("AA_BIN_TRASH",   16);
 define("AA_BIN_ALL",     31);   // all bins (AA_BIN_ACTIVE|AA_BIN_PENDING|...)

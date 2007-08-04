@@ -32,14 +32,11 @@ if (!IsSuperadmin()) {
   exit;
 }
 
-$aas   = array();
-foreach ($ACTIONAPPS as $k => $aadef) {
-    $aas[$k] = new AA_Actionapps($aadef['name'], $aadef['url'], $aadef['user'], $aadef['pwd']);
-}
+$aas = AA_Actionapps::getArray();
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
-<TITLE><?php echo _m("Central - Synchronize ActionApps (1/3) - Source ActionApps"); ?></TITLE>
+<TITLE><?php echo _m("Central - Synchronize ActionApps (1/3) - Select ActionApps for Comparison"); ?></TITLE>
 </HEAD>
 <BODY>
 <?php
@@ -47,13 +44,13 @@ $useOnLoad = true;
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "central", "synchronize");
 
-echo "<H1><B>" . _m("Central - Synchronize ActionApps (1/3) - Source ActionApps") . "</B></H1>";
+echo "<H1><B>" . _m("Central - Synchronize ActionApps (1/3) - Select ActionApps for Comparison") . "</B></H1>";
 PrintArray($err);
 echo $Msg;
 
 $aas_array = array();
 foreach ( $aas as $k => $aa ) {
-    $aas_array[$k] = $aa->org_name();
+    $aas_array[$k] = $aa->getName();
 }
 
 $form_buttons = array ("submit");
@@ -62,6 +59,7 @@ $form_buttons = array ("submit");
 <?php
 FrmTabCaption('', '','', $form_buttons, $sess, $slice_id);
 FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'], true, _m('ActionApps installation used as template'));
+FrmInputSelect('comparation_aa', _m('AA to compare'),    $aas_array, $_POST['comparation_aa'], true, _m('ActionApps installation to check for differences (just checking right now - noting is changed by this step)'));
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
 </FORM>

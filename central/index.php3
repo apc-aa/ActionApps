@@ -177,7 +177,7 @@ showMenu($aamenus, "central", $manager->getBin(), $navbar != "0", $leftbar != "0
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
 
-$BIN_CONDS   = array( 'app'    => (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING),
+$BIN_CONDS   = array( 'app'    => AA_BIN_APPROVED,
                       'hold'   => AA_BIN_HOLDING,
                       'trash'  => AA_BIN_TRASH
                     );             
