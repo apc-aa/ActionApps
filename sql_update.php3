@@ -63,6 +63,13 @@ require_once AA_BASE_PATH."modules/links/util.php3";
 
 // init used objects
 $db          = new DB_AA;
+
+// here put your code
+//$SQL = "REPLACE INTO module SELECT * FROM bck_module";
+//$db->query($SQL);
+//echo "Done";
+//exit;
+
 $db2         = new DB_AA;
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
