@@ -1213,7 +1213,12 @@ class AA_Stringexpand_Slice extends AA_Stringexpand {
     function expand($property='name') {
         // get slice_id from item, but sometimes the item is not filled (like
         // on "Add Item" in itemedit.php3, so we use global slice_id here
-        $slice = AA_Slices::getSlice(get_if($this->item->getSliceID(),$GLOBALS['slice_id']));
+        $item = $this->item;
+	$slice_id  = $item ? $item->getSliceID() : $GLOBALS['slice_id'];
+	if (!$slice_id ) {
+		return "";
+        }
+        $slice = AA_Slices::getSlice($slice_id);
         // we do not want to allow users to get all field setting
         // that's why we restict it to the properties, which makes sense
         // @todo - make it less restrictive
@@ -1221,11 +1226,6 @@ class AA_Stringexpand_Slice extends AA_Stringexpand {
         return $slice->getProperty($property);
     }
 }
-
-
-
-
-
 
 /** makeAsShortcut function
  *  Store $text in the $html_subst_arr array - used for dictionary escaping html
