@@ -71,7 +71,7 @@ class AA_Saver {
                 print("\n<br>AA_Saver->run(): we have item to store, hurray! -- ". $content4id->getItemID());
             }
 
-            $id_mode    = ($this->store_mode == 'by_grabber') ? $this->grabber->getIdMode()    : $this->id_mode;
+            $id_mode    = ($this->id_mode    == 'by_grabber') ? $this->grabber->getIdMode()    : $this->id_mode;
             $store_mode = ($this->store_mode == 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
 
             switch ($id_mode) {
@@ -177,7 +177,7 @@ class AA_Grabber {
      *  @see also getStoreMode() method
      */
     function getIdMode() {
-        return 'new';
+        return 'combined';
     }
 
     /** If AA_Saver::store_mode is 'by_grabber' then this method tells Saver,
@@ -440,12 +440,12 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         set_time_limit(240); // Allow 4 minutes per feed
 
+        $slice           = AA_Slices::getSlice($this->slice_id);
+        $feed_debug_name = 'Feed #'. $this->feed_id .' ('. getFeedTypeName($feed_type).'): '.
+                           $this->feed['name'] .' : ' .$this->feed['remote_slice_name'].
+                           ' -> '.$slice->name();
         // Get XML Data
         if ($debugfeed >= 1) {
-            $slice           = AA_Slices::getSlice($this->slice_id);
-            $feed_debug_name = 'Feed #'. $this->feed_id .' ('. getFeedTypeName($feed_type).'): '.
-                               $this->feed['name'] .' : ' .$this->feed['remote_slice_name'].
-                               ' -> '.$slice->name();
             print("\n<br>$feed_debug_name");
         }
 
@@ -471,7 +471,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         // if an error occured, write it to the LOG
         if (substr($xml_data,0,1) != "<") {
-            writeLog("CSN","Feeding mode: $xml_data");
+            writeLog("CSN","Feeding mode ($feed_debug_name): $xml_data");
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name:bad data returned: $xml_data");
             }
@@ -482,7 +482,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
         $GLOBALS['g_slice_encoding'] = getSliceEncoding($this->slice_id);
 
         if (!( $this->aa_rss = aa_rss_parse( $xml_data ))) {
-            writeLog("CSN","Feeding mode: Unable to parse XML data");
+            writeLog("CSN","Feeding mode ($feed_debug_name): Unable to parse XML data");
             if ($debugfeed >= 1) print("\n<br>$feed_debug_name:".$feed['server_url'].":unparsable: <hr>".htmlspecialchars($xml_data)."<hr>");
             return false;
         }

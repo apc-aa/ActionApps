@@ -172,7 +172,7 @@ class AA_Feed {
     function feed() {
         if ( $this->fire = 'write' ) {
             $translations = null;
-            $saver        = new AA_Saver($this->grabber, $translations, $this->destination_slice_id);
+            $saver        = new AA_Saver($this->grabber, $translations, $this->destination_slice_id, 'by_grabber', 'by_grabber');
             $saver->run();
         }
     }
@@ -226,6 +226,7 @@ if ($feed_id) {          // just one specified APC feed
             default:
                 $feed = AA_Object::load($feed_seting['id']);
         }
+
         $feed->feed();
     }
 }
