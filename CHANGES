@@ -1,5 +1,9 @@
+08/13/17 - fixed problem of overwriting articles which was fed by RSS or AARSS
+(honzam)   (cross server networking)
+08/10/07 - fixed problem with adding item (stringexpand.php3 error)
+(honzam)
 08/04/07 - Central upgraded to new version with less bugs
-(honzam) - othe small fixes
+(honzam) - other small fixes
 08/03/07 - AA_Manager class which takes care about all managers - Item Manager, 
 (honzam)   Links Manager, ... now support new API for actions (AA_Manageraction) 
          - Central manager switched to use new acion API - AA_Manageraction. 
