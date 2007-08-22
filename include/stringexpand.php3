@@ -554,6 +554,11 @@ function parseMath($text) {
 function parseLoop($out, &$item) {
     global $contentcache;
 
+    if ( !is_object($item) ) {
+        return '';
+    }
+
+
     // alternative syntax {@field...} or {list:field...}
     if ( (substr($out,0,5) == "list:") ) {
         $out = '@'. substr($out,5);
@@ -586,7 +591,11 @@ function parseLoop($out, &$item) {
     // special - {@fieldlist...} - lists all the fields
     // (good for authomatic CSV generation, for example)
     if ( $field == 'fieldlist' ) {
-        foreach ($itemcontent->getFields() as $fld) {
+        $item_slice  = AA_Slices::getSlice($item->getSliceID());
+        $item_fields = $item_slice->getFields();
+        $fields_arr  = $item_fields->getPriorityArray();
+
+        foreach ($fields_arr as $fld) {
             // make the array of fields compatible with content array in order
             // we can use the same syntax ...
             $val[] = array('value' => $fld);
@@ -1214,9 +1223,9 @@ class AA_Stringexpand_Slice extends AA_Stringexpand {
         // get slice_id from item, but sometimes the item is not filled (like
         // on "Add Item" in itemedit.php3, so we use global slice_id here
         $item = $this->item;
-	$slice_id  = $item ? $item->getSliceID() : $GLOBALS['slice_id'];
-	if (!$slice_id ) {
-		return "";
+	    $slice_id  = $item ? $item->getSliceID() : $GLOBALS['slice_id'];
+	    if (!$slice_id ) {
+		    return "";
         }
         $slice = AA_Slices::getSlice($slice_id);
         // we do not want to allow users to get all field setting
@@ -1931,7 +1940,7 @@ class AA_Stringexpand {
      * @param $remove
      * @param $item
      */
-    function unalias(&$text, $remove="", $item=null) {
+    function unalias($text, $remove="", $item=null) {
         // just create variables and set initial values
         $maxlevel = 0;
         $level    = 0;
@@ -2002,4 +2011,7 @@ class AA_Stringexpand_Packid extends AA_Stringexpand_Nevercache {
         }
     }
 }
+
+// require_once AA_INC_PATH. "custom/nszm.php";
+
 ?>
