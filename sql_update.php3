@@ -389,7 +389,7 @@ $tablelist = array(   'active_sessions' => "(
                           required smallint(5) default NULL,
                           feed smallint(5) default NULL,
                           multiple smallint(5) default NULL,
-                          input_show_func varchar(255) default NULL,
+                          input_show_func text default NULL,
                           content_id varbinary(16) default NULL,
                           search_pri smallint(5) NOT NULL default '100',
                           search_type varchar(16) default NULL,
@@ -400,13 +400,13 @@ $tablelist = array(   'active_sessions' => "(
                           search_ft_show smallint(5) default NULL,
                           search_ft_default smallint(5) default NULL,
                           alias1 varchar(10) default NULL,
-                          alias1_func varchar(255) default NULL,
+                          alias1_func text default NULL,
                           alias1_help varchar(255) default NULL,
                           alias2 varchar(10) default NULL,
-                          alias2_func varchar(255) default NULL,
+                          alias2_func text default NULL,
                           alias2_help varchar(255) default NULL,
                           alias3 varchar(10) default NULL,
-                          alias3_func varchar(255) default NULL,
+                          alias3_func text default NULL,
                           alias3_help varchar(255) default NULL,
                           input_before text,
                           aditional text,
@@ -424,6 +424,26 @@ $tablelist = array(   'active_sessions' => "(
                           name varchar(32) NOT NULL default '',
                           description varchar(255) NOT NULL default '',
                           PRIMARY KEY  (name)
+                      )",
+                      'hit_archive' => "(
+                          `id` int(11) NOT NULL,
+                          `time` int(11) NOT NULL,
+                          `hits` mediumint(9) NOT NULL default '1',
+                          KEY `time` (`time`)
+                      )",
+                      'hit_long_id' => "
+                          `id` binary(16) NOT NULL,
+                          `time` int(11) NOT NULL,
+                          `agent` varchar(255) default NULL,
+                          `info` varchar(255) default NULL,
+                          KEY `time` (`time`)
+                      )",
+                      'hit_short_id' => "( `` (
+                          `id` int(11) NOT NULL,
+                          `time` int(11) NOT NULL,
+                          `agent` varchar(255) default NULL,
+                          `info` varchar(255) default NULL,
+                          KEY `time` (`time`)
                       )",
                       'item' => "(
                           id varbinary(16) NOT NULL default '                ',
@@ -1871,7 +1891,7 @@ if ( $view_templates ) {
 }
 
 // this is wrong! it deletes the priority field! Disabled for now.
-/* 
+/*
 if ( $update_modules ) {
   echo '<h2>Updating Modules table</h2>';
   reset( $SQL_update_modules );

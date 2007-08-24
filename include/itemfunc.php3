@@ -204,30 +204,10 @@ function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
         return;
     }
 
-    // field in content table
-    $varset->clear();
-    if ($field["text_stored"]) {
-        // do not store empty values in content table for text_stored fields
-        // if ( !$value['value'] ) { return false; }    // can't do it, conditions do not work then (ecn joblist)
-        $varset->add("text", "text", $value['value']);
-        // set "TEXT stored" flag
-        $varset->add("flag", "number", (int)$value['flag'] | FLAG_TEXT_STORED );
-        if (is_numeric($additional["order"])) {
-            $varset->add("number", "number", $additional["order"]);
-        } else {
-            $varset->add("number","null", "");
-        }
-    } else {
-        $varset->add("number", "number", (int)$value['value']);
-        // clear "TEXT stored" flag
-        $varset->add("flag",   "number", (int)$value['flag'] & ~FLAG_TEXT_STORED );
-    }
-
-    // insert item but new field
-    $varset->add("item_id", "unpacked", $item_id);
-    $varset->add("field_id", "text", $field["id"]);
-    $varset->doInsert('content');
+    // field in content table (function defined in util.php since we need it for display count
+    StoreToContent($item_id, $field, $value, $additional);
 }
+
 /** insert_fnc_dte function
  * @param $item_id
  * @param $field

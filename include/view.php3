@@ -32,8 +32,10 @@ require_once AA_INC_PATH . "viewobj.php3";
 require_once AA_INC_PATH . "searchlib.php3";
 require_once AA_BASE_PATH. "modules/links/util.php3";
 require_once AA_BASE_PATH. "modules/links/linksearch.php3";
+require_once AA_INC_PATH . "hitcounter.class.php3";
 // add mlx functions
-require_once AA_INC_PATH."mlx.php";
+require_once AA_INC_PATH . "mlx.php";
+
 
 // ----------------------------------------------------------------------------
 //                         view functions
@@ -281,8 +283,7 @@ function ParseViewParameters($query_string="") {
                        // This is bizarre code, just incrementing the first item, left as it is
                        // but questioned on apc-aa-coders - mitra
                        if (($command->getCommand()=='x') AND ($zids->count()>0)) {
-                           $s_or_l_ids = ( $zids->use_short_ids() ? $zids->shortids() : $zids->longids() );
-                           CountHit($s_or_l_ids[0]);
+                           AA_Hitcounter::hit($zids->slice(0));
                        }
                        break;
 

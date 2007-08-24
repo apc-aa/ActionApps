@@ -23,11 +23,12 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
 */
+
 /** Page_HTML_Begin function
  * @param $title
  */
 function Page_HTML_Begin($title="") {
-    HTMLPageBegin (ADM_SLICE_CSS);
+    HTMLPageBegin(ADM_SLICE_CSS);
     echo '
       <title>'.$title.'</title>
     </head>
@@ -42,19 +43,21 @@ function Page_HTML_End(){
     </body>
     </html>';
 }
+
 /** GetCAtegories function
  * @param $db
  * @param $p_slice_id
  */
 function GetCategories($db,$p_slice_id){
- $SQL= " SELECT name, value FROM constant WHERE group_id='".$p_slice_id."'";
- $db->query($SQL);
- while ($db->next_record()){
-   $unpacked=unpack_id128($db->f("value"));
-   $arr[$unpacked]=$db->f("name");
- }
- return $arr;
+     $SQL = "SELECT name, value FROM constant WHERE group_id='".$p_slice_id."'";
+     $db->query($SQL);
+     while ($db->next_record()) {
+         $unpacked       = unpack_id128($db->f("value"));
+         $arr[$unpacked] = $db->f("name");
+     }
+     return $arr;
 }
+
 /** pCatSelector function
  * @param $sess_name
  * @param $sess_id
@@ -65,83 +68,63 @@ function GetCategories($db,$p_slice_id){
  * @param $encaps
  */
 function pCatSelector($sess_name,$sess_id,$url,$cats,$selected,$sli_id=0,$encaps=true){
- if (sizeof($cats)>0)
- {
-   echo "<form action=\"$url\" method=\"get\">";
-   echo "<input type=\"hidden\" name=\"$sess_name\" value=\"$sess_id\">";
-   if ( !$encaps )    // not encapsulated - need to send slice_id
-   { echo "<input type=\"hidden\" name=\"slice_id\" value=\"$sli_id\">";
-     echo "<input type=\"hidden\" name=\"encap\" value=\"".($encaps ? "true":"false")."\">";
-   }
-   echo _m("Select Category ") . "<select name=\"cat_id\">";
-   $seloption=(($selected=="")?"selected":"");
-   echo '<option value="all" $seloption>'._m("All categories").'</option>';
-   while (list($id,$name)= each($cats)) {
-     $seloption=(($selected==$id)?"selected":"");
-     echo "<option value=\"$id\" $seloption>".htmlspecialchars($name)."</option>";
-   }
-   echo "<input type=\"hidden\" name=\"scr_".$scr_name."_Go\" value=\"1\">";
-   echo "<input type=\"submit\" name=\"Go\" value=\"Go\">";
-   echo "</select>";
-   echo "</form>";
- }
+    if (sizeof($cats)>0) {
+        echo "<form action=\"$url\" method=\"get\">";
+        echo "<input type=\"hidden\" name=\"$sess_name\" value=\"$sess_id\">";
+        if ( !$encaps ) {   // not encapsulated - need to send slice_id
+            echo "<input type=\"hidden\" name=\"slice_id\" value=\"$sli_id\">";
+            echo "<input type=\"hidden\" name=\"encap\" value=\"".($encaps ? "true":"false")."\">";
+        }
+        echo _m("Select Category ") . "<select name=\"cat_id\">";
+        $seloption=(($selected=="")?"selected":"");
+        echo '<option value="all" $seloption>'._m("All categories").'</option>';
+        while (list($id,$name)= each($cats)) {
+            $seloption=(($selected==$id)?"selected":"");
+            echo "<option value=\"$id\" $seloption>".htmlspecialchars($name)."</option>";
+        }
+        echo "<input type=\"hidden\" name=\"scr_".$scr_name."_Go\" value=\"1\">";
+        echo "<input type=\"submit\" name=\"Go\" value=\"Go\">";
+        echo "</select>";
+        echo "</form>";
+    }
 }
+
 /** ExitPage function
  *
  */
 function ExitPage() {
-  global $encap, $r_packed_state_vars, $r_state_vars;
-  if (!$encap) {
-    Page_HTML_End();
-  }
-  $r_packed_state_vars = serialize($r_state_vars);
-  page_close();
-  exit;
+    global $encap, $r_packed_state_vars, $r_state_vars;
+    if (!$encap) {
+        Page_HTML_End();
+    }
+    $r_packed_state_vars = serialize($r_state_vars);
+    page_close();
+    exit;
 }
+
 /** SotreVariables function
  *
  */
 function StoreVariables( $vars ) {
-  if ( isset($vars) AND is_array($vars) ) {
-    reset($vars);
-    while ( list(,$v) = each( $vars ) )
-      $state_vars[$v] = $GLOBALS[$v];
-  }
-  return $state_vars;
+    if ( isset($vars) AND is_array($vars) ) {
+        reset($vars);
+        while ( list(,$v) = each( $vars ) )
+        $state_vars[$v] = $GLOBALS[$v];
+    }
+    return $state_vars;
 }
 /** RestoreVariables function
  *
  */
 function RestoreVariables() {
-  global $r_state_vars;
-  if ( isset($r_state_vars) AND is_array($r_state_vars) ) {
-    reset($r_state_vars);
-    while ( list($k,$v) = each( $r_state_vars ) )
-      $GLOBALS[$k] = $v;
-  }
+    global $r_state_vars;
+    if ( isset($r_state_vars) AND is_array($r_state_vars) ) {
+        reset($r_state_vars);
+        while ( list($k,$v) = each( $r_state_vars ) )
+        $GLOBALS[$k] = $v;
+    }
 }
 
-/** LogItem function
- * two purpose function - it loggs item view and it translates short_id to id
- */
-function LogItem($id, $column, $count_hit=true) {
-  global $db;
-
-  if ( $count_hit ) {
-      CountHit($id);
-  }
-
-  if ( $column == "id" ) {
-    return $id;
-  }
-
-  $SQL = "SELECT id, display_count FROM item WHERE short_id='$id'";
-  $db->query($SQL);
-  if ( $db->next_record() ) {
-    return unpack_id128( $db->f('id') );
-  }
-  return false;
-}
 /** SubstituteAliases function
  * @param $als
  * @param $var
@@ -150,16 +133,16 @@ function SubstituteAliases( $als, &$var ) {
     if ( !isset( $als ) OR !is_array( $als ) ) {  // substitute url aliases in cmd
         return;
     }
-  reset( $als );
-  while ( list($k,$v) = each( $als ) ) {
-      $var = str_replace ($k, $v, $var);
-  }
+    reset( $als );
+    while ( list($k,$v) = each( $als ) ) {
+        $var = str_replace ($k, $v, $var);
+    }
 }
+
 /** PutSearchLog function
  *
  */
-function PutSearchLog()
-{
+function PutSearchLog() {
     global $searchlog;
 
     $httpquery = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];

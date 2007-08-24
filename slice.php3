@@ -133,8 +133,10 @@ require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."mgettext.php3";
 require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."hitcounter.class.php3";
 // function definitions:
 require_once AA_INC_PATH."slice.php3";
+
 
 require_once AA_INC_PATH. ($encap ? "locsessi.php3" : "locsess.php3");
 $slice_starttime = get_microtime();
@@ -290,22 +292,19 @@ if (!is_array($slices)) {
 // fulltext view ---------------------------------------------------------------
 if ( $sh_itm OR $x OR $o ) {
     //  $r_state_vars = StoreVariables(array("sh_itm")); // store in session
-    if ( !$x AND $o ) {
-        $x = $o;
-        $count_hit = false;
-    } else {
-        $count_hit = true;
+    if ( $x ) {
+        $zid = new zids($x, 's');
+        AA_Hitcounter::hit($zid);
     }
-
-    if ($sh_itm) {
-        LogItem($sh_itm, "id", $count_hit);
+    elseif ( $o ) {
+        $zid = new zids($o, 's');
     } else {
-        $sh_itm = LogItem($x,"short_id", $count_hit);
+        $zid = new zids($sh_itm, 'l');
+        AA_Hitcounter::hit($zid);
     }
 
     if (!isset ($hideFulltext)) {
-        $itemview = new itemview($slice_info, $fields, $aliases, new zids($sh_itm,"l"),
-                                 0,1, $sess->MyUrl($slice_id, $encap));
+        $itemview = new itemview($slice_info, $fields, $aliases, $zid, 0, 1, $sess->MyUrl($slice_id, $encap));
         $itemview->print_item();
     }
 
@@ -317,10 +316,11 @@ if ( $sh_itm OR $x OR $o ) {
                      WHERE slice.id='".q_pack_id($slice_id)."' AND view.id=$discussion_vid");
         if ($db->next_record()) {
             $view_info = $db->Record;
+
             // create array of parameters
             $disc = array('ids'         => $all_ids ? "" : $ids,
                           'type'        => $add_disc ? "adddisc" : (($sel_ids || $all_ids) ? "fulltext" : "thread"),
-                          'item_id'     => $sh_itm,
+                          'item_id'     => $zid->longids(0),
                           'vid'         => $view_info['id'],
                           'html_format' => $view_info['flag'] & DISCUS_HTML_FORMAT,
                           'parent_id'   => $parent_id
