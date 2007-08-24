@@ -264,7 +264,7 @@ class AA_Transformation_Value extends AA_Transformation {
                               'u' => _m('As for other values of this field'));
         ob_start();
         FrmTabCaption();
-        FrmStaticText('', AA_Transformation_Value::description());
+        FrmStaticText('', self::description());
 
         $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
         $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
@@ -337,7 +337,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
                               'u' => _m('As for other values of this field'));
         ob_start();
         FrmTabCaption();
-        FrmStaticText('', AA_Transformation_Value::description());
+        FrmStaticText('', self::description());
 
         $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
         $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
@@ -345,6 +345,92 @@ class AA_Transformation_AddValue extends AA_Transformation {
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
         FrmTextarea(  $varname_new_content, _m('New content'),       dequote($_GET[$varname_new_content]),  12, 80, true,
                _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
+
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+/** Parses the input text and looks for the delimiter. Separates the parts
+ *  and store them as multiple values to destination field
+ */
+class AA_Transformation_ParseMulti extends AA_Transformation {
+
+    var $new_flag;
+    var $source;
+    var $delimiter;
+
+    /** AA_Transformation_AddValue function
+     * @param $param
+     */
+    function AA_Transformation_ParseMulti($param) {
+        $this->new_flag       = $param['new_flag'];
+        $this->source         = $param['source'];
+        $this->delimiter      = $param['delimiter'];
+    }
+
+    /** name function
+     * @return message
+     */
+    function name() {
+        return _m("Divide the text to multiple values");
+    }
+
+    /** description function
+     * @return message
+     */
+
+    function description() {
+        return _m("Parses the input text and looks for the delimiter. Separates the parts and store them as multiple values to destination field");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $content4id (by link)
+     */
+    function transform($field_id, &$content4id) {
+        $slice = AA_Slices::getSlice($content4id->getSliceID());
+        $item = new AA_Item($content4id->getContent(),$slice->aliases());
+
+        switch ($this->new_flag) {
+            case 'u': $flag = $item->getval($field_id, 'flag'); break;
+            case 'h': $flag = $item->getval($field_id, 'flag') | FLAG_HTML; break;
+            case 't': $flag = $item->getval($field_id, 'flag') & ~FLAG_HTML; break;
+        }
+
+        $new_value = array();
+        $arr       = explode($this->delimiter, $item->subst_alias($this->source));
+        if ( is_array($arr) ) {
+            foreach ($arr as $text) {
+                $new_value[] = array('value' => $text, 'flag' => $flag );
+            }
+        } else {
+            $new_value[] = array('value' => '', 'flag' => $flag );
+        }
+
+        return $new_value;
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
+    function htmlSetting($input_prefix, $params) {
+        $flag_options = array('h' => _m('HTML'),
+                              't' => _m('Plain text'),
+                              'u' => _m('As for other values of this field'));
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_new_flag  = AA_Transformation::_getVarname('new_flag',  $input_prefix, __CLASS__);
+        $varname_source    = AA_Transformation::_getVarname('source',    $input_prefix, __CLASS__);
+        $varname_delimiter = AA_Transformation::_getVarname('delimiter', $input_prefix, __CLASS__);
+
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
+        FrmTextarea(  $varname_source, _m('Source text'),  dequote($_GET[$varname_source]),  12, 80, true,
+               _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
+        FrmInputText( $varname_delimiter, _m('Delimiter'), dequote($_GET[$varname_delimiter]), 255, 25, true);
 
         FrmTabEnd();
         return ob_get_clean();
@@ -486,7 +572,7 @@ class AA_Transformation_Translate extends AA_Transformation {
                               'u' => _m('Unchanged'));
         ob_start();
         FrmTabCaption();
-        FrmStaticText('', AA_Transformation_Value::description());
+        FrmStaticText('', self::description());
 
         $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
         $varname_translation = AA_Transformation::_getVarname('translation', $input_prefix, __CLASS__);
@@ -543,7 +629,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
     function htmlSetting($input_prefix, $params) {
         ob_start();
         FrmTabCaption();
-        FrmStaticText('', AA_Transformation_CopyField::description());
+        FrmStaticText('', self::description());
 
         $varname = AA_Transformation::_getVarname('field2copy', $input_prefix, __CLASS__);
         FrmInputSelect($varname, _m('Copy field'), $params['field_copy_arr'], $_GET[$varname], true,
@@ -619,7 +705,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
         } else {
             $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
         }
-        writeLog("ITEM_FIELD_FILLED", array($zids->count(), $updated_items),$sel);
+        AA_Log::write("ITEM_FIELD_FILLED", array($zids->count(), $updated_items),$sel);
     }
 }
 
