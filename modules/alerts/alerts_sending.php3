@@ -304,7 +304,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
 
             // get all confirmed users for this collection and frequency
             $zids = is_null($reader_id) ? $collection->getReaders($ho) : new zids($reader_id, 'l');
-            writeLog("ALERTS", "Users for collection $collection_id: ". ((int)$zids->count()), $ho);
+            AA_Log::write("ALERTS", "Users for collection $collection_id: ". ((int)$zids->count()), $ho);
 
             // loop through readers might want to send
             for ( $i=0, $zcount=$zids->count(); $i<$zcount; $i++) {
@@ -329,7 +329,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
                         huhl("\n<br>send_mail_from_table_inner(".$collection->getEmailIdAlert().", ".$readerContent->getValue(FIELDID_EMAIL).", ...)");
                         $email_count[$collection_id]++;
                     } elseif (send_mail_from_table_inner($collection->getEmailIdAlert(), $readerContent->getValue(FIELDID_EMAIL), $item)) {
-                        writeLog("ALERTS", "$collection_id: ". $readerContent->getValue(FIELDID_EMAIL), $ho);
+                        AA_Log::write("ALERTS", "$collection_id: ". $readerContent->getValue(FIELDID_EMAIL), $ho);
                         $email_count[$collection_id]++;
                     }
                 }
@@ -337,7 +337,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
 
         // Use the emails sent as param
         } else {
-            writeLog("ALERTS", "Emails for collection $collection_id: ". ((int)count($emails)), $ho);
+            AA_Log::write("ALERTS", "Emails for collection $collection_id: ". ((int)count($emails)), $ho);
             $als = new AA_Aliases();
 //          $als->addAlias(new AA_Alias("_#FILTERS_", "id..............", 'f_t', array(get_filter_text_4_reader(null, $filters, $collection_id))));
             $als->addTextAlias("_#FILTERS_", get_filter_text_4_reader(null, $filters, $collection_id));
@@ -354,7 +354,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
                 }
             }
         }
-        writeLog("ALERTS", "Sent for collection $collection_id: ". ((int)$email_count[$collection_id]), $ho);
+        AA_Log::write("ALERTS", "Sent for collection $collection_id: ". ((int)$email_count[$collection_id]), $ho);
     }
     foreach ( (array)$email_count as $num ) {
         $total_emails += $num;

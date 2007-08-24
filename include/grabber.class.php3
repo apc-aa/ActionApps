@@ -463,7 +463,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
         }
 
         if (!$xml_data) {
-            writeLog("CSN","No data returned for $feed_debug_name");
+            AA_Log::write("CSN","No data returned for $feed_debug_name");
             if ($debugfeed >= 1) print("\n<br>$feed_debug_name: no data returned");
             return false;
         }
@@ -471,7 +471,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         // if an error occured, write it to the LOG
         if (substr($xml_data,0,1) != "<") {
-            writeLog("CSN","Feeding mode ($feed_debug_name): $xml_data");
+            AA_Log::write("CSN","Feeding mode ($feed_debug_name): $xml_data");
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name:bad data returned: $xml_data");
             }
@@ -482,7 +482,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
         $GLOBALS['g_slice_encoding'] = getSliceEncoding($this->slice_id);
 
         if (!( $this->aa_rss = aa_rss_parse( $xml_data ))) {
-            writeLog("CSN","Feeding mode ($feed_debug_name): Unable to parse XML data");
+            AA_Log::write("CSN","Feeding mode ($feed_debug_name): Unable to parse XML data");
             if ($debugfeed >= 1) print("\n<br>$feed_debug_name:".$feed['server_url'].":unparsable: <hr>".htmlspecialchars($xml_data)."<hr>");
             return false;
         }

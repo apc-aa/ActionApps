@@ -68,35 +68,71 @@ TOEXECUTE       object's class                  return code
 ALERTS          howoften                        Start/email sent
 */
 
-/** writelog function
- *  Write log entry
- * @param $event
- * @param $params
- * @param $selector
- */
-function writeLog($event, $params="", $selector="" ) {
-    global $auth, $DO_NOT_LOG;
 
-    if ( isset($DO_NOT_LOG[$event]) ) {
-        return false;
+class AA_Log {
+
+    /** AA_Log::write function - Write log entry
+     *  Static function
+     *
+     * @param $event
+     * @param $params
+     * @param $selector
+     */
+    function write($event, $params="", $selector="" ) {
+        global $auth, $DO_NOT_LOG;
+
+        if ( isset($DO_NOT_LOG[$event]) ) {
+            return false;
+        }
+
+        $db = getDB();
+
+        if (is_array($params)) {
+            $params = ParamImplode($params);
+        }
+
+        $event    = addslashes($event);
+        $params   = addslashes($params);
+        $selector = addslashes($selector);
+
+        $SQL = "INSERT INTO log (id, time, user, type, selector, params)
+                         VALUES ('', '". time() ."','". $auth->auth["uid"] ."','$event','$selector','$params')";
+        $db->query($SQL);
+        freeDB($db);
+
+        // with probability 1:1000 call log cleanup
+        if ( rand(0,1000) == 1) {
+            AA_Log::cleanup();
+        }
+        return true;
     }
 
-    $db = getDB();
+    function cleanup() {
+        $toexecute = new toexecute;
+        // clean all older than 40 days
+        $cleaner   = new AA_Log_Clenup(now() - (60*60*24*40));
 
-    if (is_array($params)) {
-        $params = ParamImplode($params);
+        // we plan this tasks for future (tomorrow)
+        // it should be enough to clean the logs once a day
+        $time2execute   = now() + (60*60*24);
+        $toexecute->laterOnce($cleaner, array(), "AA_Log_Clenup", 10, $time2execute);
+    }
+}
+
+class AA_Log_Clenup {
+
+    var $time;
+    var $type;
+
+    function AA_Log_Clenup($time, $type='') {
+        $this->time = $time;
+        $this->type = $type;
     }
 
-    $event    = addslashes($event);
-    $params   = addslashes($params);
-    $selector = addslashes($selector);
-
-    $SQL = "INSERT INTO log (id, time, user, type, selector, params)
-                     VALUES ('', '". time() ."','". $auth->auth["uid"] ."','$event','$selector','$params')";
-    $db->query($SQL);
-    freeDB($db);
-
-    return true;
+    function toexecutelater() {
+        $type_where = ( $this->type ) ? " AND type = '".quote($this->type)."' " : '';
+        tryQuery("DELETE FROM log WHERE time < '".quote($this->time)."' $type_where");
+    }
 }
 
 /** getLogEvents function

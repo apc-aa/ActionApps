@@ -836,7 +836,7 @@ class AA_Bookmarks {
         }
           // store to database
         $last_id = $this->profile->insertProperty('bookmark', $name, serialize($state), $to_global);
-        writeLog("BM_CREATE", $name, $last_id );
+        AA_Log::write("BM_CREATE", $name, $last_id );
 
         $this->profile->loadprofile(true);    // reread profile from database
         $this->setFromProfile();              // get bookmarks again
@@ -899,7 +899,7 @@ class AA_Bookmarks {
         }
           // store to database
         $this->profile->deleteProperty('bookmark', $this->bookmarks[$key]['name'], $global);
-        writeLog("BM_DELETE", $this->bookmarks[$key]['name'], $this->bookmarks[$key]['id'] );
+        AA_Log::write("BM_DELETE", $this->bookmarks[$key]['name'], $this->bookmarks[$key]['id'] );
         $this->profile->loadprofile(true);    // reread profile from database
         $this->setFromProfile();              // get bookmarks again
         return true;
@@ -913,7 +913,7 @@ class AA_Bookmarks {
         $old = $this->bookmarks[$key];
         $ret = $this->update( $old['name'], $state, $old['type']=='*', $old['id']);
         if ($ret) {
-            writeLog("BM_UPDATE", $old['name'], $old['id'] );
+            AA_Log::write("BM_UPDATE", $old['name'], $old['id'] );
         } else {
             return false;
         }
@@ -927,7 +927,7 @@ class AA_Bookmarks {
         $old = $this->bookmarks[$key];
         $ret = $this->update( $newname, $old['state'], $old['type']=='*', $old['id']);
         if ($ret) {
-            writeLog("BM_RENAME", array($newname,$old['name']), $old['id'] );
+            AA_Log::write("BM_RENAME", array($newname,$old['name']), $old['id'] );
         } else {
             return false;
         }

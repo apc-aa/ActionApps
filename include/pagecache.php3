@@ -181,6 +181,12 @@ class PageCache  {
      */
     function store($keyString, $content, $str2find) {
         global $cache_nostore;
+        /** @todo $cache_nostore should be done better - current disadvantage of
+         *  global variable is, that you use ANY {user:} alias inside a view,
+         *  then this view is never cached. We should use $additional_conditions
+         *  which will be checked in pagecache->get(), or something similar
+         */
+
         if ( $GLOBALS['debug'] ) {
             huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache str2find:'.$str2find->getStr2find(), '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
         }
@@ -205,7 +211,7 @@ class PageCache  {
 
             $varset->doTrueReplace('pagecache');  // true replace mean it calls REPLACE command and no SELECT+INSERT/UPDATE (which is better for tables with autoincremented columns, which is no
 
-            // writeLog('PAGECACHE', $keyid.':'.serialize($str2find)); // for debug
+            // AA_Log::write('PAGECACHE', $keyid.':'.serialize($str2find)); // for debug
 
             if (rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
@@ -248,7 +254,7 @@ class PageCache  {
         // It is not so big problem if we do not invalidate cache - much less than
         // halting the operation.
 
-        // writeLog('PAGECACHE', $cond, 'invalidate'); // for debug
+        // AA_Log::write('PAGECACHE', $cond, 'invalidate'); // for debug
 
         $keys = GetTable2Array("SELECT pagecache_id FROM pagecache_str2find WHERE str2find = '".quote($cond)."'", '', 'pagecache_id');
 

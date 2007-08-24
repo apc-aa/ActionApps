@@ -235,7 +235,7 @@ class AA_Csv_Importer {
         }
         // log
         $logMsg = "Slice " .$this->slice_id. ": Processed ". $numProcessed. ", Stored ". ($numProcessed-$numError) .", Error: ". $numError. " items";
-        writeLog("CSV_IMPORT",$logMsg);
+        AA_Log::write("CSV_IMPORT",$logMsg);
 
         // invalidate cache;
         $GLOBALS['pagecache']->invalidateFor("slice_id=".$this->slice_id);  // invalidate old cached values
@@ -245,9 +245,9 @@ class AA_Csv_Importer {
         // deletes  uploaded file, todo - uncomment
         if ( !in_array( Files::sourceType($this->fileName), array('HTTP', 'HTTPS')) ) {
             if (unlink($this->fileName)) {
-                writeLog("CSV_IMPORT",_m("Ok : file deleted "). $this->fileName );
+                AA_Log::write("CSV_IMPORT",_m("Ok : file deleted "). $this->fileName );
             } else {
-                writeLog("CSV_IMPORT",_m("Error: Cannot delete file"). $this->fileName );
+                AA_Log::write("CSV_IMPORT",_m("Error: Cannot delete file"). $this->fileName );
             }
         }
 

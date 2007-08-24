@@ -52,7 +52,7 @@ if (!($data = xml_fetch($server_url, ORG_NAME, $password, $auth->auth["uname"],"
 
 // find out first character of fetched data: if it is not '<' exit
 if (substr($data,0,1) != "<") {
-    writeLog("CSN","Establishing mode: $data");
+    AA_Log::write("CSN","Establishing mode: $data");
     switch ($data) {
         case ERR_NO_SLICE : $err_msg = _m("No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."); break;
         case ERR_PASSWORD : $err_msg = _m("Invalid password for the node name:") . " ".ORG_NAME . ". "._m("Contact the administrator of the local node."); break;
@@ -63,7 +63,7 @@ if (substr($data,0,1) != "<") {
 
 // try to parse xml document
 if (!($aa_rss = aa_rss_parse($data,"establish_mode"))) {
-    writeLog("CSN","Establishing mode: Unable to parse XML data");
+    AA_Log::write("CSN","Establishing mode: Unable to parse XML data");
     MsgPage($sess->url(self_base() . "se_inter_import.php3"), _m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node.") );
 }
 

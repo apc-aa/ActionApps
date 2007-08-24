@@ -34,6 +34,7 @@ require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."logs.php3";
 require_once AA_INC_PATH."go_url.php3";
 require_once AA_INC_PATH."statestore.php3";
+
 /** get_aa_url function
  * @param $href
  * @param $session
@@ -42,6 +43,7 @@ function get_aa_url($href, $session=true) {
     global $sess;
     return ($session AND is_object($sess)) ? $sess->url(AA_INSTAL_PATH.$href) : AA_INSTAL_PATH.$href;
 }
+
 /** get_admin_url function
  * @param $href
  * @param $session
@@ -106,15 +108,6 @@ function go_return_or_url($url, $usejs, $session, $add_param="") {
 function endslash(&$s) {
     if (strlen ($s) && substr ($s,-1) != "/")
         $s .= "/";
-}
-
-/** my_in_array function
- *  Wraps the in_array function, which was introduced only in PHP 4.
- * @param $needle
- * @param $array
- */
-function my_in_array($needle, $array) {
-    return in_array($needle, $array);
 }
 
 /** debuglog function
@@ -966,7 +959,7 @@ class AA_Widget extends AA_Components {
       * It never refills the array (and we relly on this fact in the code)
       * This function is rewritten fill_const_arr().
       */
-    function & getConstArr() {
+    function & getConstArr($aa_variable) {
         if ( isset($this->_const_arr) AND is_array($this->_const_arr) ) {  // already filled
             return $this->_const_arr;
         }
@@ -976,13 +969,24 @@ class AA_Widget extends AA_Components {
 
         // commented out - used for Related Item Window values
         // $zids = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
-        $zids = false;
+        $zids    = false;
         $ids_arr = false;
 
-        $constgroup       = $this->getProperty('const');
-        $filter_conds     = $this->getProperty('filter_conds');
-        $sort_by          = $this->getProperty('sort_by');
-        $slice_field      = $this->getProperty('slice_field');
+        $constgroup   = $this->getProperty('const');
+        $filter_conds = $this->getProperty('filter_conds');
+        $sort_by      = $this->getProperty('sort_by');
+        $slice_field  = $this->getProperty('slice_field');
+
+        // if variable is for some item, then we can use _#ALIASES_ in conds
+        // and sort
+        $item_id = $aa_variable->getItemId();
+        if ( $item_id ) {
+            $item         = AA_Item::getItem($item_id);
+            if ( $item ) {
+                $filter_conds = $item->unalias($filter_conds);
+                $sort_by      = $item->unalias($sort_by);
+            }
+        }
 
         if ( !$this->getProperty('const')) {  // no constants or slice defined
             return $this->_const_arr;         //  = array();
@@ -1044,15 +1048,15 @@ class AA_Widget extends AA_Components {
     /** returns options array with marked selected oprtions, missing options,...
      *  This method is rewritten get_options() method form formutil.php3
      */
-    function getOptions( $aa_value, $use_name=false, $testval=false, $add_empty=false) {
+    function getOptions( $aa_variable, $use_name=false, $testval=false, $add_empty=false) {
         $selectedused  = false;
 
         $already_selected = array();     // array where we mark selected values
         $pair_used        = array();     // array where we mark used pairs
-        $this->_fillSelected($aa_value); // fill selected array by all values in order we can print invalid values later
+        $this->_fillSelected($aa_variable->getAaValue()); // fill selected array by all values in order we can print invalid values later
 
         $ret = array();
-        $arr = $this->getConstArr();
+        $arr = $this->getConstArr($aa_variable);
         if (is_array($arr)) {
             foreach ( $arr as $k => $v ) {
                 if ($use_name) {
@@ -1079,9 +1083,9 @@ class AA_Widget extends AA_Components {
         // now add all values, which is not in the array, but field has this value
         // (this is slice inconsistence, which could go from feeding, ...)
         if ( isset( $this->_selected ) AND is_array( $this->_selected ) ) {
-            foreach ( $this->_selected as $k =>$v ) {
+            foreach ( $this->_selected as $k =>$foo ) {
                 if ( !$already_selected[$k] ) {
-                    $ret[] = array('k'=>$k, 'v'=>$v, 'selected' => true, 'mis' => true);
+                    $ret[] = array('k'=>$k, 'v'=>$k, 'selected' => true, 'mis' => true);
                     $selectedused = true;
                 }
             }
@@ -1157,7 +1161,7 @@ class AA_Widget extends AA_Components {
             $required     = $aa_variable->isRequired();
 
             $ret      = "<select name=\"$input_name\" id=\"$input_name\"$multiple>";
-            $options  = $this->getOptions($aa_variable->getAaValue(), $use_name, false, !$required);
+            $options  = $this->getOptions($aa_variable, $use_name, false, !$required);
             $ret     .= $this->getSelectOptions( $options );
             $ret     .= "</select>";
         } else {
@@ -1717,7 +1721,7 @@ class AA_Widget_Mch extends AA_Widget {
         $use_name     = $this->getProperty('use_name', false);
         $required     = $aa_variable->isRequired();
 
-        $options      = $this->getOptions($aa_variable->getAaValue(), $use_name);
+        $options      = $this->getOptions($aa_variable, $use_name);
         $htmlopt      = array();
         for ( $i=0 ; $i < count($options); $i++) {
             $htmlopt[]  = $this->getOneChBoxTag($options[$i], $input_id ."[$i]");
@@ -2222,11 +2226,16 @@ class AA_Variable extends AA_Property {
 
     /** Current value of $type. The value must be convertable to AA_Value - @see type */
     var $value=null;
+
+    /** id of item, for which is this variable (used for some unaliasing...) */
+    var $item_id=null;
+
     /** setValue function
      * @param $value
      */
-    function AA_Variable($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN, $aa_value=null) {
-        $this->value = $aa_value;
+    function AA_Variable($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN, $aa_value=null, $item_id=null) {
+        $this->value   = $aa_value;
+        $this->item_id = $item_id;
         parent::AA_Property($id, $name, $type, $multi, $persistent, $validator, $required, $input_help, $input_morehlp, $example, $show_content_type_switch, $content_type_switch_default);
     }
 
@@ -2246,6 +2255,10 @@ class AA_Variable extends AA_Property {
 
     function valuesCount() {
         return (is_null($this->value) ? 0 : $this->value->valuesCount());
+    }
+
+    function getItemId() {
+        return $this->item_id;
     }
 }
 
@@ -2448,7 +2461,8 @@ class AA_Field {
                                         null,               // $example;
                                         $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
                                         AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
-                                        $item->getAaValue($this->getId()));
+                                        $item->getAaValue($this->getId()),
+                                        $item_id);
 
         $repre_value = $item->subst_alias($visual ? $visual : $this->getId());
         return $widget->getAjaxHtml($aa_variable, get_if($repre_value, '--'));
@@ -2628,7 +2642,6 @@ class AA_Fields {
         $this->aliases = is_array($additional) ? $additional : array();
 
         //  Standard aliases
-        $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_e:itemcount",        "id..............", _m("number of found items"));
         $this->aliases["_#ITEMINDX"] = GetAliasDef( "f_e:itemindex",        "id..............", _m("index of item within whole listing (begins with 0)"));
         $this->aliases["_#PAGEINDX"] = GetAliasDef( "f_e:pageindex",        "id..............", _m("index of item within a page (it begins from 0 on each page listed by pagescroller)"));
         $this->aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............", _m("alias for Item ID"));
@@ -2689,7 +2702,7 @@ class AA_Fields {
         }
         return $ret;
     }
-    
+
     /** getPriorityArray function
      *
      */
@@ -3393,52 +3406,30 @@ function MsgPage($url, $msg, $dummy="standalone") {
   exit;
 }
 
-/** CountHit function
- * Fulltext is viewed - count hit
- *
- * UPDATE - hits logged to table log. With COUNTHIT_PROBABILITY
- * (eg. onetimes from 100 - probability 0.01) we write logged hits into table
- * item. Why this way? MySQL lock the item table for updte when someone do
- * a search in that table. If we want to view any fulltext, we can't, because we
- * have to wait for item.display_count update (which is locked). That's why we
- * log the hit into log table and from time to time (with probability 1:100) we
- * update item table based on logs.
- * @param string $id    id - short, long or tagged - it does not matter
- *                      (zids decides)
- */
-function CountHit($id) {
-    global $db;
-
-    writeLog("COUNT_HIT",$id);
-
-    $zid = new zids();
-
-    if ( rand(0,COUNTHIT_PROBABILITY) == 1) {
-        $logarray = getLogEvents("COUNT_HIT", $from="", $to="", true, true);
-        if ( isset($logarray) AND is_array($logarray) ) {
-            foreach ($logarray as $log) {
-                $myid = $log["params"];
-                $zid->refill($myid);
-                switch ($zid->onetype()) {
-                    case "l":
-                    case "t":
-                        $myid = $zid->q_packedids(0);
-                        $where = "(id='".$myid."')";
-                        break;
-                    case "s":
-                        $myid = $zid->shortids(0);
-                        $where = "(short_id='".$myid."')";
-                        break;
-                    default:
-                }
-                $zid->clear();
-                $SQL = "UPDATE item
-                           SET display_count=(display_count+".$log["count"].")
-                         WHERE $where";
-                $db->tquery($SQL);
-            }
+function StoreToContent($item_id, $field, $value, $additional='') {
+    $varset = new Cvarset();
+    $varset->clear();
+    if ($field["text_stored"]) {
+        // do not store empty values in content table for text_stored fields
+        // if ( !$value['value'] ) { return false; }    // can't do it, conditions do not work then (ecn joblist)
+        $varset->add("text", "text", $value['value']);
+        // set "TEXT stored" flag
+        $varset->add("flag", "number", (int)$value['flag'] | FLAG_TEXT_STORED );
+        if (is_numeric($additional["order"])) {
+            $varset->add("number", "number", $additional["order"]);
+        } else {
+            $varset->add("number","null", "");
         }
+    } else {
+        $varset->add("number", "number", (int)$value['value']);
+        // clear "TEXT stored" flag
+        $varset->add("flag",   "number", (int)$value['flag'] & ~FLAG_TEXT_STORED );
     }
+
+    // insert item but new field
+    $varset->add("item_id", "unpacked", $item_id);
+    $varset->add("field_id", "text", $field["id"]);
+    $varset->doInsert('content');
 }
 
 /** is_field_type_numerical function
@@ -3512,7 +3503,7 @@ function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_col
 
         // create the varset
         while (list (,$col) = each ($columns)) {
-            if (my_in_array($col["name"], $omit_columns))
+            if (in_array($col["name"], $omit_columns))
                 continue;
 
             if (is_field_type_numerical($col["type"]))
@@ -3522,7 +3513,7 @@ function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_col
             // look into $set_columns
             if (isset ($set_columns[$col["name"]]))
                  $val = $set_columns[$col["name"]];
-            else if (my_in_array($col["name"], $id_columns))
+            else if (in_array($col["name"], $id_columns))
                  $val = q_pack_id(new_id());
             else $val = $datarow[$col["name"]];
 
@@ -4219,7 +4210,7 @@ class toexecute {
                    'execute_after' => ($time ? $time : time()),
                    'aa_user'       => $auth->auth['uid'],
                    'priority'      => $priority,
-                   'selector'      => $selector,
+                   'selector'      => ($selector ? $selector : get_class($object)),
                    'object'        => serialize($object),
                    'params'        => serialize($params)
                   ));
@@ -4231,6 +4222,17 @@ class toexecute {
          }
          return true;
     }
+
+    /** before the task is planed, it check, if it is not already scheduled
+     *  (from previous time). The task is considered as planed, if the SELECTORs
+     *  are the same
+     */
+    function laterOnce( &$object, $params, $selector, $priority=100, $time=null ) {
+        if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."'", 'aa_first', 'aa_mark')) {
+            $this->later($object, $params, $selector, $priority, $time);
+        }
+    }
+
     /** cancel_all function
      * @param $selector
      */
@@ -4283,7 +4285,7 @@ class toexecute {
 
                 // Task is done - remove it from queue
                 $varset->doDelete('toexecute');
-                writeLog('TOEXECUTE', "$expected_time:$retcode:".$task['params'], get_class($object));
+                AA_Log::write('TOEXECUTE', "$expected_time:$retcode:".$task['params'], get_class($object));
                 $execute_times[$task_type] = get_microtime() - $task_start;
             }
         }
