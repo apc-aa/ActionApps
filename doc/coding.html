@@ -51,10 +51,26 @@ if ((condition1) || (condition2)) {
      - open brace at the end of line<br>
      - <code>if</code>, <code>while</code>, ... separated by space (it is not function call)</p>
 
-
 <li><b><code>function($var1, $var2=true)</code></b>
      <p>No space between function name and open brace allow us easier find
      the function in the code.</p>
+
+<li><b>class names uses <code>AA_</code> prefix, words separated by underscore and first letters are in upper case</b>
+     <p>Just like - <code>AA_Optimize_Db_Relation_Dups</code>
+     - no <code><strike>AA_Optimize_DB_Relation_Dups</strike></code> nor
+       <code><strike>AA_OptimizeDbRelationDups</strike></code></p>
+
+<li><b>Functions uses CamelCase naming convention</b>
+     <p>Just like <code>NormalizeArrayIndex()</code>, <code>ParseClassProperties()</code></p>
+
+<li><b>Class methods uses CamelCase with small first letter naming convention</b>
+     <p>Just like <code>$widget->getClassProperties()</code>, <code>$property->isRequired()</code></p>
+
+<li><b>Private class methods and variables are prefixed with underscore</b>
+     <p>Just like <code>$this->_finalizaAjaxHtml</code>, <code>$this->_selected</code></p>
+
+<li><b>Variables uses small caps with underscore between words</b>
+     <p>Just like <code>$input_id</code>, <code>$use_name</code></p>
 
 <li><b>80 characters wide</b><br>
      <p>Try to write the code 80 characters wide, if possible.</p>
@@ -70,7 +86,7 @@ if ((condition1) || (condition2)) {
 <li><b>use return true; instead of return(true);</b><br>
      <p>Return is the statement, not a function.</p>
 
-<li><b>When you committing changes into CVS, always update <i>CHANGES</i> file and
+<li><b>When you committing changes into Subversion (SVN), always update <i>CHANGES</i> file and
   send a note to <a href="mailto:apc-aa-coders@sourceforge.net">apc-aa-coders@sourceforge.net</a></b><br><br>
 
 <li><b>Document new feature on the wiki (<a href="http://actionapps.org/">http://actionapps.org/</a>)
@@ -80,6 +96,10 @@ if ((condition1) || (condition2)) {
   installation of <a href="http://actionapps.org/aa/admin/index.php3">ActionApps</a></b><br><br>
 
 <li><b>If you changing database structure (adding table, ...), you should update <i>sql_update.php3</i> script</b><br><br>
+
+<li><b>New feature must be always generalized in order other users can use it</b><br>
+     <p>No private hacks for site XY</p>
+
 
 <li><b>Before you are going to code some new feature, let us know about,
   please (<a href="mailto:apc-aa-coders@sourceforge.net">apc-aa-coders@sourceforge.net</a>)</b><br>
