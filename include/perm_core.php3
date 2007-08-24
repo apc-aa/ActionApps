@@ -615,7 +615,7 @@ function FindReaderGroups($pattern) {
                   WHERE slice.type = 'ReaderManagement'
                     AND slice.id   = module.id
                     AND module.deleted < '1'
-                    AND module.name LIKE '$pattern%'");
+                    AND module.name LIKE '". quote($pattern) ."%'");
     $prefix = _m('Reader Slice');
     $groups = array();
     while ($db->next_record()) {
@@ -644,7 +644,7 @@ function FindReaderUsers($pattern) {
              INNER JOIN content ON item.id=content.item_id
                   WHERE slice.type = 'ReaderManagement'
                     AND content.field_id = '".FIELDID_USERNAME."'
-                    AND content.text LIKE '%$pattern%'");
+                    AND content.text LIKE '%". quote($pattern) ."%'");
     while ($db->next_record()) {
         $users[unpack_id128($db->f('id'))] = array('name' => $db->f('name'));
     }

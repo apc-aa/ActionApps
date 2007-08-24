@@ -1,66 +1,93 @@
-08/13/17 - fixed problem of overwriting articles which was fed by RSS or AARSS
+08/24/07 - New version of counting item hits (AA_Hitcounter) with ability
+(honzam)   to display "Most popular item last day/week/month". See
+!SQL!      http://www.actionapps.org/en/Designing_Output_Templates#Popular_Items_.28Hit_counting.29
+           for more details.
+           (you need to run sql_update.php3 script !!!)
+         - logging is rewritten to class (AA_Log), the logs are automaticaly
+           cleaned (entries older than 40 days) so the log should never became
+           so big
+         - New ParseMulti transformation for "Modify Content..." feature
+           of ItemManager - Divide the text to multiple values on specified
+           delimiter
+         - Two Boxes input type now allows to move more than one value at time
+           (by selecting more values with CTRL key)
+         - uploaded new basice ER schema of AA database from Jitka Zavadova
+           See doc/AAdb_ER.html
+         - updated AA coding standards
+         - used size-optimized version of prototype.js library
+         - Database eroros messages are less verbose - do not display database
+           username, ...
+         - _#ID_COUNT gives better results, now - mainly in the casese, where
+           we have nested views
+         - Alias parameters on the field admin page are now textareas,
+           so the code for the parameter could be longer. We also changed the
+           database field type, so the length of the parameter is not limited
+           to 256 characters (you need to run sql_update.php3 script)
+         - do not dislplay errors in img.php3 (phpThumb)
+         - some small fixes, name changes and security improvements
+08/13/07 - fixed problem of overwriting articles which was fed by RSS or AARSS
 (honzam)   (cross server networking)
 08/10/07 - fixed problem with adding item (stringexpand.php3 error)
 (honzam)
 08/04/07 - Central upgraded to new version with less bugs
 (honzam) - other small fixes
-08/03/07 - AA_Manager class which takes care about all managers - Item Manager, 
-(honzam)   Links Manager, ... now support new API for actions (AA_Manageraction) 
-         - Central manager switched to use new acion API - AA_Manageraction. 
-           We plan to rewrite all the actions (for item and links) to that new 
-           API and remove the code for the old approach   
-         - synchronize scripts added to central admin interface 
-         - {conds} command obtains third parameter, which do not url encode 
-           the condition, so for the view you have to use the old version 
+08/03/07 - AA_Manager class which takes care about all managers - Item Manager,
+(honzam)   Links Manager, ... now support new API for actions (AA_Manageraction)
+         - Central manager switched to use new acion API - AA_Manageraction.
+           We plan to rewrite all the actions (for item and links) to that new
+           API and remove the code for the old approach
+         - synchronize scripts added to central admin interface
+         - {conds} command obtains third parameter, which do not url encode
+           the condition, so for the view you have to use the old version
            without the third parameter:
              {view.php3?vid=9&cmd[9]=c-1-{conds:category.......1}},
            but for {ids..}, where we do not expect urlencoded strings you have
-           to add third parameter, like: 
+           to add third parameter, like:
              {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:category.......3:1}}
-         - The links, which are not active in AA Admin interface is now 
+         - The links, which are not active in AA Admin interface is now
            completely hidden (like the "AA" link for Editors)
-         - disabled "Update modules table" option in sql_update.php3 since it 
+         - disabled "Update modules table" option in sql_update.php3 since it
            clears the priority field
-         - the field "Upload URL" on "Slice Admin" -> "Slice" page is hidden, 
-           since it is not working, yet.         
+         - the field "Upload URL" on "Slice Admin" -> "Slice" page is hidden,
+           since it is not working, yet.
          - fixed Hirachical constant editor - now works again
          - linkchecker do not produce warnings, if the domain do not exist
          - removed unused function p_arr
-08/01/07 - new "Central" admin interface visible for superadmins. It can store 
-(honzam)   multiple configurations of AA, so you can manage more AAs 
-           and databases from one place. Currently it allows to manage 
+08/01/07 - new "Central" admin interface visible for superadmins. It can store
+(honzam)   multiple configurations of AA, so you can manage more AAs
+           and databases from one place. Currently it allows to manage
            the configurations (add, edit, delete) and also do sql_update.php3
-           on multiple (selected) AAs   
-         - new table central_conf created in sql_update.php3 script - used 
+           on multiple (selected) AAs
+         - new table central_conf created in sql_update.php3 script - used
            by "Central"
          - new robots.txt file for more secure setting of the AA install
            (Thanks to carlos Alberto RR <carlos@colnodo.apc.org>)
-         - new f_z alias function which get the size or type of the file 
+         - new f_z alias function which get the size or type of the file
            (Thanks to Adam Sanchez)
-         - new expand function {lastedit:[<date_format>:[<slice_id>]]} 
+         - new expand function {lastedit:[<date_format>:[<slice_id>]]}
            which displays the date of last modificaton of any item in the slice.
-           The format of date is the sane as used in PHP date() function 
-           (see http://php.net/date). slice_id could be ommited - then check 
+           The format of date is the sane as used in PHP date() function
+           (see http://php.net/date). slice_id could be ommited - then check
            all the slices in AA. Thanks belongs to Adam Sanchez.
-         - more spam checking for in discussions - you can use the "answer" 
+         - more spam checking for in discussions - you can use the "answer"
            field solution in the same way as with anonymous form for items
-         - small refactoring of QuoteColons() in strinexpand.php3 - moved 
+         - small refactoring of QuoteColons() in strinexpand.php3 - moved
            to AA_Stringexpand::quoteColons($text) where it belongs.
-         - small refactoring in ItemManager - bins internaly uses bit 
+         - small refactoring in ItemManager - bins internaly uses bit
            representation insted of string
          - fixes in AA synchronization script
-         - fixed some SQL queries in sql_update.php3, to not produce errors 
+         - fixed some SQL queries in sql_update.php3, to not produce errors
            in last versions of MySQL
-         - fix database error messages to not produce invalid html code 
+         - fix database error messages to not produce invalid html code
          - small fix in tabledit
-07/30/07 - fixed javascript problem in "Slice Admin" -> "RSS Feeds", so delete 
+07/30/07 - fixed javascript problem in "Slice Admin" -> "RSS Feeds", so delete
 (honzam)   and edit works again.
 07/02/07 - fixed MLX view caching - enable with define ('MLX_NOVIEWCACHE',0);
 (mimo)   - fixed mlx mini view generator (aka getTranslations)
            now handles MLXView::getTranslations no ctrlSliceID
          - enabling MLXTRACE now gives timing info
-	     - slight change to what view.php3 passes to mlx->postqueryzids
-	     - using $_REQUEST to get $keystr in cached.php3 - register_globals
+         - slight change to what view.php3 passes to mlx->postqueryzids
+         - using $_REQUEST to get $keystr in cached.php3 - register_globals
 06/07/07 - fixed "Modify Content" action in Item Managrer to work with PHP4
 (honzam) - fixed Alerts admin page buton - it didn't work after clean-up
            (typo problem)

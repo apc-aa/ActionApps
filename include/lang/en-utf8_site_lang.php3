@@ -1,6 +1,6 @@
 <?php
 # $Id$
-# Language: EN-UTF8
+# Language: EN
 # This file was created automatically by the Mini GetText environment
 # on 14.7.2006 13:20
 

@@ -35,7 +35,7 @@ if ($cancel) {
     go_url( $sess->url(self_base() . "index.php3"));
 }
 
-if (!IfSlPerm(PS_FEEDING, "admin")) {
+if (!IfSlPerm(PS_FEEDING)) {
     MsgPage($sess->url(self_base())."index.php3", _m("You have not permissions to change feeding setting"));
     exit;
 }

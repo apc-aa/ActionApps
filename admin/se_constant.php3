@@ -287,7 +287,7 @@ if ($category) {
     if ($group_id) {
         $categ = true;
     } else {
-        MsgPage($sess->url(self_base())."slicedit.php3", _m("No category field defined in this slice.<br>Add category field to this slice first (see Field page)."), "admin");
+        MsgPage($sess->url(self_base()."slicedit.php3"), _m("No category field defined in this slice.<br>Add category field to this slice first (see Field page)."), "admin");
         exit;
     }
 }

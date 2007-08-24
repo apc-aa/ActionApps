@@ -213,7 +213,7 @@ function SetColumnTypes(&$columns, &$primary_aliases, $default_table, $join="",
 
             // is it a part of the primary key?
             if ($primary && $primary[$table]) {
-                 $is_primary = my_in_array($col["name"], $primary[$table]);
+                 $is_primary = in_array($col["name"], $primary[$table]);
             } else {
                 $is_primary = strstr ($col["flags"], "primary_key");
             }

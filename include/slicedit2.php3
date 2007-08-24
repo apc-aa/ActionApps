@@ -23,16 +23,17 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
 */
+
 /** set_template_id function
- * @param $template_id
- */
+* @param $template_id
+*/
 function set_template_id($template_id) {
     global $set_template_id, $change_lang_file;
     $set_template_id = $template_id;
     if ( $set_template_id ) {
-      $foo = explode("{", $set_template_id);
-      $set_template_id = $foo[0];
-      $change_lang_file = $foo[1];
+        $foo = explode("{", $set_template_id);
+        $set_template_id = $foo[0];
+        $change_lang_file = $foo[1];
     }
 }
 

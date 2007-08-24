@@ -79,7 +79,7 @@ while (list($to_field_id,$val) = each($fmap)) {
         case  FEEDMAP_FLAG_EXTMAP :
         case  FEEDMAP_FLAG_MAP :
             $flag = ($ext_slice) ? FEEDMAP_FLAG_EXTMAP : FEEDMAP_FLAG_MAP ;
-            $catvs->add("from_field_id", "text", $val );
+            $catVS->add("from_field_id", "text", $val );
             unset($map_to[$val]);
             break;
     }

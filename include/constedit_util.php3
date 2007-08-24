@@ -490,7 +490,7 @@ function CopyConstants($slice_id)
         $shf = $db->f("input_show_func");
         if (strlen ($shf) > 4) {
             list(,$group_id) = explode(":",$shf);
-            if (my_in_array($group_id, $group_list)) {
+            if (in_array($group_id, $group_list)) {
                 $group_ids[$group_id][$db->f("id")] = $shf;
             }
         }
@@ -504,11 +504,10 @@ function CopyConstants($slice_id)
 
         // find new id by trying to add "_1", "_2", "_3", ... to the old one
         $new_id = $old_id;
-        for ($i = 1; my_in_array ($new_id, $group_list); $i ++) {
+        for ($i = 1; in_array($new_id, $group_list); $i++) {
             $postfix = "_".$i;
             $new_id = substr ($old_id,0,
-                min (strlen($old_id)+strlen($postfix), $max_group_id_len) - strlen($postfix))
-                . $postfix;
+                min (strlen($old_id)+strlen($postfix), $max_group_id_len) - strlen($postfix)) . $postfix;
         }
         $group_list[] = $new_id;
 

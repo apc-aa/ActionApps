@@ -34,7 +34,7 @@ if (!IsSuperadmin()) {
 }
 
 /** @todo this class should be abstract after we switch to PHP5 */
-class Optimize {
+class AA_Optimize {
     var $messages = array();
     function name()         {}
     function description()  {}
@@ -67,7 +67,7 @@ class Optimize {
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
  */
-class Optimize_category_sort2group_by extends Optimize {
+class AA_Optimize_Category_Sort2group_By extends AA_Optimize {
 
     /** Name function
     * @return a message
@@ -130,7 +130,7 @@ class Optimize_category_sort2group_by extends Optimize {
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
  */
-class Optimize_db_relation_dups extends Optimize {
+class AA_Optimize_Db_Relation_Dups extends AA_Optimize {
 
     /** Name function
     * @return a message
@@ -176,7 +176,7 @@ class Optimize_db_relation_dups extends Optimize {
 
 /** Testing if feeds table do not contain relations to non existant slices
  */
-class Optimize_db_feed_inconsistency extends Optimize {
+class AA_Optimize_Db_Feed_Inconsistency extends AA_Optimize {
 
     /** Name function
     * @return a message
@@ -265,7 +265,7 @@ class Optimize_db_feed_inconsistency extends Optimize {
  *  Replaces binary fields by varbinary and removes trailing zeros
  *  Needed for MySQL > 5.0.17
  */
-class Optimize_db_binary_traing_zeros extends Optimize {
+class AA_Optimize_Db_Binary_Traing_Zeros extends AA_Optimize {
 
     /** Name function
     * @return a message
@@ -338,7 +338,7 @@ class Optimize_db_binary_traing_zeros extends Optimize {
 }
 
 /** There was change in Reader management functionality in AA v2.8.1 */
-class Optimize_readers_login2id extends Optimize {
+class AA_Optimize_Readers_Login2id extends AA_Optimize {
 
     /** Name function
     * @return a message
@@ -423,7 +423,7 @@ class Optimize_readers_login2id extends Optimize {
 }
 
 /** There was change in Reader management functionality in AA v2.8.1 */
-class Optimize_database_structure extends Optimize {
+class AA_Optimize_Database_Structure extends AA_Optimize {
 
     /** Name function
     * @return a message
@@ -490,7 +490,7 @@ class Optimize_database_structure extends Optimize {
 }
 
 /** Whole pagecache will be invalidated and deleted */
-class Optimize_clear_pagecache extends Optimize {
+class AA_Optimize_Clear_Pagecache extends AA_Optimize {
 
     /** Name function
     * @return a message
@@ -536,7 +536,7 @@ class Optimize_clear_pagecache extends Optimize {
 }
 
 /** Whole pagecache will be invalidated and deleted */
-class Optimize_copy_content extends Optimize {
+class AA_Optimize_Copy_Content extends AA_Optimize {
 
     /** Name function
     * @return a message
@@ -601,13 +601,13 @@ class Optimize_copy_content extends Optimize {
 $Msg = '';
 
 // php4 returns class names in lower case, so we need itin lower case
-if ($_GET['test'] AND (strpos(strtolower($_GET['test']), 'optimize_')===0)) {
+if ($_GET['test'] AND (strpos(strtolower($_GET['test']), 'aa_optimize_')===0)) {
     $optimizer = AA_Components::factory($_GET['test']);
     $optimizer->test();
     $Msg .= $optimizer->report();
 }
 
-if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'optimize_')===0)) {
+if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'aa_optimize_')===0)) {
     $optimizer = AA_Components::factory($_GET['repair']);
     $optimizer->repair();
     $Msg .= $optimizer->report();
@@ -616,7 +616,7 @@ if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'optimize_')===0)) 
 $optimize_names        = array();
 $optimize_descriptions = array();
 
-foreach (AA_Components::getClassNames('Optimize_') as $optimize_class) {
+foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
     // call static class methods
     $optimize_names[]        = call_user_func(array($optimize_class, 'name'));
     $description             = call_user_func(array($optimize_class, 'description'));

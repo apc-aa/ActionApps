@@ -1582,7 +1582,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
                 if ( $fid == 'discussion' ) {
                     unset ($select_cond);
                     while ( list ($fid) = each ($vv)) {
-                        if ( my_in_array ($fid,$fields) AND $cond['value'] > "" ) {
+                        if ( in_array($fid,$fields) AND $cond['value'] > "" ) {
                             $select_cond[] = GetWhereExp( "discussion.$fid",
                                               $cond['operator'], $cond['value'] );
                         }

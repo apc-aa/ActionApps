@@ -128,7 +128,7 @@ function get_filetype($filepath) {
             if (!$val["ext"]) {
                 continue;
             }
-            if (my_in_array($ext, $val["ext"])) {
+            if (in_array($ext, $val["ext"])) {
                 return $filetype;
             }
         }

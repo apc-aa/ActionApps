@@ -113,15 +113,11 @@ if (is_array($desc['params'])) {
 <body onload="readParams()">
 <center>
 
-<?php // ------- Caption ----------- ?>
 <table border="0" cellspacing="0" cellpadding="1" width="95%" bgcolor="<?php echo COLOR_TABTITBG ?>">
    <tr><td align="center" class="tablename" width="100%"><?php echo $title ?></td></tr>
 </table>
 
-<form name="f" method="post" onSubmit="self.close()" ?>
-<?php
-
-?>
+<form name="f" method="post" onSubmit="self.close()">
 
 <script Language="JavaScript"><!--
   function changeFunction (combo) {
@@ -184,7 +180,7 @@ if ($desc['name']) {
 echo '
 </td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'.COLOR_TABBG.'">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'.COLOR_TABBG.'" align="center">
 <tr><td class="tabtxt">';
 
     // show the parameter boxes with hints
@@ -198,7 +194,7 @@ echo '
             echo "<tr><td align=\"left\" size=\"50%\" class=\"tabtxt\" valign=\"top\">"
             ."<b>".strtolower("$param[name]:")."</b></td>
             <td align=\"left\" class=\"tabtxt\">
-            <input type=\"text\" name=\"param$iparam\" VALUE=\""
+            <input type=\"text\" name=\"param$iparam\" value=\""
                 .processValue($param['example'])."\">
             <span class=\"tabhlp\">";
             switch($param['type']) {

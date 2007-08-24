@@ -415,6 +415,7 @@ class AA_Item {
         $this->remove       = $remove;
         $this->parameters   = ( $param ? $param : array() );
     }
+
     /** setformat function
      * @param $format
      * @param $remove
@@ -467,30 +468,35 @@ class AA_Item {
     function getValues($field_id) {
         return $this->content4id->getValues($field_id);
     }
+
     /** getAaValue function
      * @param $field_id
      */
     function getAaValue($field_id){
         return $this->content4id->getAaValue($field_id);
     }
+
     /** getContent function
      *
      */
     function getContent() {
         return $this->content4id->getContent();
     }
+
     /** getItemContent function
      *
      */
     function getItemContent() {
         return $this->content4id;
     }
+
     /** getItemID function
      *
      */
     function getItemID() {
         return $this->content4id->getItemID();
     }
+
     /** getSliceID function
      *
      */

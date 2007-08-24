@@ -175,7 +175,7 @@ function ChangeFieldID($old_id, $new_id)
                         $SQL .= $row[$keyfield];
                     }
                     if ($settings['primary_part']) {
-                        $SQL .= " AND". $settings["slice_id"]." = '$p_slice_id'";
+                        $SQL .= " AND ". $settings["slice_id"]." = '$p_slice_id'";
                     }
                     tryQuery($SQL);
                 }
@@ -211,7 +211,7 @@ if ($update && $new_id_text && $p_slice_id) {
         }
         $new_id .= $new_id_number;
         if ($old_id != $new_id && strlen ($new_id) == 16) {
-            if (my_in_array($new_id, $reserved_ids)) {
+            if (in_array($new_id, $reserved_ids)) {
                 $err[] = _m("This ID is reserved")." ($new_id).";
             } else {
                 // proove the field does not exist
@@ -259,7 +259,7 @@ echo"<tr><td class=\"tabtxt\">"._m("This page allows to change field IDs. It is 
 <tr><td class=\"tabtxt\" align=\"center\"><br>"._m("Change from").": <select name='old_id'>";
 $slice_fields = false;
 foreach ($s_fields as $fid => $fname) {
-    if (!my_in_array($fid, $reserved_ids)) {
+    if (!in_array($fid, $reserved_ids)) {
         if ( AA_Fields::isSliceField($fid)) {
             $slice_fields = true;
         }
@@ -307,7 +307,7 @@ FrmTabSeparator(_m("Fields"),
 <tr><td colspan="2" class="tabtxt"><hr></td></tr>
 <?php
     foreach ($s_fields as $fid => $fname) {
-        if (!my_in_array($fid, $reserved_ids)) {
+        if (!in_array($fid, $reserved_ids)) {
             echo "
             <tr>
             <td class=\"tabtxt\" align=\"left\">&nbsp;&nbsp;$fid&nbsp;&nbsp;</td>

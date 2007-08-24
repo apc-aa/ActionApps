@@ -205,11 +205,14 @@ class zids {
         return $this->type;
     }
 
-    /** count function
-     * Count how many ids
-     */
+    /** Count how many ids */
     function count() {
         return count($this->a);
+    }
+
+    /** Is zids empty? */
+    function is_empty() {
+        return (count($this->a) < 1);
     }
 
     /** warnid function
@@ -333,14 +336,12 @@ class zids {
         }
         return ($this->use_short_ids() ? $this->shortids($i) : $this->longids($i));
     }
+
     /** use_short_ids function
      *
      */
     function use_short_ids() {
-        if ($this->type == "s") {
-            return true;
-        }
-        return false;
+        return ($this->type == "s");
     }
 
     /** id function
@@ -503,10 +504,13 @@ class zids {
         }
         freeDB($db);
         // we need it in the same order as in source
+        $ret = array();
         foreach ( $this->a as $idx => $zid ) {
-            $ret[] = ($type=='l') ? $this->s2l[$zid] :
-                     ($type=='p') ? pack_id128($this->s2l[$zid]) :
-                                    $this->l2s[$zid] ;
+            switch ($type) {
+                case 'l': $ret[$idx] = $this->s2l[$zid]; break;
+                case 'p': $ret[$idx] = pack_id128($this->s2l[$zid]); break;
+                default:  $ret[$idx] = $this->l2s[$zid];
+            }
         }
         return $ret;
     }
