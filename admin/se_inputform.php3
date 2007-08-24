@@ -371,7 +371,7 @@ echo "
                 <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
                 <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-            <input type=\"text\" name=\"input_show_func_p\" size=\"50\" maxlength=\"240\" value=\"". safe($input_show_func_p) ."\">
+                <textarea name=\"input_show_func_p\" rows=\"4\" cols=\"50\" wrap=\"virtual\">". safe($input_show_func_p) ."</textarea>
       </td>
      </tr>
      <tr><td colspan=\"4\"><hr></td></tr>
@@ -473,7 +473,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
     $alias_hlp     = "<strong><a href='javascript:CallParamWizard(\"FIELD_FUNCTIONS\", \"$alias_func_f\", \"$alias_func\")'>"._m("Help: Parameter Wizard")."</a></strong>";
     FrmInputText($alias_name, _m("Alias")." $iAlias", $alias_value, 10, 20, false, _m("_# + 8 UPPERCASE letters or _"));
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
-    FrmInputText($alias_func, _m("Parameters"), $$alias_func, 250, 60);
+    FrmTextarea($alias_func, _m("Parameters"), $$alias_func);
     FrmInputText($alias_help, _m("Description"), $$alias_help, 254, 60);
     if ($iAlias != 3) {
         echo "\n    <tr><td colspan=2><hr></td></tr>";
