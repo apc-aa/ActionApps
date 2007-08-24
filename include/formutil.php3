@@ -1792,7 +1792,7 @@ class AA_Inputfield {
           <tr align=left><td align=\"center\" valign='TOP'>");
 
         $offername = str_replace("[]", "", $name). '_1';
-        $out  = "<select name=\"".$offername."\" size=\"$rows\" ".getTriggers("select",$name).">\n";
+        $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" ".getTriggers("select",$name).">\n";
         $out .= get_if( $this->get_options( $this->const_arr, false, false, 'unselected'), AA_WIDTHTOR );
         $out  .= '</select>';
         $this->echovar( $out, 'unselected' );

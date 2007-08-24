@@ -189,26 +189,31 @@ function OpenWindowTop(url) {
     popupwindows[popupwindows.length] = open(url,'popup'+popupwindows_id+popupwindows.length,'scrollbars=1,resizable=1');
 }
 
-//moves selected row of left listbox to the right one
+//moves selected rows of left listbox to the right one
 function MoveSelected(left, right)
 {
+  var temptxt
+  var tempval
+  var length
   var i=eval(left).selectedIndex
-  if( !eval(left).disabled && ( i >= 0 ) )
-  {
-    var temptxt = eval(left).options[i].text
-    var tempval = eval(left).options[i].value
-    var length = eval(right).length
+  var last_selected = i;
+  while( !eval(left).disabled && ( i >= 0 ) ) {
+    temptxt = eval(left).options[i].text
+    tempval = eval(left).options[i].value
+    length  = eval(right).length
     if( (length == 1) && (eval(right).options[0].value=='wIdThTor') ){  // blank rows are just for <select> size setting
       eval(right).options[0].text = temptxt;
       eval(right).options[0].value = tempval;
-    } else
+    } else {
       eval(right).options[length] = new Option(temptxt, tempval);
+    }
     eval(left).options[i] = null
-    if( eval(left).length != 0 )
-      if( i==0 )
-        eval(left).selectedIndex=0
-       else
-        eval(left).selectedIndex=i-1
+    last_selected = i;
+    i=eval(left).selectedIndex
+  }
+  // now select next option
+  if( eval(left).length != 0 ) {
+      eval(left).selectedIndex = ((last_selected < eval(left).length) && (last_selected > 0) ? last_selected : 0);
   }
 }
 
