@@ -31,7 +31,8 @@
  *
 */
 
-require_once AA_INC_PATH."stringexpand.php3";
+require_once AA_INC_PATH . "stringexpand.php3";
+require_once AA_INC_PATH . "hitcounter.class.php3";
 
 /**
  * itemview class - used to display set of items or links or ...
@@ -100,6 +101,12 @@ class itemview {
     if ( !$aliases['_#SELECTED'] AND $slice_info['selected_item'] ) {
         $this->aliases['_#SELECTED'] = array('fce'=>'f_e:selected:'.$slice_info['selected_item'], "param"=>"", "hlp"=>"");
     }
+
+    // we fill the ID_COUNT now, because the global $GLOBALS['QueryIDsCount'] variable is
+    // most probably filled by the right value. Later the $QueryIDsCount could be damaged
+    // mainly if you use nested views, ... {view.php3?vid=} which makes new queries
+    $this->aliases["_#ID_COUNT"] = GetAliasDef( "f_t:".$GLOBALS['QueryIDsCount'],  "id..............", _m("number of found items"));
+
     $this->fields      = $fields;
     $this->zids        = $zids;
     $this->from_record = $from;      // number or text "random[:<weight_field>]"
@@ -483,10 +490,8 @@ class itemview {
    */
   function get_output($view_type="") {
     global $debug;
-    trace("+","itemview:get_output",$view_type);
 
     if ($view_type == "discussion") {
-      trace("=","","discussion type ".$this->disc['type']);
       $CurItem = new AA_Item("", $this->aliases, $this->clean_url);   // just prepare
       $CurItem->set_parameters($this->parameters);
       switch ($this->disc['type']) {
@@ -496,13 +501,11 @@ class itemview {
         case 'add_disc':
         default:         $out = $this->get_disc_add($CurItem); break;
       }
-      trace("-");
       return $out;
     }
      // other view_type than discussion
 
     if ( !( isset($this->zids) AND is_object($this->zids) )) {
-      trace("-");
       return;
     }
 
@@ -528,16 +531,13 @@ class itemview {
         $foo_zids = $this->zids;
       }
     }
-    trace("=","",$view_type." after zids");
     // fill Abstract Data Structure by the right function
     // (GetItemContent / GetItemContent_Short / GetLinkContent)
     $function2call = $this->get_content_funct;
-    trace("=","",$view_type." pre call to ".$function2call);
     // Create an array of content, indexed by either long or short id (not tagged id)
 
     $content = $function2call($foo_zids);
 
-    trace("=","",$view_type." after content");
     if ($debug>1) {
         huhl("itemview:get_content: found",$content);
     }
@@ -571,8 +571,7 @@ class itemview {
     // count hit for random item - it is used for banners, so it is important
     // to count display number
     if ( $is_random AND ($this->zids->count()==1) ) {
-        $l_ids = $this->zids->longids();
-        CountHit($l_ids[0]);
+        AA_Hitcounter::hit($this->zids);
     }
 
     switch ( $view_type ) {
