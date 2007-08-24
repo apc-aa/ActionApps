@@ -72,8 +72,9 @@ var AA_Config = {
 }
 
 <?php
-readfile($dir. 'prototype.js' ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-readfile($dir. 'tooltip.js'   );
+readfile($dir. 'prototype.js'    ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
+readfile($dir. 'tooltip.js'      ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
+readfile($dir. 'control.tabs.js' );
 ?>
 
 Element.addMethods();
