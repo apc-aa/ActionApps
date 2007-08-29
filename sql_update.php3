@@ -431,14 +431,14 @@ $tablelist = array(   'active_sessions' => "(
                           `hits` mediumint(9) NOT NULL default '1',
                           KEY `time` (`time`)
                       )",
-                      'hit_long_id' => "
+                      'hit_long_id' => "(
                           `id` binary(16) NOT NULL,
                           `time` int(11) NOT NULL,
                           `agent` varchar(255) default NULL,
                           `info` varchar(255) default NULL,
                           KEY `time` (`time`)
                       )",
-                      'hit_short_id' => "
+                      'hit_short_id' => "(
                           `id` int(11) NOT NULL,
                           `time` int(11) NOT NULL,
                           `agent` varchar(255) default NULL,
