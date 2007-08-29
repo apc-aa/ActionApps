@@ -438,7 +438,7 @@ $tablelist = array(   'active_sessions' => "(
                           `info` varchar(255) default NULL,
                           KEY `time` (`time`)
                       )",
-                      'hit_short_id' => "( `` (
+                      'hit_short_id' => "
                           `id` int(11) NOT NULL,
                           `time` int(11) NOT NULL,
                           `agent` varchar(255) default NULL,
