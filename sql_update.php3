@@ -1381,9 +1381,9 @@ $SQL_view_templates['full']       ="view SET slice_id='AA_Core_Fields..', name='
 // this is wrong! it deletes the priority field! Disabled for now.
 /*
 $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner, 0 FROM slice";
+*/
 $SQL_update_modules[] = "REPLACE INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'http://example.org/index.shtml', 'en_site_lang.php3', $now, '', '', 0)";
 $SQL_update_modules[] = "REPLACE INTO site    (id, state_file, structure, flag) VALUES ('SiteTemplate....', 'template.php3', '".'O:8:"sitetree":2:{s:4:"tree";a:1:{i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:1:{i:0;s:1:"1";}s:2:"ch";N;s:1:"f";i:0;}}s:8:"start_id";s:1:"1";}'."', 0)";
-*/
 
 // Add the rows to cron only if no row with the script exists
 $SQL_cron[] = array (
@@ -1543,9 +1543,8 @@ if ( !$update AND !$restore AND !$restore_now) {
                 "Add 'id' and 'short_id' definitions to fields tabl for each slice, where the definition is missing. It allows searchbar in Item Manager to create filter also on Short id field, ...","");
   FrmInputChBox("fixmissingfields", "Fix missing fields fields", true, false, "", 1, false,
                 "Add missing mandatory fields in slices (status_code.....)","");
-// this is wrong! it deletes the priority field! Disabled for now.
-//  FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false,
-//                "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice). The default site and poll module is also created/renewed with this option.","");
+  FrmInputChBox("update_modules", "Update modules table", true, false, "", 1, false,
+                "AA version >2.1 supports management not only slices, but other modules too. Module table holds IDs of modules (just like slice IDs), which should be copied from module tables (table slice). The default site and poll module is also created/renewed with this option.","");
   FrmInputChBox("cron", "Add entries to Cron", true, false, "", 1, false,
                 "Alerts, cross server networking and database optimization are run by cron.php3, their entries are added to table cron if not yet there.");
   FrmInputChBox("generic_emails", "Add generic email templates", true, false, "", 1, false,
@@ -1890,8 +1889,6 @@ if ( $view_templates ) {
     }
 }
 
-// this is wrong! it deletes the priority field! Disabled for now.
-/*
 if ( $update_modules ) {
   echo '<h2>Updating Modules table</h2>';
   reset( $SQL_update_modules );
@@ -1900,7 +1897,7 @@ if ( $update_modules ) {
     myquery($db, $SQL );
   }
 }
-*/
+
 
 if ( $cron ) {
   echo '<h2>Adding to Cron table</h2>';
