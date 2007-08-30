@@ -1,3 +1,5 @@
+08/29/07 - fixed typo in sql_update.php3
+(honzam)
 08/24/07 - New version of counting item hits (AA_Hitcounter) with ability
 (honzam)   to display "Most popular item last day/week/month". See
 !SQL!      http://www.actionapps.org/en/Designing_Output_Templates#Popular_Items_.28Hit_counting.29
@@ -25,7 +27,7 @@
            to 256 characters (you need to run sql_update.php3 script)
          - do not dislplay errors in img.php3 (phpThumb)
          - some small fixes, name changes and security improvements
-08/22/07 - fixed function {@fieldlist} - the fields are taken from the slice 
+08/22/07 - fixed function {@fieldlist} - the fields are taken from the slice
 (honzam)   and in the same order for each item in the slice
 08/13/07 - fixed problem of overwriting articles which was fed by RSS or AARSS
 (honzam)   (cross server networking)
