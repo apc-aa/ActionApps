@@ -25,6 +25,8 @@
            to 256 characters (you need to run sql_update.php3 script)
          - do not dislplay errors in img.php3 (phpThumb)
          - some small fixes, name changes and security improvements
+08/22/07 - fixed function {@fieldlist} - the fields are taken from the slice 
+(honzam)   and in the same order for each item in the slice
 08/13/07 - fixed problem of overwriting articles which was fed by RSS or AARSS
 (honzam)   (cross server networking)
 08/10/07 - fixed problem with adding item (stringexpand.php3 error)
@@ -385,7 +387,7 @@
               functions, where possible
             - new AA_File_Wrapper class, which is used for accessing local
               as well as remote (http:, ftp:) files
-            - new implementation of storable_class - more object oriented, more
+            - new implementation of AA_Storable - more object oriented, more
               robust. It is based on AA_Object super-parent class and its
               getPersistentProperties() method, which should be overriden in all
               Child classes which want to be persistent. The objects are stored
