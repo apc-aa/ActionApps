@@ -1,3 +1,10 @@
+09/05/07 - removed last references to HTTP_GET_VARS, HTTP_POST_VARS, ... so AA
+(honzam)   should work with "register_long_arrays" php option switched OFF
+         - fixed bug with "Propagate changes" in constatnts - it works well with
+           fields with multivalues as well
+         - better chsking of x=.. and o=.. perameters, so the database error is
+           not shown if the parameter is corrupted
+         - updated prototype.js library to version 1.5.1.1
 08/29/07 - fixed typo in sql_update.php3
 (honzam)
 08/24/07 - New version of counting item hits (AA_Hitcounter) with ability

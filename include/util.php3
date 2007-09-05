@@ -4243,7 +4243,7 @@ class toexecute {
     /** execute function
      * @param $allowed_time
      */
-    function execute($allowed_time = 0) {  // standard run is 10 s
+    function execute($allowed_time = 0) {  // standard run is 16 s
 
         if ( !$allowed_time ) {
             $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : 16.0);
@@ -4263,7 +4263,7 @@ class toexecute {
                 $task = GetTable2Array("SELECT * FROM toexecute WHERE id='$task_id'", 'aa_first', 'aa_fields');
 
                 $task_type     = get_if($tasks['selector'],'aa_unspecified');
-                $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task if 1 second
+                $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
                 $task_start    = get_microtime();
 
                 // can we run next task? Does it (most probably) fit in allowed_time?
@@ -4285,8 +4285,8 @@ class toexecute {
 
                 // Task is done - remove it from queue
                 $varset->doDelete('toexecute');
-                AA_Log::write('TOEXECUTE', "$expected_time:$retcode:".$task['params'], get_class($object));
                 $execute_times[$task_type] = get_microtime() - $task_start;
+                AA_Log::write('TOEXECUTE', $execute_times[$task_type]. ":$retcode:".$task['params'], get_class($object));
             }
         }
     }
