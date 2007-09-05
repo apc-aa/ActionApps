@@ -293,11 +293,11 @@ if (!is_array($slices)) {
 if ( $sh_itm OR $x OR $o ) {
     //  $r_state_vars = StoreVariables(array("sh_itm")); // store in session
     if ( $x ) {
-        $zid = new zids($x, 's');
+        $zid = new zids((int)$x, 's');
         AA_Hitcounter::hit($zid);
     }
     elseif ( $o ) {
-        $zid = new zids($o, 's');
+        $zid = new zids((int)$o, 's');
     } else {
         $zid = new zids($sh_itm, 'l');
         AA_Hitcounter::hit($zid);
