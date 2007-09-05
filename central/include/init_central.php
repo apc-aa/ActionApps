@@ -37,25 +37,19 @@ function StripslashesDeep($value) {
     return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
 }
 
-// global variables should be quoted (since old AA code rely on that fact), 
-// however the new code should use $_POST, which are NOT quoted 
+// global variables should be quoted (since old AA code rely on that fact),
+// however the new code should use $_POST, which are NOT quoted
 
 if (!get_magic_quotes_gpc()) {
     // Overrides GPC variables
-    if (is_array($HTTP_GET_VARS)) {
-        foreach ($HTTP_GET_VARS as $k => $v) {
-            $$k = AddslashesDeep($v);
-        }
+    foreach ($_GET as $k => $v) {
+        $kk = AddslashesDeep($v);
     }
-    if (is_array($HTTP_POST_VARS)) {
-        foreach ($HTTP_POST_VARS as $k => $v) {
-            $$k = AddslashesDeep($v);
-        }
+    foreach ($_POST as $k => $v) {
+        $kk = AddslashesDeep($v);
     }
-    if (is_array($HTTP_COOKIE_VARS)) {
-        foreach ($HTTP_COOKIE_VARS as $k => $v) {
-            $$k = AddslashesDeep($v);
-        }
+    foreach ($_COOKIE as $k => $v) {
+        $kk = AddslashesDeep($v);
     }
 }
 
