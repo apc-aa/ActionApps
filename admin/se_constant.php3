@@ -144,7 +144,6 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
             OR  field.input_show_func LIKE '___:$group_id')
            AND content.text = '$oldvalue'");
     }
-    $db1 = new DB_AA;
     $cnt = 0;
     $items2update = array();
     while ($db->next_record()) {
@@ -156,7 +155,7 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
     }
     foreach ( $items2update as $field => $zids ) {
         $SQL = "UPDATE content SET text='$newvalue' WHERE ". $zids->sqlin('item_id') ."
-                AND field_id='".addslashes($field)."'";
+                AND field_id='".addslashes($field)."' AND text='$oldvalue'";
         $db->tquery($SQL);
     }
     if ($cnt) {
