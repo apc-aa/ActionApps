@@ -76,11 +76,12 @@ class AA_Hitcounter {
         }
 
         // do not count hits from Bots
-        if ((false !== stripos($_SERVER["HTTP_USER_AGENT"], 'bot')) OR
-            (false !== stripos($_SERVER["HTTP_USER_AGENT"], 'crawl')) OR
-            (false !== stripos($_SERVER["HTTP_USER_AGENT"], 'check')) OR
-            (false !== stripos($_SERVER["HTTP_USER_AGENT"], 'spider')) OR
-            (false !== stripos($_SERVER["HTTP_USER_AGENT"], 'download'))
+        $agent = strtolower($_SERVER["HTTP_USER_AGENT"]);
+        if ((false !== strpos($agent, 'bot')) OR
+            (false !== strpos($agent, 'crawl')) OR
+            (false !== strpos($agent, 'check')) OR
+            (false !== strpos($agent, 'spider')) OR
+            (false !== strpos($agent, 'download'))
             ) {
             return;
         }
