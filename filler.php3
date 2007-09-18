@@ -21,6 +21,7 @@
  *   bool use_post2shtml If true, use the post2shtml script to send the error
  *          description and the values filled to fillform.php3.
  *   bool text_password If true, the password is stored in text form (not encrypted).
+ *   bool wap           Variable is set in filler-wap.php
  * </pre>
  *
  * @package UserInput
@@ -54,7 +55,7 @@ http://www.apc.org/
  */
 //$GLOBALS[debug]=0; $GLOBALS[errcheck] =1;
 
-$debugfill=$GLOBALS[debugfill];
+$debugfill=$GLOBALS['debugfill'];
 
 /**
  * Handle with PHP magic quotes - quote the variables if quoting is set off
@@ -132,8 +133,22 @@ function UseShowResult($txt,$url) {
  * @param string $txt error message to print
  */
 function SendErrorPage($txt) {
+    // $wap variable is set in filler-wap.php
+    if ($GLOBALS['$wap']) {
+        header("Content-type: text/vnd.wap.wml");
+        echo '
+        <?xml version="1.0" encoding="iso-8859-1"?>
+        <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.3//EN" "http://www.wapforum.org/DTD/wml13.dtd" >
+        <wml>
+          <card id="carta1" title="apc.org" ontimer="'.$GLOBALS["err_url"].'">
+            <timer value="1"/>
+            </card>
+        </wml>
+        ';
+        exit;
+    }
     if ( !$GLOBALS["err_url"] ) {
-        if ($GLOBALS[debugfill]) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$GLOBALS["err_url"] );
+        if ($GLOBALS['debugfill']) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$GLOBALS["err_url"] );
         echo HtmlPageBegin("");
         echo "</head><body>";
         if (is_array($txt)) {
@@ -145,10 +160,10 @@ function SendErrorPage($txt) {
     } else {
         if (!$GLOBALS["use_post2shtml"]) {
             $posturl = con_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000));
-            if ($GLOBALS[debugfill]) huhl("Going to post2shtml posturl=",$posturl);
+            if ($GLOBALS['debugfill']) huhl("Going to post2shtml posturl=",$posturl);
             go_url($posturl);
         } else {
-            if ($GLOBALS[debugfill]) huhl("Show result with url=",$GLOBALS["err_url"], " txt=",$txt);
+            if ($GLOBALS['debugfill']) huhl("Show result with url=",$GLOBALS["err_url"], " txt=",$txt);
             UseShowResult($txt,$GLOBALS["err_url"]);
         }
     }
@@ -161,6 +176,20 @@ function SendErrorPage($txt) {
  */
 function SendOkPage($txt) {
     global $debugfill;
+    // $wap variable if set in filler-wap.php
+    if ($GLOBALS['$wap']) {
+        header("Content-type: text/vnd.wap.wml");
+        echo '
+        <?xml version="1.0" encoding="iso-8859-1"?>
+        <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.3//EN" "http://www.wapforum.org/DTD/wml13.dtd" >
+        <wml>
+          <card id="carta1" title="apc.org" ontimer="'.$GLOBALS["ok_url"].'">
+            <timer value="1"/>
+          </card>
+        </wml>
+        ';
+        exit;
+    }
     if ($debugfill) huhl("Filler:SendOkPage:",$txt);
     if (!$GLOBALS["ok_url"]) {
         go_url($_SERVER['HTTP_REFERER']);
