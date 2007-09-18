@@ -26,7 +26,8 @@
  *
 */
 
-// only_action option!
+// @todo only_action option which prints on the output the result of the action
+// Then it could be used as AJAX call for this action!
 
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH . "varset.php3";
@@ -62,8 +63,8 @@ if ( !IsSuperadmin() ) {
     exit;
 }
 
-// we do not manage mote "modules" here, so unique id is OK 
-$module_id = '43656e7472616c2d41412d61646d696e';   
+// we do not manage more "modules" here, so unique id is OK
+$module_id = '43656e7472616c2d41412d61646d696e';
 $metabase  = new AA_Metabase;
 
 $actions   = new AA_Manageractions;
@@ -73,7 +74,7 @@ $actions->addAction(new AA_Manageraction_Central_MoveItem('Folder3',  3));
 $actions->addAction(new AA_Manageraction_Central_Sqlupdate('Sqlupdate'));
 $actions->addAction(new AA_Manageraction_Central_Linkcheck('Linkcheck'));
 $actions->addAction(new AA_Manageraction_Central_DeleteTrash('DeleteTrashAction',true));
- 
+
 $switches  = new AA_Manageractions;
 
 // no problem to write tabs as one action, but we use 3
@@ -95,6 +96,7 @@ function GetCentralAliases() {
 }
 
 $manager_settings = array(
+     'module_id' => $module_id,
      'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar' => array(
          'fields'               => $metabase->getSearchArray('central_conf'),
@@ -104,8 +106,7 @@ $manager_settings = array(
          'function'             => false  // name of function for aditional action hooked on standard filter action
                          ),
      'scroller'  => array(
-         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT),
-         'slice_id'             => $module_id
+         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
                          ),
      'itemview'  => array(
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
@@ -180,7 +181,7 @@ $sort  = $manager->getSort();
 $BIN_CONDS   = array( 'app'    => AA_BIN_APPROVED,
                       'hold'   => AA_BIN_HOLDING,
                       'trash'  => AA_BIN_TRASH
-                    );             
+                    );
 $zids = Central_QueryZids($conds, $sort, $BIN_CONDS[$manager->getBin()]);
 
 $manager->printSearchbarBegin();

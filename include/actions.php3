@@ -37,47 +37,91 @@
  *
 */
 
-/** Item_MoveItem function
- * @param $status
- * @param $item_arr
- * @param $akce_param
- * @return false
+
+require_once AA_INC_PATH."manager.class.php3";
+
+/** AA_Manageraction - Item manager actions. Just create new class and assign
+ *  it to your manager
  */
-function Item_MoveItem($status, $item_arr, $akce_param) {
-    global $event, $auth, $slice_id, $pagecache;
-    $db = getDB();
-    $now = now();
-    foreach ( $item_arr as $it_id => $foo ) {
-        $item_ids[] = pack_id(substr($it_id,1));      // remove initial 'x'
+class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
+
+    /** specifies, to which bin the move should be performed */
+    var $to_bin;
+
+    /** Constructor - fills the information about the target bin */
+    function AA_Manageraction_Item_MoveItem($id, $to_bin) {
+        $this->to_bin = $to_bin;
+        parent::AA_Manageraction($id);
     }
 
-    if ($item_ids) {
-        $SQL = "UPDATE item SET
-           status_code = $status,
-           last_edit   = '$now',
-           edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999")."'";
-
-        // E-mail Alerts
-        $moved2active = ( ($status == 1) ? $now : 0 );
-        $SQL .= ", moved2active = $moved2active";
-
-        $SQL .= " WHERE id IN ('".join_and_quote("','",$item_ids)."')";
-        $db->tquery($SQL);
-
-        if ($status == 1) {
-            foreach ($item_ids as $iid) {
-                FeedItem(unpack_id128($iid));
-            }
+    /** Name of this Manager's action */
+    function getName() {
+        switch($this->to_bin) {
+            case 1: return _m('Move to Active');
+            case 2: return _m('Move to Holding bin');
+            case 3: return _m('Move to Trash');
         }
-        $event->comes('ITEMS_MOVED', $slice_id, 'S', $item_ids, $status );
+        return "";
     }
-    $pagecache->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
-    freeDB($db);
-    return false;                                     // OK - no error
+    /** main executive function
+    * @param $param       - not used
+    * @param $item_arr    - array of id of AA records to check
+    * @param $akce_param  - not used
+    */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+        global $event, $auth, $slice_id, $pagecache;
+        $zids = new zids;
+        $zids->setFromItemArr($item_arr);
+
+        if ($zids->count() > 0) {
+            $now  = now();
+
+            $SQL = "UPDATE item SET
+               status_code = '". $this->to_bin ."',
+               last_edit   = '$now',
+               edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999")."'";
+
+            // E-mail Alerts
+            $moved2active = ( ($this->to_bin == 1) ? $now : 0 );
+            $SQL         .= ", moved2active = $moved2active";
+            $SQL         .= " WHERE ". $zids->sqlin('id');
+
+            tryQuery($SQL);
+
+            if ($this->to_bin == 1) {
+                $item_ids = $zids->longids();
+                foreach ($item_ids as $iid) {
+                    FeedItem($iid);
+                }
+            }
+            $event->comes('ITEMS_MOVED', $slice_id, 'S', $item_ids, $this->to_bin );
+        }
+        $pagecache->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+
+        return false;                                     // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        $current_bin     =  $manager->getBin();
+
+        switch($this->to_bin) {
+            case 1: return IfSlPerm(PS_ITEMS2ACT) AND
+                           ($current_bin != 'app' ) AND
+                           ($current_bin != 'appb') AND
+                           ($current_bin != 'appc');
+                    // Folder2 is Holding bin - prepared for more than three bins
+            case 2: return IfSlPerm(PS_ITEMS2HOLD) AND
+                           ($current_bin != 'hold');
+                    // Folder3 is Trash
+            case 3: return IfSlPerm(PS_ITEMS2TRASH) AND
+                           ($current_bin != 'trash');
+        }
+    }
 }
 
-/** Item_Feed function
+/** AA_Manageraction_Item_Feed
  *  Export (Copy) items to another slice
  *  @param $slice      slice object - slice, from which we export
  *  @param $item_arr   array, where keys are unpacked ids of items prefixed by
@@ -86,132 +130,316 @@ function Item_MoveItem($status, $item_arr, $akce_param) {
  *                     The format is "<status>-<unpacked_slice_id>,<status>-.."
  * @return false or error message
  */
-function Item_Feed($slice, $item_arr, $akce_param) {
-    if (strlen($akce_param) < 1) {
-        return _m('No slice selected');
-    }
-    $export_to = explode(",", $akce_param);          // <status>-<slice_id> pairs
+class AA_Manageraction_Item_Feed extends AA_Manageraction {
 
-    foreach ( $item_arr as $it_id => $foo ) {
-        $it_id = substr($it_id,1);                 // remove initial 'x'
-        foreach ( $export_to as $exp_slice_pair ) {
-            list($status,$sid) = explode("-", $exp_slice_pair);
-            FeedItemTo($it_id, $slice->unpacked_id(), $sid, ($status=='1' ? 'y':'n'), 0);
-        }
+    /** specifies, to which bin the move should be performed */
+    var $slice_id;
+
+    /** Constructor - fills the information about the target bin */
+    function AA_Manageraction_Item_Feed($id, $slice_id) {
+        $this->slice_id = $slice_id;
+        parent::AA_Manageraction($id);
     }
-    return false;                                  // OK - no error
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Export');
+    }
+
+    /** main executive function
+    * @param $param       - not used
+    * @param $item_arr    - array of id of AA records to check
+    * @param $akce_param  - not used
+    */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+        if (strlen($akce_param) < 1) {
+            return _m('No slice selected');
+        }
+        $export_to = explode(",", $akce_param);          // <status>-<slice_id> pairs
+
+        foreach ( $item_arr as $it_id => $foo ) {
+            $it_id = substr($it_id,1);                 // remove initial 'x'
+            foreach ( $export_to as $exp_slice_pair ) {
+                list($status,$sid) = explode("-", $exp_slice_pair);
+                FeedItemTo($it_id, $this->slice_id, $sid, ($status=='1' ? 'y':'n'), 0);
+            }
+        }
+        return false;                                  // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        return true;
+    }
 }
 
-/** Item_Move2Slice function
+
+/** AA_Manageraction_Item_Move2slice
  *  Move items to another slice
  *  @param $slice      slice object - slice, from which we export
  *  @param $item_arr   array, where keys are unpacked ids of items prefixed by
  *                     'x' character (javascript purposes only)
  *  @param $akce_param unpacked id of slice, where items should be moved
  */
-function Item_Move2Slice($slice, $item_arr, $akce_param) {
-    global $event, $auth, $slice_id, $pagecache;
-    if (strlen($akce_param) < 1) {
-        return _m('No slice selected');
+class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
+
+    /** specifies, to which bin the move should be performed */
+    var $slice_id;
+
+    /** Constructor - fills the information about the target bin
+     *  We use default empty parameters, since we need to construct this 
+     *  class from state by setFromState() method
+     */
+    function AA_Manageraction_Item_Move2slice($id='', $slice_id='') {
+        $this->slice_id = $slice_id;
+        parent::AA_Manageraction($id);
     }
 
-    if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
-        return _m("You have not permissions to remove items");
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Move to another slice');
     }
 
-    $db = getDB();
-    foreach ( $item_arr as $it_id => $foo ) {
-        $item_ids[] = pack_id(substr($it_id,1));      // remove initial 'x'
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     *
+     *  We extending AA_Storable, because we want to get the state form some
+     *  actions. Action selectbox is able to display settings by AJAX call, where
+     *  we need to pass all parameters of the object
+     */
+    function getClassProperties() {
+        $properties = parent::getClassProperties();
+        //                                          id             name                              type    multi  persistent - validator, required, help, morehelp, example
+        $properties['slice_id'] = new AA_Property( 'slice_id',  _m('Slice ID'),                    'text', false, true);
+        return $properties;
     }
 
-    if ($item_ids AND (strlen($akce_param) < 1)) {
-        $p_dest_slice = pack_id($akce_param);
-        $SQL = "UPDATE item SET slice_id = '$p_dest_slice' ".
-               "WHERE id IN ('".join_and_quote("','",$item_ids)."')";
+    /** Defines the HTNML for parameters. All parameters stored into akce_param[]
+     *  array will be passed to perform() method for action execution
+     */
+    function htmlSettings() {
+        global $g_modules;
+        
+        $options = array();
+        if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
+            foreach ( $g_modules as $sid => $v) {
+                //  we can feed just between slices ('S')                                                 // we must have autor or editor perms in destination slices
+                if ( ($v['type'] == 'S') AND ((string)$this->slice_id != (string)$sid) AND IfSlPerm( PS_ITEMS2ACT, $sid) ) {
+                    $options[$sid] = $v['name'];
+                }
+            }
+        }
 
-        // TODO set also moved2active flag according to status of the moved
-        //       items (moved2active used by E-mail Alerts
-        // $moved2active = ( ($status == 1) ? $now : 0 );
-        // $SQL .= ", moved2active = $moved2active";
-        $db->tquery ($SQL);
-
-        // TODO: $event->comes('ITEMS_MOVED', $slice_id, 'S', $item_ids, $status );
+        ob_start();
+        FrmTabCaption();
+        FrmInputSelect('akce_param[dest_slice_id]', _m('Move to slice'), $options);
+        FrmTabEnd();
+        return ob_get_clean();
     }
-    $pagecache->invalidateFor("slice_id=$slice_id");    // invalidate old cached values
-    $pagecache->invalidateFor("slice_id=$akce_param");  // invalidate old cached values
 
-    freeDB($db);
-    return false;                                     // OK - no error
+    /** main executive function
+    * @param $param       - not used
+    * @param $item_arr    - array of id of AA records to check
+    * @param $akce_param  - not used
+    */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+        global $event, $auth, $pagecache;
+        if (strlen($akce_param) < 1) {
+            return _m('No slice selected');
+        }
+
+        $dest_slice_id = $akce_param['dest_slice_id'];
+
+        if ( !IfSlPerm(PS_DELETE_ITEMS, $this->slice_id) OR !IfSlPerm(PS_ITEMS2ACT, $dest_slice_id) ) {    // permission to delete items and add items in destination slice?
+            return _m("You have not permissions to move items");
+        }
+
+        $zids = new zids;
+        $zids->setFromItemArr($item_arr);
+
+        if ($zids->count() < 1) {
+            return;
+        }
+
+        // check if there are no ids from bad slice (attack???)
+        $wherein = " AND ". $zids->sqlin('id');
+        $SQL = "SELECT id FROM item WHERE slice_id = '". q_pack_id($this->slice_id) ."' $wherein";
+
+        $zids_to_move = new zids(GetTable2Array($SQL, '', 'id'), 'p');
+
+        if ($zids_to_move->count() < 1) {
+            return;
+        }
+
+        tryQuery("UPDATE item SET slice_id = '". q_pack_id($dest_slice_id) ."' WHERE ". $zids_to_move->sqlin('id'));
+
+        $pagecache->invalidateFor("slice_id=". $this->slice_id);  // invalidate old cached values
+        $pagecache->invalidateFor("slice_id=". $dest_slice_id);   // invalidate old cached values
+
+        return false;                                  // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        return IfSlPerm(PS_DELETE_ITEMS, $this->slice_id);
+    }
 }
 
 
-/** Item_DeleteTrash function
- *  Handler for DeleteTrash switch - Delete all items in the trash bin
- *  @param $param       'selected' if we have to delete only items specified
- *                      in $item_arr - otherwise delete all items in Trash
- *  @param $item_arr    Items to delete (if 'selected' is $param)
- *  @param $akce_param  Not used
- * @return false or error message
+/** AA_Manageraction_Item_DeleteTrash - Handler for DeleteTrash switch
+ *  Delete all items in the trash bin
  */
-function Item_DeleteTrash($param, $item_arr, $akce_param) {
-    global $pagecache, $slice_id, $event;
-    $db = getDB();
+class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
 
-    if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
-        return _m("You have not permissions to remove items");
+    /** specifies, if we have to delete only items specified in $item_arr
+     *  otherwise delete all items in Trash
+     *  With $selected=true  it is used as "action" of manager
+     *  With $selected=false it is used as "switch" of manager (left menu)
+     */
+    var $selected;
+
+    /** Constructor - fills the information about the target bin */
+    function AA_Manageraction_Item_DeleteTrash($id, $selected=false) {
+        $this->selected = $selected;
+        parent::AA_Manageraction($id);
     }
 
-    $wherein = '';
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Remove (delete from database)');
+    }
 
-    // restrict the deletion only to selected items
-    if ($param == 'selected') {
+    /** main executive function
+     *  @param $param       'selected' if we have to delete only items specified
+     *                      in $item_arr - otherwise delete all items in Trash
+     *  @param $item_arr    Items to delete (if 'selected' is $param)
+     *  @param $akce_param  Not used
+     */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+        global $pagecache, $slice_id, $event;
+
+        if ( !IfSlPerm(PS_DELETE_ITEMS) ) {    // permission to delete items?
+            return _m("You have not permissions to remove items");
+        }
+
+        $wherein = '';
+
+        // restrict the deletion only to selected items
+        if ($this->selected == 'selected') {
+            $zids = new zids;
+            $zids->setFromItemArr($item_arr);
+
+            if ($zids->count() < 1) {
+                return;
+            }
+
+            $wherein = " AND ". $zids->sqlin('id');
+        }
+
+        $db = getDB();
+        // now we ask, which items we have to delete. We are checking the items even
+        // it is specified in $item_arr - for security reasons - we can delete only
+        // items in current slice and in trash
+        $db->query("SELECT id FROM item
+                   WHERE status_code=3 AND slice_id = '". q_pack_id($slice_id) ."' $wherein");
         $items_to_delete = array();
-        foreach ( $item_arr as $it_id => $foo ) {
-            $items_to_delete[] = pack_id(substr($it_id,1));      // remove initial 'x'
+        while ( $db->next_record() ) {
+            $items_to_delete[] = $db->f("id");
         }
         if (count($items_to_delete) < 1) {
             freeDB($db);
             return;
         }
-        $wherein = " AND id IN ('".join_and_quote("','", $items_to_delete)."')";
-    }
 
-    // now we ask, which items we have to delete. We are checking the items even
-    // it is specified in $item_arr - for security reasons - we can delete only
-    // items in current slice and in trash
-    $db->query("SELECT id FROM item
-               WHERE status_code=3 AND slice_id = '". q_pack_id($slice_id) ."' $wherein");
-    $items_to_delete = array();
-    while ( $db->next_record() ) {
-        $items_to_delete[] = $db->f("id");
-    }
-    if (count($items_to_delete) < 1) {
+        // mimo enabled -- problem?
+        $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete);
+
+        // delete content of all fields
+        // don't worry about fed fields - content is copied
+        $wherein = "IN ('".join_and_quote("','", $items_to_delete)."')";
+        $db->query("DELETE FROM content WHERE item_id ".$wherein);
+        $db->query("DELETE FROM item WHERE id ".$wherein);
+
+        $pagecache->invalidateFor("slice_id=$slice_id");
         freeDB($db);
-        return;
     }
 
-    // mimo enabled -- problem?
-    $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete);
-
-    // delete content of all fields
-    // don't worry about fed fields - content is copied
-    $wherein = "IN ('".join_and_quote("','", $items_to_delete)."')";
-    $db->query("DELETE FROM content WHERE item_id ".$wherein);
-    $db->query("DELETE FROM item WHERE id ".$wherein);
-
-    $pagecache->invalidateFor("slice_id=$slice_id");
-    freeDB($db);
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        // if we want to use it as "action" (not "switch"), then we should be in trash bin
+        return (IfSlPerm(PS_DELETE_ITEMS) AND (!$this->selected OR ($manager->getBin() == 'trash')));
+    }
 }
 
-/** Item_Tab function
- * Handler for Tab switch - switch between bins
- * @param $value
- * @param $param
+
+/** AA_Manageraction - Item manager actions. Just create new class and assign
+ *  it to your manager
  */
-function Item_Tab($value, $param) {
-    global $manager;
-    $GLOBALS['r_state']['bin'] = $value;
-    $manager->go2page(1);
+class AA_Manageraction_Item_Preview extends AA_Manageraction {
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Preview');
+    }
+
+    // uses setOpenUrl() method to open preview window
+    // perm are always true, so no need to rewrite it
 }
+
+/** AA_Manageraction - Item manager actions. Just create new class and assign
+ *  it to your manager
+ */
+class AA_Manageraction_Item_Modifycontent extends AA_Manageraction {
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Modify content');
+    }
+
+    // uses setOpenUrl() method to open search_replace.php3 window
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        return IfSlPerm(PS_EDIT_ALL_ITEMS);
+    }
+}
+
+
+/** AA_Manageraction - Item manager actions. Just create new class and assign
+ *  it to your manager
+ */
+class AA_Manageraction_Item_Email extends AA_Manageraction {
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Send email');
+    }
+
+    // uses setOpenUrl() method to open search_replace.php3 window
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        $slice = AA_Slices::getSlice($manager->getModuleId());
+        return ($slice->type() == 'ReaderManagement');
+    }
+}
+
+/** AA_Manageraction_Item_Tab - Swith to another bin in Manager */
+class AA_Manageraction_Item_Tab extends AA_Manageraction {
+
+    /** specifies, to which bin we want to switch */
+    var $to_bin;
+
+    /** Constructor - fills the information about the target bin */
+    function AA_Manageraction_Item_Tab($id, $to_bin) {
+        $this->to_bin = $to_bin;
+        parent::AA_Manageraction($id);
+    }
+
+    /** main executive function - Handler for Tab switch - switch between bins */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+        $manager->setBin($this->to_bin);
+        $manager->go2page(1);
+    }
+}
+
 
 ?>

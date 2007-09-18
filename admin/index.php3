@@ -44,48 +44,6 @@ require_once AA_INC_PATH . "actions.php3";
 
 FetchSliceReadingPassword();
 
-/** Function corresponding with 'actions' (see below) - returns true if user
- *  has the permission for the action. (The function must be called right
- *  before we perform/display action in order we have all variables set (r_state)
- *
- * @param  string  $action action to be displayed (in selectbox) / performed
- * @return bool    true if user has the permission
- */
-
-function IsActionPerm($action) {
-    global $slice;
-    $display_actions = ($GLOBALS['r_state']['action_selected'] != "0");
-    $subtree         =  $GLOBALS['r_state']['show_subtree'];
-    $current_bin     =  $GLOBALS['r_state']['bin'];
-
-    switch($action) {
-        case 'Activate':    return  $display_actions &&
-                                    IfSlPerm(PS_ITEMS2ACT) &&
-                                    ($current_bin != 'app') &&
-                                    ($current_bin != 'appb') &&
-                                    ($current_bin != 'appc');
-        case 'Folder2':     return  $display_actions &&            // Folder2 is Holding bin - prepared for more than three bins
-                                    IfSlPerm(PS_ITEMS2HOLD) &&
-                                    ($current_bin != 'hold');
-        case 'Folder3':     return  $display_actions &&            // Folder3 is Trash
-                                    IfSlPerm(PS_ITEMS2TRASH) &&
-                                    ($current_bin != 'trash');
-        case 'Feed':        return  ($GLOBALS['r_state']['feed_selected'] != "0");
-//        case 'Move2Slice':  return  IfSlPerm(PS_DELETE_ITEMS);
-        case 'Preview':     return  ($GLOBALS['r_state']['view_selected'] != "0");
-        case 'FillField':   return  IfSlPerm(PS_EDIT_ALL_ITEMS);
-        case 'Email':       return  ($slice->type() == 'ReaderManagement');
-        case 'Delete':      return  IfSlPerm(PS_DELETE_ITEMS) &&
-                                    ($current_bin == 'trash');
-        //--  switches      ------
-        case 'DeleteTrash': return  IfSlPerm(PS_DELETE_ITEMS);
-        case 'Tab':         return  true;
-        case 'GoBookmark':  return  true;
-        case 'SendEmail':   return  ($slice->type() == 'ReaderManagement');
-    }
-    return false;
-}
-
 function CountItemsInBins() {
     global $p_slice_id;
     $db = getDB();
@@ -132,11 +90,43 @@ $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
 if ( !$perm_edit_all && !$perm_edit_self) {
-  MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").AA_Slices::getName($slice_id));
-  exit;
+    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items in the slice:").AA_Slices::getName($slice_id));
+    exit;
 }
 
+
+$actions   = new AA_Manageractions;
+$actions->addAction(new AA_Manageraction_Item_MoveItem('Activate', 1));
+$actions->addAction(new AA_Manageraction_Item_MoveItem('Folder2',  2));
+$actions->addAction(new AA_Manageraction_Item_MoveItem('Folder3',  3));
+
+$new_action = new AA_Manageraction_Item_Feed('Feed', $slice->unpacked_id());
+$new_action->setOpenUrl($sess->url("feed_to.php3"));
+$actions->addAction($new_action);
+
+// rXn=1 is foo parameter to make sure, we can use '&' to join items[] parameter (see open_url_add below)
+// '&'    add items[] array to open_url url which will hold checked items
+$actions->addAction(new AA_Manageraction_Item_Preview(      'Preview',       con_url($slice->getProperty('slice_url'),'rXn=1'), '&'));
+$actions->addAction(new AA_Manageraction_Item_Modifycontent('ModifyContent', $sess->url("search_replace.php3"), '&'));
+$actions->addAction(new AA_Manageraction_Item_Email(        'Email',         $sess->url("write_mail.php3"),     '&'));
+$actions->addAction(new AA_Manageraction_Item_DeleteTrash(  'DeleteTrashAction',true));
+$actions->addAction(new AA_Manageraction_Item_Move2slice(   'Move2slice',    $module_id));
+
+
+$switches  = new AA_Manageractions;
+
+// no problem to write tabs as one action, but we use 3
+$switches->addAction(new AA_Manageraction_Item_Tab('Tab1a', 'app'));
+$switches->addAction(new AA_Manageraction_Item_Tab('Tab1b', 'appb'));
+$switches->addAction(new AA_Manageraction_Item_Tab('Tab1c', 'appc'));
+$switches->addAction(new AA_Manageraction_Item_Tab('Tab2',  'hold'));
+$switches->addAction(new AA_Manageraction_Item_Tab('Tab3',  'trash'));
+$switches->addAction(new AA_Manageraction_Item_DeleteTrash('DeleteTrash',false));
+//$switches->addAction(new AA_Manageraction_Item_Email('SendEmail'));
+
+
 $manager_settings = array(
+     'module_id' => $slice_id,
      'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar' => array(
          'fields'               => $slice->fields('search'),
@@ -146,8 +136,7 @@ $manager_settings = array(
          'function'             => false  // name of function for aditional action hooked on standard filter action
                          ),
      'scroller'  => array(
-         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT),
-         'slice_id'             => $slice_id
+         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
                          ),
      'itemview'  => array(
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
@@ -156,53 +145,9 @@ $manager_settings = array(
          'aliases'              => $slice->aliases(),
          'get_content_funct'    => 'GetItemContent'
                          ),
-     'actions_perm_function' => 'IsActionPerm',
-     'actions'    => array(
-         'Activate'    => array('function'   => 'Item_MoveItem',
-                                'func_param' => 1,
-                                'name'       => _m('Move to Active'),
-                               ),
-         'Folder2'     => array('function'   => 'Item_MoveItem',
-                                'func_param' => 2,
-                                'name'       => _m('Move to Holding bin'),
-                               ),
-         'Folder3'     => array('function'   => 'Item_MoveItem',
-                                'func_param' => 3,
-                                'name'       => _m('Move to Trash'),
-                               ),
-         'Feed'        => array('function'   => 'Item_Feed',
-                                'func_param' => &$slice,
-                                'name'       => _m('Export'),
-                                'open_url'   => $sess->url("feed_to.php3"),
-                               ),
-//         'Move2Slice'  => array('function'   => 'Item_Move2Slice',
-//                                'func_param' => &$slice,
-//                                'name'       => _m('Move to Slice'),
-//                                'open_url'   => $sess->url("move_to.php3"),
-//                               ),
-                          // no function - this function just opens preview
-         'Preview'     => array('name'       => _m('Preview'),
-                                'open_url'   => con_url($slice->getProperty('slice_url'),'rXn=1'), // rXn=1 is foo parameter to make sure, we can use '&' to join items[] parameter (see open_url_add below)
-                                'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
-                               ),
-         'FillField'   => array('name'       => _m('Modify content'),
-                                'open_url'   => $sess->url("search_replace.php3"),
-                                'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
-                               ),
-         'Email'       => array('name'       => _m('Send email'),
-                                'open_url'   => $sess->url("write_mail.php3"),
-                                'open_url_add' => '&'    // add items[] array to open_url url which will hold checked items
-                               ),
-         'Delete'      => array('function'   => 'Item_DeleteTrash',
-                                'func_param' => 'selected',
-                                'name'       => _m('Remove (delete from database)'),
-                               )
-                         ),
-     'switches'  => array(
-         'DeleteTrash' => array('function'   => 'Item_DeleteTrash'),
-         'Tab'         => array('function'   => 'Item_Tab'),
-         'GoBookmark'  => array('function'   => 'Item_GoBookmark')
-                         ),
+     'actions'   => $actions,
+     'switches'  => $switches,
+     'bin'       => 'app',
      'messages'  => array(
          'title'       => ($slice->type() == 'ReaderManagement') ?
                           _m('ActionApps - Reader Manager') :
@@ -220,7 +165,6 @@ if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
     unset($r_state);
     // set default admin interface settings from user's profile
     $r_state["module_id"]       = $module_id;
-    $r_state['bin']             = 'app';
     $sess->register('r_state');
 
     $manager->setFromProfile($profile);
@@ -237,7 +181,7 @@ $r_state['bin_cnt'] = CountItemsInBins();
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
 
 require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "itemmanager", $r_state['bin'], $navbar != "0", $leftbar != "0");
+showMenu($aamenus, "itemmanager", $manager->getBin(), $navbar != "0", $leftbar != "0");
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
@@ -254,8 +198,9 @@ $BIN_CONDS   = array( 'app'    => AA_BIN_ACTIVE,
                       'appc'   => AA_BIN_EXPIRED,
                       'hold'   => AA_BIN_HOLDING,
                       'trash'  => AA_BIN_TRASH
-                    );             
-$zids = QueryZIDs( array($slice_id), $conds, $sort, $BIN_CONDS[$r_state['bin']]);
+                    );
+
+$zids = QueryZIDs( array($slice_id), $conds, $sort, $BIN_CONDS[$manager->getBin()]);
 
 $manager->printSearchbarBegin();
 $manager->printSearchbarEnd();   // close the searchbar form

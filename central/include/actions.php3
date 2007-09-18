@@ -39,79 +39,14 @@
 
 require_once AA_INC_PATH."linkcheck.class.php3";
 
-/** AA_Manageraction - Item manager actions. Just create new class and assign 
- *  it to your manager
- */
-class AA_Manageraction {
-    
-    var $id;
-    
-    /** constructor - assigns identifier of action */
-    function AA_Manageraction($id) {
-        $this->id = $id;
-    }
-    
-    /** Name of this Manager's action */
-    function getName() {}
-
-    /** Name of this Manager's action */
-    function getId()         { return $this->id; }
-    
-    /** Should this action open new window? And if so, which one? */
-    function getOpenUrl()    { return false; }
-    
-    /** Any addition to url */
-    function getOpenUrlAdd() { return false; }
-    
-    /** main executive function
-    * @param $manager    - back link to the manager   
-    * @param $state      - state array
-    * @param $param     
-    * @param $item_arr  
-    * @param $akce_param
-    */
-    function perform(&$manager, &$state, $item_arr, $akce_param) {
-    }
-    
-    /** Checks if the user have enough permission to perform the action */
-    function isPerm(&$manager) {
-        return true;
-    }
-}
-
-class AA_Manageractions {
-    /** set of AA_Manageraction s */
-    var $actions;
-    
-    function AA_Manageractions() {
-        $this->actions = array();
-    }
-    
-    function getAction($id) {
-        return isset($this->actions[$id]) ? $this->actions[$id] : false;
-    }
-    
-    /** We unfortunately need this function, because in manager.class.php3 
-     *  we have to loop through all switches and the Iterator is not available
-     *  for PHP4
-     */
-    function &getArray() {
-        return $this->actions;
-    }
-    
-    function addAction($action) {
-        return $this->actions[$action->getId()] = $action;
-    }
-}
-
 /** AA_Manageraction_Central_Linkcheck - checks if the AA are acessible */
 class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
-    
+
     /** Name of this Manager's action */
     function getName() {
         return _m('Check the AA availability');
     }
-    
+
     /** main executive function
     * @param $param       - not used
     * @param $item_arr    - array of id of AA records to check
@@ -119,34 +54,34 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
     */
     function perform(&$manager, &$state, $item_arr, $akce_param) {
         $item_ids = array_keys($item_arr);
-    
+
         if (count($item_ids)<1) {
             return false;                                     // OK - no error
         }
-        
-        $db  = getDB();    
+
+        $db  = getDB();
         $SQL = "SELECT * FROM central_conf WHERE id IN ('".join_and_quote("','",$item_ids)."')";
         $db->tquery($SQL);
         $results[] = array('<b>'._m('AA (Organization)').'</b>', '<b>'._m('URL').'</b>', '<b>'._m('Status code').'</b>', '<b>'._m('Description').'</b>');
         $linkcheck = new linkcheck();
-    
+
         while ($db->next_record()) {
             $url       = $db->f('AA_HTTP_DOMAIN'). $db->f('AA_BASE_DIR'). "view.php3";
             $status    = $linkcheck->check_url($url);
             $results[] = array($db->f('ORG_NAME'), $url, $status['code'], $status['comment']);
         }
-        
+
         freeDB($db);
         return GetHtmlTable($results). "<br>";                                     // OK - no error
     }
-    
+
     /** Checks if the user have enough permission to perform the action */
     function isPerm(&$manager) {
         return  IsSuperadmin();
     }
 }
 
-/** AA_Manageraction_Central_Sqlupdate - Runs sql_update.php3 script on selected 
+/** AA_Manageraction_Central_Sqlupdate - Runs sql_update.php3 script on selected
  *  AAs
  */
 class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
@@ -155,7 +90,7 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
     function getName() {
         return _m('Update database (sql_update)');
     }
-    
+
     /** main executive function
     * @param $param       - not used
     * @param $item_arr    - array of id of AA records to check
@@ -163,13 +98,13 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
     */
     function perform(&$manager, &$state, $item_arr, $akce_param) {
         $item_ids = array_keys($item_arr);
-    
+
         if (count($item_ids)<1) {
             return false;                                     // OK - no error
         }
         set_time_limit(360);
         $db  = getDB();
-        
+
         $SQL = "SELECT * FROM central_conf WHERE id IN ('".join_and_quote("','",$item_ids)."')";
         $db->tquery($SQL);
         $ret = '';
@@ -183,18 +118,18 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
         freeDB($db);
         return $ret;                                     // OK - no error
     }
-    
+
     /** Checks if the user have enough permission to perform the action */
     function isPerm(&$manager) {
         return IsSuperadmin();
     }
 }
 
-/** AA_Manageraction - Item manager actions. Just create new class and assign 
+/** AA_Manageraction - Item manager actions. Just create new class and assign
  *  it to your manager
  */
 class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
-    
+
     /** specifies, to which bin the move should be performed */
     var $to_bin;
 
@@ -203,7 +138,7 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
         $this->to_bin = $to_bin;
         parent::AA_Manageraction($id);
     }
-    
+
     /** Name of this Manager's action */
     function getName() {
         switch($this->to_bin) {
@@ -229,16 +164,16 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
         }
         return false;                                     // OK - no error
     }
-    
+
     /** Checks if the user have enough permission to perform the action */
     function isPerm(&$manager) {
         $current_bin     =  $manager->getBin();
-        
+
         /** for acces to Central you have to be superadmin */
         if (!IsSuperadmin()) {
             return false;
         }
-        
+
         switch($this->to_bin) {
             case 1: return ($current_bin != 'app' ) AND
                            ($current_bin != 'appb') AND
@@ -250,14 +185,14 @@ class AA_Manageraction_Central_MoveItem extends AA_Manageraction {
         }
     }
 }
-                                    
-/** AA_Manageraction_Central_DeleteTrash - Handler for DeleteTrash switch 
- *  Delete all AAs in the trash bin 
+
+/** AA_Manageraction_Central_DeleteTrash - Handler for DeleteTrash switch
+ *  Delete all AAs in the trash bin
  */
 class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
 
     /** specifies, if we have to delete only items specified in $item_arr
-     *  otherwise delete all items in Trash 
+     *  otherwise delete all items in Trash
      *  With $selected=true  it is used as "action" of manager
      *  With $selected=false it is used as "switch" of manager (left menu)
      */
@@ -268,12 +203,12 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
         $this->selected = $selected;
         parent::AA_Manageraction($id);
     }
-    
+
     /** Name of this Manager's action */
     function getName() {
         return _m('Remove (delete from database)');
     }
-    
+
     /** main executive function
      *  @param $param       'selected' if we have to delete only items specified
      *                      in $item_arr - otherwise delete all items in Trash
@@ -284,9 +219,9 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
         if ( !isSuperadmin() ) {    // permission to delete items?
             return _m("You have not permissions to remove items");
         }
-        
+
         $wherein = '';
-    
+
         // restrict the deletion only to selected items
         if ($this->selected) {
             if (!is_array($item_ids)) {
@@ -300,9 +235,9 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
             }
             $wherein = " AND id IN ('".join_and_quote("','", $items_to_delete)."')";
         }
-    
+
         $db = getDB();
-        
+
         // now we ask, which items we have to delete. We are checking the items even
         // it is specified in $item_arr - for security reasons - we can delete only
         // items in current slice and in trash
@@ -315,14 +250,14 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
             freeDB($db);
             return;
         }
-    
+
         // delete content of all fields
         // don't worry about fed fields - content is copied
         $wherein = "IN ('".join_and_quote("','", $items_to_delete)."')";
         $db->query("DELETE FROM central_conf WHERE id ".$wherein);
         freeDB($db);
     }
-    
+
     /** Checks if the user have enough permission to perform the action */
     function isPerm(&$manager) {
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
@@ -333,7 +268,7 @@ class AA_Manageraction_Central_DeleteTrash extends AA_Manageraction {
 
 /** AA_Manageraction_Central_Tab - Swith to another bin in Manager */
 class AA_Manageraction_Central_Tab extends AA_Manageraction {
-    
+
     /** specifies, to which bin we want to switch */
     var $to_bin;
 
@@ -348,7 +283,7 @@ class AA_Manageraction_Central_Tab extends AA_Manageraction {
         $manager->setBin($this->to_bin);
         $manager->go2page(1);
     }
-    
+
     /** Checks if the user have enough permission to perform the action */
     function isPerm(&$manager) {
         return IsSuperadmin();

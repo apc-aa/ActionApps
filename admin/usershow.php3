@@ -69,7 +69,8 @@ switch( $type ) {
 }
 
 $manager_settings = array(
-     'show'     =>  MGR_SB_ORDERROWS,      //     // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+     'module_id' => $slice_id,
+     'show'      => MGR_SB_ORDERROWS,      //     // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar' => array(
          'fields'               => $slice->fields('search'),
          'search_row_count_min' => 1,
@@ -79,8 +80,7 @@ $manager_settings = array(
          'default_bookmark'     => $group
                          ),
      'scroller'  => array(
-         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT),
-         'slice_id'             => $slice_id
+         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
                          ),
      'itemview'  => array(
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
@@ -131,7 +131,7 @@ if (!$sort AND $default_sort_field) {
 
 $zids = new zids(null, 'l');
 if ( $r_userstate['items'] ) {
-    $zids->set_from_item_arr($r_userstate['items']);
+    $zids->setFromItemArr($r_userstate['items']);
 }
 
 $zids = QueryZIDs( array($slice_id), $conds, $sort, 'ACTIVE', 0, $r_userstate['items'] ? $zids : false);

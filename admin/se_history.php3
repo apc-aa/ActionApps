@@ -174,6 +174,7 @@ $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in databas
 $slice       = AA_Slices::getSlice($module_id);
 
 $manager_settings = array(
+     'module_id' => $slice_id,
      'show'      =>  MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar' => array(
          'fields'               => GetHistoryFields(),
@@ -183,8 +184,7 @@ $manager_settings = array(
          'function'             => false  // name of function for aditional action hooked on standard filter action
                          ),
      'scroller'  => array(
-         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT),
-         'slice_id'             => $slice_id
+         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
                          ),
      'itemview'  => array(
          'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design

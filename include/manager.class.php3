@@ -35,13 +35,15 @@
 
 require_once AA_INC_PATH . "searchbar.class.php3";
 require_once AA_INC_PATH . "statestore.php3";
+require_once AA_INC_PATH . "request.class.php3";
+
 
 /**
  * AA_Manager class - used for 'item' manipulation 'managers' pages
  * (like Item Manager, Link Manager, Discussion comments, Related Items, ...)
  * It takes care about searchber, scroller, actions, ...
  */
-class AA_Manager extends storable_class {
+class AA_Manager extends AA_Storable {
     var $searchbar;       // AA_Searchbar object
     var $searchbar_funct; // searchbar aditional function
     var $scroller;        // scroller object
@@ -54,6 +56,7 @@ class AA_Manager extends storable_class {
     var $itemview;        // itemview object
     var $show;            // what controls show (scroller, searchbar, ...)
     var $bin;             // stores the bin in which we are - string
+    var $module_id;       // for which module is manager used (slice_id, ...)
 
     var $msg;             // stores return code from action functions
 
@@ -62,7 +65,7 @@ class AA_Manager extends storable_class {
     //  object - there are some issues, like you have to have defined the
     //  class before calling page_open(), but it is quite hard to do, because
     //  of language settings (for example), which is stored right in sessions.
-    //  We use our own storable_class for this purpose (in manager, searchbar,
+    //  We use our own AA_Storable for this purpose (in manager, searchbar,
     //  scroller), but we are using the $persistent_slots array in the same way)
 
     // required - class name (just for PHPLib sessions)
@@ -71,21 +74,18 @@ class AA_Manager extends storable_class {
     // required - object's slots to save in session
     //            (no itemview, actions, switches, messages, searchbar_funct
     //             - we want to have it fresh (from constructor and $settings))
-    var $persistent_slots = array('searchbar', 'scroller', 'msg', 'bin');
+    var $persistent_slots = array('searchbar', 'scroller', 'msg', 'bin', 'module_id');
 
-    /** getPersistentProperties function
+    /** getClassProperties function
      *  Used parameter format (in fields.input_show_func table)
-     * @param $class
      */
-    function getPersistentProperties($class=null) {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
-        // class parameter is needed, because generic static classs method
-        // in storable_class is not able to detect, what type of class it is in
-        // Grrr! PHP (5.2.0)
+    function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return array (
             'searchbar' => new AA_Property( 'searchbar', _m("Searchbar"), 'AA_Searchbar', false, true),
             'scroller'  => new AA_Property( 'scroller',  _m("Scroller"),  'AA_Scroller',  false, true),
             'msg'       => new AA_Property( 'msg',       _m("Msg"),       'text',         true,  true),
             'bin'       => new AA_Property( 'bin',       _m("Bin"),       'text',         false, true),
+            'module_id' => new AA_Property( 'module_id', _m("Module ID"), 'text',         false, true),
             );
     }
 
@@ -100,6 +100,8 @@ class AA_Manager extends storable_class {
         $this->show = isset($settings['show']) ?
                       $settings['show'] :
                       ( MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS );
+
+        $this->module_id = $settings['module_id'];
 
         if ( $settings['actions'] ) {      // define actions, if we have to
             $this->actions = $settings['actions'];
@@ -130,12 +132,12 @@ class AA_Manager extends storable_class {
         }
 
         $this->bin = isset($settings['bin']) ? $settings['bin'] : 'app';
-        
+
         // create page scroller -----------------------------------------------
         $scroller = new AA_Scroller('st',sess_return_url($_SERVER['PHP_SELF']));
         // could be redefined by view (see ['itemview']['manager_vid'])
         $scroller->metapage = $settings['scroller']['listlen'];
-        $scroller->addFilter("slice_id", "md5", $settings['scroller']['slice_id']);
+        $scroller->addFilter("slice_id", "md5", $this->module_id);
         $this->scroller = $scroller;
 
         $this->messages = $settings['messages'];
@@ -153,7 +155,7 @@ class AA_Manager extends storable_class {
         $aliases        = $settings['itemview']['aliases'];
 
         // modify $format_strings and $aliases (passed by reference)
-        $this->setDesign($format_strings, $aliases, $manager_vid, $settings['scroller']['slice_id'] );
+        $this->setDesign($format_strings, $aliases, $manager_vid, $this->module_id );
 
         $this->itemview = new itemview( $format_strings,
                                         $settings['itemview']['fields'],
@@ -200,7 +202,12 @@ class AA_Manager extends storable_class {
             }
         }
     }
-    
+
+    /** get module id of the module, which is managed by the manager */
+    function getModuleId() {
+        return $this->module_id;
+    }
+
     /** sets the bin, where we are */
     function setBin($bin) {
         $this->bin = $bin;
@@ -299,6 +306,14 @@ class AA_Manager extends storable_class {
         if ( $this->scroller AND ($page > 0) )
             $this->scroller->go2page($page);
     }
+    
+    function getAction($akce) {
+        if (!is_object($this->actions)) {
+            return false;
+        }
+        $actions = $this->actions;
+        return $actions->getAction($akce);
+    }
 
     /** performActions function
      *
@@ -307,6 +322,15 @@ class AA_Manager extends storable_class {
 
         $akce = $_REQUEST['akce'];
         $chb  = $_REQUEST['chb'];
+        
+        /** used for AJAX display of action parameters */
+        if ( $_GET['display_params'] ) {
+            $action2display = $this->getAction($_GET['display_params']);
+            if ($action2display) {
+                echo $action2display->htmlSettings();
+            }
+            exit;
+        }
 /*
         if (!isset($akce)) {
             $akce = $_GET['akce'];
@@ -346,11 +370,11 @@ class AA_Manager extends storable_class {
             if ( $akce AND $action2do AND $action2do->isPerm($this)) {
                 $this->msg[] = $action2do->perform($this, $GLOBALS['r_state'], $chb, $_REQUEST['akce_param']);
             }
-        // older approach - @todo should be removed after we rewrite all managers 
+        // older approach - @todo should be removed after we rewrite all managers
         } else {
             $action2do = $this->actions[$akce];
             $actions_perm_function = $this->actions_perm_function;
-    
+
             if ( $akce AND $action2do AND $actions_perm_function($akce) ) {
                 $function   = $action2do['function'];   // programmer defined action to do
                 $func_param = $action2do['func_param']; // aditional parameter for the 'function'
@@ -367,7 +391,7 @@ class AA_Manager extends storable_class {
                 }
             }
         }
-        
+
         // new approach uses AA_Manageractions
         if (is_object($this->switches)) {
             $switches     = $this->switches;
@@ -378,9 +402,9 @@ class AA_Manager extends storable_class {
                 }
             }
 
-        // older approach - @todo should be removed after we rewrite all managers 
+        // older approach - @todo should be removed after we rewrite all managers
         } else {
-    
+
             // now perform switches (url parameteres - not in 'akce' field
             // (like listlen=100, Tab=app, ...)
             if ( isset($this->switches) AND is_array($this->switches) ) {
@@ -421,15 +445,16 @@ class AA_Manager extends storable_class {
         global $sess;
         echo '<form name="filterform" action="'.$_SERVER['PHP_SELF'].'">';
         $sess->hidden_session();
-        if ( isset($this->searchbar) )
+        if ( isset($this->searchbar) ) {
             $this->searchbar->printBar();
+        }
     }
 
     /** printSearchbarEnd function
      * Prints end of search form with searchbar (@see printSearchbarBegin())
      */
     function printSearchbarEnd() {
-            echo "</form><p></p>"; // workaround for align=left bug
+        echo "</form><p></p>"; // workaround for align=left bug
     }
 
     /** printItems function
@@ -459,12 +484,9 @@ class AA_Manager extends storable_class {
 
         $this->scroller->countPages( $ids_count );
 
-        if (($this->scroller->pageCount() > 1) || ($action_selected != "0")) {
-            echo "<table border=\"0\" cellpadding=\"3\">
-                   <tr>
-                    <td class=\"tabtxt\">";
-        }
-
+        echo '<table border="0" cellpadding="3">
+                <tr><td>';
+                  
         if ($action_selected != "0") {
             echo '<input type="hidden" name="akce" value="">';          // filled by javascript - contains action to perform
             echo '<input type="hidden" name="akce_param" value="">';  // if we need some parameteres to the action, store it here
@@ -475,24 +497,30 @@ class AA_Manager extends storable_class {
                 $action_arr = $actions->getArray();
                 $i       = 1;  // we start on 1 because first option is "Select action:"
                 $options = '';
-                
+
                 foreach( $action_arr as $action_id => $action ) {
                     if ( $action->isPerm($this)) {
                         $options .= '<option value="'. htmlspecialchars($action->getId()).'"> '.
                                                        htmlspecialchars($action->getName() . ($action->getOpenUrl() ? '...' : ''));
-                        if ( $action->getOpenUrl() )  { // we have to open window
+                        // we have to open window?
+                        if ( $action->getOpenUrl() )  {
                             $javascr .= "\n markedactionurl[$i] = '". $action->getOpenUrl() ."';";
                             if ( $action->getOpenUrlAdd() )  { // we have to open window
                                 $javascr .= "\n markedactionurladd[$i] = '". $action->getOpenUrlAdd() ."';";
                             }
                         }
+                        // we have to display some setting?
+                        if ( $action->isSetting() )  {
+                            // $request = new AA_Request('Do_Manageraction', array('action_class'=>get_class($action), 'action_state'=>$action->getState()));
+                            $javascr .= "\n markedactionsetting[$i] = '". $action->getId() ."';";
+                        }
                         $i++;
                     }
                 }
-                
-            // older approach - @todo should be removed after we rewrite all managers 
+
+            // older approach - @todo should be removed after we rewrite all managers
             } else {
-            
+
                 if ( isset( $this->actions ) AND is_array( $this->actions ) ) {
                     $i=1;  // we start on 1 because first option is "Select action:"
                     while ( list( $action, $param ) = each ($this->actions) ) {
@@ -518,7 +546,7 @@ class AA_Manager extends storable_class {
 
                   // click "go" does not use markedform, it uses itemsfrom above...
                   // maybe this action is not used.
-                echo '<select name="markedaction_select">
+                echo '<select name="markedaction_select" id="markedaction_select" onchange="MarkedActionSelect()">
                       <option value="nothing">'. _m('Selected items') .':'.
                       $options .'</select>';
                 if ($this->actions_hint_url || $this->actions_hint) {
@@ -531,23 +559,23 @@ class AA_Manager extends storable_class {
                   // we store open_url parameter to js variable for
                   // MarkedActionGo() function
                 echo '<script language="JavaScript" type="text/javascript"> <!--
-                         var markedactionurl=Array();
-                         var markedactionurladd=Array();
+                         var markedactionurl     = Array();
+                         var markedactionurladd  = Array();
+                         var markedactionsetting = Array();
                             '. $javascr .'
                         // -->
                       </script>';
             }
+            echo "</td>\n</tr>\n<tr height=\"3\"><td id=\"makrekactionparams\"></td></tr>\n<tr><td>";
+
         }
 
-        if (($this->scroller->pageCount() > 1) || ($action_selected != "0")) {
-            if ($this->scroller->pageCount() > 1) {
-                echo '</td></tr><tr height="3"><td></td></tr>
-                    <tr><td class="tabtxt"><b>'. _m('Items Page') .":&nbsp;&nbsp;";
-                $this->scroller->pnavbar();
-                echo "</b>";
-            }
-            echo '</td></tr></table>';
+        if (($this->scroller->pageCount() > 1) AND ($action_selected != "0")) {
+            echo '<b>'. _m('Items Page') .":&nbsp;&nbsp;";
+            $this->scroller->pnavbar();
+            echo "</b>";
         }
+        echo '</td></tr></table>';
 
         echo '</form><br>';
         return $ids_count;
@@ -559,6 +587,105 @@ class AA_Manager extends storable_class {
     function printAndClearMessages() {
         PrintArray( $this->msg );
         unset( $this->msg );
+    }
+}
+
+/** AA_Manageraction - Item manager actions. Just create new class and assign
+ *  it to your manager
+ *
+ *  We extending AA_Storable, because we want to get the state form some
+ *  actions. Action selectbox is able to display settings by AJAX call, where
+ *  we need to pass all parameters of the object
+ */
+class AA_Manageraction extends AA_Storable {
+
+    var $id;
+    var $open_url;
+    var $open_url_add;
+
+    /** constructor - assigns identifier of action */
+    function AA_Manageraction($id, $open_url=null, $open_url_add=null) {
+        $this->id = $id;
+        if ($open_url) {
+            $this->setOpenUrl($open_url, $open_url_add);
+        }
+    }
+
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     *
+     *  We extending AA_Storable, because we want to get the state form some
+     *  actions. Action selectbox is able to display settings by AJAX call, where
+     *  we need to pass all parameters of the object
+     */
+    function getClassProperties() {          //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
+        return array (
+            'id'            => new AA_Property( 'id',           _m('Action ID'),                  'text', false, true),
+            'open_url'      => new AA_Property( 'open_url',     _m('URL to open' ),               'text', false, true),
+            'open_url_add'  => new AA_Property( 'open_url_add', _m('Additional URL parameters' ), 'text', false, true)
+            );
+    }
+
+    /** Name of this Manager's action */
+    function getName() {}
+
+    /** Name of this Manager's action */
+    function getId()         { return $this->id; }
+
+    /** Should this action open new window? And if so, which one? */
+    function getOpenUrl()    { return $this->open_url; }
+
+    /** Any addition to url */
+    function getOpenUrlAdd() { return $this->open_url_add; }
+
+    function setOpenUrl($url, $add=null) {
+        $this->open_url     = $url;
+        $this->open_url_add = $add;
+    }
+
+    /** main executive function
+    * @param $manager    - back link to the manager
+    * @param $state      - state array
+    * @param $param
+    * @param $item_arr
+    * @param $akce_param
+    */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+    }
+
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        return true;
+    }
+    
+    /** Do this action have some settings, whcih should be displayed? */
+    function isSetting() {
+        return is_callable(array($this, 'htmlSettings'));
+    }
+}
+
+class AA_Manageractions {
+    /** set of AA_Manageraction s */
+    var $actions;
+
+    function AA_Manageractions() {
+        $this->actions = array();
+    }
+
+    function getAction($id) {
+        return isset($this->actions[$id]) ? $this->actions[$id] : false;
+    }
+
+    /** We unfortunately need this function, because in manager.class.php3
+     *  we have to loop through all switches and the Iterator is not available
+     *  for PHP4
+     */
+    function &getArray() {
+        return $this->actions;
+    }
+
+    function addAction($action) {
+        return $this->actions[$action->getId()] = $action;
     }
 }
 

@@ -113,6 +113,7 @@ $conds_ro = String2Conds( rawurldecode($showcondsro) );
 $conds_rw = String2Conds( rawurldecode($showcondsrw) );
 
 $manager_settings = array(
+     'module_id' => $module_id,
      'show'       =>  MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,
      'searchbar'  => array(
          'fields'               => $slice->fields('search'),
@@ -122,8 +123,7 @@ $manager_settings = array(
          'function'             => false  // name of function for aditional action hooked on standard filter action
                          ),
      'scroller'  => array(
-         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT),
-         'slice_id'             => $module_id
+         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
                          ),
      'itemview'  => array(
          'manager_vid'          => $manager_vid,    // $slice_info['manager_vid'],      // id of view which controls the design
