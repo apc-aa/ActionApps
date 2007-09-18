@@ -421,18 +421,18 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
     }
 }
 
-/** Expands {lastedit:[<date_format>:[<slice_id>]]} and displays the date of 
+/** Expands {lastedit:[<date_format>:[<slice_id>]]} and displays the date of
  *  last modificaton of any item in the slice
  *  the user.
  *  @param $date_format - the format in which you want to see the date
  *                        @see date() function of php http://php.net/date
  *                        like {lastedit:m/d/y H#:i}
- *  @param $slice_id    - the slice which should be checked for last 
+ *  @param $slice_id    - the slice which should be checked for last
  *                        modification. If no slice is specified, then check
  *                        all the slices
  */
 class AA_Stringexpand_Lastedit extends AA_Stringexpand {
-    
+
     /** expand function
      * @param $format
      * @param $slice_id
@@ -721,7 +721,7 @@ function getConstantValue($group, $what, $field_name) {
  *     But we do not want to put such string instead of {_#HEADLINE}, since then
  *     would be the inner most curly brackets the {brackets} string. We do not
  *     want to unalias inside headline text, so we replace all the control
- *     characters by substitutes 
+ *     characters by substitutes
  *     (@see AA_Stringexpand::quoteColons():$QUOTED_ARRAY, $UNQUOTED_ARRAY)
  *
  *    Ex: some text {ifset:I'm headline _AA_OpEnPaR_with _AA_OpEnBrAcE_brackets_AA_ClOsEbRaCe__AA_ClOsEpAr_:<h1>_#1</h1>} here
@@ -978,16 +978,16 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
  *    {view.php3?vid=9&cmd[9]=c-1-{conds:{_#VALUE___}}}
  *  or
  *    {view.php3?vid=9&cmd[9]=c-1-{conds:category.......1}}
- *  or 
+ *  or
  *    {ids:5367e68a88b82887baac311c30544a71:d-headline........-=-{conds:category.......3:1}}
  *    see the third parameter (1) in the last example!
- *    
- *  The syntax is: 
+ *
+ *  The syntax is:
  *     {conds:<field or text>[:<do not url encode>]}
- *  <do not url encode> the conds are by default url encoded 
- *  (%22My%20category%22) so it can be used as parameter to view. However - we 
+ *  <do not url encode> the conds are by default url encoded
+ *  (%22My%20category%22) so it can be used as parameter to view. However - we
  *  do not need url encoding for {ids } construct, so for ussage with {ids}
- *  use the last parameter and set it to 1 
+ *  use the last parameter and set it to 1
  */
 class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1058,7 +1058,9 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
         $count   = 0;
         if ( is_array($ids) ) {
             foreach ( $ids as $item_id ) {
-                if ( $item_id ) {
+                // is it item id?
+                $id_type = guesstype($item_id, true);
+                if ( ($id_type == 's') OR ($id_type == 'l')) {
                     $item = AA_Item::getItem(new zids($item_id));
                     if ($item) {
                         $count++;
@@ -1223,9 +1225,9 @@ class AA_Stringexpand_Slice extends AA_Stringexpand {
         // get slice_id from item, but sometimes the item is not filled (like
         // on "Add Item" in itemedit.php3, so we use global slice_id here
         $item = $this->item;
-	    $slice_id  = $item ? $item->getSliceID() : $GLOBALS['slice_id'];
-	    if (!$slice_id ) {
-		    return "";
+        $slice_id  = $item ? $item->getSliceID() : $GLOBALS['slice_id'];
+        if (!$slice_id ) {
+            return "";
         }
         $slice = AA_Slices::getSlice($slice_id);
         // we do not want to allow users to get all field setting
@@ -1591,7 +1593,7 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
         // main stringexpand functions.
         // @todo switch most of above constructs to standard AA_Stringexpand...
         // class
-        elseif ( !is_null($stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $parts[1], $item))) {
+        elseif ( !is_null($stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $parts[1], array('item'=>$item)))) {
             $param = empty($parts[2]) ? array() : array_map('DeQuoteColons',ParamExplode($parts[2]));
             $additional_params = $stringexpand->additionalCacheParam();
             if ( '_AA_NeVeR_CaChE' == $additional_params ) {
@@ -1858,7 +1860,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
             $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
             $repre_value = get_if($repre_value, '--');
             $iid         = $item->getItemID();
-            $input_id    = AA_Field::getId4Form($iid, $field_id);
+            $input_id    = AA_Field::getId4Form($field_id, $iid);
             $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\">\n";
             $ret .= " <div class=\"ajax_value\" id=\"ajaxv_$input_id\" aaalias=\"".htmlspecialchars($alias_name)."\">$repre_value</div>\n";
             $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_$input_id\"></div>\n";
@@ -1882,20 +1884,21 @@ class AA_Stringexpand {
     /** item, for which we are stringexpanding
      *  Not used fot many expand functions
      */
-     
+
     var $item;
+
     /** AA_Stringexpand function
      * @param $item
      */
-    function AA_Stringexpand($item) {
-        $this->item = $item;
+    function AA_Stringexpand($param) {
+        $this->item = $param['item'];
     }
-    
+
     /** expand function
      */
     function expand() {
     }
-    
+
     /** additionalCacheParam function
      *  Some stringexpand functions uses global parameters, so it is not posible
      *  to use cache for results based just on expand() parameters. We need to
@@ -1933,7 +1936,7 @@ class AA_Stringexpand {
     function dequoteColons($text) {
         return AA_Stringexpand::quoteColons($text, true);
     }
-    
+
     /** unalias function
      *  static function
      * @param $text
@@ -1947,7 +1950,7 @@ class AA_Stringexpand {
         $GLOBALS['g_formpart'] = 0;  // used for splited inputform into parts
         return new_unalias_recurent($text, $remove, $level, $maxlevel, $item ); // Note no itemview param
     }
-    
+
     /** unaliasArray function
      * @param $arr
      * @param $remove
@@ -2011,6 +2014,56 @@ class AA_Stringexpand_Packid extends AA_Stringexpand_Nevercache {
         }
     }
 }
+
+/** Displays hit statistics for the items */
+class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
+
+    /** expand function
+     * @param $type type of statistics - currently only "days" statistics is implemented
+     * @param $ids  item ids (long or short) for which you want to display statistics
+     *
+     * Example: {hitcounter:days:24457-24474}
+     * Example: {hitcounter:days:{ids:76f59b2023b8a4e8d6c57831ef8c8199:d-publish_date....->-1185919200}}
+     */
+    function expand($type, $ids) {
+        $ret = '';
+        if ( $type == 'days' ) {
+            $zids   = new zids(explode('-',$ids));
+            $s_zids = new zids($zids->shortids(), 's');
+            $hits   = GetTable2Array('SELECT id, time, hits FROM hit_archive WHERE '. $s_zids->sqlin('id'), '');
+            $stat   = array();
+            foreach ($hits as $hit) {
+                $day        = date('Y-m-d', $hit['time']);
+                if ( !isset($stat[$day]) ) {
+                    $stat[$day] = array();
+                }
+                $stat[$day][$hit['id']] = isset($stat[$day][$hit['id']]) ? $stat[$day][$hit['id']] + $hit['hits'] : $hit['hits'];
+            }
+            if (count($stat) > 0) {
+                $s_ids =  $s_zids->shortids();
+                // table header
+                $ret   = "<table>\n  <tr>\n    <th>"._m('Date \ Item ID')."</th>";
+                foreach ($s_ids as $sid) {
+                    $ret .= "\n    <th>$sid</th>";
+                }
+                $ret   .= "\n  </tr>";
+
+                ksort($stat);
+                foreach ( $stat as $day => $counts ) {
+                    $ret .= "\n  <tr>\n    <td>$day</td>";
+                    foreach ($s_ids as $sid) {
+                        $ret .= "\n    <td>".(isset($counts[$sid]) ? $counts[$sid] : '0') ."</td>";
+                    }
+                    $ret .= "\n  </tr>";
+                }
+                $ret .= "\n</table>";
+            }
+        }
+        return $ret;
+    }
+}
+
+
 
 // require_once AA_INC_PATH. "custom/nszm.php";
 
