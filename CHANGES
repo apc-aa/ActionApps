@@ -1,3 +1,20 @@
+09/18/07 - Central now supports creation of exact copy of the slice on (or from)
+(honzam)   remote AAs
+         - new hitcounter statistics - to display statistics use the
+           {hitcounter:days:<ids>} command - just like:
+           {hitcounter:days:24457-24474} or
+           {hitcounter:days:{ids:76f59b2023b8a4e8d6c57831ef8c8199:d-publish_date....->-1185919200}}{}
+         - Item Manager actions converted to new - class approach
+         - better counting algorithm for hitcount statistics
+         - filler.php3 updated to work with WAP pages (Thanks to Colnodo)
+         - AA javascript library now uses AA_Config object to store AA settings
+         - Alerts "Send Emails" page now works also with ReaderManagement slices
+           which uses slice password
+         - first classes supporting media/foto gallery in files.class.php3
+         - storeable_class renamed to standard AA_Storable
+         - widgets moved to separate include file widget.class.php3
+         - preparison for joining fulltext view and index view code
+         - last places where appears $HTTP_*_* replaced by superglobals - $_*
 09/07/07 - fixed the code of hitcounter to work also in PHP4
 (honzam)
 09/05/07 - removed last references to HTTP_GET_VARS, HTTP_POST_VARS, ... so AA
