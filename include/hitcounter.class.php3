@@ -196,6 +196,9 @@ class AA_Hitcounter_Stats {
 
         $db = getDb();
         if ( is_array($item_ids) ) {
+            // shuffle - if there are a lot of items, so we reach timelimit, it is better to
+            // count hits in random order, so each item will be counted after some time period
+            shuffle($item_ids);
             $field = GetTable2Array("SELECT * FROM field WHERE slice_id = '".q_pack_id($this->slice_id)."' AND id='". quote($this->field_id) ."'", 'aa_first', 'aa_all');
             foreach ($item_ids as $id) {
                 $db->query("DELETE FROM content WHERE item_id ='".quote($id)."' AND field_id = '". quote($this->field_id)."'");
