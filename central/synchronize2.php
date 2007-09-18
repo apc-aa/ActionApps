@@ -35,7 +35,7 @@ if (!IsSuperadmin()) {
 $aas = AA_Actionapps::getArray();
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-FrmJavascriptFile('javascript/aajslib.php3');
+FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess_id='.$sess->id );
 
 ?>
 <TITLE><?php echo _m("Central - Synchronize ActionApps (2/3) - Slices to Compare"); ?></TITLE>
@@ -75,7 +75,7 @@ $form_buttons = array("compare"      => array( "type"      => "submit",
                       "template_aa"     => array( "value"     =>  $_POST['template_aa']),
                       "comparation_aa"  => array( "value"     =>  $_POST['comparation_aa'])
                      );
-                     
+
 ?>
 <form name=f method=post action="<?php echo $sess->url(self_base() ."synchronize3.php") ?>">
 <?php
@@ -83,7 +83,7 @@ $form_buttons = array("compare"      => array( "type"      => "submit",
 FrmTabCaption('', '','', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Slice Mapping'));
-FrmStaticText($aas[$_POST['comparation_aa']]->getName(), $aas[$_POST['template_aa']]->getName());
+FrmStaticText( $aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName());
 foreach($tmplate_slices as $name) {
     FrmInputSelect('sync_slices['.htmlspecialchars($name).']', $name, $comparation_slices, $_POST['sync_slices'], true);
 }

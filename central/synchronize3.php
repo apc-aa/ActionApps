@@ -33,7 +33,7 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping) {
             $cmp_slice_name = $mapping[$tmp_slice_name];
             $differences[$tmp_slice_name] = array();
             if ( empty($comp_slice_defs[$cmp_slice_name]) ) {
-                $differences[$tmp_slice_name][] = new AA_Difference(_m('Comparation slice (%1) noes not exist', array($tmp_slice_name)));
+                $differences[$tmp_slice_name][] = new AA_Difference('INFO', _m('Comparation slice (%1) does not exist', array($tmp_slice_name)));
             }
             $differences[$tmp_slice_name] = array_merge($differences[$tmp_slice_name], $slice_def->compareWith($comp_slice_defs[$cmp_slice_name]));
         }
@@ -59,7 +59,9 @@ if ($_POST['compare']) {
     foreach($_POST['sync_slices'] as $slice_tmp => $slice_cmp) {
         if ($slice_cmp) {
             $slices4template[] = $slice_tmp;
-            $slices2compare[]  = $slice_cmp;
+            if ( $slice_cmp != '1') {   // 0 - do not compare, 1 - exact copy
+                $slices2compare[]  = $slice_cmp;
+            }
         }
     }
     
@@ -81,7 +83,7 @@ if ($_POST['synchronize']) {
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
-FrmJavascriptFile('javascript/aajslib.php3');
+FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess_id='.$sess->id );
 
 ?>
 <TITLE><?php echo _m("Central - Synchronize ActionApps (3/3) - Synchronize Slices"); ?></TITLE>

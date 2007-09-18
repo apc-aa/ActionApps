@@ -67,6 +67,7 @@ define('AA_CENTRAL_PATH', AA_BASE_PATH. "central/include/");
 
 require_once AA_INC_PATH.     "mgettext.php3";
 require_once AA_INC_PATH.     "locauth.php3";
+require_once AA_INC_PATH.     "request.class.php3";
 require_once AA_CENTRAL_PATH. 'actionapps.class.php';
 require_once AA_INC_PATH.     'perm_core.php3';
 require_once AA_INC_PATH.     'scroller.php3';  // we need it, because there coud be scroller stored in session (in manager)
