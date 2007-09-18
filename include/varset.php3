@@ -315,6 +315,7 @@ class Cvarset {
         }
         return $retval;
     }
+    
     /** doUpdate function
      * @param $tablename
      * @param $nohalt
@@ -322,6 +323,7 @@ class Cvarset {
     function doUpdate($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeUPDATE($tablename), $nohalt);
     }
+    
     /** doREPLACE function
      * @param $tablename
      * @param $nohalt
@@ -329,10 +331,11 @@ class Cvarset {
     // be sure, you have defined key field
     function doREPLACE($tablename, $nohalt=null) {
         // we do no longer use REPLACE SQL command - it is not implemented in
-        // some DB engines (it is not ANSI SQL) nad even in MySQL it works bad
+        // some DB engines (it is not ANSI SQL) and even in MySQL it works bad
         // with autoincremented fields
         return $this->_doQuery($this->makeINSERTorUPDATE($tablename), $nohalt);
     }
+    
     /** doTrueReplace function
      * @param $tablename
      * @param $nohalt
@@ -343,6 +346,14 @@ class Cvarset {
         // (it is not ANSI SQL) and even in MySQL it works bad
         // with autoincremented fields
         return $this->_doQuery($this->_makeInsertReplace('REPLACE', $tablename), $nohalt);
+    }
+    
+    /** doTruncate function - deletes all data from tabe
+     * @param $tablename
+     * @param $nohalt
+     */
+    function doTruncate($tablename, $nohalt=null) {
+        return $this->_doQuery("TRUNCATE $tablename", $nohalt);
     }
 
     /** makeSELECT function

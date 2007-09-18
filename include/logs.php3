@@ -39,7 +39,6 @@ $DO_NOT_LOG = array(
    // 'BM_DELETE',
    // 'BM_RENAME',
    // 'BM_UPDATE',
-   // 'COUNT_HIT',   // if you stop loging COUNT_HIT, AA will stop count hits itself!!!
    // 'CSN',
    // 'CSV_IMPORT',
    // 'EMAIL_SENT',

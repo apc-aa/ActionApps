@@ -181,6 +181,7 @@ class AA_Condition extends AA_Object {
         }
         return $ret;
     }
+
     /** getAsString function
      * @param $condition_number
      */
@@ -193,6 +194,7 @@ class AA_Condition extends AA_Object {
         $ret[] = "conds[$condition_number][value]=".    $this->value;
         return join('&', $ret);
     }
+
     /** matches function
      * @param $itemcontent
      */

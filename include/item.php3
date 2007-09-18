@@ -594,7 +594,7 @@ class AA_Item {
         }
         return DeHtml($txt,$html);
     }
-    
+
     /** get_alias_subst function
      * @param $alias
      * @param $use_field
@@ -620,7 +620,7 @@ class AA_Item {
         // like f_d("start_date......", "mm-dd")
         return $this->$fce(get_if($use_field, $ali_arr['param']), $function['param']);
     }
-    
+
     /** remove_string function
      * @param $text
      * @param $remove_arr
@@ -1466,10 +1466,10 @@ class AA_Item {
         $p = $this->subst_aliases( ParamExplode($param) );
         return ((time() - $this->getval($col)) < $p[0]*60) ? $p[1] : $p[2];  // time in minutes
     }
-    
+
     /** f_z function
      *  get the size or type of the file
-     * @author Adam Sanchez  
+     * @author Adam Sanchez
      * @param $col
      * @param $param
      */
@@ -1485,8 +1485,8 @@ class AA_Item {
                     $string2array = explode("/",$string);
                     $path_file    = IMG_UPLOAD_PATH. $string2array[count($string2array)-2]."/".$string2array[count($string2array)-1];
                     if (!is_dir($path_file)){
-                        $size    = filesize($path_file);       
-                        $size_kb = round($size/1024, 1);       
+                        $size    = filesize($path_file);
+                        $size_kb = round($size/1024, 1);
                         $size_mb = round($size/1048576, 1);
                         $size    = ($size <= 1048576) ? $size_kb." kB" : $size_mb." MB";
                         }

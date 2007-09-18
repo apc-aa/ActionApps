@@ -117,8 +117,8 @@ function InitPage() {}
 
 function SelectValue(sel) {
     svindex = eval(sel).selectedIndex;
-    if (svindex != -1) { 
-        return eval(sel).options[svindex].value; 
+    if (svindex != -1) {
+        return eval(sel).options[svindex].value;
     }
     return null;
 }
@@ -129,7 +129,7 @@ function SubmitForm(mode) {
         document.f.submit();
     } else {
         sel = SelectValue('document.f.rssfeeds');
-        if (sel == null) { 
+        if (sel == null) {
             alert('<?php echo _m("No selected rssfeed"); ?>');
         } else {
             if (mode == 'delete') {

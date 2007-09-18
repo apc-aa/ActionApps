@@ -115,6 +115,7 @@ class AA_Slice {
         freeDB($db);
         $this->dynamic_setting = new ItemContent($content4id);
     }
+
     /** getProperty function
      * @param $fname
      */
@@ -127,54 +128,63 @@ class AA_Slice {
             return $this->setting[$fname];
         }
     }
+
     /** name function
      *
      */
     function name() {
         return $this->getProperty('name');
     }
+
     /** jumpLink function
      *
      */
     function jumpLink() {
         return "<a href=\"".get_admin_url("index.php3?change_id=".$this->unpacked_id()). "\">".$this->name()."</a>";
     }
+
     /** deleted function
      *
      */
     function deleted() {
         return $this->getProperty('deleted');
     }
+
     /** fleman_dir function
      *
      */
     function fileman_dir() {
         return $this->getProperty('fileman_dir');
     }
+
     /** type function
      *
      */
     function type() {
         return $this->getProperty('type');
     }
+
     /** unpacked_id function
      *
      */
     function unpacked_id() {
         return $this->unpackedid; // Return a 32 character id
     }
+
     /** packed_id function
      *
      */
     function packed_id() {
         return pack_id128($this->unpackedid);
     }
+
     /** getFields function
      *
      */
-    function & getFields() {
-        return $this->fields;
+    function & getFields($dynamic_fields = false) {
+        return $dynamic_fields ? $this->dynamic_fields : $this->fields;
     }
+
     /** getWidgetAjaxHtml function
      * @param $field_id
      * @param $item_id

@@ -121,12 +121,12 @@ class zids {
         }
     }
 
-    /** set_from_item_arr function
+    /** setFromItemArr function
      * Grabs long ids from array as posted from manager.class checkboxes
      *  $items[x767ab56353544242552637389a853673]=1
      * @param $item_arr
      */
-    function set_from_item_arr($item_arr) {
+    function setFromItemArr($item_arr) {
         $this->clear('l');
         if ( isset($item_arr) AND is_array($item_arr) ) {
             foreach ( $item_arr as $it_id => $foo ) {
@@ -547,6 +547,9 @@ class zids {
  */
 function guesstype($str, $quiet = false) {
     $s = strlen($str);
+    if (($s < 12) AND (is_numeric($str) OR ($str==''))) {
+        return 's';
+    }
     if (($s >= 12) AND ($s <= 16)) {
         return 'p';
     }
@@ -555,9 +558,6 @@ function guesstype($str, $quiet = false) {
     }
     if ($s > 32) {
         return 't'; // Could also test last 32 hex
-    }
-    if ($s < 16) {
-        return 's';
     }
     if (!$quiet) {
         print("Error, unable to guess type of id '$str' - ask mitra");

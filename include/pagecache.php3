@@ -178,19 +178,17 @@ class PageCache  {
      * @param $keyString
      * @param $content
      * @param $str2find
+     * @param $force - if true, the content is stored into cache even
+     *                 if ENABLE_PAGE_CACHE is false (we use cache for cached
+     *                 javascript in admin interface (modules selectbox
+     *                 for example), so we need to use cache here)
      */
-    function store($keyString, $content, $str2find) {
+    function store($keyString, $content, $str2find, $force=false) {
         global $cache_nostore;
-        /** @todo $cache_nostore should be done better - current disadvantage of
-         *  global variable is, that you use ANY {user:} alias inside a view,
-         *  then this view is never cached. We should use $additional_conditions
-         *  which will be checked in pagecache->get(), or something similar
-         */
-
         if ( $GLOBALS['debug'] ) {
             huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache str2find:'.$str2find->getStr2find(), '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
         }
-        if (ENABLE_PAGE_CACHE AND !$cache_nostore) {  // $cache_nostore used when
+        if ((ENABLE_PAGE_CACHE OR $force) AND !$cache_nostore) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
             $keyid  = $this->getKeyId($keyString);
             if ( $GLOBALS['debug'] ) {
@@ -211,7 +209,7 @@ class PageCache  {
 
             $varset->doTrueReplace('pagecache');  // true replace mean it calls REPLACE command and no SELECT+INSERT/UPDATE (which is better for tables with autoincremented columns, which is no
 
-            // AA_Log::write('PAGECACHE', $keyid.':'.serialize($str2find)); // for debug
+            // writeLog('PAGECACHE', $keyid.':'.serialize($str2find)); // for debug
 
             if (rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store

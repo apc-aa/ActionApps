@@ -248,7 +248,6 @@ function IsPerm($perms, $perm){
  */
 function CheckPerms( $user_id, $objType, $objID, $perm) {
     global $permission_uid, $permission_to;
-    trace("+","CheckPerms");
     if ($permission_uid != $user_id) {
         CachePermissions($user_id);
     }
@@ -256,13 +255,11 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
     switch($objType) {
         case "aa":
             $ret = IsPerm($permission_to["aa"][$objID], $perm);
-            trace("-");
             return($ret);
         case "slice":
             $ret = IsPerm(JoinAA_SlicePerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
-            trace("-");
             return($ret);
-        default: trace("-"); return false;
+        default: return false;
     }
 }
 
@@ -354,13 +351,11 @@ function IfSlPerm($perm, $slice=null) {
  */
 function IsSuperadmin() {
     global $auth, $r_superuser, $permission_uid;
-    trace("+","isSuperadmin");
     // check all superadmin's global permissions
     if ($permission_uid != $auth->auth["uid"]) {
         CachePermissions($auth->auth["uid"]);
     }
-    trace("-","isSuperadmin");
-    return $r_superuser[AA_ID];
+    return $r_superuser[AA_ID] ? $r_superuser[AA_ID] : false;
 }
 
 /** IsCatPerm function

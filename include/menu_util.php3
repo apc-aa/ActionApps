@@ -185,6 +185,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
               <td align="center" class="navbar">
         ';
         $delim = '';
+
         foreach ($smmenus as $aamenu =>$aamenuprop) {
             if ($aamenuprop["level"] == "main") {
                 $link  = GetMenuLink($aamenu == $activeMain,
@@ -193,12 +194,14 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
                                      $aamenuprop["href"],
                                      $aamenuprop["exact_href"],
                                      $slice_id);
+
                 if ($link) {
                     echo $delim. $link;
                     $delim = ' | ';
                 }
             }
         }
+
 
         echo '
               </td>
@@ -243,6 +246,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
  * @param $slice_id
  */
 function GetMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) {
+
     if ($active) {
         return "<span class=\"nbactive\">$label</span>\n";
     }
@@ -253,7 +257,7 @@ function GetMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) {
         }
         $href = con_url($href, "slice_id=$slice_id");
         return a_href($href, "<span class=\"nbenable\">$label</span>");
-    } 
+    }
     // maked invisible which is better, I think. Honza 2007-08-02
     // return "<span class=\"nbdisable\">$label</span>";
     return '';

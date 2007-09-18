@@ -670,11 +670,8 @@ class ItemContent {
         // and NOW - store the fields and prepare itemvarset
         $this->_store_fields($id, $fields, $context);
 
-        /* Alerts module uses moved2active as the time when
-           an item was moved to the active bin */
-        if (($mode=='insert') ||
-            ($itemvarset->get('status_code') != $oldItemContent->getStatusCode()
-                                        && $itemvarset->get('status_code') >= 1)) {
+        // Alerts module uses moved2active as the time when an item was moved to the active bin 
+        if (($mode=='insert') OR (($itemvarset->get('status_code') != $oldItemContent->getStatusCode()) AND $itemvarset->get('status_code') >= 1)) {
             $itemvarset->add("moved2active", "number", $itemvarset->get('status_code') > 1 ? 0 : time());
         }
 
@@ -700,9 +697,16 @@ class ItemContent {
                 $itemvarset->add("edited_by", "quoted",   default_fnc_uid(""));
                 $itemvarset->doReplace('item');
                 break;
-            default:
+            case 'insert':
+                // check, if all data in item table are correct
                 if ($itemvarset->get('status_code') < 1) {
                     $itemvarset->set('status_code', 1);
+                }
+                if ($itemvarset->get('publish_date') < 1) {
+                    $itemvarset->set('publish_date', now());
+                }
+                if ($itemvarset->get('expiry_date') < 1) {
+                    $itemvarset->set('expiry_date', 1861916400);   // sometimes in 2029
                 }
                 $itemvarset->set('display_count', (int)$this->getValue('display_count...'));
                 $itemvarset->add('post_date', "quoted", default_fnc_now(""));

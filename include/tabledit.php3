@@ -130,7 +130,7 @@ class tabledit {
             reset($orderby);
             $orderby = key($orderby);
             $this->orderby = $orderby;
-            if ($tecmd["orderby"][$orderby]) {
+            if (isset($tecmd["orderby"]) AND $tecmd["orderby"][$orderby]) {
                 $tecmd["orderdir"] = $tecmd["orderdir"] == 'd' ? 'a' : 'd';
                 $this->orderdir    = $tecmd["orderdir"];
             }
