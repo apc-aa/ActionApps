@@ -41,7 +41,7 @@ if (!$userfile) {
     echo "</form>";
 } else {
     $file_name=gensalt (20);
-    $realname=$HTTP_POST_FILES['userfile']['name'];
+    $realname=$_FILES['userfile']['name'];
     $stringoutput='';
     $dest_file = Files::uploadFile('userfile', $uploadpath, '', 'new', $file_name);
     if ($dest_file === false) {   // error
