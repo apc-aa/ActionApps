@@ -246,9 +246,9 @@ class AA_Collection {
         return $zids;
     }
 
-    function getReadersSelectArray($how_often = null) {
+    function getReadersSelectArray($ignore_reading_password, $how_often = null) {
         $ret = array();
-        $content4ids = GetItemContent($this->getReaders($how_often), false, false, array(FIELDID_USERNAME, FIELDID_EMAIL));
+        $content4ids = GetItemContent($this->getReaders($how_often), false, $ignore_reading_password, array(FIELDID_USERNAME, FIELDID_EMAIL));
         if ( is_array($content4ids) ) {
             foreach ($content4ids as $reader_id => $content4id ) {
                 $ret[$reader_id] = $content4id[FIELDID_USERNAME][0]['value'] . ' ('. $content4id[FIELDID_EMAIL][0]['value'] . ')';
