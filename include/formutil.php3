@@ -249,6 +249,98 @@ class inputform {
         }
     }
 
+
+    /** getForm function
+     *   Shows the Add / Edit item form fields
+     * @param $content4id
+     * @param $slice
+     * @param $edit
+     * @param $show is used by the Anonymous Form Wizard, it is an array
+     *                (packed field id => 1) of fields to show
+     * @param $slice_fields
+     */
+    function getForm2(&$content4id, &$slice, $edit, $show="", $slice_fields=false) {
+        global $auth, $profile;
+
+        if ( !is_object( $profile ) ) {
+            $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());  // current user settings
+        }
+
+        $fields    = $slice->getFields($slice_fields);
+        $prifields = $fields->getPriorityarray();
+
+        if ( !isset($prifields) OR !is_array($prifields) ) {
+            return MsgErr(_m("No fields defined for this slice"));
+        }
+
+        $form4anonymous_wizard = is_array($show);
+
+        // holds array of fields, which we will use on the form, so we have
+        // to count with them for javascript and show_sunc_used
+        $shown_fields = array();
+
+        $item = $edit ? GetItemFromContent($content4id) : null;
+
+        foreach ($prifields as $field_id) {
+            $field       = $fields->getField($field_id);
+
+            $varname     = AA_Field::getId4Form($field_id, $item ? $item->getItemID() : null);
+            $htmlvarname = $varname."html";
+
+            if ( ($form4anonymous_wizard  AND !$show[$f['id']]) OR
+                 (!$form4anonymous_wizard AND (!$f["input_show"] OR
+                                         $profile->getProperty('hide',$f['id']) OR
+                                         $profile->getProperty('hide&fill',$f['id'])))) {
+                // do not show this field
+                continue;
+            }
+
+            $shown_fields[$field_id] = true;  // used => generate js for it
+
+            // ----- collect all field_* parameters in order we can call display function
+
+            // field_mode - how to display the field
+            $field_mode = !IsEditable($content4id->getValues($field_id), $f, $profile) ?
+                          'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
+
+            if ( $edit ) {
+                $field_value     = $content4id->getValues($field_id);
+                $field_html_flag = $content4id->getValue($field_id, 'flag') & FLAG_HTML;
+            } else {     // insert or new reload of form after error in inserting
+                // first get values from profile, if there are some predefined value
+                $foo = $profile->getProperty('predefine',$f['id']);
+                if ( $foo AND !$GLOBALS[$varname]) {
+                    $x                     = $profile->parseContentProperty($foo);
+                    $GLOBALS[$varname]     = $x[0];  // it is not quoted, so OK
+                    $GLOBALS[$htmlvarname] = $x[1];
+                }
+                // get values from form (values are filled when error on form ocures
+                if ( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {
+                      // get the multivalues
+                    foreach ( $GLOBALS[$varname] as $value ) {
+                        $field_value[] = array('value' => stripslashes($value)); // it is quoted!!!
+                    }
+                } else {
+                    $field_value[0]['value'] = stripslashes($GLOBALS[$varname]);  // it is quoted!!!
+                }
+                $field_html_flag = (((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
+            }            // Display the field
+            $aainput = new AA_Inputfield($field_value, $field_html_flag, $field_mode);
+            //fix -- otherwise $field_value keeps array
+            unset($field_value);
+            $aainput->setFromField($f);
+
+            // do not return template for anonymous form wizard
+            $ret .= $aainput->get($form4anonymous_wizard ? 'expand' : 'template', $item);
+            unset($aainput);
+        }
+        $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
+        $this->show_func_used   = $slice->get_show_func_used($edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
+        return $ret;
+    }
+
+
+
     /** getForm function
      *   Shows the Add / Edit item form fields
      * @param $content4id
@@ -2898,12 +2990,12 @@ function getFrmJavascript( $jscode ) {
 function getFrmJavascriptCached( $jscode, $name ) {
     global $pagecache;
     $keystr = serialize($jscode);
+    $keyid  = $pagecache->getKeyId($keystr);
 
-    if (!$pagecache->get($keystr)) {     // not in cache, yet
+    if (!$pagecache->getById($keyid)) {     // not in cache, yet
         $str2find = new CacheStr2find($name, 'js');
-        $pagecache->store($keystr, $jscode, $str2find);
+        $pagecache->store($keystr, $jscode, $str2find, true);
     }
-    $keyid = $pagecache->getKeyId($keystr);
     return getFrmJavascriptFile( 'cached.php3?keystr='.$keyid );
 }
 
@@ -2948,12 +3040,8 @@ function FrmCSS( $stylecode ) {
  */
 function IncludeManagerJavascript() {
     global $sess;
-    FrmJavascript( '
-        var aa_instal_path        = "'. AA_INSTAL_PATH .'";
-        var aa_live_checkbox_file = "'. $sess->url(AA_INSTAL_PATH. "live_checkbox.php3") .'";
-        var aa_live_change_file   = "'. $sess->url(AA_INSTAL_PATH. "live_change.php3") .'"; ');
+    FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess_id='.$sess->id );
     FrmJavascriptFile( 'javascript/manager.js' );
-    FrmJavascriptFile( 'javascript/aajslib.php3' );
 }
 
 /** getRadioBookmarkRow function
@@ -3071,7 +3159,7 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
     global $slice_id;
     if ( $group == 'sel_item' ) {  // user specified users
         $zids = new zids(null, 'l');
-        $zids->set_from_item_arr($items);
+        $zids->setFromItemArr($items);
     } else {                   // user defined by bookmark
         switch ($group) {
             case 'AA_ALL':         $conds = false; $bins = AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH;  break;

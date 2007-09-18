@@ -1,8 +1,6 @@
 // Scripts used in manager.class.php3
 // - folloving global javascript variables should be set before calling
-//   aa_instal_path
-//   aa_live_checkbox_file
-//   aa_live_change_file
+//   AA_Config structure - see javascript/aajslib.php3
 
 //  Fills 'akce' hidden field and submits the form or opens popup window
 function MarkedActionGo() {
@@ -23,6 +21,24 @@ function MarkedActionGo() {
         }
     }
 }
+
+//  Fills 'akce' hidden field and submits the form or opens popup window
+function MarkedActionSelect() {
+    if( $F('markedaction_select') && ($F('markedaction_select') != 'nothing') ) {
+        // markedactionsetting is global variable defined in manager.class.php3
+        // which contain serialized state of the AA object, which should be
+        // instatnionated in AA and asked for displaying htmlSetting of the action
+        if( markedactionsetting[$('markedaction_select').selectedIndex] != null ) {
+            $('makrekactionparams').update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
+            new Ajax.Updater('makrekactionparams', AA_Config.AA_INSTAL_PATH + 'admin/index.php3?' + AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID +"&display_params="+markedactionsetting[$('markedaction_select').selectedIndex]);
+        } else {
+            $('makrekactionparams').update('');
+        }
+    } else {
+        $('makrekactionparams').update('');
+    }
+}
+
 
 function WriteEmailGo() {
   var iftarget = document.itemsform.target;
@@ -142,32 +158,29 @@ function SearchBarActionConfirm( formname, srchbr_akce, confirmtxt ) {
 
 // called by the f_k alias function (see item.php3)
 // - folloving global javascript variables should be set before calling
-//   aa_instal_path, aa_live_checkbox_file, aa_live_change_file
 function CallLiveCheckbox(controlName) {
-    myimg = document.itemsform[controlName];
-    myimg.src = aa_instal_path + "images/cb_2off.gif";
-
-    imgsrc = aa_live_checkbox_file+"&"+controlName+"=1&no_cache="+Math.random();
+    myimg     = document.itemsform[controlName];
+    myimg.src = AA_Config.AA_INSTAL_PATH + "images/cb_2off.gif";
+    imgsrc    = AA_Config.AA_INSTAL_PATH + "live_checkbox.php3?" + AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID +"&"+controlName+"=1&no_cache="+Math.random();
     setTimeout("ChangeImgSrc ('"+controlName+"','"+imgsrc+"')", 1);
 }
 
 // - folloving global javascript variables should be set before calling
-//   aa_instal_path, aa_live_checkbox_file, aa_live_change_file
 function CallLiveChange(controlName, status) {
     switch (status) {
       case "change" :
             controlName = controlName + "_chb";
-            imgsrc = aa_instal_path + "images/cb_off.gif";
+            imgsrc = A_Config.AA_INSTAL_PATH + "images/cb_off.gif";
             ChangeImgSrc(controlName,imgsrc);
            break;
       case "click" :
             mysel = eval("document.itemsform['"+controlName+"']");
             val = mysel.options[mysel.selectedIndex].value;
 
-            imgsrc = aa_instal_path + "images/cb_off.gif";
+            imgsrc = A_Config.AA_INSTAL_PATH + "images/cb_off.gif";
             ChangeImgSrc(controlName+"_chb",imgsrc);
 
-            imgsrc = aa_live_change_file+"&"+controlName+"="+val+"&no_cache="+Math.random();
+            imgsrc    = AA_Config.AA_INSTAL_PATH + "live_change.php3?" + AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID +"&"+controlName+"="+val+"&no_cache="+Math.random();
             setTimeout("ChangeImgSrc('"+controlName+"_chb', '"+imgsrc+"')", 1);
            break;
     }

@@ -67,8 +67,11 @@ var Prototype = {
   K: function(x) { return x }
 }
 
+// ussage: $(div_id_2).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
 var AA_Config = {
-  AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>'
+  AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>',
+  SESS_NAME:      '<?php echo isset($_GET['sess_name']) ? $_GET['sess_name'] : ''; ?>',
+  SESS_ID:        '<?php echo isset($_GET['sess_id'])   ? $_GET['sess_id']   : ''; ?>'
 }
 
 <?php
