@@ -66,20 +66,18 @@ function orderfields_cmp($a, $b) {
 /**
  * AA_Searchbar_Row class - handles one search row
  */
-class AA_Searchbar_Row extends storable_class {
+class AA_Searchbar_Row extends AA_Storable {
     var $condition;
     var $readonly;
 
     // required - class name (just for PHPLib sessions)
     var $classname        = "AA_Searchbar_Row";
     var $persistent_slots = array('condition', 'readonly');
-    /** getPersistentProperties function
+
+    /** getClassProperties function
      * @param $class
      */
-    function getPersistentProperties($class=null) {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
-        // class parameter is needed, because generic static classs method
-        // in storable_class is not able to detect, what type of class it is in
-        // Grrr! PHP (5.2.0)
+    function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return array (
             'condition' => new AA_Property( 'condition'  , _m('Condition'), 'AA_Condition', false, true),
             'readonly'  => new AA_Property( 'readonly'   , _m('Readonly' ), 'bool',         false, true)
@@ -141,7 +139,7 @@ class AA_Searchbar_Row extends storable_class {
  * AA_Searchbar class - handles search and order bar in AA admin interface
  * (on Links Manager page, for example)
  */
-class AA_Searchbar extends storable_class {
+class AA_Searchbar extends AA_Storable {
     var $search_fields;   // fields (options) used in search selectboxes
     var $search_operators;// operators used for fields in search selectboxes
     var $order_fields;    // fields (options) used in order selectboxes
@@ -165,14 +163,10 @@ class AA_Searchbar extends storable_class {
             // save only small or dynamicaly changed values - not base setting
             array("search_row", "order_row");
 
-    /** getPersistentProperties function
+    /** getClassProperties function
      *  Used parameter format (in fields.input_show_func table)
-     * @param $class
      */
-    function getPersistentProperties($class=null) {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
-        // class parameter is needed, because generic static classs method
-        // in storable_class is not able to detect, what type of class it is in
-        // Grrr! PHP (5.2.0)
+    function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return array (
             'search_row' => new AA_Property( 'search_row'  , _m('Search row'), 'AA_Searchbar_Row', true, true),
             'order_row'  => new AA_Property( 'order_row'   , _m('Order row' ), 'text',             true, true)   // @todo probably it should be done better, since it is in fact array of arrays
@@ -437,8 +431,9 @@ class AA_Searchbar extends storable_class {
 
     /** addSearch function
      * Adds new Search bar(s)
-     * @param  array $conds[] = array ( <field> => 1, 'operator' => <operator>,
-     *                                  'value' => <search_string> )
+     * @param  array $conds[] = array ( <field>    => 1,
+     *                                  'operator' => <operator>,
+     *                                  'value'    => <search_string> )
      * @param $readonly
      */
     function addSearch($conds, $readonly=false) {
@@ -747,7 +742,7 @@ class AA_Bookmarks {
 
     /** get function
      *  Get searchbar state for bookmark number $key.
-     *  See storable_class in statestore.php3 for more info about 'state'
+     *  See AA_Storable in statestore.php3 for more info about 'state'
      * @param $param key
      */
     function get($key) {

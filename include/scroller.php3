@@ -49,7 +49,7 @@ function userdate2sec($dttm, $time="") {
 
 require_once AA_INC_PATH . "statestore.php3";
 
-class AA_Scroller extends storable_class {
+class AA_Scroller extends AA_Storable {
     var $pgcnt;			            // total page count
     var $current          = 1;		// current page
     var $id;			            // scroller id
@@ -62,7 +62,7 @@ class AA_Scroller extends storable_class {
     var $urldefault;		        // cache self url
 
     // needed for PHPlib's session storing.
-    // @todo rewrite PHPlib's sessions to storable_class approach (since there is
+    // @todo rewrite PHPlib's sessions to AA_Storable approach (since there is
     // problem that you need to have class already defined before you try to
     // get data from session. It is not so good, since you need to include all the
     // class definition files which could be potentialy stored in the session
@@ -70,14 +70,10 @@ class AA_Scroller extends storable_class {
     var $persistent_slots = array("pgcnt", "current", "id", "visible", "sortdir",
                                   "sortcol", "filters", "itmcnt", "metapage", "urldefault");
 
-    /** getPersistentProperties function
+    /** getClassProperties function
      *  Used parameter format (in fields.input_show_func table)
-     * @param $class
      */
-    function getPersistentProperties($class=null) {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
-        // class parameter is needed, because generic static classs method
-        // in storable_class is not able to detect, what type of class it is in
-        // Grrr! PHP (5.2.0)
+    function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return array (
             'pgcnt'      => new AA_Property( 'pgcnt'     , _m('Pgcnt'     ), 'int',  false, true),
             'current'    => new AA_Property( 'current'   , _m('Current'   ), 'int',  false, true),
