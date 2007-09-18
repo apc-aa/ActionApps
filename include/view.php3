@@ -620,34 +620,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
     }
     trace("=","GetViewFromDB",$view_info['type']);
     switch( $view_info['type'] ) {
-        case 'full':  // parameters: zids, als
-            $format = $view->getViewFormat($selected_item);
-            if ( isset($zids) && ($zids->count() > 0) ) {
-                // get alias list from database and possibly from url
-                list($fields,) = GetSliceFields($slice_id);
-                $aliases = GetAliasesFromFields($fields, $als);
-                //mlx stuff
-                $slice = AA_Slices::getSlice($slice_id);
-                if (isMLXSlice($slice)) {  //mlx stuff, display the item's translation
-                    $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
-                    //make sure the lang info doesnt get reused with different view
-                    $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)));
-                    $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$conds,$slices);
-                    $zids3 = new zids($zids->longids());
-                    $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id,
-                                    $conds, '', $slice->getProperty('group_by'),"ACTIVE", $slices, '', 0,
-                                    '',$GLOBALS['nocache'], "vid=$vid t=full i="); //.serialize($zids3));
-                    $zids->a    = $zids3->a;
-                    $zids->type = $zids3->type;
-                }
-                $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, shtml_url(), "");
-                $ret      = $itemview->get_output_cached("view");
-            } else {
-                $ret      = $noitem_msg;
-            }
-            trace("-");
-            return $comment_begin. $ret . $comment_end;
-
         case 'discus':
             // create array of discussion parameters
             $disc = array('ids'         => ($view_param["all_ids"] ? "" : $view_param["ids"]),
@@ -729,8 +701,35 @@ function GetViewFromDB($view_param, &$cache_sid) {
             $ret = $itemview->get_output_cached();
             return $comment_begin. $ret. $comment_end;
 
-        case 'seetoo':
+        case 'full':  // parameters: zids, als
+            $format = $view->getViewFormat($selected_item);
+            if ( isset($zids) AND ($zids->count() > 0) ) {
+                // get alias list from database and possibly from url
+                list($fields,) = GetSliceFields($slice_id);
+                $aliases = GetAliasesFromFields($fields, $als);
+                //mlx stuff
+                $slice = AA_Slices::getSlice($slice_id);
+                if (isMLXSlice($slice)) {  //mlx stuff, display the item's translation
+                    $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
+                    //make sure the lang info doesnt get reused with different view
+                    $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)));
+                    $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$conds,$slices);
+                    $zids3 = new zids($zids->longids());
+                    $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id,
+                                    $conds, '', $slice->getProperty('group_by'),"ACTIVE", $slices, '', 0,
+                                    '',$GLOBALS['nocache'], "vid=$vid t=full i="); //.serialize($zids3));
+                    $zids->a    = $zids3->a;
+                    $zids->type = $zids3->type;
+                }
+                $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, shtml_url(), "");
+                $ret      = $itemview->get_output_cached("view");
+            } else {
+                $ret      = $noitem_msg;
+            }
+            trace("-");
+            return $comment_begin. $ret . $comment_end;
 
+        case 'seetoo':
         case 'calendar':
             $today = getdate();
             $month = $view_param['month'];
@@ -751,11 +750,17 @@ function GetViewFromDB($view_param, &$cache_sid) {
             // Note drops through to next case
             trace("=","","calendar - drop through to digest, script etc");
 
+//        case 'full':  // parameters: zids, als
         case 'digest':
         case 'list':
         case 'rss':
         case 'urls':
         case 'script':  // parameters: conds, param_conds, als
+            // we have to respect listlen, from, to, page parameters, but also we have to deal with view-listlen settings, which is 0 for fulltext vieww
+/*            if ($view_info['type'] == 'full') {
+                $listlen = max(@min($listlen, $zids->count()), 1);
+            }
+*/
             if ($view_info['type'] == 'rss') {
                 header("Content-type: text/xml");
             }
