@@ -137,13 +137,32 @@ function DeleteSlice($del) {
     $SQL = "DELETE LOW_PRIORITY FROM field WHERE slice_id='$p_del'";
     $db->query($SQL);
 
+    // delete view
+    $SQL = "DELETE LOW_PRIORITY FROM view WHERE slice_id='$p_del'";
+    $db->query($SQL);
+
+    // delete email
+    $SQL = "DELETE LOW_PRIORITY FROM email WHERE owner_module_id='$p_del'";
+    $db->query($SQL);
+
+    // delete profile
+    $SQL = "DELETE LOW_PRIORITY FROM profile WHERE slice_id='$p_del'";
+    $db->query($SQL);
+
+    // delete rssfeeds
+    $SQL = "DELETE LOW_PRIORITY FROM rssfeeds WHERE slice_id='$p_del'";
+    $db->query($SQL);
+
+    // delete constant_slice
+    $SQL = "DELETE LOW_PRIORITY FROM constant_slice WHERE slice_id='$p_del'";
+    $db->query($SQL);
+
     // delete all module specific tables
     $SQL = "DELETE LOW_PRIORITY FROM slice WHERE id='$p_del'";
     $db->query($SQL);
 
     $SQL = "DELETE LOW_PRIORITY FROM module WHERE id='$p_del'";
     $db->query($SQL);
-
 }
 
 ?>
