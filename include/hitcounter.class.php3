@@ -27,6 +27,8 @@
  *
 */
 
+require_once AA_INC_PATH.  "toexecute.class.php3";
+
 /**
  * Hits logged to two temporary tables - hit_short_id (for short item ids) and
  * hit_long_id (for long item ids). With COUNTHIT_PROBABILITY
@@ -159,7 +161,7 @@ class AA_Hitcounter {
 
         if (is_array($stats2count)) {
 
-            $toexecute = new toexecute;
+            $toexecute = new AA_Toexecute;
             $timeshift = 0;
             foreach ($stats2count as $to_count) {
                 $count_slice_id = unpack_id($to_count['slice_id']);

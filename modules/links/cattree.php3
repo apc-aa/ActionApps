@@ -30,6 +30,8 @@ http://www.apc.org/
 
 /** For Links_QueryZids() - called also from /misc/toexecute.php3 */
 require_once AA_BASE_PATH. "modules/links/linksearch.php3";
+require_once AA_INC_PATH.  "toexecute.class.php3";
+
 
 /** Category assignments - stores which category is subcategory of another */
 class catassignment {
@@ -486,7 +488,7 @@ class cattree {
 
     function count_all_links() {
         $this->updateIfNeeded();
-        $toexecute   = new toexecute;
+        $toexecute   = new AA_Toexecute;
         $linkcounter = new linkcounter;
 
         /** if we have already scheduled recounting of categories,
@@ -524,7 +526,7 @@ class linkcounter {
         return $count;
     }
 
-    /** Toexecutelater - special function called from toexecute class
+    /** Toexecutelater - special function called from AA_Toexecute class
     *  - used for queued tasks (runed form cron)
     */
     function toexecutelater($cpath) {

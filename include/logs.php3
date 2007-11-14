@@ -29,6 +29,8 @@
  *
 */
 
+require_once AA_INC_PATH. "toexecute.class.php3";
+
 /** By $DO_NOT_LOG array you are able to specify, which events you don't want
  *  to log - it's just like filter
  *  This should be list of all logable events (at least now - 2005-11-9)
@@ -107,7 +109,7 @@ class AA_Log {
     }
 
     function cleanup() {
-        $toexecute = new toexecute;
+        $toexecute = new AA_Toexecute;
         // clean all older than 40 days
         $cleaner   = new AA_Log_Clenup(now() - (60*60*24*40));
 

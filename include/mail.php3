@@ -34,6 +34,7 @@ require_once AA_INC_PATH."sliceobj.php3";
 require_once AA_INC_PATH."stringexpand.php3";
 require_once AA_INC_PATH."htmlMimeMail/htmlMimeMail.php";
 require_once AA_INC_PATH."validate.php3";
+require_once AA_INC_PATH."toexecute.class.php3";
 
 class HtmlMail extends htmlMimeMail {
 
@@ -69,11 +70,11 @@ class HtmlMail extends htmlMimeMail {
 
     /** sendLater function
      *  Send prepared e-mail to adresses specified in the $to array.
-     *  The e-mail is queued it toexecute queue before sending (not imediate)
+     *  The e-mail is queued it AA_Toexecute queue before sending (not imediate)
      * @param $to
      */
     function sendLater($to) {
-        $toexecute = new toexecute;
+        $toexecute = new AA_Toexecute;
 
         $tos  = array_unique(is_array($to) ? $to : array($to));
         $sent = 0;
@@ -141,7 +142,7 @@ class HtmlMail extends htmlMimeMail {
     }
 
     /** toexecutelater function
-     *  Toexecutelater - special function called from toexecute class
+     *  Toexecutelater - special function called from AA_Toexecute class
      *  - used for queued tasks (runed form cron)
      * @param $to
      */
