@@ -287,7 +287,7 @@ function GetMembership($id, $flags = 0) {
  * @param $user_id
  */
 function IsUserReader($user_id) {
-    return (guesstype($user_id, true) == 'l');
+    return (guesstype($user_id) == 'l');
 }
 
 

@@ -656,7 +656,7 @@ function GetAuthData( $user_id = false ) {
         if ( $_SERVER['PHP_AUTH_USER'] ) {
            $user_id = ReaderName2Id($_SERVER['PHP_AUTH_USER']);
         } else {
-           $user_id = (guesstype($auth->auth["uid"], true) == 'l') ? $auth->auth["uid"] : false;
+           $user_id = (guesstype($auth->auth["uid"]) == 'l') ? $auth->auth["uid"] : false;
         }
     }
     return new ItemContent($user_id);

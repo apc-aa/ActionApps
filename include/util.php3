@@ -108,8 +108,9 @@ function go_return_or_url($url, $usejs, $session, $add_param="") {
  * @param $s
  */
 function endslash(&$s) {
-    if (strlen ($s) && substr ($s,-1) != "/")
+    if (strlen ($s) AND substr ($s,-1) != "/") {
         $s .= "/";
+    }
 }
 
 /** debuglog function

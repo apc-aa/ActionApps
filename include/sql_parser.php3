@@ -172,20 +172,23 @@ function resolveOperator($op) {
  * @param $c
  */
 function isWhite($c) {
-    return strchr (WHITE, $c);
+    return strchr(WHITE, $c);
 }
+
 /** isLeftParenthesis function
  * @param $c
  */
 function isLeftParenthesis($c) {
     return strchr (LEFT_PARENTHESES, $c);
 }
+
 /** isRightParenthesis function
  * @param $c
  */
 function isRightParenthesis($c) {
     return strchr (RIGHT_PARENTHESES, $c);
 }
+
 /** isLetter function
  * @param $c
  */
@@ -618,7 +621,7 @@ class Syntax {
         }
         else if ( $la == TOKEN_TYPE_STRING ) {    // G -> string
 //            echo("G->string<BR>\n");//debug
-            $val = $this->column . " " . $this->operator . " \"" . $this->pre . $this->tList->getStringValue() . $this->post . "\"";
+            $val = $this->column . " " . $this->operator . " '" . $this->pre . $this->tList->getStringValue() . $this->post . "'";
             if ( ($err = $this->tList->match(TOKEN_TYPE_STRING) )) {
                 $GLOBALS["syntax_error"]=$err;
                 return "_SYNTAX_ERROR";

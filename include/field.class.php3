@@ -199,7 +199,9 @@ class AA_Field {
                                         null,               // $example;
                                         $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
                                         AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
-                                        $item->getAaValue($this->getId()));
+                                        $item->getAaValue($this->getId()),
+                                        $item_id
+                                      );
 
         $repre_value = $item->subst_alias($visual ? $visual : $this->getId());
         return $widget->getAjaxHtml($aa_variable, get_if($repre_value, '--'));

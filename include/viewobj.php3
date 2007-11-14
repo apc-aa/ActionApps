@@ -47,7 +47,7 @@ class view {
      * @param $rec
      */
     function view($id,$rec=null) {
-        $this->id = $id;
+        $this->id = (int)$id;
         if (isset($rec)) {
             $this->fields = $rec;
         }

@@ -543,9 +543,8 @@ class zids {
  * short should be == 16 and long == 32 but there is or was somewhere a bug
  * leading to shorter (as short as 14) character ids.
  * @param $str
- * @param $quiet
  */
-function guesstype($str, $quiet = false) {
+function guesstype($str) {
     $s = strlen($str);
     if (($s < 12) AND (is_numeric($str) OR ($str==''))) {
         return 's';
@@ -559,9 +558,7 @@ function guesstype($str, $quiet = false) {
     if ($s > 32) {
         return 't'; // Could also test last 32 hex
     }
-    if (!$quiet) {
-        print("Error, unable to guess type of id '$str' - ask mitra");
-    }
+    debug("Error, unable to guess type of id '$str' - ask mitra");
     return ('z');
 }
 

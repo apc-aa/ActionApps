@@ -46,7 +46,11 @@ class AA_Includer {
     }
 
     function weNeed($classname) {
-
+        // this is just test include - we will manage the extensions in the database
+        if ('AA_Stringexpand_Nszm' == $classname) {
+            require_once AA_INC_PATH. "custom/nszm/stringexpand.php";
+            return true;
+        }
     }
 
 }
@@ -62,7 +66,7 @@ class AA_Includer {
  * getState() and setFromState() methods for storing and restoring object's data
  */
 class AA_Storable {
-    
+
     /** setFromState function
      * Restores the object's data from $state
      * State uses just basic types - array, int, text - not objects

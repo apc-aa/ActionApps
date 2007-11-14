@@ -862,7 +862,7 @@ function GetIDsInfo($id, $ds = "") {
 function GetUserType( $user_id ) {
     if (substr($user_id,0,4)      == 'uid=') return 'User';
     if (substr($user_id,0,3)      == 'cn=')  return 'Group';
-    if (guesstype($user_id, true) == 'l')    return 'ReaderGroup';
+    if (guesstype($user_id) == 'l')    return 'ReaderGroup';
     return 'Reader';
 }
 */
@@ -870,13 +870,13 @@ function GetUserType( $user_id ) {
  * @param $user_id
  */
 function IsUserReader($user_id) {
-    return ((guesstype($user_id, true) == 'l') AND (substr($user_id,0,4) != 'uid='));
+    return ((guesstype($user_id) == 'l') AND (substr($user_id,0,4) != 'uid='));
 }
 /** IsGroupReader function
  * @param $group_id
  */
 function IsGroupReader($group_id) {
-    return ((guesstype($group_id, true) == 'l') AND (AA_Slices::getSliceProperty($group_id, 'type')=='ReaderManagement'));
+    return ((guesstype($group_id) == 'l') AND (AA_Slices::getSliceProperty($group_id, 'type')=='ReaderManagement'));
 }
 /** IsGroupReaderSet function
  * @param $group_id

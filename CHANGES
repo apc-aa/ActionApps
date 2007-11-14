@@ -1,9 +1,36 @@
+11/13/07 - new {limit:<ids>:<offset>[:<length>[:<delimiter>]]} syntax 
+(honzam)     Allows you to get only the part of ids (first, last, ...) from the 
+             list - like:
+                 {limit:12324-353443-533443:0:1}   // returns 12324
+                 {limit:{ids:6353428288a923:d-category........-=-Dodo}:0:1}
+             Offset and length parameters follows the array_slice() PHP function
+         - new {next:<ids>:<current_id>} and {previous:<ids>:<current_id>} syntax
+             Next/Previous item for the current item in the list - like:
+                 {next:12324-353443-58921:353443}   // returns 58921
+                 {next:{ids:6353428288a923:d-category........-=-Dodo}:566a655e7787b564b8b6565b}
+         - new {img:<url>:<phpthumb_params>} syntax - Creates link to modified 
+           image using phpThumb - like: 
+                 <img src="{img:{img_url.........}:w=150&h=150}">
+             see http://phpthumb.sourceforge.net/demo/ for phpThumb parameters
+         - "No Item Message" can use AA Expressions for view.php3 as well as for
+           slice.php3. It alse uses textarea now (so the text could be longer)
+         - buttons on itemedit form and actions in Item Manager have ids 
+           attributes now, so you can easily hide it by CSS
+         - better error messages in fillform.php3
+         - fixed limit parameter for grouping, so folowing code now works:
+               sort = 5headline........-
+               sort[0] = 5headline........-
+               sort[0][headline........]=d&sort[0][limit]=5
+             displays maximally 5 items for each group
+          - fixed "=" operator - the "*" and "?" characters are not replaced 
+            by "%" and "_" in SQL which was nonsense anyway
+         - a bit nicer HTML code for <select... widget 
 09/18/07 - Central now supports creation of exact copy of the slice on (or from)
 (honzam)   remote AAs
          - new hitcounter statistics - to display statistics use the
            {hitcounter:days:<ids>} command - just like:
            {hitcounter:days:24457-24474} or
-           {hitcounter:days:{ids:76f59b2023b8a4e8d6c57831ef8c8199:d-publish_date....->-1185919200}}{}
+           {hitcounter:days:{ids:76f59b2023b8a4e8d6c57831ef8c8199:d-publish_date....->-1185919200}}
          - Item Manager actions converted to new - class approach
          - better counting algorithm for hitcount statistics
          - filler.php3 updated to work with WAP pages (Thanks to Colnodo)
