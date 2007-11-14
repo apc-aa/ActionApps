@@ -150,6 +150,7 @@ class AA_Manageraction_Item_Feed extends AA_Manageraction {
     * @param $param       - not used
     * @param $item_arr    - array of id of AA records to check
     * @param $akce_param  - not used
+    * @return false or error message
     */
     function perform(&$manager, &$state, $item_arr, $akce_param) {
         if (strlen($akce_param) < 1) {
@@ -187,7 +188,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
     var $slice_id;
 
     /** Constructor - fills the information about the target bin
-     *  We use default empty parameters, since we need to construct this 
+     *  We use default empty parameters, since we need to construct this
      *  class from state by setFromState() method
      */
     function AA_Manageraction_Item_Move2slice($id='', $slice_id='') {
@@ -219,7 +220,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
      */
     function htmlSettings() {
         global $g_modules;
-        
+
         $options = array();
         if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
             foreach ( $g_modules as $sid => $v) {
@@ -238,9 +239,10 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
     }
 
     /** main executive function
-    * @param $param       - not used
-    * @param $item_arr    - array of id of AA records to check
-    * @param $akce_param  - not used
+    * @param  $param       - not used
+    * @param  $item_arr    - array of id of AA records to check
+    * @param  $akce_param  - not used
+    * @return false or error message
     */
     function perform(&$manager, &$state, $item_arr, $akce_param) {
         global $event, $auth, $pagecache;
@@ -314,6 +316,7 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
      *                      in $item_arr - otherwise delete all items in Trash
      *  @param $item_arr    Items to delete (if 'selected' is $param)
      *  @param $akce_param  Not used
+     *  @return false or error message
      */
     function perform(&$manager, &$state, $item_arr, $akce_param) {
         global $pagecache, $slice_id, $event;
@@ -362,6 +365,8 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
 
         $pagecache->invalidateFor("slice_id=$slice_id");
         freeDB($db);
+
+        return false;
     }
 
     /** Checks if the user have enough permission to perform the action */
@@ -434,10 +439,109 @@ class AA_Manageraction_Item_Tab extends AA_Manageraction {
         parent::AA_Manageraction($id);
     }
 
-    /** main executive function - Handler for Tab switch - switch between bins */
+    /** main executive function - Handler for Tab switch - switch between bins
+     * @return false or error message
+     */
     function perform(&$manager, &$state, $item_arr, $akce_param) {
         $manager->setBin($this->to_bin);
         $manager->go2page(1);
+        return false;        // OK
+    }
+}
+
+
+
+//------------------ Actions for Task Manager --------------------------------
+
+/** AA_Manageraction_Item_DeleteTrash - Handler for DeleteTrash switch
+ *  Delete all items in the trash bin
+ */
+class AA_Manageraction_Taskmanager_Delete extends AA_Manageraction {
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Remove (cancel task)');
+    }
+
+    /** main executive function
+     *  @param $param       'selected' if we have to delete only items specified
+     *                      in $item_arr - otherwise delete all items in Trash
+     *  @param $item_arr    Items to delete (if 'selected' is $param)
+     *  @param $akce_param  Not used
+     *  @return false or error message
+     */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+
+        if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
+            /** @todo Should be changed to different permission */
+            return _m("You have not permissions to remove tasks");
+        }
+
+        // restrict the deletion only to selected items
+        $zids = new zids;
+        $zids->setFromItemArr($item_arr, 's');
+
+        if ($zids->count() < 1) {
+            return;
+        }
+
+        // $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete);
+
+        $varset = new Cvarset;
+        $varset->doDeleteWhere('toexecute', $zids->sqlin('id'));
+        return false;     // OK
+    }
+
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        /** @todo Should be changed to different permission */
+        return IfSlPerm(PS_EDIT);
+    }
+}
+
+/** AA_Manageraction_Item_DeleteTrash - Handler for DeleteTrash switch
+ *  Delete all items in the trash bin
+ */
+class AA_Manageraction_Taskmanager_Execute extends AA_Manageraction {
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Execute');
+    }
+
+    /** main executive function
+     *  @param $param       'selected' if we have to delete only items specified
+     *                      in $item_arr - otherwise delete all items in Trash
+     *  @param $item_arr    Items to delete (if 'selected' is $param)
+     *  @param $akce_param  Not used
+     *  @return false or error message
+     */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+        global $pagecache, $slice_id, $event;
+
+        if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
+            /** @todo Should be changed to different permission */
+            return _m("You have not permissions to remove items");
+        }
+
+        // restrict the deletion only to selected items
+        $zids = new zids;
+        $zids->setFromItemArr($item_arr, 's');
+
+        if ($zids->count() < 1) {
+            return;
+        }
+
+        $toexecute = new AA_Toexecute;
+        $toexecute->executeTask($zids->shortids());
+        return $toexecute->report();
+    }
+
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        /** @todo Should be changed to different permission */
+        // if we want to use it as "action" (not "switch"), then we should be in trash bin
+        return IfSlPerm(PS_EDIT);
     }
 }
 

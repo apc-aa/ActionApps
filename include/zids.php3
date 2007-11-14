@@ -125,9 +125,10 @@ class zids {
      * Grabs long ids from array as posted from manager.class checkboxes
      *  $items[x767ab56353544242552637389a853673]=1
      * @param $item_arr
+     * @param $type - type of ids, mostly 'l', but TaskManager f.e. uses short ones
      */
-    function setFromItemArr($item_arr) {
-        $this->clear('l');
+    function setFromItemArr($item_arr, $type='l') {
+        $this->clear($type);
         if ( isset($item_arr) AND is_array($item_arr) ) {
             foreach ( $item_arr as $it_id => $foo ) {
                 $this->a[] = substr($it_id,1);      // remove initial 'x'
