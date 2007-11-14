@@ -566,7 +566,7 @@ if ($zids->count() > 0) {
 } else {
     // test if the the noitem_msg is filled (be carefull - "0" should be considered as filled)
     echo (isset($slice_info['noitem_msg']) AND (strlen($slice_info['noitem_msg']) > 0)) ?               // <!--Vacuum--> is keyword for removing 'no item message'
-          str_replace( '<!--Vacuum-->', '', $slice_info['noitem_msg']) : ("<div>"._m("No item found") ."</div>");
+          str_replace( '<!--Vacuum-->', '', AA_Stringexpand::unalias($slice_info['noitem_msg'])) : ("<div>"._m("No item found") ."</div>");
 }
 
 if ($searchlog) {

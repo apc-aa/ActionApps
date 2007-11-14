@@ -560,6 +560,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
     }
 
     $selected_item = $view_param["selected"];      // used for boolean (1|0) _#SELECTED
+
     // alias - =1 for selected item
     // gets view data
     $view      = AA_Views::getView($vid);
@@ -724,7 +725,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                 $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, shtml_url(), "");
                 $ret      = $itemview->get_output_cached("view");
             } else {
-                $ret      = $noitem_msg;
+                $ret      = AA_Stringexpand::unalias($noitem_msg);
             }
             trace("-");
             return $comment_begin. $ret . $comment_end;
