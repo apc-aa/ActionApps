@@ -37,16 +37,28 @@ set_time_limit(360);
 $aas = AA_Actionapps::getArray();
 
 if ($_POST['copy']) {
-    $template_slice_defs = $aas[$_POST['template_aa']]->requestSliceDefinitions($sync_slices, true);
+    $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $_POST['sync_slices']);
+    $template_site_defs  = $aas[$_POST['template_aa']]->requestDefinitions('Site',  $_POST['sync_sites']);
     
     foreach ($_POST['destination_aa'] as $dest_aa) {
-        foreach ($_POST['sync_slices'] as $slice_name) {
-            $aas[$dest_aa]->importSlice($template_slice_defs[$slice_name]);
+        if (is_array($_POST['sync_slices'])) {
+            foreach ($_POST['sync_slices'] as $sid) {
+                if ($sid) {
+                    $aas[$dest_aa]->importModule($template_slice_defs[$sid]);
+                }
+            }
+        }
+        if (is_array($_POST['sync_sites'])) {
+            foreach ($_POST['sync_sites'] as $sid) {
+                if ($sid) {
+                    $aas[$dest_aa]->importModule($template_site_defs[$sid]);
+                }
+            }
         }
     }
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess_id='.$sess->id );
 
 ?>
@@ -54,7 +66,7 @@ FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess
 </HEAD>
 <BODY>
 <?php
-$useOnLoad = true;
+$useOnLoad = false;
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "central", "copyslice");
 
@@ -67,14 +79,10 @@ $aas_array = array();
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
 }
-// Template slice - grab from remote AA
-$tmp_slices = $aas[$_POST['template_aa']]->requestSlices();
 
-// in synchronization we are working with !!names!! not ids
-foreach ($tmp_slices as $sid => $name) {
-    $template_slices[$name] = $name;
-}
-
+// Template slice (and site) - grab from remote AA
+$template_slices = $aas[$_POST['template_aa']]->requestModules(array('S'));
+$template_sites  = $aas[$_POST['template_aa']]->requestModules(array('W'));
 
 $form_buttons = array("copy"      => array( "type"      => "submit",
                                             "value"     => _m("Copy"),
@@ -88,9 +96,10 @@ $form_buttons = array("copy"      => array( "type"      => "submit",
 
 FrmTabCaption('', '','', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
-FrmTabSeparator(_m('Slices to Copy from %1', array($aas[$_POST['template_aa']]->getName())));
-FrmInputMultiChBox('sync_slices[]', $name, $template_slices, $_POST['sync_slices'], true, '', '', 1);
-FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, $_POST['destination_aa'], 20, false, true, _m('ActionApps installation to update'));
+FrmTabSeparator(_m('Modules to Copy from %1', array($aas[$_POST['template_aa']]->getName())));
+FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, $_POST['sync_slices'], 10);
+FrmInputMultiSelect('sync_sites[]', _m('Site modules to copy'), $template_sites, @reset($_POST['sync_sites']), 10);
+FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, @reset($_POST['destination_aa']), 20, false, true, _m('ActionApps installation to update'));
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
 </FORM>
