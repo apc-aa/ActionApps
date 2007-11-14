@@ -574,6 +574,10 @@ class AA_Sortorder {
  *     1)   sort = headline........-
  *     2)   sort[0] = headline........-
  *     3)   sort[0][headline........]=d
+ *  or with group limits (limited number of items displayed in each group)
+ *     1)   sort = 5headline........-
+ *     2)   sort[0] = 5headline........-
+ *     3)   sort[0][headline........]=d&sort[0][limit]=5
  */
 function getSortFromUrl( $sort ) {
     $ret_sort = array();
@@ -587,7 +591,15 @@ function getSortFromUrl( $sort ) {
             foreach ( $sort as $k => $srt) {
                 if ($srt) {
                     if ( is_array($srt) ) {
-                        $ret_sort[] = array( key($srt) => (strtolower(current($srt)) == "d" ? 'd' : 'a'));
+                        $tmp = array();
+                        if ( key($srt) == 'limit') {
+                            next($srt);
+                        }
+                        $tmp[key($srt)] = (strtolower(current($srt)) == "d" ? 'd' : 'a');
+                        if ($srt['limit']) {
+                            $tmp['limit'] = $srt['limit'];
+                        }
+                        $ret_sort[] = $tmp;
                     } else {
                         $order->addSortFromString($srt);
                         $ret_sort = array_merge($ret_sort, $order->getOrder());
@@ -653,9 +665,15 @@ function GetWhereExp( $field, $operator, $querystring ) {
         case 'RLIKE':
         case 'LLIKE':
         case 'XLIKE':
-        case '=':
+            // @todo - I do not like this part of code, which means, that you
+            // can use '%' as well as '*'
+            // I think we should escape all the % and _ and allow it only for
+            // say XLIKE
             $querystring = str_replace('*', '%', trim($querystring));
             $querystring = str_replace('?', '_', $querystring);
+            // continue!
+        case '=':
+            // it is not possible to use wildcard characers with '='
             $syntax      = new Syntax($field, $operator, lex( trim($querystring) ) );
             $ret         = $syntax->S();
             if ( $ret == "_SYNTAX_ERROR" ) {
@@ -875,10 +893,10 @@ function String2Sort( $sort_string ) {
  * @param $fields_arr
  * @param $conds
  * @param $defaultCondsOperator
- *  @param function $join_tables           - if some table is needed to join,
- *                                           this function adds it to the array
- *  @param function $additional_field_cond - aditional condition function
- *  @param function $additional_field_cond - aditional condition function parameter
+ * @param function $join_tables           - if some table is needed to join,
+ *                                          this function adds it to the array
+ * @param function $additional_field_cond - aditional condition function
+ * @param function $additional_field_cond - aditional condition function parameter
  * @param $add_param
  */
 function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_tables, $additional_field_cond=false, $add_param=false) {
@@ -918,7 +936,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
         }
     }
     return ( isset($ret) AND is_array($ret) ) ?
-                       ' AND ( '. join(' AND ', $ret ) .') ' : ' AND (1=1) ';
+                       ' AND ( '. join(' AND ', $ret ) .') ' : '';
 }
 
 /** MakeSQLOrderBy function
@@ -1281,7 +1299,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                 if ( $field->storageTable() == 'item' ) {   // field is stored in table 'item'
                     // Long ID in conds should be specified as unpacked, but in db it is packed
                     if (($fid == 'id..............') AND (guesstype($cond['value'])=='l')) {
-                        $cond['value'] = q_pack_id($cond['value']);
+                        $cond['value'] = "'".q_pack_id($cond['value'])."'";
                     }
                     $select_conds[] = GetWhereExp( 'item.'. $field->storageColumn(), $cond['operator'], $cond['value'] );
                     if ( $fid == 'expiry_date.....' ) {
