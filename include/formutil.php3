@@ -1470,7 +1470,7 @@ class AA_Inputfield {
                 if ( ($restrict == 'unselected') AND $selected  ){
                     continue;  // do not print this option
                 }
-                $ret .= "<option value=\"". htmlspecialchars($k) ."\" $selected>".htmlspecialchars($v)."</option>";
+                $ret .= "\n  <option value=\"". htmlspecialchars($k) ."\" $selected>".htmlspecialchars($v)."</option>";
             }
         }
         // now add all values, which is not in the array, but field has this value
@@ -1478,13 +1478,13 @@ class AA_Inputfield {
         if ( isset( $this->selected ) AND is_array( $this->selected ) AND ($restrict != 'unselected')) {
             foreach ( $this->selected as $k =>$v ) {
                 if ( !$already_selected[$k] ) {
-                    $ret .= "<option value=\"". htmlspecialchars($k) ."\" selected class=\"sel_missing\">".htmlspecialchars($k)."</option>";
+                    $ret .= "\n  <option value=\"". htmlspecialchars($k) ."\" selected class=\"sel_missing\">".htmlspecialchars($k)."</option>";
                     $selectedused = true;
                 }
             }
         }
         if ( $add_empty ) {
-            $emptyret = '<option value=""';
+            $emptyret = "\n  <option value=\"\"";
             if ($selectedused == false) {
                 $emptyret .= ' selected class="sel_on"';
             }
@@ -1743,16 +1743,16 @@ class AA_Inputfield {
             <table border=\"0\" cellpadding=\"2\" width=\"100%\"><tr>
             <td align=\"center\"><b><span class=\"redtext\">"._m("Selected").":<span></b><br><br><input type=\"button\" value=\""._m("Delete")."\" onclick='hcDelete(\"$name\"); $delete_button_trigger'></td>
             <td>");
-        $out = "<select name=\"$name\" multiple size=\"$rows\"".getTriggers("select",$name).">";
+        $out = "\n<select name=\"$name\" multiple size=\"$rows\"".getTriggers("select",$name).">";
             if (is_array($val)) {
                 $constants_names = GetConstants($group_id);
                 foreach ( $val as $v) {
                     if ($v['value']) {
-                        $out .= "<option value=\"".htmlspecialchars($v['value'])."\">".htmlspecialchars($constants_names[$v['value']])."\n";
+                        $out .= "\n  <option value=\"".htmlspecialchars($v['value'])."\">".htmlspecialchars($constants_names[$v['value']])."\n";
                     }
                 }
             }
-        $out .= "<option value=\"wIdThTor\">$widthTxt";
+        $out .= "\n  <option value=\"wIdThTor\">$widthTxt";
         $out .= "</select>";
         $this->echovar($out);
         $this->echoo("</td></tr></table>\n");
@@ -2559,7 +2559,7 @@ function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_
         $i=0;
         while (list($k, $v) = each($arr)) {
             $i++;
-            echo "<option value=\"". htmlspecialchars($usevalue ? $v : $k)."\"";
+            echo "\n  <option value=\"". htmlspecialchars($usevalue ? $v : $k)."\"";
             if ((string)$val == (string)(($usevalue OR $secondfield) ? $v : $k)) {
                 echo ' selected class="sel_on"';
             }
@@ -2573,7 +2573,7 @@ function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_
         }
         reset($arr);
     } else {
-      echo "<option value=\"wIdThTor\"> ";
+      echo "\n   value=\"wIdThTor\"> ";
           for ($i=0; $i<$select_size*3; $i++) {
             echo "&nbsp; ";
           }
@@ -2629,10 +2629,10 @@ function FrmSelectEasy($name, $arr, $selected="", $add="") {
 function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
     $name=safe($name); // safe($add) - NO! - do not safe it
 
-    $retval       = "<select name=\"$name\" $add>\n";
+    $retval       = "\n<select name=\"$name\" $add>\n";
     $selectedused = false;
     foreach ($arr as $k => $v) {
-        $retval .= "  <option value=\"". htmlspecialchars($k)."\"";
+        $retval .= "\n  <option value=\"". htmlspecialchars($k)."\"";
         if ((string)$selected == (string)$k) {
             $retval .= ' selected class="sel_on"';
             $selectedused = true;
@@ -2642,7 +2642,7 @@ function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
 
     // now add all values, which is not in the array, but field has this value
     if ($selected AND !$selectedused) {
-        $retval .= "<option value=\"". htmlspecialchars($selected) ."\" selected class=\"sel_missing\">".htmlspecialchars($selected)."</option>";
+        $retval .= "\n  <option value=\"". htmlspecialchars($selected) ."\" selected class=\"sel_missing\">".htmlspecialchars($selected)."</option>";
     }
 
     $retval .= "</select>\n";
@@ -2692,7 +2692,7 @@ function FrmTabCaption( $caption='', $outer_add='', $inner_add='', $buttons='', 
         <tr><td>
           <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'. COLOR_TABBG .'">
           <tr>';
-          FrmInputButtons($buttons, $sess, $slice_id, $valign, false);
+          FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABBG, false, 'top');
         echo '</tr></table></td></tr>';
     }
     if ($caption != "") {
@@ -2759,7 +2759,7 @@ function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
             </td>
           </tr>';
     if ( $buttons ) {
-        FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABTITBG);
+        FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABTITBG, false, 'bottom');
     }
     echo '
         </table>';
@@ -2776,8 +2776,9 @@ function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
  * @param $tr
  * @param $bgcolor
  * @param $no_hidden - prints all $buttons except the hidden fields
+ * @param $prefix    - prefix for button ids
  */
-function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG, $no_hidden=false) {
+function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG, $no_hidden=false, $prefix='') {
     global $BName, $BVersion, $BPlatform;
 
     if ($tr) {
@@ -2795,6 +2796,10 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
             $accesskey_pref = "ALT";
         }
 
+        if ($prefix) {
+            $prefix = $prefix. '_';
+        }
+
         foreach ( $buttons as  $name => $properties ) {
             if ( !is_array($properties) ) {
                 $name = $properties;
@@ -2803,9 +2808,9 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
             switch($name) {
                 case 'update':
                     if ($properties['type'] == 'hidden') {
-                        echo '&nbsp;<input type="hidden" name="update" value="'. get_if($properties['value'], "") .'">&nbsp;';
+                        echo '&nbsp;<input type="hidden" name="update" id="'.$prefix .'update" value="'. get_if($properties['value'], "") .'">&nbsp;';
                     } else {
-                        echo '&nbsp;<input type="submit" name="update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." ($accesskey_pref+S) " .' ">&nbsp;';
+                        echo '&nbsp;<input type="submit" name="update" id="'.$prefix .'update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." ($accesskey_pref+S) " .' ">&nbsp;';
                         $noaccess = 1; // use for update of item, bug was, that both "update" and "insert"
                         // has accesskey S
                     }
@@ -2815,7 +2820,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                     }
                     break;
                 case 'insert':
-                    echo '&nbsp;<input type="submit" name="insert" ';
+                    echo '&nbsp;<input type="submit" name="insert" id="'.$prefix .'insert" ';
                     if (!$noaccess) { // was accesskey used ?
                         echo 'accesskey="S" ';
                     }
@@ -2841,21 +2846,21 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                         $url  = $sess->url($url);
                     }
                     //          echo '&nbsp;<input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' ">&nbsp;';
-                    echo '&nbsp;<input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="document.location=\''.$url.'\'">&nbsp;';
+                    echo '&nbsp;<input type="button" name="cancel" id="'.$prefix .'cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' " onclick="document.location=\''.$url.'\'">&nbsp;';
                     if ($properties['help'] != '') {
                         echo FrmMoreHelp($properties['help']);
                         echo "&nbsp;&nbsp;";
                     }
                     break;
                 case 'reset':
-                    echo '&nbsp;<input type="reset" value=" '. _m("Reset form") .' ">&nbsp;';
+                    echo '&nbsp;<input type="reset" id="'.$prefix .'reset" value=" '. _m("Reset form") .' ">&nbsp;';
                     if ($properties['help'] != '') {
                         echo FrmMoreHelp($properties['help']);
                         echo "&nbsp;&nbsp;";
                     }
                     break;
                 case 'submit':
-                    echo '&nbsp;<input type="submit" name="submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  ($accesskey_pref+S) ". ' ">&nbsp;';
+                    echo '&nbsp;<input type="submit" name="submit" id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  ($accesskey_pref+S) ". ' ">&nbsp;';
                     if ($properties['help'] != '') {
                         echo FrmMoreHelp($properties['help']);
                         echo "&nbsp;&nbsp;";
@@ -2871,6 +2876,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                     $nbsp = ( $type == 'hidden' ) ? '' : '&nbsp;';
                     echo $nbsp.'<input type="'.  $type .
                          '" name="'.  $name .
+                         '" id="'.  $prefix . $name .
                          '" value="'. $properties['value'] . ($properties['accesskey'] ? "  (".$accesskey_pref."+".$properties['accesskey'].")  " : "").
                          '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>'.$nbsp;
                     if ($properties['help'] != '') {

@@ -306,7 +306,7 @@ class AA_Manager extends AA_Storable {
         if ( $this->scroller AND ($page > 0) )
             $this->scroller->go2page($page);
     }
-    
+
     function getAction($akce) {
         if (!is_object($this->actions)) {
             return false;
@@ -322,7 +322,7 @@ class AA_Manager extends AA_Storable {
 
         $akce = $_REQUEST['akce'];
         $chb  = $_REQUEST['chb'];
-        
+
         /** used for AJAX display of action parameters */
         if ( $_GET['display_params'] ) {
             $action2display = $this->getAction($_GET['display_params']);
@@ -484,9 +484,9 @@ class AA_Manager extends AA_Storable {
 
         $this->scroller->countPages( $ids_count );
 
-        echo '<table border="0" cellpadding="3">
-                <tr><td>';
-                  
+        echo '<table border="0" cellpadding="3" class="aa_manager_actions">
+                <tr class="aa_manager_actions_tr"><td>';
+
         if ($action_selected != "0") {
             echo '<input type="hidden" name="akce" value="">';          // filled by javascript - contains action to perform
             echo '<input type="hidden" name="akce_param" value="">';  // if we need some parameteres to the action, store it here
@@ -546,7 +546,7 @@ class AA_Manager extends AA_Storable {
 
                   // click "go" does not use markedform, it uses itemsfrom above...
                   // maybe this action is not used.
-                echo '<select name="markedaction_select" id="markedaction_select" onchange="MarkedActionSelect()">
+                echo '<select name="markedaction_select" id="markedaction_select" onchange="MarkedActionSelect()" class="markedaction_select">
                       <option value="nothing">'. _m('Selected items') .':'.
                       $options .'</select>';
                 if ($this->actions_hint_url || $this->actions_hint) {
@@ -657,7 +657,7 @@ class AA_Manageraction extends AA_Storable {
     function isPerm(&$manager) {
         return true;
     }
-    
+
     /** Do this action have some settings, whcih should be displayed? */
     function isSetting() {
         return is_callable(array($this, 'htmlSettings'));
