@@ -118,11 +118,12 @@ function fillForm() {
     if ($slice->getProperty("type") == "ReaderManagement") {
         if ($slice->getProperty("permit_anonymous_edit") == ANONYMOUS_EDIT_HTTP_AUTH) {
             if ( !$_SERVER["REMOTE_USER"]) {
-                ; // if no user is sent, this is perhaps the subscribe page
+                return "<!--Only HTTP authenticated users can edit the reader's data (see slice setting)-->";
+                  // if no user is sent, this is perhaps the subscribe page
                   // which is out of the protected folder
             } else {
                 $db = getDB();
-                $db->tquery (
+                $db->tquery(
                   "SELECT item.id FROM content INNER JOIN item
                    ON content.item_id = item.id
                    WHERE item.slice_id='".q_pack_id($slice_id)."'
@@ -148,7 +149,7 @@ function fillForm() {
             if ($db->num_rows() != 1) {
                 huhe("Warning, invalid access code '",$GLOBALS["ac"],"'");
                 freeDB($db);
-                return "<!--ACCESS CODE not OK-->";
+                return "<!--ACCESS CODE (ac or aw) not OK-->";
             }
             $db->next_record();
             $my_item_id = unpack_id($db->f("id"));
