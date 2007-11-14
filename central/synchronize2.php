@@ -60,14 +60,7 @@ foreach ( $aas as $k => $aa ) {
 $tmplate_slices = $aas[$_POST['template_aa']]->requestSlices();
 
 // Compared slice - grab from remote AA
-$cmp_slices = $aas[$_POST['comparation_aa']]->requestSlices();
-
-// in synchronization we are working with !!names!! not ids
-$comparation_slices[0] = _m('do not compare');
-
-foreach ($cmp_slices as $sid => $name) {
-    $comparation_slices[$name] = $name;
-}
+$cmp_slices = array_merge( array(0 => _m('do not compare')), $aas[$_POST['comparation_aa']]->requestSlices());
 
 $form_buttons = array("compare"      => array( "type"      => "submit",
                                                "value"     => _m("Compare"),
@@ -84,8 +77,8 @@ FrmTabCaption('', '','', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Slice Mapping'));
 FrmStaticText( $aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName());
-foreach($tmplate_slices as $name) {
-    FrmInputSelect('sync_slices['.htmlspecialchars($name).']', $name, $comparation_slices, $_POST['sync_slices'], true);
+foreach($tmplate_slices as $sid => $name) {
+    FrmInputSelect('sync_slices['.$sid.']', $name, $cmp_slices, $_POST['sync_slices'], true);
 }
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>

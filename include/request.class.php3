@@ -75,7 +75,7 @@ class AA_Request {
     }
 
     function _requestVal() {
-        return serialize($this);
+        return gzencode(serialize($this));
     }
 
     function _requestArr() {
@@ -110,7 +110,7 @@ class AA_Request {
         }
         $response  = unserialize($result[0]);
         if ( $response == false ) {
-            huhl("<br>Error - Bad response:", $result ,"<br>on request: $url", $this);
+            huhl("<br>Error - Bad response:", $result ,"<br>on request: $url");
             return new AA_Response("Bad response", 3);
         }
         return $response;

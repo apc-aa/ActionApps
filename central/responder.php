@@ -26,6 +26,36 @@ if ($free) {
 
 require_once dirname(__FILE__). "/include/init_central.php";
 
+
+if (!function_exists('gzdecode')) {
+    function gzdecode($data) {
+        $flags = ord(substr($data, 3, 1));
+        $headerlen = 10;
+        $extralen = 0;
+        $filenamelen = 0;
+        if ($flags & 4) {
+            $extralen = unpack('v' ,substr($data, 10, 2));
+            $extralen = $extralen[1];
+            $headerlen += 2 + $extralen;
+        }
+        if ($flags & 8) { // Filename
+            $headerlen = strpos($data, chr(0), $headerlen) + 1;
+        }
+        if ($flags & 16) { // Comment
+            $headerlen = strpos($data, chr(0), $headerlen) + 1;
+        }
+        if ($flags & 2) {// CRC at end of file
+            $headerlen += 2;
+        }
+        $unpacked = gzinflate(substr($data, $headerlen));
+        if ($unpacked === FALSE) {
+              $unpacked = $data;
+        }
+        return $unpacked;
+     }
+}
+
+
 /** AA_Responder base class - defines some useful common methods
  */
 class AA_Responder extends AA_Object {
@@ -37,8 +67,6 @@ class AA_Responder extends AA_Object {
     
     function name()   { return str_replace('AA_Responder_', '', __CLASS__); }
 }
-
-
 
 /** Used for autentication
  *  @return Session ID
@@ -63,32 +91,41 @@ class AA_Responder_Get_Aaname extends AA_Responder {
 }
 
 /** @return array of informations about AA - org_name, domain */
-class AA_Responder_Get_Slices extends AA_Responder {
-    function AA_Responder_Get_Slices($param=null) {}
+class AA_Responder_Get_Modules extends AA_Responder {
+    /** array of module types to get */
+    var $types;
+    
+    function AA_Responder_Get_Modules($param=null) {
+        $this->types = is_array($param['types']) ? $param['types'] : array(); 
+    }
 
     function run() {
-        $slices = GetTable2Array("SELECT id, name FROM module WHERE type = 'S' AND deleted != '1' ORDER BY priority, name", "unpack:id", 'name');
-        return new AA_Response($slices);
+        $type_sql = (count($this->types) == 0) ? '' : CVarset::sqlin('type', $this->types) . ' AND ';
+        $modules  = GetTable2Array("SELECT id, name FROM module WHERE $type_sql deleted != '1' ORDER BY type, priority, name", "unpack:id", 'name');
+        return new AA_Response($modules);
     }
 }
 
 /** @return structure which define all the definition of the slice (like slice 
  *  properties, fields, views, ...). It is returned for all the slices in array
  */
-class AA_Responder_Get_Slice_Defs extends AA_Responder {
-    var $slice_names;
-    var $complete;
+class AA_Responder_Get_Module_Defs extends AA_Responder {
+    var $ids;
+    var $limited;
+    var $type;     // module type
     
-    function AA_Responder_Get_Slice_Defs($param) {
-        $this->slice_names = is_array($param['slice_names']) ? $param['slice_names'] : array(); 
-        $this->complete    = (bool)$param['complete']; 
+    function AA_Responder_Get_Module_Defs($param) {
+        $this->ids     = is_array($param['ids']) ? $param['ids'] : array(); 
+        $this->limited = (bool)$param['limited']; 
+        $this->type    = $param['type']; 
     }
 
     function run() {
-        $ret = array();
-        foreach ( $this->slice_names as $slice_name ) {
-            $ret[$slice_name] = new AA_Slice_Definition();
-            $ret[$slice_name]->loadForSliceName($slice_name, $this->complete);
+        $ret        = array();
+        $class_name = 'AA_Module_Definition_'. $this->type;
+        foreach ( $this->ids as $sid ) {
+            $ret[$sid] = new $class_name;
+            $ret[$sid]->loadForId($sid, $this->limited);
         }
         return new AA_Response($ret);
     }
@@ -116,15 +153,15 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
 }
 
 /** @return imports the slice to the database */
-class AA_Responder_Do_Import_Slice extends AA_Responder {
-    var $slice_def;
+class AA_Responder_Do_Import_Module extends AA_Responder {
+    var $definition;
     
-    function AA_Responder_Do_Import_Slice($param) {
-        $this->slice_def = $param['slice_def']; 
+    function AA_Responder_Do_Import_Module($param) {
+        $this->definition = $param['definition']; 
     }
 
     function run() {
-        $ret[] = $this->slice_def->importSlice();
+        $ret[] = $this->definition->importModule();
         return new AA_Response($ret);
     }
 }
@@ -146,7 +183,7 @@ $request = null;
 
 // we use primarily POST, but manager class actions needs to send GET request
 if ( $_POST['request'] ) {
-    $request = unserialize($_POST['request']);
+    $request = unserialize(gzdecode($_POST['request']));
 }
 
 if ( !is_object($request)) {

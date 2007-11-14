@@ -118,27 +118,26 @@ class AA_Actionapps {
      *  mention, that the slices are identified by !name! not id for synchronization
      */
     function requestSlices() {
-        $response = $this->getResponse( new AA_Request('Get_Slices') );
-        if ($response->isError()) {
-            return array();
-        } else {
-            return $response->getResponse();
-        }
+        return $this->requestModules(array('S'));
+    }
+
+    /** @return all module names form remote AA
+     *  @param $types array of requested module types (A|Alerts|J|Lins|P|S|W)
+     */
+    function requestModules($types) {
+        $response = $this->getResponse( new AA_Request('Get_Modules', array('types'=>$types)) );
+        return ($response->isError()) ? array() : $response->getResponse();
     }
 
     /** @return structure which define all the definition of the slice
      *  (like slice properties, fields, views, ...). It is returned for all the
      *  slices in array
      */
-    function requestSliceDefinitions($slice_names, $complete = false) {
+    function requestDefinitions($type, $ids, $limited = false) {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
-        $response = $this->getResponse( new AA_Request('Get_Slice_Defs', array('slice_names'=>$slice_names, 'complete'=>$complete)) );
-        if ($response->isError()) {
-            return array();
-        } else {
-            return $response->getResponse();
-        }
+        $response = $this->getResponse( new AA_Request('Get_Module_Defs', array('type'=>$type, 'ids'=>$ids, 'limited'=>$limited)) );
+        return ($response->isError()) ? array() : $response->getResponse();
     }
 
     /** This command synchronizes the slices base on sync[] array
@@ -148,26 +147,18 @@ class AA_Actionapps {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
         $response = $this->getResponse( new AA_Request('Do_Synchronize', array('sync'=>$sync_commands)) );
-        if ($response->isError()) {
-            return array();
-        } else {
-            return $response->getResponse();
-        }
+        return ($response->isError()) ? array() : $response->getResponse();
     }
-    
-    /** Imports slice to the current AA. The id of slice is the same as in 
+
+    /** Imports slice to the current AA. The id of slice is the same as in
      *  definition
      */
-    function importSlice($slice_def) {
+    function importModule($definition) {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
-        
-        $response = $this->getResponse( new AA_Request('Do_Import_Slice', array('slice_def'=>$slice_def)) );
-        if ($response->isError()) {
-            return array();
-        } else {
-            return $response->getResponse();
-        }
+
+        $response = $this->getResponse( new AA_Request('Do_Import_Module', array('definition'=>$definition)) );
+        return ($response->isError()) ? array() : $response->getResponse();
     }
 
     /** Main communication function - returns AA_Response object */
@@ -208,68 +199,93 @@ class AA_Actionapps {
     }
 }
 
-class AA_Slice_Definition {
-    var $slice_data;
-    var $fields_data;
-    var $views_data;
-    var $constants_data;
-    var $email_data;
-    //--- for complete definition, we use following data ---
-    var $item;
-    var $content;
-    var $discussion;
-    var $email_notify;
-    var $module;
-    var $profile;
-    var $rssfeeds;
-    
-    function AA_Slice_Definition() {
+
+class AA_Module_Definition {
+    /** module id is unpacked */
+    var $module_id;
+    /** data for the module */
+    var $data;
+
+    function AA_Module_Definition() {
         $this->clear();
     }
 
     function clear() {
-        $this->slice_data     = array();
-        $this->fields_data    = array();
-        $this->views_data     = array();
-        $this->constants_data = array();
-        $this->emails_data    = array();
-    //--- for complete definition, we use following data ---
-        $this->item           = array();
-        $this->content        = array();
-        $this->discussion     = array();
-        $this->email_notify   = array();
-        $this->module         = array();
-        $this->profile        = array();
-        $this->rssfeeds       = array();
-        $this->constant_slice = array();
+        $this->module_id = null;
+        $this->data      = array();
     }
 
-    function loadForSliceName($slice_name, $complete=false) {
+    function loadForId($module_id, $limited=false) {
+        $this->module_id = $module_id;
         $this->clear();
-        $this->slice_data  = GetTable2Array("SELECT * FROM slice WHERE name = '".quote($slice_name)."'", 'aa_first', 'aa_fields');
-        $p_slice_id = $this->slice_data['id'];
-        if ( empty($p_slice_id)) {
-            return false;
-        }
-        $qp_slice_id = quote($p_slice_id);
-        $this->fields_data    = GetTable2Array("SELECT * FROM field WHERE slice_id        = '$qp_slice_id'", 'id', 'aa_fields');
-        $this->views_data     = GetTable2Array("SELECT * FROM view  WHERE slice_id        = '$qp_slice_id'", 'id', 'aa_fields');
-        $this->emails_data    = GetTable2Array("SELECT * FROM email WHERE owner_module_id = '$qp_slice_id'", 'id', 'aa_fields');
-        // @todo - do it better - check the fields setting, and get all the constants used
-        $this->constants_data = GetTable2Array("SELECT constant.* FROM constant,constant_slice WHERE constant.group_id=constant_slice.group_id AND constant_slice.slice_id = '$qp_slice_id'", 'id', 'aa_fields');
-        if ( $complete ) {
-            $this->item           = GetTable2Array("SELECT *            FROM item            WHERE slice_id           = '$qp_slice_id'", 'id', 'aa_fields');
-            $this->content        = GetTable2Array("SELECT content.*    FROM content,item    WHERE content.item_id    = item.id AND item.slice_id = '$qp_slice_id'", '', 'aa_fields');
-            $this->discussion     = GetTable2Array("SELECT discussion.* FROM discussion,item WHERE discussion.item_id = item.id AND item.slice_id = '$qp_slice_id'", 'id', 'aa_fields');
-            $this->email_notify   = GetTable2Array("SELECT *            FROM email_notify    WHERE slice_id           = '$qp_slice_id'", '', 'aa_fields');
-            $this->module         = GetTable2Array("SELECT *            FROM module          WHERE id                 = '$qp_slice_id'", 'id', 'aa_fields');
-            $this->profile        = GetTable2Array("SELECT *            FROM profile         WHERE slice_id           = '$qp_slice_id'", 'id', 'aa_fields');
-            $this->rssfeeds       = GetTable2Array("SELECT *            FROM rssfeeds        WHERE slice_id           = '$qp_slice_id'", 'feed_id', 'aa_fields');
-            $this->constant_slice = GetTable2Array("SELECT *            FROM constant_slice  WHERE slice_id           = '$qp_slice_id'", 'group_id', 'aa_fields');
-        }
+        // should be overloaded in childs
     }
 
     function getArray() {
+        return $this->data;
+    }
+
+    function getId() {
+        return $this->module_id;
+    }
+
+    /** returns module name */
+    function getName() {
+        return $this->data['module']['name'];
+    }
+
+    function importModule() {
+
+/*
+        huhl($this->data);
+        exit;
+ */
+        foreach ($this->data as $table => $records) {
+            if ( empty($records) ) {
+                continue;
+            }
+            $varset = new Cvarset();
+            foreach ($records as $data) {
+                $varset->resetFromRecord($data);
+                $varset->doInsert($table);
+            }
+        }
+        return 'ok';
+    }
+
+    function compareWith($dest_def) {
+        // should be overloaded in childs
+    }
+}
+
+
+
+class AA_Module_Definition_Slice extends AA_Module_Definition {
+
+    function loadForId($module_id, $limited=false) {
+        $this->clear();
+        $this->module_id = $module_id;
+        $qp_slice_id     = q_pack_id($module_id);
+
+        $this->data['slice']    = GetTable2Array("SELECT * FROM slice WHERE id              = '$qp_slice_id'", 'id', 'aa_fields');
+        $this->data['field']    = GetTable2Array("SELECT * FROM field WHERE slice_id        = '$qp_slice_id'", 'id', 'aa_fields');
+        $this->data['view']     = GetTable2Array("SELECT * FROM view  WHERE slice_id        = '$qp_slice_id'", 'id', 'aa_fields');
+        $this->data['email']    = GetTable2Array("SELECT * FROM email WHERE owner_module_id = '$qp_slice_id'", 'id', 'aa_fields');
+        // @todo - do it better - check the fields setting, and get all the constants used
+        $this->data['constant'] = GetTable2Array("SELECT constant.* FROM constant,constant_slice WHERE constant.group_id=constant_slice.group_id AND constant_slice.slice_id = '$qp_slice_id'", 'id', 'aa_fields');
+        if ( !$limited ) {
+            $this->data['module']         = GetTable2Array("SELECT *            FROM module          WHERE id                 = '$qp_slice_id'", 'id', 'aa_fields');
+            $this->data['item']           = GetTable2Array("SELECT *            FROM item            WHERE slice_id           = '$qp_slice_id'", 'id', 'aa_fields');
+            $this->data['content']        = GetTable2Array("SELECT content.*    FROM content,item    WHERE content.item_id    = item.id AND item.slice_id = '$qp_slice_id'", '', 'aa_fields');
+            $this->data['discussion']     = GetTable2Array("SELECT discussion.* FROM discussion,item WHERE discussion.item_id = item.id AND item.slice_id = '$qp_slice_id'", 'id', 'aa_fields');
+            $this->data['email_notify']   = GetTable2Array("SELECT *            FROM email_notify    WHERE slice_id           = '$qp_slice_id'", '', 'aa_fields');
+            $this->data['profile']        = GetTable2Array("SELECT *            FROM profile         WHERE slice_id           = '$qp_slice_id'", 'id', 'aa_fields');
+            $this->data['rssfeeds']       = GetTable2Array("SELECT *            FROM rssfeeds        WHERE slice_id           = '$qp_slice_id'", 'feed_id', 'aa_fields');
+            $this->data['constant_slice'] = GetTable2Array("SELECT *            FROM constant_slice  WHERE slice_id           = '$qp_slice_id'", 'group_id', 'aa_fields');
+        }
+    }
+
+/*    function getArray() {
         return array ( 'data'      => $this->slice_data,
                        'fields'    => $this->fields_data,
                        'views'     => $this->views_data,
@@ -277,50 +293,38 @@ class AA_Slice_Definition {
                        'constants' => $this->constants_data
                      );
     }
-    
-    function importSlice() {
-        $slice = array($this->slice_data);  // in other case you can't pass it by reference
-        $this->_import($slice               , 'slice');
-        $this->_import($this->fields_data   , 'field');
-        $this->_import($this->views_data    , 'view');
-        $this->_import($this->constants_data, 'constant');
-        $this->_import($this->emails_data   , 'email');
-        $this->_import($this->item          , 'item');
-        $this->_import($this->content       , 'content');
-        $this->_import($this->discussion    , 'discussion');
-        $this->_import($this->email_notify  , 'email_notify');
-        $this->_import($this->module        , 'module');
-        $this->_import($this->profile       , 'profile');
-        $this->_import($this->rssfeeds      , 'rssfeeds');
-        $this->_import($this->constant_slice, 'constant_slice');
-        return "ok";
-    }
-
-    function _import(&$array, $table) {
-        if ( empty($array) ) {
-            return;
-        }
-        $varset = new Cvarset();
-        foreach ($array as $data) {
-            $varset->resetFromRecord($data);
-            $varset->doInsert($table);
-        }
-        return;
-    }
-    
+*/
 
 
     function compareWith($dest_def) {
         /** @todo check the state, when the name contains "->" */
-        $slice_name = $dest_def->slice_data['name'];
-        $diff =                    AA_Difference::_compareArray($this->slice_data,     $dest_def->slice_data,     $slice_name.'->slice', array('id'));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->fields_data,    $dest_def->fields_data,    $slice_name.'->field', array('slice_id')));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->views_data,     $dest_def->views_data,     $slice_name.'->view', array('slice_id')));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->emails_data,    $dest_def->emails_data,    $slice_name.'->email', array('owner_module_id')));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->constants_data, $dest_def->constants_data, $slice_name.'->constant', array()));
+        $dest_module_id = $dest_def->getId();
+        $diff =                    AA_Difference::_compareArray($this->data['slice'],    $dest_def->data['slice'],    new AA_Identifier($dest_module_id, 'slice'),   array('id'));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['field'],    $dest_def->data['field'],    new AA_Identifier($dest_module_id, 'field'),    array('slice_id')));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['view'],     $dest_def->data['view'],     new AA_Identifier($dest_module_id, 'view'),     array('slice_id')));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['email'],    $dest_def->data['email'],    new AA_Identifier($dest_module_id, 'email'),    array('owner_module_id')));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant'], $dest_def->data['constant'], new AA_Identifier($dest_module_id, 'constant'), array()));
         return $diff;
     }
 }
+
+
+class AA_Module_Definition_Site extends AA_Module_Definition {
+
+    function loadForId($module_id, $limited=false) {
+        $this->clear();
+        $this->module_id = $module_id;
+        $qp_site_id      = q_pack_id($module_id);
+
+        $this->data['module']    = GetTable2Array("SELECT * FROM module    WHERE id      = '$qp_site_id'", 'id', 'aa_fields');
+        $this->data['site']      = GetTable2Array("SELECT * FROM site      WHERE id      = '$qp_site_id'", 'id', 'aa_fields');
+        $this->data['site_spot'] = GetTable2Array("SELECT * FROM site_spot WHERE site_id = '$qp_site_id'", 'id', 'aa_fields');
+    }
+
+    function compareWith($dest_def) {
+    }
+}
+
 
 class AA_Difference {
 
@@ -337,7 +341,7 @@ class AA_Difference {
     }
 
     function printOut() {
-        echo "\n<tr><td>". $this->description .'</td><td>';
+        echo "\n<tr class=\"diff_".strtolower($this->type)."\"><td>". $this->description .'</td><td>';
         foreach ($this->actions as $action) {
             $action->printToForm();
         }
@@ -346,18 +350,21 @@ class AA_Difference {
 
     /// Static
 
-    function _compareArray($template_arr, $destination_arr, $name, $ignore) {
-        $diff = array();
+    function _compareArray($template_arr, $destination_arr, $identifier, $ignore) {
+        $diff       = array();
         if (! is_array($template_arr) AND is_array($destination_arr)) {
-            return array( 0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', array($name)), new AA_Sync_Action('DELETE', $name)));
+            return array( 0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', array($identifier->toString())), new AA_Sync_Action('DELETE', $identifier)));
         }
         if ( is_array($template_arr) AND !is_array($destination_arr)) {
-            return array( 0 => new AA_Difference('NEW', _m('%1 is not array in destination slice', array($name)), new AA_Sync_Action('NEW', $name, $template_arr)));
+            return array( 0 => new AA_Difference('NEW', _m('%1 is not array in destination slice', array($identifier->toString())), new AA_Sync_Action('INSERT', $identifier, $template_arr)));
         }
         if ( !is_array($template_arr) AND !is_array($destination_arr)) {
-            return array( 0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', array($name))));
+            return array( 0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', array($identifier->toString()))));
         }
         foreach ($template_arr as $key => $value) {
+            $sub_identifier = clone($identifier);
+            $sub_identifier->sub($key);
+
             // some fields we do not want to compare (like slice_ids)
             if (in_array($key, $ignore)) {
                 // we need to clear the destination array in order we can know,
@@ -366,20 +373,20 @@ class AA_Difference {
                 continue;
             }
             if (is_array($value)) {
-                $diff = array_merge($diff, AA_Difference::_compareArray($value,$destination_arr[$key], $name."->$key", $ignore));
+                $diff = array_merge($diff, AA_Difference::_compareArray($value, $destination_arr[$key], $sub_identifier, $ignore));
                 // we need to clear the destination array in order we can know,
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
             }
             elseif (!array_key_exists($key,$destination_arr)) {
-                $diff[] = new AA_Difference('DIFFERENT', _m('There is no such key (%1) in destination slice for %2', array($key, $name)), new AA_Sync_Action('UPDATE', $name."->$key", $value));
+                $diff[] = new AA_Difference('DIFFERENT', _m('There is no such key (%1) in destination slice for %2', array($key, $identifier->toString())), new AA_Sync_Action('UPDATE', $sub_identifier, $value));
             }
             elseif ($value != $destination_arr[$key]) {
                 $code = '{htmltoggle:&gt;&gt;::&lt;&lt;:'. AA_Stringexpand::quoteColons('
-                       <div style="background-color:#FFE0E0;border: solid 1px #F88;">'.safe($destination_arr[$key]).'</div>
+                       <div style="background-color:#FFE0E0;border: solid 1px #F88;">'._m('Destination').':<br>'.safe($destination_arr[$key]).'</div>
                        <br>
-                       <div style="background-color:#E0E0FF;border: solid 1px #88F;">'.safe($value).'</div>'). '}';
-                $diff[] = new AA_Difference('DIFFERENT', _m('The value for key %1 in %2 array is different %3', array($key, $name, AA_Stringexpand::unalias($code))), new AA_Sync_Action('UPDATE', $name."->$key", $value));
+                       <div style="background-color:#E0E0FF;border: solid 1px #88F;">'._m('Template').':<br>'.safe($value).'</div>'). '}';
+                $diff[] = new AA_Difference('DIFFERENT', _m('The value for key %1 in %2 array is different %3', array($key, $identifier->toString(), AA_Stringexpand::unalias($code))), new AA_Sync_Action('UPDATE', $sub_identifier, $value));
                 // we need to clear the destination array in order we can know,
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
@@ -388,27 +395,77 @@ class AA_Difference {
             }
         }
         foreach ($destination_arr as $key => $value) {
+            $sub_identifier = clone($identifier);
+            $sub_identifier->sub($key);
+
             // there are no such keys in template
             if ( is_array($value) ) {
                 // I know - we can define the difference right here, but it is better to use the same method as above
-                $diff = array_merge($diff, AA_Difference::_compareArray('',$destination_arr[$key], $name."->$key", $ignore));
+                $diff = array_merge($diff, AA_Difference::_compareArray('',$destination_arr[$key], $sub_identifier, $ignore));
             } else {
-                $diff[] = new AA_Difference('DELETED', _m('There is no such key (%1) in template slice for %2', array($key, $name)), new AA_Sync_Action('UPDATE', $name."->$key", ''));
+                $diff[] = new AA_Difference('DELETED', _m('There is no such key (%1) in template slice for %2', array($key, $sub_identifier->toString())), new AA_Sync_Action('UPDATE', $sub_identifier, ''));
             }
         }
         if ( count($diff) < 1 ) {
-            $diff[] = new AA_Difference('INFO', _m('%1 are identical', array($name)));
+            $diff[] = new AA_Difference('INFO', _m('%1 are identical', array($identifier->toString())));
         }
         return $diff;
     }
 }
 
+class AA_Identifier {
+
+    /**  $path[0] ~ module_id, [1] ~ table, [2] ~ row, [3] ~ column */
+    var $path;
+
+    function AA_Identifier($module_id=null, $table=null, $row=null, $column=null) {
+        $this->path = array();
+        if ($module_id) {
+            $this->path[0] = $module_id;
+            if ($table) {
+                $this->path[1] = $table;
+                if ($row) {
+                    $this->path[2] = $row;
+                    if ($column) {
+                        $this->path[3] = $column;
+                    }
+                }
+            }
+        }
+    }
+
+    function getModuleId() { return $this->path[0]; }
+    function getTable()    { return $this->path[1]; }
+    function getRow()      { return $this->path[2]; }
+    function getColumn()   { return $this->path[3]; }
+
+    /** Parses the identifier string (like "Configuración->field->category........")
+     *  static member function - called like $idf = AA_Identifier::factoryFromString($idf_string)
+     */
+    function factoryFromString($idf) {
+        list($module_id, $table, $row, $column) = explode('->', $idf);
+        return new AA_Identifier($module_id, $table, $row, $column);
+    }
+
+    /** creates identifier which identifies one part of the current idenftifier
+     *  say '534633'->view->32  ---> .sub('name') ---> '534633'->view->32->name
+     */
+    function sub($sub_id) {
+        $this->path[] = $sub_id;
+        return;
+    }
+
+    function toString() {
+        return join('->',$this->path);
+    }
+}
+
 /** Class which defines synchronization actions */
 class AA_Sync_Action {
-    /** action type  - DELETE | NEW | UPDATE */
+    /** action type  - DELETE | INSERT | UPDATE */
     var $type;
 
-    /** identifier string (like 'view->678->name') */
+    /** AA_Identifier object holding something like 'My Slice->view->678->name' */
     var $identifier;
 
     /** action parameters (field's data). Could be scalar as well as array */
@@ -427,20 +484,68 @@ class AA_Sync_Action {
         FrmChBoxEasy('sync[]', $state, '', $packed_action);
         switch ( $this->type ) {
             case 'DELETE': echo _m("Delete"); break;
-            case 'NEW':    echo _m("Create new"); break;
+            case 'INSERT': echo _m("Create new"); break;
             case 'UPDATE': echo _m("Update"); break;
         }
         echo '</div>';
     }
 
+    /** returns data array as we need it for $metabase->doInsert/Update */
+    function _getDataArray() {
+        $idf    = $this->identifier;
+        $column = $idf->getColumn();
+        return $column ? array( $column => $this->params) : $this->params;
+    }
+
     /** do synchronization action in destination slice */
     function doAction() {
+
+        // commands are stored as tree - like:
+        // 6353636737->field->category........
+        // 6353636737 is id of slice - we use slice name as identifier
+        // here, because slice_id is different in remote slices and we want
+        // to synchronize the slices of the same name
+        $idf         = $this->identifier;
+        $module_id   = $idf->getModuleId();
+        $table       = $idf->getTable();
+        $row         = $idf->getRow();
+        $column      = $idf->getColumn();
+
+        $p_module_id = pack_id($module_id);
+
+        $metabase    = AA_Metabase::singleton();
+
+        if (!$row) {
+            return _m('Wrong command - row is not defined - %1', array($idf->toString()));
+        }
+        // $fid = $row;
+        if ( $this->type == 'UPDATE' ) {
+            $metabase->getKeys($table);
+            $data = $this->_getDataArray();
+            $metabase->doUpdate($table, $metabase->fillKeys($data, $idf));
+            return _m('%1 %2 in slice %3 updated', array($table, $row, $module_id));
+        }
+        if ( $this->type == 'INSERT' ) {
+            $data = $this->params;
+            $metabase->reassignModule($data, $table, $module_id);
+            $metabase->doInsert($table, $data);
+            return _m('%1 %2 inserted into slice %3', array($table, $row, $module_id));  // field xy inserted into slice yz
+        }
+        if ( $this->type == 'DELETE' ) {
+            $metabase->doDelete($table, $data);
+            return _m('%1 %2 deleted from slice %3', array($table, $row, $module_id));
+        }
+        return _m("Unknown action (%1) for field %2 in slice %3", array($this->type, $row, $module_id));
+    }
+
+    /** do synchronization action in destination slice */
+    function doActionOld() {
         /** @todo convert to class variable after move to PHP5 */
         global $slice_id_cache;
 
         // commands are stored as tree - like:
-        // Configuración->field->category........
-        // Configuración in name of slice - we use slice name as identifier
+        // 6353636737->field->category........
+        // 6353636737 is id of slice - we use slice name as identifier
         // here, because slice_id is different in remote slices and we want
         // to synchronize the slices of the same name
         $cmd = explode('->', $this->identifier);
@@ -472,7 +577,7 @@ class AA_Sync_Action {
                     $varset->doUpdate('slice');
                     return _m('Slice %1 updated', array($cmd[0]));
                 }
-                if ( $this->type == 'NEW' ) {
+                if ( $this->type == 'INSERT' ) {
                     /** @todo Add it to the module table, as well */
                     $varset->addkey('id', 'unpacked', new_id());
                     foreach ( $this->params as $key => $val ) {
@@ -494,11 +599,11 @@ class AA_Sync_Action {
                 if ( $this->type == 'UPDATE' ) {
                     $varset->addkey('slice_id', 'quoted', $qp_slice_id);
                     $varset->addkey('id',       'text',   $fid);
-                    if ( isset($cmd[3]) ) {
+                    if ( isset($column) ) {
                         // single value
-                        if (($cmd[3] != 'id') AND ($cmd[3] != 'slice_id')) {
+                        if (($column != 'id') AND ($column != 'slice_id')) {
                             // it makes no sense to update id (also, the id is alredy set a few rows above)
-                            $varset->add($cmd[3], 'text', $this->params);
+                            $varset->add($column, 'text', $this->params);
                         }
                     } else {
                         // whole slice record
@@ -512,7 +617,7 @@ class AA_Sync_Action {
                     $varset->doUpdate('field');
                     return _m('Field %1 in slice %2 updated', array($fid, $cmd[0]));
                 }
-                if ( $this->type == 'NEW' ) {
+                if ( $this->type == 'INSERT' ) {
                     $varset->addkey('slice_id', 'quoted', $qp_slice_id);
                     $varset->addkey('id', 'text', $fid);
                     foreach ( $this->params as $key => $val ) {
@@ -557,7 +662,7 @@ class AA_Sync_Action {
                     $varset->doUpdate('view');
                     return _m('View %1 in slice %2 updated', array($vid, $cmd[0]));
                 }
-                if ( $this->type == 'NEW' ) {
+                if ( $this->type == 'INSERT' ) {
                     $varset->addkey('slice_id', 'quoted', $qp_slice_id);
                     $varset->addkey('id', 'text', $vid);
                     foreach ( $this->params as $key => $val ) {
@@ -602,7 +707,7 @@ class AA_Sync_Action {
                     $varset->doUpdate('email');
                     return _m('Email %1 in slice %2 updated', array($emailid, $cmd[0]));
                 }
-                if ( $this->type == 'NEW' ) {
+                if ( $this->type == 'INSERT' ) {
                     $varset->addkey('owner_module_id', 'quoted', $qp_slice_id);
                     $varset->addkey('id',              'text',   $emailid);
                     foreach ( $this->params as $key => $val ) {
@@ -624,6 +729,29 @@ class AA_Sync_Action {
             case 'constant':  /** @todo work with constant */
         }
         return _m("Unknown action for data %1 in slice %2", array($cmd[1], $cmd[0]));
+    }
+}
+
+
+/** Stores the synchronization action which should be performed on remote AA
+ *  Objects are stored into AA_Toexecute queue for running from Task Manager
+ **/
+class AA_Sync_Task {
+    /** AA_Sync_Action object - Action to do */
+    var $sync_action;
+
+    /** AA_Actionapps object  - In which AA we have to do the action */
+    var $actionapps;
+
+    function AA_Sync_Task($sync_action, $actionapps) {
+        $this->sync_action = $sync_action;
+        $this->actionapps  = $actionapps;
+    }
+
+    function toexecutelater() {
+        // synchronize accepts array of sync_actions, so it is possible
+        // to do more action by one call
+        $this->actionapps->synchronize(array($this->sync_action));
     }
 }
 
@@ -668,7 +796,7 @@ function Central_QueryZids($conds, $sort="", $type="app") {
 
     if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
-    $metabase  = new AA_Metabase;
+    $metabase    = AA_Metabase::singleton();
 
     $fields      = $metabase->getSearchArray('central_conf');
     $join_tables = array();   // not used in this function
