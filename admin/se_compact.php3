@@ -232,8 +232,9 @@ function EnableClick(cond,what) {
                .'<br>'.view::getViewJumpLinks($category_bottom), DOCUMENTATION_URL, 1);
   FrmInputText("compact_remove", _m("Remove strings"), $compact_remove, 254, 50, false,
                _m("Removes empty brackets etc. Use ## as delimiter."), DOCUMENTATION_URL);
-  FrmInputText("noitem_msg", _m("'No item found' message"), $noitem_msg, 254, 50, false,
-               _m("message to show in place of slice.php3, if no item matches the query"), DOCUMENTATION_URL);
+  FrmTextarea("noitem_msg", _m("'No item found' message"), $noitem_msg, 4, 50, false,
+               _m("message to show in place of slice.php3, if no item matches the query")
+               .'<br>'.view::getViewJumpLinks($category_bottom), DOCUMENTATION_URL, 1);
 
   PrintAliasHelp(GetAliasesFromFields($fields), $fields, false, $form_buttons, $sess, $slice_id);
 
