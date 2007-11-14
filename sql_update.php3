@@ -418,7 +418,7 @@ $tablelist = array(   'active_sessions' => "(
                           input_insert_func varchar(255) NOT NULL default '',
                           input_show smallint(5) default NULL,
                           text_stored smallint(5) default '1',
-                          KEY slice_id (slice_id,id)
+                          PRIMARY KEY (slice_id,id)
                       )",
                       'groups' => "(
                           name varchar(32) NOT NULL default '',
