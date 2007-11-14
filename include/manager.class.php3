@@ -37,7 +37,6 @@ require_once AA_INC_PATH . "searchbar.class.php3";
 require_once AA_INC_PATH . "statestore.php3";
 require_once AA_INC_PATH . "request.class.php3";
 
-
 /**
  * AA_Manager class - used for 'item' manipulation 'managers' pages
  * (like Item Manager, Link Manager, Discussion comments, Related Items, ...)
@@ -167,7 +166,6 @@ class AA_Manager extends AA_Storable {
                                         '',      // no discussion settings
                                         $settings['itemview']['get_content_funct']);
     }
-
 
     /** setDesing function
      *  Fills format array with manager default design and ensures, the aliases are

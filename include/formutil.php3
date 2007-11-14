@@ -1878,8 +1878,8 @@ class AA_Inputfield {
         $wi2_selected = get_if( $wi2_selected, _m("Selected") );
 
         $this->field_name('plus');
-        $this->echoo("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr align=left>
-          <td align=\"center'\ valign=\"top\">". $wi2_offer ."</td><td></td>
+        $this->echoo("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr align=\"left\">
+          <td align=\"center\" valign=\"top\">". $wi2_offer ."</td><td></td>
             <td align=\"center\" valign=\"top\">". $wi2_selected ."</td></tr>
           <tr align=left><td align=\"center\" valign='TOP'>");
 

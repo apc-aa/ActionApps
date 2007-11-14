@@ -123,7 +123,6 @@ class itemview {
         case '0':         // - for backward compatibility ...
                           //   Item ids are in long format (default)
             $this->get_content_funct = 'GetItemContent'; break;
-            $this->get_content_funct = 'GetItemContent'; break;
         default:
             $this->get_content_funct = $get_content_funct;
     }
@@ -531,12 +530,23 @@ class itemview {
         $foo_zids = $this->zids;
       }
     }
-    // fill Abstract Data Structure by the right function
-    // (GetItemContent / GetItemContent_Short / GetLinkContent)
-    $function2call = $this->get_content_funct;
+
     // Create an array of content, indexed by either long or short id (not tagged id)
 
-    $content = $function2call($foo_zids);
+    // fill Abstract Data Structure by the right function
+    // (GetItemContent / GetItemContent_Short / GetLinkContent / $metabase->getContent / ...)
+    if ( is_array($this->get_content_funct) ) {
+        // Get content function should be also method of some class. In that
+        // case it is passed as two members array(method,params), where both
+        // method as well as params are arrays again, so in fact it looks like:
+        // array(array('classname', method),array(param1, param2))
+        // Example array(array('AA_Metabase','getContent'),array(table=>'toexecute'))
+        // getContent is in theis case static class method
+        // parameter array (if supplied) is apassed as FIRST parameter of the method
+        $content = call_user_func_array($this->get_content_funct[0], array($this->get_content_funct[1], $foo_zids));
+    } else {
+        $content = call_user_func_array($this->get_content_funct, array($foo_zids));
+    }
 
     if ($debug>1) {
         huhl("itemview:get_content: found",$content);

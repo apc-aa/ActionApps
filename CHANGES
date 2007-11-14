@@ -1,4 +1,25 @@
-11/13/07 - new {limit:<ids>:<offset>[:<length>[:<delimiter>]]} syntax 
+11/13/07 - new Task Manager allowing us to split long tasks to subtasks and let 
+(honzam)   user control the execution 
+         - AA Synchronization in Central now uses more general approach using 
+           AA_Metabase and Task Manager 
+         - AA_Metabase improved - now it holds structure of AA database, which 
+           help us with security check in SQL commands, database upgrades 
+           or just updates of data  
+         - New "Fix field definitions duplicates" Optimalization script in 
+           "AA -> Optimize". There should be only one slice_id - field_id pair
+           in all slices, but sometimes there are more than one (mainly because
+           of error in former sql_update.php3 script, where more than one 
+           display_count... fields were added)
+         - Better deletion of slice when you delete it (more cleanup is performed)
+         - Improved "Copy slice/site" feature in Central
+         - the "slice_id, id" pair is marked as PRIMARY KEY for "field" table 
+           in sql_update.php3 (instead of just KEY). You can have problems with 
+           sql_update.php3, because there was small bug in previous 
+           sql_update.php3 script, which duplicated the display_count... field. 
+           In such case you should go to "AA -> Optimize" page and run 
+           "Fix field definitions duplicates" repiar
+         - changed name of class from toexecute to AA_Toexecute
+11/12/07 - new {limit:<ids>:<offset>[:<length>[:<delimiter>]]} syntax 
 (honzam)     Allows you to get only the part of ids (first, last, ...) from the 
              list - like:
                  {limit:12324-353443-533443:0:1}   // returns 12324
