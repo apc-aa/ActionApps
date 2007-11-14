@@ -469,6 +469,12 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
 
     function expand($switch_state_1, $code_1, $switch_state_2, $code_2) {
+
+        // it is nonsense to show expandable trigger if both contents are empty
+        if (trim($code_1.$code_2) == '') {
+            return '';
+        }
+
         // we can't use apostrophes and quotes in href="javacript:..." attribute
         $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
         $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
@@ -486,7 +492,10 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
  *  It creates the link text1 (or text2) and two divs, where only one is visible
  *  at the time - first is displayed as defaut, the second is loaded by AJAX
  *  call on demand from specified url. The URL should be on the same server
- *  The /javscript/aajslib.php3 shoud be included to the page
+<corrected by="gumba">
+ *    #BAD# The /javscript/aajslib.php3 shoud be included to the page
+ *    The /aaa/javascript/aajslib.php3 shoud be included to the page
+</corrected>
  *  (by <script src="">)
  *  @param $switch_state_1 - default link text
  *  @param $code_1         - HTML code displayed as default (in div)
@@ -825,6 +834,76 @@ class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Allows you to get only the part of ids (first, last, ...) from the list
+ *    {limit:<ids>:<offset>[:<length>[:<delimiter>]]}
+ *    {limit:12324-353443-533443:0:1}   // returns 12324
+ *    {limit:{ids:6353428288a923:d-category........-=-Dodo}:0:1}
+ *  offset and length parameters follows the array_slice() PHP function
+ *  @see http://php.net/array_slice
+ */
+class AA_Stringexpand_Limit extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** for offset and length parameters see PHP function array_slice()
+     * @param $ids        // parts separated by $delimiter
+     * @param $offset     // start index (first is 0). Could be negative.
+     * @param $length     // default is "to the end of the list". Colud be negative
+     * @param $delimiter  // default is '-'
+     */
+    function expand($ids, $offset, $length='', $delimiter='-') {
+        $arr = explode($delimiter, $ids);
+        $arr = ($length === '') ? array_slice($arr, $offset) : array_slice($arr, $offset, $length);
+        return join($delimiter, $arr);
+    }
+}
+
+/** Next item for the current item in the list
+ *    {next:<ids>:<current_id>}
+ *    {next:12324-353443-58921:353443}   // returns 58921
+ *    {next:{ids:6353428288a923:d-category........-=-Dodo}:566a655e7787b564b8b6565b}
+ */
+class AA_Stringexpand_Next extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** for offset and length parameters see PHP function array_slice()
+     * @param $ids         // item ids separated by '-' (long or short)
+     * @param $current_id  // id of the item in question - id should be of the same type as in $ids
+     */
+    function expand($ids, $current_id) {
+        if (!trim($ids) OR !trim($current_id)) {
+            return '';
+        }
+        $arr = explode('-', $ids);
+        $key = array_search($current_id, $arr);
+        return (($key !== false) AND isset($arr[$key+1])) ? $arr[$key+1] : '';
+    }
+}
+
+/** Previous item for the current item in the list
+ *    {previous:<ids>:<current_id>}
+ *    {previous:12324-353443-58921:353443}   // returns 12324
+ *    {previous:{ids:6353428288a923:d-category........-=-Dodo}:566a655e7787b564b8b6565b}
+ */
+class AA_Stringexpand_Previous extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** for offset and length parameters see PHP function array_slice()
+     * @param $ids         // item ids separated by '-' (long or short)
+     * @param $current_id  // id of the item in question - id should be of the same type as in $ids
+     */
+    function expand($ids, $current_id) {
+        if (!trim($ids) OR !trim($current_id)) {
+            return '';
+        }
+        $arr = explode('-', $ids);
+        $key = array_search($current_id, $arr);
+        return ($key AND isset($arr[$key-1])) ? $arr[$key-1] : '';
+    }
+}
+
 class AA_Stringexpand_Strlen extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -1059,8 +1138,8 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
         if ( is_array($ids) ) {
             foreach ( $ids as $item_id ) {
                 // is it item id?
-                $id_type = guesstype($item_id, true);
-                if ( ($id_type == 's') OR ($id_type == 'l')) {
+                $id_type = guesstype($item_id);
+                if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
                     $item = AA_Item::getItem(new zids($item_id));
                     if ($item) {
                         $count++;
@@ -1262,7 +1341,7 @@ function makeAsShortcut($text) {
  *  It is writen as quick as possible, so we do not use preg_replace for the
  *  main replaces (it is extremly slow for bigger dictionaries) - strtr used
  *  instead
- *  @author Honza Malik, Hana Havelková
+ *  @author Honza Malik, Hana Havelkova½
  */
 class AA_Stringexpand_Dictionary extends AA_Stringexpand {
     /** expand function
@@ -1842,14 +1921,14 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     foreach ( $changes as $selector => $values ) {
                         if ( $selector == $fid ) {
                             foreach ( $values as $value ) {
-                                $change_cmd .= "\n  <div class=\"change_cmd\">$value <input type=\"button\" value=\"zmìnit\" onclick=\"AcceptChange('$change_id', '$divid')\"></div>";
+                                $change_cmd .= "\n  <div class=\"change_cmd\">$value <input type=\"button\" value=\"zmenit\" onclick=\"AcceptChange('$change_id', '$divid')\"></div>";
                             }
                         }
                     }
                 }
             }
             if ( $zmena_cmd ) {
-                $odmitnout_text = ( $fid == 'edit_note......1') ? 'Vyøešeno' : 'odmítnout zmìny';
+                $odmitnout_text = ( $fid == 'edit_note......1') ? 'Vyreseno' : 'odmitnout zmeny';
                 $ret .= "<div class=\"change_cmds\" id=\"zmena_cmds$divid\">
                          $zmena_cmd
                          <div class=\"change_cmd\"><input type=\"button\" value=\"$odmitnout_text\" onclick=\"CancelChanges('$item_id', '$fid', '$divid')\"></div>
@@ -2064,7 +2143,29 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
 }
 
 
+/** Creates link to modified image using phpThub
+ *  {img:<url>:<phpthumb_params>}
+ *
+ *  Ussage:
+ *     <img src="{img:{img_url.........}:w=150&h=150}">
+ *
+ *  for phpThumb params see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
+ *  (phpThumb library is the part of AA)
+ **/
+class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
 
-// require_once AA_INC_PATH. "custom/nszm.php";
+    /** expand function
+     * @param $image - image url
+     * @param $phpthumb_params - parameters as you would put to url for phpThumb
+     *                           see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
+     */
+    function expand($image='', $phpthumb_params='') {
+        // it is much better to access the files as files reletive to the directory, than using http access
+        $image = str_replace(AA_HTTP_DOMAIN, '', $image);
+        return AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params";
+    }
+}
 
 ?>
