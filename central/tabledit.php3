@@ -38,8 +38,8 @@ require_once menu_include();   //show navigation column depending on $show
 // ----------------------------------------------------------------------------------------
 
 function GetCentalEditTableView() {
-    $metabase  = new AA_Metabase;
-    return $metabase->getTableditConf('central_conf'); 
+    $metabase = AA_Metabase::singleton();
+    return $metabase->getTableditConf('central_conf');
 }
 
 if ( !IsSuperadmin() ) {

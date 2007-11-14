@@ -913,15 +913,28 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         if ( !$ignore_reading_password AND !in_array('slice_id........', $fields2get) ) {
             $item_sql_fields[] = 'slice_id........';
         }
-        $metabase       = new AA_Metabase();
-        $item_fields    = $metabase->itemFields4Sql($item_sql_fields);
-        $content_fields = $metabase->nonItemFields($fields2get);
+        $metabase       = AA_Metabase::singleton();
+
+        $content_fields = array();
+        $item_fields    = array();
+        foreach ( (array)$fields2get as $field_name ) {
+            //convert publish_date.... to publish_date
+            $clean_name = AA_Fields::getFieldType($field_name);
+
+            if ( $metabase->isColumn('item', $clean_name) ) {
+                $item_fields[] = 'item.'.$clean_name;
+            } else {
+                $content_fields[] = $field_name;
+            }
+        }
+
+        $item_fields_sql =  ( count($item_fields) < 1 ) ? 'item.*' : join(',', $item_fields);
     } else {
-        $item_fields = 'item.*';
+        $item_fields_sql = 'item.*';
     }
 
     $id_column = ($use_short_ids ? "short_id" : "id");
-    $SQL       = "SELECT $item_fields FROM item WHERE item.$id_column $sel_in";
+    $SQL       = "SELECT $item_fields_sql FROM item WHERE item.$id_column $sel_in";
     $db->tquery($SQL);
 
     $n_items = 0;
@@ -2108,157 +2121,6 @@ class contentcache {
     }
 
 // end of contentcache class
-}
-
-
-
-/** toexecute class - used for many short tasks, such as sending an e-mail for
- *  alerts. Instead of sending thounsands of e-mails in one php script run (bad
- *  eperienses with 1000+ emails), we store just store the task in the database.
- *  Then we call misc/toexecute.php3 script from AA cron (say each 2 minutes)
- *  and if there is any task in the quweue, it is executed. This way we spread
- *  sending of weekls alerts to thounsands users to several hours.
- *  Ussage:
- *    Instead of calling:
- *        $object->function_name(param1, param2);
- *    we will use
- *        $toexecute = new toexecute;
- *        $toexecute->later($object, array(param1, param2));
- *
- *        Then we create method $object->toexecutelater(param1, param2)
- *        in which we will call $object->function_name(param1, param2);
- *
- *  The name of 'toexecutelater' method is fixed - This is because of security.
- *  We do not want to allow users to execute any method of any object just
- *  by inserting some data in the database.
- */
-class toexecute {
-
-    /** global_instance function
-     *  "class function" obviously called as toexecute::global_instance();
-     *  This function makes sure, there is global instance of the class
-     */
-    function global_instance() {
-        if ( !isset($GLOBALS['toexecute']) ) {
-            $GLOBALS['toexecute'] = new toexecute;
-        }
-    }
-
-    /** later function
-     *  Stores the object and params to the database for later execution.
-     *  Such task is called from cron (the order depends on priority)
-     *  selector is used for identifying class of task - used for deletion
-     *  of duplicated task
-     * @param $object
-     * @param $params
-     * @param $seletor
-     * @param $priority
-     * @param $time
-     *  @example: we need to recount all links in allcategories (Links module),
-     *           so we need to cancel all older "recount" tasks, since it will
-     *           be dubled in the queue (we call cancel_all() method for it)
-     */
-    function later( &$object, $params=array(), $selector='', $priority=100, $time=null ) {
-        global $auth;
-        $varset = new Cvarset(
-            array( 'created'       => time(),
-                   'execute_after' => ($time ? $time : time()),
-                   'aa_user'       => $auth->auth['uid'],
-                   'priority'      => $priority,
-                   'selector'      => ($selector ? $selector : get_class($object)),
-                   'object'        => serialize($object),
-                   'params'        => serialize($params)
-                  ));
-         // store the task in the queue (toexecute table)
-         if ( !$varset->doInsert('toexecute') ) {
-             // if you can't store it in the queue (table not created?)
-             // - execute it directly
-             return $this->execute_one($object,$params);
-         }
-         return true;
-    }
-
-    /** before the task is planed, it check, if it is not already scheduled
-     *  (from previous time). The task is considered as planed, if the SELECTORs
-     *  are the same
-     */
-    function laterOnce( &$object, $params, $selector, $priority=100, $time=null ) {
-        if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."'", 'aa_first', 'aa_mark')) {
-            $this->later($object, $params, $selector, $priority, $time);
-        }
-    }
-
-    /** cancel_all function
-     * @param $selector
-     */
-    function cancel_all($selector) {
-        $varset = new Cvarset;
-        $varset->doDeleteWhere('toexecute',"selector='".quote($selector)."'");
-    }
-    /** execute function
-     * @param $allowed_time
-     */
-    function execute($allowed_time = 0) {  // standard run is 16 s
-
-        if ( !$allowed_time ) {
-            $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : 16.0);
-        }
-        /** there we store the the time needed for last task of given type
-         *  (selector) - this value we use in next round to determine, if we can
-         *  run one more such task or if we left it for next time */
-        $execute_times = array();
-
-        // get just ids - the task itself we will grab later, since the objects
-        // in the database could be pretty big, so we want to grab it one by one
-        $tasks = GetTable2Array("SELECT id FROM toexecute WHERE execute_after < ".now()." ORDER by priority DESC", 'id', 'aa_mark');
-
-        $execute_start = get_microtime();
-        if (is_array($tasks)) {
-            foreach ($tasks as $task_id => $foo) {
-                $task = GetTable2Array("SELECT * FROM toexecute WHERE id='$task_id'", 'aa_first', 'aa_fields');
-
-                $task_type     = get_if($tasks['selector'],'aa_unspecified');
-                $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
-                $task_start    = get_microtime();
-
-                // can we run next task? Does it (most probably) fit in allowed_time?
-                if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
-                    break;
-                }
-                $varset = new Cvarset( array( 'priority' => max( $task['priority']-1, 0 )));
-                $varset->addkey('id', 'number', $task['id']);
-                // We lower the priority for this task before the execution, so
-                // if the task is not able to finish, then other tasks with the same
-                // priority is called before this one (next time)
-                $varset->doUpdate('toexecute');
-
-                $object = unserialize($task['object']);
-                if ( $GLOBALS['debug'] ) {
-                    huhl($object);
-                }
-                $retcode = $this->execute_one($object, unserialize($task['params']));
-
-                // Task is done - remove it from queue
-                $varset->doDelete('toexecute');
-                $execute_times[$task_type] = get_microtime() - $task_start;
-                AA_Log::write('TOEXECUTE', $execute_times[$task_type]. ":$retcode:".$task['params'], get_class($object));
-            }
-        }
-    }
-    /** execute_one function
-     * @param $object
-     * @param $params
-     */
-    function execute_one(&$object, $params) {
-        if ( !is_object($object) ) {
-            return 'No object'; // Error
-        }
-        set_time_limit( 30 );   // 30 seconds for each task
-        return call_user_func_array(array($object, 'toexecutelater'), $params);
-    }
-
-
-// end of toexecute class
 }
 
 /** get_if function

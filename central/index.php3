@@ -65,7 +65,7 @@ if ( !IsSuperadmin() ) {
 
 // we do not manage more "modules" here, so unique id is OK
 $module_id = '43656e7472616c2d41412d61646d696e';
-$metabase  = new AA_Metabase;
+$metabase  = AA_Metabase::singleton();
 
 $actions   = new AA_Manageractions;
 $actions->addAction(new AA_Manageraction_Central_MoveItem('Activate', 1));

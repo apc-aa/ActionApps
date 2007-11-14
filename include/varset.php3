@@ -90,20 +90,27 @@ class Cvariable {
 }
 
 class Cvarset {
-    var $vars;  // array of variables
-    var $db;    // database handler
+    var $vars;        // array of variables
+    var $db;          // database handler
+    var $just_print;  // debug option - just prints the query (not implemented for all methods!!!)
 
     /** Cvarset function
      *  constructor - also good for filling the varset
      * @param $arr
      */
     function Cvarset( $arr=null ) {
-        $this->db = null;
+        $this->db         = null;
+        $this->just_print = false;
+
         foreach ( (array)$arr as $varname => $value ) {
             if ( $varname ) {
                 $this->add($varname, 'text', $value);
             }
         }
+    }
+
+    function setDebug() {
+        $this->just_print = true;
     }
 
     /** clear function
@@ -252,6 +259,10 @@ class Cvarset {
      * @param $nohalt
      */
     function _doQuery($SQL, $nohalt=null) {
+        if ($this->just_print) {
+            huhl($SQL);
+            return;
+        }
         if ( is_null($this->db) ) {
             $this->db = getDB();
         }
@@ -262,6 +273,7 @@ class Cvarset {
         }
         return $retval;
     }
+
     /** _makeInsertReplace function
      * @param $command
      * @param $tablename
@@ -315,7 +327,7 @@ class Cvarset {
         }
         return $retval;
     }
-    
+
     /** doUpdate function
      * @param $tablename
      * @param $nohalt
@@ -323,7 +335,7 @@ class Cvarset {
     function doUpdate($tablename, $nohalt=null) {
         return $this->_doQuery($this->makeUPDATE($tablename), $nohalt);
     }
-    
+
     /** doREPLACE function
      * @param $tablename
      * @param $nohalt
@@ -335,7 +347,7 @@ class Cvarset {
         // with autoincremented fields
         return $this->_doQuery($this->makeINSERTorUPDATE($tablename), $nohalt);
     }
-    
+
     /** doTrueReplace function
      * @param $tablename
      * @param $nohalt
@@ -347,7 +359,7 @@ class Cvarset {
         // with autoincremented fields
         return $this->_doQuery($this->_makeInsertReplace('REPLACE', $tablename), $nohalt);
     }
-    
+
     /** doTruncate function - deletes all data from tabe
      * @param $tablename
      * @param $nohalt
@@ -357,22 +369,22 @@ class Cvarset {
     }
 
     /** makeSELECT function
-     * @param $table
+     * @param $tablename
      */
-    function makeSELECT($table) {
+    function makeSELECT($tablename) {
         $where = $this->makeWHERE();
-        return ($where ? "SELECT * FROM `$table` WHERE ".$where :
-                         "SELECT * FROM `$table`");
+        return ($where ? "SELECT * FROM `$tablename` WHERE ".$where :
+                         "SELECT * FROM `$tablename`");
     }
     /** makeDELETE function
-     * @param $table
+     * @param $tablename
      * @param $where
      */
-    function makeDELETE($table, $where=null) {
+    function makeDELETE($tablename, $where=null) {
         if ( is_null($where) ) {
             $where = $this->makeWHERE();
         }
-        return ($where ? "DELETE FROM `$table` WHERE ".$where : 'Error');
+        return ($where ? "DELETE FROM `$tablename` WHERE ".$where : 'Error');
     }
     /** doDelete function
      * @param $tablename
@@ -390,17 +402,17 @@ class Cvarset {
         return $this->_doQuery($this->makeDELETE($tablename, $where), $nohalt);
     }
     /** makeWHERE function
-     * @param $table
+     * @param $tablename
      */
-    function makeWHERE($table="") {
+    function makeWHERE($tablename="") {
         $where = "";
         foreach ( $this->vars as $varname => $variable) {
             if ($variable->iskey) {
                 if ($where) {
                     $where .= " AND ";
                 }
-                if ($table) {
-                    $varname = $table.".".$varname;
+                if ($tablename) {
+                    $varname = $tablename.".".$varname;
                 }
                 $where .= $varname ."=". $variable->getSQLValue();
             }
@@ -412,23 +424,23 @@ class Cvarset {
      *  This function looks into the given table and if the row exists, it is
      *  updated, if not then inserted. Add always all key fields by addkey()
      *  to the varset before using this function.
-     * @param $table
+     * @param $tablename
      */
-    function makeINSERTorUPDATE($table) {
-        $this->_doQuery($this->makeSELECT($table));
+    function makeINSERTorUPDATE($tablename) {
+        $this->_doQuery($this->makeSELECT($tablename));
         switch ($this->db->num_rows()) {
-            case 0: return $this->makeINSERT($table);
-            case 1: return $this->makeUPDATE($table);
+            case 0: return $this->makeINSERT($tablename);
+            case 1: return $this->makeUPDATE($tablename);
             default:
             // Error: there are several rows with the same key variables
             return "Error using makeINSERTorUPDATE: " . $this->db->num_rows(). " rows match the query";
         }
     }
     /** lastInsertId function
-     * @param $table
+     * @param $tablename
      */
-    function lastInsertId($table) {
-        $this->_doQuery("SELECT LAST_INSERT_ID() AS lid FROM $table");
+    function lastInsertId($tablename) {
+        $this->_doQuery("SELECT LAST_INSERT_ID() AS lid FROM $tablename");
         $this->db->next_record();
         return $this->db->f("lid");
     }
@@ -468,149 +480,9 @@ class Cvarset {
     }
 }
 
-class AA_Metabase_Table {
-    /** Name of the table */
-    var $tablename;
-    /** array of PRIMARY KEY columns */
-    var $primary_key;
-    /** array of INDEXES */
-    var $index;
-    /** array of table columns */
-    var $column;
-    /** array of table flags - like ENGINE=InnoDB, DEFAULT CHARSET=cp1250 */
-    var $flags;
+// it should be in oposite direction - require metabase in all scripts, which
+// then will require varset, but for now we will use this approach
 
-    /** setFromSql function
-     *  Fills AA_Metabase_Table structure from the result of SQL command:
-     *     SHOW CREATE TABLE $table_name
-     * @param $tablename
-     * @param $create_SQL
-     */
-    function setFromSql($tablename, $create_SQL) {
-        $this->tablename = $tablename;
-        foreach (explode("\n", $create_SQL) as $row) {
-            $row = trim($row);
-            // first row - CREATE TABLE - no need to grab anything from it
-            if ( strpos($row, 'CREATE TABLE') === 0 ) {
-                continue;
-            }
-            // field definition row - grab it
-            if ( (strpos($row, 'KEY') === 0) OR
-                 (strpos($row, 'UNIQUE KEY') === 0) OR
-                 (strpos($row, 'PRIMARY KEY') === 0) ) {
-                $this->_setIndexFromSql($row);
-                continue;
-            }
-            if ( strpos($row, ')') === 0 ) {
-                $this->_setFlagFromSql($row);
-                continue;
-            }
-            // else urecognized row
-            echo $row;
-        }
-    }
-}
-
-/** @todo convert to static class variables after move to PHP5 */
-class AA_Metabase {
-    var $tables;
-    var $item_translations;
-    /** AA_Metabase function
-     *
-     */
-    function AA_Metabase() {
-        $this->tables            = array('item'         => array('id', 'short_id', 'slice_id', 'status_code', 'post_date', 'publish_date', 'expiry_date', 'highlight', 'posted_by', 'edited_by', 'last_edit', 'display_count', 'flags', 'disc_count', 'disc_app', 'externally_fed', 'moved2active'),
-                                         'central_conf' => array('id', 'dns_conf', 'dns_serial', 'dns_web', 'dns_mx', 'dns_db', 'dns_prim', 'dns_sec', 'web_conf', 'web_path', 'db_server', 'db_name', 'db_user', 'db_pwd', 'AA_SITE_PATH', 'AA_BASE_DIR', 'AA_HTTP_DOMAIN', 'AA_ID', 'ORG_NAME', 'ERROR_REPORTING_EMAIL', 'ALERTS_EMAIL', 'IMG_UPLOAD_MAX_SIZE', 'IMG_UPLOAD_URL', 'IMG_UPLOAD_PATH', 'SCROLLER_LENGTH', 'FILEMAN_BASE_DIR', 'FILEMAN_BASE_URL', 'FILEMAN_UPLOAD_TIME_LIMIT', 'AA_ADMIN_USER', 'AA_ADMIN_PWD', 'status_code'));
-        
-        $this->item_translations = array();
-        foreach ($this->tables['item'] as $column) {
-            $this->item_translations[AA_Fields::createFieldId($column)] = $column;
-        }
-    }
-    
-    /** addTableFromSql function
-     * @param $tablename
-     * @param $create_SQL
-     */
-    function addTableFromSql($tablename, $create_SQL) {
-        $this->tables[$tablename] = new AA_Metabase_Table;
-        $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
-    }
-    
-    /** getSearchArray function
-     *
-     */
-    function getSearchArray($table) {
-        $i = 0;
-        foreach ( $this->tables[$table] as $field_id ) { // in priority order
-            $field_type = 'text';    // @todo - get the type from field type
-            // we can hide the field, if we put in fields.search_pri=0
-            $search_pri = ++$i;
-                               //          $name,     $field,    $operators, $table, $search_pri, $order_pri
-            $ret[$field_id] = GetFieldDef( $field_id, $field_id, $field_type, false, $search_pri, $search_pri);
-        }
-        return $ret;
-    }
-    
-    /** Get tabledit cofiguration for easy edit and add to the table */
-    function getTableditConf($table) {
-        $ret = array (
-            "table"     => $table,
-            "type"      => "edit",
-//          "mainmenu"  => "modadmin",
-//          "submenu"   => "design",
-            "readonly"  => false,
-            "addrecord" => false,
-//          "cond"      => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_MODP_EDIT_DESIGN),
-//          "title"     => $title,
-//          "caption"   => $title,
-            "attrs"     => array ("table"=>"border=0 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"),
-//          "gotoview"  => "polls_designs_edit",
-        );
-        foreach ( $this->tables[$table] as $field_id ) { // in priority order
-            $field_type = 'text';    // @todo - get the type from field type
-            $ret['fields'][$field_id] = array('caption' => $field_id,
-                                              'view'    => array('type' => $field_type)
-                                             );
-            // @todo - do better check - based on table setting
-            if ($field_id = 'id') {
-                $ret['fields'][$field_id]['view']['readonly'] = true;
-            }
-        }
-        return $ret;
-    }
-
-    /** itemTableField function
-     * @param $field_id
-     */
-    function itemTableField($field_id) {
-        return empty($field_id) ? false : get_if($this->item_translations[$field_id], false);
-    }
-    
-    /** itemFields4Sql function
-     * @param $fields2get
-     */
-    function itemFields4Sql($fields2get) {
-        $fields = array();
-        foreach ( (array)$fields2get as $field_name ) {
-            $item_field = $this->itemTableField($field_name);
-            if ( $item_field ) {
-                $fields[] = 'item.'. $item_field;
-            }
-        }
-        return ( count($fields) < 1 ) ? 'item.*' : join(',', $fields);
-    }
-
-    function nonItemFields($fields2get) {
-        $fields = array();
-        foreach ( (array)$fields2get as $field_name ) {
-            if ( !$this->itemTableField($field_name) ) {
-                $fields[] = $field_name;
-            }
-        }
-        return $fields;
-    }
-
-}
+require_once AA_INC_PATH . "metabase.class.php3";
 
 ?>
