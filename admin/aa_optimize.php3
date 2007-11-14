@@ -489,6 +489,7 @@ class AA_Optimize_Database_Structure extends AA_Optimize {
     }
 }
 
+
 /** Whole pagecache will be invalidated and deleted */
 class AA_Optimize_Clear_Pagecache extends AA_Optimize {
 
@@ -596,6 +597,87 @@ class AA_Optimize_Copy_Content extends AA_Optimize {
         return true;
     }
 }
+
+
+/** Fix field table duplicate keys */
+class AA_Optimize_Field_Duplicates extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Fix field definitions duplicates");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php3 script, where more than one display_count... fields were added).");
+    }
+
+    /** Test function
+    * @return bool
+    */
+    function test() {
+        $duplicates = $this->_check_table();
+
+        if (count($duplicates)==0) {
+            $this->messages[] = _m('No duplicates found');
+            return true;
+        }
+        foreach ($duplicates as $dup) {
+            $this->messages[] = _m('Duplicate in slice - field: %1 - %2', array(unpack_id($dup[0]), $dup[1]));
+        }
+        return false;
+    }
+
+    function repair() {
+        $varset = new Cvarset;
+        // $varset->setDebug();
+
+        $duplicates = $this->_check_table();
+        if (count($duplicates)==0) {
+            $this->messages[] = _m('No duplicates found');
+            return true;
+        }
+        $fixed = array();
+        foreach ($duplicates as $dup) {
+            if ( $fixed[$dup[0].$dup[1]] ) {
+                // already fixed
+                continue;
+            }
+            $fixed[$dup[0].$dup[1]] = true;
+
+            $varset->doDeleteWhere('field', "slice_id='".quote($dup[0])."' AND id='".quote($dup[1])."'");
+            $varset->resetFromRecord($dup[2]);
+            $varset->doInsert('field');
+            $this->messages[] = _m('Field %2 in slice %1 fixed', array(unpack_id($dup[0]), $dup[1]));
+        }
+        return true;
+    }
+
+    function _check_table() {
+        $fields = GetTable2Array("SELECT * FROM field ORDER BY slice_id, id", '');
+
+        $field_table = array();
+        $duplicates  = array();
+        foreach ($fields as $field) {
+            $sid = $field['slice_id'];
+            $fid = $field['id'];
+            if (!isset($field_table[$sid])) {
+                $field_table[$sid] = array();
+            }
+            if ( isset($field_table[$sid][$fid])) {
+                $duplicates[] = array($sid, $fid, $field_table[$sid][$fid]);
+            } else {
+                $field_table[$sid][$fid] = $field;
+            }
+        }
+        return $duplicates;
+    }
+}
+
 
 
 $Msg = '';
