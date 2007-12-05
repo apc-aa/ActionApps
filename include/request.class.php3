@@ -28,6 +28,35 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+
+if (!function_exists('gzdecode')) {
+    function gzdecode($data) {
+        $flags = ord(substr($data, 3, 1));
+        $headerlen = 10;
+        $extralen = 0;
+        $filenamelen = 0;
+        if ($flags & 4) {
+            $extralen = unpack('v' ,substr($data, 10, 2));
+            $extralen = $extralen[1];
+            $headerlen += 2 + $extralen;
+        }
+        if ($flags & 8) { // Filename
+            $headerlen = strpos($data, chr(0), $headerlen) + 1;
+        }
+        if ($flags & 16) { // Comment
+            $headerlen = strpos($data, chr(0), $headerlen) + 1;
+        }
+        if ($flags & 2) {// CRC at end of file
+            $headerlen += 2;
+        }
+        $unpacked = gzinflate(substr($data, $headerlen));
+        if ($unpacked === FALSE) {
+              $unpacked = $data;
+        }
+        return $unpacked;
+     }
+}
+
 class AA_Response {
     var $response;
     var $error;
@@ -65,6 +94,13 @@ class AA_Response {
     }
 }
 
+ini_set('unserialize_callback_func', 'myccallback');
+
+function myccallback($class) {
+    echo "--------unserialize problem:$class:";
+    exit;
+}
+
 class AA_Request {
     var $command;
     var $params;
@@ -75,15 +111,22 @@ class AA_Request {
     }
 
     function _requestVal() {
-        return gzencode(serialize($this));
+        return serialize($this);
     }
 
     function _requestArr() {
         return array('request' => $this->_requestVal());
     }
-    
+
     function encode4Url() {
         return urlencode(base64_encode($this->_requestVal()));
+    }
+
+    /** static member function called like:
+     *     $request = AA_Request::decode$_POST['request']);
+     **/
+    function decode($posted_data) {
+        return unserialize($posted_data);
     }
 
     function getCommand() {
@@ -103,12 +146,22 @@ class AA_Request {
         if (is_array($parameters)) {
             $ask_arr = array_merge($ask_arr, $parameters);
         }
-        $result = HttpPostRequest($url, $ask_arr);
-        if (isset($result["errno"])) {
-            huhl("<br>Error - response:", $result);
-            return new AA_Response('No response recieved ('. $result["errno"] .' - '. $result["errstr"]. ')', 3);
+
+        if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
+            $r = unserialize($ask_arr['request']);
+            huhl($ask_arr, unserialize($ask_arr['request']), $r->params['sync'][0], unserialize($r->params['sync'][0]), unserialize(str_replace("'", "\'", $r->params['sync'][0])), $url);
         }
-        $response  = unserialize($result[0]);
+        $result = AA_Http::postRequest($url, $ask_arr);
+
+        if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
+            huhl('xx', $result);
+            exit;
+        }
+        if ( $result === false ) {
+            huhl("<br>Error - response:", AA_Http::lastErrMsg());
+            return new AA_Response('No response recieved ('. AA_Http::lastErr() .' - '. AA_Http::lastErrMsg(). ')', 3);
+        }
+        $response  = unserialize($result);
         if ( $response == false ) {
             huhl("<br>Error - Bad response:", $result ,"<br>on request: $url");
             return new AA_Response("Bad response", 3);
