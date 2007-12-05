@@ -420,8 +420,8 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 
     switch( $input ) {
         case "field":   FrmInputText(  $k, $label, $value, 254, 50, false, $help); break;
-        case "area":    FrmTextarea(   $k, $label, $value,   4, 50, false, $help); break;
-        case "areabig": FrmTextarea(   $k, $label, $value,  15, 80, false, $help); break;
+        case "area":    FrmTextarea(   $k, $label, $value,   4, 50, false, $help, '', 1); break;
+        case "areabig": FrmTextarea(   $k, $label, $value,  15, 80, false, $help, '', 1); break;
         case "seltype": FrmInputSelect($k, $label, $VIEW_TYPES_INFO[$view_type]['modification'], $value, false, $help); break;
         case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help); break;
         case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help); break;
@@ -430,7 +430,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
         case "cond":    ConditionFrm(  $k, $label, $value); break;
         case "order":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy'); break;
         case "group":   OrderFrm(      $k, $label, $value, $lookup_fields, $VIEW_TYPES_INFO[$view_type]['order'] == 'easy', true); break;
-        case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help, DOCUMENTATION_URL); break;
+        case "select":  FrmInputSelect($k, $label, $VIEW_FIELDS[$k]['value'], $vw_data[$k], false, $help, ''); break;
         case "none":    break;
     }
 }
