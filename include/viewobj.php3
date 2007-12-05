@@ -194,17 +194,20 @@ class AA_Views {
         $this->a = array();
     }
 
-    /** global_instance function
-     *  "class function" obviously called as AA_Views::global_instance();
+    /** singleton function
+     *  called as AA_Views::singleton() from getView() method;
      *  This function makes sure, there is global instance of the class
      *  @todo  convert to static class variable (after migration to PHP5)
      */
-    function & global_instance() {
-        if ( !isset($GLOBALS['allknownviews']) ) {
-            $GLOBALS['allknownviews'] = new AA_Views;
+    function & singleton() {
+        static $instance = null;
+        if (is_null($instance)) {
+            // Now create the AA_Views object
+            $instance = new AA_Views;
         }
-        return $GLOBALS['allknownviews'];
+        return $instance;
     }
+
     /** xml_serialize function
      * @param $t
      * @param $i
@@ -220,7 +223,7 @@ class AA_Views {
      * @param $vid
      */
     function & getView($vid) {
-        $views = AA_Views::global_instance();
+        $views = AA_Views::singleton();
         return $views->_getView($vid);
     }
 
@@ -230,7 +233,7 @@ class AA_Views {
      * @param $field
      */
     function getViewField($vid, $field) {
-        $views = AA_Views::global_instance();
+        $views = AA_Views::singleton();
         $view  = $views->_getView($vid);
         return $view ? $view->f($field) : null;
     }
@@ -251,7 +254,7 @@ class AA_Views {
     function getSliceViews($slice_id) {
         $a = array();
         if ($slice_id) {
-            $views = AA_Views::global_instance();
+            $views = AA_Views::singleton();
             $SQL   = "SELECT id FROM view WHERE slice_id='". q_pack_id($slice_id) ."'";
             $v_arr = GetTable2Array($SQL, 'NoCoLuMn', 'id');
             if (is_array($v_arr)) {

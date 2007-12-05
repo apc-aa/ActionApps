@@ -444,16 +444,18 @@ class AA_Slices {
         $this->a = array();
     }
 
-    /** global_instance function
-     *  "class function" obviously called as AA_Slices::global_instance();
-     *  This function makes sure, there is global instance of the class
+    /** singleton
+     *  called from getSlice method
+     *  This function makes sure, there is just ONE static instance if the class
      *  @todo  convert to static class variable (after migration to PHP5)
      */
-    function & global_instance() {
-        if ( !isset($GLOBALS['allknownslices']) ) {
-            $GLOBALS['allknownslices'] = new AA_Slices;
+    function singleton() {
+        static $instance = null;
+        if (is_null($instance)) {
+            // Now create the AA_Slices object
+            $instance = new AA_Slices;
         }
-        return $GLOBALS['allknownslices'];
+        return $instance;
     }
 
     /** getSlice function
@@ -461,7 +463,7 @@ class AA_Slices {
      * @param $slice_id
      */
     function & getSlice($slice_id) {
-        $slices = AA_Slices::global_instance();
+        $slices = AA_Slices::singleton();
         return $slices->_getSlice($slice_id);
     }
 
@@ -471,7 +473,7 @@ class AA_Slices {
      * @param $field
      */
     function getSliceProperty($slice_id, $field) {
-        $slices = AA_Slices::global_instance();
+        $slices = AA_Slices::singleton();
         $slice  = $slices->_getSlice($slice_id);
         return $slice ? $slice->getProperty($field) : null;
     }
