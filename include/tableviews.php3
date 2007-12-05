@@ -110,38 +110,38 @@ function GetTableView($viewID) {
     }
 
     /* ------------------------------------------------------------------------------------
-       polls_designs
+       polls_design
     */
-    if ($viewID == "polls_designs") {
+    if ($viewID == "polls_design") {
         return  array (
-        "table" => "polls_designs",
-        "type" => "browse",
-        "mainmenu" => "modadmin",
-        "submenu" => "design",
-        "readonly" => true,
+        "table"     => "polls_design",
+        "type"      => "browse",
+        "mainmenu"  => "modadmin",
+        "submenu"   => "design",
+        "readonly"  => true,
         "addrecord" => false,
-        "where" => "(pollsModuleID='". q_pack_id($slice_id)."')",
-        "cond" => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_MODP_EDIT_DESIGN),
-        "title" => _m ("Polls Design"),
-        "caption" => _m("Polls Design"),
-        "attrs" => $attrs_browse,
-        "gotoview" => "polls_designs_edit",
-        "fields" => array (
-            "designID" => array ("caption" => _m("Id")),
+        "where"     => "(module_id='". q_pack_id($slice_id)."')",
+        "cond"      => CheckPerms( $auth->auth["uid"], "slice", $slice_id, PS_MODP_EDIT_DESIGN),
+        "title"     => _m("Polls Design"),
+        "caption"   => _m("Polls Design"),
+        "attrs"     => $attrs_browse,
+        "gotoview"  => "polls_design_edit",
+        "fields"    => array (
+            "id"       => array ("caption" => _m("Id")),
             "name"     => array ("caption" => _m("Name")),
             "comment"  => array ("caption" => _m("Comment"))
         ));
     }
 
-    if ($viewID == "polls_designs_edit") {
-        $retval = GetTableView("polls_designs");
+    if ($viewID == "polls_design_edit") {
+        $retval = GetTableView("polls_design");
         $retval["type"] = "edit";
         $retval["attrs"] = $attrs_edit;
         $retval["readonly"] = false;
-        $retval["gotoview"] = "polls_designs";
+        $retval["gotoview"] = "polls_design";
         $retval["addrecord"] = false;
         $retval["fields"] = array (
-            "designID"        => array ("caption" => _m("Id"),
+            "id"        => array ("caption" => _m("Id"),
                                         "view" => array( "type"=>"text",
                                                          "readonly" => true )),
             "name"            => array ("caption" => _m("Name"),
@@ -150,17 +150,12 @@ function GetTableView($viewID) {
             "comment"         => array ("caption" => _m("Comment"),
                                         "view" => array( "type"=>"text" ),
                                          "hint" => _m("design description (for administrators only)")),
-            "resultBarFile"   => array ("caption" => _m("Bar image"),
-                                        "view" => array( "type"=>"text" ),
-                                        "hint" => _m("url of image for bar")),
-            "resultBarWidth"  => array ("caption" => _m("Bar width"),
-                                        "hint" => _m("width of poll bar")),
-            "resultBarHeight" => array ("caption" => _m("Bar height"),
-                                        "hint" => _m("height of poll bar")),
-            "top"             => array ("caption" => _m("Top HTML")),
-            "answer"          => array ("caption" => _m("Answer HTML")),
-            "bottom"          => array ("caption" => _m("Bottom HTML")),
-            "params"          => array ("caption" => _m("Params"))
+            "top"             => array ("caption" => _m("Top HTML"),
+                                        "view" => array( "type"=>"area" )),
+            "answer"          => array ("caption" => _m("Answer HTML"),
+                                        "view" => array( "type"=>"area" )),
+            "bottom"          => array ("caption" => _m("Bottom HTML"),
+                                        "view" => array( "type"=>"area" ))
             );
         return $retval;
     }

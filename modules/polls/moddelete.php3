@@ -26,22 +26,22 @@ require_once AA_INC_PATH . "msgpage.php3";
 require_once AA_INC_PATH . "modutils.php3";
 
 
-if ($cancel)
-  go_url( $sess->url(self_base() . "index.php3"));
-
+if ($cancel) {
+    go_url( $sess->url(self_base() . "index.php3"));
+}
 
 if ($del) {
-  if (!IsSuperadmin()) {
-    MsgPage($sess->url(self_base())."index.php3", L_NO_PS_DEL, "admin");
-    exit;
-  }
+    if (!IsSuperadmin()) {
+        MsgPage($sess->url(self_base())."index.php3", L_NO_PS_DEL, "admin");
+        exit;
+    }
 } else {
-  MsgPage($sess->url(self_base())."index.php3", L_NO_MODULE, "admin");
-  exit;
+    MsgPage($sess->url(self_base())."index.php3", L_NO_MODULE, "admin");
+    exit;
 }
 
 $err["Init"] = "";      // error array (Init - just for initializing variable
-$p_del = q_pack_id($del);
+$p_del       = q_pack_id($del);
 
 // check if module can be deleted
 ExitIfCantDelete( $del, $db );
@@ -52,37 +52,37 @@ DeleteModule( $del, $db );
 // delete all module specific tables
 
 // find all polls for this module
-$delim = "";
+$delim      = "";
 $polls_list = "";
-$SQL = "SELECT pollID FROM polls WHERE pollsModuleID='$p_del'";
+$SQL        = "SELECT id FROM polls WHERE module_id='$p_del'";
 $db->query($SQL);
 while ( $db->next_record() ) {
-  $polls_list .= $delim ."'". $db->f('pollID') ."'";
-  $delim = ', ';
+    $polls_list .= $delim ."'". $db->f('id') ."'";
+    $delim = ', ';
 }
 
 if ( $polls_list ) {
-  $SQL = "DELETE LOW_PRIORITY FROM polls_ip_lock WHERE pollID IN ($polls_list)";
-  $db->query($SQL);
+    $SQL = "DELETE LOW_PRIORITY FROM polls_ip_lock WHERE poll_id IN ($polls_list)";
+    $db->query($SQL);
 
-  $SQL = "DELETE LOW_PRIORITY FROM polls_data WHERE pollID IN ($polls_list )";
-  $db->query($SQL);
+    $SQL = "DELETE LOW_PRIORITY FROM polls_answer WHERE poll_id IN ($polls_list )";
+    $db->query($SQL);
 
-  $SQL = "DELETE LOW_PRIORITY FROM polls_log WHERE pollID IN ($polls_list)";
-  $db->query($SQL);
+/** @todo - delete all logs for the polls */
+//    $SQL = "DELETE LOW_PRIORITY FROM polls_log WHERE id IN ($polls_list)";
+//    $db->query($SQL);
 }
 
 $SQL = "DELETE LOW_PRIORITY FROM polls WHERE id='$p_del'";
 $db->query($SQL);
 
-$SQL = "DELETE LOW_PRIORITY FROM polls_designs WHERE  pollsModuleID='$p_del'";
+$SQL = "DELETE LOW_PRIORITY FROM polls_design WHERE module_id='$p_del'";
 $db->query($SQL);
 
 // delete module from permission system
 DelPermObject($del, "slice");  // the word 'slice' is not mistake - do not change
 
 page_close();                                // to save session variables
-go_url(con_url($sess->url(AA_INSTAL_PATH . "admin/slicedel.php3"),
-                                          "Msg=".rawurlencode(L_DELSLICE_OK)));
+go_url(con_url($sess->url(AA_INSTAL_PATH . "admin/slicedel.php3"), "Msg=".rawurlencode(L_DELSLICE_OK)));
 
 ?>

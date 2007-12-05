@@ -39,32 +39,30 @@ require_once "constants.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
-function firstBig ($s)
-{
+function firstBig($s) {
 	return strtoupper($s[0]).substr($s,1);
 }
 
 // the HTML tags to be printed verbatim are back-slashed in the text
 // e.g. <A ....> is written \<A ...\>
 
-function processSlashes ($s)
-{
+function processSlashes($s) {
 	$s = str_replace ("\\<", HTMLSpecialChars("<"), $s);
 	$s = str_replace ("\\>", HTMLSpecialChars(">"), $s);
 	return $s;
 }
 
 $desc = $$list;
-$desc = $desc[items][$item];
+$desc = $desc['items'][$item];
 $title = firstbig($desc[name])." ".L_PARAM_WIZARD_TITLE;
 
 // by some item (I know only about the date input type) the parameters are divided with ' rather than :
 // so I allow to use ' when all params are INT or BOOL
 
 $allow_quote = 1;
-if (is_array($desc[params])) {
-	reset($desc[params]);
-	while (list(,$param)=each($desc[params])) {
+if (is_array($desc['params'])) {
+	reset($desc['params']);
+	while (list(,$param)=each($desc['params'])) {
 		if ($param[type] != 'INT' && $param[type] != 'BOOL') {
 			$allow_quote = 3;
 			break;
@@ -79,16 +77,14 @@ if (is_array($desc[params])) {
 <body onload=readParams()>
 <center>
 
-<?php // ------- Caption ----------- ?>
+<?php // ------- Caption ----------- 
+?>
 <table border="0" cellspacing="0" cellpadding="1" width="95%" bgcolor="<?php echo COLOR_TABTITBG ?>">
    <TR><TD align=center class=tablename width="100%"><?php echo $title ?></TD></TR>
 </table>
 
 <form name="f" method=post onSubmit="self.close()" ?>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" bgcolor="<?php echo COLOR_TABTITBG ?>">
-<?php
-
-?>
 
 <SCRIPT Language="JavaScript"><!--
   function changeFunction (combo) {

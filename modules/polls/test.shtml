@@ -2,19 +2,23 @@
 
 <html>
 <head>
-	<title>Untitled</title>
+    <title>Untitled</title>
 </head>
 
 <body>
 <h1>Testovani</h1>
 <hr>
-<!--#include virtual="/apc-aa-dev/modules/polls/poll.php3?poll_id=ef5470982b28bf8465f0dd98f7c73f50&show=36"-->
+
+<!--#include virtual="/apc-aa-dev/modules/polls/poll.php3?pid=e5505b518d57175990432457e03d1f62"-->
+<!-- #include virtual="/apc-aa-dev/modules/polls/poll.php3?pid=746573746f76616369616e6b65746b61&show=24"-->
+<!-- #include virtual="/apc-aa-dev/modules/polls/poll.php3?pid=746573746f76616369616e6b65746b61&show=11"-->
+<!-- #include virtual="/apc-aa-dev/modules/polls/poll.php3?pid=746573746f76616369616e6b65746b61&show=8"-->
 <!-- #include virtual="/apc-aa-dev/modules/polls/showpoll.php3?packed=1&id=testovacianketka"-->
 <br>
 <br>
 <br>
 
-<!-- #include virtual="/apc-aa-dev/modules/polls/showpoll.php3?id=ef5470982b28bf8465f0dd98f7c73f50&poll_id=36"-->
+<!-- #include virtual="/apc-aa-dev/modules/polls/showpoll.php3?id=ef5470982b28bf8465f0dd98f7c73f50&pid=36"-->
 <hr>
 </body>
 </html>

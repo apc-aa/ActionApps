@@ -1183,6 +1183,8 @@ class AA_Item {
                 return (($p[1]=='anonym') ?
                 get_aa_url('modules/links/linkedit.php3?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :
                 get_aa_url('modules/links/linkedit.php3?lid='. $this->getval('id')) );
+            case "poll_edit":
+                return get_aa_url('modules/polls/polledit.php3?poll_id='. $this->getval('id'));
             case "link_go_categ":
                 $cat_names            = $this->getValues('cat_name');
                 $cat_ids              = $this->getValues('cat_id');

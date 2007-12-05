@@ -176,7 +176,14 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'name' => _m('Polls for AA'),
                                 'show_templates' => 1,
                                 'directory' => "modules/polls/",
-                                'menu' => "modules/polls/menu.php3"));
+                                'menu' => "modules/polls/include/menu.php3",
+                                'language_files' => array(
+                                    "en_polls_lang.php3" => "en_polls_lang.php3",
+                                    "cz_polls_lang.php3" => "cz_polls_lang.php3")),
+
+                 );
+
+
 $MODULES['Alerts'] = array ('table' => 'module',
                             'name' => _m('Alerts'),
                             'directory' => "modules/alerts/",
