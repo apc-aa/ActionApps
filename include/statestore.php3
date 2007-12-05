@@ -443,7 +443,14 @@ class AA_Object extends AA_Storable {
      * @param $params
      */
     function &factoryByName($class_mask, $name, $params=null) {
-        return AA_Object::factory($class_mask. ucwords(strtolower($name)), $params);
+        return AA_Object::factory(AA_Object::constructClassName($class_mask, $name), $params);
+    }
+    
+    /** create the name of class from the type and name 
+     *  static class method
+     **/
+    function constructClassName($class_mask, $name) {
+        return $class_mask. ucwords(strtolower($name));
     }
 
 
@@ -465,7 +472,7 @@ class AA_Object extends AA_Storable {
 
         // first parameter is the class identifier - the parameters starts then
         $i      = 1;
-        $class  = $class_mask. ucwords(strtolower($splited[0]));
+        $class  = AA_Object::constructClassName($class_mask, $splited[0]);
         $params = array('class' => $class);
 
         // ask class, which parameters uses

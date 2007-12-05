@@ -389,7 +389,13 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
         $context = $additional["context"];
     }
 
-    $filevarname = "v".unpack_id($field["id"])."x";
+    if (strpos('x'.$value['value'], 'AA_UPLOAD:')==1) {
+        // newer - widget approach - the uploaded file is encoded into the value
+        // and prefixed with "AA_UPLOAD:" constant
+        $filevarname = substr($value['value'],10); 
+    } else {
+        $filevarname = "v".unpack_id($field["id"])."x";
+    }
     $up_file = $_FILES[$filevarname];
 
     // look if the uploaded picture exists

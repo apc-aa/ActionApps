@@ -631,6 +631,14 @@ class AA_Grabber_Aarss extends AA_Grabber {
 *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
 *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
 *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
+*
+*   There could be also compound widgets, which consists from more than one
+*   input - just like date selector. In such case we use following syntax:
+*       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][d][]
+*       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][m][]
+*       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][y][]
+*   where "dte" points to the AA_Widget_Dte. The method AA_Widget_Dte::getValue()
+*   is called to grab the value (or multivalues) from the submitted form
 */
 class AA_Grabber_Form {
     var $_items;
@@ -753,20 +761,18 @@ class AA_Grabber_Form {
                 $item_fields = array_merge($aa['all'], $item_fields);
             }
             foreach ($item_fields as $dirty_field_id => $val_array) {
-                $flag          = $val_array['flag'] & FLAG_HTML;
-                $fld_value_arr = array();
-                foreach ( (array)$val_array as $key => $value ) {
-                    if (is_numeric($key)) {
-                        $value = str_replace($trans_item_alias, $trans_item_ids, $value);
-                        $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
-                    }
-                }
+                // get the content of the field (values and flags)
+                $aa_value = AA_Widget::getValue($val_array);
+
+                $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
+
                 // create full_text......1 from full_text______1
                 $field_id = AA_Field::getFieldIdFromVar($dirty_field_id);
-                $item->setFieldValue($field_id, $fld_value_arr);
+                $item->setFieldValue($field_id, $aa_value);
             }
             $this->_items[] = array($item, $store_mode);
         }
+
         reset ($this->_items);
     }
 

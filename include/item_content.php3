@@ -47,11 +47,12 @@ class AA_Value {
     function AA_Value($value=null, $flag=null) {
         $this->clear();
         if (is_array($value)) {
-            // aa array used in AA_ItemContent - [0]['value'] = ..
-            //                                      ['flag']  = ..
-            //                                   [1]['value'] = ..
+            // normal array(val1, val2, ...) used or used AA array used 
+            // in AA_ItemContent - [0]['value'] = ..
+            //                         ['flag']  = ..
+            //                     [1]['value'] = ..
             foreach($value as $val) {
-                $this->val[] = $val['value'];
+                $this->val[] = is_array($val) ? $val['value'] : $val;
             }
             $this->flag = !is_null($flag) ? $flag : get_if($value[0]['flag'], 0);
         } elseif ( !is_null($value) ) {
@@ -68,13 +69,16 @@ class AA_Value {
     function getValue($i=0) {
         return $this->val[$i];
     }
-    /** clear function
-     *
-     */
+
     /** Returns the value for a field. If it is a multi-value
     *   field, this is the first value. */
     function getFlag($i=0) {
         return $this->flag;
+    }
+
+    /** Set the flag (for al the values the flag is common at this time) */
+    function setFlag($flag) {
+        $this->flag = $flag;
     }
 
     /** Returns number of values */
@@ -82,10 +86,33 @@ class AA_Value {
         return count($this->val);
     }
 
+    /** clear function  */
     function clear() {
         $this->val  = array();
         $this->flag = 0;
     }
+    
+    /** Replaces the strings in all values  */
+     function replaceInValues($search, $replace) {
+         foreach ($this->val as $k => $v) {
+             $this->val[$k] = str_replace($search, $replace, $v);
+         }
+    }        
+
+    /** getArray function
+     *  @return clasic $content value array - [0]['value'] = ..
+     *                                           ['flag']  = ..
+     *                                        [1]['value'] = ..
+     *          the values are not quoted, ...
+     *  Mainly for backward compatibility with old - array approach
+     */
+     function getArray() {
+         $ret = array();
+         foreach ($this->val as $v) {
+             $ret[] = array('value'=>$v, 'flag'=>$this->flag);
+         }
+         return $ret;
+     }
 }
 
 
@@ -438,7 +465,12 @@ class ItemContent {
      * @param $v
      */
     function setFieldValue($field_id,$v) {
-        $this->content[$field_id] = $v;
+        if (is_object($v)) {
+            // we expect AA_Value object here
+            $this->content[$field_id] = $v->getArray();
+        } else {
+            $this->content[$field_id] = $v;
+        }
     }
     /** setItemValue function
      * @param $field_name

@@ -286,6 +286,46 @@ class AA_Widget extends AA_Components {
         $widget_html  .= "\n<input type=\"hidden\" id=\"ajaxh_$input_id\" value=\"".htmlspecialchars($repre_value)."\">";
         return $widget_html;
     }
+
+
+    /** @return AA_Value for the data send by the widget
+     *   The data submitted by form usually looks like
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][headline________][]=Hi
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][headline________][flag]=1
+     *   The $data4field is just the last array(0=>Hi, flag=>1)
+     *   This method coverts such data to AA_Value.
+     *
+     *   There could be also compound widgets, which consists from more than one
+     *   input - just like date selector. In such case we use following syntax:
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][d][]
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][m][]
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][y][]
+     *   where "dte" points to the AA_Widget_Dte. The method AA_Widget_Dte::getValue()
+     *   is called to grab the value (or multivalues) from the submitted form
+     *
+     *  static class method
+     */
+    function getValue($data4field) {
+        $flag          = $data4field['flag'] & FLAG_HTML;
+        $fld_value_arr = array();
+
+        foreach ( (array)$data4field as $key => $value ) {
+            if (is_numeric($key)) {
+                $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
+            }
+            elseif (($key != 'flag') AND class_exists($class = AA_Object::constructClassName('AA_Widget_', $key))) {
+                // call function like AA_Widget_Dte::getValue($data)
+                // where $data depends on the widget - for example for
+                // date it is array('d'=>array(), 'm'=>array(), 'y'=>array())
+                $aa_value = call_user_func_array(array($class, 'getValue'), array($value));
+                $aa_value->setFlag($flag);
+
+                // there is no need to go through array - we do not expect more widgets for one variable
+                return $aa_value;
+            }
+        }
+        return new AA_Value($fld_value_arr, $flag);
+    }
 }
 
 /** Textarea widget */
@@ -683,6 +723,48 @@ class AA_Widget_Dte extends AA_Widget {
             'show_time'              => new AA_Property( 'show_time',              _m("Show time"),            'bool', false, true, 'bool', false, _m("show the time box? (1 means Yes, undefined means No)"), '', "1")
             );
     }
+
+    /** @return AA_Value for the data send by the widget
+     *   This is compound widgets, which consists from more than one input, so
+     *   the inputs looks like:
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][d][]
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][m][]
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][y][]
+     *   where "dte" points to the AA_Widget_Dte.
+     *
+     *   This method AA_Widget_Dte::getValue() is called to grab the value
+     *   (or multivalues) from the submitted form
+     *
+     *  @param $data4field - array('y'=>array(), 'm'=>array(), 'd'=>array(), 't'=>array())
+     *  static class method
+     */
+    function getValue($data4field) {
+
+        $years  = (array)$data4field['y'];
+        $months = (array)$data4field['m'];
+        $days   = (array)$data4field['d'];
+        $times  = (array)$data4field['t'];
+
+        // date could be also multivalue
+        $max = max(count($years), count($months), count($days), count($times));
+
+        $values = array();
+
+        for ($i=0 ; $i<$max; $i++) {
+            // check if anything is filled
+            if ( !(int)$years[$i] AND !(int)$months[$i] AND !(int)$days[$i] AND !$time[$i]) {
+                continue;
+            }
+            $year  = $years[$i]  ? $years[$i]  : date('Y'); // specified year or current
+            $month = $months[$i] ? $months[$i] : 1;         // specified month or January
+            $day   = $days[$i]   ? $days[$i]   : 1;         // specified day or 1st
+            $time  = explode( ':', $times[$i] ?  $times[$i] : "0:0:0");         // specified time or midnight
+
+            $values[] = mktime($time[0],$time[1],$time[2],(int)$month,(int)$day,(int)$year);
+        }
+
+        return new AA_Value($values);
+    }
 }
 
 /** Check Box widget */
@@ -936,6 +1018,48 @@ class AA_Widget_Fil extends AA_Widget {
             'hint'                   => new AA_Property( 'hint',                   _m("Hint"),                 'text', false, true, 'text', false, _m("appears beneath the file upload field"), '', _m("You can select a file ..."))
             );
     }
+
+    /** @return AA_Value for the data send by the widget
+     *   This is compound widgets, which consists from more than one input - filled
+     *   URL of the file or name of input[type=file] for upload,
+     *   so the inputs looks like:
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][fil][var][]  // varname of uploaded file
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][fil][url][]  // url
+     *   Unfortunatey we can't use something like:
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][fil][up][]  // upoaded file
+     *   since the array variabes in $_FILES array are mess in PHP (at least 5.2.5)
+     *
+     *   This method AA_Widget_Fil::getValue() is called to grab the value
+     *   (or multivalues) from the submitted form. The function actually do not
+     *   upload the file. The upload itself is done by insert_fnc_fil() later
+     *   Here we just mar the uploaded file by prefix AA_UPLOAD:, so
+     *   insert_fnc_fil() knows aboutr the new file for upload
+     *
+     *  @param $data4field - array('var'=>array(), 'url'=>array())
+     *  static class method
+     */
+    function getValue($data4field) {
+
+        $uploads  = (array)$data4field['var'];
+        $urls     = (array)$data4field['url'];
+
+        // date could be also multivalue
+        $max = max(count($uploads), count($urls));
+
+        $values = array();
+
+        for ($i=0 ; $i<$max; $i++) {
+            if ($uploads[$i]) {
+                $values[] = 'AA_UPLOAD:'.$uploads[$i];
+            }
+            elseif ($urls[$i]) {
+                $values[] = $urls[$i];
+            }
+        }
+        return new AA_Value($values);
+    }
+
+
 }
 
 /** Related Item Window widget */

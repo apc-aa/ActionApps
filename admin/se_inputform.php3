@@ -148,7 +148,7 @@ if ($update) {
         // mark as multiple
         // Mark field as multiple is not necessary - we can remove this
         // property in the future. Honza, 17.10.2006
-        $widget_class = 'AA_Widget_'. ucwords($input_show_func_f);
+        $widget_class = AA_Object::constructClassName('AA_Widget_', $input_show_func_f);
         Qvarsetadd("multiple",      "quoted", ($onlyupdate ? $multiple : (call_user_func(array($widget_class,'multiple')) ? 1 : 0)));
 
         for ($iAlias = 1; $iAlias <= 3; $iAlias ++) {
@@ -272,7 +272,7 @@ if ( !$update ) {      // load defaults
     get_params($fld["input_show_func"], $input_show_func_f, $input_show_func_p);
 
     // which parameters uses this widget?
-    $widget_class   = 'AA_Widget_'. ucwords($input_show_func_f);
+    $widget_class   = AA_Object::constructClassName('AA_Widget_', $input_show_func_f);
     $isf_parameters = call_user_func(array($widget_class,'getClassProperties'));
 
     if ( isset($isf_parameters['const'])) {
