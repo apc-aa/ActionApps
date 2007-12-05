@@ -1087,48 +1087,45 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
         $numeric_bin = AA_BIN_ACTIVE;
     }
 
-    $SQL = '';
     /* create SQL query for different types of numeric constants */
     if ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH)) {
-        $SQL .= ' 1=1 ';
+        return ' 1=1 ';
     } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
-        $SQL .= " $table.status_code=1 ";
+        return " $table.status_code=1 ";
     } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_PENDING)) {
-        //      $SQL .= " $table.status_code=1 AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
-        $SQL .= " $table.status_code=1 AND ($table.expiry_date > '$now') ";
+        return " $table.status_code=1 AND ($table.expiry_date > '$now') ";
     } else {
-        $SQL2 = '';
+        $or_conds = array();
         if ($numeric_bin & AA_BIN_ACTIVE) {
-            $SQL2 .= " ( $table.status_code=1 AND ($table.publish_date <= '$now') ";
+            $SQL = " $table.status_code=1 AND $table.publish_date <= '$now' ";
             /* condition can specify expiry date (good for archives) */
             if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
                 //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
-                $SQL2 .= " AND ($table.expiry_date > '$now') ";
+                $SQL .= " AND $table.expiry_date > '$now' ";
             }
-            $SQL2 .= ' )';
+            $or_conds[] = $SQL;
         }
         if ($numeric_bin & AA_BIN_EXPIRED) {
-            if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " ($table.status_code=1 AND $table.expiry_date <= '$now') ";
+            $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
         }
         if ($numeric_bin & AA_BIN_PENDING) {
-            if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " ($table.status_code=1 AND $table.publish_date > '$now') ";
+            $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' ";
         }
         if ($numeric_bin & AA_BIN_HOLDING) {
-            if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " ($table.status_code=2) ";
+            $or_conds[] = " $table.status_code=2 ";
         }
         if ($numeric_bin & AA_BIN_TRASH) {
-            if ($SQL2 != "") { $SQL2 .= ' OR '; }
-            $SQL2 .= " ($table.status_code=3) ";
+            $or_conds[] = " $table.status_code=3 ";
         }
-        $SQL .= " ( ".$SQL2 ." ) ";
+        switch (count($or_conds)) {
+            case 0:  return ' 1=1 ';
+            case 1:  return ' '. $or_conds[0] .' ';
+            default: return ' (('. join(') OR (', $or_conds) .')) ';
+        }
     }
 
-    return $SQL;
+    return ' 1=1 ';
 }
-
 
 
 // -------------------------------------------------------------------------------------------
