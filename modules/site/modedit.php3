@@ -117,10 +117,7 @@ if ($add || $update) {
             $varset->set("state_file", $state_file, "quoted");
 
             // create new site
-            if ( !$db->query("INSERT INTO site" . $varset->makeINSERT() )) {
-                $err["DB"] .= MsgErr("Can't add site");
-                break;
-            }
+            $varset->doInsert('site');
 
             // copy spots
             $db2 = new DB_AA;
@@ -172,6 +169,17 @@ if ($template['W']) {           // set new name for new module
     $name = "";
 }
 
+if ( $template['W'] ) {
+    $form_buttons = array( 'insert',
+                           'template[W]' => array( 'type'=>"hidden", 'value'=> $template['W']),
+                           'add'         => array( 'type'=>"hidden", 'value'=> 1),
+                           );
+} else {
+    $form_buttons = array( 'update',
+                           "update"  => array ('type' => 'hidden', 'value'=>'1'),
+                           );
+}
+
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <TITLE><?php echo _m("Site Admin");?></TITLE>
@@ -185,13 +193,9 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     echo $Msg;
 ?>
 <form method=post action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
-<table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Site")?></b>
-</td>
-</tr>
-<tr><td>
-<table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 <?php
+    FrmTabCaption(_m("Site"),'','',$form_buttons, $sess, $module_id);
+
     ModW_HiddenRSpotId();
     FrmStaticText(_m("Id"), $module_id, false);
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
@@ -208,23 +212,10 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     }
     FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['W']['language_files'], $lang_file, false);
     FrmInputText("state_file", _m("State file"), $state_file, 99, 25, false, _m("Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."));
+
+    FrmTabEnd($form_buttons, $sess, $module_id);
+
+echo "\n </form>";
+HtmlPageEnd();
+page_close();
 ?>
-</table>
-<tr><td align="center">
-<?php
-    if ( $template['W'] ) {
-        echo "<input type=hidden name=\"add\" value=1>";        // action
-        echo "<input type=hidden name=\"template[W]\" value=\"". $template['W'] .'">';
-        echo "<input type=submit name=insert value=\"". _m("Insert") .'">';
-    } else {
-        echo "<input type=hidden name=\"update\" value=1>";
-        echo '<input type=submit name=update value="'. _m("Update") .'">&nbsp;&nbsp;';
-        echo '<input type=reset value="'. _m("Reset form") .'">&nbsp;&nbsp;';
-        echo '<input type=submit name=cancel value="'. _m("Cancel") .'">';
-    }
-?>
-</td></tr></table>
-</FORM>
-</BODY>
-</HTML>
-<?php page_close(); ?>
