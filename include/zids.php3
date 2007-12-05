@@ -376,6 +376,11 @@ class zids {
         return $this->slice($index);
     }
 
+    /** get the ids array as is */
+    function getArray() {
+        return $this->a;
+    }
+
     /** gettags function
      * Return associative array, longid->tag;
      */
@@ -430,16 +435,22 @@ class zids {
      *  Return appropriate SQL for including in WHERE clause
      * Note that some code still does this by hand,
      * @param $column
+     * @param $asis - returns the ids in long form (not packed even for 'l' type)
      */
-    function sqlin( $column = 'short_or_long' ) {
+    function sqlin( $column = 'short_or_long', $asis = false ) {
         if ($this->count() == 0) {
             return $column ? '0' : ' = "" ';
         }
         if ( $column == 'short_or_long' ) {
             $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
         }
-        $id_list = implode(",", $this->use_short_ids() ?
-                   array_map( "qquote", $this->shortids()) : $this->qq_packedids() );
+        if ( $asis ) {
+            $id_list = implode(",",array_map("qquote", $this->a));
+        } elseif ($this->use_short_ids()) {
+            $id_list = implode(",",array_map("qquote",  $this->shortids()));
+        } else {
+            $id_list = implode(",", $this->qq_packedids());
+        }
 
         // '=' is much quicker than 'IN ()' in MySQL 4.0.x
         // - don't ask me why, please. Honza

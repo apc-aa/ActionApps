@@ -1,4 +1,35 @@
-12/05/07 - Added prototip js code - see:
+12/05/07 - polls module finalized and working - last bugs fixed, database
+(honzam)   structure of polls* tables is different
+         - Error page could be deffined for database errors - use
+           define("DB_ERROR_PAGE", "http://some.url.cz/page.html"); in your
+           config.php3 file.
+         - new possibility to set the the URL for uploaded files. The place,
+           where the data are stored is not changed, but you are able to change
+           the url which is stored into database. So, if you make symbolic link
+           from say /var/www/some.domain.cz/documents to
+           /var/www/aa.domain.cz/img_upload/56345363737337373763, then you can
+           set that the uploaded url to some.domain.cz, so the files will look
+           like from your domain.
+           See "Slice Admin" -> "Slice Fields" -> "Upload URL" field
+         - new support for compound widgets (like date, file upload) in
+           AA_Widget_* class and its support in AA_Form_Grabber API.
+           Compound widgets, which consists from more than one input. In such
+           case we use following syntax:
+             aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][d][]
+             aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][m][]
+             aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][y][]
+           where "dte" points to the AA_Widget_Dte. The method
+           AA_Widget_Dte::getValue() is called to grab the value (or multivalues)
+           from the submitted form
+         - The database errors are loged into system log (thanks to
+           Cedric Knight, GreenNet)
+         - site module Setting page converted to more generalized (module) version
+         - refactoring to use AA_Set instead of AA_Sortorder and also changes
+           in AA_Manager class - method display()
+         - AA_Views and AA_Slices uses singleton pattern
+         - better support for synchronizatin slices in AA_Metabase, ...
+         - synchronization script in AA Central updated
+12/04/07 - Added prototip js code - see:
 (honzam)      http://www.nickstakenburg.com/projects/prototip/.
            If you add apc-aa/javascript/aajslib.php3 and
                       apc-aa/javascript/prototype/css/prototip.css

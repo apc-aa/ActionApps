@@ -519,6 +519,7 @@ class AA_Fields {
      * @param $id
      */
     function getFieldType($id) {
+        $id = ltrim($id, "_");  // slice (module) fields are prefixed by underscore
         $dot_pos = strpos($id, ".");
         return ($dot_pos === false) ? $id : substr($id, 0, $dot_pos);
     }

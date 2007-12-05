@@ -251,7 +251,7 @@ function ParamImplode($param) {
  *   to GLOBALS.
  * @param $query_string
  */
-function add_vars($query_string="") {
+function add_vars($query_string="", $where='GLOBALS') {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
 
     if ( !$varstring ) {
@@ -260,6 +260,7 @@ function add_vars($query_string="") {
     if ( ($pos = strpos('#', $varstring)) === true ) {  // remove 'fragment' part
         $varstring = substr($varstring,0,$pos);
     }
+
     // parse_str function is quite unusable, if used with magic_quotes_gpc ON
     // - it adds slashes not only to values, but ALSO to ARRAY KEYS!
     // we have to call magic_strip() to repair it
@@ -270,7 +271,11 @@ function add_vars($query_string="") {
     // we do not want to replace sess variable, since we use it for sessions
     unset($aa_query_arr['sess']);
     $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
-    if (is_array($aa_query_arr) ) {
+
+    // use of $$where do not work for some reason
+    if ($where == '_REQUEST' ) {
+        array_merge_append($_REQUEST, $aa_query_arr);
+    } else {
         array_merge_append($GLOBALS, $aa_query_arr);
     }
 }

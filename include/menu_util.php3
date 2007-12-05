@@ -125,6 +125,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
     //huhsess("Session Variables");
     // load the main AA menu (see menu.php3)
     if ($smmenus == "aamenus") {
+        // @todo
         // Menu functions are defined in include/menu.php3 or modules/*/menu.php3
         // We need to call last defined menu function (when switching to another
         // module). This solution is not so nice, but it removes get_aamenus()
