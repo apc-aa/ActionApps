@@ -1,4 +1,5 @@
 <?php
+require_once "./include/config.php3";
 //////////////////////////////////////////////////////////////
 ///  phpThumb() by James Heinrich <info@silisoftware.com>   //
 //        available at http://phpthumb.sourceforge.net     ///

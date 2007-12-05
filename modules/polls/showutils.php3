@@ -8,10 +8,6 @@ require_once "constants.php3";
 // 2. - use our image (0) or image from "URL to bar image"
 //
 
-function showQuestion($poll, $polldata, $which=0) {
-    return $poll["pollTitle"];
-}
-
 function showAnswer($poll, $polldata, $which) {
     return $polldata[$which]["optionText"];
 }

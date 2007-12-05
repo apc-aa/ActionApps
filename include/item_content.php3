@@ -91,9 +91,10 @@ class AA_Value {
 
 
 
-define('ITEMCONTENT_ERROR_BAD_PARAM', 200);
-define('ITEMCONTENT_ERROR_DUPLICATE', 201);
-define('ITEMCONTENT_ERROR_NO_ID',     202);
+define('ITEMCONTENT_ERROR_BAD_PARAM',   200);
+define('ITEMCONTENT_ERROR_DUPLICATE',   201);
+define('ITEMCONTENT_ERROR_NO_ID',       202);
+define('ITEMCONTENT_ERROR_NO_SLICE_ID', 203);
 
 /**
  *  ItemContent class is an abstract data structure, used mostly for storing
@@ -542,6 +543,118 @@ class ItemContent {
         return $added_to_db ? array(0=> ($insert ? INSERT : UPDATE) ,1=>$id) : false;
     }
 
+    function validate() {
+        $slice_id = $this->getSliceID();
+        if (!$slice_id) {
+            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("No Slice Id specified"));  // set error code
+            return false;
+        }
+        $slice     = AA_Slices::getSlice($this->getSliceID());
+
+        $fields    = $slice->getFields();
+        $field_ids = $fields->getPriorityArray();
+        foreach ($field_ids as $field_id) {
+            $field = $fields->getField($field_id);
+
+        }
+
+        //  @todo \
+
+
+        foreach ($prifields as $pri_field_id) {
+            $f = $fields[$pri_field_id];
+            //  'status_code.....' is not in condition - could be set from defaults
+            if (($pri_field_id=='edited_by.......') || ($pri_field_id=='posted_by.......')) {
+                continue;   // filed by AA - it could not be filled here
+            }
+            $varname = 'v'. unpack_id($pri_field_id);  // "v" prefix - database field var
+            $htmlvarname = $varname."html";
+
+            global $$varname, $$htmlvarname;
+
+            $setdefault = $action == "add"
+                    || !$f["input_show"]
+                    || $profile->getProperty('hide',$pri_field_id)
+                    || ($action == "insert" && $notshown [$varname]);
+
+            list($validate) = explode(":", $f["input_validate"], 2);
+
+            if ($setdefault) {
+                // modify the value to be compatible with $_GET[] array - we use
+                // slashed variables (this will be changed in future) - TODO
+                $$varname     = addslashes(GetDefault($f));
+                $$htmlvarname = GetDefaultHTML($f);
+            } elseif ($validate=='date') {
+                // we do not know at this moment, if we have to use default
+                $default_val  = addslashes(GetDefault($f));
+            }
+
+            $editable = IsEditable($oldcontent4id[$pri_field_id], $f, $profile) && !$notshown[$varname];
+
+            // Run the "validation" which changes field values
+            if ($editable && ($action == "insert" || $action == "update")) {
+                switch( $validate ) {
+                    case 'date':
+                        $foo_datectrl_name = new datectrl($varname);
+                        $foo_datectrl_name->update();           // updates datectrl
+                        if ($$varname != "") {                  // loaded from defaults
+                            $foo_datectrl_name->setdate_int($$varname);
+                        }
+                        $foo_datectrl_name->ValidateDate($f["name"], $err, $f["required"], $default_val);
+                        $$varname = $foo_datectrl_name->get_date();  // write to var
+                        break;
+                    case 'bool':
+                        $$varname = ($$varname ? 1 : 0);
+                        break;
+                    case 'pwd':
+                        // store the original password to use it in
+                        // insert_fnc_pwd when it is not changed
+                        if ($action == "update"){
+                            $GLOBALS[$varname."c"] = $oldcontent4id[$pri_field_id][0]['value'];
+                        }
+                        break;
+                }
+            }
+
+            // Run the validation which really only validates
+            if ($do_validate && ($action == "insert" || $action == "update")) {
+                // special setting for file upload - there we solve the problem
+                // of required fileupload field, but which is empty at this moment
+                if ( $f["required"] AND (substr($f["input_show_func"], 0,3) === 'fil')) {
+                    ValidateInput($varname, $f["name"], $$varname. $GLOBALS[$varname.'x'] , $err, // status code is never required
+                        $f["required"] ? 1 : 0, $f["input_validate"]);
+                    continue;
+                }
+
+                switch( $validate ) {
+                    case 'text':
+                    case 'url':
+                    case 'email':
+                    case 'number':
+                    case 'id':
+                        ValidateInput($varname, $f["name"], $$varname, $err, // status code is never required
+                            ($f["required"] AND ($pri_field_id!='status_code.....')) ? 1 : 0, $f["input_validate"]);
+                        break;
+                    // necessary for 'unique' validation: do not validate if
+                    // the value did not change (otherwise would the value always
+                    // be found)
+                    case 'e-unique':
+                    case 'unique':
+                        if (addslashes ($oldcontent4id[$pri_field_id][0]['value']) != $$varname)
+                            ValidateInput($varname, $f["name"], $$varname, $err,
+                                      $f["required"] ? 1 : 0, $f["input_validate"]);
+                        break;
+                    case 'user':
+                        // this is under development.... setu, 2002-0301
+                        // value can be modified by $$varname = "new value";
+                        $$varname = usr_validate($varname, $f["name"], $$varname, $err, $f, $fields);
+                        break;
+                }
+            }
+        }
+    }
+
+
     /** storeItem function
      *  Basic function for changing contents of items.
      *   Use always this function, not direct SQL queries.
@@ -670,7 +783,7 @@ class ItemContent {
         // and NOW - store the fields and prepare itemvarset
         $this->_store_fields($id, $fields, $context);
 
-        // Alerts module uses moved2active as the time when an item was moved to the active bin 
+        // Alerts module uses moved2active as the time when an item was moved to the active bin
         if (($mode=='insert') OR (($itemvarset->get('status_code') != $oldItemContent->getStatusCode()) AND $itemvarset->get('status_code') >= 1)) {
             $itemvarset->add("moved2active", "number", $itemvarset->get('status_code') > 1 ? 0 : time());
         }

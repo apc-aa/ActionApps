@@ -1,26 +1,45 @@
-11/13/07 - new Task Manager allowing us to split long tasks to subtasks and let 
-(honzam)   user control the execution 
-         - AA Synchronization in Central now uses more general approach using 
-           AA_Metabase and Task Manager 
-         - AA_Metabase improved - now it holds structure of AA database, which 
-           help us with security check in SQL commands, database upgrades 
-           or just updates of data  
-         - New "Fix field definitions duplicates" Optimalization script in 
+12/05/07 - Added prototip js code - see:
+(honzam)      http://www.nickstakenburg.com/projects/prototip/.
+           If you add apc-aa/javascript/aajslib.php3 and
+                      apc-aa/javascript/prototype/css/prototip.css
+           to your page (as javascript), then you can use the tooltips, just like
+              <script type="text/javascript">
+                 new Tip('id_of_HTML_element', 'tooltip html code', {delay: 0});
+              </script>
+         - view edit page uses big textareas (just like in the form for fulltext)
+         - Prototype javascript library upgraded to last version 1.6.0
+         - Improved cache deletion - the pagecache_str2find table is cleaned
+           only if pagecache table was sucessfully cleaned
+         - SQL commands for searching AA database was simplified a bit (without
+           functional change)
+         - fixed bug in "Bulk email - Send emails" for Reader Slice - remaining
+           changes for AA_Log refactoring
+         - fixed problem with "sess" variable, when used as parameter to shtml
+           file (it redefines inner sess variable). Now it works well without
+           problems.
+11/13/07 - new Task Manager allowing us to split long tasks to subtasks and let
+(honzam)   user control the execution
+         - AA Synchronization in Central now uses more general approach using
+           AA_Metabase and Task Manager
+         - AA_Metabase improved - now it holds structure of AA database, which
+           help us with security check in SQL commands, database upgrades
+           or just updates of data
+         - New "Fix field definitions duplicates" Optimalization script in
            "AA -> Optimize". There should be only one slice_id - field_id pair
            in all slices, but sometimes there are more than one (mainly because
-           of error in former sql_update.php3 script, where more than one 
+           of error in former sql_update.php3 script, where more than one
            display_count... fields were added)
          - Better deletion of slice when you delete it (more cleanup is performed)
          - Improved "Copy slice/site" feature in Central
-         - the "slice_id, id" pair is marked as PRIMARY KEY for "field" table 
-           in sql_update.php3 (instead of just KEY). You can have problems with 
-           sql_update.php3, because there was small bug in previous 
-           sql_update.php3 script, which duplicated the display_count... field. 
-           In such case you should go to "AA -> Optimize" page and run 
+         - the "slice_id, id" pair is marked as PRIMARY KEY for "field" table
+           in sql_update.php3 (instead of just KEY). You can have problems with
+           sql_update.php3, because there was small bug in previous
+           sql_update.php3 script, which duplicated the display_count... field.
+           In such case you should go to "AA -> Optimize" page and run
            "Fix field definitions duplicates" repiar
          - changed name of class from toexecute to AA_Toexecute
-11/12/07 - new {limit:<ids>:<offset>[:<length>[:<delimiter>]]} syntax 
-(honzam)     Allows you to get only the part of ids (first, last, ...) from the 
+11/12/07 - new {limit:<ids>:<offset>[:<length>[:<delimiter>]]} syntax
+(honzam)     Allows you to get only the part of ids (first, last, ...) from the
              list - like:
                  {limit:12324-353443-533443:0:1}   // returns 12324
                  {limit:{ids:6353428288a923:d-category........-=-Dodo}:0:1}
@@ -29,13 +48,13 @@
              Next/Previous item for the current item in the list - like:
                  {next:12324-353443-58921:353443}   // returns 58921
                  {next:{ids:6353428288a923:d-category........-=-Dodo}:566a655e7787b564b8b6565b}
-         - new {img:<url>:<phpthumb_params>} syntax - Creates link to modified 
-           image using phpThumb - like: 
+         - new {img:<url>:<phpthumb_params>} syntax - Creates link to modified
+           image using phpThumb - like:
                  <img src="{img:{img_url.........}:w=150&h=150}">
              see http://phpthumb.sourceforge.net/demo/ for phpThumb parameters
          - "No Item Message" can use AA Expressions for view.php3 as well as for
            slice.php3. It alse uses textarea now (so the text could be longer)
-         - buttons on itemedit form and actions in Item Manager have ids 
+         - buttons on itemedit form and actions in Item Manager have ids
            attributes now, so you can easily hide it by CSS
          - better error messages in fillform.php3
          - fixed limit parameter for grouping, so folowing code now works:
@@ -43,9 +62,9 @@
                sort[0] = 5headline........-
                sort[0][headline........]=d&sort[0][limit]=5
              displays maximally 5 items for each group
-          - fixed "=" operator - the "*" and "?" characters are not replaced 
+          - fixed "=" operator - the "*" and "?" characters are not replaced
             by "%" and "_" in SQL which was nonsense anyway
-         - a bit nicer HTML code for <select... widget 
+         - a bit nicer HTML code for <select... widget
 09/18/07 - Central now supports creation of exact copy of the slice on (or from)
 (honzam)   remote AAs
          - new hitcounter statistics - to display statistics use the
@@ -696,7 +715,7 @@
            Management Slice is updated, but they are filled with correct values,
            now
          - new insert type Date (just logically saparates text and date inputs;
-           internaly it bahaves just like text field
+           internaly it bahaves just like text field)
          - better behavior of File upload field when checked as Required. There
            is no longer need to fill upper field in the inputform. However, it
            is still not perfect since the content is checked before we move
