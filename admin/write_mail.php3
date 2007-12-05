@@ -102,7 +102,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             } else {
                 $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
             }
-            writeLog("EMAIL_SENT",array($users_count, $mails_sent),$sel);
+            AA_Log::write("EMAIL_SENT",array($users_count, $mails_sent),$sel);
             // remove temporary email template from database
             // TODO - store the tamplate and allow user to reuse it
             $SQL = "DELETE FROM email WHERE id='$mail_id'";

@@ -48,7 +48,7 @@ $slice      = AA_Slices::getSlice($slice_id);
 if ( ($slice->getProperty('export_to_all') ? 1:0) != ($to_all ? 1:0) ) {
     $SQL = "UPDATE slice SET export_to_all=". ($to_all ? 1 : 0) ." WHERE id='$p_slice_id'";
     $db->query($SQL);
-    writeLog( ($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), $slice_id);
+    AA_Log::write( ($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), $slice_id);
 }
 
 // ------------------------ Export --------------------------
@@ -75,7 +75,7 @@ do {
                 $err["DB"] .= MsgErr("Can't add export to $val");
                 break;    // not necessary - we have set the halt_on_error
             }
-            writeLog("FEED_ENBLE", "$slice_id,$val");
+            AA_Log::write("FEED_ENBLE", "$slice_id,$val");
         }
   }
   reset($feedto);
@@ -83,7 +83,7 @@ do {
         if ( $val ) {
             $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id='". q_pack_id($to). "'";
             $db->query( $SQL );
-            writeLog("FEED_DSBLE", "$slice_id,$val");
+            AA_Log::write("FEED_DSBLE", "$slice_id,$val");
         }
     }
 } while (false);
@@ -114,7 +114,7 @@ do {
                 $err["DB"] .= MsgErr("Can't add import from $val");
                 break;  // not necessary - we have set the halt_on_error
             }
-            writeLog("FEED_ADD", "$slice_id,$val");
+            AA_Log::write("FEED_ADD", "$slice_id,$val");
         }
     }
 
@@ -123,7 +123,7 @@ do {
         if ( $val ) {
             $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id='". q_pack_id($from). "'";
             $db->query( $SQL );
-            writeLog("FEED_DEL", "$slice_id,$val");
+            AA_Log::write("FEED_DEL", "$slice_id,$val");
         }
     }
 } while (false);
