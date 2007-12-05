@@ -43,6 +43,7 @@ class AA_Operators {
                                    'BETWEEN' => _m('BETWEEN'),
                                    'ISNULL'  => _m('not set'),
                                    'NOTNULL' => _m('is set'),
+                                   '=='      => _m('=='),         // exact match - no SQL parsing
                                    '='       => _m('='),
                                    '<'       => _m('<'),
                                    '>'       => _m('>'),
@@ -226,6 +227,7 @@ class AA_Condition extends AA_Object {
                 return (((int)$field_value >= (int)$arr[0]) AND ((int)$field_value <= (int)$arr[1]));
             case 'ISNULL':  return ($field_value == '');
             case 'NOTNULL': return ($field_value <> '');
+            case '==' :                                           // exact match - no SQL parsing
             case '='  :     return $field_value == $this->value;
             case '<>' :     return $field_value != $this->value;
             case '!=' :     return $field_value != $this->value;
@@ -239,12 +241,48 @@ class AA_Condition extends AA_Object {
     }
 }
 
+
+/** Stores one sorting order
+ *  The order is stored in the array like array('category........' => d)
+ *  It is also possible to specify "group limit" (maximum number of items
+ *  of each group. In such case the array looks like:
+ *     array( 'limit' => 4, 'category........' => d )
+ */
+class AA_Sortorder {
+    var $sort;
+
+    /** AA_Sortorder function  */
+    function AA_Sortorder($sort) {
+        $this->clear();
+        $this->sort = $sort;
+    }
+
+    /** clear function */
+    function clear() {
+        $this->sort = array();
+    }
+
+    /** getArray function
+     *  @return clasic $sort array - array('field'  => a|d [,limit => <group_no>])
+     *
+     *  Mainly for backward compatibility with old - array approach
+     */
+    function getArray() {
+        return $this->sort;
+    }
+}
+
+
+
+
+
 class AA_Set extends AA_Object {
     /** array of AA_Condition */
     var $conds;
 
-    /** array of AA_Sortorder */
+    /** array of AA_Sortorder objects */
     var $sort;
+
     /** AA_Set function
      * @param $conds
      * @param $sort
@@ -254,19 +292,34 @@ class AA_Set extends AA_Object {
         if ( !is_null($conds) ) {
             $this->addCondsFromArray($conds, 'LIKE');
         }
+        if ( !is_null($sort) ) {
+            $this->addSortFromArray($sort);
+        }
     }
+
     /** clear function
      *
      */
     function clear() {
         $this->conds = array();
+        $this->sort  = array();
     }
+
     /** addCondition function
      * @param $condition
      */
     function addCondition(&$condition) {
         if ( $condition ) {
             $this->conds[] = $condition;
+        }
+    }
+
+    /** addSortorder function
+     * @param $sortorder
+     */
+    function addSortorder(&$sortorder) {
+        if ( $sortorder ) {
+            $this->sort[] = $sortorder;
         }
     }
 
@@ -300,6 +353,7 @@ class AA_Set extends AA_Object {
         $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
         $this->addCondsFromArray($aa_query_arr['conds'], $defaultCondsOperator);
     }
+
     /** addCondsFromArray function
      * @param $conds
      * @param $defaultCondsOperator
@@ -419,6 +473,42 @@ class AA_Set extends AA_Object {
         }
     }
 
+    /** addSortFromString function
+     *  Transforms 'publish_date....-' like sort definition (used in prifiles, ...)
+     *  to $arr['publish_date....'] = 'd' as used in sort[] array
+     *  It is also possible to specify "group limit" by the number at the begin
+     *  of the string (like 4category........-), which means that we want maximum
+     *  4 items of each category. In such case we returned something like:
+     *  array( 'limit' => 4, 'category........' => d )
+     * @param $sort
+     */
+    function addSortFromString( $sort ) {
+        $ret = array();
+        if ($sort) {
+            // is defined group limit?
+            if (($limit_len = strspn($sort,'0123456789')) > 0) {
+                $ret['limit'] = (int)substr($sort,0,$limit_len);
+                $sort  = substr($sort,$limit_len);        // rest of the string
+            }
+            switch ( substr($sort,-1) ) {    // last character
+                case '-':  $ret[substr($sort,0,-1)] = 'd'; break;
+                case '+':  $ret[substr($sort,0,-1)] = 'a'; break;
+                default:   $ret[$sort]              = 'a';
+            }
+        }
+        if ( count($ret) > 0 ) {
+            $this->sort[] = new AA_Sortorder($ret);
+        }
+    }
+
+    function addSortFromArray($sort) {
+        if ($sort and is_array($sort)) {
+            foreach ($sort as $s) {
+                $this->sort[] = new AA_Sortorder($s);
+            }
+        }
+    }
+
     /** _parseViewConds function
      *  Creates conditions from d-<fields>-<operator>-<value>-<fields>-<op....
      *  @param $string ie:   d-headline........,category.......1-RLIKE-Bio
@@ -457,6 +547,17 @@ class AA_Set extends AA_Object {
         $ret = array();
         foreach ( $this->conds as $condition ) {
             $ret[] = $condition->getArray();
+        }
+        return $ret;
+    }
+
+    /** getSort function
+     *  retruns $sort[] array - mainly for backward compatibility
+     */
+    function getSort() {
+        $ret = array();
+        foreach ( $this->sort as $sortorder ) {
+            $ret[] = $sortorder->getArray();
         }
         return $ret;
     }
@@ -517,57 +618,6 @@ class AA_Set extends AA_Object {
 
 }
 
-class AA_Sortorder {
-    var $order;
-    /** AA_Sortorder function
-     *
-     */
-    function AA_Sortorder() {
-        $this->clear();
-    }
-    /** clear function
-     *
-     */
-    function clear() {
-        $this->order = array();
-    }
-
-    /** addSortFromString function
-     *  Transforms 'publish_date....-' like sort definition (used in prifiles, ...)
-     *  to $arr['publish_date....'] = 'd' as used in sort[] array
-     *  It is also possible to specify "group limit" by the number at the begin
-     *  of the string (like 4category........-), which means that we want maximum
-     *  4 items of each category. In such case we returned something like:
-     *  array( 'limit' => 4, 'category........' => d )
-     * @param $sort
-     */
-    function addSortFromString( $sort ) {
-        $ret = array();
-        if ($sort) {
-            // is defined group limit?
-            if (($limit_len = strspn($sort,'0123456789')) > 0) {
-                $ret['limit'] = (int)substr($sort,0,$limit_len);
-                $sort  = substr($sort,$limit_len);        // rest of the string
-            }
-            switch ( substr($sort,-1) ) {    // last character
-                case '-':  $ret[substr($sort,0,-1)] = 'd'; break;
-                case '+':  $ret[substr($sort,0,-1)] = 'a'; break;
-                default:   $ret[$sort]              = 'a';
-            }
-        }
-        if ( count($ret) > 0 ) {
-            $this->order[] = $ret;
-        }
-    }
-    /** getOrder function
-     *
-     */
-    function getOrder() {
-        return $this->order;
-    }
-}
-
-
 /** getSortFromUrl function
  *  Returns sort[] array used by QueryZids functions
  *  $sort - sort definition in various formats:
@@ -581,11 +631,11 @@ class AA_Sortorder {
  */
 function getSortFromUrl( $sort ) {
     $ret_sort = array();
-    $order    = new AA_Sortorder;
+    $set      = new AA_Set;
     if ( isset($sort) ) {
         if ( !is_array($sort) ) {
-            $order->addSortFromString($sort);
-            $ret_sort = $order->getOrder();
+            $set->addSortFromString($sort);
+            $ret_sort = $set->getSort();
         } else {
             ksort( $sort, SORT_NUMERIC); // it is not sorted and the order is important
             foreach ( $sort as $k => $srt) {
@@ -601,8 +651,8 @@ function getSortFromUrl( $sort ) {
                         }
                         $ret_sort[] = $tmp;
                     } else {
-                        $order->addSortFromString($srt);
-                        $ret_sort = array_merge($ret_sort, $order->getOrder());
+                        $set->addSortFromString($srt);
+                        $ret_sort = array_merge($ret_sort, $set->getSort());
                     }
                 }
             }
@@ -685,11 +735,10 @@ function GetWhereExp( $field, $operator, $querystring ) {
             return ( $ret ? " ($ret) " : "1=1" );
         case 'BETWEEN':
             $arr = explode( ",", $querystring );
-            return ( " (($field >= $arr[0]) AND ($field <= $arr[1])) ");
-        case 'ISNULL':
-            return ( " (($field IS NULL) OR ($field='')) ");
-        case 'NOTNULL':
-            return ( " (($field IS NOT NULL) AND ($field<>'')) ");
+            return  " (($field >= $arr[0]) AND ($field <= $arr[1])) ";
+        case 'ISNULL':   return " (($field IS NULL) OR ($field='')) ";
+        case 'NOTNULL':  return " (($field IS NOT NULL) AND ($field<>'')) ";
+        case '==':       return " ($field = '$querystring') ";            // exact match - no SQL parsing (we added this because SQL Syntax parser in AA have problems with packed ids)
         case '='  :
 //      case '<=>':  //MySQL know this operator, but we do not use it in AA
         case '<>' :

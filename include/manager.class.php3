@@ -154,7 +154,7 @@ class AA_Manager extends AA_Storable {
         $aliases        = $settings['itemview']['aliases'];
 
         // modify $format_strings and $aliases (passed by reference)
-        $this->setDesign($format_strings, $aliases, $manager_vid, $this->module_id );
+        $this->setDesign($format_strings, $aliases, $manager_vid);
 
         $this->itemview = new itemview( $format_strings,
                                         $settings['itemview']['fields'],
@@ -173,9 +173,9 @@ class AA_Manager extends AA_Storable {
      * @param $format_strings
      * @param $aliases
      * @param $manager_vid
-     * @param $module_id
      */
-    function setDesign(&$format_strings, &$aliases, $manager_vid, $module_id) {
+    function setDesign(&$format_strings, &$aliases, $manager_vid = null) {
+        
         if ( $manager_vid ) {
             $view = AA_Views::getView($manager_vid);
             if ( $view AND !($view->f('deleted')>0) ) {
@@ -187,7 +187,7 @@ class AA_Manager extends AA_Storable {
             }
         } else {
             // define JS_HEAD_, HEADLINE, SITEM_ID, ITEM_ID_ (if not set)
-            DefineBaseAliases($aliases, $module_id);
+            DefineBaseAliases($aliases, $this->module_id);
 
             if ( !$format_strings ) {
                 $row = '<td>_#PUB_DATE&nbsp;</td><td>_#HEADLINE</td>'. (isset($aliases["_#AA_ACTIO"]) ? '<td>_#AA_ACTIO</td>': '');
@@ -231,25 +231,31 @@ class AA_Manager extends AA_Storable {
         }
     }
 
-
+    /** @return AA_Set object - should be used instead of getConds and getSort
+     */
+    function getSet() {
+        if ( $this->searchbar ) {
+            return $this->searchbar->getSet();
+        }
+        return new AA_Set;  // empty set
+    }
+    
     /** getConds function
      * Get conditios (conds[] array) for *_QueryIDs from scroller
+     * @deprecated - use getSet() instead
      */
     function getConds() {
-        if ( $this->searchbar ) {
-            return $this->searchbar->getConds();
-        }
-        return false;
+        $set = $this->getSet();
+        return $set->getConds();
     }
 
     /** getSort function
      * Get sort[] array for *_QueryIDs from scroller
+     * @deprecated - use getSet() instead
      */
     function getSort() {
-        if ( $this->searchbar ) {
-            return $this->searchbar->getSort();
-        }
-        return false;
+        $set = $this->getSet();
+        return $set->getSort();
     }
 
     /** reserSearchBar function
@@ -419,6 +425,23 @@ class AA_Manager extends AA_Storable {
         }
     }
 
+    /** Displays the manager. This function joins together some common method 
+     *  calls, which was separate. We should use display, now. We plan to move 
+     *  even more methods here
+     **/
+    function display($zids) {
+        global $r_err, $r_msg;          // @todo - check if it is still needed 
+        $this->printSearchbarBegin();
+        $this->printSearchbarEnd();     // close the searchbar form
+        $this->printAndClearMessages();
+       
+        PrintArray($r_err);
+        PrintArray($r_msg);
+        unset($r_err);
+        unset($r_msg);
+        $this->printItems($zids);       // print items and actions
+    }
+    
     /** printHtmlPageBegin function
      * Print HTML start page tags (html begin, encoding, style sheet, title
      * and includes necessary javascripts for manager

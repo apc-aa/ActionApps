@@ -125,6 +125,11 @@ class AA_Searchbar_Row extends AA_Storable {
     function getCondArray() {
         return ( is_null($this->condition) ? array() : $this->condition->getArray() );
     }
+    
+    /** getCondsArray function - @return AA_Condition object or null  */
+    function getCondition() {
+        return $this->condition;
+    }
 
     /** isReadonly function
      *  Returns, if the search row is marked as readonly
@@ -469,14 +474,14 @@ class AA_Searchbar extends AA_Storable {
      */
     function setFromProfile(&$profile) {
         // admin_order is in 'publish_date....+' format
-        $order        = new AA_Sortorder;
+        $set        = new AA_Set;
         $orderstrings = $profile->get('admin_order', '*');
         if (is_array($orderstrings)) {
             foreach ( $orderstrings as $orderstring ) {
-                $order->addSortFromString($orderstring[0]);
+                $set->addSortFromString($orderstring[0]);
             }
         }
-        $foo_order = $order->getOrder();
+        $foo_order = $set->getSort();
         if ( count($foo_order) < 1 ) {
             $this->setDefaultOrder();
         } else {
@@ -496,41 +501,28 @@ class AA_Searchbar extends AA_Storable {
         }
     }
 
-    /** getConds function
-     * Returns conds[] array to use with QueryIDs() (or Links_QueryIDs(), ...)
+    /** @return AA_Set object - should be used instead of getConds and getSort
      */
-    function getConds() {
-        if ( empty($this->search_row) ) {
-            return false;
+    function getSet() {
+        $set = new AA_Set;
+        foreach ($this->search_row as $row) {
+            $set->addCondition($row->getCondition());
         }
-
-        $fields = $this->fields;
-        foreach ($this->search_row as $c) {
-            $conds[] = $c->getCondArray();
+        if ( isset($this->order_row) AND is_array($this->order_row) ) {
+            foreach ( $this->order_row as $s ) {
+                $set->addSortorder(new AA_Sortorder(array( $s['field'] => $s['dir'] )));
+            }
         }
-        return $conds;
+        return $set;
     }
-
-    /** getSort function
-     * @return sort[] array to use with QueryIDs() (or Links_QueryIDs(), ...)
-     */
-    function getSort() {
-        if ( !isset($this->order_row) OR !is_array($this->order_row) ) {
-            return false;
-        }
-
-        foreach ( $this->order_row as $s ) {
-            $sort[]=array( $s['field'] => $s['dir'] );
-        }
-        return $sort;
-    }
-
+    
      /** getBookmarkNames function
       *  @return array of bookmark names <key> => <name>
       */
     function getBookmarkNames() {
         return isset($this->bookmarks) ? $this->bookmarks->getKeyName() : false;
     }
+    
     /** getBookmarkParams function
      * @param $key
      */

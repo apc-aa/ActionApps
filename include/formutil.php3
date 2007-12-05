@@ -2208,6 +2208,27 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $relation
     $input->print_result();
 }
 
+
+
+/** FrmInputMultiText function - Multiple Text Field Widget
+ *  Prints html tag <select multiple .. to 2-column table
+ *  for use within <form> and <table> tag
+ * @param $name
+ * @param $text
+ * @param $arr
+ * @param $selected
+ * @param $rows
+ * @param $needed
+ * @param $hlp
+ * @param $morehlp
+ * @param $actions
+ */
+function FrmInputMultiText($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp="", $actions='MDAC') {
+    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input->inputRelation($rows, '', MAX_RELATED_COUNT, '', '', $actions);
+    $input->print_result();
+}
+
 /** FrmHierarchicalConstant function
  *  Print boxes allowing to choose constant in a hiearchical way
  * @param $name
@@ -2419,178 +2440,6 @@ function FrmChBoxEasyCode($name, $checked=true, $add="", $value='') {
   return "<input type=\"checkbox\" name=\"$name\" $add".
     ($value   ? " value=\"$value\"" : '').
     ($checked ? " checked>" : ">");
-}
-
-/**FrmInputWithSelect function
- * Prints html tag <intup type=text ...> with <select ...> and buttons
- * for moving with items
- * to 2-column table for use within <form> and <table> tag
- * @param $name
- * @param $txt
- * @param $arr
- * @param $val
- * @param $input_maxsize
- * @param $input_size
- * @param $select_size
- * @param $numbered
- * @param $needed
- * @param $hlp
- * @param $morehlp
- * @param $adding
- * @param $secondfield
- * @param $usevalue
- */
-function FrmInputWithSelect($name, $txt, $arr, $val, $input_maxsize=254, $input_size=25,
-                            $select_size=6, $numbered=0, $needed=false, $hlp="", $morehlp="", $adding=0,
-                            $secondfield="", $usevalue=false) {
-  $name=safe($name); $val=safe($val); $txt=safe($txt); $hlp=safe($hlp); $morehlp=safe($morehlp);
-
-    if ( !$input_maxsize ) {
-        $input_maxsize = 254;
-    }
-    if ( !$input_size ) {
-        $input_size = 25;
-    }
-    if ( !$select_size ) {
-        $select_size = 6;
-    }
-    if ($secondfield) {
-        $varsecfield = 'v'. unpack_id($secondfield);
-    }
-    echo "\n<script language=\"JavaScript\"  type=\"text/javascript\">
-  <!--
-    function add_to_select(selectbox, inputbox) {
-                  value = inputbox.value;
-                  length = selectbox.length;
-                  if (value.length != 0) {
-                    if ((length == 1) && (selectbox.options[0].value=='wIdThTor') ){\n";
-
-        if ($numbered==1) {
-          echo "    text = length+'. '+value; ";
-        }
-        echo "
-                selectbox.options[0].text = text;
-                selectbox.options[0].value = value;
-              } else {";
-        if ($numbered==1) {
-          echo "    text = (length+1)+'. '+value; ";
-        }
-        echo "      selectbox.options[selectbox.length] = new Option (text, value);
-        }
-                    inputbox.select();
-                  }
-                }
-
-                function remove_selected(selectbox) {
-                  number = selectbox.selectedIndex;
-                  length = selectbox.length;
-                  selectbox.options[number] = null;\n";
-        if ($numbered==1) {
-          echo "
-                  for (i=number;i<length; i++){
-                    selectbox.options[i].text = (i+1)+'. '+selectbox.options[i].value;
-                  }";
-        }
-        echo "    selectbox.selectedIndex = number;
-                }
-
-                function move(selectbox, type) {
-                  length = selectbox.length;
-                  s = selectbox.selectedIndex;
-
-                  dontwork = 0;
-
-                  if (s < 0) { dontwork=1; }
-
-                  if (type=='up') {
-                    s2 = s-1;
-                    if (s2 < 0) { s2 = 0;}
-                  } else {
-                    s2 = s+1;
-                    if (s2 >= length-1) { s2 = length-1; }
-                  }
-
-                  if (dontwork == 0) {
-                    dummy_val = selectbox.options[s2].value;
-                    dummy_txt = selectbox.options[s2].text;
-                    selectbox.options[s2].value = selectbox.options[s].value;
-                    selectbox.options[s2].text = selectbox.options[s].text;
-                    selectbox.options[s].value = dummy_val;
-                    selectbox.options[s].text  = dummy_txt;
-
-                    selectbox.selectedIndex = s2;\n";
-        if ($numbered==1) {
-          echo "
-                  number = selectbox.selectedIndex;
-                  if (type == 'up') {
-                    for (i=number;i<length; i++){
-                      selectbox.options[i].text = (i+1)+'. '+selectbox.options[i].value;
-                    }
-                  } else {
-                    for (i=0;i<=number; i++){
-                      selectbox.options[i].text = (i+1)+'. '+selectbox.options[i].value;
-                    }
-                  }";
-        }
-        echo "
-
-                  }
-                }
-
-                listboxes[listboxes.length] = '$name';
-  //-->
-  </script>\n";
-
-  echo "<tr align=\"left\"><td class=\"tabtxt\"><b>$txt</b>";
-  Needed($needed);
-  echo "</td>\n";
-  if (SINGLE_COLUMN_FORM)
-    echo "</tr><tr align=\"left\">";
-  echo "<td align=\"left\">
-
-        <table>
-        <tr><td><input type=\"text\" name=\"foo_$name\" size=\"$input_size\" maxlength=\"$input_maxsize\" value=\"$val\"></td>
-        <td align=\"center\"><input type=\"button\" name=\"".$name."_add\" value=\"  Add  \" ".
-        " onclick=\"add_to_select(document.inputform['".$name."[]'], foo_$name)\"></td></tr>
-        <tr align=\"left\"><td rowspan=\"3\"><select name=\"".$name."[]\" multiple width=\"$input_size\" size=\"$select_size\">\n";
-
-    if (is_array($arr)) {
-        reset($arr);
-        $i=0;
-        while (list($k, $v) = each($arr)) {
-            $i++;
-            echo "\n  <option value=\"". htmlspecialchars($usevalue ? $v : $k)."\"";
-            if ((string)$val == (string)(($usevalue OR $secondfield) ? $v : $k)) {
-                echo ' selected class="sel_on"';
-            }
-            echo "> ";
-            if ($numbered ==1) {
-                echo htmlspecialchars($i.". ".$v);
-            } else {
-                echo htmlspecialchars($v);
-            }
-            echo " </option>";
-        }
-        reset($arr);
-    } else {
-      echo "\n   value=\"wIdThTor\"> ";
-          for ($i=0; $i<$select_size*3; $i++) {
-            echo "&nbsp; ";
-          }
-          echo "</option>";
-    }
-
-  echo "</select></td>
-        <td align=\"center\"><input type=\"button\" name=\"".$name."_up\" value=\" /\ \" ".
-                 " onclick = \"move(document.inputform['".$name."[]'],'up');\"></td></tr>
-        <tr><td align=\"center\"><input type=\"button\"  name=\"".$name."_remove\" value=\" "._m("Remove")."\" ".
-                 " onclick = \"remove_selected(document.inputform['".$name."[]']);\"></td></tr>
-        <tr><td align=\"center\"><input type=\"button\" name=\"".$name."_down\" value=\" \/ \" ".
-                 " onclick = \"move(document.inputform['".$name."[]'], 'down');\"></td></tr>
-        </table>";
-  PrintMoreHelp($morehlp);
-  PrintHelp($hlp);
-  echo "</td></tr>\n";
 }
 
 /** getRadioButtonTag function
@@ -3178,10 +3027,10 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
             case '':               $conds = false; $bins = AA_BIN_ACTIVE;  break;
             default:
                 $searchbar->setFromBookmark($group);
-                $conds = $searchbar->getConds();
+                $set = $searchbar->getSet();
                 $bins  = AA_BIN_ACTIVE;
         }
-        $zids  = QueryZIDs( array($slice_id), $conds, '',  $bins);
+        $zids  = QueryZIDs( array($slice_id), $set->getConds(), $set->getSort(),  $bins);
     }
     return $zids;
 }

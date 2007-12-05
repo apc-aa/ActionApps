@@ -439,9 +439,9 @@ function GetViewSort(&$view_info, $param_sort=null) {
         if ( $param_sort['sort'] == 'AAnoSORT' ) {
             return false;
         }
-        $order    = new AA_Sortorder;
-        $order->addSortFromString($param_sort['sort']);
-        $sort = $order->getOrder();
+        $set    = new AA_Set;
+        $set->addSortFromString($param_sort['sort']);
+        $sort = $set->getSort();
     }
     // grouping
     if ($view_info['group_by1']) {

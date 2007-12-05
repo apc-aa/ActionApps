@@ -483,9 +483,9 @@ if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($
     *  (add number before the field if you want to group limit (limit number of items of the same value))
     */
     if ($order) {
-        $sortorder = new AA_Sortorder;
-        $sortorder->addSortFromString($order);
-        $order = reset($sortorder->getOrder());  // get the first from array
+        $set = new AA_Set;
+        $set->addSortFromString($order);
+        $order = reset($set->getSort());  // get the first from array
         list($order, $orderdirection) = each($order);
     }
 
@@ -495,9 +495,9 @@ if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($
 
     $sort_tmp = array();
     if ($group_by) {
-        $sortorder = new AA_Sortorder;
-        $sortorder->addSortFromString($group_by);
-        $sort_tmp = $sortorder->getOrder();
+        $set = new AA_Set;
+        $set->addSortFromString($group_by);
+        $sort_tmp = $set->getSort();
         $slice_info["group_by"] = key($sort_tmp[0]);
     }
     elseif ($slice_info['category_sort']) {

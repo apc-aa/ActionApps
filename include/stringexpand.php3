@@ -1184,17 +1184,14 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
      * @param $ids
      */
     function expand($slices, $conds=null, $sort=null, $delimiter=null, $ids=null) {
-        $conditions = new AA_Set;
-        $conditions->addCondsFromString($conds);
-        $order      = new AA_Sortorder;
-        $order->addSortFromString($sort);
-        $slices_arr = explode('-', $slices);
+        $set           = new AA_Set($conds, $sort);
+        $slices_arr    = explode('-', $slices);
         $restrict_zids = false;
         if ( $ids ) {
             $restrict_zids = new zids(explode('-',$ids),'l');
         }
 
-        $zids       = QueryZIDs($slices_arr, $conditions->getConds(), $order->getOrder(), 'ACTIVE', 0, $restrict_zids);
+        $zids          = QueryZIDs($slices_arr, $set->getConds(), $set->getSort(), 'ACTIVE', 0, $restrict_zids);
         return join($zids->longids(), $delimiter ? $delimiter : '-');
     }
 }
@@ -1520,7 +1517,7 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
     // {any text}                                       - return "any text"
     //
     // all parameters could contain aliases (like "{any _#HEADLINE text}"),
-    // which are processed before expanding the function
+    // which are processed after expanding the function
 
     // tried to change to preg_match, but there was problem with multiple lines
     //   used: '/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/'
@@ -2141,7 +2138,6 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
         return $ret;
     }
 }
-
 
 /** Creates link to modified image using phpThub
  *  {img:<url>:<phpthumb_params>}

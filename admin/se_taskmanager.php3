@@ -1,7 +1,5 @@
 <?php  //slice_id expected
 /**
- *
- *
  * PHP versions 4 and 5
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
@@ -15,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program (LICENSE); if not, write to the Free Software
+ * along with this program (LICENSE); if not, write tao the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @version   $Id$
@@ -55,7 +53,7 @@ $module_id = 'toexecute';
 
 //$metabase  = new AA_Metabase;
 //$metabase->loadFromDb();
-//echo serialize($metabase);
+//echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\');';
 //exit;
 
 //echo $metabase->getDefinition();
@@ -87,29 +85,19 @@ if ($r_state['manager']) {        // do not set state for the first time calling
 
 $manager->performActions();
 
-// need for menu
-//$r_state['bin_cnt'] = CountItemsInBins();
+$set = $manager->getSet();
+$set->addCondition(new AA_Condition('execute_after', '=', TOEXECUTE_USER_TASK_TIME));
+$set->addCondition(new AA_Condition('aa_user',       '=', $auth->auth['uid']));
+
+$zids  = AA_Metabase::queryZids(array('table'=>'toexecute'), $set);
 
 $manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
 
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "sliceadmin", "taskmanager");
 
-$conds = $manager->getConds();
-$sort  = $manager->getSort();
+$manager->display($zids);
 
-$zids  = AA_Metabase::queryZids(array('table'=>'toexecute'), $conds, $sort, 'app');
-
-$manager->printSearchbarBegin();
-$manager->printSearchbarEnd();   // close the searchbar form
-
-$manager->printAndClearMessages();
-PrintArray($r_err);
-PrintArray($r_msg);
-unset($r_err);
-unset($r_msg);
-
-$manager->printItems($zids);   // print links and actions
 $r_state['manager'] = $manager->getState();
 
 HtmlPageEnd();
