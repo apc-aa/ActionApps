@@ -4,7 +4,7 @@
  * @package Control.Tabs
  * @license MIT
  * @url http://livepipe.net/projects/control_tabs/
- * @version 2.0.0.RC2
+ * @version 2.1.1
  */
 
 if(typeof(Control) == 'undefined')
@@ -36,7 +36,9 @@ Object.extend(Control.Tabs.prototype,{
             activeClassName: 'active',
             defaultTab: 'first',
             autoLinkExternal: true,
-            targetRegExp: /#(.+)$/
+            targetRegExp: /#(.+)$/,
+            showFunction: Element.show,
+            hideFunction: Element.hide
         };
         Object.extend(this.options,options || {});
         (typeof(this.options.linkSelector == 'string')
@@ -47,6 +49,7 @@ Object.extend(Control.Tabs.prototype,{
         }).each(function(link){
             this.addTab(link);
         }.bind(this));
+        this.containers.values().each(this.options.hideFunction);
         if(this.options.defaultTab == 'first')
             this.setActiveTab(this.links.first());
         else if(this.options.defaultTab == 'last')
@@ -102,16 +105,15 @@ Object.extend(Control.Tabs.prototype,{
             }.bind(this));
         }else{
             this.notify('beforeChange',this.activeContainer);
-            this.containers.each(function(item){
-                item[1].hide();
-            });
+            if(this.activeContainer)
+                this.options.hideFunction(this.activeContainer);
             this.links.each(function(item){
-                (this.options.setClassOnContainer ? item.parent: item).removeClassName(this.options.activeClassName);
+                (this.options.setClassOnContainer ? $(item.parentNode) : item).removeClassName(this.options.activeClassName);
             }.bind(this));
-            link.addClassName(this.options.activeClassName);
+            (this.options.setClassOnContainer ? $(link.parentNode) : link).addClassName(this.options.activeClassName);
             this.activeContainer = this.containers[link.key];
             this.activeLink = link;
-            this.containers[link.key].show();
+            this.options.showFunction(this.containers[link.key]);
             this.notify('afterChange',this.containers[link.key]);
         }
     },
