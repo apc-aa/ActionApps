@@ -48,8 +48,13 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 
 // lookup - APC wide possible field types are defined as special slice AA_Core_Fields..
-$field_types = GetTable2Array("SELECT * FROM field
-                                WHERE slice_id='AA_Core_Fields..'");
+$SQL = "SELECT * FROM field  WHERE slice_id='AA_Core_Fields..'";
+if (!$slice_fields) {
+    // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
+    // and we do not want to list it as option for normal fields
+    $SQL .= " AND name NOT LIKE '\_%'";
+}
+$field_types  = GetTable2Array($SQL);
 
 /** ShowField function
  * @param $id
