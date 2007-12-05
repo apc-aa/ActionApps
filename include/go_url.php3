@@ -70,7 +70,10 @@ function HttpGetParameters($parameters) {
 
 /** Appends any number of QUERY_STRING parameters (separated by &) to given URL,
  *  using apropriate ? or &. */
-function get_url($url, $params) {
+function get_url($url, $params='') {
+    if (empty($params)) {
+        return $url;
+    }
     list($path, $fragment) = explode( '#', $url, 2 );
 
     $param_string = HttpGetParameters($params);
@@ -107,72 +110,150 @@ function go_url($url, $add_param="", $usejs=false) {
     exit;
 }
 
-/** HttpPostRequest function
- *  POST data to the url (usin POST request and returns resulted data
- * @param $url
- * @param $data
- * @return array $result[]
- */
-function HttpPostRequest($url, $data = array() ) {
-    $request = parse_url($url);
-
-    $host = $request['host'];
-    $uri  = $request['path']. (empty($request['query']) ? '' : '?'.$request['query']);
-
-    $reqbody = "";
-    foreach($data as $key=>$val) {
-        if (!empty($reqbody)) {
-            $reqbody.= "&";
+class AA_Http {
+    /** lastErr function
+     *  Method returns or sets last file error
+     *  The trick for static class variables is used
+     * @param $err_id
+     * @param $err_msg
+     * @param $getmsg
+     */
+    function lastErr($err_id = null, $err_msg = null, $getmsg = false) {
+        static $lastErr;
+        static $lastErrMsg;
+        if (!is_null($err_id)) {
+            $lastErr    = $err_id;
+            $lastErrMsg = $err_msg;
         }
-        $reqbody.= $key."=".rawurlencode($val);
+        return $getmsg ? $lastErrMsg : $lastErr;
     }
 
-    $contentlength = strlen($reqbody);
-    $reqheader =  "POST $uri HTTP/1.1\r\n".
-                  "Host: $host\n". "User-Agent: ActionApps\r\n".
-                  "Content-Type: application/x-www-form-urlencoded\r\n".
-                  "Content-Length: $contentlength\r\n\r\n".
-                  "$reqbody\r\n";
-
-    $socket = fsockopen($host, 80, $errno, $errstr);
-
-    if (!$socket) {
-        $result["errno"] = $errno;
-        $result["errstr"] = $errstr;
-        return $result;
+    /** lastErrMsg function
+     *  Return last error message - it is grabbed from static variable
+     *  of lastErr() method
+     */
+    function lastErrMsg() {
+        return AA_Http::lastErr(null, null, true);
     }
 
-    fputs($socket, $reqheader);
+    /** Move to another page
+     *  new version of go_ur() - could use POST redirect
+     *  static function - called like AA_Http::go("http://ecn.cz", array('a'=>'my string'), 'POST')
+     *  @param url - destination url
+     *  @param parameters = array('a' => 1, 'b' => 'OK boy')
+     *  @param type  - preffered type. Could be GET or POST, but if headers
+     *                 are already sent, then we use javascript for redirection
+     *  @param sess_close - try to close session, if the session is set
+     *                      we do not want to try it, when database connection
+     *                      error ocures, for example
+     **/
+    function go($url, $parameters, $type='GET', $sess_close=true) {
+        global $sess;
 
-    $responseHeader = '';
-    $responseContent = '';
-
-    do {
-        $responseHeader.= fread($socket, 1);
-    } while (!preg_match('/\\r\\n\\r\\n$/', $responseHeader));
-
-
-    if (!strstr($responseHeader, "Transfer-Encoding: chunked")) {
-        while (!feof($socket)) {
-            $responseContent.= fgets($socket, 128);
+        if (is_object($sess) AND $sess_close) {
+            page_close();
         }
-    } else {
-        while ($chunk_length = hexdec(fgets($socket))) {
-            $responseContentChunk = '';
-            $read_length = 0;
 
-            while ($read_length < $chunk_length) {
-                $responseContentChunk .= fread($socket, $chunk_length - $read_length);
-                $read_length = strlen($responseContentChunk);
+        // if headers are already sent, we have to use javascript redirect
+        if ( headers_sent() ) {
+            AA_Http::_goJs($url, $parameters);
+            exit;
+        }
+        if ($type=='POST') {
+            $response = AA_Http::postRequest($url, $parameters);
+            if ($response !== false) {
+                // POST request OK
+                echo $response;
+                exit;
             }
-
-            $responseContent.= $responseContentChunk;
-
-            fgets($socket);
         }
+        // get request
+        $url = get_url($url, $parameters);
+        header("HTTP/1.1 Status: 302 Moved Temporarily");
+        header("Location: $url");
+        exit;
     }
 
-    return array( 0=>$responseContent );
+    /** Move (redirect) to page $url using javascript
+     *  static function
+     */
+    function _goJs($url, $parameters='') {
+        $url = get_url( $url, $parameters);
+        echo '
+        <script language="JavaScript" type="text/javascript"> <!--
+            document.location = "'.$url.'";
+          //-->
+        </script>
+        ';
+        exit;
+    }
+
+    /** postRequest function
+     *  POST data to the url (using POST request and returns resulted data
+     * @param $url
+     * @param $data
+     * @return array $result[]
+     */
+    function postRequest($url, $data = array() ) {
+        $request = parse_url($url);
+
+        $host = $request['host'];
+        $uri  = $request['path']. (empty($request['query']) ? '' : '?'.$request['query']);
+
+        $reqbody = "";
+        foreach($data as $key=>$val) {
+            if (!empty($reqbody)) {
+                $reqbody.= "&";
+            }
+            $reqbody.= $key."=".rawurlencode($val);
+        }
+
+        $contentlength = strlen($reqbody);
+        $reqheader =  "POST $uri HTTP/1.1\r\n".
+                      "Host: $host\n". "User-Agent: ActionApps\r\n".
+                      "Content-Type: application/x-www-form-urlencoded\r\n".
+                      "Content-Length: $contentlength\r\n\r\n".
+                      "$reqbody\r\n";
+
+        $socket = fsockopen($host, 80, $errno, $errstr);
+
+        if (!$socket) {
+            AA_Http::lastErr($errno, $errstr);  // set error code
+            return false;
+        }
+
+        fputs($socket, $reqheader);
+
+        $responseHeader = '';
+        $responseContent = '';
+
+        do {
+            $responseHeader.= fread($socket, 1);
+        } while (!preg_match('/\\r\\n\\r\\n$/', $responseHeader));
+
+
+        if (!strstr($responseHeader, "Transfer-Encoding: chunked")) {
+            while (!feof($socket)) {
+                $responseContent.= fgets($socket, 128);
+            }
+        } else {
+            while ($chunk_length = hexdec(fgets($socket))) {
+                $responseContentChunk = '';
+                $read_length = 0;
+
+                while ($read_length < $chunk_length) {
+                    $responseContentChunk .= fread($socket, $chunk_length - $read_length);
+                    $read_length = strlen($responseContentChunk);
+                }
+
+                $responseContent.= $responseContentChunk;
+
+                fgets($socket);
+            }
+        }
+
+        return $responseContent;
+    }
 }
 
 ?>

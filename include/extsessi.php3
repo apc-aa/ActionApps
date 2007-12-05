@@ -85,6 +85,7 @@ class DB_AA extends DB_Sql {
         $this->Halt_On_Error = $store_halt;
         return $retval;
     }
+
     /** halt function
      * @param $msg
      */
@@ -92,12 +93,31 @@ class DB_AA extends DB_Sql {
         if ($this->Halt_On_Error == "no") {
             return;
         }
-        // (for security reasons) we do not want to display messages like "Database error: mysql_pconnect(mysqldbserver, aadbuser, $Password) failed."
-        // printf("<b>Database error:</b> %s<br>\n", $msg);
-        printf("<b>Database error!</b><br>\n");
-        printf("<b>Error Number (description)</b>: %s (%s)<br>\n", $this->Errno, $this->Error);
-        echo("Please contact ". ERROR_REPORTING_EMAIL ." and report the ");
-        printf("exact error message.<br>\n");
+
+        // if you want to display special error page, then define DB_ERROR_PAGE
+        // in config.php3 file. You can use following variables on that page
+        // (in case you will use php page):
+        // $_POST['Err'], $_POST['ErrMsg'] and $_POST['Msg'] variables
+        // --- Disabled -- AA_Http::go() for POST works in the way, that the
+        // page content is grabbed into variable and printed on current page.
+        // It works pretty well, but if you link the external css on tahat page,
+        // then it is not found, which is unexpected behavior. So, you can't use
+        // the variables on that page. Honza, 2007-12-05
+        if (defined('DB_ERROR_PAGE') AND ($this->Halt_On_Error == "yes")) {
+            ob_end_clean();
+            // AA_Http::go(DB_ERROR_PAGE, array('Err'=>$this->Errno, 'ErrMsg'=>$this->Error, 'Msg'=>$msg), 'POST', false);
+            // sending variables disabled - see the comment above
+            AA_Http::go(DB_ERROR_PAGE, null, 'GET', false);
+            exit;
+        }
+
+        // If you do not want (for security reasons) display messages like:
+        // "Database error: mysql_pconnect(mysqldbserver, aadbuser, $Password) failed."
+        // then just define DB_ERROR_PAGE constant in your config.php3 file
+        echo "\n<br><b>Database error:</b> $msg";
+        echo "\n<br><b>Error Number:</b>: ". $this->Errno;
+        echo "\n<br><b>Error Description:</b>: ". $this->Error;
+        echo "\n<br>Please contact ". ERROR_REPORTING_EMAIL ." and report the exact error message.<br>\n";
         if ($this->Halt_On_Error == "yes") {
             die("Session halted.");
         }

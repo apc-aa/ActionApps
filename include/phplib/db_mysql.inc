@@ -86,9 +86,10 @@ class DB_Sql {
         }
 
         if (!@mysql_select_db($Database,$this->Link_ID)) {
-            $this->halt("cannot use database $Database");
+            syslog(LOG_CRIT, 'Cannot open database '.mysql_error($this->Link_ID).'('.mysql_errno($this->Link_ID).')');
+            $this->halt("cannot use database $Database : ".mysql_error($this->Link_ID).'('.mysql_errno($this->Link_ID).')');
             return 0;
-        }
+         }
     }
 
     return $this->Link_ID;
