@@ -56,17 +56,6 @@ $dir = dirname(__FILE__). '/prototype/';
  *
 /*--------------------------------------------------------------------------*/
 
-var Prototype = {
-  Version: '1.5.0',
-  BrowserFeatures: {
-    XPath: !!document.evaluate
-  },
-
-  ScriptFragment: '(?:<script.*?>)((\n|\r|.)*?)(?:<\/script>)',
-  emptyFunction: function() {},
-  K: function(x) { return x }
-}
-
 // ussage: $(div_id_2).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
 var AA_Config = {
   AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>',
@@ -76,11 +65,9 @@ var AA_Config = {
 
 <?php
 readfile($dir. 'prototype.js'    ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
-readfile($dir. 'tooltip.js'      ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
+readfile($dir. 'prototip.js'     ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
 readfile($dir. 'control.tabs.js' );
 ?>
-
-Element.addMethods();
 
 // now AA specific functions
 function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
@@ -111,6 +98,19 @@ function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2
         $(div_id_1).show();
         $(link_id).update(link_text_1);
     }
+}
+
+/** Send the form by AJAX and on success displays the ok_html text
+ *  @param id        - form id
+ *  @param loader_id - id of the html element, where you want to display the loader gif
+ *                   - the button itself could be used here (not the form!)
+ *  @param ok_html   - what text (html) should be displayed after the success
+ *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
+ */
+function SendAjaxForm(id, loader_id, ok_html) {
+    $(loader_id).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
+    $(id).request({encoding:   'windows-1250',
+                   onComplete: function(){ $(id).update(ok_html); }});
 }
 
 /** Deprecated
