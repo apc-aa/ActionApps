@@ -26,45 +26,15 @@ if ($free) {
 
 require_once dirname(__FILE__). "/include/init_central.php";
 
-
-if (!function_exists('gzdecode')) {
-    function gzdecode($data) {
-        $flags = ord(substr($data, 3, 1));
-        $headerlen = 10;
-        $extralen = 0;
-        $filenamelen = 0;
-        if ($flags & 4) {
-            $extralen = unpack('v' ,substr($data, 10, 2));
-            $extralen = $extralen[1];
-            $headerlen += 2 + $extralen;
-        }
-        if ($flags & 8) { // Filename
-            $headerlen = strpos($data, chr(0), $headerlen) + 1;
-        }
-        if ($flags & 16) { // Comment
-            $headerlen = strpos($data, chr(0), $headerlen) + 1;
-        }
-        if ($flags & 2) {// CRC at end of file
-            $headerlen += 2;
-        }
-        $unpacked = gzinflate(substr($data, $headerlen));
-        if ($unpacked === FALSE) {
-              $unpacked = $data;
-        }
-        return $unpacked;
-     }
-}
-
-
 /** AA_Responder base class - defines some useful common methods
  */
 class AA_Responder extends AA_Object {
 
     function run()    { return new AA_Response();}
-    
+
     /** by default only superadmins are allowed to perform remote operations */
     function isPerm() { return IsSuperadmin(); }
-    
+
     function name()   { return str_replace('AA_Responder_', '', __CLASS__); }
 }
 
@@ -94,9 +64,9 @@ class AA_Responder_Get_Aaname extends AA_Responder {
 class AA_Responder_Get_Modules extends AA_Responder {
     /** array of module types to get */
     var $types;
-    
+
     function AA_Responder_Get_Modules($param=null) {
-        $this->types = is_array($param['types']) ? $param['types'] : array(); 
+        $this->types = is_array($param['types']) ? $param['types'] : array();
     }
 
     function run() {
@@ -106,18 +76,18 @@ class AA_Responder_Get_Modules extends AA_Responder {
     }
 }
 
-/** @return structure which define all the definition of the slice (like slice 
+/** @return structure which define all the definition of the slice (like slice
  *  properties, fields, views, ...). It is returned for all the slices in array
  */
 class AA_Responder_Get_Module_Defs extends AA_Responder {
     var $ids;
     var $limited;
     var $type;     // module type
-    
+
     function AA_Responder_Get_Module_Defs($param) {
-        $this->ids     = is_array($param['ids']) ? $param['ids'] : array(); 
-        $this->limited = (bool)$param['limited']; 
-        $this->type    = $param['type']; 
+        $this->ids     = is_array($param['ids']) ? $param['ids'] : array();
+        $this->limited = (bool)$param['limited'];
+        $this->type    = $param['type'];
     }
 
     function run() {
@@ -131,21 +101,24 @@ class AA_Responder_Get_Module_Defs extends AA_Responder {
     }
 }
 
-/** @return structure which define all the definition of the slice (like slice 
+/** @return structure which define all the definition of the slice (like slice
  *  properties, fields, views, ...). It is returned for all the slices in array
  */
 class AA_Responder_Do_Synchronize extends AA_Responder {
     var $sync_commands;
-    
+
     function AA_Responder_Do_Synchronize($param) {
-        $this->sync_commands = is_array($param['sync']) ? $param['sync'] : array(); 
+        $this->sync_commands = is_array($param['sync']) ? $param['sync'] : array();
     }
 
     function run() {
         $ret = array();
         $slice_id_cache = array();
         foreach ( $this->sync_commands as $serialized_command ) {
+            huhl('$serialized_command:', $serialized_command);
             $cmd = unserialize($serialized_command);
+            huhl('$cmd', $cmd);
+
             $ret[] = $cmd->doAction();
         }
         return new AA_Response($ret);
@@ -155,9 +128,9 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
 /** @return imports the slice to the database */
 class AA_Responder_Do_Import_Module extends AA_Responder {
     var $definition;
-    
+
     function AA_Responder_Do_Import_Module($param) {
-        $this->definition = $param['definition']; 
+        $this->definition = $param['definition'];
     }
 
     function run() {
@@ -183,7 +156,13 @@ $request = null;
 
 // we use primarily POST, but manager class actions needs to send GET request
 if ( $_POST['request'] ) {
-    $request = unserialize(gzdecode($_POST['request']));
+    $request = AA_Request::decode($_POST['request']);
+    if (!strpos($_POST['request'], 'Get_Sessionid')) {
+        huhl('yy', $request, $request->params['sync'][0], unserialize($request->params['sync'][0]));
+        exit;
+    }
+    
+    
 }
 
 if ( !is_object($request)) {
