@@ -742,56 +742,58 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (objectid,userid,object_type),
                           KEY userid (userid)
                       )",
-                      'polls' => "(
-                          id varbinary(16) NOT NULL default '',
-                          pollID int(11) NOT NULL auto_increment,
-                          status_code tinyint(4) NOT NULL default '1',
-                          pollTitle varchar(100) NOT NULL default '',
-                          startDate int(11) NOT NULL default '0',
-                          endDate int(11) NOT NULL default '0',
-                          defaults tinyint(1) default NULL,
-                          Logging tinyint(1) default NULL,
-                          IPLocking tinyint(1) default NULL,
-                          IPLockTimeout int(4) default NULL,
-                          setCookies tinyint(1) default NULL,
-                          cookiesPrefix varchar(16) default NULL,
-                          designID int(11) default NULL,
-                          params text NOT NULL,
-                          PRIMARY KEY  (pollID)
+                      `polls` => "(
+                         `id` varbinary(32) NOT NULL ,
+                         `module_id` varbinary(16) NOT NULL ,
+                         `status_code` tinyint(4) NOT NULL default '1' ,
+                         `headline` text NOT NULL ,
+                         `publish_date` int(11) NOT NULL ,
+                         `expiry_date` int(11) NOT NULL ,
+                         `locked` tinyint(4) NOT NULL ,
+                         `logging` tinyint(1) NOT NULL ,
+                         `ip_locking` tinyint(1) NOT NULL ,
+                         `ip_lock_timeout` int(4) ,
+                         `set_cookies` tinyint(1) NOT NULL ,
+                         `cookies_prefix` varbinary(16) ,
+                         `design_id` varbinary(32) ,
+                         `aftervote_design_id` varbinary(32) ,
+                         `params` text NOT NULL ,
+                         PRIMARY KEY (`id`),
+                         KEY id (`module_id`,`status_code`,`expiry_date`)
                       )",
-                      'polls_data' => "(
-                          pollID int(11) NOT NULL default '0',
-                          optionText char(50) NOT NULL default '',
-                          optionCount int(11) NOT NULL default '0',
-                          voteID int(11) NOT NULL default '0'
-                      )",
-                      'polls_designs' => "(
-                          designID int(11) NOT NULL auto_increment,
-                          pollsModuleID varbinary(16) NOT NULL default '',
-                          name text NOT NULL,
-                          `comment` text NOT NULL,
-                          resultBarFile text NOT NULL,
-                          resultBarWidth int(4) NOT NULL default '0',
-                          resultBarHeight int(4) NOT NULL default '0',
-                          top text NOT NULL,
-                          answer text NOT NULL,
-                          bottom text NOT NULL,
-                          params text NOT NULL,
-                          PRIMARY KEY  (designID)
-                      )",
-                      'polls_ip_lock' => "(
-                          pollID int(11) NOT NULL default '0',
-                          voteID int(11) NOT NULL default '0',
-                          votersIP char(16) NOT NULL default '',
-                          `timeStamp` int(11) NOT NULL default '0'
-                      )",
-                      'polls_log' => "(
-                          logID int(11) NOT NULL auto_increment,
-                          pollID int(11) NOT NULL default '0',
-                          voteID int(11) NOT NULL default '0',
-                          votersIP varbinary(16) NOT NULL default '',
-                          `timeStamp` int(11) NOT NULL default '0',
-                          PRIMARY KEY  (logID)
+                      `polls_answer` => "(
+                         `id` varbinary(32) NOT NULL ,
+                         `poll_id` varbinary(32) NOT NULL ,
+                         `answer` text NOT NULL ,
+                         `votes` int(11) NOT NULL ,
+                         `priority` int(11) NOT NULL ,
+                         PRIMARY KEY (`id`),
+                         KEY poll_id (`poll_id`,`priority`)
+                         )",
+                      `polls_design` => "(
+                         `id` varbinary(32) NOT NULL ,
+                         `module_id` varbinary(16) NOT NULL ,
+                         `name` text NOT NULL ,
+                         `comment` text NOT NULL ,
+                         `top` text NOT NULL ,
+                         `answer` text NOT NULL ,
+                         `bottom` text NOT NULL ,
+                         PRIMARY KEY (`id`),
+                         KEY module_id (`module_id`)
+                         )",
+                      `polls_ip_lock` => "(
+                         `poll_id` varbinary(32) NOT NULL ,
+                         `voters_ip` varbinary(16) NOT NULL ,
+                         `timestamp` int(11) NOT NULL ,
+                         KEY poll_id (`poll_id`,`voters_ip`),
+                         KEY poll_id_time (`poll_id`,`timestamp`)
+                         )",
+                      `polls_log` => "(
+                         `id` int(11) NOT NULL auto_increment,
+                         `answer_id` varbinary(32) NOT NULL ,
+                         `voters_ip` varbinary(16) NOT NULL ,
+                         `timestamp` int(11) NOT NULL ,
+                         PRIMARY KEY (`id`)
                       )",
                       'post2shtml' => "(
                           id varbinary(32) NOT NULL default '',

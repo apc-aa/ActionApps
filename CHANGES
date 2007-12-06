@@ -1,3 +1,6 @@
+12/06/07 - fixed sql_update.php3 script for polls module
+(honzam)
+!SQL!
 12/05/07 - polls module finalized and working - last bugs fixed, database
 (honzam)   structure of polls* tables is different
          - Error page could be deffined for database errors - use
