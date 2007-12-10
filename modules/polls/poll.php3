@@ -30,34 +30,18 @@
 * Polls for ActionApps
 *
 * Based on phpPolls 1.0.3 from http://phpwizards.net (also under GPL v2.)
-* You can supply just poll_id parameter - the first poll is displayed
+* You can supply just pid parameter - the first poll is displayed
 * (the one in Active bin with oldest publish date and not expired)
-* If you do not want the actual poll, you can display the second in the line
-* by relative parameter (rel=1), the third (rel=2), ... You can also display
-* already expired polls this way (rel=-1, rel=-2, ...)
 *
-* @param    string   poll_id    32 digit long hexadecimal id of poll (see Polls
-*                               Admin). This parameter is REQUIRED.
-* @param  	integer  show       id of poll to show (the id is displayed in AA
-*                               admin interface - Polls Manager)
-* @param  	integer  rel        show relative poll (current +/- rel)
-* @param    integer  no_vote    if no_vote=1, user votes are ignored (used for
-*                               displaying old polls results)
+* @param pid      - id of poll module
+* @param poll_id  - 32 digit long hexadecimal id of poll (see Polls Admin)
+* @param vote_id  - vote for specified answer
+* @param conds    - conds for the module which enables to display polls matching
+*                   specified condition (just like for views)
+* @param sort     - sortorder of polls (just like for views)
+* @param listlen  - number of polls displayed - default is 1
 */
 
-
-
-// input parameters:
-//
-// * id - id of polls
-// * poll_id - id of one poll
-//
-// to show more polls, if to_id isn't set, we show all polls from from_id
-// * from_id
-// * to_id
-//
-// relative show of polls, parameters aren't IDS!!!!!!
-// * rel
 
 require_once "../../include/config.php3";
 require_once AA_INC_PATH. "util.php3";
@@ -113,19 +97,19 @@ if ($_REQUEST['poll_id']) {
     $set->addCondition(new AA_Condition('expiry_date', '>=', $now));
     $set->addCondition(new AA_Condition('publish_date', '<=', $now));
 
-    if ($conds) {
-        $set->addCondsFromArray($conds);
+    if ($_REQUEST['conds']) {
+        $set->addCondsFromArray($_REQUEST['conds']);
     }
 
-    if ($sort) {
-        $set->addSortFromArray($sort);
+    if ($_REQUEST['sort']) {
+        $set->addSortFromArray($_REQUEST['sort']);
     } else {
         // default sort order - just like for items - publish date - descending
         $set->addSortorder( new AA_Sortorder( array('publish_date' => 'd')));
     }
 
     $poll_zids = AA_Metabase::queryZids(array('table'=>'polls'), $set);
-    $poll_zids = $poll_zids->slice(0, $listlen ? $listlen : 1);
+    $poll_zids = $poll_zids->slice(0, $_REQUEST['listlen'] ? $_REQUEST['listlen'] : 1);
 }
 
 // and now display the polls

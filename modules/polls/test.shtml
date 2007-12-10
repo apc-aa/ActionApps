@@ -2,23 +2,15 @@
 
 <html>
 <head>
-    <title>Untitled</title>
+    <title>ActionApps Polls Test</title>
 </head>
 
 <body>
-<h1>Testovani</h1>
-<hr>
+<h1>ActionApps Polls Test</h1>
 
-<!--#include virtual="/apc-aa-dev/modules/polls/poll.php3?pid=e5505b518d57175990432457e03d1f62"-->
-<!-- #include virtual="/apc-aa-dev/modules/polls/poll.php3?pid=746573746f76616369616e6b65746b61&show=24"-->
-<!-- #include virtual="/apc-aa-dev/modules/polls/poll.php3?pid=746573746f76616369616e6b65746b61&show=11"-->
-<!-- #include virtual="/apc-aa-dev/modules/polls/poll.php3?pid=746573746f76616369616e6b65746b61&show=8"-->
-<!-- #include virtual="/apc-aa-dev/modules/polls/showpoll.php3?packed=1&id=testovacianketka"-->
-<br>
-<br>
-<br>
+<h2>Polls Template</h2>
 
-<!-- #include virtual="/apc-aa-dev/modules/polls/showpoll.php3?id=ef5470982b28bf8465f0dd98f7c73f50&pid=36"-->
-<hr>
+<!--#include virtual="/apc-aa-dev/modules/polls/poll.php3?pid=506f6c6c7354656d706c6174652e2e2e"-->
+
 </body>
 </html>
