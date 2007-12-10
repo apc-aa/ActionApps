@@ -6,8 +6,8 @@
          - cleanup in polls
          - parameters described in modules/polls/poll.php3
          - fixed syntax errors in aa_optimize.php3
-12/06/07 - fixed sql_update.php3 script for polls module
-(honzam)
+12/06/07 - fixed sql_update.php3 script for polls module - you can use
+(honzam)   AA -> Optimize "Add Polls" action for initial table creation
 !SQL!
 12/05/07 - polls module finalized and working - last bugs fixed, database
 (honzam)   structure of polls* tables is different
