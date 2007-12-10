@@ -315,7 +315,6 @@ class AA_Optimize_Db_Binary_Traing_Zeros extends AA_Optimize {
         $this->_fixTable('perms','objectid',"varbinary(32) NOT NULL default ''");
         $this->_fixTable('perms','userid',"varbinary(32) NOT NULL default '0'");
         $this->_fixTable('perms','perm',"varbinary(32) NOT NULL default ''");
-        $this->_fixTable('polls_log','votersIP',"varbinary(16) NOT NULL default ''");
         $this->_fixTable('slice_owner','id',"varbinary(16) NOT NULL default ''");
         $this->_fixTable('subscriptions','slice_owner',"varbinary(16) default NULL");
         $this->_fixTable('users','type',"varbinary(10) NOT NULL default ''");
@@ -328,10 +327,10 @@ class AA_Optimize_Db_Binary_Traing_Zeros extends AA_Optimize {
     function _fixTable($table, $field, $definition) {
         $db  = getDb();
         $SQL = "ALTER TABLE `$table` CHANGE `$field` `$field` $definition";
-        $this->messages($SQL);
+        $this->message($SQL);
         $db->query($SQL);
         $SQL = "UPDATE `$table` SET $field=TRIM(TRAILING '\0' FROM $field)";
-        $this->messages($SQL);
+        $this->message($SQL);
         $db->query($SQL);
         freeDb($db);
     }
@@ -511,7 +510,7 @@ class AA_Optimize_Clear_Pagecache extends AA_Optimize {
     * @return bool
     */
     function test() {
-        $this->messages[] = _m('There is nothing to test.');
+        $this->message(_m('There is nothing to test.'));
         return true;
     }
 
@@ -522,15 +521,15 @@ class AA_Optimize_Clear_Pagecache extends AA_Optimize {
     function repair() {
         $db  = getDb();
         $db->query('CREATE TABLE pagecache_new LIKE pagecache');
-        $this->messages[] = _m('Table pagecache_new created');
+        $this->message(_m('Table pagecache_new created'));
         $db->query('CREATE TABLE pagecache_str2find_new LIKE pagecache_str2find');
-        $this->messages[] = _m('Table pagecache_str2find_new created');
+        $this->message(_m('Table pagecache_str2find_new created'));
         $db->query('RENAME TABLE pagecache_str2find TO pagecache_str2find_bak, pagecache TO pagecache_bak');
-        $this->messages[] = _m('Renamed tables pagecache_* to pagecache_*_bak');
+        $this->message(_m('Renamed tables pagecache_* to pagecache_*_bak'));
         $db->query('RENAME TABLE pagecache_str2find_new TO pagecache_str2find, pagecache_new TO pagecache');
-        $this->messages[] = _m('Renamed tables pagecache_*_new to pagecache_*');
+        $this->message(_m('Renamed tables pagecache_*_new to pagecache_*'));
         $db->query('DROP TABLE pagecache_str2find_bak, pagecache_bak');
-        $this->messages[] = _m('Old pagecache_*_bak tables dropped');
+        $this->message(_m('Old pagecache_*_bak tables dropped'));
         freeDb($db);
         return true;
     }
@@ -557,7 +556,7 @@ class AA_Optimize_Copy_Content extends AA_Optimize {
     * @return a message
     */
     function test() {
-        $this->messages[] = _m('There is nothing to test.');
+        $this->message(_m('There is nothing to test.'));
         return true;
     }
 
@@ -591,7 +590,7 @@ class AA_Optimize_Copy_Content extends AA_Optimize {
          *
          *  $db->query($SQL);
         */
-        $this->messages[] = _m('Coppied');
+        $this->message(_m('Coppied'));
 
         freeDb($db);
         return true;
@@ -623,11 +622,11 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
         $duplicates = $this->_check_table();
 
         if (count($duplicates)==0) {
-            $this->messages[] = _m('No duplicates found');
+            $this->message(_m('No duplicates found'));
             return true;
         }
         foreach ($duplicates as $dup) {
-            $this->messages[] = _m('Duplicate in slice - field: %1 - %2', array(unpack_id($dup[0]), $dup[1]));
+            $this->message(_m('Duplicate in slice - field: %1 - %2', array(unpack_id($dup[0]), $dup[1])));
         }
         return false;
     }
@@ -638,7 +637,7 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
 
         $duplicates = $this->_check_table();
         if (count($duplicates)==0) {
-            $this->messages[] = _m('No duplicates found');
+            $this->message(_m('No duplicates found'));
             return true;
         }
         $fixed = array();
@@ -652,7 +651,7 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
             $varset->doDeleteWhere('field', "slice_id='".quote($dup[0])."' AND id='".quote($dup[1])."'");
             $varset->resetFromRecord($dup[2]);
             $varset->doInsert('field');
-            $this->messages[] = _m('Field %2 in slice %1 fixed', array(unpack_id($dup[0]), $dup[1]));
+            $this->message(_m('Field %2 in slice %1 fixed', array(unpack_id($dup[0]), $dup[1])));
         }
         return true;
     }
