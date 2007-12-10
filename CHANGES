@@ -1,5 +1,8 @@
-12/10/07 - fixed syntax errors in aa_optimize.php3
-(honzam)
+12/10/07 - metabase now deals with indexes. Metabase is now also able to create
+(honzam)   right SQL for creating whole AA database, so sql_update.php3 script
+           will use it instead of SQLs placed directly into sql_update.php3
+         - cleanup in polls
+         - fixed syntax errors in aa_optimize.php3
 12/06/07 - fixed sql_update.php3 script for polls module
 (honzam)
 !SQL!
