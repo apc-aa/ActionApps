@@ -92,8 +92,6 @@ require_once AA_INC_PATH. ($encap ? "locsessi.php3" : "locsess.php3");
 
 $db = new DB_AA;
 
-huhl($_REQUEST);
-
 if (isset($_REQUEST['vote_id']) AND isset($_REQUEST['poll_id'])) {
     $poll = AA_Polls::getPoll($_REQUEST['poll_id']);
     $poll->registerVote($_REQUEST['vote_id']);
@@ -109,23 +107,23 @@ if ($_REQUEST['poll_id']) {
     // there is also one poll which acts as template - managed from Polls Admin
     // (and not from the Polls Manager page) - it has status_code=0,
     // so it is filtered out automaticaly
-    
+
     $now = now();
     $set->addCondition(new AA_Condition('status_code', '=', '1'));
     $set->addCondition(new AA_Condition('expiry_date', '>=', $now));
     $set->addCondition(new AA_Condition('publish_date', '<=', $now));
-    
+
     if ($conds) {
         $set->addCondsFromArray($conds);
     }
-    
+
     if ($sort) {
         $set->addSortFromArray($sort);
     } else {
         // default sort order - just like for items - publish date - descending
         $set->addSortorder( new AA_Sortorder( array('publish_date' => 'd')));
     }
-    
+
     $poll_zids = AA_Metabase::queryZids(array('table'=>'polls'), $set);
     $poll_zids = $poll_zids->slice(0, $listlen ? $listlen : 1);
 }

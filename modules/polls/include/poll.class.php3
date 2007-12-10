@@ -82,7 +82,7 @@ class AA_Poll {
         }
         return $this->_sum;
     }
-    
+
     /** name function  */
     function name() {
         return $this->getProperty('name');
@@ -132,20 +132,20 @@ class AA_Poll {
         $item = new AA_Item($this->content->getContent(), $this->aliases(), '', $expression);
         return $item->get_item();
     }
-    
+
     function registerVote($vote_id) {
         $vote_invalid = false;
         $current_time = now();
         $poll_id       = $this->id();
-        
+
         $varset = new CVarset;
-    
+
         // checkig for duplicated votes - ip_locking method
         if ($this->getProperty('locked') == 1) {
             $vote_invalid = "Locked";
         }
         if ($this->getProperty('ip_locking') == 1) {
-            
+
             $varset->doDeleteWhere('polls_ip_lock', "poll_id='$poll_id' AND timestamp < ". ($current_time - $this->getProperty('ip_lock_timeout')));
 
             $ip = GetTable2Array("SELECT voters_ip FROM polls_ip_lock WHERE (poll_id='$poll_id') AND (voters_ip = '".$_SERVER['REMOTE_ADDR']."')", 'aa_first');
@@ -156,7 +156,7 @@ class AA_Poll {
                 $varset->doInsert('polls_ip_lock');
             }
         }
-    
+
         // checkig for duplicated votes - Cookies method
         if ($this->getProperty('set_cookies') == 1) {
             $cookie = $poll["cookies_prefix"].$poll_id;
@@ -166,7 +166,7 @@ class AA_Poll {
                 setCookie($cookie, "1");
             }
         }
-        
+
         if (!$vote_invalid) {
             tryQuery("UPDATE polls_answer SET votes=votes+1 WHERE id='$vote_id'");
             $GLOBALS['pagecache']->invalidateFor("slice_id=$poll_id");
@@ -176,27 +176,26 @@ class AA_Poll {
                 $varset->doInsert('polls_log');
             }
         }
-        echo "eeeeeee". $vote_invalid;
         return $vote_invalid ? false : true;
     }
-    
+
     function display($type='beforevote') {
         $format   = $this->get_format_strings($type);
-    
+
         $metabase = AA_Metabase::singleton();
         $aliases  = GetAnswerAliases();
         $fields   = $metabase->getSearchArray('polls_answer');
-    
+
         $set = new AA_Set;
         $set->addCondition(new AA_Condition('poll_id', '==', $this->id()));
         $set->addSortorder(new AA_Sortorder(array('priority' => 'a')));
-    
+
         $zids = $metabase->queryZids(array('table'=>'polls_answer'), $set);
-    
+
         $content_function = array(array('AA_Metabase', 'getContent'), array('table'=>'polls_answer'));
-    
+
         $itemview = new itemview( $format, $fields, $aliases, $zids, 0, $zids->count(), shtml_url(), "", $content_function);
-        
+
         echo $itemview->get_output();
     }
 }
