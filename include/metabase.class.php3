@@ -36,11 +36,13 @@
  *
  *       'central_conf' => array(
  *           'id' => array(
- *               'Field'   => "id",
- *               'Type'    => "int(10) unsigned",
- *               'Null'    => "NO",
- *               'Key'     => "PRI",
- *               'Extra'   => "auto_increment",
+ *                0 => "id",                         // 'Field'
+ *                1 => "int(10) unsigned",           // 'Type'
+ *                2 => "NO",                         // 'Null'
+ *                3 => "PRI",                        // 'Key'
+ *                4 => "0",                          // 'Default'
+ *                5 => "auto_increment",             // 'Extra'
+ *                6 => "AA identifier",              // 'Comment'
  *           ),
  *           'dns_conf' => array(
  *               'Field'   => "dns_conf",
@@ -63,11 +65,24 @@ class AA_Metabase_Column {
     var $c;
 
     function AA_Metabase_Column($column) {
-        $this->c = array( $column['Field'], $column['Type'], $column['Null'], $column['Key'], $column['Default'], $column['Extra'], $column['Comment'] );
+        $this->c = array( $column['Field'], $column['Type'], $column['Null']=='YES', $column['Key'], $column['Default'], $column['Extra'], $column['Comment'] );
     }
 
     function isKey() {
         return strpos($this->c[3], 'PRI')!==false;
+    }
+
+    function getCreateSql() {
+        $SQL  = '`'.  $this->c[0] .'`';                     // column name
+        $SQL .= ' '.  $this->c[1];                          // column definition
+        if (!$this->c[2]) {                                 // NULL ?
+            $SQL .= ' NOT NULL';
+        }
+        if (strlen($this->c[4]) > 0) {
+            $SQL .= " default '". $this->c[4] ."'";         // default
+        }
+        $SQL .= ' '.  $this->c[5];                          // extra - like auto_increment
+        return $SQL;
     }
 
     /** returns database structure definition as PHP code (array)
@@ -76,7 +91,7 @@ class AA_Metabase_Column {
         $ret  = "\n        '".$this->c[0]."' => array(";
         if ($this->c[0]) { $ret .= "\n            'Field'   => \"".$this->c[0].'",';  }
         if ($this->c[1]) { $ret .= "\n            'Type'    => \"".$this->c[1].'",';  }
-        if ($this->c[2]) { $ret .= "\n            'Null'    => \"".$this->c[2].'",';  }
+        if ($this->c[2]) { $ret .= "\n            'Null'    => \"".($this->c[2] ? 'YES' : 'NO').'",';  }
         if ($this->c[3]) { $ret .= "\n            'Key'     => \"".$this->c[3].'",';  }
         if ($this->c[4]) { $ret .= "\n            'Default' => \"".$this->c[4].'",';  }
         if ($this->c[5]) { $ret .= "\n            'Extra'   => \"".$this->c[5].'",';  }
@@ -86,12 +101,48 @@ class AA_Metabase_Column {
     }
 }
 
+class AA_Metabase_Index {
+    /**
+     *  The reason, why we use this short variables is, that the metabase is here
+     *  stored as serialized string and I want to keep it as short as possible
+     */
+    var $t; // table name
+    var $n; // index name
+    var $s; // sort of index P|U|I  (= PRIMARY|UNIQUE|INDEX)
+    var $c; // columns array (array of column names of array (name,part) for partial column index (like text(10))
+
+    function AA_Metabase_Index($table, $name, $sort) {
+        $this->t = $table;
+        $this->n = $name;
+        $this->s = $sort;
+        $this->c = array();
+    }
+
+    function addColumn($position, $column, $sub_part='') {
+        $this->c[(int)$position] = $sub_part ? array($column, $sub_part) : $column;
+    }
+
+    function getCreateSql() {
+        $cols = array();
+        foreach ($this->c as $col) {
+            $cols[] = is_array($col) ? '`'.$col[0].'`('.$col[1].')' : "`$col`";
+        }
+        $cols_list = join(',', $cols);
+        switch ($this->s) {
+            case 'P': return "PRIMARY KEY ($cols_list)";
+            case 'U': return 'UNIQUE KEY '.$this->n." ($cols_list)";
+        }
+        return 'KEY '.$this->n." ($cols_list)";
+    }
+}
+
+
 class AA_Metabase_Table {
     /** Name of the table */
     var $tablename;
     /** array of PRIMARY KEY columns */
     var $primary_key;
-    /** array of INDEXES */
+    /** array of INDEXES: array(index_name => AA_Metabase_Index) */
     var $index;
     /** array of table columns */
     var $column;
@@ -101,10 +152,11 @@ class AA_Metabase_Table {
     // This is temporary solution - we will use some better structure (MDB2?)
     // for table definition in order we can check the field type,
     // the indexes, generate sql_update script, ...
-    function AA_Metabase_Table($tablename, $columns) {
+    function AA_Metabase_Table($tablename, $columns, $indexes='') {
         $this->tablename   = $tablename;
         $this->column      = array();
         $this->primary_key = array();
+        $this->index       = array();
         foreach ($columns as $column) {
             $aa_column  = new AA_Metabase_Column($column);
             $this->column[$column['Field']] = new AA_Metabase_Column($column);
@@ -112,11 +164,25 @@ class AA_Metabase_Table {
                 $this->primary_key[$column['Field']] = true;
             }
         }
+        if (!empty($indexes)) {
+            // indexes array looks like:
+            // [0] => Array (
+            //      [Table] => email [Non_unique] => 0 [Key_name] => PRIMARY [Seq_in_index] => 1 [Column_name] => id [Collation] => A [Cardinality] => 71 [Sub_part] => [Packed] => [Null] => [Index_type] => BTREE [Comment] => )
+            foreach ($indexes as $index_part) {
+                if ( !isset($this->index[$index_part['Key_name']])) {
+                    $index_type = ($index_part['Key_name'] == 'PRIMARY') ? 'P' : (($index_part['Non_unique']) ? 'I': 'U' );
+                    $this->index[$index_part['Key_name']] = new AA_Metabase_Index($index_part['Table'], $index_part['Key_name'], $index_type);
+                }
+                $idx = &$this->index[$index_part['Key_name']]; // to work in php4
+                $idx->addColumn((int)$index_part['Seq_in_index'], $index_part['Column_name'], $index_part['Sub_part']);
+            }
+        }
     }
 
     function factoryFromDb($tablename) {
         $columns = GetTable2Array("SHOW FULL COLUMNS FROM `$tablename`", 'Field');
-        return new AA_Metabase_Table($tablename, $columns);
+        $indexes = GetTable2Array("SHOW INDEX FROM `$tablename`", '');
+        return new AA_Metabase_Table($tablename, $columns, $indexes);
     }
 
     function getColumnNames() {
@@ -139,6 +205,17 @@ class AA_Metabase_Table {
     // temporary solution - will be in better solved in MDB2 datastructure
     function getKeyType() {
         return in_array($this->tablename, array('slice', 'item')) ? 'packed' : 'normal';
+    }
+
+    function getCreateSql($prefix='') {
+        $sql_parts = array();
+        foreach ($this->column as $column) {
+            $sql_parts[] = $column->getCreateSql();
+        }
+        foreach ($this->index as $index) {
+            $sql_parts[] = $index->getCreateSql();
+        }
+        return "CREATE TABLE IF NOT EXISTS `$prefix".$this->tablename."` (\n". join(",\n",$sql_parts) ."\n)";
     }
 
     /** returns database structure definition as PHP code (array) */
@@ -441,6 +518,14 @@ class AA_Metabase {
         foreach ($tables as $table) {
             $this->tables[$table['table_name']] = AA_Metabase_Table::factoryFromDb($table['table_name']);
         }
+    }
+
+    function getCreateSql($prefix='') {
+        $sql_parts = array();
+        foreach ($this->tables as $table) {
+            $sql_parts[] = $table->getCreateSql($prefix);
+        }
+        return join("\n",$sql_parts);
     }
 
     /** returns database structure definition as PHP code (array) */
