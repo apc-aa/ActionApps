@@ -10,7 +10,9 @@
 (honzam)   AA -> Optimize "Add Polls" action for initial table creation
 !SQL!
 12/05/07 - polls module finalized and working - last bugs fixed, database
-(honzam)   structure of polls* tables is different
+(honzam)   structure of polls* tables is different. Thanks should go to Econnect
+           who sponsored the initial polls implementation and to Colnodo, who
+           sponsored this finalization.
          - Error page could be defined for database errors - use
            define("DB_ERROR_PAGE", "http://some.url.cz/page.html"); in your
            config.php3 file.
