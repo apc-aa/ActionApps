@@ -147,16 +147,16 @@ class AA_Request {
             $ask_arr = array_merge($ask_arr, $parameters);
         }
 
-        if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
-            $r = unserialize($ask_arr['request']);
-            huhl($ask_arr, unserialize($ask_arr['request']), $r->params['sync'][0], unserialize($r->params['sync'][0]), unserialize(str_replace("'", "\'", $r->params['sync'][0])), $url);
-        }
+//       if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
+//           $r = unserialize($ask_arr['request']);
+//           huhl($ask_arr, unserialize($ask_arr['request']), $r->params['sync'][0], unserialize($r->params['sync'][0]), unserialize(str_replace("'", "\'", $r->params['sync'][0])), $url);
+//       }
         $result = AA_Http::postRequest($url, $ask_arr);
 
-        if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
-            huhl('xx', $result);
-            exit;
-        }
+//        if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
+//            huhl('xx', $result);
+//            exit;
+//        }
         if ( $result === false ) {
             huhl("<br>Error - response:", AA_Http::lastErrMsg());
             return new AA_Response('No response recieved ('. AA_Http::lastErr() .' - '. AA_Http::lastErrMsg(). ')', 3);

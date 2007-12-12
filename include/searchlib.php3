@@ -272,10 +272,6 @@ class AA_Sortorder {
     }
 }
 
-
-
-
-
 class AA_Set extends AA_Object {
     /** array of AA_Condition */
     var $conds;

@@ -1,3 +1,5 @@
+12/12/07 - fixes in Central Synchronization - constants are synchronized well
+(honzam) - better UI for Central Synchronize
 12/10/07 - metabase now deals with indexes. Metabase is now also able to create
 (honzam)   right SQL for creating whole AA database, so sql_update.php3 script
            will use it instead of SQLs placed directly into sql_update.php3

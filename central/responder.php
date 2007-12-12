@@ -115,10 +115,7 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
         $ret = array();
         $slice_id_cache = array();
         foreach ( $this->sync_commands as $serialized_command ) {
-            huhl('$serialized_command:', $serialized_command);
             $cmd = unserialize($serialized_command);
-            huhl('$cmd', $cmd);
-
             $ret[] = $cmd->doAction();
         }
         return new AA_Response($ret);
@@ -157,12 +154,12 @@ $request = null;
 // we use primarily POST, but manager class actions needs to send GET request
 if ( $_POST['request'] ) {
     $request = AA_Request::decode($_POST['request']);
-    if (!strpos($_POST['request'], 'Get_Sessionid')) {
-        huhl('yy', $request, $request->params['sync'][0], unserialize($request->params['sync'][0]));
-        exit;
-    }
-    
-    
+//    if (!strpos($_POST['request'], 'Get_Sessionid')) {
+//        huhl('yy', $request, $request->params['sync'][0], unserialize($request->params['sync'][0]));
+//        exit;
+//    }
+//
+
 }
 
 if ( !is_object($request)) {
