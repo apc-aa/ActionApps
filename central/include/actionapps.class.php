@@ -267,16 +267,34 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
         $this->module_id = $module_id;
         $metabase        = AA_Metabase::singleton();
 
+        $this->data['module']   = $metabase->getModuleRows('module'        , $module_id);
         $this->data['slice']    = $metabase->getModuleRows('slice', $module_id);
         $this->data['field']    = $metabase->getModuleRows('field', $module_id);
         $this->data['view']     = $metabase->getModuleRows('view',  $module_id);
         $this->data['email']    = $metabase->getModuleRows('email', $module_id);
 
         // @todo - do it better - check the fields setting, and get all the constants used
-        $this->data['constant'] = $metabase->getModuleRows('constant', $module_id);
+        $this->data['constant_slice'] = $metabase->getModuleRows('constant_slice', $module_id);
+        $this->data['constant']       = $metabase->getModuleRows('constant', $module_id);
+        if (is_array($this->data['constant'])) {
+            $constant_groups = array();
+            foreach ($this->data['constant'] as $k => $v) {
+                $constant_groups[$v['group_id']] = true;   // get list of all groups
+            }
+
+            $SQL = "SELECT * FROM constant WHERE group_id='lt_groupNames' AND ". Cvarset::sqlin('value', array_keys($constant_groups));
+
+            $groups = GetTable2Array($SQL, "unpack:id", 'aa_fields');
+            if (!is_array($groups)) {
+                $groups = array();
+            }
+            foreach ($groups as $k => $v) {
+                $groups[$k]['id'] = unpack_id($v['id']);
+            }
+            $this->data['constant'] = array_merge($this->data['constant'], $groups);
+        }
 
         if ( !$limited ) {
-            $this->data['module']         = $metabase->getModuleRows('module'        , $module_id);
             $this->data['item']           = $metabase->getModuleRows('item'          , $module_id);
             $this->data['content']        = $metabase->getModuleRows('content'       , $module_id);
             $this->data['discussion']     = $metabase->getModuleRows('discussion'    , $module_id);
@@ -292,11 +310,13 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
         $dest_module_id = $dest_def->getId();
         $metabase       = AA_Metabase::singleton();
 
-        $diff =                    AA_Difference::_compareArray($this->data['slice'],    $dest_def->data['slice'],    new AA_Identifier($dest_module_id, 'slice'),    $metabase->getKeys('slice'));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['field'],    $dest_def->data['field'],    new AA_Identifier($dest_module_id, 'field'),    $metabase->getKeys('field')));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['view'],     $dest_def->data['view'],     new AA_Identifier($dest_module_id, 'view'),     $metabase->getKeys('view')));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['email'],    $dest_def->data['email'],    new AA_Identifier($dest_module_id, 'email'),    $metabase->getKeys('email')));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant'], $dest_def->data['constant'], new AA_Identifier($dest_module_id, 'constant'), $metabase->getKeys('constant')));
+        $diff =                    AA_Difference::_compareArray(reset($this->data['module']),  reset($dest_def->data['module']), new AA_Identifier($dest_module_id, 'module', $dest_module_id), array($metabase->getModuleField('module'))); // just module data
+        $diff = array_merge($diff, AA_Difference::_compareArray(reset($this->data['slice']),   reset($dest_def->data['slice']),  new AA_Identifier($dest_module_id, 'slice', $dest_module_id),  array($metabase->getModuleField('slice'))));  // just slice data
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['field'],    $dest_def->data['field'],    new AA_Identifier($dest_module_id, 'field'),    array($metabase->getModuleField('field'))));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['view'],     $dest_def->data['view'],     new AA_Identifier($dest_module_id, 'view'),     array($metabase->getModuleField('view'))));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['email'],    $dest_def->data['email'],    new AA_Identifier($dest_module_id, 'email'),    array($metabase->getModuleField('email'))));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant_slice'], $dest_def->data['constant_slice'], new AA_Identifier($dest_module_id, 'constant_slice'), array($metabase->getModuleField('constant_slice'))));
+        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant'], $dest_def->data['constant'], new AA_Identifier($dest_module_id, 'constant'), array($metabase->getModuleField('constant'))));
         return $diff;
     }
 }
@@ -375,9 +395,9 @@ class AA_Difference {
                 unset($destination_arr[$key]);
             }
             elseif (!array_key_exists($key,$destination_arr)) {
-                $diff[] = new AA_Difference('DIFFERENT_VALUE', _m('There is no such key (%1) in destination slice for %2', array($key, $identifier->toString())), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
+                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('There is no such key (%1) in destination slice for %2', array($key, $identifier->toString())), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
             }
-            elseif ($value != $destination_arr[$key]) {
+            elseif (($value != $destination_arr[$key]) AND !(empty($value) AND empty($destination_arr[$key]))) {  // '' and 0 is considered equal
                // if we comparing row values, we can also update whole row at once - so we mark it
                $is_different = true;
 
@@ -385,7 +405,7 @@ class AA_Difference {
                        <div style="background-color:#FFE0E0;border: solid 1px #F88;">'._m('Destination').':<br>'.safe($destination_arr[$key]).'</div>
                        <br>
                        <div style="background-color:#E0E0FF;border: solid 1px #88F;">'._m('Template').':<br>'.safe($value).'</div>'). '}';
-                $diff[] = new AA_Difference('DIFFERENT_VALUE', _m('The value for key %1 in %2 array is different %3', array($key, $identifier->toString(), AA_Stringexpand::unalias($code))), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
+                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('The value for key %1 in %2 array is different %3', array($key, $identifier->toString(), AA_Stringexpand::unalias($code))), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
                 // we need to clear the destination array in order we can know,
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
@@ -406,7 +426,7 @@ class AA_Difference {
                 // I know - we can define the difference right here, but it is better to use the same method as above
                 $diff = array_merge($diff, AA_Difference::_compareArray('',$destination_arr[$key], $sub_identifier, $ignore));
             } else {
-                $diff[] = new AA_Difference('DELETED', _m('There is no such key (%1) in template slice for %2', array($key, $sub_identifier->toString())), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, ''));
+                $diff[] = new AA_Difference('DELETED', '&nbsp;&nbsp;&nbsp;-&nbsp;'. _m('There is no such key (%1) in template slice for %2', array($key, $sub_identifier->toString())), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, ''));
             }
         }
         if ( count($diff) < 1 ) {
@@ -483,7 +503,7 @@ class AA_Sync_Action {
     function printToForm() {
         $packed_action = serialize($this);
         echo '<div>';
-        $state = isset($_POST['sync']) ? in_array($packed_action, (array)$_POST['sync']) : true;
+        $state = isset($_POST['sync']) ? in_array($packed_action, (array)$_POST['sync']) : ($this->type != 'UPDATE_VALUE');
         FrmChBoxEasy('sync[]', $state, '', $packed_action);
         switch ( $this->type ) {
             case 'DELETE': echo _m("Delete"); break;
@@ -530,11 +550,13 @@ class AA_Sync_Action {
         }
         if ( $this->type == 'INSERT' ) {
             $data = $this->params;
-            $metabase->reassignModule($data, $table, $module_id);
+            $metabase->fillKeys($data, $idf);
             $metabase->doInsert($table, $data);
             return _m('%1 %2 inserted into slice %3', array($table, $row, $module_id));  // field xy inserted into slice yz
         }
         if ( $this->type == 'DELETE' ) {
+            $data = array();
+            $metabase->fillKeys($data, $idf);
             $metabase->doDelete($table, $data);
             return _m('%1 %2 deleted from slice %3', array($table, $row, $module_id));
         }

@@ -202,11 +202,6 @@ class AA_Metabase_Table {
         return ($this->primary_key[$columnname] ? true : false);
     }
 
-    // temporary solution - will be in better solved in MDB2 datastructure
-    function getKeyType() {
-        return in_array($this->tablename, array('slice', 'item')) ? 'packed' : 'normal';
-    }
-
     function getCreateSql($prefix='') {
         $sql_parts = array();
         foreach ($this->column as $column) {
@@ -321,20 +316,17 @@ class AA_Metabase {
         $table      = $this->tables[$tablename];
         $keys       = $table->getKeys();
 
-//        huhl('keys:', $keys, 'row:', $row);
-
         // make sense just for single-keys or two-key, where second key
         // is replaced by $module_field below (for field table)
+        $module_field = AA_Metabase::getModuleField($tablename);
         foreach ($keys as $key) {
+            if ($key == $module_field) {
+                // we will assign it in nex step - reassignModule()
+                continue;
+            }
             $data[$key] = AA_Metabase::isPacked($tablename, $key) ? pack_id($row) : $row;
         }
-
-//        huhl('data1:', $data);
-
         $this->reassignModule($data, $tablename, $module_id);
-
-//        huhl('data2:', $data);
-
     }
 
     /** changes the column of the table which identifies to which module it
@@ -355,24 +347,29 @@ class AA_Metabase {
 
     /** static method */
     function isPacked($tablename, $column) {
-        return in_array(AA_Metabase::getPacked($tablename), $column);
+        return in_array($column, AA_Metabase::getPacked($tablename));
     }
 
     /** static method */
     function getModuleField($tablename) {
-        static $MODULE_KEYS = array( 'field'               => 'slice_id',
-                                     'email_notify'        => 'slice_id',
+        static $MODULE_KEYS = array(
                                      'alerts_collection'   => 'module_id',
                                      'constant_slice'      => 'slice_id',
                                      'ef_permissions'      => 'slice_id',
                                      'email'               => 'owner_module_id',
+                                     'email_notify'        => 'slice_id',
                                      'external_feeds'      => 'slice_id',
+                                     'field'               => 'slice_id',
                                      'item'                => 'slice_id',
+                                     'links'               => 'id',
+                                     'module'              => 'id',
                                      'mysql_auth_group'    => 'slice_id',
                                      'mysql_auth_userinfo' => 'slice_id',
+                                     'polls'               => 'module_id',
                                      'profile'             => 'slice_id',
                                      'rssfeeds'            => 'slice_id',
                                      'site_spot'           => 'site_id',
+                                     'slice'               => 'id',
                                      'view'                => 'slice_id'
             );
         return $MODULE_KEYS[$tablename];
@@ -419,7 +416,7 @@ class AA_Metabase {
                   'site_spot'           => array('site_id'),
                   'view'                => array('slice_id')
                   );
-        return (array)$PACKED[$tablename];
+        return isset($PACKED[$tablename]) ? $PACKED[$tablename] : array();
     }
 
     /** static method
@@ -490,7 +487,7 @@ class AA_Metabase {
     function doInsert($tablename, $data) {
         $varset     = new Cvarset();
         $varset->resetFromRecord($data);
-        return $varset->doUpdate($tablename);
+        return $varset->doInsert($tablename);
     }
 
     function doDelete($tablename, $data) {
@@ -502,7 +499,8 @@ class AA_Metabase {
             // @todo - do some validity checks for the data
             if (!$data[$key]) {
                 // you can't use this function for that table - this is programmers mistake - correct the code
-                echo "Missing key for table $tablename in AA_Metabase::doDelete()";
+                huhl($data);
+                echo "Missing key $key for table $tablename in AA_Metabase::doDelete()";
                 exit;
             }
             $varset->addkey($key, 'text', $data[$key]);
@@ -597,25 +595,31 @@ class AA_Metabase {
         $join_sql     = '';
 
         if ( isset($JOIN[$tablename]) ) {
-            list($scr_field, $dest_table, $dest_field) = each($JOIN['tablename']);
-            $module_table = $dest_table;
-            $join_sql     = "INNER JOIN $dest_table ON $tablename.$scr_field=$dest_table.$dest_field";
+            $j = $JOIN[$tablename];
+            $module_table = $j['dest_table'];
+            $join_sql     = "INNER JOIN $module_table ON $tablename.". $j['scr_field']."=$module_table.".$j['dest_field'];
         }
 
         $module_field = $this->getModuleField($module_table);
         if (!$module_field) {
             // you can't use this function for that table - this is programmers mistake - correct the code
-            echo "table $tablename not supported in AA_Metabase::getModuleRows()";
+            echo "table $tablename not supported in AA_Metabase::getModuleRows() - no module field";
             exit;
         }
 
         $table_keys   = $this->getKeys($tablename);
-        if (count($table_keys) != 1) {
+        if (count($table_keys) == 1) {
+            $table_key = $table_keys[0];
+        }
+        elseif ((count($table_keys) == 2) AND in_array($module_field, $table_keys)) {
+            // two keys, but one of them is module_id, which is OK
+            $table_key = ($table_keys[0] == $module_field) ? $table_keys[1] : $table_keys[0];
+        }
+        else {
             // you can't use this function for that table - this is programmers mistake - correct the code
-            echo "table $tablename not supported in AA_Metabase::getModuleRows()";
+            echo "table $tablename not supported in AA_Metabase::getModuleRows() - too much keys";
             exit;
         }
-        $table_key = $table_keys[0];
 
         $module_val   = $this->isPacked($module_table, $module_field) ? q_pack_id($module_id) : $module_id;
         $key_packed   = $this->isPacked($tablename, $table_key);
@@ -623,6 +627,9 @@ class AA_Metabase {
         $SQL = "SELECT $tablename.* FROM $tablename $join_sql WHERE $module_table.$module_field = '$module_val'";
 
         $ret            = GetTable2Array($SQL, $key_packed ? "unpack:$table_key" : $table_key, 'aa_fields');
+        if (!is_array($ret)) {
+            $ret = array();
+        }
         $packed_columns = $this->getPacked($tablename);
         foreach ($packed_columns as $column) {
             foreach ($ret as $k => $v) {
