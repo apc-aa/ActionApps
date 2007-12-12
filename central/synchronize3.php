@@ -170,9 +170,18 @@ if ( isset($differences) ) {
 }
 FrmTabSeparator(_m('Synchronize'));
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
-FrmStaticText(_m('Compared ActionApps'), $aas[$_POST['comparation_aa']]->getName());
-FrmInputMultiSelect('destination_aa[]', _m('AA to update'), $aas_array, $_POST['destination_aa'], 20, false, true, _m('ActionApps installation to update'));
-FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
+FrmStaticText(_m('Compared and Updated ActionApps'), $aas[$_POST['comparation_aa']]->getName());
+$aa2update = isset($_POST['destination_aa']) ? $_POST['destination_aa'] : $_POST['comparation_aa'];
+FrmHidden("destination_aa[]", $aa2update);
+
+//FrmInputMultiSelect('destination_aa[]', _m('AA to update'), $aas_array, $aa2update, 20, false, true, _m('ActionApps installation to update'));
+//FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
+foreach ($_POST['sync_slices'] as $k => $v) {
+    if ($v) {
+        FrmHidden("sync_slices[$k]", $v);
+    }
+}
+//FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
 // prepared for multiple update
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
