@@ -40,8 +40,6 @@ require_once AA_INC_PATH. "formutil.php3";
 require_once AA_INC_PATH. "varset.php3";
 require_once AA_INC_PATH. "mgettext.php3";
 require_once AA_INC_PATH. "msgpage.php3";
-require_once AA_BASE_PATH."modules/polls/include/util.php3";   // module specific utils
-require_once AA_BASE_PATH."modules/polls/include/constants.php3";
 
 // id of the editted module
 $module_id = $slice_id;               // id in long form (32-digit hexadecimal
@@ -97,24 +95,33 @@ if ($insert  || $update ) {
         $err["DB"] = MsgErr(($update ? _m("Can't update poll with id ".$poll_id) : _m("Can't insert new poll")));
         break;
     }
-    $SQL="";
+
+    $SQL         = "SELECT * FROM polls_answer WHERE (poll_id='$poll_id')";
+    $answertable = GetTable2Array($SQL, 'id', 'aa_fields');
+    
+    if (is_array($answers)) {
+        $i=1;
+        $answers2store = array();
+        foreach ( $answers as $v) {
+            if (isset($answertable[substr($v, 1, 32)])) { // old answer
+                $answ = $answertable[substr($v, 1, 32)];
+                $answ['answer'] = substr($v, 34);
+            } else {
+                $answ = array('id'=>new_id(), 'answer'=>$v, 'votes'=>0);
+            }
+            $answ['poll_id']  = $poll_id;
+            $answ['priority'] = $i;
+            $answers2store[] = $answ;
+            $i++;
+        }
+    }
 
     $varset->clear();
     $varset->doDeleteWhere('polls_answer', "(poll_id='$poll_id')");
-
-    if (is_array($answers)) {
-        $i=1;
-        foreach ( $answers as $v) {
-            $varset->clear();
-            $varset->add("id",      "quoted", new_id());
-            $varset->add("poll_id", "quoted", $poll_id);
-            $varset->add("priority","number", $i);
-            $varset->add("votes",   "number", 0);
-            $varset->add("answer",  "quoted", $v);
-            $varset->doINSERT('polls_answer');
-            $i++;
-        }
-
+    
+    foreach ($answers2store as $record) {
+        $varset->resetFromRecord($record);
+        $varset->doINSERT('polls_answer');
     }
     // clear cache
     $GLOBALS['pagecache']->invalidateFor("slice_id=$poll_id");    // invalidate this concrete poll
@@ -166,8 +173,14 @@ list($design_id, $aftervote_design_id, $params, $cookies_prefix, $set_cookies, $
 
 if ($poll_id) {
 
-    $SQL = "SELECT answer AS text FROM polls_answer WHERE (poll_id='$poll_id')";
-    $polltext = GetTable2Array($SQL, 'text', 'text');
+    $SQL         = "SELECT id, answer AS text FROM polls_answer WHERE (poll_id='$poll_id') ORDER BY priority";
+    $answertable = GetTable2Array($SQL, '', 'aa_fields');
+    $polltext    = array();
+    if ( is_array($answertable) ) { 
+        foreach ($answertable as $answ) {
+            $polltext[':'.$answ['id'].':'.$answ['text']] = $answ['text']; 
+        }
+    }
 
     FrmInputText("headline",      _m("Headline"),                                  $headline, 99, 40, true,  _m("Question"));
     FrmInputMultiText('answers[]',_m("Insert new answers and choose their order"), $polltext,  "", 10, true, "", "", 'MDAC');
@@ -187,13 +200,12 @@ FrmTabSeparator(_m("Polls settings"));
 FrmInputChBox("locked",         _m("Poll is locked"),     $locked);
 FrmInputChBox("logging",        _m("Use logging"),        $logging);
 FrmInputChBox("ip_locking",     _m("Use IP locking"),     $ip_locking);
-FrmInputText("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout);
+FrmInputText("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout, 15, 10, false,  _m("time in seconds"));
 FrmInputChBox("set_cookies",    _m("Use cookies"),        $set_cookies);
 FrmInputText("cookies_prefix",  _m("Cookies prefix"),     $cookies_prefix);
 FrmInputText("params",          _m("Parameters"),         $params);
-/*  echo "<tr><td><a href='javascript:CallParamWizard  (\"POLL_PARAMS\", \"pol\", \"params\")'>".L_PARAM_WIZARD_LINK."</a></td></tr>";*/
 
-FrmTabSeparator(_m("Polls settings"));
+FrmTabSeparator(_m("Polls design templates"));
 
 $SQL     = "SELECT id, name FROM polls_design WHERE (module_id='$p_module_id')";
 $designs = GetTable2Array($SQL, 'id', 'name');

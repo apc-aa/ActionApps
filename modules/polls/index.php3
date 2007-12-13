@@ -35,7 +35,7 @@ require_once AA_INC_PATH . "item.php3";
 require_once AA_INC_PATH . "manager.class.php3";
 require_once AA_INC_PATH . "actions.php3";
 require_once AA_BASE_PATH. "modules/polls/include/actions.php3";
-require_once AA_BASE_PATH. "modules/polls/include/constants.php3";
+require_once AA_BASE_PATH. "modules/polls/include/util.php3";
 
 if ( !IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
     MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to manage Polls"));

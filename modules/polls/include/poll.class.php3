@@ -172,7 +172,7 @@ class AA_Poll {
             $GLOBALS['pagecache']->invalidateFor("slice_id=$poll_id");
 
             if ($this->getProperty('logging') == 1) {
-                $varset->resetFromRecord( array('poll_id'=>$poll_id, 'answer_id'=> $vote_id, 'voters_ip'=>$_SERVER['REMOTE_ADDR'], 'timestamp'=> $current_time) );
+                $varset->resetFromRecord( array('answer_id'=> $vote_id, 'voters_ip'=>$_SERVER['REMOTE_ADDR'], 'timestamp'=> $current_time) );
                 $varset->doInsert('polls_log');
             }
         }
