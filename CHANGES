@@ -8,6 +8,8 @@
          - added new Add Polls action in AA -> Optimize which creates Polls
            tables and first Polls template for you
          - cleanup in polls
+         - fixed {ids...} construct which was not working after the change
+           to AA_Set 12/05/07
          - parameters described in modules/polls/poll.php3
          - fixed syntax errors in aa_optimize.php3
 12/06/07 - fixed sql_update.php3 script for polls module - you can use
