@@ -499,7 +499,6 @@ class AA_Metabase {
             // @todo - do some validity checks for the data
             if (!$data[$key]) {
                 // you can't use this function for that table - this is programmers mistake - correct the code
-                huhl($data);
                 echo "Missing key $key for table $tablename in AA_Metabase::doDelete()";
                 exit;
             }
