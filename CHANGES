@@ -1,3 +1,5 @@
+16/12/07 - fixed syntax errors with polls tables inside sql_update.php3
+(Adam)
 12/12/07 - fixes in Central Synchronization - constants are synchronized well
 (honzam) - better UI for Central Synchronize
          - cleanup in polls - removed unused functions and files
