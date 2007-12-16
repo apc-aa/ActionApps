@@ -742,7 +742,7 @@ $tablelist = array(   'active_sessions' => "(
                           PRIMARY KEY  (objectid,userid,object_type),
                           KEY userid (userid)
                       )",
-                      `polls` => "(
+                      'polls' => "(
                          `id` varbinary(32) NOT NULL ,
                          `module_id` varbinary(16) NOT NULL ,
                          `status_code` tinyint(4) NOT NULL default '1' ,
@@ -761,7 +761,7 @@ $tablelist = array(   'active_sessions' => "(
                          PRIMARY KEY (`id`),
                          KEY id (`module_id`,`status_code`,`expiry_date`)
                       )",
-                      `polls_answer` => "(
+                      'polls_answer' => "(
                          `id` varbinary(32) NOT NULL ,
                          `poll_id` varbinary(32) NOT NULL ,
                          `answer` text NOT NULL ,
@@ -770,7 +770,7 @@ $tablelist = array(   'active_sessions' => "(
                          PRIMARY KEY (`id`),
                          KEY poll_id (`poll_id`,`priority`)
                          )",
-                      `polls_design` => "(
+                      'polls_design' => "(
                          `id` varbinary(32) NOT NULL ,
                          `module_id` varbinary(16) NOT NULL ,
                          `name` text NOT NULL ,
@@ -781,14 +781,14 @@ $tablelist = array(   'active_sessions' => "(
                          PRIMARY KEY (`id`),
                          KEY module_id (`module_id`)
                          )",
-                      `polls_ip_lock` => "(
+                      'polls_ip_lock' => "(
                          `poll_id` varbinary(32) NOT NULL ,
                          `voters_ip` varbinary(16) NOT NULL ,
                          `timestamp` int(11) NOT NULL ,
                          KEY poll_id (`poll_id`,`voters_ip`),
                          KEY poll_id_time (`poll_id`,`timestamp`)
                          )",
-                      `polls_log` => "(
+                      'polls_log' => "(
                          `id` int(11) NOT NULL auto_increment,
                          `answer_id` varbinary(32) NOT NULL ,
                          `voters_ip` varbinary(16) NOT NULL ,
