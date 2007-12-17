@@ -79,7 +79,12 @@ class AA_Metabase_Column {
             $SQL .= ' NOT NULL';
         }
         if (strlen($this->c[4]) > 0) {
-            $SQL .= " default '". $this->c[4] ."'";         // default
+            // look for keywords for default
+            if (in_array($this->c[4], array('CURRENT_TIMESTAMP', 'NULL'))) {
+                $SQL .= " default ". $this->c[4];     // default
+            } else {
+                $SQL .= " default '". $this->c[4] ."'";     // default
+            }
         }
         $SQL .= ' '.  $this->c[5];                          // extra - like auto_increment
         return $SQL;
@@ -284,22 +289,33 @@ class AA_Metabase {
         return $instance;
     }
 
-    /** Returns array of keys for given table */
-    function getKeys($tablename) {
-        $table = $this->tables[$tablename];
-        return $table->getKeys();
+    /** Returns array of all table names */
+    function getTableNames($tablename) {
+        return array_keys($this->tables);
     }
 
     /** Returns array of keys for given table */
+    function getKeys($tablename) {
+        $table = $this->tables[$tablename];
+        return is_object($table) ? $table->getKeys() : array();
+    }
+
+    /** is the $columnname the key for given table */
     function isKey($tablename, $columnname) {
         $table = $this->tables[$tablename];
-        return $table->isKey($columnname);
+        return is_object($table) ? $table->isKey($columnname) : false;
+    }
+
+    /** Returns array of all columns */
+    function getColumnNames($tablename) {
+        $table = $this->tables[$tablename];
+        return is_object($table) ? $table->getColumnNames() : array();
     }
 
     /** Is the $columnname the column in the $tablename? */
     function isColumn($tablename, $columnname) {
         $table = $this->tables[$tablename];
-        return $table->isColumn($columnname);
+        return is_object($table) ? $table->isColumn($columnname) : false;
     }
 
     function fillKeys(&$data, $identifier) {
@@ -309,7 +325,7 @@ class AA_Metabase {
         $row        = $identifier->getRow();
 
         if (!AA_Metabase::isTableKeysSupported($tablename)) {
-            // you can't yse this function for that tghe table - this is programmers mistake - correct the code
+            // you can't use this function for that the table - this is programmers mistake - correct the code
             echo "table $tablename not supported in AA_Metabase::fillKeys()";
             exit;
         }
@@ -520,7 +536,9 @@ class AA_Metabase {
         $sql_parts = array();
         $tables = $tablename ? array($this->tables[$tablename]) : $this->tables;
         foreach ($tables as $table) {
-            $sql_parts[] = $table->getCreateSql($prefix);
+            if ( is_object($table) ) {
+                $sql_parts[] = $table->getCreateSql($prefix);
+            }
         }
         return join("\n",$sql_parts);
     }
@@ -638,6 +656,22 @@ class AA_Metabase {
         return $ret;
     }
 
+    /** Compares two metabases - this and the $metabase supplied by the parameter
+     *  You can use it to check, which tables should be updated
+     *  @param $metabase - the second metabase which will be compated to $this
+     **/
+    function compare($metabase) {
+        $diffs = array();
+        foreach ($this->tables as $tablename => $table) {
+            $table_sql_1 = $table->getCreateSql();
+            $table_sql_2 = $metabase->getCreateSql($tablename);
+            $diffs[$tablename] = array('equal'  => ($table_sql_1 == $table_sql_2),
+                                       'table1' => $table_sql_1,
+                                       'table2' => $table_sql_2
+                                      );
+        }
+        return $diffs;
+    }
 
     /** getContent function for loading content of specified table for manager
      *  class

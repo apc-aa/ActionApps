@@ -731,4 +731,155 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
     }
 }
 
+
+/** Updates the database structure for AA. It cheks all the tables in current
+ *  system and compare it with the newest database structure. The new table
+ *  is created as tmp_*, then the content from old table is copied and if
+ *  everything is OK, then the old table is renamed to bck_* and tmp_*
+ *  is renamed to new table
+ **/
+class AA_Optimize_Update_Db_Structure extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Update database structure");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("Updates the database structure for AA. It cheks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table");
+    }
+
+    /** Test function
+    * @return a message
+    */
+    function test() {
+        $template_metabase = AA_Metabase::singleton();
+        $this_metabase     = new AA_Metabase;
+        $this_metabase->loadFromDb();
+        $diffs     = $template_metabase->compare($this_metabase);
+        $different = false;
+        foreach($diffs as $tablename => $diff) {
+            if ($diff['equal']) {
+                //huhl($diff);
+                $this->message(_m('Tables %1 are identical.', array($tablename)));
+            } else {
+                $this->message(_m('Tables %1 are different: <br>Template:<br>%2<br>Current:<br>%3', array($tablename, $diff['table1'], $diff['table2'])));
+                $different = true;
+            }
+        }
+        return !$different;
+    }
+
+    /** Main update function
+     *  @return bool
+     */
+    function repair() {
+        $db                = getDb();
+        $template_metabase = AA_Metabase::singleton();
+        $this_metabase     = new AA_Metabase;
+        $this_metabase->loadFromDb();
+        $diffs     = $template_metabase->compare($this_metabase);
+        $different = false;
+        foreach($diffs as $tablename => $diff) {
+            if ($diff['equal']) {
+                $this->message(_m('Tables %1 are identical. Skipping.', array($tablename)));
+                continue;
+            }
+            // create temporary table
+            $this->message(_m('Deleting temporary table tmp_%1, if exist.', array($tablename)));
+            $db->query("DROP TABLE IF EXISTS `tmp_$tablename`");
+            $this->message(_m('Creating temporary table tmp_%1.', array($tablename)));
+            $db->query($template_metabase->getCreateSql($tablename, 'tmp_'));
+
+            // create new tables that do not exist in database
+            // (we need it for next data copy, else if ends up with db error)
+            $this->message(_m('Creating "old" data table %1 if not exists.', array($tablename)));
+            $db->query($template_metabase->getCreateSql($tablename));
+
+
+            // copy old data to tmp table
+            $this->message(_m('copying old values to new table %1 -> tmp_%1', array($tablename)));
+            $store_halt = $db->Halt_On_Error;
+            $db->Halt_On_Error = "report";
+
+            $tmp_columns = $template_metabase->getColumnNames($tablename);
+            $old_columns = $this_metabase->getColumnNames($tablename);
+
+            $matches = array_intersect($tmp_columns, $old_columns);
+            if ( count($matches) > 1 ) {
+                $field_list = '`'. join('`, `', $matches) .'`';
+                $db->query("INSERT INTO `tmp_$tablename` SELECT $field_list FROM `$tablename`");
+            }
+
+            // backup table and use the new one
+            $this->message(_m('backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1', array($tablename)));
+            $db->query("DROP TABLE IF EXISTS `bck_$tablename`");
+            $db->query("ALTER TABLE `$tablename` RENAME `bck_$tablename");
+            $db->query("ALTER TABLE `tmp_$tablename` RENAME `$tablename");
+            $db->Halt_On_Error = $store_halt;
+            $this->message(_m('%1 done.', array($tablename)));
+        }
+    }
+}
+
+/** Restore Data from Backup Tables
+ *  This script DELETES all the current tables (slice, item, ...) where we have
+ *  bck_table and renames all backup tables (bck_slice, bck_item, ...) to right
+ *  names (slice, item, ...).
+ **/
+class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Restore data from backup tables");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...).");
+    }
+
+    /** Test function
+    * @return a message
+    */
+    function test() {
+        $this->message(_m('There is nothing to test.'));
+        return true;
+    }
+
+    /** Main update function
+     *  @return bool
+     */
+    function repair() {
+        $db         = getDb();
+
+        $metabase   = AA_Metabase::singleton();
+        $tablenames = $metabase->getTableNames();
+        $store_halt = $db->Halt_On_Error;
+        $db->Halt_On_Error = "report";
+        foreach($tablenames as $tablename) {
+            // checks if the backup table exist
+            $db->query("SHOW TABLES LIKE 'bck_$tablename'");
+            if ( !$db->next_record() ) {
+                // we do not have bck table
+                $this->message(_m('There is no bck_%1 table - %1 not restored.', array($tablename)));
+                continue;
+            }
+            $this->message(_m('Replace table bck_%1 -> %1', array($tablename)));
+            $db->query("DROP TABLE IF EXISTS `$tablename`");
+            $db->query("ALTER TABLE `bck_$tablename` RENAME `$tablename");
+        }
+        $db->Halt_On_Error = $store_halt;
+    }
+}
+
 ?>
