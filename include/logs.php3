@@ -132,7 +132,11 @@ class AA_Log_Clenup {
 
     function toexecutelater() {
         $type_where = ( $this->type ) ? " AND type = '".quote($this->type)."' " : '';
-        tryQuery("DELETE FROM log WHERE time < '".quote($this->time)."' $type_where");
+        $db_time    = quote($this->time);
+        tryQuery("DELETE FROM log WHERE time < '$db_time' $type_where");
+
+        // delete also old records post2shtml table
+        tryQuery("DELETE FROM post2shtml WHERE time < '$db_time'");
     }
 }
 

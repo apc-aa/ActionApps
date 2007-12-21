@@ -1846,11 +1846,9 @@ function add_post2shtml_vars($delete = true) {
     freeDB($db);
     $var_types = array ("post","get","files","cookie");
 
-    reset ($var_types);
-    while (list (,$var_type) = each ($var_types)) {
+    foreach ($var_types as $var_type) {
         if (is_array($vars[$var_type])) {
-            reset ($vars[$var_type]);
-            while (list ($var, $value) = each ($vars[$var_type])) {
+            foreach ($vars[$var_type] as $var => $value) {
                 global $$var;
                 if ($debugfill) huhl("add_post2shtml_vars:$$var=",$value);
                 $$var = $value;
