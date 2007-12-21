@@ -73,6 +73,10 @@ $actions->addAction(new AA_Manageraction_Central_MoveItem('Folder2',  2));
 $actions->addAction(new AA_Manageraction_Central_MoveItem('Folder3',  3));
 $actions->addAction(new AA_Manageraction_Central_Sqlupdate('Sqlupdate'));
 $actions->addAction(new AA_Manageraction_Central_Linkcheck('Linkcheck'));
+$actions->addAction(new AA_Manageraction_Central_Optimize('Update_Db_Structure_Test',   'AA_Optimize_Update_Db_Structure', 'test'));
+$actions->addAction(new AA_Manageraction_Central_Optimize('Update_Db_Structure_Repair', 'AA_Optimize_Update_Db_Structure', 'repair'));
+$actions->addAction(new AA_Manageraction_Central_Optimize('Field_Duplicates_Test',      'AA_Optimize_Field_Duplicates', 'test'));
+$actions->addAction(new AA_Manageraction_Central_Optimize('Field_Duplicates_Repair',    'AA_Optimize_Field_Duplicates', 'repair'));
 $actions->addAction(new AA_Manageraction_Central_DeleteTrash('DeleteTrashAction',true));
 
 $switches  = new AA_Manageractions;

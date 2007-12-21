@@ -38,6 +38,7 @@
 */
 
 require_once AA_INC_PATH."linkcheck.class.php3";
+require_once AA_INC_PATH."optimize.class.php3";
 
 /** AA_Manageraction_Central_Linkcheck - checks if the AA are acessible */
 class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
@@ -289,5 +290,53 @@ class AA_Manageraction_Central_Tab extends AA_Manageraction {
         return IsSuperadmin();
     }
 }
+
+
+
+/** Call remote AA_Optimize_* function
+ *
+ */
+class AA_Manageraction_Central_Optimize extends AA_Manageraction {
+
+    /** class to be executed in remote AA */
+    var $optimize_class;
+
+    /** method to be called in optimize_class */
+    var $optimize_method;
+
+    /** Constructor - fills the information about the optimize method */
+    function AA_Manageraction_Central_Optimize($id, $class, $method) {
+        $this->optimize_class  = $class;
+        $this->optimize_method = $method;
+        parent::AA_Manageraction($id);
+    }
+
+    /** Name of this Manager's action */
+    function getName() {
+        return call_user_func(array($this->optimize_class, 'name')). ' - '.  $this->optimize_method;
+    }
+
+    /** main executive function
+    * @param $param       - not used
+    * @param $item_arr    - array of id of AA records to check
+    * @param $akce_param  - not used
+    */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+        $ret    = array();
+        $aa_ids = array_keys($item_arr);
+
+        foreach ($aa_ids as $aa_id) {
+            $aa = AA_Actionapps::getActionapps($aa_id);
+            $ret[] = $aa->doOptimize($this->optimize_class, $this->optimize_method);
+        }
+        return join('<br>', $ret);   // @todo we should rewrite outputs from AA_Manageraction to some standard messages() system
+    }
+
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        return IsSuperadmin();
+    }
+}
+
 
 ?>

@@ -68,6 +68,20 @@ class AA_Actionapps {
         $this->_cached             = array();
     }
 
+    /** getActionapps function
+     *  static - main factory static method called like:
+     *     $aa = AA_Actionapps::getActionapps($aa_id);
+     * @param $aa_id
+     */
+    function & getActionapps($aa_id) {
+        static $aas = array();
+        if (!isset($aas[$aa_id])) {
+            $aa_ic       = Central_GetAaContent(new zids($aa_id, 's'));
+            $aas[$aa_id] = new AA_Actionapps(new ItemContent($aa_ic[$aa_id]));
+        }
+        return $aas[$aa_id];
+    }
+
     /** url of remote AAs - like "http://example.org/apc-aa/"  */
     function getComunicatorUrl() {
         return Files::makeFile($this->getValue('AA_HTTP_DOMAIN'). $this->getValue('AA_BASE_DIR'), 'central/responder.php');
@@ -147,6 +161,14 @@ class AA_Actionapps {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
         $response = $this->getResponse( new AA_Request('Do_Synchronize', array('sync'=>$sync_commands)) );
+        return ($response->isError()) ? array() : $response->getResponse();
+    }
+
+    /** This command calls optimize method
+     *  @return the report on the optimize
+     */
+    function doOptimize($optimize_class, $optimize_method) {
+        $response = $this->getResponse( new AA_Request('Do_Optimize', array('class'=>$optimize_class, 'method'=>$optimize_method)) );
         return ($response->isError()) ? array() : $response->getResponse();
     }
 

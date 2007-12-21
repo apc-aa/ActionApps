@@ -25,6 +25,7 @@ if ($free) {
 }
 
 require_once dirname(__FILE__). "/include/init_central.php";
+require_once AA_INC_PATH."optimize.class.php3";
 
 /** AA_Responder base class - defines some useful common methods
  */
@@ -132,6 +133,24 @@ class AA_Responder_Do_Import_Module extends AA_Responder {
 
     function run() {
         $ret[] = $this->definition->importModule();
+        return new AA_Response($ret);
+    }
+}
+
+/** @return imports the slice to the database */
+class AA_Responder_Do_Optimize extends AA_Responder {
+    var $optimize_class;
+    var $optimize_method;
+
+    function AA_Responder_Do_Optimize($param) {
+        $this->optimize_class  = $param['class'];
+        $this->optimize_method = $param['method'];
+    }
+
+    function run() {
+        $optimize = new $this->optimize_class;
+        call_user_func(array($optimize,$this->optimize_method));
+        $ret      = $optimize->report();
         return new AA_Response($ret);
     }
 }
