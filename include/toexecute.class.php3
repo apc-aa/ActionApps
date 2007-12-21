@@ -58,7 +58,11 @@ class AA_Toexecute {
     * @param $text
     */
     function message($text) {
-        $this->messages[] = $text;
+        if (is_array($text)) {
+            $this->messages = array_merge($this->messages, $text);
+        } else {
+            $this->messages[] = $text;
+        }
     }
 
     /** Report function
@@ -164,10 +168,11 @@ class AA_Toexecute {
      * @param $tasks - array of ids of tasks to execute
      * @param $allowed_time
      */
-    function executeTask($tasks, $allowed_time = 0) {  // standard run is 16 s
+    function executeTask($tasks, $allowed_time = 0) {  // standard run is (max_execution_time - 9) seconds.
 
         if ( !$allowed_time ) {
-            $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : 16.0);
+            set_time_limit( 360 );   // try to set 360 seconds to run
+            $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME' ) ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time')>0) ? ini_get('max_execution_time')-9 : 16.0));
         }
 
         /** there we store the the time needed for last task of given type
@@ -220,7 +225,7 @@ class AA_Toexecute {
         if ( !is_object($object) ) {
             return 'No object'; // Error
         }
-        set_time_limit( 30 );   // 30 seconds for each task
+        set_time_limit(max(30,ini_get('max_execution_time')));   // 30 seconds (at least) for each task
         return call_user_func_array(array($object, 'toexecutelater'), $params);
     }
 } // end of toexecute class
