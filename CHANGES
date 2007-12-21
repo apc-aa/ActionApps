@@ -1,3 +1,15 @@
+21/12/07 - added Field_Duplicates_Test, Field_Duplicates_Repair,
+(honzam)   Update_Db_Structure_Test, Update_Db_Structure_Repair to actions in
+           Central. At this moment you can update the database structure
+           of remote AA by those actions. Those actions should replace the old
+           system sql_update.php3. All the table definitions are stored
+           in metabase. The advantage of this approach is, that only the tables
+           which structure is modified are updated (metabase compares
+           the definitions for current and latest AA structure). Before update
+           you should run Field_Duplicates_Test and if the duplicates are found,
+           then run Field_Duplicates_Repair. Only then
+           the Update_Db_Structure_Repair is finished well
+         - fix new database upgrade script to work with MySQL 4.0
 16/12/07 - fixed syntax errors with polls tables inside sql_update.php3
 (Adam)
 12/12/07 - fixes in Central Synchronization - constants are synchronized well
