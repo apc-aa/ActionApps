@@ -41,11 +41,32 @@ if ( !IsSuperadmin() ) {
     exit;
 }
 
+/** Test Task */
+/*
+class AA_Task_Test {
+
+    function AA_Task_Test() {
+    }
+
+    function toexecutelater() {
+        // synchronize accepts array of sync_actions, so it is possible
+        // to do more action by one call
+        echo time(). " ";
+        sleep(25);
+        return "OK" ;
+    }
+}
+
+$toexecute = new AA_Toexecute;
+$test_task = new AA_Task_Test();
+$toexecute->userQueue($test_task, array(), 'AA_Task_Test');
+*/
+
 // we do not manage more "modules" here, so unique id is OK
 
 $actions   = new AA_Manageractions;
-$actions->addAction(new AA_Manageraction_Taskmanager_Delete('DeleteTaskAction'));
 $actions->addAction(new AA_Manageraction_Taskmanager_Execute('ExecuteTaskAction'));
+$actions->addAction(new AA_Manageraction_Taskmanager_Delete('DeleteTaskAction'));
 
 
 //$switches  = new AA_Manageractions;  // we do not need switches here

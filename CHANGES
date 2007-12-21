@@ -12,6 +12,10 @@
          - fixed "Copy slice" feature of Central. Now uses Task Manager
            and items import is optional
          - UI of Task Manager is improved a bit
+         - better timeout handling in toexecute queue class
+         - AA_Http::postRequest function is many times faster on the server with
+           PHP5, now. If you are using PHP4, the old slow function is used.
+           It speeds up mainly the Central scripts (Synchronize, Copy Slice)
          - preventing AA session expiration for remote AAs
          - fix new database upgrade script to work with MySQL 4.0
          - old records from post2shtml table are deleted periodicaly (with log

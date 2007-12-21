@@ -165,7 +165,7 @@ class AA_Actionapps {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
         $response = $this->getResponse( new AA_Request('Do_Synchronize', array('sync'=>$sync_commands)) );
-        return ($response->isError()) ? array() : $response->getResponse();
+        return ($response->isError()) ? $response->getError() : $response->getResponse();
     }
 
     /** This command calls optimize method
@@ -173,7 +173,7 @@ class AA_Actionapps {
      */
     function doOptimize($optimize_class, $optimize_method) {
         $response = $this->getResponse( new AA_Request('Do_Optimize', array('class'=>$optimize_class, 'method'=>$optimize_method)) );
-        return ($response->isError()) ? array() : $response->getResponse();
+        return ($response->isError()) ? $response->getError() : $response->getResponse();
     }
 
     /** Imports slice to the current AA. The id of slice is the same as in
@@ -184,7 +184,7 @@ class AA_Actionapps {
         // slices, since it is much quicker than separate call for each slice
 
         $response = $this->getResponse( new AA_Request('Do_Import_Module', array('definition'=>$definition)) );
-        return ($response->isError()) ? array() : $response->getResponse();
+        return ($response->isError()) ? $response->getError() : $response->getResponse();
     }
 
     /** Main communication function - returns AA_Response object */
@@ -604,7 +604,7 @@ class AA_Task_Sync {
     function toexecutelater() {
         // synchronize accepts array of sync_actions, so it is possible
         // to do more action by one call
-        $this->actionapps->synchronize(array($this->sync_action));
+        return $this->actionapps->synchronize(array($this->sync_action));
     }
 }
 
@@ -626,7 +626,7 @@ class AA_Task_Import_Module {
     function toexecutelater() {
         // synchronize accepts array of sync_actions, so it is possible
         // to do more action by one call
-        $this->actionapps->importModule($this->module_definition);
+        return $this->actionapps->importModule($this->module_definition);
     }
 }
 
