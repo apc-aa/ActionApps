@@ -80,7 +80,13 @@ class AA_Metabase_Column {
         }
         if (strlen($this->c[4]) > 0) {
             // look for keywords for default
-            if (in_array($this->c[4], array('CURRENT_TIMESTAMP', 'NULL'))) {
+            if ( $this->c[4] === 'CURRENT_TIMESTAMP' ) {
+                // we ignore it, because DEFAULT CURRENT_TIMESTAMP is
+                // not supported in MySQL < 4.1.x and it is not needed for
+                // MySQL > 4.1.x, because standard settings of any timestamp
+                // column is:
+                //     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            } elseif ( $this->c[4] === 'NULL' ) {
                 $SQL .= " default ". $this->c[4];     // default
             } else {
                 $SQL .= " default '". $this->c[4] ."'";     // default
