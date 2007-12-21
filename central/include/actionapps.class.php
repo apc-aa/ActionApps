@@ -47,6 +47,9 @@ class AA_Actionapps {
     /** cached remote session ID */
     var $_remote_session_id;
 
+    /** time when we get remote session ID. We do not use sessions older than ...*/
+    var $_remote_session_id_time;
+
     /** cached remote data - like AA name, ... */
     var $_cached;
 
@@ -65,6 +68,7 @@ class AA_Actionapps {
     function AA_Actionapps($content4id) {
         $this->local_data          = $content4id;
         $this->_remote_session_id  = null;
+        $this->_remote_session_id_time  = 0;
         $this->_cached             = array();
     }
 
@@ -185,7 +189,7 @@ class AA_Actionapps {
 
     /** Main communication function - returns AA_Response object */
     function getResponse($request) {
-        if ( !$this->_remote_session_id ) {
+        if ( !$this->_remote_session_id OR $this->_remote_session_id_time < (now() - 10*60)) {  // 10 minutes
             $response = $this->_authenticate();
             if ($response->isError()) {
                 return $response;
@@ -200,6 +204,7 @@ class AA_Actionapps {
         $response = $request->ask($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword()));
         if ( !$response->isError() ) {
             $this->_remote_session_id = $response->getResponse();
+            $this->_remote_session_id_time = now();
         }
         return $response;
     }
