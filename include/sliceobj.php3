@@ -485,6 +485,7 @@ class AA_Slices {
     function getName($slice_id) {
         return AA_Slices::getSliceProperty($slice_id, 'name');
     }
+
     /** _getSlice function
      * @param $slice_id
      */

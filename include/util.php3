@@ -271,12 +271,13 @@ function add_vars($query_string="", $where='GLOBALS') {
     // we do not want to replace sess variable, since we use it for sessions
     unset($aa_query_arr['sess']);
     $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
-
-    // use of $$where do not work for some reason
-    if ($where == '_REQUEST' ) {
-        array_merge_append($_REQUEST, $aa_query_arr);
-    } else {
-        array_merge_append($GLOBALS, $aa_query_arr);
+    if (is_array($aa_query_arr) ) {
+        // use of $$where do not work for some reason
+        if ($where == '_REQUEST' ) {
+            array_merge_append($_REQUEST, $aa_query_arr);
+        } else {
+            array_merge_append($GLOBALS, $aa_query_arr);
+        }
     }
 }
 

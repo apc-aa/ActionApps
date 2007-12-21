@@ -94,12 +94,12 @@ class AA_Response {
     }
 }
 
-ini_set('unserialize_callback_func', 'myccallback');
-
-function myccallback($class) {
-    echo "--------unserialize problem:$class:";
-    exit;
-}
+// ini_set('unserialize_callback_func', 'myccallback');
+//
+// function myccallback($class) {
+//     echo "--------unserialize problem:$class:";
+//     exit;
+// }
 
 class AA_Request {
     var $command;
