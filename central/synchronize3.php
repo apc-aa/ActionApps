@@ -82,8 +82,8 @@ if ($_POST['synchronize']) {
             if (is_array($_POST['sync'])) {
                 foreach ( $_POST['sync'] as $sync_action ) {
                     // plan the synchronization action to for execution via Task Manager
-                    $sync_task = new AA_Sync_Task($sync_action, $aas[$dest_aa]);
-                    $toexecute->userQueue($sync_task, array(), 'AA_Sync_Task');
+                    $sync_task = new AA_Task_Sync($sync_action, $aas[$dest_aa]);
+                    $toexecute->userQueue($sync_task, array(), 'AA_Task_Sync');
                     ++$no_sync_tasks;
                 }
             }

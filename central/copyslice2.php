@@ -37,25 +37,38 @@ set_time_limit(360);
 $aas = AA_Actionapps::getArray();
 
 if ($_POST['copy']) {
-    $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $_POST['sync_slices']);
+    $toexecute = new AA_Toexecute;
+    $no_sync_tasks = 0;
+
+    $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $_POST['sync_slices'], !$sync_items);
     $template_site_defs  = $aas[$_POST['template_aa']]->requestDefinitions('Site',  $_POST['sync_sites']);
-    
+
     foreach ($_POST['destination_aa'] as $dest_aa) {
         if (is_array($_POST['sync_slices'])) {
             foreach ($_POST['sync_slices'] as $sid) {
                 if ($sid) {
-                    $aas[$dest_aa]->importModule($template_slice_defs[$sid]);
+                    // plan the synchronization action to for execution via Task Manager
+                    $import_task = new AA_Task_Import_Module($template_slice_defs[$sid], $aas[$dest_aa]);
+                    $toexecute->userQueue($import_task, array(), 'AA_Task_Import_Module');
+                    ++$no_sync_tasks;
                 }
             }
         }
         if (is_array($_POST['sync_sites'])) {
             foreach ($_POST['sync_sites'] as $sid) {
                 if ($sid) {
-                    $aas[$dest_aa]->importModule($template_site_defs[$sid]);
+                    $import_task = new AA_Task_Import_Module($template_site_defs[$sid], $aas[$dest_aa]);
+                    $toexecute->userQueue($import_task, array(), 'AA_Task_Import_Module');
+                    ++$no_sync_tasks;
                 }
             }
         }
     }
+    echo _m("%1 import actions planed. See", array($no_sync_tasks)). ' ';
+    echo a_href(get_admin_url('se_taskmanager.php3'), _m('Task Manager'));
+} else {
+    // init values for form
+    $sync_items = true;
 }
 
 HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -97,7 +110,8 @@ $form_buttons = array("copy"      => array( "type"      => "submit",
 FrmTabCaption('', '','', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Modules to Copy from %1', array($aas[$_POST['template_aa']]->getName())));
-FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, $_POST['sync_slices'], 10);
+FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, @reset($_POST['sync_slices']), 10);
+FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, "", 1, false, _m('Copy also item data (items, discussions, ...) of selected slices above'));
 FrmInputMultiSelect('sync_sites[]', _m('Site modules to copy'), $template_sites, @reset($_POST['sync_sites']), 10);
 FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, @reset($_POST['destination_aa']), 20, false, true, _m('ActionApps installation to update'));
 FrmTabEnd($form_buttons, $sess, $slice_id);

@@ -296,7 +296,7 @@ class AA_Metabase {
     }
 
     /** Returns array of all table names */
-    function getTableNames($tablename) {
+    function getTableNames() {
         return array_keys($this->tables);
     }
 
@@ -390,6 +390,7 @@ class AA_Metabase {
                                      'polls'               => 'module_id',
                                      'profile'             => 'slice_id',
                                      'rssfeeds'            => 'slice_id',
+                                     'site'                => 'id',
                                      'site_spot'           => 'site_id',
                                      'slice'               => 'id',
                                      'view'                => 'slice_id'
@@ -405,37 +406,38 @@ class AA_Metabase {
      **/
     function getPacked($tablename) {
         static $PACKED = array(
-                  // keys
-                  'constant'       => array('id'),
-                  'discussion'     => array('id'),
-                  'ef_categories'  => array('category_id','target_category_id'),
-                  'ef_permissions' => array('slice_id'),
-                  'email_notify'   => array('slice_id'),
-                  'feedmap'        => array('from_slice_id', 'to_slice_id'),
-                  'feedperms'      => array('from_id','to_id'),
-                  'feeds'          => array('from_id','to_id'),
-                  'field'          => array('slice_id'),
-                  'hit_long_id'    => array('id'),
-                  'item'           => array('id','slice_id'),  // slice_id is not part of key, here
-                  'jump'           => array('slice_id'),
-                  'links'          => array('id'),
-                  'module'         => array('id'),
-                  'offline'        => array('id'),
-                  'site'           => array('id'),
-                  'slice'          => array('id'),
-                  'slice_owner'    => array('id'),
-
-                  // other - module ids
-                  // this is not comlete list !!!
-                  'alerts_collection'   => array('module_id'),
+                  'alerts_collection'   => array('module_id','slice_id'),
+                  'constant'            => array('id','ancestors'), // ancestors are multiple - joined!
                   'constant_slice'      => array('slice_id'),
+                  'content'             => array('item_id'),
+                  'discussion'          => array('id','item_id'),
+                  'ef_categories'       => array('category_id','target_category_id'),
+                  'ef_permissions'      => array('slice_id'),
                   'email'               => array('owner_module_id'),
-                  'external_feeds'      => array('slice_id'),
+                  'email_notify'        => array('slice_id'),
+                  'external_feeds'      => array('slice_id', 'remote_slice_id'),
+                  'feedmap'             => array('from_slice_id', 'to_slice_id'),
+                  'feedperms'           => array('from_id','to_id'),
+                  'feeds'               => array('from_id','to_id','category_id','to_category_id'),
+                  'field'               => array('slice_id'),
+                  'hit_long_id'         => array('id'),
+                  'item'                => array('id','slice_id'),  // slice_id is not part of key, here
+                  'jump'                => array('slice_id', 'dest_slice_id'),
+                  'links'               => array('id'),             // special meaning of first characters - category!!!
+                  'module'              => array('id', 'owner'),
                   'mysql_auth_group'    => array('slice_id'),
                   'mysql_auth_userinfo' => array('slice_id'),
+                  'offline'             => array('id'),
+                  'polls'               => array('module_id'),
+                  'polls_design'        => array('module_id'),
                   'profile'             => array('slice_id'),
+                  'relation'            => array('source_id', 'destination_id'),
                   'rssfeeds'            => array('slice_id'),
+                  'site'                => array('id'),
                   'site_spot'           => array('site_id'),
+                  'slice'               => array('id', 'owner', 'mlxctrl'),
+                  'slice_owner'         => array('id'),
+                  'subscriptions'       => array('slice_owner'),
                   'view'                => array('slice_id')
                   );
         return isset($PACKED[$tablename]) ? $PACKED[$tablename] : array();
@@ -607,7 +609,7 @@ class AA_Metabase {
      */
     function getModuleRows($tablename, $module_id) {
         $JOIN = array(
-          // @todo - do it better - check the fields setting, and get all the constants used
+          // @todo - do the 'constant' better - check the fields setting, and get all the constants used
           'constant'   => array('scr_field' => 'group_id', 'dest_table' => 'constant_slice', 'dest_field' => 'group_id'),
 
           'content'    => array('scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id'),
@@ -640,16 +642,17 @@ class AA_Metabase {
         }
         else {
             // you can't use this function for that table - this is programmers mistake - correct the code
-            echo "table $tablename not supported in AA_Metabase::getModuleRows() - too much keys";
-            exit;
+            //echo "table $tablename not supported in AA_Metabase::getModuleRows() - too much keys";
+            //exit;
+            $table_key = '';  // we do not use the key
         }
 
         $module_val   = $this->isPacked($module_table, $module_field) ? q_pack_id($module_id) : $module_id;
-        $key_packed   = $this->isPacked($tablename, $table_key);
+        $key_used     = !$table_key ? '' : ($this->isPacked($tablename, $table_key) ? "unpack:$table_key" : $table_key);
 
         $SQL = "SELECT $tablename.* FROM $tablename $join_sql WHERE $module_table.$module_field = '$module_val'";
 
-        $ret            = GetTable2Array($SQL, $key_packed ? "unpack:$table_key" : $table_key, 'aa_fields');
+        $ret            = GetTable2Array($SQL, $key_used, 'aa_fields');
         if (!is_array($ret)) {
             $ret = array();
         }

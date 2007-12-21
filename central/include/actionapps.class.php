@@ -257,11 +257,6 @@ class AA_Module_Definition {
     }
 
     function importModule() {
-
-/*
-        huhl($this->data);
-        exit;
- */
         foreach ($this->data as $table => $records) {
             if ( empty($records) ) {
                 continue;
@@ -269,7 +264,7 @@ class AA_Module_Definition {
             $varset = new Cvarset();
             foreach ($records as $data) {
                 $varset->resetFromRecord($data);
-                $varset->doInsert($table);
+                $varset->doInsert($table, 'nohalt'); // nohalt (typicaly constants are sometimes already imported)
             }
         }
         return 'ok';
@@ -323,7 +318,6 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
             $this->data['email_notify']   = $metabase->getModuleRows('email_notify'  , $module_id);
             $this->data['profile']        = $metabase->getModuleRows('profile'       , $module_id);
             $this->data['rssfeeds']       = $metabase->getModuleRows('rssfeeds'      , $module_id);
-            $this->data['constant_slice'] = $metabase->getModuleRows('constant_slice', $module_id);
         }
     }
 
@@ -590,14 +584,14 @@ class AA_Sync_Action {
 /** Stores the synchronization action which should be performed on remote AA
  *  Objects are stored into AA_Toexecute queue for running from Task Manager
  **/
-class AA_Sync_Task {
+class AA_Task_Sync {
     /** AA_Sync_Action object - Action to do */
     var $sync_action;
 
     /** AA_Actionapps object  - In which AA we have to do the action */
     var $actionapps;
 
-    function AA_Sync_Task($sync_action, $actionapps) {
+    function AA_Task_Sync($sync_action, $actionapps) {
         $this->sync_action = $sync_action;
         $this->actionapps  = $actionapps;
     }
@@ -608,6 +602,29 @@ class AA_Sync_Task {
         $this->actionapps->synchronize(array($this->sync_action));
     }
 }
+
+/** Stores the synchronization action which should be performed on remote AA
+ *  Objects are stored into AA_Toexecute queue for running from Task Manager
+ **/
+class AA_Task_Import_Module {
+    /** AA_Module_Definition_* object for import */
+    var $module_definition;
+
+    /** AA_Actionapps object  - In which AA we have to do the action */
+    var $actionapps;
+
+    function AA_Task_Import_Module($module_definition, $actionapps) {
+        $this->module_definition = $module_definition;
+        $this->actionapps        = $actionapps;
+    }
+
+    function toexecutelater() {
+        // synchronize accepts array of sync_actions, so it is possible
+        // to do more action by one call
+        $this->actionapps->importModule($this->module_definition);
+    }
+}
+
 
 /** Central_GetAaContent function for loading content of AA configuration
  *  for manager class
