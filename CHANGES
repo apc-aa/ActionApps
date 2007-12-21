@@ -12,6 +12,7 @@
          - fixed "Copy slice" feature of Central. Now uses Task Manager
            and items import is optional
          - UI of Task Manager is improved a bit
+         - preventing AA session expiration for remote AAs
          - fix new database upgrade script to work with MySQL 4.0
          - old records from post2shtml table are deleted periodicaly (with log
            table cleanup)
