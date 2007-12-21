@@ -9,7 +9,12 @@
            you should run Field_Duplicates_Test and if the duplicates are found,
            then run Field_Duplicates_Repair. Only then
            the Update_Db_Structure_Repair is finished well
+         - fixed "Copy slice" feature of Central. Now uses Task Manager
+           and items import is optional
+         - UI of Task Manager is improved a bit
          - fix new database upgrade script to work with MySQL 4.0
+         - old records from post2shtml table are deleted periodicaly (with log
+           table cleanup)
 16/12/07 - fixed syntax errors with polls tables inside sql_update.php3
 (Adam)
 12/12/07 - fixes in Central Synchronization - constants are synchronized well

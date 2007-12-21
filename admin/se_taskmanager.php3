@@ -51,18 +51,55 @@ $actions->addAction(new AA_Manageraction_Taskmanager_Execute('ExecuteTaskAction'
 //$switches  = new AA_Manageractions;  // we do not need switches here
 $module_id = 'toexecute';
 
+$metabase  = new AA_Metabase;
+$metabase->loadFromDb();
+//huhl($metabase->getCreateSql());
+//echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\');';
+//exit;
+
 //$metabase  = new AA_Metabase;
 //$metabase->loadFromDb();
-//echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\');';
+//echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\';';
 //exit;
 
 //echo $metabase->getDefinition();
 
-$metabase         = AA_Metabase::singleton();
+//$metabase         = AA_Metabase::singleton();
+//huhl($metabase);
 
 $manager_settings = $metabase->getManagerConf('toexecute', $actions);
+//$manager_settings['itemview']['aliases'] = GetPollsAliases();
 
-//huh($manager_settings);
+$manager_settings['itemview']['format'] = array(
+             'compact_top'      => '<table border="0" cellpadding="5" cellspacing="0">
+                                            <tbody><tr>
+                                              <th width="30">&nbsp;</th>
+                                              <th>id</th>
+                                              <th>created</th>
+                                              <th>aa_user</th>
+                                              <th>priority</th>
+                                              <th>selector</th>
+                                              <th>params</th>
+                                            </tr>',
+             'category_sort'    => false,
+             'category_format'  => "",
+             'category_top'     => "",
+             'category_bottom'  => "",
+             'even_odd_differ'  => false,
+             'even_row_format'  => "",
+             'odd_row_format'   => '<tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
+                                        <td>_#ID______</td>
+                                        <td>_#CREATED_</td>
+                                        <td>_#AA_USER_</td>
+                                        <td>_#PRIORITY</td>
+                                        <td>_#SELECTOR</td>
+                                        <td>_#PARAMS__</td>
+                                    </tr>
+             ',                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
+             'compact_remove'   => "",
+             'compact_bottom'   => "</tbody></table>",
+             'id'               => $module_id
+          );
 
 $manager = new AA_Manager($manager_settings);
 $profile = new aaprofile($auth->auth["uid"], $module_id); // current user settings
