@@ -188,6 +188,7 @@ class AA_Http {
         exit;
     }
 
+
     /** postRequest function
      *  POST data to the url (using POST request and returns resulted data
      * @param $url
@@ -195,6 +196,41 @@ class AA_Http {
      * @return array $result[]
      */
     function postRequest($url, $data = array() ) {
+        if (version_compare(phpversion(), "5.0.0", ">=")) {
+            return AA_Http::postRequest5($url, $data); // you're on PHP5 or later
+        }
+        return AA_Http::postRequest4($url, $data); // you're on PHP5 or later
+    }
+
+    /** inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl */
+    function postRequest5($url, $data) {
+        $data = http_build_query($data);
+        $params = array('http' => array(
+                            'method' => 'POST',
+                            'content' => $data
+                                        )
+                        );
+         $ctx = stream_context_create($params);
+         $fp = @fopen($url, 'rb', false, $ctx);
+         if (!$fp) {
+            AA_Http::lastErr(1, _m("Can't open url: %1", array($url)));  // set error code
+            return false;
+         }
+         $response = @stream_get_contents($fp);
+         if ($response === false) {
+            AA_Http::lastErr(2, _m("Problem reading data from url: %1", array($url)));  // set error code
+            return false;
+         }
+         return $response;
+    }
+
+    /** postRequest function
+     *  POST data to the url (using POST request and returns resulted data
+     * @param $url
+     * @param $data
+     * @return array $result[]
+     */
+    function postRequest4($url, $data = array() ) {
         $request = parse_url($url);
 
         $host = $request['host'];
@@ -231,7 +267,6 @@ class AA_Http {
             $responseHeader.= fread($socket, 1);
         } while (!preg_match('/\\r\\n\\r\\n$/', $responseHeader));
 
-
         if (!strstr($responseHeader, "Transfer-Encoding: chunked")) {
             while (!feof($socket)) {
                 $responseContent.= fgets($socket, 128);
@@ -251,7 +286,6 @@ class AA_Http {
                 fgets($socket);
             }
         }
-
         return $responseContent;
     }
 }
