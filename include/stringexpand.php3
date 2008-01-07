@@ -2159,8 +2159,15 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      */
     function expand($image='', $phpthumb_params='') {
         // it is much better to access the files as files reletive to the directory, than using http access
-        $image = str_replace(AA_HTTP_DOMAIN, '', $image);
-        return AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params";
+
+		if (AA_HTTP_DOMAIN!=="/") {
+		$image = str_replace(AA_HTTP_DOMAIN, '', $image);
+		}
+		if (substr($image,0,4)=="http"){
+		$image = ereg_replace("http://(www\.)?(.+)\.([a-z]{1,6})/(.+)", "/\\4", $image);
+		}
+		
+		return AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params";
     }
 }
 

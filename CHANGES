@@ -1,3 +1,5 @@
+07/01/08 - small bugfix in stringexpand.php3 for new {img} syntax
+(Adam)
 21/12/07 - added Field_Duplicates_Test, Field_Duplicates_Repair,
 (honzam)   Update_Db_Structure_Test, Update_Db_Structure_Repair to actions in
            Central. At this moment you can update the database structure
