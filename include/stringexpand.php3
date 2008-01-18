@@ -809,10 +809,13 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
-    /** expand function
-     */
-    function expand() {
-        return time();
+
+    /** expand function  */
+    function expand($format='') {
+        if ( empty($format) ) {
+            $format = "U";
+        }
+        return date($format,time());
     }
 }
 
