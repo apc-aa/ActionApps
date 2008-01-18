@@ -633,6 +633,7 @@ function huhlo($a) {
         } else {
             print_r($a);
         }
+        echo "<br>\n";
     }
 }
 

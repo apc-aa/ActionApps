@@ -512,9 +512,9 @@ class AA_Optimize_Clear_Pagecache extends AA_Optimize {
      */
     function repair() {
         $db  = getDb();
-        $db->query('CREATE TABLE pagecache_new LIKE pagecache');
+        $db->query('CREATE TABLE IF NOT EXISTS pagecache_new LIKE pagecache');
         $this->message(_m('Table pagecache_new created'));
-        $db->query('CREATE TABLE pagecache_str2find_new LIKE pagecache_str2find');
+        $db->query('CREATE TABLE IF NOT EXISTS pagecache_str2find_new LIKE pagecache_str2find');
         $this->message(_m('Table pagecache_str2find_new created'));
         $db->query('RENAME TABLE pagecache_str2find TO pagecache_str2find_bak, pagecache TO pagecache_bak');
         $this->message(_m('Renamed tables pagecache_* to pagecache_*_bak'));

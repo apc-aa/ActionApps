@@ -1,3 +1,18 @@
+18/01/08 - {now} command now could use format: {now:format}, where format is
+(honzam)   standard php date format @see http://php.net/date. Ex: {now:d.m.Y}
+         - Pagecache is now purged asynchronicaly from toexecute queue
+           So far we purged the cache on random basis with the probability about
+           1:1000 when you tried to save the content to the cache. Now only
+           the purge action is planed into toexecute queue (table) and it is
+           then executed rom there (by AA cron). The adventage is, that the
+           "lucky" user do not need to wait for cache purge finish. Also it is
+           better planed - the clenup is done once for 5 minutes, now
+         - Counting of hit_1...., hit_7...., hit_30.... and display_count fields
+           are counted asynchronicaly from toexecute queue (table)
+         - The hits statistisc are now compacted automaticaly (from toexecute
+           queue) - hits for one item is grouped for one day (for hits older
+           than 8 days). It makes the hit_archive table much smaller
+         - little improved UI of user administration
 07/01/08 - small bugfix in stringexpand.php3 for new {img} syntax
 (Adam)
 21/12/07 - added Field_Duplicates_Test, Field_Duplicates_Repair,

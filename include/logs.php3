@@ -31,31 +31,6 @@
 
 require_once AA_INC_PATH. "toexecute.class.php3";
 
-/** By $DO_NOT_LOG array you are able to specify, which events you don't want
- *  to log - it's just like filter
- *  This should be list of all logable events (at least now - 2005-11-9)
- */
-$DO_NOT_LOG = array(
-   // 'ALERTS',
-   // 'BM_CREATE',
-   // 'BM_DELETE',
-   // 'BM_RENAME',
-   // 'BM_UPDATE',
-   // 'CSN',
-   // 'CSV_IMPORT',
-   // 'EMAIL_SENT',
-   // 'FEED2ALL_0',
-   // 'FEED2ALL_1',
-   // 'FEED_ADD',
-   // 'FEED_DEL',
-   // 'FEED_DSBLE',
-   // 'FEED_ENBLE',
-   // 'FILE IMP:',
-   // 'ITEM_FIELD_FILLED',
-   // 'PAGECACHE',
-      'TOEXECUTE'
-);
-
 /*
 Events logged into AA log
 type            selector                        parameters
@@ -69,7 +44,6 @@ TOEXECUTE       object's class                  return code
 ALERTS          howoften                        Start/email sent
 */
 
-
 class AA_Log {
 
     /** AA_Log::write function - Write log entry
@@ -80,9 +54,9 @@ class AA_Log {
      * @param $selector
      */
     function write($event, $params="", $selector="" ) {
-        global $auth, $DO_NOT_LOG;
+        global $auth;
 
-        if ( isset($DO_NOT_LOG[$event]) ) {
+        if ( AA_Log::isLogable($event) ) {
             return false;
         }
 
@@ -117,6 +91,37 @@ class AA_Log {
         // it should be enough to clean the logs once a day
         $time2execute   = now() + (60*60*24);
         $toexecute->laterOnce($cleaner, array(), "AA_Log_Clenup", 10, $time2execute);
+    }
+
+    /** Is the event logable?
+     *  Static class method
+     **/
+    function isLogable($event_type) {
+        /** By $DO_NOT_LOG array you are able to specify, which events you don't want
+         *  to log - it's just like filter
+         *  This should be list of all logable events (at least now - 2005-11-9)
+         */
+        $DO_NOT_LOG = array(
+           // 'ALERTS',
+           // 'BM_CREATE',
+           // 'BM_DELETE',
+           // 'BM_RENAME',
+           // 'BM_UPDATE',
+           // 'CSN',
+           // 'CSV_IMPORT',
+           // 'EMAIL_SENT',
+           // 'FEED2ALL_0',
+           // 'FEED2ALL_1',
+           // 'FEED_ADD',
+           // 'FEED_DEL',
+           // 'FEED_DSBLE',
+           // 'FEED_ENBLE',
+           // 'FILE IMP:',
+           // 'ITEM_FIELD_FILLED',
+           // 'PAGECACHE',
+              'TOEXECUTE'
+        );
+        return in_array($event_type, $DO_NOT_LOG);
     }
 }
 

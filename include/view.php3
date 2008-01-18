@@ -206,8 +206,12 @@ class AA_View_Commands {
                 }
             }
 
-            $splited = split_escaped("-", $cmd_part, "--");
-            $this->addCommand($splited[0], array_slice($splited,1));
+            list($command, $params) = explode("-", $cmd_part, 2);
+            $splited = in_array($command, array('x', 'i', 'o')) ? explode("-", $params) : split_escaped("-", $params, "--");
+            $this->addCommand($command, $splited);
+
+//            $splited = split_escaped("-", $cmd_part, "--");
+//            $this->addCommand($splited[0], array_slice($splited,1));
         }
     }
 

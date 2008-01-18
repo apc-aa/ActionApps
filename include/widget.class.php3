@@ -189,7 +189,7 @@ class AA_Widget extends AA_Components {
             }
         }
         if ( $add_empty ) {
-            // put empty oprion to the front
+            // put empty option to the front
             array_unshift($ret, array('k'=>'', 'v'=>'', 'selected' => !$selectedused, 'mis' => false));
         }
         return $ret;
