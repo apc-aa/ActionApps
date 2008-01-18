@@ -99,18 +99,31 @@ class AA_Hitcounter {
             $varset->add('id', 'unpacked', $zids->id(0));
             $varset->doInsert('hit_long_id');
         }
-//        AA_Hitcounter::updateDisplayCount();
+
+        // it is not necessary to check, if the  AA_Hitcounter_Update is planed
+        // on each hit. We check it only once for 1000 (COUNTHIT_PROBABILITY)
         if ( rand(0,COUNTHIT_PROBABILITY) == 1) {
-            AA_Hitcounter::updateDisplayCount();
+            $display_counter  = new AA_Hitcounter_Update();
+            $toexecute        = new AA_Toexecute;
+            $toexecute->laterOnce($display_counter, array(), 'AA_Hitcounter_Update', 100, now() + 300);  // run it once in 5 minutes
+//            $toexecute->laterOnce($display_counter, array(), 'AA_Hitcounter_Update', 100, now() + 3000);  // run it once in 50 minutes
         }
         return;
     }
+}
 
+/** Used as object for toexecute - updates item.display_count and hit_archive
+ *  based on hit log in hit_short_id and hit_long_id tables
+ *  It also plans the the hit_x..... field counting into toexecute queue
+ */
+class AA_Hitcounter_Update {
 
-    /**
-     *
+    /** updateDisplayCount - updates item.display_count and hit_archive based
+     *  on hit log in hit_short_id and hit_long_id tables
+     *                     - it also plans the the hit_x..... field counting
+     *                       into toexecute queue
      */
-    function updateDisplayCount() {
+    function toexecutelater() {
 
         // we can't count with current second, since the records for current
         // second could grow. Two seconds back should be OK.
@@ -153,7 +166,13 @@ class AA_Hitcounter {
         tryQuery("INSERT INTO hit_archive (id, time) SELECT item.short_id, hit_long_id.time FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id WHERE time < $time");
         tryQuery("DELETE FROM hit_long_id WHERE time < $time");
 
-        AA_Hitcounter::updateDisplayStatistics();
+        // once a day plan 3 new grouping (which means, that each day is counted
+        // 3 times - in case it fails in one or two cases. If it fails three
+        // times it is not so big problem - we can plan(0) sometime in the future
+        $grouper = new AA_Hitcounter_Group;
+        $grouper->plan(3);
+
+        $this->updateDisplayStatistics();
     }
 
     function updateDisplayStatistics() {
@@ -169,10 +188,10 @@ class AA_Hitcounter {
                 $stats_counter  = new AA_Hitcounter_Stats($count_slice_id, $field_id);
 
                 // we plan this tasks for future
-                // hit_1  (day)   plan +/- 5   minutes later
-                // hit_7  (week)  plan +/- 35  minutes later
-                // hit_30 (month) plan +/- 150 minutes later
-                $time2execute   = now() + ($stats_counter->getDays() * 30 * (10 + $timeshift++));
+                // hit_1  (day)   plan +/- 50   minutes later
+                // hit_7  (week)  plan +/- 350  minutes later (5,8 hours)
+                // hit_30 (month) plan +/- 1500 minutes later (25 hours)
+                $time2execute   = now() + ($stats_counter->getDays() * 300 * (10 + $timeshift++));
                 $toexecute->laterOnce($stats_counter, array(), "Count_". $count_slice_id.'_'.$field_id, 100, $time2execute);
             }
         }
@@ -190,18 +209,19 @@ class AA_Hitcounter_Stats {
     }
 
     function toexecutelater() {
-        $days = $this->getDays();
-        $time = now() - ($days * 86400);
-        $hits = GetTable2Array("SELECT item.id, count(*) as count FROM hit_archive INNER JOIN item ON hit_archive.id=item.short_id
-                                 WHERE hit_archive.time > $time GROUP BY hit_archive.id", 'id', 'count');
-        $item_ids = GetTable2Array("SELECT id FROM item WHERE slice_id = '".q_pack_id($this->slice_id)."'", '', 'id');
+        $days        = $this->getDays();
+        $time        = now() - ($days * 86400);
+        $qp_slice_id = q_pack_id($this->slice_id);
+        $hits        = GetTable2Array("SELECT item.id, sum(hits) as count FROM hit_archive INNER JOIN item ON hit_archive.id=item.short_id
+                                        WHERE hit_archive.time > $time AND item.slice_id = '$qp_slice_id' GROUP BY hit_archive.id", 'id', 'count');
+        $item_ids    = GetTable2Array("SELECT id FROM item WHERE slice_id = '$qp_slice_id'", '', 'id');
 
         $db = getDb();
         if ( is_array($item_ids) ) {
             // shuffle - if there are a lot of items, so we reach timelimit, it is better to
             // count hits in random order, so each item will be counted after some time period
             shuffle($item_ids);
-            $field = GetTable2Array("SELECT * FROM field WHERE slice_id = '".q_pack_id($this->slice_id)."' AND id='". quote($this->field_id) ."'", 'aa_first', 'aa_all');
+            $field = GetTable2Array("SELECT * FROM field WHERE slice_id = '$qp_slice_id' AND id='". quote($this->field_id) ."'", 'aa_first', 'aa_all');
             foreach ($item_ids as $id) {
                 $db->query("DELETE FROM content WHERE item_id ='".quote($id)."' AND field_id = '". quote($this->field_id)."'");
                 $value = isset($hits[$id]) ? $hits[$id] : 0;
@@ -215,5 +235,54 @@ class AA_Hitcounter_Stats {
         return (int) substr($this->field_id, 4);
     }
 }
+
+
+/** Groups data in hit_archive table
+ *  We store all the hits into the hit_archive table. It is good for counting
+ *  hit_1..., ... field statistics as well as for item display statistics.
+ *  On the other hand the amount of data is huge, so we group the hit count for
+ *  item on day basis (for older hits)
+ **/
+class AA_Hitcounter_Group {
+
+    function toexecutelater($begin, $step) {
+        $varset = new CVarset;
+        $time_cond = "time >= $begin AND time < ". ($begin + $step);
+        $hits      = GetTable2Array("SELECT id, sum(hits) as sum FROM hit_archive WHERE $time_cond GROUP BY id", 'id', 'sum');
+
+        tryQuery("DELETE FROM hit_archive WHERE $time_cond");
+        if (is_array($hits)) {
+            foreach ($hits as $id => $sum ) {
+                $varset->clear();
+                $varset->add('id',   'number', $id);
+                $varset->add('hits', 'number', $sum);
+                $varset->add('time', 'number', $begin);
+                $varset->doInsert('hit_archive');
+            }
+        }
+    }
+
+    /** plan grouping tasks to toexecute queue
+     *  - by default we plan all the task
+     */
+    function plan($max_task = 0) {
+        $oldest         = GetTable2Array("SELECT min( time ) as oldest FROM `hit_archive`", 'aa_first', 'oldest');
+        $grouping_start = mktime(0, 0, 0, date("m")  , date("d")-8, date("Y")); // week ago
+        $step           = 60 * 60 * 24;                        // day
+
+        $toexecute        = new AA_Toexecute;
+        // run for all the days from $oldest to week ago
+        $no_task = 0;
+        for ($begin = $grouping_start; $begin + $step >= $oldest; $begin = $begin - $step) {
+            $toexecute->laterOnce($this, array($begin, $step), "AA_Hitcounter_Group_$begin", 40, now() + 60*60*24); // once a day
+
+            // by default we plan all the task
+            if (++$no_task == $max_task) {
+                break;
+            }
+        }
+    }
+}
+
 
 ?>
