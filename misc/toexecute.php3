@@ -39,7 +39,7 @@ require_once AA_INC_PATH."varset.php3";
 
 //require_once AA_INC_PATH."item.php3";
 //require_once AA_INC_PATH."view.php3";
-//require_once AA_INC_PATH."pagecache.php3";
+require_once AA_INC_PATH."pagecache.php3";
 //require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH.  "toexecute.class.php3";
 require_once AA_INC_PATH.  "mail.php3";

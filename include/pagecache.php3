@@ -40,6 +40,7 @@
  */
 
 require_once AA_INC_PATH."varset.php3";
+require_once AA_INC_PATH."toexecute.class.php3";
 
 class PageCache  {
     var $cacheTime     = 600; // number of seconds to store cached informations
@@ -211,9 +212,13 @@ class PageCache  {
 
             // writeLog('PAGECACHE', $keyid.':'.serialize($str2find)); // for debug
 
+            // it is not necessary to check, if the  AA_Pagecache_Purge is planed
+            // store. We check it only once for 1000 (PAGECACHEPURGE_PROBABILITY)
             if (rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
-                $this->purge();
+                $cache_purger  = new AA_Pagecache_Purge();
+                $toexecute     = new AA_Toexecute;
+                $toexecute->laterOnce($cache_purger, array($this->cacheTime), 'AA_Pagecache_Purge', 101, now() + 300);  // run it once in 5 minutes
             }
         }
         return $keyid;
@@ -232,15 +237,6 @@ class PageCache  {
                 $varset->doDeleteWhere('pagecache_str2find', " pagecache_id IN ('$keystring')", 'nohalt');
             }
         }
-    }
-
-    /** purge function
-     *  Clears all old cached data
-     */
-    function purge() {
-        $tm   = time();
-        $keys = GetTable2Array("SELECT id FROM pagecache WHERE stored<'".($tm - ($this->cacheTime))."'", '', 'id');
-        $this->invalidateById( $keys );
     }
 
     /** invalidateFor function
@@ -278,6 +274,23 @@ class PageCache  {
         $SQL = "DELETE FROM pagecache_str2find";
         $db->query_nohalt($SQL);
         freeDB($db);
+    }
+}
+
+
+class AA_Pagecache_Purge {
+    /** purge function
+     *  Clears all old cached data
+     */
+    function toexecutelater($cache_time) {
+        $tm   = time();
+        // we tired to speed up the deletion by multi-table delete:
+        // DELETE pagecache, pagecache_str2find FROM pagecache, pagecache_str2find
+        //  WHERE pagecache.id = pagecache_str2find.pagecache_id AND pagecache.stored<'1200478499'
+        // (supported in MySQL >= 4.0), but it takes ages
+
+        $keys = GetTable2Array("SELECT id FROM pagecache WHERE stored<'".(time() - $cache_time)."'", '', 'id');
+        PageCache::invalidateById( $keys );
     }
 }
 
