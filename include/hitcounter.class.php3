@@ -175,6 +175,9 @@ class AA_Hitcounter_Update {
         $this->updateDisplayStatistics();
     }
 
+    /** Plan task for counting statistics fields (hit_1, hit_7, ...)
+     *  It is planed as AA_Toexecute jobs
+     */
     function updateDisplayStatistics() {
         $stats2count = GetTable2Array("SELECT id, slice_id FROM field WHERE slice_id <> 'AA_Core_Fields..' AND id LIKE 'hit_%'", '');
 
@@ -198,9 +201,15 @@ class AA_Hitcounter_Update {
     }
 }
 
+/** Updates the hit_x..... fields for all items from the slice based on the data
+ *  in hit_archive table.
+ */
 class AA_Hitcounter_Stats {
 
+    /** For which slice we will cout the hits */
     var $slice_id;
+
+    /** For which field we will cont the hits (hit_1...., hit_2...) */
     var $field_id;
 
     function AA_Hitcounter_Stats($slice_id, $field_id) {
@@ -235,7 +244,6 @@ class AA_Hitcounter_Stats {
         return (int) substr($this->field_id, 4);
     }
 }
-
 
 /** Groups data in hit_archive table
  *  We store all the hits into the hit_archive table. It is good for counting
@@ -283,6 +291,5 @@ class AA_Hitcounter_Group {
         }
     }
 }
-
 
 ?>

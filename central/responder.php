@@ -25,7 +25,6 @@ if ($free) {
 }
 
 require_once dirname(__FILE__). "/include/init_central.php";
-require_once AA_INC_PATH."optimize.class.php3";
 
 /** AA_Responder base class - defines some useful common methods
  */
@@ -124,33 +123,15 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
 }
 
 /** @return imports the slice to the database */
-class AA_Responder_Do_Import_Module extends AA_Responder {
-    var $definition;
+class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
+    var $definition_chunk;
 
-    function AA_Responder_Do_Import_Module($param) {
-        $this->definition = $param['definition'];
+    function AA_Responder_Do_Import_Module_Chunk($param) {
+        $this->definition_chunk = $param['definition_chunk'];
     }
 
     function run() {
-        $ret[] = $this->definition->importModule();
-        return new AA_Response($ret);
-    }
-}
-
-/** @return imports the slice to the database */
-class AA_Responder_Do_Optimize extends AA_Responder {
-    var $optimize_class;
-    var $optimize_method;
-
-    function AA_Responder_Do_Optimize($param) {
-        $this->optimize_class  = $param['class'];
-        $this->optimize_method = $param['method'];
-    }
-
-    function run() {
-        $optimize = new $this->optimize_class;
-        call_user_func(array($optimize,$this->optimize_method));
-        $ret      = $optimize->report();
+        $ret[] = $this->definition_chunk->importModuleChunk();
         return new AA_Response($ret);
     }
 }

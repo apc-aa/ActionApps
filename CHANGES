@@ -1,5 +1,10 @@
 18/01/08 - {now} command now could use format: {now:format}, where format is
 (honzam)   standard php date format @see http://php.net/date. Ex: {now:d.m.Y}
+         - Improved the "Copy slice" feature of Central. Now it splits the copy
+           into separate tasks (chunks), so we are able to copy also slices with
+           unlimited number of items in it. The copying now works well - tested
+           on one big real site with 15+ slices including site module and Reader
+           management
          - Pagecache is now purged asynchronicaly from toexecute queue
            So far we purged the cache on random basis with the probability about
            1:1000 when you tried to save the content to the cache. Now only

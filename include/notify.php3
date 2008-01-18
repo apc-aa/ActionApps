@@ -42,67 +42,67 @@ require_once AA_INC_PATH."mail.php3";
  * @param $extra
  */
 function email_notify($slice_id, $event, $item_id, $extra = ""){
-  global $db;
-  $p_slice_id = q_pack_id($slice_id);
+    global $db;
+    $p_slice_id = q_pack_id($slice_id);
 
-  // expand the body template using the itemview function
-  $format['group_by']        = '';
-  $format['category_format'] = '';
-  $format['compact_bottom']  = '';
-  $format['compact_remove']  = '';
-  $format['even_row_format'] ='';
-  $format['even_odd_differ'] = '0';
-  $format['id']              = $slice_id;
+    // expand the body template using the itemview function
+    $format['group_by']        = '';
+    $format['category_format'] = '';
+    $format['compact_bottom']  = '';
+    $format['compact_remove']  = '';
+    $format['even_row_format'] ='';
+    $format['even_odd_differ'] = '0';
+    $format['id']              = $slice_id;
 
-  // get alias list from database
-  list($fields,) = GetSliceFields($slice_id);
-  $aliases       = GetAliasesFromFields($fields, $als);
+    // get alias list from database
+    list($fields,) = GetSliceFields($slice_id);
+    $aliases       = GetAliasesFromFields($fields, $als);
 
-  // select the text templates
-  switch ($event){
-    case 1: $prefix = 'notify_holding_item'; break;
-    case 2: $prefix = 'notify_holding_item_edit'; break;
-    case 3: $prefix = 'notify_active_item'; break;
-    case 4: $prefix = 'notify_active_item_edit'; break;
-  }
+    // select the text templates
+    switch ($event){
+        case 1: $prefix = 'notify_holding_item'; break;
+        case 2: $prefix = 'notify_holding_item_edit'; break;
+        case 3: $prefix = 'notify_active_item'; break;
+        case 4: $prefix = 'notify_active_item_edit'; break;
+    }
 
-  $SQL = "SELECT ${prefix}_s as s, ${prefix}_b as b from slice where id = '$p_slice_id'";
-  $db->query($SQL);
-  if ( $db->next_record() ){
-    $s = $db->f('s');
-    $b = $db->f('b');
-  } else {
-    die ("email_notify(): bad slice_id ($slice_id)");
-  }
+    $SQL = "SELECT ${prefix}_s as s, ${prefix}_b as b from slice where id = '$p_slice_id'";
+    $db->query($SQL);
+    if ( $db->next_record() ){
+        $s = $db->f('s');
+        $b = $db->f('b');
+    } else {
+        die ("email_notify(): bad slice_id ($slice_id)");
+    }
 
-  // determine subject of message
-  $format['odd_row_format'] = $s;
-  $zids = new zids($item_id);
+    // determine subject of message
+    $format['odd_row_format'] = $s;
+    $zids = new zids($item_id);
 
-  $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, '');
-  $subject = $itemview->get_output_cached("view");
+    $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, '');
+    $subject = $itemview->get_output_cached("view");
 
-  // determine body of message
-  $format['odd_row_format'] = $b;
-  //$item_ids[] = $item_id;   // Ick, this would have put two ids in!
+    // determine body of message
+    $format['odd_row_format'] = $b;
+    //$item_ids[] = $item_id;   // Ick, this would have put two ids in!
 
-  $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, '');
-  $body     = $itemview->get_output_cached("view");
+    $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, '');
+    $body     = $itemview->get_output_cached("view");
 
-  // select all the users
-  $SQL = "SELECT uid from email_notify where slice_id = '$p_slice_id' AND function = '$event'";
-  $db->query($SQL);
+    // select all the users
+    $SQL = "SELECT uid from email_notify where slice_id = '$p_slice_id' AND function = '$event'";
+    $db->query($SQL);
 
-  $emails = "";
-  // loop through the users for the event
-  while ( $db->next_record() ) {
-      $emails[] = $db->f('uid');
-  }
+    $emails = "";
+    // loop through the users for the event
+    while ( $db->next_record() ) {
+        $emails[] = $db->f('uid');
+    }
 
-  $mail = new HtmlMail();
-  $mail->setSubject($subject);
-  $mail->setHtml($body, html2text($body));
-  $mail->setCharset($LANGUAGE_CHARSETS[get_mgettext_lang()]);
-  $mail->send($emails);
+    $mail = new HtmlMail();
+    $mail->setSubject($subject);
+    $mail->setHtml($body, html2text($body));
+    $mail->setCharset($LANGUAGE_CHARSETS[get_mgettext_lang()]);
+    $mail->send($emails);
 }
 ?>

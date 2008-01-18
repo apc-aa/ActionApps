@@ -70,7 +70,7 @@ if ( $update ) {
             $set1->addCondsFromString($cond1);
             $set1->setName($name1);
             $set1->setOwner($slice_id);
-            // those id ase marked so we can use it as group in Reader permissions
+            // those id are marked so we can use it as group in Reader permissions
             $set1->setId($objid1 ? $objid1 : new_id(1));
             $set1->save();
         }
@@ -80,7 +80,7 @@ if ( $update ) {
             $set2->addCondsFromString($cond2);
             $set2->setName($name2);
             $set2->setOwner($slice_id);
-            // those id ase marked so we can use it as group in Reader permissions
+            // those id are marked so we can use it as group in Reader permissions
             $set2->setId($objid2 ? $objid2 : new_id(1));
             $set2->save();
         }
@@ -90,7 +90,7 @@ if ( $update ) {
             $set3->addCondsFromString($cond3);
             $set3->setName($name3);
             $set3->setOwner($slice_id);
-            // those id ase marked so we can use it as group in Reader permissions
+            // those id are marked so we can use it as group in Reader permissions
             $set3->setId($objid3 ? $objid3 : new_id(1));
             $set3->save();
         }
@@ -100,11 +100,10 @@ if ( $update ) {
             $set4->addCondsFromString($cond4);
             $set4->setName($name4);
             $set4->setOwner($slice_id);
-            // those id ase marked so we can use it as group in Reader permissions
+            // those id are marked so we can use it as group in Reader permissions
             $set4->setId($objid4 ? $objid4 : new_id(1));
             $set4->save();
         }
-
 
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 

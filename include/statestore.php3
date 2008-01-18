@@ -60,7 +60,7 @@ class AA_Includer {
  * AA_Storable - abstract class which implements methods for storing and
  * restoring class data (used in searchbar class, manager class, ...).
  *
- * If you want to use strable methods in your class, you should derive the new
+ * If you want to use storable methods in your class, you should derive the new
  * class from AA_Storable. Then you should define $persistent_slots array,
  * where you specify all the variables you want to store. Then you just call
  * getState() and setFromState() methods for storing and restoring object's data
@@ -196,8 +196,14 @@ class AA_Object extends AA_Storable {
     /** Object Name - max 16 characters long object name - optional, unique for whole AA */
     var $aa_name;
 
-    /** Object Owner - id if object's parent, where the object belongs - oprional */
+    /** Object Owner - id if object's parent, where the object belongs - optional */
     var $aa_owner;
+
+    /** We store also following data, but it do not need its own variable
+     *   aa_type       - class of the object
+     *   aa_version    - version of the object class (if it is not 1)
+     *   aa_subobjects - helper field used for quicker load of object
+     */
 
     /** Constructor
      *  @param $params array of parameters in form 'property_name' => 'value'
@@ -445,8 +451,8 @@ class AA_Object extends AA_Storable {
     function &factoryByName($class_mask, $name, $params=null) {
         return AA_Object::factory(AA_Object::constructClassName($class_mask, $name), $params);
     }
-    
-    /** create the name of class from the type and name 
+
+    /** create the name of class from the type and name
      *  static class method
      **/
     function constructClassName($class_mask, $name) {
