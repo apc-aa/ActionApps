@@ -52,7 +52,7 @@ function SelectGU_ID($name, $arr, $selected="", $type="short", $substract="") {
                 if ((string)$selected == (string)$k) {
                     echo " selected";
                 }
-                echo "> ". htmlspecialchars($v['name']) ." </option>";
+                echo "> ". htmlspecialchars($v['name']. " (".perm_username($k).")") ." </option>";
             }
         }
         if ( !$option_exist ) { // if no options, we must set width of <select> box

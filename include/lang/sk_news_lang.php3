@@ -2628,7 +2628,7 @@ $_m["Try to be more specific."]
  = "Skúste zada presnejšie údaje.";
 
 # admin/se_users_add.php3, row 139
-$_m["List is limitted to 5 users.<br>If some user is not in list, try to be more specific in your query"]
+$_m["List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query"]
  = "";
 
 # admin/se_view.php3, row 55

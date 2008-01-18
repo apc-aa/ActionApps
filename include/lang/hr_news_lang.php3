@@ -3684,8 +3684,8 @@ $_m["Try to be more specific."]
  = "Pokušajte suziti opseg pretraživanja";
 
 # admin/se_users_add.php3, row 139
-$_m["List is limitted to 5 users.<br>If some user is not in list, try to be more specific in your query"]
- = "Lista je ogranièena na 5 korisnika";
+$_m["List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query"]
+ = "Lista je ogranièena na %1 korisnika";
 
 # admin/se_view.php3, row 55
 $_m["Group by selections"]

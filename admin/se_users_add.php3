@@ -35,9 +35,11 @@
 function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
 // $usr_id is DN in LDAP
     global $sess, $perms_roles;
-    $usr_id = rawurlencode($usr_id);
+    $username = perm_username($usr_id);
+    $usr_id   = rawurlencode($usr_id);
 
     echo "<tr><td class=\"tabtxt\" width=\"25%\">". $usr['name'] ."</td>\n";
+    echo "<td class=\"tabtxt\">$username</td>\n";
     echo "<td class=\"tabtxt\" width=\"25%\">".
        (($usr['mail']) ? $usr['mail'] : "&nbsp;") ."</td>\n";
 
@@ -60,13 +62,8 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
 ?>
 <form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
-/*
-<table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class=tabtit><b>&nbsp;<?php echo _m("Search user or group") ?></b></td></tr>
-<tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">*/
     FrmTabCaption(_m("Search user or group"));
-    ?>
+?>
 <tr>
         <td width="30%" class="tabtxt"><b><?php echo _m("Users") ?></b></td>
         <td width="40%"><input type="text" name="usr" value="<?php echo safe($usr)?>"></td>
@@ -77,82 +74,69 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true) {
         <td><input type="text" name="grp" value="<?php echo safe($grp)?>"></td>
         <td><input type="submit" name="GrpSrch" value="<?php echo _m("Search")?>"></td>
 </tr>
- <?php
+<?php
 $continue=false;
 if ($GrpSrch || $UsrSrch) {
-    if ($GrpSrch){
-        $addable = FindGroups($grp);
+    $addable = $GrpSrch ? FindGroups($grp) : FindUsers($usr);
+
+    FrmTabSeparator(_m("Assign new permissions"));
+    // determine role of this user
+    if (ComparePerms($editor_perms, $perms_roles["SUPER"]['perm'])!="L") {
+        $curr_role = $perms_roles["SUPER"]['id'];
+    }
+    elseif (ComparePerms($editor_perms, $perms_roles["ADMINISTRATOR"]['perm'])!="L") {
+        $curr_role = $perms_roles["ADMINISTRATOR"]['id'];
+    } elseif (ComparePerms($editor_perms, $perms_roles["EDITOR"]['perm'])!="L") {
+        $curr_role = $perms_roles["EDITOR"]['id'];
+    } elseif (ComparePerms($editor_perms, $perms_roles["AUTHOR"]['perm'])!="L") {
+        $curr_role = $perms_roles["AUTHOR"]['id'];
     } else {
-        $addable = FindUsers($usr);
+        $curr_role=0;
     }
 
-  FrmTabSeparator(_m("Assign new permissions"));
-/*
-  <tr><td class=tabtit><b>&nbsp;<?php echo _m("Assign new permissions") ?></b></td></tr>
-  <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
-*/
-  // determine role of this user
-  if (ComparePerms($editor_perms, $perms_roles["SUPER"]['perm'])!="L")
-    $curr_role = $perms_roles["SUPER"]['id'];
-  elseif (ComparePerms($editor_perms, $perms_roles["ADMINISTRATOR"]['perm'])!="L")
-    $curr_role = $perms_roles["ADMINISTRATOR"]['id'];
-  elseif (ComparePerms($editor_perms, $perms_roles["EDITOR"]['perm'])!="L")
-    $curr_role = $perms_roles["EDITOR"]['id'];
-  elseif (ComparePerms($editor_perms, $perms_roles["AUTHOR"]['perm'])!="L")
-    $curr_role = $perms_roles["AUTHOR"]['id'];
-  else
-    $curr_role=0;
+    $slice_users = GetObjectsPerms($slice_id, "slice");
+    $aa_users    = GetObjectsPerms(AA_ID, "aa");   // higher than slice
 
-  $slice_users = GetObjectsPerms($slice_id, "slice");
-  $aa_users = GetObjectsPerms(AA_ID, "aa");   // higher than slice
-
-  if ( isset($slice_users) AND !is_array($slice_users) ) {
-      unset($slice_users);
-  }
-  if ( isset($aa_users) AND !is_array($aa_users) ) {
-      unset($aa_users);
-  }
-
-  if ( is_array($aa_users)) {
-    reset($aa_users);    // add aa users too
-    while ( list($usr_id,$usr)= each($aa_users))
-        if ( !$slice_users[$usr_id] ) {
-            $slice_users[$usr_id] = $aa_users[$usr_id];
+    if ( isset($slice_users) AND !is_array($slice_users) ) {
+        unset($slice_users);
     }
-  }
+    if ( isset($aa_users) AND !is_array($aa_users) ) {
+        unset($aa_users);
+    }
 
-  $l_counter = 1;
-  if ( !is_array($addable) ) {
-      if ( $addable == "too much" ) {
-          echo "<tr><td class=\"tabtxt\">". _m("Too many users or groups found.") ." ". _m("Try to be more specific.")."</td>\n";
-      } else {
-          echo "<tr><td class=\"tabtxt\">". _m("No user (group) found") ."</td>\n";
-      }
-  } else {
-    reset($addable);
-    while ( list($usr_id,$usr) = each($addable)) {
-        if (!$slice_users[$usr_id]) {                         // show only new users
-            PrintAddableUser($usr, $usr_id, $curr_role, true);
+    if ( is_array($aa_users)) {
+        // add aa users too
+        foreach ($aa_users as $usr_id => $usr) {
+            if ( !$slice_users[$usr_id] ) {
+                $slice_users[$usr_id] = $aa_users[$usr_id];
+            }
+        }
+    }
+
+    $l_counter = 1;
+    if ( !is_array($addable) ) {
+        if ( $addable == "too much" ) {
+            echo "<tr><td class=\"tabtxt\">". _m("Too many users or groups found.") ." ". _m("Try to be more specific.")."</td>\n";
         } else {
-            PrintAddableUser($usr, $usr_id, $curr_role, false);
+            echo "<tr><td class=\"tabtxt\">". _m("No user (group) found") ."</td>\n";
         }
-        if ($l_counter++ >= MAX_ENTRIES_SHOWN) {
-            break;
+    } else {
+        foreach ($addable as $usr_id => $usr) {
+            if (!$slice_users[$usr_id]) {                         // show only new users
+                PrintAddableUser($usr, $usr_id, $curr_role, true);
+            } else {
+                PrintAddableUser($usr, $usr_id, $curr_role, false);
+            }
+            if ($l_counter++ >= MAX_ENTRIES_SHOWN) {
+                break;
+            }
         }
     }
-  }
 
 }
-  FrmTabEnd($form_buttons, false, $slice_id);
+FrmTabEnd($form_buttons, false, $slice_id);
 
-/*
-<tr><td align="center">
-<input type=hidden name="slice_id" value="<?php echo $slice_id ?>">
-<input type=submit name=back value="<?php echo _m("Back") ?>">
-</td></tr>
-</table>*/
 ?>
-<br><br><small><?php echo _m("List is limitted to 5 users.<br>If some user is not in list, try to be more specific in your query") ?></small>
+<br><br><small><?php echo _m("List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query", array(MAX_ENTRIES_SHOWN)) ?></small>
 </form>
 

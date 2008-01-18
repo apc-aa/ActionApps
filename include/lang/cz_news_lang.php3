@@ -2799,8 +2799,8 @@ $_m["Try to be more specific."]
  = "Zkuste zadat pøesnìjší údaje.";
 
 # admin/se_users_add.php3, row 139
-$_m["List is limitted to 5 users.<br>If some user is not in list, try to be more specific in your query"]
- = "Délka seznamu je max. 5 uživatelù.<br>Pokud nìjaký uživatel není v sezanmu, zkuste pøesnìjší dotaz";
+$_m["List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query"]
+ = "Délka seznamu je max. %1 uživatelù.<br>Pokud nìjaký uživatel není v seznamu, zkuste pøesnìjší dotaz";
 
 # admin/se_view.php3, row 55
 $_m["Group by selections"]

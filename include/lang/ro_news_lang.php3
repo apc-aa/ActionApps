@@ -2671,8 +2671,8 @@ $_m["Try to be more specific."]
  = "Fiþi mai specific.";
 
 # admin/se_users_add.php3, row 139
-$_m["List is limitted to 5 users.<br>If some user is not in list, try to be more specific in your query"]
- = "Lista este limitatã la 5 utilizatori.<br>Dacã cineva nu apare în listã, încercaþi o interogare mai specificã.";
+$_m["List is limitted to %1 users.<br>If some user is not in list, try to be more specific in your query"]
+ = "Lista este limitatã la %1 utilizatori.<br>Dacã cineva nu apare în listã, încercaþi o interogare mai specificã.";
 
 # admin/se_view.php3, row 55
 $_m["Group by selections"]

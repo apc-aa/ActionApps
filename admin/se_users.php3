@@ -59,7 +59,9 @@ function IfLink( $cond, $url, $txt ) {
  */
 function PrintUser($usr, $usr_id, $editor_perm) {
     global $perms_roles, $sess, $auth;
-    $usr_id = rawurlencode($usr_id);
+
+    $username = perm_username($usr_id);
+    $usr_id   = rawurlencode($usr_id);
     // select role icon
     $role_images = array(0 => "rolex.gif",
                          1 => "role1.gif",
@@ -91,6 +93,7 @@ function PrintUser($usr, $usr_id, $editor_perm) {
         '<a href="'. get_admin_url(  $go_url_arr[$usr['type']] ) .'">'. $usr['name'] .'</a>' );
 
     echo "<td class=\"tabtxt\">". $usr_code ."</td>\n";
+    echo "<td class=\"tabtxt\">". $username ."</td>\n";
     echo "<td class=\"tabtxt\">". (($usr['mail']) ? $usr['mail'] : "&nbsp;") ."</td>\n";
     echo "<td class=\"tabtxt\">". _mdelayed($usr['type']) ."</td>\n";
 
@@ -168,7 +171,7 @@ if ( $continue ) {
     }
 
     echo "<tr><td class=\"tabtxt\">&nbsp;</td>
-              <td class=\"tabtxt\" colspan=\"7\">". _m("Default user profile") ."</td>
+              <td class=\"tabtxt\" colspan=\"8\">". _m("Default user profile") ."</td>
               <td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."\"
            onclick=\"document.location='". $sess->url("se_profile.php3?uid=*") ."'\"></td>\n";
   echo "</tr>\n";
