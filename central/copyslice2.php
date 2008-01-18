@@ -48,18 +48,16 @@ if ($_POST['copy']) {
             foreach ($_POST['sync_slices'] as $sid) {
                 if ($sid) {
                     // plan the synchronization action to for execution via Task Manager
-                    $import_task = new AA_Task_Import_Module($template_slice_defs[$sid], $aas[$dest_aa]);
-                    $toexecute->userQueue($import_task, array(), 'AA_Task_Import_Module');
-                    ++$no_sync_tasks;
+                    $slice_def      = $template_slice_defs[$sid];
+                    $no_sync_tasks += $slice_def->planModuleImport($aas[$dest_aa]);
                 }
             }
         }
         if (is_array($_POST['sync_sites'])) {
             foreach ($_POST['sync_sites'] as $sid) {
                 if ($sid) {
-                    $import_task = new AA_Task_Import_Module($template_site_defs[$sid], $aas[$dest_aa]);
-                    $toexecute->userQueue($import_task, array(), 'AA_Task_Import_Module');
-                    ++$no_sync_tasks;
+                    $site_def       = $template_site_defs[$sid];
+                    $no_sync_tasks += $site_def->planModuleImport($aas[$dest_aa]);
                 }
             }
         }

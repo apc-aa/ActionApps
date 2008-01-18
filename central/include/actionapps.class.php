@@ -179,11 +179,11 @@ class AA_Actionapps {
     /** Imports slice to the current AA. The id of slice is the same as in
      *  definition
      */
-    function importModule($definition) {
+    function importModuleChunk($definition_chunk) {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
 
-        $response = $this->getResponse( new AA_Request('Do_Import_Module', array('definition'=>$definition)) );
+        $response = $this->getResponse( new AA_Request('Do_Import_Module_Chunk', array('definition_chunk'=>$definition_chunk)) );
         return ($response->isError()) ? $response->getError() : $response->getResponse();
     }
 
@@ -261,26 +261,73 @@ class AA_Module_Definition {
         return $this->data['module']['name'];
     }
 
-    function importModule() {
+    function compareWith($dest_def) {
+        // should be overloaded in childs
+    }
+
+    function planModuleImport($aa) {
+        $no_sync_tasks = 0;
+        $toexecute = new AA_Toexecute;
+
+        foreach ($this->data as $table => $rows) {
+            $chunks = AA_Module_Definition_Chunk::factoryArray($this->module_id, $table, $rows);
+            foreach ($chunks as $chunk) {
+                $import_task = new AA_Task_Import_Module_Chunk($chunk, $aa);
+                $toexecute->userQueue($import_task, array(), 'AA_Task_Import_Module_Chunk');
+            }
+            $no_sync_tasks += count($chunks);
+        }
+        return $no_sync_tasks;
+    }
+}
+
+/** AA_Module_Definition could be splited to more pieces (chunks) for easier
+ *  transmission and import
+ */
+class AA_Module_Definition_Chunk {
+
+    /** module id is unpacked */
+    var $module_id;
+    /** part of the data for the module definition */
+    var $data;
+
+    /** Creates array of chunks from given data. The data are splited to more
+     *  chunks, if it is bigger than limit.
+     *  static class member method
+     **/
+    function factoryArray($module_id, $table, $rows) {
+        $chunks = array();
+
+        // maximum 1000 rows in one chunk
+        $chunks_data = array_chunk($rows, 1000, true);
+        foreach ($chunks_data as $chunk_data) {
+            $chunks[] = new AA_Module_Definition_Chunk($module_id, $table, $chunk_data);
+        }
+        return $chunks;
+    }
+
+    function AA_Module_Definition_Chunk($module_id, $table, $rows) {
+        $this->module_id = $module_id;
+        $this->data      = array($table => $rows);
+    }
+
+    function importModuleChunk() {
+
+        $metabase    = AA_Metabase::singleton();
+
         foreach ($this->data as $table => $records) {
             if ( empty($records) ) {
                 continue;
             }
-            $varset = new Cvarset();
+
+            $metabase->packIds($table, $records);    // pack ids ...
             foreach ($records as $data) {
-                $varset->resetFromRecord($data);
-                $varset->doInsert($table, 'nohalt'); // nohalt (typicaly constants are sometimes already imported)
+                $metabase->doInsert($table, $data, 'nohalt');
             }
         }
         return 'ok';
     }
-
-    function compareWith($dest_def) {
-        // should be overloaded in childs
-    }
 }
-
-
 
 class AA_Module_Definition_Slice extends AA_Module_Definition {
 
@@ -289,11 +336,11 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
         $this->module_id = $module_id;
         $metabase        = AA_Metabase::singleton();
 
-        $this->data['module']   = $metabase->getModuleRows('module'        , $module_id);
-        $this->data['slice']    = $metabase->getModuleRows('slice', $module_id);
-        $this->data['field']    = $metabase->getModuleRows('field', $module_id);
-        $this->data['view']     = $metabase->getModuleRows('view',  $module_id);
-        $this->data['email']    = $metabase->getModuleRows('email', $module_id);
+        $this->data['module']   = $metabase->getModuleRows('module', $module_id);
+        $this->data['slice']    = $metabase->getModuleRows('slice',  $module_id);
+        $this->data['field']    = $metabase->getModuleRows('field',  $module_id);
+        $this->data['view']     = $metabase->getModuleRows('view',   $module_id);
+        $this->data['email']    = $metabase->getModuleRows('email',  $module_id);
 
         // @todo - do it better - check the fields setting, and get all the constants used
         $this->data['constant_slice'] = $metabase->getModuleRows('constant_slice', $module_id);
@@ -611,22 +658,22 @@ class AA_Task_Sync {
 /** Stores the synchronization action which should be performed on remote AA
  *  Objects are stored into AA_Toexecute queue for running from Task Manager
  **/
-class AA_Task_Import_Module {
+class AA_Task_Import_Module_Chunk {
     /** AA_Module_Definition_* object for import */
-    var $module_definition;
+    var $module_definition_chunk;
 
     /** AA_Actionapps object  - In which AA we have to do the action */
     var $actionapps;
 
-    function AA_Task_Import_Module($module_definition, $actionapps) {
-        $this->module_definition = $module_definition;
-        $this->actionapps        = $actionapps;
+    function AA_Task_Import_Module_Chunk($module_definition_chunk, $actionapps) {
+        $this->module_definition_chunk = $module_definition_chunk;
+        $this->actionapps              = $actionapps;
     }
 
     function toexecutelater() {
         // synchronize accepts array of sync_actions, so it is possible
         // to do more action by one call
-        return $this->actionapps->importModule($this->module_definition);
+        return $this->actionapps->importModuleChunk($this->module_definition_chunk);
     }
 }
 

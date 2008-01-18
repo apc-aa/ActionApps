@@ -508,10 +508,10 @@ class AA_Metabase {
         return $varset->doUpdate($tablename);
     }
 
-    function doInsert($tablename, $data) {
+    function doInsert($tablename, $data, $nohalt=null) {
         $varset     = new Cvarset();
         $varset->resetFromRecord($data);
-        return $varset->doInsert($tablename);
+        return $varset->doInsert($tablename, $nohalt);
     }
 
     function doDelete($tablename, $data) {
@@ -656,14 +656,29 @@ class AA_Metabase {
         if (!is_array($ret)) {
             $ret = array();
         }
-        $packed_columns = $this->getPacked($tablename);
-        foreach ($packed_columns as $column) {
-            foreach ($ret as $k => $v) {
-                $ret[$k][$column] = unpack_id($v[$column]);
-            }
-        }
+        
+        $this->unpackIds($tablename, $ret);
         return $ret;
     }
+    
+    function unpackIds($tablename, &$data) {
+        $packed_columns = $this->getPacked($tablename);
+        foreach ($packed_columns as $column) {
+            foreach ($data as $k => $v) {
+                $data[$k][$column] = unpack_id($v[$column]);
+            }
+        }
+    }
+    
+    function packIds($tablename, &$data) {
+        $packed_columns = $this->getPacked($tablename);
+        foreach ($packed_columns as $column) {
+            foreach ($data as $k => $v) {
+                $data[$k][$column] = pack_id($v[$column]);
+            }
+        }
+    }
+    
 
     /** Compares two metabases - this and the $metabase supplied by the parameter
      *  You can use it to check, which tables should be updated
