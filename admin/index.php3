@@ -68,7 +68,8 @@ function CountItemsInBins() {
     $db->tquery("SELECT count(*) as cnt FROM item
                  WHERE slice_id = '$p_slice_id'
                    AND status_code=1
-                   AND publish_date > '$now' ");
+                   AND publish_date > '$now'
+                   AND expiry_date > '$now' ");
                    if ( $db->next_record() ) {
                        $ret['pending'] = $db->f('cnt');
                    }
@@ -202,16 +203,9 @@ $BIN_CONDS   = array( 'app'    => AA_BIN_ACTIVE,
 
 $zids = QueryZIDs( array($slice_id), $conds, $sort, $BIN_CONDS[$manager->getBin()]);
 
-$manager->printSearchbarBegin();
-$manager->printSearchbarEnd();   // close the searchbar form
+// print searchbar, messages, errors, items
+$manager->display($zids);
 
-$manager->printAndClearMessages();
-PrintArray($r_err);
-PrintArray($r_msg);
-unset($r_err);
-unset($r_msg);
-
-$manager->printItems($zids);   // print links and actions
 $r_state['manager'] = $manager->getState();
 
 HtmlPageEnd();

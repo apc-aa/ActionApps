@@ -1162,7 +1162,7 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
             $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
         }
         if ($numeric_bin & AA_BIN_PENDING) {
-            $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' ";
+            $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' AND expiry_date > '$now'";
         }
         if ($numeric_bin & AA_BIN_HOLDING) {
             $or_conds[] = " $table.status_code=2 ";
