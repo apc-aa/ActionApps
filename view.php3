@@ -98,9 +98,9 @@ if ($contenttype) {
 
 $text = GetView(ParseViewParameters());
 
-if ($convertto AND $convertfrom) {
+if ($convertto OR $convertfrom) {
     require_once AA_INC_PATH."convert_charset.class.php3";
-    $encoder = new ConvertCharset;
+    $encoder = ConvertCharset::singleton();
     $text = $encoder->Convert($text, $convertfrom, $convertto);
 }
 

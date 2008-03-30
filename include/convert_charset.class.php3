@@ -178,12 +178,22 @@ class ConvertCharset {
 
     /** Default conversions for this convertor */
     var $from_charset;
-    var $to_varset;
+    var $to_charset;
 
-    function ConvertCharset($from_charset = null, $to_varset = null) {
+    function ConvertCharset($from_charset = null, $to_charset = null) {
         $this->from_charset = $from_charset;
-        $this->to_varset    = $to_varset;
+        $this->to_charset   = $to_charset;
     }
+
+    /** Static function called like $encoder = ConvertCharset::singleton($from, $to) */
+    function singleton($from_charset = null, $to_charset = null) {
+        static $instance = null;
+        if (is_null($instance)) {
+            $instance = new ConvertCharset($from_charset, $to_charset);
+        }
+        return $instance;
+    }
+
 
     /**
      * CharsetChange::NumUnicodeEntity()
@@ -410,11 +420,11 @@ class ConvertCharset {
             print $this->DebugOutput(0, 3, "\$StringToChange");
             return "";
         }
-        elseif ($FromCharset == "") {
+        elseif (empty($FromCharset)) {
             print $this->DebugOutput(0, 3, "\$FromCharset");
             $FromCharset = 'utf-8';
         }
-        elseif ($ToCharset == "") {
+        elseif (empty($ToCharset)) {
             print $this->DebugOutput(0, 3, "\$ToCharset");
             $ToCharset = 'utf-8';
         }
