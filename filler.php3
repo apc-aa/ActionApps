@@ -13,6 +13,9 @@
  *   ok_url       - url where to go, if item is successfully stored in database
  *   err_url      - url where to go, if item is not stored in database (due to
  *                  validation of data, ...)
+ *   inline       - the ok url will be send to output directly (by readfile)
+ *                  (for AJAX editing)
+ *                  ok_url = "http://example.org/aa/view.php3?vid=1374&cmd[1374]=x-1374-_#N1_ID___"
  *   force_status_code - you may add this to force to change the status code
  *                       but the new status code must always be higher than bin2fill
  *                       setting (you can't add to the Active bin, for example)
@@ -70,9 +73,21 @@ function StripslashesDeep($value) {
     return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
 }
 
+/** APC-AA configuration file */
+require_once "include/config.php3";
+require_once AA_INC_PATH."convert_charset.class.php3";
+
+function ConvertEncodingDeep($value, $from=null, $to=null) {
+    $encoder = ConvertCharset::singleton($from, $to);
+    return is_array($value) ? array_map('ConvertEncodingDeep', $value) : $encoder->Convert($value);
+}
+
+if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
+    $_POST   = ConvertEncodingDeep($_POST, $_REQUEST['convertfrom'], $_REQUEST['convertto']);
+}
+
 // global variables should be quoted (since old AA code rely on that fact),
 // however the new code should use $_POST, which are NOT quoted
-
 if (!get_magic_quotes_gpc()) {
     // Overrides GPC variables
     foreach ($_GET as $k => $v) {
@@ -92,8 +107,6 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE = StripslashesDeep($_COOKIE);
 }
 
-/** APC-AA configuration file */
-require_once "include/config.php3";
 /** Main include file for using session management function on a page */
 require_once AA_INC_PATH."locsess.php3";
 /** Set of useful functions used on most pages */
@@ -112,6 +125,7 @@ require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."sliceobj.php3";
 require_once AA_INC_PATH."grabber.class.php3";
+
 
 function UseShowResult($txt,$url) {
     // allows to call a script showing the error results from fillform
@@ -134,7 +148,7 @@ function UseShowResult($txt,$url) {
  */
 function SendErrorPage($txt) {
     // $wap variable is set in filler-wap.php
-    if ($GLOBALS['$wap']) {
+    if ($GLOBALS['wap']) {
         header("Content-type: text/vnd.wap.wml");
         echo '
         <?xml version="1.0" encoding="iso-8859-1"?>
@@ -159,7 +173,7 @@ function SendErrorPage($txt) {
         echo "</body></html>";
     } else {
         if (!$GLOBALS["use_post2shtml"]) {
-            $posturl = con_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000));
+            $posturl = get_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000));
             if ($GLOBALS['debugfill']) huhl("Going to post2shtml posturl=",$posturl);
             go_url($posturl);
         } else {
@@ -174,10 +188,10 @@ function SendErrorPage($txt) {
  * Loads a page if posting is successful. If the ok_url parameter is passed,
  * redirects to the specified URL, else returns to the calling page.
  */
-function SendOkPage($txt) {
+function SendOkPage($txt, $new_ids = array()) {
     global $debugfill;
     // $wap variable if set in filler-wap.php
-    if ($GLOBALS['$wap']) {
+    if ($GLOBALS['wap']) {
         header("Content-type: text/vnd.wap.wml");
         echo '
         <?xml version="1.0" encoding="iso-8859-1"?>
@@ -191,6 +205,16 @@ function SendOkPage($txt) {
         exit;
     }
     if ($debugfill) huhl("Filler:SendOkPage:",$txt);
+
+    // we can use something like:
+    //    ok_url = "/aa/view.php3?vid=1374&cmd[1374]=x-1374-_#N1_ID___"
+    if ($GLOBALS["ok_url"]) {
+        $GLOBALS["ok_url"] = str_replace('_#N1_ID___', $new_ids[0], $GLOBALS["ok_url"]);
+    }
+    if ($GLOBALS["inline"]) {
+        readfile($GLOBALS["ok_url"]);
+        exit;
+    }
     if (!$GLOBALS["ok_url"]) {
         go_url($_SERVER['HTTP_REFERER']);
     } elseif (!$GLOBALS["use_post2shtml"]) {
@@ -213,7 +237,7 @@ if ( isset($_POST['aa']) ) {
     $translations = null;
     $saver        = new AA_Saver($grabber, $translations, null, 'by_grabber');
     $saver->run();
-    SendOkPage( array("success" => "insert" ));
+    SendOkPage( array("success" => "insert" ), $saver->newIds());
     exit;
 }
 

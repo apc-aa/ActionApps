@@ -60,7 +60,10 @@ $dir = dirname(__FILE__). '/prototype/';
 var AA_Config = {
   AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>',
   SESS_NAME:      '<?php echo isset($_GET['sess_name']) ? $_GET['sess_name'] : ''; ?>',
-  SESS_ID:        '<?php echo isset($_GET['sess_id'])   ? $_GET['sess_id']   : ''; ?>'
+  SESS_ID:        '<?php echo isset($_GET['sess_id'])   ? $_GET['sess_id']   : ''; ?>',
+  loader:         '<img src="<?php echo AA_INSTAL_PATH; ?>images/loader.gif" border="0" width="16" height="16">',
+  icon_new:       '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_new.gif" border="0" width="17" height="17">',
+  icon_close:     '<img src="<?php echo AA_INSTAL_PATH; ?>images/icon_close.gif" border="0" width="17" height="17">'
 }
 
 <?php
@@ -88,15 +91,33 @@ function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2
         $(div_id_2).show();
         // not loaded from remote url, yet?
         if ( $(div_id_2).readAttribute('aa_loaded') != '1') {
-            $(div_id_2).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
-            new Ajax.Updater(div_id_2, url);
             $(div_id_2).setAttribute('aa_loaded', '1');
+            AA_Ajax(div_id_2, url);
         }
         $(link_id).update(link_text_2);
     } else {
         $(div_id_2).hide();
         $(div_id_1).show();
         $(link_id).update(link_text_1);
+    }
+}
+
+function AA_Ajax(div, url, param) {
+    $(div).update(AA_Config.loader);
+    new Ajax.Updater(div, url, param);
+}
+
+
+function AA_AjaxInsert(a_obj, form_url) {
+    var new_div_id = $(a_obj).identify() + '_ins';
+    if ( $(new_div_id) == null ) {
+        var new_div  = new Element('div', { 'id': new_div_id});
+        $(a_obj).update(AA_Config.icon_close);
+        new Insertion.After(a_obj, new_div);
+        AA_Ajax(new_div, form_url);
+    } else {
+        $(a_obj).update(AA_Config.icon_new);
+        $(new_div_id).remove();
     }
 }
 
@@ -107,10 +128,14 @@ function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2
  *  @param ok_html   - what text (html) should be displayed after the success
  *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
  */
-function SendAjaxForm(id, loader_id, ok_html) {
-    $(loader_id).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
+function SendAjaxForm(id) {
+    $(id).insert(AA_Config.loader);
     $(id).request({encoding:   'windows-1250',
-                   onComplete: function(){ $(id).update(ok_html); }});
+                   onComplete: function(transport){ 
+                       new Insertion.After($(id).up('div'), new Element('div').update(transport.responseText));
+                       // close form and display add icon
+                       AA_AjaxInsert($(id).up('div').previous(), ''); 
+                   }});
 }
 
 /** Deprecated
