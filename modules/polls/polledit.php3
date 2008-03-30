@@ -80,7 +80,7 @@ if ($insert  || $update ) {
     $varset->add("ip_lock_timeout",    "number", $ip_lock_timeout);
     $varset->add("set_cookies",        "number", ($set_cookies ? 1 : 0));
     $varset->add("cookies_prefix",     "quoted", $cookies_prefix);
-                                       
+
     $varset->add("params",             "quoted", $params);
 
     if ($insert) {
@@ -98,11 +98,12 @@ if ($insert  || $update ) {
 
     $SQL         = "SELECT * FROM polls_answer WHERE (poll_id='$poll_id')";
     $answertable = GetTable2Array($SQL, 'id', 'aa_fields');
-    
+
     if (is_array($answers)) {
         $i=1;
         $answers2store = array();
         foreach ( $answers as $v) {
+            $v = stripslashes($v);    // it is quoted
             if (isset($answertable[substr($v, 1, 32)])) { // old answer
                 $answ = $answertable[substr($v, 1, 32)];
                 $answ['answer'] = substr($v, 34);
@@ -111,14 +112,14 @@ if ($insert  || $update ) {
             }
             $answ['poll_id']  = $poll_id;
             $answ['priority'] = $i;
-            $answers2store[] = $answ;
+            $answers2store[]  = $answ;
             $i++;
         }
     }
 
     $varset->clear();
     $varset->doDeleteWhere('polls_answer', "(poll_id='$poll_id')");
-    
+
     foreach ($answers2store as $record) {
         $varset->resetFromRecord($record);
         $varset->doINSERT('polls_answer');
@@ -126,7 +127,7 @@ if ($insert  || $update ) {
     // clear cache
     $GLOBALS['pagecache']->invalidateFor("slice_id=$poll_id");    // invalidate this concrete poll
     $GLOBALS['pagecache']->invalidateFor("slice_id=$module_id");  // and also the list of polls in this module, if used
-    
+
     go_url($sess->url(self_base(). "./index.php3"));  // back to poll manager
 }
 
@@ -176,9 +177,9 @@ if ($poll_id) {
     $SQL         = "SELECT id, answer AS text FROM polls_answer WHERE (poll_id='$poll_id') ORDER BY priority";
     $answertable = GetTable2Array($SQL, '', 'aa_fields');
     $polltext    = array();
-    if ( is_array($answertable) ) { 
+    if ( is_array($answertable) ) {
         foreach ($answertable as $answ) {
-            $polltext[':'.$answ['id'].':'.$answ['text']] = $answ['text']; 
+            $polltext[':'.$answ['id'].':'.$answ['text']] = $answ['text'];
         }
     }
 
