@@ -940,6 +940,8 @@ class ItemContent {
 
         // we use slice_id as item id here
         $this->_store_fields($slice_id, $fields);
+        
+        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");
     }
 
     /** _clean_updated_fields function
