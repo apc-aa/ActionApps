@@ -139,10 +139,15 @@ function GetTableView($viewID) {
         $retval["attrs"] = $attrs_edit;
         $retval["readonly"] = false;
         $retval["gotoview"] = "polls_design";
-        $retval["addrecord"] = false;
+        $retval["addrecord"] = true;
         $retval["fields"] = array (
             "id"        => array ("caption" => _m("Id"),
+                                  "default" => new_id(),
                                         "view" => array( "type"=>"text",
+                                                         "readonly" => true )),
+            "module_id" => array ("caption" => _m("Module Id"),
+                                  "default" => pack_id128($GLOBALS["slice_id"]),
+                                        "view" => array( "type"=>"hide",
                                                          "readonly" => true )),
             "name"            => array ("caption" => _m("Name"),
                                         "view" => array( "type"=>"text" ),
