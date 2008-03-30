@@ -2149,8 +2149,14 @@ function get_if($value, $else, $else2='aa_NoNe') {
  *  Version of AA - automaticaly included also date and revision of util.php3
  *  file, for better version informations
  */
-function aa_version() {
-    return 'ActionApps 2.11.0 ($Date$, $Revision$)';
+function aa_version($format='full') {
+    $version = '2.11.0';
+    $full    = 'ActionApps '.$version.' ($Date$, $Revision$)';
+    switch ($format) {
+        case 'svn': return (int) substr($full, strpos($full, 'Revision')+10);
+        case 'aa':  return $version;
+    }
+    return $full;
 }
 
 class CookieManager {

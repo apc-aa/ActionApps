@@ -480,7 +480,7 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
         $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
 
         $uniqid = uniqid();
-        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid')\">$switch_state_1</a>\n";
+        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid');return false;\">$switch_state_1</a>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
         return $ret;
@@ -511,7 +511,7 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
         $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
 
         $uniqid = uniqid();
-        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"javascript:AA_HtmlAjaxToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid', '$url')\">$switch_state_1</a>\n";
+        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid', '$url');return false;\">$switch_state_1</a>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\"></div>\n";
         return $ret;
@@ -806,6 +806,10 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Current date with specified date format
+ *    {now:j.n.Y}  displays 24.12.2008 on X-mas 2008
+ *    {now:Y}      current year
+ */
 class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -1199,6 +1203,23 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
     }
 }
 
+/** returns ids of items based on conds d-...
+ *  {seo2ids:<slices>:<seo-string>}
+ *  {seo2ids:6a435236626262738348478463536272:about-us}
+ *  returns long id of item in selected slice (or dash separated slices) with
+ *  the specified SEO string in seo............. field. If there more such ids
+ *  (which should not be), they are dash separated
+ */
+class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
+    /** expand function
+     * @param $slices
+     * @param $seo_string
+     */
+    function expand($slices, $seo_string) {
+        return AA_Stringexpand_Ids::expand($slices, 'd-seo.............-=-'. str_replace('-', '--', $seo_string));
+    }
+}
+
 /** @returns name (or other field) of the constant in $gropup_id with $value */
 class AA_Stringexpand_Constant extends AA_Stringexpand {
     /** expand function
@@ -1210,6 +1231,24 @@ class AA_Stringexpand_Constant extends AA_Stringexpand {
          return getConstantValue($group_id, $what, $value);
     }
 }
+
+/** @return html <option>s for given constant group */
+class AA_Stringexpand_Options extends AA_Stringexpand {
+    /** expand function
+     * @param $group_id
+     */
+    function expand($group_id) {
+        $ret = '';
+        $constants = GetConstants($group_id);
+        if (is_array($constants)) {
+            foreach ($constants as $k => $v) {
+                $ret .= "\n  <option value=\"".safe($k)."\">".safe($v)."</option>";
+            }
+        }
+        return $ret;
+    }
+}
+
 
 /** If $condition is filled by some text, then print $text. $text could contain
  *  _#1 alias for the condition, but you can use any {} AA expression.
@@ -1289,6 +1328,27 @@ class AA_Stringexpand_Field extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Get module (slice, ...) property (currently only "module fileds" 
+ *  (beggining with underscore) and 'name' is supported
+ *  replacing older {alias:_abstract.......:f_s:slice_info} syntax 
+ **/
+class AA_Stringexpand_Modulefield extends AA_Stringexpand {
+    /** expand function
+     * @param $property
+     */
+    function expand($slice_id, $property='') {
+        $slice = AA_Slices::getSlice($slice_id);
+        // we do not want to allow users to get all field setting
+        // that's why we restict it to the properties, which makes sense
+        // @todo - make it less restrictive
+        if (!AA_Fields::isSliceField($property)) {  // it is "slice field" (begins with underscore _)
+            $property = 'name';
+        }
+        return $slice->getProperty($property);
+    }
+}
+
+
 /** Get module (slice, ...) property (currently only 'name' is supported */
 class AA_Stringexpand_Slice extends AA_Stringexpand {
     /** additionalCacheParam function
@@ -1308,12 +1368,7 @@ class AA_Stringexpand_Slice extends AA_Stringexpand {
         if (!$slice_id ) {
             return "";
         }
-        $slice = AA_Slices::getSlice($slice_id);
-        // we do not want to allow users to get all field setting
-        // that's why we restict it to the properties, which makes sense
-        // @todo - make it less restrictive
-        $property = 'name';
-        return $slice->getProperty($property);
+        return AA_Stringexpand_Modulefield::expand($slice_id, $property);
     }
 }
 
@@ -2163,15 +2218,33 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
     function expand($image='', $phpthumb_params='') {
         // it is much better to access the files as files reletive to the directory, than using http access
 
-		if (AA_HTTP_DOMAIN!=="/") {
-		$image = str_replace(AA_HTTP_DOMAIN, '', $image);
-		}
-		if (substr($image,0,4)=="http"){
-		$image = ereg_replace("http://(www\.)?(.+)\.([a-z]{1,6})/(.+)", "/\\4", $image);
-		}
-		
-		return AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params";
+        if (AA_HTTP_DOMAIN!=="/") {
+            $image = str_replace(AA_HTTP_DOMAIN, '', $image);
+        }
+        if (substr($image,0,4)=="http"){
+            $image = ereg_replace("http://(www\.)?(.+)\.([a-z]{1,6})/(.+)", "/\\4", $image);
+        }
+
+        return AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params";
     }
 }
+
+/** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
+ *  {version[:aa|svn]}
+ **/
+class AA_Stringexpand_Version extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function
+     * @param $format - 'full' (default) - string with AA version, date, revision, ...
+     *                  'aa'             - AA version like "2.11.0"
+     *                  'svn'            - Subversion revision like "2314"
+     */
+    function expand($format='') {
+        return aa_version($format);
+    }
+}
+
 
 ?>
