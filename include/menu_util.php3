@@ -248,16 +248,17 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
  */
 function GetMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) {
 
-    if ($active) {
-        return "<span class=\"nbactive\">$label</span>\n";
-    }
+    $cssclass = $active ? 'nbactive' : 'nbenable';
+//    if ($active) {
+//        return "<span class=\"nbactive\">$label</span>\n";
+//    }
     if ($slice_id AND $cond) {
         $href = $exact_href;
         if (!$href) {
             $href = get_aa_url($aa_href);
         }
         $href = con_url($href, "slice_id=$slice_id");
-        return a_href($href, "<span class=\"nbenable\">$label</span>");
+        return a_href($href, "<span class=\"$cssclass\">$label</span>");
     }
     // maked invisible which is better, I think. Honza 2007-08-02
     // return "<span class=\"nbdisable\">$label</span>";
@@ -294,10 +295,14 @@ function showSubMenuRows( $aamenuitems, $active ) {
             showSubMenuRows( $function( $item["func_param"] ), $active );
         } else {
             echo '<tr><td width="122" valign="TOP">&nbsp;';
-            if (!isset ($item["cond"])) $item["cond"] = 1;
-            if ($itemshow == $active) {
-                echo "<span class=\"leftmenua\">".$item["label"]."</span>\n";
-            } elseif (($slice_id || $item["show_always"]) && $item["cond"]) {
+            if (!isset ($item["cond"])) {
+                $item["cond"] = 1;
+            }
+            $cssclass = ($itemshow == $active) ? 'leftmenua' : 'leftmenuy';
+//            if ($itemshow == $active) {
+//                echo "<span class=\"leftmenua\">".$item["label"]."</span>\n";
+//            } elseif (($slice_id || $item["show_always"]) && $item["cond"]) {
+            if (($slice_id || $item["show_always"]) && $item["cond"]) {
                 $href = ($item["exact_href"] ? $item["exact_href"] : get_aa_url($item["href"]));
                 if ($slice_id && !$item["no_slice_id"]) {
                     $href = con_url($href, "slice_id=$slice_id");
@@ -307,7 +312,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
                     $item['js'] = str_replace("{exact_href}",$href,$item['js']);
                     $href       = "javascript:".$item['js'];
                 }
-                echo '<a href="'.$href.'" class="leftmenuy">'.$item["label"]."</a>\n";
+                echo '<a href="'.$href.'" class='.$cssclass.'>'.$item["label"]."</a>\n";
             } elseif ( !$item["hide"] ) {
                 echo "<span class=\"leftmenun\">".$item["label"]."</span>\n";
             }

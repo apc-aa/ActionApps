@@ -536,7 +536,7 @@ class AA_Item {
         (($no_sess OR !is_object($sess))  ? '' : $sess->url('')) );
 
         // add state variable, if defined (apc - AA Pointer Cache)
-        if ( $GLOBALS['apc_state'] ) {
+        if ( $GLOBALS['apc_state'] AND $GLOBALS['apc_state']['state'] ) {
             $url_base = con_url( $url_base, 'apc='.$GLOBALS['apc_state']['state'] );
         }
         return $url_base;

@@ -56,7 +56,7 @@ require_once AA_INC_PATH."varset.php3";
  * @param int $time the UNIX timestamp to simulate behaviour on a given date
  *                  - if omitted, uses the current time
  */
-function cron ($time = 0) {
+function cron($time = 0) {
 
     global $debug;
     if ($debug) {
@@ -69,7 +69,7 @@ function cron ($time = 0) {
 
     if (!$time) $time = time();
 
-    $db = new DB_AA;
+    $db        = new DB_AA;
     $db_update = new DB_AA;
 
     $parts = array ("mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60);
@@ -158,18 +158,22 @@ function cron ($time = 0) {
                 $nearest_time -= $diff * 24 * 60 * 60;
             }
         } // end of if ($db->f("last_run"))
-        else $nearest_time = time();
+        else {
+            $nearest_time = time();
+        }
 
         $url = AA_INSTAL_URL.$db->f("script")."?".$db->f("params");
 
         if ($debug) {
-            if ($nearest_part > -1 && $nearest_time > $db->f("last_run"))
+            if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
                  echo "<b>$url</b> will be run<BR>";
-            else echo "<font size=small>$url will be run on ".date( "d.m.y H:i",$nearest_time)." ($nearest_time)</font><BR>";
+            } else {
+                echo "<font size=small>$url will be run on ".date( "d.m.y H:i",$nearest_time)." ($nearest_time)</font><BR>";
+            }
             //echo "Nearest time: "; print_r ($nearest);
             $db_update->query("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
         }
-        else if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
+        elseif ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
             $db_update->query("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
             fopen ($url,"r");
         }

@@ -542,7 +542,7 @@ class itemview {
         // array(array('classname', method),array(param1, param2))
         // Example array(array('AA_Metabase','getContent'),array(table=>'toexecute'))
         // getContent is in theis case static class method
-        // parameter array (if supplied) is apassed as FIRST parameter of the method
+        // parameter array (if supplied) is passed as FIRST parameter of the method
         $content = call_user_func_array($this->get_content_funct[0], array($this->get_content_funct[1], $foo_zids));
     } else {
         $content = call_user_func_array($this->get_content_funct, array($foo_zids));

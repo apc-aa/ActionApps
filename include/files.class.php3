@@ -381,7 +381,7 @@ class Files {
      * @return boolean true if deleted, false otherwise.
      */
     function delFile($file) {
-        return is_file($file) ? unlink($file) : false;
+        return @is_file($file) ? @unlink($file) : false;
     }
 
     /** delFolder function

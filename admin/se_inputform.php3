@@ -401,7 +401,8 @@ echo "
              <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
              <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"text\" name=\"input_validate_p\" size=\"50\" maxlength=\"240\" value=\"". safe($input_validate_p) ."\">
+         <input type=\"text\" name=\"input_validate_p\" size=\"50\" maxlength=\"240\" value=\"". safe($input_validate_p) ."\"><br>
+            ". _m('Stored as').": ". ($fld['text_stored'] == 1 ? _m('Text') : _m('Number') ) ."
          </td>
       </td>
      </tr>

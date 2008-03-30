@@ -3016,21 +3016,25 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
         $zids = new zids(null, 'l');
         $zids->setFromItemArr($items);
     } else {                   // user defined by bookmark
+        $conds = false;
+        $sort  = false;
         switch ($group) {
-            case 'AA_ALL':         $conds = false; $bins = AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH;  break;
-            case 'AA_BIN_PENDING': $conds = false; $bins = AA_BIN_PENDING; break;
-            case 'AA_BIN_EXPIRED': $conds = false; $bins = AA_BIN_EXPIRED; break;
-            case 'AA_BIN_ACTIVE':  $conds = false; $bins = AA_BIN_ACTIVE;  break;
-            case 'AA_BIN_HOLDING': $conds = false; $bins = AA_BIN_HOLDING; break;
-            case 'AA_BIN_TRASH':   $conds = false; $bins = AA_BIN_TRASH;   break;
+            case 'AA_ALL':         $bins = AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH;  break;
+            case 'AA_BIN_PENDING': $bins = AA_BIN_PENDING; break;
+            case 'AA_BIN_EXPIRED': $bins = AA_BIN_EXPIRED; break;
+            case 'AA_BIN_ACTIVE':  $bins = AA_BIN_ACTIVE;  break;
+            case 'AA_BIN_HOLDING': $bins = AA_BIN_HOLDING; break;
+            case 'AA_BIN_TRASH':   $bins = AA_BIN_TRASH;   break;
             case 'AA_BIN_ACTIVE':
-            case '':               $conds = false; $bins = AA_BIN_ACTIVE;  break;
+            case '':               $bins = AA_BIN_ACTIVE;  break;
             default:
                 $searchbar->setFromBookmark($group);
-                $set = $searchbar->getSet();
+                $set   = $searchbar->getSet();
                 $bins  = AA_BIN_ACTIVE;
+                $conds = $set->getConds();
+                $sort  = $set->getSort();
         }
-        $zids  = QueryZIDs( array($slice_id), $set->getConds(), $set->getSort(),  $bins);
+        $zids  = QueryZIDs( array($slice_id), $conds, $sort,  $bins);
     }
     return $zids;
 }

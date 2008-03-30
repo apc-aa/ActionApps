@@ -43,6 +43,10 @@ class AA_Saver {
     var $slice_id;           /** id of destination slice */
     var $store_mode;         /** store-policy - how to store - overwrite | insert_if_new | by_grabber */
     var $id_mode;            /** id-policy    - how to construct id - old | new | combined */
+    
+    var $_new_ids;           /** array of newly inserted ids (after run()) - the long ones */
+    var $_updated_ids;       /** array of ids of rewritten items (after run()) - the long ones */
+    
     /** AA_Saver function
      * @param $grabber
      * @param $transformations
@@ -56,6 +60,8 @@ class AA_Saver {
         $this->slice_id        = $slice_id;
         $this->store_mode      = $store_mode;
         $this->id_mode         = $id_mode;
+        $this->_new_ids        = array();
+        $this->_updated_ids    = array();
     }
 
     /** run function
@@ -119,6 +125,15 @@ class AA_Saver {
                 if ($debugfeed >= 1) {
                     print("\n<br>  + stored OK: ". $content4id->getValue('headline........'));
                 }
+                
+                // @todo better check of new ids
+                if ($store_mode == 'insert') {
+                    $this->_new_ids[] = $new_item_id;
+                } else {
+                    $this->_updated_ids[] = $new_item_id;
+                }
+                
+                
                 // Update relation table to show where came from
                 if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
                     AddRelationFeed($new_item_id, $content4id->getItemID());
@@ -126,6 +141,11 @@ class AA_Saver {
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some finalization in grabber
+    }
+    
+    /** Returns array of long new saved ids */
+    function newIds() {
+        return $this->_new_ids;
     }
 
     /** toexecutelater function
