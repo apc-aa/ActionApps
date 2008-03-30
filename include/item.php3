@@ -1178,7 +1178,7 @@ class AA_Item {
             case "csv":
                 return $this->f_t($col,":".$p[0]);
             case "slice_info":
-                return AA_Stringexpand_Slice::expand($col);
+                return AA_Stringexpand_Modulefield::expand(get_if($this->getSliceID(),$GLOBALS['slice_id']), $col);
             case "link_edit":
                 return (($p[1]=='anonym') ?
                 get_aa_url('modules/links/linkedit.php3?free=anonym&freepwd=anonym&lid='. $this->getval('id')) :
