@@ -79,7 +79,7 @@ if ($insert  || $update ) {
     $varset->add("ip_locking",         "number", ($ip_locking ? 1 : 0));
     $varset->add("ip_lock_timeout",    "number", $ip_lock_timeout);
     $varset->add("set_cookies",        "number", ($set_cookies ? 1 : 0));
-    $varset->add("cookies_prefix",     "quoted", $cookies_prefix);
+    // $varset->add("cookies_prefix",     "quoted", $cookies_prefix);  // not used
 
     $varset->add("params",             "quoted", $params);
 
@@ -169,8 +169,8 @@ if ($poll_id) {
 FrmTabCaption(_m("Insert question and answers"), '','', $form_buttons, $sess, $module_id);
 
 $where = $poll_id ? "id='$poll_id'" : "module_id = '$p_module_id' AND status_code = 0";
-$SQL  = "SELECT design_id, aftervote_design_id, params, cookies_prefix, set_cookies, ip_lock_timeout, locked, ip_locking, logging, expiry_date, publish_date, headline FROM polls WHERE $where";
-list($design_id, $aftervote_design_id, $params, $cookies_prefix, $set_cookies, $ip_lock_timeout, $locked, $ip_locking, $logging, $expiry_date, $publish_date, $headline) = GetTable2Array($SQL, 'aa_first');
+$SQL  = "SELECT design_id, aftervote_design_id, params, set_cookies, ip_lock_timeout, locked, ip_locking, logging, expiry_date, publish_date, headline FROM polls WHERE $where";
+list($design_id, $aftervote_design_id, $params, $set_cookies, $ip_lock_timeout, $locked, $ip_locking, $logging, $expiry_date, $publish_date, $headline) = GetTable2Array($SQL, 'aa_first');
 
 if ($poll_id) {
 
@@ -203,7 +203,7 @@ FrmInputChBox("logging",        _m("Use logging"),        $logging);
 FrmInputChBox("ip_locking",     _m("Use IP locking"),     $ip_locking);
 FrmInputText("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout, 15, 10, false,  _m("time in seconds"));
 FrmInputChBox("set_cookies",    _m("Use cookies"),        $set_cookies);
-FrmInputText("cookies_prefix",  _m("Cookies prefix"),     $cookies_prefix);
+// FrmInputText("cookies_prefix",  _m("Cookies prefix"),     $cookies_prefix);  // not used
 FrmInputText("params",          _m("Parameters"),         $params);
 
 FrmTabSeparator(_m("Polls design templates"));
