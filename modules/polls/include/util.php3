@@ -35,12 +35,19 @@ require_once AA_INC_PATH. "varset.php3";
 function GetAnswerAliases() {
     $metabase = AA_Metabase::singleton();
     $aliases = array (
-        "_#POLLQUES" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#HEADLINE}",        "",                _m('Prints poll answer')),
-        "_#ANS_NO__" => GetAliasDef( "f_t",       "priority",                _m('Nubmer of answer')),
-        "_#ANS_VOTE" => GetAliasDef( "f_t",          "votes",                _m('Nubmer of votes for this answer')),
-        "_#ANSWER__" => GetAliasDef( "f_t",         "answer",                _m('Text of answer')), // generated automaticaly form the table column using metabase methods
-        "_#ANS_ID__" => GetAliasDef( "f_t",             "id",                _m('ID of answer (32 characters hexadecimal number)')),
-        "_#POLL_ID_" => GetAliasDef( "f_t",        "poll_id",                _m('Poll id (32 characters hexadecimal number - the same for all answers)')), // generated automaticaly form the table column using metabase methods
+        "_#QUESTION" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),
+        "_#POLLQUES" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#QUESTION}",   "", _m('Prints poll question')),  // deprecated
+        "_#PUB_DATE" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#PUB_DATE}",   "", _m('Poll publish date')),
+        "_#EXP_DATE" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#EXP_DATE}",   "", _m('Poll expiry date')),
+        "_#PARAMS__" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#PARAMS__}",   "", _m('Poll params')),
+        "_#MODULEID" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#MODULEID}",   "", _m('Module ID')),
+        
+        "_#POLL_ID_" => GetAliasDef( "f_t",           "poll_id",                _m('Poll id (32 characters hexadecimal number - the same for all answers)')), // generated automaticaly form the table column using metabase methods
+
+        "_#ANS_NO__" => GetAliasDef( "f_t",          "priority",                _m('Nubmer of answer')),
+        "_#ANS_VOTE" => GetAliasDef( "f_t",             "votes",                _m('Nubmer of votes for this answer')),
+        "_#ANSWER__" => GetAliasDef( "f_t",            "answer",                _m('Text of answer')), // generated automaticaly form the table column using metabase methods
+        "_#ANS_ID__" => GetAliasDef( "f_t",                "id",                _m('ID of answer (32 characters hexadecimal number)')),
         "_#ANS_PERC" => GetAliasDef( "f_t:{poll_share}",     "",                _m('Votes for this answer in percent. You can use also {poll_share}.')),
         "_#ANS_SUM_" => GetAliasDef( "f_t:{poll_sum}",       "",                _m('Sum of all votes. You can use also {poll_sum}.')),
     );
@@ -52,14 +59,16 @@ function GetAnswerAliases() {
 function GetPollsAliases() {  // function - we need trnslate _m() on use (not at include time)
     $metabase = AA_Metabase::singleton();
     $aliases = array (
-        "_#POLL_ID_" => GetAliasDef( "f_t",               "id",          _m('Poll ID')),
-        "_#QUESTION" => GetAliasDef( "f_t",               "headline",       _m('Prints poll question')),
-        "_#PUB_DATE" => GetAliasDef( "f_d:n/j/Y",         "publish_date",       _m('Publish Date')),
-        "_#EXP_DATE" => GetAliasDef( "f_d:n/j/Y",         "expiry_date",         _m('Expiry Date')),
-        "_#EDITPOLL" => GetAliasDef( "f_e:poll_edit",     "id",          _m('Link to poll editing page (for admin interface only)')),
-        "_#POLLQUES" => GetAliasDef( "f_t:{ifset:1:2:3}",        "",                _m('Prints poll answer')),
+        "_#POLL_ID_" => GetAliasDef( "f_t",               "id",           _m('Poll ID')),
+        "_#MODULEID" => GetAliasDef( "f_t",               "module_id",    _m('Module ID')),
+        "_#QUESTION" => GetAliasDef( "f_t",               "headline",     _m('Prints poll question')),
+        "_#PUB_DATE" => GetAliasDef( "f_d:n/j/Y",         "publish_date", _m('Publish Date')),
+        "_#EXP_DATE" => GetAliasDef( "f_d:n/j/Y",         "expiry_date",  _m('Expiry Date')),
+        "_#PARAMS__" => GetAliasDef( "f_t",               "params",       _m('Prints poll params')),
+        "_#EDITPOLL" => GetAliasDef( "f_e:poll_edit",     "id",           _m('Link to poll editing page (for admin interface only)')),
     );
-    return array_merge($metabase->generateAliases('polls'), $aliases);
+    return $aliases;
+    // array_merge($metabase->generateAliases('polls'), $aliases);
 }
 
 function printAliases() {
