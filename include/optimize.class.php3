@@ -882,4 +882,43 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
     }
 }
 
+
+/** Creates upload directory for current slice (if not already created) **/
+class AA_Optimize_Create_Upload_Dir extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Create upload directory for current slice");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("see IMG_UPLOAD_PATH parameter in config.php3 file");
+    }
+
+    /** Test function
+    * @return a message
+    */
+    function test() {
+        $this->message(_m('There is nothing to test.'));
+        return true;
+    }
+
+    /** Main update function
+     *  @return bool
+     */
+    function repair() {
+        if ($path = Files::destinationDir(AA_Slices::getSlice($GLOBALS['slice_id']))) {
+            $this->message(_m('OK, %1 created', array($path)));
+            return true;
+        }
+        $this->message(Files::lastErr());
+        return false;
+    }
+}
+
 ?>
