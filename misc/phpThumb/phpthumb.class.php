@@ -97,8 +97,11 @@ class phpthumb {
     var $config_nohotlink_erase_image                = true;
     var $config_nohotlink_text_message               = 'Off-server thumbnailing is not allowed';
     // * Off-server Linking Configuration:
-    var $config_nooffsitelink_enabled                = true;   // Changed by Honza s Gumbou 17.10.2007 for ecn gallery
-    var $config_nooffsitelink_valid_domains          = array('zpravodajstvi.ecn.cz'); //added by Gumba, 18.10.2007 for ecn gallery
+
+    // do not change configuration here - use phpthumb.config.php file instead
+    // see "nooffsitelink_enabled" variable!!!  Honza 31.3.2008
+    var $config_nooffsitelink_enabled                = true;
+    var $config_nooffsitelink_valid_domains          = array();
 /**
  * [cz] Az bude alias {img...} spravne fungovat, zmenit nastaveni
  *      bankwatch gallery (toolkit i web), aby se zamezilo zbytecnym
