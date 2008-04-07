@@ -216,25 +216,24 @@ class datectrl {
      * @return string
      */
     function gettimeselect() {
-    switch( $this->display_time ) {
-      case 2:   //display time as is - hour:minutes:seconds
-              return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"
-                     value=\"". safe($this->time) ."\" size=8 maxlength=8>";
-      case 1:   //display time as hour:minutes - if time is 00:00, it shows nothing
-      case 3:   //display time as hour:minutes
-              $t = explode( ":", $this->time );
-              if ( !is_array($t) ) $t = array( '00','00');
-              if ( !$t[0] ) $t[0] = "00";
-              if ( !$t[1] ) $t[1] = "00";
-              if ( strlen( $t[1] ) == '1' )   // minutes should be two nubers
-                $t[1] = "0" . $t[1];
-              $timestr = $t[0] .":". $t[1];
-              if ( ($this->display_time == 1) AND ($timestr == "00:00") )
-                $timestr = "";
-              return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"
-                     value=\"". safe($timestr). "\" size=\"8\" maxlength=\"8\"".getTriggers("input",$this->name).">";
-    }
-    return "";
+        if (!$this->display_time) {
+            return "";
+        }
+        $t = explode( ":", $this->time );
+        $time_string = '';
+
+        switch( $this->display_time ) {
+            case 1: $time_string = sprintf("%d:%02d",$t[0], $t[1]);
+                    if ($time_string == "0:00") {
+                        $time_string = '';
+                    }
+                    break;
+            case 2: $time_string = sprintf("%d:%02d:%02d",$t[0], $t[1]);
+                    break;
+            case 3: $time_string = sprintf("%d:%02d",$t[0], $t[1]);
+                    break;
+        }
+        return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"  value=\"". safe($time_string). "\" size=\"8\" maxlength=\"8\"".getTriggers("input",$this->name).">";
     }
 
     /** getselect function
