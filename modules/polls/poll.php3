@@ -116,8 +116,9 @@ if ($_REQUEST['poll_id']) {
 $zid_count = $poll_zids->count();
 
 for ( $i=0; $i < $zid_count; $i++ ) {
-    $poll = AA_Polls::getPoll($poll_zids->id($i));
-    $poll->display($_REQUEST['vote_id'] ? 'aftervote' : 'beforevote');
+    $poll   = AA_Polls::getPoll($poll_zids->id($i));
+    $design = $_REQUEST['design_id'] ? $_REQUEST['design_id'] : ($_REQUEST['vote_id'] ? 'aftervote' : 'beforevote');
+    $poll->display($design);
 }
 
 exit;

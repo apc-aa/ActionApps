@@ -95,12 +95,24 @@ class AA_Poll {
 
     /** get_format_strings function
      *  Returns array of admin format strings as used in manager class
+     *  @param $design  beforevote|aftervote|<design_id>
      */
-    function get_format_strings($type='beforevote') {
+    function get_format_strings($design='beforevote') {
         $this->loadSettings();
-        $design_type = (($type=='beforevote') OR !($this->getProperty('aftervote_design_id'))) ? 'design_id' : 'aftervote_design_id';
+        switch ($design) {
+            case 'aftervote':   $design_id = $this->getProperty('aftervote_design_id');
+                                break;
+                                // if not found, take standard design
+            case 'beforevote':  $design_id = false;  // default
+                                break;
+            default:            $design_id = $design;
+        }
+        // set deafault desing, if not specified
+        if (!$design_id) {
+            $design_id = $this->getProperty('design_id');
+        }
 
-        $design = GetTable2Array("SELECT top, answer, bottom FROM polls_design WHERE id = '".$this->getProperty($design_type)."'", 'aa_first');
+        $design = GetTable2Array("SELECT top, answer, bottom FROM polls_design WHERE id = '".quote($design_id)."'", 'aa_first');
         // additional string for compact_top and compact_bottom needed
         // for historical reasons (not manager.class verion of item manager)
         return array ( "compact_top"     => $design['top'],
@@ -126,10 +138,23 @@ class AA_Poll {
     function aliases() {
         return GetPollsAliases();
     }
+    
+    /** @return true, if the string is column in polls table */
+    function isField($string) {
+        static $columns = null;
+        if (is_null($columns)) {
+            $metabase = AA_Metabase::singleton();
+            $columns  = $metabase->getColumnNames('polls');
+        }
+        return in_array($string, $columns);
+    }
 
     function unalias($expression) {
         $this->loadSettings();
-        $item = new AA_Item($this->content->getContent(), $this->aliases(), '', $expression);
+        if ($this->isField($expression)) {
+            return $this->getProperty($expression);
+        }
+        $item = new AA_Item($this->content->getContent(), $this->aliases(), $expression);
         return $item->get_item();
     }
 
@@ -159,7 +184,7 @@ class AA_Poll {
 
         // checkig for duplicated votes - Cookies method
         if ($this->getProperty('set_cookies') == 1) {
-            $cookie = $poll["cookies_prefix"].$poll_id;
+            $cookie = 'AA_Polls_'.$poll_id;   // $this->getProperty('cookies_prefix') // it is not necessary
             if ($_COOKIE[$cookie] == "1") {
                 $vote_invalid = "Cookie";
             } else {
@@ -179,8 +204,8 @@ class AA_Poll {
         return $vote_invalid ? false : true;
     }
 
-    function display($type='beforevote') {
-        $format   = $this->get_format_strings($type);
+    function display($design='beforevote') {
+        $format   = $this->get_format_strings($design);
 
         $metabase = AA_Metabase::singleton();
         $aliases  = GetAnswerAliases();

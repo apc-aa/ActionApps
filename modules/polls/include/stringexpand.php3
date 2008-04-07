@@ -29,7 +29,7 @@
 
 /** Expands {poll:<poll_ids>:<aa_expression>} and displays the aa_expression
  *  for the poll
- *  @param $poll_id       - id of the poll (not pioll module, but poll as one question)
+ *  @param $poll_id       - id of the poll (not poll module, but poll as one question)
  *  @param $aa_expression - field from 'polls' table or any other expression
  */
 class AA_Stringexpand_Poll extends AA_Stringexpand {
@@ -41,13 +41,11 @@ class AA_Stringexpand_Poll extends AA_Stringexpand {
     function expand($ids_string='', $expression='') {
         $ids     = explode('-', $ids_string);
         $results = array();
-        $count   = 0;
         if ( is_array($ids) ) {
             foreach ( $ids as $poll_id ) {
                 if ( $poll_id ) {
                     $poll = AA_Polls::getPoll($poll_id);
                     if ($poll) {
-                        $count++;
                         if ($expression) {
                             $results[$poll_id] = $poll->unalias($expression);
                         }
