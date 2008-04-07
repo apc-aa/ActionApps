@@ -54,9 +54,10 @@ if ($categ OR $category) {
 }
 
 // as_new and $group_id is varname4form()-ed (for easier parameter passing)
-$as_new   = (strlen($as_new) > 1) ? pack_id(substr($as_new,1)) : null;
-$group_id = (strlen($group_id) > 1) ? pack_id(substr($group_id,1)) : null;
-$back_url = ($return_url ? ($fid ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php3");
+$as_new    = (strlen($as_new) > 1)   ? pack_id(substr($as_new,1)) : null;
+$group_id  = (strlen($group_id) > 1) ? pack_id(substr($group_id,1)) : null;
+$back_url  = ($return_url ? ($fid    ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php3");
+$from_form = false;  // display the values from form (after unsucessful update)
 
 if ($deleteGroup && $group_id && !$category) {
     delete_constant_group($group_id);
@@ -103,7 +104,7 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
       <td class=\"tabtxt\"><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>";
     if ($categ) {   // it is categories - show APC wide categories for parent category select
         echo "<td class=\"tabtxt\">";
-        echo "<select name=\"class[$id]\" $add>";
+        echo "<select name=\"class[$id]\">";
         foreach ($classes as $k => $v) {
             echo "<option value=\"". htmlspecialchars($k)."\"";
             if ((string)$class == (string)$k) {
@@ -168,6 +169,7 @@ function propagateChanges($constant_id, $newvalue, $oldvalue) {
 hcUpdate();
 
 if ($update) {
+    $from_form = true;
     do {
         if (!(isset($name) AND is_array($name))) {
             break;
@@ -271,10 +273,10 @@ if ($update) {
                 }
             }
         }
-
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 
         if (count($err) <= 1) {
+            $from_form = false;
             $Msg .= MsgOK(_m("Constants update successful"));
         }
     } while( 0 );           // in order we can use "break;" statement
@@ -419,7 +421,7 @@ echo "'</td></tr>
 if ($s_constants) {
     $i=0;
     foreach ($s_constants as $v) {
-        if ($update) {  // get values from form
+        if ($from_form) {  // get values from form
             ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $categ, $classes);
         } else {        // get values from database
             ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id128($v["id"]), $v["pri"], $v["class"], $categ, $classes);
