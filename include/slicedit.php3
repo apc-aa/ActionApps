@@ -322,6 +322,9 @@ if ( $add || $update ) {
                 if ($myerr != "") $err[] = _m("Internal error when changing user role.")." ($myerr)";
             }
             /* End of Wizard stuff */
+
+            // create new upload directory
+            Files::destinationDir(AA_Slices::getSlice($slice_id));
         }
         $slice = AA_Slices::getSlice($slice_id);
 //        $slice->setSliceField('_upload_url.....', $upload_url);
