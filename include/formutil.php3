@@ -193,7 +193,7 @@ class inputform {
 //        debug( $form, $GLOBALS['contentcache']);
     //added for MLX
         // print the inputform
-        $CurItem = new AA_Item($content4id, $slice->aliases(), '', $form, $remove_string);   // just prepare
+        $CurItem = new AA_Item($content4id, $slice->aliases(), $form, $remove_string);   // just prepare
 
         $out = $CurItem->get_item();
 
@@ -2153,9 +2153,12 @@ function FrmRichEditTextarea($name, $txt, $val, $rows=10, $cols=80, $type="class
  * @param $needed
  * @param $hlp
  * @param $morehlp
- * @param $display_time
+ * @param $display_time  - 0 - no
+ *                         1 - hour:minutes:seconds
+ *                         2 - hour:minutes - if time is 00:00, it shows nothing
+ *                         3 - hour:minutes
  */
-function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $display_time=false) {
+function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $display_time=0) {
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->dateSelect(7, 1, true, $display_time);
     $input->print_result();

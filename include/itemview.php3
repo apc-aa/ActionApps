@@ -455,7 +455,7 @@ class itemview {
       $level = 0; $maxlevel = 0;
       // If no item is specified, then still try and expand aliases using parameters
       if (!$item) {
-          $item = new AA_Item(null,$this->aliases,null,null,null,$this->parameters);
+          $item = new AA_Item(null,$this->aliases,null,null,$this->parameters);
       }
       // new_unalias_recurent modifies also $txt - that's why we do not use
       // &$txt in function definition
@@ -491,7 +491,7 @@ class itemview {
     global $debug;
 
     if ($view_type == "discussion") {
-      $CurItem = new AA_Item("", $this->aliases, $this->clean_url);   // just prepare
+      $CurItem = new AA_Item("", $this->aliases);   // just prepare
       $CurItem->set_parameters($this->parameters);
       switch ($this->disc['type']) {
         case 'thread':   $out = $this->get_disc_thread($CurItem); break;
@@ -552,7 +552,7 @@ class itemview {
         huhl("itemview:get_content: found",$content);
     }
 
-    $CurItem = new AA_Item("", $this->aliases, $this->clean_url);   // just prepare
+    $CurItem = new AA_Item("", $this->aliases);   // just prepare
     $CurItem->set_parameters($this->parameters);
 
     // process the random selection (based on weight)
@@ -759,7 +759,7 @@ class itemview {
      */
     function get_output_calendar(&$content) {
         trace("+","get_output_calendar");
-        $CurItem = new AA_Item("", $this->aliases, $this->clean_url);   // just prepare
+        $CurItem = new AA_Item("", $this->aliases);   // just prepare
         $CurItem->set_parameters($this->parameters);
 
         $month = $this->slice_info['calendar_month'];

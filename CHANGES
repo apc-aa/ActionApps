@@ -1,41 +1,56 @@
-30/03/08 - new support for forms send through AJAX. Now you can write a html 
-(honzam)   page which will consist of one or more forms. The form after 
+07/04/08 - new design_id parameter for poll.php3 by which you cen redefine
+(honzam)   the design of displayed poll(s)
+         - polls aliases improved and added new ones
+         - removed unused cookies_prefix option from polls module
+         - added utf-8 support for czech language version of AA
+         - better Costant Editing - the results after submition of the form are
+           taken frm the database, so it is 100% up to date
+         - the Upload Directory is created for slice just during slice creation
+           (there is no longer needed to create upload field and upload a file
+           in order you can use Xinha (htmlarea) upload functionality)
+         - new AA->Otimize action - "Create_Upload_Dir" for slice
+           (for the cases the upload dir is not present)
+         - phpThumb uses better configuration, so it work better on most
+           AA installs
+         - small fixes in date-time widget, refactoring
+30/03/08 - new support for forms send through AJAX. Now you can write a html
+(honzam)   page which will consist of one or more forms. The form after
            the submition will be send by AJAX, stored as new item to AA database
-           and the result will be displayed instead of the form 
-           (without page reload). Example of the code follows:  
+           and the result will be displayed instead of the form
+           (without page reload). Example of the code follows:
               <form id="myform1" name="myform1" method="post" action="/apc-aa/filler.php3">
                 <input id="inline" name="inline" value="1" type="hidden">
                 <input name="slice_id" value="5e4576289e988c756b5525bacc78987b" type="hidden">
                 <!-- text displayed insted of the form after the submittion (inserted item in our case) -->
                 <input id="ok_url" name="ok_url" value="http://example.org/apc-aa/view_php3?vid=12&amp;cmd[12]=x-12-_#N1_ID___&amp;convertfrom=windows-1250" type="hidden">
-                <!-- convertto is optional (you need it if you are not using utf-8 encoding) --> 
+                <!-- convertto is optional (you need it if you are not using utf-8 encoding) -->
                 <input id="convertto" name="convertto" value="windows-1250" type="hidden">
-                
+
                 <input id="aa[n1_5e4576289e988c756b5525bacc78987b][headline________][]" name="aa[n1_5e4576289e988c756b5525bacc78987b][headline________][]" size="60" value="" type="text">
                 <input id="aa[n1_5e4576289e988c756b5525bacc78987b][switch__________][]" name="aa[n1_5e4576289e988c756b5525bacc78987b][switch__________][]" type="checkbox">
-                    
+
                 <input id="ajaxsend" name="ajaxsend" value="Send" onclick="SendAjaxForm('myform1')" type="button">
               </form>
-         - new {seo2ids:<slices>:<seo-string>} syntax used like 
-             {seo2ids:8a435116626262738348478463536242:about-us} 
-           which returns long id of item in selected slice (or dash separated 
-           slices) with the specified SEO string in seo............. field. 
+         - new {seo2ids:<slices>:<seo-string>} syntax used like
+             {seo2ids:8a435116626262738348478463536242:about-us}
+           which returns long id of item in selected slice (or dash separated
+           slices) with the specified SEO string in seo............. field.
            If there more such ids (which should not be), they are dash separated
-         - new {options:<group_id>} syntax which returns HTML <option> tags for 
+         - new {options:<group_id>} syntax which returns HTML <option> tags for
            given constant group - like {options:lt_languages};
-         - new {version[:full|aa|svn]} syntax which prints version of AA 
+         - new {version[:full|aa|svn]} syntax which prints version of AA
            as fullstring, AA version (2.11.0), or svn revision (2368)
-         - new {modulefield:<sice_id>:<field_id>} - returns module/slice field 
+         - new {modulefield:<sice_id>:<field_id>} - returns module/slice field
              {modulefield:8a435116626262738348478463536242:_abstract.......}
            replaces older {alias:_abstract.......:f_s:slice_info} syntax
-         - fixed older {alias:_abstract.......:f_s:slice_info} syntax 
-           for module/slice field display 
-         - encoding conversion uses utf-8 as the base (so you do not need 
-           to specify it in convertto or convertfrom parameters) 
+         - fixed older {alias:_abstract.......:f_s:slice_info} syntax
+           for module/slice field display
+         - encoding conversion uses utf-8 as the base (so you do not need
+           to specify it in convertto or convertfrom parameters)
          - fixed backslashes problem in the polls module
-         - change of content of module/slice fields invalidates cache for 
+         - change of content of module/slice fields invalidates cache for
            the slice
-         - javascript links converted form href="javascript:" to standard 
+         - javascript links converted form href="javascript:" to standard
            href="#" onclick="" solution on some places
          - fixed counting itmes in bins (if the item is expired AND also pending
            (quite strange item), then it is placed into expired bin only)

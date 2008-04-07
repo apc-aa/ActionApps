@@ -398,19 +398,17 @@ class AA_Item {
      *  @param $content4id could be ItemContent as well as zids as well as old
      *                     contentent array
      *  @param $aliases
-     *  @param $clean_url
      *  @param $format
      *  @param $remove
      *  @param $param
      *
      *  Take a look at GetItemFromId() above, if you want to create item from id
      */
-    function AA_Item($content4id='', $aliases='', $clean_url='', $format='', $remove='', $param=false){
+    function AA_Item($content4id='', $aliases='', $format='', $remove='', $param=false){
         // there was three other options, but now it was never used so I it was
         // removed: $item_content, $top and $bottom (honzam 2003-08-19)
         $this->set_data($content4id);
         $this->aliases      = $aliases;
-        $this->clean_url    = $clean_url;
         $this->format       = $format;
         $this->remove       = $remove;
         $this->parameters   = ( $param ? $param : array() );
