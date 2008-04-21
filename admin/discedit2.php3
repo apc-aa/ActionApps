@@ -57,6 +57,7 @@ if ($update) {
     ValidateInput("url_address", _m("Authors's WWW  - URL"), $url_address, $err, false, "url");
     ValidateInput("url_description", _m("Authors's WWW - description"), $url_description, $err, false, "text");
     ValidateInput("remote_addr", _m("Remote address"), $remote_addr, $err, true, "text");
+    ValidateInput("free1", _m("Free1"), $free1, $err, false, "text");
 
     $datectrl = new datectrl('date');
     $datectrl->update();                   // updates datectrl
@@ -72,6 +73,7 @@ if ($update) {
         $varset->add("url_address", "quoted", $url_address);
         $varset->add("url_description", "quoted", $url_description);
         $varset->add("remote_addr", "quoted", $remote_addr);
+        $varset->add("free1", "quoted", $free1);
 
         $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
         $db->query($SQL);
@@ -124,6 +126,7 @@ echo $Msg;
     FrmInputText("url_address",_m("Authors's WWW  - URL"), $url_address, 99, 50, false);
     FrmInputText("url_description", _m("Authors's WWW - description"), $url_description, 60, 25, false);
     FrmInputText("remote_addr",_m("Remote address"), $remote_addr, 60, 25, false);
+    FrmTextArea("free1", _m("Free 1"), $free1, 5, 40, false);
 ?>
 </table>
 <tr><td align="center">
