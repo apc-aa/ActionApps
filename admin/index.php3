@@ -37,7 +37,7 @@ require_once AA_INC_PATH . "itemfunc.php3";
 require_once AA_INC_PATH . "notify.php3";
 require_once AA_INC_PATH . "searchlib.php3";
 require_once AA_INC_PATH . "formutil.php3";
-require_once AA_INC_PATH . "sliceobj.php3";
+require_once AA_INC_PATH . "slice.class.php3";
 require_once AA_INC_PATH . "msgpage.php3";
 require_once AA_INC_PATH . "manager.class.php3";
 require_once AA_INC_PATH . "actions.php3";
@@ -157,7 +157,8 @@ $manager_settings = array(
          );
 
 $manager = new AA_Manager($manager_settings);
-$profile = new aaprofile($auth->auth["uid"], $module_id); // current user settings
+$profile = AA_Profile::getProfile($auth->auth["uid"], $module_id); // current user settings
+
 
 // r_state array holds all configuration of Links Manager
 // the configuration then could be Bookmarked

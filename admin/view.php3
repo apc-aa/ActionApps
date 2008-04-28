@@ -30,7 +30,7 @@
 
 
 require_once "../include/init_page.php3"; // Loads variables etc
-//require_once AA_INC_PATH."sliceobj.php3";  // for slices
+//require_once AA_INC_PATH."slice.class.php3";  // for slices
 
 // These parameters effect how slices compare to each other
 

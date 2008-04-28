@@ -27,7 +27,7 @@ http://www.apc.org/
 */
 
 require_once AA_INC_PATH."item.php3";
-require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."searchlib.php3";

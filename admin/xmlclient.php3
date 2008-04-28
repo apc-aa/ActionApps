@@ -83,7 +83,7 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."notify.php3";
 require_once AA_INC_PATH."feeding.php3";
-require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."grabber.class.php3";
 
 if ($debugfeed >= 8) {

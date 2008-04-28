@@ -39,7 +39,7 @@
 //require_once "../include/config.php3";
 //require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
-require_once AA_INC_PATH."viewobj.php3"; //GetViewsWhere
+require_once AA_INC_PATH."view.class.php3"; //GetViewsWhere
 
 class AA_Poll {
     var $name;         // The name of the poll
@@ -138,7 +138,7 @@ class AA_Poll {
     function aliases() {
         return GetPollsAliases();
     }
-    
+
     /** @return true, if the string is column in polls table */
     function isField($string) {
         static $columns = null;

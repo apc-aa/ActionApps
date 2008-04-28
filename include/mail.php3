@@ -30,7 +30,7 @@
 
 require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."item_content.php3";
-require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."stringexpand.php3";
 require_once AA_INC_PATH."htmlMimeMail/htmlMimeMail.php";
 require_once AA_INC_PATH."validate.php3";

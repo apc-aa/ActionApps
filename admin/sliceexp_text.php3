@@ -34,7 +34,7 @@
 
 
 require_once AA_INC_PATH . "searchlib.php3";
-require_once AA_INC_PATH . "sliceobj.php3";
+require_once AA_INC_PATH . "slice.class.php3";
 require_once AA_INC_PATH . "xml_serializer.php3";
 require_once AA_INC_PATH . "convert_charset.class.php3";
 

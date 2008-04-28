@@ -28,7 +28,7 @@
 */
 require_once AA_INC_PATH . "mgettext.php3";
 require_once AA_INC_PATH . "itemview.php3";
-require_once AA_INC_PATH . "viewobj.php3";
+require_once AA_INC_PATH . "view.class.php3";
 require_once AA_INC_PATH . "searchlib.php3";
 require_once AA_BASE_PATH. "modules/links/util.php3";
 require_once AA_BASE_PATH. "modules/links/linksearch.php3";

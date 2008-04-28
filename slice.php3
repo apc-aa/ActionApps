@@ -132,7 +132,7 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."mgettext.php3";
-require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."hitcounter.class.php3";
 // function definitions:
 require_once AA_INC_PATH."slice.php3";

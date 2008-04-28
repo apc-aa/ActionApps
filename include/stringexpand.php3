@@ -33,7 +33,7 @@
 // Code by Mitra based on code in existing other files
 
 require_once AA_INC_PATH."easy_scroller.php3";
-require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
 require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
 /** translateString function
@@ -1328,9 +1328,9 @@ class AA_Stringexpand_Field extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Get module (slice, ...) property (currently only "module fileds" 
+/** Get module (slice, ...) property (currently only "module fileds"
  *  (beggining with underscore) and 'name' is supported
- *  replacing older {alias:_abstract.......:f_s:slice_info} syntax 
+ *  replacing older {alias:_abstract.......:f_s:slice_info} syntax
  **/
 class AA_Stringexpand_Modulefield extends AA_Stringexpand {
     /** expand function

@@ -3607,7 +3607,7 @@ $_m["StoreItem for slice %1 - failed parameter check for id = '%2'"]
  = "";
 
 # include/util.php3, row 880, 925
-# include/sliceobj.php3, row 184
+# include/slice.class.php3, row 184
 $_m["Error: Missing Reading Password"]
  = "";
 
@@ -3786,7 +3786,7 @@ $_m["3rd parameter filled in DiscussionMailList field"]
 $_m["%1th parameter filled in DiscussionMailList field"]
  = "";
 
-# include/viewobj.php3, row 77
+# include/view.class.php3, row 77
 $_m["Jump to view:"]
  = "";
 
@@ -4932,7 +4932,7 @@ $_m["Error when copying views."]
 $_m["Internal error when changing user role."]
  = "";
 
-# include/sliceobj.php3, row 56
+# include/slice.class.php3, row 56
 $_m["WARNING: slice: %s doesn't look like an unpacked id"]
  = "";
 
