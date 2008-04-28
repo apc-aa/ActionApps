@@ -1,4 +1,8 @@
-22/04/08 -"AA finder" allows to search also in field deffinitions, now
+28/04/08 - sliceobj.php3 file renamed to more standard slice.class.php3
+(honzam) - viewobj.php3  file renamed to more standard view.class.php3
+         - aaprofile class renamed to more standfard AA_Profile + some profile
+           optimalizations
+22/04/08 - "AA finder" allows to search also in field deffinitions, now
 (honzam)
 21/04/08 - added editable discussion field free1
 (honzam)
@@ -2386,7 +2390,7 @@
          - added flag EXTSESSEITHER_INCLUDED to get around bugs with
             multiple includes until these get fixed
          - commented out security risk default_fnc_variable (mitra)
-         - created include/viewobj.php3
+         - created include/view.class.php3
          - added mroe functionality to sliceobj, especially slice2
          - added getDB and freeDB to remove guessing about which AA_DB to use
          - created xml_serializer.php3 for object <-> xml
@@ -2430,7 +2434,7 @@
 02/04/03 - added Hex checkbox to Slice Export (default), uncheck to get XML
 02/04/03 - fixed bug in discussion views (mitra)
 02/04/03 - fixed new_id to skip ids ending in space (honza, via mitra)
-02/04/03 - added sliceobj.php3 to start encapsulating slice db manipulation
+02/04/03 - added slice.class.php3 to start encapsulating slice db manipulation
            (mitra)
          - fixed bug with error handling in xmlclient.php3
          - updated install-4.html to show no more aadb.sql

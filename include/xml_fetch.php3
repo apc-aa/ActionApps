@@ -31,7 +31,7 @@
 //
 
 require_once AA_INC_PATH."logs.php3";
-require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."csn_util.php3";
 require_once AA_INC_PATH."xml_rssparse.php3";
 require_once AA_INC_PATH."grabber.class.php3";
