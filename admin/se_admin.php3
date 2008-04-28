@@ -103,7 +103,7 @@ if ( $slice_id!="" ) {  // set variables from database
         $admin_noitem_msg    = $db->f('admin_noitem_msg');
     }
 
-    $default_profile = new aaprofile('*', $slice_id); // current user settings
+    $default_profile = AA_Profile::getProfile('*', $slice_id);
     $inputform_vid   = $default_profile->getProperty('input_view');
 }
 

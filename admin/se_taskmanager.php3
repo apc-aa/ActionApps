@@ -123,7 +123,7 @@ $manager_settings['itemview']['format'] = array(
           );
 
 $manager = new AA_Manager($manager_settings);
-$profile = new aaprofile($auth->auth["uid"], $module_id); // current user settings
+$profile = AA_Profile::getProfile($auth->auth["uid"], $module_id); // current user settings
 
 // r_state array holds all configuration of Links Manager
 // the configuration then could be Bookmarked

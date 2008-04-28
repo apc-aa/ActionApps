@@ -29,26 +29,45 @@
  * @link      http://www.apc.org/ APC
  *
 */
-/** aaprofile class - used for storing specific custom settings of loged user
+/** AA_Profile class - used for storing specific custom settings of loged user
  *  in one specific slice
  */
-class aaprofile {
-    var $classname = "aaprofile";   // sometimes it is required class property
+class AA_Profile {
+    var $classname = "AA_Profile";   // sometimes it is required class property
 
     var $module_id;      // for which slice/module we hold the profile?
     var $user_id;        // for which user we hold the profile?
     var $properties;     // user's profile/settings
     var $err;            // array of error messages from methods
 
-    /** aaprofile function
+    /** AA_Profile function - do not use directly - use rather
+     *     $profile = AA_Profile::getProfile($user_id, $module_id);
      *  constructor - do nearly nothing (lazy evaluation used)
      *  @param $module_id - for which slice/module we hold the profile?
      *  @param $user_id   - for which user we hold the profile?
      */
-    function aaprofile($user_id, $module_id) {
+    function AA_Profile($user_id, $module_id) {
         $this->user_id   = $user_id;
         $this->module_id = $module_id;
     }
+
+    /** getProfile - main factory static method
+     *  Profiles should be used like $profile = AA_Profile::getProfile($user_id, $module_id);
+     * @param $slice_id
+     */
+    function & getProfile($user_id, $module_id) {
+        // AA_Profiles array
+        static $instances = array();
+        if (empty($instances[$user_id])) {
+            $instances[$user_id] = array();
+        }
+        if (empty($instances[$user_id][$module_id])) {
+            $instances[$user_id][$module_id] = new AA_Profile($user_id, $module_id);
+        }
+
+        return $instances[$user_id][$module_id];
+    }
+
 
     /** loadprofile function
      *  Loads profile for current user and current slice/module from database
@@ -221,7 +240,7 @@ class aaprofile {
      * @param $global
      * @param $id
      */
-    function updateProperty($property, $selector, $value, $global=false, $id) {
+    function updateProperty($property, $selector, $value, $id) {
         $property = quote($property); $selector = quote($selector); $value=quote($value);
         $SQL = "UPDATE profile SET";
         if ($selector != "") {
@@ -270,7 +289,7 @@ class aaprofile {
  * @param $html
  */
 function AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html) {
-    $profile = new aaprofile($uid, $slice_id);      // user settings
+    $profile = AA_Profile::getProfile($uid, $slice_id); // user settings
     switch($property) {
         case 'listlen':
         case 'input_view':

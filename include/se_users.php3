@@ -67,7 +67,7 @@ function ChangeRole() {
                       $perms_roles["AUTHOR"]['perm']) )  // smallest permission
       DelPerm($UsrDel, $slice_id, "slice");
 
-      $profile = new aaprofile($UsrDel, $slice_id);      // user settings
+      $profile = AA_Profile::getProfile($UsrDel, $slice_id);  // user settings
       $profile->delUserProfile();
       $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
   }

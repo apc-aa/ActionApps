@@ -125,7 +125,7 @@ class AA_Searchbar_Row extends AA_Storable {
     function getCondArray() {
         return ( is_null($this->condition) ? array() : $this->condition->getArray() );
     }
-    
+
     /** getCondsArray function - @return AA_Condition object or null  */
     function getCondition() {
         return $this->condition;
@@ -515,14 +515,14 @@ class AA_Searchbar extends AA_Storable {
         }
         return $set;
     }
-    
+
      /** getBookmarkNames function
       *  @return array of bookmark names <key> => <name>
       */
     function getBookmarkNames() {
         return isset($this->bookmarks) ? $this->bookmarks->getKeyName() : false;
     }
-    
+
     /** getBookmarkParams function
      * @param $key
      */
@@ -727,7 +727,8 @@ class AA_Bookmarks {
      */
     function AA_Bookmarks() {
         global $auth, $slice_id;
-        $this->profile = new aaprofile($auth->auth["uid"], $slice_id);  // current user settings
+        $this->profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
+
         $this->setFromProfile();
         $this->setLastUsed();
     }
@@ -851,7 +852,7 @@ class AA_Bookmarks {
             return false;
         }
           // store to database
-        $this->profile->updateProperty('bookmark', $name, serialize($state), $to_global, $id);
+        $this->profile->updateProperty('bookmark', $name, serialize($state), $id);
 
         $this->profile->loadprofile(true);    // reread profile from database
         $this->setFromProfile();              // get bookmarks again

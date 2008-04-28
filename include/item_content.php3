@@ -47,7 +47,7 @@ class AA_Value {
     function AA_Value($value=null, $flag=null) {
         $this->clear();
         if (is_array($value)) {
-            // normal array(val1, val2, ...) used or used AA array used 
+            // normal array(val1, val2, ...) used or used AA array used
             // in AA_ItemContent - [0]['value'] = ..
             //                         ['flag']  = ..
             //                     [1]['value'] = ..
@@ -91,13 +91,13 @@ class AA_Value {
         $this->val  = array();
         $this->flag = 0;
     }
-    
+
     /** Replaces the strings in all values  */
      function replaceInValues($search, $replace) {
          foreach ($this->val as $k => $v) {
              $this->val[$k] = str_replace($search, $replace, $v);
          }
-    }        
+    }
 
     /** getArray function
      *  @return clasic $content value array - [0]['value'] = ..
@@ -210,16 +210,14 @@ class ItemContent {
      * @param $slice_fields
      */
     function setFieldsFromForm(&$slice, $oldcontent4id="", $insert=true, $slice_fields=false) {
-        global $profile, $auth;
+        global $auth;
 
         list($fields, $prifields) = $slice->fields(null, $slice_fields);
         if (!isset($prifields) OR !is_array($prifields)) {
             return false;
         }
 
-        if (!is_object($profile)) {
-            $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());  // current user settings
-        }
+        $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
 
         foreach ($prifields as $pri_field_id) {
             $f = $fields[$pri_field_id];
@@ -940,7 +938,7 @@ class ItemContent {
 
         // we use slice_id as item id here
         $this->_store_fields($slice_id, $fields);
-        
+
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");
     }
 

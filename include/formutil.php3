@@ -39,7 +39,7 @@ require_once AA_INC_PATH."javascript.php3";
 require_once AA_INC_PATH."profile.class.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."stringexpand.php3";
-require_once AA_INC_PATH."sliceobj.php3";
+require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."validate.php3";
 
 // IsUserNameFree() function deffinition here
@@ -260,11 +260,9 @@ class inputform {
      * @param $slice_fields
      */
     function getForm2(&$content4id, &$slice, $edit, $show="", $slice_fields=false) {
-        global $auth, $profile;
+        global $auth;
 
-        if ( !is_object( $profile ) ) {
-            $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());  // current user settings
-        }
+        $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
 
         $fields    = $slice->getFields($slice_fields);
         $prifields = $fields->getPriorityarray();
@@ -351,11 +349,9 @@ class inputform {
      * @param $slice_fields
      */
     function getForm(&$content4id, &$slice, $edit, $show="", $slice_fields=false) {
-        global $auth, $profile;
+        global $auth;
 
-        if ( !is_object( $profile ) ) {
-            $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());  // current user settings
-        }
+        $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
 
         list($fields, $prifields) = $slice->fields(null, $slice_fields);
 

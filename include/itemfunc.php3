@@ -392,7 +392,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
     if (strpos('x'.$value['value'], 'AA_UPLOAD:')==1) {
         // newer - widget approach - the uploaded file is encoded into the value
         // and prefixed with "AA_UPLOAD:" constant
-        $filevarname = substr($value['value'],10); 
+        $filevarname = substr($value['value'],10);
     } else {
         $filevarname = "v".unpack_id($field["id"])."x";
     }
@@ -537,16 +537,14 @@ function IsEditable($fieldcontent, $field, &$profile) {
  * @param $insert
  */
 function GetContentFromForm( $slice, $oldcontent4id="", $insert=true ) {
-    global $profile, $auth;
+    global $auth;
 
     list($fields, $prifields) = $slice->fields();
     if (!isset($prifields) OR !is_array($prifields)) {
         return false;
     }
 
-    if (!is_object($profile)) {
-        $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());  // current user settings
-    }
+    $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
 
     foreach ( $prifields as $pri_field_id) {
         $f = $fields[$pri_field_id];
@@ -661,15 +659,13 @@ function GetDefaultHTML($f) {
  *                (packed field id => 1) of fields to show
  */
 function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
-    global $slice_id, $auth, $profile;
+    global $slice_id, $auth;
 
     if ( !isset($prifields) OR !is_array($prifields) ) {
         return MsgErr(_m("No fields defined for this slice"));
     }
 
-    if ( !is_object($profile) ) {
-        $profile = new aaprofile($auth->auth["uid"], $slice_id);  // current user settings
-    }
+    $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 
     foreach ($prifields as $pri_field_id) {
         $f   = $fields[$pri_field_id];
@@ -763,11 +759,9 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
 //./filler.php3:                                       ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown)
 function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $notshown="")
 {
-    global $oldcontent4id, $profile, $auth;
+    global $oldcontent4id, $auth;
 
-    if (!is_object($profile)) {             // current user settings
-        $profile = new aaprofile($auth->auth["uid"], $slice->unpacked_id());
-    }
+    $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
 
     // error array (Init - just for initializing variable
     if (!is_array($err)) {

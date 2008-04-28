@@ -28,13 +28,11 @@
  *
 */
 
-
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."se_users.php3";
 require_once AA_INC_PATH."msgpage.php3";
-require_once AA_INC_PATH."profile.php3";
 
 if (!IfSlPerm(PS_USERS)) {
     MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to manage users"), "admin");

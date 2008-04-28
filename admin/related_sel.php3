@@ -165,7 +165,7 @@ if ( !isset($r_state['related']) OR $sid OR ($r_state['related']['sid'] != $modu
 //    $r_state['related']['conds_rw'] = $conds_rw;
 
     $sess->register('r_state');
-    $profile = new aaprofile($auth->auth["uid"], $module_id); // current user settings
+    $profile = AA_Profile::getProfile($auth->auth["uid"], $module_id); // current user settings
     $manager->setFromProfile($profile);
 }
 
