@@ -39,7 +39,7 @@
 //require_once "../include/config.php3";
 //require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
-require_once AA_INC_PATH."viewobj.php3"; //GetViewsWhere
+require_once AA_INC_PATH."view.class.php3"; //GetViewsWhere
 
 class AA_Slice {
     var $name;            // The name of the slice
@@ -359,10 +359,8 @@ class AA_Slice {
             return;                                // already computed
         }
 
-        global $profile, $auth;
-        if (!is_object( $profile ) ) {             // current user settings
-            $profile = new aaprofile($auth->auth["uid"], $this->unpacked_id());
-        }
+        global $auth;
+        $profile = AA_Profile::getProfile($auth->auth["uid"], $this->unpacked_id()); // current user settings
         $this->loadsettings();
 
         // get slice fields and its priorities in inputform
