@@ -19,8 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
-
 // script for MySQL database update
 
 // this script updates the database to last structure, create all tables, ...
@@ -60,6 +58,8 @@ require_once AA_INC_PATH."formutil.php3";
 
 //function Links_Category2SliceID($cid) definition
 require_once AA_BASE_PATH."modules/links/util.php3";
+
+require_once AA_INC_PATH. 'optimize.class.php3';
 
 // init used objects
 $db          = new DB_AA;
@@ -1506,7 +1506,26 @@ if ( !$update AND !$restore AND !$restore_now) {
     <title>APC-AA database update script</title>
   </head>
   <body>
+  ';
 
+  $Msg = '';
+
+  // php4 returns class names in lower case, so we need itin lower case
+  if ($_GET['test'] AND (strpos(strtolower($_GET['test']), 'aa_optimize_')===0)) {
+      $optimizer = AA_Components::factory($_GET['test']);
+      $optimizer->test();
+      $Msg .= $optimizer->report();
+  }
+
+  if ($_GET['repair'] AND (strpos(strtolower($_GET['repair']), 'aa_optimize_')===0)) {
+      $optimizer = AA_Components::factory($_GET['repair']);
+      $optimizer->repair();
+      $Msg .= $optimizer->report();
+  }
+
+  echo $Msg;
+
+  echo '
   <h1>APC-AA database update</h1>
   <p>This script is written to be not destructive. It creates temporary tables
      first, then copies data from old tables to the temporary ones (tmp_*) and
@@ -1516,13 +1535,47 @@ if ( !$update AND !$restore AND !$restore_now) {
   <p><font color="red">However, it is strongly recommended backup your current
   database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u '.DB_USER.' -p --opt '.DB_NAME.' &gt; ./aadb/aadb.sql</code></p>
 
-  <form name=f action="' .$_SERVER['PHP_SELF'] .'" method=post>
-  <table width="440" border="0" cellspacing="0" cellpadding="1" bgcolor="#589868" align="center">
-  <tr><td class=tabtit><b>&nbsp;APC-AA database update options</b>
-  </td>
-  </tr>
-  <tr><td>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#A8C8B0">';
+  <form name=f action="' .$_SERVER['PHP_SELF'] .'" method=post>';
+
+
+  FrmTabCaption(_m('Database checkers'));
+
+  $optimize_names        = array();
+  $optimize_descriptions = array();
+
+
+  foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
+      if (!call_user_func_array(array($optimize_class, 'isType'), array('sql_update'))) {
+          continue;
+      }
+
+      // call static class methods
+      $optimize_names[]        = call_user_func(array($optimize_class, 'name'));
+      $description             = call_user_func(array($optimize_class, 'description'));
+      $actions                 = call_user_func(array($optimize_class, 'actions'));
+
+      $row = "
+      <div>
+        <div style=\"float: right;\">";
+      if (in_array('test', $actions)) {
+          $row .= "<a href=\"?test=$optimize_class\">". _m('Test'). "</a> ";
+      }
+      if (in_array('repair', $actions)) {
+          $row .= "<a href=\"?repair=$optimize_class\">". _m('Repair'). "</a> ";
+      }
+
+      $optimize_descriptions[] = $row ."
+        </div>
+        <div>$description</div>
+      </div>";
+  }
+
+  foreach ( $optimize_names as $i => $name ) {
+      FrmStaticText($name, $optimize_descriptions[$i], false, '', '', false);
+  }
+
+  FrmTabSeparator(_m('Update'));
+
   FrmInputChBox("dbcreate", "Update DB structure", true, false, "", 1, false,
                 "create or update database structure","");
   FrmInputChBox("copyold", "Copy current data", true, false, "", 1, false,
@@ -1566,16 +1619,15 @@ if ( !$update AND !$restore AND !$restore_now) {
                      <b>Administrator's e-mail:</b> ".ERROR_REPORTING_EMAIL."<br>", false, "", "", false );
   FrmInputText("dbpw5", "5 characters of database password", "", 5, 5, false,
                 "Fill in first five characters of the database password (see DB_PASSWORD in config.php3 file) - it is from security reasons");
-  echo '
-  </table></td></tr>
-  <tr><td align="center">
-    <input type=submit name=update value="Run Update">
-    <input type=submit name=restore value="Restore Data from Backup Tables">
-  </td></tr></table>
-  </FORM>
-  </body>
-  </html>
-  ';
+
+  $form_buttons = array("update" => array('type'  => 'submit',
+                                          'value' => _m("Run Update")),
+                        "restore" => array('type'  => 'submit',
+                                          'value' => _m("Restore Data from Backup Tables"))
+                        );
+  FrmTabEnd($form_buttons);
+  echo '</form>';
+  HtmlPageEnd();
   exit;
 }
 

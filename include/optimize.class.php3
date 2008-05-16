@@ -1,4 +1,4 @@
-<?php
+t<?php
  /**
  *
  * PHP versions 4 and 5
@@ -32,6 +32,12 @@ class AA_Optimize {
     function description()  {}
     function test()         {}
     function repair()       {}
+
+    /** implemented actions within this class */
+    function actions()      { return array('test','repair'); }
+
+    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type)  { return in_array($type, array()); }
 
     /** Message function
     * @param $text
@@ -273,6 +279,9 @@ class AA_Optimize_Db_Binary_Traing_Zeros extends AA_Optimize {
         return _m("Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17");
     }
 
+    /** implemented actions within this class */
+    function actions()      { return array('repair'); }
+
     /** Test function
     * @return true
     */
@@ -498,6 +507,9 @@ class AA_Optimize_Clear_Pagecache extends AA_Optimize {
         return _m("Whole pagecache will be invalidated and deleted");
     }
 
+    /** implemented actions within this class */
+    function actions()      { return array('repair'); }
+
     /** Test function
     * @return bool
     */
@@ -543,6 +555,9 @@ class AA_Optimize_Copy_Content extends AA_Optimize {
     function description() {
         return _m("Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not usefull for any other users, I think.");
     }
+
+    /** implemented actions within this class */
+    function actions()      { return array('repair'); }
 
     /** Test function
     * @return a message
@@ -605,6 +620,9 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
     function description() {
         return _m("There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php3 script, where more than one display_count... fields were added).");
     }
+
+    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type)  { return in_array($type, array('sql_update')); }
 
     /** Test function
     * @return bool
@@ -686,6 +704,9 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
         return _m("Create tables for new Polls module and adds first - template polls. It removes all current polls!");
     }
 
+    /** implemented actions within this class */
+    function actions()      { return array('repair'); }
+
     /** Test function
     * @return a message
     */
@@ -751,8 +772,11 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
     * @return a message
     */
     function description() {
-        return _m("Updates the database structure for AA. It cheks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table");
+        return _m("[experimental] "). _m("Updates the database structure for AA. It cheks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)");
     }
+
+    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type)  { return in_array($type, array('sql_update')); }
 
     /** Test function
     * @return a message
@@ -845,8 +869,14 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
     * @return a message
     */
     function description() {
-        return _m("Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...).");
+        return _m("[experimental] "). _m("Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...).");
     }
+
+    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
+    function isType($type)  { return in_array($type, array('sql_update')); }
+
+    /** implemented actions within this class */
+    function actions()      { return array('repair'); }
 
     /** Test function
     * @return a message
@@ -899,6 +929,9 @@ class AA_Optimize_Create_Upload_Dir extends AA_Optimize {
     function description() {
         return _m("see IMG_UPLOAD_PATH parameter in config.php3 file");
     }
+
+    /** implemented actions within this class */
+    function actions()      { return array('repair'); }
 
     /** Test function
     * @return a message
