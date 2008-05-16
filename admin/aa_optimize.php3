@@ -56,11 +56,19 @@ foreach (AA_Components::getClassNames('AA_Optimize_') as $optimize_class) {
     // call static class methods
     $optimize_names[]        = call_user_func(array($optimize_class, 'name'));
     $description             = call_user_func(array($optimize_class, 'description'));
-    $optimize_descriptions[] = "
+    $actions                 = call_user_func(array($optimize_class, 'actions'));
+
+    $row = "
     <div>
-      <div style=\"float: right;\">
-        <a href=\"". $sess->url("?test=$optimize_class") ."\">Test</a>
-        <a href=\"". $sess->url("?repair=$optimize_class") ."\">Repair</a>
+      <div style=\"float: right;\">";
+    if (in_array('test', $actions)) {
+        $row .= "<a href=\"". $sess->url("?test=$optimize_class") ."\">". _m('Test'). "</a> ";
+    }
+    if (in_array('repair', $actions)) {
+        $row .= "<a href=\"". $sess->url("?repair=$optimize_class") ."\">". _m('Repair'). "</a> ";
+    }
+
+    $optimize_descriptions[] = $row ."
       </div>
       <div>$description</div>
     </div>";
