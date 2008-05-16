@@ -1,3 +1,10 @@
+16/05/08 - improved version of sql_update script, which now allows to run
+(honzam)   specified AA_Optimize scripts. The key is the "Fix field definitions
+           duplicates" optimalization, which should be run before any sql_update
+         - AA -> Optimize shows only implemented actions for each optimalization
+         - the same SPAM protection by "answer" field implemented to Links
+           module
+22/04/08 -"AA finder" allows to search also in field deffinitions, now
 28/04/08 - sliceobj.php3 file renamed to more standard slice.class.php3
 (honzam) - viewobj.php3  file renamed to more standard view.class.php3
          - aaprofile class renamed to more standfard AA_Profile + some profile

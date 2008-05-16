@@ -312,7 +312,7 @@ class AA_Set extends AA_Object {
     /** addCondition function
      * @param $condition
      */
-    function addCondition(&$condition) {
+    function addCondition($condition) {
         if ( $condition ) {
             $this->conds[] = $condition;
         }
@@ -321,7 +321,7 @@ class AA_Set extends AA_Object {
     /** addSortorder function
      * @param $sortorder
      */
-    function addSortorder(&$sortorder) {
+    function addSortorder($sortorder) {
         if ( $sortorder ) {
             $this->sort[] = $sortorder;
         }

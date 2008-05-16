@@ -251,11 +251,18 @@ class AA_Field {
     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
     */
     function getId4Form($field_id, $item_id=null) {
-        $form_field_id = str_replace('.','_', $field_id);
+        $form_field_id = AA_Field::getVarFromFieldId($field_id);
         if ( $item_id ) {
             return "aa[i$item_id][$form_field_id]";
         }
         return "aa[n1_".$this->getSliceId()."][$form_field_id]";
+    }
+
+    /** Converts real field id into field id as used in the AA form, like:
+     *  post_date......1  ==>  post_date______1
+     */
+    function getVarFromFieldId($field_id) {
+        return str_replace('.','_', $field_id);
     }
 
     /** Converts field id as used in the AA form to real field id, like:

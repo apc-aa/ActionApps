@@ -168,47 +168,6 @@ function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
     }
 }
 
-/** GetDiscussionContentSQL function
- * @param $SQL
- * @param $item_id
- * @param $ids
- * @param $state
- * @param $html_flag
- * @param $clean_url
- */
-function GetDiscussionContentSQL($SQL, $item_id, $ids, $state, $html_flag, $clean_url) {
-    global $db;
-    $db->tquery($SQL);
-    while ($db->next_record()) {
-        $d_id = unpack_id128($db->f('id'));
-        if (!$ids || $ids["x".$d_id]) {
-            $col["d_id............"][0]['value'] = $d_id;
-            $col["d_parent........"][0]['value'] = $db->f('parent') ? unpack_id($db->f('parent')) : "0";
-            $col["d_item_id......."][0]['value'] = unpack_id128($db->f('item_id'));
-            $col["d_subject......."][0]['value'] = $db->f('subject');
-            $col["d_body.........."][0]['value'] = $db->f('body');
-            $col["d_author........"][0]['value'] = $db->f('author');
-            $col["d_e_mail........"][0]['value'] = $db->f('e_mail');
-            $col["d_url_address..."][0]['value'] = $db->f('url_address');
-            $col["d_url_descript.."][0]['value'] = $db->f('url_description');
-            $col["d_date.........."][0]['value'] = $db->f('date');
-            $col["d_remote_addr..."][0]['value'] = $db->f('remote_addr');
-            $col["d_state........."][0]['value'] = $db->f('state');
-            setDiscUrls($col, $clean_url,unpack_id128($db->f('item_id')),$d_id);
-
-            // set html flag
-            if ($html_flag) {
-                $col["d_body.........."][0]['flag'] = FLAG_HTML;
-            }
-            $col["d_checkbox......"][0]['flag'] = FLAG_HTML;
-            $col["d_treeimages...."][0]['flag'] = FLAG_HTML;
-
-            $col["hide"] = ($db->f('state') == '1' && $state);     //mark hidden comment.
-            $d_content[$d_id] = $col;
-        }
-    }
-    return $d_content;
-}
 /** SetCheckboxContent function
  * Set the right content for a checkbox
  * @param $content

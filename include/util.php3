@@ -179,10 +179,12 @@ function self_base() {
 
 /** document_uri function
  *  On some servers isn't defined DOCUMENT_URI
+ *   Ecn - when rewrite is applied - http://privatizacepraha2.cz/cz/aktuality/2084368
+ *   and somwhere nor REDIRECT_URL  
  *   (canaca.com 2003-09-19 - Apache/1.3.27 (Unix) (Red-Hat/Linux), Honza)
  */
 function document_uri() {
-    return get_if($_SERVER['DOCUMENT_URI'],$_SERVER['SCRIPT_URL']);
+    return get_if($_SERVER['DOCUMENT_URI'],$_SERVER['REDIRECT_URL'],$_SERVER['SCRIPT_URL']);
 }
 
 /** shtml_base function
