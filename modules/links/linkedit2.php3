@@ -24,6 +24,13 @@ if ($cancel) {
     go_url( $cancelUrl );
 }
 
+
+// trap field for spammer bots
+if ( $answer )    {
+     echo _m("Not accepted, sorry. Looks like spam.");
+     exit;
+}
+
 $r_err[0] = "";  // error array (just for initializing variable)
 
 // we allways sending link id - it prevent us of bug with 'Back' browser button

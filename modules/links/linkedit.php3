@@ -417,8 +417,14 @@ echo '
         <input type="button" value="'. _m('Check url') .'" onclick="CheckURL()">&nbsp;<a href="'.get_help_url(AA_LINKS_HELP_LINK,"hledej-url").'" target="_blank">?</a>&nbsp;&nbsp;
         <input type="button" value="'. _m('View') .'" onclick="window.open(document.f.url.value, \'blank\')">
         <div class="tabhlp">'. _m('You can check, if the page is not in database already') .'</div>
-          </td>
-      </tr>';
+        <style type="text/css">
+           .skryto { display:none };
+        </style>
+        <div class="skryto">
+          '. _m('Do not fill, please:') .' <input type="text" name="answer" value="">
+        </div>
+      </td>
+    </tr>';
     printChange('url', $url_change, $url);
     FrmInputText( 'aa_name', _m('Page name'),           $aa_name,  250, 50, true,
                    _m('English name of the page'), get_help_url(AA_LINKS_HELP_LINK,"nazev-odkazu"));
