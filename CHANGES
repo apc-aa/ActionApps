@@ -1,3 +1,6 @@
+20/05/08 - better SQL update functionality - the "Column count doesn't match
+(honzam)   value count at row 1" SQL Error apearing in some configurations
+           should be fixed
 16/05/08 - improved version of sql_update script, which now allows to run
 (honzam)   specified AA_Optimize scripts. The key is the "Fix field definitions
            duplicates" optimalization, which should be run before any sql_update
