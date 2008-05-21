@@ -837,7 +837,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
             $matches = array_intersect($tmp_columns, $old_columns);
             if ( count($matches) > 1 ) {
                 $field_list = '`'. join('`, `', $matches) .'`';
-                $db->query("INSERT INTO `tmp_$tablename` $field_list SELECT $field_list FROM `$tablename`");
+                $db->query("INSERT INTO `tmp_$tablename` ($field_list) SELECT $field_list FROM `$tablename`");
             }
 
             // backup table and use the new one
