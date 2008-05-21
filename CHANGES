@@ -1,3 +1,5 @@
+21/05/08 - fixed previous fix
+(honzam)
 20/05/08 - better SQL update functionality - the "Column count doesn't match
 (honzam)   value count at row 1" SQL Error apearing in some configurations
            should be fixed
