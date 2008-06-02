@@ -3,6 +3,7 @@
          - slice deletion - improved UI
          - cleanup - reading password checking optimalizations
          - cleanup - simplified (and quicker) queries for some cases
+         - boundary check for date value in f_d function
 21/05/08 - fixed previous fix
 (honzam)
 20/05/08 - better SQL update functionality - the "Column count doesn't match
