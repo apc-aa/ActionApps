@@ -10,7 +10,11 @@
 //   http://dynarch.com/mishoo
 //
 // $Id$
-HTMLArea = window.opener.HTMLArea;
+if(typeof Xinha == 'undefined')
+  Xinha = window.opener.Xinha;
+
+// Backward compatibility will be removed some time or not?
+HTMLArea = Xinha;
 
 function getAbsolutePos(el) {
 	var r = { x: el.offsetLeft, y: el.offsetTop };
@@ -20,7 +24,7 @@ function getAbsolutePos(el) {
 		r.y += tmp.y;
 	}
 	return r;
-};
+}
 
 function comboSelectValue(c, val) {
 	var ops = c.getElementsByTagName("option");
@@ -29,85 +33,108 @@ function comboSelectValue(c, val) {
 		op.selected = (op.value == val);
 	}
 	c.value = val;
-};
+}
 
 function __dlg_onclose() {
 	opener.Dialog._return(null);
-};
+}
+// ray: I mark this on deprecated, because bottom is never used
+function __dlg_init( bottom, win_dim ) {
+  __xinha_dlg_init(win_dim);
+}
 
-function __dlg_init(bottom) {
-	var body = document.body;
-	var body_height = 0;
-	if (typeof bottom == "undefined") {
-		var div = document.createElement("div");
-		body.appendChild(div);
-		var pos = getAbsolutePos(div);
-		body_height = pos.y;
-	} else {
-		var pos = getAbsolutePos(bottom);
-		body_height = pos.y + bottom.offsetHeight;
-	}
-	window.dialogArguments = opener.Dialog._arguments;
-	if (!document.all) {
-		window.sizeToContent();
-		window.sizeToContent();	// for reasons beyond understanding,
-					// only if we call it twice we get the
-					// correct size.
-		window.addEventListener("unload", __dlg_onclose, true);
-		window.innerWidth = body.offsetWidth + 5;
-		window.innerHeight = body_height + 2;
-		// center on parent
-		var x = opener.screenX + (opener.outerWidth - window.outerWidth) / 2;
-		var y = opener.screenY + (opener.outerHeight - window.outerHeight) / 2;
-		window.moveTo(x, y);
-	} else {
-		// window.dialogHeight = body.offsetHeight + 50 + "px";
-		// window.dialogWidth = body.offsetWidth + "px";
-		window.resizeTo(body.offsetWidth, body_height);
-		var ch = body.clientHeight;
-		var cw = body.clientWidth;
-		window.resizeBy(body.offsetWidth - cw, body_height - ch);
-		var W = body.offsetWidth;
-		var H = 2 * body_height - ch;
-		var x = (screen.availWidth - W) / 2;
-		var y = (screen.availHeight - H) / 2;
-		window.moveTo(x, y);
-	}
-	HTMLArea.addDom0Event(document.body, 'keypress', __dlg_close_on_esc);
-};
+function __xinha_dlg_init( win_dim ) {
+  if(window.__dlg_init_done) return true;
+  
+  if(window.opener._editor_skin) {
+    var head = document.getElementsByTagName("head")[0];
+    var link = document.createElement("link");
+    link.type = "text/css";
+    link.href = window.opener._editor_url + 'skins/' + window.opener._editor_skin + '/skin.css';
+    link.rel = "stylesheet";
+    head.appendChild(link);
+  }
+  if (!window.dialogArguments && opener.Dialog._arguments)
+  {
+    window.dialogArguments = opener.Dialog._arguments;
+  }
+  
+
+  var page = Xinha.pageSize(window);
+  if ( !win_dim )
+  {
+    win_dim = {width:page.x, height: page.y};
+  }
+  window.resizeTo(win_dim.width, win_dim.height);
+
+  var dim = Xinha.viewportSize(window);
+
+  window.resizeBy(0, page.y - dim.y);
+
+  if(win_dim.top && win_dim.left)
+  {
+    window.moveTo(win_dim.left,win_dim.top);
+  }
+  else
+  {
+    if (!Xinha.is_ie)
+    {
+      var x = opener.screenX + (opener.outerWidth - win_dim.width) / 2;
+      var y = opener.screenY + (opener.outerHeight - win_dim.height) / 2;
+    }
+    else
+    {//IE does not have window.outer... , so center it on the screen at least
+      var x =  (self.screen.availWidth - win_dim.width) / 2;
+      var y =  (self.screen.availHeight - win_dim.height) / 2;	
+    }
+    window.moveTo(x,y);
+  }
+  
+  Xinha.addDom0Event(document.body, 'keypress', __dlg_close_on_esc);
+  window.__dlg_init_done = true;
+}
 
 function __dlg_translate(context) {
-	var types = ["input", "select", "legend", "span", "option", "td", "button", "div", "label"];
+	var types = ["input", "select", "legend", "span", "option", "td", "th", "button", "div", "label", "a", "img"];
 	for (var type = 0; type < types.length; ++type) {
 		var spans = document.getElementsByTagName(types[type]);
 		for (var i = spans.length; --i >= 0;) {
 			var span = spans[i];
 			if (span.firstChild && span.firstChild.data) {
-				var txt = HTMLArea._lc(span.firstChild.data, context);
-				if (txt)
+				var txt = Xinha._lc(span.firstChild.data, context);
+				if (txt) {
 					span.firstChild.data = txt;
+				}
 			}
-                        if (span.title) {
-				var txt = HTMLArea._lc(span.title, context);
-				if (txt)
+			if (span.title) {
+				var txt = Xinha._lc(span.title, context);
+				if (txt) {
 					span.title = txt;
-                        }
+				}
+			}
+			if (span.tagName.toLowerCase() == 'input' && 
+					(/^(button|submit|reset)$/i.test(span.type))) {
+				var txt = Xinha._lc(span.value, context);
+				if (txt) {
+					span.value = txt;
+				}
+			}
 		}
 	}
-    document.title = HTMLArea._lc(document.title, context);
-};
+	document.title = Xinha._lc(document.title, context);
+}
 
 // closes the dialog and passes the return info upper.
 function __dlg_close(val) {
 	opener.Dialog._return(val);
 	window.close();
-};
+}
 
 function __dlg_close_on_esc(ev) {
 	ev || (ev = window.event);
 	if (ev.keyCode == 27) {
-		window.close();
+		__dlg_close(null);
 		return false;
 	}
 	return true;
-};
+}

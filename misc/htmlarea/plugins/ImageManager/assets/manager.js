@@ -7,8 +7,8 @@
 	
 	//Translation
 	function i18n(str) {
-        return HTMLArea._lc(str, 'ImageManager');
-	};
+        return Xinha._lc(str, 'ImageManager');
+	}
 
 
 	//set the alignment options
@@ -26,9 +26,12 @@
 	}
 
 	//initialise the form
+  doneinit = 0; // Seems that in Opera the load event of the iframe re-fires this one also.
 	init = function () 
 	{
-		__dlg_init();
+    if(doneinit++) return;
+    
+		__dlg_init(null, {width:600,height:460});
 
 		__dlg_translate('ImageManager');
         
@@ -36,36 +39,81 @@
         document.getElementById("f_align").selectedIndex = 1;
         document.getElementById("f_align").selectedIndex = 0;
         
+
 		var uploadForm = document.getElementById('uploadForm');
 		if(uploadForm) uploadForm.target = 'imgManager';
 
 		var param = window.dialogArguments;
 		if (param) 
 		{
-			document.getElementById("f_url").value = param["f_url"];
-			document.getElementById("f_alt").value = param["f_alt"];
-			document.getElementById("f_border").value = param["f_border"];
-			document.getElementById("f_vert").value = param["f_vert"];
-			document.getElementById("f_horiz").value = param["f_horiz"];
-			document.getElementById("f_width").value = param["f_width"];
-			document.getElementById("f_height").value = param["f_height"];
-			setAlign(param["f_align"]);
-		}
+      var image_regex = new RegExp( '(https?://[^/]*)?' + base_url.replace(/\/$/, '') );
+      param.f_url = param.f_url.replace( image_regex, "" );
 
-		document.getElementById("f_url").focus();
-	}
+      // The image URL may reference one of the automatically resized images 
+      // (when the user alters the dimensions in the picker), clean that up
+      // so it looks right and we get back to a normal f_url
+      var rd = (_resized_dir) ? _resized_dir.replace(Xinha.RE_Specials, '\\$1') + '/' : '';
+      var rp = _resized_prefix.replace(Xinha.RE_Specials, '\\$1');
+      var dreg = new RegExp('^(.*/)' + rd + rp + '_([0-9]+)x([0-9]+)_([^/]+)$');
+  
+      if(dreg.test(param.f_url))
+      {
+        param.f_url    = RegExp.$1 + RegExp.$4;
+        param.f_width  = RegExp.$2;
+        param.f_height = RegExp.$3;
+      }
+      
+      for (var id in param)
+      {
+        if(id == 'f_align') continue;
+        if(document.getElementById(id))
+        {
+          document.getElementById(id).value = param[id];
+        }
+      }
+
+
+
+      document.getElementById("orginal_width").value = param["f_width"];
+			document.getElementById("orginal_height").value = param["f_height"];
+			setAlign(param["f_align"]);
+
+      // Locate to the correct directory
+      var dreg = new RegExp('^(.*/)([^/]+)$');
+      if(dreg.test(param['f_url']) && !(new RegExp('^https?://','i')).test(param['f_url']))
+      {
+        changeDir(RegExp.$1);
+        var dirPath = document.getElementById('dirPath');
+        for(var i = 0; i < dirPath.options.length; i++)
+        {
+          if(dirPath.options[i].value == encodeURIComponent(RegExp.$1))
+          {
+            dirPath.options[i].selected = true;
+            break;
+          }
+        }
+      }
+      document.getElementById('f_preview').src = _backend_url + '__function=thumbs&img=' + param.f_url;      
+		}
+		
+		 // Hookup color pickers
+    new Xinha.colorPicker.InputBinding(document.getElementById('f_backgroundColor'));
+    new Xinha.colorPicker.InputBinding(document.getElementById('f_borderColor'));
+
+		document.getElementById("f_alt").focus();
+	};
 
 
 	function onCancel() 
 	{
 		__dlg_close(null);
 		return false;
-	};
+	}
 
 	function onOK() 
 	{
 		// pass data back to the calling window
-		var fields = ["f_url", "f_alt", "f_align", "f_border", "f_horiz", "f_vert", "f_height", "f_width"];
+		var fields = ["f_url", "f_alt", "f_align", "f_width", "f_height", "f_padding", "f_margin", "f_border", "f_borderColor", "f_backgroundColor"];
 		var param = new Object();
 		for (var i in fields) 
 		{
@@ -76,18 +124,42 @@
 
 				if ( el.value == "" )
 					{
-					alert( "No Image selected." );
+					alert( i18n("No Image selected.") );
 					return( false );
 					}
 
 				param[id] = makeURL(base_url,el.value);
 				}
-			else
+			else if (el)
 				param[id] = el.value;
+      else alert("Missing " + fields[i]);
+
 		}
+
+    // See if we need to resize the image
+    var origsize =
+    {
+      w:document.getElementById('orginal_width').value,
+      h:document.getElementById('orginal_height').value
+    }
+
+    if(  (origsize.w != param.f_width)
+      || (origsize.h != param.f_height) )
+    {
+      // Yup, need to resize
+      var resized = Xinha._geturlcontent(_backend_url + '&__function=resizer&img=' + encodeURIComponent(document.getElementById('f_url').value) + '&width=' + param.f_width + '&height=' + param.f_height);
+      // alert(resized);
+      resized = eval(resized);
+      if(resized)
+      {
+        param.f_url = makeURL(base_url, resized);
+      }
+    }
+
+
 		__dlg_close(param);
 		return false;
-	};
+	}
 
 	//similar to the Files::makeFile() in Files.php
 	function makeURL(pathA, pathB) 
@@ -139,7 +211,9 @@
 	function changeDir(newDir) 
 	{
 		if(typeof imgManager != 'undefined')
-			imgManager.changeDir(newDir);
+    {      
+	    imgManager.changeDir(newDir);
+    }
 	}
 
 	function toggleConstrains(constrains) 
@@ -198,7 +272,7 @@
 
 		message.appendChild(document.createTextNode(i18n(newMessage)));
 		
-		messages.style.display = "block";
+		messages.style.display = '';
 	}
 
 	function addEvent(obj, evType, fn)
@@ -223,28 +297,45 @@
 	}
 
 
-	function newFolder() 
+	function newFolder()
 	{
-		var selection = document.getElementById('dirPath');
-		var dir = selection.options[selection.selectedIndex].value;
-
-		Dialog("newFolder.html", function(param) 
+		function createFolder(folder)
 		{
-			if (!param) // user must have pressed Cancel
-				return false;
-			else
+			var selection = document.getElementById('dirPath');
+			var dir = selection.options[selection.selectedIndex].value;
+
+			if(folder == thumbdir)
 			{
-				var folder = param['f_foldername'];
-				if(folder == thumbdir)
+				alert(i18n('Invalid folder name, please choose another folder name.'));
+				return false;
+			}
+
+			if (folder && folder != '' && typeof imgManager != 'undefined')
+			{
+				imgManager.newFolder(dir, encodeURI(folder));
+			}
+		}
+		// IE7 has crippled the prompt()
+		if (Xinha.ie_version > 6)
+		{
+			Dialog("newFolder.html", function(param)
+			{
+				if (!param) // user must have pressed Cancel
 				{
-					alert(i18n('Invalid folder name, please choose another folder name.'));
 					return false;
 				}
-
-				if (folder && folder != '' && typeof imgManager != 'undefined') 
-					imgManager.newFolder(dir, encodeURI(folder)); 
-			}
-		}, null);
+				else
+				{
+					var folder = param['f_foldername'];
+					createFolder(folder);
+				}
+			}, null);
+		}
+		else
+		{
+			var folder = prompt(i18n('Please enter name for new folder...'), i18n('Untitled'));
+			createFolder(folder);
+		}
 	}
-
+  
 	addEvent(window, 'load', init);

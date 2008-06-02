@@ -1,17 +1,6 @@
 // I18N constants
-
 // LANG: "he", ENCODING: UTF-8
 // Author: Liron Newman, http://www.eesh.net, <plastish at ultinet dot org>
-
-// FOR TRANSLATORS:
-//
-//   1. PLEASE PUT YOUR CONTACT INFO IN THE ABOVE LINE
-//      (at least a valid email address)
-//
-//   2. PLEASE TRY TO USE UTF-8 FOR ENCODING;
-//      (if this is not possible, please include a comment
-//       that states what encoding is necessary.)
-
 {
   "Align": "ישור",
   "All four sides": "כל ארבעת הצדדים",
@@ -82,9 +71,9 @@
   "Unset color": "צבע לא נבחר",
   "Vertical align": "יישור אנכי",
   "Width": "רוחב",
-  "HTMLArea cowardly refuses to delete the last cell in row.": "HTMLArea מסרב בפחדנות למחוק את התא האחרון בשורה.",
-  "HTMLArea cowardly refuses to delete the last column in table.": "HTMLArea מסרב בפחדנות למחוק את הטור האחרון בטבלה.",
-  "HTMLArea cowardly refuses to delete the last row in table.": "HTMLArea מסרב בפחדנות למחוק את השורה האחרונה בטבלה.",
+  "Xinha cowardly refuses to delete the last cell in row.": "Xinha מסרב בפחדנות למחוק את התא האחרון בשורה.",
+  "Xinha cowardly refuses to delete the last column in table.": "Xinha מסרב בפחדנות למחוק את הטור האחרון בטבלה.",
+  "Xinha cowardly refuses to delete the last row in table.": "Xinha מסרב בפחדנות למחוק את השורה האחרונה בטבלה.",
   "percent": "אחוז",
   "pixels": "פיקסלים"
-}
+};

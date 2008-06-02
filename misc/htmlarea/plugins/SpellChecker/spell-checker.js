@@ -8,7 +8,7 @@
 //
 // $Id$
 
-HTMLArea.Config.prototype.SpellChecker = { 'backend': 'php', 'personalFilesDir' : '', 'defaultDictionary' : 'en_GB' };
+Xinha.Config.prototype.SpellChecker = { 'backend': 'php', 'personalFilesDir' : '', 'defaultDictionary' : 'en_GB', 'utf8_to_entities' : true };
 
 function SpellChecker(editor) {
   this.editor = editor;
@@ -26,7 +26,7 @@ function SpellChecker(editor) {
              });
 
   cfg.addToolbarElement("SC-spell-check", "htmlmode", 1);
-};
+}
 
 SpellChecker._pluginInfo = {
   name          : "SpellChecker",
@@ -40,8 +40,8 @@ SpellChecker._pluginInfo = {
 };
 
 SpellChecker.prototype._lc = function(string) {
-    return HTMLArea._lc(string, 'SpellChecker');
-}
+    return Xinha._lc(string, 'SpellChecker');
+};
 
 SpellChecker.btnList = [
   null, // separator
@@ -53,9 +53,9 @@ SpellChecker.prototype.buttonPress = function(editor, id) {
       case "SC-spell-check":
     SpellChecker.editor = editor;
     SpellChecker.init = true;
-    var uiurl = _editor_url + "plugins/SpellChecker/spell-check-ui.html";
+    var uiurl = Xinha.getPluginDir("SpellChecker") + "/spell-check-ui.html";
     var win;
-    if (HTMLArea.is_ie) {
+    if (Xinha.is_ie) {
       win = window.open(uiurl, "SC_spell_checker",
             "toolbar=no,location=no,directories=no,status=no,menubar=no," +
             "scrollbars=no,resizable=yes,width=600,height=450");

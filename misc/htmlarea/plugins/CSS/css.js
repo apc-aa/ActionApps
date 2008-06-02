@@ -7,18 +7,57 @@
 // This notice MUST stay intact for use (see license.txt).
 //
 // $Id$
+// @TODO This is the default and won't be very useful to others.
+// We should make this better.
+Xinha.Config.prototype.cssPluginConfig =
+  {
+    combos : [
+      { label: "Syntax",
+                   // menu text       // CSS class
+        options: { "None"           : "",
+                   "Code" : "code",
+                   "String" : "string",
+                   "Comment" : "comment",
+                   "Variable name" : "variable-name",
+                   "Type" : "type",
+                   "Reference" : "reference",
+                   "Preprocessor" : "preprocessor",
+                   "Keyword" : "keyword",
+                   "Function name" : "function-name",
+                   "Html tag" : "html-tag",
+                   "Html italic" : "html-helper-italic",
+                   "Warning" : "warning",
+                   "Html bold" : "html-helper-bold"
+                 },
+        context: "pre"
+      },
+      { label: "Info",
+        options: { "None"           : "",
+                   "Quote"          : "quote",
+                   "Highlight"      : "highlight",
+                   "Deprecated"     : "deprecated"
+                 }
+      }
+    ]
+  };
 
 function CSS(editor, params) {
 	this.editor = editor;
 	var cfg = editor.config;
-	var toolbar = cfg.toolbar;
 	var self = this;
-	var i18n = CSS.I18N;
-	var plugin_config = params[0];
-	var combos = plugin_config.combos;
+	var plugin_config;
+  if(params && params.length)
+  {
+    plugin_config = params[0];
+  }
+  else
+  {
+    plugin_config = editor.config.cssPluginConfig;
+  }
 
-	var first = true;
-	for (var i = combos.length; --i >= 0;) {
+  var combos = plugin_config.combos;
+
+	for (var i = 0; i < combos.length; i++) {
 		var combo = combos[i];
 		var id = "CSS-class" + i;
 		var css_class = {
@@ -29,15 +68,9 @@ function CSS(editor, params) {
 			context    : combo.context
 		};
 		cfg.registerDropdown(css_class);
-
-		// prepend to the toolbar
-		toolbar[1].splice(0, 0, first ? "separator" : "space");
-		toolbar[1].splice(0, 0, id);
-		if (combo.label)
-			toolbar[1].splice(0, 0, "T[" + combo.label + "]");
-		first = false;
-	}
-};
+    cfg.addToolbarElement(["T[" + combo.label + "]", id, "separator"] , "formatblock", -1);
+ 	}
+}
 
 CSS._pluginInfo = {
 	name          : "CSS",

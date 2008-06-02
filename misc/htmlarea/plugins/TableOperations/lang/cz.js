@@ -1,17 +1,6 @@
 // I18N constants
-
 // LANG: "cz", ENCODING: UTF-8
 // Author: Jiri Löw, <jirilow@jirilow.com>
-
-// FOR TRANSLATORS:
-//
-//   1. PLEASE PUT YOUR CONTACT INFO IN THE ABOVE LINE
-//      (at least a valid email address)
-//
-//   2. PLEASE TRY TO USE UTF-8 FOR ENCODING;
-//      (if this is not possible, please include a comment
-//       that states what encoding is necessary.)
-
 {
   "Align": "Zarovnání",
   "All four sides": "Všechny čtyři strany",
@@ -82,9 +71,9 @@
   "Unset color": "Zrušit barvu",
   "Vertical align": "Svislé zarovnání",
   "Width": "Šířka",
-  "HTMLArea cowardly refuses to delete the last cell in row.": "HTMLArea zbaběle odmítá smazat poslední buňku v řádku.",
-  "HTMLArea cowardly refuses to delete the last column in table.": "HTMLArea zbaběle odmítá smazat poslední sloupec v tabulce.",
-  "HTMLArea cowardly refuses to delete the last row in table.": "HTMLArea zbaběle odmítá smazat poslední řádek v tabulce.",
+  "Xinha cowardly refuses to delete the last cell in row.": "Xinha zbaběle odmítá smazat poslední buňku v řádku.",
+  "Xinha cowardly refuses to delete the last column in table.": "Xinha zbaběle odmítá smazat poslední sloupec v tabulce.",
+  "Xinha cowardly refuses to delete the last row in table.": "Xinha zbaběle odmítá smazat poslední řádek v tabulce.",
   "percent": "procent",
   "pixels": "pixelů"
-}
+};

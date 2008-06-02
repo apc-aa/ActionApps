@@ -102,7 +102,7 @@ initEditor = function ()
 
     if (markerImg.src.indexOf("img/t_white.gif")>0)
         toggleMarker() ;
-}
+};
 
 function init_crop() 
 {
@@ -487,8 +487,13 @@ function measure(e)
 
 function setMarker(nx,ny,nw,nh) 
 {
+    if (isNaN(nx)) nx = 0;
+    if (isNaN(ny)) ny = 0;
+    if (isNaN(nw)) nw = 0;
+    if (isNaN(nh)) nh = 0;
+  
     if (ant == null)
-        ant = MM_findObj("ant");
+      ant = MM_findObj("ant");
 
     if (canvas == null)
         canvas = MM_findObj("imgCanvas");

@@ -2,7 +2,9 @@ function InsertAnchor(editor) {
   this.editor = editor;
   var cfg = editor.config;
   var self = this;
-
+  
+  this.placeholderImg = '<img class="IA_placeholder" src="'+Xinha.getPluginDir("InsertAnchor")+'/img/placeholder.gif" />';
+  
   // register the toolbar buttons provided by this plugin
   cfg.registerButton({
   id       : "insert-anchor", 
@@ -29,19 +31,23 @@ InsertAnchor._pluginInfo = {
 };
 
 InsertAnchor.prototype._lc = function(string) {
-    return HTMLArea._lc(string, 'InsertAnchor');
-}
+    return Xinha._lc(string, 'InsertAnchor');
+};
 
 InsertAnchor.prototype.onGenerate = function() {
-  var style_id = "IA-style"
-  var style = this.editor._doc.getElementById(style_id);
-  if (style == null) {
-    style = this.editor._doc.createElement("link");
-    style.id = style_id;
-    style.rel = 'stylesheet';
-    style.href = _editor_url + 'plugins/InsertAnchor/insert-anchor.css';
-    this.editor._doc.getElementsByTagName("HEAD")[0].appendChild(style);
-  }
+  this.editor.addEditorStylesheet(Xinha.getPluginDir("InsertAnchor") + '/insert-anchor.css');
+  
+};
+
+InsertAnchor.prototype.inwardHtml = function(html)
+{
+	html= html.replace(/(<a[^>]*class="anchor"[^>]*>)/g,"$1"+this.placeholderImg);
+	return html;
+}
+InsertAnchor.prototype.outwardHtml = function(html)
+{
+	html= html.replace(/(<img[^>]*class="?IA_placeholder"?[^>]*>)/ig,"");
+	return html;
 }
 
 InsertAnchor.prototype.buttonPress = function(editor) {
@@ -49,6 +55,7 @@ InsertAnchor.prototype.buttonPress = function(editor) {
   var html = editor.getSelectedHTML();
   var sel  = editor._getSelection();
   var range  = editor._createRange(sel);
+  var self = this;
   var  a = editor._activeElement(sel);
   if(!(a != null && a.tagName.toLowerCase() == 'a')) {
     a = editor._getFirstAncestor(sel, 'a'); 
@@ -63,7 +70,7 @@ InsertAnchor.prototype.buttonPress = function(editor) {
       var anchor = param["name"];
       if (anchor == "" || anchor == null) {
         if (a) {
-          var child = a.innerHTML;
+          var child = self.outwardHtml(a.innerHTML);
           a.parentNode.removeChild(a);
           editor.insertHTML(child);
         }
@@ -78,8 +85,9 @@ InsertAnchor.prototype.buttonPress = function(editor) {
           a.name = anchor;
           a.title = anchor;
           a.className = "anchor";
-          a.innerHTML = html;
-          if (HTMLArea.is_ie) {
+          a.innerHTML = self.placeholderImg;
+		  if (html) a.innerHTML += html;
+          if (Xinha.is_ie) {
             range.pasteHTML(a.outerHTML);
           } else {
             editor.insertNodeAtSelection(a);
@@ -94,4 +102,4 @@ InsertAnchor.prototype.buttonPress = function(editor) {
       catch (e) { }
     }
   }, outparam);
-}
+};

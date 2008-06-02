@@ -1,17 +1,6 @@
 // I18N constants
-
 // LANG: "nl", ENCODING: UTF-8
 // Author: Michel Weegeerink (info@mmc-shop.nl), http://mmc-shop.nl
-
-// FOR TRANSLATORS:
-//
-//   1. PLEASE PUT YOUR CONTACT INFO IN THE ABOVE LINE
-//      (at least a valid email address)
-//
-//   2. PLEASE TRY TO USE UTF-8 FOR ENCODING;
-//      (if this is not possible, please include a comment
-//       that states what encoding is necessary.)
-
 {
   "Align": "Uitlijning",
   "All four sides": "Alle 4 zijden",
@@ -82,9 +71,9 @@
   "Unset color": "Wis kleur",
   "Vertical align": "Vertikale uitlijning",
   "Width": "Breedte",
-  "HTMLArea cowardly refuses to delete the last cell in row.": "HTMLArea kan de laatste cel in deze tabel niet verwijderen.",
-  "HTMLArea cowardly refuses to delete the last column in table.": "HTMLArea kan de laatste kolom in deze tabel niet verwijderen.",
-  "HTMLArea cowardly refuses to delete the last row in table.": "HTMLArea kan de laatste rij in deze tabel niet verwijderen.",
+  "Xinha cowardly refuses to delete the last cell in row.": "Xinha kan de laatste cel in deze tabel niet verwijderen.",
+  "Xinha cowardly refuses to delete the last column in table.": "Xinha kan de laatste kolom in deze tabel niet verwijderen.",
+  "Xinha cowardly refuses to delete the last row in table.": "Xinha kan de laatste rij in deze tabel niet verwijderen.",
   "percent": "procent",
   "pixels": "pixels"
-}
+};

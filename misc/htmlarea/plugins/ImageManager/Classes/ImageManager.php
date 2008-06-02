@@ -6,8 +6,8 @@
  * @package ImageManager
  */
 
-/* changed for APC-AA by honzam@ecn.cz */
-require_once AA_INC_PATH. "files.class.php3";
+// require_once('../ImageManager/Classes/Files.php'); // AA_CHANGE - honzam
+require_once AA_INC_PATH. "files.class.php3";         // AA_CHANGE + honzam
 
 // uncomment to turn on debugging
 
@@ -64,7 +64,7 @@ class ImageManager
 
 	/**
 	 * Get the tmp file prefix.
-     * @return string tmp file prefix.
+	 * @return string tmp file prefix.
 	 */
 	function getTmpPrefix() 
 	{
@@ -282,24 +282,16 @@ class ImageManager
 		
 		$thumbnail = $this->config['thumbnail_prefix'].$path_parts['basename'];
 
-		if($this->config['safe_mode'] == true
-			|| strlen(trim($this->config['thumbnail_dir'])) == 0)
+		if( strlen(trim($this->config['thumbnail_dir'])) == 0 || $this->config['safe_mode'] == true)
 		{
 			Return Files::makeFile($path_parts['dirname'],$thumbnail);
 		}
 		else
 		{
-			if(strlen(trim($this->config['thumbnail_dir'])) > 0)
-			{
 				$path = Files::makePath($path_parts['dirname'],$this->config['thumbnail_dir']);
 				if(!is_dir($path))
 					Files::createFolder($path);
 				Return Files::makeFile($path,$thumbnail);
-			}
-			else //should this ever happen?
-			{
-				//error_log('ImageManager: Error in creating thumbnail name');
-			}
 		}
 	}
 	
@@ -340,6 +332,35 @@ class ImageManager
 				//error_log('ImageManager: Error in creating thumbnail url');
 			}
 
+		}
+	}
+
+
+	/**
+	 * For a given image file, get the respective resized filename
+	 * no file existence check is done.
+	 * @param string $fullpathfile the full path to the image file
+	 * @param integer $width the intended width
+	 * @param integer $height the intended height
+	 * @param boolean $mkDir whether to attempt to make the resized_dir if it doesn't exist
+	 * @return string of the resized filename
+	 */
+	function getResizedName($fullpathfile, $width, $height, $mkDir = TRUE)
+	{
+		$path_parts = pathinfo($fullpathfile);
+
+		$thumbnail = $this->config['resized_prefix']."_{$width}x{$height}_{$path_parts['basename']}";
+
+		if( strlen(trim($this->config['resized_dir'])) == 0 || $this->config['safe_mode'] == true )
+		{
+			Return Files::makeFile($path_parts['dirname'],$thumbnail);
+		}
+		else
+		{
+			$path = Files::makePath($path_parts['dirname'],$this->config['resized_dir']);
+			if($mkDir && !is_dir($path))
+				Files::createFolder($path);
+			Return Files::makeFile($path,$thumbnail);
 		}
 	}
 
@@ -391,9 +412,10 @@ class ImageManager
 		//check for the file, and must have valid relative path
 		if(isset($_FILES['upload']) && $this->validRelativePath($relative))
 		{
-            /* changed for APC-AA by honzam@ecn.cz */
             // $this->_processFiles($relative, $_FILES['upload']);
+ // AA_CHANGE - honzam
 			$this->_processFiles($relative, 'upload');
+             // AA_CHANGE + honzam
 		}
 	}
 
@@ -409,7 +431,8 @@ class ImageManager
 	 * @return boolean true if the file was processed successfully, 
 	 * false otherwise
 	 */
-	function _processFiles($relative, $filevarname)
+//	function _processFiles($relative, $file)          // AA_CHANGE - honzam
+	function _processFiles($relative, $filevarname)   // AA_CHANGE + honzam
 	{
         /* changed for APC-AA by honzam@ecn.cz
            this function is changet quite a lot - filevarname passes insted of 
@@ -417,46 +440,54 @@ class ImageManager
            file - not prior upload (because of "open_basedir restriction in 
            effect" error) 
         */
-        
-    	$file = $_FILES[$filevarname];
+		
+    	$file = $_FILES[$filevarname];           // AA_CHANGE + honzam
+
 
 		if($file['error']!=0)
 		{
-			return false;
-		}
-
-		if (!is_uploaded_file($file['tmp_name'])) {
-			Files::delFile($file['tmp_name']);
-			return false;
-		}
-
-		//now copy the file
-		$path = Files::makePath($this->getImagesDir(),$relative);
-
-        /* changed for APC-AA by honzam@ecn.cz */
-		// $result = Files::copyFile($file['tmp_name'], $path, $file['name']);
-        $result = Files::uploadFile($filevarname, $path);
-		if ($result===false) {
-			Files::delFile($file['tmp_name']);
 			Return false;
 		}
 
+        // we can't test it because of open_basedir restriction on PHP upload 
+        // directory - Honzam
+		// if(!is_file($file['tmp_name']))       // AA_CHANGE - honzam
+		// {                                     // AA_CHANGE - honzam
+		//     Return false;                     // AA_CHANGE - honzam
+		// }                                     // AA_CHANGE - honzam
 
-		if ($this->config['validate_images'] == true)
+		if(!is_uploaded_file($file['tmp_name']))
 		{
-			$imgInfo = @getImageSize($result);
+			Files::delFile($file['tmp_name']);
+			Return false;
+		}
+		
+
+		if($this->config['validate_images'] == true)
+		{
+			$imgInfo = @getImageSize($file['tmp_name']);
 			if(!is_array($imgInfo))
 			{
-                // delete both - copied as well as copied
-				Files::delFile($result);  
 				Files::delFile($file['tmp_name']);
 				Return false;
 			}
 		}
 
+		//now copy the file
+		$path = Files::makePath($this->getImagesDir(),$relative);
+		// $result = Files::copyFile($file['tmp_name'], $path, $file['name']);  // AA_CHANGE - honzam
+        $result = Files::uploadFile($filevarname, $path);                       // AA_CHANGE + honzam
+
+		//no copy error
+		if(!is_int($result))
+		{
+			Files::delFile($file['tmp_name']);
+			Return true;
+		}
+
 		//delete tmp files.
 		Files::delFile($file['tmp_name']);
-		Return true;
+		Return false;
 	}
 
 	/**

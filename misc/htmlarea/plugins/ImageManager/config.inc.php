@@ -16,21 +16,20 @@
 
 // -------------------------------------------------------------------------
 
+// This pays attention to $change_id
+require_once dirname(__FILE__). "/../../../../include/init_page.php3";     // AA_CHANGE + by brazda@changenet.sk
 
-/* changed for APC-AA by brazda@changenet.sk */
-require_once dirname(__FILE__). "/../../../../include/init_page.php3";     // This pays attention to $change_id
-require_once AA_INC_PATH."util.php3";
+require_once AA_INC_PATH."util.php3";                                      // AA_CHANGE + by honzam
 
 /**
 * Default backend URL
 *
 * URL to use for unified backend.
 *
-* The ?__plugin=ImageManager& is required.
+* The ?__plugin=ImageManager& is required. 
 */
 
-/* changed for APC-AA by brazda@changenet.sk */
-$IMConfig['backend_url'] = "backend.php?AA_CP_Session=$AA_CP_Session&__plugin=ImageManager&";
+$IMConfig['backend_url'] = "backend.php?AA_CP_Session=". $GLOBALS['AA_CP_Session'] ."&__plugin=ImageManager&";           // AA_CHANGE + by brazda@changenet.sk
 
 /**
 * Backend Installation Directory
@@ -52,7 +51,7 @@ $IMConfig['base_url'] = '';
 * File system path to the directory you want to manage the images
 * for multiple user systems, set it dynamically.
 *
-* NOTE: This directory requires write access by PHP. That is,
+* NOTE: This directory requires write access by PHP. That is, 
 * PHP must be able to create files in this directory.
 * Able to create directories is nice, but not necessary.
 *
@@ -62,7 +61,7 @@ $IMConfig['base_url'] = '';
 
 // $IMConfig['images_dir'] = "/some/path/to/images/directory;
 
-$IMConfig['images_dir'] = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
+$IMConfig['images_dir'] = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];   // AA_CHANGE + honzam
 
 // -------------------------------------------------------------------------
 
@@ -85,7 +84,7 @@ $IMConfig['images_dir'] = IMG_UPLOAD_PATH. $GLOBALS["slice_id"];
 // try to figure out the URL of the sample images directory. For your installation
 // you will probably want to keep images in another directory.
 
-$IMConfig['images_url'] = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
+$IMConfig['images_url'] = IMG_UPLOAD_URL. $GLOBALS["slice_id"];    // AA_CHANGE + honzam
 
 // -------------------------------------------------------------------------
 
@@ -102,7 +101,8 @@ $IMConfig['images_url'] = IMG_UPLOAD_URL. $GLOBALS["slice_id"];
 * FALSE - Set to false if PHP on the web server is not in safe mode.
 */
 
-$IMConfig['safe_mode'] = ini_get('safe_mode');
+// $IMConfig['safe_mode'] = false;               // AA_CHANGE - honzam
+$IMConfig['safe_mode'] = ini_get('safe_mode');   // AA_CHANGE + honzam
 
 // -------------------------------------------------------------------------
 
@@ -112,13 +112,14 @@ $IMConfig['safe_mode'] = ini_get('safe_mode');
 * Possible values: 'GD', 'IM', or 'NetPBM'
 *
 * The image manipulation library to use, either GD or ImageMagick or NetPBM.
-* If you have safe mode ON, or don't have the binaries to other packages,
+* If you have safe mode ON, or don't have the binaries to other packages, 
 * your choice is 'GD' only. Other packages require Safe Mode to be off.
 *
-* DEFAULT: GD is probably the most likely to be available.
+* DEFAULT: GD is probably the most likely to be available. 
 */
 
-define('IMAGE_CLASS', 'GD');
+$IMConfig['IMAGE_CLASS'] = 'GD';
+
 
 // -------------------------------------------------------------------------
 
@@ -131,10 +132,13 @@ define('IMAGE_CLASS', 'GD');
 * GD does not require the following definition.
 */
 
-//define('IMAGE_TRANSFORM_LIB_PATH', 'C:/"Program Files"/ImageMagick-5.5.7-Q16/');
+// $IMConfig['IMAGE_TRANSFORM_LIB_PATH'] ='/usr/bin/';     // AA_CHANGE - honzam
+
+// For windows, something like
+// C:/"Program Files"/ImageMagick-5.5.7-Q16/
 
 // -------------------------------------------------------------------------
-//                OPTIONAL SETTINGS
+//                OPTIONAL SETTINGS 
 // -------------------------------------------------------------------------
 
 /**
@@ -154,7 +158,7 @@ $IMConfig['thumbnail_prefix'] = '.';
 *
 * Thumbnail can also be stored in a directory, this directory
 * will be created by PHP. If PHP is in safe mode, this parameter
-*  is ignored, you can not create directories.
+*  is ignored, you can not create directories. 
 *
 *  If you do not want to store thumbnails in a directory, set this
 *  to false or empty string '';
@@ -162,6 +166,39 @@ $IMConfig['thumbnail_prefix'] = '.';
 
 $IMConfig['thumbnail_dir'] = '.thumbs';
 
+// -------------------------------------------------------------------------
+
+/**
+* Resized prefix
+*
+* The prefix for resized files, something like .resized will do.  The
+* resized files will be named <prefix>_<width>x<height>_<original>
+* resized files are created when one changes the dimensions of an image
+* in the image manager selection dialog - the image is scaled when the
+* user clicks the ok button.
+*/
+
+$IMConfig['resized_prefix'] = '.resized';
+
+// -------------------------------------------------------------------------
+
+/**
+* Resized Directory
+*
+* Resized images may also be stored in a directory, except in safe mode.
+*/
+
+$IMConfig['resized_dir'] = '.resized';
+
+/**
+ * Full options
+ *
+ * Determines whether the user is given options for padding, 
+ * background/padding colour, margin, border and border colour. 
+ */
+
+$IMConfig['show_full_options'] = true;
+ 
 // -------------------------------------------------------------------------
 
 /**
@@ -206,8 +243,8 @@ $IMConfig['allow_upload'] = true;
 *
 * Possible values: true, false
 *
-* TRUE - If set to true, uploaded files will be validated based on the
-*        function getImageSize, if we can get the image dimensions then
+* TRUE - If set to true, uploaded files will be validated based on the 
+*        function getImageSize, if we can get the image dimensions then 
 *        I guess this should be a valid image. Otherwise the file will be rejected.
 *
 * FALSE - All uploaded files will be processed.
@@ -248,11 +285,61 @@ $IMConfig['thumbnail_height'] = 96;
 $IMConfig['tmp_prefix'] = '.editor_';
 
 
+$IMConfig['ViewMode'] = 'thumbs';
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//       ================== END OF CONFIGURATION =======================      //
+////////////////////////////////////////////////////////////////////////////////
+
+
+// Standard PHP Backend Data Passing
+//  if data was passed using xinha_pass_to_php_backend() we merge the items
+//  provided into the Config
+require_once(realpath(dirname(__FILE__) . '/../../contrib/php-xinha.php'));
+if($passed_data = xinha_read_passed_data())
+{
+  $IMConfig = array_merge($IMConfig, $passed_data);
+  $IMConfig['backend_url'] .= xinha_passed_data_querystring() . '&';
+}
+// Deprecated config passing, don't use this way any more!
+elseif(isset($_REQUEST['backend_config']))
+{
+  if(get_magic_quotes_gpc()) {
+    $_REQUEST['backend_config'] = stripslashes($_REQUEST['backend_config']);
+  }
+  
+  // Config specified from front end, check that it's valid
+  session_start();
+  $secret = $_SESSION[$_REQUEST['backend_config_secret_key_location']];
+
+  if($_REQUEST['backend_config_hash'] !== sha1($_REQUEST['backend_config'] . $secret))
+  {
+    die("Backend security error.");
+  }
+
+  $to_merge = unserialize($_REQUEST['backend_config']);
+  if(!is_array($to_merge))
+  {
+    die("Backend config syntax error.");
+  }
+
+  $IMConfig = array_merge($IMConfig, $to_merge);
+  $IMConfig['backend_url'] .= "backend_config=" . rawurlencode($_REQUEST['backend_config']) . '&';
+  $IMConfig['backend_url'] .= "backend_config_hash=" . rawurlencode($_REQUEST['backend_config_hash']) . '&';
+  $IMConfig['backend_url'] .= "backend_config_secret_key_location=" . rawurlencode($_REQUEST['backend_config_secret_key_location']) . '&';
+
+}
+
+define('IMAGE_CLASS', $IMConfig['IMAGE_CLASS']);
+define('IMAGE_TRANSFORM_LIB_PATH', $IMConfig['IMAGE_TRANSFORM_LIB_PATH']);
 define( "IM_CONFIG_LOADED", "yes" );
 
 // bring in the debugging library
 
-require_once( "ddt.php" );
+include_once( "ddt.php" );
 
 // uncomment to send debug messages to a local file
 // _setDebugLog( "/tmp/debug_log.txt" );

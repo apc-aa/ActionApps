@@ -1,10 +1,10 @@
-// Character Map plugin for HTMLArea
+// Character Map plugin for Xinha
 // Sponsored by http://www.systemconcept.de
 // Implementation by Holger Hees based on HTMLArea XTD 1.5 (http://mosforge.net/projects/htmlarea3xtd/)
 // Original Author - Bernhard Pfeifer novocaine@gmx.net 
 //
 // (c) systemconcept.de 2004
-// Distributed under the same terms as HTMLArea itself.
+// Distributed under the same terms as Xinha itself.
 // This notice MUST stay intact for use (see license.txt).
 
 function EditTag(editor) {
@@ -20,11 +20,11 @@ function EditTag(editor) {
                 action   : function(editor) {
                              self.buttonPress(editor);
                            }
-            })
+            });
 
 	cfg.addToolbarElement("edittag", "htmlmode",1);
 
-};
+}
 
 EditTag._pluginInfo = {
 	name          : "EditTag",
@@ -38,8 +38,8 @@ EditTag._pluginInfo = {
 };
 
 EditTag.prototype._lc = function(string) {
-    return HTMLArea._lc(string, 'EditTag');
-}
+    return Xinha._lc(string, 'EditTag');
+};
 
 EditTag.prototype.buttonPress = function(editor) {
 	// Costruzione dell'oggetto parametri da passare alla dialog.
@@ -53,4 +53,4 @@ EditTag.prototype.buttonPress = function(editor) {
 		}
 		editor.insertHTML( html );
 	}, outparam);
-}
+};

@@ -7,7 +7,7 @@
 
 var FindReplace = window.opener.FindReplace;
 var editor = FindReplace.editor;
-var is_mo = window.opener.HTMLArea.is_gecko;
+var is_mo = window.opener.Xinha.is_gecko;
 var tosearch = '';
 var pater = null;
 var buffer = null;
@@ -15,7 +15,7 @@ var matches = 0;
 var replaces = 0;
 var fr_spans = new Array();
 function _lc(string) {
-    return(window.opener.HTMLArea._lc(string, 'FindReplace'));
+    return(window.opener.Xinha._lc(string, 'FindReplace'));
 }
 function execSearch(params) {
 var ihtml = editor._doc.body.innerHTML;
@@ -49,7 +49,7 @@ var ihtml = editor._doc.body.innerHTML;
   }
 
 spanWalker(params['fr_pattern'],params['fr_replacement'],params['fr_replaceall']);
-};
+}
 
 function spanWalker(pattern,replacement,replaceall) {
 var foundtrue = false;
@@ -95,7 +95,7 @@ clearMarks();
     } else { message += '"'+pattern+'" '+_lc("not found"); }
   alert(message+'.');
   }
-};
+}
 
 function clearDoc() {
 var doc = editor._doc.body.innerHTML; 
@@ -107,9 +107,9 @@ fr_spans = new Array();
 matches = 0;
 replaces = 0;
 disab("fr_hiliteall,fr_clear",true);
-};
+}
 
-function clearMarks() { 
+function clearMarks() {
 var getall = editor._doc.body.getElementsByTagName("span"); 
   for (var i = 0; i < getall.length; i++) {
   var elm = getall[i];
@@ -120,7 +120,7 @@ var getall = editor._doc.body.getElementsByTagName("span");
     objStyle.fontWeight = "";
     }
   }
-};
+}
 
 function hiliteAll() { 
 var getall = editor._doc.body.getElementsByTagName("span"); 
@@ -133,17 +133,17 @@ var getall = editor._doc.body.getElementsByTagName("span");
     objStyle.fontWeight = "bold";
     }
   }
-};
+}
 
 function resetContents() { 
   if(buffer == null) return;
 var transp = editor._doc.body.innerHTML;
 editor._doc.body.innerHTML = buffer;
 buffer = transp;
-};
+}
 
 function disab(elms,toset) { 
 var names = elms.split(/[,; ]+/);
   for(var i = 0; i < names.length; i++) 
     document.getElementById(names[i]).disabled = toset;
-};
+}

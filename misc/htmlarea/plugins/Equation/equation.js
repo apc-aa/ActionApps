@@ -1,146 +1,230 @@
-// Table Operations Plugin for HTMLArea-3.0
-// Implementation by Nazarij Dubnytskyj.  Sponsored by NasCreative
-//
-// htmlArea v3.0 - Copyright (c) 2002 interactivetools.com, inc.
-// This notice MUST stay intact for use (see license.txt).
-//
-// A free WYSIWYG editor replacement for <textarea> fields.
-// For full source code and docs, visit http://www.interactivetools.com/
-//
-// Version 1.0 developed by Nazarij Dubnytskyj for NasCreative.
-//
-// $Id$
+/*------------------------------------------*\
+ AsciiMathML Formula Editor for Xinha
+ _______________________
+ 
+ Based on AsciiMathML by Peter Jipsen http://www.chapman.edu/~jipsen
+ 
+ Including a table with math symbols for easy input modified from CharacterMap for ASCIIMathML by Peter Jipsen
+ HTMLSource based on HTMLArea XTD 1.5 (http://mosforge.net/projects/htmlarea3xtd/) modified by Holger Hees
+ Original Author - Bernhard Pfeifer novocaine@gmx.net
+ 
+ See readme.txt
+ 
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation; either version 2.1 of the License, or (at
+ your option) any later version.
 
-// Object that will encapsulate all the equation operations
+ This program is distributed in the hope that it will be useful, 
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License (at http://www.gnu.org/licenses/lgpl.html) 
+ for more details.
+
+ Raimund Meyer  11/23/2006
+     
+\*------------------------------------------*/
 function Equation(editor) {
 	this.editor = editor;
 
 	var cfg = editor.config;
 	var self = this;
+	
 
 	// register the toolbar buttons provided by this plugin
 	cfg.registerButton({
 	id       : "equation",
-	tooltip  : this._lc("Equation Editor"),
+	tooltip  : this._lc("Formula Editor"),
 	image    : editor.imgURL("equation.gif", "Equation"),
 	textMode : false,
 	action   : function(editor, id) {
 			self.buttonPress(editor, id);
 		}
-	})
-	 cfg.addToolbarElement("equation", "inserthorizontalrule", -1);
-};
-
-Equation._pluginInfo = {
-	name          : "Equation",
-	version       : "1.0",
-	developer     : "Nazarij Dubnytskyj",
-	developer_url : "",
-	c_owner       : "",
-	sponsor       : "Nascreative",
-	sponsor_url   : "",
-	license       : "htmlArea"
-};
-
-Equation.prototype._lc = function(string) {
-    return HTMLArea._lc(string, 'Equation');
+	});
+	cfg.addToolbarElement("equation", "inserthorizontalrule", -1);
+	
+	mathcolor = cfg.Equation.mathcolor;       // change it to "" (to inherit) or any other color
+	mathfontfamily = cfg.Equation.mathfontfamily;
+	
+	this.enabled = !Xinha.is_ie;
+	
+	if (this.enabled)
+	{	
+		this.onBeforeSubmit = this.onBeforeUnload = function () {self.unParse();};
+	}
+	
+	if (typeof  AMprocessNode != "function")
+	{
+		Xinha._loadback(Xinha.getPluginDir('Equation') + "/ASCIIMathML.js", function () { translate(); });
+	}
 }
 
-Equation.prototype.buttonPress = function(editor, id) {
-	var self = this;
-	this.editor = editor;
+Xinha.Config.prototype.Equation =
+{
+	"mathcolor" : "black",       // change it to "" (to inherit) or any other color
+	"mathfontfamily" : "serif" // change to "" to inherit (works in IE) 
+                               // or another family (e.g. "arial")
+}
 
-	switch (id) {
-		case "equation":
-			editor._popupDialog("plugin://Equation/operations", function(params) {
-				self.insertOperation(editor,params);
-			}, '');
-		break;
-	}
+Equation._pluginInfo = {
+	name          : "ASCIIMathML Formula Editor",
+	version       : "2.3 (2008-01-26)",
+	developer     : "Raimund Meyer",
+	developer_url : "http://xinha.raimundmeyer.de",
+	c_owner       : "",
+	sponsor       : "",
+	sponsor_url   : "",
+	license       : "GNU/LGPL"
 };
 
-Equation.prototype.insertOperation = function(editor,params) {
-	var cur_operation=params["op"];
+Equation.prototype._lc = function(string) 
+{
+    return Xinha._lc(string, 'Equation');
+};
+Equation.prototype.onGenerate = function() 
+{
+	this.parse();
+};
 
-	this.editor = editor;
+// avoid changing the formula in the editor
+Equation.prototype.onKeyPress = function(ev)
+{
+	if (this.enabled)
+	{
+		e = this.editor;
+		var span = e._getFirstAncestor(e.getSelection(),['span']);
+		if ( span && span.className == "AM" )
+		{
+			if (
+				ev.keyCode == 8 || // delete
+				ev.keyCode == 46 ||// backspace
+				ev.charCode	       // all character keys
+			) 
+			{ // stop event
+				Xinha._stopEvent(ev);
+				return true; 
+			}
+		}
+	}
+	return false;
+}
+Equation.prototype.onBeforeMode = function( mode )
+{
+	if (this.enabled && mode == 'textmode')
+	{
+		this.unParse();
+	}
+}
+Equation.prototype.onMode = function( mode )
+{
+	if (this.enabled && mode == 'wysiwyg')
+	{
+		this.parse();
+	}
+}
 
-	switch (cur_operation) {
-		case "less_equal":
-			editor.insertHTML('<img src="../plugins/Equation/img/dsp_less_equal.gif" style="position:relative; top:4px;">');
-		break;
-		case "greater_egual":
-			editor.insertHTML('<img src="../plugins/Equation/img/dsp_greater_equal.gif" style="position:relative; top:4px;">');
-		break;
-		case "notequal":
-			editor.insertHTML('<img src="../plugins/Equation/img/dsp_notequal.gif" style="position:relative; top:4px;">');
-		break;
-		case "mul":
-			editor.insertHTML('&nbsp;*&nbsp;');
-		break;
-		case "divide":
-			editor.insertHTML(' &divide; ');
-		break;
-		case "abs_value":
-			tstr='<table taglabel="ABS" style="display: inline; vertical-align: middle;" border="0" cellpadding="0" cellspacing="0">';
-			tstr+='<tbody>';
-			tstr+=' <tr>';
-			tstr+='   <td style="font-size: 16px; font-family: times new roman,times,serif;"  type="paren" autosize="absVal" noresize="1" nowrap="nowrap" valign="middle"><b>|</b></td>';
-			tstr+='   <td  nowrap="nowrap" valign="bottom"><table  style="display: inline;" border="0" cellpadding="0" cellspacing="0"><tbody ><tr ><td taglabel="CONTENTS" style="vertical-align: middle; padding-top: 0px; text-align: center;" nowrap="nowrap">x</td></tr></tbody></table></td>';
-			tstr+='   <td style="font-size: 16px; font-family: times new roman,times,serif;"  type="paren" autosize="absVal" noresize="1" nowrap="nowrap" valign="middle"><b>|</b></td>';
-			tstr+=' </tr>';
-			tstr+='</tbody></table>';
-			editor.insertHTML(tstr);
-		break;
-		case "parenthesis":
-			tstr='<table taglabel="PARENTHESIS" style="display: inline; vertical-align: middle;" border="0" cellpadding="0" cellspacing="0">';
-			tstr+='<tbody>';
-			tstr+=' <tr>';
-			tstr+='   <td style="font-family: times new roman,times,serif; font-size: 32px;" type="paren" autosize="paren" noresize="1" nowrap="nowrap" valign="middle">(</td>';
-			tstr+='   <td nowrap="nowrap" valign="middle">x</td>';
-			tstr+='   <td style="font-family: times new roman,times,serif; font-size: 32px;" type="paren" autosize="paren" noresize="1" nowrap="nowrap" valign="middle">)</td>';
-			tstr+=' </tr>';
-			tstr+='</tbody></table>';
-			editor.insertHTML(tstr);
-		break;
-		case "hor_fraction":
-			tstr='<table cellpadding="3" cellspacing="0" style="float:left;" taglabel="FRACTION">';
-			tstr+='<tr><td align="center" style="border-bottom:1px solid #000;" type="numerator"> x </td></tr>';
-			tstr+='<tr><td align="center" type="denominator"> y </td></tr>';
-			tstr+='</table>';
-			tstr+='<div style="margin:15px 5px 0px 5px;float:left;"> &nbsp; &nbsp; </div>';
-			tstr+='<div style="clear:both;"></div><br /><br />';
-			editor.insertHTML(tstr);
-		break;
-		case "diag_fraction":
-			tstr='<table taglabel="ABS" style="display: inline; vertical-align: middle;" border="0" cellpadding="0" cellspacing="0">';
-			tstr+='<tbody>';
-			tstr+=' <tr>';
-			tstr+='   <td style="font-size: 16px; font-family: times new roman,times,serif;" type="paren" autosize="diag_fraction" noresize="1" nowrap="nowrap" valign="middle">x</td>';
-			tstr+='   <td nowrap="nowrap" valign="bottom"><table  style="display: inline;" border="0" cellpadding="0" cellspacing="0"><tbody ><tr ><td taglabel="CONTENTS" style="vertical-align: middle; padding-top: 0px; text-align: center; font-size: 24px; font-weight:900;" nowrap="nowrap">&nbsp;/&nbsp;</td></tr></tbody></table></td>';
-			tstr+='   <td style="font-size: 16px; font-family: times new roman,times,serif;" type="paren" autosize="diag_fraction" noresize="1" nowrap="nowrap" valign="middle">y</td>';
-			tstr+=' </tr>';
-			tstr+='</tbody></table>';
-			editor.insertHTML(tstr);
-		break;
-		case "square_root":
-			tstr='<table style="display: inline; vertical-align: middle;" taglabel="RADICAL" border="0" cellpadding="0" cellspacing="0">';
-			tstr+='<tbody>';
-			tstr+=' <tr>';
-			tstr+='   <td style="padding: 0px 0px 0px 2px; font-family: times new roman,times,serif; font-size: 8pt;" align="right" nowrap="nowrap" valign="bottom">&nbsp;<br><strong style="font-weight: 900; font-family: times new roman,times,serif;">\\</strong></td>';
-			tstr+='   <td style="border-top: 2px solid black; border-left: 2px solid black; padding: 2px 3px 1px 5px;" align="center" nowrap="nowrap">&nbsp;x</td>';
-			tstr+=' </tr>';
-			tstr+='</tbody></table>';
-			editor.insertHTML(tstr);
-		break;
-		case "root":
-			tstr='<table style="display: inline; vertical-align: middle;" taglabel="RADICAL" border="0" cellpadding="0" cellspacing="0">';
-			tstr+='<tbody>';
-			tstr+=' <tr>';
-			tstr+='   <td style="padding: 0px 0px 0px 2px; font-family: times new roman,times,serif; font-size: 8pt;" align="right" nowrap="nowrap" valign="bottom">y&nbsp;<br><strong style="font-weight: 900; font-family: times new roman,times,serif;">\\</strong></td>';
-			tstr+='   <td style="border-top: 2px solid black; border-left: 2px solid black; padding: 2px 3px 1px 5px;" align="center" nowrap="nowrap">&nbsp;x</td>';
-			tstr+=' </tr>';
-			tstr+='</tbody></table>';
-			editor.insertHTML(tstr);
-		break;
+Equation.prototype.parse = function ()
+{
+	if (this.enabled)
+	{
+		var doc = this.editor._doc;
+		var spans = doc.getElementsByTagName("span");
+		for (var i = 0;i<spans.length;i++)
+		{
+			var node = spans[i];
+			if (node.className != 'AM') continue;
+			if (node.innerHTML.indexOf(this.editor.cc) != -1) // avoid problems with source code position auxiliary character
+			{
+				node.innerHTML = node.innerHTML.replace(this.editor.cc,'');
+				node.parentNode.insertBefore(doc.createTextNode(this.editor.cc), node);
+			}
+			node.title = node.innerHTML;
+			// FF3 strict source document policy: 
+			// the span is taken from the editor document, processed in the plugin document, and put back in the editor
+			var clone = node.cloneNode(true);
+			try {
+				document.adoptNode(clone);
+			} catch (e) {}
+			AMprocessNode(clone, false);
+			try {
+				doc.adoptNode(clone);
+			} catch (e) {}
+			node.parentNode.replaceChild(clone, node);
+			// insert space before and after the protected node, otherwide one could get stuck
+			clone.parentNode.insertBefore(doc.createTextNode(String.fromCharCode(32)),clone);
+			clone.parentNode.insertBefore(doc.createTextNode(String.fromCharCode(32)),clone.nextSibling);
+		}
+	}
+}
+
+Equation.prototype.unParse = function ()
+{
+	var doc = this.editor._doc;
+	var spans = doc.getElementsByTagName("span");
+	for (var i = 0;i<spans.length;i++)
+	{
+		var node = spans[i];
+		if (node.className.indexOf ("AM") == -1 || node.getElementsByTagName("math").length == 0) continue;
+		var formula = node.getAttribute("title");
+		node.innerHTML = formula;
+		node.setAttribute("title", null);
+	}
+}
+
+Equation.prototype.buttonPress = function() 
+{
+	var self = this;
+	var editor = this.editor;
+	var args = {};
+	
+	args['editor'] = editor;
+	
+	var parent = editor._getFirstAncestor(editor.getSelection(),['span']);
+	if (parent)
+	{
+		args["editedNode"] = parent;
+	}
+	Dialog(Xinha.getPluginDir('Equation') + "/popups/dialog.html", function(params) {
+				self.insert(params);
+			}, args);
+};
+
+Equation.prototype.insert = function (param)
+{
+	if (typeof param["formula"] != "undefined")
+	{
+		var formula = (param["formula"] != '') ? param["formula"].replace(/^`?(.*)`?$/m,"`$1`") : '';
+
+		if (param["editedNode"] && (param["editedNode"].tagName.toLowerCase() == 'span')) 
+		{
+			var span = param["editedNode"]; 
+			if (formula != '')
+			{
+				span.innerHTML = formula;
+				if (this.enabled) span.title = formula;
+			}
+			else
+			{
+				span.parentNode.removeChild(span);
+			}
+			
+		}
+		else if (!param["editedNode"] && formula != '')
+		{
+			if (this.enabled)
+			{			
+				var span = document.createElement('span');
+				span.className = 'AM';
+				this.editor.insertNodeAtSelection(span);
+				span.innerHTML = formula;
+				span.title = formula;
+			}
+			else
+			{
+				this.editor.insertHTML('<span class="AM">'+formula+'</span>');
+			}
+		}
+
+		if (this.enabled) this.parse();//AMprocessNode(this.editor._doc.body, false);
 	}
 }

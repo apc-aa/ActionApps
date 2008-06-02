@@ -1,8 +1,6 @@
 // I18N constants
-
 // LANG: "de", ENCODING: UTF-8
 // translated: Raimund Meyer xinha@ray-of-light.org
-
 {
   "Align": "Ausrichtung",
   "All four sides": "Alle 4 Seiten",
@@ -73,11 +71,11 @@
   "Unset color": "Farbe entfernen",
   "Vertical align": "Vertikale Ausrichtung",
   "Width": "Breite",
-  "HTMLArea cowardly refuses to delete the last cell in row.": "Letzte Zelle in dieser Zeile kann nicht gelöscht werden",
-  "HTMLArea cowardly refuses to delete the last column in table.": "Letzte Spalte in dieser Tabelle kann nicht gelöscht werden",
-  "HTMLArea cowardly refuses to delete the last row in table.": "Letzte Reihe in dieser Tabelle kann nicht gelöscht werden",
+  "Xinha cowardly refuses to delete the last cell in row.": "Letzte Zelle in dieser Zeile kann nicht gelöscht werden",
+  "Xinha cowardly refuses to delete the last column in table.": "Letzte Spalte in dieser Tabelle kann nicht gelöscht werden",
+  "Xinha cowardly refuses to delete the last row in table.": "Letzte Reihe in dieser Tabelle kann nicht gelöscht werden",
   "percent": "%",
   "pixels": "Pixel",
   "OK": "OK",
   "Cancel": "Abbrechen"
-}
+};

@@ -1,15 +1,13 @@
-<?php
-
-
+<?php 
 /*
-This ddt library is released under the terms of the HTMLArea license.
+This ddt library is released under the terms of the HTMLArea license. 
 See license.txt that is shipped with Xinha.
 */
 
 // must be included after the configuration has been loaded.
 
 if ( ! defined( "IM_CONFIG_LOADED" ) )
-    die( "sorry" );
+	die( "sorry" );
 
 /**
 * Debug and Error Message functions.
@@ -36,9 +34,9 @@ if ( ! defined( "IM_CONFIG_LOADED" ) )
 //	.	added a newline to generated messages.
 //
 // 2005-01-09 YmL:
-//	.	now checks global $fvDEBUG[ "logfile" ] setting for
-//		logfile to output to.
-//	.	dumping to file has not been combined into a dumpmsg
+//	.	now checks global $fvDEBUG[ "logfile" ] setting for 
+//		logfile to output to. 
+//	.	dumping to file has not been combined into a dumpmsg 
 //		method.
 //
 // 2005-02-25 YmL:
@@ -63,31 +61,31 @@ function dumpmsg( $msgline )
 global $fvDEBUG;
 
 if ( @$fvDEBUG[ "logfile" ] != NULL )
-    {
+	{
 
-    // only open the file once and store the handle in the global
-    // fvDEBUG array .. for now.
+	// only open the file once and store the handle in the global
+	// fvDEBUG array .. for now.
 
-    if ( @$fvDEBUG[ "logfile_fp" ] == NULL )
-        {
+	if ( @$fvDEBUG[ "logfile_fp" ] == NULL )
+		{
 
-        // we clear out the debug file on each run.
+		// we clear out the debug file on each run.
 
-        if (( $fvDEBUG[ "logfile_fp" ] = fopen( $fvDEBUG[ "logfile" ], "a" )) == NULL )
-            {
-            die( "ddt(): unable to open debug log" );
-            return  false ;
-            }
-        }
+		if (( $fvDEBUG[ "logfile_fp" ] = fopen( $fvDEBUG[ "logfile" ], "a" )) == NULL )
+			{
+			die( "ddt(): unable to open debug log" );
+			return  false ;
+			}
+		}
 
-    fputs( $fvDEBUG[ "logfile_fp" ], "$msgline" );
-    fflush( $fvDEBUG[ "logfile_fp" ] );
+	fputs( $fvDEBUG[ "logfile_fp" ], "$msgline" );
+	fflush( $fvDEBUG[ "logfile_fp" ] );
 
-    }
+	}
 else
-    {
-    echo $msgline;
-    }
+	{
+	echo $msgline;
+	}
 
 }	// end of dumpmsg.
 
@@ -111,26 +109,26 @@ global $_DDT_CMDLINE;
 $basename = basename( $file );
 
 if ( @$_DDT == "yes" )
-    {
+	{
 
-    if ( @$_DDT_CMDLINE == "yes" )
-        {
-        dumpmsg( basename( $file ) . ":$line: $msg \n" );
-        flush();
+	if ( @$_DDT_CMDLINE == "yes" )
+		{
+		dumpmsg( basename( $file ) . ":$line: $msg \n" );
+		flush();
 
-        }
-    else
-        {
-        dumpmsg( "<p>$basename:$line: $msg</p>\n" );
-        }
-    }
+		}
+	else
+		{
+		dumpmsg( "<p>$basename:$line: $msg</p>\n" );
+		}
+	}
 
 }	// end of _ddt
 
 /**
 * displays a formatted dump of an associative array.
 *
-* If ddtOn() was called, outputs a formatted debugging message showing
+* If ddtOn() was called, outputs a formatted debugging message showing 
 * contents of array.
 *
 * @param string $file filename, usually __FILE__
@@ -145,15 +143,15 @@ function _ddtArray( $file, $line, $msg,	$array_var )
 global $_DDT;
 
 if ( $_DDT == "yes" )
-    {
+	{
 
-    dumpmsg( "<h2>$file:$line: $msg</h2>" );
-
-    foreach	( $array_var as	$name => $value	)
-        {
-        dumpmsg( "<p><b>$name</b> => <b>$value</b>\n" );
-        }
-    }
+	dumpmsg( "<h2>$file:$line: $msg</h2>" );
+	
+	foreach	( $array_var as	$name => $value	)
+		{
+		dumpmsg( "<p><b>$name</b> => <b>$value</b>\n" );
+		}
+	}
 
 }	// end of _ddtArray
 
@@ -163,7 +161,7 @@ if ( $_DDT == "yes" )
 * Central Error Function.
 *
 * Displays a formatted error message to the user.
-* If the global _DDT_ERROR_LOG is set the error message is dumped
+* If the global _DDT_ERROR_LOG is set the error message is dumped 
 * to that file	instead	of being displayed to the user.
 */
 
@@ -174,28 +172,28 @@ global $_DDT_ERROR_LOG;
 global $_DDT_CMDLINE;
 
 if ( @$_DDT_ERROR_LOG == NULL )
-    {
+	{
 
-    if ( @$_DDT_CMDLINE == "yes" )
-        {
-        echo basename($file) . ":$line: $msg\n";
-        }
-    else
-        {
-        echo "<h2>$file:$line: $msg</h2>";
-        }
-    }
+	if ( @$_DDT_CMDLINE == "yes" )
+		{
+		echo basename($file) . ":$line: $msg\n";
+		}
+	else
+		{
+		echo "<h2>$file:$line: $msg</h2>";
+		}
+	}
 else
-    {
-
-    if (( $fp = fopen( $_DDT_ERROR_LOG, "a"	)) != NULL )
-        {
-        fputs( $fp, date("D M j	G:i:s T	Y") . "	- $file:$line: $msg\n" );
-        fclose(	$fp );
-        }
-
-    }
-
+	{
+	 
+	if (( $fp = fopen( $_DDT_ERROR_LOG, "a"	)) != NULL )
+		{
+		fputs( $fp, date("D M j	G:i:s T	Y") . "	- $file:$line: $msg\n" );
+		fclose(	$fp );
+		}
+		
+	}
+	
 }	// end of _error
 
 // ----------------------------------------------------------------------
@@ -206,18 +204,18 @@ function errorEcho( $title, $field )
 global $error_msg;
 
 if ( $error_msg[ $field	] != ""	)
-    {
-
-    echo "<FONT SIZE=\"+2\"	COLOR=\"RED\">$title</FONT>";
-
-    }
+	{
+	
+	echo "<FONT SIZE=\"+2\"	COLOR=\"RED\">$title</FONT>";
+	
+	}
 else
-    {
-
-    echo $title;
-
-    }
-
+	{
+	
+	echo $title;
+	
+	}
+	
 }	// end of errorEcho
 
 /**
@@ -272,7 +270,7 @@ $fvDEBUG[ "logfile" ] = $debugLog;
 /**
 * set debugging output style to command line.
 *
-* tells ddt to format debugging messages for a
+* tells ddt to format debugging messages for a 
 * command line program.
 */
 

@@ -26,7 +26,7 @@ function FullPage(editor) {
 
 	// add a new line in the toolbar
 	cfg.addToolbarElement(["separator","FP-docprop"],"separator",-1);
-};
+}
 
 FullPage._pluginInfo = {
 	name          : "FullPage",
@@ -40,8 +40,8 @@ FullPage._pluginInfo = {
 };
 
 FullPage.prototype._lc = function(string) {
-    return HTMLArea._lc(string, 'FullPage');
-}
+    return Xinha._lc(string, 'FullPage');
+};
 
 FullPage.prototype.buttonPress = function(editor, id) {
 	var self = this;
@@ -51,6 +51,8 @@ FullPage.prototype.buttonPress = function(editor, id) {
 		var links = doc.getElementsByTagName("link");
 		var style1 = '';
 		var style2 = '';
+		var keywords = '';
+		var description = '';
 		var charset = '';
 		for (var i = links.length; --i >= 0;) {
 			var link = links[i];
@@ -67,6 +69,10 @@ FullPage.prototype.buttonPress = function(editor, id) {
 			if (/content-type/i.test(meta.httpEquiv)) {
 				r = /^text\/html; *charset=(.*)$/i.exec(meta.content);
 				charset = r[1];
+			} else if ((/keywords/i.test(meta.name)) || (/keywords/i.test(meta.id))) {
+				keywords = meta.content;
+			}	else if ((/description/i.test(meta.name)) || (/description/i.test(meta.id))) {
+				description = meta.content;
 			}
 		}
 		var title = doc.getElementsByTagName("title")[0];
@@ -74,11 +80,13 @@ FullPage.prototype.buttonPress = function(editor, id) {
 		var init = {
 			f_doctype      : editor.doctype,
 			f_title        : title,
-			f_body_bgcolor : HTMLArea._colorToRgb(doc.body.style.backgroundColor),
-			f_body_fgcolor : HTMLArea._colorToRgb(doc.body.style.color),
+			f_body_bgcolor : Xinha._colorToRgb(doc.body.style.backgroundColor),
+			f_body_fgcolor : Xinha._colorToRgb(doc.body.style.color),
 			f_base_style   : style1,
 			f_alt_style    : style2,
 			f_charset      : charset,
+			f_keywords     : keywords,
+			f_description  : description,
 			editor         : editor
 		};
 		editor._popupDialog("plugin://FullPage/docprop", function(params) {
@@ -98,6 +106,8 @@ FullPage.prototype.setDocProp = function(params) {
 	var style2 = null;
 	var charset = null;
 	var charset_meta = null;
+	var keywords = null;
+	var description = null;
 	for (var i = links.length; --i >= 0;) {
 		var link = links[i];
 		if (/stylesheet/i.test(link.rel)) {
@@ -113,6 +123,10 @@ FullPage.prototype.setDocProp = function(params) {
 			r = /^text\/html; *charset=(.*)$/i.exec(meta.content);
 			charset = r[1];
 			charset_meta = meta;
+		} else if ((/keywords/i.test(meta.name)) || (/keywords/i.test(meta.id))) {
+			keywords = meta;
+		}	else if ((/description/i.test(meta.name)) || (/description/i.test(meta.id))) {
+			description = meta;
 		}
 	}
 	function createLink(alt) {
@@ -120,14 +134,16 @@ FullPage.prototype.setDocProp = function(params) {
 		link.rel = alt ? "alternate stylesheet" : "stylesheet";
 		head.appendChild(link);
 		return link;
-	};
-	function createMeta(name, content) {
+	}
+	function createMeta(httpEquiv, name, content) {
 		var meta = doc.createElement("meta");
-		meta.httpEquiv = name;
+		if (httpEquiv!="") meta.httpEquiv = httpEquiv;
+		if (name!="") meta.name = name;
+		if (name!="") meta.id = name;
 		meta.content = content;
 		head.appendChild(meta);
 		return meta;
-	};
+	}
 
 	if (!style1 && params.f_base_style)
 		style1 = createLink(false);
@@ -148,7 +164,21 @@ FullPage.prototype.setDocProp = function(params) {
 		charset_meta = null;
 	}
 	if (!charset_meta && params.f_charset)
-		charset_meta = createMeta("Content-Type", "text/html; charset="+params.f_charset);
+		charset_meta = createMeta("Content-Type","", "text/html; charset="+params.f_charset);
+
+	if (!keywords && params.f_keywords)
+		keywords = createMeta("","keywords", params.f_keywords);
+	else if (params.f_keywords)
+		keywords.content = params.f_keywords;
+	else if (keywords)
+		head.removeChild(keywords);
+
+	if (!description && params.f_description)
+		description = createMeta("","description", params.f_description);
+	else if (params.f_description)
+		description.content = params.f_description;
+	else if (description)
+		head.removeChild(description);
 
   	for (var i in params) {
 		var val = params[i];
@@ -160,7 +190,7 @@ FullPage.prototype.setDocProp = function(params) {
 				head.appendChild(title);
 			} else while (node = title.lastChild)
 				title.removeChild(node);
-			if (!HTMLArea.is_ie)
+			if (!Xinha.is_ie)
 				title.appendChild(doc.createTextNode(val));
 			else
 				doc.title = val;

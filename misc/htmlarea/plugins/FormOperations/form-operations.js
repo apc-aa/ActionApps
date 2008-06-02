@@ -8,16 +8,16 @@
     --  $LastChangedBy$
     --------------------------------------------------------------------------*/
 
-HTMLArea.Config.prototype.FormOperations =
+Xinha.Config.prototype.FormOperations =
 {
   // format for fields where multiple values may be selected
   //    'php'          => FieldName[]
   //    'unmodified'   => FieldName
   'multiple_field_format': 'php',
   'allow_edit_form'      : false,
-  'default_form_action'  : _editor_url + 'plugins/FormOperations/formmail.php',
-  'default_form_html'    : HTMLArea._geturlcontent(_editor_url + 'plugins/FormOperations/default_form.html')
-}
+  'default_form_action'  : Xinha.getPluginDir('FormOperations') + '/formmail.php',
+  'default_form_html'    : Xinha._geturlcontent(Xinha.getPluginDir('FormOperations') + '/default_form.html')
+};
 
 FormOperations._pluginInfo =
 {
@@ -41,7 +41,7 @@ function FormOperations(editor)
   this._preparePanel();
 
 
-  editor.config.pageStyleSheets.push(_editor_url + 'plugins/FormOperations/iframe.css');
+  editor.config.pageStyleSheets.push(Xinha.getPluginDir('FormOperations') + '/iframe.css');
 
   var toolbar =
   [
@@ -59,7 +59,7 @@ function FormOperations(editor)
 
   function pasteAndSelect(htmlTag)
   {
-    var id = HTMLArea.uniq('fo');
+    var id = Xinha.uniq('fo');
     htmlTag = htmlTag.replace(/^<([^ \/>]+)/i, '<$1 id="'+id+'"');
     editor.insertHTML(htmlTag);
     var el = editor._doc.getElementById(id);
@@ -71,8 +71,12 @@ function FormOperations(editor)
 
   var buttonsImage = editor.imgURL('buttons.gif', 'FormOperations');
 
+  FormOperations.prototype._lc = function(string) {
+    return Xinha._lc(string, 'FormOperations');
+  };
+
   this.editor.config.btnList.insert_form =
-  [ "Insert a form.",
+  [ this._lc("Insert a Form."),
     [buttonsImage, 0, 0],
     false,
     function()
@@ -95,7 +99,7 @@ function FormOperations(editor)
   ];
 
   this.editor.config.btnList.insert_text_field =
-  [ "Insert a text, password or hidden field.",
+  [ this._lc("Insert a text, password or hidden field."),
     [buttonsImage, 1, 0],
     false,
     function()
@@ -106,7 +110,7 @@ function FormOperations(editor)
   ];
 
   this.editor.config.btnList.insert_textarea_field =
-  [ "Insert a multi-line text field.",
+  [ this._lc("Insert a multi-line text field."),
     [buttonsImage, 2, 0],
     false,
     function()
@@ -117,7 +121,7 @@ function FormOperations(editor)
   ];
 
   this.editor.config.btnList.insert_select_field =
-  [ "Insert a select field.",
+  [ this._lc("Insert a select field."),
     [buttonsImage, 3, 0],
     false,
     function()
@@ -128,7 +132,7 @@ function FormOperations(editor)
   ];
 
   this.editor.config.btnList.insert_cb_field =
-  [ "Insert a check box.",
+  [ this._lc("Insert a check box."),
     [buttonsImage, 4, 0],
     false,
     function()
@@ -139,7 +143,7 @@ function FormOperations(editor)
   ];
 
   this.editor.config.btnList.insert_rb_field =
-  [ "Insert a radio button.",
+  [ this._lc("Insert a radio button."),
     [buttonsImage, 5, 0],
     false,
     function()
@@ -150,7 +154,7 @@ function FormOperations(editor)
   ];
 
   this.editor.config.btnList.insert_button =
-  [ "Insert a submit/reset button.",
+  [ this._lc("Insert a submit/reset button."),
     [buttonsImage, 6, 0],
     false,
     function()
@@ -165,17 +169,17 @@ FormOperations.prototype.onGenerate = function()
 {
   // Gecko does not register click events on select lists inside the iframe
   // so the only way of detecting that is to do an event on mouse move.
-  if( HTMLArea.is_gecko)
+  if( Xinha.is_gecko)
   {
     var editor = this.editor;
     var doc    = this.editor._doc;
-    HTMLArea._addEvents
+    Xinha._addEvents
     (doc, ["mousemove"],
      function (event) {
        return editor._editorEvent(event);
      });
   }
-}
+};
 
 FormOperations.prototype._preparePanel = function ()
 {
@@ -183,7 +187,7 @@ FormOperations.prototype._preparePanel = function ()
   if(this.html == false)
   {
 
-    HTMLArea._getback(_editor_url + 'plugins/FormOperations/panel.html',
+    Xinha._getback(Xinha.getPluginDir('FormOperations') + '/panel.html',
       function(txt)
       {
         fo.html = txt;
@@ -193,26 +197,26 @@ FormOperations.prototype._preparePanel = function ()
     return false;
   }
 
-  if(typeof HTMLArea.Dialog == 'undefined')
+  if(typeof Xinha.Dialog == 'undefined')
   {
-    HTMLArea._loadback
-      (_editor_url + 'inline-dialog.js', function() { fo._preparePanel(); } );
+    Xinha._loadback
+      (_editor_url + 'modules/Dialogs/inline-dialog.js', function() { fo._preparePanel(); } );
       return false;
   }
 
-  if(typeof HTMLArea.PanelDialog == 'undefined')
+  if(typeof Xinha.PanelDialog == 'undefined')
   {
-    HTMLArea._loadback
-      (_editor_url + 'panel-dialog.js', function() { fo._preparePanel(); } );
+    Xinha._loadback
+      (_editor_url + 'modules/Dialogs/panel-dialog.js', function() { fo._preparePanel(); } );
       return false;
   }
 
 
 
-  this.panel = new HTMLArea.PanelDialog(this.editor,'bottom',this.html,'FormOperations');
+  this.panel = new Xinha.PanelDialog(this.editor,'bottom',this.html,'FormOperations');
   this.panel.hide();
   this.ready = true;
-}
+};
 
 FormOperations.prototype.onUpdateToolbar = function()
 {
@@ -223,8 +227,7 @@ FormOperations.prototype.onUpdateToolbar = function()
     if(activeElement == this.activeElement) return true;
 
     var tag = activeElement.tagName.toLowerCase();
-    this.panel.show();
-
+    
     this.hideAll();
     if(tag === 'form')
     {
@@ -306,6 +309,9 @@ FormOperations.prototype.onUpdateToolbar = function()
         }
       }
     }
+    
+    this.panel.show();
+    
     //this.editor.scrollToElement(activeElement);
     this.activeElement = activeElement;
     return true;
@@ -316,7 +322,7 @@ FormOperations.prototype.onUpdateToolbar = function()
     this.panel.hide();
     return true;
   }
-}
+};
 
 
 FormOperations.prototype.hideAll = function()
@@ -327,7 +333,7 @@ FormOperations.prototype.hideAll = function()
   this.panel.getElementById('fs_select').style.display = 'none';
   this.panel.getElementById('fs_cbrd').style.display = 'none';
   this.panel.getElementById('fs_button').style.display = 'none';
-}
+};
 
 FormOperations.prototype.showForm = function(form)
 {
@@ -339,9 +345,9 @@ FormOperations.prototype.showForm = function(form)
   }
   this.panel.setValues(vals);
   var f = form;
-  this.panel.getElementById('action').onkeyup = function () { f.action = this.value; }
-  this.panel.getElementById('method').onchange   = function () { f.method = this.options[this.selectedIndex].value; }
-}
+  this.panel.getElementById('action').onkeyup = function () { f.action = this.value; };
+  this.panel.getElementById('method').onchange   = function () { f.method = this.options[this.selectedIndex].value; };
+};
 
 FormOperations.prototype.showText = function (input)
 {
@@ -365,7 +371,7 @@ FormOperations.prototype.showText = function (input)
   this.panel.getElementById('text_value').onkeyup  = function () { i.value = this.value; }
   this.panel.getElementById('text_type').onchange   = function ()
     {
-      if(!HTMLArea.is_ie)
+      if(!Xinha.is_ie)
       {
         i.type = this.options[this.selectedIndex].value;
       }
@@ -384,9 +390,9 @@ FormOperations.prototype.showText = function (input)
         {
           tmpContainer.innerHTML = i.outerHTML.replace(/type="?[a-z]+"?/i, 'type="' + this.options[this.selectedIndex].value + '"');
         }
-        var newElement = HTMLArea.removeFromParent(tmpContainer.childNodes[0]);
+        var newElement = Xinha.removeFromParent(tmpContainer.childNodes[0]);
         i.parentNode.insertBefore(newElement, i);
-        HTMLArea.removeFromParent(i);
+        Xinha.removeFromParent(i);
         input = i = newElement;
       }
     }
@@ -406,7 +412,7 @@ FormOperations.prototype.showText = function (input)
     }
 
   this.panel.getElementById('text_maxlength').onkeyup = function () { i.maxlength = this.value; }
-}
+};
 
 FormOperations.prototype.showCbRd = function (input)
 {
@@ -417,7 +423,7 @@ FormOperations.prototype.showCbRd = function (input)
     'cbrd_value'   : input.value,
     'cbrd_checked' : input.checked ? 1 : 0,
     'cbrd_type'    : input.type.toLowerCase()
-  }
+  };
   this.panel.setValues(vals);
 
   var i = input;
@@ -426,7 +432,7 @@ FormOperations.prototype.showCbRd = function (input)
   this.panel.getElementById('cbrd_value').onkeyup  = function () { i.value = this.value; }
   this.panel.getElementById('cbrd_type').onchange   = function ()
     {
-      if(!HTMLArea.is_ie)
+      if(!Xinha.is_ie)
       {
         i.type = this.options[this.selectedIndex].value;
       }
@@ -445,14 +451,14 @@ FormOperations.prototype.showCbRd = function (input)
         {
           tmpContainer.innerHTML = i.outerHTML.replace(/type="?[a-z]+"?/i, 'type="' + this.options[this.selectedIndex].value + '"');
         }
-        var newElement = HTMLArea.removeFromParent(tmpContainer.childNodes[0]);
+        var newElement = Xinha.removeFromParent(tmpContainer.childNodes[0]);
         i.parentNode.insertBefore(newElement, i);
-        HTMLArea.removeFromParent(i);
+        Xinha.removeFromParent(i);
         input = i = newElement;
       }
     }
   this.panel.getElementById('cbrd_checked').onclick   = function () { i.checked = this.checked; }
-}
+};
 
 FormOperations.prototype.showButton = function (input)
 {
@@ -462,16 +468,16 @@ FormOperations.prototype.showButton = function (input)
     'button_name'    : this.deformatName(input, input.name),
     'button_value'   : input.value,
     'button_type'    : input.type.toLowerCase()
-  }
+  };
   this.panel.setValues(vals);
 
   var i = input;
   var fo = this;
-  this.panel.getElementById('button_name').onkeyup   = function () { i.name = fo.formatName(i, this.value); }
-  this.panel.getElementById('button_value').onkeyup  = function () { i.value = this.value; }
+  this.panel.getElementById('button_name').onkeyup   = function () { i.name = fo.formatName(i, this.value); };
+  this.panel.getElementById('button_value').onkeyup  = function () { i.value = this.value; };
   this.panel.getElementById('button_type').onchange   = function ()
     {
-      if(!HTMLArea.is_ie)
+      if(!Xinha.is_ie)
       {
         i.type = this.options[this.selectedIndex].value;
       }
@@ -490,13 +496,13 @@ FormOperations.prototype.showButton = function (input)
         {
           tmpContainer.innerHTML = i.outerHTML.replace(/type="?[a-z]+"?/i, 'type="' + this.options[this.selectedIndex].value + '"');
         }
-        var newElement = HTMLArea.removeFromParent(tmpContainer.childNodes[0]);
+        var newElement = Xinha.removeFromParent(tmpContainer.childNodes[0]);
         i.parentNode.insertBefore(newElement, i);
-        HTMLArea.removeFromParent(i);
+        Xinha.removeFromParent(i);
         input = i = newElement;
       }
-    }
-}
+    };
+};
 
 FormOperations.prototype.showTextarea = function (input)
 {
@@ -509,14 +515,14 @@ FormOperations.prototype.showTextarea = function (input)
     'textarea_width_units' : input.style.width ? input.style.width.replace(/[0-9.]/, '').toLowerCase() : 'ex',
     'textarea_height'      : input.style.height ? parseFloat(input.style.height.replace(/[^0-9.]/, '')) : '',
     'textarea_height_units': input.style.height ? input.style.height.replace(/[0-9.]/, '').toLowerCase() : 'ex'
-  }
+  };
 
   this.panel.setValues(vals);
 
   var i = input;
   var fo = this;
-  this.panel.getElementById('textarea_name').onkeyup   = function () { i.name = fo.formatName(i, this.value); }
-  this.panel.getElementById('textarea_value').onkeyup  = function () { i.value = i.innerHTML = this.value; }
+  this.panel.getElementById('textarea_name').onkeyup   = function () { i.name = fo.formatName(i, this.value); };
+  this.panel.getElementById('textarea_value').onkeyup  = function () { i.value = i.innerHTML = this.value; };
 
   var w  = this.panel.getElementById('textarea_width');
   var wu = this.panel.getElementById('textarea_width_units');
@@ -530,7 +536,7 @@ FormOperations.prototype.showTextarea = function (input)
         i.style.width = '';
       }
       i.style.width = parseFloat(w.value) + wu.options[wu.selectedIndex].value;
-    }
+    };
 
   var h  = this.panel.getElementById('textarea_height');
   var hu = this.panel.getElementById('textarea_height_units');
@@ -544,9 +550,9 @@ FormOperations.prototype.showTextarea = function (input)
         i.style.height = '';
       }
       i.style.height = parseFloat(h.value) + hu.options[hu.selectedIndex].value;
-    }
+    };
 
-}
+};
 
 FormOperations.prototype.showSelect = function (input)
 {
@@ -559,14 +565,14 @@ FormOperations.prototype.showSelect = function (input)
     'select_width_units' : input.style.width ? input.style.width.replace(/[0-9.]/, '').toLowerCase() : 'ex',
       'select_height'      : input.style.height ? parseFloat(input.style.height.replace(/[^0-9.]/, '')) : (input.size && input.size > 0 ? input.size : 1),
     'select_height_units': input.style.height ? input.style.height.replace(/[0-9.]/, '').toLowerCase() : 'items'
-  }
+  };
 
   this.panel.setValues(vals);
 
   var i = input;
   var fo = this;
-  this.panel.getElementById('select_name').onkeyup   = function () { i.name = fo.formatName(i, this.value); }
-  this.panel.getElementById('select_multiple').onclick   = function () { i.multiple = this.checked; }
+  this.panel.getElementById('select_name').onkeyup   = function () { i.name = fo.formatName(i, this.value); };
+  this.panel.getElementById('select_multiple').onclick   = function () { i.multiple = this.checked; };
 
   var w  = this.panel.getElementById('select_width');
   var wu = this.panel.getElementById('select_width_units');
@@ -580,7 +586,7 @@ FormOperations.prototype.showSelect = function (input)
         i.style.width = '';
       }
       i.style.width = parseFloat(w.value) + wu.options[wu.selectedIndex].value;
-    }
+    };
 
   var h  = this.panel.getElementById('select_height');
   var hu = this.panel.getElementById('select_height_units');
@@ -604,7 +610,7 @@ FormOperations.prototype.showSelect = function (input)
       {
         i.style.height = parseFloat(h.value) + hu.options[hu.selectedIndex].value;
       }
-    }
+    };
 
 
   var fo_sel = this.panel.getElementById('select_options');
@@ -613,7 +619,7 @@ FormOperations.prototype.showSelect = function (input)
   this.panel.getElementById('add_option').onclick =
     function()
     {
-      var txt = prompt("Enter the name for new option.");
+      var txt = prompt(Xinha._lc("Enter the name for new option.", 'FormOperations'));
       if(txt == null) return;
       var newOpt = new Option(txt);
       var opts   = fo.optsToArray(fo_sel.options);
@@ -627,7 +633,7 @@ FormOperations.prototype.showSelect = function (input)
       }
       fo.arrayToOpts(opts, input.options);
       fo.arrayToOpts(opts, fo_sel.options);
-    }
+    };
 
   this.panel.getElementById('del_option').onclick =
     function()
@@ -641,7 +647,7 @@ FormOperations.prototype.showSelect = function (input)
       }
       fo.arrayToOpts(newOpts, input.options);
       fo.arrayToOpts(newOpts, fo_sel.options);
-    }
+    };
 
   this.panel.getElementById('up_option').onclick =
     function()
@@ -652,7 +658,7 @@ FormOperations.prototype.showSelect = function (input)
       opts.splice(fo_sel.selectedIndex - 1, 0, move);
       fo.arrayToOpts(opts, input.options);
       fo.arrayToOpts(opts, fo_sel.options);
-    }
+    };
 
   this.panel.getElementById('down_option').onclick =
     function()
@@ -663,14 +669,14 @@ FormOperations.prototype.showSelect = function (input)
       opts.splice(fo_sel.selectedIndex+1, 0, move);
       fo.arrayToOpts(opts, input.options);
       fo.arrayToOpts(opts, fo_sel.options);
-    }
+    };
 
   this.panel.getElementById('select_options').onchange =
     function()
     {
       fo.arrayToOpts(fo.optsToArray(fo_sel.options), input.options);
-    }
-}
+    };
+};
 
 FormOperations.prototype.optsToArray = function(o)
 {
@@ -687,7 +693,7 @@ FormOperations.prototype.optsToArray = function(o)
     );
   }
   return a;
-}
+};
 
 FormOperations.prototype.arrayToOpts = function(a, o)
 {
@@ -700,7 +706,7 @@ FormOperations.prototype.arrayToOpts = function(a, o)
   {
     o[i] = new Option(a[i].text, a[i].value, a[i].defaultSelected, a[i].selected);
   }
-}
+};
 
 FormOperations.prototype.formatName = function(input, name)
 {
@@ -737,7 +743,7 @@ FormOperations.prototype.formatName = function(input, name)
   }
 
   return name;
-}
+};
 
 FormOperations.prototype.deformatName = function(input, name)
 {
@@ -747,5 +753,4 @@ FormOperations.prototype.deformatName = function(input, name)
   }
 
   return name;
-}
-
+};
