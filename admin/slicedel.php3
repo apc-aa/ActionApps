@@ -47,13 +47,18 @@ if (!IsSuperadmin()) {
  * @return prints a table row with a checkbox and a link
  */
 function PrintSlice($id, $name, $type) {
-  global $sess, $MODULES;
+    global $sess, $MODULES;
 
-  $name=safe($name); $id=safe($id);
-  $url = (($type=='S') ? './slicedel2.php3' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
+    $name=safe($name); $id=safe($id);
+    $url = (($type=='S') ? './slicedel2.php3' : AA_INSTAL_PATH.$MODULES[$type]['directory']."moddelete.php3" );
 
-  echo "<tr class=\"tabtxt\"><td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td><td>$name</td>
-          <td class=\"tabtxt\"><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td></tr>";
+    echo "<tr class=\"tabtxt\">
+            <td><input type=\"checkbox\" name=\"deletearr[]\" value=\"$id\"></td>
+            <td>$name</td>
+            <td>$type</td>
+            <td class=\"tabtxt\"><a href=\"javascript:DeleteSlice('$id', '$url')\">". _m("Delete") ."</a></td>
+            </tr>
+         ";
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -99,9 +104,9 @@ FrmTabSeparator(_m('Slices to delete') );
 
 // -- get views for current slice --
 if ($slices2show == 'all') {
-    $SQL = "SELECT * FROM module";
+    $SQL = "SELECT * FROM module ORDER BY type, name";
 } else {
-    $SQL = "SELECT * FROM module WHERE deleted>0";
+    $SQL = "SELECT * FROM module WHERE deleted>0 ORDER BY type, name";
 }
 
 $db->query($SQL);

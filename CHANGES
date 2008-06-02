@@ -1,3 +1,8 @@
+02/06/08 - HTMLArea (Xinha) updated to last svn version
+(honzam) - new "Fix inconcistency in pagecache" optimalization action
+         - slice deletion - improved UI
+         - cleanup - reading password checking optimalizations
+         - cleanup - simplified (and quicker) queries for some cases
 21/05/08 - fixed previous fix
 (honzam)
 20/05/08 - better SQL update functionality - the "Column count doesn't match
