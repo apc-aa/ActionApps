@@ -727,7 +727,11 @@ class AA_Item {
         if ( $param=="" ) {
             $param = "m/d/Y";
         }
-        $dstr = date($param, (int)$this->getval($col));
+        // we check, if the value is not so big (becauce we solved problem, when
+        // the date was entered as 230584301025887115 - which is too big and it
+        // takes ages for PHP to evaluate the date() function then. (php 5.2.6))
+        // it is perfectly possible to increase the max value, however
+        $dstr = date($param, (int)min(-2147483647,max(2147483648,$this->getval($col))));
         return (($param != "H:i") ? $dstr : ( ($dstr=="00:00") ? "" : $dstr ));
     }
 
