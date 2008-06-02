@@ -959,7 +959,11 @@ define("AA_BIN_TRASH",   16);
 define("AA_BIN_ALL",     31);   // all bins (AA_BIN_ACTIVE|AA_BIN_PENDING|...)
 
 /** HTMLArea constants */
-define("AA_HTMLAREA_SPELL_CGISCRIPT",""); // path for spellchecker cgi script (read misc/htmlarea/readme.aa)
+// not supported with new version of HtmlArea
+// you need just to change following line in plugins/SpellChecker/spell-check-ui.html
+//     <form style="display: none;" action="spell-check-logic.cgi"
+// define("AA_HTMLAREA_SPELL_CGISCRIPT",""); // path for spellchecker cgi script (read misc/htmlarea/readme.aa)
+
 /** getFilemanAccesses function
  * @return array
  */
