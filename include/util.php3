@@ -889,7 +889,8 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
  * Basic function to get item content. Use this function, not direct SQL queries.
  * @param $zids
  * @param $use_short_ids
- *   @param bool  $ignore_reading_password
+ *   @param bool $show_invisible - ignore Slice Reading Password as well as
+ *       read content from holding bin/trash
  *       Use carefully only when you are sure the data is used safely and not viewed
  *       to unauthorized persons.
  *   @param array $fields2get
@@ -898,7 +899,7 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
  *       like: array('headline........', 'category.......1')
  *       (only content table fields are restricted (yet))
  */
-function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false) {
+function GetItemContent($zids, $use_short_ids=false, $show_invisible=false, $fields2get=false) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
     $db = getDB();
 
@@ -906,7 +907,6 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     list($sel_in, $settags) = itemContent_getWhere($zids, $use_short_ids);
     if (!$sel_in) {
         freeDB($db);
-        trace("-");
         return false;
     }
 
@@ -924,7 +924,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         $item_sql_fields = $fields2get;
 
         // we need slice_id for each item, if we have to count with slice permissions
-        if ( !$ignore_reading_password AND !in_array('slice_id........', $fields2get) ) {
+        if ( !$show_invisible AND !in_array('slice_id........', $fields2get) ) {
             $item_sql_fields[] = 'slice_id........';
         }
         $metabase       = AA_Metabase::singleton();
@@ -942,7 +942,15 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             }
         }
 
-        $item_fields_sql =  ( count($item_fields) < 1 ) ? 'item.*' : join(',', $item_fields);
+        if (count($item_fields) < 1) {
+            $item_fields_sql = 'item.*';
+        } else {
+            // we need status_code field (so we can not display the item)
+            if (!in_array('status_code', $item_fields)) {
+                $item_fields[] = 'status_code';
+            }
+            $item_fields_sql = join(',', $item_fields);
+        }
     } else {
         $item_fields_sql = 'item.*';
     }
@@ -955,11 +963,22 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     while ( $db->next_record() ) {
         // proove permissions for password-read-protected slices
 
-        if (!$ignore_reading_password) {
+        $reading_permitted = true;
+        if (!$show_invisible) {
             $reading_password = AA_Slices::getSliceProperty(unpack_id128($db->f("slice_id")),'reading_password');
+
+            // check, if the item is in APPROVED BIN
+            if ($db->f("status_code") != 1) {
+                $reading_permitted     = false;
+                $reading_permitted_msg = _m("Item is not approved");
+
+            // check, if the slice uses Reading Password and if it is right
+            } elseif ($reading_password AND ($reading_password != md5($GLOBALS["slice_pwd"]))) {
+                $reading_permitted     = false;
+                $reading_permitted_msg = _m("Error: Missing Reading Password");
+            }
         }
 
-        $reading_permitted            = ($ignore_reading_password OR !$reading_password OR ($reading_password == md5($GLOBALS["slice_pwd"])));
         $item_permitted[$db->f("id")] = $reading_permitted;
 
         $n_items = $n_items+1;
@@ -979,7 +998,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             // we need only item fields
             if (!is_numeric($key)) {
                 $content[$foo_id][AA_Fields::createFieldId($key)][] = array(
-                     "value" => $reading_permitted ? $val : _m("Error: Missing Reading Password"));
+                     "value" => $reading_permitted ? $val : $reading_permitted_msg);
             }
         }
     }
@@ -987,7 +1006,6 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     // Skip the rest if no items found
     if ($n_items == 0) {
         freeDB($db);
-        trace("-");
         return null;
     }
 
@@ -1037,7 +1055,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
                                        unpack_id128($db->f("item_id")) );
 
             if ( !$item_permitted[$db->f("item_id")] ) {
-                $content[$fooid][$db->f("field_id")][0] = array( "value" => _m("Error: Missing Reading Password"));
+                $content[$fooid][$db->f("field_id")][0] = array( "value" => $reading_permitted_msg);
                 continue;
             }
 
