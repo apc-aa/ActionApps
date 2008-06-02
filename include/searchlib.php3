@@ -1404,9 +1404,6 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
             if ( $field->storageTable() == 'item' ) {   // field is stored in table 'item'
                 $fieldId          = 'item.' . $field->storageColumn();
                 $select_order    .= $delim  . $fieldId;
-                // select_distinct added in order we can group by multiple value fields
-                // (items are shown more times)
-                $select_distinct .= ", $fieldId as s$sort_no";
                 if ( stristr(current( $srt ), 'd'))
                 $select_order .= ' DESC';
                 $delim         = ',';
@@ -1440,7 +1437,6 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                     // fill arrays according to this sort specification
                     $fieldId          = $tbl. ".pri";
                     $select_order    .= $delim . $fieldId;
-                    $select_distinct .= ", $fieldId as s$sort_no";
                     if ( stristr($direction,'9') ) {
                         $select_order  .= " DESC";
                     }
@@ -1449,7 +1445,6 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                     // fill arrays according to this sort specification
                     $fieldId          = $sortable[$fid]. ".$store";
                     $select_order    .= $delim . $fieldId;
-                    $select_distinct .= ", $fieldId as s$sort_no";
                     if ( stristr(current( $srt ), 'd')) {
                         $select_order  .= " DESC";
                     }
@@ -1457,6 +1452,9 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                 $delim = ',';
             }
             if ($srt['limit']) {
+                // select_distinct added in order we can group by multiple value fields
+                // (items are shown more times)
+                $select_distinct .= ", $fieldId as s$sort_no";
                 $select_limit_field = array('field' => "s$sort_no", 'limit' => $srt['limit']);
             }
         }
