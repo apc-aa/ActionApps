@@ -90,15 +90,16 @@ class datectrl {
      * @param $date
      */
     function setdate($date) {
-        if (ereg("([[:digit:]]{4}) *- *([[:digit:]]{1,2}) *- *([[:digit:]]{1,2}) *(.*$)",
-                $date, $regs)) {
-            $this->year = $regs[1];
+        $regs = array();
+        if (preg_match("/([0-9]{4}) *- *([0-9]{1,2}) *- *([0-9]{1,2}) *(.*$)/", $date, $regs)) {
+            $this->year  = $regs[1];
             $this->month = $regs[2];
-            $this->day = $regs[3];
-            $this->time = $regs[4];
-    }
-        if (checkdate($this->month, $this->day, $this->year))
+            $this->day   = $regs[3];
+            $this->time  = $regs[4];
+        }
+        if (checkdate($this->month, $this->day, $this->year)) {
             return "$this->year-$this->month-$this->day";
+        }
         return "";
     }
 
@@ -107,11 +108,20 @@ class datectrl {
      * @param $date
      */
     function setdate_int($date) {
-        $d           = is_numeric($date) ? getdate($date) : getdate();
+        $d           = datectrl::isTimestamp($date) ? getdate($date) : getdate();
         $this->year  = $d["year"];
         $this->month = $d["mon"];
         $this->day   = $d["mday"];
         $this->time  = $d["hours"].":".$d["minutes"].":".$d["seconds"] ;
+    }
+
+    /** we check, if the value is not so big (becauce we solved problem, when
+     *  the date was entered as 230584301025887115 - which is too big and it
+     *  takes ages for PHP to evaluate the date() function then. (php 5.2.6))
+     *  it is perfectly possible to increase the max value, however
+     */
+    function isTimestamp($timestamp) {
+        return is_numeric($timestamp) AND ($timestamp > -2147483647) AND ($timestamp < 2147483648);
     }
 
     /** get_date function
