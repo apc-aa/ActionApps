@@ -271,7 +271,7 @@
 
     <orderedlist>
       <listitem>
-        <simpara>Update to the new AA version from CVS and run
+        <simpara>Update to the new AA version from Subversion (svn) and run
         <constant>sql_update.php3</constant></simpara>
       </listitem>
 

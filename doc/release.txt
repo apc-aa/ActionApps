@@ -1,5 +1,5 @@
 List of main changes between ActionApps 2.8.1 and 2.10.0
-(all changes you can see in CHANGES file: http://apc-aa.cvs.sourceforge.net/apc-aa/apc-aa/CHANGES?view=markup)
+(all changes you can see in CHANGES file: http://apc-aa.svn.sourceforge.net/viewvc/apc-aa/trunk/CHANGES?view=markup)
 
 
 ActionApps Output Functionality
