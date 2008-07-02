@@ -888,6 +888,35 @@ class AA_Stringexpand_Next extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Counts ids or other string parts separated by delimiter
+ *  It is much quicker to use this function for counting of ids, than
+ *  {aggregate:count..} since this one do not grab tha item data from
+ *  the database
+ *    {count:<ids>[:<delimiter>]}
+ *    {count:12324-353443-58921}   // returns 3
+ *    {count:{ids:6353428288a923:d-category........-=-Dodo}}
+ */
+class AA_Stringexpand_Count extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** for offset and length parameters see PHP function array_slice()
+     * @param $ids        // item ids separated by '-' (long or short)
+     * @param $delimiter  // separator of the parts - by default it is '-', but
+     *                       you can use any one
+     */
+    function expand($ids='', $delimiter='') {
+        if (!trim($ids)) {
+            return 0;
+        }
+        if (empty($delimiter)) {
+            $delimeter = '-';
+        }
+        return count(explode($delimeter, $ids));
+    }
+}
+
+
 /** Previous item for the current item in the list
  *    {previous:<ids>:<current_id>}
  *    {previous:12324-353443-58921:353443}   // returns 12324
@@ -998,7 +1027,7 @@ class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
     }
 }
 
-// In javascript we need escape apostroph
+/** Escape apostrophs and convert HTML entities */
 class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -1009,6 +1038,19 @@ class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
         return str_replace("'", "\'", safe($text));
     }
 }
+
+/** Just escape apostrophs ' => \' */
+class AA_Stringexpand_Quote extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $text
+     */
+    function expand($text='') {
+        return str_replace("'", "\'", str_replace('\\', '\\\\', $text));
+    }
+}
+
 
 class AA_Stringexpand_Striptags extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1207,8 +1249,8 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
  *  {seo2ids:<slices>:<seo-string>}
  *  {seo2ids:6a435236626262738348478463536272:about-us}
  *  returns long id of item in selected slice (or dash separated slices) with
- *  the specified SEO string in seo............. field. If there more such ids
- *  (which should not be), they are dash separated
+ *  the specified SEO string in seo............. field. If there are more such
+ *  ids (which should not be), they are dash separated
  */
 class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
     /** expand function
@@ -1253,6 +1295,8 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
 /** If $condition is filled by some text, then print $text. $text could contain
  *  _#1 alias for the condition, but you can use any {} AA expression.
  *  Example: {ifset:{img_height.....2}: height="_#1"}
+ *  The $condition with undefined alias is considered as empty as well
+ *    ($condition=_#.{8} (exactly) - like '_#HEADLINE')
  */
 class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1263,11 +1307,12 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
      * @param $else_text
      */
     function expand($condition, $text, $else_text='') {
-        return (strlen($condition)<1) ? $else_text : str_replace('_#1', $condition, $text);
+        return ((strlen($condition)<1) OR IsAlias($condition)) ? $else_text : str_replace('_#1', $condition, $text);
     }
 }
 
-/** Expand URL by adding session,
+/** Expand URL by adding session
+ *  Example: {sessurl:<url>}
  *  also handle special cases like {sessurl:hidden}
  */
 class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
