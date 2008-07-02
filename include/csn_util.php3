@@ -129,18 +129,18 @@ function UseAllCategoriesOption( &$ext_categs ) {
                  AND to_slice_id='".q_pack_id($l_slice_id)."'
                  ORDER BY from_field_name");
      while ($db->next_record()) {
-         switch ($f = $db->f(flag)) {
+         switch ($f = $db->f('flag')) {
              case FEEDMAP_FLAG_EXTMAP :
              case FEEDMAP_FLAG_MAP:
-                $v = $db->f(from_field_id);
-                $map_to[$v] = $db->f(from_field_name) ;
+                $v = $db->f('from_field_id');
+                $map_to[$v] = $db->f('from_field_name') ;
                 break;
              case FEEDMAP_FLAG_JOIN:
              case FEEDMAP_FLAG_RSS:
-             case FEEDMAP_FLAG_VALUE :  $v = $db->f(value); break;
+             case FEEDMAP_FLAG_VALUE :  $v = $db->f('value'); break;
              case FEEDMAP_FLAG_EMPTY :  $v = ""; break;
          }
-         $map_from[$db->f(to_field_id)] = array("feedmap_flag"=>$f,"value"=>$v,"from_field_name"=>$db->f(from_field_name));
+         $map_from[$db->f('to_field_id')] = array("feedmap_flag"=>$f,"value"=>$v,"from_field_name"=>$db->f('from_field_name'));
      }
 
      return array($map_to,$map_from);
@@ -253,19 +253,20 @@ function iso8601_to_unixstamp_old($t) {
 $DEFAULT_RSS_MAP = array (
     // Note this matches code in xml_rssparse.php3 for parsing DC fields
     // Can change the names without affecting anything
-        "author.........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/creator","from_field_name"=>"DC:creator"),
-        "abstract........" => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"),
-        "publish_date...." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DATE(DC/date)|DATE(ITEM/pubdate)|NOW","from_field_name"=>"DC:date"),
-        "source.........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/source|CHANNEL/title","from_field_name"=>"DC:source"),
-        "lang_code......." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/language","from_field_name"=>"DC:language"),
-        "source_href....." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/relation|CHANNEL/link","from_field_name"=>"DC:relation"),
-        "place..........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/coverage","from_field_name"=>"DC:coverage"),
-        "headline........" => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"DC/title|ITEM/title","from_field_name"=>"DC:title"),
-        "full_text......." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"CONTENT","from_field_name"=>"Content"),
-        "status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,"from_field_name"=>"Approved"),
-        "hl_href........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,"value"=>"ITEM/link|ITEM/guid","from_field_name"=>"ITEM:link"),
-        "expiry_date....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),"from_field_name"=>"Expiry Date")
+        "author.........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/creator",                                "from_field_name"=>"DC:creator"),
+        "abstract........" => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"),
+        "publish_date...." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DATE(DC/date)|DATE(ITEM/pubdate)|NOW",      "from_field_name"=>"DC:date"),
+        "source.........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/source|CHANNEL/title",                   "from_field_name"=>"DC:source"),
+        "lang_code......." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/language",                               "from_field_name"=>"DC:language"),
+        "source_href....." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/relation|CHANNEL/link",                  "from_field_name"=>"DC:relation"),
+        "place..........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/coverage",                               "from_field_name"=>"DC:coverage"),
+        "headline........" => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/title|ITEM/title",                       "from_field_name"=>"DC:title"),
+        "full_text......." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"CONTENT",                                   "from_field_name"=>"Content"),
+        "status_code....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,                                           "from_field_name"=>"Approved"),
+        "hl_href........." => array("feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/link|ITEM/guid",                       "from_field_name"=>"ITEM:link"),
+        "expiry_date....." => array("feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),                      "from_field_name"=>"Expiry Date")
     );
+
 /** attr2id function
  * @param $str
  *

@@ -181,7 +181,7 @@ if (isset($_GET['mode'])) {
         <body bgcolor="white" text="black">
         <font face="Helvetica, Arial, sans-serif" size="2">
         The test session has been unregistered.<br>
-        <a href="test.php">Go back</a> to the test.php page.<br>
+        <a href="test.php3">Go back</a> to the test.php3 page.<br>
         <?php
         exit;
         break;
@@ -218,7 +218,7 @@ echo "<li>".APC_AA_VERSION;
 
 <h1>PHP Version</h1>
 <ul>
-    <li><a href="test.php?mode=phpinfo">View phpinfo() screen</a></li>
+    <li><a href="test.php3?mode=phpinfo">View phpinfo() screen</a></li>
     <li>PHP Version: <?php echo phpversion(); ?></li>
 <?php
     show_php_version($phpver);
@@ -274,7 +274,7 @@ echo "<li>".APC_AA_VERSION;
 <?php $apcaa_test_count++; ?>
 <ul>
     <li>Session counter: <?php echo $apcaa_test_count; ?></li>
-    <li>To unregister the session: <a href="test.php?mode=unregister">click here</a></li>
+    <li>To unregister the session: <a href="test.php3?mode=unregister">click here</a></li>
 </ul>
 
 <h1>PEAR</h1>

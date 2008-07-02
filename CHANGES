@@ -1,3 +1,14 @@
+02/07/08 - updated documentation - CVS replaced by SVN (Subversion)
+(honzam) - new {count:<ids>[:<delimiter>]} syntax - counts ids or other string
+           parts separated by delimiter. It is much quicker to use this function
+           for counting of ids, than {aggregate:count..} since this one do not
+           grab the item data from the database
+             {count:12324-353443-58921}   // returns 3
+             {count:{ids:6353428288a923:d-category........-=-Dodo}}
+         - new {quote:text} - just replaces ' with \'
+         - the <condition> for {ifset:<condition>:...} is considered as empty
+           also for unfilled aliases (like _#HEADLINE)
+         - validation added to timestamp values for date widget
 02/06/08 - HTMLArea (Xinha) updated to last svn version
 (honzam) - new "Fix inconcistency in pagecache" optimalization action
          - slice deletion - improved UI

@@ -208,7 +208,7 @@ $s_fields = GetTable2Array($SQL);
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
  <title><?php echo _m("Admin - configure Fields");?></title>
- <script Language="JavaScript"><!--
+ <script type="text/javascript"><!--
    function DeleteField(id) {
      if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>"))
        return
