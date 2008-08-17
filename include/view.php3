@@ -584,12 +584,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
     }
 
     // Use right language (from slice settings) - languages are used for
-    // 'No item found', ... messages
-    $lang_file = substr( get_if($view_info['lang_file'],DEFAULT_LANG_INCLUDE), 0, 2);
-    if (!$GLOBALS['LANGUAGE_NAMES'][$lang_file]) {
-        $lang_file = "en";
-    }
-    bind_mgettext_domain(AA_INC_PATH."lang/".$lang_file."_output_lang.php3");
+    // 'No item found', Next, ... messages
+    bind_mgettext_domain(AA_INC_PATH."lang/".$view->getLang()."_output_lang.php3");
 
     $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
                    ( (isset($view_info['noitem_msg']) AND (strlen($view_info['noitem_msg']) > 0) ) ?

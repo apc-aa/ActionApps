@@ -80,6 +80,15 @@ class view {
         return $this->fields;
     }
 
+    /** getLang function
+     *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
+     */
+    function getLang()     {
+        $lang = $this->f('lang_file');
+        $lang_file = substr($lang, 0, strpos($lang, '_news_lang'));
+        return isset($GLOBALS['LANGUAGE_NAMES'][$lang_file]) ? $lang_file : substr(DEFAULT_LANG_INCLUDE, 0, 2);
+    }
+
     /** jumpLink function
      *  Generates link to view edit
      * @param $name
