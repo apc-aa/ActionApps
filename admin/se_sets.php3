@@ -61,6 +61,10 @@ if ( $update ) {
         ValidateInput("cond3",  _m("Condition 3"), $cond3,  $err, false, "text");
         ValidateInput("objid3", _m("Object ID 3"), $objid3, $err, false, "text");
 
+        ValidateInput("name4",  _m("Name 4"),      $name4,  $err, false, "text");
+        ValidateInput("cond4",  _m("Condition 4"), $cond4,  $err, false, "text");
+        ValidateInput("objid4", _m("Object ID 4"), $objid4, $err, false, "text");
+
         if ( count($err) > 1) {
             break;
         }
@@ -135,6 +139,7 @@ $form_buttons = array ("update",
 <form name="f" method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("Sets"), '','',$form_buttons, $sess, $slice_id);
+FrmStaticText('', _m('Conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'), false, '', '', false);
 
 $set_ids = AA_Object::query('AA_Set', array($slice_id));
 $k = 0;
@@ -145,13 +150,14 @@ foreach( $set_ids as $i => $set_id ) {
     }
     $k = $i+1;
     FrmHidden("objid$k", $set->getId());
-    FrmInputText("name$k", _m("Set name %1",  array($k)), $set->getName());
-    FrmTextArea("cond$k", _m("Conditions %1", array($k)), $set->getCondsAsString());
+    FrmStaticText(_m('ID'), $set->getId());
+    FrmInputText("name$k", _m("Set name %1",  array($k)), $set->getName(), 32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
+    FrmTextArea("cond$k", _m("Conditions %1", array($k)), $set->getCondsAsString(), 4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
 }
 
 for ( $i=$k+1; $i<5 ;$i++) {
-    FrmInputText("name$i", _m("Set name %1", array($i)), '');
-    FrmTextArea("cond$i", _m("Conditions %1", array($i)), '');
+    FrmInputText("name$i", _m("Set name %1", array($i)), '', 32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
+    FrmTextArea("cond$i", _m("Conditions %1", array($i)), '', 4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
 }
 
 FrmTabEnd($form_buttons, $sess, $slice_id);
