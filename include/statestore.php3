@@ -481,11 +481,13 @@ class AA_Object extends AA_Storable {
         $class  = AA_Object::constructClassName($class_mask, $splited[0]);
         $params = array('class' => $class);
 
-        // ask class, which parameters uses
-        // call AA_Widget_Txt::getClassProperties()), for example
-        foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $name => $property) {
-            if (isset($splited[$i])) {
-                $params[$name] = $splited[$i++];
+        if ( class_exists($class) ) {
+            // ask class, which parameters uses
+            // call AA_Widget_Txt::getClassProperties()), for example
+            foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $name => $property) {
+                if (isset($splited[$i])) {
+                    $params[$name] = $splited[$i++];
+                }
             }
         }
 

@@ -35,7 +35,6 @@ function IsInDomain( $domain ) {
 }
 
 // ----------------- function definition end -----------------------------------
-trace("+","site.php3");
 $db          = new DB_AA;
 $err["Init"] = "";          // error array (Init - just for initializing variable
 
@@ -73,9 +72,6 @@ if ( $site_info['state_file'] ) {
     exit;
 }
 
-trace("=","site.php3","precachecheck");
-// Look into cache if the page is not cached
-
 // CACHE_TTL defines the time in seconds the page will be stored in cache
 // (Time To Live) - in fact it can be infinity because of automatic cache
 // flushing on page change
@@ -100,10 +96,8 @@ if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($key_str,$noca
         $time    = $timeend - $timestart;
         echo "<br><br>Site cache hit!!! Page generation time: $time";
     }
-    trace("-");
     exit;
 }
-trace("=","site.php3","precachecheck");
 
 require_once AA_BASE_PATH."modules/site/util.php3";                      // module specific utils
 require_once AA_BASE_PATH."modules/site/sitetree.php3";
@@ -113,7 +107,6 @@ require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."item.php3";
 
-trace("=","site.php3","preGetSite");
 $res = ModW_GetSite( $apc_state, $site_id, $site_info );
 echo $res;
 
@@ -148,7 +141,6 @@ if ($debugtime) {
 
 function ModW_GetSite( $apc_state, $site_id, $site_info ) {
     global $show_ids;
-    trace("+","ModW_GetSite");
 
     // site_id should be defined as url parameter
     $module_id   = $site_id;
@@ -162,7 +154,6 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
     // it fills $show_ids array
     $tree->walkTree($apc_state, 1, 'ModW_StoreIDs', 'cond');
     if (count($show_ids)<1) {
-        trace("-");
         exit;
     }
 
@@ -184,23 +175,21 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
         $out .= ( ($flags[$v] & MODW_FLAG_JUST_TEXT) ?
                 $spot_content : ModW_unalias($spot_content, $apc_state) );
     }
-    trace("-");
     return $out;
 }
 
 function ModW_StoreIDs($spot_id, $depth) {
-    if ($GLOBALS['errcheck'] && ! $spot_id)      // There is a bug causes this
+    if ($GLOBALS['errcheck'] && ! $spot_id) {      // There is a bug causes this
         huhl("Warning adding empty spot_id");
+    }
     $GLOBALS['show_ids'][] = $spot_id;
 }
 
 function ModW_unalias( &$text, &$state ) {
     // just create variables and set initial values
-    trace("+","ModW_unalias",htmlentities($text));
     $maxlevel = 0;
     $level    = 0;
     $ret      = new_unalias_recurent($text, "", $level, $maxlevel,$state['item']);
-    trace("-");
     return $ret;
 }
 

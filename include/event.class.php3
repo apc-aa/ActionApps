@@ -158,8 +158,10 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemNewComment',          array('type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item'));
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_UPDATED',     'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
         $this->handlers[] = new aahandler('Event_ItemUpdated_Aperio_porad',array('type' => 'ITEM_NEW',         'slice'        => 'e455517b6d142d19cc8ad08c5be98eef'));  // Aperio - poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',array('type' => 'ITEM_UPDATED',     'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
-        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',array('type' => 'ITEM_NEW',         'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',      array('type' => 'ITEM_UPDATED',     'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',      array('type' => 'ITEM_NEW',         'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
+        $this->handlers[] = new aahandler('Event_ItemInserted_Efekt',      array('type' => 'ITEM_NEW',         'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b'));  // EFEKT - iEKIS
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Efekt',       array('type' => 'ITEM_UPDATED',     'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b'));  // EFEKT - iEKIS
     }
 
     /** get_handlers_newwwwww function
@@ -748,6 +750,7 @@ function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_pa
     }
     return false;
 }
+
 /** Event_ItemAfterInsert_NszmPruzkum function
  * @param $type
  * @param $slice
@@ -765,6 +768,55 @@ function Event_ItemAfterInsert_NszmPruzkum( $type, $slice_id, $slice_type, &$ret
 
     if ($email1 OR $email2) {
         return send_mail_from_table_inner(63, array($email1, $email2), $item) > 0;
+    }
+    return false;
+}
+
+
+/** Event_ItemAfterInsert_NszmPruzkum function
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param $ret_params
+ * @param $foo
+ * @param $foo2
+ */
+function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
+    $short_id   = $ret_params->getValue('short_id........');              // item's short_id is in params
+    
+    if (!$ret_params->getValue('switch.........2')) {
+        return false;  // not stored for MPO, yet
+    }
+    
+    $email1   = trim($ret_params->getValue('con_email.......'));
+
+    $item     = AA_Item::getItem(new zids($short_id, 's'));
+
+    if ($email1) {
+        return send_mail_from_table_inner(5, array($email1), $item) > 0;
+    }
+    return false;
+}
+
+/** Event_ItemAfterInsert_NszmPruzkum function
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param $ret_params
+ * @param $foo
+ * @param $foo2
+ */
+function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
+    $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
+    $ekis_id  = $ret_params->getValue('relation.......1');              // item's short_id is in params
+    
+    
+    $email1   = trim(AA_Stringexpand::unalias('{item:'.$ekis_id.':_#EKISMAIL}'));
+
+    $item     = AA_Item::getItem(new zids($short_id, 's'));
+
+    if ($email1) {
+        return send_mail_from_table_inner(4, array($email1), $item) > 0;
     }
     return false;
 }

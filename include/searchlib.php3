@@ -1187,7 +1187,7 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
 *  Finds item IDs for items to be shown in a slice / view
 *
 *   @param array  $slices array of slices in which to look for items
-*                         could be false. if you specifi restrict_zids
+*                         could be false. if you specify restrict_zids
 *   @param array  $conds    search conditions (see FAQ)
 *   @param array  $sort     sort fields (see FAQ)
 *   @param string $type

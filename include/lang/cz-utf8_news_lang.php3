@@ -5570,4 +5570,8 @@ $_m["EDITOR"]
 $_m["Can't change user"]
  = "Nelze změnit data uživatele - LDAP Error";
 
+$_m["Not in the list of possible values"]
+ = "Jsou zadány nepovolené znaky";
+ 
+ 
 ?>

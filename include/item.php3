@@ -580,11 +580,11 @@ class AA_Item {
             // hide email from spam robots
             if ($hide=='1') {
                 $linkpart=explode('@',str_replace("'", "\'", $url.'@'.DeHtml($txt, $html)),4);
-                $ret = "\n<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\ndocument.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $linkpart[2];
+                $ret = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\ndocument.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $linkpart[2];
                 if ($linkpart[3]) {
                     $ret .= "'+'@'+'".$linkpart[3];
                 }
-                $ret .= "</a>')\n// -->\n</script>\n";
+                $ret .= "</a>')\n// -->\n</script>";
                 return $ret;
             } else {
                 return '<a href="'. $url ."\" $add>". DeHtml($txt, $html).'</a>';
@@ -846,27 +846,9 @@ class AA_Item {
         if ($value AND !($col == $field)) {  // special case - return whole field
             return DeHtml( $value, $this->getval($col,'flag') );
         }
-        $shorted_text = substr(get_if($value, $pfield), 0, $plength);    // pfield is already expanded!!!
 
-        // search the text for following ocurrences in the order!
-        $PARAGRAPH_ENDS = array( '</p>','<p>','<br>', "\n", "\r" );
         if ($pparagraph) {
-            foreach ( $PARAGRAPH_ENDS as $end_str ) {
-                $paraend = strpos(strtolower($shorted_text), $end_str, min(strlen($shorted_text),10));  // we do not want to
-                if ( $paraend !== false ) {   // end_str found
-                    $shorted_text = substr($shorted_text, 0, $paraend);
-                    break;
-                }
-            }
-            if ($paraend===false) {      // no <BR>, <P>, ... found
-                // try to find dot (first from the end)
-                $dot = strrpos( $shorted_text,".");
-                if ( $dot > $paraend/3 ) { // take at least one third of text
-                    $shorted_text = substr($shorted_text, 0, $dot+1);
-                } elseif ( $space = strrpos($shorted_text," ") ) {   // assignment!
-                    $shorted_text = substr($shorted_text, 0, $space);
-                } // no dot, no space - leave the text plength long
-            }
+            $shorted_text = AA_Stringexpand_Shorten::expand(get_if($value, $pfield), $plength);
         } else {
             $shorted_text = substr($value, 0, $plength);
         }
