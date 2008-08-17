@@ -132,6 +132,11 @@ class inputform {
         $this->hidden               = $settings['hidden'];      // array of hidden fields to be added to the form
     }
 
+    /** static */
+    function _getButton($key, $type, $default_text, $profile_text, $url = null) {
+        return ($profile_text === '') ? array() : array( $key => array('type'=>$type, 'value'=> get_if($profile_text, $default_text), 'url' => $url));
+    }
+
     /** printForm function
      *  Displays the form
      * @param $content4id
@@ -141,12 +146,14 @@ class inputform {
      *                         which are stored in content table
      */
     function printForm($content4id, &$slice, $edit, $slice_fields=false) {
-        global $sess;
+        global $sess, $auth;
 
         // Get the default form and FILL CONTENTCACHE with fields
         // This function also fills the $this->show_func_used and
         // $this->js_proove_fields
-        $form = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
+        $form       = $this->getForm($content4id, $slice, $edit, '', $slice_fields);
+        $profile    = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
+        $page_title = get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_title' : 'add_title'), $this->page_title);
 
         if ( $this->display_aa_begin_end ) {
             HtmlPageBegin('default', false, $slice->getLang());   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -156,10 +163,14 @@ class inputform {
             // $this->show_func_used, $this->js_proove_fields must be already filled
             echo $this->getFormJavascript();
             echo '
-                <title>'. $this->page_title .'</title>
+                <title>'. $page_title .'</title>
               </head>
               <body>
-                <h1><b>' . $this->page_title .'</b></h1>';
+                <h1><b>' . $page_title .'</b></h1>';
+
+            // you can add some html code by user profiles, above the form
+            echo get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_tophtml' : 'add_tophtml'), '');
+
             PrintArray( $this->messages['err'] );     // prints err or OK messages
         }
 
@@ -172,23 +183,25 @@ class inputform {
             $remove_string = $view->f('remove_string');
         }
 
+        $buttons = array();
+
         // create buttons array for top (and lately for bottom of the form)
         if ( $this->form4update ) {
-            $buttons[]                  = 'update';
+            $buttons += inputform::_getButton('update', 'submit', _m("Update"), $profile->getProperty('ui_inputform', 'edit_btn_update'));
             if ( $this->show_preview_button ) {
-                $buttons['upd_preview'] = array('type'=>'submit', 'value'=>_m("Update & View"));
+                $buttons += inputform::_getButton('upd_preview', 'submit', _m("Update & View"), $profile->getProperty('ui_inputform', 'edit_btn_upd_preview'));
             }
             // if we edit dynamic slice setting fields, we do not need such buttons
             if (!$slice_fields) {
-                $buttons['insert']      = array('type'=>'submit', 'value'=>_m("Insert as new"));
-                $buttons['reset']       = array('type'=>'reset',  'value'=>_m("Reset form"));
+                $buttons += inputform::_getButton('insert', 'submit', _m("Insert as new"), $profile->getProperty('ui_inputform', 'edit_btn_insert'));
+                $buttons += inputform::_getButton('reset', 'reset', _m("Reset form"), $profile->getProperty('ui_inputform', 'edit_btn_reset'));
             }
+            $buttons += inputform::_getButton('cancel', 'button', _m("Cancel"), $profile->getProperty('ui_inputform', 'edit_btn_cancel'), $this->cancel_url);
         } else {
-            $buttons[]                  = 'insert';
-            $buttons['ins_preview']     = array('type'=>'submit', 'value'=>_m("Insert & View"));
+            $buttons += inputform::_getButton('insert', 'submit', _m("Insert"), $profile->getProperty('ui_inputform', 'add_btn_insert'));
+            $buttons += inputform::_getButton('ins_preview', 'submit', _m("Insert & View"), $profile->getProperty('ui_inputform', 'add_btn_ins_preview'));
+            $buttons += inputform::_getButton('cancel', 'button', _m("Cancel"), $profile->getProperty('ui_inputform', 'add_btn_cancel'), $this->cancel_url);
         }
-        $buttons['cancel']              = array('type'=>'button', 'value'=>_m("Cancel"),
-                                                'url'=> $this->cancel_url);
 
 //        debug( $form, $GLOBALS['contentcache']);
     //added for MLX
@@ -244,6 +257,10 @@ class inputform {
         }
 
         echo '</form>';
+
+        // you can add some html code by user profiles, below the form
+        echo get_if($profile->getProperty('ui_inputform', $this->form4update ? 'edit_bottomhtml' : 'add_bottomhtml'), '');
+
         if ( $this->display_aa_begin_end ) {
             echo "</body></html>";
         }
@@ -2607,7 +2624,7 @@ function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
             </td>
           </tr>';
     if ( $buttons ) {
-        FrmInputButtons($buttons, $sess, $slice_id, $valign, false, COLOR_TABTITBG, false, 'bottom');
+        FrmInputButtons($buttons, $sess, $slice_id, $valign, true, COLOR_TABTITBG, false, 'bottom');
     }
     echo '
         </table>';

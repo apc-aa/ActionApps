@@ -293,6 +293,7 @@ function AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $pa
     switch($property) {
         case 'listlen':
         case 'input_view':
+        case 'admin_perm':
             if ( $param > 0 ) {
                 $profile->deleteProperty($property);
                 $profile->insertProperty($property, '0', $param);
@@ -319,6 +320,8 @@ function AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $pa
             }
             break;
         case 'hide':
+        case 'ui_manager_hide':
+        case 'ui_inputform_hide':
             if ( $field_id ) {
                 $profile->deleteProperty($property, $field_id);
                 $profile->insertProperty($property, $field_id, '1');
@@ -331,6 +334,14 @@ function AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $pa
             if ( $field_id ) {
                 $profile->deleteProperty($property,$field_id);
                 $profile->insertProperty($property, $field_id, "$html:$fnction:$param");
+                $Msg = MsgOK(_m("Rule added"));
+            }
+            break;
+        case 'ui_manager':
+        case 'ui_inputform':
+            if ( $field_id ) {
+                $profile->deleteProperty($property,$field_id);
+                $profile->insertProperty($property, $field_id, "$param");
                 $Msg = MsgOK(_m("Rule added"));
             }
             break;

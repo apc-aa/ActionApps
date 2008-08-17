@@ -56,50 +56,54 @@ function get_aamenus() {
            $slice_id,
            $r_state,
            $AA_CP_Session,
-           $profile;
+           $bookmarks;
+
+    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 
     $aamenus["view"] = array (
-        "label"       => _m("View site"),
+        "label"       => GetLabel($profile,'ui_manager','top_view', _m("View site")),
         "exact_href"  => $r_slice_view_url,
-        "cond"        => 1,
+        "cond"        => ($profile->getProperty('ui_manager', 'top_view') !== ''),
         "level"       => "main");
 
     $input_view = (isset($profile) AND $profile->getProperty('input_view')) ?
                   '&vid='.$profile->getProperty('input_view') : '';
 
     $aamenus["additem"] = array (
-        "label" => _m("Add Item"),
-        "href"  => "admin/itemedit.php3?encap=false&add=1$input_view",
+        "label" => GetLabel($profile,'ui_manager','top_additem', _m("Add Item")),
+        "href"  => "admin/itemedit.php3?add=1$input_view",
+        "cond"  => ($profile->getProperty('ui_manager', 'top_additem') !== ''),
         "level" => "main");
 
     $aamenus["itemmanager"] = array (
-        "label"   => _m("Item Manager"),
+        "label"   => get_if($profile->getProperty('ui_manager', 'top_itemmanager'), _m("Item Manager")),
         "title"   => _m("Item Manager"),
         "href"    => "admin/index.php3?Tab=app",
+        "cond"  => ($profile->getProperty('ui_manager', 'top_itemmanager') !== '') OR IsSuperadmin(),
         "level"   => "main",
         "submenu" => "itemmanager_submenu");
 
     $aamenus["sliceadmin"] = array (
-        "label"   => _m("Slice Admin"),
+        "label"   => get_if($profile->getProperty('ui_manager', 'top_sliceadmin'), _m("Slice Admin")),
         "title"   => _m("Slice Administration"),
         "href"    => "admin/se_fields.php3",
-        "cond"    => IfSlPerm(PS_FIELDS),
+        "cond"    => (IfSlPerm(PS_FIELDS) AND ($profile->getProperty('ui_manager', 'top_sliceadmin') !== '')) OR IsSuperadmin(),
         "level"   => "main",
         "submenu" => "sliceadmin_submenu");
 
     $aamenus["aaadmin"] = array (
-        "label"   => _m("AA"),
+        "label"   => GetLabel($profile,'ui_manager','top_aaadmin', _m("AA")),
         "title"   => _m("AA Administration"),
         "href"    => "admin/um_uedit.php3",
-        "cond"    => IfSlPerm(PS_NEW_USER),
+        "cond"    => IfSlPerm(PS_NEW_USER) AND ($profile->getProperty('ui_manager', 'top_aaadmin') !== ''),
         "level"   => "main",
         "submenu" => "aaadmin_submenu");
 
     $aamenus["central"] = array (
-        "label"   => _m("Central"),
+        "label"   => GetLabel($profile,'ui_manager','top_central', _m("Central")),
         "title"   => _m("AA Central"),
         "href"    => "central/index.php3",
-        "cond"    => IsSuperadmin(),
+        "cond"    => IsSuperadmin() AND ($profile->getProperty('ui_manager', 'top_central') !== ''),
         "level"   => "main",
         "submenu" => "central_submenu");
 
@@ -178,20 +182,30 @@ function get_aamenus() {
         "bottom_td" => 200,
         "level"     => "submenu",
         "items"     => array(
-            "header1"   => _m("Folders"),
-            "app"       => array("cond"=>1,                           "href"=>"admin/index.php3?Tab1a=1",                                   "label"=>"<img src='../images/ok.gif' border=0>"._m("Active")." (". $r_state['bin_cnt']['app'] .")"),
-            "appb"      => array("cond"=>1,                           "href"=>"admin/index.php3?Tab1b=1",                                  "label"=>_m("... pending")." (". $r_state['bin_cnt']['pending'] .")", "show"=>!$apple_design),
-            "appc"      => array("cond"=>1,                           "href"=>"admin/index.php3?Tab1c=1",                                  "label"=>_m("... expired")." (". $r_state['bin_cnt']['expired'] .")", "show"=>!$apple_design),
-            "hold"      => array("cond"=>1,                           "href"=>"admin/index.php3?Tab2=1",                                  "label"=>"<img src='../images/edit.gif' border=0>"._m("Hold bin")." (". $r_state['bin_cnt']['folder2'] .")"),
-            "trash"     => array("cond"=>1,                           "href"=>"admin/index.php3?Tab3=1",                                 "label"=>"<img src='../images/delete.gif' border=0>"._m("Trash bin")." (". $r_state['bin_cnt']['folder3'] .")"),
+            "header1"     => GetLabel($profile,'ui_manager', 'itemmanager_submenu_header1', _m("Folders")),
+            "additem"     => array("cond"=> $profile->getProperty('ui_manager', 'itemmanager_submenu_additem'), 'hide' => !$profile->getProperty('ui_manager', 'itemmanager_submenu_additem'),         "label" => $profile->getProperty('ui_manager', 'itemmanager_submenu_additem'), "href"  => "admin/itemedit.php3?add=1$input_view"),
+            "app"         => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   === ''),                           "href"=>"admin/index.php3?Tab1a=1",                                "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_app'  , "<img src='../images/ok.gif' border=0>"._m("Active")." (". $r_state['bin_cnt']['app'] .")")),
+            "appb"        => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  === ''),                           "href"=>"admin/index.php3?Tab1b=1",                                "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appb' , _m("... pending")." (". $r_state['bin_cnt']['pending'] .")"), "show"=>!$apple_design),
+            "appc"        => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  === ''),                           "href"=>"admin/index.php3?Tab1c=1",                                "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appc' , _m("... expired")." (". $r_state['bin_cnt']['expired'] .")"), "show"=>!$apple_design),
+            "hold"        => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_hold')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_hold')  === ''),                           "href"=>"admin/index.php3?Tab2=1",                                 "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_hold' , "<img src='../images/edit.gif' border=0>"._m("Hold bin")." (". $r_state['bin_cnt']['folder2'] .")")),
+            "trash"       => array("cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_trash') !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_trash') === ''),                           "href"=>"admin/index.php3?Tab3=1",                                 "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_trash', "<img src='../images/delete.gif' border=0>"._m("Trash bin")." (". $r_state['bin_cnt']['folder3'] .")"))));
 
-            "header2"   => _m("Misc"),
-            "slice_fld" => array("cond"=>IfSlPerm(PS_EDIT_ALL_ITEMS), "href"=>"admin/slicefieldsedit.php3?edit=1&encap=false&id=$slice_id", "label"=> _m("Setting")),
-            "item6"     => array("cond"=>IfSlPerm(PS_DELETE_ITEMS),   "href"=>"admin/index.php3?DeleteTrash=1",                              "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"),
-            "CSVimport" => array("cond"=>IfSlPerm(PS_EDIT_ALL_ITEMS), "href"=>"admin/se_csv_import.php3",                                   "label"=>_m("Import CSV")),
-            "debug"     => array("cond"=>IsSuperadmin(),              "js"  =>"ToggleCookie('aa_debug','1')", "hide"=>!IsSuperadmin(),      "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))),
-            "line"      => ""
-    ));
+    if ( $profile->getProperty('ui_manager', 'itemmanager_submenu_bookmarks') !== false ) {
+        $aamenus["itemmanager_submenu"]['items']['headerbookmarks'] = GetLabel($profile,'ui_manager', 'itemmanager_submenu_bookmarks', _m("Bookmarks"));
+
+        foreach ( (array) $bookmarks as $bookid => $bookname ) {
+            $aamenus["itemmanager_submenu"]['items']['bookmark'.$bookid] = array( "href"=> "admin/index.php3?GoBookmark=$bookid", "label"=>$bookname);
+        }
+    }
+            
+    $aamenus["itemmanager_submenu"]['items'] += array(       
+            "header2"     => GetLabel($profile,'ui_manager', 'itemmanager_submenu_header2', _m("Misc")),
+            "slice_fld"   => array("cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_slice_fld')   === ''), "href"=>"admin/slicefieldsedit.php3?edit=1&encap=false&id=$slice_id",   "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_slice_fld', _m("Setting"))),
+            "empty_trash" => array("cond"=>(IfSlPerm(PS_DELETE_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_empty_trash')   === ''), "href"=>"admin/index.php3?DeleteTrash=1",                             "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_empty_trash', "<img src='../images/empty_trash.gif' border=0>"._m("Empty trash")), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"),
+            "CSVimport"   => array("cond"=>(IfSlPerm(PS_EDIT_ALL_ITEMS) AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport') !== '')), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_CSVimport')   === ''), "href"=>"admin/se_csv_import.php3",                                     "label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_CSVimport', _m("Import CSV"))),
+            "debug"       => array("cond"=>(IsSuperadmin() AND ($profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   !== '')),                'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_debug')   === '') AND !IsSuperadmin(),                  "js"  =>"ToggleCookie('aa_debug','1')","label"=>GetLabel($profile,'ui_manager','itemmanager_submenu_debug',  ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))))
+    //        "line"        => ""
+    );
 
     if ($slice_id && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
 

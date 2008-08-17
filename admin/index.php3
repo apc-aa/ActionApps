@@ -123,12 +123,20 @@ $switches->addAction(new AA_Manageraction_Item_Tab('Tab1c', 'appc'));
 $switches->addAction(new AA_Manageraction_Item_Tab('Tab2',  'hold'));
 $switches->addAction(new AA_Manageraction_Item_Tab('Tab3',  'trash'));
 $switches->addAction(new AA_Manageraction_Item_DeleteTrash('DeleteTrash',false));
+$switches->addAction(new AA_Manageraction_Item_GoBookmark(   'GoBookmark'));
 //$switches->addAction(new AA_Manageraction_Item_Email('SendEmail'));
 
 
+$profile       = AA_Profile::getProfile($auth->auth["uid"], $module_id); // current user settings
+$show_settings = MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS;
+if ($profile->getProperty('ui_manager_hide', 'mgr_actions'))       { $show_settings -= MGR_ACTIONS; }
+if ($profile->getProperty('ui_manager_hide', 'mgr_sb_searchrows')) { $show_settings -= MGR_SB_SEARCHROWS; }
+if ($profile->getProperty('ui_manager_hide', 'mgr_sb_orderrows'))  { $show_settings -= MGR_SB_ORDERROWS; }
+if ($profile->getProperty('ui_manager_hide', 'mgr_sb_bookmarks'))  { $show_settings -= MGR_SB_BOOKMARKS; }
+
 $manager_settings = array(
      'module_id' => $slice_id,
-     'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+     'show'      => $show_settings,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
      'searchbar' => array(
          'fields'               => $slice->fields('search'),
          'search_row_count_min' => 1,
@@ -157,8 +165,6 @@ $manager_settings = array(
          );
 
 $manager = new AA_Manager($manager_settings);
-$profile = AA_Profile::getProfile($auth->auth["uid"], $module_id); // current user settings
-
 
 // r_state array holds all configuration of Links Manager
 // the configuration then could be Bookmarked
@@ -180,19 +186,36 @@ $manager->performActions();
 
 $r_state['bin_cnt'] = CountItemsInBins();
 
-$manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
+if ($profile->getProperty('ui_manager', 'css_add')) { $show_settings -= MGR_SB_SEARCHROWS; }
 
+$manager->printHtmlPageBegin(true, $profile->getProperty('ui_manager', 'css_add'));  // html, head, css, title, javascripts
+
+// just for menu
+$bookmarks = $manager->getBookmarkNames();
 require_once AA_INC_PATH."menu.php3";
 showMenu($aamenus, "itemmanager", $manager->getBin(), $navbar != "0", $leftbar != "0");
 
-$conds = $manager->getConds();
-$sort  = $manager->getSort();
+$aa_set = $manager->getSet();  // do not use $set variable name, since it confuses set[] url command in view
+
+$perm_set_id = $profile->getProperty('admin_perm');
+
+// permissions could be diffined in user profiles through Item Set conditions
+if ($perm_set_id) {
+    $profile_set = AA_Object::load($perm_set_id, 'AA_Set');
+    if ( is_null($profile_set)) {
+        // we want to proceed next $perm_edit_all condition
+        $perm_set_id = 0;
+    } else {
+        $conds_string = $profile_set->getCondsAsString();
+        // the conditions could use some aliases with user_id say: d-organization....-=-{user:_#ORGANIZA}
+        $conds_string = AA_Stringexpand::unalias($conds_string);
+        $aa_set->addCondsFromString($conds_string);
+    }
+}
 
 // authors have only permission to edit its own items
-if (! $perm_edit_all ) {
-      $conds[]=array( 'operator' => '=',
-                      'value' => $auth->auth['uid'],
-                      'posted_by.......' => 1 );
+if (!$perm_edit_all AND !$perm_set_id) {
+    $aa_set->addCondition(new AA_Condition('posted_by.......', '=', $auth->auth['uid']));
 }
 
 $BIN_CONDS   = array( 'app'    => AA_BIN_ACTIVE,
@@ -202,7 +225,7 @@ $BIN_CONDS   = array( 'app'    => AA_BIN_ACTIVE,
                       'trash'  => AA_BIN_TRASH
                     );
 
-$zids = QueryZIDs( array($slice_id), $conds, $sort, $BIN_CONDS[$manager->getBin()]);
+$zids = QueryZIDs( array($slice_id), $aa_set->getConds(), $aa_set->getSort(), $BIN_CONDS[$manager->getBin()]);
 
 // print searchbar, messages, errors, items
 $manager->display($zids);

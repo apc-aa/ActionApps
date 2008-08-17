@@ -28,6 +28,12 @@
  *
 */
 
+
+function GetLabel(&$profile, $property, $selector, $default_text) {
+    $val = $profile->getProperty($property, $selector);
+    return ($val === false) ? $default_text : $val;
+}
+
 // ----------------------------------------------------------------------------------------
 /* creates a JavaScript variable modulesOptions, which allows to create another Module selectbox
     without reprinting all the options */
@@ -36,9 +42,11 @@
  */
 function PrintModuleSelection() {
     global $slice_id, $g_modules, $sess, $db, $MODULES;
+    global $auth; // for profiles
 
-    if ( is_array($g_modules) AND (count($g_modules) > 1) ) {
+    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 
+    if ( is_array($g_modules) AND (count($g_modules) > 1) AND ($profile->getProperty('ui_manager', 'top_moduleselection') === false)) {
         // create the modulesOptions content:
         $permitted = GetUserSlices();
         if ($permitted != "all") {
@@ -97,13 +105,20 @@ function PrintModuleSelection() {
         if ( !$slice_id ) {   // new slice
             $js .= "\t+'<option value=\"new\" selected>". _m("New slice") + "'";
         }
-        $js .= ";
+
+        $js .= ";\n";
+        $switch_text = GetLabel(&$profile, 'ui_manager', 'top_moduleswitchtext', '');
+
+        if ($switch_text) {
+            $js .= "document.write('". str_replace("'","\\'", $switch_text) ."');\n";
+        }
+        $js .= "\n
         document.write('<select name=\"slice_id\" onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url($_SERVER['PHP_SELF']),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
         document.write(modulesOptions);
         document.write('</select>');\n";
         FrmJavascriptCached($js, 'modules');
     } else {
-        echo "&nbsp;";
+        echo GetLabel(&$profile, 'ui_manager', 'top_moduleselection', "&nbsp;");
     }
 }
 
@@ -121,7 +136,9 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
     global $slice_id, $useOnLoad, $sess, $db, $auth;
     global $menu_function;
     global $debug;
-    trace("+","showMenu",$smmenus);
+
+    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
+
     //huhsess("Session Variables");
     // load the main AA menu (see menu.php3)
     if ($smmenus == "aamenus") {
@@ -138,7 +155,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
         bind_mgettext_domain(AA_INC_PATH."lang/".get_mgettext_lang()."_news_lang.php3");
     }
 
-    $nb_logo = '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>';
+    $nb_logo = GetLabel(&$profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>');
 
     echo '
 <body'. ($useOnLoad ? ' OnLoad="InitPage()"' : ''). ' bgcolor="'. COLOR_BACKGROUND .'">
@@ -160,8 +177,25 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
         if (!$title_img) {
             $title_img = GetAAImage('spacer.gif', '', 28, 36);
         }
+
+        $title_title = GetLabel(&$profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
+        $title_name  = ($slice_id ? AA_Slices::getName($slice_id) : _m("New slice"));
+
+        $title_out   = $title_img .'&nbsp;'. $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name;
+
+        $prop_logout = $profile->getProperty('ui_manager', 'top_logout');
+        if ( $prop_logout === false ) {
+            $logout_out = '<input type="submit" name="logout" value="'._m('logout').'">';
+        } elseif ( $prop_logout === '' ) {
+            $logout_out = '';
+        } else {
+            $logout_out = '<input type="submit" name="logout" value="'.$profile->getProperty('ui_manager', 'top_logout').'">';
+        }
+
+        $user_out = GetLabel(&$profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3', false, $slice_id));
+
         echo '
-        <td colspan="2">
+        <td colspan="2" id="aa_top">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
               <td width="1%"><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" width="122" height="1"></td>
@@ -171,14 +205,11 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
             <tr>
               <td width="1%" rowspan="2" align="center" class="nblogo">'.$nb_logo.'</td>
               <td height="43" align="center" valign="middle" class="slicehead">'.
-                  $title_img .'&nbsp;'. $smmenus[$activeMain]['title']. "  -  ".
-                  ($slice_id ? AA_Slices::getName($slice_id) : _m("New slice")).
+                  $title_out .
               '</td>
-              <td width="20%" align="right" class="navbar">
-                <form name="logoutform" method="post" action="'. get_admin_url('logout.php3').'">';
-        echo GetMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3', false, $slice_id);
-        echo '
-                   <input type="submit" name="logout" value="'._m('logout').'">&nbsp;
+              <td align="right" class="navbar">
+                <form name="logoutform" method="post" action="'. get_admin_url('logout.php3').'">
+                   '. $user_out .' '. $logout_out .'&nbsp;
                 </form>
               </td>
             </tr>
@@ -206,7 +237,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
 
         echo '
               </td>
-              <td width="20%" class="navbar" valign="bottom">
+              <td class="navbar" align="right" valign="bottom">
                 <form name="nbform" enctype="multipart/form-data" method="post" action="'. $sess->url($_SERVER['PHP_SELF']) .'" style="display:inline">
                 &nbsp; ';
         echo "\n";
@@ -231,7 +262,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
         }
     }
     echo '
-        <td align="left" valign="top" width="99%">
+        <td align="left" valign="top" width="99%" id="aa_content">
           <table border="0" cellspacing="0" cellpadding="10" width="100%">
             <tr>
               <td align="left">
@@ -279,7 +310,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
     foreach ($aamenuitems as $itemshow => $item) {
         if (substr($itemshow,0,4) == "text") {
             echo "<tr><td>$item</td></tr>\n";
-        } elseif (substr($itemshow,0,6) == "header") {
+        } elseif ((substr($itemshow,0,6) == "header") AND ($item !== '')) {
             echo '<tr><td>&nbsp;</td></tr>
                   <tr><td><img src="'.AA_INSTAL_PATH.'images/black.gif" width="120" height="1"></td></tr>
                   <tr><td class="leftmenu">'.$item.'</td></tr>

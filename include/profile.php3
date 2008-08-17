@@ -26,6 +26,29 @@
  *
 */
 require_once AA_INC_PATH."constants_param_wizard.php3";
+
+class AA_Profile_Rule {
+
+    /** name of the property */
+    var $property;
+
+    /** one selector or array of possible selectors */
+    var $selector;
+
+    /** array of possible values */
+    var $values;
+
+
+    function AA_Profile_Rule($property, $selector, $values) {
+        $this->property = $property;
+        $this->selector = $selector;
+        $this->values   = $values;
+    }
+
+
+}
+
+
 /** PrintRuleRow function
  * @param $rid
  * @param $prop
@@ -46,6 +69,8 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4="") {
             $sess->url("se_profile.php3?del=$rid&uid=$uid"). "'\">". _m("Delete") ."</a></td>
         </tr>";
 }
+
+
 /** PrintRule function
  * @param $rule
  */
@@ -59,6 +84,7 @@ function PrintRule($rule) {
     switch($prop) {
         case 'input_view':
         case 'listlen':
+        case 'admin_perm':
             PrintRuleRow($rid, $PROPERTY_TYPES[$prop], "", $rule['value']);
             break;
         case 'bookmark':
@@ -86,13 +112,21 @@ function PrintRule($rule) {
                 $INPUT_DEFAULT_TYPES[$fnc['fnc']], $fnc['param'],
                 ($rule['value'][0] == '1')? 'HTML' : "" );
             break;
+        case 'ui_manager':
+        case 'ui_inputform':
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector'], $rule['value']);
+            break;
+        case 'ui_manager_hide':
+        case 'ui_inputform_hide':
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector']);
+            break;
     }
 }
 
 /** Prints one Rule
  *  @param $n       rule row number
  *  @param $rule    id of rule as in $PROPERTY_TYPES
- *  @param $sfld    bool - should we show field selectbox?
+ *  @param $sfld    bool|array - should we show field selectbox or other selectbox?
  *  @param $func    bool - should we show function selectbox?
  *  @param $func    bool - should we show function parameter input field?
  *  @param $func    bool - should we show html chackbox?
@@ -102,7 +136,9 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc) {
     echo "<tr class=\"tabtxt\">
            <td>". $PROPERTY_TYPES[$rule]. "<input type=\"hidden\" name=\"prop$n\" value=\"$rule\"></td>
            <td>";
-    if ($sfld) {
+    if ( is_array($sfld)) {
+        FrmSelectEasy("fld$n", $sfld, "");
+    } elseif ($sfld)  {
         FrmSelectEasy("fld$n", $lookup_fields, "");
     } else {
         echo "&nbsp;";
