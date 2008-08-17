@@ -798,13 +798,24 @@ class ItemContent {
             $event->comes('ITEM_BEFORE_INSERT', $slice_id, 'S', $this);
         }
 
-        if ($mode == 'overwrite') {
+        switch ($mode) {
+        case 'overwrite':
             $varset     = new CVarset();
             $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "'");
-        } elseif ($mode == 'update') {
+            break;
+        case 'update':
             // delete content of all fields, which are in new content array
             // (this means - all not redefined fields are unchanged)
             $this->_clean_updated_fields($id, $fields);
+            break;
+        case 'insert':
+            // reset hit counter fields for new items
+            foreach ((array)$fields as $fid => $foo) {
+                if (substr($fid, 0, 4) == 'hit_' ) {
+                    $this->setValue($fid, 0);
+                }
+            }
+            break;
         }
         // else 'add' do not clear the current content - the values are added
         // in paralel to curent values (stored as multivalues for all fields
