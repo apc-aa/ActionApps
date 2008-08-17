@@ -49,6 +49,10 @@
          - added "seo" field type to sql_update.php3 script
          - new Validation type - "Regular Expression"
          - validation improved
+         - fix for bad sometimes bad url in scroller
+         - fix - reset hit_counter fields for new items
+         - added ids to html code of checkboxes in order we can address it 
+           by prototype.js
          - better support for utf8 character encoding 
          - small css fixes and UI improvement in Item Manager, Itemedit 
            and Item Set settings

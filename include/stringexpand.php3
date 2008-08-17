@@ -938,9 +938,9 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
         }
         if ( empty($timestamp) ) {
             $timestamp = time();
-    }
+        }
         return date($format, (int)$timestamp);
-}
+    }
 }
 
 

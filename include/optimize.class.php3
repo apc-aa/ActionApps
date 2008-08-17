@@ -1,4 +1,4 @@
-t<?php
+<?php
  /**
  *
  * PHP versions 4 and 5
@@ -823,7 +823,7 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
     }
 
     function _check_table() {
-        $fields = GetTable2Array("SELECT * FROM field ORDER BY slice_id, id", '');
+        $fields = GetTable2Array("SELECT slice_id, id FROM field ORDER BY slice_id, id", '');
 
         $field_table = array();
         $duplicates  = array();

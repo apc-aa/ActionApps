@@ -31,8 +31,6 @@
 */
 
 
-
-
 $save_hidden = true;   // do not delete r_hidden session variable in init_page!
 
 require_once "../include/init_page.php3";
