@@ -175,7 +175,7 @@ class AA_Manager extends AA_Storable {
      * @param $manager_vid
      */
     function setDesign(&$format_strings, &$aliases, $manager_vid = null) {
-        
+
         if ( $manager_vid ) {
             $view = AA_Views::getView($manager_vid);
             if ( $view AND !($view->f('deleted')>0) ) {
@@ -239,7 +239,7 @@ class AA_Manager extends AA_Storable {
         }
         return new AA_Set;  // empty set
     }
-    
+
     /** getConds function
      * Get conditios (conds[] array) for *_QueryIDs from scroller
      * @deprecated - use getSet() instead
@@ -256,6 +256,19 @@ class AA_Manager extends AA_Storable {
     function getSort() {
         $set = $this->getSet();
         return $set->getSort();
+    }
+
+    function getBookmarkNames() {
+        if ( $this->searchbar ) {
+            return $this->searchbar->getBookmarkNames();
+        }
+        return array();
+    }
+
+    function setFromBookmark($bookmark_id) {
+        if ( $this->searchbar ) {
+            $this->searchbar->setFromBookmark($bookmark_id);
+        }
     }
 
     /** reserSearchBar function
@@ -425,36 +438,42 @@ class AA_Manager extends AA_Storable {
         }
     }
 
-    /** Displays the manager. This function joins together some common method 
-     *  calls, which was separate. We should use display, now. We plan to move 
+    /** Displays the manager. This function joins together some common method
+     *  calls, which was separate. We should use display, now. We plan to move
      *  even more methods here
      **/
     function display($zids) {
-        global $r_err, $r_msg;          // @todo - check if it is still needed 
+        global $r_err, $r_msg;          // @todo - check if it is still needed
         $this->printSearchbarBegin();
         $this->printSearchbarEnd();     // close the searchbar form
         $this->printAndClearMessages();
-       
+
         PrintArray($r_err);
         PrintArray($r_msg);
         unset($r_err);
         unset($r_msg);
         $this->printItems($zids);       // print items and actions
     }
-    
+
     /** printHtmlPageBegin function
      * Print HTML start page tags (html begin, encoding, style sheet, title
      * and includes necessary javascripts for manager
      * @param $head_end
+     * @param $css_add  adds custom css to the manager page
      */
-    function printHtmlPageBegin( $head_end = false) {
+    function printHtmlPageBegin( $head_end = false, $css_add='') {
         // Print HTML start page (html begin, encoding, style sheet, no title)
         HtmlPageBegin();
         // manager javascripts - must be included
         echo '<title>'. $this->messages['title'] .'</title>';
         IncludeManagerJavascript();
-        if ( $head_end )
+        if ($css_add) {
+             echo "\n  <link rel=\"StyleSheet\" href=\"$css_add\" type=\"text/css\">";
+
+        }
+        if ( $head_end ) {
             echo "\n</head>\n";
+        }
     }
 
     /** printSearchbarBegin function
@@ -484,7 +503,7 @@ class AA_Manager extends AA_Storable {
      */
     function printItems($zids) {
         global $sess;
-        echo '<form name="itemsform" method="post" action="'. $_SERVER['PHP_SELF'] .'">';
+        echo '<form name="itemsform" id="itemsform" method="post" action="'. $_SERVER['PHP_SELF'] .'">';
         $sess->hidden_session();
 
         $ids_count = $zids->count();
@@ -508,7 +527,7 @@ class AA_Manager extends AA_Storable {
         echo '<table border="0" cellpadding="3" class="aa_manager_actions">
                 <tr class="aa_manager_actions_tr"><td>';
 
-        if ($action_selected != "0") {
+        if ($this->show & MGR_ACTIONS) {
             echo '<input type="hidden" name="akce" value="">';          // filled by javascript - contains action to perform
             echo '<input type="hidden" name="akce_param" value="">';  // if we need some parameteres to the action, store it here
 
@@ -679,7 +698,7 @@ class AA_Manageraction extends AA_Storable {
         return true;
     }
 
-    /** Do this action have some settings, whcih should be displayed? */
+    /** Do this action have some settings, which should be displayed? */
     function isSetting() {
         return is_callable(array($this, 'htmlSettings'));
     }

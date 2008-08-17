@@ -191,7 +191,7 @@ class AA_Searchbar extends AA_Storable {
      */
     function AA_Searchbar($fields=false, $f='foo', $srcm=1, $orcm=1, $aesr=1, $show='aa_default', $hint='', $hint_url='') {
         $this->fields               = $fields;
-        $this->show                 = (($show == 'aa_default') ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show);
+        $this->show                 = (((string)$show == 'aa_default') ? (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS) : $show);
         $this->hint                 = $hint;
         $this->hint_url             = $hint_url;
 
@@ -612,6 +612,7 @@ class AA_Searchbar extends AA_Storable {
         echo "<tr class=\"leftmenuy\">
 
                <td colspan=\"3\">
+               <input type=\"submit\" value=\"submit\" style=\"display:none\">
                <a href=\"javascript:document.".$this->form_name. ".submit()\">". _m('Search') ."</a> /
                <a href=\"javascript:SearchBarAction('".$this->form_name. "', 'clearsearch', false, false)\">". _m('Clear') ."</a>
                </td>
@@ -746,10 +747,13 @@ class AA_Bookmarks {
      *  Get array of bookmark (<key> => <name>)
      */
     function getKeyName() {
+        $ret = array();
         if ( isset($this->bookmarks) AND is_array($this->bookmarks) ) {
             foreach ( $this->bookmarks as $key => $book ) {
-                $ret[$key] = $book['name'];
+                $ret[(string)$key] = $book['name'];
             }
+            // return the bookmarks sorted by name (used in left menu bookmark display)
+            asort($ret);
         }
         return $ret;
     }
