@@ -41,6 +41,7 @@ require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."stringexpand.php3";
 require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."validate.php3";
+require_once AA_INC_PATH."field.class.php3";
 
 // IsUserNameFree() function deffinition here
 require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
@@ -451,6 +452,7 @@ class inputform {
 
         $retval  = getFrmJavascriptFile( 'javascript/inputform.js' );
         $retval .= getFrmJavascriptFile( 'javascript/js_lib.js' );
+        $retval .= getFrmJavascriptFile( 'javascript/aajslib.php3' );
 
         $jscode .= $this->js_proove_fields;
 
@@ -1199,10 +1201,10 @@ class AA_Inputfield {
      * @param $v
      * @param $add
      */
-    function getOneChBoxTag(&$k, &$v, $add='') {
-        $name = $this->varname();
-        $ret = "<nobr><input type='checkbox' name='$name'
-             value='". htmlspecialchars($k) ."' $add".getTriggers("input",$name);
+    function getOneChBoxTag(&$k, &$v, $add='', $id = '') {
+        $id_attr = empty($id) ? '' : " id='$id'";
+        $name    = $this->varname();
+        $ret = "\n<nobr><input type='checkbox' name='$name'$id_attr value='". htmlspecialchars($k) ."' $add".getTriggers("input",$name);
         $ret .= $this->if_selected($k, " checked");
         $ret .= ">".htmlspecialchars($v)."</nobr>";
         return $ret;
@@ -2440,7 +2442,7 @@ function PrintMoreHelp( $txt ) {
  * @param $add
  * @param $value
  */
-function FrmChBoxEasy($name, $checked=true, $add="", $value='') {
+function FrmChBoxEasy($name, $checked=true, $add="", $value='', $id='') {
   echo FrmChBoxEasyCode($name, $checked, $add, $value);
 }
 /** FrmChBoxEasyCode function
@@ -2449,11 +2451,12 @@ function FrmChBoxEasy($name, $checked=true, $add="", $value='') {
  * @param $add
  * @param $value
  */
-function FrmChBoxEasyCode($name, $checked=true, $add="", $value='') {
+function FrmChBoxEasyCode($name, $checked=true, $add="", $value='', $id='') {
   $name  = safe($name);
   $value = safe($value); // $add=safe($add); NO!!
 
   return "<input type=\"checkbox\" name=\"$name\" $add".
+    ($id      ? " id=\"$id\"" : '').
     ($value   ? " value=\"$value\"" : '').
     ($checked ? " checked>" : ">");
 }
