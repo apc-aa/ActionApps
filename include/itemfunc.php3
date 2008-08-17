@@ -346,7 +346,25 @@ function insert_fnc_log($item_id, $field, $value, $param, $additional='') {
 function insert_fnc_now($item_id, $field, $value, $param, $additional='') {
     insert_fnc_qte($item_id, $field, array("value"=>now()), $param, $additional);
 }
-/** insert_fnc_com function
+
+/** insert_fnc_co2 function - Computed field for INSERT/UPDATE
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
+function insert_fnc_co2($item_id, $field, $value, $param, $additional='') {
+    // we store it to the database at this time, even if it is probably
+    // not final value for this field - we probably recompute this value later
+    // in storeItem method, but we should compute with this new value there,
+    // so we need to store it, right now
+    // (this is the only case for computed field SHOWN IN INPUTFORM)
+    insert_fnc_qte($item_id, $field, $value, $param, $additional);
+    return;
+}
+
+/** insert_fnc_com function - Computed field
  * @param $item_id
  * @param $field
  * @param $value
@@ -354,12 +372,7 @@ function insert_fnc_now($item_id, $field, $value, $param, $additional='') {
  * @param $additional
  */
 function insert_fnc_com($item_id, $field, $value, $param, $additional='') {
-    // we store it to the database at this time, even if it is probably
-    // not final value for this field - we probably recompute this value later
-    // in storeItem method, but we should compute with this new value there,
-    // so we need to store it, right now
-    // (this is the only case for computed field SHOWN IN INPUTFORM)
-    insert_fnc_qte($item_id, $field, $value, $param, $additional);
+    insert_fnc_co2($item_id, $field, $value, $param, $additional);
     return;
 }
 
@@ -857,27 +870,28 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
             }
 
             switch( $validate ) {
-                case 'text':
-                case 'url':
-                case 'email':
-                case 'number':
-                case 'id':
-                    ValidateInput($varname, $f["name"], $$varname, $err, // status code is never required
-                        ($f["required"] AND ($pri_field_id!='status_code.....')) ? 1 : 0, $f["input_validate"]);
-                    break;
                 // necessary for 'unique' validation: do not validate if
                 // the value did not change (otherwise would the value always
                 // be found)
                 case 'e-unique':
                 case 'unique':
-                    if (addslashes ($oldcontent4id[$pri_field_id][0]['value']) != $$varname)
-                        ValidateInput($varname, $f["name"], $$varname, $err,
-                                  $f["required"] ? 1 : 0, $f["input_validate"]);
+                    if (addslashes ($oldcontent4id[$pri_field_id][0]['value']) != $$varname) {
+                        ValidateInput($varname, $f["name"], $$varname, $err, $f["required"] ? 1 : 0, $f["input_validate"]);
+                    }
                     break;
                 case 'user':
                     // this is under development.... setu, 2002-0301
                     // value can be modified by $$varname = "new value";
                     $$varname = usr_validate($varname, $f["name"], $$varname, $err, $f, $fields);
+                    break;
+                //case 'text':
+                //case 'url':
+                //case 'email':
+                //case 'number':
+                //case 'id':
+                default:
+                    // status code is never required
+                    ValidateInput($varname, $f["name"], $$varname, $err, ($f["required"] AND ($pri_field_id!='status_code.....')) ? 1 : 0, $f["input_validate"]);
                     break;
             }
         }

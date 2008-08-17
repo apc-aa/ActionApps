@@ -867,7 +867,7 @@ class ItemContent {
         $itemContent->setByItemID($id,true);     // ignore reading password
 
         // look for computed fields and update it (based on the stored item)
-        if ( $itemContent->updateComputedFields($id, $fields) ) {
+        if ( $itemContent->updateComputedFields($id, $fields, $mode) ) {
             // if computed fields are updated, reread the content
             $itemContent->setByItemID($id,true); // ignore reading password
         }
@@ -883,45 +883,58 @@ class ItemContent {
                 $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
             }
         }
-        if ($debugsi) {
-            huhl("StoreItem err=",$err);
-        }
         return $id;
     } // end of storeItem()
+
     /** updateComputedFields function
      * @param $id
      * @param $fields
      */
-    function updateComputedFields($id, &$fields) {
+    function updateComputedFields($id, &$fields, $mode) {
         $varset     = new CVarset();
-
+        $update     = (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add'));
         $computed_field_exist = false;
         foreach ($fields as $fid => $f) {
             // input insert function parameters of field
             $fnc = ParseFnc($f["input_insert_func"]);
 
-            // computed field?
-            if ($fnc AND ($fnc["fnc"]=='com') AND (strlen($fnc["param"])>0)) {
-
-                // the code, which (unaliased!) should be stored in the field
-                // is in parameter
-                if ($computed_field_exist === false) {
-                    $computed_field_exist = true;
-                    // prepare item for computing
-                    $slice = AA_Slices::getSlice($this->getSliceID());
-                    $item  = new AA_Item($this->getContent(),$slice->aliases());
-                }
-
-                // delete content just for this computed field
-                $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id='$fid'");
-                // compute new value for this computed field
-                $new_computed_value = $item->unalias($fnc["param"]);
-                // set this value also to $item in order we can count with it
-                // in next computed field
-                $item->set_field_value($fid, $new_computed_value);
-                //  store the computed value for this field to database
-                insert_fnc_qte($id, $f, array('value' => $new_computed_value), '');
+            if (!$fnc) {
+                continue;
             }
+
+            // computed field?
+            if ($fnc["fnc"]=='com') {
+                $expand_string = $fnc["param"];
+            }
+            elseif ($fnc["fnc"]=='co2') {
+                list($expand_insert,$expand_update) = ParamExplode($fnc["param"]);
+                $expand_string = $update ? $expand_update : $expand_insert;
+            } else {
+                continue;
+            }
+            if (strlen($expand_string)<=0) {
+                continue;
+            }
+            // the code, which (unaliased!) should be stored in the field
+            // is in parameter
+            if ($computed_field_exist === false) {
+                $computed_field_exist = true;
+                // prepare item for computing
+                $slice = AA_Slices::getSlice($this->getSliceID());
+                $item  = new AA_Item($this->getContent(),$slice->aliases());
+            }
+
+            // delete content just for this computed field
+            $varset->doDeleteWhere('content', "item_id='". q_pack_id($id). "' AND field_id='$fid'");
+
+            // compute new value for this computed field
+            $new_computed_value = $item->unalias($expand_string);
+
+            // set this value also to $item in order we can count with it
+            // in next computed field
+            $item->set_field_value($fid, $new_computed_value);
+            //  store the computed value for this field to database
+            insert_fnc_qte($id, $f, array('value' => $new_computed_value), '');
         }
         return $computed_field_exist;
     }
@@ -994,10 +1007,6 @@ class ItemContent {
                     // file upload needs the $fields array, because it stores
                     // some other fields as thumbnails
                     if ($fnc["fnc"]=="fil") {
-                        if ($debugsi >= 5) huhl("StoreItem: fil");
-                        if ($debugsi >= 5) {
-                            $GLOBALS['debug'] = 1; $GLOBALS['debugupload'] = 1;
-                        }
                         //Note $thumbnails is undefined the first time in this loop
                         if (is_array($thumbnails)) {
                             foreach ($thumbnails as $v_stop) {
@@ -1008,9 +1017,6 @@ class ItemContent {
                         }
 
                         if (!$stop) {
-                            if ($debugsi >= 5) {
-                                huhl($fncname,"(",$id,$f,$v,$fnc["param"],")");
-                            }
                             if ($numbered) {
                                 $parameters["order"] = $order;
                             }
@@ -1019,9 +1025,6 @@ class ItemContent {
                             $thumbnails = $fncname($id, $f, $v, $fnc["param"], $parameters);
                         }
                     } else {
-                        if ($debugsi >= 5) {
-                            huhl($fncname,"(",$id,$f,$v,$fnc["param"],")");
-                        }
                         if ($numbered) {
                             $parameters["order"] = $order;
                             $fncname($id, $f, $v, $fnc["param"], $parameters);

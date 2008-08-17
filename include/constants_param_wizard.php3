@@ -115,12 +115,31 @@ array ("name" => _m("Password and Change Password"),
            and if so, MD5-encrypts the new password and stores it."));
 $INSERT_TYPES["items"]["com"] =
 array ("name" => _m("Computed field"),
+"desc" => _m("Deprecated (use Computed field for INSERT/UPDATE). The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here"),
+       "params"=>array(
+                        array("name"=>_m("Code for unaliasing (INSERT+UPDATE)"),
+                              "desc"=>_m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"),
+                              "type"=>"STR",
+                              "example"=>"({publish_date....}) {headline........}"
+                             ),
+                       )
+       );
+$INSERT_TYPES["items"]["co2"] =
+array ("name" => _m("Computed field for INSERT/UPDATE"),
 "desc" => _m("The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here"),
        "params"=>array(
-        array("name"=>_m("Code for unaliasing"),
-        "desc"=>_m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"),
-        "type"=>"STR",
-        "example"=>"({publish_date....}) {headline........}")));
+                        array("name"=>_m("Code for unaliasing (INSERT)"),
+                              "desc"=>_m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"),
+                              "type"=>"STR",
+                              "example"=>"({publish_date....}) {headline........}"
+                             ),
+                        array("name"=>_m("Code for unaliasing (UPDATE)"),
+                            "desc"=>_m("The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged"),
+                              "type"=>"STR",
+                              "example"=>""
+                             )
+                       )
+       );
 
 // --------------------------------------------------------------------------------
 
@@ -195,6 +214,19 @@ $VALIDATE_TYPES["items"]["unique"] = array (
                 array(FIELDID_USERNAME)),
               "type"=>"INT",
               "example"=>1)
+     ));
+$VALIDATE_TYPES["items"]["regexp"] = array (
+    "name"=>_m("Regular Expression"),
+    "desc"=>_m("Validation based on Regular Expressions"),
+    "params"=>array (
+        array("name"=>_m("Regular Expressions"),
+              "desc"=>_m('use something like: /^[0-9]*$/ - see "Regular Expressions" manual.'),
+              "type"=>"STR",
+              "example"=>'/^[a-zA-Z ]{0,10}$/'),
+        array("name"=>_m("Error text"),
+              "desc"=>_m("error message"),
+              "type"=>"STR",
+              "example"=>_m("Wrong value"))
      ));
 $VALIDATE_TYPES["items"]["e-unique"] = array (
     "name"=>_m("Unique e-mail"),
