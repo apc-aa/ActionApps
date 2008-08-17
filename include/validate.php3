@@ -80,12 +80,13 @@ class AA_Validate {
                 case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Int();            break;
                 case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float();          break;
                 // email regexp should be improved
+                case 'e-mail':
                 case 'email':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^.+@.+\..+$/');          break;
                 case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[a-fA-Z]+$/');          break;
                 case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[0-9a-f]{30,32}$/');    break;
                 case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Int(0);           break;
                 case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^_#[0-9_#a-zA-Z]{8}$/'); break;
-                case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp('^[-.0-9a-zA-Z_]+$/', VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z, 0-9 . _ and - characters")); break;
+                case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[-.0-9a-zA-Z_]+$/', VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z, 0-9 . _ and - characters")); break;
                 case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login();          break;
                 case 'password': $standard_validators[$sv_key] = new AA_Validate_Password();       break;
                 case 'unique':   $standard_validators[$sv_key] = new AA_Validate_Unique();         break;
@@ -260,7 +261,7 @@ class AA_Validate_Regexp extends AA_Validate {
      * @param $default
      */
     function validate(&$var, $default='AA_noDefault') {
-        return preg_match($this->regular_expression, $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_NOT_IN_LIST, _m('Not in the list of possible values'), $default);
+        return preg_match($this->regular_expression, $var) ? true : AA_Validate::bad($var, $this->default_error_id, $this->default_error_msg, $default);
     }
 }
 
@@ -453,10 +454,9 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
         }
     }
 
-    if (strchr ($type, ":")) {
-        $params = substr($type, strpos($type,":")+1);
-        $type   = substr($type, 0, strpos ($type,":"));
-    }
+
+    $validate_definition = ParamExplode($type);
+    $type                = $validate_definition[0];
 
     // empty values for 'alias' and 'id' types
     if (($type == 'alias') OR ($type == 'id')) {
@@ -468,14 +468,23 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
         case 'alias':    $ret = AA_Validate::validate($variable, 'alias');    break;
         case 'id':       $ret = AA_Validate::validate($variable, 'long_id');  break;
         case 'integer':
+        case 'num':
         case 'number':   $ret = AA_Validate::validate($variable, 'int');      break;
+        case 'e-mail':
         case 'email':    $ret = AA_Validate::validate($variable, 'email');    break;
         case 'login':    $ret = AA_Validate::validate($variable, 'login');    break;
         case 'password': $ret = AA_Validate::validate($variable, 'password'); break;
         case 'filename': $ret = AA_Validate::validate($variable, 'filename'); break;
+        case 'regexp':
+                         $regexp    = $validate_definition[1];
+                         $err_text  = isset($validate_definition[2]) ? $validate_definition[2] : null;
+                         $validator = new AA_Validate_Regexp($regexp, null, $err_text);
+                         $ret       = $validator->validate($variable);
+                         break;
         case 'e-unique':
         case 'unique':
-                         list($field_id, $scope) = explode(":", $params);
+                         $field_id  = $validate_definition[1];
+                         $scope     = $validate_definition[2];
                          $UNIQUE_SCOPES               = array ( 0 => 'username',
                                                                 1 => 'slice',
                                                                 2 => 'allslices'
@@ -545,6 +554,7 @@ function get_javascript_field_validation() {
                         err = '"._m("Not a valid file name.")."';
                     break;
                 case 'email':
+                case 'e-mail':
                     if (val.match(invalid_email) || !val.match(valid_email))
                         err = '"._m("Not a valid email address.")."';
                     break;
