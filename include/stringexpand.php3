@@ -480,9 +480,97 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
         $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
 
         $uniqid = uniqid();
+
+        if ($code_1 == $code_2) {
+            // no need to addf toggle
+            $ret = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
+        } else {
         $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid');return false;\">$switch_state_1</a>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
+        }
+        return $ret;
+    }
+}
+
+
+/** Expands {shorten:<text>:<length>[:<mode>]} like:
+ *          {shorten:{abstract.......1}:150}
+ *  @return up to <length> characters from the <text>. If the <mode> is 1
+ *  then it tries to identify only first paragraph or at least stop at the end
+ *  of sentence. In all cases it strips HTML tags
+ *  @param $text           - the shortened text
+ *  @param $length         - max length
+ *  @param $mode           - 1 - try cut whole paragraph
+ *                         - 0 - just cut on length
+ */
+class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
+    // Never cache this code, since we need unique divs with uniqid()
+
+    function expand($text, $length, $mode=1) {
+        $shorted_text = substr($text, 0, $length);
+
+        // search the text for following ocurrences in the order!
+        $PARAGRAPH_ENDS = array( '</p>','<p>','<br>', "\n", "\r" );
+        if ($mode == 1) {
+            foreach ( $PARAGRAPH_ENDS as $end_str ) {
+                $paraend = strpos(strtolower($shorted_text), $end_str, min(strlen($shorted_text),10));  // we do not want to
+                if ( $paraend !== false ) {   // end_str found
+                    $shorted_text = substr($shorted_text, 0, $paraend);
+                    break;
+                }
+            }
+            if ($paraend===false) {      // no <BR>, <P>, ... found
+                // try to find dot (first from the end)
+                $dot = strrpos( $shorted_text,".");
+                if ( $dot > $paraend/3 ) { // take at least one third of text
+                    $shorted_text = substr($shorted_text, 0, $dot+1);
+                } elseif ( $space = strrpos($shorted_text," ") ) {   // assignment!
+                    $shorted_text = substr($shorted_text, 0, $space);
+                } // no dot, no space - leave the text length long
+            }
+        }
+        return strip_tags( $shorted_text );
+    }
+}
+
+/** Expands {expandable:<text>:<length>:<add>:<more>:<less>} like:
+ *          {expandable:some long text:50:...:more >>>:less <<<}
+ *  It creates the div and if the text is longer than <length> characters, then
+ *  it adds <more> DHTML link in order user can see all the text
+ *  The /javscript/aajslib.php3 shoud be included to the page
+ *  (by <script src="">)
+ *  @param $text           - default link text
+ *  @param $length         - HTML code displayed as default (in div)
+ *  @param $add            - add this to shortened text
+ *  @param $more           - "see all text" link text
+ *  @param $less           - "hide" link text
+ */
+class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
+    // Never cache this code, since we need unique divs with uniqid()
+
+    function expand($text, $length, $add='', $more='', $less='') {
+        // it is nonsense to show expandable trigger if both contents are empty
+        if (trim($text) == '') {
+            return '';
+        }
+
+        // we can't use apostrophes and quotes in href="javacript:..." attribute
+        $more_js = str_replace(array("'", '"'), array("\'", "\'"), $more);
+        $less_js = str_replace(array("'", '"'), array("\'", "\'"), $less);
+
+        $uniqid = uniqid();
+        $length = (int)$length;
+
+        if (strlen($text)<=$length) {
+            $ret = "<div class=\"expandableclass\" id=\"expandable_1_$uniqid\">$text</div>\n";
+        } else {
+            $text_2 = AA_Stringexpand_Shorten::expand($text, $length);
+            $link_1 = "<a class=\"expandablelink\" id=\"expandable_link1_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('expandable_link1_$uniqid', '', 'expandable_1_$uniqid', '$more_js', 'expandable_2_$uniqid');return false;\">$more_js</a>\n";
+            $link_2 = !$less_js ? '' : "<a class=\"expandablelink\" id=\"expandable_link2_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('expandable_link2_$uniqid', '', 'expandable_2_$uniqid', '$less_js', 'expandable_1_$uniqid');return false;\">$less_js</a>\n";
+            $ret    = "<div class=\"expandableclass\" id=\"expandable_1_$uniqid\">$text_2".$add." $link_1</div>\n";
+            $ret   .= "<div class=\"expandableclass\" id=\"expandable_2_$uniqid\" style=\"display:none;\">$text". " $link_2</div>\n";
+        }
         return $ret;
     }
 }
@@ -806,20 +894,68 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Current date with specified date format
- *    {now:j.n.Y}  displays 24.12.2008 on X-mas 2008
- *    {now:Y}      current year
+/** Evaluates the expression
+ *    {math:<expression>[:<decimals>[:<decimal point character>:<thousands separator>]]}
+ *    {math:1+1-(2*6)}
+ *    {math:478778:0:,: }
+ */
+class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function  */
+    function expand($expression='', $decimals='', $dec_point='', $thousands_sep = '') {
+        $ret = calculate($expression); // defined in math.php3
+        if ( !empty($dec_point) OR !empty($thousands_sep) ) {
+            $dec_point     = get_if($dec_point, ',');
+            $thousands_sep = get_if($thousands_sep, ' ');
+            $decimals      = get_if($decimals,0);
+            $ret = number_format($ret, $decimals, $dec_point, $thousands_sep);
+        } elseif ($decimals !== '') {
+            $ret = number_format($ret, $decimals);
+        }
+        return $ret;
+    }
+}
+
+/** (Current) date with specified date format {date:[<format>[:<timestamp>]]}
+ *   {date:j.n.Y}                               displays 24.12.2008 on X-mas 2008
+ *   {date:Y}                                   current year
+ *   {date:m/d/Y:{math:{_#PUB_DATE}+(24*3600)}} day after publish date
+ *
+ *   @param $format      - format - the same as PHP date() function
+ *   @param $timestamp   - timestamp of the date (if not specified, current time
+ *                         is used)
+ */
+class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function  */
+    function expand($format='', $timestamp='') {
+        if ( empty($format) ) {
+            $format = "U";
+        }
+        if ( empty($timestamp) ) {
+            $timestamp = time();
+    }
+        return date($format, (int)$timestamp);
+}
+}
+
+
+/** (Current) date with specified date format - alias for {date:...}
+ *   {now:j.n.Y}                               displays 24.12.2008 on X-mas 2008
+ *   {now:Y}                                   current year
+ *   {now:m/d/Y:{math:{_#PUB_DATE}+(24*3600)}} day after publish date
  */
 class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
 
     /** expand function  */
-    function expand($format='') {
-        if ( empty($format) ) {
-            $format = "U";
-        }
-        return date($format,time());
+    function expand($format='', $timestamp='') {
+        return AA_Stringexpand_Date::expand($format,$timestamp);
     }
 }
 
@@ -1258,7 +1394,10 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
      * @param $seo_string
      */
     function expand($slices, $seo_string) {
-        return AA_Stringexpand_Ids::expand($slices, 'd-seo.............-=-'. str_replace('-', '--', $seo_string));
+        if (trim($seo_string)=='') {
+            return '';
+        }
+        return AA_Stringexpand_Ids::expand($slices, 'd-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"');
     }
 }
 
@@ -1313,7 +1452,9 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
 
 /** Expand URL by adding session
  *  Example: {sessurl:<url>}
+ *  Example: {sessurl}           - returns session_id
  *  also handle special cases like {sessurl:hidden}
+ *
  */
 class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1321,9 +1462,17 @@ class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $url
      */
-    function expand($url) {
+    function expand($url='') {
         global $sess;
-        return ($url == "hidden") ? "<input type=\"hidden\" name=\"".$sess->name."\" value=\"".$sess->id."\">" : $sess->url($url);
+
+        if (!isset($sess)) {
+            return '';
+        }
+        switch($url) {
+           case '':       return $sess->id;
+           case 'hidden': return "<input type=\"hidden\" name=\"".$sess->name."\" value=\"".$sess->id."\">";
+        }
+        return $sess->url($url);
     }
 }
 
@@ -1394,8 +1543,14 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
 }
 
 
-/** Get module (slice, ...) property (currently only 'name' is supported */
-class AA_Stringexpand_Slice extends AA_Stringexpand {
+/** Deprecated - use AA_Stringexpand_Modulefield instead
+ *
+ *  Get module (slice, ...) property (currently only 'name' is supported
+ *
+ *  Never cached because of grabbing the slice_id from item or globals
+ *  however it never mind - underlaying AA_Stringexpand_Modulefield is cached
+ */
+class AA_Stringexpand_Slice extends AA_Stringexpand_Nevercache {
     /** additionalCacheParam function
      *
      */
@@ -1416,6 +1571,82 @@ class AA_Stringexpand_Slice extends AA_Stringexpand {
         return AA_Stringexpand_Modulefield::expand($slice_id, $property);
     }
 }
+
+/** Deprecated for site modules - use AA_Stringexpand_Pager instead
+ *
+ *  {scroller:<begin>:<end>:<add>:<nopage>}
+ *  Displys page scroller for view
+ */
+class AA_Stringexpand_Scroller extends AA_Stringexpand {
+
+    /** additionalCacheParam function */
+    function additionalCacheParam() {
+        $itemview = $this->itemview;
+        if (!is_object($itemview)) {
+            return '';
+        }
+        return serialize(array($itemview->slice_info['vid'], $itemview->clean_url, $itemview->num_records, $itemview->idcount(), $itemview->from_record));
+    }
+
+    /** expand function
+     * @param $property
+     */
+    function expand($begin='', $end='', $add='', $nopage='') {
+        $itemview = $this->itemview;
+        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th grou display
+            return "Scroller not valid without a view, or for group display";
+        }
+        $viewScr = new view_scroller($itemview->slice_info['vid'],
+                                     $itemview->clean_url,
+                                     $itemview->num_records,
+                                     $itemview->idcount(),
+                                     $itemview->from_record);
+        return $viewScr->get( $begin, $end, $add, $nopage );
+    }
+}
+
+/** page scroller for site modules views - displys page scroller for view
+ *
+ *  It calls router methods, so it displays the right urls in the scroller
+ *  @see AA_Router::scroller() method
+ *
+ *  Must be issued inside the view
+ */
+class AA_Stringexpand_Pager extends AA_Stringexpand {
+
+    /** additionalCacheParam function */
+    function additionalCacheParam() {
+        global $apc_state;
+        $itemview = $this->itemview;
+        if (!is_object($itemview)) {
+            return '';
+        }
+        return serialize(array($apc_state['router'], $itemview->num_records, $itemview->idcount(), $itemview->from_record));
+    }
+
+    /** expand function
+     * @param $property
+     */
+    function expand() {
+        global $apc_state;
+        if (!isset($apc_state['router'])) {
+            return "Err in {pager} - router not foung - {pager} is designed for site modules";
+        }
+
+        $itemview = $this->itemview;
+        if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th grou display
+            return "Err in {pager} - pager not valid without a view, or for group display";
+        }
+
+        $class_name = $apc_state['router'];
+        $router = new $class_name;
+        $page   = floor( $itemview->from_record/$itemview->num_records ) + 1;
+        $max    = floor(($itemview->idcount() - 1) / max(1,$itemview->num_records)) + 1;
+
+        return $router->scroller($page,$max);
+    }
+}
+
 
 /** makeAsShortcut function
  *  Store $text in the $html_subst_arr array - used for dictionary escaping html
@@ -1599,6 +1830,7 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
     // {include:file:fileman|site}
     // {include:file:readfile[:str_replace:<search>[;<search1>;..]:<replace>[:<replace1>;..]:<trim-to-tag>:<trim-from-tag>[:filter_func]]}
     // {scroller.....}
+    // {pager:.....}
     // {#comments}
     // {debug}
     // {inputvar:<field_id>:part:param}
@@ -1707,18 +1939,6 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
         return QuoteColons($level, 1, $fileout);
         // QuoteColons used to mark colons, which is not parameter separators.
     }
-    elseif( ereg("^scroller:?([^}]*)$", $out, $parts)) {
-        if (!isset($itemview) OR ($itemview->num_records<0) ) {   //negative is for n-th grou display
-            return "Scroller not valid without a view, or for group display";
-        }
-        $viewScr = new view_scroller($itemview->slice_info['vid'],
-                                     $itemview->clean_url,
-                                     $itemview->num_records,
-                                     $itemview->idcount(),
-                                     $itemview->from_record);
-        list( $begin, $end, $add, $nopage ) = ParamExplode($parts[1]);
-        return $viewScr->get( $begin, $end, $add, $nopage );
-    }
     // remove comments
     elseif ( substr($out, 0, 1) == "#" ) {
         return "";
@@ -1737,7 +1957,6 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
         if (isset($als)) {
             huhl("als=",$als);
         }
-        huhl("globals=",$GLOBALS);
         return "";
     }
     elseif ( substr($out, 0,10) == "view.php3?" ) {
@@ -1772,7 +1991,7 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
         // main stringexpand functions.
         // @todo switch most of above constructs to standard AA_Stringexpand...
         // class
-        elseif ( !is_null($stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $parts[1], array('item'=>$item)))) {
+        elseif ( !is_null($stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $parts[1], array('item'=>$item, 'itemview'=> $itemview)))) {
             $param = empty($parts[2]) ? array() : array_map('DeQuoteColons',ParamExplode($parts[2]));
             $additional_params = $stringexpand->additionalCacheParam();
             if ( '_AA_NeVeR_CaChE' == $additional_params ) {
@@ -2037,7 +2256,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     */
             $item        = AA_Item::getItem(new zids($item_id));
             $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
-            $repre_value = get_if($repre_value, '--');
+            $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
             $iid         = $item->getItemID();
             $input_id    = AA_Field::getId4Form($field_id, $iid);
             $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\">\n";
@@ -2061,16 +2280,22 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand {
 
     /** item, for which we are stringexpanding
-     *  Not used fot many expand functions
+     *  Not used in many expand functions
      */
 
     var $item;
+
+    /** view, in which we are stringexpanding
+     *  Not used in many expand functions
+     */
+    var $itemview;
 
     /** AA_Stringexpand function
      * @param $item
      */
     function AA_Stringexpand($param) {
-        $this->item = $param['item'];
+        $this->item     = $param['item'];
+        $this->itemview = $param['itemview'];
     }
 
     /** expand function
