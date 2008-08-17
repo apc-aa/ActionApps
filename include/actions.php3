@@ -449,6 +449,26 @@ class AA_Manageraction_Item_Tab extends AA_Manageraction {
     }
 }
 
+/** AA_Manageraction_Item_Tab - Swith to another bin in Manager */
+class AA_Manageraction_Item_Gobookmark extends AA_Manageraction {
+
+    /** specifies, to which bin we want to switch */
+    //var $to_bin;
+
+    /** Constructor - fills the information about the target bin */
+    function AA_Manageraction_Item_Gobookmark($id) {
+        parent::AA_Manageraction($id);
+    }
+
+    /** main executive function - Handler for Tab switch - switch between bins
+     * @return false or error message
+     */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+        $manager->setFromBookmark($_GET['GoBookmark']);
+        $manager->go2page(1);
+        return false;        // OK
+    }
+}
 
 
 //------------------ Actions for Task Manager --------------------------------
