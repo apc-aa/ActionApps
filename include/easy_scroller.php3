@@ -218,7 +218,7 @@ class view_scroller {
     function view_scroller($id="", $url="", $metapage=10, $itmcnt=0, $curr=0) {
         $this->id         = $id;
         $this->metapage   = $metapage;
-        $this->urldefault = $url;
+        $this->urldefault = $url;      // no longer needed
         $this->itmcnt     = $itmcnt;
         $this->current    = floor( $curr/$this->metapage ) + 1;
     }
@@ -301,7 +301,8 @@ class view_scroller {
      * @param $nopage
      */
     function get($begin='', $end='', $add='class="scroller"', $nopage='') {
-        $url = con_url($this->urldefault,"scrl=".$this->id);
+        // $url = con_url($this->urldefault,"scrl=".$this->id);
+        $url = "?scrl=". $this->id;
 
         if ($GLOBALS['apc_state']) {
             $url .= '&amp;apc='.$GLOBALS['apc_state']['state'];
