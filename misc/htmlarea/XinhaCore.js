@@ -76,7 +76,7 @@ if ( typeof _editor_url == "string" )
   
   // convert _editor_url to absolute
   if(!_editor_url.match(/^([^:]+\:)?\//)){
-    var path = window.location.toString().split("/");
+    var path = window.location.toString().replace(/\?.*$/,'').split("/");
     path.pop();
     _editor_url = Xinha._resolveRelativeUrl(path.join("/"), _editor_url);
   }
@@ -984,10 +984,10 @@ Xinha.Config = function()
 
   /** Switches on some debugging (only in execCommand() as far as I see at the moment)<br />
    *
-   * Default: <code>true</code>
+   * Default: <code>false</code>
    * @type Boolean
    */
-  this.debug = true;
+  this.debug = false;
 
   this.URIs =
   {
@@ -4688,7 +4688,7 @@ Xinha.prototype._editorEvent = function(ev)
   //call events of textarea
   if ( typeof editor._textArea['on'+ev.type] == "function" )
   {
-    editor._textArea['on'+ev.type]();
+    editor._textArea['on'+ev.type](ev);
   }
   
   if ( this.isKeyEvent(ev) )
