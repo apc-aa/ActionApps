@@ -1445,7 +1445,7 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
      * @param $text
      * @param $else_text
      */
-    function expand($condition, $text, $else_text='') {
+    function expand($condition, $text='', $else_text='') {
         return ((strlen($condition)<1) OR IsAlias($condition)) ? $else_text : str_replace('_#1', $condition, $text);
     }
 }

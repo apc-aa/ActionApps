@@ -252,7 +252,8 @@ $IMConfig['allow_upload'] = true;
 * NOTE: If uploading is not allowed, this parameter is ignored.
 */
 
-$IMConfig['validate_images'] = true;
+//$IMConfig['validate_images'] = true;
+$IMConfig['validate_images'] = false;
 
 // -------------------------------------------------------------------------
 
@@ -339,7 +340,7 @@ define( "IM_CONFIG_LOADED", "yes" );
 
 // bring in the debugging library
 
-include_once( "ddt.php" );
+// include_once( "ddt.php" );
 
 // uncomment to send debug messages to a local file
 // _setDebugLog( "/tmp/debug_log.txt" );

@@ -1,49 +1,51 @@
-18/08/08 - new possibility to change user interface of AA - you can hide any 
-(honzam)   part of Item Manager (searchbar, actions, slice selector, button 
-           or even change labels) as well as Input form through user profiles 
+26/08/08 - fixed problem of image upload in Xinha/htmlarea
+(honzam) - other small changes and fixes
+18/08/08 - new possibility to change user interface of AA - you can hide any
+(honzam)   part of Item Manager (searchbar, actions, slice selector, button
+           or even change labels) as well as Input form through user profiles
            ("Slice Admin -> Premissions - Change -> Profile".
            This way you can also define permissions for user through "Item Set",
-           so the user can edit ony items which matches the condition defined 
-           in the Set 
-         - new {shorten:<text>:<length>[:<mode>]} - like: 
-               {shorten:{abstract.......1}:150} 
+           so the user can edit ony items which matches the condition defined
+           in the Set
+         - new {shorten:<text>:<length>[:<mode>]} - like:
+               {shorten:{abstract.......1}:150}
            returns up to <length> characters from the <text>. If the <mode> is 1
-           then it tries to identify only first paragraph or at least stop 
+           then it tries to identify only first paragraph or at least stop
            at the end of sentence. In all cases it strips HTML tags
-         - new {expandable:<text>:<length>:<add>:<more>:<less>} - like: 
+         - new {expandable:<text>:<length>:<add>:<more>:<less>} - like:
                {expandable:some long text:50:...:more >>>:less <<<}
-           it creates the div and if the text is longer than <length> 
+           it creates the div and if the text is longer than <length>
            characters, then it adds <more> DHTML link in order user can see all
-           the text. The /javscript/aajslib.php3 shoud be included to the page 
+           the text. The /javscript/aajslib.php3 shoud be included to the page
            (by <script src="">)
-         - new {date:[<format>[:<timestamp>]]} - displays (current) date with 
-           specified date format - like: 
+         - new {date:[<format>[:<timestamp>]]} - displays (current) date with
+           specified date format - like:
              {date:j.n.Y}                   - displays 24.12.2008 on X-mas 2008
-             {date:Y}                       - current year, 
+             {date:Y}                       - current year,
              {date:m/d/Y:{math:{_#PUB_DATE}+(24*3600)}} - day after publish date
            {date} is the alias for {now}, which has the same syntax, now
-         - new {pager} - page scroller for site modules views - displys page 
+         - new {pager} - page scroller for site modules views - displys page
            scroller for view - It calls router methods, so it displays the right
-           urls in the scroller - @see AA_Router::scroller() method, 
-           must be issued inside the view. 
-         - {scroller:...} syntax used in site module rewritten and marked 
+           urls in the scroller - @see AA_Router::scroller() method,
+           must be issued inside the view.
+         - {scroller:...} syntax used in site module rewritten and marked
            as deprecated - use {pager} instead (but it still works)
-         - new syntax 
+         - new syntax
            {math:<expression>[:<decimals>[:<decimal point character>:<thousands separator>]]}
-           which is in more standard compliant form than older 
-           {math(0#,#)<expression>} syntax. The old syntax is still valid. 
-           Usage: 
-              {math:1+1-(2*6)} or 
+           which is in more standard compliant form than older
+           {math(0#,#)<expression>} syntax. The old syntax is still valid.
+           Usage:
+              {math:1+1-(2*6)} or
               {math:{_#NUMBER__}:0:,: }
          - improved {htmltoggle} - no toggle for the same text
-         - new possibility of {sessurl:<url>} - without <url> it returns just 
+         - new possibility of {sessurl:<url>} - without <url> it returns just
            session id
          - fix for empty ids in {seo2ids:<slices>:<seo-string>} expression
          - search bar improvement - hitting enter always submits the form
-                                  - stored searches are sorted alphabeticaly 
-                                  - bookmarks (stored searches) in Item Manager 
+                                  - stored searches are sorted alphabeticaly
+                                  - bookmarks (stored searches) in Item Manager
                                     moved to standard AA_Manageraction API
-         - new "Computed field for INSERT/UPDATE" Input function 
+         - new "Computed field for INSERT/UPDATE" Input function
              alows to define different compute methods for INSERT and UPDATE.
              The older "Computed field" Input function marked as deprecated
          - added "seo" field type to sql_update.php3 script
@@ -51,10 +53,10 @@
          - validation improved
          - fix for bad sometimes bad url in scroller
          - fix - reset hit_counter fields for new items
-         - added ids to html code of checkboxes in order we can address it 
+         - added ids to html code of checkboxes in order we can address it
            by prototype.js
-         - better support for utf8 character encoding 
-         - small css fixes and UI improvement in Item Manager, Itemedit 
+         - better support for utf8 character encoding
+         - small css fixes and UI improvement in Item Manager, Itemedit
            and Item Set settings
 02/07/08 - updated documentation - CVS replaced by SVN (Subversion)
 (honzam) - new {count:<ids>[:<delimiter>]} syntax - counts ids or other string

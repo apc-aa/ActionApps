@@ -246,7 +246,7 @@ class AA_Manageraction_Item_Move2slice extends AA_Manageraction {
     */
     function perform(&$manager, &$state, $item_arr, $akce_param) {
         global $event, $auth, $pagecache;
-        if (strlen($akce_param) < 1) {
+        if (strlen($akce_param['dest_slice_id']) < 1) {
             return _m('No slice selected');
         }
 

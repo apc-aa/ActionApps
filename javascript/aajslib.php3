@@ -131,10 +131,10 @@ function AA_AjaxInsert(a_obj, form_url) {
 function SendAjaxForm(id) {
     $(id).insert(AA_Config.loader);
     $(id).request({encoding:   'windows-1250',
-                   onComplete: function(transport){ 
+                   onComplete: function(transport){
                        new Insertion.After($(id).up('div'), new Element('div').update(transport.responseText));
                        // close form and display add icon
-                       AA_AjaxInsert($(id).up('div').previous(), ''); 
+                       AA_AjaxInsert($(id).up('div').previous(), '');
                    }});
 }
 
