@@ -9,9 +9,10 @@
  *
  */ 
 
-class DB_Sql {
+class DB_Pgsql {
   var $Host     = "";
   var $Database = "";
+  var $Port     = "";
   var $User     = "";
   var $Password = "";
 
@@ -24,31 +25,45 @@ class DB_Sql {
 
   var $Errno    = 0;
   var $Error    = "";
+  var $Debug    = 0;
+  var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
 
   var $Auto_Free = 0; # Set this to 1 for automatic pg_freeresult on 
                       # last record.
+  var $PConnect  = 0; ## Set to 1 to use persistent database connections
 
   function ifadd($add, $me) {
-	  if("" != $add) return " ".$me.$add;
+          if("" != $add) return " ".$me.$add;
   }
   
   /* public: constructor */
-  function DB_Sql($query = "") {
+  function DB_Pgsql($query = "") {
+    if($query) {
       $this->query($query);
+    }
   }
 
   function connect() {
-	  if ( 0 == $this->Link_ID ) {
-		  $cstr = "dbname=".$this->Database.
-		  $this->ifadd($this->Host, "host=").
-		  $this->ifadd($this->Port, "port=").
-		  $this->ifadd($this->User, "user=").
-		  $this->ifadd($this->Password, "password=");
-		  $this->Link_ID=pg_pconnect($cstr);
-		  if (!$this->Link_ID) {
-			  $this->halt("Link-ID == false, pconnect failed");
-		  }
-	  }
+    if ( 0 == $this->Link_ID ) {
+      $cstr = "dbname=".$this->Database.
+      $this->ifadd($this->Host, "host=").
+      $this->ifadd($this->Port, "port=").
+      $this->ifadd($this->User, "user=").
+      $this->ifadd($this->Password, "password=");
+      if(!$this->PConnect) {
+        $this->Link_ID = pg_connect($cstr);
+      } else {
+        $this->Link_ID = pg_pconnect($cstr);
+      }
+      if (!$this->Link_ID) {
+        $this->connect_failed();
+      }
+    }
+  }
+
+  function connect_failed() {
+    $this->Halt_On_Error = "yes";
+    $this->halt("connect ($this->Host" . (($this-Port) ? ":$this->Port" : "") . ", $this->User, \$Password, $this->Database) failed");
   }
 
   function query($Query_String) {
@@ -61,8 +76,9 @@ class DB_Sql {
       return 0;
 
     $this->connect();
-
-#   printf("<br>Debug: query = %s<br>\n", $Query_String);
+    
+    if ($this->Debug) 
+      printf("<br>Debug: query = %s<br>\n", $Query_String);
 
     $this->Query_ID = pg_Exec($this->Link_ID, $Query_String);
     $this->Row   = 0;
@@ -145,31 +161,40 @@ class DB_Sql {
     return $nextid;
   }
 
-
-
-  function metadata($table) {
+  function metadata($table="") {
     $count = 0;
     $id    = 0;
     $res   = array();
 
-    $this->connect();
-    $id = pg_exec($this->Link_ID, "select * from $table");
-    if ($id < 0) {
-      $this->Error = pg_ErrorMessage($id);
-      $this->Errno = 1;
-      $this->halt("Metadata query failed.");
+    if ($table) {
+       $this->connect();
+       $id = pg_exec($this->Link_ID, "select * from $table");
+       if ($id < 0) {
+          $this->Error = pg_ErrorMessage($id);
+          $this->Errno = 1;
+          $this->halt("Metadata query failed.");
+       }
+    } else {
+      $id = $this->Query_ID;
+      if (!$id) {
+        $this->halt("No query specified.");
+      }
     }
+
     $count = pg_NumFields($id);
-    
+
     for ($i=0; $i<$count; $i++) {
       $res[$i]["table"] = $table;
-      $res[$i]["name"]  = pg_FieldName  ($id, $i); 
+      $res[$i]["name"]  = pg_FieldName  ($id, $i);
       $res[$i]["type"]  = pg_FieldType  ($id, $i);
       $res[$i]["len"]   = pg_FieldSize  ($id, $i);
       $res[$i]["flags"] = "";
     }
-    
-    pg_FreeResult($id);
+
+    if ($table) {
+      pg_FreeResult($id);
+    }
+
     return $res;
   }
 
@@ -202,11 +227,20 @@ class DB_Sql {
   }
   
   function halt($msg) {
-    printf("</td></tr></table><b>Database error:</b> %s<br>\n", $msg);
-    printf("<b>PostgreSQL Error</b>: %s (%s)<br>\n",
+    if ("no" == $this->Halt_On_Error)
+      return;
+
+    $this->haltmsg($msg);
+
+    if ("report" != $this->Halt_On_Error)
+      die("Session halted.");
+  }
+  
+  function haltmsg($msg) {
+    printf("<p><b>Database error:</b> %s<br>\n", $msg);
+    printf("<b>PostgreSQL Error</b>: %s (%s)</p>\n",
       $this->Errno,
       $this->Error);
-    die("Session halted.");
   }
 
   function table_names() {
@@ -222,4 +256,16 @@ class DB_Sql {
     return $return;
   }
 }
+$_php_major_version = substr(phpversion(), 0, 1);
+if((4 > $_php_major_version) or !class_exists("DB_Sql"))
+	{
+	class DB_Sql extends DB_Pgsql
+		{
+		function DB_Sql($query = "")
+			{
+			$this->DB_Pgsql($query);
+			}
+		}
+	}
+unset($_php_major_version);
 ?>

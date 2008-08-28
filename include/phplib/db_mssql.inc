@@ -4,13 +4,13 @@
  *
  * (C) Copyright 1998 Cameron Taggart (cameront@wolfenet.com)
  *        Modified by Guarneri carmelo (carmelo@melting-soft.com)
- *	  Modified by Cameron Just     (C.Just@its.uq.edu.au)
+ *	  Modified by Cameron Just     (C.Just@its.uq.edu.au)	 
  *
  * $Id$
- */
+ */ 
 # echo "<BR>This is using the MSSQL class<BR>";
 
-class DB_Sql {
+class DB_MSSQL {
   var $Host     = "";
   var $Database = "";
   var $User     = "";
@@ -20,37 +20,50 @@ class DB_Sql {
   var $Query_ID = 0;
   var $Record   = array();
   var $Row      = 0;
-
+  
   var $Errno    = 0;
   var $Error    = "";
+  var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
 
   var $Auto_Free = 0;     ## set this to 1 to automatically free results
-
-
+  var $PConnect  = 0;     ## Set to 1 to persistent database connections
+  
+  
   /* public: constructor */
-  function DB_Sql($query = "") {
+  function DB_MSSQL($query = "") {
+    if($query) {
       $this->query($query);
+    }
   }
 
   function connect() {
     if ( 0 == $this->Link_ID ) {
-      $this->Link_ID=mssql_connect($this->Host, $this->User, $this->Password);
-      if (!$this->Link_ID) {
-        $this->halt("Link-ID == false, mssql_pconnect failed");
+      if(!$this->PConnect) {
+        $this->Link_ID = mssql_connect($this->Host, $this->User, $this->Password);
       } else {
-        mssql_select_db($this->Database, $this->Link_ID);
+        $this->Link_ID = mssql_pconnect($this->Host, $this->User, $this->Password);
       }
+      if (!$this->Link_ID)
+        $this->connect_failed("connect ($this->Host, $this->User, \$Password) failed");
+      else
+        if (!mssql_select_db($this->Database, $this->Link_ID)) {
+          $this->connect_failed("cannot use database ".$this->Database);
+        }
     }
   }
-
-  function free_result(){
-    mssql_free_result($this->Query_ID);
-    $this->Query_ID = 0;
+  function connect_failed($message) {
+    $this->Halt_On_Error = "yes";
+    $this->halt($message);
   }
-
-  function query($Query_String)
+  
+  function free_result(){
+	  mssql_free_result($this->Query_ID);
+  	$this->Query_ID = 0;
+  }
+  
+  function query($Query_String) 
   {
-
+    
     /* No empty queries, please, since PHP4 chokes on them. */
     if ($Query_String == "")
       /* The empty query string is passed on from the constructor,
@@ -59,24 +72,11 @@ class DB_Sql {
        */
       return 0;
 
-    if (!$this->Link_ID)
-        $this->connect();
-
-
-    // $Query string is quoted for MySQL - we need to strip the spashes and then
-    // prepare the string for MSSQL - double apostrophs
-    // Aded by honzam 2005/1/12
-    $quotes_translate = array( '\"'        => '"',
-                               '\\\\'      => '\\',
-                               '\\'.chr(0) => chr(0),
-                               '\\\''      => "''",
-                             );
-
-    // hack - MS SQL replaces '' in updates by ' '. Don't ask me why. Maybe
-    // something like sp_dbcmptlevel ... - it is not true if we insert NULL
-    // $Query_String =  str_replace("''",'NULL', $Query_String);
-    $Query_String =  strtr($Query_String, $quotes_translate);
-
+  	if (!$this->Link_ID)
+    	$this->connect();
+    
+#   printf("<br>Debug: query = %s<br>\n", $Query_String);
+    
     $this->Query_ID = mssql_query($Query_String, $this->Link_ID);
     $this->Row = 0;
     if (!$this->Query_ID) {
@@ -86,31 +86,30 @@ class DB_Sql {
     }
     return $this->Query_ID;
   }
-
+  
   function next_record() {
-
+  	
     if ($this->Record = mssql_fetch_row($this->Query_ID)) {
       // add to Record[<key>]
       $count = mssql_num_fields($this->Query_ID);
       for ($i=0; $i<$count; $i++){
-        $fieldinfo = mssql_fetch_field($this->Query_ID,$i);
-        // rtrim added by Honza mainly because MSSQL adds extra space for '' fields
-        $this->Record[strtolower($fieldinfo->name)] = rtrim($this->Record[$i]);
+      	$fieldinfo = mssql_fetch_field($this->Query_ID,$i);
+        $this->Record[strtolower($fieldinfo->name)] = $this->Record[$i];
       }
       $this->Row += 1;
       $stat = 1;
     } else {
       if ($this->Auto_Free) {
-            $this->free_result();
-        }
+	    	$this->free_result();
+	  	}
       $stat = 0;
     }
     return $stat;
   }
-
+  
   function seek($pos) {
-        mssql_data_seek($this->Query_ID,$pos);
-    $this->Row = $pos;
+		mssql_data_seek($this->Query_ID,$pos);
+  	$this->Row = $pos;
   }
 
   function metadata($table) {
@@ -119,46 +118,38 @@ class DB_Sql {
     $res   = array();
 
     $this->connect();
-    $id = mssql_query("SELECT * FROM $table WHERE 1=0", $this->Link_ID);
-    if (!is_resource($id)) {
+    $id = mssql_query("select * from $table", $this->Link_ID);
+    if (!$id) {
       $this->Errno = 1;
       $this->Error = "General Error (The MSSQL interface cannot return detailed error messages).";
       $this->halt("Metadata query failed.");
     }
     $count = mssql_num_fields($id);
-
-    // Grabbed for PEAR - thanks!
+    
     for ($i=0; $i<$count; $i++) {
-        $res[$i]['table'] = $table;
-        $res[$i]['name']  = strval(@mssql_field_name($id, $i));
-        $res[$i]['type']  = @mssql_field_type($id, $i);
-        $res[$i]['len']   = @mssql_field_length($id, $i);
-        // We only support flags for tables
-        $res[$i]['flags'] = '';  // TODO - set flags - Honza
-        // $this->_mssql_field_flags($result, $res[$i]['name']);
+    	$info = mssql_fetch_field($id, $i);
+      $res[$i]["table"] = $table;
+      $res[$i]["name"]  = $info->name;
+      $res[$i]["len"]   = $info->max_length;
+      $res[$i]["flags"] = $info->numeric;
     }
-
-    /*  commented out by Honza and Jirka - it was not functional
-        for ($i=0; $i<$count; $i++) {
-            $info = mssql_fetch_field($id, $i);
-          $res[$i]["table"] = $table;
-          $res[$i]["name"]  = $info["name"];
-          $res[$i]["len"]   = $info["max_length"];
-          $res[$i]["flags"] = $info["numeric"];
-        }
-    */
     $this->free_result();
     return $res;
   }
-
+  
   function affected_rows() {
-    return mssql_affected_rows($this->Query_ID);
+// Not a supported function in PHP3/4.  Chris Johnson, 16May2001.
+//    return mssql_affected_rows($this->Query_ID);
+    $rsRows = mssql_query("Select @@rowcount as rows", $this->Link_ID);
+    if ($rsRows) {       
+       return mssql_result($rsRows, 0, "rows");
+    }
   }
-
+  
   function num_rows() {
     return mssql_num_rows($this->Query_ID);
   }
-
+  
   function num_fields() {
     return mssql_num_fields($this->Query_ID);
   }
@@ -166,25 +157,46 @@ class DB_Sql {
   function nf() {
     return $this->num_rows();
   }
-
+  
   function np() {
     print $this->num_rows();
   }
-
+  
   function f($Field_Name) {
     return $this->Record[strtolower($Field_Name)];
   }
-
+  
   function p($Field_Name) {
     print $this->f($Field_Name);
   }
-
+  
   function halt($msg) {
-    printf("</td></tr></table><b>Database error:</b> %s<br>\n", $msg);
-    printf("<b>MSSQL Error</b>: %s (%s)<br>\n",
+    if ("no" == $this->Halt_On_Error)
+      return;
+
+    $this->haltmsg($msg);
+
+    if ("report" != $this->Halt_On_Error)
+      die("Session halted.");
+  }
+  
+  function haltmsg($msg) {
+    printf("<p><b>Database error:</b> %s<br>\n", $msg);
+    printf("<b>MSSQL Error</b>: %s (%s)</p>\n",
       $this->Errno,
       $this->Error);
-    die("Session halted.");
   }
 }
+$_php_major_version = substr(phpversion(), 0, 1);
+if((4 > $_php_major_version) or !class_exists("DB_Sql"))
+	{
+	class DB_Sql extends DB_MSSQL
+		{
+		function DB_Sql($query = "")
+			{
+			$this->DB_MSSQL($query);
+			}
+		}
+	}
+unset($_php_major_version);
 ?>

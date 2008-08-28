@@ -51,7 +51,7 @@ if (!get_magic_quotes_gpc()) {
 }
 
 require_once "../include/config.php3";
-require_once AA_INC_PATH. "locsessi.php3";
+require_once AA_INC_PATH. "locsess.php3";
 require_once AA_INC_PATH. "perm_core.php3";
 require_once AA_INC_PATH. "perm_" . PERM_LIB . ".php3";
 require_once AA_INC_PATH. "util.php3";

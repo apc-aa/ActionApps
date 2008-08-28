@@ -137,8 +137,8 @@ require_once AA_INC_PATH."hitcounter.class.php3";
 // function definitions:
 require_once AA_INC_PATH."slice.php3";
 
+require_once AA_INC_PATH."locsess.php3";
 
-require_once AA_INC_PATH. ($encap ? "locsessi.php3" : "locsess.php3");
 $slice_starttime = get_microtime();
 
 //MLX stuff

@@ -32,7 +32,7 @@ http://www.apc.org/
 if (!defined ("AA_ID")) {
     require_once "../../include/config.php3";
 }
-require_once AA_INC_PATH. ($encap ? "locsessi.php3" : "locsess.php3");
+require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."varset.php3";
 // mini gettext language environment (the _m() function)

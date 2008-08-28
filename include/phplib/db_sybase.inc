@@ -13,7 +13,7 @@
  *
  */ 
 
-class DB_Sql {
+class DB_Sybase {
   var $Host     = "";
   var $Database = "";
   var $User     = "";
@@ -24,23 +24,37 @@ class DB_Sql {
   var $Record   = array();
   var $Row;
 
+  var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
+
   var $Auto_Free = 0;     ## Set this to 1 for automatic sybase_free_result()
+  var $PConnect  = 0;     ## Set to 1 to use persistent database connections
 
   /* public: constructor */
-  function DB_Sql($query = "") {
+  function DB_Sybase($query = "") {
+    if($query) {
       $this->query($query);
+    }
   }
 
   function connect() {
     if ( 0 == $this->Link_ID ) {
-      $this->Link_ID=sybase_pconnect($this->Host,$this->User,$this->Password);
-      if (!$this->Link_ID) {
-        $this->halt("Link-ID == false, pconnect failed");
+      if(!$this->PConnect) {
+        $this->Link_ID = sybase_connect($this->Host, $this->User, $this->Password);
+      } else {
+        $this->Link_ID = sybase_pconnect($this->Host, $this->User, $this->Password);
       }
-	  if(!sybase_select_db($this->Database, $this->Link_ID)) {
-        $this->halt("cannot use database ".$this->Database);
+      if (!$this->Link_ID) {
+        $this->connect_failed("connect ($this->Host, $this->User, \$Password) failed");
+      }
+      if(!sybase_select_db($this->Database, $this->Link_ID)) {
+        $this->connect_failed("cannot use database ".$this->Database);
       }
     }
+  }
+
+  function connect_failed($message) {
+    $this->Halt_On_Error = "yes";
+    $this->halt($message);
   }
 
   function query($Query_String) {
@@ -140,9 +154,30 @@ class DB_Sql {
   }
   
   function halt($msg) {
-    printf("</td></tr></table><b>Database error:</b> %s<br>\n", $msg);
-    printf("<b>Sybase Error</b><br>\n");
-    die("Session halted.");
+    if ("no" == $this->Halt_On_Error)
+      return;
+
+    $this->haltmsg($msg);
+
+    if ("report" != $this->Halt_On_Error)
+      die("Session halted.");
+  }
+  
+  function haltmsg($msg) {
+    printf("<p><b>Database error:</b> %s<br>\n", $msg);
+    printf("<b>Sybase Error</b></p>\n", $this->Error);
   }
 }
+$_php_major_version = substr(phpversion(), 0, 1);
+if((4 > $_php_major_version) or !class_exists("DB_Sql"))
+	{
+	class DB_Sql extends DB_Sybase
+		{
+		function DB_Sql($query = "")
+			{
+			$this->DB_Sybase($query);
+			}
+		}
+	}
+unset($_php_major_version);
 ?>

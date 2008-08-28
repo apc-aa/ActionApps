@@ -86,7 +86,8 @@ require_once AA_INC_PATH."pagecache.php3";
 /** functions for searching and filtering items */
 require_once AA_INC_PATH."searchlib.php3";
 /** Main include file for using session management function on page */
-require_once AA_INC_PATH."locsessi.php3";    // DB_AA object definition
+$encap = true; // just for calling extsessi.php
+require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 add_vars();
 

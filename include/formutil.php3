@@ -46,7 +46,7 @@ require_once AA_INC_PATH."field.class.php3";
 // IsUserNameFree() function deffinition here
 require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
 
-define( 'AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
+define( 'AA_WIDTHTOR', '<option value="wIdThTor"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>');
 define( 'AA_BIN_ACT_PEND', AA_BIN_ACTIVE|AA_BIN_PENDING );
 // Easy to redefine this functionality by changing the array below
 // prefix is what goes in the selection box in "Edit Item",

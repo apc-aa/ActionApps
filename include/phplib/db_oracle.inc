@@ -8,7 +8,7 @@
  *
  */ 
 
-class DB_Sql {
+class DB_Oracle {
   var $Debug    =  false;
   var $Home     = "/u01/app/oracle/product/8.0.4";
   var $Remote   =  1;
@@ -30,6 +30,7 @@ class DB_Sql {
   var $Errno     = 0;
   var $Error     = "";
   var $ora_no_next_fetch=false;
+  var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
 
 
   /* copied from db_mysql for completeness */
@@ -37,11 +38,11 @@ class DB_Sql {
   var $type     = "oracle";
   var $revision = "1.2";
 
-  var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore errror, but spit a warning)
-
   /* public: constructor */
-  function DB_Sql($query = "") {
-    $this->query($query);
+  function DB_Oracle($query = "") {
+    if($query) {
+      $this->query($query);
+    }
   }
 
   /* public: some trivial reporting */
@@ -85,8 +86,7 @@ class DB_Sql {
           printf("<br>connect() Link_ID: $this->Link_ID<br>\n");
         }
         if (!$this->Link_ID) {
-          $this->halt("connect() Link-ID == false " .
-                 "($this->Link_ID), ora_plogon failed");
+          $this->connect_failed();
         } else {
 			//echo "commit on<p>";
           ora_commiton($this->Link_ID);
@@ -95,6 +95,11 @@ class DB_Sql {
           printf("<br>connect() Obtained the Link_ID: $this->Link_ID<br>\n");
         }   
       }
+  }
+  
+  function connect_failed() {
+    $this->Halt_On_Error = "yes";
+    $this->halt("connect ($this->User, \$Password, $this->Database) failed");
   }
   
   ## In order to increase the # of cursors per system/user go edit the
@@ -399,18 +404,18 @@ class DB_Sql {
   
   /* private: error handling */
   function halt($msg) {
-    if ($this->Halt_On_Error == "no")
+    if ("no" == $this->Halt_On_Error)
       return;
 
     $this->haltmsg($msg);
 
-    if ($this->Halt_On_Error != "report")
+    if ("report" != $this->Halt_On_Error)
       die("Session halted.");
   }
 
   function haltmsg($msg) {
-    printf("</td></tr></table><b>Database error:</b> %s<br>\n", $msg);
-    printf("<b>Oracle Error</b>: %s (%s)<br>\n",
+    printf("<p><b>Database error:</b> %s<br>\n", $msg);
+    printf("<b>Oracle Error</b>: %s (%s)</p>\n",
       $this->Errno,
       $this->Error);
   }
@@ -430,4 +435,16 @@ class DB_Sql {
   return $info;
   }
 }
+$_php_major_version = substr(phpversion(), 0, 1);
+if((4 > $_php_major_version) or !class_exists("DB_Sql"))
+	{
+	class DB_Sql extends DB_Oracle
+		{
+		function DB_Sql($query = "")
+			{
+			$this->DB_Oracle($query);
+			}
+		}
+	}
+unset($_php_major_version);
 ?>

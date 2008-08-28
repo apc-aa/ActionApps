@@ -109,13 +109,9 @@ require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."discussion.php3";
 /** Defines class for inserting and updating database fields */
 require_once AA_INC_PATH."varset.php3";
-if ($encap) {
-    /** Main include file for using session management function on an encapsulated (.shtml) page */
-    require_once AA_INC_PATH."locsessi.php3";
-} else {
-    /** Main include file for using session management function on a page */
-    require_once AA_INC_PATH."locsess.php3";
-}
+/** Main include file for using session management function on a page */
+require_once AA_INC_PATH."locsess.php3";
+
 require_once AA_BASE_PATH."modules/alerts/util.php3";
 /** Used for getFrmJavascript() */
 require_once AA_INC_PATH."formutil.php3";

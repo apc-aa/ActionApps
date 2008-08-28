@@ -75,7 +75,8 @@ require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."searchlib.php3";
-require_once AA_INC_PATH."locsessi.php3";    // DB_AA object definition
+$encap = true; // just for calling extsessi.php
+require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 add_vars();
 

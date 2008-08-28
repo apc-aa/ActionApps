@@ -11,7 +11,7 @@
  *
  */ 
 
-class DB_Sql {
+class DB_msql {
   var $Host     = "";
   var $Database = "";
 
@@ -21,34 +21,49 @@ class DB_Sql {
   var $Row;
 
   var $Error    = "";
+  var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
   
   var $Auto_Free = 0;     ## Set this to 1 for automatic msql_free_result()
+  var $PConnect  = 0;     ## Set to 1 to use persistent database connections
 
   /* public: constructor */
-  function DB_Sql($query = "") {
+  function DB_msql($query = "") {
+    if($query) {
       $this->query($query);
+    }
   }
 
   function connect() {
     // Not connected? Then connect?
     if ( 0 == $this->Link_ID ) {
       // Check for local connect
-      $this->Link_ID = empty($this->Host)? 
-                         $this->Link_ID=msql_pconnect():
-                         $this->Link_ID=msql_pconnect($this->Host);
+      if(!$this->PConnect) {
+        $this->Link_ID = empty($this->Host) ? 
+                         $this->Link_ID = msql_connect() :
+                         $this->Link_ID = msql_connect($this->Host);
+      } else {
+        $this->Link_ID = empty($this->Host) ? 
+                         $this->Link_ID = msql_pconnect() :
+                         $this->Link_ID = msql_pconnect($this->Host);
+      }
     }
     
     // Still not connected? Raise error.
     if ( 0 == $this->Link_ID ) {
-      $this->halt("Link-ID == false, pconnect failed");
+      $this->connect_failed("connect ($this->Host) failed");
     }
 
     // Select current database
 	  if (!msql_select_db($this->Database, $this->Link_ID)) {
-      $this->halt("cannot use database ".$this->Database);
+      $this->connect_failed("cannot use database ".$this->Database);
     }
   }
-  
+
+  function connect_failed($message) {
+    $this->Halt_On_Error = "yes";
+    $this->halt($message);
+  }
+
   function query($Query_String) {
     
     /* No empty queries, please, since PHP4 chokes on them. */
@@ -149,9 +164,30 @@ class DB_Sql {
   }
   
   function halt($msg) {
-    printf("</td></tr></table><b>Database error:</b> %s<br>\n", $msg);
-    printf("<b>MSQL Error</b>: %s<br>\n", $this->Error);
-    die("Session halted.");
+    if ("no" == $this->Halt_On_Error)
+      return;
+
+    $this->haltmsg($msg);
+
+    if ("report" != $this->Halt_On_Error)
+      die("Session halted.");
+  }
+  
+  function haltmsg($msg) {
+    printf("<p><b>Database error:</b> %s<br>\n", $msg);
+    printf("<b>MSQL Error</b>: %s</p>\n", $this->Error);
   }
 }
+$_php_major_version = substr(phpversion(), 0, 1);
+if((4 > $_php_major_version) or !class_exists("DB_Sql"))
+	{
+	class DB_Sql extends DB_msql
+		{
+		function DB_Sql($query = "")
+			{
+			$this->DB_msql($query);
+			}
+		}
+	}
+unset($_php_major_version);
 ?>

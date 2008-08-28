@@ -5,7 +5,7 @@
 ##                    Boris Erdmann, Kristian Koehntopp
 ##
 ## Copyright (c) 1998-2000 Sascha Schumann <sascha@schumann.cx>
-##
+## 
 ## $Id$
 ##
 ## PHPLIB Data Storage Container using a SQL database
@@ -16,7 +16,7 @@ class CT_Sql {
   ## Define these parameters by overwriting or by
   ## deriving your own class from it (recommened)
   ##
-
+    
   var $database_table = "active_sessions";
   var $database_class = "DB_Sql";
   var $database_lock_semaphore = "";
@@ -52,7 +52,7 @@ class CT_Sql {
     $timeout = time();
     $sqldate = date("YmdHis", $timeout - ($gc_time * 60));
     $this->db->query(sprintf("DELETE FROM %s WHERE changed < '%s' AND name = '%s'",
-                    $this->database_table,
+                    $this->database_table, 
                     $sqldate,
                     addslashes($name)));
     }
@@ -73,28 +73,54 @@ class CT_Sql {
     $name = addslashes($name);
 
     ## update duration of visit
-    global $HTTP_REFERER, $HTTP_USER_AGENT, $REMOTE_ADDR;
-
     $now = date("YmdHis", time());
-    $rquery = sprintf("replace %s ( sid, name, val, changed ) values ('%s', '%s', '%s', '%s')",
+    $uquery = sprintf("update %s set val='%s', changed='%s' where sid='%s' and name='%s'",
+      $this->database_table,
+      $str,
+      $now,
+      $id,
+      $name);
+    $squery = sprintf("select count(sid) count from %s where val='%s' and changed='%s' and sid='%s' and name='%s'",
+      $this->database_table,
+      $str,
+      $now,
+      $id,
+      $name);
+    $iquery = sprintf("insert into %s ( sid, name, val, changed ) values ('%s', '%s', '%s', '%s')",
       $this->database_table,
       $id,
       $name,
       $str,
       $now);
 
-    if( !$this->db->query($rquery) )
-      $ret = false;
+    $this->db->query($uquery);
 
+    # FIRST test to see if any rows were affected.
+    #   Zero rows affected could mean either there were no matching rows
+    #   whatsoever, OR that the update statement did match a row but made
+    #   no changes to the table data (i.e. UPDATE tbl SET col = 'x', when
+    #   "col" is _already_ set to 'x') so then,
+    # SECOND, query(SELECT...) on the sid to determine if the row is in
+    #   fact there,
+    # THIRD, verify that there is at least one row present, and if there
+    #   is not, then
+    # FOURTH, insert the row as we've determined that it does not exist.
+ 
+    if ( $this->db->affected_rows() == 0
+        && $this->db->query($squery)
+	&& $this->db->next_record() && $this->db->f("count") == 0
+        && !$this->db->query($iquery)) {
+
+        $ret = false;
+    }
     return $ret;
   }
 
   function ac_delete($id, $name) {
-    $SQL = sprintf("delete from %s where name = '%s' and sid = '%s'",
+    $this->db->query(sprintf("delete from %s where name = '%s' and sid = '%s'",
       $this->database_table,
       addslashes($name),
-      $id);
-    $this->db->query($SQL);
+      $id));
   }
 
   function ac_get_value($id, $name) {

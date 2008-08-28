@@ -72,7 +72,7 @@ if ( get_magic_quotes_gpc() ) {
 add_vars('', '_REQUEST');
 
 $encap = ( ($encap=="false") ? false : true );
-require_once AA_INC_PATH. ($encap ? "locsessi.php3" : "locsess.php3");
+require_once AA_INC_PATH."locsess.php3";
 
 $db = new DB_AA;
 

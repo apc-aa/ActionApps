@@ -6,10 +6,10 @@
 
 /aa/images
   *.gif         Pictures used in administration interface.
-  
+
 /aa/admin       (Admin inreface files)
   feed_to.php3       Form for feeding selected items (called from inddex.php3)
-  index.php3         Main administration interface file. Shows Approved holding or trash bin tables in more or less detail and responses to required actions with selected items.  
+  index.php3         Main administration interface file. Shows Approved holding or trash bin tables in more or less detail and responses to required actions with selected items.
   itemedit.php3      File called for displaing Item Form - form for editing/adding items.
   make_rss.php3      Returns Rich Site Summary RDF file from slice (may be used for node to node exchanging items)
   se_*.php3          Slice edit files - all called form Slice Edit page
@@ -31,7 +31,7 @@
   um_*.php3          User management functions
   um_gedit.php3      User management - edit/create user (new user in whole permission system - not related to any slice of aplication)
   um_uedit.php3      User management - edit/cerate group - add/delete member ...
-  
+
 /aa/include
   *_lang.php3        Language files - there are two types language files - common and others
                         common - there are stored all language constants common to all action aplications
@@ -50,9 +50,9 @@
    perm_sql.php3             Permission API based on SQL
    perm_dummy.php3           Permission API dummy - no permission defined - all can do all
                              (switch permission system in config.php3)
-                       2) Action aplication specific perm functions 
+                       2) Action aplication specific perm functions
    perm_core.php3            Calls only functions from Perm API (resolves semantics of perm strings, makes object hierarchy (aa->slice) ...)
-   
+
   init_page.php3    File included on the bgegin of each admin page - selects slice, language file, sets variables
   navbar.php3       Shows top navigation bar
   leftbar_se.php3   Shows left menu on slice edit pages (se_*.php3)
@@ -72,7 +72,7 @@
   feeding.php3      Functions for feeding items
   searchlib.php3    Set of usefull functions related to search database
   js_lib.js         Set of usefull JavaScript scripts
-  
+
   config.php3       Main configuration file - mostly all AA parameters can be set there.
 
   ext*.php3, loc*.php3  Configuration files for Phplib's session management and authentication.
@@ -83,12 +83,11 @@
   extauthnobody.php3 Extends PHPLIB's authentication class for anonymous user
   locauth.php3      Main include file for using authentication feature on page
   locsess.php3      Main include file for using session management function on page
-  locsessi.php3     Main include file for using session management function on encapsulated page
 
   doit_*.*          Usefull scripts for administration - not used in any aplication
-  doit_perm_admin_user.inc          
-  doit_perm_admin_user.php3              
-  doit_perm_clean.inc                    
-  doit_perm_first_users.inc              
-  doit_perm_test.inc                  
-  doit_test_utils.php3                        
+  doit_perm_admin_user.inc
+  doit_perm_admin_user.php3
+  doit_perm_clean.inc
+  doit_perm_first_users.inc
+  doit_perm_test.inc
+  doit_test_utils.php3
