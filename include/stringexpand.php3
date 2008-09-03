@@ -1397,7 +1397,8 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
         if (trim($seo_string)=='') {
             return '';
         }
-        return AA_Stringexpand_Ids::expand($slices, 'd-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"');
+        // added expiry date in order we can get ids also for expired items
+        return AA_Stringexpand_Ids::expand($slices, 'd-expiry_date.....-<-2000000000-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"');
     }
 }
 
