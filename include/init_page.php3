@@ -102,8 +102,8 @@ if (!defined('AA_BASE_PATH')) {
     define('AA_BASE_PATH', substr(AA_INC_PATH, 0, -8));
 }
 
-// anonymous authentication - locauth calls extauthnobody
 if ($free) {
+    // message for locauth.php3 to not display loginform
     $nobody = true;
 }
 
@@ -124,8 +124,8 @@ if ( $encap ) { // we can't use AA_CP_Session - it uses more Header information
 
 // anonymous login
 if ($nobody) {
-    $username = $free;
-    $password = $freepwd;
+    $_POST['username'] = $free;
+    $_POST['password'] = $freepwd;
     $auth->auth["uid"] = $auth->auth_validatelogin();
     if ( !$auth->auth["uid"] ) {
         echo _m("Either your username or your password is not valid.");

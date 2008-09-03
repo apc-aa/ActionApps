@@ -1,3 +1,19 @@
+02/09/08 - new random sorting in view or slice - use following url parameters:
+             sort[0]=random
+             sort[0]=category........&sort[1]=random
+             /apc-aa/view.php3?vid=13&cmd[13]=c-1-1&set[13]=sort-random
+           This operatin is quite slow in MySQL, so if you need just one random 
+           item (for banner, ...), you should rather use 
+           set[]=random-1 parameter for view.php3
+         - new "client authentication" library (include/request.class.php) 
+           allowing user authentication against AA in your site. See the 
+           instruction in the file as well as in the new 
+           /doc/script/example_auth example
+         - cleanup of auth and session management in AA
+         - fixed {seo2ids:<slices>:<seo-string>} construct - now translates also
+           expired items
+         - fixed problem of unsuccessfull creation of new slice when there are 
+           no template slice in the AA 
 26/08/08 - fixed problem of image upload in Xinha/htmlarea
 (honzam) - other small changes and fixes
 18/08/08 - new possibility to change user interface of AA - you can hide any

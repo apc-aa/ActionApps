@@ -27,12 +27,58 @@
 */
 
 require_once(AA_INC_PATH. "locsess.php3");
+require_once(AA_INC_PATH. "perm_core.php3"); // allways included!
 
-/* Required, contains your local authentication extension. */
-if ($nobody) {  // used in itemedit.php3 for anonymoous news posting
-    require_once(AA_INC_PATH . "extauthnobody.php3");
-} else {
-    require_once(AA_INC_PATH . "extauth.php3");
-}
+// choice of the permission system library
+// PERM_LIB is defined in config.php3
+require_once(AA_INC_PATH . "perm_" . PERM_LIB . ".php3");
+
+// message for AA_CP_Auth
+define ('AA_AUTH_NOBODY', $GLOBALS['nobody'] ? true : false);
+
+class AA_CP_Auth extends Auth {
+    var $classname      = "AA_CP_Auth";
+    var $lifetime       = 200;                // 200 minutes
+    var $nobody         = AA_AUTH_NOBODY;
+
+    /** relogin_if function
+     * @param $t
+     */
+    function relogin_if($t) {
+        if ( $t )  {
+            printf ("<center><b>User ".$this->auth["uname"]." has been logged out.</b></center><br>");
+            $this->unauth();
+            $this->start();
+        }
+    }
+    /** auth_loginform
+     *
+     */
+    function auth_loginform() {
+        global $sess, $_PHPLIB, $anonymous_user;
+        $username = $_POST["username"];  // there was problem with variables
+        $password = $_POST["password"];  // in cookies - if someone writes
+                                                  // to cookies username, then the
+                                                  // cookies username is used - error
+
+        require_once (AA_INC_PATH . "loginform.inc");
+    }
+    /** auth_validatelogin function
+     *
+     */
+    function auth_validatelogin() {
+        $username = $_POST["username"];  // there was problem with variables
+        $password = $_POST["password"];  // in cookies - if someone writes
+                                                // to cookies username, then the
+                                                // cookies username is used - error
+        if (isset($username)){
+            $this->auth["uname"]=$username;
+        }
+
+        $user=$username;
+        $uid = AuthenticateUsername($user, $password);
+        return $uid;
+    }
+};
 
 ?>

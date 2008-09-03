@@ -44,6 +44,9 @@ class AA_Responder extends AA_Object {
 class AA_Responder_Get_Sessionid extends AA_Responder {
 
     function AA_Responder_Get_Sessionid($param=null) {}
+    
+    /** every authenticated user can get his/her session_id */
+    function isPerm() { return true; }
 
     function run() {
         global $sess;
@@ -140,8 +143,8 @@ page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
 
 // anonymous login
 if ($nobody) {
-    $username = $free;
-    $password = $freepwd;
+    $_POST['username'] = $free;
+    $_POST['password'] = $freepwd;
     $auth->auth["uid"] = $auth->auth_validatelogin();
     if ( !$auth->auth["uid"] ) {
         AA_Response::error(_m("Either your username or your password is not valid."), 1);  // 1 - _m("Either your username or your password is not valid.");
