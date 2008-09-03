@@ -2497,9 +2497,12 @@ function FrmSelectEasy($name, $arr, $selected="", $add="") {
 function FrmSelectEasyCode($name, $arr, $selected="", $add="") {
     $name=safe($name); // safe($add) - NO! - do not safe it
 
+    if (!is_array($arr) OR (count($arr)==0)) {
+        return '';
+    }
     $retval       = "\n<select name=\"$name\" $add>\n";
     $selectedused = false;
-    foreach ($arr as $k => $v) {
+    foreach ((array)$arr as $k => $v) {
         $retval .= "\n  <option value=\"". htmlspecialchars($k)."\"";
         if ((string)$selected == (string)$k) {
             $retval .= ' selected class="sel_on"';
@@ -3100,31 +3103,26 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
  * @param $sess
  * @param $slice_id
  */
-function PrintAliasHelp($aliases, $fields=false, $endtable=true, $buttons='', $sess='', $slice_id='') {
-  global $sess;
-
-  FrmTabSeparator(_m("Use these aliases for database fields") , $buttons, $sess, $slice_id);
-
-//  echo '
-//  <tr><td class=tabtit><b>&nbsp;'._m("Use these aliases for database fields").'</b></td></tr>
-//  <tr><td>
-//  <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'.COLOR_TABBG.'">';
-
-  $count = 0;
-  while ( list( $ali,$v ) = each( $aliases ) ) {
-    // if it is possible point to alias editing page
-    $aliasedit = ( !$v["fld"] ? "&nbsp;" :
-      "<a href=\"". $sess->url(con_url("./se_inputform.php3",
-                    "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
-    if ($fields AND $fields[$v["fld"]] AND !$fields[$v["fld"]]['input_show'])
-        $ali = "<span class=\"disabled\">$ali</span>";
-    echo "<tr><td nowrap>$ali</td><td>". $v['hlp'] ."</td><td>$aliasedit</td></tr>";
-  }
-
-  if ($endtable) {
-   echo '
-    </table></td></tr>';
-  }
+ function PrintAliasHelp($aliases, $fields=false, $endtable=true, $buttons='', $sess='', $slice_id='') {
+     global $sess;
+     
+     FrmTabSeparator(_m("Use these aliases for database fields") , $buttons, $sess, $slice_id);
+     
+     $count = 0;
+     if (is_array($aliases)) {
+         foreach ($aliases as $ali => $v ) {
+             // if it is possible point to alias editing page
+             $aliasedit = ( !$v["fld"] ? "&nbsp;" : "<a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($v["fld"]))) ."\">". _m("Edit") . "</a>");
+             if ($fields AND $fields[$v["fld"]] AND !$fields[$v["fld"]]['input_show']) {
+                 $ali = "<span class=\"disabled\">$ali</span>";
+             }
+             echo "<tr><td nowrap>$ali</td><td>". $v['hlp'] ."</td><td>$aliasedit</td></tr>";
+         }
+     }
+     
+     if ($endtable) {
+         echo "\n        </table></td></tr>";
+     }
 }
 
 ?>
