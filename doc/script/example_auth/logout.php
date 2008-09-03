@@ -1,0 +1,1 @@
+<?php   require_once "head.php";   $a->logout();?><h1>Logout page</h2><p>You are logged out, but you can login again in the box bellow</p><?php   displayUserbox($a); // the $a variable is defined in head.php - see above?><br>go to other <a href="index.php">index page</a>

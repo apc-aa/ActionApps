@@ -1,0 +1,1 @@
+<?php   require_once "head.php";?><h1>Test page</h2><p>Different conten but the box is called the same way</p><?php   displayUserbox($a); // the $a variable is defined in head.php - see above?><p>That's it - the box is displayed and the content coninues.   <br>go to other <a href="index.php">index page</a></p>
