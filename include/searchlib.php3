@@ -1006,15 +1006,27 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
     if ( isset($sort) AND is_array($sort)) {
         foreach ( $sort as $srt ) {
             if ( isset($srt) AND is_array($srt) ) {
+                // random order
+                // This operatin is quite slow in MySQL, so if you need just
+                // one random item (for banner, ...), you should rather use
+                // set[]=random-1 parameter for view.php3
+
+
+                // This code is not tested, but should work, so if you need it, just enable it and you will see
+                // I wrote it for item randomization, but then I find out that this function is not used for normal items in the slice
+                // Honza 2008-09-01
+                // if (key($srt) == 'random') {
+                //     $ret[] = 'RAND()';
+                //     continue;
+                // }
                 $finfo = $fields_arr[key($srt)];
-                if ( $finfo AND is_array($finfo))  {
+                if ( $finfo AND is_array($finfo)) {
                     if ( $additional_field_cond ) {
                         if ( !$additional_field_cond( $finfo, current($srt), $add_param ) ) {
-                                continue;
+                            continue;
                         }
                     }
-                    $ret[] = $finfo['field'] .
-                                (stristr(current( $srt ), 'd') ? " DESC" : "");
+                    $ret[] = $finfo['field'] . (stristr(current( $srt ), 'd') ? " DESC" : "");
                     if ( $finfo['table'] ) {
                         $join_tables[$finfo['table']] = true;
                     }
@@ -1027,7 +1039,7 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
 }
 
 /** CachedSearch function
- *  Get searchresult from cache, if cahed
+ *  Get searchresult from cache, if cached
  * @param bool   $cache_condition - have we look into cache?
  * @param string $keystr          - id_string which identifies cache content
  * @return resulting zids from cache or false;
@@ -1038,7 +1050,10 @@ function CachedSearch($cache_condition, $keystr) {
     if ( $cache_condition ) {
         if ( $res = $pagecache->get($keystr)) {
             $zids = unserialize($res);
-            $QueryIDsCount = $zids->count();  // global variable
+            //huhl($res, $zids);
+            if (is_object($zids)) {
+                $QueryIDsCount = $zids->count();  // global variable
+            }
             if ( $debug ) {
                 echo "<br>Cache HIT - return $QueryIDsCount IDs<br>";
             }
@@ -1233,6 +1248,9 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
 *   sort[1][publish_date....]='d';    // and publish_date descending (secondary)
 *   sort[0][category........]='1';    // order items by category priority - ascending
 *   sort[0][category........]='9';    // order items by category priority - descending
+*   sort[0]=random;                   // order items in random order (it is quite database intensive,
+*                                     // so if you want to diplay just one random item, use set[]=random-1
+*                                     // view parameter instead)
 *   </pre>
 */
 function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=0, $restrict_zids=false, $defaultCondsOperator = "LIKE", $use_cache=false ) {
@@ -1384,6 +1402,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         }
     }
 
+
     if ( !is_array($sort) OR count($sort)<1 ) {
         $select_order =  is_object($restrict_zids) ? '' : 'item.publish_date DESC';   // default item order
     } else {
@@ -1392,7 +1411,28 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
             if (key($srt)=='limit') {
                 next($srt);       // skip the 'limit' record in the array
             }
+
             $fid   = key($srt);
+
+            // random sorting by following url parameters:
+            //    sort[0]=random
+            //    sort[0]=category........&sort[1]=random
+            //    /apc-aa/view.php3?vid=13&cmd[13]=c-1-1&set[13]=sort-random
+            // This operatin is quite slow in MySQL, so if you need just
+            // one random item (for banner, ...), you should rather use
+            // set[]=random-1 parameter for view.php3
+            if ( $fid == 'random' ) {
+                $select_order .= $delim  . ' RAND()';
+                $delim         = ',';
+
+                // break! - we do not want to create expressions like
+                //    ORDER BY RAND(),item.publish_date DESC
+                // bacause it makes no sense
+                // (on the other hand the following expressions are perfectly OK:
+                //    ORDER BY s0, RAND()
+                break;
+            }
+
             $field = $fields->getField($fid);
             if ( is_null($field) ) { // bad field_id - skip
                 if ($debug) {
@@ -1404,8 +1444,9 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
             if ( $field->storageTable() == 'item' ) {   // field is stored in table 'item'
                 $fieldId          = 'item.' . $field->storageColumn();
                 $select_order    .= $delim  . $fieldId;
-                if ( stristr(current( $srt ), 'd'))
-                $select_order .= ' DESC';
+                if ( stristr(current( $srt ), 'd')) {
+                    $select_order .= ' DESC';
+                }
                 $delim         = ',';
             } else {
                 if ( !$sortable[ $fid ] ) {           // this field is not joined, yet
