@@ -27,20 +27,12 @@
 /** set_template_id function
 * @param $template_id
 */
-function set_template_id($template_id) {
-    global $set_template_id, $change_lang_file;
-    $set_template_id = $template_id;
-    if ( $set_template_id ) {
-        $foo = explode("{", $set_template_id);
-        $set_template_id = $foo[0];
-        $change_lang_file = $foo[1];
+function get_template_and_lang($template_id) {
+    $ret = array($template_id,'');
+    if ( $template_id ) {
+        $ret = explode("{", $template_id);
     }
+    return $ret;
 }
 
-// the wizard page has radio buttons instead of submit buttons
-if ($template_slice_radio) {
-    set_template_id($template_slice_radio == "slice" ? $template_id2 : $template_id);
-} else {
-    set_template_id($template_slice_sel["slice"] ? $template_id2 : $template_id);
-}
 ?>

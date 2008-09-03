@@ -28,6 +28,8 @@
 // set template id (changes language file => must be here):
 require_once "../include/slicedit2.php3";
 
+list($set_template_id, $change_lang_file) = get_template_and_lang($template_slice_sel["slice"] ? $template_id2 : $template_id);
+
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."formutil.php3";
 require_once AA_INC_PATH."date.php3";
@@ -69,6 +71,7 @@ $superadmin  = IsSuperadmin();
 require_once AA_INC_PATH."slicedit.php3";
 
 $foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
+
   // set variables from database - allways
 $db = getDB();
 $SQL= " SELECT *, module.priority FROM slice, module WHERE slice.id = module.id AND module.id='".q_pack_id($foo_source)."'";

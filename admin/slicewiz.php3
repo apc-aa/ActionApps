@@ -26,6 +26,8 @@
 // set template id (changes language file => must be here):
 require_once "../include/slicedit2.php3";
 
+list($set_template_id, $change_lang_file) = get_template_and_lang($template_slice_radio == "slice" ? $template_id2 : $template_id);
+
 // messages for init_page:
 $no_slice_id          = true;
 $require_default_lang = true;
