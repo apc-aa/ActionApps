@@ -1,5 +1,6 @@
 05/09/08 - new AA_Router class used for easier "Site Module" creation.
 (honzam)   Instructions are in the file (/modules/site/router.class.php)
+         - language files updated
 02/09/08 - new random sorting in view or slice - use following url parameters:
 (honzam)     sort[0]=random
              sort[0]=category........&sort[1]=random
