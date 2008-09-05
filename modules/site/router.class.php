@@ -189,7 +189,7 @@ class AA_Router_Seo extends AA_Router {
 
     function parseApc($apc) {
         $arr = explode('/', $apc);
-        $ret = Router_Ekowatt::_parseRegexp(array('xlang','xpage','xflag'), '/(cz|en|de)([0-9]*)([^0-9]*)/',$arr[0]);
+        $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag'), '/(cz|en|de)([0-9]*)([^0-9]*)/',$arr[0]);
 
         for ($i=1; $i < count($arr); $i++) {
             $ret['xseo'.$i] = $arr[$i];
