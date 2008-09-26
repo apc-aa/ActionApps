@@ -302,8 +302,10 @@ function isArray(obj) {
 
 function displayInput(valdivid, item_id, fid) {
     // already editing ?
-    if ( $(valdivid).readAttribute('aaedit') == '1') {
-        return;
+    switch ($(valdivid).readAttribute('aaedit')) {
+       case '1': return;
+       case '2': $(valdivid).setAttribute("aaedit", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
+                 return;
     }
     var alias_name = $(valdivid).readAttribute('aaalias');
 
