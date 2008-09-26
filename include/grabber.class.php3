@@ -43,10 +43,10 @@ class AA_Saver {
     var $slice_id;           /** id of destination slice */
     var $store_mode;         /** store-policy - how to store - overwrite | insert_if_new | by_grabber */
     var $id_mode;            /** id-policy    - how to construct id - old | new | combined */
-    
+
     var $_new_ids;           /** array of newly inserted ids (after run()) - the long ones */
     var $_updated_ids;       /** array of ids of rewritten items (after run()) - the long ones */
-    
+
     /** AA_Saver function
      * @param $grabber
      * @param $transformations
@@ -125,15 +125,15 @@ class AA_Saver {
                 if ($debugfeed >= 1) {
                     print("\n<br>  + stored OK: ". $content4id->getValue('headline........'));
                 }
-                
+
                 // @todo better check of new ids
                 if ($store_mode == 'insert') {
                     $this->_new_ids[] = $new_item_id;
                 } else {
                     $this->_updated_ids[] = $new_item_id;
                 }
-                
-                
+
+
                 // Update relation table to show where came from
                 if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
                     AddRelationFeed($new_item_id, $content4id->getItemID());
@@ -142,7 +142,7 @@ class AA_Saver {
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some finalization in grabber
     }
-    
+
     /** Returns array of long new saved ids */
     function newIds() {
         return $this->_new_ids;
@@ -805,5 +805,227 @@ class AA_Grabber_Form {
     }
 }
 
+
+
+/** AA_Grabber_Iekis_Xml - grabs data from XML files in one directory
+ */
+class AA_Grabber_Iekis_Xml extends AA_Grabber {
+
+    var $dir;                   /** directory, where teh files are */
+    var $_files;                /** list if files to grab - internal array */
+
+    function AA_Grabber_Iekis_Xml($dir) {
+        $this->dir = $dir;
+    }
+
+    /** Name of the grabber - used for grabber selection box */
+    function name() { return _m('iEKIS XML files'); }
+
+    /** Description of the grabber - used as help text for the users.
+     *  Description is in in HTML
+     */
+    function description() { return _m('specialiEKIS XML files in one directory'); }
+
+     /** Possibly preparation of grabber - it is called directly before getItem()
+     *  method is called - it means "we are going really to grab the data
+     */
+    function prepare() {
+        $this->_files = array();
+        // instance of class iCalFile (external file ical.php)
+        if ($handle = opendir($this->dir)) {
+            while (false !== ($file = readdir($handle))) {
+                if ($file != "." && $file != "..") {
+                    $this->_files[] = $file;
+                }
+            }
+            closedir($handle);
+        }
+        sort($this->_files);
+    }
+
+    /** Method called by the AA_Saver to get next item from the data input */
+    function getItem() {
+        if (!($file = current($this->_files))) {
+            return false;
+        }
+        next($this->_files);
+
+        $xml = simplexml_load_file($this->dir .$file);
+        $att = $xml->attributes();
+
+        foreach ($xml->text as $key => $text) {
+            $text_att = $text->attributes();
+            switch ($text_att['typ']) {
+                case 'otazka':  $t0a = $text_att; $t0 = (string)$text; break;
+                case 'odpoved': $t1a = $text_att; $t1 = (string)$text; break;
+            }
+        }
+
+        $item = new ItemContent();
+        $item->setValue('number.........1', $att['idp']);
+        $item->setValue('unspecified.....', $att['obor']);
+        $item->setValue('publish_date....', strtotime($att['datum'].' '.$att['cas']));
+        $item->setValue('post_date.......', strtotime($att['datum'].' '.$att['cas']));
+        $item->setValue('unspecified....1', $att['stav']);
+        $item->setValue('unspecified....2', $att['kod']);
+        $item->setValue('unspecified....3', $att['pristupne']);
+        $item->setValue('headline........', $att['predmet']);
+        $item->setValue('text...........1', $t0a['jmeno']);
+        $item->setValue('con_email.......', $t0a['email']);
+        $item->setValue('address.........', $t0a['kontakt']);
+        $item->setValue('unspecified....4', $t0a['predmet']);
+        $item->setValue('start_date......', strtotime($t1a['datum'].' '.$t1a['cas']));
+        $item->setValue('unspecified....5', $t1a['expert']);
+        $item->setValue('unspecified....6', $t1a['predmet']);
+        $item->setValue('text...........4', $t0);
+        $item->setValue('text...........5', $t1);
+        $item->setValue('edit_note.......', 'importovano ze stareho i-ekis.cz - '. $file);
+        $item->setValue('switch.........2', '1');  // ulozit pro mpo
+        $item->setValue('switch..........', '0');  // storno
+
+        $TEMAS = array(
+                     '1' => 'b2269049caf8e47737b718e62ccc905c',   // Územní energetické koncepce
+                     '2' => 'b2269049caf8e47737b718e62ccc905c',   // Akční plány
+                     '3' => 'afbab0cf8bfb524ce48e50862fb8fa88',   // Energetické audity a průkazy (99)
+                     '4' => 'b2325f0658cab17838f8ce6e49a26688',   // Kotle a kotelny (524)
+                     '5' => '09952314df2e76d4fc9cd1dc8baec9ae',   // Energie slunce (237)
+                     '6' => '144f1726c94eb7e86a491dea2bc84021',   // Energie vody (131)
+                     '7' => 'ae02cc88721e77af713d30c766834e9f',   // Energie větru (180)
+                     '8' => '1754f99f9d83562c81d99a28818cf585',   // Energie biomasy (332)
+                     '9' => '1754f99f9d83562c81d99a28818cf585',   // Využití bioplynů (35)
+                    '10' => '18804c2b8e611fba74ceb46038494e68',   // Využití odpadního tepla (13)
+                    '11' => '442340d0d7ff8a68c76902a2da083d44',   // Tepelná čerpadla (153)
+                    '12' => '5f4fe6025c68814d449f29e3f1cdd01a',   // Palivové články (6)
+                    '13' => '49282fdb6ee5d9c524cd5552417b855a',   // Elektrické vytápění (247)
+                    '14' => '1b2fbed9465f609835c51841620d8b6a',   // Kogenerace, trigenerace (35)
+                    '15' => '5941e5f49d61ac033130660ea394122d',   // Měření a regulace (594)
+                    '16' => 'b2269049caf8e47737b718e62ccc905c',   // Rekonstrukce rozvodů sídlištního celku
+                    '17' => 'b2269049caf8e47737b718e62ccc905c',   // Rekonstrukce otopné soustavy v objektu
+                    '18' => '5f93ea7654fafea8cf29ddb8b80351ef',   // Úsporná opatření v průmyslu (12)
+                    '19' => 'b2269049caf8e47737b718e62ccc905c',   // Monitoring a targeting (1)
+                    '20' => 'b2269049caf8e47737b718e62ccc905c',   // Moderní postupy, technologie a materiály
+                    '21' => 'a8e078b5bf57ec58a2c7245f71f0d3d4',   // Zateplování objektů (2101)
+                    '22' => '15efaadbec739b0965a098da205a0d31',   // Nízkoenergetické a pasivní domy (179)
+                    '23' => '3c3e0d17813eccc67afd3a267329595a',   // Projekty energetických služeb se zárukou
+                    '24' => '3c3e0d17813eccc67afd3a267329595a',   // Financování z fondů Evropské unie
+                    '25' => 'b2269049caf8e47737b718e62ccc905c'    // Ostatní (536)
+                    );
+
+        if ($TEMAS[(string)$att['obor']]) {
+            $item->setValue('relation.......2', $TEMAS[(string)$att['obor']]);
+        }
+
+        return $item;
+    }
+
+}
+
+
+/** AA_Grabber_Ical - iCal  calendar format grabber
+ *  could be called like
+ *     $a = new AA_Grabber_Ical('http://example.org/calendar.ics');
+ */
+class AA_Grabber_Ical extends AA_Grabber {
+
+    var $url;                   /** URL of .ics file */
+    var $ical;                  /** instance iCalFile */
+    var $vCalPos;               /** pointer of vCalendar */
+    var $vComponentsTypePos;    /** pointer of type components */
+    var $vComponentsPos;        /** pointer of components */
+
+
+    function AA_Grabber_Ical($url){
+        $this->url=$url;
+    }
+      /** Name of the grabber - used for grabber selection box */
+    function name() { return _m('iCal'); }
+
+    /** Description of the grabber - used as help text for the users.
+     *  Description is in in HTML
+     */
+    function description() { return _m('Import data from iCal (.ics) format'); }
+
+     /** Possibly preparation of grabber - it is called directly before getItem()
+     *  method is called - it means "we are going really to grab the data
+     */
+    function prepare() {
+        // instance of class iCalFile (external file ical.php)
+        $this->ical = new iCalFile($this->url);
+        // set pointers
+        $this->vCalPos = 0;
+        $this->vComponentsPos =0;
+        $this->vComponentsTypePos =0;
+    }
+
+    /** Method called by the AA_Saver to get next item from the data input */
+    function getItem() {
+        // set pointers
+        $vCalPos =0;
+        $vComponentsPos =0;
+        $vComponentsTypePos =0;
+
+        //TODO solve empty ical->components exception ( case of empty or wrong ics file)
+
+        //check if ical->components isn't empty (case of empty or wrong ics file)
+        if (isset($this->ical->components['VCALENDAR'])){
+            //get $vcalendar index
+            foreach ($this->ical->components['VCALENDAR'] as $vcalKey => $vcalItem ) {
+                if ($vCalPos < $this->vCalPos) {$vCalPos++; continue;}
+                    //chek if vcalItem-> isn't empty
+                    if (isset($vcalItem->components)){
+                        //get keys of components type
+                        foreach ($vcalItem->components as $componentTypeKey => $componentTypeItem) {
+
+                            if ($vComponentsTypePos < $this->vComponentsTypePos)  { $vComponentsTypePos++; $vComponentsPos=0; continue;}
+                            //insert type of component
+                            $content4id['type'][0]['value']=$componentTypeKey;
+                                //get index of components key
+                            foreach ($componentTypeItem as $componentKey => $componentItem) {
+
+                                if ($vComponentsPos < $this->vComponentsPos) {$vComponentsPos++;  continue; }
+                                //check if is set componentItem->components
+                                if (isset( $componentItem->components )) {
+                                    //get keys of properties
+                                    foreach ($componentItem->components as $valueKey => $valueArray) {
+                                        //get index of properties
+                                        foreach ($valueArray as $valueIndex => $valueItem) {
+                                            //check if exists method get_value()
+                                            if (method_exists($valueItem, 'get_value')) {
+                                                //fill array $content4id
+                                                $content4id[$valueKey][$valueIndex]['value']=$valueItem->get_value();
+                                            }
+                                        }
+                                    }
+
+                                    // instance of ItemContent with array content4id
+                                    $ic = new ItemContent($content4id);
+                                    //unset array content4id
+                                    unset($content4id);
+
+                                    $vComponentsPos++;
+                                    $this->vCalPos=$vCalPos;
+                                    $this->vComponentsPos=$vComponentsPos;
+                                    $this->vComponentsTypePos=$vComponentsTypePos;
+                                    return $ic;
+                                }
+
+                                $vComponentsPos++;
+                            }
+
+                            $vComponentsTypePos++;
+                            $vComponentsPos=0;
+                            if ($vComponentsTypePos > $this->vComponentsTypePos) {$this->vComponentsPos=0;}
+                        }
+
+                    }
+                    $vCalPos++;
+                    $vComponentsPos=0;
+                    $vComponentsTypePos =0;
+            }
+        }
+        return 0;
+    }
+
+}
 
 ?>
