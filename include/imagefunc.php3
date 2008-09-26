@@ -170,7 +170,12 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
                 imagecopyresized($dst_img,$src_img,0,0,$offset_w,$offset_h,$new_width,$new_height,$imginfo[0],$imginfo[1]);
             }
             $f="Image".$imagetype;
-            $f($dst_img,$dimage);
+            if ($imagetype == 'jpeg'){
+                $f($dst_img,$dimage,'100');
+            }
+            else{
+                $f($dst_img,$dimage);
+            }
             if ($debugupload) {
                 huhl("Resampled it");
             }
@@ -195,7 +200,7 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
 $imageTable = array(
     1 => array("m" => "image/gif",  "e" => "gif",  "u" => "GIF",  "b" => IMG_GIF, " x" => IMAGETYPE_GIF,  "t" => false),
     2 => array("m" => "image/jpeg", "e" => "jpeg", "u" => "JPEG", "b" => IMG_JPG,  "x" => IMAGETYPE_JPEG, "t" => true),
-    3 => array("m" => "image/png",  "e" => "png",  "u" => "PNG",  "b" => IMG_PNG,  "x" => IMAGETYPE_PNG,  "t" => false),
+    3 => array("m" => "image/png",  "e" => "png",  "u" => "PNG",  "b" => IMG_PNG,  "x" => IMAGETYPE_PNG,  "t" => true),
     6 => array("m" => "image/wbmp", "e" => "bmp",  "u" => "WBMP", "b" => IMG_WBMP, "x" => IMAGETYPE_BMP,  "t" => false)
 );
 
