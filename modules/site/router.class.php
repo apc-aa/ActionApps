@@ -188,16 +188,22 @@ class AA_Router {
 class AA_Router_Seo extends AA_Router {
 
     function parseApc($apc) {
-        $arr = explode('/', $apc);
+        
+        $parsed_url = parse_url($apc);
+        $arr = explode('/', ltrim($parsed_url['path'],'/'));
         $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag'), '/(cz|en|de)([0-9]*)([^0-9]*)/',$arr[0]);
 
         for ($i=1; $i < count($arr); $i++) {
             $ret['xseo'.$i] = $arr[$i];
         }
 
-        // set default values - like xseo, xseo10, ...
-        $ret = AA_Router_Seo::newState($ret, '');
+        // add querystring
+        if ($parsed_url['query']) {
+            $ret['xqs'] = $parsed_url['query']; 
+        }
 
+        // set default values - like xseo, xseo10, ...
+        $ret = self::newState($ret, '');
         return $ret;
     }
 
@@ -208,7 +214,12 @@ class AA_Router_Seo extends AA_Router {
             $ret .= $apc_state['xseo'.$i]. '/';
             $i++;
         }
-        return rtrim($ret,"/");
+        $ret = rtrim($ret,"/");
+        // add querystring
+        if ($apc_state['xqs']) {
+            $ret .= '?'. $apc_state['xqs'];
+        }
+        return $ret;
     }
 
     /** ze stavajiciho $apc_state a naparsovaneho query-stringu
@@ -218,7 +229,7 @@ class AA_Router_Seo extends AA_Router {
         parse_str($query_string, $new_arr);   // now we have $new_arr['x'], $new_arr['p'], etc.
 
         if (!empty($new_arr['xlang'])) { //change language
-            $apc_state = AA_Router_Seo::parseApc($new_arr['xlang']);
+            $apc_state = self::parseApc($new_arr['xlang']);
         }
 
         // convert xseoX to array temporarily - it will be easier to work with it
@@ -250,8 +261,13 @@ class AA_Router_Seo extends AA_Router {
             $x_max = self::_maxKey($apc_state, 'xseo');
             $apc_state['xseo'. ($x_max+1)] = $new_arr['xseoadd'];
         }
+        // xseo changed - reset pager
+        if (($new_x_max > 0) OR (!empty($new_arr['xseoadd']))) {
+            $apc_state['xpage'] = '';
+            $apc_state['xqs']   = '';
+        }
         if (!empty($new_arr['xpage'])) { //'scroll' to other page
-            $apc_state['xpage'] = $new_arr['xpage'];
+            $apc_state['xpage'] = ($new_arr['xpage'] < 2) ? '' : $new_arr['xpage'];
         }
         if (!empty($new_arr['xflag'])) { //change flag
             $apc_state['xflag'] = $new_arr['xflag'];
