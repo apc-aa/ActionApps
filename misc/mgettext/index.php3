@@ -38,6 +38,7 @@ require_once AA_BASE_PATH."misc/mgettext/createlogs.php3";
 
 // list of all languages. Useful if you want e.g. to update only one language file.
 $lang_list = array ("cz"     => 1,
+                    "cz-utf8"=> 1,
                     "sk"     => 1,
                     "es"     => 1,
                     "en"     => 1,
@@ -78,6 +79,7 @@ $lang_groups ["alerts"] =
 $lang_groups ["news"] =
     array ("./",
            "admin/",
+           "central/",
            "include/",
            "-./slice.php3",
            "-admin/param_wizard.php3",
@@ -93,6 +95,9 @@ $lang_groups ["links"] =
            "include/manager.class.php3",
            "include/searchbar.class.php3",
            "include/util.php3" );
+// _polls_lang.php3 language files, used in the Links module
+$lang_groups ["polls"] =
+    array ("modules/polls/");
 // _output_lang.php3 language files, used in the output, i.e. slice.php3 and view.php3
 $lang_groups ["output"] =
     array ("./slice.php3",
@@ -134,7 +139,7 @@ $old_lang_files = $aadir."include/??_".$old_group."_lang.php3";
 $log_files = $destdir."log_??_".$old_group."_lang.php3";
 
 // directories from which to translate files (replace language constants by _m() calls)
-$translate_dirlist = array (".","include","admin",
+$translate_dirlist = array (".","include","admin","central",
     "modules","modules/module_TEMPLATE", "modules/jump", "modules/alerts", "modules/links",
     "misc/oldDb2db", 'misc/charset', 'misc/msconvert', 'misc/offline2slice');
 

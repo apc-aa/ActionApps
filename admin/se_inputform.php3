@@ -456,7 +456,7 @@ echo "
       echo "<div class=\"tabhlp\">". _m("Should the content of this field be copied to another slice if it is fed?") ."</div>
       </td>
      </tr>";
-FrmTabSeparator(_m("ALIASES used in views to print field content". ' ('.$fld['id']. ')'));
+FrmTabSeparator(_m("ALIASES used in views to print field content (%1)", array($fld['id'])));
 
 
 $myarray = $FIELD_FUNCTIONS['items'];

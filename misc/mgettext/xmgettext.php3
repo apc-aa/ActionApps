@@ -55,12 +55,12 @@ class mgettext_writer_php extends mgettext_writer {
     /** Prints language file header. */
     function write_header($lang) {
         fputs($this->fd, "<?php\n");
-        fputs($this->fd, "# \$Id$\n");
-        fputs($this->fd, "# Language: ".strtoupper($lang)."\n");
-        fputs($this->fd, "# This file was created automatically by the Mini GetText environment\n");
-        fputs($this->fd, "# on ".date("j.n.Y H:i")."\n\n");
-        fputs($this->fd, "# Do not change this file otherwise than by typing translations on the right of =\n\n");
-        fputs($this->fd, "# Before each message there are links to program code where it was used.\n");
+        fputs($this->fd, "// \$Id$\n");
+        fputs($this->fd, "// Language: ".strtoupper($lang)."\n");
+        fputs($this->fd, "// This file was created automatically by the Mini GetText environment\n");
+        fputs($this->fd, "// on ".date("j.n.Y H:i")."\n\n");
+        fputs($this->fd, "// Do not change this file otherwise than by typing translations on the right of =\n\n");
+        fputs($this->fd, "// Before each message there are links to program code where it was used.\n");
         fputs($this->fd, "\n");
         fputs($this->fd, "\$mgettext_lang = \"$lang\";\n");
         fputs($this->fd, "\n");
@@ -71,7 +71,7 @@ class mgettext_writer_php extends mgettext_writer {
         $text = "";
         if ($pair['comments']) {
             foreach ( $pair['comments'] as $comment ) {
-                $text .= "# $comment\n";
+                $text .= "// $comment\n";
             }
         }
         $text .= "\$_m[".$this->prepare_string($pair['message'])."]\n = ".$this->prepare_string($pair['translation']).";\n\n";
@@ -330,12 +330,13 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
     if (file_exists ($logfile)) {
         require_once $logfile;
     }
+    echo "<br>collect_messages()";
     foreach ( $files as $fname) {
         $skip = ($fname[0] == "-");
         if ($skip) {
             $fname = substr ($fname, 1);
         }
-        echo "$fname<br>";
+        echo "<br> $fname";
         if (! is_dir($files_base_dir.$fname)) {
             mark_file_4_processing('', $fname, $skip, $skiplist, $filelist);
         }
@@ -350,12 +351,16 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
         }
     }
 
+    // echo "<br> skiplist:";
+    // print_r($skiplist);
     if (is_array($skiplist)) {
         foreach ($skiplist as $skipfile => $foo) {
             unset($filelist[$skipfile]);
         }
     }
 
+    // echo "<br> filelist:";
+    // print_r($filelist);
     foreach ($filelist as $filename => $foo) {
         $messages = array();
         $warnings = array();
@@ -563,24 +568,20 @@ function isidletter($c)
       || (ord ($c) > 127);
 }
 
-function isspace($c)
-{ return strchr(" \t\r\n", $c); }
-
-
-
-
-
+function isspace($c) {
+    return strchr(" \t\r\n", $c);
+}
 
 /** strips path from file name */
 function filepath($filename) {
-    if (!strstr($filename,"/")) return "./";
+    if (!strstr($filename,"/")) {
+        return "./";
+    }
     $i = strlen($filename);
-    while ($filename[$i] != "/") $i --;
+    while ($filename[$i] != "/") {
+        $i--;
+    }
     return substr($filename,0,$i+1);
 }
-
-
-
-
 
 ?>

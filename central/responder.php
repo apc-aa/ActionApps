@@ -44,7 +44,7 @@ class AA_Responder extends AA_Object {
 class AA_Responder_Get_Sessionid extends AA_Responder {
 
     function AA_Responder_Get_Sessionid($param=null) {}
-    
+
     /** every authenticated user can get his/her session_id */
     function isPerm() { return true; }
 
@@ -172,7 +172,7 @@ if ( !is_object($request)) {
 
 $responder = AA_Object::factoryByName('AA_Responder_', $request->getCommand(), $request->getParameters());
 if ( empty($responder) ) {
-    AA_Response::error(_m("Bad request sent for responder.php". $request->getCommand()), 103);  // error code > 0
+    AA_Response::error(_m("Bad request sent for responder.php - %1", array($request->getCommand())), 103);  // error code > 0
     exit;
 }
 
