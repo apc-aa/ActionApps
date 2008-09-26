@@ -154,7 +154,7 @@ function Links_PrintActionLink($r_spot_id, $action, $text, $img, $link=null) {
     return "<a href=\"$link\">$image</a>&nbsp;<a href=\"$link\">$text</a>";
 }
 
-echo '<table border=0 cellspacing=0 class=login width="95%"><tr><td id="sitetree">
+echo '<table border=0 cellspacing=0 class=login width="98%"><tr><td id="sitetree">
       <br>
       <table border=0 cellspacing=0 align="center">
         <tr>

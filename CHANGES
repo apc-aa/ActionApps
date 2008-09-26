@@ -1,7 +1,26 @@
-05/09/08 - new AA_Router class used for easier "Site Module" creation.
+09/26/08 - new {join:<delimiter>:<val_1>:...:<val_x>} which takes unlimited
+(honzam)   number of parameters and joins the unempty ones into one string using
+           first parameter as delimiter:
+             {join:, :{_#YEAR____}:{_#SIZE____}:{_#SOURCE___}}
+         - improved picture quality for AA resizer of PNG and JPG images
+           (thanks to Dan Craioveanu)
+         - improvements in seo router for site module - the query string
+           is remembered in pager
+         - fix in filler.php - item_id could be set as parameter for OK page
+           using _#N1_ID___ aias:
+               ok_url = http://example.org/ok.php?item_id=_#N1_ID___
+         - fix for firefox 3.0 ajax editing: storno now works (quite dirty hack)
+         - new XML and iCal grabber (Iekis) - which is able to import more XML
+           files from one directory. Grabs only specific XML file, so it is
+           included as example of working XML grabber
+         - language environment (mgettext) fixes
+         - continue with migrating sql_update.php3 script to AA_Optimalization
+           actions - the "Updating Core field definitions" converterd
+         - small design fixes
+09/05/08 - new AA_Router class used for easier "Site Module" creation.
 (honzam)   Instructions are in the file (/modules/site/router.class.php)
          - language files updated
-02/09/08 - new random sorting in view or slice - use following url parameters:
+09/02/08 - new random sorting in view or slice - use following url parameters:
 (honzam)     sort[0]=random
              sort[0]=category........&sort[1]=random
              /apc-aa/view.php3?vid=13&cmd[13]=c-1-1&set[13]=sort-random
@@ -17,9 +36,9 @@
            expired items
          - fixed problem of unsuccessfull creation of new slice when there are
            no template slice in the AA
-26/08/08 - fixed problem of image upload in Xinha/htmlarea
+08/26/08 - fixed problem of image upload in Xinha/htmlarea
 (honzam) - other small changes and fixes
-18/08/08 - new possibility to change user interface of AA - you can hide any
+08/18/08 - new possibility to change user interface of AA - you can hide any
 (honzam)   part of Item Manager (searchbar, actions, slice selector, button
            or even change labels) as well as Input form through user profiles
            ("Slice Admin -> Premissions - Change -> Profile".
@@ -77,7 +96,7 @@
          - better support for utf8 character encoding
          - small css fixes and UI improvement in Item Manager, Itemedit
            and Item Set settings
-02/07/08 - updated documentation - CVS replaced by SVN (Subversion)
+07/02/08 - updated documentation - CVS replaced by SVN (Subversion)
 (honzam) - new {count:<ids>[:<delimiter>]} syntax - counts ids or other string
            parts separated by delimiter. It is much quicker to use this function
            for counting of ids, than {aggregate:count..} since this one do not
@@ -88,32 +107,32 @@
          - the <condition> for {ifset:<condition>:...} is considered as empty
            also for unfilled aliases (like _#HEADLINE)
          - validation added to timestamp values for date widget
-02/06/08 - HTMLArea (Xinha) updated to last svn version
+06/02/08 - HTMLArea (Xinha) updated to last svn version
 (honzam) - new "Fix inconcistency in pagecache" optimalization action
          - slice deletion - improved UI
          - cleanup - reading password checking optimalizations
          - cleanup - simplified (and quicker) queries for some cases
          - boundary check for date value in f_d function
-21/05/08 - fixed previous fix
+05/21/08 - fixed previous fix
 (honzam)
-20/05/08 - better SQL update functionality - the "Column count doesn't match
+05/20/08 - better SQL update functionality - the "Column count doesn't match
 (honzam)   value count at row 1" SQL Error apearing in some configurations
            should be fixed
-16/05/08 - improved version of sql_update script, which now allows to run
+05/16/08 - improved version of sql_update script, which now allows to run
 (honzam)   specified AA_Optimize scripts. The key is the "Fix field definitions
            duplicates" optimalization, which should be run before any sql_update
          - AA -> Optimize shows only implemented actions for each optimalization
          - the same SPAM protection by "answer" field implemented to Links
            module
-28/04/08 - sliceobj.php3 file renamed to more standard slice.class.php3
+04/28/08 - sliceobj.php3 file renamed to more standard slice.class.php3
 (honzam) - viewobj.php3  file renamed to more standard view.class.php3
          - aaprofile class renamed to more standfard AA_Profile + some profile
            optimalizations
-22/04/08 - "AA finder" allows to search also in field deffinitions, now
+04/22/08 - "AA finder" allows to search also in field deffinitions, now
 (honzam)
-21/04/08 - added editable discussion field free1
+04/21/08 - added editable discussion field free1
 (honzam)
-07/04/08 - new design_id parameter for poll.php3 by which you cen redefine
+04/07/08 - new design_id parameter for poll.php3 by which you cen redefine
 (honzam)   the design of displayed poll(s)
          - polls aliases improved and added new ones
          - removed unused cookies_prefix option from polls module
@@ -128,7 +147,7 @@
          - phpThumb uses better configuration, so it work better on most
            AA installs
          - small fixes in date-time widget, refactoring
-30/03/08 - new support for forms send through AJAX. Now you can write a html
+03/30/08 - new support for forms send through AJAX. Now you can write a html
 (honzam)   page which will consist of one or more forms. The form after
            the submition will be send by AJAX, stored as new item to AA database
            and the result will be displayed instead of the form
@@ -170,7 +189,7 @@
          - fixed counting itmes in bins (if the item is expired AND also pending
            (quite strange item), then it is placed into expired bin only)
          - fixed diesign edit for polls
-18/01/08 - {now} command now could use format: {now:format}, where format is
+01/18/08 - {now} command now could use format: {now:format}, where format is
 (honzam)   standard php date format @see http://php.net/date. Ex: {now:d.m.Y}
          - Improved the "Copy slice" feature of Central. Now it splits the copy
            into separate tasks (chunks), so we are able to copy also slices with
@@ -190,9 +209,9 @@
            queue) - hits for one item is grouped for one day (for hits older
            than 8 days). It makes the hit_archive table much smaller
          - little improved UI of user administration
-07/01/08 - small bugfix in stringexpand.php3 for new {img} syntax
+01/07/08 - small bugfix in stringexpand.php3 for new {img} syntax
 (Adam)
-21/12/07 - added Field_Duplicates_Test, Field_Duplicates_Repair,
+12/21/07 - added Field_Duplicates_Test, Field_Duplicates_Repair,
 (honzam)   Update_Db_Structure_Test, Update_Db_Structure_Repair to actions in
            Central. At this moment you can update the database structure
            of remote AA by those actions. Those actions should replace the old
@@ -214,7 +233,7 @@
          - fix new database upgrade script to work with MySQL 4.0
          - old records from post2shtml table are deleted periodicaly (with log
            table cleanup)
-16/12/07 - fixed syntax errors with polls tables inside sql_update.php3
+12/16/07 - fixed syntax errors with polls tables inside sql_update.php3
 (Adam)
 12/12/07 - fixes in Central Synchronization - constants are synchronized well
 (honzam) - better UI for Central Synchronize
