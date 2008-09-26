@@ -189,6 +189,8 @@ function SendErrorPage($txt) {
  * redirects to the specified URL, else returns to the calling page.
  */
 function SendOkPage($txt, $new_ids = array()) {
+
+
     global $debugfill;
     // $wap variable if set in filler-wap.php
     if ($GLOBALS['wap']) {
@@ -379,7 +381,7 @@ if ($debugfill) huhl("result=",$result);
 // See doc/anonym.html for structure of $result, which is intended
 // for fillform.php3 to interpret and display
 
-if ($debugfill) exit;
+// if ($debugfill) exit;
 
 if ($debugfill) huhl("Going to Store Item");
 if ($debugfill) huhl("content4id=",$content4id);
@@ -390,7 +392,7 @@ if (is_array($result)) {
     SendErrorPage( array("store" => _m("Some error in store item.")));
 } else {
     if ($debugfill) huhl("Filler: Sending ok");
-    SendOkPage( array("success" => $insert ? "insert" : "update" ));
+    SendOkPage( array("success" => $insert ? "insert" : "update" ), array($my_item_id));
 }
 
 ?>
