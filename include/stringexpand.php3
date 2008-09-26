@@ -1451,6 +1451,26 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Takes unlimited number of parameters and jioins the unempty ones into one
+ *  string ussing first parameter as delimiter
+ *  Example: {join:, :{_#YEAR____}:{_#SIZE____}:{_#SOURCE___}}
+ */
+class AA_Stringexpand_Join extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $condition
+     * @param $text
+     * @param $else_text
+     */
+    function expand() {
+        $arg_list  = func_get_args();   // must be asssigned to the variable
+        $delimiter = array_shift($arg_list);
+        return join($delimiter, array_filter($arg_list, create_function('$str', 'return strlen(trim($str))>0;')));
+    }
+}
+
+
 /** Expand URL by adding session
  *  Example: {sessurl:<url>}
  *  Example: {sessurl}           - returns session_id
@@ -1613,7 +1633,7 @@ class AA_Stringexpand_Scroller extends AA_Stringexpand {
  *
  *  Must be issued inside the view
  */
-class AA_Stringexpand_Pager extends AA_Stringexpand {
+class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
 
     /** additionalCacheParam function */
     function additionalCacheParam() {
@@ -1631,7 +1651,7 @@ class AA_Stringexpand_Pager extends AA_Stringexpand {
     function expand() {
         global $apc_state;
         if (!isset($apc_state['router'])) {
-            return "Err in {pager} - router not foung - {pager} is designed for site modules";
+            return "Err in {pager} - router not found - {pager} is designed for site modules";
         }
 
         $itemview = $this->itemview;
