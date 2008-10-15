@@ -41,6 +41,17 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 // change the state
 add_vars();                 // get variables pased to stm page
 
+function StripslashesDeep($value) {
+    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
+}
+
+if ( get_magic_quotes_gpc() ) {
+    $_POST    = StripslashesDeep($_POST);
+    $_GET     = StripslashesDeep($_GET);
+    $_REQUEST = StripslashesDeep($_REQUEST);
+    $_COOKIE  = StripslashesDeep($_COOKIE);
+}
+
 $site_info = GetModuleInfo($site_id,'W');   // W is identifier of "site" module
                                             //    - see /include/constants.php3
 if ( !is_array($site_info) ) {

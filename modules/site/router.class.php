@@ -77,8 +77,17 @@ class AA_Router {
         $nav_arr = $this->_scrollerArray($page, $max);
         $add     = $this->getParam('scroller_add');
 
+        $query_string = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+
         foreach ( $nav_arr as $k => $v) {
-            $arr[] = ( $v ? "<a href=\"$v\" $add>$k</a>" : $k);
+            if ( $v ) {
+                if ($query_string) {
+                    $v .=  '?'. $query_string;
+                }
+                $arr[] = "<a href=\"$v\" $add>$k</a>";
+            } else {
+                $arr[] = $k;
+            }
         }
 
         return $this->getParam('scroller_begin'). join($this->getParam('scroller_delimiter'), $arr) . $this->getParam('scroller_end');
@@ -255,6 +264,9 @@ class AA_Router_Seo extends AA_Router {
                 } else {// $state = 'COPY';
                     $apc_state['xseo'. $i] = $apc_state['xseo'. $i];
                 }
+            }
+            if ($state != 'COPY') {
+                $apc_state['xpage'] = '';
             }
         }
         if (!empty($new_arr['xseoadd'])) {
