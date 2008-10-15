@@ -181,6 +181,7 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                 'menu' => "modules/polls/include/menu.php3",
                                 'language_files' => array(
                                     "en_polls_lang.php3" => "en_polls_lang.php3",
+                                    "es_polls_lang.php3" => "es_polls_lang.php3",
                                     "cz_polls_lang.php3" => "cz_polls_lang.php3",
                                     "cz-utf8_polls_lang.php3" => "cz-utf8_polls_lang.php3",
                                     )),
