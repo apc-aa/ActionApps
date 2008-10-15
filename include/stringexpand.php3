@@ -60,11 +60,12 @@ function translateString( $string, $translation ) {
  * @param $text
  */
 function parseSwitch($text) {
-    $variable = substr(strtok('_'.$text,")"),1);   // add and remove '_' - this
-                                                   // is hack for empty variable
-                                                   // (when $text begins with ')')
-    $variable = DeQuoteColons($variable);	// If expanded, will be quoted ()
-    return translateString( $variable, strtok("") );
+    $condition = substr(strtok('_'.$text,")"),1); // add and remove '_' - this
+                                                  // is hack for empty condition
+                                                  // (when $text begins with ')')
+    $condition = DeQuoteColons($condition);	// If expanded, will be quoted ()
+    $ret       = translateString( $condition, strtok("") );
+    return str_replace('_#1', $condition, $ret);
 }
 
 /** Expands {user:xxxxxx} alias - auth user informations (of current user)
@@ -418,6 +419,26 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
           onerror=\"this.onerror=null;this.src='http://www.the-server.net:$port/image/jabberunknown.gif';\"></a>";
 
         return $output;
+    }
+}
+
+
+/** Expands {protectmail:<email>[:<text>]} - hides mail into javascript
+ *  <a href="mailto:<email>"><text></a>   (but encocded in javascript)
+ *  @param $email    - e-mail to protect
+ *  @param $text     - text to be linked (if not specified, the $email is used)
+ */
+class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // cache is used by expand function itself
+
+    /** expand function */
+    function expand($email='', $text='') {
+        $linkpart    = explode('@', $email);
+        $mailprotect = "'".$linkpart[0]."'+'@'+'".$linkpart[1]."'";
+        $linktext    = ($text=='') ? $mailprotect : "'".str_replace("'", "\'", $text)."'";
+        $ret = "<script type=\"text/javascript\">document.write('<a href=\"mai'+'lto:'+$mailprotect+'\">'+$linktext+'</a>')</script>";
+        return $ret;
     }
 }
 
@@ -959,6 +980,43 @@ class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
     }
 }
 
+
+/** Date range mostly for event calendar
+ *   {daterange:<start_timestamp>:<end_timestamp>}
+ *   {date:{start_date......}:{expiry_date.....}} - displays 24.12. - 28.12.2008
+ *   @param $start_timestamp - timestamp of the start date
+ *   @param $end_timestamp   - timestamp of the end date
+ *   @param $format          - day format - the same as PHP date() function
+ *                             (the default is j.n.Y)
+ */
+class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function  */
+    function expand($start_timestamp='', $end_timestamp='') {
+        if ( date("j.n.Y", $start_timestamp) == date("j.n.Y", $end_timestamp) ) {
+            $ret = date("j.n.Y", $start_timestamp);
+        } elseif ( date("Y", $start_timestamp) == date("Y", $end_timestamp) ) {
+            $ret = date("j.n.", $start_timestamp). '&nbsp;-&nbsp;'. date("j.n.Y", $end_timestamp);
+        } else {
+            $ret = date("j.n.Y", $start_timestamp). '&nbsp;-&nbsp;'. date("j.n.Y", $end_timestamp);
+        }
+
+        $starttime = date("G:i", $start_timestamp);
+        if ( $starttime != "0:00") {
+            $ret .= " $starttime";
+        }
+
+        $endtime = date("G:i", $end_timestamp);
+        if( ($endtime != "0:00") AND ( $endtime != "23:59") AND ($endtime != $starttime)) {
+            $ret .= "&nbsp;-&nbsp;$endtime";
+        }
+
+        return $ret;
+    }
+}
+
 class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -1285,7 +1343,7 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
     /** Static */
     function _textToConds($text, $no_url_encode) {
         if ($no_url_encode) {
-            return '"'. str_replace('-', '--', $text) .'"';
+            return '"'. str_replace(array('-','"'), array('--','\"'), $text) .'"';
         }
         return '%22'. str_replace(array('-',' '), array('--','%20'), $text) .'%22';
     }
@@ -1398,7 +1456,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
             return '';
         }
         // added expiry date in order we can get ids also for expired items
-        return AA_Stringexpand_Ids::expand($slices, 'd-expiry_date.....-<-2000000000-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"');
+        return AA_Stringexpand_Ids::expand($slices, 'd-expiry_date.....->-0-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"');
     }
 }
 
@@ -1693,7 +1751,7 @@ function makeAsShortcut($text) {
  *  It is writen as quick as possible, so we do not use preg_replace for the
  *  main replaces (it is extremly slow for bigger dictionaries) - strtr used
  *  instead
- *  @author Honza Malik, Hana Havelkova½
+ *  @author Honza Malik, Hana Havelkova
  */
 class AA_Stringexpand_Dictionary extends AA_Stringexpand {
     /** expand function
@@ -2131,7 +2189,17 @@ class AA_Stringexpand_Keystring extends AA_Stringexpand_Nevercache {
             $ks .= serialize($GLOBALS["als"]);
         }
         if (isset($_COOKIE)) {
-            $ks .= serialize($_COOKIE);
+            $work = array();
+            // do not count with cookie names starting with underscore
+            // (Google urchin uses cookies like __utmz which varies very often)
+            foreach( $_COOKIE as $key => $val ) {
+                if (!substr((string)$key,0,1)=='_') {
+                    $work[$key] = $val;
+                }
+            }
+            if (count($work)>0) {
+                $ks .= serialize($work);
+            }
         }
         return $ks;
     }
