@@ -751,7 +751,7 @@ class AA_Item {
      * @param $param
      */
     function f_y($col, $param="") {
-        $str2unalias = get_if( $param, $this->getval($col) );
+        $str2unalias = $param ? $param : DeHtml($this->getval($col), $this->getval($col,'flag'));
         return $this->unalias( $str2unalias );
     }
 
