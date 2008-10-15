@@ -1,3 +1,25 @@
+10/15/08 - Spanish translation of Polls module (thanks to Colnodo)
+(honzam) - new possibility to use _#1 shortcut for condition in {switch}
+           statement. It works in the same way as in {ifset:} statement.
+           Example:
+              {switch({file............})pdf:_#1}
+           prints filename if the name in file............ field contains pdf
+         - new {protectmail:<email>[:<text>]} - hides mail into javascript
+           prints <a href="mailto:<email>"><text></a>, but encoded
+           into javascript to be protected from spambots
+         - new {daterange:<start_timestamp>:<end_timestamp>} - prints date range
+           mostly for event calendar
+           Example:
+              {date:{start_date......}:{expiry_date.....}}
+           displays 24.12. - 28.12.2008
+         - fixed seo2ids - fixed wrong expiry_date condition so the items with
+           big expiry date is no longer (wrongly) filtered out
+         - the cookies beginning with underscore is no longer added to cache key
+           (=> better caching for sites using Google Analytics)
+         - fix - f_y alias function taked care about HTML/Plain text field
+           setting, now
+         - fixed site module router - the {pager} now keeps also all querystring
+           parameters
 09/26/08 - new {join:<delimiter>:<val_1>:...:<val_x>} which takes unlimited
 (honzam)   number of parameters and joins the unempty ones into one string using
            first parameter as delimiter:

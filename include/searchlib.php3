@@ -537,7 +537,17 @@ class AA_Set extends AA_Object {
         while ( $command_params[$i] ) {
              if ( AA_Set::check($command_params[$i], $command_params[$i+2]) ) {
                  $field_arr = explode(',',$command_params[$i]);
-                 $this->conds[] = new AA_Condition($field_arr, $command_params[$i+1], stripslashes($command_params[$i+2]));
+                 $cond_str  = $command_params[$i+2];
+                 // well stripsplashes if bad - we never want the slashed text 
+                 // here, but we do not know, if the command is not from url
+                 // so we will rather stripslash the string in most cases
+                 // However - if the string starts with ", then it is never
+                 // slashed, for sure
+                 // @todo remove stripslashes for AA3.0 - Honza
+                 if ( substr($cond_str,0,1) !='"') {
+                     $cond_str = stripslashes($cond_str);
+                 }
+                 $this->conds[] = new AA_Condition($field_arr, $command_params[$i+1], $cond_str);
              }
              $i += 3;
          }
@@ -673,6 +683,12 @@ function getSortFromUrl( $sort ) {
 function GetWhereExp( $field, $operator, $querystring ) {
 
     // query string could be slashed - sometimes :-(
+    // However - if the string starts with ", then it is never
+    // slashed, for sure
+    // @todo remove stripslashes for AA3.0 - Honza
+//    if ( substr($querystring,0,1) != '"') {
+//        $querystring = stripslashes( $querystring );
+//    }
     $querystring = stripslashes( $querystring );
 
     if ( $GLOBALS['debug'] ) {
@@ -743,7 +759,6 @@ function GetWhereExp( $field, $operator, $querystring ) {
         case 'ISNULL':   return " (($field IS NULL) OR ($field='')) ";
         case 'NOTNULL':  return " (($field IS NOT NULL) AND ($field<>'')) ";
         case '==':       return " ($field = '$querystring') ";            // exact match - no SQL parsing (we added this because SQL Syntax parser in AA have problems with packed ids)
-        case '='  :
 //      case '<=>':  //MySQL know this operator, but we do not use it in AA
         case '<>' :
         case '!=' :
@@ -1267,7 +1282,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     }
 
     if ( $debug ) {
-        huhl("<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",join('-',$slices));
+        huhl("QueryZIDs - start:<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",join('-',$slices));
     }
 
     if (is_object($restrict_zids) AND ($restrict_zids->count() == 0)) {
@@ -1318,7 +1333,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     }
 
     if ( $debug ) {
-        huhl("Conds=",$conds,"Sort=",$sort, "Slices=",join('-',$slices));
+        huhl("QueryZIDs: Conds=",$conds,"Sort=",$sort, "Slices=",join('-',$slices));
     }
 
     // parse conditions ----------------------------------
