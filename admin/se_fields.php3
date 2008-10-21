@@ -48,13 +48,17 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset = new Cvarset();
 
 // lookup - APC wide possible field types are defined as special slice AA_Core_Fields..
-$SQL = "SELECT * FROM field  WHERE slice_id='AA_Core_Fields..'";
+$SQL_add = '';
 if (!$slice_fields) {
     // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
     // and we do not want to list it as option for normal fields
-    $SQL .= " AND name NOT LIKE '\_%'";
+    $SQL_add = " AND id NOT LIKE '\_%'";
 }
-$field_types  = GetTable2Array($SQL);
+$SQL = "SELECT * FROM field  WHERE slice_id='AA_Core_Fields..'". $SQL_add .' ORDER BY name';
+$field_types    = GetTable2Array($SQL);
+$SQL = "SELECT * FROM field  WHERE slice_id='$p_slice_id'". $SQL_add . ' ORDER BY input_pri';
+//$SQL = "SELECT * FROM field  WHERE slice_id='".q_pack_id('41102583a79baa022246ded93734769d')."'". $SQL_add . ' ORDER BY input_pri';
+$current_types  = GetTable2Array($SQL);
 
 /** ShowField function
  * @param $id
@@ -67,7 +71,7 @@ $field_types  = GetTable2Array($SQL);
  * @param $separate=false
  */
 function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $separate=false) {
-    global $sess, $field_types, $AA_CP_Session;
+    global $sess, $field_types, $current_types, $slice_id;
     $name = safe($name); $pri=safe($pri);
 
     $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : 'tabtxt');
@@ -79,11 +83,16 @@ function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $sep
     if ( $type=="new" ) {
         echo '<td>
               <select name="ftype">';
+        $fileds_slice = unpack_id('AA_Core_Fields..');
         foreach ( $field_types as $k => $v) {
-            echo '<option value="'. htmlspecialchars($k).'"> '.
-                 htmlspecialchars($v['name']) ." </option>";
+            echo '<option value="'. $fileds_slice .'-'. htmlspecialchars($k).'"> '. htmlspecialchars($v['name']) ." </option>";
         }
-        echo "</select>\n </td>";
+        $fileds_slice = $slice_id;
+        echo '<optgroup label="'._m('copy current:').'">';
+        foreach ( $current_types as $k => $v) {
+            echo '<option value="'. $fileds_slice .'-'. htmlspecialchars($k).'"> '. htmlspecialchars($v['name']) ." </option>";
+        }
+        echo "</optgroup></select>\n </td>";
     } else {
         echo "<td>$id</td>";
     }
@@ -131,11 +140,14 @@ if ($update) {
                     continue;
                 }
 
+                list($field_slice, $field_type) = explode('-',$ftype,2);
+                $field_setting = ($field_slice == unpack_id('AA_Core_Fields..')) ? $field_types[$field_type] : $current_types[$field_type];
+
                 // copy fields
                 // use the same setting for new field as template in AA_Core_Fields..
                 $varset->clear();
                 $varset->addArray( $FIELD_FIELDS_TEXT, $FIELD_FIELDS_NUM );
-                $varset->setFromArray($field_types[$ftype]);   // from template for this field
+                $varset->setFromArray($field_setting);   // from template for this field
 
                 // in AA_Core_Fields.. are fields identified by 'switch' or 'text'
                 // identifiers (without dots!) by default. However if user add new
@@ -143,7 +155,7 @@ if ($update) {
                 // is full (it contains dots). We need base identifier, for now.
                 // Also we will add underscore for all "slice fields" - the ones
                 // which are not set for items, but rather for slice (settings)
-                $ftype_base = ($slice_fields ? '_' : '') . AA_Fields::getFieldType($ftype);
+                $ftype_base = ($slice_fields ? '_' : '') . AA_Fields::getFieldType($field_type);
 
                 // get new field id
                 $SQL = "SELECT id FROM field
