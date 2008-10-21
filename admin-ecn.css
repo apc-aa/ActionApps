@@ -386,7 +386,14 @@ img.eye {
 
 /* -------------------- Sitemodule CSS - end ----------------------------- */
 
+/* -- live editing  */
+select.live, input.live, textarea.live {
+    border: 1px solid #EBDABE;
+}
 
+select.updating, input.updating, textarea.updating {
+    border: 1px solid #FF0000;
+}
 
 
 

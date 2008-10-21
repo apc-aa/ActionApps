@@ -323,13 +323,8 @@ function displayInput(valdivid, item_id, fid) {
     });
 }
 
-/** This function replaces the older one - proposeChange
- *  The main chane is, that now we use standard AA input names:
- *   aa[i<item_id>][<field_id>][]
- */
-function DoChange(input_id) {
-    var valdivid   = 'ajaxv_'+input_id;
-    var alias_name = $(valdivid).readAttribute('aaalias');
+
+function _getInputContent(input_id) {
     var content    = Array();
     var i          = 0;
     var add_empty  = false;
@@ -357,6 +352,17 @@ function DoChange(input_id) {
     if ( add_empty && content.count < 1 ) {
         content.push('');  // it is different from push('0') above, because single chbox is 1|0, but multi is value..value|''
     }
+    return content;
+}
+
+/** This function replaces the older one - proposeChange
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function DoChange(input_id) {
+    var valdivid   = 'ajaxv_'+input_id;
+    var alias_name = $(valdivid).readAttribute('aaalias');
+    var content    = _getInputContent(input_id);
 
     $(valdivid).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
     new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
@@ -369,6 +375,25 @@ function DoChange(input_id) {
             $('ajaxv_'+input_id).update(transport.responseText);  // new value
             $('ajaxch_'+input_id).update('');
             $(valdivid).setAttribute("aaedit", "0");
+        }
+    });
+}
+
+/** updates database for given iten and field by Ajax
+ */
+function DoChangeLive(input_id) {
+
+    $$('*[id ^="'+input_id+'"]').invoke('addClassName', 'updating');
+    var content    = _getInputContent(input_id);
+
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
+        parameters: { input_id:   input_id,
+                      alias_name: '',
+                      aaaction:   'DOCHANGE',
+                      'content[]':    content    // encodeURIComponent(document.getElementById('ajaxi_'+combi_id).value)
+                     },
+        onSuccess: function(transport) {
+            $$('*[id ^="'+input_id+'"]').invoke('removeClassName', 'updating');
         }
     });
 }

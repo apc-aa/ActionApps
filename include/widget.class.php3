@@ -264,19 +264,59 @@ class AA_Widget extends AA_Components {
             $ret     .= "</select>";
         } else {
             $delim = '';
+            $width          = $this->getProperty('width', 60);
+            $max_characters = $this->getProperty('max_characters', 254);
+
             for ( $i = 0; $i < $aa_variable->valuesCount(); $i++ ) {
                 $input_name   = $input_id ."[$i]";
                 $input_value  = htmlspecialchars($aa_variable->getValue($i));
-                $ret         .= "$delim\n<input type=\"text\" size=\"80\" id=\"$input_name\" value=\"$input_value\">";
+                $ret         .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"$input_name\" value=\"$input_value\">";
                 $delim        = '<br />';
             }
             // no input was printed, we need to print one
             if ( !$ret ) {
-                $ret         = "\n<input type=\"text\" size=\"80\" id=\"". $input_id ."[0]\" value=\"\">";
+                $ret         = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"". $input_id ."[0]\" value=\"\">";
             }
         }
 
         return $this->_finalizaAjaxHtml($ret, $input_id, $repre_value);
+    }
+
+    /** @return widget HTML for using as Live component (in place editing)
+     *  @param  $aa_variable - the variable holding the value to display
+     */
+    function getLiveHtml($aa_variable) {
+
+        $input_id    = $aa_variable->getId();
+        $ret   = '';
+
+        // This widget uses constants - show selectbox!
+        if ($this->getProperty('const')) {
+            $input_name   = $input_id ."[]";
+            $use_name     = $this->getProperty('use_name', false);
+            $multiple     = $this->multiple() ? ' multiple' : '';
+            $required     = $aa_variable->isRequired();
+
+            $ret      = "<select name=\"$input_name\" id=\"$input_name\"$multiple class=\"live\" onchange=\"DoChangeLive('$input_id')\">";
+            $options  = $this->getOptions($aa_variable, $use_name, false, !$required);
+            $ret     .= $this->getSelectOptions( $options );
+            $ret     .= "</select>";
+        } else {
+            $delim = '';
+            $width          = $this->getProperty('width', 60);
+            $max_characters = $this->getProperty('max_characters', 254);
+            for ( $i = 0; $i < $aa_variable->valuesCount(); $i++ ) {
+                $input_name   = $input_id ."[$i]";
+                $input_value  = htmlspecialchars($aa_variable->getValue($i));
+                $ret         .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"$input_name\" value=\"$input_value\" class=\"live\" onchange=\"DoChangeLive('$input_id')\">";
+                $delim        = '<br />';
+            }
+            // no input was printed, we need to print one
+            if ( !$ret ) {
+                $ret         = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"". $input_id ."[0]\" value=\"\" class=\"live\" onchange=\"DoChangeLive('". $input_id ."')\">";
+            }
+        }
+        return $ret;
     }
 
     /* Creates all common ajax editing buttons to be used by different inputs */
@@ -387,6 +427,28 @@ class AA_Widget_Txt extends AA_Widget {
         return $this->_finalizaAjaxHtml($ret, $input_id, $repre_value);
     }
 
+    function getLiveHtml($aa_variable) {
+        $input_id  = $aa_variable->getId();
+        $row_count = $this->getProperty('row_count', 4);
+
+        $ret   = '';
+        $delim = '';
+        for ( $i = 0; $i < $aa_variable->valuesCount(); $i++ ) {
+            $input_name   = $input_id ."[$i]";
+            $input_value  = htmlspecialchars($aa_variable->getValue($i));
+            $ret         .= "$delim\n<textarea id=\"$input_name\" name=\"$input_name\" rows=\"$row_count\" class=\"live\" onchange=\"DoChangeLive('$input_id')\" style=\"width:100%\">$input_value</textarea>";
+            $delim        = '<br />';
+        }
+
+        // no input was printed, we need to print one
+        if ( !$ret ) {
+            $input_name  = $input_id ."[0]";
+            $ret         = "\n<textarea id=\"$input_name\" name=\"$input_name\" rows=\"$row_count\" class=\"live\" onchange=\"DoChangeLive('$input_id')\" style=\"width:100%\"></textarea>";
+        }
+
+        return $ret;
+    }
+
 }
 
 /** Textarea with Presets widget */
@@ -469,33 +531,6 @@ class AA_Widget_Fld extends AA_Widget {
     function AA_Widget_Fld($params) {
         // assign all the properties (using parent constructor)
         parent::AA_Object($params);
-    }
-
-    /** @return widget HTML for using as AJAX component
-     *  @param  $aa_variable - the variable holding the value to display
-     *  @param  $repre_value - current code used for representation of the
-     *                         variable
-     */
-    function getAjaxHtml($aa_variable, $repre_value) {
-        $input_id    = $aa_variable->getId();
-
-        $max_characters = $this->getProperty('max_characters', 254);
-        $width          = $this->getProperty('width', 60);
-
-        $ret   = '';
-        $delim = '';
-        for ( $i = 0; $i < $aa_variable->valuesCount(); $i++ ) {
-            $input_name   = $input_id ."[$i]";
-            $input_value  = htmlspecialchars($aa_variable->getValue($i));
-            $ret         .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"$input_name\" value=\"$input_value\">";
-            $delim        = '<br />';
-        }
-        // no input was printed, we need to print one
-        if ( !$ret ) {
-            $ret         = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"". $input_id ."[0]\" value=\"\">";
-        }
-
-        return $this->_finalizaAjaxHtml($ret, $input_id, $repre_value);
     }
 
     /** - static member functions
@@ -799,6 +834,28 @@ class AA_Widget_Chb extends AA_Widget {
         }
 
         return $this->_finalizaAjaxHtml($ret, $input_id, $repre_value);
+    }
+
+    /** @return widget HTML for using as Live component
+     *  @param  $aa_variable - the variable holding the value to display
+     */
+    function getLiveHtml($aa_variable, $repre_value) {
+        $input_id    = $aa_variable->getId();
+
+        $ret   = '';
+        $delim = '';
+        for ( $i = 0; $i < $aa_variable->valuesCount(); $i++ ) {
+            $input_name   = $input_id ."[$i]";
+            $input_value  = htmlspecialchars($aa_variable->getValue($i));
+            $ret         .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_name\" value=\"1\"". ($input_value ? " checked" : '')." class=\"live\" onchange=\"DoChangeLive('$input_id')\">";
+            $delim        = '<br />';
+        }
+        // no input was printed, we need to print one
+        if ( !$ret ) {
+            $input_name   = $input_id ."[0]";
+            $ret         .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_name\" value=\"1\" class=\"live\" onchange=\"DoChangeLive('$input_id')\">";
+        }
+        return $ret;
     }
 
     /** - static member functions

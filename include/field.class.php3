@@ -177,34 +177,54 @@ class AA_Field {
         return $field_type;
     }
 
+
     /** getWidgetAjaxHtml function
     * @param $item_id
     * @param $aa_value
-    *   @todo create validator on input_validate
+    * @todo create validator on input_validate
+    */
+    function _getAaVariable($item, $multiple) {
+        $item_id = $item->getItemID();
+
+        // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN) {
+        return new AA_Variable( AA_Field::getId4Form($this->getId(), $item_id),
+                                $this->getName(),
+                                $this->getProperty('text_stored') ? 'text' : 'int',
+                                $multiple,
+                                false,                   // persistent @todo
+                                null,              // $validator - @todo create validator
+                                $this->required(),
+                                $this->getProperty('input_help'),
+                                $this->getProperty('input_morehlp'),
+                                null,               // $example;
+                                $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
+                                AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
+                                $item->getAaValue($this->getId()),
+                                $item_id
+                               );
+    }
+
+    /** getWidgetAjaxHtml function
+    * @param $item_id
+    * @param $visual
     */
     function getWidgetAjaxHtml($item_id, $visual='') {
-        $widget = $this->getWidget();
-        // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN) {
-        $item   = AA_Item::getItem($item_id);
-
-        $aa_variable = new AA_Variable( AA_Field::getId4Form($this->getId(), $item_id),
-                                        $this->getName(),
-                                        $this->getProperty('text_stored') ? 'text' : 'int',
-                                        $widget->multiple(),
-                                        false,                   // persistent @todo
-                                        null,              // $validator - @todo create validator
-                                        $this->required(),
-                                        $this->getProperty('input_help'),
-                                        $this->getProperty('input_morehlp'),
-                                        null,               // $example;
-                                        $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
-                                        AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
-                                        $item->getAaValue($this->getId()),
-                                        $item_id
-                                      );
+        $widget      = $this->getWidget();
+        $item        = AA_Item::getItem($item_id);
+        $aa_variable = $this->_getAaVariable($item, $widget->multiple());
 
         $repre_value = $item->subst_alias($visual ? $visual : $this->getId());
         return $widget->getAjaxHtml($aa_variable, get_if($repre_value, '--'));
+    }
+
+    /** getWidgetLiveHtml function
+    * @param $item_id
+    */
+    function getWidgetLiveHtml($item_id) {
+        $widget      = $this->getWidget();
+        $item        = AA_Item::getItem($item_id);
+        $aa_variable = $this->_getAaVariable($item, $widget->multiple());
+        return $widget->getLiveHtml($aa_variable);
     }
 
     /** _areSliceConstants function
@@ -368,14 +388,24 @@ class AA_Fields {
         $this->load();
         return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getProperty($property) : null;
     }
+
     /** getWidgetAjaxHtml function
      * @param $field_id
      * @param $item_id
-     * @param $aa_value
+     * @param $visual
      */
     function getWidgetAjaxHtml($field_id, $item_id, $visual='') {
         $this->load();
         return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getWidgetAjaxHtml($item_id, $visual) : '';
+    }
+
+    /** getWidgetLiveHtml function
+     * @param $field_id
+     * @param $item_id
+     */
+    function getWidgetLiveHtml($field_id, $item_id) {
+        $this->load();
+        return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getWidgetLiveHtml($item_id) : '';
     }
 
     /** getAliases function
