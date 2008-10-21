@@ -316,7 +316,7 @@ class itemview {
       list($script_loc,) = explode('#',$col["d_disc_url......"][0]['value']); // remove #disc part
 
     $out .= "
-      <SCRIPT Language=\"JavaScript\" type=\"text/javascript\"><!--
+      <SCRIPT type=\"text/javascript\"><!--
         function showSelectedComments() {
           var url = \"". $script_loc . "&sel_ids=1\"
           var done = 0;
@@ -424,9 +424,9 @@ class itemview {
           }
       }
       if ( $js ) {
-          $out .= "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". get_aa_url('javascript/fillform.js', false) . "\"></script>";
+          $out .= "\n <script type=\"text/javascript\" src=\"". get_aa_url('javascript/fillform.js', false) . "\"></script>";
           $out .= '
-          <script language="JavaScript" type="text/javascript"> <!--
+          <script type="text/javascript"> <!--
           '.$js.'
           //-->
           </script>

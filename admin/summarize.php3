@@ -109,7 +109,6 @@ function sliceshortcuts($ign) {
         $n = $so->name();
          print("<tr><td><a href=\"#$si\">$si</a></td><td>$n</td><td>" .
             ($so->deleted() ? "Deleted " : "") .
-//            pack_id128($si) .
             editslicefields($si) . " " . comparewith($si) .
             "</td></tr>\n");
     }

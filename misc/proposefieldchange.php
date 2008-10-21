@@ -101,7 +101,7 @@ function GetRepreValue($item_id, $field_id, $alias_name) {
     // get the item directly from the database
     $item        = AA_Item::getItem(new zids($item_id), true);
     $repre_value = $alias_name ? $item->subst_alias('_#'.$alias_name) : $item->getval($field_id);
-    return get_if($repre_value, '--');
+    return (strlen($repre_value) > 0) ? $repre_value : '--';
 }
 
 // BSC assignment
@@ -116,7 +116,10 @@ if ( AA_V::P('bsc') == 1 ) {
                     $field_content[] = array('value'=>$related_id, 'flag'=>0);
                 }
             }
-            UpdateFieldContent($item_id, 'relation.......3', $field_content, false);
+            //UpdateFieldContent($item_id, 'relation.......3', $field_content, false);
+            // we do not use special field now - we just assign the SA and
+            // Aktivity as normal (but form foreign plan)
+            UpdateFieldContent($item_id, 'relation........', $field_content, false);
             ++$updated;
         }
     }
@@ -168,60 +171,8 @@ elseif ($_POST['aaaction']=='DISPLAYINPUT') {
 //        echo AA_Stringexpand::unalias($str);
 //    }
 
-
     $encoder = new ConvertCharset;
     echo $encoder->Convert($widget_html, $charset, 'utf-8');
-
-
-/*    switch ($item->getSliceId()."-".$field_id) {
-        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......1':
-        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......2':
-        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......3':
-        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......4':
-        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......5':
-        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......6':
-        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......7':
-        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......8':
-        case '21d6a8da7d7a2477a29baf0218efcc99-subtitle.......9':
-            $widget = '<select id="ajaxi_'.$combi_id.'">
-                          <option value="1"'.(($value==1) ? ' selected' : '') .'>splnìno</option>
-                          <option value="2"'.(($value==2) ? ' selected' : '') .'>nesplnìno</option>
-                          <option value="3"'.(($value==3) ? ' selected' : '') .'>neutrální</option>
-                          <option value="4"'.(($value==4) ? ' selected' : '') .'>nehodnoceno</option>
-                          <option value="5"'.(($value==5) ? ' selected' : '') .'>informativní</option>
-                          <option value=""'. (($value=='') ? ' selected' : '') .'>nevyplnìno</option>
-                      </select>';
-            break;
-        case '83d16238c1ea645f7eb95ccb301069a6-switch.........2':
-        case '83d16238c1ea645f7eb95ccb301069a6-switch.........3':
-            $widget = '<select id="ajaxi_'.$combi_id.'">
-                          <option value="1"'.(($value==1) ? ' selected' : '') .'>Ano</option>
-                          <option value="0"'.(($value==0) ? ' selected' : '') .'>Ne</option>
-                      </select>';
-            break;
-
-        case '36fd8c2301d1a4bfe8506dcebbd243cb-year...........1':
-            $values = $item->getValues();
-            foreach ((array)$values as $val) {
-                $value_hash[$val['value']] = true;
-            }
-            $widget = '<select id="ajaxi_'.$combi_id.'" multiple="multiple">
-                          <option value="2005"'.($value_hash[2005] ? ' selected' : '') .'>2005</option>
-                          <option value="2006"'.($value_hash[2006] ? ' selected' : '') .'>2006</option>
-                          <option value="2007"'.($value_hash[2007] ? ' selected' : '') .'>2007</option>
-                      </select>';
-
-        default:
-            $widget = "<input type=\"text\" size=\"80\" id=\"ajaxi_$combi_id\" value=\"$value\">";
-    }
-    $ret         = $widget;
-    $ret        .= "<input type=\"button\" value=\"ULOŽIT ZMÌNU\" onclick=\"proposeChange('$combi_id', '$iid', '$field_id', (typeof do_change == 'undefined') ? 1 : do_change)\">";
-    $ret        .= "<input type=\"button\" value=\"storno\" onclick=\"$('ajaxv_$combi_id').update('".str_replace("'", "\\"."'", $repre_value )."'); $('ajaxv_$combi_id').setAttribute('aaedit', '0');\">";
-    $ret        .= " <input type=\"hidden\" id=\"ajaxh_$combi_id\" value=\"$repre_value\">";
-    $encoder = new ConvertCharset;
-    echo $encoder->Convert($ret, 'windows-1250', 'utf-8');
-    */
-
 }
 elseif (AA_V::P('cancel_changes') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
     $changes = new AA_ChangesMonitor();

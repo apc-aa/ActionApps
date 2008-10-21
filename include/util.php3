@@ -430,7 +430,6 @@ function string2id($str) {
  */
 function pack_id($unpacked_id) {
     global $errcheck;
-    // Give up tracking this, too many errors in Honza's code!
     /*
     if ($errcheck && !preg_match("/^[0-9a-f]+$/", $unpacked_id)) // Note was + instead {32}
          huhe("Warning: trying to pack $unpacked_id.<br>\n");

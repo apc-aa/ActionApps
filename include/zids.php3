@@ -261,11 +261,11 @@ class zids {
         }
         switch ($this->type) {
             case 'p': return (isset($i) ? $this->a[$i] : $this->a);
-            case 'l': return (isset($i) ? pack_id128($this->a[$i]) : array_map("pack_id128",$this->a));
-            case 't': return (isset($i) ? pack_id128(id_t2l($this->a[$i]))
-                                        : array_map("pack_id128", $this->longids()));
+            case 'l': return (isset($i) ? pack_id($this->a[$i]) : array_map("pack_id",$this->a));
+            case 't': return (isset($i) ? pack_id(id_t2l($this->a[$i]))
+                                        : array_map("pack_id", $this->longids()));
             case 's': $trans = $this->translate('l');
-                      return ( isset($i) ? pack_id128($trans[$i]) : array_map("pack_id128", $trans));
+                      return ( isset($i) ? pack_id($trans[$i]) : array_map("pack_id", $trans));
             default:
                       print("ERROR - zids:packedids(): can't handle type $this->type conversion to packedds - ask mitra");
                       return false;
@@ -415,7 +415,7 @@ class zids {
         $tags = array();
         while ( list(,$v) = each($zids->a)) {
             switch ($this->type) {
-                case 'p': $k = pack_id128(id_t2l($v)); break;
+                case 'p': $k = pack_id(id_t2l($v)); break;
                 default:
                           print("<br>Error: zids: can't retag array of type '$type', tell mitra");
                           return;
@@ -520,7 +520,7 @@ class zids {
         foreach ( $this->a as $idx => $zid ) {
             switch ($type) {
                 case 'l': $ret[$idx] = $this->s2l[$zid]; break;
-                case 'p': $ret[$idx] = pack_id128($this->s2l[$zid]); break;
+                case 'p': $ret[$idx] = pack_id($this->s2l[$zid]); break;
                 default:  $ret[$idx] = $this->l2s[$zid];
             }
         }
@@ -574,41 +574,21 @@ function guesstype($str) {
     return ('z');
 }
 
-/** pack_id128 function
- *  returns packed md5 id, not quoted !!!
- * Note that pack_id is used in many places where it is NOT 128 bit ids.
- * This version is ONLY for 128 bit ids.
- * @param $unpacked_id
- */
-function pack_id128($unpacked_id){
-    global $errcheck;
-    if ($errcheck && !preg_match("/^[0-9a-f]{24,32}$/", $unpacked_id)) { // Note was + instead {32}
-        huhe("Warning: trying to pack $unpacked_id.<br>\n");
-    }
-    return ((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id)));
-}
-
 /** unpack_id128 function
  *  returns unpacked md5 id
  * Note this will NOT unpack correctly a quoted packed id
  * @param $packed_id
  */
-function unpack_id128($packed_id){
-    if ((string)$packed_id == "0")  return "0";
-    $foo=bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
-    if ($errcheck && !preg_match("/^[0-9a-f]{24,32}$/", $foo)) { // Note was + instead {32}
-        huhe("Warning: unpacked id to $foo..<br>\n");
-    }
-    return (string)$foo;
+function unpack_id128($packed_id) {
+    return unpack_id($packed_id);
 }
-
 
 /** q_pack_id function
  * returns packed and quoted md5 id
  * @param $unpacked_id
  */
 function q_pack_id($unpacked_id){
-    $foo = pack_id128($unpacked_id);
+    $foo = pack_id($unpacked_id);
     return quote($foo);
 }
 /** qq_pack_id function

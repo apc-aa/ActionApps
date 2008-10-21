@@ -276,7 +276,7 @@ class MLX
         } else {
             $this->fatal("MLX update: duno what to do");
         }
-        $qp_cntitemid = pack_id128($cntitemid);
+        $qp_cntitemid = pack_id($cntitemid);
         foreach ($this->ctrlFields as $k => $v) {
             if ($v['name'] == $lang) {
                 $content4mlxid[(string)$k] = array(array('value' => $qp_cntitemid));
@@ -285,7 +285,7 @@ class MLX
             }
         }
 
-        //huhl("update(", $content4mlxid, "$id, $lang, $qp_cntitemid, $cntitemid, ".unpack_id128($qp_cntitemid)." ".strlen($qp_cntitemid)." ".pack_id128($content4id->getItemID()));
+        //huhl("update(", $content4mlxid, "$id, $lang, $qp_cntitemid, $cntitemid, ".unpack_id128($qp_cntitemid)." ".strlen($qp_cntitemid)." ".pack_id($content4id->getItemID()));
         //die;
         if (empty($content4mlxid)) {
             $this->fatal("Creating the Control Language Data failed. "
@@ -301,7 +301,7 @@ class MLX
         $content4mlxid["publish_date...."][0]['value'] = time();
         $content4mlxid["expiry_date....."][0]['value'] = time() + 200*365*24*60*60;
         $content4mlxid["status_code....."][0]['value'] = 1;
-        $p_id = pack_id128($id);
+        $p_id = pack_id($id);
         if((strlen($id) != 32) || (strlen($p_id)!=16)) {
             $this->fatal("MLX update: mlxid corrupted: $id ".strlen($id).", $p_id");
         }
@@ -604,9 +604,9 @@ class MLXView
 //             __mlx_dbg(var_dump($this,true),__FUNCTION__);
 //             __mlx_dbg(var_dump(func_get_args(),true),__FUNCTION__);
         }
-        
+
         $nocache = $nocache || MLX_NOVIEWCACHE || $GLOBALS['nocache'] || $GLOBALS['mlxnoviewcache'];
-	// try cache 
+    // try cache
         if(!$nocache) {
             #create keystring from values, which exactly identifies resulting content
             $keystr = md5($this->mode.serialize($this->language)
@@ -615,9 +615,9 @@ class MLXView
                 . ':'.$group_by.':'.$type.':'.serialize($slices).':'.$neverAllItems
 //                 . ((isset($restrict_zids) && is_object($restrict_zids)) ?
 //                     serialize($restrict_zids) : "")
-                . ':'.serialize($restrict_zids) 
+                . ':'.serialize($restrict_zids)
                 . ':'.$defaultCondsOperator .':'. $cachekeyextra);
-            
+
 //             __mlx_dbg(func_get_args(),__FUNCTION__);
 
 //             if($qCache[$keystr]) {
@@ -627,7 +627,7 @@ class MLXView
 // 		$zidsObj = $qCache[$keystr];
 //                 return;
 // 	    }
-		
+
 
             $str2find = new CacheStr2find($ctrlSliceID, 'slice_id');
             if ( $res = CachedSearch( !$nocache, $keystr )) {
@@ -803,7 +803,7 @@ class MLXView
             if(!$ctrlSliceID) {
                 return "MLXView::getTranslations no ctrlSliceID";
             }
-            $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id128($slice_id)] = unpack_id128($ctrlSliceID); 
+            $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id128($slice_id)] = unpack_id128($ctrlSliceID);
         }
         $translations = $this->getPrioTranslationFields($ctrlSliceID);
         $db  = getDB();

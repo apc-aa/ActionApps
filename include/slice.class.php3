@@ -175,7 +175,7 @@ class AA_Slice {
      *
      */
     function packed_id() {
-        return pack_id128($this->unpackedid);
+        return pack_id($this->unpackedid);
     }
 
     /** getFields function
@@ -188,10 +188,18 @@ class AA_Slice {
     /** getWidgetAjaxHtml function
      * @param $field_id
      * @param $item_id
-     * @param $aa_value
+     * @param $visual
      */
     function getWidgetAjaxHtml($field_id, $item_id, $visual='') {
         return $this->fields->getWidgetAjaxHtml($field_id, $item_id, $visual);
+    }
+
+    /** getWidgetAjaxHtml function
+     * @param $field_id
+     * @param $item_id
+     */
+    function getWidgetLiveHtml($field_id, $item_id) {
+        return $this->fields->getWidgetLiveHtml($field_id, $item_id);
     }
 
     /** getLang function

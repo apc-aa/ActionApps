@@ -146,7 +146,7 @@ function GetTableView($viewID) {
                                         "view" => array( "type"=>"text",
                                                          "readonly" => true )),
             "module_id" => array ("caption" => _m("Module Id"),
-                                  "default" => pack_id128($GLOBALS["slice_id"]),
+                                  "default" => pack_id($GLOBALS["slice_id"]),
                                         "view" => array( "type"=>"hide",
                                                          "readonly" => true )),
             "name"            => array ("caption" => _m("Name"),

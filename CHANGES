@@ -1,3 +1,29 @@
+10/21/08 - new {live:<item_id>:<field_id>} construct which allows in-place
+{honzam}   editing of the fields. it is similar to {ajax:} construct, but the
+           edit field is visible all the time and on "onchange" event is written
+           directly to the database. It works for most of the input types - for
+           checkboxes it works as "live checkbox (f_k)", but this ine works also
+           for textfields, ... You can use it in admin interface as well as
+           in public pages if you include /apc-aa/javascript/aajslib.php3
+           javascript file.
+           It is good idea to use styles to indicate the input state:
+             select.live, input.live, textarea.live
+               { border: 1px solid #EBDABE; }
+             select.updating, input.updating, textarea.updating
+               { border: 1px solid #FF0000;}
+           The <item_id> parameter is optional, so it could look like
+             {live::headline........};
+           This feature is experimental, yet.
+         - new possibility to add new field to slice not only based on
+           the template slice, but also from current slice on "Admin"->"Fields"
+           page - good for creating set of similar fields in the slice
+         - now you can use _#this "alias" with all alias functions - it is
+           allways expanded before the function is invoked and is replaced
+           by {field_id........}, where field_id is the field for which is
+           the alias defined. Use it like:
+              vid=23&cmd[]=x-23-_#this for f_v, or
+              {ifset:_#this:<h2>_#1</h2>} in f_t, ...
+         - removed unused pack_id128() function, small fixes
 10/15/08 - Spanish translation of Polls module (thanks to Colnodo)
 (honzam) - new possibility to use _#1 shortcut for condition in {switch}
            statement. It works in the same way as in {ifset:} statement.

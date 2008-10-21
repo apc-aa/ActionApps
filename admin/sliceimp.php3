@@ -82,7 +82,7 @@ function proove_ID($slice)
     // back-up old ids, if you want import slice definition with new id
     $new_slice_ids[$slice["id"]]["new_id"] = new_id();
 
-    $slice_id = addslashes(pack_id128($slice["id"]));
+    $slice_id = q_pack_id($slice["id"]));
     //echo "$slice_id";
     $SQL = "SELECT id FROM slice WHERE id=\"$slice_id\"";
 
@@ -428,7 +428,7 @@ if ($Cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list |
 <?php
 if ($IDconflict) {?>
     <tr><td class="tabtxt">
-    <b><?php echo sprintf (_m("Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>"),pack_id128($slice_id)) ?></b></p>
+<b><?php echo _m("Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>") ?></b></p>
     <p align="center">
 <textarea name="conflicts_list" rows=<?php echo count($conflicts_ID) ?> cols="90">
 <?php

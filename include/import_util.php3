@@ -230,6 +230,10 @@ class Actions {
     }
 }
 
+function nszmOldId2New($id) {
+    return unpack_id(substr('i'.$id.'-08-08-31xxxxxxxxxx',0,16));
+}
+
 /** Represents an action, which transform a field from an input ItemContent to
  *  one field of an output ItemContent.
  *	Each action has two additional parameters:
@@ -338,15 +342,33 @@ class Action {
                 if (!is_array($from)) $from = array($from);
                 foreach ( $from as $tostore ) {
                     $save = trim($itemContent->GetValue($tostore));
-                        $fvalues[]['value'] = $save;
+                    $fvalues[]['value'] = $save;
                 }
                 break;
             }
             case "storeparsemulti": {
                 $items = explode ($this->params,trim($itemContent->GetValue($from)));
                 foreach ( $items as $save ) {
-                    $fvalues[]['value'] = $save;
+                    $fvalues[]['value'] = trim($save);
                 }
+                break;
+            }
+            case "storeparsemultiunpack": {
+                $items = explode ($this->params,trim($itemContent->GetValue($from)));
+                foreach ( $items as $save ) {
+                    $fvalues[]['value'] = unpack_id(trim($save));
+                }
+                break;
+            }
+            case "nszmmultiidunpacked": {
+                $items = explode($this->params,trim($itemContent->GetValue($from)));
+                foreach ( $items as $save ) {
+                    $fvalues[]['value'] = nszmOldId2New(trim($save));
+                }
+                break;
+            }
+            case "nszmnewidunpacked": {
+                $fvalues[]['value'] = nszmOldId2New($itemContent->GetValue($from));		// todo - pokud neexistuje pole s $from , co delat?                $items = explode($this->params,trim($itemContent->GetValue($from)));
                 break;
             }
             case "string2id": {
@@ -386,6 +408,10 @@ class Action {
                 $fvalues[]['value'] = get_if($itemContent->GetValue($from), 1);
                 break;
             }
+            case "password": {
+                $fvalues[]['value'] = crypt($itemContent->GetValue($from), 'xx');
+                break;
+            }
             default: {
                   return "Unknown function: $this->action";
             }
@@ -413,6 +439,7 @@ $nszmciselnik = array (
 '16'=>'1.6',
 '17'=>'1.7',
 '18'=>'1.8',
+'19'=>'1.9',
 '2'=>'2.',
 '21'=>'2.1',
 '22'=>'2.2',
@@ -422,6 +449,7 @@ $nszmciselnik = array (
 '26'=>'2.6',
 '27'=>'2.7',
 '28'=>'2.8',
+'29'=>'2.9',
 '3'=>'3.',
 '31'=>'3.1',
 '32'=>'3.2',
@@ -439,6 +467,9 @@ $nszmciselnik = array (
 '44'=>'4.4',
 '45'=>'4.5',
 '46'=>'4.6',
+'47'=>'4.7',
+'48'=>'4.8',
+'49'=>'4.9',
 '5'=>'5.',
 '51'=>'5.1',
 '52'=>'5.2',
@@ -446,6 +477,9 @@ $nszmciselnik = array (
 '54'=>'5.4',
 '55'=>'5.5',
 '56'=>'5.6',
+'57'=>'5.7',
+'58'=>'5.8',
+'59'=>'5.9',
 '6'=>'6.',
 '61'=>'6.1',
 '62'=>'6.2',
@@ -463,6 +497,9 @@ $nszmciselnik = array (
 '74'=>'7.4',
 '75'=>'7.5',
 '76'=>'7.6',
+'77'=>'7.7',
+'78'=>'7.8',
+'79'=>'7.9',
 '8'=>'8.',
 '81'=>'8.1',
 '82'=>'8.2',
@@ -471,6 +508,8 @@ $nszmciselnik = array (
 '85'=>'8.5',
 '86'=>'8.6',
 '87'=>'8.7',
+'88'=>'8.8',
+'89'=>'8.9',
 '9'=>'9.',
 '91'=>'9.1',
 '92'=>'9.2',
@@ -479,7 +518,8 @@ $nszmciselnik = array (
 '95'=>'9.5',
 '96'=>'9.6',
 '97'=>'9.7',
-'98'=>'9.8'
+'98'=>'9.8',
+'99'=>'9.9'
 );
 
 $nszmmesta = array(
@@ -503,7 +543,7 @@ $nszmmesta = array(
  *  Get List of actions
  */
 function getActions() {
-    $a = array("store","removestring","formatdate", "web", "storeparsemulti","value","string2id", 'nszmstav', 'nszmciselnik', 'nszmmesta', "default");
+    $a = array("store","removestring","formatdate", "web", "storeparsemulti","storeparsemultiunpack",'nszmnewidunpacked', 'nszmmultiidunpacked', "value","string2id", 'nszmstav', 'nszmciselnik', 'nszmmesta', 'password', "default");
     // not used:  "convertvalue","storemultiasone", "storeasmulti", "not map"
     foreach ( $a as $v ) { $actions[$v] = $v; }
     return $actions;
