@@ -642,11 +642,11 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
             $format = GetDiscussionFormat($view_info);
             // This is probably a bug, I think it should be
-            //  $format['slice_id'] = pack_id128($slice_id); // packed, not quoted
+            //  $format['slice_id'] = pack_id($slice_id); // packed, not quoted
             //  Re: No, it is not bug - format normaly holds data from slice table,
             //      where id of slice is stored in 'id' column (honzam)
 
-            $format['id'] = pack_id128($slice_id);                  // set slice_id because of caching
+            $format['id'] = pack_id($slice_id);                  // set slice_id because of caching
 
             // special url parameter disc_url - tell us, where we have to show
             // discussion fulltext (good for discussion search)
