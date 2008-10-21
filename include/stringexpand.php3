@@ -24,6 +24,7 @@
  * @link      http://www.apc.org/ APC
 */
 
+
 // ----------------------------------------------------------------------------
 //                         stringexpand
 //
@@ -506,14 +507,13 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
             // no need to addf toggle
             $ret = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         } else {
-        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid');return false;\">$switch_state_1</a>\n";
-        $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
-        $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
+            $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid');return false;\">$switch_state_1</a>\n";
+            $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
+            $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
         }
         return $ret;
     }
 }
-
 
 /** Expands {shorten:<text>:<length>[:<mode>]} like:
  *          {shorten:{abstract.......1}:150}
@@ -707,7 +707,9 @@ function parseLoop($out, &$item) {
 
     $val = array();
     // special - {@fieldlist...} - lists all the fields
-    // (good for authomatic CSV generation, for example)
+    // (good for authomatic CSV generation, for example:
+    //        Odd HTML is: {@fieldlist(_#CSV_FMTD):,:_#1}, where
+    //        _#CSV_FMTD is defined as f_t and with parameter: {alias:{loop............}:f_t::csv}.
     if ( $field == 'fieldlist' ) {
         $item_slice  = AA_Slices::getSlice($item->getSliceID());
         $item_fields = $item_slice->getFields();
@@ -734,11 +736,14 @@ function parseLoop($out, &$item) {
     } else { // we have format string
         if ( !is_array($params) ) {
             // case if we have only one parameter for substitution
+            $val_delim = '';
             foreach ($val as $value) {
-                $dummy = str_replace("_#1", $value['value'], $format_str);
-                $ret_str = $ret_str . ($ret_str ? $separator : "") . $dummy;
+                $dummy     = str_replace("_#1", $value['value'], $format_str);
+                $ret_str   = $ret_str . $val_delim . $dummy;
+                $val_delim = $separator;
             }
         } else {
+            $val_delim = '';
             // case with special parameters in ()
             foreach ($val as $value) { // loop for all values
                 $dummy = $format_str; // make work-copy of format string
@@ -769,7 +774,8 @@ function parseLoop($out, &$item) {
                     }
                     $dummy = str_replace("_#".($i+1), $par, $dummy);
                 }
-                $ret_str = $ret_str . ($ret_str ? $separator : "") . $dummy;
+                $ret_str   = $ret_str . $val_delim . $dummy;
+                $val_delim = $separator;
             }
         }
     }
@@ -979,7 +985,6 @@ class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
         return AA_Stringexpand_Date::expand($format,$timestamp);
     }
 }
-
 
 /** Date range mostly for event calendar
  *   {daterange:<start_timestamp>:<end_timestamp>}
@@ -2319,30 +2324,6 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
         $ret = '';
         $alias_name = ($show_alias == '') ? '' : substr($show_alias, 2);
         if ( $item_id AND $field_id) {
-
-    /*        $changes_monitor = new AA_ChangesMonitor();
-            $props     = $changes_monitor->getProposals(array($item_id));
-            $proposals = $props->getValues(array($item_id));
-            if ( $proposals ) {
-                $change_cmd = '';
-                foreach ( $proposals as $change_id => $changes ) {
-                    foreach ( $changes as $selector => $values ) {
-                        if ( $selector == $fid ) {
-                            foreach ( $values as $value ) {
-                                $change_cmd .= "\n  <div class=\"change_cmd\">$value <input type=\"button\" value=\"zmenit\" onclick=\"AcceptChange('$change_id', '$divid')\"></div>";
-                            }
-                        }
-                    }
-                }
-            }
-            if ( $zmena_cmd ) {
-                $odmitnout_text = ( $fid == 'edit_note......1') ? 'Vyreseno' : 'odmitnout zmeny';
-                $ret .= "<div class=\"change_cmds\" id=\"zmena_cmds$divid\">
-                         $zmena_cmd
-                         <div class=\"change_cmd\"><input type=\"button\" value=\"$odmitnout_text\" onclick=\"CancelChanges('$item_id', '$fid', '$divid')\"></div>
-                      </div>";
-            }
-    */
             $item        = AA_Item::getItem(new zids($item_id));
             $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
             $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
@@ -2351,17 +2332,45 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
             $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\">\n";
             $ret .= " <div class=\"ajax_value\" id=\"ajaxv_$input_id\" aaalias=\"".htmlspecialchars($alias_name)."\">$repre_value</div>\n";
             $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_$input_id\"></div>\n";
-
-    /*        $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_{$iid}_{$fid}\">
-                         $zmena_cmd
-                         <div class=\"change_cmd\"><input type=\"button\" value=\"$odmitnout_text\" onclick=\"CancelChanges('$item_id', '$fid', '$divid')\"></div>
-                      </div>\n";
-    */
             $ret .= "</div>\n\n";
         }
         return $ret;
     }
 }
+
+/** Allows on-line editing of field content */
+class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // It works with database, so it shoud always look in the database
+    /** expand function
+     * @param $item_id
+     * @param $field_id
+     */
+    function expand($item_id, $field_id) {
+        $ret = '';
+
+        if (!$field_id) {
+            return '';
+        }
+
+        $item = $item_id ? AA_Item::getItem(new zids($item_id)) : $this->item;
+        if (!empty($item)) {
+
+            $iid   = $item->getItemID();
+            $slice = AA_Slices::getSlice($item->getSliceId());
+
+            // Use right language (from slice settings) - languages are used for button texts, ...
+            $lang  = $slice->getLang();
+            //$charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
+            bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_output_lang.php3");
+
+            $ret   = $slice->getWidgetLiveHtml($field_id, $iid);
+        }
+        return $ret;
+    }
+}
+
+
 
 /** @todo - convert whole stringexpand to the new class approach
  *        - this is just begin
