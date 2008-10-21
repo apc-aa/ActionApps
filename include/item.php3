@@ -614,9 +614,15 @@ class AA_Item {
         $function = ParseFnc($ali_arr['fce']);
         $fce      = $function['fnc'];
 
+        if (!is_callable(array($this,$fce))) {
+            return _m('Error: wrong alias function %1 for %2', array($fce,$alias));
+        }
+
         // call function (called by function reference (pointer))
         // like f_d("start_date......", "mm-dd")
-        return $this->$fce(get_if($use_field, $ali_arr['param']), $function['param']);
+        $field_id = get_if($use_field, $ali_arr['param']);
+        $param    = str_replace('_#this', '{'.$field_id.'}', $function['param']);
+        return call_user_func_array( array($this,$fce), array($field_id, $param));
     }
 
     /** remove_string function
@@ -1314,10 +1320,7 @@ class AA_Item {
         while ( $part = strstr( $part, "_#" )) {  // aliases for field content
             $fid = substr( $part, 2, 16 );         // looks like _#headline........
 
-            if ( substr( $fid, 0, 4 ) == "this" ) {  // special alias _#this
-                $param = str_replace( "_#this", $this->f_h($col, "-"), $param );
-            }
-            elseif ( substr( $fid, 0, 5) == "slice" ) {  // Another special alias _#slice
+            if ( substr( $fid, 0, 5) == "slice" ) {  // Another special alias _#slice
                 //Mitra says: looks like this mucks up _#slice_id........
                 $param = str_replace("_#slice", $this->getval('slice_id........'), $param);
             }
@@ -1409,10 +1412,8 @@ class AA_Item {
 
         $name = "live_checkbox[".$short_id."][$col]";
         $img  = $this->getval($col) ? "on" : "off";
-        return "<img width=\"16\" height=\"16\" name=\"$name\" border=\"0\"
-                onClick='javascript:CallLiveCheckbox (\"$name\");'
-                src=\"".AA_INSTAL_PATH."images/cb_".$img.".gif\"
-                alt=\"".($this->getval($col) ? _m("on") : _m("off"))."\">";
+        return "<img width=\"16\" height=\"16\" name=\"$name\" border=\"0\" onClick='CallLiveCheckbox(\"$name\");'
+                src=\"".AA_INSTAL_PATH."images/cb_".$img.".gif\" alt=\"".($this->getval($col) ? _m("on") : _m("off"))."\">";
     }
 
     /** f_x function
