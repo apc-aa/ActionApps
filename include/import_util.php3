@@ -154,15 +154,15 @@ class Actions {
              if (!$action || $action['action']->getAction() == "default") {
                  switch ($field_id) {
                      // case "display_count..." : $v = 0; break;
-                     case "status_code....." : $done = 1; $fieldVal[]['value'] = 1; break; // todo
-                     case "flags..........." : $done = 1; $fieldVal[]['value'] = ITEM_FLAG_OFFLINE; break;
-                     case "publish_date...." : $done = 1; $fieldVal[]['value'] = time(); break;
-                     case "post_date......." : $done = 1; $fieldVal[]['value'] = time(); break;
-                     case "last_edit......." : $done = 1; $fieldVal[]['value'] = time(); break;
-                     case "expiry_date....." : $done = 1; $fieldVal[]['value'] = mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
-                     case "posted_by......." : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
-                     case "edited_by......." : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
-                     case "id.............." : $done = 1; $fieldVal[]['value'] = pack_id(new_id()); break;
+                     case 'status_code.....' : $done = 1; $fieldVal[]['value'] = 1; break; // todo
+                     case 'flags...........' : $done = 1; $fieldVal[]['value'] = ITEM_FLAG_OFFLINE; break;
+                     case 'publish_date....' : $done = 1; $fieldVal[]['value'] = time(); break;
+                     case 'post_date.......' : $done = 1; $fieldVal[]['value'] = time(); break;
+                     case 'last_edit.......' : $done = 1; $fieldVal[]['value'] = time(); break;
+                     case 'expiry_date.....' : $done = 1; $fieldVal[]['value'] = mktime(0,0,0,date("m"),date("d"),date("Y")+10) ; break;	// expiry in 10 years default : TODO
+                     case 'posted_by.......' : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
+                     case 'edited_by.......' : $done = 1; $fieldVal[]['value'] = $auth->auth['uid']; break;	// todo
+                     case 'id..............' : $done = 1; $fieldVal[]['value'] = new_id(); break;
                      default :
                          if ( $action['from'] && ($action['from'] != '__empty__')) {
                              $action['action']->setAction('store');
@@ -175,7 +175,7 @@ class Actions {
                  }
              } elseif ($action['action']->getAction() == "new") {
                   $done = 1;
-                  $fieldVal[]['value'] = pack_id(new_id());
+                  $fieldVal[]['value'] = new_id();
              }
              if ( !$done ) {
 
@@ -187,7 +187,11 @@ class Actions {
              }
              if (isset($fieldVal) and is_array($fieldVal)) {
                  // store the output field to the output item content
-                 $outputItemContent->setFieldValue($field_id,$fieldVal);
+                 if ($field_id == 'id..............') {
+                     $outputItemContent->setItemId($fieldVal[0]['value']);
+                 } else {
+                     $outputItemContent->setFieldValue($field_id,$fieldVal);
+                 }
              }
         }
     }
@@ -388,7 +392,7 @@ class Action {
                 break;
             }
             case "nszmciselnik": {
-                $from = array('ciselnik1','ciselnik2','ciselnik3');
+                $from = array('c1','c2','c3','c4','c5','c6');
                 foreach ( $from as $tostore ) {
                     $save = $GLOBALS['nszmciselnik'][(string)trim($itemContent->GetValue($tostore))];
                     if ( $save ) {
@@ -397,6 +401,18 @@ class Action {
                 }
                 break;
             }
+/*
+            case "nszmciselnik": {
+                $items = explode ($this->params,trim($itemContent->GetValue($from)));
+                foreach ( $items as $tostore ) {
+                    $save = $GLOBALS['nszmciselnik'][(string)trim($tostore)];
+                    if ( $save ) {
+                        $fvalues[]['value'] = $save;
+                    }
+                }
+                break;
+            }
+ */
             case "nszmmesta": {
                 $save = $GLOBALS['nszmmesta'][(string)trim($itemContent->GetValue($from))];
                 if ( $save ) {
