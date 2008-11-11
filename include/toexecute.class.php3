@@ -160,7 +160,10 @@ class AA_Toexecute {
 
         // get just ids - the task itself we will grab later, since the objects
         // in the database could be pretty big, so we want to grab it one by one
-        $tasks = GetTable2Array("SELECT id FROM toexecute WHERE execute_after < ".now()." ORDER by priority DESC", '', 'id');
+        // If the priority is 0, we consider this task as unpossible to execute,
+        // because the script tries execute it several times and without success.
+        // @todo such task should be removed by some garbage collector
+        $tasks = GetTable2Array("SELECT id FROM toexecute WHERE execute_after < ".now()." AND priority > 0 ORDER by priority DESC", '', 'id');
         return $this->executeTask($tasks, $allowed_time);
     }
 
