@@ -438,7 +438,7 @@ class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
         $linkpart    = explode('@', $email);
         $mailprotect = "'".$linkpart[0]."'+'@'+'".$linkpart[1]."'";
         $linktext    = ($text=='') ? $mailprotect : "'".str_replace("'", "\'", $text)."'";
-        $ret = "<script type=\"text/javascript\">document.write('<a href=\"mai'+'lto:'+$mailprotect+'\">'+$linktext+'</a>')</script>";
+        $ret = "<script type=\"text/javascript\">document.write('<a href=\"mai'+'lto:'+$mailprotect+'\">'+$linktext+'<\/a>')</script>";
         return $ret;
     }
 }

@@ -434,7 +434,7 @@ function pack_id($unpacked_id) {
     if ($errcheck && !preg_match("/^[0-9a-f]+$/", $unpacked_id)) // Note was + instead {32}
          huhe("Warning: trying to pack $unpacked_id.<br>\n");
     */
-    return ((string)$unpacked_id == "0" ? "0" : pack("H*",trim($unpacked_id)));
+    return ((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id)));
 }
 
 /** unpack_id
