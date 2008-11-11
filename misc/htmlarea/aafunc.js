@@ -63,7 +63,7 @@ function xinha_init() {
 }
 
 function switchHTML(name) {
-    elem = document.getElementById(name+"html");
+    elem = $$('input[name="'+name+"html"+'"]');
     //elem = document.inputform.eval(name+"html");
     if ( elem != null ) {
         for (i=0; i<elem.length; i++) {
@@ -73,10 +73,7 @@ function switchHTML(name) {
         }
     }
     if (HTMLArea.checkSupportedBrowser) {
-        elem = document.getElementById("htmlplainspan"+name);
-        if ( elem != null ) {
-            elem.style.display = "none";
-        }
+        $("htmlplainspan"+name).hide();
     }
 }
 
