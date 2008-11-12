@@ -81,14 +81,13 @@ require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 add_vars();
 
 if (is_numeric($time_limit)) {
-    set_time_limit((int)$time_limit);
+    @set_time_limit((int)$time_limit);
 }
 
 if (isset($slice_id)) $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 	   	 // open BD
 $db2 = new DB_AA; 		 // open BD
 
-if ($time_limit) set_time_limit($time_limit);
 if ($debug) huhl("Starting view");
 
 // Need to be able to set content-type for RSS, cannot do it in the view
