@@ -286,14 +286,18 @@ class AA_Set extends AA_Object {
     function AA_Set($conds=null, $sort=null) {
         $this->clear();
         if ( !is_null($conds) ) {
-            if (is_array($conds)) {
+            if (is_object($conds)) {
+                $this->addCondition($conds);
+            } elseif (is_array($conds)) {
                 $this->addCondsFromArray($conds, 'LIKE');
             } else {
                 $this->addCondsFromString($conds);
             }
         }
         if ( !is_null($sort) ) {
-            if (is_array($sort)) {
+            if (is_object($sort)) {
+                $this->addSortorder($sort);
+            } elseif (is_array($sort)) {
                 $this->addSortFromArray($sort);
             } else {
                 $this->addSortFromString($sort);
