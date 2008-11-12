@@ -680,7 +680,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
 
                 $newcontent4id->setItemID($item_id);
                 $newcontent4id->setSliceID($sli_id);
-                if ($newcontent4id->storeItem( 'update', array(false, false, false))) {    // not invalidatecache, not feed, no events
+                if ($newcontent4id->storeItem( $silent ? 'update_silent' : 'update', array(false, false, false))) {    // not invalidatecache, not feed, no events
                     $updated_items++;
                 }
                 $slices2invalidate[$sli_id] = $sli_id;
@@ -761,6 +761,8 @@ FrmItemGroupSelect( $items, $searchbar, 'items', $messages, $additional);
 FrmTabSeparator( _m('Fill field') );
 FrmInputSelect('field_id',       _m('Field'),             $field_select,       $field_id, true,
                _m('Be very carefull with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item\'s data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now).'));
+
+FrmInputChBox('silent', _m('Silent'), true, false, "", 1, false, _m('Just update the field and do not perform any other operations like set-last-edit, evaluate-computed-field, feed, ...'));
 
 FrmStaticText(_m('Action'), AA_Components::getSelectionCode('AA_Transformation_', SEARCH_REPLACE_PREFIX, $params), true, "", "", false );
 

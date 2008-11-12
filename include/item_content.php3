@@ -695,9 +695,15 @@ class ItemContent {
      *   @param string $mode   how to deal with the stored item.
      *      update        - the fields defined in $this object are cleared and
      *                      then overwriten by values from $this object
-     *                      - other fields of the item are untouched. The id
-     *                      of the item must be set before calling this
+     *                      - other fields of the item are untouched (except 
+     *                      the last_edit, edited_by and also all computed 
+     *                      fields). 
+     *                      The id of the item must be set before calling this
      *                      function ($this->setItemID($id))
+     *      update_silent - the same as update, but no additional operations are
+     *                      performed (the computed fields are not computed, 
+     *                      last_edit and edited_by is not changed, events are 
+     *                      not issued
      *      add           - do not clear the current content - the values are
      *                      added in paralel to curent values (stored
      *                      as multivalues for all fields stored in content
@@ -730,27 +736,22 @@ class ItemContent {
     function storeItem( $mode, $flags = array(), $context='direct' ) {
         global $event, $itemvarset;
 
-        $invalidatecache = isset($flags[0]) ? $flags[0] : true;
-        $feed            = isset($flags[1]) ? $flags[1] : true;
-        $throw_events    = isset($flags[2]) ? $flags[2] : true;
-
         $itemvarset = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
 
         $slice_id   = $this->getSliceID();
         $slice      = AA_Slices::getSlice($slice_id);
         $fields     = $slice->fields('record');
+        $silent     = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
-
-        if ( ($mode != 'insert') AND
-             ($mode != 'insert_new') AND
-             ($mode != 'insert_if_new') AND
-             ($mode != 'insert_as_new') AND
-             ($mode != 'overwrite') AND
-             ($mode != 'add')) {
+        if ( !in_array($mode, array('insert', 'insert_new', 'insert_if_new', 'insert_as_new', 'overwrite', 'add', 'update_silent'))) {
             $mode = 'update';
         }
 
         switch ($mode) {
+            case 'update_silent': $silent = true;
+                                  $mode   ='update';
+                                  $id     = $this->getItemID();
+                                  break;
             case 'insert_as_new': $id = new_id();
                                   $mode ='insert';
                                   break;
@@ -778,7 +779,11 @@ class ItemContent {
             default:              $id   = $this->getItemID();
                                   break;
         }
-
+        
+        $invalidatecache = isset($flags[0]) ? $flags[0] : !$silent;
+        $feed            = isset($flags[1]) ? $flags[1] : !$silent;
+        $throw_events    = isset($flags[2]) ? $flags[2] : !$silent;
+        
         if (!($id AND is_array($fields))) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", array($slice->name(),$id)));  // set error code
             if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
@@ -793,9 +798,13 @@ class ItemContent {
         // remove old content first (just in content table - item is updated)
         if (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add')) {
             $oldItemContent = new ItemContent($id);
-            $event->comes('ITEM_BEFORE_UPDATE', $slice_id, 'S', $this, $oldItemContent);
+            if ($throw_events) {
+                $event->comes('ITEM_BEFORE_UPDATE', $slice_id, 'S', $this, $oldItemContent);
+            }
         } else {
-            $event->comes('ITEM_BEFORE_INSERT', $slice_id, 'S', $this);
+            if ($throw_events) {
+                $event->comes('ITEM_BEFORE_INSERT', $slice_id, 'S', $this);
+            }
         }
 
         switch ($mode) {
@@ -838,8 +847,10 @@ class ItemContent {
         switch ($mode) {
             case 'update':
             case 'add':
-                $itemvarset->add("last_edit", "quoted",   default_fnc_now(""));
-                $itemvarset->add("edited_by", "quoted",   default_fnc_uid(""));
+                if (!$silent) {
+                    $itemvarset->add("last_edit", "quoted", default_fnc_now(""));
+                    $itemvarset->add("edited_by", "quoted", default_fnc_uid(""));
+                }
                 $itemvarset->doUpdate('item');
                 break;
             case 'overwrite':
@@ -878,9 +889,11 @@ class ItemContent {
         $itemContent->setByItemID($id,true);     // ignore reading password
 
         // look for computed fields and update it (based on the stored item)
-        if ( $itemContent->updateComputedFields($id, $fields, $mode) ) {
-            // if computed fields are updated, reread the content
-            $itemContent->setByItemID($id,true); // ignore reading password
+        if (!$silent) {
+            if ( $itemContent->updateComputedFields($id, $fields, $mode) ) {
+                // if computed fields are updated, reread the content
+                $itemContent->setByItemID($id,true); // ignore reading password
+            }
         }
 
         if ($feed) {
