@@ -1299,6 +1299,19 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
 // }
 
 
+class AA_Stringexpand_View extends AA_Stringexpand {
+    /** expand function
+     * @param $vid, $ids
+     */
+    function expand($vid, $ids=null) {
+        $param = "vid=$vid";
+        if (isset($ids)) {
+            $param .= "&cmd[$vid]=x-$vid-$ids";
+        }
+        return GetView(ParseViewParameters($param));
+    }
+}
+
 
 
 /** Allows you to call view with conds:
@@ -1460,8 +1473,64 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
         if (trim($seo_string)=='') {
             return '';
         }
+        $slices_arr = explode('-', $slices);
+        $set        = new AA_Set(new AA_Condition('seo.............', '=', '"'.$seo_string.'"'));
+        $zids       = QueryZIDs($slices_arr, $set->getConds(), '', 'ALL');
+        return join($zids->longids(), '-');
         // added expiry date in order we can get ids also for expired items
         return AA_Stringexpand_Ids::expand($slices, 'd-expiry_date.....->-0-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"');
+    }
+}
+
+/** returns seo name created from the string
+ *  {seoname:<string>[:<unique_slices>[:<encoding>]]}
+ *  {seoname:About Us:3aa35236626262738348478463536224:windows-1250}
+ *  returns about-us
+ *  If you specify the unique_slices parameter, then the id is created as unique
+ *  for those slices. Slices are separated by dash
+ *  Encoding parameter helps convert the name to acsii. You shoud write here
+ *  the character encoding from the slice setting. The default is utf-8, but you
+ *  can use any (windows-1250, iso-8859-2, iso-8859-1, ...)
+ */
+class AA_Stringexpand_Seoname extends AA_Stringexpand {
+    /** expand function
+     * @param $string
+     * @param $unique_slices
+     * @param $encoding
+     */
+    function expand($string, $unique_slices='', $encoding='') {
+        require_once AA_INC_PATH."convert_charset.class.php3";
+        $encoder = new ConvertCharset;
+        $base = $encoder->Convert($string, empty($encoding) ? 'utf-8' : $encoding, 'us-ascii');
+        $base = preg_replace('/[^\w]/', '-', $base);
+        while ( strpos($base, '--') !== false ) {
+            $base = str_replace('--', '-', $base);
+        }
+        // remove starting and ending dash
+        $base = trim(strtolower($base), '-');
+        // we do not want to have looooong urls
+        if (strlen($base) > 124) {
+            $base = substr($base, 0, 124);
+            if (strrpos($base, '-') > 80) {
+                // do not split in middle of the word
+                $base = substr($base, 0, strrpos($base, '-'));
+            }
+        }
+
+        $add = '';
+        if ( !empty($unique_slices) ) {
+            $i = 1;
+            // we do not want to create infinitive loop for wrong parameters
+            for ($i=2; $i < 100000; $i++) {
+                $ids = AA_Stringexpand_Seo2ids::expand($unique_slices, $base.$add);
+                if (empty($ids)) {
+                    // we found unique seo-name
+                    break;
+                }
+                $add = '-'.$i;
+            }
+        }
+        return $base.$add;
     }
 }
 
