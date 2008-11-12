@@ -172,11 +172,12 @@ class AA_Router {
  *
  *  which is parsed into following variables
  *
- *    www.example.org/<xlang>[<xpage>][<xflag>]/<xseo1>/<xseo2>/<xseo3>...  (<xseo> = <xseo3> - the last one)
+ *    www.example.org/<xlang>[<xpage>][<xflag>][-<xcat>]/<xseo1>/<xseo2>/<xseo3>...  (<xseo> = <xseo3> - the last one)
  *
  *       xlang = en
  *       xpage = 2
  *       xflag = test
+ *       xcat  = bio
  *       xseo1 = about-us
  *       xseo2 = projekts
  *       xseo3 = eficiency
@@ -200,7 +201,7 @@ class AA_Router_Seo extends AA_Router {
         
         $parsed_url = parse_url($apc);
         $arr = explode('/', ltrim($parsed_url['path'],'/'));
-        $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag'), '/(cz|en|de)([0-9]*)([^0-9]*)/',$arr[0]);
+        $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag','xcat'), '/(cz|en|de)([0-9]*)([^-0-9]*)[-]?(.*)/',$arr[0]);
 
         for ($i=1; $i < count($arr); $i++) {
             $ret['xseo'.$i] = $arr[$i];
@@ -217,7 +218,7 @@ class AA_Router_Seo extends AA_Router {
     }
 
     function getState($apc_state) {
-        $ret = '/'.$apc_state['xlang'].$apc_state['xpage'].$apc_state['xflag'].'/';
+        $ret = '/'.$apc_state['xlang'].$apc_state['xpage'].$apc_state['xflag'].($apc_state['xcat'] ? '-'. $apc_state['xcat'] : '').'/';
         $i=1;
         while (!empty($apc_state['xseo'.$i])) {
             $ret .= $apc_state['xseo'.$i]. '/';
@@ -235,6 +236,7 @@ class AA_Router_Seo extends AA_Router {
         aktualizuje hodnoty v $apc_state a vrati novy aktualni
         apc retezec */
     function newState($apc_state, $query_string) {
+        $new_arr = array();
         parse_str($query_string, $new_arr);   // now we have $new_arr['x'], $new_arr['p'], etc.
 
         if (!empty($new_arr['xlang'])) { //change language
@@ -283,6 +285,9 @@ class AA_Router_Seo extends AA_Router {
         }
         if (!empty($new_arr['xflag'])) { //change flag
             $apc_state['xflag'] = $new_arr['xflag'];
+        }
+        if (!empty($new_arr['xcat'])) { //change flag
+            $apc_state['xcat'] = $new_arr['xcat'];
         }
         $x_max = self::_maxKey($apc_state, 'xseo');
         // we clear all unused {xseoX} in order {xseoX} is allaways SEO string or empty string and not something like {xseo4}
