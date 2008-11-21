@@ -45,7 +45,6 @@ define ('AA_INC_PATH', "../include/");
 require_once AA_INC_PATH."config.php3";
 require_once AA_INC_PATH."locsess.php3";   // DB_AA definition
 
-//require_once AA_INC_PATH."util.php3";
 //require_once AA_INC_PATH."constants.php3";
 //require_once AA_INC_PATH."formutil.php3";
 
