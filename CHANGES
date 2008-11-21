@@ -1,22 +1,27 @@
+11/20/08 - new service/sql_update.php script - better structured, seprated
+(honzam)   to standalone directory, so you can copy the service directory
+           to your old AA and update it from there. All actions have tests,
+           so it runs conditionaly. All actions was rewriten to AA_Optimize
+           class, so you can run them separately from AA -> Optimize page
 11/12/08 - new "silent" possibility with "Modify content" tool - all the fields
-(honzam)   are updated but no other fields are touched (no last_edit, 
+(honzam)   are updated but no other fields are touched (no last_edit,
            nor computed fields are updated)
-         - new {seoname:<string>[:<unique_slices>[:<encoding>]]} which returns 
-           SEO friendly name created from the string. If you specify 
-           the unique_slices parameter, then the id is created as unique for 
-           those slices. Slices are separated by dash. Encoding parameter helps 
-           convert the name to acsii. You shoud write here the character 
-           encoding from the slice setting. The default is utf-8, but you can 
-           use any (windows-1250, iso-8859-2, iso-8859-1, ...) 
-           Usage: 
+         - new {seoname:<string>[:<unique_slices>[:<encoding>]]} which returns
+           SEO friendly name created from the string. If you specify
+           the unique_slices parameter, then the id is created as unique for
+           those slices. Slices are separated by dash. Encoding parameter helps
+           convert the name to acsii. You shoud write here the character
+           encoding from the slice setting. The default is utf-8, but you can
+           use any (windows-1250, iso-8859-2, iso-8859-1, ...)
+           Usage:
               {seoname:About Us:3aa35236626262738348478463536224:windows-1250}
               - returns about-us
          - seo router now handles categories as well (if you need them)
 11/11/08 - fixed HTML/plain switch for wysiwyg Xinha editor
 (honzam) - fixed CSV import - better handling od imported item ids
          - the tasks in toexecute queue is considered undoable when the priority
-           lowers to zero (the priority is lowered by one each time the task 
-           is started). The zero-priority tasksk remains still in the toexecute 
+           lowers to zero (the priority is lowered by one each time the task
+           is started). The zero-priority tasksk remains still in the toexecute
            table, however
 10/21/08 - new {live:<item_id>:<field_id>} construct which allows in-place
 {honzam}   editing of the fields. it is similar to {ajax:} construct, but the
