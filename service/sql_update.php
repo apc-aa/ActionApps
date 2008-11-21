@@ -24,6 +24,11 @@ http://www.apc.org/
 // this script updates the database to last structure, create all tables, ...
 // can be used for upgrade from apc-aa v. >= 1.5 or for create new database
 
+
+ini_set('display_errors', 'On');
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
+
+
 /**
  * Handle with PHP magic quotes - quote the variables if quoting is set off
  * @param mixed $value the variable or array to quote (add slashes)
@@ -44,9 +49,6 @@ define ('AA_INC_PATH', "../include/");
 
 require_once AA_INC_PATH."config.php3";
 require_once AA_INC_PATH."locsess.php3";   // DB_AA definition
-
-//require_once AA_INC_PATH."constants.php3";  // what about delete this line?
-//require_once AA_INC_PATH."formutil.php3";
 
 /** Helper functions
  *  We are implementing all the functions here again, altrough you will be able
@@ -134,10 +136,20 @@ if (!is_callable('GetTable2Array')) {
     }
 }
 
+if (!is_callable('unpack_id')) {
+    function unpack_id($packed_id){
+        if ((string)$packed_id == "0") {
+            return "0";
+        }
+        $foo = bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
+        return (string)$foo;
+    }
+}
+
 // do not reorder those requires because of metabase and varset dependency
-require_once AA_BASE_PATH."service/metabase.class.php3";
-require_once AA_BASE_PATH."service/varset.php3";
-require_once AA_BASE_PATH."service/update.optimize.class.php";
+require_once dirname(__FILE__)."/metabase.class.php3";
+require_once dirname(__FILE__)."/varset.php3";
+require_once dirname(__FILE__)."/update.optimize.class.php";
 
 class AA_SQL_Updater {
 
@@ -248,7 +260,7 @@ echo '  For update or restore you need to know database password (see DB_PASSWOR
         Fill in first five characters of the password here
 
         <input type="text" name="dbpw5" size="5" maxsize="5" value="'.$_GET['dbpw5'].'"><br>
-        Write to database <input type="checkbox" name="fire" value="'.$_GET['fire'].'"><br>
+        Write to database <input type="checkbox" name="fire" value="1"'.($_GET['fire'] ? ' checked' : ''). '"><br>
         <small>Check this for real work with writing to database</small>
         <br><br>
 
