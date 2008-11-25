@@ -308,6 +308,7 @@ class zids {
                                         : array_map("qq_pack_id", $this->longids()));
             default:
                       print("ERROR - zids:qq_packedids(): can't handle type $this->type conversion to packedds - ask mitra");
+                      huhl($this);
                       return false;
         }
     }

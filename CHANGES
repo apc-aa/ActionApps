@@ -1,3 +1,21 @@
+11/25/08 - improvement in the polls module - fixed aliases, UI works also with
+(honza)    green AA design.
+           see new polls documentation on http://actionapps.org/en/Polls_Module
+           (Thanks to Radek Svitil/Ekolist)
+         - IP lock in Polls when enabled and limeout set to 0 never expires
+         - new {polls:<pid>} syntax for including the Polls module in the site
+         - fixed problem in Item Edit - when you edit the item containing
+           aliases (like _#HEADLINE), then the alias was unaliased in the form.
+           Now it is not
+         - fixed validation of URLs, E-mails and Alphanunerics in the Input form
+         - new parameter allowing long, short or none year representation in
+           {daterange:<start_timestamp>:<end_timestamp>:<year_format>}
+         - {live...} and {ajax:} editting is now "silent" - the last_edit nor
+           computed fields are updated in the item. The cache is invalidated
+         - added missing "num" insert type for field setting. It is exactly
+           the same as text, but we use it in some configuration for better
+           clarity of settings
+         - no allowed extension specified in Insert File
 11/20/08 - new service/sql_update.php script - better structured, seprated
 (honzam)   to standalone directory, so you can copy the service directory
            to your old AA and update it from there. All actions have tests,
@@ -24,7 +42,7 @@
            is started). The zero-priority tasksk remains still in the toexecute
            table, however
 10/21/08 - new {live:<item_id>:<field_id>} construct which allows in-place
-{honzam}   editing of the fields. it is similar to {ajax:} construct, but the
+(honzam)   editing of the fields. it is similar to {ajax:} construct, but the
            edit field is visible all the time and on "onchange" event is written
            directly to the database. It works for most of the input types - for
            checkboxes it works as "live checkbox (f_k)", but this ine works also
@@ -61,7 +79,7 @@
          - new {daterange:<start_timestamp>:<end_timestamp>} - prints date range
            mostly for event calendar
            Example:
-              {date:{start_date......}:{expiry_date.....}}
+              {daterange:{start_date......}:{expiry_date.....}}
            displays 24.12. - 28.12.2008
          - fixed seo2ids - fixed wrong expiry_date condition so the items with
            big expiry date is no longer (wrongly) filtered out

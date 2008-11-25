@@ -211,7 +211,7 @@ class Session {
 
     switch ($this->mode) {
       case "get":
-        $url .= ( strpos($url, "?") != false ?  "&" : "?" ).
+          $url .= ( strpos($url, "?") !== false ?  "&" : "?" ).
                 urlencode($this->name)."=".$this->id;
       break;
       default:
