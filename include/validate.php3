@@ -79,10 +79,9 @@ class AA_Validate {
                 case 'int':
                 case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Int();            break;
                 case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float();          break;
-                // email regexp should be improved
                 case 'e-mail':
-                case 'email':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^.+@.+\..+$/');          break;
-                case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[a-fA-Z]+$/');          break;
+                case 'email':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,6}$/');          break;
+                case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[a-zA-Z]+$/');          break;
                 case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[0-9a-f]{30,32}$/');    break;
                 case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Int(0);           break;
                 case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^_#[0-9_#a-zA-Z]{8}$/'); break;
@@ -91,7 +90,7 @@ class AA_Validate {
                 case 'password': $standard_validators[$sv_key] = new AA_Validate_Password();       break;
                 case 'unique':   $standard_validators[$sv_key] = new AA_Validate_Unique();         break;
                 case 'e_unique': $standard_validators[$sv_key] = new AA_Validate_E_Unique();       break;
-                case 'url':
+                case 'url':      $standard_validators[$sv_key] = new AA_Validate_Regexp('|^http(s?)\://\S+\.\S+|', VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters in URL - you should start with http:// or https:// and do not use space characters")); break;
                 case 'text':
                 case 'field':
                 case 'all':      $standard_validators[$sv_key] = new AA_Validate_All();            break;
@@ -103,7 +102,6 @@ class AA_Validate {
 
         return $standard_validators[$sv_key];
     }
-
     /** validate function
      *  static class function - called as AA_Validate::validate('email');
      * @param $var
