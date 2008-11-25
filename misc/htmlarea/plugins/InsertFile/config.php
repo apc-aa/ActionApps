@@ -61,7 +61,8 @@ $MY_URL_TO_OPEN_FILE  = IMG_UPLOAD_URL.$GLOBALS["slice_id"];
         You should always include server side executable file types in MY_DENY_EXTENSIONS !!!
 */
 
-$MY_ALLOW_EXTENSIONS	= array('html', 'htm', 'doc', 'xls', 'rtf', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf', 'eps', 'zip', 'rar');
+// AA_Change - all extensions allowed - Honza - 19.11.2008
+//$MY_ALLOW_EXTENSIONS	= array('html', 'htm', 'doc', 'xls', 'rtf', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf', 'eps', 'zip', 'rar', 'ppt', 'ods', 'docx', 'odt');
 $MY_DENY_EXTENSIONS		= array('php', 'php3', 'php4', 'phtml', 'shtml', 'stm', 'cgi', 'pl');
 
 /*
@@ -69,7 +70,9 @@ $MY_DENY_EXTENSIONS		= array('php', 'php3', 'php4', 'phtml', 'shtml', 'stm', 'cg
  This array specifies which files are listed in dialog. Setting to null causes that all files are listed.
  NOTE: File extensions arrays are case insensitive.
 */
-$MY_LIST_EXTENSIONS		= array('html', 'htm', 'doc', 'xls', 'rtf', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf', 'eps', 'zip', 'rar');
+
+// AA_Change - all extensions allowed - Honza - 19.11.2008
+//$MY_LIST_EXTENSIONS		= array('html', 'htm', 'doc', 'xls', 'rtf', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf', 'eps', 'zip', 'rar');
 
 /*
  MY_ALLOW_CREATE
