@@ -140,7 +140,10 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
         global $contentcache;
         $arg_list = func_get_args();   // must be asssigned to the variable
         // replace inputform field
-        return $contentcache->get('inputvar:'. join(':',$arg_list));
+        // destroy all aliases, since the content of the variablews coud contain
+        // aliases, but we don't want to unalias them. The _AA_ReMoVe_ string
+        // will be removed in dequteColons
+        return str_replace('_#','__AA_ReMoVe#', $contentcache->get('inputvar:'. join(':',$arg_list)));
     }
 }
 
@@ -987,25 +990,25 @@ class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
 }
 
 /** Date range mostly for event calendar
- *   {daterange:<start_timestamp>:<end_timestamp>}
- *   {date:{start_date......}:{expiry_date.....}} - displays 24.12. - 28.12.2008
+ *   {daterange:<start_timestamp>:<end_timestamp>:<year_format>}
+ *   {daterange:{start_date......}:{expiry_date.....}} - displays 24.12. - 28.12.2008
  *   @param $start_timestamp - timestamp of the start date
  *   @param $end_timestamp   - timestamp of the end date
- *   @param $format          - day format - the same as PHP date() function
- *                             (the default is j.n.Y)
+ *   @param $year_format     - format - Y, y or empty for 2008, 08 or none
+ *                             Y is default (2008)
  */
 class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
 
     /** expand function  */
-    function expand($start_timestamp='', $end_timestamp='') {
-        if ( date("j.n.Y", $start_timestamp) == date("j.n.Y", $end_timestamp) ) {
-            $ret = date("j.n.Y", $start_timestamp);
+    function expand($start_timestamp='', $end_timestamp='', $year_format='Y') {
+        if ( date("j.n.$year_format", $start_timestamp) == date("j.n.$year_format", $end_timestamp) ) {
+            $ret = date("j.n.$year_format", $start_timestamp);
         } elseif ( date("Y", $start_timestamp) == date("Y", $end_timestamp) ) {
-            $ret = date("j.n.", $start_timestamp). '&nbsp;-&nbsp;'. date("j.n.Y", $end_timestamp);
+            $ret = date("j.n.", $start_timestamp). '&nbsp;-&nbsp;'. date("j.n.$year_format", $end_timestamp);
         } else {
-            $ret = date("j.n.Y", $start_timestamp). '&nbsp;-&nbsp;'. date("j.n.Y", $end_timestamp);
+            $ret = date("j.n.$year_format", $start_timestamp). '&nbsp;-&nbsp;'. date("j.n.$year_format", $end_timestamp);
         }
 
         $starttime = date("G:i", $start_timestamp);
@@ -1309,6 +1312,24 @@ class AA_Stringexpand_View extends AA_Stringexpand {
             $param .= "&cmd[$vid]=x-$vid-$ids";
         }
         return GetView(ParseViewParameters($param));
+    }
+}
+
+/** displays current poll from polls module specified by its pid */
+class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
+    /** expand function
+     * @param $pid
+     */
+    function expand($pid) {
+        require_once AA_BASE_PATH."modules/polls/include/util.php3";
+        require_once AA_BASE_PATH."modules/polls/include/stringexpand.php3";
+        require_once AA_BASE_PATH."modules/polls/include/poll.class.php3";
+
+        $set       = AA_Poll::generateSet($pid);
+        $poll_zids = AA_Metabase::queryZids(array('table'=>'polls'), $set);
+
+        $poll      = AA_Polls::getPoll($poll_zids->id(0));
+        return $poll ? $poll->getOutput('beforevote') : '';
     }
 }
 
@@ -2494,7 +2515,7 @@ class AA_Stringexpand {
         // Do not change strings used, as they can be used to force an escaped character
         // in something that would normally expand it
         static $UNQUOTED_ARRAY = array(":", "(", ")", "{", "}");
-        static $QUOTED_ARRAY   = array("_AA_CoLoN_", "_AA_OpEnPaR_", "_AA_ClOsEpAr_", "_AA_OpEnBrAcE_", "_AA_ClOsEbRaCe_");
+        static $QUOTED_ARRAY   = array("_AA_CoLoN_", "_AA_OpEnPaR_", "_AA_ClOsEpAr_", "_AA_OpEnBrAcE_", "_AA_ClOsEbRaCe_", "_AA_ReMoVe");
 
         return $reverse ? str_replace($QUOTED_ARRAY, $UNQUOTED_ARRAY, $text) : str_replace($UNQUOTED_ARRAY, $QUOTED_ARRAY, $text);
     }
