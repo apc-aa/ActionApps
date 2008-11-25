@@ -92,7 +92,7 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
     $newcontent4id->setItemID($item_id);
     $newcontent4id->setSliceID($sli_id);
     $updated_items = 0;
-    if ($newcontent4id->storeItem( 'update', array($invalidate, false))) {    // invalidatecache, not feed
+    if ($newcontent4id->storeItem( 'update_silent', array($invalidate, false))) {    // invalidatecache, not feed
         $updated_items++;
     }
 }
