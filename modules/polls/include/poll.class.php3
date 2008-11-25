@@ -25,19 +25,6 @@
  * @link      http://www.apc.org/ APC
 */
 
-// A class for manipulating polls
-//
-// Author and Maintainer: Mitra mitra@mitra.biz
-//
-// It is intended - and you are welcome - to extend this to bring into
-// one place the functions for working with polls.
-//
-// A design goal is to use lazy-evaluation wherever possible, i.e. to only
-// go to the database when something is needed.
-
-//If this is needed, comment why! It trips out anything calling pollobj NOT from one level down
-//require_once "../include/config.php3";
-//require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."zids.php3"; // Pack and unpack ids
 require_once AA_INC_PATH."view.class.php3"; //GetViewsWhere
 
@@ -171,7 +158,10 @@ class AA_Poll {
         }
         if ($this->getProperty('ip_locking') == 1) {
 
-            $varset->doDeleteWhere('polls_ip_lock', "poll_id='$poll_id' AND timestamp < ". ($current_time - $this->getProperty('ip_lock_timeout')));
+            // ip_lock_timeout = 0 means it is locked forever
+            if ($this->getProperty('ip_lock_timeout') <> 0) {
+                $varset->doDeleteWhere('polls_ip_lock', "poll_id='$poll_id' AND timestamp < ". ($current_time - $this->getProperty('ip_lock_timeout')));
+            }
 
             $ip = GetTable2Array("SELECT voters_ip FROM polls_ip_lock WHERE (poll_id='$poll_id') AND (voters_ip = '".$_SERVER['REMOTE_ADDR']."')", 'aa_first');
             if ($ip) {
@@ -204,7 +194,8 @@ class AA_Poll {
         return $vote_invalid ? false : true;
     }
 
-    function display($design='beforevote') {
+
+    function getOutput($design='beforevote') {
         $format   = $this->get_format_strings($design);
 
         $metabase = AA_Metabase::singleton();
@@ -221,7 +212,39 @@ class AA_Poll {
 
         $itemview = new itemview( $format, $fields, $aliases, $zids, 0, $zids->count(), shtml_url(), "", $content_function);
 
-        echo $itemview->get_output();
+        return $itemview->get_output();
+    }
+
+    function display($design='beforevote') {
+        echo $this->getOutput($design);
+    }
+
+    /** static class function - called like $set=AA_Poll::generateSet()
+     *  It creates the set based on the conds and sort array
+     */
+    function generateSet($pid,$conds=null,$sort=null) {
+        $set = new AA_Set;
+        $set->addCondition(new AA_Condition('module_id',   '==', q_pack_id($pid)));
+        // there is also one poll which acts as template - managed from Polls Admin
+        // (and not from the Polls Manager page) - it has status_code=0,
+        // so it is filtered out automaticaly
+
+        $now = now();
+        $set->addCondition(new AA_Condition('status_code', '=', '1'));
+        $set->addCondition(new AA_Condition('expiry_date', '>=', $now));
+        $set->addCondition(new AA_Condition('publish_date', '<=', $now));
+
+        if ($conds) {
+            $set->addCondsFromArray($conds);
+        }
+
+        if ($sort) {
+            $set->addSortFromArray($sort);
+        } else {
+            // default sort order - just like for items - publish date - descending
+            $set->addSortorder( new AA_Sortorder( array('publish_date' => 'd')));
+        }
+        return $set;
     }
 }
 
