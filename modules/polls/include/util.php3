@@ -41,7 +41,7 @@ function GetAnswerAliases() {
         "_#EXP_DATE" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#EXP_DATE}",   "", _m('Poll expiry date')),
         "_#PARAMS__" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#PARAMS__}",   "", _m('Poll params')),
         "_#MODULEID" => GetAliasDef( "f_t:{poll:{_#POLL_ID_}:_#MODULEID}",   "", _m('Module ID')),
-        
+
         "_#POLL_ID_" => GetAliasDef( "f_t",           "poll_id",                _m('Poll id (32 characters hexadecimal number - the same for all answers)')), // generated automaticaly form the table column using metabase methods
 
         "_#ANS_NO__" => GetAliasDef( "f_t",          "priority",                _m('Nubmer of answer')),
@@ -60,7 +60,7 @@ function GetPollsAliases() {  // function - we need trnslate _m() on use (not at
     $metabase = AA_Metabase::singleton();
     $aliases = array (
         "_#POLL_ID_" => GetAliasDef( "f_t",               "id",           _m('Poll ID')),
-        "_#MODULEID" => GetAliasDef( "f_t",               "module_id",    _m('Module ID')),
+        "_#MODULEID" => GetAliasDef( "f_n",               "module_id",    _m('Module ID')),
         "_#QUESTION" => GetAliasDef( "f_t",               "headline",     _m('Prints poll question')),
         "_#PUB_DATE" => GetAliasDef( "f_d:n/j/Y",         "publish_date", _m('Publish Date')),
         "_#EXP_DATE" => GetAliasDef( "f_d:n/j/Y",         "expiry_date",  _m('Expiry Date')),

@@ -85,29 +85,7 @@ if ($_REQUEST['poll_id']) {
     // we want to display specified poll, or we just voted
     $poll_zids = new zids($_REQUEST['poll_id']);
 } else {
-
-    $set = new AA_Set;
-    $set->addCondition(new AA_Condition('module_id',   '==', q_pack_id($_REQUEST['pid'])));
-    // there is also one poll which acts as template - managed from Polls Admin
-    // (and not from the Polls Manager page) - it has status_code=0,
-    // so it is filtered out automaticaly
-
-    $now = now();
-    $set->addCondition(new AA_Condition('status_code', '=', '1'));
-    $set->addCondition(new AA_Condition('expiry_date', '>=', $now));
-    $set->addCondition(new AA_Condition('publish_date', '<=', $now));
-
-    if ($_REQUEST['conds']) {
-        $set->addCondsFromArray($_REQUEST['conds']);
-    }
-
-    if ($_REQUEST['sort']) {
-        $set->addSortFromArray($_REQUEST['sort']);
-    } else {
-        // default sort order - just like for items - publish date - descending
-        $set->addSortorder( new AA_Sortorder( array('publish_date' => 'd')));
-    }
-
+    $set       = AA_Poll::generateSet($_REQUEST['pid'],$_REQUEST['conds'],$_REQUEST['sort']);
     $poll_zids = AA_Metabase::queryZids(array('table'=>'polls'), $set);
     $poll_zids = $poll_zids->slice(0, $_REQUEST['listlen'] ? $_REQUEST['listlen'] : 1);
 }
