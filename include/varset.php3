@@ -483,6 +483,7 @@ class Cvarset {
 // it should be in oposite direction - require metabase in all scripts, which
 // then will require varset, but for now we will use this approach
 
-require_once AA_INC_PATH . "metabase.class.php3";
-
+if (!class_exists('AA_Metabase')) {
+    require_once AA_INC_PATH . "metabase.class.php3";
+}
 ?>
