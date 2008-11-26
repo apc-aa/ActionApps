@@ -688,14 +688,16 @@ class AA_Metabase {
     function compare($metabase) {
         $diffs = array();
 
+        // for us are varchar and char the same - some tables are never converted
+        // to char in some versions of MySQL, so the test is always false
+        $eq_vars   = array('varchar', "default ' '");
+        $eq_novars = array('char'   , '');
+
         foreach ($this->tables as $tablename => $table) {
             $table_sql_1 = $table->getCreateSql();
             $table_sql_2 = $metabase->getCreateSql($tablename);
 
-            // for us are varchar and char the same - some tables are never
-            // converted to char in some versions of MySQL, so the test
-            // is always false
-            $diffs[$tablename] = array('equal'  => (str_replace('varchar', 'char', $table_sql_1) == str_replace('varchar', 'char', $table_sql_2)),
+            $diffs[$tablename] = array('equal'  => (str_replace($eq_vars, $eq_novars, $table_sql_1) == str_replace($eq_vars, $eq_novars, $table_sql_2)),
                                        'table1' => $table_sql_1,
                                        'table2' => $table_sql_2
                                       );
