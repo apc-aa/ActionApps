@@ -19,6 +19,8 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+// my change 
+
 // script for MySQL database update
 
 // this script updates the database to last structure, create all tables, ...
@@ -146,6 +148,13 @@ if (!is_callable('unpack_id')) {
     }
 }
 
+if (!is_callable('quote')) {
+    function quote($str) {
+      return addslashes($str);
+    }
+}
+
+
 // do not reorder those requires because of metabase and varset dependency
 require_once dirname(__FILE__)."/metabase.class.php3";
 require_once dirname(__FILE__)."/varset.php3";
@@ -224,7 +233,7 @@ echo '
      right names. Then it possibly updates common records (like default field
      definitions, module templates, constants and templates).</p>
   <p><font color="red">However, it is strongly recommended backup your current
-  database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -u '.DB_USER.' -p --opt '.DB_NAME.' &gt; ./aadb/aadb.sql</code></p>
+  database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -h '.DB_HOST.' -u '.DB_USER.' -p --opt '.DB_NAME.' &gt; ./'.DB_NAME.'_'.date('ymd').'.sql</code></p>
 
   <form name="f" action="' .$_SERVER['PHP_SELF'] .'">
   ';
