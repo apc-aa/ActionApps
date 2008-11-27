@@ -87,9 +87,18 @@ class AA_Manageraction_Central_Linkcheck extends AA_Manageraction {
  */
 class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
 
+    /** sql_update action - dotest|update*/
+    var $update_action;
+
+    /** Constructor - fills the information about the optimize method */
+    function AA_Manageraction_Central_Sqlupdate($id, $action) {
+        $this->update_action  = $action;
+        parent::AA_Manageraction($id);
+    }
+
     /** Name of this Manager's action */
     function getName() {
-        return _m('Update database (sql_update)');
+        return _m('Update DB (sql_update)'). ' - '.  $this->update_action;
     }
 
     /** main executive function
@@ -110,10 +119,10 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
         $db->tquery($SQL);
         $ret = '';
         while ($db->next_record()) {
-            $params   = 'dbpw5='.substr($db->f('db_pwd'),0,5).'&fire=1&dbcreate=on&copyold=on&backup=on&replacecateg=on&replaceconst=on&newcore=on&templates=on&view_templates=on&addstatistic=on&additemidfields=on&fixmissingfields=on&update_modules=on&cron=on&generic_emails=on&links_create=on&update=Run+Update';
-            $file     = $db->f('AA_HTTP_DOMAIN'). $db->f('AA_BASE_DIR'). "sql_update.php3?$params";
+            $params   = 'dbpw5='.substr($db->f('db_pwd'),0,5).'&fire=1&'.$this->update_action.'=1';
+            $file     = $db->f('AA_HTTP_DOMAIN'). $db->f('AA_BASE_DIR'). "service/sql_update.php?$params";
             $response = file_get_contents($file);
-            $toggle   = '{htmltoggle:&gt;&gt;:'.AA_Stringexpand::quoteColons($db->f('AA_HTTP_DOMAIN')).':&lt;&lt;:'. AA_Stringexpand::quoteColons($response).'}';
+            $toggle   = '{htmltoggle:&gt;&gt;:'.AA_Stringexpand::quoteColons($file).':&lt;&lt;:'. AA_Stringexpand::quoteColons($response).'}';
             $ret     .= AA_Stringexpand::unalias($toggle);
         }
         freeDB($db);
