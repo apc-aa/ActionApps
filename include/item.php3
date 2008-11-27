@@ -1473,13 +1473,13 @@ class AA_Item {
                     $string       = $this->getval($col);
                     $string2array = explode("/",$string);
                     $path_file    = IMG_UPLOAD_PATH. $string2array[count($string2array)-2]."/".$string2array[count($string2array)-1];
-                    if (!is_dir($path_file)){
-                        $size    = filesize($path_file);
+                    if (!is_dir($path_file)) {
+                        $size    = @filesize($path_file);
                         $size_kb = round($size/1024, 1);
                         $size_mb = round($size/1048576, 1);
                         $size    = ($size <= 1048576) ? $size_kb." kB" : $size_mb." MB";
-                        }
-                        return $size;
+                    }
+                    return $size;
         }
     }
 
