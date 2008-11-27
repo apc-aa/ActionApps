@@ -140,7 +140,7 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
         global $contentcache;
         $arg_list = func_get_args();   // must be asssigned to the variable
         // replace inputform field
-        // destroy all aliases, since the content of the variablews coud contain
+        // destroy all aliases, since the content of the variables could contain
         // aliases, but we don't want to unalias them. The _AA_ReMoVe_ string
         // will be removed in dequteColons
         return str_replace('_#','__AA_ReMoVe#', $contentcache->get('inputvar:'. join(':',$arg_list)));

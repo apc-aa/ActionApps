@@ -1,5 +1,13 @@
+11/27/08 - Central allows to upload AA definitions from CSV file
+(honzam) - Central calls new sql_update.php script from service/ directory
+         - improved tests in service/sql_update.php script
+         - new Optimize action which generates metabase definition row to be
+           placed in service/metabase.class.php3 and include/metabase.class.php3
+             - for AA programmers only
+         - updated database structure - prepared for new optimized caching
+           (not finished, yet)
 11/25/08 - improvement in the polls module - fixed aliases, UI works also with
-(honza)    green AA design.
+(honzam)   green AA design.
            see new polls documentation on http://actionapps.org/en/Polls_Module
            (Thanks to Radek Svitil/Ekolist)
          - IP lock in Polls when enabled and limeout set to 0 never expires
