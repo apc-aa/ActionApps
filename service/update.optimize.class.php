@@ -73,7 +73,9 @@ class AA_Optimize {
      */
     function query($SQL) {
         $this->message($SQL);
-        if (AA_Optimize::justPrint()) {
+        $just_print = AA_Optimize::justPrint();
+
+        if ($just_print) {
             return;
         }
         if (!$this->db) {
@@ -790,8 +792,19 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
 
     /** Description function @return a message */
     function description() {
-        return _m("Deletes and recreates the discus view, used as template view of that type");
+        return _m("Deletes and recreates that view, which is used as template view of that type");
     }
+
+
+    function _viewType(){
+        return 'discus';
+    }
+
+    function _viewDefinition() {
+        $AA_IMG_URL  = '/'. AA_BASE_DIR .'images/';
+        return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Discussion ...', type='discus', `before`='<table bgcolor=#000000 cellspacing=0 cellpadding=1 border=0><tr><td><table width=100% bgcolor=#f5f0e7 cellspacing=0 cellpadding=0 border=0><tr><td colspan=8><big>Comments</big></td></tr>', even='<table  width=500 cellspacing=0 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr><tr><td width=\"20%\"><b>Date:</b></td><td> _#DATE####</td></tr><tr><td><b>Comment:</b></td><td> _#SUBJECT#</td></tr><tr><td><b>Author:</b></td><td><A href=mailto:_#EMAIL###>_#AUTHOR##</a></td></tr><tr><td><b>WWW:</b></td><td><A href=_#WWW_URL#>_#WWW_DESC</a></td></tr><tr><td><b>IP:</b></td><td>_#IP_ADDR#</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>_#BODY####</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2><a href=_#URLREPLY>Reply</a></td></tr></table><br>', odd='<tr><td width=\"10\">&nbsp;</td><td><font size=-1>_#CHECKBOX</font></td><td width=\"10\">&nbsp;</td><td align=center nowrap><SMALL>_#DATE####</SMALL></td><td width=\"20\">&nbsp;</td><td nowrap>_#AUTHOR## </td><td><table cellspacing=0 cellpadding=0 border=0><tr><td>_#TREEIMGS</td><td><img src=".$AA_IMG_URL."blank.gif width=2 height=21></td><td nowrap>_#SUBJECT#</td></tr></table></td><td width=\"20\">&nbsp;</td></tr>', even_odd_differ=1, after='</table></td></tr></table>_#BUTTONS#', remove_string='<SCRIPT Language=\"JavaScript\"><!--function checkData() { var text=\"\"; if(!document.f.d_subject.value) { text+=\"subject \" } if (text!=\"\") { alert(\"Please, fill the field: \" + text);  return false; } return true; } // --></SCRIPT><form name=f method=post action=\"/apc-aa/filldisc.php3\" onSubmit=\" return checkData()\"><p>Author<br><input type=text name=d_author > <p>Subject<br><input type=text name=d_subject value=\"_#SUBJECT#\"><p>E-mail<br><input type=text name=d_e_mail><p>Comment<br><textarea rows=\"5\" cols=\"40\" name=d_body ></textarea><p>WWW<br><input type=text name=d_url_address value=\"http://\"><p>WWW description<br><input type=text name=d_url_description><br><input type=submit value=Send align=center><input type=hidden name=d_parent value=\"_#DISC_ID#\"><input type=hidden name=d_item_id value=\"_#ITEM_ID#\"><input type=hidden name=url value=\"_#DISC_URL\"></FORM>', group_title=NULL, order1=NULL, o1_direction=0, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=NULL, scroller=NULL, selected_item=0, modification=23, parameter=NULL, img1='<img src=${AA_IMG_URL}i.gif width=9 height=21>', img2='<img src=${AA_IMG_URL}l.gif width=9 height=21>', img3='<img src=${AA_IMG_URL}t.gif width=9 height=21>', img4='<img src=${AA_IMG_URL}blank.gif width=12 height=21>', flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon'";
+    }
+
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
     function isType($type)  { return in_array($type, array('sql_update')); }
@@ -801,9 +814,9 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
     function test() {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='discus'", "aa_first", 'count');
+        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='".$this->_viewType()."'", "aa_first", 'count');
         if ($row_count <> 1) {
-            $this->message(_m('"discus" template view is not defined'));
+            $this->message(_m('"%1" template view is not defined', array($this->_viewType())));
             $ret = false;
         }
         return $ret;
@@ -813,419 +826,86 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
      *  @return bool
      */
     function repair() {
-
-
-        $this->message(_m('Deleting the view template "discus"'));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='discus' ");
+        $this->message(_m('Deleting the view template "%1"', array($this->_viewType())));
+        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='".$this->_viewType()."' ");
 
         $this->message(_m('Inserting the view "discus" template'));
-        $this->query("INSERT INTO view SET slice_id='AA_Core_Fields..', name='Discussion ...', type='discus', `before`='<table bgcolor=#000000 cellspacing=0 cellpadding=1 border=0><tr><td><table width=100% bgcolor=#f5f0e7 cellspacing=0 cellpadding=0 border=0><tr><td colspan=8><big>Comments</big></td></tr>', even='<table  width=500 cellspacing=0 cellpadding=0 border=0><tr><td colspan=2><hr></td></tr><tr><td width=\"20%\"><b>Date:</b></td><td> _#DATE####</td></tr><tr><td><b>Comment:</b></td><td> _#SUBJECT#</td></tr><tr><td><b>Author:</b></td><td><A href=mailto:_#EMAIL###>_#AUTHOR##</a></td></tr><tr><td><b>WWW:</b></td><td><A href=_#WWW_URL#>_#WWW_DESC</a></td></tr><tr><td><b>IP:</b></td><td>_#IP_ADDR#</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2>_#BODY####</td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td colspan=2><a href=_#URLREPLY>Reply</a></td></tr></table><br>', odd='<tr><td width=\"10\">&nbsp;</td><td><font size=-1>_#CHECKBOX</font></td><td width=\"10\">&nbsp;</td><td align=center nowrap><SMALL>_#DATE####</SMALL></td><td width=\"20\">&nbsp;</td><td nowrap>_#AUTHOR## </td><td><table cellspacing=0 cellpadding=0 border=0><tr><td>_#TREEIMGS</td><td><img src=".$AA_IMG_URL."blank.gif width=2 height=21></td><td nowrap>_#SUBJECT#</td></tr></table></td><td width=\"20\">&nbsp;</td></tr>', even_odd_differ=1, after='</table></td></tr></table>_#BUTTONS#', remove_string='<SCRIPT Language=\"JavaScript\"><!--function checkData() { var text=\"\"; if(!document.f.d_subject.value) { text+=\"subject \" } if (text!=\"\") { alert(\"Please, fill the field: \" + text);  return false; } return true; } // --></SCRIPT><form name=f method=post action=\"/apc-aa/filldisc.php3\" onSubmit=\" return checkData()\"><p>Author<br><input type=text name=d_author > <p>Subject<br><input type=text name=d_subject value=\"_#SUBJECT#\"><p>E-mail<br><input type=text name=d_e_mail><p>Comment<br><textarea rows=\"5\" cols=\"40\" name=d_body ></textarea><p>WWW<br><input type=text name=d_url_address value=\"http://\"><p>WWW description<br><input type=text name=d_url_description><br><input type=submit value=Send align=center><input type=hidden name=d_parent value=\"_#DISC_ID#\"><input type=hidden name=d_item_id value=\"_#ITEM_ID#\"><input type=hidden name=url value=\"_#DISC_URL\"></FORM>', group_title=NULL, order1=NULL, o1_direction=0, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=NULL, scroller=NULL, selected_item=0, modification=23, parameter=NULL, img1='<img src=${AA_IMG_URL}i.gif width=9 height=21>', img2='<img src=${AA_IMG_URL}l.gif width=9 height=21>', img3='<img src=${AA_IMG_URL}t.gif width=9 height=21>', img4='<img src=${AA_IMG_URL}blank.gif width=12 height=21>', flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon'");
+        $this->query($this->_viewDefinition());
 
-        $this->message(_m('view "discus" redefinition - done.'));
+        $this->message(_m('view "%1" redefinition - done.', array($this->_viewType())));
     }
 }
 
 /** Recreates the template view - const**/
-class AA_Optimize_Redefine_View_Const_Templates extends AA_Optimize {
+class AA_Optimize_Redefine_View_Const_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    /** Name function @return a message */
-    function name() {
-        return _m("Redefine const template view");
-    }
-
-    /** Description function @return a message */
-    function description() {
-        return _m("Deletes and recreates the const view, used as template view of that type");
-    }
-
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
-
-
-    /** Test function @return bool */
-    function test() {
-        $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='const'", "aa_first", 'count');
-        if ($row_count <> 1) {
-            $this->message(_m('"const" template view is not defined'));
-            $ret = false;
-        }
-        return $ret;
-    }
-
-    /** Main update function
-     *  @return bool
-     */
-    function repair() {
-
-
-        $this->message(_m('Deleting the view template "const"'));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='const' ");
-
-        $this->message(_m('Inserting the view "const" template'));
-        $this->query("INSERT INTO view SET slice_id='AA_Core_Fields..', name='Constant view ...', type='const', `before`='<table border=0 cellpadding=0 cellspacing=0>', even='', odd='<tr><td>_#VALUE###</td></tr>', even_odd_differ=0, after='</table>', remove_string=NULL, group_title=NULL, order1='value', o1_direction=0, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=10, scroller=NULL, selected_item=0, modification=NULL, parameter='lt_languages', img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon'");
-
-        $this->message(_m('view "const" redefinition - done.'));
-    }
+    function name()            { return _m("Redefine const template view"); }
+    function _viewType()       { return 'const'; }
+    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Constant view ...', type='const', `before`='<table border=0 cellpadding=0 cellspacing=0>', even='', odd='<tr><td>_#VALUE###</td></tr>', even_odd_differ=0, after='</table>', remove_string=NULL, group_title=NULL, order1='value', o1_direction=0, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=10, scroller=NULL, selected_item=0, modification=NULL, parameter='lt_languages', img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
 
 /** Recreates the template view - javascript**/
-class AA_Optimize_Redefine_View_Javascript_Templates extends AA_Optimize {
+class AA_Optimize_Redefine_View_Javascript_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    /** Name function @return a message */
-    function name() {
-        return _m("Redefine javascript template view");
-    }
-
-    /** Description function @return a message */
-    function description() {
-        return _m("Deletes and recreates the javascript view, used as template view of that type");
-    }
-
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
-
-
-    /** Test function @return bool */
-    function test() {
-        $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='javascript'", "aa_first", 'count');
-        if ($row_count <> 1) {
-            $this->message(_m('"javascript" template view is not defined'));
-            $ret = false;
-        }
-        return $ret;
-    }
-
-    /** Main update function @return bool */
-    function repair() {
-
-
-        $this->message(_m('Deleting the view template "javascript"'));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='javascript' ");
-
-        $this->message(_m('Inserting the view "javascript" template'));
-        $this->query("INSERT INTO view SET slice_id='AA_Core_Fields..', name='Javascript ...', type='javascript', `before`='/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"". AA_BASE_PATH ."view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', even=NULL, odd='document.write(\"_#HEADLINE\");', even_odd_differ=NULL, after='// script end ', remove_string=NULL, group_title=NULL, order1='', o1_direction=0, order2='', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=8, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon'");
-
-        $this->message(_m('view "javascript" redefinition - done.'));
-    }
+    function name()            { return _m("Redefine javascript template view"); }
+    function _viewType()       { return 'javascript'; }
+    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Javascript ...', type='javascript', `before`='/* output of this script can be included to any page on any server by adding:&lt;script type=\"text/javascript\" src=\"". AA_BASE_PATH ."view.php3?vid=3\"&gt; &lt;/script&lt; or such.*/', even=NULL, odd='document.write(\"_#HEADLINE\");', even_odd_differ=NULL, after='// script end ', remove_string=NULL, group_title=NULL, order1='', o1_direction=0, order2='', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=8, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1='', field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
 
 /** Recreates the template view - rss**/
-class AA_Optimize_Redefine_View_Rss_Templates extends AA_Optimize {
+class AA_Optimize_Redefine_View_Rss_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    /** Name function @return a message */
-    function name() {
-        return _m("Redefine rss template view");
-    }
-
-    /** Description function @return a message */
-    function description() {
-        return _m("Deletes and recreates the rss view, used as template view of that type");
-    }
-
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
-
-
-    /** Test function @return bool */
-    function test() {
-        $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='rss'", "aa_first", 'count');
-        if ($row_count <> 1) {
-            $this->message(_m('"rss" template view is not defined'));
-            $ret = false;
-        }
-        return $ret;
-    }
-
-    /** Main update function
-     *  @return bool
-     */
-    function repair() {
-
-
-        $this->message(_m('Deleting the view template "rss"'));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='rss' ");
-
-        $this->message(_m('Inserting the view "rss" template'));
-        $this->query("INSERT INTO view SET slice_id='AA_Core_Fields..', name='rss', type='rss', `before`='<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <channel>  <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language>', even=NULL, odd=' <item> <title>_#RSS_IT_T</title> <link>_#RSS_IT_L</link> <description>_#RSS_IT_D</description> </item>', even_odd_differ=NULL, after='</channel></rss>', remove_string=NULL, group_title=NULL, order1='publish_date....', o1_direction=0, order2='headline........', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='source..........', cond1op='', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=15, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional='NULL', aditional2='NULL', aditional3='NULL', aditional4='NULL', aditional5='NULL', aditional6='NULL', noitem_msg='<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language><channel></channel></rss>', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'");
-
-        $this->message(_m('view "rss" redefinition - done.'));
-    }
+    function name()            { return _m("Redefine rss template view"); }
+    function _viewType()       { return 'rss'; }
+    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='rss', type='rss', `before`='<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <channel>  <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language>', even=NULL, odd=' <item> <title>_#RSS_IT_T</title> <link>_#RSS_IT_L</link> <description>_#RSS_IT_D</description> </item>', even_odd_differ=NULL, after='</channel></rss>', remove_string=NULL, group_title=NULL, order1='publish_date....', o1_direction=0, order2='headline........', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='source..........', cond1op='', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=15, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional='NULL', aditional2='NULL', aditional3='NULL', aditional4='NULL', aditional5='NULL', aditional6='NULL', noitem_msg='<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\" \"http://my.netscape.com/publish/formats/rss-0.91.dtd\"> <rss version=\"0.91\"> <title>_#RSS_TITL</title>  <link>_#RSS_LINK</link>  <description>_#RSS_DESC</description>  <lastBuildDate>_#RSS_DATE</lastBuildDate> <language></language><channel></channel></rss>', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
 
 /** Recreates the template view - calendar**/
-class AA_Optimize_Redefine_View_Calendar_Templates extends AA_Optimize {
+class AA_Optimize_Redefine_View_Calendar_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    /** Name function @return a message */
-    function name() {
-        return _m("Redefine calendar template view");
-    }
-
-    /** Description function @return a message */
-    function description() {
-        return _m("Deletes and recreates the calendar view, used as template view of that type");
-    }
-
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
-
-
-    /** Test function @return bool */
-    function test() {
-        $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='calendar'", "aa_first", 'count');
-        if ($row_count <> 1) {
-            $this->message(_m('"calendar" template view is not defined'));
-            $ret = false;
-        }
-        return $ret;
-    }
-
-    /** Main update function
-     *  @return bool
-     */
-    function repair() {
-
-
-        $this->message(_m('Deleting the view template "calendar"'));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='calendar' ");
-
-        $this->message(_m('Inserting the view "calendar" template'));
-        $this->query("INSERT INTO view SET slice_id='AA_Core_Fields..', name='Calendar', type='calendar', `before`='<table border=1>\r\n<tr><td>Mon</td><td>Tue</td><td>Wen</td><td>Thu</td><td>Fri</td><td>Sat</td><td>Sun</td></tr>', even=NULL, odd='_#STARTDAT-_#END_DATE <b>_#HEADLINE</b>', even_odd_differ=1, after='</table>', remove_string='', group_title='<td><font size=+2><a href=\"calendar.shtml?vid=319&cmd[319]=c-1-_#CV_TST_2-2-_#CV_TST_1&month=_#CV_NUM_M&year=_#CV_NUM_Y&day=_#CV_NUM_D\"><b>_#CV_NUM_D</b></a></font></td>', order1='', o1_direction=0, order2='', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='publish_date....', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=5, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional='<td><font size=+2>_#CV_NUM_D</font></td>', aditional2='', aditional3='bgcolor=\"_#COLOR___\"', aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='There are no events in this month.', group_bottom='', field1='start_date.....1', field2='end_date.......1', field3=NULL, calendar_type='mon_table'");
-
-        $this->message(_m('view "calendar" redefinition - done.'));
-    }
+    function name()            { return _m("Redefine calendar template view"); }
+    function _viewType()       { return 'calendar'; }
+    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Calendar', type='calendar', `before`='<table border=1>\r\n<tr><td>Mon</td><td>Tue</td><td>Wen</td><td>Thu</td><td>Fri</td><td>Sat</td><td>Sun</td></tr>', even=NULL, odd='_#STARTDAT-_#END_DATE <b>_#HEADLINE</b>', even_odd_differ=1, after='</table>', remove_string='', group_title='<td><font size=+2><a href=\"calendar.shtml?vid=319&cmd[319]=c-1-_#CV_TST_2-2-_#CV_TST_1&month=_#CV_NUM_M&year=_#CV_NUM_Y&day=_#CV_NUM_D\"><b>_#CV_NUM_D</b></a></font></td>', order1='', o1_direction=0, order2='', o2_direction=0, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='publish_date....', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=5, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional='<td><font size=+2>_#CV_NUM_D</font></td>', aditional2='', aditional3='bgcolor=\"_#COLOR___\"', aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='There are no events in this month.', group_bottom='', field1='start_date.....1', field2='end_date.......1', field3=NULL, calendar_type='mon_table'"; }
 }
 
 /** Recreates the template view - links**/
-class AA_Optimize_Redefine_View_Links_Templates extends AA_Optimize {
+class AA_Optimize_Redefine_View_Links_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    /** Name function @return a message */
-    function name() {
-        return _m("Redefine links template view");
-    }
-
-    /** Description function @return a message */
-    function description() {
-        return _m("Deletes and recreates the links view, used as template view of that type");
-    }
-
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
-
-
-    /** Test function @return bool */
-    function test() {
-        $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='links'", "aa_first", 'count');
-        if ($row_count <> 1) {
-            $this->message(_m('"links" template view is not defined'));
-            $ret = false;
-        }
-        return $ret;
-    }
-
-    /** Main update function
-     *  @return bool
-     */
-    function repair() {
-
-
-        $this->message(_m('Deleting the view template "links"'));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='links' ");
-
-        $this->message(_m('Inserting the view "links" template'));
-        $this->query("INSERT INTO view SET slice_id='AA_Core_Fields..', name='Links', type='links', `before`='<br>\r\n', even='', odd='<p><a href=\"_#L_URL___\" class=\"link\">_#L_NAME__ (_#L_O_NAME)</a><br>\r\n          _#L_DESCRI<br>\r\n          <a href=\"_#L_URL___\" class=\"link2\">_#L_URL___</a>\r\n     </p>\r\n', even_odd_differ=0, after='', remove_string='()', group_title='', order1='', o1_direction=0, order2=NULL, o2_direction=0, group_by1=NULL, g1_direction=0, group_by2=NULL, g2_direction=0, cond1field=NULL, cond1op='<', cond1cond=NULL, cond2field=NULL, cond2op='<', cond2cond=NULL, cond3field=NULL, cond3op='<', cond3cond=NULL, listlen=1000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<!-- no links in this category -->', group_bottom='', field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'");
-
-        $this->message(_m('view "links" redefinition - done.'));
-    }
+    function name()            { return _m("Redefine links template view"); }
+    function _viewType()       { return 'links'; }
+    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Links', type='links', `before`='<br>\r\n', even='', odd='<p><a href=\"_#L_URL___\" class=\"link\">_#L_NAME__ (_#L_O_NAME)</a><br>\r\n          _#L_DESCRI<br>\r\n          <a href=\"_#L_URL___\" class=\"link2\">_#L_URL___</a>\r\n     </p>\r\n', even_odd_differ=0, after='', remove_string='()', group_title='', order1='', o1_direction=0, order2=NULL, o2_direction=0, group_by1=NULL, g1_direction=0, group_by2=NULL, g2_direction=0, cond1field=NULL, cond1op='<', cond1cond=NULL, cond2field=NULL, cond2op='<', cond2cond=NULL, cond3field=NULL, cond3op='<', cond3cond=NULL, listlen=1000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<!-- no links in this category -->', group_bottom='', field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
 
 /** Recreates the template view - categories**/
-class AA_Optimize_Redefine_View_Categories_Templates extends AA_Optimize {
+class AA_Optimize_Redefine_View_Categories_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    /** Name function @return a message */
-    function name() {
-        return _m("Redefine categories template view");
-    }
-
-    /** Description function @return a message */
-    function description() {
-        return _m("Deletes and recreates the categories view, used as template view of that type");
-    }
-
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
-
-
-    /** Test function @return bool */
-    function test() {
-        $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='categories'", "aa_first", 'count');
-        if ($row_count <> 1) {
-            $this->message(_m('"categories" template view is not defined'));
-            $ret = false;
-        }
-        return $ret;
-    }
-
-    /** Main update function
-     *  @return bool
-     */
-    function repair() {
-
-
-        $this->message(_m('Deleting the view template "categories"'));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='categories' ");
-
-        $this->message(_m('Inserting the view "categories" template'));
-        $this->query("INSERT INTO view SET slice_id='AA_Core_Fields..', name='Catategories', type='categories', `before`='     <br><b>_#C_PATH__</b><br><br>\r\n', even='', odd='<br>&#8226; <a href=\"?cat=_#CATEG_ID\" class=\"link\">_#C_NAME___#C_CROSS_</a>&nbsp;&nbsp;<b>(_#C_LCOUNT)</b>\r\n', even_odd_differ=0, after='', remove_string='', group_title='', order1='', o1_direction=0, order2='', o2_direction=0, group_by1='', g1_direction=0, group_by2='', g2_direction=0, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=1000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<!-- no categories in this category -->', group_bottom='', field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'");
-
-        $this->message(_m('view "categories" redefinition - done.'));
-    }
+    function name()            { return _m("Redefine categories template view"); }
+    function _viewType()       { return 'categories'; }
+    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Catategories', type='categories', `before`='     <br><b>_#C_PATH__</b><br><br>\r\n', even='', odd='<br>&#8226; <a href=\"?cat=_#CATEG_ID\" class=\"link\">_#C_NAME___#C_CROSS_</a>&nbsp;&nbsp;<b>(_#C_LCOUNT)</b>\r\n', even_odd_differ=0, after='', remove_string='', group_title='', order1='', o1_direction=0, order2='', o2_direction=0, group_by1='', g1_direction=0, group_by2='', g2_direction=0, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=1000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<!-- no categories in this category -->', group_bottom='', field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
 
 /** Recreates the template view - urls**/
-class AA_Optimize_Redefine_View_Urls_Templates extends AA_Optimize {
+class AA_Optimize_Redefine_View_Urls_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    /** Name function @return a message */
-    function name() {
-        return _m("Redefine urls template view");
-    }
-
-    /** Description function @return a message */
-    function description() {
-        return _m("Deletes and recreates the urls view, used as template view of that type");
-    }
-
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
-
-
-    /** Test function @return bool */
-    function test() {
-        $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='urls'", "aa_first", 'count');
-        if ($row_count <> 1) {
-            $this->message(_m('"urls" template view is not defined'));
-            $ret = false;
-        }
-        return $ret;
-    }
-
-    /** Main update function
-     *  @return bool
-     */
-    function repair() {
-
-
-        $this->message(_m('Deleting the view template "urls"'));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='urls' ");
-
-        $this->message(_m('Inserting the view "urls" template'));
-        $this->query("INSERT INTO view SET slice_id='AA_Core_Fields..', name='URLs listing', type='urls', `before`='<!-- view used for listing URLs of items -->', even=NULL, odd='<a href=\"http://www.example.org/index.stm?x=_#SITEM_ID\">_#SITEM_ID</a><br>\r\n', even_odd_differ=0, after='', remove_string='', group_title='', order1='', o1_direction=0, order2='', o2_direction=0, group_by1='', g1_direction=0, group_by2='', g2_direction=0, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=100000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'");
-
-
-        $this->message(_m('view "urls" redefinition - done.'));
-    }
+    function name()            { return _m("Redefine urls template view"); }
+    function _viewType()       { return 'urls'; }
+    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='URLs listing', type='urls', `before`='<!-- view used for listing URLs of items -->', even=NULL, odd='<a href=\"http://www.example.org/index.stm?x=_#SITEM_ID\">_#SITEM_ID</a><br>\r\n', even_odd_differ=0, after='', remove_string='', group_title='', order1='', o1_direction=0, order2='', o2_direction=0, group_by1='', g1_direction=0, group_by2='', g2_direction=0, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=100000, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='No item found', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
 
 /** Recreates the template view - static**/
-class AA_Optimize_Redefine_View_Static_Templates extends AA_Optimize {
+class AA_Optimize_Redefine_View_Static_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    /** Name function @return a message */
-    function name() {
-        return _m("Redefine static template view");
-    }
-
-    /** Description function @return a message */
-    function description() {
-        return _m("Deletes and recreates the static view, used as template view of that type");
-    }
-
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
-
-
-    /** Test function @return bool */
-    function test() {
-        $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='static'", "aa_first", 'count');
-        if ($row_count <> 1) {
-            $this->message(_m('"static" template view is not defined'));
-            $ret = false;
-        }
-        return $ret;
-    }
-
-    /** Main update function
-     *  @return bool
-     */
-    function repair() {
-
-
-        $this->message(_m('Deleting the view template "static"'));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='static' ");
-
-        $this->message(_m('Inserting the view "static" template'));
-        $this->query("INSERT INTO view SET slice_id='AA_Core_Fields..', name='Static page', type='static', `before`=NULL, even=NULL, odd='<!-- Static page view is used for creating and viewing static pages like Contacts or About us.', even_odd_differ=NULL, after=NULL, remove_string=NULL, group_title=NULL, order1=NULL, o1_direction=NULL, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=NULL, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg=NULL, group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'");
-
-        $this->message(_m('view "static" redefinition - done.'));
-    }
+    function name()            { return _m("Redefine static template view"); }
+    function _viewType()       { return 'static'; }
+    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Static page', type='static', `before`=NULL, even=NULL, odd='<!-- Static page view is used for creating and viewing static pages like Contacts or About us.', even_odd_differ=NULL, after=NULL, remove_string=NULL, group_title=NULL, order1=NULL, o1_direction=NULL, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field=NULL, cond1op=NULL, cond1cond=NULL, cond2field=NULL, cond2op=NULL, cond2cond=NULL, cond3field=NULL, cond3op=NULL, cond3cond=NULL, listlen=NULL, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg=NULL, group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
 
 /** Recreates the template view - full**/
-class AA_Optimize_Redefine_View_Full_Templates extends AA_Optimize {
+class AA_Optimize_Redefine_View_Full_Templates extends AA_Optimize_Redefine_View_Discus_Templates {
 
-    /** Name function @return a message */
-    function name() {
-        return _m("Redefine full template view");
-    }
-
-    /** Description function @return a message */
-    function description() {
-        return _m("Deletes and recreates the full view, used as template view of that type");
-    }
-
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
-
-
-    /** Test function @return bool */
-    function test() {
-        $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM view WHERE slice_id='AA_Core_Fields..' AND type='full'", "aa_first", 'count');
-        if ($row_count <> 1) {
-            $this->message(_m('"full" template view is not defined'));
-            $ret = false;
-        }
-        return $ret;
-    }
-
-    /** Main update function
-     *  @return bool
-     */
-    function repair() {
-
-        $this->message(_m('Deleting the view template "full"'));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='full' ");
-
-        $this->message(_m('Inserting the view "full" template'));
-        $this->query("INSERT INTO view SET slice_id='AA_Core_Fields..', name='Fulltext view', type='full', `before`='<!-- Fulltext view is for viewing long items. It shows only one selected item with abstract and fulltext. -->\r\n\r\n<!-- top of the page -->\r\n<br>', even=NULL, odd='<h2><b>_#HEADLINE</b></h2>\r\n_#PUB_DATE, _#AUTHOR__\r\n<br>\r\n_#FULLTEXT<br>\r\n<div align=\"right\"><a href=\"javascript:history.go(-1)\">Back</a></div>\r\n', even_odd_differ=NULL, after='', remove_string=NULL, group_title=NULL, order1=NULL, o1_direction=NULL, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=NULL, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<p>No item found.</p>', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'");
-
-        $this->message(_m('view "full" redefinition - done.'));
-    }
+    function name()            { return _m("Redefine full template view"); }
+    function _viewType()       { return 'full'; }
+    function _viewDefinition() { return "INSERT INTO view SET slice_id='AA_Core_Fields..', name='Fulltext view', type='full', `before`='<!-- Fulltext view is for viewing long items. It shows only one selected item with abstract and fulltext. -->\r\n\r\n<!-- top of the page -->\r\n<br>', even=NULL, odd='<h2><b>_#HEADLINE</b></h2>\r\n_#PUB_DATE, _#AUTHOR__\r\n<br>\r\n_#FULLTEXT<br>\r\n<div align=\"right\"><a href=\"javascript:history.go(-1)\">Back</a></div>\r\n', even_odd_differ=NULL, after='', remove_string=NULL, group_title=NULL, order1=NULL, o1_direction=NULL, order2=NULL, o2_direction=NULL, group_by1=NULL, g1_direction=NULL, group_by2=NULL, g2_direction=NULL, cond1field='', cond1op='<', cond1cond='', cond2field='', cond2op='<', cond2cond='', cond3field='', cond3op='<', cond3cond='', listlen=NULL, scroller=NULL, selected_item=NULL, modification=NULL, parameter=NULL, img1=NULL, img2=NULL, img3=NULL, img4=NULL, flag=NULL, aditional=NULL, aditional2=NULL, aditional3=NULL, aditional4=NULL, aditional5=NULL, aditional6=NULL, noitem_msg='<p>No item found.</p>', group_bottom=NULL, field1=NULL, field2=NULL, field3=NULL, calendar_type='mon'"; }
 }
 
 /** Recreates the default site module template **/
@@ -1894,21 +1574,24 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
 
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
-class AA_Optimize_Add_New_Field_Templates extends AA_Optimize {
+class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
 
     /** Name function
     * @return a message
     */
     function name() {
-        return _m("Add new fields templates");
+        return _m("Add seo fields template");
     }
 
     /** Description function
     * @return a message
     */
     function description() {
-        return _m("Updates field templates (in ActionApps Core slice), and redefine the all new field templates");
+        return _m("Updates field templates (in ActionApps Core slice) - redefine the field template");
     }
+
+    function _fieldType()       { return 'seo'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('seo',         '', 'AA_Core_Fields..', 'SEO',             '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; }
 
     /** checks if the this Optimize class belongs to specified type (like "sql_update") */
     function isType($type)  { return in_array($type, array('sql_update')); }
@@ -1920,9 +1603,9 @@ class AA_Optimize_Add_New_Field_Templates extends AA_Optimize {
     function test() {
         $ret = true;
 
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM field WHERE id='hit_30' AND slice_id='AA_Core_Fields..'", "aa_first", 'count');
+        $row_count   = GetTable2Array("SELECT count(*) as count FROM field WHERE id='".$this->_fieldType()."' AND slice_id='AA_Core_Fields..'", "aa_first", 'count');
         if ($row_count <> 1) {
-            $this->message(_m('The new fields templates missing'));
+            $this->message(_m('The "%1" field template missing', array($this->_fieldType())));
             $ret = false;
         }
         return $ret;
@@ -1933,44 +1616,163 @@ class AA_Optimize_Add_New_Field_Templates extends AA_Optimize {
      *  @return bool
      */
     function repair() {
-
-        $this->message(_m('Recreate field definitions'));
-        // Jakub added auth_group and mail_lists on 6.3.2003
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('auth_group......', '', 'AA_Core_Fields..', 'Auth Group',         '350', 'Sets permissions for web sections', '', 'txt:', 0, 0, 0, 'sel:', '', 100, '', '', '', '', 1, 1, 1, '_#AUTGROUP', 'f_h:', 'Auth Group (membership type)', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);");
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('mail_lists......', '', 'AA_Core_Fields..', 'Mailing Lists',      '1000', 'Select mailing lists which you read', '', 'txt:', 0, 0, 1, 'mch::3:1', '', 100, '', '', '', '', 1, 1, 1, '_#MAILLIST', 'f_h:;&nbsp', 'Mailing Lists', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);");
-        // mimo added mlxctrl on 4.10.2004
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('mlxctrl', '', 'AA_Core_Fields..', 'MLX Control', '6000', '', 'http://mimo.gn.apc.org/mlx/', 'txt:', 1, 0, 1, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 0, 1);");
-        // mimo added 2005-03-02
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'integer',  '', 'AA_Core_Fields..', 'Integer',     '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'number', 'num', '1', '0')");
-        // honzam added 2005-08-15 (based on Philip King and Antonin Slejska suggestions)
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'name',        '', 'AA_Core_Fields..', 'Name',            '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // name
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'phone',       '', 'AA_Core_Fields..', 'Phone',           '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // phone
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'fax',         '', 'AA_Core_Fields..', 'Fax',             '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // fax
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'address',     '', 'AA_Core_Fields..', 'Address',         '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // address
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'location',    '', 'AA_Core_Fields..', 'Location',        '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // location
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'city',        '', 'AA_Core_Fields..', 'City',            '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // city
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'country',     '', 'AA_Core_Fields..', 'Country',         '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // country
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'range',       '', 'AA_Core_Fields..', 'Range',           '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // range
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'real',        '', 'AA_Core_Fields..', 'Real number',     '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"); // real
-        // honzam added 2005-08-26 - computed fields templates
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'computed_num','', 'AA_Core_Fields..', 'Computed number', '100', '', '', 'txt', '0', '0', '0', 'nul', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'number', 'com', '1', '0')"); // computed_num
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'computed_txt','', 'AA_Core_Fields..', 'Computed text',   '100', '', '', 'txt', '0', '0', '0', 'nul', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'com', '1', '1')"); // computed_txt
-        // honzam added 2007-11-21 - _upload_url..... - slice field for setting the name of upload directory
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( '_upload_url', '', 'AA_Core_Fields..', 'Upload URL',      '100', 'If you want to have your files stored in your domain, then you can create symbolic link from http://yourdomain.org/upload -> http://your.actionapps.org/IMG_UPLOAD_PATH and fill there \"http://yourdomain.org/upload\". The url stored in AA will be changed (The file is stored still on the same place).', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')");
-        // honzam added 2008-07-15 - seo field for seo optimalization
-        $this->query("REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'seo',         '', 'AA_Core_Fields..', 'SEO',             '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')");
-        // honzam added 2008-11-20 - hit_1, hit_7, hit_30 - count hits
-        $this->query("REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_1', '', 'AA_Core_Fields..', 'Hits last day', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)");     // hit_1
-        $this->query("REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_7', '', 'AA_Core_Fields..', 'Hits last week', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)");    // hit_7
-        $this->query("REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_30', '', 'AA_Core_Fields..', 'Hits last month', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)");  // hit_30
-
-        // UPDATE ALSO AA_Optimize_Redefine_Field_Templates !!!
-
-        $this->message(_m('New field templates added'));
+        $this->message(_m('Recreate "%1" field definition', array($this->_fieldType())));
+        $this->query($this->_fieldDefinition());
+        $this->message(_m('New "%1" field template added', array($this->_fieldType())));
     }
 }
 
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Auth_Group_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
 
+    function name()             { return _m("Add auth_group...... field template"); }
+    function _fieldType()       { return 'auth_group......'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('auth_group......', '', 'AA_Core_Fields..', 'Auth Group',         '350', 'Sets permissions for web sections', '', 'txt:', 0, 0, 0, 'sel:', '', 100, '', '', '', '', 1, 1, 1, '_#AUTGROUP', 'f_h:', 'Auth Group (membership type)', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);"; }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Mail_Lists_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add mail_lists field template"); }
+    function _fieldType()       { return 'mail_lists......'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('mail_lists......', '', 'AA_Core_Fields..', 'Mailing Lists',      '1000', 'Select mailing lists which you read', '', 'txt:', 0, 0, 1, 'mch::3:1', '', 100, '', '', '', '', 1, 1, 1, '_#MAILLIST', 'f_h:;&nbsp', 'Mailing Lists', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);"; }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Mlxctrl_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add mlxctrl field template"); }
+    function _fieldType()       { return 'mlxctrl'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('mlxctrl', '', 'AA_Core_Fields..', 'MLX Control', '6000', '', 'http://mimo.gn.apc.org/mlx/', 'txt:', 1, 0, 1, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 0, 1);"; }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Integer_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add integer field template"); }
+    function _fieldType()       { return 'integer'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('integer',  '', 'AA_Core_Fields..', 'Integer',     '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'number', 'num', '1', '0')"; }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Name_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add name field template"); }
+    function _fieldType()       { return 'name'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('name',        '', 'AA_Core_Fields..', 'Name',            '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // name
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Phone_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add phone field template"); }
+    function _fieldType()       { return 'phone'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('phone',       '', 'AA_Core_Fields..', 'Phone',           '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // phone
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Fax_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add fax field template"); }
+    function _fieldType()       { return 'fax'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('fax',         '', 'AA_Core_Fields..', 'Fax',             '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // fax
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Address_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add address field template"); }
+    function _fieldType()       { return 'address'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('address',     '', 'AA_Core_Fields..', 'Address',         '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // address
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Location_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add location field template"); }
+    function _fieldType()       { return 'location'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('location',    '', 'AA_Core_Fields..', 'Location',        '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // location
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_City_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add city field template"); }
+    function _fieldType()       { return 'city'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('city',        '', 'AA_Core_Fields..', 'City',            '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // city
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Country_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add country field template"); }
+    function _fieldType()       { return 'country'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('country',     '', 'AA_Core_Fields..', 'Country',         '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // country
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Range_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add range field template"); }
+    function _fieldType()       { return 'range'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('range',       '', 'AA_Core_Fields..', 'Range',           '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // range
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Real_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add real field template"); }
+    function _fieldType()       { return 'real'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('real',        '', 'AA_Core_Fields..', 'Real number',     '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; } // real
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Computed_Num_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add computed_num field template"); }
+    function _fieldType()       { return 'computed_num'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('computed_num','', 'AA_Core_Fields..', 'Computed number', '100', '', '', 'txt', '0', '0', '0', 'nul', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'number', 'com', '1', '0')"; } // computed_num
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Computed_Txt_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add computed_txt field template"); }
+    function _fieldType()       { return 'computed_txt'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('computed_txt','', 'AA_Core_Fields..', 'Computed text',   '100', '', '', 'txt', '0', '0', '0', 'nul', '', '100', '', '', '', '', '1', '1', '1', '_#UNDEFINE', 'f_h', 'alias undefined - see Admin pages - Field setting', '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'com', '1', '1')"; } // computed_txt
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add__Upload_Url_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add _upload_url field template"); }
+    function _fieldType()       { return '_upload_url'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_upload_url', '', 'AA_Core_Fields..', 'Upload URL',      '100', 'If you want to have your files stored in your domain, then you can create symbolic link from http://yourdomain.org/upload -> http://your.actionapps.org/IMG_UPLOAD_PATH and fill there \"http://yourdomain.org/upload\". The url stored in AA will be changed (The file is stored still on the same place).', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Hit_1_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add hit_1 field template"); }
+    function _fieldType()       { return 'hit_1'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_1', '', 'AA_Core_Fields..', 'Hits last day', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)"; }     // hit_1
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Hit_7_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add hit_7 field template"); }
+    function _fieldType()       { return 'hit_7'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_7', '', 'AA_Core_Fields..', 'Hits last week', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)"; }    // hit_7
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Hit_30_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add hit_30 field template"); }
+    function _fieldType()       { return 'hit_30'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_30', '', 'AA_Core_Fields..', 'Hits last month', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)"; }  // hit_30
+}
 
 
 /** Restore Data from Backup Tables
@@ -2033,17 +1835,17 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
     }
 }
 
-/** Add tables for new polls module */
+/** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
 
     /** Name function @return a message */
     function name() {
-        return _m("Fixing missing %1 field definitions in slices", array(self::_field()));
+        return _m("Fixing missing %1 field definitions in slices", array('status_code.....'));
     }
 
     /** Description function @return a message */
     function description() {
-        return _m("Adds %1 fields definitions for slices, where missing", array(self::_field()));
+        return _m("Adds fields definitions for slices, where missing");
     }
 
     function _field() {
@@ -2093,59 +1895,39 @@ class AA_Optimize_Add_Mandatory_Status_Code extends AA_Optimize {
     }
 }
 
-/** Add tables for new polls module */
+/** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Display_Count extends AA_Optimize_Add_Mandatory_Status_Code {
-    function _field() {
-        return 'display_count...';
-    }
-
-    function _fieldDefinition($sid) {
-        return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'display_count...', '', '". quote($sid) ."', 'Displayed Times', '5050', 'Internal field - do not change', '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'display_count', '', 'nul', '0', '1')";
-    }
+    function name()                 { return _m("Fixing missing %1 field definitions in slices", array('display_count...')); }
+    function _field()               { return 'display_count...'; }
+    function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'display_count...', '', '". quote($sid) ."', 'Displayed Times', '5050', 'Internal field - do not change', '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#DISPL_NO', 'f_h', 'alias for number of displaying of this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'display_count', '', 'nul', '0', '1')"; }
 }
 
-/** Add tables for new polls module */
+/** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Disc_Count extends AA_Optimize_Add_Mandatory_Status_Code {
-    function _field() {
-        return 'disc_count......';
-    }
-
-    function _fieldDefinition($sid) {
-        return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_count......', '', '". quote($sid) ."', 'Comments Count', '5060', 'Internal field - do not change',  '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_ALLCNT', 'f_h', 'alias for number of all discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_count', '', 'nul', '0', '1')";
-    }
+    function name()                 { return _m("Fixing missing %1 field definitions in slices", array('disc_count......')); }
+    function _field()               { return 'disc_count......';    }
+    function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_count......', '', '". quote($sid) ."', 'Comments Count', '5060', 'Internal field - do not change',  '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_ALLCNT', 'f_h', 'alias for number of all discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_count', '', 'nul', '0', '1')";    }
 }
 
-/** Add tables for new polls module */
+/** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Disc_App extends AA_Optimize_Add_Mandatory_Status_Code {
-    function _field() {
-        return 'disc_app........';
-    }
-
-    function _fieldDefinition($sid) {
-        return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_app........', '', '". quote($sid) ."', 'Approved Comments Count', '5070', 'Internal field - do not change', '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_APPCNT', 'f_h', 'alias for number of approved discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_app', '', 'nul', '0', '1')";
-    }
+    function name()                 { return _m("Fixing missing %1 field definitions in slices", array('disc_app........')); }
+    function _field()               { return 'disc_app........';   }
+    function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'disc_app........', '', '". quote($sid) ."', 'Approved Comments Count', '5070', 'Internal field - do not change', '', 'qte:0', '1', '1', '0', 'fld', '', '100', '', '', '', '', '0', '0', '0', '_#D_APPCNT', 'f_h', 'alias for number of approved discussion comments for this item', '', '', '', '', '', '', '', '', '0', '0', '0', 'disc_app', '', 'nul', '0', '1')";    }
 }
 
-/** Add tables for new polls module */
+/** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Id extends AA_Optimize_Add_Mandatory_Status_Code {
-    function _field() {
-        return 'id..............';
-    }
-
-    function _fieldDefinition($sid) {
-        return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('id..............', '', '". quote($sid) ."', 'Long ID', 5080, 'Internal field - do not change', '', 'txt:', 0, 0, 0, 'nul', '', 0, '', '', '', '', 1, 1, 1, '_#ITEM_ID_', 'f_n:', 'alias for Long Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'id', '', 'nul', 0, 1)";
-    }
+    function name()                 { return _m("Fixing missing %1 field definitions in slices", array('id..............')); }
+    function _field()               { return 'id..............';    }
+    function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('id..............', '', '". quote($sid) ."', 'Long ID', 5080, 'Internal field - do not change', '', 'txt:', 0, 0, 0, 'nul', '', 0, '', '', '', '', 1, 1, 1, '_#ITEM_ID_', 'f_n:', 'alias for Long Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'id', '', 'nul', 0, 1)";    }
 }
 
-/** Add tables for new polls module */
+/** Add mandtory fields to each slice where missing */
 class AA_Optimize_Add_Mandatory_Short_Id extends AA_Optimize_Add_Mandatory_Status_Code {
-    function _field() {
-        return 'short_id........';
-    }
-
-    function _fieldDefinition($sid) {
-        return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('short_id........', '', '". quote($sid) ."', 'Short ID', 5090, 'Internal field - do not change', '', 'txt:', 0, 0, 0, 'nul', '', 100, '', '', '', '', 1, 1, 1, '_#SITEM_ID', 'f_t:', 'alias for Short Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'short_id', '', 'nul', 0, 0)";
-    }
+    function name()                 { return _m("Fixing missing %1 field definitions in slices", array('short_id........')); }
+    function _field()               { return 'short_id........';    }
+    function _fieldDefinition($sid) { return "REPLACE INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('short_id........', '', '". quote($sid) ."', 'Short ID', 5090, 'Internal field - do not change', '', 'txt:', 0, 0, 0, 'nul', '', 100, '', '', '', '', 1, 1, 1, '_#SITEM_ID', 'f_t:', 'alias for Short Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'short_id', '', 'nul', 0, 0)";    }
 }
 
 ?>
