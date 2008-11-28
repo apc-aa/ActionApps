@@ -690,8 +690,8 @@ class AA_Metabase {
 
         // for us are varchar and char the same - some tables are never converted
         // to char in some versions of MySQL, so the test is always false
-        $eq_vars   = array('varchar', " default '                '", " default '                                '");
-        $eq_novars = array('char'   , '', '');
+        $eq_vars   = array('varchar', " default '                '", " default '                                '", " default '0'", "timestamp NOT NULL");
+        $eq_novars = array('char'   , '', '', '', 'timestamp');
 
         foreach ($this->tables as $tablename => $table) {
             $table_sql_1 = $table->getCreateSql();
