@@ -1023,7 +1023,7 @@ class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='admin/xmlclient.php3'", "aa_first", 'count');
-        if ($row_count <> 1) {
+        if ($row_count < 1) {
             $this->message(_m('Cron entry for Feeding is not installed in AA Cron'));
             $ret = false;
         }
@@ -1066,7 +1066,7 @@ class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='misc/optimize.php3'", "aa_first", 'count');
-        if ($row_count <> 1) {
+        if ($row_count < 1) {
             $this->message(_m('Cron entry for Database Optimalization is not installed in AA Cron'));
             $ret = false;
         }
@@ -1109,7 +1109,7 @@ class AA_Optimize_Add_Auth_Suspend_Cron_Entry extends AA_Optimize {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='modules/mysql_auth/suspend.php3'", "aa_first", 'count');
-        if ($row_count <> 1) {
+        if ($row_count < 1) {
             $this->message(_m('Cron entry for "mysql_auth reader suspending" is not installed in AA Cron'));
             $ret = false;
         }
@@ -1152,7 +1152,7 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='modules/links/linkcheck.php3'", "aa_first", 'count');
-        if ($row_count <> 1) {
+        if ($row_count < 1) {
             $this->message(_m('Cron entry for "Checking link stutus in Links module" is not installed in AA Cron'));
             $ret = false;
         }
@@ -1195,7 +1195,7 @@ class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
         $ret = true;
 
         $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='misc/toexecute.php3'", "aa_first", 'count');
-        if ($row_count <> 1) {
+        if ($row_count < 1) {
             $this->message(_m('Cron entry for "Toexecute queue execution" is not installed in AA Cron'));
             $ret = false;
         }
