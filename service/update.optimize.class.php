@@ -559,7 +559,7 @@ class AA_Optimize_Redefine_Slice_News_Templates extends AA_Optimize {
      */
     function repair() {
 
-        $now         = now();
+        $now         = time();
         $AA_IMG_URL  = '/'. AA_BASE_DIR .'images/';
         $AA_DOC_URL  = '/'. AA_BASE_DIR .'doc/';
 
@@ -1474,7 +1474,7 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
      */
     function repair() {
 
-        $now         = now();
+        $now         = time();
         $AA_IMG_URL  = '/'. AA_BASE_DIR .'images/';
         $AA_DOC_URL  = '/'. AA_BASE_DIR .'doc/';
 
