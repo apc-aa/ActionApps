@@ -166,14 +166,19 @@ class AA_SQL_Updater {
     function test() {
         $optimizers = $this->getOptimizers();
         $msg        = '<table>';
+        $result     = true;
         foreach ($optimizers as $optimizer) {
             $msg .= '<tr><td>'. $optimizer->name() .'</td>';
-            $msg .= '<td>'. ($optimizer->test() ? 'OK' : 'Problem') .'</td>';
+            $res  = $optimizer->test();
+            if (!$res) {
+                $result = false;
+            }
+            $msg .= '<td>'. ($res ? 'OK' : 'Problem') .'</td>';
             $msg .= '<td>'. $optimizer->report(). '</td></tr>';
         }
         $msg .= "</table>";
         $this->message($msg);
-        return true;
+        return $result;
     }
 
     function restore() {
@@ -186,6 +191,7 @@ class AA_SQL_Updater {
     function update() {
         $optimizers = $this->getOptimizers();
         $msg        = '<table>';
+        $result     = true;
         foreach ($optimizers as $optimizer) {
             $msg .= '<tr><td>'. $optimizer->name() .'</td>';
 
@@ -193,13 +199,16 @@ class AA_SQL_Updater {
                 $msg .= '<td>test passed - skipping</td></tr>';
             } else {
                 $optimizer->clear_report();
-                $optimizer->repair();
+                $res  = $optimizer->repair();
+                if (!$res) {
+                    $result = false;
+                }
                 $msg .= '<td>'. $optimizer->report(). '</td></tr>';
             }
         }
         $msg .= "</table>";
         $this->message($msg);
-        return true;
+        return $result;
     }
 
     /** getOptimizers function
