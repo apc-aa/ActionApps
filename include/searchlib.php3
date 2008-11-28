@@ -542,7 +542,7 @@ class AA_Set extends AA_Object {
              if ( AA_Set::check($command_params[$i], $command_params[$i+2]) ) {
                  $field_arr = explode(',',$command_params[$i]);
                  $cond_str  = $command_params[$i+2];
-                 // well stripsplashes if bad - we never want the slashed text 
+                 // well stripsplashes if bad - we never want the slashed text
                  // here, but we do not know, if the command is not from url
                  // so we will rather stripslash the string in most cases
                  // However - if the string starts with ", then it is never
