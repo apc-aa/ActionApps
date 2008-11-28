@@ -290,6 +290,7 @@ class AA_Optimize_Update_Db_Structure extends AA_Optimize {
             $this->query("ALTER TABLE `tmp_$tablename` RENAME `$tablename");
             $this->message(_m('%1 done.', array($tablename)));
         }
+        return true;
     }
 }
 
@@ -514,6 +515,7 @@ class AA_Optimize_Redefine_Core_Constants extends AA_Optimize {
         $this->query("REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined056', 'lt_groupNames', 'APC-wide Categories', 'lt_apcCategories', '', '1000')");
 
         $this->message(_m('Redefine core constants - done.'));
+        return true;
     }
 }
 
@@ -604,6 +606,7 @@ class AA_Optimize_Redefine_Slice_News_Templates extends AA_Optimize {
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES( 'short_id........', '', 'News_EN_tmpl....', 'Short ID', '5090', 'Internal field - do not change', '', 'txt:', 0, 0, 0, 'nul', '', 100, '', '', '', '', 1, 1, 1, '_#SITEM_ID', 'f_t:', 'alias for Short Item ID', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, 'short_id', '', 'nul', 0, 0)");
 
         $this->message(_m('News EN template slice creation - done.'));
+        return true;
     }
 }
 
@@ -652,8 +655,6 @@ class AA_Optimize_Redefine_Slice_Reader_Templates extends AA_Optimize {
         $AA_IMG_URL  = '/'. AA_BASE_DIR .'images/';
         $AA_DOC_URL  = '/'. AA_BASE_DIR .'doc/';
 
-
-
         $this->message(_m('Deleting all fields form "Reader Management" slice'));
         $this->query("DELETE FROM field WHERE slice_id='ReaderManagement'");
 
@@ -687,6 +688,7 @@ class AA_Optimize_Redefine_Slice_Reader_Templates extends AA_Optimize {
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('text...........3', '', 'ReaderManagement', 'Access Code', 700, 'Access code is used to confirm email and when you do not use HTTP Authentification', '', 'rnd:5:text...........3:0', 0, 0, 0, 'fld:', '', 100, '', '', '', '', 1, 1, 1, '_#ACCECODE', 'f_h:', 'Access Code', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'text:', 'qte:', 1, 1);");
 
         $this->message(_m('Reader Management template slice creation - done.'));
+        return true;
     }
 }
 
@@ -736,8 +738,6 @@ class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
         $AA_IMG_URL  = '/'. AA_BASE_DIR .'images/';
         $AA_DOC_URL  = '/'. AA_BASE_DIR .'doc/';
 
-
-
         $this->message(_m('Deleting all fields form "Noticas - ES" slice'));
         $this->query("DELETE FROM field WHERE slice_id='noticias-es.....'");
 
@@ -779,6 +779,7 @@ class AA_Optimize_Redefine_Slice_Noticias_Templates extends AA_Optimize {
         $this->query("INSERT INTO field (id, type, slice_id, name, input_pri, input_help, input_morehlp, input_default, required, feed, multiple, input_show_func, content_id, search_pri, search_type, search_help, search_before, search_more_help, search_show, search_ft_show, search_ft_default, alias1, alias1_func, alias1_help, alias2, alias2_func, alias2_help, alias3, alias3_func, alias3_help, input_before, aditional, content_edit, html_default, html_show, in_item_tbl, input_validate, input_insert_func, input_show, text_stored) VALUES ('source_href.....', '', 'noticias-es.....', 'URL de la fuente', 610, '', '', 'txt:', 0, 0, 0, 'fld:', '', 100, '', '', '', '', 1, 1, 1, '_#URL_FTE_', 'f_h:', 'URL de la fuente', '', 'f_0:', '', '', 'f_0:', '', '', '', 0, 0, 0, '', 'url:', 'qte:', 1, 1)");
 
         $this->message(_m('Noticas - ES template slice creation - done.'));
+        return true;
     }
 }
 
@@ -833,6 +834,7 @@ class AA_Optimize_Redefine_View_Discus_Templates extends AA_Optimize {
         $this->query($this->_viewDefinition());
 
         $this->message(_m('view "%1" redefinition - done.', array($this->_viewType())));
+        return true;
     }
 }
 
@@ -945,6 +947,7 @@ class AA_Optimize_Redefine_Site_Templates extends AA_Optimize {
         $this->query("REPLACE INTO site    (id, state_file, structure, flag) VALUES ('SiteTemplate....', 'template.php3', '".'O:8:"sitetree":2:{s:4:"tree";a:1:{i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:1:{i:0;s:1:"1";}s:2:"ch";N;s:1:"f";i:0;}}s:8:"start_id";s:1:"1";}'."', 0)");
 
         $this->message(_m('Site Module template recreation - done.'));
+        return true;
     }
 }
 
@@ -987,7 +990,6 @@ class AA_Optimize_Add_Alerts_Cron_Entry extends AA_Optimize {
     /** Main update function @return bool */
     function repair() {
 
-
         $this->message(_m('Deleting AA Cron entry for Alerts Sending'));
         $this->query("DELETE FROM cron WHERE script='modules/alerts/alerts.php3'");
 
@@ -995,6 +997,7 @@ class AA_Optimize_Add_Alerts_Cron_Entry extends AA_Optimize {
         $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('0-60/5', '*', '*', '*', '*', 'modules/alerts/alerts.php3', 'howoften=instant', NULL)");
 
         $this->message(_m('AA cron entry for Alerts Sending - done.'));
+        return true;
     }
 }
 
@@ -1030,7 +1033,6 @@ class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
     /** Main update function @return bool */
     function repair() {
 
-
         $this->message(_m('Deleting AA Cron entry for Feeding'));
         $this->query("DELETE FROM cron WHERE script='admin/xmlclient.php3'");
 
@@ -1038,6 +1040,7 @@ class AA_Optimize_Add_Feeding_Cron_Entry extends AA_Optimize {
         $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('8,23,38,53', '*', '*', '*', '*', 'admin/xmlclient.php3', '', NULL)");
 
         $this->message(_m('AA cron entry for Feeding - done.'));
+        return true;
     }
 }
 
@@ -1073,7 +1076,6 @@ class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
     /** Main update function @return bool */
     function repair() {
 
-
         $this->message(_m('Deleting AA Cron entry for Database Optimalization'));
         $this->query("DELETE FROM cron WHERE script='misc/optimize.php3'");
 
@@ -1081,6 +1083,7 @@ class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
         $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('38',     '2', '*', '*', '2', 'misc/optimize.php3', 'key=".substr( DB_PASSWORD, 0, 5 )."', NULL)");
 
         $this->message(_m('AA cron entry for Database Optimalization - done.'));
+        return true;
     }
 }
 
@@ -1116,7 +1119,6 @@ class AA_Optimize_Add_Auth_Suspend_Cron_Entry extends AA_Optimize {
     /** Main update function @return bool */
     function repair() {
 
-
         $this->message(_m('Deleting AA Cron entry for mysql_auth reader suspending'));
         $this->query("DELETE FROM cron WHERE script='modules/mysql_auth/suspend.php3'");
 
@@ -1124,6 +1126,7 @@ class AA_Optimize_Add_Auth_Suspend_Cron_Entry extends AA_Optimize {
         $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('1',     '0', '*', '*', '*', 'modules/mysql_auth/suspend.php3', '', NULL)");
 
         $this->message(_m('AA cron entry for "mysql_auth reader suspending" - done.'));
+        return true;
     }
 }
 
@@ -1159,7 +1162,6 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
     /** Main update function @return bool */
     function repair() {
 
-
         $this->message(_m('Deleting AA Cron entry for Checking link stutus in Links module'));
         $this->query("DELETE FROM cron WHERE script='modules/links/linkcheck.php3'");
 
@@ -1167,6 +1169,7 @@ class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
         $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('35',     '*', '*', '*', '*', 'modules/links/linkcheck.php3', '', NULL)");
 
         $this->message(_m('AA cron entry for "Checking link stutus in Links module" - done.'));
+        return true;
     }
 }
 
@@ -1202,7 +1205,6 @@ class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
     /** Main update function @return bool */
     function repair() {
 
-
         $this->message(_m('Deleting AA Cron entry for Toexecute queue execution'));
         $this->query("DELETE FROM cron WHERE script='misc/toexecute.php3'");
 
@@ -1210,6 +1212,7 @@ class AA_Optimize_Add_Toexecute_Cron_Entry extends AA_Optimize {
         $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('0-60/2',     '*', '*', '*', '*', 'misc/toexecute.php3', '', NULL)");
 
         $this->message(_m('AA cron entry for Toexecute queue execution - done.'));
+        return true;
     }
 }
 
@@ -1247,13 +1250,13 @@ class AA_Optimize_Add_Email_Templates_Cron_Entry extends AA_Optimize {
     /** Main update function @return bool */
     function repair() {
 
-
         $this->message(_m('Replacing the e-mail templates'));
         $this->query("REPLACE INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Welcome', 'Welcome to Econnect Alerts', 'Somebody requested to receive regularly new items from our web site \r\n<a href=\"http://www.ecn.cz\">www.ecn.cz</a>\r\n{switch({_#HOWOFTEN})instant:at the moment they are added\r\n:daily:once a day\r\n:weekly:once a week\r\n:monthly:once a month}.<br>\r\n<br>\r\nYou will not receive any emails until you confirm your subscription.\r\nTo confirm it or to change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'somebody@haha.cz', '', '', '', 'cz', 1, 'alerts welcome');");
         $this->query("REPLACE INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Alerts Alert', '{switch({_#HOWOFTEN})instant:News from Econnect::_#HOWOFTEN digest from Econnect}', '_#FILTERS_\r\n<br><hr>\r\nTo change your personal info, please go to<br>\r\n<a href=\"_#COLLFORM\">_#COLLFORM</a>.<br><br>\r\nThank you for reading our alerts,<br>\r\nThe Econnect team\r\n', 'econnect@team.cz', '', '', '', 'cz', 1, 'alerts alert');");
         $this->query("REPLACE INTO email (description, subject, body, header_from, reply_to, errors_to, sender, lang, html, type) VALUES ('Generic Item Manager Welcome', 'Welcome, AA _#ROLE____', 'You have been assigned an Item Manager for the slice _#SLICNAME. Your username is _#LOGIN___. See <a href=\"http://apc-aa.sf.net/faq\">FAQ</a> for help.', '\"_#ME_NAME_\" <_#ME_MAIL_>', '', '', '', 'en', 1, 'slice wizard welcome');");
 
         $this->message(_m('The e-mail templates updated'));
+        return true;
     }
 }
 
@@ -1351,6 +1354,7 @@ class AA_Optimize_Redefine_Links_Templates extends AA_Optimize {
         $this->query("REPLACE INTO links_regions (id, name, level) VALUES (6050, 'Uruguay', 2)");
 
         $this->message(_m('Links Module template recreation - done.'));
+        return true;
     }
 }
 
@@ -1396,7 +1400,6 @@ class AA_Optimize_Add_Polls extends AA_Optimize {
      * @return bool
      */
     function repair() {
-
 
         $metabase = AA_Metabase::singleton();
         $this->query("DROP TABLE IF EXISTS `polls`");
@@ -1474,8 +1477,6 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
         $now         = now();
         $AA_IMG_URL  = '/'. AA_BASE_DIR .'images/';
         $AA_DOC_URL  = '/'. AA_BASE_DIR .'doc/';
-
-
 
         $this->message(_m('Deleting all fields form "ActionApps Core" slice'));
         $this->query("DELETE FROM field WHERE slice_id='AA_Core_Fields..'");
@@ -1569,6 +1570,7 @@ class AA_Optimize_Redefine_Field_Templates extends AA_Optimize {
         // UPDATE ALSO AA_Optimize_Add_New_Field_Templates class
 
         $this->message(_m('Redefine field defaults - done.'));
+        return true;
     }
 }
 
@@ -1619,6 +1621,7 @@ class AA_Optimize_Add_Seo_Field_Template extends AA_Optimize {
         $this->message(_m('Recreate "%1" field definition', array($this->_fieldType())));
         $this->query($this->_fieldDefinition());
         $this->message(_m('New "%1" field template added', array($this->_fieldType())));
+        return true;
     }
 }
 
@@ -1832,6 +1835,7 @@ class AA_Optimize_Restore_Bck_Tables extends AA_Optimize {
             $this->query("DROP TABLE IF EXISTS `$tablename`");
             $this->query("ALTER TABLE `bck_$tablename` RENAME `$tablename");
         }
+        return true;
     }
 }
 

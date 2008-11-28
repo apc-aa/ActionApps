@@ -119,11 +119,12 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
         $db->tquery($SQL);
         $ret = '';
         while ($db->next_record()) {
-            $params   = 'dbpw5='.substr($db->f('db_pwd'),0,5).'&fire=1&'.$this->update_action.'=1';
+            $params   = 'dbpw5='.substr($db->f('db_pwd'),0,5).'&silent=1&fire=1&'.$this->update_action.'=1';
             $file     = $db->f('AA_HTTP_DOMAIN'). $db->f('AA_BASE_DIR'). "service/sql_update.php?$params";
             $response = file_get_contents($file);
+            $status   = substr($response,0,3);
             $toggle   = '{htmltoggle:&gt;&gt;:'.AA_Stringexpand::quoteColons($file).':&lt;&lt;:'. AA_Stringexpand::quoteColons($response).'}';
-            $ret     .= AA_Stringexpand::unalias($toggle);
+            $ret     .= AA_Stringexpand::unalias($status.' '.$toggle);
         }
         freeDB($db);
         return $ret;                                     // OK - no error

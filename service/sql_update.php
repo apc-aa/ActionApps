@@ -19,7 +19,7 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// my change 
+// my change
 
 // script for MySQL database update
 
@@ -161,6 +161,7 @@ require_once dirname(__FILE__)."/varset.php3";
 require_once dirname(__FILE__)."/update.optimize.class.php";
 
 class AA_SQL_Updater {
+    var $messages = array();
 
     function test() {
         $optimizers = $this->getOptimizers();
@@ -170,13 +171,16 @@ class AA_SQL_Updater {
             $msg .= '<td>'. ($optimizer->test() ? 'OK' : 'Problem') .'</td>';
             $msg .= '<td>'. $optimizer->report(). '</td></tr>';
         }
-        return "$msg</table>";
+        $msg .= "</table>";
+        $this->message($msg);
+        return true;
     }
 
     function restore() {
         $optimizer = new AA_Optimize_Restore_Bck_Tables();
         $optimizer->repair();
-        return $optimizer->report();
+        $this->message($optimizer->report());
+        return true;
     }
 
     function update() {
@@ -193,7 +197,9 @@ class AA_SQL_Updater {
                 $msg .= '<td>'. $optimizer->report(). '</td></tr>';
             }
         }
-        return "$msg</table>";
+        $msg .= "</table>";
+        $this->message($msg);
+        return true;
     }
 
     /** getOptimizers function
@@ -217,26 +223,52 @@ class AA_SQL_Updater {
         ksort($optimizers);
         return $optimizers;
     }
+
+    /** Message function
+    * @param $text
+    */
+    function message($text) {
+        $this->messages[] = $text;
+    }
+
+    /** Report function
+    * @return messages separated by <br>
+    */
+    function report()       {
+        return join('<br>', $this->messages);
+    }
+
+    /** Clear report function
+    * unsets all current messages
+    */
+    function clear_report() {
+        unset($this->messages);
+        $this->messages = array();
+    }
+
 }
 
-echo '
-  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-  <html>
-  <head>
-    <title>APC-AA database update script</title>
-  </head>
-  <body>
-  <h1>ActionApps database update</h1>
-  <p>This script is written to be not destructive. It creates temporary tables
-     first, then copies data from old tables to the temporary ones (tmp_*) and
-     after successfull copy it drops old tables and renames temporary ones to
-     right names. Then it possibly updates common records (like default field
-     definitions, module templates, constants and templates).</p>
-  <p><font color="red">However, it is strongly recommended backup your current
-  database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -h '.DB_HOST.' -u '.DB_USER.' -p --opt '.DB_NAME.' &gt; ./'.DB_NAME.'_'.date('ymd').'.sql</code></p>
 
-  <form name="f" action="' .$_SERVER['PHP_SELF'] .'">
-  ';
+if (!$_GET['silent']) {
+    echo '
+      <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+      <html>
+      <head>
+        <title>APC-AA database update script</title>
+      </head>
+      <body>
+      <h1>ActionApps database update</h1>
+      <p>This script is written to be not destructive. It creates temporary tables
+         first, then copies data from old tables to the temporary ones (tmp_*) and
+         after successfull copy it drops old tables and renames temporary ones to
+         right names. Then it possibly updates common records (like default field
+         definitions, module templates, constants and templates).</p>
+      <p><font color="red">However, it is strongly recommended backup your current
+      database !!!</font><br><br>Something like:<br><code>mysqldump --lock-tables -h '.DB_HOST.' -u '.DB_USER.' -p --opt '.DB_NAME.' &gt; ./'.DB_NAME.'_'.date('ymd').'.sql</code></p>
+
+      <form name="f" action="' .$_SERVER['PHP_SELF'] .'">
+      ';
+}
 
 
 $updater = new AA_SQL_Updater();
@@ -248,7 +280,8 @@ if ($_GET['update']) {
         if (!$_GET['fire']) {
             AA_Optimize::justPrint(true);
         }
-        echo $updater->update();
+        $status = $updater->update();
+        echo ($status ? 'OK ' : 'Err ') . $updater->report();
     }
 }
 elseif ( $_GET['restore']) {
@@ -258,25 +291,30 @@ elseif ( $_GET['restore']) {
         if (!$_GET['fire']) {
             AA_Optimize::justPrint(true);
         }
-        echo $updater->restore();
+        $status = $updater->restore();
+        echo ($status ? 'OK ' : 'Err ') . $updater->report();
     }
 }
 elseif ( $_GET['dotest']) {
-    echo $updater->test();
+    $status = $updater->test();
+    echo ($status ? 'OK ' : 'Err ') . $updater->report();
 }
 
-echo '  For update or restore you need to know database password (see DB_PASSWORD in config.php3 file) - it is from security reasons. <br><br>
-        Fill in first five characters of the password here
 
-        <input type="text" name="dbpw5" size="5" maxsize="5" value="'.$_GET['dbpw5'].'"><br>
-        Write to database <input type="checkbox" name="fire" value="1"'.($_GET['fire'] ? ' checked' : ''). '"><br>
-        <small>Check this for real work with writing to database</small>
-        <br><br>
+if (!$_GET['silent']) {
+    echo '  For update or restore you need to know database password (see DB_PASSWORD in config.php3 file) - it is from security reasons. <br><br>
+            Fill in first five characters of the password here
 
-        <input type="submit" name="dotest" value="Test">
-        <input type="submit" name="update" value="Update">
-        <input type="submit" name="restore" value="Restore">
-       </form>
-      </body>
-      </html>';
+            <input type="text" name="dbpw5" size="5" maxsize="5" value="'.$_GET['dbpw5'].'"><br>
+            Write to database <input type="checkbox" name="fire" value="1"'.($_GET['fire'] ? ' checked' : ''). '"><br>
+            <small>Check this for real work with writing to database</small>
+            <br><br>
+
+            <input type="submit" name="dotest" value="Test">
+            <input type="submit" name="update" value="Update">
+            <input type="submit" name="restore" value="Restore">
+           </form>
+          </body>
+          </html>';
+}
 ?>

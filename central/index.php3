@@ -133,7 +133,7 @@ $manager_settings = array(
                                     </tr>
                                     <tr class="tabtxt">
                                       <td>&nbsp;</td>
-                                      <td class="tabtxt" colspan="4"><a href="{sessurl:?akce=Sqlupdate&chb[_#ID______]=1}">'._m('sql_upadte NOW!') .'</a></td>
+                                      <td class="tabtxt" colspan="4"><a href="{sessurl:?akce=Sqlupdate_Test&chb[_#ID______]=1}">'._m('sql_upadte TEST') .'</a> &nbsp; &nbsp; <a href="{sessurl:?akce=Sqlupdate_Update&chb[_#ID______]=1}">'._m('sql_upadte NOW!') .'</a></td>
                                     </tr>
                                    ',
              'compact_remove'   => "",
