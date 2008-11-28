@@ -736,15 +736,15 @@ class itemview {
      * @param $day
      */
     function resolve_calendar_aliases($txt,$day="") {
-        $month = $this->slice_info['calendar_month'];
-        $year  = $this->slice_info['calendar_year'];
+        $month = (int)$this->slice_info['calendar_month'];
+        $year  = (int)$this->slice_info['calendar_year'];
 
         $aliases = array (
             "_#CV_NUM_Y" => $year,
             "_#CV_NUM_M" => $month,
             "_#CV_NUM_D" => $day,
-            "_#CV_TST_1" => mktime (0,0,0,$month,$day,$year),
-            "_#CV_TST_2" => mktime (0,0,0,$month,$day+1,$year));
+            "_#CV_TST_1" => mktime (0,0,0,$month,(int)$day,$year),
+            "_#CV_TST_2" => mktime (0,0,0,$month,(int)$day+1,$year));
 
         reset ($aliases);
         while (list ($alias,$replace) = each($aliases)) {
