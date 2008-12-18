@@ -1,3 +1,5 @@
+12/08/08 - better handling of cmd[]=x, i and o parameters - ids are checked, so 
+(honzam)   only valid ads are used in query
 11/27/08 - Central allows to upload AA definitions from CSV file
 (honzam) - Central calls new sql_update.php script from service/ directory
          - improved tests in service/sql_update.php script

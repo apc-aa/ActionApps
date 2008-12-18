@@ -144,6 +144,26 @@ class zids {
         $this->a    = array();
         $this->type = $inittype;
     }
+    
+    
+    /** adds ids from $ids array and checks if the valueas are short or long 
+     *  wrong valuas are not added 
+     */
+    function addDirty($ids) {
+        foreach ((array)$ids as $id) {
+            $id   = trim($id);
+            $type = guesstype($id);
+            if ( !in_array($type, array('s','l')) OR ($id=='0') OR ($id=='')) {
+                continue;
+            }
+            if ($this->type == 'z') {
+                $this->type = $type;
+            }
+            if ($this->type == $type) {
+                $this->a[] = $id;
+            }
+        }
+    }
 
     /** add function
      *  Adds new id or array of ids or zids object.

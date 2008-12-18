@@ -271,7 +271,6 @@ function ParseViewParameters($query_string="") {
     $v_conds  = new AA_Set;
 
     if ( $GLOBALS['debug'] ) huhl("<br>ParseViewParameters - command:", $commands);
-
     $commands->reset();
     while($command = $commands->current()) {
         $commands->next();
@@ -282,7 +281,8 @@ function ParseViewParameters($query_string="") {
             case 'o':  // the same as x, but no hit for item is added
             case 'i':  // i is exactly the same as o, now
             case 'x':  $vid = $command->getParameter(0);
-                       $zids = new zids(($command->getParameter(1)=='url') ? $x : $command->getParameterArray(1));
+                       $zids = new zids();
+                       $zids->addDirty(($command->getParameter(1)=='url') ? $x : $command->getParameterArray(1));
 
                        // This is bizarre code, just incrementing the first item, left as it is
                        // but questioned on apc-aa-coders - mitra
