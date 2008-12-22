@@ -483,7 +483,7 @@ class AA_Manager extends AA_Storable {
      */
     function printSearchbarBegin() {
         global $sess;
-        echo '<form name="filterform" action="'.$_SERVER['PHP_SELF'].'">';
+        echo '<form name="filterform" action="'.$_SERVER['PHP_SELF'].'" class="noprint">';
         $sess->hidden_session();
         if ( isset($this->searchbar) ) {
             $this->searchbar->printBar();

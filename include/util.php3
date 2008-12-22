@@ -1311,9 +1311,13 @@ function HtmlPageBegin($stylesheet='default', $js_lib=false, $lang=null) {
       <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">';
     if ($stylesheet) {
         echo '
-      <link rel="StyleSheet" href="'.$stylesheet.'" type="text/css">';
+      <link rel="stylesheet" href="'.$stylesheet.'" type="text/css" media="all">
+      <style type="text/css" media="print">
+        .noprint, .aa_manager_actions { display: none; }
+        body, #hlavnitbl { background-color: #FFFFFF;  }
+      </style>
+      ';
     }
-
 
     $charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang ? $lang : get_mgettext_lang()];
     echo "<!--$lang-->";

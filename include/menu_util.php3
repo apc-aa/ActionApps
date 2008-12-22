@@ -196,7 +196,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
 
         echo '
         <td colspan="2" id="aa_top">
-          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" class="noprint">
             <tr>
               <td width="1%"><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" width="122" height="1"></td>
               <td><img src="'. AA_INSTAL_PATH. 'images/spacer.gif" height="1"></td>
@@ -361,7 +361,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
 function showSubmenu(&$aamenu, $active) {
     global $debug;
     if ($debug) { echo "<p><font color=\"purple\">showSubmenu:active=$active</font></p>\n"; }
-    echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="left" class="leftmenu">'."\n";
+    echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="left" class="leftmenu noprint">'."\n";
 
     $aamenuitems = $aamenu["items"];
     showSubMenuRows( $aamenuitems, $active );

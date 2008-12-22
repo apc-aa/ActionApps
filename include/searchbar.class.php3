@@ -655,7 +655,7 @@ class AA_Searchbar extends AA_Storable {
 
         echo '<input type="hidden" name="srchbr_akce" value="1">
               <table width="100%" border="0" cellspacing="5" cellpadding="0"
-              class="leftmenu" bgcolor="'. COLOR_TABBG .'">';
+              class="noprint" bgcolor="'. COLOR_TABBG .'">';
 
         // print searchbars
         $count_sb = 0;
