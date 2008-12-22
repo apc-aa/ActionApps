@@ -796,4 +796,40 @@ class AA_Optimize_Create_Upload_Dir extends AA_Optimize {
     }
 }
 
+
+/** Creates upload directory for current slice (if not already created) **/
+class AA_Optimize_Generate_Metabase_Row extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Generate metabase PHP row");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("prints out the metabase row for include/metabase.class.php3 file (used by AA developers to update database definition tempate)");
+    }
+
+    /** implemented actions within this class */
+    function actions()      { return array('repair'); }
+
+    /** Main update function
+     *  @return bool
+     */
+    function repair() {
+        $metabase  = new AA_Metabase;
+        $metabase->loadFromDb();
+        echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\');';
+        exit;
+    }
+}
+
+
+
+
+
 ?>
