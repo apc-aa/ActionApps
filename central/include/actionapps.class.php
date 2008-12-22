@@ -151,7 +151,7 @@ class AA_Actionapps {
      *  (like slice properties, fields, views, ...). It is returned for all the
      *  slices in array
      */
-    function requestDefinitions($type, $ids, $limited = false) {
+    function requestDefinitions($type, $ids, $limited = array()) {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
         $response = $this->getResponse( new AA_Request('Get_Module_Defs', array('type'=>$type, 'ids'=>$ids, 'limited'=>$limited)) );
@@ -331,45 +331,47 @@ class AA_Module_Definition_Chunk {
 
 class AA_Module_Definition_Slice extends AA_Module_Definition {
 
-    function loadForId($module_id, $limited=false) {
+    function loadForId($module_id, $limited=array()) {
         $this->clear();
         $this->module_id = $module_id;
         $metabase        = AA_Metabase::singleton();
 
-        $this->data['module']   = $metabase->getModuleRows('module', $module_id);
-        $this->data['slice']    = $metabase->getModuleRows('slice',  $module_id);
-        $this->data['field']    = $metabase->getModuleRows('field',  $module_id);
-        $this->data['view']     = $metabase->getModuleRows('view',   $module_id);
-        $this->data['email']    = $metabase->getModuleRows('email',  $module_id);
+        if ($limited['definitions']) {
+            $this->data['module']       = $metabase->getModuleRows('module',      $module_id);
+            $this->data['slice']        = $metabase->getModuleRows('slice',       $module_id);
+            $this->data['field']        = $metabase->getModuleRows('field',       $module_id);
+            $this->data['view']         = $metabase->getModuleRows('view',        $module_id);
+            $this->data['email']        = $metabase->getModuleRows('email',       $module_id);
+            $this->data['email_notify'] = $metabase->getModuleRows('email_notify',$module_id);
+            $this->data['profile']      = $metabase->getModuleRows('profile',     $module_id);
+            $this->data['rssfeeds']     = $metabase->getModuleRows('rssfeeds',    $module_id);
 
-        // @todo - do it better - check the fields setting, and get all the constants used
-        $this->data['constant_slice'] = $metabase->getModuleRows('constant_slice', $module_id);
-        $this->data['constant']       = $metabase->getModuleRows('constant', $module_id);
-        if (is_array($this->data['constant'])) {
-            $constant_groups = array();
-            foreach ($this->data['constant'] as $k => $v) {
-                $constant_groups[$v['group_id']] = true;   // get list of all groups
-            }
+            // @todo - do it better - check the fields setting, and get all the constants used
+            $this->data['constant_slice'] = $metabase->getModuleRows('constant_slice', $module_id);
+            $this->data['constant']       = $metabase->getModuleRows('constant', $module_id);
+            if (is_array($this->data['constant'])) {
+                $constant_groups = array();
+                foreach ($this->data['constant'] as $k => $v) {
+                    $constant_groups[$v['group_id']] = true;   // get list of all groups
+                }
 
-            $SQL = "SELECT * FROM constant WHERE group_id='lt_groupNames' AND ". Cvarset::sqlin('value', array_keys($constant_groups));
+                $SQL = "SELECT * FROM constant WHERE group_id='lt_groupNames' AND ". Cvarset::sqlin('value', array_keys($constant_groups));
 
-            $groups = GetTable2Array($SQL, "unpack:id", 'aa_fields');
-            if (!is_array($groups)) {
-                $groups = array();
+                $groups = GetTable2Array($SQL, "unpack:id", 'aa_fields');
+                if (!is_array($groups)) {
+                    $groups = array();
+                }
+                foreach ($groups as $k => $v) {
+                    $groups[$k]['id'] = unpack_id($v['id']);
+                }
+                $this->data['constant'] = array_merge($this->data['constant'], $groups);
             }
-            foreach ($groups as $k => $v) {
-                $groups[$k]['id'] = unpack_id($v['id']);
-            }
-            $this->data['constant'] = array_merge($this->data['constant'], $groups);
         }
 
-        if ( !$limited ) {
-            $this->data['item']           = $metabase->getModuleRows('item'          , $module_id);
-            $this->data['content']        = $metabase->getModuleRows('content'       , $module_id);
-            $this->data['discussion']     = $metabase->getModuleRows('discussion'    , $module_id);
-            $this->data['email_notify']   = $metabase->getModuleRows('email_notify'  , $module_id);
-            $this->data['profile']        = $metabase->getModuleRows('profile'       , $module_id);
-            $this->data['rssfeeds']       = $metabase->getModuleRows('rssfeeds'      , $module_id);
+        if ( $limited['items']) {
+            $this->data['item']       = $metabase->getModuleRows('item'      , $module_id);
+            $this->data['content']    = $metabase->getModuleRows('content'   , $module_id);
+            $this->data['discussion'] = $metabase->getModuleRows('discussion', $module_id);
         }
     }
 

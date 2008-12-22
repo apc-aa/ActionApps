@@ -84,12 +84,12 @@ class AA_Responder_Get_Modules extends AA_Responder {
  */
 class AA_Responder_Get_Module_Defs extends AA_Responder {
     var $ids;
-    var $limited;
+    var $limited;  // array - limits the sended definitions
     var $type;     // module type
 
     function AA_Responder_Get_Module_Defs($param) {
         $this->ids     = is_array($param['ids']) ? $param['ids'] : array();
-        $this->limited = (bool)$param['limited'];
+        $this->limited = is_array($param['limited']) ? $param['limited'] : array();
         $this->type    = $param['type'];
     }
 

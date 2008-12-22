@@ -40,11 +40,16 @@ if ($_POST['copy']) {
     $toexecute = new AA_Toexecute;
     $no_sync_tasks = 0;
 
-    $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $_POST['sync_slices'], !$sync_items);
+    $limit = array();
+    if ($sync_items) { $limit['items']       = true; }
+    if ($sync_defs)  { $limit['definitions'] = true; }
+    if (count($limit) > 0) {
+        $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $_POST['sync_slices'], $limit);
+    }
     $template_site_defs  = $aas[$_POST['template_aa']]->requestDefinitions('Site',  $_POST['sync_sites']);
 
     foreach ($_POST['destination_aa'] as $dest_aa) {
-        if (is_array($_POST['sync_slices'])) {
+        if (is_array($_POST['sync_slices']) AND (count($limit) > 0)) {
             foreach ($_POST['sync_slices'] as $sid) {
                 if ($sid) {
                     // plan the synchronization action to for execution via Task Manager
@@ -67,6 +72,7 @@ if ($_POST['copy']) {
 } else {
     // init values for form
     $sync_items = true;
+    $sync_defs  = true;
 }
 
 HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -109,7 +115,8 @@ FrmTabCaption('', '','', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Modules to Copy from %1', array($aas[$_POST['template_aa']]->getName())));
 FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, @reset($_POST['sync_slices']), 10);
-FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, "", 1, false, _m('Copy also item data (items, discussions, ...) of selected slices above'));
+FrmInputChBox('sync_defs',  _m('Copy definitions'), $sync_defs, false, "", 1, false, _m('Copy slice, fields, views, .... of selected slices above'));
+FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, "", 1, false, _m('Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice'));
 FrmInputMultiSelect('sync_sites[]', _m('Site modules to copy'), $template_sites, @reset($_POST['sync_sites']), 10);
 FrmInputMultiSelect('destination_aa[]', _m('Destination AAs'), $aas_array, @reset($_POST['destination_aa']), 20, false, true, _m('ActionApps installation to update'));
 FrmTabEnd($form_buttons, $sess, $slice_id);
