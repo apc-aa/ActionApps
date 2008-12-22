@@ -77,13 +77,8 @@ class AA_Router {
         $nav_arr = $this->_scrollerArray($page, $max);
         $add     = $this->getParam('scroller_add');
 
-        $query_string = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
-
         foreach ( $nav_arr as $k => $v) {
             if ( $v ) {
-                if ($query_string) {
-                    $v .=  '?'. $query_string;
-                }
                 $arr[] = "<a href=\"$v\" $add>$k</a>";
             } else {
                 $arr[] = $k;
@@ -198,7 +193,7 @@ class AA_Router {
 class AA_Router_Seo extends AA_Router {
 
     function parseApc($apc) {
-        
+
         $parsed_url = parse_url($apc);
         $arr = explode('/', ltrim($parsed_url['path'],'/'));
         $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag','xcat'), '/(cz|en|de)([0-9]*)([^-0-9]*)[-]?(.*)/',$arr[0]);
@@ -209,7 +204,7 @@ class AA_Router_Seo extends AA_Router {
 
         // add querystring
         if ($parsed_url['query']) {
-            $ret['xqs'] = $parsed_url['query']; 
+            $ret['xqs'] = $parsed_url['query'];
         }
 
         // set default values - like xseo, xseo10, ...
