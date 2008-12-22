@@ -90,6 +90,14 @@ if ( $answer )    {
      exit;
 }
 
+
+$slice_id = unpack_id128(GetTable2Array("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'", 'aa_first', 'slice_id'));
+$slice    = AA_Slices::getSlice($slice_id);
+if (empty($slice)) {
+     echo _m("Comment to wrong item - item's slice not found.");
+     exit;
+}
+
 // test for spam
 $discussion_fields = array (
     'd_parent'         => 0,   // allowed number of 'http' substings
@@ -107,8 +115,20 @@ $discussion_fields = array (
     );
 foreach ($discussion_fields as $field => $tolerance) {
     if ( IsSpamText($$field, $tolerance) ) {
-         echo _m("Not accepted, sorry. Looks like spam.");
-         exit;
+        echo get_if( $slice->getProperty('_msg_spam.......'), _m("Not accepted, sorry. Looks like spam.")); 
+        exit;
+    }
+}
+
+// test if the sender IP is not blocked by special slice
+$ip_address         = $_SERVER['REMOTE_ADDR'];
+$ip_banned_slice_id = $slice->getProperty('_ip_banned......');
+if ($ip_banned_slice_id) {
+    $set  = new AA_Set(new AA_Condition('ip..............', '=', '"'.$ip_address.'"'));
+    $zids = QueryZIDs($slices_arr, $set->getConds());
+    if ($zids) {
+        echo get_if( $slice->getProperty('_msg_banned.....'), _m("Not accepted, your IP address is banned.")); 
+        exit;
     }
 }
 
@@ -135,7 +155,7 @@ $catVS->add("free2",           "quoted",   $d_free2);
 $catVS->add("url_address",     "quoted",   $d_url_address);
 $catVS->add("url_description", "quoted",   $d_url_description);
 $catVS->add("date",            "quoted",   time());
-$catVS->add("remote_addr",     "quoted",   $_SERVER['REMOTE_ADDR']);
+$catVS->add("remote_addr",     "quoted",   $ip_address);
 
 if (!$catVS->doInsert('discussion')) {  // not necessary - we have set the halt_on_error
     $err["DB"] .= MsgErr("Can't add discussion comment");

@@ -1,4 +1,26 @@
-12/08/08 - better handling of cmd[]=x, i and o parameters - ids are checked, so 
+12/22/08 - new possibility to bann some IP addresses from posting comments to
+           discussion. If you want to use bann IP list in your slice, you should
+           create new slice, which will contain at least the "ip.............."
+           field. Then you should add the "slice field" "_ip_banned......" in
+           you slice with discusion, and fill the field with the slice_id of
+           bann slice. You could also fill the "_msg_banned....." "slice field"
+           where you fill the message, which apears to banned user after commit
+           the comment (there is similar field "_msg_spam......." for spammers
+           as well)
+         - new "_msg_spam......." "slice field" which allows you to configure
+           the message displayed to user, when (s)he submits spam-like comment
+         - new possibility to copy only structure or only content of the slice
+           during "Copy slice" feature of Central
+         - updated database structure - added just one index for better handling
+           of dicsussions - this one:
+             ALTER TABLE discussion ADD INDEX item_id_date (item_id , date)
+         - fixed problem with query sting parameters used with {pager} of SEO
+           router
+         - added print CSS styles for AA admin interface
+         - new optimize action "Generate metabase PHP row" which prints out the
+           metabase row for include/metabase.class.php3 file
+           (used by AA developers to update database definition tempate)
+12/08/08 - better handling of cmd[]=x, i and o parameters - ids are checked, so
 (honzam)   only valid ads are used in query
 11/27/08 - Central allows to upload AA definitions from CSV file
 (honzam) - Central calls new sql_update.php script from service/ directory

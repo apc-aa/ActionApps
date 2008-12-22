@@ -1777,6 +1777,37 @@ class AA_Optimize_Add_Hit_30_Field_Template extends AA_Optimize_Add_Seo_Field_Te
     function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('hit_30', '', 'AA_Core_Fields..', 'Hits last month', 100, '', '', 'qte', 1, 0, 0, 'fld', '', 100, '', '', '', '', 1, 1, 1, '', 'f_h', '', '', '', '', '', '', '', '', '', 0, 0, 0, '', 'text', 'num', 1, 0)"; }  // hit_30
 }
 
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add_Ip_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add ip field template"); }
+    function _fieldType()       { return 'ip'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('ip', '', 'AA_Core_Fields..', 'IP address',      '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add__Ip_Banned_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add _ip_banned field template"); }
+    function _fieldType()       { return '_ip_banned'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_ip_banned', '', 'AA_Core_Fields..', 'Banned IPs slice ID',      '100', '', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add__Msg_Banned_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add _msg_banned field template"); }
+    function _fieldType()       { return '_msg_banned'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_msg_banned', '', 'AA_Core_Fields..', 'Message Banned',      '100', 'Message shown to user, when the IP address of the comment sender is on list of banned IP addresses', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; }
+}
+
+/** Recreates the new field types to be used as templates (in "ActionApps Core" slice) **/
+class AA_Optimize_Add__Msg_Spam_Field_Template extends AA_Optimize_Add_Seo_Field_Template {
+
+    function name()             { return _m("Add _msg_spam field template"); }
+    function _fieldType()       { return '_msg_spam'; }
+    function _fieldDefinition() { return "REPLACE INTO `field` (`id`, `type`, `slice_id`, `name`, `input_pri`, `input_help`, `input_morehlp`, `input_default`, `required`, `feed`, `multiple`, `input_show_func`, `content_id`, `search_pri`, `search_type`, `search_help`, `search_before`, `search_more_help`, `search_show`, `search_ft_show`, `search_ft_default`, `alias1`, `alias1_func`, `alias1_help`, `alias2`, `alias2_func`, `alias2_help`, `alias3`, `alias3_func`, `alias3_help`, `input_before`, `aditional`, `content_edit`, `html_default`, `html_show`, `in_item_tbl`, `input_validate`, `input_insert_func`, `input_show`, `text_stored`) VALUES('_msg_spam', '', 'AA_Core_Fields..', 'Message Spam',      '100', 'Message shown to user, when the SPAM detection filter in the comments decides the post is spam', '', 'txt', '0', '0', '0', 'fld', '', '100', '', '', '', '', '1', '1', '1', '',           '',    '',                                                  '', '', '', '', '', '', '', '', '0', '0', '0', '', 'text',   'qte', '1', '1')"; }
+}
 
 /** Restore Data from Backup Tables
  *  This script DELETES all the current tables (slice, item, ...) where we have
