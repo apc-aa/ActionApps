@@ -76,21 +76,24 @@ class AA_Validate {
         if ( !isset($standard_validators[$sv_key]) ) {
             switch ($type) {
                 case 'bool':     $standard_validators[$sv_key] = new AA_Validate_Int(0,1);         break;
+                case 'num':
+                case 'number':
                 case 'int':
                 case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Int();            break;
                 case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float();          break;
                 case 'e-mail':
                 case 'email':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,6}$/');          break;
                 case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[a-zA-Z]+$/');          break;
-                case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[0-9a-f]{30,32}$/');    break;
+                case 'id':
+                case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[0-9a-f]{30,32}$/',null,null,'/^0|\s*$/');    break;  // empty = "" or "0"
                 case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Int(0);           break;
-                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^_#[0-9_#a-zA-Z]{8}$/'); break;
+                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^_#[0-9_#a-zA-Z]{8}$/',null,null,'/^0|\s*$/'); break;  // empty = "" or "0"
                 case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[-.0-9a-zA-Z_]+$/', VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z, 0-9 . _ and - characters")); break;
                 case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login();          break;
                 case 'password': $standard_validators[$sv_key] = new AA_Validate_Password();       break;
                 case 'unique':   $standard_validators[$sv_key] = new AA_Validate_Unique();         break;
                 case 'e_unique': $standard_validators[$sv_key] = new AA_Validate_E_Unique();       break;
-                case 'url':      $standard_validators[$sv_key] = new AA_Validate_Regexp('|^http(s?)\://\S+\.\S+|', VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters in URL - you should start with http:// or https:// and do not use space characters")); break;
+                case 'url':      $standard_validators[$sv_key] = new AA_Validate_Regexp('|^http(s?)\://\S+\.\S+|', VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters in URL - you should start with http:// or https:// and do not use space characters"),'~(^http(s?)\://$)|(^\s*$)~'); break;
                 case 'text':
                 case 'field':
                 case 'all':      $standard_validators[$sv_key] = new AA_Validate_All();            break;
@@ -116,6 +119,10 @@ class AA_Validate {
         return $validator->validate($var);
     }
 
+    /** checks if the variable is empty */
+    function varempty(&$variable) {
+        return  ($variable=="" OR chop($variable)=="");
+    }
 
     /** lastErr function
      *  Method returns or sets last itemContent error
@@ -244,22 +251,29 @@ class AA_Validate_Regexp extends AA_Validate {
     /** Defines possible return error id and messages, if the variable do not matches */
     var $default_error_id;
     var $default_error_msg;
+    var $empty_expression;
     /** AA_Validate_Regexp function
      * @param $regular_expression
      * @param $err_id
      * @param $err_msg
      */
-    function AA_Validate_Regexp( $regular_expression, $err_id=null, $err_msg=null ) {
+    function AA_Validate_Regexp( $regular_expression, $err_id=null, $err_msg=null, $empty_expression='/^\s*$/' ) {
         $this->regular_expression = $regular_expression;
         $this->default_error_id  = is_null($err_id)  ? VALIDATE_ERROR_NOT_MATCH : $err_id;
         $this->default_error_msg = is_null($err_msg) ? _m('Wrong value')        : $err_msg;
+        $this->empty_expression  = $empty_expression;
     }
+
     /** validate function
      * @param $var
      * @param $default
      */
     function validate(&$var, $default='AA_noDefault') {
         return preg_match($this->regular_expression, $var) ? true : AA_Validate::bad($var, $this->default_error_id, $this->default_error_msg, $default);
+    }
+
+    function varempty($var) {
+        return preg_match($this->empty_expression, $var);
     }
 }
 
@@ -278,7 +292,7 @@ class AA_Validate_Enum extends AA_Validate {
     /** AA_Validate_Regexp function
      * @param $possible_values
      */
-    function AA_Validate_Regexp( $possible_values ) {
+    function AA_Validate_Enum( $possible_values ) {
         $this->possible_values = $possible_values;
     }
     /** validate function
@@ -443,41 +457,13 @@ class AA_Validate_All extends AA_Validate {
 *  You can add parameters to $type divided by ":".
 */
 function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $needed, $type) {
-    if ($variable=="" OR chop($variable)=="") {
-        if ( $needed ) {                     // NOT NULL
-            $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must be filled").")");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-
     $validate_definition = ParamExplode($type);
     $type                = $validate_definition[0];
 
-    // empty values for 'alias' and 'id' types
-    if (($type == 'alias') OR ($type == 'id')) {
-        if ((string)$variable=="0" AND !$needed) {
-            return true;
-        }
-    }
     switch ($type) {
-        case 'alias':    $ret = AA_Validate::validate($variable, 'alias');    break;
-        case 'id':       $ret = AA_Validate::validate($variable, 'long_id');  break;
-        case 'integer':
-        case 'num':
-        case 'number':   $ret = AA_Validate::validate($variable, 'int');      break;
-        case 'e-mail':
-        case 'email':    $ret = AA_Validate::validate($variable, 'email');    break;
-        case 'login':    $ret = AA_Validate::validate($variable, 'login');    break;
-        case 'password': $ret = AA_Validate::validate($variable, 'password'); break;
-        case 'filename': $ret = AA_Validate::validate($variable, 'filename'); break;
-        case 'regexp':
-                         $regexp    = $validate_definition[1];
+        case 'regexp':   $regexp    = $validate_definition[1];
                          $err_text  = isset($validate_definition[2]) ? $validate_definition[2] : null;
                          $validator = new AA_Validate_Regexp($regexp, null, $err_text);
-                         $ret       = $validator->validate($variable);
                          break;
         case 'e-unique':
         case 'unique':
@@ -489,18 +475,27 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
                                                                );
                          if ( $type == 'unique' ) {
                              $validator = new AA_Validate_Unique( $UNIQUE_SCOPES[(int)$scope], $field_id);
-                             $ret       = $validator->validate($variable);
                          } else {
                              $validator = new AA_Validate_E_Unique( $UNIQUE_SCOPES[(int)$scope], $field_id);
-                             $ret       = $validator->validate($variable);
                          }
                          break;
-        case 'url':      $ret = AA_Validate::validate($variable, 'url'); break;
-        case 'all':
-        default:         $ret = true;
+        default:         $validator = AA_Validate::factory($type);
     }
-    if (!$ret) {
-        $err["$variableName"] = MsgErr(_m("Error in")." $inputName - ". AA_Validate::lastErrMsg());
+
+    $ret = true;
+    if (is_object($validator)) {
+        if ( $validator->varempty($variable) ) {
+            if ( $needed ) {
+                $err[$variableName] = MsgErr(_m("Error in")." $inputName ("._m("it must be filled").")");
+                return false;
+            } else {
+                return true;
+            }
+        }
+        $ret = $validator->validate($variable);
+        if (!$ret) {
+            $err["$variableName"] = MsgErr(_m("Error in")." $inputName - ". AA_Validate::lastErrMsg());
+        }
     }
     return $ret;
 }

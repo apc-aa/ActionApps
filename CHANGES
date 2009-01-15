@@ -1,5 +1,15 @@
+01/15/09 - _msg_banned..... could contain aliases from IP Banning slice, so you 
+(honzam)   can display banned message specific for each user
+         - DiscussionMailList field used as one way, how to specify, where 
+           should be e-mailed the discussion comment now could contain more than
+           one email - separated by comma - just like: 
+             t48:info@example.org,actionapps@ecn.cz
+         - cleanup - removed old, unused tables from database including the old 
+           serving code for them     
+         - validation updated - the http:// string is considered as empty url
+         - fixed offline.php3 so it could be used with new PHP version (5.2.8) 
 12/22/08 - new possibility to bann some IP addresses from posting comments to
-           discussion. If you want to use bann IP list in your slice, you should
+(honzam)   discussion. If you want to use bann IP list in your slice, you should
            create new slice, which will contain at least the "ip.............."
            field. Then you should add the "slice field" "_ip_banned......" in
            you slice with discusion, and fill the field with the slice_id of
