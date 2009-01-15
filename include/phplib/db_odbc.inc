@@ -21,9 +21,6 @@ class DB_ODBC {
   var $PConnect      = 0;     ## Set to 1 to use persistent database connections
   var $Debug         = 0;     ## Set to 1 for debugging messages
   var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
-  var $Seq_Table     = "db_sequence"; ## Name of the sequence table
-  var $Seq_ID_Col    = "p_nextid";    ## Name of the Sequence ID column in $Seq_Table
-  var $Seq_Name_Col  = "p_seq_name";  ## Name of the Sequence Name column in $Seq_Table
   var $Lock_Table    = "db_sequence"; ## Name of the lock table
   var $Lock_Name_Col = "p_seq_name";  ## Name of the lock Name column
   var $Lock_ID_Col   = "p_nextid";    ## Name of the lock Name column
@@ -392,58 +389,6 @@ The function halt()s if a lock cannot be obtained.
 
   function p($Name) {
     print $this->f($Name);
-  }
-
-  /* public: sequence numbers */
-  function nextid($seq_name) {
-    if (!$this->connect()) {
-      return 0; /* we already complained in connect() about that. */
-    };
-    
-    if ($this->lock($this->Seq_Table)) {
-      /* get sequence number (locked) and increment */
-      $q  = sprintf("select %s from %s where %s = '%s'",
-                $this->Seq_ID_Col,
-                $this->Seq_Table,
-                $this->Seq_Name_Col,
-                $seq_name);
-      $id = odbc_exec($this->Link_ID, $q);
-      $res = 0;
-      if (odbc_fetch_row($id, 1)) {
-        $res = array();
-        $count = odbc_num_fields($id);
-        for ($i=1; $i<=$count; $i++) {
-          $res[strtolower(odbc_field_name($id, $i))] = odbc_result($id, $i);
-        }
-      }
-
-      /* No current value, make one */
-      if (!is_array($res)) {
-        $currentid = 0;
-        $q = sprintf("insert into %s ( %s, %s ) values('%s', %s)",
-                $this->Seq_Table,
-                $this->Seq_Name_Col,
-                $this->Seq_ID_Col,
-                $seq_name,
-                $currentid);
-        $id = odbc_exec($this->Link_ID, $q);
-      } else {
-        $currentid = $res[$this->Seq_ID_Col];
-      }
-      $nextid = $currentid + 1;
-      $q = sprintf("update %s set %s = '%s' where %s = '%s'",
-                $this->Seq_Table,
-                $this->Seq_ID_Col,
-                $nextid,
-                $this->Seq_Name_Col,
-                $seq_name);
-      $id = odbc_exec($this->Link_ID, $q);
-      $this->unlock();
-    } else {
-      $this->halt("cannot lock ".$this->Seq_Table." - has it been created?");
-      return 0;
-    }
-    return $nextid;
   }
 
   /* public: return table metadata */

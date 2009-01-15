@@ -21,8 +21,6 @@ class DB_Pgsql {
   var $Record   = array();
   var $Row      = 0;
 
-  var $Seq_Table     = "db_sequence";
-
   var $Errno    = 0;
   var $Error    = "";
   var $Debug    = 0;
@@ -63,7 +61,7 @@ class DB_Pgsql {
 
   function connect_failed() {
     $this->Halt_On_Error = "yes";
-    $this->halt("connect ($this->Host" . (($this-Port) ? ":$this->Port" : "") . ", $this->User, \$Password, $this->Database) failed");
+    $this->halt("connect ($this->Host" . (($this->Port) ? ":$this->Port" : "") . ", $this->User, \$Password, $this->Database) failed");
   }
 
   function query($Query_String) {
@@ -121,44 +119,6 @@ class DB_Pgsql {
   
   function unlock() {
     return pg_Exec($this->Link_ID, "commit");
-  }
-
-
-  /* public: sequence numbers */
-  function nextid($seq_name) {
-    $this->connect();
-
-    if ($this->lock($this->Seq_Table)) {
-      /* get sequence number (locked) and increment */
-      $q  = sprintf("select nextid from %s where seq_name = '%s'",
-                $this->Seq_Table,
-                $seq_name);
-      $id  = @pg_Exec($this->Link_ID, $q);
-      $res = @pg_Fetch_Array($id, 0);
-      
-      /* No current value, make one */
-      if (!is_array($res)) {
-        $currentid = 0;
-        $q = sprintf("insert into %s values('%s', %s)",
-                 $this->Seq_Table,
-                 $seq_name,
-                 $currentid);
-        $id = @pg_Exec($this->Link_ID, $q);
-      } else {
-        $currentid = $res["nextid"];
-      }
-      $nextid = $currentid + 1;
-      $q = sprintf("update %s set nextid = '%s' where seq_name = '%s'",
-               $this->Seq_Table,
-               $nextid,
-               $seq_name);
-      $id = @pg_Exec($this->Link_ID, $q);
-      $this->unlock();
-    } else {
-      $this->halt("cannot lock ".$this->Seq_Table." - has it been created?");
-      return 0;
-    }
-    return $nextid;
   }
 
   function metadata($table="") {

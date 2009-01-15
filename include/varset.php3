@@ -1,6 +1,6 @@
 <?php
 /**
- * Class AA_Validate
+ * Class Cvariable, Cvarset
  *
  *
  * PHP versions 4 and 5

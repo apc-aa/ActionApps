@@ -1087,49 +1087,6 @@ class AA_Optimize_Add_Optimize_Cron_Entry extends AA_Optimize {
     }
 }
 
-/** Adds cron entry for mysql_auth reader suspending into AA cron **/
-class AA_Optimize_Add_Auth_Suspend_Cron_Entry extends AA_Optimize {
-
-    /** Name function @return a message */
-    function name() {
-        return _m("Adds cron entry for mysql_auth reader suspending into AA cron");
-    }
-
-    /** Description function @return a message */
-    function description() {
-        return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
-    }
-
-    /** checks if the this Optimize class belongs to specified type (like "sql_update") */
-    function isType($type)  { return in_array($type, array('sql_update')); }
-
-
-    /** Test function @return bool */
-    function test() {
-        $ret = true;
-
-        $row_count   = GetTable2Array("SELECT count(*) as count FROM cron WHERE script='modules/mysql_auth/suspend.php3'", "aa_first", 'count');
-        if ($row_count < 1) {
-            $this->message(_m('Cron entry for "mysql_auth reader suspending" is not installed in AA Cron'));
-            $ret = false;
-        }
-        return $ret;
-    }
-
-    /** Main update function @return bool */
-    function repair() {
-
-        $this->message(_m('Deleting AA Cron entry for mysql_auth reader suspending'));
-        $this->query("DELETE FROM cron WHERE script='modules/mysql_auth/suspend.php3'");
-
-        $this->message(_m('Adding AA cron entry for mysql_auth reader suspending'));
-        $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('1',     '0', '*', '*', '*', 'modules/mysql_auth/suspend.php3', '', NULL)");
-
-        $this->message(_m('AA cron entry for "mysql_auth reader suspending" - done.'));
-        return true;
-    }
-}
-
 /** Adds cron entry for Checking link stutus in Links module into AA cron **/
 class AA_Optimize_Add_Linkcheck_Cron_Entry extends AA_Optimize {
 

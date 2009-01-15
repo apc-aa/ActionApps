@@ -39,17 +39,10 @@ function set_collectionid() {
             $collectionid = $db->f("id");
             $collectionprop = $db->Record;
         } else {
-            echo "Can't find collection with module_id=$slice_id ("
-                .HTMLEntities(pack_id($slice_id))."). Bailing out.<br>";
+            echo "Can't find collection with module_id=$slice_id (". HTMLEntities(pack_id($slice_id))."). Bailing out.<br>";
             exit;
         }
     }
-}
-
-/// Returns true if $howoften is a regular howoften option.
-function is_howoften_option($howoften) {
-    $ho = get_howoften_options();
-    return $ho[$howoften];
 }
 
 function get_howoften_options($include_instant = true) {
@@ -64,18 +57,9 @@ function get_howoften_options($include_instant = true) {
 
 function get_bin_names() {
     return array (
-    1 => _m("Active"),
-    2 => _m("Holding bin"),
-    3 => _m("Trash bin"));
-}
-
-function new_user_id() {
-    global $db;
-    do {
-        $new_id = new_numeric_id(32767);
-        $db->query("SELECT id FROM alerts_user WHERE id = $new_id");
-    } while ($db->next_record());
-    return $new_id;
+        1 => _m("Active"),
+        2 => _m("Holding bin"),
+        3 => _m("Trash bin"));
 }
 
 function new_collection_id() {
@@ -90,98 +74,13 @@ function new_collection_id() {
 function new_alphanumeric_id($saltlen) {
     srand((double) microtime() * 1000000);
     $salt_chars = "abcdefghijklmnoprstuvwxBCDFGHJKLMNPQRSTVWXZ0123456589";
-    for ($i = 0; $i < $saltlen; $i ++)
+    for ($i = 0; $i < $saltlen; $i ++) {
         $salt .= $salt_chars[rand(0,strlen($salt_chars)-1)];
+    }
     return $salt;
 }
 
-function new_numeric_id ($max) {
-    list($usec, $sec) = explode(' ', microtime());
-    $seed = (float) $sec + ((float) $usec * 100000);
-    srand($seed);
-    return rand(1, $max);
-}
-
-function new_user_confirm()
-{
-    global $db;
-    do {
-        $retval = gensalt(4);
-        $db->query("SELECT confirm FROM alerts_user_collection WHERE confirm='".addslashes($retval)."'");
-    } while ($db->next_record());
-    return $retval;
-}
-
 // ----------------------------------------------------------------------------------------
-
-/**
-* @param $info  should contain "uid" for $insert=false,
-*               may contain "firstname","lastname","lang",
-                "password"=md5-encrypted new password
-* @param $insert if true, user is inserted, else updated
-* @returns new user ID, if $insert=true, nothing otherwise
-*/
-function insert_or_update_user($info, $insert)
-{
-    global $db, $slice_id;
-    // insert new user
-    $varset = new CVarset;
-    if ($insert) {
-        $userid = new_user_id();
-        $varset->addkey("id", "number", $userid);
-    } else {
-        $varset->addkey("id", "number", $info["uid"]);
-    }
-    $userfields = array ("email","firstname","lastname","lang","password");
-    foreach ($userfields as $field) {
-        if (isset ($info[$field])) {
-            $varset->add ($field, "quoted", $info[$field]);
-        }
-    }
-    $varset->add("owner_module_id", "unpacked", $slice_id);
-    $db->query($varset->makeINSERTorUPDATE("alerts_user"));
-    return $userid;
-}
-
-// ----------------------------------------------------------------------------------------
-function email_address($name, $email) {
-    return ($name > " ") ? "$name <$email>" : $email;
-}
-
-// ----------------------------------------------------------------------------------------
-
-function alerts_email_headers($record, $default) {
-    $headers = array (
-        "From" => "header_from",
-        "Reply-To" => "reply_to",
-        "Errors-To" => "errors_to",
-        "Sender" => "sender");
-    foreach ($headers as $header => $field) {
-        if ($record["$field"]) {
-            $retval .= $header.": ".$record["$field"]."\r\n";
-        } elseif ($default["$field"]) {
-            $retval .= $header.": ".$default["$field"]."\r\n";
-        }
-    }
-    return $retval;
-}
-
-// -----------------------------------------------------------------------------------
-
-function AlertsPageBegin() {
-    // style sheet
-    global $ss;
-    $stylesheet = $ss ? $ss : AA_INSTAL_PATH. ADMIN_CSS;
-
-    echo
-    '<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
-       <HTML>
-         <HEAD>
-           <LINK rel=StyleSheet href="'.$stylesheet.'" type="text/css"  title="CPAdminCSS">
-           <meta http-equiv="Content-Type" content="text/html; charset='.$LANGUAGE_CHARSETS[get_mgettext_lang()].'">';
-}
-
-// -----------------------------------------------------------------------------------
 
 function getAlertsField($field_id, $collection_id) {
     return substr($field_id.".............", 0, 16 - strlen ($collection_id)). $collection_id;

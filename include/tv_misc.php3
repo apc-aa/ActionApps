@@ -54,38 +54,6 @@ function GetMiscTableView($viewID, $processForm = false) {
         return $tableview;
     }
 
-    /* ------------------------------------------------------------------------------------
-       ww -- browse wizard welcomes
-       ww_edit -- edit -"-
-    */
-    if ($viewID == "ww") {
-        return  array (
-        "table" => "wizard_welcome",
-        "type" => "browse",
-        "readonly" => true,
-        "title" => _m("Wizard Welcomes"),
-        "caption" => _m("Wizard Welcomes"),
-        "mainmenu" => "aaadmin",
-        "submenu" => "te_wizard_welcome",
-        "cond" => IsSuperadmin(),
-        "fields" => array (
-            "description" => array ("required" => true),
-            "email" => array ("hint" => _m("mail body"), "validate" => "email", "required" => true),
-            "subject" => array ("required" => true),
-            "mail_from" => array ("hint" => _m("From: mail header"), "required" => true)),
-        "attrs" => $attrs_browse,
-        "gotoview" => "ww_edit");
-    }
-
-    if ($viewID == "ww_edit") {
-        $retval = GetMiscTableView("ww");
-        $retval["type"] = "edit";
-        $retval["attrs"] = $attrs_edit;
-        $retval["readonly"] = false;
-        $retval["gotoview"] = "ww";
-        $retval["addrecord"] = false;
-        return $retval;
-    }
 
     /* ------------------------------------------------------------------------------------
        wt -- browse wizard templates

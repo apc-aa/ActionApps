@@ -352,34 +352,6 @@ class DB_OCI8 {
     print $this->f($Name);
   }
 
-  function nextid($seqname) {
-    $this->connect();
-
-    $Query_ID = @OCIParse($this->Link_ID, "SELECT $seqname.NEXTVAL FROM DUAL");
-
-    if (!@OCIExecute($Query_ID)) {
-      $this->Error = @OCIError($Query_ID);
-      if (2289 == $this->Error["code"]) {
-        $Query_ID = OCIParse($this->Link_ID, "CREATE SEQUENCE $seqname");
-        if (!OCIExecute($Query_ID)) {
-          $this->Error = OCIError($Query_ID); 
-          $this->halt("<BR> nextid() function - unable to create sequence<br>".$this->Error["message"]);
-        } else {
-          $Query_ID = OCIParse($this->Link_ID, "SELECT $seqname.NEXTVAL FROM DUAL");
-          OCIExecute($Query_ID);
-        }
-      }
-    }
-
-    if (OCIFetch($Query_ID)) {
-      $next_id = OCIResult($Query_ID, "NEXTVAL");
-    } else {
-      $next_id = 0;
-    }
-    OCIFreeStatement($Query_ID);
-    return $next_id;
-  }
-
   function disconnect() {
     if ($this->Debug) {
       printf("Disconnecting...<br>\n");

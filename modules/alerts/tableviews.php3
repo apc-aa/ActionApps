@@ -241,67 +241,6 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         ));
     }
 
-    /* ------------------------------------------------------------------------------------
-       alerts_admin
-    */
-    if ($viewID == "alerts_admin") {
-        $db->query("SELECT * FROM alerts_admin");
-        if ($db->num_rows() == 0)
-            $db->query("INSERT INTO alerts_admin (mail_confirm, delete_not_confirmed) VALUES (0,0)");
-        return array (
-        "table" => "alerts_admin",
-        "caption" => _m("Alerts Admin"),
-        "title" => _m("Alerts Admin"),
-        "mainmenu" => "sliceadmin",
-        "submenu" => "te_alerts_admin",
-        "buttons_down" => array ("update"=>1),
-        "attrs" => array ("table"=>"border=1 cellpadding=3 cellspacing=0 bgcolor='".COLOR_TABBG."'"),
-        "type" => "edit",
-        "readonly" => false,
-        "addrecord" => false,
-        "cond" => IsSuperadmin(),
-        "newrecord" => false,
-        "fields" => array (
-            "mail_confirm" => array (
-                "caption" => _m("confirm mail"),
-                "hint" => _m("number of days, 0 = off"),
-                "view" => array (
-                    "type" => "text",
-                    "size" => array ("cols" => 3)),
-                "validate" => "number"),
-            "delete_not_confirmed" => array (
-                "caption" => _m("delete not confirmed"),
-                "hint" => _m("number of days, 0 = off"),
-                "view" => array (
-                    "type" => "text",
-                    "size" => array ("cols" => 3)),
-                "validate" => "number"),
-            "last_mail_confirm" => array (
-                "caption" => _m ("last confirm mail"),
-                "view" => array (
-                    "readonly" => true,
-                    "type" => "date",
-                    "size" => array ("cols" => 6),
-                    "format" => "j.m.y G:i")),
-            "last_delete" => array (
-                "caption" => _m ("last delete not confirmed"),
-                "view" => array (
-                    "readonly" => true,
-                    "type" => "date",
-                    "size" => array ("cols" => 6),
-                    "format" => "j.m.y G:i"))),
-        "help" => _m (
-            "This table sets handling of not confirmed users. It's accessible only
-            to superadmins.
-            You can delete not confirmed users after a number of days and / or send them an email
-            demanding them to do confirmation
-            after a smaller number of days. To switch either of the actions off,
-            set number of days to 0. The two last fields are for your information only.<br>
-            <br>
-            To run the script, you must have cron set up with a row running
-            misc/alerts/admin_mails.php3.<br>
-            For more information, see <a href='http://apc-aa.sourceforge.net/faq/#1389'>the FAQ</a>."));
-    }
 } // end of GetTableView
 
 // ----------------------------------------------------------------------------------

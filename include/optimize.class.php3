@@ -345,8 +345,6 @@ class AA_Optimize_Db_Binary_Traing_Zeros extends AA_Optimize {
         $this->_fixTable('field','content_id',"varbinary(16) default NULL");
         $this->_fixTable('jump','slice_id',"varbinary(16) NOT NULL default ''");
         $this->_fixTable('jump','dest_slice_id',"varbinary(16) NOT NULL default ''");
-        $this->_fixTable('mysql_auth_group','slice_id',"varbinary(16) NOT NULL default ''");
-        $this->_fixTable('mysql_auth_userinfo','slice_id',"varbinary(16) NOT NULL default ''");
         $this->_fixTable('object_float','object_id',"varbinary(16) NOT NULL default ''");
         $this->_fixTable('object_float','property',"varbinary(32) NOT NULL default ''");
         $this->_fixTable('object_integer','object_id',"varbinary(16) NOT NULL default ''");
@@ -417,7 +415,6 @@ class AA_Optimize_Db_Binary_Traing_Zeros extends AA_Optimize {
         $this->_fixTable('perms','userid',"varbinary(32) NOT NULL default '0'");
         $this->_fixTable('perms','perm',"varbinary(32) NOT NULL default ''");
         $this->_fixTable('slice_owner','id',"varbinary(16) NOT NULL default ''");
-        $this->_fixTable('subscriptions','slice_owner',"varbinary(16) default NULL");
         $this->_fixTable('users','type',"varbinary(10) NOT NULL default ''");
         $this->_fixTable('users','password',"varbinary(30) NOT NULL default ''");
         $this->_fixTable('users','uid',"varbinary(40) NOT NULL default ''");

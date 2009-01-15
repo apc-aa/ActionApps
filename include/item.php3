@@ -402,7 +402,7 @@ class AA_Item {
      *  @param $remove
      *  @param $param
      *
-     *  Take a look at GetItemFromId() above, if you want to create item from id
+     *  Take a look at AA_Item::getItem() above, if you want to create item from id
      */
     function AA_Item($content4id='', $aliases='', $format='', $remove='', $param=false){
         // there was three other options, but now it was never used so I it was

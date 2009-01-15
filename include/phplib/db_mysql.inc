@@ -22,7 +22,6 @@ class DB_MySQL {
   var $Debug         = 0;     ## Set to 1 for debugging messages.
   var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
   var $PConnect      = 0;     ## Set to 1 to use persistent database connections
-  var $Seq_Table     = "db_sequence";
 
   /* public: result array and current row number */
   var $Record   = array();
@@ -252,59 +251,6 @@ class DB_MySQL {
     if (isset($this->Record[$Name])) {
       print $this->Record[$Name];
     }
-  }
-
-  /* public: sequence numbers */
-  function nextid($seq_name) {
-    /* if no current lock, lock sequence table */
-    if(!$this->locked) {
-      if($this->lock($this->Seq_Table)) {
-        $locked = true;
-      } else {
-        $this->halt("cannot lock ".$this->Seq_Table." - has it been created?");
-        return 0;
-      }
-    }
-    
-    /* get sequence number and increment */
-    $q = sprintf("select nextid from %s where seq_name = '%s'",
-               $this->Seq_Table,
-               $seq_name);
-    if(!$this->query($q)) {
-      $this->halt('query failed in nextid: '.$q);
-      return 0;
-    }
-    
-    /* No current value, make one */
-    if(!$this->next_record()) {
-      $currentid = 0;
-      $q = sprintf("insert into %s values('%s', %s)",
-                 $this->Seq_Table,
-                 $seq_name,
-                 $currentid);
-      if(!$this->query($q)) {
-        $this->halt('query failed in nextid: '.$q);
-        return 0;
-      }
-    } else {
-      $currentid = $this->f("nextid");
-    }
-    $nextid = $currentid + 1;
-    $q = sprintf("update %s set nextid = '%s' where seq_name = '%s'",
-               $this->Seq_Table,
-               $nextid,
-               $seq_name);
-    if(!$this->query($q)) {
-      $this->halt('query failed in nextid: '.$q);
-      return 0;
-    }
-    
-    /* if nextid() locked the sequence table, unlock it */
-    if($locked) {
-      $this->unlock();
-    }
-    
-    return $nextid;
   }
 
   /* public: return table metadata */

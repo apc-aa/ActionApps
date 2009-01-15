@@ -165,11 +165,6 @@ $MODULES = array( 'S' => array( 'table' => 'slice',
                                     'cz_site_lang.php3' => 'cz_site_lang.php3',
                                     'cz-utf8_site_lang.php3' => 'cz-utf8_site_lang.php3'
                                     )),
-                  'A' => array( 'table' => 'module', // this module doesn't have any special info yet
-                                'name' => _m('MySQL Auth'),
-                                'hide_create_module' => 1,
-                                'directory' => "modules/mysql_auth/",
-                                'menu' => "modules/mysql_auth/menu.php3"),
                   'J' => array( 'table' => 'jump',
                                 'name' => _m('Jump inside AA control panel'),
                                 'directory' => "modules/jump/",
