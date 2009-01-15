@@ -115,7 +115,7 @@ $discussion_fields = array (
     );
 foreach ($discussion_fields as $field => $tolerance) {
     if ( IsSpamText($$field, $tolerance) ) {
-        echo get_if( $slice->getProperty('_msg_spam.......'), _m("Not accepted, sorry. Looks like spam.")); 
+        echo get_if( $slice->getProperty('_msg_spam.......'), _m("Not accepted, sorry. Looks like spam."));
         exit;
     }
 }
@@ -125,9 +125,15 @@ $ip_address         = $_SERVER['REMOTE_ADDR'];
 $ip_banned_slice_id = $slice->getProperty('_ip_banned......');
 if ($ip_banned_slice_id) {
     $set  = new AA_Set(new AA_Condition('ip..............', '=', '"'.$ip_address.'"'));
-    $zids = QueryZIDs($slices_arr, $set->getConds());
-    if ($zids) {
-        echo get_if( $slice->getProperty('_msg_banned.....'), _m("Not accepted, your IP address is banned.")); 
+    $zids = QueryZIDs(array($ip_banned_slice_id), $set->getConds());
+    if ($zids AND ($zids->count() > 0)) {
+        $ban_msg = $slice->getProperty('_msg_banned.....');
+        if ($ban_msg) {
+            $discitem = AA_Item::getItem($zids->slice(0));
+            echo $discitem ? $discitem->unalias($ban_msg) : $ban_msg;
+        } else {
+            echo _m("Not accepted, your IP address is banned.");
+        }
         exit;
     }
 }

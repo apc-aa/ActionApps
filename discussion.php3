@@ -51,20 +51,18 @@ if (!get_magic_quotes_gpc()) {
  * PutSearchLog
  */
 function PutSearchLog() {
-    global $searchlog;
+    global $searchlog, $view_param;
 
     $httpquery = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
     $httpquery = DeBackslash($httpquery);
     $httpquery = str_replace("'", "\\'", $httpquery);
-    $db = new DB_AA;
-    global $view_param;
-    $found_count = count ($view_param["disc_ids"]);
+    $db        = new DB_AA;
+
+    $found_count      = count($view_param["disc_ids"]);
     list($usec, $sec) = explode(" ",microtime());
-    $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS['disc_starttime']);
-    $user = $_SERVER['PHP_AUTH_USER'];
-    $db->query(
-    "INSERT INTO searchlog (date,query,user,found_count,search_time,additional1)
-    VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'discuss $searchlog')");
+    $slice_time       = 1000 * ((float)$usec + (float)$sec - $GLOBALS['disc_starttime']);
+    $user             = $_SERVER['PHP_AUTH_USER'];
+    $db->query( "INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'discuss $searchlog')");
 }
 
 /** APC-AA configuration file */
@@ -95,15 +93,16 @@ $p_slice_id= q_pack_id($slice_id);
 $db = new DB_AA; 	   	 // open BD
 
 list($usec, $sec) = explode(" ",microtime());
-$disc_starttime = ((float)$usec + (float)$sec);
+$disc_starttime   = ((float)$usec + (float)$sec);
 
-$view_param = ParseViewParameters();
-$view_param["disc_ids"] = QueryDiscIDs($slice_id, $conds, $sort, $slices );
+$view_param              = ParseViewParameters();
+$view_param["disc_ids"]  = QueryDiscIDs($slice_id, $conds, $sort, $slices );
 $view_param["disc_type"] = "list";
 // special url parameter disc_url - tell us, where we have to show
 // discussion fulltext (good for discussion search)
-if ( $disc_url )
+if ( $disc_url ) {
     $view_param["disc_url"] = $disc_url;
+}
 
 if ($debug) {
     echo "Discussion item IDs:<br>";
@@ -112,7 +111,8 @@ if ($debug) {
 
 echo GetView($view_param);
 
-if ($searchlog) PutSearchLog();
+if ($searchlog) {
+    PutSearchLog();
+}
 exit;
-
 ?>
