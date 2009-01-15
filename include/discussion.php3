@@ -457,7 +457,8 @@ function send2mailList($d_item_id, $new_id) {
             // newer version based on email templates
             if ( $vid{0} == 't' ) {   // email template
                 $mail_id = substr($vid,1);
-                send_mail_from_table_inner($mail_id, $maillist, $CurItem);
+                $mails   = explode(',', str_replace(' ','',$maillist));
+                send_mail_from_table_inner($mail_id, $mails, $CurItem);
                 return;
             }
             $db->tquery("SELECT * FROM view WHERE id=$vid");
