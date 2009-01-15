@@ -33,6 +33,8 @@
 // Cross-Server Netvorking (node2node feeding) and off-line filling)
 //
 
+require_once AA_INC_PATH."convert_charset.class.php3";
+
 define("WDDX_DUPLICATED", 1);
 define("WDDX_BAD_PACKET", 2);
 
@@ -86,6 +88,10 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
     // update database
     $id = new_id();
 
+    $slice  = AA_Slices::getSlice($slice_id);
+    $charset = $slice->getCharset();   // like 'windows-1250'
+    $encoder       = new ConvertCharset;
+
     // prepare content4id array before call StoreItem function
     while (list($key,$val) = each($vals)) {
         if (isset($val) AND is_array($val)) {
@@ -98,12 +104,12 @@ function StoreWDDX2DB( $packet, $slice_id, $fields, $bin2fill ) {
                     reset($val);
                     $i=0;
                     while (list(,$v) = each($val)) {
-                        $content4id[$key][$i]['value']   = $v;
+                        $content4id[$key][$i]['value']   = $encoder->Convert($v, 'utf-8', $charset);
                         $content4id[$key][$i++]['flag'] |= FLAG_OFFLINE;  // mark as offline filled
                     }
             }
         } else {                           // if not array - just store content
-            $content4id[$key][0]['value'] = $val;
+            $content4id[$key][0]['value'] = $encoder->Convert($val, 'utf-8', $charset);
         }
         // set html flag from field default
         if ( $fields[$key]["html_default"] > 0 ) {

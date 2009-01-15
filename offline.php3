@@ -130,7 +130,7 @@ foreach ($packets as $packet) {;
 
     // fix for php >5.1 - it crashes without those lines
     // (IE shows Page not found) - I think it is PHP 5.1.2 bug
-    $packet = utf8_encode($packet);
+    //$packet = utf8_encode($packet);
     $packet = str_replace("<wddxPacket>","<wddxPacket version='1.0'>",$packet);
 
     switch (StoreWDDX2DB($packet,$slice_id,$fields,$bin2fill)) {
