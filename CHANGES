@@ -1,13 +1,15 @@
-01/15/09 - _msg_banned..... could contain aliases from IP Banning slice, so you 
+02/04/09 - fixed "Missing argument 2 for AA_Widget_Chb::getLiveHtml" error
+(honzam)
+01/15/09 - _msg_banned..... could contain aliases from IP Banning slice, so you
 (honzam)   can display banned message specific for each user
-         - DiscussionMailList field used as one way, how to specify, where 
+         - DiscussionMailList field used as one way, how to specify, where
            should be e-mailed the discussion comment now could contain more than
-           one email - separated by comma - just like: 
+           one email - separated by comma - just like:
              t48:info@example.org,actionapps@ecn.cz
-         - cleanup - removed old, unused tables from database including the old 
-           serving code for them     
+         - cleanup - removed old, unused tables from database including the old
+           serving code for them
          - validation updated - the http:// string is considered as empty url
-         - fixed offline.php3 so it could be used with new PHP version (5.2.8) 
+         - fixed offline.php3 so it could be used with new PHP version (5.2.8)
 12/22/08 - new possibility to bann some IP addresses from posting comments to
 (honzam)   discussion. If you want to use bann IP list in your slice, you should
            create new slice, which will contain at least the "ip.............."

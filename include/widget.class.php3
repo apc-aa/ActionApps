@@ -839,7 +839,7 @@ class AA_Widget_Chb extends AA_Widget {
     /** @return widget HTML for using as Live component
      *  @param  $aa_variable - the variable holding the value to display
      */
-    function getLiveHtml($aa_variable, $repre_value) {
+    function getLiveHtml($aa_variable) {
         $input_id    = $aa_variable->getId();
 
         $ret   = '';
