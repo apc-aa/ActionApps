@@ -146,8 +146,8 @@ require_once AA_INC_PATH."mlx.php";
 
 page_open(array("sess" => "AA_SL_Session"));
 
-$sess->register(r_packed_state_vars);
-$sess->register(slices);
+$sess->register('r_packed_state_vars');
+$sess->register('slices');
 
 $r_state_vars = unserialize($r_packed_state_vars);
 

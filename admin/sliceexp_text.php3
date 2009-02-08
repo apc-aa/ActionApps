@@ -153,7 +153,7 @@ class AA_Slice_Exporter {
         if ($this->hex) {
             $views_data = "<views coding=\"serialize".($this->gzip ? "gzip" : "")."\">$views_data</views>";
         }
-        fwrite($temp_file, $e_temp."\n");
+        fwrite($temp_file, $views_data."\n");
     }
 
 

@@ -1,3 +1,8 @@
+02/08/09 - new apc-aa/export.php script, which allows to export the content 
+(honzam)   of the slice to file. Currently is supported the CSV format 
+           (through AA_Exporter_Csv class), but other formats could be added 
+           easily (just by adding other AA_Exporter_* class). The parameters are
+           "format", "slice_id" and optional "sort", "conds" and "filename"
 02/04/09 - fixed "Missing argument 2 for AA_Widget_Chb::getLiveHtml" error
 (honzam)
 01/15/09 - _msg_banned..... could contain aliases from IP Banning slice, so you
@@ -171,6 +176,8 @@
            expired items
          - fixed problem of unsuccessfull creation of new slice when there are
            no template slice in the AA
+08/26/08 - phplib (session and auth management) updated and removed unnecessay
+(honzam)   files
 08/26/08 - fixed problem of image upload in Xinha/htmlarea
 (honzam) - other small changes and fixes
 08/18/08 - new possibility to change user interface of AA - you can hide any

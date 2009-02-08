@@ -443,7 +443,8 @@ class AA_Object extends AA_Storable {
         return null;
     }
 
-    /** factoryByName function
+    /** factoryByName function - creates any object based on mask and name:
+     *   AA_Object::factoryByName('AA_Responder_', $name);
      * @param $mask
      * @param $name
      * @param $params
