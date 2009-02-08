@@ -265,14 +265,6 @@ class AA_Grabber_Csv {
         return _m('Import data from CSV (Comma Separated Values) format');
     }
 
-    /** htmlSetting function
-     *  HTML code for parameters - defines parameters of this grabber.
-     *  Each grabber could have its own parameters (like separator for CSV, ...)
-     * @param $input_prefix
-     * @param $params
-     */
-    function htmlSetting($input_prefix, $params) {}
-
     /** getItem function
      * Method called by the AA_Saver to get next item from the data input
      */
@@ -676,11 +668,6 @@ class AA_Grabber_Form {
      */
     function description() { return _m('Grabbs data POSTed by AA form'); }
 
-    /** HTML code for parameters - defines parameters of this grabber.
-     *  Each grabber could have its own parameters (like separator for CSV, ...)
-     */
-    function htmlSetting($input_prefix, $params) {}
-
     /** If AA_Saver::store_mode is 'by_grabber' then this method tells Saver,
      *  how to store the item.
      *  @see also getStoreMode() method
@@ -806,7 +793,6 @@ class AA_Grabber_Form {
 }
 
 
-
 /** AA_Grabber_Iekis_Xml - grabs data from XML files in one directory
  */
 class AA_Grabber_Iekis_Xml extends AA_Grabber {
@@ -824,7 +810,7 @@ class AA_Grabber_Iekis_Xml extends AA_Grabber {
     /** Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    function description() { return _m('specialiEKIS XML files in one directory'); }
+    function description() { return _m('special iEKIS XML files in one directory'); }
 
      /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
@@ -918,6 +904,51 @@ class AA_Grabber_Iekis_Xml extends AA_Grabber {
         return $item;
     }
 
+}
+
+/** AA_Grabber_Slice - grabs data from slice based on AA_Set
+ *  Right now we use it mainly for apc-aa/export.php
+ */
+class AA_Grabber_Slice extends AA_Grabber {
+
+    var $set;                 /** AA_Set specifies the slice, conds and sort */
+    var $_longids;            /** list if files to grab - internal array */
+
+    function AA_Grabber_Slice($set) {
+        $this->set      = $set;
+        $this->_longids = array();
+    }
+
+    /** Name of the grabber - used for grabber selection box */
+    function name() { return _m('Items from slice'); }
+
+    /** Description of the grabber - used as help text for the users.
+     *  Description is in in HTML
+     */
+    function description() { return _m('grabs items form some slice'); }
+
+     /** Possibly preparation of grabber - it is called directly before getItem()
+     *  method is called - it means "we are going really to grab the data
+     */
+    function prepare() {
+        $set            = $this->set;
+        $zids           = QueryZIDs($set->getSlices(), $set->getConds(), $set->getSort());
+        $this->_longids = $zids->longids();
+        reset($this->_longids);   // go to first long id
+    }
+
+    /** Method called by the AA_Saver to get next item from the data input */
+    function getItem() {
+        if (!($longid = current($this->_longids))) {
+            return false;
+        }
+        next($this->_longids);
+        return new ItemContent(new zids($longid, 'l'));
+    }
+
+    function finish() {
+        $this->_longids = array();
+    }
 }
 
 

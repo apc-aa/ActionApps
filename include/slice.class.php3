@@ -67,11 +67,12 @@ class AA_Slice {
 
     /** loadsettings function
      *  Load $this from the DB for any of $fields not already loaded
-     * @param $force
+     *  @return true/false if the settings is loaded (= slice_id is OK)
+     *  @param  $force
      */
     function loadsettings($force=false) {
         if ( !$force AND isset($this->setting) AND is_array($this->setting) ) {
-            return;
+            return true;
         }
 
         // get fields from slice table
@@ -87,12 +88,13 @@ class AA_Slice {
             if ($GLOBALS['errcheck']) {
                 huhl("Slice ".$this->unpacked_id()." is not a valid slice");
             }
-            return;
+            return false;
         }
 
         // get fields from module table
         $SQL = "SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM module WHERE id = '".$this->sql_id(). "'";
         $this->setting = array_merge($this->setting, GetTable2Array($SQL, 'aa_first', 'aa_fields'));
+        return true;
     }
 
     /** loadsettingfields function
@@ -134,6 +136,11 @@ class AA_Slice {
      */
     function name() {
         return $this->getProperty('name');
+    }
+
+    /** Checks, if the unpackedid is OK and the slice is not deleted */
+    function isValid() {
+        return $this->loadsettings() AND !$this->deleted();
     }
 
     /** jumpLink function

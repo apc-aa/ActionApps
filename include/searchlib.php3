@@ -279,11 +279,14 @@ class AA_Set extends AA_Object {
     /** array of AA_Sortorder objects */
     var $sort;
 
+    /** array of slice_ids (unpacked_ids) */
+    var $slices;
+
     /** AA_Set function
-     * @param $conds array or conds url srting
+     * @param $conds array or conds url string
      * @param $sort  array or sort  url string
      */
-    function AA_Set($conds=null, $sort=null) {
+    function AA_Set($conds=null, $sort=null, $slices=null) {
         $this->clear();
         if ( !is_null($conds) ) {
             if (is_object($conds)) {
@@ -303,14 +306,18 @@ class AA_Set extends AA_Object {
                 $this->addSortFromString($sort);
             }
         }
+        if ( !is_null($slices) ) {
+            $this->slices = $slices;
+        }
     }
 
     /** clear function
      *
      */
     function clear() {
-        $this->conds = array();
-        $this->sort  = array();
+        $this->conds  = array();
+        $this->sort   = array();
+        $this->slices = array();
     }
 
     /** addCondition function
@@ -580,6 +587,13 @@ class AA_Set extends AA_Object {
         return $ret;
     }
 
+    /** getSlices function
+     *  retruns $slices[] array - mainly for backward compatibility
+     */
+    function getSlices() {
+        return $this->slices;
+    }
+
     /** getCondsAsString function
      *  @return $conds[] array - mainly for backward compatibility
      */
@@ -628,9 +642,11 @@ class AA_Set extends AA_Object {
     function getClassProperties()  {
         return array (                //  id            name         type          multi  persistent validator, required, help,                                         morehelp, example
             /** Array of AA_Condition */
-            'conds' => new AA_Property( 'conds', _m("Conditions"), 'AA_Condition',  true, true ),
+            'conds'  => new AA_Property( 'conds',  _m("Conditions"), 'AA_Condition',  true, true ),
             /** array of AA_Sortorder */
-            'sort'  => new AA_Property( 'sort',  _m("Sort"),       'AA_Sortorder',  true, true )
+            'sort'   => new AA_Property( 'sort',   _m("Sort"),       'AA_Sortorder',  true, true ),
+            /** array of slice_ids */
+            'slices' => new AA_Property( 'slices', _m("Slices"),     'id',            true, true )
             );
     }
 
