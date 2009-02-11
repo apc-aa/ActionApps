@@ -26,11 +26,14 @@
  *
 */
 
-/** @param format    csv|xls|...  (just csv now supported) - corresponds to AA_Exporter_* classes
+/** @param format    csv|excel|html - corresponds to AA_Exporter_* classes
  *  @param slice_id  unpacked slice id to export
  *  @param sort      optional - sorting
  *  @param conds     optional - conditions when just some items shoud be exported
  *  @param filename  optional - name of the file
+ *
+ *  @example http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=csv&filename=export.csv
+ *  @example http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=excel&filename=export.xls
  */
 
 /** Handle with PHP magic quotes - unquote the variables if quoting is set on */
@@ -64,10 +67,7 @@ class AA_Exporter {
 
         $temp_file = $this->_createTmpFile();
 
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename='.basename($file_name));
-        header('Content-Transfer-Encoding: binary');
+        $this->_contentHeaders($file_name);
         header('Expires: 0');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Pragma: public');
@@ -113,9 +113,15 @@ class AA_Exporter {
         return $temp_file;
     }
 
-    function _outputStart($item) { return ''; }
-    function _outputItem($item)  { return ''; }
-    function _outputEnd($item)   { return ''; }
+    function _outputStart($item)  { return ''; }
+    function _outputItem($item)   { return ''; }
+    function _outputEnd($item)    { return ''; }
+    function _contentHeaders($file_name)    {
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename='.basename($file_name));
+        header('Content-Transfer-Encoding: binary');
+    }
 }
 
 class AA_Exporter_Csv extends AA_Exporter {
@@ -144,6 +150,138 @@ class AA_Exporter_Csv extends AA_Exporter {
         return join(',',$out_arr)."\n";
     }
 }
+
+
+/*
+class AA_Exporter_Excel extends AA_Exporter {
+
+    var $current_row;
+
+    function AA_Exporter_Excel($params) {
+        $this->current_row = -1;
+        parent::AA_Exporter($params);
+    }
+
+    function _outputEnd($item)   {
+        return pack("ss", 0x0A, 0x00);  // EOF
+    }
+
+    function _outputStart($item)  {
+        $ret .= pack("ssssss", 0x809, 0x8, 0x0, 0x10, 0x0, 0x0);  // BOF
+        $ret .= pack('ss', 0x0042, 0x0002). pack('s',  0x04E4);   // or 0x04B0 ? codepage
+
+        $fs      = $this->field_set;
+        $count   = $fs->fieldCount();
+
+        for ($i=0; $i < $count; $i++) {
+            $ret .= $this->__getCell($fs->getName($i), 0, $i);
+            $ret .= $this->__getCell('('.$fs->getDefinition($i).')', 1, $i);
+        }
+        $this->current_row = 1;
+        return $ret;
+    }
+
+    function _outputItem($item)  {
+        $ret     = '';
+
+        $fs      = $this->field_set;
+        $count   = $fs->fieldCount();
+        $this->current_row++;
+
+        for ($i=0; $i < $count; $i++) {
+            $definition = $fs->getDefinition($i);
+            $recipe     = $fs->isField($i) ? "{@$definition:|}" : $definition;
+            $ret       .= $this->__getCell($item->unalias($recipe), $this->current_row, $i);
+        }
+        return $ret;
+    }
+
+    function __getCell($value,$row,$col) {
+        $ret = '';
+        if (is_numeric($value)) {
+            $ret = pack("sssss", 0x203, 14, $row, $col, 0x0) . pack("d", $value);
+        } elseif(is_string($value)) {
+            $value = UTF8toBIFF8UnicodeShortchr(255).chr(254).mb_convert_encoding( $value, 'UTF-16LE', 'UTF-8');
+            $len = mb_strlen($value);
+            $ret = pack("ssssss", 0x204, 8 + $len, $row, $col, 0x0, $len) . $value;
+        }
+        return $ret;
+    }
+
+    function UTF8toBIFF8UnicodeShort($value) {
+        if (function_exists('mb_strlen') and function_exists('mb_convert_encoding')) {
+            // character count
+            $ln = mb_strlen($value, 'UTF-8');
+
+            // option flags
+            $opt = 0x0001;
+
+            // characters
+            $chars = mb_convert_encoding($value, 'UTF-16LE', 'UTF-8');
+        } else {
+            // character count
+            $ln = strlen($value);
+
+            // option flags
+            $opt = 0x0000;
+
+            // characters
+            $chars = $value;
+        }
+
+        $data = pack('CC', $ln, $opt) . $chars;
+        return $data;
+    }
+}
+*/
+
+class AA_Exporter_Excel extends AA_Exporter_Html {
+    function _contentHeaders($file_name)    {
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/vnd.ms-excel;charset:UTF-8');
+        header('Content-Disposition: attachment; filename='.basename($file_name));
+        header('Content-Transfer-Encoding: binary');
+    }
+}
+
+class AA_Exporter_Html extends AA_Exporter {
+
+    function _contentHeaders($file_name)    {
+        header('Content-Type: text/html; charset=utf-8');
+    }
+
+    function _outputEnd($item)   {
+        return "\n</table></body></html>";  // EOF
+    }
+
+    function _outputStart($item)  {
+        $ret  = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">';
+        $ret .= '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>ActionApps Export</title></head><body><table border="1"><tr>';
+
+        $fs      = $this->field_set;
+        $count   = $fs->fieldCount();
+
+        for ($i=0; $i < $count; $i++) {
+            $ret .= "\n  <th>". htmlspecialchars($fs->getName($i), ENT_COMPAT, 'UTF-8') .'<br>('. $fs->getDefinition($i).')</th>';
+        }
+        return $ret."\n </tr>";
+    }
+
+    function _outputItem($item)  {
+        $ret = "\n <tr>";
+
+        $fs      = $this->field_set;
+        $count   = $fs->fieldCount();
+
+        for ($i=0; $i < $count; $i++) {
+            $definition = $fs->getDefinition($i);
+            $recipe     = $fs->isField($i) ? "{@$definition:|}" : $definition;
+            $ret       .= "\n  <td>". htmlspecialchars($item->unalias($recipe), ENT_COMPAT, 'UTF-8') .'</td>';
+        }
+        return $ret."\n </tr>";
+    }
+}
+
 
 class AA_Fieldset {
 

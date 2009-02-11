@@ -1,6 +1,13 @@
-02/08/09 - new apc-aa/export.php script, which allows to export the content 
-(honzam)   of the slice to file. Currently is supported the CSV format 
-           (through AA_Exporter_Csv class), but other formats could be added 
+02/11/09 - export.php script now supports also EXCEL and HTML export format:
+(honzam)   Example:
+             http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=csv&filename=export.csv
+             http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=excel&filename=export.xls
+           The Excel and HTML Exports works correctly for utf-8 character
+           encoding only (so for iso-8859-1 probably as well). The Excel export
+           is quite hackish - exported through HTML, but works.
+02/08/09 - new apc-aa/export.php script, which allows to export the content
+(honzam)   of the slice to file. Currently is supported the CSV format
+           (through AA_Exporter_Csv class), but other formats could be added
            easily (just by adding other AA_Exporter_* class). The parameters are
            "format", "slice_id" and optional "sort", "conds" and "filename"
 02/04/09 - fixed "Missing argument 2 for AA_Widget_Chb::getLiveHtml" error
