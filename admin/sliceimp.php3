@@ -82,7 +82,7 @@ function proove_ID($slice)
     // back-up old ids, if you want import slice definition with new id
     $new_slice_ids[$slice["id"]]["new_id"] = new_id();
 
-    $slice_id = q_pack_id($slice["id"]));
+    $slice_id = q_pack_id($slice["id"]);
     //echo "$slice_id";
     $SQL = "SELECT id FROM slice WHERE id=\"$slice_id\"";
 
