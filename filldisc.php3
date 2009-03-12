@@ -138,6 +138,15 @@ if ($ip_banned_slice_id) {
     }
 }
 
+// do not accept comments for not existing items or the items which
+// are in thrash or holding bin
+$SQL         = 'SELECT status_code FROM item WHERE id = \''.q_pack_id($d_item_id).'\'';
+$item_status = GetTable2Array($SQL, "aa_first", 'status_code');
+if ($item_status <> 1) {
+    echo _m("Not accepted, item is not published or do not exist.");
+    exit;
+}
+
 $new_id = new_id();
 
 $cookie = new CookieManager();
