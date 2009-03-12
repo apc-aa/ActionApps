@@ -174,10 +174,24 @@ if ($go_findfield && $findfield) {
 }
 
 if ($go_finditem && $finditem) {
+    $zid = new zids($finditem);
+    $long_id = $zid->longids(0);
+    if ($long_id) {
+        echo '<h3>'. _m('item table rocord for the item') .'</h3><pre>';
+        print_r(GetTable2Array('SELECT * FROM item WHERE id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
+        echo "</pre>";
+
+        echo '<h3>'. _m('content table rocords for the item') .'</h3><pre>';
+        print_r(GetTable2Array('SELECT * FROM content WHERE item_id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
+        echo "</pre>";
+    }
+
     $item = AA_Item::getItem($finditem);
-    echo "<pre>";
+
+    echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
     print_r($item);
     echo "</pre>";
+
 }
 
 // ------------------------------------------------------------------------------------------
