@@ -457,7 +457,7 @@ class Cvarset {
     // Static //
 
     /** sqlin function
-     *  Returns part of SQL command ised in WHERE, column = value, or column IN (...)
+     *  Returns part of SQL command sed in WHERE, column = value, or column IN (...)
      * @param $column
      * @param $values
      */
@@ -473,7 +473,7 @@ class Cvarset {
         }
         if (count($arr) == 1) {
             return "$column = ". $arr[0];
-        } elseif ( count($values) == 0 ) {
+        } elseif ( count($arr) == 0 ) {
             return "2=1";
         }
         return "$column IN (". join(',', $arr) .")";

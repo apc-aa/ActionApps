@@ -1,3 +1,12 @@
+03/12/09 - discussions: do not accept comments for not existing items
+(honzam)   or the items which are in thrash or holding bin
+         - new optimize script "Delete discussion comments for not existing
+           items"
+         - diplayed more informations about item on AA -> AA Finder page
+         - fix: discussion comments are deleted correctly if you delete
+           the item (=empty the trash bin)
+         - fixed {live:} for checkboxes - the field is set correctly to 0
+           if unchecked, not cleared at all as was in previous case
 02/11/09 - export.php script now supports also EXCEL and HTML export format:
 (honzam)   Example:
              http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=csv&filename=export.csv
