@@ -360,6 +360,7 @@ class AA_Manageraction_Item_DeleteTrash extends AA_Manageraction {
         // delete content of all fields
         // don't worry about fed fields - content is copied
         $wherein = "IN ('".join_and_quote("','", $items_to_delete)."')";
+        $db->query("DELETE FROM discussion WHERE item_id ".$wherein);
         $db->query("DELETE FROM content WHERE item_id ".$wherein);
         $db->query("DELETE FROM item WHERE id ".$wherein);
 
