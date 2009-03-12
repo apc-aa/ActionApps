@@ -852,7 +852,9 @@ class AA_Widget_Chb extends AA_Widget {
         }
         // no input was printed, we need to print one
         if ( !$ret ) {
-            $input_name   = $input_id ."[0]";
+            // do not put there [0] - we need to distinguish between single
+            // checkbox and multiple checkboxes in DoChangeLive() function
+            $input_name   = $input_id ."[]";
             $ret         .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_name\" value=\"1\" class=\"live\" onchange=\"DoChangeLive('$input_id')\">";
         }
         return $ret;
