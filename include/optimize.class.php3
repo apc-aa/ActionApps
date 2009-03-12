@@ -826,6 +826,64 @@ class AA_Optimize_Generate_Metabase_Row extends AA_Optimize {
 }
 
 
+/** Delete discussion comments for not existing items
+ */
+class AA_Optimize_Item_Discussion extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Delete discussion comments for not existing items");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("");
+    }
+
+    /** Test function
+    * tests for duplicate entries
+    * @return bool
+    */
+    function test() {
+        $SQL      = 'SELECT count(*) as disc_count, item_id FROM `discussion` LEFT JOIN item ON discussion.item_id = item.id WHERE item.short_id IS NULL GROUP BY discussion.item_id';
+        $problems = GetTable2Array($SQL, "unpack:item_id", 'disc_count');
+        if ($problems == false) {
+            $this->message( _m('No problems found') );
+            return true;
+        }
+        foreach ($problems as $item_id => $disc_count) {
+            $this->message(_m('Problem for item %1 - %2 comments found', array($item_id, $disc_count)));
+        }
+        return false;
+    }
+
+    /** Repair the problem
+    * @return bool
+    */
+    function repair() {
+        $db       = getDb();
+        $SQL      = 'SELECT count(*) as disc_count, item_id FROM `discussion` LEFT JOIN item ON discussion.item_id = item.id WHERE item.short_id IS NULL GROUP BY discussion.item_id';
+        $problems = GetTable2Array($SQL, "", 'item_id');
+        if (count((array)$problems) < 1) {
+            $this->message( _m('No problems found') );
+            return true;
+        }
+        $SQL = 'DELETE FROM `discussion` WHERE '. Cvarset::sqlin('item_id', $problems);
+        $db->query($SQL);
+        $SQL = "DELETE FROM `discussion` WHERE item_id = ''";
+        $db->query($SQL);
+        $this->message(_m('%1 problems solved', array(count($problems))));
+        freeDb($db);
+        return true;
+    }
+}
+
+
+
 
 
 
