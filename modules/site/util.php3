@@ -28,13 +28,13 @@ define ('MODW_FLAG_COLLAPSE',  4);   // (visualy) Collapsed spot
 
 
 function SiteAdminPage($spot_id, $add = null) {
-    global $sess;
-    $url = con_url($_SERVER['PHP_SELF'],"spot_id=$spot_id");   // Always used this way
+    global $sess, $slice_id;
+    $url = get_url($_SERVER['PHP_SELF'], array('spot_id'=>$spot_id, 'slice_id'=>$slice_id));   // Always used this way
     if ($add) {
-        $url = con_url($url, $add);
+        $url = get_url($url, $add);
     }
     // Don't add AA_CP_Session if already there (it isn't in PHP_SELF)
-    return ((strpos($url, 'AA_CP_Session') === false) ? $sess->url($url) : $url);
+    return htmlentities((strpos($url, 'AA_CP_Session') === false) ? $sess->url($url) : $url);
 }
 
 function ModW_HiddenRSpotId() {
