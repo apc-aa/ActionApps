@@ -392,7 +392,25 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
 }
 
 
-class AA_Module_Definition_Site extends AA_Module_Definition {
+class AA_Module_Definition_Alerts extends AA_Module_Definition {
+
+    function loadForId($module_id, $limited=false) {
+        $this->clear();
+        $this->module_id = $module_id;
+        $metabase        = AA_Metabase::singleton();
+
+        $this->data['module']                     = $metabase->getModuleRows('module', $module_id);
+        $this->data['alerts_collection']          = $metabase->getModuleRows('alerts_collection', $module_id);
+        $this->data['alerts_collection_filter']   = $metabase->getModuleRows('alerts_collection_filter', $module_id);
+        $this->data['alerts_collection_howoften'] = $metabase->getModuleRows('alerts_collection_howoften', $module_id);
+        $this->data['alerts_filter']              = $metabase->getModuleRows('alerts_filter', $module_id);
+    }
+
+    function compareWith($dest_def) {
+    }
+}
+
+class AA_Module_Definition_Alerts extends AA_Module_Definition {
 
     function loadForId($module_id, $limited=false) {
         $this->clear();
@@ -407,7 +425,6 @@ class AA_Module_Definition_Site extends AA_Module_Definition {
     function compareWith($dest_def) {
     }
 }
-
 
 class AA_Difference {
 

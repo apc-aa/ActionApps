@@ -615,7 +615,10 @@ class AA_Metabase {
           'constant'   => array('scr_field' => 'group_id', 'dest_table' => 'constant_slice', 'dest_field' => 'group_id'),
 
           'content'    => array('scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id'),
-          'discussion' => array('scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id')
+          'discussion' => array('scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id'),
+
+          'alerts_collection_filter'   => array('scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id'),
+          'alerts_collection_howoften' => array('scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id')
         );
 
         $module_table = $tablename;
