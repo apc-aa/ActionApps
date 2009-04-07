@@ -1,3 +1,7 @@
+04/07/09 - new posibility to copy also Alerts Module in Central
+(honzam) - fixed back button for site manager  site manager inner links contain
+           module_id, so the back link works site modeles
+         - fixed Polls design setting - it did not work for some poll ids
 03/12/09 - discussions: do not accept comments for not existing items
 (honzam)   or the items which are in thrash or holding bin
          - new optimize script "Delete discussion comments for not existing
@@ -7,6 +11,8 @@
            the item (=empty the trash bin)
          - fixed {live:} for checkboxes - the field is set correctly to 0
            if unchecked, not cleared at all as was in previous case
+03/09/09 - fixed syntax error in sliceimp.php3 reported by Ariel Barbosa
+(honzam)
 02/11/09 - export.php script now supports also EXCEL and HTML export format:
 (honzam)   Example:
              http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=csv&filename=export.csv
