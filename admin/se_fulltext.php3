@@ -142,13 +142,13 @@ $form_buttons = array ("update",
 FrmTabCaption(_m("HTML code for fulltext view"), '','', $form_buttons, $sess, $slice_id);
 FrmTextarea("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, 4, 60, false,
              _m("HTML code which appears at the top of slice area")
-             .'<br>'.view::getViewJumpLinks($fulltext_format_top), DOCUMENTATION_URL, 1);
+             .'<br>'.AA_View::getViewJumpLinks($fulltext_format_top), DOCUMENTATION_URL, 1);
 FrmTextarea("fulltext_format", _m("Fulltext HTML code"), $fulltext_format, 8, 60, true,
              _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
-             .'<br>'.view::getViewJumpLinks($fulltext_format), DOCUMENTATION_URL, 1);
+             .'<br>'.AA_View::getViewJumpLinks($fulltext_format), DOCUMENTATION_URL, 1);
 FrmTextarea("fulltext_format_bottom", _m("Bottom HTML code"), $fulltext_format_bottom, 4, 60, false,
              _m("HTML code which appears at the bottom of slice area")
-             .'<br>'.view::getViewJumpLinks($fulltext_format_bottom), DOCUMENTATION_URL, 1);
+             .'<br>'.AA_View::getViewJumpLinks($fulltext_format_bottom), DOCUMENTATION_URL, 1);
 FrmInputText("fulltext_remove", _m("Remove strings"), $fulltext_remove, 254, 50, false,
              _m("Removes empty brackets etc. Use ## as delimiter."), DOCUMENTATION_URL);
 FrmInputSelect("discus_sel", _m("Show discussion"), $discus_vids, $discus_vid, false,

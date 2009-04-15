@@ -415,7 +415,7 @@ foreach ($VIEW_TYPES[$view_type] as $k => $v) {
 
     // Create quick link to views
     if ( !$help ) {
-        $help = view::getViewJumpLinks($value);
+        $help = AA_View::getViewJumpLinks($value);
     }
 
     switch( $input ) {

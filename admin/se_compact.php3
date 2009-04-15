@@ -199,17 +199,17 @@ function EnableClick(cond,what) {
 
   FrmTextarea("compact_top", _m("Top HTML"), $compact_top, 4, 50, false,
                _m("HTML code which appears at the top of slice area")
-               .'<br>'.view::getViewJumpLinks($compact_top), DOCUMENTATION_URL, 1);
+               .'<br>'.AA_View::getViewJumpLinks($compact_top), DOCUMENTATION_URL, 1);
   FrmTextarea("odd_row_format", _m("Odd Rows"), $odd_row_format, 6, 50, false,
                _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
-               .'<br>'.view::getViewJumpLinks($odd_row_format), DOCUMENTATION_URL, 1);
+               .'<br>'.AA_View::getViewJumpLinks($odd_row_format), DOCUMENTATION_URL, 1);
   FrmInputChBox("even_odd_differ", _m("Use different HTML code for even rows"), $even_odd_differ, true, "OnClick=\"EnableClick('document.f.even_odd_differ','document.f.even_row_format')\"");
   FrmTextarea("even_row_format", _m("Even Rows"), $even_row_format, 6, 50, false,
                _m("You can define different code for odd and ever rows\n                         <br>first red, second black, for example")
-               .'<br>'.view::getViewJumpLinks($even_row_format), DOCUMENTATION_URL, 1);
+               .'<br>'.AA_View::getViewJumpLinks($even_row_format), DOCUMENTATION_URL, 1);
   FrmTextarea("compact_bottom", _m("Bottom HTML"), $compact_bottom, 4, 50, false,
                _m("HTML code which appears at the bottom of slice area")
-               .'<br>'.view::getViewJumpLinks($compact_bottom), DOCUMENTATION_URL, 1);
+               .'<br>'.AA_View::getViewJumpLinks($compact_bottom), DOCUMENTATION_URL, 1);
   echo "<tr><td class=\"tabtxt\"><b>"._m("Group by")."</b></td><td>";
   FrmSelectEasy("group_by", $lookup_fields, $group_by);
   echo "<br>"."";
@@ -223,18 +223,18 @@ function EnableClick(cond,what) {
   echo "</td></tr>";
   FrmTextarea("category_top", _m("Category top HTML"), $category_top, 4, 50, false,
                _m("HTML code which appears at the top of slice area")
-               .'<br>'.view::getViewJumpLinks($category_top), DOCUMENTATION_URL, 1);
+               .'<br>'.AA_View::getViewJumpLinks($category_top), DOCUMENTATION_URL, 1);
   FrmTextarea("category_format", _m("Category Headline"), $category_format, 6, 50, false,
                _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
-               .'<br>'.view::getViewJumpLinks($category_format), DOCUMENTATION_URL, 1);
+               .'<br>'.AA_View::getViewJumpLinks($category_format), DOCUMENTATION_URL, 1);
   FrmTextarea("category_bottom", _m("Category bottom HTML"), $category_bottom, 4, 50, false,
                _m("HTML code which appears at the bottom of slice area")
-               .'<br>'.view::getViewJumpLinks($category_bottom), DOCUMENTATION_URL, 1);
+               .'<br>'.AA_View::getViewJumpLinks($category_bottom), DOCUMENTATION_URL, 1);
   FrmInputText("compact_remove", _m("Remove strings"), $compact_remove, 254, 50, false,
                _m("Removes empty brackets etc. Use ## as delimiter."), DOCUMENTATION_URL);
   FrmTextarea("noitem_msg", _m("'No item found' message"), $noitem_msg, 4, 50, false,
                _m("message to show in place of slice.php3, if no item matches the query")
-               .'<br>'.view::getViewJumpLinks($category_bottom), DOCUMENTATION_URL, 1);
+               .'<br>'.AA_View::getViewJumpLinks($category_bottom), DOCUMENTATION_URL, 1);
 
   PrintAliasHelp(GetAliasesFromFields($fields), $fields, false, $form_buttons, $sess, $slice_id);
 

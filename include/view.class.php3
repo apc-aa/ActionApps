@@ -39,19 +39,21 @@
  * go to the database when something is needed.
  */
 
-class view {
+class AA_View {
     var $id;
     var $fields; // Array of fields
+
     /** view function
      * @param $id
      * @param $rec
      */
-    function view($id,$rec=null) {
+    function AA_View($id, $rec=null) {
         $this->id = (int)$id;
         if (isset($rec)) {
             $this->fields = $rec;
         }
     }
+
     /** load function
      * @param $force
      */
@@ -60,8 +62,16 @@ class view {
             $SQL = "SELECT view.*, module.deleted, module.lang_file FROM view, module
                      WHERE module.id=view.slice_id AND view.id='".$this->id."'";
             $this->fields = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+            return $this->fields ? true : false;
         }
+        return true;
     }
+
+    /** Checks, if the unpackedid is OK and the slice is not deleted */
+    function isValid() {
+        return $this->load() AND !$this->f('deleted');
+    }
+
     /** f function
      * @param $field
      */
@@ -72,9 +82,8 @@ class view {
         $this->load();
         return $this->fields[$field];
     }
-    /** getViewInfo function
-     *
-     */
+
+    /** getViewInfo function */
     function getViewInfo() {
         $this->load();
         return $this->fields;
@@ -103,6 +112,7 @@ class view {
     function jumpUrl() {
         return get_admin_url("se_view.php3?change_id=".unpack_id($this->f('slice_id')). "&view_id=". $this->id);
     }
+
     /** setfields function
      * @param $rec
      */
@@ -115,8 +125,9 @@ class view {
      * @param $banner_param
      */
     function setBannerParam($banner_param) {
-        $this->fields = array_merge( $this->fields, $banner_param);
+        $this->fields = array_merge( (array)$this->fields, $banner_param);
     }
+
     /** getViewFormat function
      * @param $selected_item
      */
@@ -172,6 +183,7 @@ class view {
         }
         return $ret;
     }
+
     /** xml_serialize function
      * @param $t
      * @param $i
@@ -190,15 +202,15 @@ class view {
  * @param $a
  */
 function VIEW_xml_unserialize($n,$a) {
-    $v = new view($n,$a);
+    $v = new AA_View($n,$a);
     return $v;
 }
 
+/** usualy called as $view = AA_Views::getView($vid); */
 class AA_Views {
     var $a = array();
-    /** AA_Views function
-     *
-     */
+
+    /** AA_Views function  */
     function AA_Views() {
         $this->a = array();
     }
@@ -246,12 +258,13 @@ class AA_Views {
         $view  = $views->_getView($vid);
         return $view ? $view->f($field) : null;
     }
+
     /** _getView function
      * @param $vid
      */
     function & _getView($vid) {
         if (!isset($this->a[$vid])) {
-            $this->a[$vid] = new view($vid);
+            $this->a[$vid] = new AA_View($vid);
         }
         return $this->a[$vid];
     }
@@ -270,7 +283,7 @@ class AA_Views {
                 foreach ($v_arr as $id) {
                     // cache it
                     if (!isset($views->a[$id])) {
-                        $views->a[$id] = new view($id);
+                        $views->a[$id] = new AA_View($id);
                     }
                     $a["$id"] = &$views->a[$id];
                 }
@@ -279,12 +292,13 @@ class AA_Views {
         return $a;
     }
 }
+
 /** VIEWS_xml_unserialize function
  * @param $n
  * @param $a
  */
 function VIEWS_xml_unserialize($n,$a) {
-    $vs = new AA_Views();
+    $vs    = new AA_Views();
     $vs->a = $a;
     return $vs;
 }

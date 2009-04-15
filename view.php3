@@ -45,6 +45,8 @@ http://www.apc.org/
 // for more info see AA FAQ: http://apc-aa.sourceforge.net/faq/index.shtml#219
 
 
+ini_set('display_errors', 1);
+
 /**
  * Handle with PHP magic quotes - quote the variables if quoting is set off
  * @param mixed $value the variable or array to quote (add slashes)
@@ -80,13 +82,16 @@ require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 add_vars();
 
+// it must be here as we are using functions like GetCategoryGroup() where
+// we still use
+//     global $db;
+$db  = new DB_AA;
+$db2 = new DB_AA;
+
 if (is_numeric($time_limit)) {
     @set_time_limit((int)$time_limit);
 }
 
-if (isset($slice_id)) $p_slice_id= q_pack_id($slice_id);
-$db = new DB_AA; 	   	 // open BD
-$db2 = new DB_AA; 		 // open BD
 
 if ($debug) huhl("Starting view");
 
@@ -96,15 +101,16 @@ if ($contenttype) {
     header("Content-type: $contenttype");
 }
 
-$text = GetView(ParseViewParameters());
+$view_param = ParseViewParameters();
 
-if ($convertto OR $convertfrom) {
-    require_once AA_INC_PATH."convert_charset.class.php3";
-    $encoder = ConvertCharset::singleton();
-    $text = $encoder->Convert($text, $convertfrom, $convertto);
+if ($convertfrom) {
+    $view_param['convertfrom'] = $convertfrom;
+}
+if ($convertto) {
+    $view_param['convertto']   = $convertto;
 }
 
-echo $text;
+echo GetView($view_param);
 
 if ($debug) huhl("Completed view");
 

@@ -185,7 +185,7 @@ function ModW_ShowSpot(&$tree, $site_id, $spot_id) {
     FrmTabCaption();
     ModW_HiddenRSpotId();
     FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false, false);
-    FrmTextarea('content', '', $content, 30, 80, false, view::getViewJumpLinks($content), "", true);
+    FrmTextarea('content', '', $content, 30, 80, false, AA_View::getViewJumpLinks($content), "", true);
     FrmTabEnd(array('submit'), $sess);
     echo "</form>";
 }

@@ -547,7 +547,6 @@ function GetView($view_param) {
 // Return view result based on parameters, set cache_sid
 function GetViewFromDB($view_param, &$cache_sid) {
     global $debug;
-    trace("+","GetViewFromDB",$view_param);
     $vid           = $view_param["vid"];
     $als           = $view_param["als"];
     $conds         = $view_param["conds"];
@@ -568,18 +567,9 @@ function GetViewFromDB($view_param, &$cache_sid) {
     // alias - =1 for selected item
     // gets view data
     $view      = AA_Views::getView($vid);
-    $view_info = $view->getViewInfo($vid);
+    $view_info = $view->getViewInfo();
 
-    // user could make the view to display view ID before and after the view output
-    // which is usefull mainly for debugging. See view setting in admin interface
-    $comment_begin = $comment_end = '';
-    if ( $debug OR ($view_info['flag'] & VIEW_FLAG_COMMENTS) ) {
-        $comment_begin = "<!-- $vid -->";
-        $comment_end   = "<!-- /$vid -->";
-    }
-
-    if (!$view_info OR ($view_info['deleted']>0)) {
-        trace("-");
+    if (!$view->isValid()) {
         return false;
     }
 
@@ -588,20 +578,13 @@ function GetViewFromDB($view_param, &$cache_sid) {
     bind_mgettext_domain(AA_INC_PATH."lang/".$view->getLang()."_output_lang.php3");
 
     $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
-                   ( (isset($view_info['noitem_msg']) AND (strlen($view_info['noitem_msg']) > 0) ) ?
-                   str_replace( '<!--Vacuum-->', '', $view_info['noitem_msg']) :
+                   ( ((strlen($view->f('noitem_msg')) > 0) ) ?
+                   str_replace( '<!--Vacuum-->', '', $view->f('noitem_msg')) :
                                      ("<div>"._m("No item found") ."</div>")));
 
     $view->setBannerParam(ParseBannerParam($view_param["banner"]));  // if banner set format
 
-    $listlen    = ($view_param["listlen"] ? $view_param["listlen"] : $view_info['listlen'] );
-
-    /* Old code, had problems because unpack_id128 won't unpack quoted
-    $p_slice_id = ($view_param["slice_id"] ? q_pack_id($view_param["slice_id"]) : $view_info['slice_id'] );
-    // This is to fix a bug where get_output_cached, caches under wrong slice (mitra)
-    $view_info['slice_id'] = $p_slice_id;
-    $slice_id = unpack_id128($p_slice_id);
-    */
+    $listlen    = $view_param["listlen"] ? $view_param["listlen"] : $view->f('listlen');
 
     if ($view_param["slice_id"]) {
         $view_info["slice_id"] = pack_id($view_param["slice_id"]);  // packed,not quoted
@@ -619,7 +602,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
     if ($debug) {
         huhl("GetViewFromDB:view_info=",$view_info);
     }
-    trace("=","GetViewFromDB",$view_info['type']);
     switch( $view_info['type'] ) {
         case 'discus':
             // create array of discussion parameters
@@ -658,8 +640,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
             $itemview = new itemview($format,"",$aliases,null,"","",$durl, $disc);
             $ret      = $itemview->get_output_cached("discussion");
-            trace("-");
-            return $comment_begin. $ret. $comment_end;
+            break;
 
         case 'links':              // links       (module Links)
         case 'categories':         // categories  (module Likns)
@@ -696,11 +677,11 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
             if ( !isset($zids) || $zids->count() <= 0) {
                 $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
-                return $comment_begin. $ret. $comment_end;
+                break;
             }
 
             $ret = $itemview->get_output_cached();
-            return $comment_begin. $ret. $comment_end;
+            break;
 
         case 'full':  // parameters: zids, als
             $format = $view->getViewFormat($selected_item);
@@ -727,8 +708,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
             } else {
                 $ret      = AA_Stringexpand::unalias($noitem_msg);
             }
-            trace("-");
-            return $comment_begin. $ret . $comment_end;
+            break;
 
         case 'seetoo':
         case 'calendar':
@@ -749,7 +729,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
                                             'value' => mktime (0,0,0,$month,1,$year),
                                             $view_info['field2'] => 1 ));
             // Note drops through to next case
-            trace("=","","calendar - drop through to digest, script etc");
 
 //        case 'full':  // parameters: zids, als
         case 'digest':
@@ -775,7 +754,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
                     $conds[] = $v;
                 }
             }
-            trace("=","","in script with slice_id=".$slice_id."; and view_param=".$view_param["slice_id"].";");
             list($fields,) = GetSliceFields($slice_id);
             $aliases       = GetAliasesFromFields($fields, $als);
 
@@ -813,9 +791,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                 if ($debug) huhl("Retagged zids=",$zids2);
             }
 
-            if ($debug) {
-                huhl("GetViewFromDB: Filtered ids=",$zids2);
-            }
+            if ($debug) { huhl("GetViewFromDB: Filtered ids=",$zids2); }
 
             $format = $view->getViewFormat($selected_item);
             $format['calendar_month'] = $month;
@@ -823,12 +799,16 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
             list($listlen, $list_from) = GetListLength($listlen, $view_param["to"], $view_param["from"], $list_page, $zids2->count(), $random);
 
+            if ($debug) { huhl("GetViewFromDB: Filtered listlen=",$listlen); }
+
+
             $itemview = new itemview( $format, $fields, $aliases, $zids2, $list_from, $listlen, shtml_url(), "",
                                       ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
 
             if (isset($zids2) && ($zids2->count() > 0)) {
                 $itemview_type = (($view_info['type'] == 'calendar') ? 'calendar' : 'view');
-                $ret = $itemview->get_output_cached($itemview_type);
+                if ($debug) { huhl("GetViewFromDB: to show=",$zids2, $itemview_type); }
+                $ret = $itemview->get_output($itemview_type);
             }   //zids2->count >0
             else {
                 /* Not sure if this was a necessary change that got missed, or got changed again
@@ -841,9 +821,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                 */
                 $ret = $itemview->unaliasWithScrollerEasy($noitem_msg);
             }
-            // 	if ( ($scr->pageCount() > 1) AND !$no_scr)  $scr->pnavbar();
-            trace("-");
-            return $comment_begin. $ret. $comment_end;
+            break;
 
         case 'static':
             // $format = $view->getViewFormat();  // not needed now
@@ -851,8 +829,30 @@ function GetViewFromDB($view_param, &$cache_sid) {
             $CurItem      = new AA_Item("", $als);
             $formatstring = $view_info["odd"];          // it is better to copy format-
             $ret = $CurItem->unalias( $formatstring );  // string to variable - unalias
-            trace("-");
-            return $comment_begin. $ret. $comment_end;
-    }                                             // uses call by reference
+            break;
+    }
+
+
+    if ($debug) {
+        huhl("GetViewFromDB: ret=",$ret);
+    }
+
+
+    // user could make the view to display view ID before and after the view output
+    // which is usefull mainly for debugging. See view setting in admin interface
+    if ( $debug OR ($view_info['flag'] & VIEW_FLAG_COMMENTS) ) {
+        $ret = "<!-- $vid -->$ret<!-- /$vid -->";
+    }
+
+    if ($view_param['convertto'] OR $view_param['convertfrom'] ) {
+        if (!$view_param['convertfrom']) {
+            $slice                     = AA_Slices::getSlice($slice_id);
+            $view_param['convertfrom'] = $slice->getCharset();
+        }
+        require_once AA_INC_PATH."convert_charset.class.php3";
+        $encoder = ConvertCharset::singleton();
+        $ret     = $encoder->Convert($ret, $view_param['convertfrom'], $view_param['convertto']);
+    }
+    return $ret;
 }
 ?>
