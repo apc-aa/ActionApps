@@ -1,3 +1,14 @@
+04/15/09 - new code for slice password slice_pwd handling using AA_Credentials
+(honzam)   class - allows to access protected slices from widgets (for related
+           items). The slice password is then filled as parameter to the widget
+         - {seo2ids} do not search in thrash bin
+         - new cached version of getItem() - AA_Items::getItem
+         - new version GetFormatedItems() using AA_Set and AA_Items::getItem
+         - htmlMail class updated to last version, improved and renamed
+           to AA_Mail
+         - fixed CSV import of items when long ids provided
+         - new function QuerySet(<AA_Set>), which will replace QueryZids()
+         - AA_Set class handles not only conds and sort, but also bins, now
 04/15/09 - new {tree:<item_id>[:<relation_field>]} - returns dash separated long
 (honzam)   ids of subitems (items which belongs to the tree under specifield
            item) based on the relations between items - like:

@@ -80,9 +80,6 @@ if ($update) {
         // set the
         AddProfileProperty('*', $slice_id, 'input_view', '', '', $inputform_sel, '');
 
-        $admin_format_top    = dequote($admin_format_top);
-        $admin_format        = dequote($admin_format);
-        $admin_format_bottom = dequote($admin_format_bottom);
     } while(false);
 
     if ( count($err) <= 1 ) {

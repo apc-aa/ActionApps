@@ -77,9 +77,6 @@ if ( $update ) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;    // not necessary - we have set the halt_on_error
         }
-        $fulltext_format_top    = dequote($fulltext_format_top);
-        $fulltext_format        = dequote($fulltext_format);
-        $fulltext_format_bottom = dequote($fulltext_format_bottom);
 
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 

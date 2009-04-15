@@ -38,6 +38,15 @@ require_once AA_INC_PATH. "varset.php3";
 $searchbar = new AA_Searchbar();   // mainly for bookmarks
 $items     = $chb;
 
+//if ( IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
+//    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to send mails from this slice: ").AA_Slices::getName($slice_id));
+//    exit;
+//}
+
+// Allow to use current slice data without slice_pwd
+$credentials = AA_Credentials::singleton();
+$credentials->loadFromSlice($slice_id);
+
 if ( !$send ) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
     unset($r_wm_state);       // clear if it was filled
@@ -82,14 +91,14 @@ if ( !$send ) {               // for the first time - directly from item manager
 
             // --- send emails
             if ( $group == 'testuser') {
-                $mails_sent  = send_mail_from_table($mail_id, $testemail);
+                $mails_sent  = AA_Mail::sendTemplate($mail_id, $testemail);
                 $users_count = 1;
             } else {
                 // get reader's zids
                 $zids = getZidsFromGroupSelect($group, $items, $searchbar);
                 // following functionality could be extend by adding third
                 // parameter $recipient (for testing e-mail)
-                $mails_sent  = send_mail_to_reader($mail_id, $zids);
+                $mails_sent  = AA_Mail::sendToReader($mail_id, $zids);
                 $users_count = $zids->count();
             }
             $Msg = MsgOK(_m("Email sucessfully sent (Users: %1, Emails sent (valid e-mails...): %2)",
@@ -141,14 +150,18 @@ FrmItemGroupSelect( $items, $searchbar, 'users', $messages, $additional);
 
 FrmTabSeparator( _m('Write the email') );
 
-FrmInputText(  'subject',     _m('Subject'),           dequote($subject),     254, 80, true);
-FrmTextarea(   'body',        _m('Body'),              dequote($body),         12, 80, true);
-FrmInputText(  'header_from', _m('From (email)'),      dequote($header_from), 254, 80, true);
-FrmInputText(  'reply_to',    _m('Reply to (email)'),  dequote($reply_to),    254, 80, false);
-FrmInputText(  'errors_to',   _m('Errors to (email)'), dequote($errors_to),   254, 80, false);
-FrmInputText(  'sender',      _m('Sender (email)'),    dequote($sender),      254, 80, false);
-FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),            $lang, true);
-FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $html, true);
+FrmInputText(  'subject',     _m('Subject'),           $_GET['subject'],     254, 80, true);
+FrmTextarea(   'body',        _m('Body'),              $_GET['body'],         12, 80, true);
+FrmInputText(  'header_from', _m('From (email)'),      $_GET['header_from'], 254, 80, true);
+FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_GET['reply_to'],    254, 80, false);
+FrmInputText(  'errors_to',   _m('Errors to (email)'), $_GET['errors_to'],   254, 80, false);
+FrmInputText(  'sender',      _m('Sender (email)'),    $_GET['sender'],      254, 80, false);
+FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),            $_GET['lang'], true);
+FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $_GET['html'], true);
+FrmInputFile('attachment1',       _m('Attachement 1'), false, "*/*");
+FrmInputFile('attachment2',       _m('Attachement 2'), false, "*/*");
+FrmInputFile('attachment3',       _m('Attachement 3'), false, "*/*");
+
 
 FrmTabEnd(array( 'send' =>array('type'=>'submit', 'value'=>_m('Send')),
                  'close'=>array('type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"')),
