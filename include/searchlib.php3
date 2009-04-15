@@ -701,19 +701,23 @@ function getSortFromUrl( $sort ) {
  * @param $querystring
  */
 function GetWhereExp( $field, $operator, $querystring ) {
+    if ( $GLOBALS['debug'] ) {
+        echo "<br>GetWhereExp( $field, $operator, $querystring )";
+    }
+
+    if ($operator == '==') {
+        return " ($field = '$querystring') ";            // exact match - no SQL parsing, no stripslashes (we added this because SQL Syntax parser in AA have problems with packed ids)
+    }
 
     // query string could be slashed - sometimes :-(
     // However - if the string starts with ", then it is never
     // slashed, for sure
     // @todo remove stripslashes for AA3.0 - Honza
-//    if ( substr($querystring,0,1) != '"') {
-//        $querystring = stripslashes( $querystring );
-//    }
-    $querystring = stripslashes( $querystring );
+    //    if ( substr($querystring,0,1) != '"') {
+    //        $querystring = stripslashes( $querystring );
+    //    }
 
-    if ( $GLOBALS['debug'] ) {
-        echo "<br>GetWhereExp( $field, $operator, $querystring )";
-    }
+    $querystring = stripslashes( $querystring );
 
     // search operator for functions (some operators can be in function:operator
     // fomat - the function is called to $querystring (good for date transform ...)
@@ -778,7 +782,6 @@ function GetWhereExp( $field, $operator, $querystring ) {
             return  " (($field >= $arr[0]) AND ($field <= $arr[1])) ";
         case 'ISNULL':   return " (($field IS NULL) OR ($field='')) ";
         case 'NOTNULL':  return " (($field IS NOT NULL) AND ($field<>'')) ";
-        case '==':       return " ($field = '$querystring') ";            // exact match - no SQL parsing (we added this because SQL Syntax parser in AA have problems with packed ids)
 //      case '<=>':  //MySQL know this operator, but we do not use it in AA
         case '<>' :
         case '!=' :
@@ -1401,8 +1404,11 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
                 if ( $field->storageTable() == 'item' ) {   // field is stored in table 'item'
                     // Long ID in conds should be specified as unpacked, but in db it is packed
-                    if (($fid == 'id..............') AND (guesstype($cond['value'])=='l')) {
-                        $cond['value'] = "'".q_pack_id($cond['value'])."'";
+                    if ((($fid == 'id..............') OR ($fid == 'slice_id........')) AND (guesstype($cond['value'])=='l')) {
+                        $cond['value'] = q_pack_id($cond['value']);
+                        if ($cond['operator'] == '=') {
+                            $cond['operator'] = '==';   // the syntax analyzer have problems with packed ids and '=' operator
+                        }
                     }
                     $select_conds[] = GetWhereExp( 'item.'. $field->storageColumn(), $cond['operator'], $cond['value'] );
                     if ( $fid == 'expiry_date.....' ) {
