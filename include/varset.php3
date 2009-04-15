@@ -99,6 +99,7 @@ class Cvarset {
      * @param $arr
      */
     function Cvarset( $arr=null ) {
+        $this->vars       = array();
         $this->db         = null;
         $this->just_print = false;
 
@@ -117,7 +118,12 @@ class Cvarset {
      *  clears whole varset
      */
     function clear() {
-        $this->vars="";
+        $this->vars = array();
+    }
+
+    /** Returns true, is the varset do not contain any variable */
+    function isEmpty() {
+        return count($this->vars) < 1;
     }
 
     /** get function

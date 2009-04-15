@@ -133,14 +133,15 @@ class AA_Widget extends AA_Components {
      *  This method is rewritten _fillSelected() method form formutil.php3
      */
     function _fillSelected($aa_value) {
-        if ( is_null($this->_selected) ) {  // not cached yet => create selected array
-            for ($i=0 ; $i < $aa_value->valuesCount(); $i++) {
-                $val = $aa_value->getValue($i);
-                if ( $val ) {
-                    $this->_selected[(string)$val] = true;
-                }
+        $this->_selected = array();
+        //if ( is_null($this->_selected) ) {  // not cached yet => create selected array
+        for ($i=0 ; $i < $aa_value->valuesCount(); $i++) {
+            $val = $aa_value->getValue($i);
+            if ( $val ) {
+                $this->_selected[(string)$val] = true;
             }
         }
+        //}
     }
 
     /** returns options array with marked selected oprtions, missing options,...
@@ -188,6 +189,7 @@ class AA_Widget extends AA_Components {
                 }
             }
         }
+
         if ( $add_empty ) {
             // put empty option to the front
             array_unshift($ret, array('k'=>'', 'v'=>'', 'selected' => !$selectedused, 'mis' => false));
