@@ -459,18 +459,6 @@ function now($step=false) {
         ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
 }
 
-
-/** date2sec function
- * @param $dat
- * @return number of seconds since 1970 to date in MySQL format
- */
-function date2sec($dat) {
-    if ( Ereg("^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})", $dat, $d)) {
-        return MkTime($d[4], $d[5], $d[6], $d[2], $d[3], $d[1]);
-    }
-    return 0;
-}
-
 /** detect_browser function
  * function which detects the browser
  */
@@ -877,7 +865,7 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
     if ( !is_object($zids) ) {
         $zids = new zids( $zids, $use_short_ids ? 's' : 'l' );
     }
-    $sel_in = $zids->sqlin( false );
+    $sel_in = $zids->sqlin( '' );
     if ($zids->onetype() == "t") {
         $settags = true;  // Used below
     }
@@ -895,7 +883,6 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
  *       restrict return fields only to listed fields (so the content4id array
  *       is not so big)
  *       like: array('headline........', 'category.......1')
- *       (only content table fields are restricted (yet))
  */
 function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
@@ -917,15 +904,11 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         }
     }
 
+    $metabase       = AA_Metabase::singleton();
+
     // if the output fields are restricted, restrict also item fields
     if ( $fields2get ) {
         $item_sql_fields = $fields2get;
-
-        // we need slice_id for each item, if we have to count with slice permissions
-        if ( !$ignore_reading_password AND !in_array('slice_id........', $fields2get) ) {
-            $item_sql_fields[] = 'slice_id........';
-        }
-        $metabase       = AA_Metabase::singleton();
 
         $content_fields = array();
         $item_fields    = array();
@@ -934,19 +917,32 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             $clean_name = AA_Fields::getFieldType($field_name);
 
             if ( $metabase->isColumn('item', $clean_name) ) {
-                $item_fields[] = 'item.'.$clean_name;
+                $item_fields[]    = $clean_name;
             } else {
                 $content_fields[] = $field_name;
             }
         }
 
-        $item_fields_sql =  ( count($item_fields) < 1 ) ? 'item.*' : join(',', $item_fields);
+        // save it (without possibel new fields 'id' and 'slice_id' - see below)
+        $real_item_fields2get = $item_fields;
+
+        // we need item id for $content index
+        if ( !in_array('id', $item_fields) ) {
+            $item_fields[] = 'id';
+        }
+        // we need slice_id for each item, if we have to count with slice permissions
+        if ( !$ignore_reading_password AND !in_array('slice_id', $item_fields) ) {
+            $item_fields[] = 'slice_id';
+        }
+
+        $item_fields_sql = join(',', $item_fields);
     } else {
-        $item_fields_sql = 'item.*';
+        $item_fields_sql = '*';
+        $real_item_fields2get = $metabase->getColumnNames('item');
     }
 
     $id_column = ($use_short_ids ? "short_id" : "id");
-    $SQL       = "SELECT $item_fields_sql FROM item WHERE item.$id_column $sel_in";
+    $SQL       = "SELECT $item_fields_sql FROM item WHERE $id_column $sel_in";
     $db->tquery($SQL);
 
     $n_items = 0;
@@ -971,14 +967,12 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         } else {
             $foo_id = unpack_id128($db->f("id"));
         }
+
         // Note that it stores into the $content[] array based on the id being used which
         // could be either shortid or longid, but is NOT tagged id.
-        while (list($key, $val) = each($db->Record)) {
-            // we need only item fields
-            if (!is_numeric($key)) {
-                $content[$foo_id][AA_Fields::createFieldId($key)][] = array(
-                     "value" => $reading_permitted ? $val : _m("Error: Missing Reading Password"));
-            }
+        foreach ($real_item_fields2get as $item_fid) {
+            $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array(
+                     "value" => $reading_permitted ? $db->f($item_fid) : _m("Error: Missing Reading Password"));
         }
     }
 
