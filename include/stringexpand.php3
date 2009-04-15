@@ -1441,7 +1441,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                 // is it item id?
                 $id_type = guesstype($item_id);
                 if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
-                    $item = AA_Item::getItem(new zids($item_id));
+                    $item = AA_Items::getItem(new zids($item_id,$id_type));
                     if ($item) {
                         $count++;
                         if ($expression) {
@@ -1540,7 +1540,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
         }
         $slices_arr = explode('-', $slices);
         $set        = new AA_Set(new AA_Condition('seo.............', '=', '"'.$seo_string.'"'));
-        $zids       = QueryZIDs($slices_arr, $set->getConds(), '', 'ALL');
+        $zids       = QueryZIDs($slices_arr, $set->getConds(), '', AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING );
         return join($zids->longids(), '-');
         // added expiry date in order we can get ids also for expired items
         return AA_Stringexpand_Ids::expand($slices, 'd-expiry_date.....->-0-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"');
@@ -1989,11 +1989,17 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
          *  have to create pair for each of the word. The _#KEYWORD_ alias is then
          *  used in format string
          */
-        $kw_item  = GetFormatedItems( $dictionary, "{@keywords........:##}_AA_DeLiM_$format", false, AA_BIN_ACTIVE, $conds, $sort);
+
+        $format  = AA_Fields::isField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+        $format  = "{@keywords........:##}_AA_DeLiM_$format";
         // above is little hack - we need keyword pair, but we want to call
         // GetFormatedItems only once (for speedup), so we create one string with
         // delimiter:
         //   BIOM##Biom##biom_AA_DeLiM_<a href="http://biom.cz">_#KEYWORD_</a>
+
+        $set     = new AA_Set(String2Conds( $conds ), String2Sort( $sort ), array($dictionary));
+        $kw_item = GetFormatedItems($set, $format);
+
         foreach ( $kw_item as $kw_string ) {
             list($keywords, $link) = explode('_AA_DeLiM_', $kw_string,2);
             $kw_array              = explode('##', $keywords);
@@ -2329,12 +2335,10 @@ class AA_Stringexpand_Keystring extends AA_Stringexpand_Nevercache {
      */
     function expand() {
         $ks = "";
-        if (isset($GLOBALS["apc_state"])) {
-            $ks .= serialize($GLOBALS["apc_state"]);
-        }
-        if (isset($GLOBALS["als"])) {
-            $ks .= serialize($GLOBALS["als"]);
-        }
+        if (isset($GLOBALS["apc_state"])) { $ks .= serialize($GLOBALS["apc_state"]); }
+        if (isset($GLOBALS["als"]))       { $ks .= serialize($GLOBALS["als"]);       }
+        if (isset($GLOBALS["slice_pwd"])) { $ks .= serialize($GLOBALS["slice_pwd"]); }
+        
         if (isset($_COOKIE)) {
             $work = array();
             // do not count with cookie names starting with underscore
@@ -2410,7 +2414,7 @@ function new_unalias_recurent(&$text, $remove, $level, $maxlevel, $item=null, $i
         $text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback,'expand_bracketed_callback'), $text);
     }
 
-    if (isset($item)) {
+    if (is_object($item)) {
         return QuoteColons($level, $maxlevel, $item->substitute_alias_and_remove($text, explode("##",$remove)));
     } else {
         return QuoteColons($level, $maxlevel, $text);
@@ -2466,7 +2470,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
         $ret = '';
         $alias_name = ($show_alias == '') ? '' : substr($show_alias, 2);
         if ( $item_id AND $field_id) {
-            $item        = AA_Item::getItem(new zids($item_id));
+            $item        = AA_Items::getItem(new zids($item_id));
             $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
             $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
             $iid         = $item->getItemID();
@@ -2495,7 +2499,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
             return '';
         }
 
-        $item = $item_id ? AA_Item::getItem(new zids($item_id)) : $this->item;
+        $item = $item_id ? AA_Items::getItem(new zids($item_id)) : $this->item;
         if (!empty($item)) {
 
             $iid   = $item->getItemID();
