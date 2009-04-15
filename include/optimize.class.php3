@@ -27,7 +27,6 @@
 
 require_once AA_BASE_PATH."service/update.optimize.class.php";
 
-
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
  */
@@ -250,7 +249,6 @@ class AA_Optimize_Db_Feed_Inconsistency extends AA_Optimize {
         return true;
     }
 }
-
 
 
 /** Fix user login problem, constants editiong problem, ...
@@ -794,7 +792,9 @@ class AA_Optimize_Create_Upload_Dir extends AA_Optimize {
 }
 
 
-/** Creates upload directory for current slice (if not already created) **/
+/** prints out the metabase row for include/metabase.class.php3 file
+ *  (used by AA developers to update database definition tempate)"
+ **/
 class AA_Optimize_Generate_Metabase_Row extends AA_Optimize {
 
     /** Name function
@@ -882,9 +882,91 @@ class AA_Optimize_Item_Discussion extends AA_Optimize {
     }
 }
 
+/**
+ */
+class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
 
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Multivalue Duplicates");
+    }
 
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("Removes duplicate values in multivalue text fields");
+    }
 
+    /** Test function
+    * tests for duplicate entries
+    * @return bool
+    */
+    function test() {
+        $ret = true;
 
+        // test wrong destination slices
+        $SQL      = "SELECT `item_id`, `field_id`, `text`, count(*) AS `cnt` FROM `content` WHERE (flag && 64) GROUP BY `item_id`, `field_id`, `text` HAVING `cnt` >1";
+        $err_text = GetTable2Array($SQL, '', 'aa_fields');
+
+        if (is_array($err_text) AND count($err_text) > 0) {
+            $this->message( _m('%1 duplicates found in text fields', array(count($err_text))));
+            foreach ($err_text as $wrong) {
+                $this->message( _m('Duplicates (%4) in item %1 - field %2 - value %3', array(unpack_id($wrong['item_id']),$wrong['field_id'],$wrong['text'],$wrong['cnt'])));
+            }
+            $ret = false;
+        }
+
+        $SQL      = "SELECT `item_id`, `field_id`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag && 64) = 0 GROUP BY `item_id`, `field_id`, `number` HAVING `cnt` >1";
+        $err_num  = GetTable2Array($SQL, '', 'aa_fields');
+
+        if (is_array($err_num) AND count($err_num) > 0) {
+            $this->message( _m('%1 duplicates found in numeric fields', array(count($err_num))));
+            foreach ($err_num as $wrong) {
+                $this->message( _m('Duplicates (%4) in item %1 - field %2 - value %3', array(unpack_id($wrong['item_id']),$wrong['field_id'],$wrong['text'],$wrong['cnt'])));
+            }
+            $ret = false;
+        }
+
+        if ($ret ) {
+            $this->message(_m('No duplicates found, hurray!'));
+        }
+        return $ret;
+    }
+
+    /** Name function
+    * @return bool
+    */
+    function repair() {
+        $db  = getDb();
+
+        // test wrong destination slices
+        $SQL = "SELECT to_id FROM feeds LEFT JOIN slice ON feeds.to_id=slice.id WHERE slice.id IS NULL";
+        $err = GetTable2Array($SQL, '', 'unpack:to_id');
+
+        if (is_array($err) AND count($err)>0 ) {
+            foreach ($err as $wrong_slice_id) {
+                $SQL = 'DELETE FROM `feeds` WHERE `to_id`=\''.q_pack_id($wrong_slice_id).'\'';
+                $db->query($SQL);
+            }
+        }
+
+        // test wrong source slices
+        $SQL = "SELECT from_id FROM feeds LEFT JOIN slice ON feeds.from_id=slice.id WHERE slice.id IS NULL";
+        $err = GetTable2Array($SQL, '', 'unpack:from_id');
+
+        if (is_array($err) AND count($err)>0 ) {
+            foreach ($err as $wrong_slice_id) {
+                $SQL = 'DELETE FROM `feeds` WHERE `from_id`=\''.q_pack_id($wrong_slice_id).'\'';
+                $db->query($SQL);
+            }
+        }
+
+        freeDb($db);
+        return true;
+    }
+}
 
 ?>
