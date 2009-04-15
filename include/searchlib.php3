@@ -282,11 +282,17 @@ class AA_Set extends AA_Object {
     /** array of slice_ids (unpacked_ids) */
     var $slices;
 
+    /** bitfield representing the bins - like Holding Bin, Approved, Trash, ...
+     *  AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH
+     */
+    var $bins;
+
+
     /** AA_Set function
      * @param $conds array or conds url string
      * @param $sort  array or sort  url string
      */
-    function AA_Set($conds=null, $sort=null, $slices=null) {
+    function AA_Set($conds=null, $sort=null, $slices=null, $bins=AA_BIN_ACTIVE) {
         $this->clear();
         if ( !is_null($conds) ) {
             if (is_object($conds)) {
@@ -309,6 +315,7 @@ class AA_Set extends AA_Object {
         if ( !is_null($slices) ) {
             $this->slices = $slices;
         }
+        $this->bins = $bins;
     }
 
     /** clear function
@@ -318,6 +325,15 @@ class AA_Set extends AA_Object {
         $this->conds  = array();
         $this->sort   = array();
         $this->slices = array();
+        $this->bins   = AA_BIN_ACTIVE;
+    }
+
+    /** set the bins - like Holding Bin, Approved, Trash, ...
+     *  @param $bins bitfield
+     *  AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH
+     */
+    function setBins($bins) {
+        $this->bins = $bins;
     }
 
     /** addCondition function
@@ -592,6 +608,11 @@ class AA_Set extends AA_Object {
      */
     function getSlices() {
         return $this->slices;
+    }
+
+    /** @return bins bitfield - AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH */
+    function getBins() {
+        return $this->bins;
     }
 
     /** getCondsAsString function
@@ -1148,6 +1169,7 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition=false, $keystr='', $cache_
         }
     }
     $zids = new zids($arr, $zid_type);
+
     $QueryIDsCount = count($arr);
 
     if ( is_object($sort_zids) ) {
@@ -1157,7 +1179,6 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition=false, $keystr='', $cache_
     if ( $cache_condition ) {
         $pagecache->store($keystr, serialize($zids), $cache_str2find);
     }
-
     freeDB($db);
     return $zids;
 }
@@ -1235,6 +1256,17 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
 
 
 // -------------------------------------------------------------------------------------------
+
+
+/** New main function to get item ids from database based on conditions...
+ *  Should replace QueryZIDs() in future
+ *  @param $set           - AA_Set
+ *  @param $restrict_zids - zids
+ */
+function QuerySet($set, $restrict_zids=false) {
+    return QueryZIDs($set->getSlices(), $set->getConds(), $set->getSort(), $set->getBins(), 0, $restrict_zids);
+}
+
 
 /** QueryZIDs function
 *  Finds item IDs for items to be shown in a slice / view
