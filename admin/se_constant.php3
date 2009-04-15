@@ -69,10 +69,7 @@ $varset      = new Cvarset();
 
 // Check permissions
 if (! $category && $group_id ) {
-    $SQL = "SELECT * FROM constant_slice INNER JOIN slice
-        ON constant_slice.slice_id = slice.id
-        WHERE group_id='$group_id'";
-
+    $SQL = "SELECT * FROM constant_slice INNER JOIN slice ON constant_slice.slice_id = slice.id WHERE group_id='$group_id'";
     $db->tquery($SQL);
 
     if ($db->next_record() && !CheckPerms( $auth->auth["uid"], "slice", unpack_id($db->f("slice_id")), PS_FIELDS)) {
@@ -80,6 +77,7 @@ if (! $category && $group_id ) {
         exit;
     }
 }
+
 /** ShowConstant function
  * @param $id
  * @param $name
@@ -98,8 +96,8 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
 
     echo "
     <tr>
-      <td><input type=\"text\" name=\"name[$id]\" size=\"25\" maxlength=\"149\" value=\"$name\"></td>
-      <td><input type=\"text\" name=\"value[$id]\" size=\"25\" maxlength=\"255\" value=\"$value\">
+      <td><input type=\"text\" name=\"name[$id]\" size=\"30\" maxlength=\"149\" value=\"$name\"></td>
+      <td><input type=\"text\" name=\"value[$id]\" size=\"30\" maxlength=\"255\" value=\"$value\">
           <input type=\"hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
       <td class=\"tabtxt\"><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>";
     if ($categ) {   // it is categories - show APC wide categories for parent category select
@@ -405,6 +403,12 @@ else {
 
 $propagate_ch = ( $group_id ? $db->f("propagate") : 1);   // default is checked for new constant group;
 
+if ($categ) {
+    $categ_head    = "<td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('class')\">". _m("Parent") ."</a></b><br>". _m("categories&nbsp;only") ."</td>";
+} else {
+    $categ_head    = "<td class=\"tabtxt\">&nbsp;</td>";
+}
+
 echo "</td></tr>
 <tr><td colspan=\"4\"><input type=\"checkbox\" name=\"propagate_changes\"".($propagate_ch ? " checked" : "").">"._m("Propagate changes into current items");
 echo "'</td></tr>
@@ -413,7 +417,7 @@ echo "'</td></tr>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</td>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</td>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</td>
- <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('class')\">". _m("Parent") ."</a></b><br>". _m("categories&nbsp;only") ."</td>
+ $categ_head
 </tr>
 <tr><td colspan=\"4\"><hr></td></tr>";
 
