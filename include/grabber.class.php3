@@ -931,8 +931,7 @@ class AA_Grabber_Slice extends AA_Grabber {
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
-        $set            = $this->set;
-        $zids           = QueryZIDs($set->getSlices(), $set->getConds(), $set->getSort());
+        $zids           = QuerySet($this->set);
         $this->_longids = $zids->longids();
         reset($this->_longids);   // go to first long id
     }
