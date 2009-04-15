@@ -44,6 +44,10 @@ require_once AA_INC_PATH . "actions.php3";
 
 // new manager class approach ------------------------------------------------
 
+// Allow edit current slice without slice_pwd
+$credentials = AA_Credentials::singleton();
+$credentials->loadFromSlice($slice_id);
+
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id = $slice_id;
 // module_id is the same as slice_id (slice_id was used before AA introduced
@@ -52,6 +56,12 @@ $module_id = $slice_id;
 
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice       = AA_Slices::getSlice($module_id);
+
+if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission see the users in this slice:").AA_Slices::getName($slice_id));
+    exit;
+}
+
 
 switch( $type ) {
     case 'users':

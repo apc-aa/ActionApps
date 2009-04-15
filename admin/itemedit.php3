@@ -96,12 +96,13 @@ function CloseDialog($zid = null, $openervar = null, $insert=true, $url2go=null)
                                getFrmJavascript($js)));
 }
 
-FetchSliceReadingPassword();
+// Allow edit current slice without slice_pwd
+$credentials = AA_Credentials::singleton();
+$credentials->loadFromSlice($slice_id);
 
 if ($encap) {
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
-}
-                               //       and REDIRECT_STRING_UNESCAPED - from url
+}                      // and REDIRECT_STRING_UNESCAPED - from url
 
 QuoteVars("post", array('encap'=>1) );  // if magicquotes are not set, quote variables
                                         // but skip (already edited) encap variable

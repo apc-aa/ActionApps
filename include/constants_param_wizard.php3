@@ -372,7 +372,11 @@ array("name"=>_m("Select Box"),
         array("name"=>_m("Sort by"),
         "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
         "type"=>"STR",
-        "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d")
+        "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d"),
+        array("name"=>_m("Slice password"),
+        "desc"=>_m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"),
+        "type"=>"STR",
+        "example"=>"")
         ));
 $INPUT_TYPES["items"]["pre"]=
 array("name"=>_m("Text Field with Presets"),

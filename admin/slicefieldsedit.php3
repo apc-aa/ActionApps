@@ -48,9 +48,11 @@ if ( file_exists( AA_INC_PATH."usr_validate.php3" ) ) {
     require_once AA_INC_PATH."usr_validate.php3";
 }
 
-FetchSliceReadingPassword();
+// Allow edit current slice without slice_pwd
+$credentials = AA_Credentials::singleton();
+$credentials->loadFromSlice($slice_id);
 
-if ($encap) {
+if ($encap) {  // do we use somewhere this ensap??? Honza 3/2009
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
 }                             //       and REDIRECT_STRING_UNESCAPED - from url
 

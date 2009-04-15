@@ -285,7 +285,7 @@ class AA_Transformation_Value extends AA_Transformation {
         $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
 
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea(  $varname_new_content, _m('New content'),       dequote($_GET[$varname_new_content]),  12, 80, true,
+        FrmTextarea(  $varname_new_content, _m('New content'),       $_GET[$varname_new_content],  12, 80, true,
                _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
 
         FrmTabEnd();
@@ -359,7 +359,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
         $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
 
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea(  $varname_new_content, _m('New content'),       dequote($_GET[$varname_new_content]),  12, 80, true,
+        FrmTextarea(  $varname_new_content, _m('New content'),       $_GET[$varname_new_content],  12, 80, true,
                _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
 
         FrmTabEnd();
@@ -427,9 +427,9 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
         $varname_delimiter = AA_Transformation::_getVarname('delimiter', $input_prefix, __CLASS__);
 
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea(  $varname_source, _m('Source text'),  dequote($_GET[$varname_source]),  12, 80, true,
+        FrmTextarea(  $varname_source, _m('Source text'),  $_GET[$varname_source],  12, 80, true,
                _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
-        FrmInputText( $varname_delimiter, _m('Delimiter'), dequote($_GET[$varname_delimiter]), 255, 25, true);
+        FrmInputText( $varname_delimiter, _m('Delimiter'), $_GET[$varname_delimiter], 255, 25, true);
 
         FrmTabEnd();
         return ob_get_clean();
@@ -582,7 +582,7 @@ class AA_Transformation_Translate extends AA_Transformation {
         $varname_translation = AA_Transformation::_getVarname('translation', $input_prefix, __CLASS__);
 
         FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea(  $varname_translation, _m('Translations'),       dequote($_GET[$varname_translation]),  12, 80, true,
+        FrmTextarea(  $varname_translation, _m('Translations'),       $_GET[$varname_translation],  12, 80, true,
         _m('Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src="_#0.jpg"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be "<code>:regexp:<regular expression>:<output></code>". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> ("Bio" is replaced by two values). You can use any number of values here.'));
 
         FrmTabEnd();
@@ -649,6 +649,10 @@ class AA_Transformation_CopyField extends AA_Transformation {
     }
 }
 
+if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+    MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to edit items this way in this slice"));
+    exit;
+}
 
 $searchbar = new AA_Searchbar();   // mainly for bookmarks
 $items=$chb;
@@ -670,7 +674,11 @@ if ( !$fill ) {               // for the first time - directly from item manager
 
             for ( $i=0; $i<=$zids->count(); $i++ ) {
 
-                $content4id    = new ItemContent($zids->zid($i));
+                $content4id    = new ItemContent();
+                $content4id->setByItemID($zids->zid($i), true);     // ignore password
+                // if we do not ignore it, then it will not work for slices with slice_pwd
+                // It is OK to do not care about password here - we are loged in and have permission PS_EDIT_ALL_ITEMS
+                
                 $sli_id  = $content4id->getSliceID();
                 $item_id = $content4id->getItemID();
                 if (!$sli_id OR !$item_id) {

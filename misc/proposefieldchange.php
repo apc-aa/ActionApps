@@ -82,7 +82,10 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
     $changes       = new AA_ChangesMonitor();
     $changes->addHistory(new AA_ChangeProposal($item_id, $field_id, array(GetRepreValue($item_id, $field_id))));
 
-    $content4id    = new ItemContent($item_id);
+    $content4id    = new ItemContent();
+    $content4id->setByItemID($item_id, true);     // ignore password
+    // if we do not ignore it, then whole item is destroyed for slices with slice_pwd
+    
     $sli_id        = $content4id->getSliceID();
     unset($content4id);
 
@@ -99,7 +102,7 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
 
 function GetRepreValue($item_id, $field_id, $alias_name) {
     // get the item directly from the database
-    $item        = AA_Item::getItem(new zids($item_id), true);
+    $item        = AA_Item::getItem(new zids($item_id));
     $repre_value = $alias_name ? $item->subst_alias('_#'.$alias_name) : $item->getval($field_id);
     return (strlen($repre_value) > 0) ? $repre_value : '--';
 }

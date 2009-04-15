@@ -42,8 +42,6 @@ require_once AA_INC_PATH . "msgpage.php3";
 require_once AA_INC_PATH . "manager.class.php3";
 require_once AA_INC_PATH . "actions.php3";
 
-FetchSliceReadingPassword();
-
 function CountItemsInBins() {
     global $p_slice_id;
     $db = getDB();
@@ -77,6 +75,10 @@ function CountItemsInBins() {
     $ret['app'] = $ret['folder1']-$ret['pending']-$ret['expired'];
     return $ret;
 }
+
+// Allow edit current slice without slice_pwd
+$credentials = AA_Credentials::singleton();
+$credentials->loadFromSlice($slice_id);
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id = $slice_id;

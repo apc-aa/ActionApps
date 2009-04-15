@@ -362,15 +362,6 @@ function QuoteVars($method="get", $skip='') {
     }
 }
 
-/** dequote function
- * function to reverse effect of "magic quotes"
- * not needed in MySQL and get_magic_quotes_gpc()==1
- * @param $str
- */
-function dequote($str) {
-    return $str;
-}
-
 /** new_id function
  *  returns new unpacked md5 unique id, except these which can  force unexpected end of string
  * @param $mark
@@ -408,7 +399,7 @@ function is_marked_by($id, $mark) {
 
 /** string2id function
  * @param $str
- *  @return a unique id from a string.
+ *  @return a unique (long - unpacked) id from a string.
  *  Note that it will always return the same id from the same string so it
  *  can be used to compare the hashes as well as create new item id (combining
  *  item id of fed item and slice_id, for example - @see xml_fetch.php3)
@@ -798,7 +789,7 @@ function GetModuleInfo($module_id, $type) {
     if ( $ret AND $ret['reading_password'] ) {
         // do it more secure and do not store it plain
         // (we should be carefull - mainly with debug outputs)
-        $ret['reading_password'] = md5($ret['reading_password']);
+        $ret['reading_password'] = AA_Credentials::encrypt($ret['reading_password']);
     }
     return $ret;
 }
@@ -884,7 +875,7 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
  *       is not so big)
  *       like: array('headline........', 'category.......1')
  */
-function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false) {
+function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
     $db = getDB();
 
@@ -946,14 +937,12 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     $db->tquery($SQL);
 
     $n_items = 0;
+
+    $credentials = AA_Credentials::singleton();
     while ( $db->next_record() ) {
+
         // proove permissions for password-read-protected slices
-
-        if (!$ignore_reading_password) {
-            $reading_password = AA_Slices::getSliceProperty(unpack_id128($db->f("slice_id")),'reading_password');
-        }
-
-        $reading_permitted            = ($ignore_reading_password OR !$reading_password OR ($reading_password == md5($GLOBALS["slice_pwd"])));
+        $reading_permitted = $ignore_reading_password ? true : $credentials->checkSlice(unpack_id128($db->f("slice_id")), $crypted_additional_slice_pwd);
         $item_permitted[$db->f("id")] = $reading_permitted;
 
         $n_items = $n_items+1;
@@ -970,9 +959,18 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
         // Note that it stores into the $content[] array based on the id being used which
         // could be either shortid or longid, but is NOT tagged id.
-        foreach ($real_item_fields2get as $item_fid) {
-            $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array(
-                     "value" => $reading_permitted ? $db->f($item_fid) : _m("Error: Missing Reading Password"));
+        if ($reading_permitted) {
+            foreach ($real_item_fields2get as $item_fid) {
+                $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $db->f($item_fid));
+            }
+        } else {
+            $error_msg = _m("Error: Missing Reading Password");
+            foreach ($real_item_fields2get as $item_fid) {
+                $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $error_msg);
+            }
+            // fill at least following fields with correct values - we need id.............. for AA_Items::getItems()
+            $content[$foo_id]['id..............'][0]['value'] =  $db->f('id');
+            $content[$foo_id]['slice_id........'][0]['value'] =  $db->f('slice_id');
         }
     }
 
@@ -1095,6 +1093,7 @@ function GetItemContentMinimal($zids, $fields2get=false) {
   freeDB($db);
   return ($n_items == 0) ? null : $content;   // null returned if no items found
 }
+
 /** GrabConstantColumn function
  * @param $db
  * @param $column
@@ -1572,8 +1571,7 @@ function GetTimeZone() {
  * generates random string of given length (useful as MD5 salt)
  * @param $saltlen
  */
-function gensalt($saltlen)
-{
+function gensalt($saltlen) {
     srand((double) microtime() * 1000000);
     $salt_chars = "abcdefghijklmnoprstuvwxBCDFGHJKLMNPQRSTVWXZ0123456589";
     for ($i = 0; $i < $saltlen; $i++) {
@@ -1590,8 +1588,7 @@ function gensalt($saltlen)
  * @param $filename
  *   @return string  error description or empty string
  */
-function aa_move_uploaded_file($varname, $destdir, $perms = 0, $filename = null)
-{
+function aa_move_uploaded_file($varname, $destdir, $perms = 0, $filename = null) {
     endslash($destdir);
     if (!$GLOBALS[$varname]) {
         return "No $varname?";
@@ -2000,16 +1997,70 @@ function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='
     return GetAAImage($filename, $alt, $width, $height, $add, "modules/$module/");
 }
 
-/** FetchSliceReadingPassword function
- * On many places in Admin panel, it is secure to read sensitive data => use this function
- */
-function FetchSliceReadingPassword() {
-    global $slice_id, $slice_pwd, $db;
-    $db->query("SELECT reading_password FROM slice WHERE id='".q_pack_id($slice_id)."'");
-    if ($db->next_record()) {
-        $slice_pwd = $db->f("reading_password");
+/**
+* Use as
+*   $credentials = AA_Credentials::singleton();
+*   $credentials->loadFromSlice($slice_id);
+*/
+
+class AA_Credentials {
+    var $_pwd = array();     // Array of all known slice passwords (md5 for better security)
+
+    /** AA_Credentials function
+     */
+    function AA_Credentials() {
+        $this->_pwd = array();
+    }
+
+    /** singleton
+     *  called from getSlice method
+     *  This function makes sure, there is just ONE static instance if the class
+     *  @todo  convert to static class variable (after migration to PHP5)
+     */
+    function singleton() {
+        static $instance = null;
+        if (is_null($instance)) {
+            // Now create the AA_Credentials object
+            $instance = new AA_Credentials;
+        }
+        return $instance;
+    }
+
+    /** main method for checking the slice_pwd */
+    function checkSlice($slice_id, $crypted_additional_slice_pwd=null) {
+        return $this->checkCryptedPassword(AA_Slices::getSliceProperty($slice_id,'reading_password'), $crypted_additional_slice_pwd);
+    }
+
+    function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd=null) {
+        if (!$crypted_slice_pwd OR $this->_pwd[$crypted_slice_pwd] OR $crypted_slice_pwd == $crypted_additional_slice_pwd) {
+            return true;
+        }
+        if ($GLOBALS['slice_pwd']) {
+            $this->_add(AA_Credentials::encrypt($GLOBALS['slice_pwd']));
+        }
+        return $this->_pwd[$crypted_slice_pwd] ? true : false;
+    }
+
+    /** Load reading_password from slice
+     * @param $slice_id
+     */
+    function loadFromSlice($slice_id) {
+        $this->_add(AA_Slices::getSliceProperty($slice_id,'reading_password'));
+    }
+
+    function _add($crypted_slice_pwd) {
+        if (!empty($crypted_slice_pwd)) {
+            $this->_pwd[$crypted_slice_pwd] = true;
+        }
+    }
+
+    /** wrapper function
+     *  static function called as AA_Credentials::encrypt($reading_password) */
+    function encrypt($pwd) {
+        return md5($pwd);
     }
 }
+
 
 $tracearr = array();
 /** trace function

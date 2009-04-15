@@ -82,7 +82,7 @@ class AA_Slice {
             // do it more secure and do not store it plain
             // (we should be carefull - mainly with debug outputs)
             if ($this->setting['reading_password']) {
-                $this->setting['reading_password'] =  md5($this->setting['reading_password']);
+                $this->setting['reading_password'] =  AA_Credentials::encrypt($this->setting['reading_password']);
             }
         } else {
             if ($GLOBALS['errcheck']) {
@@ -254,15 +254,17 @@ class AA_Slice {
      * @param $ignore_reading_password
      */
     function get_dynamic_setting_content($ignore_reading_password = false) {
-        if ($ignore_reading_password || ($this->getProperty('reading_password') == '') || ($this->getProperty('reading_password') == md5($GLOBALS["slice_pwd"]))) {
-            $this->loadsettingfields();
-            return $this->dynamic_setting;
-        } else {
-            if ($GLOBALS['errcheck'] OR $GLOBALS['debug']) {
-                huhe(_m("Error: Missing Reading Password"));
+        if (!$ignore_reading_password) {
+            $credentials = AA_Credentials::singleton();
+            if (!$credentials->checkCryptedPassword($this->getProperty('reading_password'))) {
+                if ($GLOBALS['errcheck'] OR $GLOBALS['debug']) {
+                    huhe(_m("Error: Missing Reading Password"));
+                }
+                return false;
             }
-            return false;
         }
+        $this->loadsettingfields();
+        return $this->dynamic_setting;
     }
 
     /** getUploadBase function
