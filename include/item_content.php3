@@ -38,27 +38,18 @@ require_once AA_INC_PATH."feeding.php3";
 class AA_Value {
     /** array of the values */
     var $val;
+
     /** holds the flag - common for all the values */
     var $flag;
+
     /** AA_Value function
      * @param $value
      * @param $flag
      */
     function AA_Value($value=null, $flag=null) {
         $this->clear();
-        if (is_array($value)) {
-            // normal array(val1, val2, ...) used or used AA array used
-            // in AA_ItemContent - [0]['value'] = ..
-            //                         ['flag']  = ..
-            //                     [1]['value'] = ..
-            foreach($value as $val) {
-                $this->val[] = is_array($val) ? $val['value'] : $val;
-            }
-            $this->flag = !is_null($flag) ? $flag : get_if($value[0]['flag'], 0);
-        } elseif ( !is_null($value) ) {
-            $this->val[] = $value;
-            $this->flag  = !is_null($flag) ? $flag : 0;
-        }
+        $this->addValue($value);
+        $this->setFlag(!is_null($flag) ? $flag : ( (is_array($value) AND is_array($value[0])) ? $value[0]['flag'] : 0));
     }
 
     /** getValue function
@@ -74,6 +65,27 @@ class AA_Value {
     *   field, this is the first value. */
     function getFlag($i=0) {
         return $this->flag;
+    }
+
+    /** @return true, if the value do not contain any data */
+    function isEmpty() {
+        return count($this->val) < 1;
+    }
+
+    /** Add Value */
+    function addValue($value) {
+        if (is_array($value)) {
+            // normal array(val1, val2, ...) used or used AA array used
+            // in AA_ItemContent - [0]['value'] = ..
+            //                         ['flag']  = ..
+            //                     [1]['value'] = ..
+            foreach($value as $val) {
+                $this->val[] = is_array($val) ? $val['value'] : $val;
+            }
+        } elseif ( !is_null($value) ) {
+            $this->val[] = $value;
+        }
+        return $this;
     }
 
     /** Set the flag (for al the values the flag is common at this time) */
@@ -97,6 +109,12 @@ class AA_Value {
          foreach ($this->val as $k => $v) {
              $this->val[$k] = str_replace($search, $replace, $v);
          }
+    }
+
+    /** Remove duplicate values from the array */
+    function removeDuplicates() {
+        $this->val = array_values( array_unique($this->val) );
+        return $this;
     }
 
     /** getArray function
@@ -366,12 +384,14 @@ class ItemContent {
     function getAaValue($field_id) {
         return new AA_Value( $this->content[$field_id] );
     }
+
     /** getValues function
      * @param $field_id
      */
     function getValues($field_id) {
         return ( is_array($this->content[$field_id]) ? $this->content[$field_id] : false );
     }
+
     /** getValuesArray function
      * @param $field_id
      */
@@ -695,14 +715,14 @@ class ItemContent {
      *   @param string $mode   how to deal with the stored item.
      *      update        - the fields defined in $this object are cleared and
      *                      then overwriten by values from $this object
-     *                      - other fields of the item are untouched (except 
-     *                      the last_edit, edited_by and also all computed 
-     *                      fields). 
+     *                      - other fields of the item are untouched (except
+     *                      the last_edit, edited_by and also all computed
+     *                      fields).
      *                      The id of the item must be set before calling this
      *                      function ($this->setItemID($id))
      *      update_silent - the same as update, but no additional operations are
-     *                      performed (the computed fields are not computed, 
-     *                      last_edit and edited_by is not changed, events are 
+     *                      performed (the computed fields are not computed,
+     *                      last_edit and edited_by is not changed, events are
      *                      not issued
      *      add           - do not clear the current content - the values are
      *                      added in paralel to curent values (stored
@@ -779,11 +799,11 @@ class ItemContent {
             default:              $id   = $this->getItemID();
                                   break;
         }
-        
+
         $invalidatecache = isset($flags[0]) ? $flags[0] : !$silent;
         $feed            = isset($flags[1]) ? $flags[1] : !$silent;
         $throw_events    = isset($flags[2]) ? $flags[2] : !$silent;
-        
+
         if (!($id AND is_array($fields))) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_BAD_PARAM, _m("StoreItem for slice %1 - failed parameter check for id = '%2'", array($slice->name(),$id)));  // set error code
             if ($GLOBALS['errcheck']) huhl(ItemContent::lastErrMsg());
@@ -915,7 +935,11 @@ class ItemContent {
      * @param $fields
      */
     function updateComputedFields($id, &$fields, $mode) {
+        global $itemvarset; // set by insert_fnc_qte function
+
         $varset     = new CVarset();
+        $itemvarset = new CVarset();
+
         $update     = (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add'));
         $computed_field_exist = false;
         foreach ($fields as $fid => $f) {
@@ -960,6 +984,11 @@ class ItemContent {
             //  store the computed value for this field to database
             insert_fnc_qte($id, $f, array('value' => $new_computed_value), '');
         }
+
+        if (!$itemvarset->isEmpty()) {
+            $itemvarset->addkey('id', 'unpacked', $id);
+            $itemvarset->doUpdate('item');
+        }
         return $computed_field_exist;
     }
 
@@ -977,6 +1006,12 @@ class ItemContent {
         $this->_store_fields($slice_id, $fields);
 
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");
+    }
+
+    /** unalias the text using content of this itemcontent and aliases of the slice */
+    function unalias($text) {
+        $item = GetItemFromContent($this);
+        return is_null($item) ? '' : $item->unalias($text);
     }
 
     /** _clean_updated_fields function
