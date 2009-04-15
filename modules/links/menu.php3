@@ -92,7 +92,7 @@ function get_aamenus_links() {
     $aamenus["aaadmin"] = array (
         "label" => _m('AA'),
         "title" => _m('AA'),
-        "href"  => "admin/um_uedit.php3",
+        "href"  => "admin/aafinder.php3",
         "cond"  => IsSuperadmin(),
         "level" => "main",
         "submenu"=>"aaadmin_submenu");

@@ -197,7 +197,22 @@ if ($go_finditem && $finditem) {
 // ------------------------------------------------------------------------------------------
 // SHOW THE PAGE
 
-FrmTabCaption(_m("AA finder"));
+
+FrmTabCaption(_m("Manage"));
+echo '<tr><td>';
+echo '<form name="f_finduser" action="'.$sess->url("um_uedit.php3").'" method="post">';
+echo '<b>'._m("Manage User:").'</b><br>
+    <input type="text" name="usr" value="" size="30">&nbsp;&nbsp;<input type="hidden" name="UsrSrch" value="1">
+    <input type="submit" name="go_finduser" value="'._m("Go!").'">';
+echo '</form>';
+echo '</td></tr><tr><td>';
+echo '<form name="f_findgroup" action="'.$sess->url("um_gedit.php3").'" method="post">';
+echo '<b>'._m("Manage Group:").'</b><br>
+    <input type="text" name="grp" value="" size="30">&nbsp;&nbsp;<input type="hidden" name="GrpSrch" value="1">
+    <input type="submit" name="go_findgroup" value="'._m("Go!").'">';
+echo '</form>';
+echo '</td></tr>';
+FrmTabSeparator(_m("Find"));
 echo '<tr><td>';
 echo '<form name="f_findview" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Find all VIEWS containing in any field the string:").'</b><br>
@@ -218,7 +233,7 @@ echo '<b>'._m("Find all FIELDS containing in ites definition the string:").'</b>
 echo '</form>';
 echo '</td></tr><tr><td>';
 echo '<form name="f_finditem" action="'.$sess->url("aafinder.php3").'" method="post">';
-echo '<b>'._m("Get all informations about the item").'</b><br>
+echo '<b>'._m("Get all informations about the ITEM").'</b><br>
     <input type="text" name="finditem" value="'.$finditem.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_finditem" value="'._m("Go!").'">';
 echo '</form></td></tr>';

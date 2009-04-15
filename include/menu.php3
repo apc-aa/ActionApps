@@ -94,7 +94,7 @@ function get_aamenus() {
     $aamenus["aaadmin"] = array (
         "label"   => GetLabel($profile,'ui_manager','top_aaadmin', _m("AA")),
         "title"   => _m("AA Administration"),
-        "href"    => "admin/um_uedit.php3",
+        "href"    => "admin/aafinder.php3",
         "cond"    => IfSlPerm(PS_NEW_USER) AND ($profile->getProperty('ui_manager', 'top_aaadmin') !== ''),
         "level"   => "main",
         "submenu" => "aaadmin_submenu");

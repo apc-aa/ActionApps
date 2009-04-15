@@ -67,7 +67,7 @@ function get_aamenus_sites()
     $aamenus["aaadmin"] = array (
         "label" => _m("AA"),
         "title" => _m("AA Administration"),
-        "href"  => "admin/um_uedit.php3",
+        "href"  => "admin/aafinder.php3",
         "cond"  => IfSlPerm(PS_NEW_USER),
         "level" => "main",
         "submenu"=>"aaadmin_submenu");
