@@ -46,21 +46,25 @@ define('SEARCH_REPLACE_PREFIX', 'transform');
 class AA_Transformation {
     var $messages   = array();
     var $parameters = array();
-/** name function
- *
- */
+
+    /** name function
+     *
+     */
     function name()         {}
-/** description function
- *
- */
+
+    /** description function
+     *
+     */
     function description()  {}
-/** transform function
- *
- */
+
+    /** transform function
+     *
+     */
     function transform()    {}
-/** parameters function
- * @return array
- */
+
+    /** parameters function
+     * @return array
+     */
     function parameters()   { return array(); }
 
     /** _getVarname function
@@ -128,6 +132,20 @@ class AA_Transformation {
 //        return $this->parameters[$param_name]->getValue();
         return $this->$param_name;
     }
+
+    /** Reads new flag value from user's HTML form
+     *  Common function for many transformations
+     **/
+    function getFlagFromForm($old_flag) {
+        switch ($this->getParam('new_flag')) {
+                case 'u': return $old_flag;
+                case 'h': return $old_flag | FLAG_HTML;
+                case 't': return $old_flag & ~FLAG_HTML;
+        }
+        return 0;  // should never happen
+    }
+
+
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
@@ -208,7 +226,7 @@ class AA_Transformation_Value extends AA_Transformation {
             case 't': $flag = $item->getval($field_id, 'flag') & ~FLAG_HTML; break;
         }
 
-        return array( 0 => array('value' => $text, 'flag' => $flag ));
+        return new AA_Value($text,$flag);
     }
 }
 */
@@ -216,6 +234,7 @@ class AA_Transformation_Value extends AA_Transformation {
 
     var $new_flag;
     var $new_content;
+
     /** AA_Transformation_Value function
      * @param $param
      */
@@ -223,37 +242,33 @@ class AA_Transformation_Value extends AA_Transformation {
         $this->new_flag    = $param['new_flag'];
         $this->new_content = $param['new_content'];
     }
+
     /** name function
      * @return message
      */
     function name() {
         return _m("Fill by value");
     }
+
     /** description function
      * @return message
      */
     function description() {
         return _m("Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {switch()...}, ...");
     }
+
     /** transform function
      * @param $field_id
      * @param $content4id (by link)
      * @return array
      */
     function transform($field_id, &$content4id) {
-        $slice = AA_Slices::getSlice($content4id->getSliceID());
-        $item = new AA_Item($content4id->getContent(),$slice->aliases());
-
+        $item = GetItemFromContent($content4id);
         $text = $item->subst_alias($this->getParam('new_content'));
-
-        switch ($this->getParam('new_flag')) {
-            case 'u': $flag = $item->getval($field_id, 'flag'); break;
-            case 'h': $flag = $item->getval($field_id, 'flag') | FLAG_HTML; break;
-            case 't': $flag = $item->getval($field_id, 'flag') & ~FLAG_HTML; break;
-        }
-
-        return array( 0 => array('value' => $text, 'flag' => $flag ));
+        $flag = $this->getFlagFromForm($item->getval($field_id, 'flag'));
+        return new AA_Value($text,$flag);
     }
+
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
@@ -290,6 +305,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
 
     var $new_flag;
     var $new_content;
+
     /** AA_Transformation_AddValue function
      * @param $param
      */
@@ -297,34 +313,34 @@ class AA_Transformation_AddValue extends AA_Transformation {
         $this->new_flag    = $param['new_flag'];
         $this->new_content = $param['new_content'];
     }
+
     /** name function
      * @return message
      */
     function name() {
         return _m("Add value to field");
     }
+
     /** description function
      * @return message
      */
     function description() {
         return _m("Add new value to current content of field, so the field becames multivalue.<br>You can use any AA expressions like {switch()...}, ... for new value.");
     }
+
     /** transform function
      * @param $field_id
      * @param $content4id (by link)
      */
     function transform($field_id, &$content4id) {
-        $slice = AA_Slices::getSlice($content4id->getSliceID());
-        $item = new AA_Item($content4id->getContent(),$slice->aliases());
+        $item = GetItemFromContent($content4id);
+        $flag = $this->getFlagFromForm($item->getval($field_id, 'flag'));
 
-        switch ($this->new_flag) {
-            case 'u': $flag = $item->getval($field_id, 'flag'); break;
-            case 'h': $flag = $item->getval($field_id, 'flag') | FLAG_HTML; break;
-            case 't': $flag = $item->getval($field_id, 'flag') & ~FLAG_HTML; break;
-        }
-        $new_value = array(array('value' => $item->subst_alias($this->new_content), 'flag' => $flag ));
+        $ret  = $content4id->getAaValue($field_id);
+        $ret->setFlag($flag);
+        $ret->addValue($item->subst_alias($this->new_content));
 
-        return array_merge($content4id->getValues($field_id), $new_value);
+        return $ret;
     }
 
     /** htmlSetting function
@@ -389,26 +405,9 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
      * @param $content4id (by link)
      */
     function transform($field_id, &$content4id) {
-        $slice = AA_Slices::getSlice($content4id->getSliceID());
-        $item = new AA_Item($content4id->getContent(),$slice->aliases());
-
-        switch ($this->new_flag) {
-            case 'u': $flag = $item->getval($field_id, 'flag'); break;
-            case 'h': $flag = $item->getval($field_id, 'flag') | FLAG_HTML; break;
-            case 't': $flag = $item->getval($field_id, 'flag') & ~FLAG_HTML; break;
-        }
-
-        $new_value = array();
-        $arr       = explode($this->delimiter, $item->subst_alias($this->source));
-        if ( is_array($arr) ) {
-            foreach ($arr as $text) {
-                $new_value[] = array('value' => $text, 'flag' => $flag );
-            }
-        } else {
-            $new_value[] = array('value' => '', 'flag' => $flag );
-        }
-
-        return $new_value;
+        $item = GetItemFromContent($content4id);
+        $flag = $this->getFlagFromForm($item->getval($field_id, 'flag'));
+        return new AA_Value(explode($this->delimiter, $item->subst_alias($this->source)), $flag);
     }
 
     /** htmlSetting function
@@ -445,6 +444,7 @@ class AA_Strreplace {
     var $method;
     var $pattern;
     var $replacements; // array
+
     /** AA_Strreplace function
      * @param $method
      * @param $pattern
@@ -455,30 +455,32 @@ class AA_Strreplace {
         $this->pattern      = $pattern;
         $this->replacements = $replacements;
     }
+
     /** matches function
      * @param $text
      * @return string/false
      */
     function matches($text) {
         switch ($this->method) {
-            case 'regexp':  return (preg_match($pattern, $text) > 0);
+            case 'regexp':  return (preg_match($this->pattern, $text) > 0);
             case 'replace': return ($text == $this->pattern);
         }
         return false;
     }
+
     /** replace function
      * @param $value
      * @param $flag
      * @param $item (by link)
      * @return array
      */
-    function replace($value, $flag, &$item) {
+    function replace($value, &$item) {
         $ret = array();
         foreach ( $this->replacements as $replacement) {
             $replacement = str_replace('_#0', $value, $replacement);
             $text = $item->subst_alias($replacement);
             if ( $text != 'AA_NULL' ) {
-                $ret[] = array('value' => $text, 'flag' => $flag );
+                $ret[] = $text;
             }
         }
         return $ret;
@@ -486,6 +488,7 @@ class AA_Strreplace {
 }
 
 class AA_Transformation_Translate extends AA_Transformation {
+
     /** AA_Transformation_Translate function
      * @param $param
      */
@@ -493,18 +496,21 @@ class AA_Transformation_Translate extends AA_Transformation {
         $this->new_flag    = $param['new_flag'];
         $this->translation = $param['translation'];
     }
+
     /** name function
      * @return message
      */
     function name() {
         return _m("Translate");
     }
+
     /** description function
      * @return message
      */
     function description() {
         return _m("Translates one value after other according to translation table. The result is multivalue, since each value of multivalue field is translated seperately.");
     }
+
     /** transform function
      * @param $field_id
      * @param $content4id (by link)
@@ -516,31 +522,28 @@ class AA_Transformation_Translate extends AA_Transformation {
             return false;
         }
 
-        $slice = AA_Slices::getSlice($content4id->getSliceID());
-        $item = new AA_Item($content4id->getContent(),$slice->aliases());
-
-        switch ($this->new_flag) {
-            case 'u': $flag = $item->getval($field_id, 'flag'); break;
-            case 'h': $flag = $item->getval($field_id, 'flag') | FLAG_HTML; break;
-            case 't': $flag = $item->getval($field_id, 'flag') & ~FLAG_HTML; break;
-        }
+        $item = GetItemFromContent($content4id);
+        $flag = $this->getFlagFromForm($item->getval($field_id, 'flag'));
 
         $translations = $this->_parseTranslation();
-        $ret = array();
+        $ret = new AA_Value;
+        $ret->setFlag($flag);
         foreach ( $content4id->getValues($field_id) as $source ) {
             // if not found any match, use the old value
-            $new_value = array(array('value' => $source['value'], 'flag' => $flag ));
+            $new_value = array($source['value']);
             foreach ($translations as $strreplace) {
                 if ( $strreplace->matches($source['value']) ) {
                     // matches - add all translations to the resulting array
                     // stop searching - go to next value
-                    $new_value = $strreplace->replace($source['value'], $flag, $item);
+                    $new_value = $strreplace->replace($source['value'], $item);
+                    break;
                 }
             }
-            $ret = array_merge($ret, $new_value);
+            $ret->addValue($new_value);
         }
         return $ret;
     }
+
     /** _parseTranslation function
      * @return $translations array
      */
@@ -562,6 +565,7 @@ class AA_Transformation_Translate extends AA_Transformation {
         }
         return $translations;
     }
+
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
@@ -592,24 +596,28 @@ class AA_Transformation_Translate extends AA_Transformation {
 class AA_Transformation_CopyField extends AA_Transformation {
 
     var $field2copy;
+
     /** AA_Transformation_CopyField function
      * @param $param
      */
     function AA_Transformation_CopyField($param) {
         $this->field2copy = $param['field2copy'];
     }
+
     /** name function
      * @return message
      */
     function name() {
         return _m("Copy field");
     }
+
     /** description function
      * @return message
      */
     function description() {
         return _m('If you select the field here, the "New content" text is not used. Selected field will be copied to the "Field" (including multivalues)');
     }
+
     /** transform function
      * @param $field_id
      * @param $content4id (by link)
@@ -620,8 +628,9 @@ class AA_Transformation_CopyField extends AA_Transformation {
             return false;
         }
         // get content from $field2copy field of current item
-        return $content4id->getValues($this->field2copy);
+        return $content4id->getAaValue($this->field2copy);
     }
+
     /** htmlSetting function
      * @param $input_prefix
      * @param $params
@@ -639,7 +648,6 @@ class AA_Transformation_CopyField extends AA_Transformation {
         return ob_get_clean();
     }
 }
-
 
 
 $searchbar = new AA_Searchbar();   // mainly for bookmarks
@@ -669,17 +677,16 @@ if ( !$fill ) {               // for the first time - directly from item manager
                     // Probably: item not found, for some reason
                     continue;
                 }
-                $newcontent4id = new ItemContent();
-                // transform retuns normal multivalue array ([][value]=...)
+
+                // transform retuns AA_Value
                 $field_content = $transformation->transform($field_id, $content4id);
+                $field_content->removeDuplicates();
 
-                if ( empty($field_content) ) {
-                    continue;
-                }
+                $newcontent4id = new ItemContent();
                 $newcontent4id->setFieldValue($field_id, $field_content);
-
                 $newcontent4id->setItemID($item_id);
                 $newcontent4id->setSliceID($sli_id);
+
                 if ($newcontent4id->storeItem( $silent ? 'update_silent' : 'update', array(false, false, false))) {    // not invalidatecache, not feed, no events
                     $updated_items++;
                 }
