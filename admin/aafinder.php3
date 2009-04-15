@@ -186,7 +186,7 @@ if ($go_finditem && $finditem) {
         echo "</pre>";
     }
 
-    $item = AA_Item::getItem($finditem);
+    $item = AA_Items::getItem($finditem);
 
     echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
     print_r($item);

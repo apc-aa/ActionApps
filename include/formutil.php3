@@ -727,7 +727,7 @@ class AA_Inputfield {
       * @param $ids_arr
       * @param $tagprefix
       */
-    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=false, $tagprefix=null) {
+    function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=false, $crypted_additional_slice_pwd=null, $tagprefix=null) {
         if ( isset($this->const_arr) and is_array($this->const_arr) ) {  // already filled
             return;
         }
@@ -749,8 +749,10 @@ class AA_Inputfield {
                     return;
                 }
             }
-            $format = AA_Fields::isField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
-            $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix);
+            $format          = AA_Fields::isField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+            $set             = new AA_Set(String2Conds( $conds ), String2Sort( $sort ), array($sid), $whichitems);
+            $this->const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tagprefix);
+            // $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix); // older version of the function :honzam03/09
             return $sid; // in most cases not very impotant information, but used in inputRelatION() input type
         } else {
             $this->const_arr = GetFormatedConstants($constgroup, $slice_field, $ids_arr, $conds, $sort);
@@ -947,12 +949,12 @@ class AA_Inputfield {
                                $GLOBALS['list_fnc_edt'][] = $this->varname();
                                break;
             case 'anonym_sel':
-            case 'normal_sel': list(,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str) = $this->param;
+            case 'normal_sel': list(,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
                                if ( !is_null($item) ) {
                                    $conds_str = $item->unalias($conds_str);
                                }
                                if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                               $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
+                               $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, AA_Credentials::encrypt($add_slice_pwd));  // if we fill it there, it is not refilled in inputSel()
                                $this->inputSelect($usevalue);
                                break;
             case 'anonym_rio':
@@ -1004,7 +1006,7 @@ class AA_Inputfield {
                                    $this->msg[] = _m("Unable to find tagprefix table %1", array($tp));
                                }
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
+                               $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, null, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
                                if ( $this->mode == 'freeze' ) {
                                    $this->value_modified = $this->implodeVal('<br>');
                                    $this->staticText();
@@ -2325,7 +2327,7 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false, $hlp
  * @param $hlp
  * @param $morehlp
  */
-function FrmInputFile($name, $txt, $needed=false, $accepts="image/*", $hlp="", $morehlp="" ){
+function FrmInputFile($name, $txt, $needed=false, $accepts="image/*", $hlp="", $morehlp="" ) {
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputFile($accepts);
     $input->print_result();
@@ -3105,9 +3107,9 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
  */
  function PrintAliasHelp($aliases, $fields=false, $endtable=true, $buttons='', $sess='', $slice_id='') {
      global $sess;
-     
+
      FrmTabSeparator(_m("Use these aliases for database fields") , $buttons, $sess, $slice_id);
-     
+
      $count = 0;
      if (is_array($aliases)) {
          foreach ($aliases as $ali => $v ) {
@@ -3119,7 +3121,7 @@ function getSelectWithParam($name, $arr, $selected="", $html_setting=null) {
              echo "<tr><td nowrap>$ali</td><td>". $v['hlp'] ."</td><td>$aliasedit</td></tr>";
          }
      }
-     
+
      if ($endtable) {
          echo "\n        </table></td></tr>";
      }

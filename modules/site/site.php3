@@ -207,7 +207,7 @@ function ModW_unalias( &$text, &$state ) {
 // id = an item id, unpacked or short
 // short_ids = boolean indicating type of $ids (default is false => unpacked)
 function ModW_id2item($id,$use_short_ids="false") {
-    return AA_Item::getItem(new zids($id, $use_short_ids ? 's' : 'l'));
+    return AA_Items::getItem(new zids($id, $use_short_ids ? 's' : 'l'));
 }
 
 /** Convert a state string into an array, based on the variable names and

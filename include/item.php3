@@ -124,7 +124,6 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
           $aliases[$val['alias3']] = array("fce" =>  $val['alias3_func'], "param" => $val['id'], "hlp" => $val['alias3_help'], "fld" => $k);
       }
   }
-  trace("-");
   return($aliases);
 }
 
@@ -289,34 +288,23 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
 
 /** GetFormatedItems function
  *  Fills array - [unpacked_item_id] => unaliased string (headline) for item_id
- * @param $sid       - slice id
- * @param $format    - normal AA alias string like {headline.......1} or more
- *                      complicated
+ * @param $set       - where to search
+ * @param $format    - normal AA alias string like {headline.......1} or more complicated
  * @param $restrict_zids
- * @param $frombins
- * @param $conds
- * @param $sort
+ * @param $crypted_additional_slice_pwd
  * @param $tagprefix - array as defined in itemfunc.php3
  */
-function GetFormatedItems( $sid, $format="",  $restrict_zids=false, $frombins=AA_BIN_ACTIVE, $conds="", $sort="", $tagprefix=null) {
-
-    $slice = AA_Slices::getSlice($sid);
-    $conds = String2Conds( $conds );
-    $sort  = String2Sort( $sort );
-
-    $zids  = QueryZIDs( array($sid), $conds, $sort, $frombins, 0, $restrict_zids);
-
+function GetFormatedItems( $set, $format, $restrict_zids=false, $crypted_additional_slice_pwd=null, $tagprefix=null) {
+  //  $set = new AA_Set(String2Conds( $conds ), String2Sort( $sort ), array($sid), $frombins);
+    $zids  = QuerySet($set, $restrict_zids);
     if ( $zids->count() <= 0 ) {
         return false;
     }
 
-    $content = GetItemContent($zids);
-    $item    = new AA_Item('',$slice->aliases());
-    $item->setformat( $format );
-    for ( $i=0; $i<$zids->count(); $i++ ) {
-        $iid = $zids->short_or_longids($i);
-        $item->set_data($content[$iid]);
-        $ret[$iid] = $item->get_item();
+    $ret = array();
+    $items = AA_Items::getItems($zids, $crypted_additional_slice_pwd);
+    foreach($items as $long_id=>$item) {
+        $ret[$long_id] = AA_Stringexpand::unalias($format, '', $item);
     }
 
     if (!(isset($restrict_zids) AND is_object($restrict_zids) AND ($restrict_zids->onetype() == 't') AND isset($tagprefix))) {
@@ -325,6 +313,8 @@ function GetFormatedItems( $sid, $format="",  $restrict_zids=false, $frombins=AA
 
     // following code is just for tagged ids
     // (I hope it works, but I can't test it, since I do not want to use it.)
+    // I think tagged IDs is bad idea and will be removed in future
+
     // Honza 8/27/04
 
     // See if need to Put the tags back on the ids
@@ -343,7 +333,6 @@ function GetFormatedItems( $sid, $format="",  $restrict_zids=false, $frombins=AA
     }
     return $new_ret;
 }
-
 
 /** GetFormatedConstants function
  * @param $constgroup
@@ -404,7 +393,8 @@ class AA_Item {
      *  @param $remove
      *  @param $param
      *
-     *  Take a look at AA_Item::getItem() above, if you want to create item from id
+     *  Take a look at AA_Item::getItem() (non caching) or 
+     *  AA_Items::getItem() (caching), if you want to create item from id
      */
     function AA_Item($content4id='', $aliases='', $format='', $remove='', $param=false){
         // there was three other options, but now it was never used so I it was
@@ -668,14 +658,12 @@ class AA_Item {
      * @param $remove
      */
     function unalias( &$text, $remove="" ) {
-        trace("+","unalias",htmlentities($text));
         // just create variables and set initial values
         $maxlevel = 0;
         $level    = 0;
         $GLOBALS['g_formpart'] = 0;  // used for splited inputform into parts
         //   return $this->old_unalias_recurent( $text, $remove, $level, $maxlevel );
         $ret = new_unalias_recurent($text, $remove, $level, $maxlevel, $this ); // Note no itemview param
-        trace("-");
         return $ret;
     }
     /** subst_alias function
@@ -1587,7 +1575,52 @@ class AA_Item {
         return $out;
     }
 
-    /** Static methods */
+    /** Noncaching equivalent to AA_Items::getItem()
+     *
+     *  Static methods
+     *  Creates item object just from item id and fills all necessary structures
+     *  
+     *  @param  zid     - an item id - zid object, unpacked or short id
+     *  @param  renew   - regenerate the item form database
+     */
+    function getItem($zid, $renew=false) {
+        if (empty($zid)) {
+            return false;
+        }
+        $zid   = (strtolower(get_class($zid))=='zids') ? $zid : new zids($zid);
+        return GetItemFromContent(new ItemContent($zid));
+    }
+};
+
+
+class AA_Items {
+    /** Array of all items grabbed from database during rendering of the page
+     *  Array short item id -> AA_Item object (short for smaller memmory ussage)
+     */
+    var $_i;
+
+    /** translation table from long ids to short ones */
+    var $_l2s;
+
+    /** AA_Items function - constructor - called only from singleton() !
+     */
+    function AA_Items() {
+        $this->_i = array();
+    }
+
+    /** singleton
+     *  called from getSlice method
+     *  This function makes sure, there is just ONE static instance if the class
+     *  @todo  convert to static class variable (after migration to PHP5)
+     */
+    function singleton() {
+        static $instance = null;
+        if (is_null($instance)) {
+            // Now create the AA_Items object
+            $instance = new AA_Items;
+        }
+        return $instance;
+    }
 
     /** Item caching function
      *
@@ -1599,38 +1632,78 @@ class AA_Item {
      *  @param  zid     - an item id - zid object, unpacked or short id
      *  @param  renew   - regenerate the item form database
      */
-    function getItem($zid, $renew=false) {
-        /** array of all items grabbed from database during rendering of the
-         *  page
-         */
-        static $_i;
-        /** translation table from long ids to short ones */
-        static $_l2s;
-
+    function & getItem($zid, $crypted_additional_slice_pwd=null, $renew=false) {
         if (empty($zid)) {
             return false;
         }
+        $items = AA_Items::singleton();
+
         $zid = (strtolower(get_class($zid))=='zids') ? $zid : new zids($zid);
 
         // Do we want to count with inner cache (probably yes)
         if (!$renew) {
-            // is it cached inder its id (we expect short id here)
-            if ( isset($_i[$zid->id(0)]) ) {
-                return $_i[$zid->id(0)];
-            }
-            // but maybe it is long id, so we look for translation to short one
-            if ( isset($_l2s[$zid->id(0)]) AND isset($_i[$_l2s[$zid->id(0)]]) ) {
-                return $_i[$_l2s[$zid->id(0)]];
+            if ($item = $items->_getFromCache($zid)) {  // assignment
+                return $item;
             }
         }
 
-        // no cached - get it from database
-        $item                     = GetItemFromContent(new ItemContent($zid));
-        $short_id                 = $item->getval('short_id........');
-        $_i[$short_id]            = &$item;    // cache it
-        $_l2s[$item->getItemId()] = $short_id;
-        return $_i[$short_id];
+        $content = GetItemContent($zid, false, false, false, $crypted_additional_slice_pwd);
+        return $items->_store(GetItemFromContent(new ItemContent(reset($content))));
     }
-};
 
+    /** @return array(long_id -> AA_Item) */
+    function & getItems($zids, $crypted_additional_slice_pwd=null) {
+        $items = AA_Items::singleton();
+
+        // check for already cached items
+        $zids2get = new zids(null, $zids->onetype());
+
+        for ( $i=0; $i<$zids->count(); $i++ ) {
+            if (!$items->_getFromCache($zids->zid($i))) {  // just check
+                $zids2get->add($zids->id($i));
+            }
+        }
+
+        // do we need some not cached items?
+        if ($zids2get->count() > 0) {
+            // yes we store it in the cache first
+            $content = GetItemContent($zids2get, false, false, false, $crypted_additional_slice_pwd);
+            for ( $i=0; $i<$zids2get->count(); $i++ ) {
+                $items->_store(GetItemFromContent(new ItemContent($content[$zids2get->short_or_longids($i)])));
+            }
+        }
+
+        // all is cached, we get all the items in RIGHT ORDER
+        $ret = array();
+        for ( $i=0; $i<$zids->count(); $i++ ) {
+            $item = $items->_getFromCache($zids->zid($i));
+            $ret[$item->getItemId()] = $item;       // long item id
+        }
+        return $ret;
+    }
+
+    /** returns AA_Item or false (if not cached) */
+    function _getFromCache($zid) {
+        if ( $zid->use_short_ids() ) {
+            $id = $zid->id(0);
+            // is it cached under its id (we expect short id here)
+            return isset($this->_i[$id]) ? $this->_i[$id] : false;
+        }
+
+        // long or packed
+        $id = $zid->longids(0);
+        // long id, so we look for translation to short one
+        if ( isset($this->_l2s[$id]) AND isset($this->_i[$this->_l2s[$id]]) ) {
+            return $this->_i[$this->_l2s[$id]];
+        }
+        return false;
+    }
+
+    function _store($item) {
+        $short_id                       = $item->getval('short_id........');
+        $this->_i[$short_id]            = &$item;    // cache it
+        $this->_l2s[$item->getItemId()] = $short_id;
+        return $item;
+    }
+}
 ?>
