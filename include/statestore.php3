@@ -33,7 +33,7 @@
 /** AA_Includer manages php scripts includes.
  *
  *  The class holds the in the static variable the pair "class" => "file"
- *  so if you then call AA_Includer::include($classname), then the file
+ *  so if you then call AA_Includer::weNeed($classname), then the file
  *  with the class definition is processed (required)
  */
 class AA_Includer {
@@ -47,7 +47,7 @@ class AA_Includer {
 
     function weNeed($classname) {
         // this is just test include - we will manage the extensions in the database
-        if ('AA_Stringexpand_Nszm' == $classname) {
+        if ( strpos($classname, 'AA_Stringexpand_Nszm') === 0 ) {
             require_once AA_INC_PATH. "custom/nszm/stringexpand.php";
             return true;
         }

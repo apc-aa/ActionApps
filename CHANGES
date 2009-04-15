@@ -1,3 +1,29 @@
+04/15/09 - new {tree:<item_id>[:<relation_field>]} - returns dash separated long
+(honzam)   ids of subitems (items which belongs to the tree under specifield
+           item) based on the relations between items - like:
+             {tree:2a4352366262227383484784635362ab:relation.......1}
+         - new parameter "position" in
+           {htmlajaxtoggle:<toggle1>:<text1>:<toggle2>:<url_of_text2>[:<position>]}
+           defining position of the link - top|bottom (top is default)
+         - new {intersect:<ids>:<ids>} which returns set of intersect of two
+           set of ids (dash separated)
+         - new <text> parameter for {debug[:<text>]} debugging output
+         - default admin page for tha "AA" menu is "AA Finder", which now also
+           allows to search for user and group
+         - new Optimize action - "Multivalue Duplicates" - removes duplicate
+           values in multivalue text fields
+         - optimized a bit Constants editing page - Parent column ic not shown
+           for other than categories
+         - remove duplicate values which comes from various transformations in
+           "Modify Content" manager action
+         - fixed problem with wrong selectbox value on multiple {live:...}
+           widgets in one page
+         - fixed {live:...} for editing also item table values
+         - optimized database query for an item a bit
+         - optimized f_t alias function - uses standarda AA_Stringexpand_*
+           classes, now
+         - fixed some problems with packed ids in search
+         - class view converted to AA_View
 04/07/09 - new posibility to copy also Alerts Module in Central
 (honzam) - fixed back button for site manager  site manager inner links contain
            module_id, so the back link works site modeles

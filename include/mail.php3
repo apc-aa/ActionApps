@@ -85,7 +85,7 @@ class HtmlMail extends htmlMimeMail {
 
             // 2 minutes for each 20 e-mails
             if ( ($sent % 20) == 0 ) {
-                set_time_limit( 120 );
+                @set_time_limit( 120 );
             }
 
             // Yes, two nested arrays - mail->send() accepts array($to) and

@@ -212,7 +212,6 @@ class AA_Field {
         $widget      = $this->getWidget();
         $item        = AA_Item::getItem($item_id);
         $aa_variable = $this->_getAaVariable($item, $widget->multiple());
-
         $repre_value = $item->subst_alias($visual ? $visual : $this->getId());
         return $widget->getAjaxHtml($aa_variable, get_if($repre_value, '--'));
     }
