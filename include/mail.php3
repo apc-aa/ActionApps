@@ -36,7 +36,7 @@ require_once AA_INC_PATH."htmlMimeMail/htmlMimeMail.php";
 require_once AA_INC_PATH."validate.php3";
 require_once AA_INC_PATH."toexecute.class.php3";
 
-class HtmlMail extends htmlMimeMail {
+class AA_Mail extends htmlMimeMail {
 
     /** setFromTemplate function
      *  Prepares the mail for sending
@@ -45,7 +45,7 @@ class HtmlMail extends htmlMimeMail {
      * @param $mail_id
      * @param $item
      */
-    function setFromTemplate($mail_id, $item) {
+    function setFromTemplate($mail_id, $item=null) {
         global  $LANGUAGE_CHARSETS;
         // email has the templates in it
         $record = GetTable2Array("SELECT subject, body, header_from, reply_to, errors_to, sender, lang, html
@@ -55,8 +55,7 @@ class HtmlMail extends htmlMimeMail {
         }
         // unalias all the template fields including errors_to ...
         foreach ( $record as $key => $value) {
-            $level = 0; $maxlevel = 0;
-            $record[$key] = new_unalias_recurent($value, "", $level, $maxlevel, $item);
+            $record[$key] = AA_Stringexpand::unalias($value, "", $item);
         }
         if ($record["html"]) {
             $this->setHtml( $record["body"], html2text($record["body"]));
@@ -66,6 +65,9 @@ class HtmlMail extends htmlMimeMail {
         $this->setSubject($record["subject"]);
         $this->setBasicHeaders($record, "");
         $this->setCharset($LANGUAGE_CHARSETS[$record["lang"]]);
+
+        //$attachment = $this->getFile('http://aa.ecn.cz/img_upload/a0ca2a9887a8b74691a5b41a4453ac85/PP2_novinky_9.pdf');
+        //$this->addAttachment($attachment, 'PP2_novinky_9.pdf', 'application/pdf');
     }
 
     /** sendLater function
@@ -129,9 +131,11 @@ class HtmlMail extends htmlMimeMail {
      * @param $input
      * @param $charset
      */
-    function _encodeHeader($input, $charset = 'ISO-8859-1') {
-        return $input;
-    }
+    //maybe fixed in new version 2.5.2 - trying to use default - Honza 15.3.2009
+    //function _encodeHeader($input, $charset = 'ISO-8859-1') {
+    //    return $input;
+    //}
+
     /** setCharset function
      * @param $charset
      */
@@ -148,6 +152,39 @@ class HtmlMail extends htmlMimeMail {
      */
     function toexecutelater($to) {
         return $this->send($to);
+    }
+
+    /** AA_Mail::sendTemplate function
+     *  Sends mail defined in e-mail template id $mail_id to all e-mails listed
+     *  in $to (array or string) and unalias aliases according to $item
+     * @param $mail_id
+     * @param $to         array()
+     * @param $item
+     *
+     * Static function called as AA_Mail::sendTemplate($mail_id,$to,$item=null)
+     */
+     function sendTemplate($mail_id, $to, $item=null) {
+        // email has the templates in it
+        $mail = new AA_Mail;
+        $mail->setFromTemplate($mail_id, $item);
+        return $mail->sendLater($to);
+    }
+
+    /** sendToReader function
+     *  Sends mail defined in e-mail template id $mail_id to all zids (Readers).
+     *  Mail template is unaliased using aliases and data form item identified by
+     *  $zids (often Reader item). The recipients are Reders itself, by default.
+     * @param $mail_id
+     * @param $zids
+     */
+     function sendToReader($mail_id, $zids) {
+        $mail_count = 0;
+        for ( $i=0; $i<$zids->count(); $i++) {
+            $item = AA_Item::getItem($zids->longids($i));
+            $to   = $item->getval(FIELDID_EMAIL);
+            $mail_count += AA_Mail::sendTemplate($mail_id, $to, $item);
+        }
+        return $mail_count;
     }
 };
 
@@ -222,68 +259,5 @@ function html2text($html) {
 
     return $html;
 }
-
-// -----------------------------------------------------------------------------
-/** send_mail_from_table function
-* (c) Jakub Adamek, Econnect, December 2002
-* Sends email from the table "email" to the address given.
-* First resolves the aliases, working even with the {} inline commands.
-*
-* @param  int $mail_id     id from the email table
-* @param  mixed $to        email address or an array of email addresses
-* @param  array $aliases   (optional) array of alias => text
-* @return int count of successfully sent emails
-*/
-function send_mail_from_table($mail_id, $to, $aliases="") {
-    if (!is_array($aliases)) {
-        $aliases = array ("_#dUmMy__aLiAsSs#_" => "");
-    }
-
-    // I try to pretend having an item.
-    foreach ($aliases as $alias => $translate) {
-        // I create the "columns"
-        $cols[$alias][0] = array(
-            "value" => $translate,
-            "flag"  => FLAG_HTML);
-        // and "aliases"
-        $als[$alias] = array ("fce"=>"f_h", "param"=>$alias);
-    }
-    $item = new AA_Item($cols, $als);
-    return send_mail_from_table_inner($mail_id, $to, $item);
-}
-
-/** send_mail_to_reader function
- *  Sends mail defined in e-mail template id $mail_id to all $recipients.
- *  Mail template is unaliased using aliases and data form item identified by
- *  $zids (often Reader item). The recipients are Reders itself, by default.
- * @param $mail_id
- * @param $zids
- * @param $recipient
- */
-function send_mail_to_reader($mail_id, $zids, $recipient='aa_field_email') {
-    $mail_count = 0;
-    for ( $i=0; $i<$zids->count(); $i++) {
-        $item = AA_Item::getItem($zids->longids($i));
-        $to   = (($recipient=='aa_field_email') ? $item->getval(FIELDID_EMAIL) : $recipient);
-        $mail_count += send_mail_from_table_inner($mail_id, $to, $item);
-    }
-    return $mail_count;
-}
-
-/** send_mail_from_table_inner function
- *  Sends mail defined in e-mail template id $mail_id to all e-mails listed
- *  in $to (array or string) and unalias aliases according to $item
- * @param $mail_id
- * @param $to
- * @param $item
- */
-function send_mail_from_table_inner($mail_id, $to, $item) {
-    // email has the templates in it
-    $mail = new HtmlMail;
-    $mail->setFromTemplate($mail_id, $item);
-    return $mail->sendLater($to);
-}
-
-// -----------------------------------------------------------------------------
 
 ?>

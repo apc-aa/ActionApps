@@ -326,9 +326,9 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
                     $item         = new AA_Item($readerContent, $aliases);
 
                     if ($GLOBALS['debug_email']) {
-                        huhl("\n<br>send_mail_from_table_inner(".$collection->getEmailIdAlert().", ".$readerContent->getValue(FIELDID_EMAIL).", ...)");
+                        huhl("\n<br>AA_Mail::sendTemplate(".$collection->getEmailIdAlert().", ".$readerContent->getValue(FIELDID_EMAIL).", ...)");
                         $email_count[$collection_id]++;
-                    } elseif (send_mail_from_table_inner($collection->getEmailIdAlert(), $readerContent->getValue(FIELDID_EMAIL), $item)) {
+                    } elseif (AA_Mail::sendTemplate($collection->getEmailIdAlert(), $readerContent->getValue(FIELDID_EMAIL), $item)) {
                         AA_Log::write("ALERTS", "$collection_id: ". $readerContent->getValue(FIELDID_EMAIL), $ho);
                         $email_count[$collection_id]++;
                     }
@@ -349,7 +349,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
             $item = new AA_Item('', $aliases);
 
             foreach ( (array)$emails as $email ) {
-                if (send_mail_from_table_inner($collection->getEmailIdAlert(), $email, $item)) {
+                if (AA_Mail::sendTemplate($collection->getEmailIdAlert(), $email, $item)) {
                     $email_count[$collection_id]++;
                 }
             }

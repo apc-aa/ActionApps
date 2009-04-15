@@ -246,7 +246,7 @@ class NewDiscussionCommentEvent {
         // newer version based on email templates
         if ( $vid{0} == 't' ) {   // email template
             $mail_id = substr($vid,1);
-            send_mail_from_table_inner($mail_id, $maillist, $CurItem);
+            AA_Mail::sendTemplate($mail_id, $maillist, $CurItem);
             return;
         }
 
@@ -355,7 +355,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
     $columns   = reset($d_content);  // get first element
     $CurItem   = new AA_Item($columns, GetDiscussionAliases());
 
-    $mail = new HtmlMail;
+    $mail = new AA_Mail;
     $mail->setFromTemplate($mail_id, $CurItem);
     $mail->sendLater($emails);
     return true;
@@ -653,8 +653,8 @@ function SendFilledItem(&$ret_params, $email_template) {
     $send     = trim($ret_params->getValue('switch.........2'));
 
     if ($email AND $otazka AND $odpoved AND (($send == 'on') OR ($send == '1'))) {
-        $item = AA_Item::getItem(new zids($short_id, 's'));
-        return send_mail_from_table_inner($email_template, $email, $item) > 0;
+        $item = AA_Items::getItem(new zids($short_id, 's'));
+        return AA_Mail::sendTemplate($email_template, $email, $item) > 0;
     }
     return false;
 }
@@ -742,11 +742,11 @@ function Event_ItemAfterInsert_NszmAkce( $type, $slice_id, $slice_type, &$ret_pa
     $akce_id   = trim($ret_params->getValue('unspecified.....'));              // akce_id
     $email     = trim($ret_params->getValue('e_posted_by....1'));
 
-    $item_akce = AA_Item::getItem(new zids($akce_id, 'l'));
+    $item_akce = AA_Items::getItem(new zids($akce_id, 'l'));
     $text      = trim($item_akce->getval('text...........7'));
 
     if ($email AND $text) {
-        return send_mail_from_table_inner(60, $email, $item_akce) > 0;
+        return AA_Mail::sendTemplate(60, $email, $item_akce) > 0;
     }
     return false;
 }
@@ -764,10 +764,10 @@ function Event_ItemAfterInsert_NszmPruzkum( $type, $slice_id, $slice_type, &$ret
     $email1   = trim($ret_params->getValue('address.........'));
     $email2   = trim($ret_params->getValue('address........1'));
 
-    $item     = AA_Item::getItem(new zids($short_id, 's'));
+    $item     = AA_Items::getItem(new zids($short_id, 's'));
 
     if ($email1 OR $email2) {
-        return send_mail_from_table_inner(63, array($email1, $email2), $item) > 0;
+        return AA_Mail::sendTemplate(63, array($email1, $email2), $item) > 0;
     }
     return false;
 }
@@ -790,10 +790,10 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $
     
     $email1   = trim($ret_params->getValue('con_email.......'));
 
-    $item     = AA_Item::getItem(new zids($short_id, 's'));
+    $item     = AA_Items::getItem(new zids($short_id, 's'));
 
     if ($email1) {
-        return send_mail_from_table_inner(5, array($email1), $item) > 0;
+        return AA_Mail::sendTemplate(5, array($email1), $item) > 0;
     }
     return false;
 }
@@ -813,10 +813,10 @@ function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, &$ret_params, 
     
     $email1   = trim(AA_Stringexpand::unalias('{item:'.$ekis_id.':_#EKISMAIL}'));
 
-    $item     = AA_Item::getItem(new zids($short_id, 's'));
+    $item     = AA_Items::getItem(new zids($short_id, 's'));
 
     if ($email1) {
-        return send_mail_from_table_inner(4, array($email1), $item) > 0;
+        return AA_Mail::sendTemplate(4, array($email1), $item) > 0;
     }
     return false;
 }

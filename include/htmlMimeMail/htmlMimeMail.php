@@ -90,7 +90,6 @@ class htmlMimeMail {
 * Constructor function. Sets the headers
 * if supplied.
 */
-
     function htmlMimeMail()
     {
         /**
@@ -106,15 +105,15 @@ class htmlMimeMail {
         * extension and content type here.
         */
         $this->image_types = array(
-                                    'gif'	=> 'image/gif',
-                                    'jpg'	=> 'image/jpeg',
-                                    'jpeg'	=> 'image/jpeg',
-                                    'jpe'	=> 'image/jpeg',
-                                    'bmp'	=> 'image/bmp',
-                                    'png'	=> 'image/png',
-                                    'tif'	=> 'image/tiff',
-                                    'tiff'	=> 'image/tiff',
-                                    'swf'	=> 'application/x-shockwave-flash'
+                                    'gif'    => 'image/gif',
+                                    'jpg'    => 'image/jpeg',
+                                    'jpeg'    => 'image/jpeg',
+                                    'jpe'    => 'image/jpeg',
+                                    'bmp'    => 'image/bmp',
+                                    'png'    => 'image/png',
+                                    'tif'    => 'image/tiff',
+                                    'tiff'    => 'image/tiff',
+                                    'swf'    => 'application/x-shockwave-flash'
                                   );
 
         /**
@@ -375,10 +374,10 @@ class htmlMimeMail {
     function addAttachment($file, $name = '', $c_type='application/octet-stream', $encoding = 'base64')
     {
         $this->attachments[] = array(
-                                    'body'		=> $file,
-                                    'name'		=> $name,
-                                    'c_type'	=> $c_type,
-                                    'encoding'	=> $encoding
+                                    'body'        => $file,
+                                    'name'        => $name,
+                                    'c_type'    => $c_type,
+                                    'encoding'    => $encoding
                                   );
     }
 
@@ -391,10 +390,12 @@ class htmlMimeMail {
         $params['encoding']     = $this->build_params['text_encoding'];
         $params['charset']      = $this->build_params['text_charset'];
         if (is_object($obj)) {
-            return $obj->addSubpart($text, $params);
+            $return = $obj->addSubpart($text, $params);
         } else {
-            return new Mail_mimePart($text, $params);
+            $return = new Mail_mimePart($text, $params);
         }
+        
+        return $return;
     }
 
 /**
@@ -406,10 +407,12 @@ class htmlMimeMail {
         $params['encoding']     = $this->build_params['html_encoding'];
         $params['charset']      = $this->build_params['html_charset'];
         if (is_object($obj)) {
-            return $obj->addSubpart($this->html, $params);
+            $return = $obj->addSubpart($this->html, $params);
         } else {
-            return new Mail_mimePart($this->html, $params);
+            $return = new Mail_mimePart($this->html, $params);
         }
+        
+        return $return;
     }
 
 /**
@@ -418,7 +421,9 @@ class htmlMimeMail {
     function &_addMixedPart()
     {
         $params['content_type'] = 'multipart/mixed';
-        return new Mail_mimePart('', $params);
+        $return = new Mail_mimePart('', $params);
+        
+        return $return;
     }
 
 /**
@@ -428,10 +433,12 @@ class htmlMimeMail {
     {
         $params['content_type'] = 'multipart/alternative';
         if (is_object($obj)) {
-            return $obj->addSubpart('', $params);
+            $return = $obj->addSubpart('', $params);
         } else {
-            return new Mail_mimePart('', $params);
+            $return = new Mail_mimePart('', $params);
         }
+        
+        return $return;
     }
 
 /**
@@ -441,16 +448,18 @@ class htmlMimeMail {
     {
         $params['content_type'] = 'multipart/related';
         if (is_object($obj)) {
-            return $obj->addSubpart('', $params);
+            $return = $obj->addSubpart('', $params);
         } else {
-            return new Mail_mimePart('', $params);
+            $return = new Mail_mimePart('', $params);
         }
+        
+        return $return;
     }
 
 /**
 * Adds an html image subpart to a mime_part object
 */
-    function &_addHtmlImagePart(&$obj, $value)
+    function _addHtmlImagePart(&$obj, $value)
     {
         $params['content_type'] = $value['c_type'];
         $params['encoding']     = 'base64';
@@ -463,7 +472,7 @@ class htmlMimeMail {
 /**
 * Adds an attachment subpart to a mime_part object
 */
-    function &_addAttachmentPart(&$obj, $value)
+    function _addAttachmentPart(&$obj, $value)
     {
         $params['content_type'] = $value['c_type'];
         $params['encoding']     = $value['encoding'];
@@ -617,9 +626,9 @@ class htmlMimeMail {
 */
     function _encodeHeader($input, $charset = 'ISO-8859-1')
     {
-        preg_match_all('/(\w*[\x80-\xFF]+\w*)/', $input, $matches);
+        preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches);
         foreach ($matches[1] as $value) {
-            $replacement = preg_replace('/([\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
+            $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
             $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
         }
 

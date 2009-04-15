@@ -60,7 +60,7 @@ require_once AA_INC_PATH.  "hitcounter.class.php3";
 $toexecute = new AA_Toexecute;
 
 /*
-$mail = new HtmlMail;
+$mail = new AA_Mail;
 $mail->setText("toto je mail 10");
 $mail->setSubject('subject');
 //$mail->setBasicHeaders(ecord, "");

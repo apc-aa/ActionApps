@@ -458,7 +458,7 @@ function send2mailList($d_item_id, $new_id) {
             if ( $vid{0} == 't' ) {   // email template
                 $mail_id = substr($vid,1);
                 $mails   = explode(',', str_replace(' ','',$maillist));
-                send_mail_from_table_inner($mail_id, $mails, $CurItem);
+                AA_Mail::sendTemplate($mail_id, $mails, $CurItem);
                 return;
             }
             $db->tquery("SELECT * FROM view WHERE id=$vid");
@@ -469,12 +469,12 @@ function send2mailList($d_item_id, $new_id) {
 
                 // older and deprecated version with discussion view
                 $mail_parts = array (
-                    "from" => "aditional",
-                    "reply_to" => "aditional2",
+                    "from"      => "aditional",
+                    "reply_to"  => "aditional2",
                     "errors_to" => "aditional3",
-                    "sender" => "aditional4",
-                    "subject" => "aditional5",
-                    "body" => "even");
+                    "sender"    => "aditional4",
+                    "subject"   => "aditional5",
+                    "body"      => "even");
 
                 $mail = "";
                 foreach ($mail_parts as $part => $field) {
@@ -486,7 +486,7 @@ function send2mailList($d_item_id, $new_id) {
                     $mail[$part] = $CurItem->get_item();
                 }
 
-                $mail = new HtmlMail;
+                $mail = new AA_Mail;
                 $mail->setSubject($mail["subject"]);
                 $mail->setHtml($mail["body"], html2text($mail["body"]));
                 if ($mail["from"]) {
@@ -502,8 +502,7 @@ function send2mailList($d_item_id, $new_id) {
                     $mail->setHeader("Sender",    $mail["sender"]);
                 }
 
-                $db->tquery("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id
-                             WHERE item.id='".q_pack_id($d_item_id)."'");
+                $db->tquery("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id WHERE item.id='".q_pack_id($d_item_id)."'");
                 $db->next_record();
                 $mail->setCharset($GLOBALS["LANGUAGE_CHARSETS"][substr($db->f("lang_file"),0,2)]);
                 $mail->send(array($maillist));
