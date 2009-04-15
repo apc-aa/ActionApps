@@ -300,6 +300,10 @@ class Action {
                 $fvalues[]['value'] = pack_id($itemContent->GetValue($from));		// todo - pokud neexistuje pole s $from , co delat?
                 break;
             }
+            case "unpack_id": {
+                $fvalues[]['value'] = unpack_id($itemContent->GetValue($from));  // todo - pokud neexistuje pole s $from , co delat?
+                break;
+            }
             case "removestring": {
                 $v =  $itemContent->GetValue($from);
                 $fvalues[]['value'] = $this->params ? ereg_replace($this->params, "", $v) :$v;
@@ -539,20 +543,20 @@ $nszmciselnik = array (
 );
 
 $nszmmesta = array(
-    '®ïár nad Sázavou'      => '5f3e1d8a5654bcbec5aebc18802cc3ab',
-    'Velké Meziøíèí'        => '6bfe94a7be75cba6bf4d382d2cfa56c3',
-    'Tøebíè'                => 'f2fab2ff86ab58626148f7b7d8141f92',
-    'Telè'                  => 'fb0c96998a51b0d4865a8bf3681f89f2',
-    'Svìtlá nad Sázavou'    => '3ea61bd532190e35b145c6dfe0d33075',
-    'Pelhøimov'             => '88eb421653b38c4bdd4ea3e1b94253da',
-    'Pacov'                 => 'ff46f6e1b2999a09ddbf4776d4d985e7',
-    'Nové Mìsto na Moravì'  => '0e51a3726c152f17a6b18f81adfa85a3',
-    'Námì¹» nad Oslavou'    => '57c4724b65aa8a9c191a4bc069b6b0e5',
-    'Moravské Budìjovice'   => 'dd35b973320dcb5ee70ea1dfd566465c',
-    'Jihlava'               => 'da4dcfdf17cb9b5a0e3ba37e7a9799e6',
-    'Humpolec'              => '358bd219028e31e6612d607bc79cd058',
-    'Havlíèkùv Brod'        => 'ede15d796d90d4c6ce6180d48a7aecbd',
-    'Chotìboø'              => '135e12ccfa199f24e3ce9e9d7a6e46aa',
+    '®ïár nad Sázavou'         => '5f3e1d8a5654bcbec5aebc18802cc3ab',
+    'Velké Meziøíèí'           => '6bfe94a7be75cba6bf4d382d2cfa56c3',
+    'Tøebíè'                   => 'f2fab2ff86ab58626148f7b7d8141f92',
+    'Telè'                     => 'fb0c96998a51b0d4865a8bf3681f89f2',
+    'Svìtlá nad Sázavou'       => '3ea61bd532190e35b145c6dfe0d33075',
+    'Pelhøimov'                => '88eb421653b38c4bdd4ea3e1b94253da',
+    'Pacov'                    => 'ff46f6e1b2999a09ddbf4776d4d985e7',
+    'Nové Mìsto na Moravì'     => '0e51a3726c152f17a6b18f81adfa85a3',
+    'Námì¹» nad Oslavou'       => '57c4724b65aa8a9c191a4bc069b6b0e5',
+    'Moravské Budìjovice'      => 'dd35b973320dcb5ee70ea1dfd566465c',
+    'Jihlava'                  => 'da4dcfdf17cb9b5a0e3ba37e7a9799e6',
+    'Humpolec'                 => '358bd219028e31e6612d607bc79cd058',
+    'Havlíèkùv Brod'           => 'ede15d796d90d4c6ce6180d48a7aecbd',
+    'Chotìboø'                 => '135e12ccfa199f24e3ce9e9d7a6e46aa',
     'Bystøice nad Pern¹tejnem' => '7723d9023b66ad5a950fb2d945fadfcb');
 
 /** getActions function

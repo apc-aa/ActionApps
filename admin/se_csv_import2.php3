@@ -389,11 +389,11 @@ class AA_Csv_Importer {
                  echo _m("Map item id from"). '&nbsp';
                  FrmSelectEasy("itemIdMappedFrom",$inFields, $this->itemIdMappedFrom ? $this->itemIdMappedFrom : ( !$set_default ? $this->idFrom : $inFields[0]));
                  echo '<br>';
-                 $mapping_options = array ( 'pack_id'   => _m('unpacked long id (pack_id)'),
-                                            'store'     => _m('packed long id (store)'),
+                 $mapping_options = array ( 'store'     => _m('unpacked long id (32 chracters)'),
+                                            'unpack_id' => _m('packed long id (16 chracters)'),
                                             'string2id' => _m('string to be converted (string2id) - with param:'));
 
-                 FrmSelectEasy("itemIdMappedActions",$mapping_options, !$set_default ? $this->itemIdMappedActions : 'pack_id');
+                 FrmSelectEasy("itemIdMappedActions",$mapping_options, !$set_default ? $this->itemIdMappedActions : 'store');
                  echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. (!$set_default ? $this->itemIdMappedParams : '').'"></input>';
                ?></td>
             </tr>
