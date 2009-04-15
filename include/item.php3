@@ -242,14 +242,14 @@ function Links_admin_url($script, $add) {
 /** Inputform_url function
  *  helper function which create link to inputform from item manager
  * (_#EDITITEM, f_e:add, ...)
- * @param $add
+ * @param $add - bool - true|false
  * @param $iid
- * @param $sid
+ * @param $sid - for edditing it is not necessary
  * @param $ret_url
  * @param $vid
  * @param $var
  */
-function Inputform_url($add, $iid, $sid, $ret_url, $vid = null, $var = null) {
+function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = null) {
     global $sess, $AA_CP_Session, $profile;
 
     // $admin_path = AA_INSTAL_URL. "admin/itemedit.php3";
@@ -268,9 +268,11 @@ function Inputform_url($add, $iid, $sid, $ret_url, $vid = null, $var = null) {
     if ($iid) {
         $param[] = "id=$iid";
     }
-        $param[] = ($add ? 'add=1' : 'edit=1');
-        $param[] = "encap=false";
+    $param[] = ($add ? 'add=1' : 'edit=1');
+    $param[] = "encap=false";
+    if ($sid) {
         $param[] = "slice_id=$sid";
+    }
     if ($return_url) {
         $param[] = 'return_url='. urlencode($return_url);
     }
@@ -1094,25 +1096,12 @@ class AA_Item {
      * @param $param string to be printed (like <img src="{img_src........1}"></img>
      */
     function f_t($col, $param="") {
-        $p = ParamExplode($param);
-        if ( isset($p[1]) ) {
-            $text = get_if( $p[0], $this->getval($col) );
-            switch ( $p[1] ) {
-                case 'csv':         return AA_Stringexpand_Csv::expand($text);
-                case 'safe':        return AA_Stringexpand_Safe::expand($text);
-                // In javascript we need escape apostroph
-                case 'javascript':  return AA_Stringexpand_Javascript::expand($text);
-                case 'urlencode':   return AA_Stringexpand_Urlencode::expand($text);
-                case 'striptags':   return AA_Stringexpand_Striptags::expand($text);
-                case 'rss':         return AA_Stringexpand_Rss::expand($text);
-                // allows you to call view with conds:
-                // {view.php3?vid=9&cmd[9]=c-1-{alias::f_t:{_#VALUE___}:conds}}
-                case 'conds':       return AA_Stringexpand_Conds::expand($text);
-                // do not DeHtml - good for search & replace in fields
-                case 'asis':        return AA_Stringexpand_Asis::expand($text);
-                case 'substitute':  // This is the same as '' - but be carefull, 'some text:' is not the same as 'some text',
-                // because in first case the colons should be escaped: #:
-                case '':            $param = $p[0];  // case 'some text:'
+        $pos = strrpos($param, ":");
+        if ($pos !== false) {
+            $modif = substr($param,$pos+1);
+            if (in_array($modif, array('csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug')) AND (($pos==0) OR (substr($param,$pos-1,1)!='#'))) {
+                $text = ($pos==0) ? $this->getval($col) : substr($param,0,$pos);
+                return call_user_func( array( AA_Object::constructClassName('AA_Stringexpand_', $modif), 'expand'), $text);
             }
         }
         return $param ? $this->subst_alias( $param ): DeHtml($this->getval($col), $this->getval($col,'flag'));
