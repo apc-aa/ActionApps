@@ -37,6 +37,8 @@ require_once AA_INC_PATH."easy_scroller.php3";
 require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
 require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
+require_once AA_INC_PATH."tree.class.php3";   // for {tree:...};
+
 /** translateString function
  * @param $string
  * @param $translation
@@ -599,34 +601,37 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Expands {htmlajaxtoggle:<toggle1>:<text1>:<toggle2>:<url_of_text2>} like:
+/** Expands {htmlajaxtoggle:<toggle1>:<text1>:<toggle2>:<url_of_text2>[:<position>]} like:
  *          {htmlajaxtoggle:more >>>:Econnect:less <<<:/about-ecn.html}
  *  It creates the link text1 (or text2) and two divs, where only one is visible
  *  at the time - first is displayed as defaut, the second is loaded by AJAX
  *  call on demand from specified url. The URL should be on the same server
-<corrected by="gumba">
- *    #BAD# The /javscript/aajslib.php3 shoud be included to the page
- *    The /aaa/javascript/aajslib.php3 shoud be included to the page
-</corrected>
+ *  The /apc-aa/javascript/aajslib.php3 shoud be included to the page
  *  (by <script src="">)
  *  @param $switch_state_1 - default link text
  *  @param $code_1         - HTML code displayed as default (in div)
  *  @param $switch_state_2 - link text 2
  *  @param $url_of_text2   - url, which will be called by AJAX and displayed
  *                           on demand (click on the link)
+ *  @param $position       - position of the link - top|bottom (top is default)
  */
 class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
 
-    function expand($switch_state_1, $code_1, $switch_state_2, $url) {
+    function expand($switch_state_1, $code_1, $switch_state_2, $url, $position=null) {
         // we can't use apostrophes and quotes in href="javacript:..." attribute
         $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
         $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
 
+        // automaticaly add conversion to utf-8 for AA view.php3 calls
+        if ((strpos($url,'/view.php3?') !== false) AND (strpos($url,'convert')===false)) {
+            $url = get_url($url,array('convertto' => 'utf-8'));
+        }
+
         $uniqid = uniqid();
-        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid', '$url');return false;\">$switch_state_1</a>\n";
-        $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
+        $link   = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid', '$url');return false;\">$switch_state_1</a>\n";
+        $ret    = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\"></div>\n";
-        return $ret;
+        return ($position=='bottom') ?  $ret. $link : $link. $ret;
     }
 }
 
@@ -948,6 +953,20 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** {intersect:<ids>:<ids>}
+ *  @returns set of intersect of two set of ids (dash separated)
+ */
+class AA_Stringexpand_Intersect extends AA_Stringexpand {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function  */
+    function expand($set1, $set2) {
+        return join(array_intersect(explode('-',$set1),explode('-',$set2)),'-');
+    }
+}
+
+
 /** (Current) date with specified date format {date:[<format>[:<timestamp>]]}
  *   {date:j.n.Y}                               displays 24.12.2008 on X-mas 2008
  *   {date:Y}                                   current year
@@ -1159,7 +1178,7 @@ class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $string
      */
-    function expand($string) {
+    function expand($string='') {
         return trim($string);
     }
 }
@@ -1475,6 +1494,31 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
 
         $zids          = QueryZIDs($slices_arr, $set->getConds(), $set->getSort(), 'ACTIVE', 0, $restrict_zids);
         return join($zids->longids(), $delimiter ? $delimiter : '-');
+    }
+}
+
+/** returns long ids of subitems items based on the relations between items
+ *  {tree:<item_id>[:<relation_field>]}
+ *  {tree:2a4352366262227383484784635362ab:relation.......1}
+ *  @return dash separated long ids of items which belongs to the tree under
+ *          specifield iten based on the relation field
+ */
+class AA_Stringexpand_Tree extends AA_Stringexpand {
+    /** expand function
+     * @param $item_id          - item id of the tree root (short or long)
+     * @param $relation_field   - tree relation field (default relation........)
+     */
+    function expand($item_id, $relation_field=null) {
+        $zid     = new zids($item_id);
+        $long_id = $zid->longids(0);
+        if (empty($item_id)) {
+            return '';
+        }
+        if (empty($relation_field)) {
+            $relation_field = 'relation........';
+        }
+        $tree = AA_Trees::getTree($long_id, $relation_field);
+        return join($tree->getIds(), '-');
     }
 }
 
@@ -1821,6 +1865,26 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** debugging
+ */
+class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercache {
+    /** expand function
+     * @param $property
+     */
+    function expand( $text='' ) {
+        // Note don't rely on the behavior of {debug} its changed by programmers for testing!
+        if (isset($GLOBALS["apc_state"])) {
+            huhl("apc_state=",$GLOBALS["apc_state"]);
+        }
+        if (isset($this)) {
+            huhl("this=",$this);
+        }
+        huhl('text=', $text);
+        return "$text";
+    }
+}
+
+
 
 /** makeAsShortcut function
  *  Store $text in the $html_subst_arr array - used for dictionary escaping html
@@ -2117,22 +2181,6 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
     elseif ( substr($out, 0, 1) == "#" ) {
         return "";
     }
-    elseif( substr($out, 0,5) == "debug" ) {
-        // Note don't rely on the behavior of {debug} its changed by programmers for testing!
-        if (isset($GLOBALS["apc_state"])) {
-            huhl("apc_state=",$GLOBALS["apc_state"]);
-        }
-        if (isset($itemview)) {
-            huhl("itemview=",$itemview);
-        }
-        if (isset($aliases)) {
-            huhl("aliases=",$aliases);
-        }
-        if (isset($als)) {
-            huhl("als=",$als);
-        }
-        return "";
-    }
     elseif ( substr($out, 0,10) == "view.php3?" ) {
         // view do not use colons as separators => dequote before callig
         return QuoteColons($level, 1, GetView(ParseViewParameters(DeQuoteColons(substr($out,10) ))));
@@ -2220,7 +2268,11 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
     }
     // Look for {_#.........} and expand now, rather than wait till top
     elseif (isset($item) && (substr($out,0,2) == "_#")) {
-        return QuoteColons($level, 1,$item->substitute_alias_and_remove($out));
+        if (isset($als[substr($out,2)])) {
+            return QuoteColons($level, 1, new_unalias_recurent($als[substr($out,2)],"",$level+1,1,$item,$itemview,$aliases));
+        } else {
+            return QuoteColons($level, 1,$item->substitute_alias_and_remove($out));
+        }
     }
     // first char of alias is @ - make loop to view all values from field
     elseif ( (substr($out,0,1) == "@") OR (substr($out,0,5) == "list:")) {
