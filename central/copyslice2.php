@@ -46,7 +46,8 @@ if ($_POST['copy']) {
     if (count($limit) > 0) {
         $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $_POST['sync_slices'], $limit);
     }
-    $template_site_defs  = $aas[$_POST['template_aa']]->requestDefinitions('Site',  $_POST['sync_sites']);
+    $template_site_defs   = $aas[$_POST['template_aa']]->requestDefinitions('Site',    $_POST['sync_sites']);
+    $template_alerts_defs  = $aas[$_POST['template_aa']]->requestDefinitions('Alerts',  $_POST['sync_alerts']);
 
     foreach ($_POST['destination_aa'] as $dest_aa) {
         if (is_array($_POST['sync_slices']) AND (count($limit) > 0)) {
@@ -63,6 +64,14 @@ if ($_POST['copy']) {
                 if ($sid) {
                     $site_def       = $template_site_defs[$sid];
                     $no_sync_tasks += $site_def->planModuleImport($aas[$dest_aa]);
+                }
+            }
+        }
+        if (is_array($_POST['sync_alerts'])) {
+            foreach ($_POST['sync_alerts'] as $aid) {
+                if ($aid) {
+                    $alerts_def     = $template_alerts_defs[$aid];
+                    $no_sync_tasks += $alerts_def->planModuleImport($aas[$dest_aa]);
                 }
             }
         }

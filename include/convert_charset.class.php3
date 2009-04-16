@@ -448,7 +448,7 @@ class ConvertCharset {
             return $StringToChange;
         }
 
-        // This function replace all Windows-1250 accent characters with
+        // replace all Windows-1250 accent characters with
         // thier non-accent ekvivalents. Useful for Czech and Slovak languages.
         // Special approach, since Convert class do not do it by itself
         if (($FromCharset == 'windows-1250') AND ($ToCharset == 'us-ascii')) {
@@ -458,6 +458,12 @@ class ConvertCharset {
             $ret = strtr($ret, "\xC1\xC8\xCF\xCC\xC9\xCD\xC2\xD3\xD8", "\x41\x43\x44\x45\x45\x49\x4E\x4F\x52");
             $ret = strtr($ret, "\x8A\x8D\xDA\xDD\x8E\xD2\xD9\xEF\xCF", "\x53\x54\x55\x59\x5A\x4E\x55\x64\x44");
             return $ret;
+        }
+
+        // replace all utf-8 accent characters with thier non-accent ekvivalents
+        // Special approach, since Convert class do not do it by itself
+        if (($FromCharset == 'utf-8') AND ($ToCharset == 'us-ascii')) {
+            return iconv("utf-8", "us-ascii//TRANSLIT", $StringToChange);
         }
 
         /*

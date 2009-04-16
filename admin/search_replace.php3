@@ -488,6 +488,8 @@ class AA_Strreplace {
 }
 
 class AA_Transformation_Translate extends AA_Transformation {
+    var $new_flag;
+    var $translation;
 
     /** AA_Transformation_Translate function
      * @param $param
@@ -590,6 +592,69 @@ class AA_Transformation_Translate extends AA_Transformation {
     }
 }
 
+class AA_Transformation_Replace extends AA_Transformation {
+    var $searchpattern;
+    var $replacestring;
+
+    /** AA_Transformation_Translate function
+     * @param $param
+     */
+    function AA_Transformation_Replace($param) {
+        $this->searchpattern = $param['searchpattern'];
+        $this->replacestring = $param['replacestring'];
+    }
+
+    /** name function
+     * @return message
+     */
+    function name() {
+        return _m("Search and Replace");
+    }
+
+    /** description function
+     * @return message
+     */
+    function description() {
+        return _m("Search the content of text and replaces it with the another text. No other transformations/unaliasing are applied - just basic search and replace.");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $content4id (by link)
+     * @return array/false
+     */
+    function transform($field_id, &$content4id) {
+        if (!$this->searchpattern) {
+            $this->message(_m('No searchstring specified.'));
+            return false;
+        }
+
+        $ret = array();
+        foreach ( $content4id->getValues($field_id) as $source ) {
+            $ret[] = array('value' => str_replace($this->searchpattern, $this->replacestring, $source['value']), 'flag' => $source['flag']);
+        }
+        return $ret;
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
+    function htmlSetting($input_prefix, $params) {
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_searchpattern = AA_Transformation::_getVarname('searchpattern', $input_prefix, __CLASS__);
+        $varname_replacestring = AA_Transformation::_getVarname('replacestring', $input_prefix, __CLASS__);
+
+        FrmTextarea(  $varname_searchpattern, _m('Search'),  dequote($_GET[$varname_searchpattern]),  4, 80, true);
+        FrmTextarea(  $varname_replacestring, _m('Replace'), dequote($_GET[$varname_replacestring]),  4, 80, true);
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
  */
@@ -678,7 +743,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
                 $content4id->setByItemID($zids->zid($i), true);     // ignore password
                 // if we do not ignore it, then it will not work for slices with slice_pwd
                 // It is OK to do not care about password here - we are loged in and have permission PS_EDIT_ALL_ITEMS
-                
+
                 $sli_id  = $content4id->getSliceID();
                 $item_id = $content4id->getItemID();
                 if (!$sli_id OR !$item_id) {

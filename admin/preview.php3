@@ -26,13 +26,42 @@
  *
 */
 
+/** @param slice_id   - long id of slice
+ *  @param sh_itm     - long id of item
+ *  @param return_url - where to go after hit OK button
+ **/
+
 require_once "../include/init_page.php3";
+
+// already stripslashed in init_page.php3
+
+$sh_itm     = $_GET['sh_itm'];
+$slice_id   = $_GET['slice_id'];
+$return_url = $_GET['return_url'];
+
+$slice = AA_Slices::getSlice($slice_id);
+if (empty($slice)) {
+     echo _m("Wrong slice_id.");
+     exit;
+}
+
+$preview_url = $slice->getProperty('_url_preview....');
+if (empty($preview_url)) {
+    $preview_url = con_url($r_slice_view_url, "sh_itm=$sh_itm");
+} else {
+    $item = AA_Item::getItem(new zids($sh_itm, 'l'));
+    if ($item) {
+        $preview_url = $item->unalias($preview_url);
+    }
+}
+
+
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
 </head>
 <!-- frames -->
 <frameset  rows="30,*">
    <frame name="Navigation" src="<?php echo con_url($sess->url("prev_navigation.php3"),"sh_itm=$sh_itm&return_url=$return_url"); ?>" marginwidth="10" marginheight="10" scrolling="no" frameborder="0">
-   <frame name="Item" src="<?php echo con_url($r_slice_view_url, "sh_itm=".$sh_itm); ?>" marginwidth="10" marginheight="10" scrolling="auto" frameborder="0">
+   <frame name="Item" src="<?php echo $preview_url; ?>" marginwidth="10" marginheight="10" scrolling="auto" frameborder="0">
 </frameset>
 </html>

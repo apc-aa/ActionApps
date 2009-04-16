@@ -1,21 +1,21 @@
 <?php
 /**
- * This file could be used inside AA as well as outside of the AA. 
- * You can just copy the file to your website and use it for client 
+ * This file could be used inside AA as well as outside of the AA.
+ * You can just copy the file to your website and use it for client
  * authentization. The example of the "client authentization" you can find
  * in apc-aa/doc/script/example_auth directory.
- * 
+ *
  * The fiel has no external requires - it si standalone library
- * 
+ *
  * It provides:
- * 
+ *
  *   AA_Client_Auth - for client authentization (@see /doc/script/example_auth)
- *   
+ *
  *   AA_Request
  *   AA_Response
  *   AA_Http        - three classes used for communication with (and between)
  *                    AA installations. Used for "client auth" as well as for
- *                    Central.        
+ *                    Central.
  *
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
@@ -154,33 +154,41 @@ class AA_Http {
      * @param $data
      * @return array $result[]
      */
-    function postRequest($url, $data = array() ) {
+    function postRequest($url, $data = array(), $headers=array() ) {
         if (version_compare(phpversion(), "5.0.0", ">=")) {
-            return AA_Http::postRequest5($url, $data); // you're on PHP5 or later
+            return AA_Http::postRequest5($url, $data, $headers); // you're on PHP5 or later
         }
-        return AA_Http::postRequest4($url, $data); // you're on PHP5 or later
+        return AA_Http::postRequest4($url, $data, $headers); // you're on PHP5 or later
     }
 
     /** inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl */
-    function postRequest5($url, $data) {
+    function postRequest5($url, $data = array(), $headers=array()) {
         $data = http_build_query($data);
         $params = array('http' => array(
                             'method' => 'POST',
                             'content' => $data
                                         )
                         );
-         $ctx = stream_context_create($params);
-         $fp = @fopen($url, 'rb', false, $ctx);
-         if (!$fp) {
-            AA_Http::lastErr(1, "Can't open url: $url");  // set error code
-            return false;
-         }
-         $response = @stream_get_contents($fp);
-         if ($response === false) {
-            AA_Http::lastErr(2, "Problem reading data from url: $url");  // set error code
-            return false;
-         }
-         return $response;
+        if (!empty($headers)) {
+            $header = '';
+            foreach ($headers as $k => $v) {
+                $header .= "$k: $v\r\n";
+            }
+            $params['http']['header'] = $header;
+        }
+
+        $ctx = stream_context_create($params);
+        $fp = @fopen($url, 'rb', false, $ctx);
+        if (!$fp) {
+           AA_Http::lastErr(1, "Can't open url: $url");  // set error code
+           return false;
+        }
+        $response = @stream_get_contents($fp);
+        if ($response === false) {
+           AA_Http::lastErr(2, "Problem reading data from url: $url");  // set error code
+           return false;
+        }
+        return $response;
     }
 
     /** postRequest function
@@ -189,7 +197,7 @@ class AA_Http {
      * @param $data
      * @return array $result[]
      */
-    function postRequest4($url, $data = array() ) {
+    function postRequest4($url, $data = array(), $headers=array()) {
         $request = parse_url($url);
 
         $host = $request['host'];

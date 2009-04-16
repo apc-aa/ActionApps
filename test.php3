@@ -18,6 +18,12 @@ require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."formutil.php3";
 
+require_once AA_INC_PATH."optimize.class.php3";
+echo $_SERVER["SERVER_NAME"]. '<br><br>';
+$fix = new AA_Optimize_Db_Binary_Traing_Zeros();
+$fix->repair();
+echo $fix->report();
+exit;
 
 @session_start();
 /* Register a session. */

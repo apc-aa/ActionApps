@@ -418,7 +418,8 @@ class AA_Module_Definition_Alerts extends AA_Module_Definition {
         $this->data['alerts_collection']          = $metabase->getModuleRows('alerts_collection', $module_id);
         $this->data['alerts_collection_filter']   = $metabase->getModuleRows('alerts_collection_filter', $module_id);
         $this->data['alerts_collection_howoften'] = $metabase->getModuleRows('alerts_collection_howoften', $module_id);
-        $this->data['alerts_filter']              = $metabase->getModuleRows('alerts_filter', $module_id);
+       // @todo - filter is not copied since it need double jopined tabled in metabase's  getModuleRows()
+       // $this->data['alerts_filter']              = $metabase->getModuleRows('alerts_filter', $module_id);
     }
 
     function compareWith($dest_def) {
