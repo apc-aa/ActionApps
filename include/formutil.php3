@@ -188,18 +188,23 @@ class inputform {
 
         // create buttons array for top (and lately for bottom of the form)
         if ( $this->form4update ) {
-            $buttons += inputform::_getButton('update', 'submit', _m("Update"), $profile->getProperty('ui_inputform', 'edit_btn_update'));
+            $buttons += inputform::_getButton('update',   'submit', _m("Update"), $profile->getProperty('ui_inputform', 'edit_btn_update'));
+            $buttons += inputform::_getButton('upd_edit', 'submit', _m("Update & Edit"), $profile->getProperty('ui_inputform', 'edit_btn_upd_edit'));
             if ( $this->show_preview_button ) {
                 $buttons += inputform::_getButton('upd_preview', 'submit', _m("Update & View"), $profile->getProperty('ui_inputform', 'edit_btn_upd_preview'));
             }
             // if we edit dynamic slice setting fields, we do not need such buttons
             if (!$slice_fields) {
                 $buttons += inputform::_getButton('insert', 'submit', _m("Insert as new"), $profile->getProperty('ui_inputform', 'edit_btn_insert'));
-                $buttons += inputform::_getButton('reset', 'reset', _m("Reset form"), $profile->getProperty('ui_inputform', 'edit_btn_reset'));
+                if (strlen($profile->getProperty('ui_inputform', 'edit_btn_reset')) > 0) {
+                    // reset button display just if it is defined in profile
+                    $buttons += inputform::_getButton('reset', 'reset', _m("Reset form"), $profile->getProperty('ui_inputform', 'edit_btn_reset'));
+                }
             }
             $buttons += inputform::_getButton('cancel', 'button', _m("Cancel"), $profile->getProperty('ui_inputform', 'edit_btn_cancel'), $this->cancel_url);
         } else {
-            $buttons += inputform::_getButton('insert', 'submit', _m("Insert"), $profile->getProperty('ui_inputform', 'add_btn_insert'));
+            $buttons += inputform::_getButton('insert',      'submit', _m("Insert"), $profile->getProperty('ui_inputform', 'add_btn_insert'));
+            $buttons += inputform::_getButton('ins_edit',    'submit', _m("Insert & Edit"), $profile->getProperty('ui_inputform', 'add_btn_ins_edit'));
             $buttons += inputform::_getButton('ins_preview', 'submit', _m("Insert & View"), $profile->getProperty('ui_inputform', 'add_btn_ins_preview'));
             $buttons += inputform::_getButton('cancel', 'button', _m("Cancel"), $profile->getProperty('ui_inputform', 'add_btn_cancel'), $this->cancel_url);
         }

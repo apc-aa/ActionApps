@@ -15,7 +15,10 @@ $_m["Cancel"]
  = "Storno";
 
 $_m["SAVE CHANGE"]
- = "ULOŽIT ZMĚNU";
+ = "Uložit změnu";
+
+$_m["EXIT WITHOUT CHANGE"]
+ = "Zpět beze změny";
 
 $_m["Constant unique id"]
  = "Identifikační číslo hodnoty";

@@ -4958,7 +4958,11 @@ $_m["Bad"]
 
 // include/formutil.php3, row 193
 $_m["Update & View"]
- = "Poslat a prohlédnout";
+ = "Zmìnit a prohlédnout";
+
+// include/formutil.php3, row 193
+$_m["Update & Edit"]
+ = "Zmìnit a editovat dále";
 
 // include/formutil.php3, row 197
 $_m["Insert as new"]
@@ -4966,7 +4970,11 @@ $_m["Insert as new"]
 
 // include/formutil.php3, row 203
 $_m["Insert & View"]
- = "Vložit & Prohlédnout";
+ = "Vložit a prohlédnout";
+
+// include/formutil.php3, row 203
+$_m["Insert & Edit"]
+ = "Vložit a editovat dále";
 
 // include/formutil.php3, row 220
 $_m["Part"]
