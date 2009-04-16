@@ -25,6 +25,9 @@ http://www.apc.org/
 //optionaly x         // the same as sh_itm, but short_id is used instead
                      // implemented for shorter item url (see _#SITEM_ID alias)
 //optionaly o         // the same as x but the hit is not counted
+                     // implemented for shorter item url (see _#SITEM_ID alias)
+//optionaly seo      // the same as x, but instead of it of item you provide seo
+                     // string (the one on seo............. field)
 //optionaly srch      // true if this script have to show search results
 //optionaly highlight // when true, shows only highlighted items in compact view
 //optionaly bigsrch   // NOT SUPPORTED IN AA v 1.5+
@@ -290,10 +293,14 @@ if (!is_array($slices)) {
 }
 
 // fulltext view ---------------------------------------------------------------
-if ( $sh_itm OR $x OR $o ) {
+if ( $sh_itm OR $x OR $o OR $seo ) {
     //  $r_state_vars = StoreVariables(array("sh_itm")); // store in session
     if ( $x ) {
         $zid = new zids((int)$x, 's');
+        AA_Hitcounter::hit($zid);
+    }
+    elseif ( $seo ) {
+        $zid = new zids(explode('-', AA_Stringexpand_Seo2ids::expand($slice_id, $seo)), 'l');
         AA_Hitcounter::hit($zid);
     }
     elseif ( $o ) {
