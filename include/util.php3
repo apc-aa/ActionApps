@@ -1031,9 +1031,10 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
             }
 
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-            $db_field = ( ($db->f("text")!="") OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
+            $db_field = ( (strlen($db->f("text"))>0) OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
             $content[$fooid][$db->f("field_id")][] = array( "value" => $db->f($db_field),
-                                                            "flag"  => $db->f("flag") );
+                                                            "flag"  => $db->f("flag")
+                                                            );
         }
     }
 

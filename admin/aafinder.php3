@@ -187,7 +187,11 @@ if ($go_finditem && $finditem) {
     }
 
     $item = AA_Items::getItem($finditem);
-
+    if ($item) {
+        echo "<br>Item ID: ". $item->getItemID();
+        echo "<br>Item slice: ". $item->getSliceID(). ' ('. AA_Slices::getName(unpack_id128($item->getSliceID())). ')';
+    }
+    echo "<pre>";
     echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
     print_r($item);
     echo "</pre>";

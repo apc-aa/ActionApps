@@ -325,7 +325,7 @@ class AA_Widget extends AA_Components {
     /* Creates all common ajax editing buttons to be used by different inputs */
     function _finalizaAjaxHtml($widget_html, $input_id, $repre_value) {
         $widget_html  .= "\n<input type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"DoChange('$input_id')\">"; //ULOŽIT ZMÌNU
-        $widget_html  .= "\n<input type=\"button\" value=\"". _m('Cancel') ."\" onclick=\"$('ajaxv_$input_id').update(". '$F(\'ajaxh_'.$input_id.'\'))'."; $('ajaxv_$input_id').setAttribute('aaedit', '2');\">";
+        $widget_html  .= "\n<input type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"$('ajaxv_$input_id').update(". '$F(\'ajaxh_'.$input_id.'\'))'."; $('ajaxv_$input_id').setAttribute('aaedit', '2');\">";
         $widget_html  .= "\n<input type=\"hidden\" id=\"ajaxh_$input_id\" value=\"".htmlspecialchars($repre_value)."\">";
         return $widget_html;
     }

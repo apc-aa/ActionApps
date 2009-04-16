@@ -53,16 +53,16 @@ if (!get_magic_quotes_gpc()) {
 function PutSearchLog() {
     global $searchlog, $view_param;
 
-    $httpquery = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
-    $httpquery = DeBackslash($httpquery);
-    $httpquery = str_replace("'", "\\'", $httpquery);
-    $db        = new DB_AA;
-
+    $httpquery        = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
+    $httpquery        = DeBackslash($httpquery);
+    $httpquery        = str_replace("'", "\\'", $httpquery);
+    $db               = getDb();
     $found_count      = count($view_param["disc_ids"]);
     list($usec, $sec) = explode(" ",microtime());
     $slice_time       = 1000 * ((float)$usec + (float)$sec - $GLOBALS['disc_starttime']);
     $user             = $_SERVER['PHP_AUTH_USER'];
-    $db->query( "INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'discuss $searchlog')");
+    $db->query("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'discuss $searchlog')");
+    freeDb($db);
 }
 
 /** APC-AA configuration file */

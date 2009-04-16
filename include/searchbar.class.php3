@@ -750,7 +750,8 @@ class AA_Bookmarks {
         $ret = array();
         if ( isset($this->bookmarks) AND is_array($this->bookmarks) ) {
             foreach ( $this->bookmarks as $key => $book ) {
-                $ret[(string)$key] = $book['name'];
+                $name = $book['name'] . ($this->isSelected($key) ? ' -' : '');
+                $ret[(string)$key] = $name;
             }
             // return the bookmarks sorted by name (used in left menu bookmark display)
             asort($ret);
@@ -925,6 +926,10 @@ class AA_Bookmarks {
         }
     }
 
+    /** bookmark of key $key is currently seleted? */
+    function isSelected($key) {
+        return is_numeric($this->getLastUsed()) && ($this->getLastUsed() == $key);
+    }
 
     /** getSelectbox function
      * Return HTML selectbox from bookmarks
@@ -934,9 +939,9 @@ class AA_Bookmarks {
           <select name="srchbr_bookmark">
              <option value="none" '. (($this->getLastUsed() == "none") ? 'selected' : '') .'>'. _m('Select one...') .'</option>';
         foreach ($this->bookmarks as $k => $book) {
-            $class = $this->is_global($k) ? 'class="sel_title"' : '';
-            $sel = ((is_numeric($this->getLastUsed()) && ($this->getLastUsed() == $k)) ? 'selected' : '');
-            $ret .= "\n<option value=\"$k\" $sel $class>".htmlspecialchars($book['name'])."</option>";
+            $class = $this->is_global($k)  ? 'class="sel_title"' : '';
+            $sel   = $this->isSelected($k) ? 'selected' : '';
+            $ret  .= "\n<option value=\"$k\" $sel $class>".htmlspecialchars($book['name'])."</option>";
         }
         $ret .= '</select>';
         return $ret;

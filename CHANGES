@@ -1,3 +1,40 @@
+04/16/09 - new buttons for Add/Edit Item form - "Insert & Edit" or
+(honzam)   "Update & Edit" which allows to continue editing the item after
+           the change. The buttons could be hiden from user profiles (as well as
+           any other UI elements)
+         - new parameter seo for slice.php3 - it displays single item based
+           on seo............. field (simalar to "x" and "o" parameter)
+             - like /apc-aa/slice.php3?seo=about-us
+         - improved preview in itemedit; preview url could be also specified
+           by _url_preview slice field where you can use AA constructs, so you
+           can construct exact url using items data
+         - {img:<url>:[<phpthumb_params>]:[<info>]} now have new parameter
+           <info>, which controls, which informations about the image
+           is returned. Possible values are:
+             - url (default)
+             - width
+             - height
+             - imgtype
+             - mime
+             - html or hw (height="xxx" width="yyy")
+             - img (<img src="<url>" height="xxx" width="yyy"/>)
+             - imgb (the same as img, but border="0" is added)
+         - new {fileinfo:<url>:<info>} returns size or type of the file:
+           {fileinfo:{file............}:size} - thanks to Adam Sanchez
+         - {include:} now passes Cookies to included file, which might
+           be usefull for AA_Auth, ...
+         - better {seoname:} (SEO name creation) - works better with UTF-8
+           encoding
+         - new basic "Search and Replace" transfromation in "Modify Content"
+           item action
+         - new possibility to copy also Alerts module in Central
+           (still experimental)
+         - new Optimize action - "Check database consistency" which check
+           the content table for records without item table reference, test
+           items - slice and also discussion - item relations
+         - new Optimize action - "Set right content column for field" - sets
+           flag FLAG_TEXT_STORED for all content, where field is marked as text
+           field, and reset it for numer fields
 04/15/09 - new code for slice password slice_pwd handling using AA_Credentials
 (honzam)   class - allows to access protected slices from widgets (for related
            items). The slice password is then filled as parameter to the widget
