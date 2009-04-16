@@ -97,17 +97,22 @@ class AA_Exporter {
         $grabber = new AA_Grabber_Slice($this->set);
         $grabber->prepare();       // maybe some initialization in grabber
 
-        $first = true;
+        $index = 0;
         while ($content4id = $grabber->getItem()) {
 
             $item = GetItemFromContent($content4id);
 
-            if ($first) {
+            if ($index == 0) {
                 fwrite($temp_file, $this->_outputStart($item));
-                $first = false;
             }
+            $index++;
+            
             fwrite($temp_file, $this->_outputItem($item));
             $old_item = $item;
+            
+//            if ($index==6000) {
+//                break;
+//            }
         }
         fwrite($temp_file, $this->_outputEnd($old_item));
         return $temp_file;
@@ -337,7 +342,7 @@ foreach ($fields_arr as $field_id) {
 $fs->addField('u_slice_id......', 'Slice ID');
 $fs->addField('unpacked_id.....', 'Item ID');
 
-set_time_limit(120);
+set_time_limit(1200);
 
 $set = new AA_Set($_GET['conds'], $_GET['sort'], array($_GET['slice_id']));
 $exporter = AA_Object::factoryByName('AA_Exporter_', $_GET['format'], array('set'=>$set, 'field_set'=>$fs));

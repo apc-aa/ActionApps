@@ -913,10 +913,14 @@ class AA_Grabber_Slice extends AA_Grabber {
 
     var $set;                 /** AA_Set specifies the slice, conds and sort */
     var $_longids;            /** list if files to grab - internal array */
+    var $_content_cache;      /**  */
+    var $_index;              /**  */
 
     function AA_Grabber_Slice($set) {
-        $this->set      = $set;
-        $this->_longids = array();
+        $this->set            = $set;
+        $this->_longids       = array();
+        $this->_content_cache = array();
+        $this->_index         = 0;
     }
 
     /** Name of the grabber - used for grabber selection box */
@@ -931,18 +935,30 @@ class AA_Grabber_Slice extends AA_Grabber {
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
-        $zids           = QuerySet($this->set);
-        $this->_longids = $zids->longids();
+        $zids                 = QuerySet($this->set);
+        $this->_longids       = $zids->longids();
+        $this->_content_cache = array();
+        $this->_index         = 0;
         reset($this->_longids);   // go to first long id
     }
 
     /** Method called by the AA_Saver to get next item from the data input */
     function getItem() {
-        if (!($longid = current($this->_longids))) {
+        if (!($longid = $this->_longids[$this->_index])) {
             return false;
         }
-        next($this->_longids);
-        return new ItemContent(new zids($longid, 'l'));
+        if (empty($this->_content_cache[$longid])) {
+            $this->_fillCache();
+        }
+
+        $this->_index++;
+        return new ItemContent($this->_content_cache[$longid]);
+    }
+
+    /** speedup */
+    function _fillCache() {
+        // read next 100 items (we can laborate with cache sice in future to get even better performance)
+        $this->_content_cache = GetItemContent(new zids( array_slice($this->_longids, $this->_index, 100), 'l'));
     }
 
     function finish() {
