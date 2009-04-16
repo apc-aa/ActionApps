@@ -1851,7 +1851,7 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
     function expand() {
         global $apc_state;
         if (!isset($apc_state['router'])) {
-            return "Err in {pager} - router not found - {pager} is designed for site modules";
+            return '<div class="aa-error">Err in {pager} - router not found - {pager} is designed for site modules</div>';
         }
 
         $itemview = $this->itemview;
@@ -1993,8 +1993,9 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
          *  used in format string
          */
 
-        $format  = AA_Fields::isField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+        $format  = AA_Fields::isField($format) ? '{substr:{'.$format.'}:0:50}' : $format;
         $format  = "{@keywords........:##}_AA_DeLiM_$format";
+
         // above is little hack - we need keyword pair, but we want to call
         // GetFormatedItems only once (for speedup), so we create one string with
         // delimiter:
