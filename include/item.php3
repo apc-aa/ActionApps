@@ -295,7 +295,6 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
  * @param $tagprefix - array as defined in itemfunc.php3
  */
 function GetFormatedItems( $set, $format, $restrict_zids=false, $crypted_additional_slice_pwd=null, $tagprefix=null) {
-  //  $set = new AA_Set(String2Conds( $conds ), String2Sort( $sort ), array($sid), $frombins);
     $zids  = QuerySet($set, $restrict_zids);
     if ( $zids->count() <= 0 ) {
         return false;
@@ -393,7 +392,7 @@ class AA_Item {
      *  @param $remove
      *  @param $param
      *
-     *  Take a look at AA_Item::getItem() (non caching) or 
+     *  Take a look at AA_Item::getItem() (non caching) or
      *  AA_Items::getItem() (caching), if you want to create item from id
      */
     function AA_Item($content4id='', $aliases='', $format='', $remove='', $param=false){
@@ -1545,7 +1544,7 @@ class AA_Item {
      *
      *  Static methods
      *  Creates item object just from item id and fills all necessary structures
-     *  
+     *
      *  @param  zid     - an item id - zid object, unpacked or short id
      *  @param  renew   - regenerate the item form database
      */
@@ -1557,7 +1556,6 @@ class AA_Item {
         return GetItemFromContent(new ItemContent($zid));
     }
 };
-
 
 class AA_Items {
     /** Array of all items grabbed from database during rendering of the page

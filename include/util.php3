@@ -1413,15 +1413,7 @@ function StoreToContent($item_id, $field, $value, $additional='') {
  * @param $field_type
  */
 function is_field_type_numerical($field_type) {
-    $number_db_types = array ("float","double","decimal","int", "timestamp");
-    reset ($number_db_types);
-
-    while (list (,$n_col) = each ($number_db_types))
-        if (strstr ($field_type, $n_col)) {
-            return true;
-        }
-
-    return false;
+    return in_array($field_type, array("float","double","decimal","int","timestamp"));
 }
 
 // -----------------------------------------------------------------------------

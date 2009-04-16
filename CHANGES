@@ -35,6 +35,11 @@
          - new Optimize action - "Set right content column for field" - sets
            flag FLAG_TEXT_STORED for all content, where field is marked as text
            field, and reset it for numer fields
+         - fixed {dictionary:...} broken in last commit
+         - some error messages are printed into <div class="aa-error"> div,
+           so it can be hidden by CSS ({pager} error)
+         - items are read in chunk (100) at once in AA_Grabber_Slice
+           for speedup of export
 04/15/09 - new code for slice password slice_pwd handling using AA_Credentials
 (honzam)   class - allows to access protected slices from widgets (for related
            items). The slice password is then filled as parameter to the widget
