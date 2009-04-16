@@ -94,7 +94,7 @@ class AA_Widget extends AA_Components {
 
             $bin_filter                   = $this->getProperty('bin_filter', AA_BIN_ACT_PEND);
             $tag_prefix                   = $this->getProperty('tag_prefix');  // tag_prfix is deprecated - should not be used
-            $crypted_additional_slice_pwd = AA_Credentials::encode($this->getProperty('additional_slice_pwd'));
+            $crypted_additional_slice_pwd = AA_Credentials::encrypt($this->getProperty('additional_slice_pwd'));
 
             $sid              = substr($constgroup, 7);
             /** Get format for which represents the id
