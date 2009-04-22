@@ -648,8 +648,8 @@ class AA_Transformation_Replace extends AA_Transformation {
         $varname_searchpattern = AA_Transformation::_getVarname('searchpattern', $input_prefix, __CLASS__);
         $varname_replacestring = AA_Transformation::_getVarname('replacestring', $input_prefix, __CLASS__);
 
-        FrmTextarea(  $varname_searchpattern, _m('Search'),  dequote($_GET[$varname_searchpattern]),  4, 80, true);
-        FrmTextarea(  $varname_replacestring, _m('Replace'), dequote($_GET[$varname_replacestring]),  4, 80, true);
+        FrmTextarea(  $varname_searchpattern, _m('Search'),  $_GET[$varname_searchpattern],  4, 80, true);
+        FrmTextarea(  $varname_replacestring, _m('Replace'), $_GET[$varname_replacestring],  4, 80, true);
         FrmTabEnd();
         return ob_get_clean();
     }

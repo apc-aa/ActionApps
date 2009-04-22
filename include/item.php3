@@ -1066,12 +1066,15 @@ class AA_Item {
      * @param $param string to be printed (like <img src="{img_src........1}"></img>
      */
     function f_t($col, $param="") {
-        $pos = strrpos($param, ":");
-        if ($pos !== false) {
-            $modif = substr($param,$pos+1);
-            if (in_array($modif, array('csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug')) AND (($pos==0) OR (substr($param,$pos-1,1)!='#'))) {
-                $text = ($pos==0) ? $this->getval($col) : substr($param,0,$pos);
+        $p = ParamExplode($param);
+        if ( isset($p[1]) ) {
+            $text  = get_if( $p[0], $this->getval($col) );
+            $modif = $p[1];
+            if (in_array($modif, array('csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug'))) {
                 return call_user_func( array( AA_Object::constructClassName('AA_Stringexpand_', $modif), 'expand'), $text);
+            }
+            if ($p[1]=='') {
+                $param = $p[0];
             }
         }
         return $param ? $this->subst_alias( $param ): DeHtml($this->getval($col), $this->getval($col,'flag'));

@@ -1,3 +1,5 @@
+04/22/09 - fixed bugs with f_t, "Modify content" action and alert e-mails
+(honzam)   (bugs introduced last commit)
 04/16/09 - new buttons for Add/Edit Item form - "Insert & Edit" or
 (honzam)   "Update & Edit" which allows to continue editing the item after
            the change. The buttons could be hiden from user profiles (as well as

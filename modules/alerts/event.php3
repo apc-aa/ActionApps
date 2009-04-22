@@ -55,7 +55,7 @@ function AlertsSendWelcome( $slice_id, &$itemContent ) {
             $item  = new AA_Item($itemContent, $aliases);
 
             if ($mydb->f("emailid_welcome")) {
-                send_mail_from_table_inner($mydb->f("emailid_welcome"), $itemContent->getValue(FIELDID_EMAIL), $item);
+                AA_Mail::sendTemplate($mydb->f("emailid_welcome"), $itemContent->getValue(FIELDID_EMAIL), $item);
             }
         }
     }
