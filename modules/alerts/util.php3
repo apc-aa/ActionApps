@@ -26,20 +26,23 @@ if (!is_object($db)) {
     $db=new DB_AA;
 }
 
+function GetCollection($slice_id) {
+    $SQL =  "SELECT AC.*, module.name, module.lang_file, module.slice_url
+              FROM alerts_collection AC INNER JOIN module ON AC.module_id = module.id
+              WHERE module_id='".q_pack_id($slice_id)."'";
+    return GetTable2Array($SQL, 'aa_first');
+}
+
 function set_collectionid() {
     global $collectionid, $collectionprop, $db, $no_slice_id, $slice_id;
 
     if (!$no_slice_id) {
         if (!$slice_id) { echo "Error: no slice ID"; exit; }
-        $db->query("SELECT AC.*, module.name, module.lang_file, module.slice_url
-            FROM alerts_collection AC INNER JOIN module
-            ON AC.module_id = module.id
-            WHERE module_id='".q_pack_id($slice_id)."'");
-        if ($db->next_record()) {
-            $collectionid = $db->f("id");
-            $collectionprop = $db->Record;
+        $collectionprop = GetCollection($slice_id);
+        if ($collectionprop) {
+            $collectionid = $collectionprop['id'];
         } else {
-            echo "Can't find collection with module_id=$slice_id (". HTMLEntities(pack_id($slice_id))."). Bailing out.<br>";
+            echo "Can't find collection with module_id=$slice_id. Bailing out.<br>";
             exit;
         }
     }
@@ -98,5 +101,85 @@ function GetEmailLangs() {
         $ret[$l] = $LANGUAGE_NAMES[$l]." (".$charset.")";
     }
     return $ret;
+}
+
+/** confirm_email function
+ *   Confirms email on Reader management slices because the parameter $aw
+ *   is sent only in Welcome messages.
+ *   Returns true if email exists and not yet confirmed, false otherwise.
+ */
+function confirm_email($slice_id, $aw) {
+
+    require_once AA_INC_PATH."itemfunc.php3";
+    $db = getDB();
+    $db->query(
+        "SELECT item.id FROM content INNER JOIN item
+         ON content.item_id = item.id
+         WHERE item.slice_id='".q_pack_id($slice_id)."'
+         AND content.field_id='".FIELDID_ACCESS_CODE."'
+         AND content.text='$aw'");
+    if ($db->num_rows() != 1) {
+        if ($GLOBALS['debug']) { echo "AW not OK: ".$db->num_rows()." items"; }
+        freeDB($db);
+        return false;
+    }
+    $db->next_record();
+    $item_id = unpack_id($db->f("id"));
+
+    $db->query(
+        "SELECT text FROM content
+          WHERE field_id = '".FIELDID_MAIL_CONFIRMED."'
+            AND item_id = '".q_pack_id($item_id)."'");
+
+    if ($db->next_record()) {
+        if (($db->f("text") != "") AND !$db->f("text")) {
+            $db->query(
+                "UPDATE content SET text='1'
+                WHERE field_id = '".FIELDID_MAIL_CONFIRMED."'
+                AND item_id = '".q_pack_id($item_id)."'");
+            if ($GLOBALS['debug']) { echo "<!--OK: email confirmed-->"; }
+            freeDB($db);
+            return true;
+        }
+    }
+    freeDB($db);
+    return false;
+}
+
+/** unsubscribe_reader function
+ */
+function unsubscribe_reader($slice_id, $au, $c) {
+
+    require_once AA_INC_PATH."itemfunc.php3";
+    $db = getDB();
+    $db->query (
+        "SELECT item.id FROM content INNER JOIN item
+         ON content.item_id = item.id
+         WHERE item.slice_id='".q_pack_id($slice_id)."'
+         AND content.field_id='".FIELDID_ACCESS_CODE."'
+         AND content.text='$au'");
+    if ($db->num_rows() != 1) {
+        if ($GLOBALS['debug']) echo "AU not OK: ".$db->num_rows()." items";
+        freeDB($db);
+        return false;
+    }
+    $db->next_record();
+    $item_id = unpack_id($db->f("id"));
+
+    $field_id = getAlertsField(FIELDID_HOWOFTEN, $c);
+    $db->query( "SELECT text FROM content WHERE field_id = '".$field_id."' AND item_id = '".q_pack_id($item_id)."'");
+
+    if ($db->next_record()) {
+        $frequency = $db->f("text");
+        if ($frequency AND (substr($frequency,0,5) != 'unsub')) {
+            $new_frequency = quote('unsubscribed:'. date('Y-m-d H:i'). ':au');  // just inform text
+            $db->query( "UPDATE content SET text='$new_frequency' WHERE field_id = '$field_id' AND item_id = '".q_pack_id($item_id)."'");
+            if ($GLOBALS['debug']) { echo "<!--OK: f $field_id unsubscribed-->"; }
+            freeDB($db);
+            return true;
+        }
+    }
+    freeDB($db);
+    return false;
 }
 ?>

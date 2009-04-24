@@ -1,3 +1,11 @@
+04/24/09 - new {alerts:<module_id>} syntax, which manages alerts subscriptions.
+(honzam)   The idea is, that this alias will manage all the alerts subscriptions
+           on the page - you just put the
+             {alerts:<alert_module_id>:<some opther parameter>}
+           construct on the page, and it displays the form for subscriptions,
+           managing user profile, unsubscribe users and confirm e-mails. At this
+           moment it is just start - it should unsubscribe users and confirm
+           e-mails when added to the page
 04/22/09 - fixed bugs with f_t, "Modify content" action and alert e-mails
 (honzam)   (bugs introduced last commit)
 04/16/09 - new buttons for Add/Edit Item form - "Insert & Edit" or

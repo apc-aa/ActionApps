@@ -2834,4 +2834,38 @@ class AA_Stringexpand_Version extends AA_Stringexpand_Nevercache {
 }
 
 
+/** manages alerts subscriptions
+ *  The idea is, that this alias will manage all the alerts subscriptions on the
+ *  page - you just put the {alerts:<alert_module_id>:<some opther parameter>}
+ *  construct on the page, and it displays the form for subscriptions, managing
+ *  user profile, unsubscribe users and confirm e-mails.
+ *  At this moment it is just start - it should unsubscribe users and confirm
+ *  e-mails when added to the page
+*/
+class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
+
+    /** expand function
+     * @param $module_id - alerts module id
+     */
+    function expand($module_id) {
+        // we need just reader slice id
+        $collectionprop = GetCollection($module_id);
+        if (!$collectionprop) {
+            return '';
+        }
+        $reader_slice_id = $collectionprop['slice_id'];
+        if ($_GET["aw"]) {
+            if (confirm_email($reader_slice_id, $_GET["aw"])) {
+                return '<div class="aa-ok">E-mail confirmed</div>';  // @todo get messages from alerts module
+            }
+        }
+        if ($_GET["au"]) {
+            if (unsubscribe_reader($reader_slice_id, $_GET["au"], $_GET["c"])) {
+                return '<div class="aa-ok">reader unsubsribed</div>';  // @todo get messages from alerts module
+            }
+        }
+    }
+}
+
+
 ?>

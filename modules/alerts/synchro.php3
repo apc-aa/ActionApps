@@ -36,7 +36,12 @@ require_once AA_BASE_PATH."modules/alerts/synchro2.php3";
 // -------------------------------------------------------------------
 // HTML code
 
-set_collectionid();
+$collectionprop = GetCollection($slice_id);
+if ($collectionprop) {
+    $collectionid = $collectionprop['id'];
+} else {
+    echo "Can't find collection with module_id=$slice_id. Bailing out.<br>";
+}
 
 HTMLPageBegin();
 echo "<title>"._m("Slice Synchro")."</title>";

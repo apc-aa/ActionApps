@@ -97,13 +97,13 @@ function fillForm() {
     if ($slice->getProperty("type") == "ReaderManagement") {
         if ($GLOBALS["aw"]) {
             $GLOBALS["ac"] = $GLOBALS["aw"];
-            if (confirm_email()) {
+            if (confirm_email($slice_id, $GLOBALS["aw"])) {
                 $GLOBALS["result"]["email_confirmed"] = "OK";
             }
         }
         if ($GLOBALS["au"]) {
             $GLOBALS["ac"] = $GLOBALS["au"];
-            if (unsubscribe_reader()) {
+            if (unsubscribe_reader($slice_id, $GLOBALS["au"], $GLOBALS["c"])) {
                 $GLOBALS["result"]["unsubscribed"] = "OK";
             }
         }
@@ -232,96 +232,6 @@ function fillFormWithContent($oldcontent4id) {
         $js .= "\n  fillForm ();";
     }
     return getFrmJavascript($js);
-}
-
-/** confirm_email function
- *   Confirms email on Reader management slices because the parameter $aw
- *   is sent only in Welcome messages.
- *   Returns true if email exists and not yet confirmed, false otherwise.
- */
-function confirm_email() {
-    global $slice_id;
-
-    require_once AA_INC_PATH."itemfunc.php3";
-    $db = getDB();
-    $db->query(
-        "SELECT item.id FROM content INNER JOIN item
-         ON content.item_id = item.id
-         WHERE item.slice_id='".q_pack_id($slice_id)."'
-         AND content.field_id='".FIELDID_ACCESS_CODE."'
-         AND content.text='".$GLOBALS["aw"]."'");
-    if ($db->num_rows() != 1) {
-        if ($debug) { echo "AW not OK: ".$db->num_rows()." items"; }
-        freeDB($db);
-        return false;
-    }
-    $db->next_record();
-    $item_id = unpack_id($db->f("id"));
-
-    $db->query(
-        "SELECT text FROM content
-          WHERE field_id = '".FIELDID_MAIL_CONFIRMED."'
-            AND item_id = '".q_pack_id($item_id)."'");
-
-    if ($db->next_record()) {
-        if (($db->f("text") != "") AND !$db->f("text")) {
-            $db->query(
-                "UPDATE content SET text='1'
-                WHERE field_id = '".FIELDID_MAIL_CONFIRMED."'
-                AND item_id = '".q_pack_id($item_id)."'");
-            if ($debug) {
-                echo "<!--OK: email confirmed-->";
-            }
-            freeDB($db);
-            return true;
-        }
-    }
-    freeDB($db);
-    return false;
-}
-/** unsubscribe_reader function
- *
- */
-function unsubscribe_reader() {
-    global $slice_id;
-
-    require_once AA_INC_PATH."itemfunc.php3";
-    $db = getDB();
-    $db->query (
-        "SELECT item.id FROM content INNER JOIN item
-         ON content.item_id = item.id
-         WHERE item.slice_id='".q_pack_id($slice_id)."'
-         AND content.field_id='".FIELDID_ACCESS_CODE."'
-         AND content.text='".$GLOBALS["au"]."'");
-    if ($db->num_rows() != 1) {
-        if ($debug) echo "AU not OK: ".$db->num_rows()." items";
-        freeDB($db);
-        return false;
-    }
-    $db->next_record();
-    $item_id = unpack_id($db->f("id"));
-
-    $field_id = getAlertsField (FIELDID_HOWOFTEN, $GLOBALS["c"]);
-    $db->query(
-        "SELECT text FROM content
-        WHERE field_id = '".$field_id."'
-        AND item_id = '".q_pack_id($item_id)."'");
-
-    if ($db->next_record()) {
-        if ($db->f("text")) {
-            $db->query(
-                "UPDATE content SET text=''
-                WHERE field_id = '".$field_id."'
-                AND item_id = '".q_pack_id($item_id)."'");
-            if ($debug) {
-                echo "<!--OK: f $field_id unsubscribed-->";
-            }
-            freeDB($db);
-            return true;
-        }
-    }
-    freeDB($db);
-    return false;
 }
 
 // ----------------------------------------------------------------------------
