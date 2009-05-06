@@ -237,13 +237,14 @@ function GetModuleLetter($type) {
     // get 'letter' or first letter of MODULE type
     return ($MODULES[$type]['letter'] ? $MODULES[$type]['letter'] : substr($type,0,1));
 }
+
 /** PrintPermUmPageEnd function
  * @param $MODULES
  * @param $mod_types
  * @param $perms_roles_modules
  */
 function PrintPermUmPageEnd($MODULES, $mod_types, $perms_roles_modules) { ?>
-    <script language="JavaScript"><!--
+    <script type="text/javascript"><!--
       var mod       = new Array();
       var mod_names = new Array();
     <?php

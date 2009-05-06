@@ -148,6 +148,7 @@ $perms_roles_modules = array(
   'J'     => array("ADMINISTRATOR"),                    // jump module
       // There is no specific roles in 'W', 'A', 'J' modules.
       // See include/constants.php3 for module definitions
+  'Alerts'=> array("ADMINISTRATOR"),                    // Alerts module
   'P'     => array("EDITOR","ADMINISTRATOR"),           // polls module
   'Links' => array("AUTHOR","EDITOR","ADMINISTRATOR")); // Links module
       // AUTHOR in Links module is public - probably identified by free/freepwd
