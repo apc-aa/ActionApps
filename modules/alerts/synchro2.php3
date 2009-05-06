@@ -104,7 +104,7 @@ function get_alerts_specific_fields($collectionid) {
 
 /** Adds Alerts-specific fields to the Reader Management Slice.
 *   Skips fields which already are in the slice.
-*   @param string $slice_id	packed ID of Reader Management Slice
+*   @param string $slice_id	long ID of Reader Management Slice
 *	@return string Message about the number of field added. */
 function add_fields_2_slice($collectionid, $slice_id) {
     global $db, $field_defaults;
@@ -132,8 +132,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
     $input_pri = 1800;
     do {
         $input_pri += 200;
-        $db->query("SELECT id FROM field
-            WHERE slice_id = '".addslashes($slice_id)."' AND id NOT LIKE '\_%' AND input_pri = $input_pri");
+        $db->query("SELECT id FROM field WHERE slice_id = '". q_pack_id($slice_id)."' AND id NOT LIKE '\_%' AND input_pri = $input_pri");
     } while ($db->next_record());
 
     $varset = new CVarset;
@@ -143,7 +142,7 @@ function add_fields_2_slice($collectionid, $slice_id) {
         $fprop = &$alerts_specific_fields[$field_id];
 
         $varset->clear();
-        $varset->addkey("slice_id", "text", $slice_id);
+        $varset->addkey("slice_id", "unpacked", $slice_id);
         $varset->addkey("id",       "text", $field_id);
 
         // don't add fields twice
@@ -198,26 +197,26 @@ function add_fields_2_slice($collectionid, $slice_id) {
 
 /** Deletes Alerts-specific fields from slice, including constant groups.
 *   Negates add_fields_2_slice() doings. */
-function delete_fields_from_slice ($collectionid, $sliceid)
-{
+function delete_fields_from_slice($collectionid, $slice_id) {
     global $db;
-    $alerts_specific_fields = get_alerts_specific_fields ($collectionid);
+    $ndeleted_groups        = 0;
+    $ndeleted               = 0;
+    $alerts_specific_fields = get_alerts_specific_fields($collectionid);
     $varset = new CVarset;
-    $varset->addkey ("slice_id", "text", $sliceid);
-    reset ($alerts_specific_fields);
-    while (list ($field_id) = each ($alerts_specific_fields)) {
-        $fprop = &$alerts_specific_fields [$field_id];
-        $varset->addkey ("id", "text", $field_id);
-        $db->query ($varset->makeSELECT ("field"));
+    $varset->addkey ("slice_id", "unpacked", $slice_id);
+    foreach ($alerts_specific_fields as $field_id => $foo) {
+        $varset->addkey("id", "text", $field_id);
+        $db->query($varset->makeSELECT ("field"));
         if ($db->next_record()) {
             list ($fnc, $group_id) = explode (":", $db->f("input_show_func"));
-            if (delete_constant_group ($group_id, unpack_id ($sliceid)))
-                $ndeleted_groups ++;
-            $ndeleted ++;
-            $db->query ($varset->makeDELETE ("field"));
+            if (delete_constant_group($group_id, $slice_id)) {
+                $ndeleted_groups++;
+            }
+            $ndeleted++;
+            $varset->doDelete("field");
         }
     }
-    return _m("%1 field(s) and %2 constant group(s) deleted", array ($ndeleted+0, $ndeleted_groups+0));
+    return _m("%1 field(s) and %2 constant group(s) deleted", array($ndeleted+0, $ndeleted_groups+0));
 }
 
 // -------------------------------------------------------------------

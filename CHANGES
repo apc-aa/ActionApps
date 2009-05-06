@@ -1,3 +1,10 @@
+05/06/09 - new possibility to print multiple constants with {constant} syntax:
+(honzam)     {constant:<group_id>:<value(s)>[:<constant_field>[:<value_delimiter>[:<output_delimiter>]]]}
+           just like:
+             {constant:biom__categories:{@category........:|}:name:|:, }
+         - fixes in {alerts} syntax
+         - fixed Alerts module permissions - now you can assign the permission
+           to edit the module to the user
 04/24/09 - new {alerts:<module_id>} syntax, which manages alerts subscriptions.
 (honzam)   The idea is, that this alias will manage all the alerts subscriptions
            on the page - you just put the

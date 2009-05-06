@@ -53,27 +53,28 @@ echo '<h1>'._m("Synchronization with Reader Management Slice").'</h1>';
 
 // Execute requested actions from FORM
 
-if ($add_fields)
-    echo "<b>".add_fields_2_slice ($collectionid, $collectionprop["slice_id"])."</b><br><br>";
-
-if ($change_to_cmd && pack_id ($change_to) != $collectionprop["slice_id"])	{
-    if ($change_to_delete)
-        echo "<b>".delete_fields_from_slice ($collectionid, $collectionprop["slice_id"])."</b><br><br>";
-    if ($change_to)
-        $db->query ("UPDATE alerts_collection SET slice_id='".q_pack_id($change_to)."'
-            WHERE id='$collectionid'");
-    else $db->query ("UPDATE alerts_collection SET slice_id = NULL
-            WHERE id='$collectionid'");
-
-    $collectionprop["slice_id"] = pack_id ($change_to);
+if ($add_fields) {
+    echo "<b>".add_fields_2_slice($collectionid, $collectionprop["slice_id"])."</b><br><br>";
 }
 
-$db->query ("SELECT name FROM slice WHERE id = '".addslashes ($collectionprop["slice_id"])."'");
+if ($change_to_cmd && ($change_to != $collectionprop["slice_id"]))	{
+    if ($change_to_delete) {
+        echo "<b>".delete_fields_from_slice($collectionid, $collectionprop["slice_id"])."</b><br><br>";
+    }
+    if ($change_to) {
+        $db->query ("UPDATE alerts_collection SET slice_id='".q_pack_id($change_to)."' WHERE id='$collectionid'");
+    } else {
+        $db->query ("UPDATE alerts_collection SET slice_id = NULL WHERE id='$collectionid'");
+    }
+    $collectionprop["slice_id"] = $change_to;
+}
+
+$db->query ("SELECT name FROM slice WHERE id = '". q_pack_id($collectionprop["slice_id"])."'");
 if ($db->next_record()) {
     $slice_name = $db->f("name");
-    $slice_set = true;
+    $slice_set  = true;
 } else {
-    $slice_set = false;
+    $slice_set  = false;
     $slice_name = _m("Not Yet Set");
 }
 
@@ -85,20 +86,21 @@ echo '
     <tr><td class=tabtxt>
     <h2>'._m("Choose Reader Management Slice").'</h2>
     '._m("This Alerts Collection takes user data from the slice").":<br><b>";
-if ($slice_set) echo "
-    <a href=\"".$sess->url(AA_INSTAL_PATH."admin/index.php3?slice_id="
-    .unpack_id($collectionprop["slice_id"]))."\">".$slice_name.'</a>';
-else echo $slice_name;
-echo '</b><br><br>'
-    ._m("Change to: ");
 
-FrmSelectEasy("change_to", getReaderManagementSlices(), unpack_id($collectionprop["slice_id"]));
+if ($slice_set) {
+    echo "<a href=\"".$sess->url(AA_INSTAL_PATH."admin/index.php3?slice_id=". $collectionprop["slice_id"])."\">".$slice_name.'</a>';
+} else {
+    echo $slice_name;
+}
+echo '</b><br><br>'._m("Change to: ");
+
+FrmSelectEasy("change_to", getReaderManagementSlices(), $collectionprop["slice_id"]);
 
 if ($slice_set) {
     echo '<br><input type="checkbox" name="change_to_delete" checked> '
-        ._m("and delete the %1-specific fields from %2",
-            array ($collectionprop["name"], $slice_name));
+        ._m("and delete the %1-specific fields from %2", array($collectionprop["name"], $slice_name));
 }
+
 echo '
     <br><br><input type="submit" name="change_to_cmd" value="'._m("Change").'">
 </td></tr></table></form>
@@ -122,17 +124,18 @@ echo '<br><br><table border="1" cellspacing="0" cellpadding="3">
         <td class="tabtit">'._m("Field ID").'</td></tr>';
 
 $fields = get_alerts_specific_fields($collectionid);
-reset ($fields);
-while (list ($field_id, $fprop) = each ($fields))
-    echo '<tr><td class="tabtxt">'.$fprop["name"].'</td>
-              <td class="tabtxt">'.$field_id.'</td></tr>';
+foreach ($fields as $field_id => $fprop) {
+    echo "<tr><td class=\"tabtxt\">".$fprop["name"]."</td><td class=\"tabtxt\">$field_id</td></tr>\n";
+}
 echo '</table><br>';
 
-if ($slice_set)
+if ($slice_set) {
     echo '<input type="submit" name="add_fields" value="'._m("Add or refresh fields").'">';
-else echo _m("This command can not be used until you choose the Reader Management Slice.");
-echo '
-</td></tr></table></form>';
+} else {
+    echo _m("This command can not be used until you choose the Reader Management Slice.");
+}
+
+echo "\n</td></tr></table></form>";
 
 HTMLPageEnd();
 page_close();
