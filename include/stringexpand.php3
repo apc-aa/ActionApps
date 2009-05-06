@@ -1601,16 +1601,27 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand {
 }
 
 /** @returns name (or other field) of the constant in $gropup_id with $value
- *  Example: {constant:AA Core Bins:name}
+ *  Example: {constant:AA Core Bins:1:name}
+ *           {constant:biom__categories:{@category........:|}:name:|:, }  // for multiple constants
  */
 class AA_Stringexpand_Constant extends AA_Stringexpand {
     /** expand function
-     * @param $group_id
-     * @param $value
-     * @param $what
+     * @param $group_id         - constants ID
+     * @param $value            - constant value (or values delimited by $value_delimiter)
+     * @param $what             - name|value|short_id|description|pri|group|class|id|level
+     * @param $value_delimiter  - value delimiter - used just form translating multiple constants at once
+     * @param $output_delimiter - resulting output delimiter - ', ' is default for multiple constants
      */
-    function expand($group_id, $value, $what='name') {
-         return getConstantValue($group_id, $what, $value);
+    function expand($group_id, $value, $what='name', $value_delimiter='', $output_delimiter=', ') {
+        if (!$value_delimiter) {
+            return getConstantValue($group_id, $what, $value);
+        }
+        $arr = explode($value_delimiter, $value);
+        $ret = array();
+        foreach ($arr as $constant) {
+            $ret[] = getConstantValue($group_id, $what, $constant);
+        }
+        return join($output_delimiter, $ret);
     }
 }
 
@@ -2332,9 +2343,9 @@ function expandFilenameWithHttp($parturl) {
       }
 
       return AA_Http::PostRequest($filename, array(), $headers);
-//      $file = &AA_File_Wrapper::wrapper($filename);
+      // $file = &AA_File_Wrapper::wrapper($filename);
       // $file->contents(); opens the stream, reads the data and close the stream
-//      return $file->contents();
+      // return $file->contents();
 }
 
 // Return some strings to use in keystr for cache if could do a stringexpand
@@ -2848,8 +2859,11 @@ class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
      * @param $module_id - alerts module id
      */
     function expand($module_id) {
+        require_once AA_BASE_PATH."modules/alerts/util.php3";
+
         // we need just reader slice id
         $collectionprop = GetCollection($module_id);
+
         if (!$collectionprop) {
             return '';
         }
@@ -2861,9 +2875,10 @@ class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
         }
         if ($_GET["au"]) {
             if (unsubscribe_reader($reader_slice_id, $_GET["au"], $_GET["c"])) {
-                return '<div class="aa-ok">reader unsubsribed</div>';  // @todo get messages from alerts module
+                return '<div class="aa-ok">E-mail unsubscribed</div>';  // @todo get messages from alerts module
             }
         }
+        return '';
     }
 }
 
