@@ -1,3 +1,7 @@
+05/18/09 - new {credentials:ThisIsThePassword} EXPERIMENTAL construct allowing
+(honzam)   you display the content of the protected slice. It is usefull for
+           site module, when ypu need to display protected content
+         - small fixes for LDAP permission system and cleanup
 05/06/09 - new possibility to print multiple constants with {constant} syntax:
 (honzam)     {constant:<group_id>:<value(s)>[:<constant_field>[:<value_delimiter>[:<output_delimiter>]]]}
            just like:

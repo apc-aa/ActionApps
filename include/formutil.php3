@@ -733,7 +733,7 @@ class AA_Inputfield {
       * @param $tagprefix
       */
     function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=false, $crypted_additional_slice_pwd=null, $tagprefix=null) {
-        if ( isset($this->const_arr) and is_array($this->const_arr) ) {  // already filled
+        if ( isset($this->const_arr) AND is_array($this->const_arr) ) {  // already filled
             return;
         }
         $this->const_arr = array();  // Initialize

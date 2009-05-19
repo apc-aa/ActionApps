@@ -2029,7 +2029,7 @@ class AA_Credentials {
             return true;
         }
         if ($GLOBALS['slice_pwd']) {
-            $this->_add(AA_Credentials::encrypt($GLOBALS['slice_pwd']));
+            $this->register(AA_Credentials::encrypt($GLOBALS['slice_pwd']));
         }
         return $this->_pwd[$crypted_slice_pwd] ? true : false;
     }
@@ -2038,10 +2038,10 @@ class AA_Credentials {
      * @param $slice_id
      */
     function loadFromSlice($slice_id) {
-        $this->_add(AA_Slices::getSliceProperty($slice_id,'reading_password'));
+        $this->register(AA_Slices::getSliceProperty($slice_id,'reading_password'));
     }
 
-    function _add($crypted_slice_pwd) {
+    function register($crypted_slice_pwd) {
         if (!empty($crypted_slice_pwd)) {
             $this->_pwd[$crypted_slice_pwd] = true;
         }
@@ -2191,7 +2191,7 @@ function get_if($value, $else, $else2='aa_NoNe') {
  *  file, for better version informations
  */
 function aa_version($format='full') {
-    $version = '2.11.0';
+    $version = '2.49.0';
     $full    = 'ActionApps '.$version.' ($Date$, $Revision$)';
     switch ($format) {
         case 'svn': return (int) substr($full, strpos($full, 'Revision')+10);

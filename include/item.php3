@@ -295,12 +295,12 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
  * @param $tagprefix - array as defined in itemfunc.php3
  */
 function GetFormatedItems( $set, $format, $restrict_zids=false, $crypted_additional_slice_pwd=null, $tagprefix=null) {
+    $ret = array();
     $zids  = QuerySet($set, $restrict_zids);
     if ( $zids->count() <= 0 ) {
-        return false;
+        return $ret;
     }
 
-    $ret = array();
     $items = AA_Items::getItems($zids, $crypted_additional_slice_pwd);
     foreach($items as $long_id=>$item) {
         $ret[$long_id] = AA_Stringexpand::unalias($format, '', $item);
