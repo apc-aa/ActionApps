@@ -2883,4 +2883,26 @@ class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
 }
 
 
+/** Adds supplied slice password to the list of known passwords for the page,
+ *  so you can display the content of the protected slice
+ *  It is usefull for site module, when ypu need to display protected content
+ *  Experimental
+ *  Ussage: {credentials:ThisIsThePassword}
+ */
+class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // The caching is made by AA_Stringexpand_Aggregate, which is enough
+    /** expand function
+     * @param $ids_string
+     * @param $expression
+     * @param $delimeter
+     */
+    function expand($slice_pwd, $slice_id='') {
+        $credentials = AA_Credentials::singleton();
+        $credentials->register(AA_Credentials::encrypt($slice_pwd));
+        return '';
+    }
+}
+
+
 ?>
