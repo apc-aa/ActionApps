@@ -41,35 +41,28 @@ $editor_perms = GetSlicePerms($auth->auth["uid"], $slice_id);
  * @param $role_perm
  */
 function CanChangeRole($user_perm, $editor_perm, $role_perm) {
-  if ((ComparePerms($editor_perm, $user_perm)=="G") &&
-      (ComparePerms($editor_perm, $role_perm)=="G")) {
-    return true;
-  } else {
-    return false;
-  }
+    return ((ComparePerms($editor_perm, $user_perm)=="G") AND (ComparePerms($editor_perm, $role_perm)=="G"));
 }
+
 /** ChangeRole function
  *
  */
 function ChangeRole() {
-  global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role, $perms_roles, $db;
+    global $UsrAdd, $UsrDel, $slice_id, $editor_perms, $role, $perms_roles, $db;
 
-  if ( $UsrAdd ) {
-    if ( CanChangeRole( GetSlicePerms($UsrAdd, $slice_id, false),
-                       $editor_perms,
-                       $perms_roles[$role]['perm']) ) {
-      AddPerm($UsrAdd, $slice_id, "slice", $perms_roles[$role]['id']);
-      $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+    if ( $UsrAdd ) {
+        if ( CanChangeRole( GetSlicePerms($UsrAdd, $slice_id, false), $editor_perms, $perms_roles[$role]['perm']) ) {
+            AddPerm($UsrAdd, $slice_id, "slice", $perms_roles[$role]['id']);
+            $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
+        }
+    } elseif( $UsrDel ) {
+        if ( CanChangeRole(GetSlicePerms($UsrDel, $slice_id, false), $editor_perms, $perms_roles["AUTHOR"]['perm']) ) { // smallest permission
+            DelPerm($UsrDel, $slice_id, "slice");
+        }
+
+        $profile = AA_Profile::getProfile($UsrDel, $slice_id);  // user settings
+        $profile->delUserProfile();
+        $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
     }
-  } elseif( $UsrDel ) {
-    if ( CanChangeRole(GetSlicePerms($UsrDel, $slice_id, false),
-                      $editor_perms,
-                      $perms_roles["AUTHOR"]['perm']) )  // smallest permission
-      DelPerm($UsrDel, $slice_id, "slice");
-
-      $profile = AA_Profile::getProfile($UsrDel, $slice_id);  // user settings
-      $profile->delUserProfile();
-      $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
-  }
 }
 ?>

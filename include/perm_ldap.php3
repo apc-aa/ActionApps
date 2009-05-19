@@ -615,7 +615,14 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
     $basedn = "apcobjectid=" . $objectID . "," . $aa_default_ldap['acls'];
     $result = @ldap_read($ds, $basedn, $filter, array("apcaci"));
     if (!$result) {
-        return false;
+        // we have to add the permission object
+        AddPermObject($objectID, $objectType);
+        $result = @ldap_read($ds, $basedn, $filter, array("apcaci"));
+
+        // does not help - return false
+        if (!$result) {
+            return false;
+        }
     }
     $entry = ldap_first_entry ($ds, $result);
     $arr   = ldap_get_attributes($ds, $entry);
