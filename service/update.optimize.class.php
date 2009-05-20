@@ -172,6 +172,11 @@ class AA_Optimize_Field_Duplicates extends AA_Optimize {
     }
 
     function _check_table() {
+        // does the table exist at all?
+        $field_exists = GetTable2Array("SHOW TABLES LIKE 'field'", "aa_first");
+        if (!$field_exists) {
+            return array();
+        }
         $fields = GetTable2Array("SELECT * FROM field ORDER BY slice_id, id", '');
 
         $field_table = array();

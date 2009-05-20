@@ -148,6 +148,12 @@ if (!is_callable('unpack_id')) {
     }
 }
 
+if (!is_callable('q_pack_id')) {
+    function q_pack_id($unpacked_id){
+        return quote(((string)$unpacked_id == "0" ? "0" : @pack("H*",trim($unpacked_id))));
+    }
+}
+
 if (!is_callable('quote')) {
     function quote($str) {
       return addslashes($str);
@@ -320,7 +326,7 @@ if (!$_GET['silent']) {
             <br><br>
 
             <input type="submit" name="dotest" value="Test">
-            <input type="submit" name="update" value="Update">
+            <input type="submit" name="update" value="Install / Update">
             <input type="submit" name="restore" value="Restore">
            </form>
           </body>
