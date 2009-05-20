@@ -63,10 +63,10 @@ bind_mgettext_domain(AA_INC_PATH."lang/".DEFAULT_LANG_INCLUDE);
  */
 function HtmlStart() {
     HTMLPageBegin("../".ADMIN_CSS);
-    echo "<title>" . _m("AA Setup") . "</title></head>\n";
+    echo "<title>" . _m("ActionApps Setup") . "</title></head>\n";
     echo "<body bgcolor=\"". COLOR_BACKGROUND ."\">\n";
     echo "<center>\n";
-    echo "<h1>" . _m("AA Setup") . "</h1>\n";
+    echo "<h1>" . _m("ActionApps Setup") . "</h1>\n";
 }
 /** NoAction function
  * @return prints a message
@@ -150,7 +150,7 @@ if ( !isset($info) OR !is_array($info) OR (count($info)<1) ) {
     HtmlStart();
     echo _m('Database is not configured correctly or the database is empty.<br>
              Check please the database credentials in <b>include/config.php3</b>
-             file <br>or run <a href="../sql_update.php3">sql_update.php3</a> script,
+             file <br>or run <a href="../service/sql_update.php">/service/sql_update.php</a> script,
              which creates AA tables for you.');
     HtmlEnd();
     exit;

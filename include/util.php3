@@ -420,8 +420,8 @@ function string2id($str) {
  * Note that pack_id is used in many places where it is NOT 128 bit ids.
  */
 function pack_id($unpacked_id) {
-    global $errcheck;
     /*
+    global $errcheck;
     if ($errcheck && !preg_match("/^[0-9a-f]+$/", $unpacked_id)) // Note was + instead {32}
          huhe("Warning: trying to pack $unpacked_id.<br>\n");
     */

@@ -1,6 +1,16 @@
+--------------------
+05/21/09 - v2.50.0 - stable release
+--------------------
+05/20/09 - prepared for ActionApps v2.50.0 release
+(honzam) - sql_update.php3 script replaced by the /service/sql_update.php script
+         - /service/sql_update.php script fixed to allow also database install
+         - new Export to file option in Slice Admin menu which allows export
+           selected items to CSV/HTML/(XLS). We moved there the older export.php
+           script from root, which was misplaced there
+         - new parameter for poll.php3 - 'from' and 'novote'
 05/18/09 - new {credentials:ThisIsThePassword} EXPERIMENTAL construct allowing
 (honzam)   you display the content of the protected slice. It is usefull for
-           site module, when ypu need to display protected content
+           site module, when you need to display protected content
          - small fixes for LDAP permission system and cleanup
 05/06/09 - new possibility to print multiple constants with {constant} syntax:
 (honzam)     {constant:<group_id>:<value(s)>[:<constant_field>[:<value_delimiter>[:<output_delimiter>]]]}

@@ -5,17 +5,6 @@ ActionApps
 ActionApps (under the GPL) provide easy automated publishing for
 non-profit WWW sites and 'Usenet-like' sharing of articles between sites.
 
-
-
-
-News
-====
-11/04/2003 - stable v2.6.0 of ActionApps released
-11/18/2002 - stable v2.4.0 of ActionApps released
-06/14/2002 - stable v2.2.0 of ActionApps released
-10/08/2001 - stable v2.0.0 of ActionApps released
-06/04/2001 - stable v1.8.0 of ActionApps released
-
 Features
 ========
 - Complete web publishing system: no HTML skills required
@@ -34,12 +23,12 @@ Features
 
 Update
 ======
-To upgrade database form v >1.5 use /sql_update.php3 script.
+To upgrade or just check database use /service/sql_update.php3 script.
 
 
 Contact
 =======
-See http://www.apc.org/actionapps/ for more info about APC-AA
+See http://actionapps.org/ for more info about ActionApps
 
 See http://sourceforge.net/projects/apc-aa/ for
 
@@ -50,5 +39,4 @@ See http://sourceforge.net/projects/apc-aa/ for
   patches
   support manager for help with installation
 
-See http://apc-aa.sourceforge.net/aa/doc/ for recent documentation,
-or look in the doc/ subdirectory.
+See http://actionapps.org/ for recent documentation, or look in the doc/ subdirectory.
