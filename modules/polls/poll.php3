@@ -76,7 +76,7 @@ require_once AA_INC_PATH."locsess.php3";
 
 $db = new DB_AA;
 
-if (isset($_REQUEST['vote_id']) AND isset($_REQUEST['poll_id'])) {
+if (isset($_REQUEST['vote_id']) AND isset($_REQUEST['poll_id']) AND !isset($_REQUEST['novote'])) {
     $poll = AA_Polls::getPoll($_REQUEST['poll_id']);
     $poll->registerVote($_REQUEST['vote_id']);
 }
@@ -87,7 +87,9 @@ if ($_REQUEST['poll_id']) {
 } else {
     $set       = AA_Poll::generateSet($_REQUEST['pid'],$_REQUEST['conds'],$_REQUEST['sort']);
     $poll_zids = AA_Metabase::queryZids(array('table'=>'polls'), $set);
-    $poll_zids = $poll_zids->slice(0, $_REQUEST['listlen'] ? $_REQUEST['listlen'] : 1);
+    $from      = $_REQUEST['from'] ? $_REQUEST['from']-1 : 0;
+    $listlen   = get_if($_REQUEST['listlen'], 1);
+    $poll_zids = $poll_zids->slice($from, $listlen);
 }
 
 // and now display the polls
