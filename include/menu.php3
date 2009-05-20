@@ -160,6 +160,7 @@ function get_aamenus() {
         "filters"       => array("cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_filters.php3",               "label"=>_m("Filters")),
         "mapping"       => array("cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_mapping.php3",               "label"=>_m("Mapping")),
         "CSVimport"     => array("cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_csv_import.php3",            "label"=>_m("Import CSV")),
+        "export"        => array("cond"=>IfSlPerm(PS_FEEDING),  "href"=>"admin/se_export.php",                 "label"=>_m("Export to file")),
 
         "header5"       => _m("Misc"),
         "field_ids"     => array("cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fieldid.php3",               "label"=>_m("Change field IDs")),

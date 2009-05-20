@@ -36,25 +36,14 @@
  *  @example http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=excel&filename=export.xls
  */
 
-/** Handle with PHP magic quotes - unquote the variables if quoting is set on */
-function StripslashesDeep($value) {
-    return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
-}
-
-if ( get_magic_quotes_gpc() ) {
-    $_POST    = StripslashesDeep($_POST);
-    $_GET     = StripslashesDeep($_GET);
-    $_COOKIE  = StripslashesDeep($_COOKIE);
-}
-
-require_once "./include/config.php3";
+require_once "../include/init_page.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."grabber.class.php3";
 require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
-class AA_Exporter {
+class AA_Exporter extends AA_Object {
     var $set;
     var $field_set;
 
@@ -106,10 +95,10 @@ class AA_Exporter {
                 fwrite($temp_file, $this->_outputStart($item));
             }
             $index++;
-            
+
             fwrite($temp_file, $this->_outputItem($item));
             $old_item = $item;
-            
+
 //            if ($index==6000) {
 //                break;
 //            }
@@ -240,15 +229,6 @@ class AA_Exporter_Excel extends AA_Exporter {
 }
 */
 
-class AA_Exporter_Excel extends AA_Exporter_Html {
-    function _contentHeaders($file_name)    {
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/vnd.ms-excel;charset:UTF-8');
-        header('Content-Disposition: attachment; filename='.basename($file_name));
-        header('Content-Transfer-Encoding: binary');
-    }
-}
-
 class AA_Exporter_Html extends AA_Exporter {
 
     function _contentHeaders($file_name)    {
@@ -287,6 +267,14 @@ class AA_Exporter_Html extends AA_Exporter {
     }
 }
 
+class AA_Exporter_Excel extends AA_Exporter_Html {
+    function _contentHeaders($file_name)    {
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/vnd.ms-excel;charset:UTF-8');
+        header('Content-Disposition: attachment; filename='.basename($file_name));
+        header('Content-Transfer-Encoding: binary');
+    }
+}
 
 class AA_Fieldset {
 
@@ -322,38 +310,93 @@ class AA_Fieldset {
     function isField($index)       { return $this->_types[$index] == 'f'; }
 }
 
-$slice  = AA_Slices::getSlice($_GET['slice_id']);
-if (!$slice->isValid()) {
-    echo _m('No slice specified - specify slice_id as url parameter');
+if (!IfSlPerm(PS_FEEDING)) {
+    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to export"));
     exit;
 }
 
-$fields     = $slice->getFields();
-$fields_arr = $fields->getPriorityArray();
-$fs         = new AA_Fieldset;
+if ($_GET['export']) {
+    $slice  = AA_Slices::getSlice($slice_id);
 
-foreach ($fields_arr as $field_id) {
-    // skip packed fields
-    if ( in_array($field_id, array('id..............', 'slice_id........'))) {
-        continue;
+    if (!$slice->isValid()) {
+        echo _m('No slice specified - specify slice_id as url parameter');
+        exit;
     }
-    $fs->addField($field_id, $fields->getProperty($field_id,'name'));
-}
-$fs->addField('u_slice_id......', 'Slice ID');
-$fs->addField('unpacked_id.....', 'Item ID');
 
-set_time_limit(1200);
+    $fields     = $slice->getFields();
+    $fields_arr = $fields->getPriorityArray();
+    $fs         = new AA_Fieldset;
 
-$set = new AA_Set($_GET['conds'], $_GET['sort'], array($_GET['slice_id']));
-$exporter = AA_Object::factoryByName('AA_Exporter_', $_GET['format'], array('set'=>$set, 'field_set'=>$fs));
-if (is_null($exporter)) {
-    echo _m('Bad file format - specify format as url parameter (csv, xls, ...)');
+    foreach ($fields_arr as $field_id) {
+        // skip packed fields
+        if ( in_array($field_id, array('id..............', 'slice_id........'))) {
+            continue;
+        }
+        $fs->addField($field_id, $fields->getProperty($field_id,'name'));
+    }
+    $fs->addField('u_slice_id......', 'Slice ID');
+    $fs->addField('unpacked_id.....', 'Item ID');
+
+    set_time_limit(1200);
+
+    $set      = new AA_Set($_GET['conds'], $_GET['sort'], array($slice_id), $_GET['bins']);
+    $exporter = AA_Object::factory($_GET['format'], array('set'=>$set, 'field_set'=>$fs));
+    if (is_null($exporter)) {
+        echo _m('Bad file format - specify format');
+        exit;
+    }
+
+    $filename = $_GET['filename'] ? $_GET['filename'] : 'export.'.$_GET['format'];
+
+    $exporter->sendFile($filename);
+
     exit;
 }
 
-$filename = $_GET['filename'] ? $_GET['filename'] : 'export.'.$_GET['format'];
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+?>
+<title><?php echo _m("Admin - Export Items");?></title>
+</head>
 
-$exporter->sendFile($filename);
+<?php
+require_once AA_INC_PATH."menu.php3";
+showMenu($aamenus, "sliceadmin", "export");
 
-exit;
+echo "<h1><b>" . _m("Admin - Export Items") . "</b></h1>";
+PrintArray($err);
+echo $Msg;
+
+$form_buttons = array ('export' => array('type'=>'submit', 'value'=> _m('Export')));
+
+$bins_arr = array(
+    AA_BIN_ALL      => _m('All'),
+    AA_BIN_ACTIVE   => _m('Active'),
+    AA_BIN_PENDING  => _m('Pending'),
+    AA_BIN_EXPIRED  => _m('Expired'),
+    AA_BIN_APPROVED => _m('Approved'),
+    AA_BIN_HOLDING  => _m('Holding'),
+    AA_BIN_TRASH    => _m('Trash')
+    );
+
+$format_arr    = AA_Components::getClassNames('AA_Exporter_');
+
+?>
+<form name="f" method="get" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<?php
+FrmTabCaption(_m("Export Items"), '','',$form_buttons, $sess, $slice_id);
+
+FrmInputSelect('format', _m("Format"),    $format_arr, $format, true, '', '', true);
+FrmInputSelect('bins', _m("Bins"),      $bins_arr, $bins, true);
+FrmInputText("filename",  _m("Filename"), $filename, 255, 60, false, _m('save as...'));
+FrmInputText("conds",  _m("Conditions"), $conds, 255, 60, false, _m('conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
+FrmInputText("sort",   _m("Sort"),       $sort, 255,  60, false, _m('like: publish_date....-'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
+
+FrmTabEnd($form_buttons, $sess, $slice_id);
+?>
+</form>
+<?php
+HtmlPageEnd();
+page_close()
+?>
+
 ?>
