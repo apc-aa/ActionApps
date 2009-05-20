@@ -7,10 +7,10 @@
  *
  * $Id$
  *
- */ 
+ */
 
 class DB_MySQL {
-  
+
   /* public: connection parameters */
   var $Host     = "";
   var $Database = "";
@@ -68,9 +68,9 @@ class DB_MySQL {
       $User     = $this->User;
     if ("" == $Password)
       $Password = $this->Password;
-      
+
     /* establish connection, select database */
-    if ( 0 == $this->Link_ID ) {  
+    if ( 0 == $this->Link_ID ) {
         $method = ( defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT ) ? 'mysql_connect' : 'mysql_pconnect';
         $this->Link_ID = $method($Host, $User, $Password);
 
@@ -92,7 +92,7 @@ class DB_MySQL {
         return 0;
       }
     }
-    
+
     return $this->Link_ID;
   }
 
@@ -168,7 +168,7 @@ class DB_MySQL {
     else {
       $this->halt("seek($pos) failed: result has ".$this->num_rows()." rows.");
 
-      /* half assed attempt to save the day, 
+      /* half assed attempt to save the day,
        * but do not consider this documented or even
        * desireable behaviour.
        */
@@ -206,7 +206,7 @@ class DB_MySQL {
     $this->locked = true;
     return true;
   }
-  
+
   function unlock() {
 
     // set before unlock to avoid potential loop
@@ -295,13 +295,13 @@ class DB_MySQL {
         return false;
       }
     } else {
-      $id = $this->Query_ID; 
+      $id = $this->Query_ID;
       if (!$id) {
         $this->halt("No query specified.");
         return false;
       }
     }
- 
+
     $count = @mysql_num_fields($id);
 
     // made this IF due to performance (one if is faster than $count if's)
@@ -315,7 +315,7 @@ class DB_MySQL {
       }
     } else { // full
       $res["num_fields"]= $count;
-    
+
       for ($i=0; $i<$count; $i++) {
         $res[$i]["table"] = @mysql_field_table ($id, $i);
         $res[$i]["name"]  = @mysql_field_name  ($id, $i);
@@ -325,7 +325,7 @@ class DB_MySQL {
         $res["meta"][$res[$i]["name"]] = $i;
       }
     }
-    
+
     // free the result only if we were called on a table
     if ($table) {
       @mysql_free_result($id);
@@ -335,6 +335,7 @@ class DB_MySQL {
 
   /* public: find available table names */
   function table_names() {
+    $return = array();
     $this->connect();
     $h = @mysql_query("show tables", $this->Link_ID);
     $i = 0;
@@ -344,7 +345,7 @@ class DB_MySQL {
       $return[$i]["database"]        = $this->Database;
       $i++;
     }
-    
+
     @mysql_free_result($h);
     return $return;
   }
@@ -376,14 +377,14 @@ class DB_MySQL {
 }
 $_php_major_version = substr(phpversion(), 0, 1);
 if((4 > $_php_major_version) or !class_exists("DB_Sql"))
-	{
-	class DB_Sql extends DB_MySQL
-		{
-		function DB_Sql($query = "")
-			{
-			$this->DB_MySQL($query);
-			}
-		}
-	}
+    {
+    class DB_Sql extends DB_MySQL
+        {
+        function DB_Sql($query = "")
+            {
+            $this->DB_MySQL($query);
+            }
+        }
+    }
 unset($_php_major_version);
 ?>
