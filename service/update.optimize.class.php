@@ -947,6 +947,7 @@ class AA_Optimize_Redefine_Site_Templates extends AA_Optimize {
     /** Main update function @return bool */
     function repair() {
 
+        $now = time();
         $this->message(_m('Replacing module definition'));
         $this->query("REPLACE INTO module  (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) VALUES ('SiteTemplate....', 'Site Template', 0, 'W', 'http://example.org/index.shtml', 'en_site_lang.php3', $now, '', '', 0)");
         $this->query("REPLACE INTO site    (id, state_file, structure, flag) VALUES ('SiteTemplate....', 'template.php3', '".'O:8:"sitetree":2:{s:4:"tree";a:1:{i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:1:{i:0;s:1:"1";}s:2:"ch";N;s:1:"f";i:0;}}s:8:"start_id";s:1:"1";}'."', 0)");
@@ -1255,6 +1256,7 @@ class AA_Optimize_Redefine_Links_Templates extends AA_Optimize {
     /** Main update function @return bool */
     function repair() {
 
+        $now = time();
         $this->message(_m('Replacing module definition'));
         $plinks_root_id = substr( '1Links'.q_pack_id(AA_ID), 0, 16 ); // the same as q_pack_id(Links_Category2SliceID(1)); see /modules/links/util.php3
         $plinks_test_id = substr( '2Links'.q_pack_id(AA_ID), 0, 16 ); // the same as q_pack_id(Links_Category2SliceID(2)); see /modules/links/util.php3
