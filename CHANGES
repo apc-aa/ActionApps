@@ -1,3 +1,5 @@
+
+
 --------------------
 05/21/09 - v2.50.0 - stable release
 --------------------
@@ -542,7 +544,7 @@
            like from your domain.
            See "Slice Admin" -> "Slice Fields" -> "Upload URL" field
          - new support for compound widgets (like date, file upload) in
-           AA_Widget_* class and its support in AA_Form_Grabber API.
+           AA_Widget_* class and its support in AA_Grabber_Form API.
            Compound widgets, which consists from more than one input. In such
            case we use following syntax:
              aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][dte][d][]
