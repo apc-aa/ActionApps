@@ -907,7 +907,7 @@ class AA_Grabber_Iekis_Xml extends AA_Grabber {
 }
 
 /** AA_Grabber_Slice - grabs data from slice based on AA_Set
- *  Right now we use it mainly for apc-aa/export.php
+ *  Right now we use it mainly for apc-aa/admin/se_export.php
  */
 class AA_Grabber_Slice extends AA_Grabber {
 
@@ -1071,7 +1071,5 @@ class AA_Grabber_Ical extends AA_Grabber {
         }
         return 0;
     }
-
 }
-
 ?>
