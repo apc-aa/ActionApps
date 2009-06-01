@@ -133,7 +133,7 @@ echo '
 </head>
 <body>
   <h1>'. _m("Bulk Email Wizard") .'</h1>
-  <form name="mailform">';
+  <form name="mailform" method="post">';
 
 PrintArray($err);
 echo $Msg;
@@ -150,14 +150,14 @@ FrmItemGroupSelect( $items, $searchbar, 'users', $messages, $additional);
 
 FrmTabSeparator( _m('Write the email') );
 
-FrmInputText(  'subject',     _m('Subject'),           $_GET['subject'],     254, 80, true);
-FrmTextarea(   'body',        _m('Body'),              $_GET['body'],         12, 80, true);
-FrmInputText(  'header_from', _m('From (email)'),      $_GET['header_from'], 254, 80, true);
-FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_GET['reply_to'],    254, 80, false);
-FrmInputText(  'errors_to',   _m('Errors to (email)'), $_GET['errors_to'],   254, 80, false);
-FrmInputText(  'sender',      _m('Sender (email)'),    $_GET['sender'],      254, 80, false);
-FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),            $_GET['lang'], true);
-FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $_GET['html'], true);
+FrmInputText(  'subject',     _m('Subject'),           $_POST['subject'],     254, 80, true);
+FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         12, 80, true);
+FrmInputText(  'header_from', _m('From (email)'),      $_POST['header_from'], 254, 80, true);
+FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80, false);
+FrmInputText(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80, false);
+FrmInputText(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80, false);
+FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),            $_POST['lang'], true);
+FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $_POST['html'], true);
 FrmInputFile('attachment1',       _m('Attachement 1'), false, "*/*");
 FrmInputFile('attachment2',       _m('Attachement 2'), false, "*/*");
 FrmInputFile('attachment3',       _m('Attachement 3'), false, "*/*");
