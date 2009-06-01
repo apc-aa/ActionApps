@@ -423,8 +423,9 @@ class AA_Manageraction_Item_Email extends AA_Manageraction {
     // uses setOpenUrl() method to open search_replace.php3 window
     /** Checks if the user have enough permission to perform the action */
     function isPerm(&$manager) {
-        $slice = AA_Slices::getSlice($manager->getModuleId());
-        return ($slice->type() == 'ReaderManagement');
+        // $slice = AA_Slices::getSlice($manager->getModuleId());
+        // return ($slice->type() == 'ReaderManagement');
+        return true; // allow in all slices
     }
 }
 
