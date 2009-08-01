@@ -198,6 +198,48 @@ if ($go_finditem && $finditem) {
 
 }
 
+if ($go_finditem_edit && $finditem_edit && $finditem_edit_op) {
+
+function query_search ($field, $op, $value,$sess) {
+
+$db = new DB_AA;
+
+$sql="SELECT distinct  slice.name as slice_name, slice.id as slice_id, item.short_id as short_id, item.id as long_id from slice JOIN item ON slice.id=item.slice_id JOIN content ON content.item_id=item.id WHERE ".$field." ".$op."'$value'";	
+
+$db->query($sql);
+
+$num_rows = $db->num_rows(); 
+
+$output.= $num_rows." "._m('Show results with string')."  <b><i>$value</i></b><br>";
+
+$output.= "<ul id=\"list\">";
+
+while ($db->next_record()) { 
+	$slice_name = $db->f('slice_name');
+    $slice_id = (string)bin2hex($db->f('slice_id'));
+	$short_id = $db->f('short_id');
+	$long_id = (string)bin2hex($db->f('long_id'));
+  $output.= "<li class=\"node\"> <b>"._m('Slice').":</b> ".$slice_name.". <b>Item=</b>".$short_id."  <a href=\"http://".$_SERVER['SERVER_NAME']."/".AA_BASE_DIR.$sess->url('slice.php3')."&slice_id=".$slice_id."&nocache=1\" target=\"_blank\" >"._m('Show')."</a> | <a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id&$sess->name=$sess->id\" target=\"_blank\">"._m('Edit')."</a></li>";
+   }
+
+$output.= "</ul>";   
+
+return $output;
+
+}
+
+switch ($finditem_edit_op) {
+	
+	case 'LIKE' :$field = "content.text";
+				 print query_search ($field, 'LIKE','%'.$finditem_edit.'%',$sess);break;
+	case '='    :$field = "content.text";
+				 print query_search ($field, '=',$finditem_edit,$sess);break;
+	case 'item' :$field = "item.short_id";
+				 print query_search ($field, '=',$finditem_edit,$sess);break;
+	}	
+	
+}
+
 // ------------------------------------------------------------------------------------------
 // SHOW THE PAGE
 
@@ -241,6 +283,20 @@ echo '<b>'._m("Get all informations about the ITEM").'</b><br>
     <input type="text" name="finditem" value="'.$finditem.'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_finditem" value="'._m("Go!").'">';
 echo '</form></td></tr>';
+echo '<tr><td>';
+echo '<form name="f_finditem_edit" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
+    <input type="text" name="finditem_edit" value="'.$finditem_edit.'" size="30">&nbsp;&nbsp;
+	<select name="finditem_edit_op" value="">
+	<option value="LIKE">Contiene</option>
+	<option value="=">Frase exacta</option>
+	<option value="item">Número de item</option>
+	</select>
+    <input type="submit" name="go_finditem_edit" value="'._m("Go!").'">';
+echo '</form></td></tr>';
+
+
+
 FrmTabEnd();
 
 HTMLPageEnd();
