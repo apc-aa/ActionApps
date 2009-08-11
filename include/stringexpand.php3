@@ -535,12 +535,13 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
 
     function expand($text, $length, $mode=1) {
         $shorted_text = substr($text, 0, $length);
+        $shorted_len  = strlen($shorted_text);
 
         // search the text for following ocurrences in the order!
-        $PARAGRAPH_ENDS = array( '</p>','<p>','<br>', "\n", "\r" );
+        $PARAGRAPH_ENDS = array( '</p>','<p>');
         if ($mode == 1) {
             foreach ( $PARAGRAPH_ENDS as $end_str ) {
-                $paraend = strpos(strtolower($shorted_text), $end_str, min(strlen($shorted_text),10));  // we do not want to
+                $paraend = strpos(strtolower($shorted_text), $end_str, min($shorted_len,10));  // we do not want to
                 if ( $paraend !== false ) {   // end_str found
                     $shorted_text = substr($shorted_text, 0, $paraend);
                     break;
@@ -548,11 +549,12 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
             }
             if ($paraend===false) {      // no <BR>, <P>, ... found
                 // try to find dot (first from the end)
-                $dot = strrpos( $shorted_text,".");
-                if ( $dot > $paraend/3 ) { // take at least one third of text
-                    $shorted_text = substr($shorted_text, 0, $dot+1);
-                } elseif ( $space = strrpos($shorted_text," ") ) {   // assignment!
-                    $shorted_text = substr($shorted_text, 0, $space);
+                $PARAGRAPH_ENDS = array( '<br>', '.', "\n", "\r", ' ');
+                foreach ( $PARAGRAPH_ENDS as $end_str ) {
+                    if ( ($dot = strrpos( $shorted_text, $end_str)) > ($shorted_len/2) ) { // take at least one half of text
+                        $shorted_text = substr($shorted_text, 0, $dot+1);
+                        break;
+                    }
                 } // no dot, no space - leave the text length long
             }
         }
@@ -2826,7 +2828,26 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
     }
 }
 
+/** get link to file for download (prints also file size and type)
+ *  {filelink:<url>:<text>}
+ *
+ *  Ussage:
+ *     {filelink:{file............}:{text............}}
+ *     returns: <a href="http://..." title="Document [PDF - 157 kB]">Document</a> [PDF - 157 kB]
+ **/
+class AA_Stringexpand_Filelink extends AA_Stringexpand {
 
+    function expand($url, $text='', $text_before='') {
+        if (empty($url)) {
+            return '';
+        }
+        $filename = $text ? $text : basename(parse_url($url, PHP_URL_PATH));
+        $fileinfo = join(' - ', array(AA_Stringexpand_Fileinfo::expand($url,'type'), AA_Stringexpand_Fileinfo::expand($url,'size')));
+        $fileinfo = $fileinfo ? " [$fileinfo]" : '';
+
+        return "$text_before<a href=\"$url\" title=\"$filename$fileinfo\">$filename</a>&nbsp;". str_replace(' ','&nbsp;', $fileinfo);
+    }
+}
 /** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
  *  {version[:aa|svn]}
  **/

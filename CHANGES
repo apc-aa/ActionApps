@@ -1,3 +1,17 @@
+08/11/09 - new {filelink:<url>:<text>} syntax - get link to file for download 
+(honzam)   (prints also file size and type) - 
+             ussage: {filelink:{file............}:{text............}} 
+             returns: 
+               <a href="http://..." title="Document [PDF - 157 kB]">Document</a>
+               [PDF - 157 kB]
+         - better handling of text in {shorten} syntax 
+         - new parameter lock=1 for polls.php used if we want something like 
+           view for polls and we want the polls do not react to URL parameters. 
+           Used maily if we want list more than one poll on one page
+         - better cleanup of tasks (from toexecute queue) - the taksk with 
+           priority = 0. Such tasks are considered as undoabe. Note the priority
+           is decreased on each try of task execution.
+
 --------------------
 05/21/09 - v2.50.0 - stable release
 --------------------
