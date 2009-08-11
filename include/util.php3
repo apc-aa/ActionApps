@@ -257,7 +257,7 @@ function add_vars($query_string="", $where='GLOBALS') {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
 
     if ( !$varstring ) {
-        return;
+        return array();
     }
     if ( ($pos = strpos('#', $varstring)) === true ) {  // remove 'fragment' part
         $varstring = substr($varstring,0,$pos);
@@ -275,13 +275,17 @@ function add_vars($query_string="", $where='GLOBALS') {
     $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
     if (is_array($aa_query_arr) ) {
         // use of $$where do not work for some reason
-        if ($where == '_REQUEST' ) {
-            array_merge_append($_REQUEST, $aa_query_arr);
-        } else {
-            array_merge_append($GLOBALS, $aa_query_arr);
+        switch ($where) {
+            case '_REQUEST': array_merge_append($_REQUEST, $aa_query_arr);
+                             break;
+            case 'return':   break;
+            default:         array_merge_append($GLOBALS, $aa_query_arr);
         }
+        return $aa_query_arr;
     }
+    return array();
 }
+
 
 /** NormalizeArrayIndex function
  *  Removes starting and closing quotes from array index
