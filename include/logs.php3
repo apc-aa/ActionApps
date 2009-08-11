@@ -142,6 +142,11 @@ class AA_Log_Clenup {
 
         // delete also old records post2shtml table
         tryQuery("DELETE FROM post2shtml WHERE time < '$db_time'");
+
+        // delete task with priority = 0 - considered as undoable (note the priority is decreased on each try of task execution.)
+        $undoable_tasks = GetTable2Array('SELECT * FROM toexecute WHERE priority=0', 'NoCoLuMn');
+        AA_Log::write('TOEXECUTE', serialize($undoable_tasks), 'cleanup');
+        tryQuery("DELETE FROM toexecute WHERE priority = 0");
     }
 }
 
