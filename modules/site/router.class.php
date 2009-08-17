@@ -63,6 +63,23 @@ http://www.apc.org/
  */
 class AA_Router {
 
+    protected $apc;
+    protected $slices;
+
+    // Store the single instance of Database
+    private static $_instance;
+
+    function __construct($slices=null) {
+        $this->slices = is_array($slices) ? $slices : array();
+    }
+
+    public static function singleton($type, $slices=null) {
+        if(!isset(self::$_instance)) {
+            self::$_instance = new $type($slices);
+        }
+        return self::$_instance;
+    }
+
     /** view scroller function
      * @param $page   - current page
      * @param $max    - number of pages
@@ -180,18 +197,28 @@ class AA_Router {
  *
  *  For URL construction yo can use go2url:
  *
- *    original url:                                 cz/news/about-us
+ *    original url:                             cz/news/about-us
  *
- *    {go2url:xlang=de&xseo1=faq&xseo2=questions}   de/faq/questions
- *    {go2url:xseo1=faq&xseo2=questions}            cz/faq/questions
- *    {go2url:xseo1=faq}                            cz/faq
- *    {go2url:xseo2=projects}                       cz/news/projects
- *    {go2url:xseoadd=nika}                         cz/news/about-us/nika
- *    {go2url:xlang=de}                             de/
- *    {go2url:xpage=2}                              cz2/news/about-us
+ *    {go:xlang=de&xseo1=faq&xseo2=questions}   de/faq/questions
+ *    {go:xseo1=faq&xseo2=questions}            cz/faq/questions
+ *    {go:xseo1=faq}                            cz/faq
+ *    {go:xseo2=projects}                       cz/news/projects
+ *    {go:xseoadd=nika}                         cz/news/about-us/nika
+ *    {go:xlang=de}                             de/
+ *    {go:xpage=2}                              cz2/news/about-us
  */
 class AA_Router_Seo extends AA_Router {
 
+    /** array of translations xseoX -> id */
+    protected $_seocache;
+
+    function parse($url) {
+        $this->apc          = self::parseApc($url);
+        $this->apc['state'] = self::getState($this->apc);
+        return $this->apc;
+    }
+
+    /** static function - caling from outside is not necessary, now */
     function parseApc($apc) {
 
         $parsed_url = parse_url($apc);
@@ -212,6 +239,7 @@ class AA_Router_Seo extends AA_Router {
         return $ret;
     }
 
+    /** static function - caling from outside is not necessary, now */
     function getState($apc_state) {
         $ret = '/'.$apc_state['xlang'].$apc_state['xpage'].$apc_state['xflag'].($apc_state['xcat'] ? '-'. $apc_state['xcat'] : '').'/';
         $i=1;
@@ -293,8 +321,53 @@ class AA_Router_Seo extends AA_Router {
         if (empty($apc_state['xseo']) AND ($x_max>1)) {
             $apc_state['xseo']   = $apc_state['xseo'. ($x_max-1)];
         }
-        $apc_state['router'] = get_class();
+
+        // workaround for the static::get_class()
+        // returns real class name, not the AA_Router_Seo (if called staticaly)
+        $backtrace           = debug_backtrace();
+        $apc_state['router'] = $backtrace[0]['class'];
+
         return $apc_state;
+    }
+
+    /** returns: 1) ID of current item (if no param specified)
+     *           2) ID of item on specified level (if param is number)
+     *           3) IDs path of current item - like 2587(2877(3004)) as used
+     *              in {item...} syntax (good for breadcrumbs)
+     *              (if param = "path")
+     */
+    function xid($param=null) {
+
+        if (empty($param)) {
+            // current item id
+            return $this->_xseo2id($this->apc['xseo']);
+        }
+        if (is_numeric($param)) {
+            // item on specified level
+            return $this->_xseo2id($this->apc['xseo'.$param]);
+        }
+        if ($param == 'path') {
+            // tree for breadcrumb - just like 7663(7434(7432))
+            $i     = 1;
+            $delim = '';
+            $path  = '';
+            while (!empty($this->apc['xseo'.$i])) {
+                $path  .= $delim. $this->_xseo2id($this->apc['xseo'.$i]);
+                $delim  = '(';
+                $i++;
+            }
+            if ($i > 2) {
+                $path .= str_repeat(')', $i-2);   // close all open brackets
+            }
+            return $path;
+        }
+    }
+
+    function _xseo2id($seo_string) {
+        if (!isset($this->_seocache[$seo_string])) {
+            $this->_seocache[$seo_string] = AA_Stringexpand_Seo2ids::expand(join('-', $this->slices), $seo_string);
+        }
+        return $this->_seocache[$seo_string];
     }
 
     /** $varnames - array()! of varnames */
@@ -323,11 +396,46 @@ class AA_Router_Seo extends AA_Router {
     }
 }
 
-/** Add this function to your "site control file" */
-// function stringexpand_go2url($query_string) {
-//     global $apc_state;
-//     return AA_Router_Seo::getState(AA_Router_Seo::newState($apc_state, $query_string));
-// }
+/** {go:<query-string>}
+ *  @return url based on current state (apc) and query-string paramater
+ *  Ussage: {go:xseo1=faq&xseo2=questions}
+ *  (we used {go2url} custom function in previous versions of AA. This function
+ *  is however core function)
+ */
+class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    /** expand function */
+    function expand($query_string='') {
+        $router_class = $GLOBALS['apc_state']['router'];
+        if (empty($router_class)) {
+            return '<div class="aa-error">Err in {go} - router not found - {go} is designed for site modules</div>';
+        }
+        $router = AA_Router::singleton($router_class);
+        return $router->go2url($query_string);
+    }
+}
 
+/** {xid[:<level>]} - complement to {xseo1},.. variables of AA_Router_Seo
+ *  @return id of the current item on specifield level
+ *  {xid}      - returns id of current item (the id of {xseo} item)
+ *  {xid:1}    - returns id of item on first level (the id of {xseo1} item)
+ *               for /cz/project/about-us returns id of "project" item
+ *  {xid:path} - returns ids path of current item - like 2587(2877(3004)) as
+ *               used in {item...} syntax (good for breadcrumbs:
+ *               {item:{xid:path}: _#HEADLINE:: _#HEADLINK &gt;}
+ **/
+class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // Cached inside the router itself
+    /** expand function */
+    function expand($param='') {
+        $router_class = $GLOBALS['apc_state']['router'];
+        if (empty($router_class)) {
+            return '<div class="aa-error">Err in {xid} - router not found - {xid} is designed for site modules</div>';
+        }
+        $router = AA_Router::singleton($router_class);
+        return $router->xid($param);
+    }
+}
 
 ?>
