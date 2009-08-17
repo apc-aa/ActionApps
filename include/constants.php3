@@ -392,7 +392,8 @@ define( "STATE_FEEDABLE_UPDATE",       3);
 define( "STATE_FEEDABLE_UPDATE_LOCKED",4);
 
 /** relation table flags */
-define( "REL_FLAG_FEED", 2 );    // 2 - just to be compatible with content table
+define( "REL_FLAG_MODULE_DEPEND", 1 );  // specifies dependency between site modue and used slices
+define( "REL_FLAG_FEED", 2 );           // 2 - just to be compatible with content table
 
 /** view table flags */
 define( "VIEW_FLAG_COMMENTS", 1 );    // display HTML comments before and after the view

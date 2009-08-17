@@ -1628,7 +1628,7 @@ class AA_Inputfield {
         if (strpos($actions,'D') !== false) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
         }
-        $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
+        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = Array() };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("</td></tr></table>\n");
         $this->helps('plus');
     }
@@ -1718,7 +1718,7 @@ class AA_Inputfield {
               <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>
               &nbsp;&nbsp;");
             $this->echoo("<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
-            $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
+            $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = Array() };  listboxes[listboxes.length] = '$name';"));
             $this->echoo("</td></tr></table>\n");
         }
         $this->helps('plus');
@@ -1781,6 +1781,7 @@ class AA_Inputfield {
         $this->echoo(getFrmJavascript("
             hcInit($hcid);
             hcDeleteLast('$name');
+            if (typeof listboxes == 'undefined') { var listboxes = Array() };
             listboxes[listboxes.length] = '$name';"));
         $this->helps('plus');
     }
@@ -1931,7 +1932,7 @@ class AA_Inputfield {
         $out  .= '</select>';
         $this->echovar( $out, 'selected' );
 
-        $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
+        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = Array() };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("
         </td></tr></table>");
         $this->helps('plus');
@@ -2407,8 +2408,14 @@ function FrmRelated($name, $txt, $arr, $rows, $sid, $mode, $design, $needed=fals
  * @param $morehlp
  */
 function FrmTwoBox($name, $txt, $arr, $selected, $rows, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp="") {
+    $sel = array();
+    if (is_array($selected)) {
+        foreach($selected as $val) {
+            $sel[] = array('value'=>$val);
+        }
+    }
     // $val is not used - there is only from historical reasons and should be removed accross files
-    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input = new AA_Inputfield($sel, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->twoBox($rows,$wi2_offer,$wi2_selected);
     $input->print_result();
 }
