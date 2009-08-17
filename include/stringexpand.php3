@@ -1409,17 +1409,172 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** ids_string - ids (long or short (or mixed) separated by dash '-') */
-class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // The caching is made by AA_Stringexpand_Aggregate, which is enough
+
+/**
+* Display field/alias of given item(s)
+ * {item:<ids>:<aa_expression>[:<delimiter>[:<nested_top>[:<nested_bottom>]]]}
+ *
+ * Main ussage is to display some field or alias of given item:
+ *   {item:171055:_#HEADLINE}
+ *
+ * You can also display it for more than one item and use the delimeter
+ *   {item:53443-54322-53553:_HEADLINE:, }
+ *
+ * But, you can also use it to display item in tree. In tat case you will use
+ * tree representation string, just like: 3234(3443-3678(3872-3664)-3223)-4045
+ * In such case you can use also the last two parameters nested_top and
+ * nested_bottom. The exmples of trees follows.
+ *
+ * Practical examle of ussage is for example breadcrumb navigation:
+ *   {item:{xseo1}({xseo2}({xseo3}({xseo4}))): _#HEADLINE:: <a href="_#ITEM_URL">_#HEADLINE</a> &gt;:}
+ *
+ * However, you will be able to use it for discussions tree as well.
+ *
+ *
+ * 1) Generic tree
+ *
+ *    -+-- 1 --+-- 2
+ *     |       |
+ *     |       +-- 3 --+-- 5
+ *     |       |       |
+ *     |       |       +-- 6
+ *     |       +-- 4
+ *     +-- 7
+ *     |
+ *     +-- 8
+ *
+ *   represented as: 1(2-3(5-6)-4)-7-8
+ *
+ *   printed as: 1 nested_top
+ *               2 content
+ *               3 nested_top
+ *               5 content
+ *               delimeter
+ *               6 content
+ *               3 nested_bottom
+ *               4 content
+ *               1 nested_bottom
+ *               7 content
+ *               delimeter
+ *               8 content
+ *
+ * 2) SEO path (like for breadcrumbs - xseo1 --- xseo2 --- xseo3)
+ *
+ *    --- 1 --- 2 --- 3
+ *
+ *   represented as: 1(2(3))
+ *
+ *   printed as: 1 nested_top
+ *               2 nested_top
+ *               3 content
+ *               2 nested_bottom
+ *               1 nested_bottom
+ *
+ *
+ * 3) Normal list of items
+ *
+ *    -+-- 1
+ *     |
+ *     +-- 2
+ *     |
+ *     +-- 3
+ *
+ *   represented as:  1-2-3
+ *
+ *   printed as: 1 content
+ *               delimeter
+ *               2 content
+ *               delimeter
+ *               3 content
+ */
+class AA_Stringexpand_Item extends AA_Stringexpand {
+
     /** expand function
-     * @param $ids_string
-     * @param $expression
+     * @param $ids_string  ids (long or short (or mixed) separated by dash '-')
+     *                     - now you can also use tree representation like:
+     *                     3234(3443-3678(3872-3664)-3223)-4045  (see above)
+     * @param $content
      * @param $delimeter
+     * @param $top
+     * @param $bottom
      */
-    function expand($ids_string, $expression, $delimiter=', ') {
-        return AA_Stringexpand_Aggregate::expand('concat', $ids_string, $expression, $delimiter);
+    function expand($ids_string, $content=null, $delim=null, $top=null, $bottom=null) {
+
+        // sanity input
+        $ids_string = preg_replace('/[^0-9a-g()-]/', '', strtolower($ids_string));  // mention the g (used for generated subrtree cache)
+        $ids_string = str_replace('()', '', $ids_string);
+
+        $tree_cache = new AA_Treecache($content, $delim, $top, $bottom);
+
+        // we are looking for subtrees 93938(73737-64635)
+        while (preg_match('/[0-9a-f]+[(]([^()]+)[)]/s',$ids_string)) {
+            $ids_string = preg_replace_callback('/([0-9a-f]+)[(]([^()]+)[)]/s', array($tree_cache,'cache_list'), $ids_string);
+        }
+
+        return $tree_cache->get_concat($ids_string);
+    }
+}
+
+
+/** helper class for AA_Stringexpand_Item */
+class AA_Treecache {
+    var $content;
+    var $delim;
+    var $top;
+    var $bottom;
+    var $_cache;
+
+    function AA_Treecache($content, $delim, $top, $bottom) {
+        $this->content = $content;
+        $this->delim   = $delim;
+        $this->top     = $top;
+        $this->bottom  = $bottom;
+    }
+
+    function cache_list($match) {
+        $key = 'g'. md5($match[0]);
+
+        if (!isset($this->cache[$key])) {
+            $subtree  = $this->top     ? $this->_get_item($match[1], $this->top) : '';
+            $subtree .= $this->content ? $this->get_concat($match[2]) : '';
+            $subtree .= $this->bottom  ? $this->_get_item($match[1], $this->bottom) : '';
+
+            $this->_cache[$key] = $subtree;
+        }
+
+        return $key;
+    }
+
+    function get_concat($ids_string) {
+        if (!$this->content) {
+            return '';
+        }
+        $ids     = explode('-', $ids_string);
+        $results = array();
+        if ( is_array($ids) ) {
+            foreach ( $ids as $item_id ) {
+                if ($c = $this->_get_item($item_id, $this->content)) {  // assignment
+                    $results[] = $c;
+                }
+            }
+        }
+        return join($this->delim,$results);
+    }
+
+    function _get_item($item_id, $expression) {
+        // cached subtree
+        if ($item_id{0} == 'g') {
+            return $this->_cache[$item_id];
+        }
+
+        $id_type = guesstype($item_id);
+        if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
+            $item = AA_Items::getItem(new zids($item_id,$id_type));
+            if ($item) {
+                return $item->subst_alias($expression);
+            }
+        }
+        return '';
     }
 }
 
@@ -1873,9 +2028,10 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
         }
 
         $class_name = $apc_state['router'];
-        $router = new $class_name;
-        $page   = floor( $itemview->from_record/$itemview->num_records ) + 1;
-        $max    = floor(($itemview->idcount() - 1) / max(1,$itemview->num_records)) + 1;
+//        $router = new $class_name;
+        $router     = AA_Router::singleton($class_name);
+        $page       = floor( $itemview->from_record/$itemview->num_records ) + 1;
+        $max        = floor(($itemview->idcount() - 1) / max(1,$itemview->num_records)) + 1;
 
         return $router->scroller($page,$max);
     }
@@ -2473,7 +2629,7 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
         // designers to run custom scripts inside AA
         // @todo better check for e modifier
         if (strpos($pattern,'e', strpos($pattern, $pattern{0}, 1))) {
-            return _m('PHP patterns in Preg_Match aro not allowed');
+            return _m('PHP patterns in Preg_Match are not allowed');
         }
         preg_match($pattern, $subject, $matches);
         return $matches[0];
