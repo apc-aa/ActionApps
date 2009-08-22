@@ -51,23 +51,26 @@ function sb_GetSelectedValue(selectbox) {
 }
 
 function sb_SetValue(selectbox, index, text, value) {
-    if (index=='new') {
-        // find "empty" row
-        for( i=0; i < maxcount; i++ ) { // maxcount is global as well as relmessage
-            if( (selectbox.options[i].value == 'wIdThTor') || selectbox.options[i].value == '') break;
+    if (selectbox != null && selectbox.options != null) {
+        if (index=='new') {
+            // find "empty" row
+            for( i=0; i < selectbox.options.length; i++ ) { // maxcount is global as well as relmessage
+                if( (selectbox.options[i].value == 'wIdThTor') || selectbox.options[i].value == '') break;
+            }
+
+            if ( i == selectbox.options.length ) {
+                selectbox.options[selectbox.options.length] = new Option(text, value);
+                return;
+            }
+            index = i;
         }
-        if ( i >= maxcount ) {
-            alert(relmessage);
-            return;
+        if ((text != null) && (value != null)) {
+            if (value == '') {
+                value = 'wIdThTor';
+            }
+            selectbox.options[index].value = value;
+            selectbox.options[index].text  = text;
         }
-        index = i;
-    }
-    if ((text != null) && (value != null)) {
-        if (value == '') {
-            value = 'wIdThTor';
-        }
-        selectbox.options[index].value = value;
-        selectbox.options[index].text  = text;
     }
 }
 
