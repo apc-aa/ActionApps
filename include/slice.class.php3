@@ -512,4 +512,46 @@ class AA_Slices {
     }
 }
 
+
+
+class AA_Modules {
+
+    // Store the single instance of Database
+    private static $_instance;
+
+    private function __construct() {}
+
+    public static function singleton() {
+        if(!isset(self::$_instance)) {
+            self::$_instance = new AA_Modules();
+        }
+        return self::$_instance;
+    }
+
+    /** @return array id => name of current user's modules
+     *  @param $module_type
+     *  @param $perm
+     *  @param $user_id
+     */
+    public static function getUserModules( $module_type = '', $perm = PS_EDIT_SELF_ITEMS, $user_id = '') {
+        global $auth;
+
+        $where_add = empty($module_type) ? '' : "AND type='$module_type'";
+        $all_modules = GetTable2Array("SELECT id, name FROM module WHERE deleted<>1 $where_add ORDER BY priority, name", 'unpack:id', 'name');
+
+        if (empty($user_id)) {
+            $user_id =  $auth->auth["uid"];
+        }
+
+        $ret = array();
+        foreach($all_modules as $mid => $mname) {
+            if (CheckPerms( $user_id, 'slice', $mid, $perm)) {
+                $ret[$mid] = $mname;
+            }
+        }
+
+        return $ret;
+    }
+}
+
 ?>
