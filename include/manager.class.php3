@@ -56,6 +56,7 @@ class AA_Manager extends AA_Storable {
     var $show;            // what controls show (scroller, searchbar, ...)
     var $bin;             // stores the bin in which we are - string
     var $module_id;       // for which module is manager used (slice_id, ...)
+    var $_manager_id;     // ID of manager
 
     var $msg;             // stores return code from action functions
 
@@ -73,18 +74,19 @@ class AA_Manager extends AA_Storable {
     // required - object's slots to save in session
     //            (no itemview, actions, switches, messages, searchbar_funct
     //             - we want to have it fresh (from constructor and $settings))
-    var $persistent_slots = array('searchbar', 'scroller', 'msg', 'bin', 'module_id');
+    var $persistent_slots = array('searchbar', 'scroller', 'msg', 'bin', 'module_id', '_manager_id');
 
     /** getClassProperties function
      *  Used parameter format (in fields.input_show_func table)
      */
     function getClassProperties() {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return array (
-            'searchbar' => new AA_Property( 'searchbar', _m("Searchbar"), 'AA_Searchbar', false, true),
-            'scroller'  => new AA_Property( 'scroller',  _m("Scroller"),  'AA_Scroller',  false, true),
-            'msg'       => new AA_Property( 'msg',       _m("Msg"),       'text',         true,  true),
-            'bin'       => new AA_Property( 'bin',       _m("Bin"),       'text',         false, true),
-            'module_id' => new AA_Property( 'module_id', _m("Module ID"), 'text',         false, true),
+            'searchbar'   => new AA_Property( 'searchbar',   _m("Searchbar"),  'AA_Searchbar', false, true),
+            'scroller'    => new AA_Property( 'scroller',    _m("Scroller"),   'AA_Scroller',  false, true),
+            'msg'         => new AA_Property( 'msg',         _m("Msg"),        'text',         true,  true),
+            'bin'         => new AA_Property( 'bin',         _m("Bin"),        'text',         false, true),
+            'module_id'   => new AA_Property( 'module_id',   _m("Module ID"),  'text',         false, true),
+            '_manager_id' => new AA_Property( '_manager_id', _m("Manager ID"), 'text',         false, true),
             );
     }
 
@@ -94,13 +96,15 @@ class AA_Manager extends AA_Storable {
      *
      * @param array $settings - main manager settings
      */
-    function AA_Manager($settings) {
+    function AA_Manager($manager_id, $settings) {
+        global $r_state, $sess, $auth;
 
         $this->show = isset($settings['show']) ?
                       $settings['show'] :
                       ( MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS );
 
-        $this->module_id = $settings['module_id'];
+        $this->module_id   = $settings['module_id'];
+        $this->_manager_id = $manager_id;
 
         if ( $settings['actions'] ) {      // define actions, if we have to
             $this->actions = $settings['actions'];
@@ -136,7 +140,7 @@ class AA_Manager extends AA_Storable {
         $scroller = new AA_Scroller('st',sess_return_url($_SERVER['PHP_SELF']));
         // could be redefined by view (see ['itemview']['manager_vid'])
         $scroller->metapage = $settings['scroller']['listlen'];
-        $scroller->addFilter("slice_id", "md5", $this->module_id);
+//        $scroller->addFilter("slice_id", "md5", $this->module_id);
         $this->scroller = $scroller;
 
         $this->messages = $settings['messages'];
@@ -165,6 +169,24 @@ class AA_Manager extends AA_Storable {
                                         '',      // not necessary I think: $settings['itemview']['url'],  // $r_slice_view_url
                                         '',      // no discussion settings
                                         $settings['itemview']['get_content_funct']);
+
+        // r_state array holds all configuration of Manager
+        // the configuration then could be Bookmarked
+        if ( !isset($r_state) ) {
+            $r_state = array();
+            $sess->register('r_state');
+        }
+        // user switched to another page with different manager?
+        if ($r_state["manager_id"] != $this->_manager_id) {
+            // we are here for the first time or we are switching to another slice
+            unset($r_state['manager']);
+            // set default admin interface settings from user's profile
+
+            $profile = AA_Profile::getProfile($auth->auth["uid"], $this->module_id); // current user settings
+            $this->setFromProfile($profile);
+        } elseif ($r_state['manager']) {        // do not set state for the first time calling
+            $this->setFromState($r_state['manager']);
+        }
     }
 
     /** setDesing function
@@ -357,6 +379,7 @@ class AA_Manager extends AA_Storable {
         }
 */
         // update scroller
+
         if ( isset($this->scroller) ) {
             $this->scroller->updateScr(sess_return_url($_SERVER['PHP_SELF'])); // use $return_url if set.
             if ( $_GET['listlen'] ) {
@@ -455,6 +478,20 @@ class AA_Manager extends AA_Storable {
         $this->printItems($zids);       // print items and actions
     }
 
+    function displayPage($zids, $menu_top, $menu_left, $css_add='') {
+        global $r_state, $aamenus;
+        $this->printHtmlPageBegin(true, $css_add);  // html, head, css, title, javascripts
+
+        showMenu($aamenus, $menu_top, $menu_left);
+
+        $this->display($zids);
+
+        $r_state['manager']    = $this->getState();
+        $r_state["manager_id"] = $this->_manager_id;
+
+        HtmlPageEnd();
+    }
+
     /** printHtmlPageBegin function
      * Print HTML start page tags (html begin, encoding, style sheet, title
      * and includes necessary javascripts for manager
@@ -520,6 +557,7 @@ class AA_Manager extends AA_Storable {
         // big security hole is open if we cache it
         // (links to itemedit.php3 would stay with session ids in cache
         // - you bacame another user !!!)
+
         $this->itemview->print_view("NOCACHE");
 
         $this->scroller->countPages( $ids_count );
@@ -593,8 +631,7 @@ class AA_Manager extends AA_Storable {
                     echo FrmMoreHelp($this->actions_hint_url, "", $this->actions_hint);
                 }
 
-                echo '&nbsp;&nbsp;<a href="javascript:MarkedActionGo()"
-                      class="leftmenuy">'. _m('Go') . '</a>';
+                echo '&nbsp;&nbsp;<a href="javascript:MarkedActionGo()" class="leftmenuy">'. _m('Go') . '</a>';
 
                   // we store open_url parameter to js variable for
                   // MarkedActionGo() function

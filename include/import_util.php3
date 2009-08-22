@@ -190,7 +190,7 @@ class Actions {
                  if ($field_id == 'id..............') {
                      $outputItemContent->setItemId($fieldVal[0]['value']);
                  } else {
-                     $outputItemContent->setFieldValue($field_id,$fieldVal);
+                     $outputItemContent->setAaValue($field_id, new AA_Value($fieldVal));
                  }
              }
         }

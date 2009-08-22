@@ -269,7 +269,7 @@ class itemview {
                   while ( list( $d_id, $images ) = each( $outcome )) {
                       SetCheckboxContent( $d_content, $d_id, $cnt++ );
                       SetImagesContent( $d_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
-                      $this->set_columns($CurItem, $d_content, $d_id);
+                      $this->setColumns($CurItem, $d_content[$d_id]);
                       // print top HTML with aliases
                       if ( !$top_html_already_printed ) {
                           $CurItem->setformat( $this->slice_info['d_top']);
@@ -286,7 +286,7 @@ class itemview {
                       continue;
                   }
                   SetCheckboxContent( $d_content, $d_id, $cnt++ );
-                  $this->set_columns($CurItem, $d_content, $d_id);
+                  $this->setColumns($CurItem, $d_content[$d_id]);
                   // print top HTML with aliases
                   if ( !$top_html_already_printed ) {
                       $CurItem->setformat( $this->slice_info['d_top']);
@@ -372,7 +372,7 @@ class itemview {
       $out.= '<a name="disc"></a>';
       if ( isset($outcome) AND is_array($outcome) ) {
           while ( list( $d_id, $images ) = each( $outcome )) {
-              $this->set_columns($CurItem, $d_content, $d_id);
+              $this->setColumns($CurItem, $d_content[$d_id]);
               $depth = count($images)-1;
               $spacer = "";
               $out.= '
@@ -409,7 +409,7 @@ class itemview {
           $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
 
           $CurItem->setformat( $this->slice_info['d_fulltext']);
-          $this->set_columns($CurItem, $d_content, $this->disc['parent_id']);
+          $this->setColumns($CurItem, $d_content[$this->disc['parent_id']]);
           $out .= $CurItem->get_item();
       } else {
           $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
@@ -429,7 +429,7 @@ class itemview {
           }
       }
       if ( $js ) {
-          $out .= "\n <script type=\"text/javascript\" src=\"". get_aa_url('javascript/fillform.js', false) . "\"></script>";
+          $out .= "\n <script type=\"text/javascript\" src=\"". get_aa_url('javascript/fillform.js', '', false) . "\"></script>";
           $out .= '
           <script type="text/javascript"> <!--
           '.$js.'
@@ -469,20 +469,18 @@ class itemview {
 
   // set the aliases from the slice of the item ... used to view items from
   // several slices at once: all slices have to define aliases with the same names
-  /** set_columns function
+  /** setColumns function
    * @param $CurItem
-   * @param $content
-   * @param $iid
+   * @param $content4id
    */
-  function set_columns(&$CurItem, &$content, $iid)
-  {
-     // hack for searching in multiple slices. This is not so nice part
-     // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
-     // used (filled) in slice.php3
-     $CurItem->set_data($content[$iid]);
-     // slice_id... in content is packed!!!
-     $p_slice_id = addslashes($content[$iid]["slice_id........"][0]['value']);
-     $CurItem->aliases = (is_array($this->aliases[$p_slice_id]) ? $this->aliases[$p_slice_id] : $this->aliases);
+  function setColumns($CurItem, &$content4id) {
+      // hack for searching in multiple slices. This is not so nice part
+      // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
+      // used (filled) in slice.php3
+      $CurItem->set_data($content4id);
+      // slice_id... in content is packed!!!
+      $p_slice_id = addslashes($CurItem->getval('slice_id........'));
+      $CurItem->aliases = (is_array($this->aliases[$p_slice_id]) ? $this->aliases[$p_slice_id] : $this->aliases);
   }
 
   // ----------------------------------------------------------------------------------
@@ -592,7 +590,7 @@ class itemview {
     switch ( $view_type ) {
       case "fulltext":
         $iid = $this->zids->short_or_longids(0);  // unpacked or short id
-        $this->set_columns($CurItem, $content, $iid);   // set right content for aliases
+        $this->setColumns($CurItem, $content[$iid]);   // set right content for aliases
 
         // print item
         $CurItem->setformat( $this->slice_info['fulltext_format'],
@@ -609,7 +607,7 @@ class itemview {
           if ( !$iid )
             continue;                                     // iid = quoted or short id
 
-          $this->set_columns($CurItem, $content, $iid);   // set right content for aliases
+          $this->setColumns($CurItem, $content[$iid]);   // set right content for aliases
 
             // print item
           $CurItem->setformat( $this->slice_info['fulltext_format'],
@@ -623,9 +621,11 @@ class itemview {
         $out = $this->get_output_calendar ($content);
         break;
 
-      default:                         // compact view (of items or links)
-        $oldcat = "_No CaTeg";
-        $group_n = 0;                  // group counter (see group_n slice.php3 parameter)
+      default:
+        // compact view (of items or links)
+        $oldcat                   = "_No CaTeg";
+        $group_n                  = 0;    // group counter (see group_n slice.php3 parameter)
+        $top_html_already_printed = false;
 
         // negative num_record used for displaying n-th group of items only
         $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : $this->num_records );
@@ -646,8 +646,8 @@ class itemview {
             if (!$GLOBALS['QueryIDsPageIndex']) {
                 $GLOBALS['QueryIDsPageIndex'] = array();
             }
-            array_push($GLOBALS['QueryIDsIndex'],$zidx);  // So that _#ITEMINDX = f_e:itemindex can find it
-            array_push($GLOBALS['QueryIDsPageIndex'],$i);     // So that _#PAGEINDX = f_e:pageindex can find it
+            array_push($GLOBALS['QueryIDsIndex'],$zidx);    // So that _#ITEMINDX = f_e:itemindex can find it
+            array_push($GLOBALS['QueryIDsPageIndex'],$i);   // So that _#PAGEINDX = f_e:pageindex can find it
 
             $iid = $this->zids->short_or_longids($zidx);
             if ( !$iid ) {
@@ -656,14 +656,15 @@ class itemview {
             }
             // Note if iid is invalid, then expect empty answers
 
-            $catname = $content[$iid][$this->group_fld][0]['value'];
-            if ($this->slice_info['gb_header']) {
-                $catname = substr($catname, 0, $this->slice_info['gb_header']);
-            }
 
             $OldItem = $CurItem;  // this could be used in CATEGORY BOTTOM -
                                   // we need old item aliases & content there
-            $this->set_columns($CurItem, $content, $iid);   // set right content for aliases
+            $this->setColumns($CurItem, $content[$iid]);   // set right content for aliases
+
+            $catname = $CurItem->getval($this->group_fld);
+            if ($this->slice_info['gb_header']) {
+                $catname = substr($catname, 0, $this->slice_info['gb_header']);
+            }
 
             // get top HTML code, unalias it and add scroller, if needed
             if ( !$top_html_already_printed ) {
@@ -729,7 +730,6 @@ class itemview {
         }
         $out .= $this->unaliasWithScroller($this->slice_info['compact_bottom'], $CurItem);
     }
-    trace("-");
     return $out;
   }
 
@@ -883,7 +883,7 @@ class itemview {
                 for ($ievent = 0; $ievent < $max_events; ++$ievent) {
                     $event = $events[$ievent];
                     if ($event["iid"] && $event["start"]) {
-                        $this->set_columns ($CurItem, $content, $event['iid']);
+                        $this->setColumns ($CurItem, $content[$event['iid']]);
                         $CurItem->setformat ($this->slice_info['aditional3']);
                         $tdattribs = $CurItem->get_item();
                         $CurItem->setformat ($this->slice_info['odd_row_format']);
@@ -923,7 +923,7 @@ class itemview {
                         for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
                             $event = $calendar[$cell][$ievent];
                             if ($event["iid"] && $event["start"]) {
-                                $this->set_columns($CurItem, $content, $event['iid']);
+                                $this->setColumns($CurItem, $content[$event['iid']]);
                                 $CurItem->setformat($this->slice_info['aditional3']);
                                 $tdattribs = $CurItem->get_item();
                                 $CurItem->setformat ($this->slice_info['odd_row_format']);

@@ -36,21 +36,24 @@ require_once AA_BASE_PATH."modules/links/constants.php3";
 if ( !is_object($contentcache) ) {
     $contentcache = new contentcache;
 }
+
 /** txt2html function
  * @param $txt
  */
 function txt2html($txt) {          // converts plain text to html
-  return nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",htmlspecialchars($txt)));
+    return nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",htmlspecialchars($txt)));
                                    // preg allows text to be pasted from Word
                                    // displays qoutes instead of &8221;
 }
+
 /** DeHtml function
  * @param $txt
  * @param $flag
  */
 function DeHtml($txt, $flag) {
-  return ( ($flag & FLAG_HTML) ? $txt : txt2html($txt) );
+    return ( ($flag & FLAG_HTML) ? $txt : txt2html($txt) );
 }
+
 /** DefineBaseAliases function
  * @param $aliases
  * @param $module_id
@@ -428,7 +431,7 @@ class AA_Item {
      * @param $content4id
      */
     function set_data($content4id) {
-        $this->content4id = ((strtolower(get_class($content4id))=='itemcontent') ? $content4id : new ItemContent($content4id));
+        $this->content4id = (is_object($content4id) ? $content4id : new ItemContent($content4id));
     }
 
     /** set_field_value function
@@ -442,12 +445,21 @@ class AA_Item {
 
 
     /** getval function
-     * shortcut for ItemContent->getValue()
+     * shortcut for AA_Content->getValue()
      * @param $field_id
      * @param $what
      */
-    function getval($field_id, $what='value') {
-        return $this->content4id->getValue($field_id, $what);
+    function getval($field_id) {
+        return $this->content4id->getValue($field_id);
+    }
+
+    /** getFlag function
+     * shortcut for AA_Content->getFlag()
+     * @param $field_id
+     * @param $what
+     */
+    function getFlag($field_id) {
+        return $this->content4id->getFlag($field_id);
     }
 
     /** getValues function
@@ -465,25 +477,29 @@ class AA_Item {
         return $this->content4id->getAaValue($field_id);
     }
 
-    /** getContent function
-     *
-     */
+    /** checks, if the field looks like the field ID */
+    function isField($text) {
+        return $this->content4id->isField($text);
+    }
+
+    /** getContent function */
     function getContent() {
         return $this->content4id->getContent();
     }
 
-    /** getItemContent function
-     *
-     */
+    /** getItemContent function */
     function getItemContent() {
         return $this->content4id;
     }
 
-    /** getItemID function
-     *
-     */
+    /** getItemID function */
     function getItemID() {
         return $this->content4id->getItemID();
+    }
+
+    /** getId */
+    function getId() {
+        return $this->content4id->getId();
     }
 
     /** getSliceID function
@@ -589,6 +605,8 @@ class AA_Item {
      * @param $use_field
      */
     function get_alias_subst( $alias, $use_field="" ) {
+
+
         // use_field is for expanding aliases with loop - prefix {@
         $ali_arr = $this->aliases[$alias];
         // is this realy alias?
@@ -604,6 +622,8 @@ class AA_Item {
         // get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
         $function = ParseFnc($ali_arr['fce']);
         $fce      = $function['fnc'];
+
+
 
         if (!is_callable(array($this,$fce))) {
             return _m('Error: wrong alias function %1 for %2', array($fce,$alias));
@@ -639,6 +659,7 @@ class AA_Item {
         reset( $piece );
         $out = current($piece);   // initial sequence
         while ( $vparam = next($piece) ) {
+
             //search for alias definition (fce,param,hlp)
             $substitution = $this->get_alias_subst( "_#".(substr($vparam,0,8)));
             if ( $substitution != "" ) {   // alias produced some output, so we can remove
@@ -652,24 +673,20 @@ class AA_Item {
         }
         return $clear_output . $this->remove_strings($out,$remove_arr);
     }
+
     /** unalias function
      * @param $text
      * @param $remove
      */
     function unalias( &$text, $remove="" ) {
-        // just create variables and set initial values
-        $maxlevel = 0;
-        $level    = 0;
-        $GLOBALS['g_formpart'] = 0;  // used for splited inputform into parts
-        //   return $this->old_unalias_recurent( $text, $remove, $level, $maxlevel );
-        $ret = new_unalias_recurent($text, $remove, $level, $maxlevel, $this ); // Note no itemview param
-        return $ret;
+        return AA_Stringexpand::unalias($text, $remove, $this);
     }
+
     /** subst_alias function
      * @param $text
      */
     function subst_alias( $text ) {
-        return (AA_Fields::isField($text) ? $this->getval($text) : $this->unalias($text));
+        return ($this->isField($text) ? $this->getval($text) : $this->unalias($text));
     }
     /** subst_aliases function
      * @param $var
@@ -702,15 +719,20 @@ class AA_Item {
      * @param $param delimiter - used to separate values if the field is multi
      */
     function f_h($col, $param="") {
-        $values = $this->getValues($col);
-        if ( $param AND !empty($values)) {  // create list of values for multivalue fields
+        if ( $param ) {
+            $values = $this->getValues($col);
+            if (empty($values)) {
+                return '';
+            }
+            // create list of values for multivalue fields
             $param = $this->subst_alias( $param );
             foreach ( $values as $v ) {
                 $res .= ($res ? $param : ''). DeHtml($v['value'], $v['flag']); // add value separator just if field is filled
             }
             return $res;
         }
-        return DeHtml($this->getval($col), $this->getval($col,'flag'));
+
+        return DeHtml($this->getval($col), $this->getFlag($col));
     }
 
     /** f_d function
@@ -746,7 +768,7 @@ class AA_Item {
      * @param $param
      */
     function f_y($col, $param="") {
-        $str2unalias = $param ? $param : DeHtml($this->getval($col), $this->getval($col,'flag'));
+        $str2unalias = $param ? $param : DeHtml($this->getval($col), $this->getFlag($col));
         return $this->unalias( $str2unalias );
     }
 
@@ -824,7 +846,7 @@ class AA_Item {
         list( $plength, $pfield, $pparagraph ) = $this->subst_aliases( ParamExplode($param) );
         $value = $this->getval($col);
         if ($value AND !($col == $field)) {  // special case - return whole field
-            return DeHtml( $value, $this->getval($col,'flag') );
+            return DeHtml( $value, $this->getFlag($col) );
         }
 
         if ($pparagraph) {
@@ -876,7 +898,7 @@ class AA_Item {
 
         // last parameter - condition field
         $url = $this->getitemurl($plink_only, $purl_field, $predirect, $pcondition, $pno_sess);
-        $flg = ( $this->content4id->is_set($p[3]) ? $this->getval($p[3],'flag') : true );
+        $flg = ( $this->content4id->is_set($p[3]) ? $this->getFlag($p[3]) : true );
         return $this->getahref($url,$ptxt,$paddition,$flg);
     }
 
@@ -1077,7 +1099,7 @@ class AA_Item {
                 $param = $p[0];
             }
         }
-        return $param ? $this->subst_alias( $param ): DeHtml($this->getval($col), $this->getval($col,'flag'));
+        return $param ? $this->subst_alias( $param ): DeHtml($this->getval($col), $this->getFlag($col));
     }
 
     /** f_s function
@@ -1097,7 +1119,7 @@ class AA_Item {
      */
     function f_l($col, $param="") {
         list($plink, $padditional) = $this->subst_aliases( ParamExplode($param) );
-        return $this->getahref($plink, $this->getval($col), $padditional,$this->getval($col,'flag'));
+        return $this->getahref($plink, $this->getval($col), $padditional,$this->getFlag($col));
     }
 
     /** f_e function
@@ -1230,7 +1252,7 @@ class AA_Item {
             $negate = !$negate;
         }
         if (!$pskip_col) {
-            $coltxt = DeHtml($this->getval($col), $this->getval($col,'flag'));
+            $coltxt = DeHtml($this->getval($col), $this->getFlag($col));
         }
         return  ($negate ? $pnone : $pbegin. $coltxt .$pend);
     }
@@ -1291,7 +1313,7 @@ class AA_Item {
             elseif( $fid == 'unpacked_id.....' ) {
                 $param = str_replace( "_#$fid", $this->f_n('id..............'), $param );
             }
-            elseif( AA_Fields::isField($fid) ) {
+            elseif( $this->isField($fid) ) {
                 $param = str_replace( "_#$fid", $this->f_h($fid, "-"), $param );
             }
             $part = substr( $part, 6 );
@@ -1321,10 +1343,10 @@ class AA_Item {
         if ( $this->content4id->is_set($p[1]) ) {
             $field_id = ($pfield ? $p[1] : $col);
             $txt = $this->getval($field_id);
-            $flg = $this->getval($field_id,'flag');
+            $flg = $this->getFlag($field_id);
         } else {
             $txt = ( $p[1] ? $pfield : $this->getval($col));
-            $flg = ( $p[1] ? FLAG_HTML : $this->getval($col,'flag'));
+            $flg = ( $p[1] ? FLAG_HTML : $this->getFlag($col));
         }
         $linktype =  (($ptype && ($ptype!='mailto')) ? "" : "mailto:");
         return $pbegin.$this->getahref( $linktype.$this->getval($col), $txt, $padd, $flg, $phide);
@@ -1615,7 +1637,7 @@ class AA_Items {
         }
 
         $content = GetItemContent($zid, false, false, false, $crypted_additional_slice_pwd);
-        return $items->_store(GetItemFromContent(new ItemContent(reset($content))));
+        return is_array($content) ? $items->_store(GetItemFromContent(new ItemContent(reset($content)))) : false;
     }
 
     /** @return array(long_id -> AA_Item) */

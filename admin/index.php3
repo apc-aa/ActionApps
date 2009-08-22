@@ -166,36 +166,27 @@ $manager_settings = array(
                          )
          );
 
-$manager = new AA_Manager($manager_settings);
 
-// r_state array holds all configuration of Links Manager
-// the configuration then could be Bookmarked
-if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
+if ( $change_id OR ($r_state["module_id"] != $module_id)) {
     // we are here for the first time or we are switching to another slice
     unset($r_state);
     // set default admin interface settings from user's profile
     $r_state["module_id"]       = $module_id;
     $sess->register('r_state');
-
-    $manager->setFromProfile($profile);
 }
 
-if ($r_state['manager']) {        // do not set state for the first time calling
-    $manager->setFromState($r_state['manager']);
-}
-
+$manager = new AA_Manager('item'.$module_id, $manager_settings);
 $manager->performActions();
 
-$r_state['bin_cnt'] = CountItemsInBins();
+$set  = $manager->getSet();
+$zids = AA_Metabase::queryZids(array('table'=>'log'), $set);
 
-if ($profile->getProperty('ui_manager', 'css_add')) { $show_settings -= MGR_SB_SEARCHROWS; }
+$r_state['bin_cnt'] = CountItemsInBins();
 
 $manager->printHtmlPageBegin(true, $profile->getProperty('ui_manager', 'css_add'));  // html, head, css, title, javascripts
 
 // just for menu
 $bookmarks = $manager->getBookmarkNames();
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "itemmanager", $manager->getBin(), $navbar != "0", $leftbar != "0");
 
 $aa_set = $manager->getSet();  // do not use $set variable name, since it confuses set[] url command in view
 
@@ -229,11 +220,9 @@ $BIN_CONDS   = array( 'app'    => AA_BIN_ACTIVE,
 
 $zids = QueryZIDs( array($slice_id), $aa_set->getConds(), $aa_set->getSort(), $BIN_CONDS[$manager->getBin()]);
 
-// print searchbar, messages, errors, items
-$manager->display($zids);
+require_once AA_INC_PATH."menu.php3";
 
-$r_state['manager'] = $manager->getState();
+$manager->displayPage($zids, 'itemmanager', $manager->getBin(), $profile->getProperty('ui_manager', 'css_add'));
 
-HtmlPageEnd();
 page_close();
 ?>

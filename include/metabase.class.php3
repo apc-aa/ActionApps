@@ -716,8 +716,8 @@ class AA_Metabase {
      * and stores it in the 'Abstract Data Structure' for use with 'item' class
      *
      * @see GetItemContent(), itemview class, item class
-     * @param array $zids array if ids to get from database
      * @param array $settings array - just one parameter: table, where to search
+     * @param array $zids array if ids to get from database
      * @return array - Abstract Data Structure containing the links data
      *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
      */
@@ -841,13 +841,11 @@ class AA_Metabase {
      * @param $classname
      * @param $params
      */
-    function getManagerConf($tablename, $actions=null, $switches=null, $manager_id=null) {
-        $manager_id    = is_null($manager_id) ? $manager_id : $tablename;   // or something more concrete?
+    function getManagerConf($tablename, $actions=null, $switches=null) {
         $aliases       = $this->generateAliases($tablename);
         $search_fields = $this->getSearchArray($tablename);
 
         $manager_settings = array(
-             'module_id' => $manager_id,
              'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
              'searchbar' => array(
                  'fields'               => $search_fields,
@@ -881,9 +879,9 @@ class AA_Metabase {
                                             </tr>
                                            ',
                      'compact_remove'   => "",
-                     'compact_bottom'   => "</table>",
-                     'id'               => $manager_id ),
-                 'fields'               => $this->getSearchArray($tablename),
+                     'compact_bottom'   => "</table>"
+                                  ),
+                 'fields'               => $search_fields,
                  'aliases'              => $aliases,
                                            //    static class method               , first parameter to the method
                  'get_content_funct'    => array(array('AA_Metabase', 'getContent'), array('table'=>$tablename))

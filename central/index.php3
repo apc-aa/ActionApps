@@ -88,119 +88,41 @@ $switches->addAction(new AA_Manageraction_Central_Tab('Tab2', 'hold'));
 $switches->addAction(new AA_Manageraction_Central_Tab('Tab3', 'trash'));
 $switches->addAction(new AA_Manageraction_Central_DeleteTrash('DeleteTrash',false));
 
-function GetCentralAliases() {
-    // fields: array('id', 'dns_conf', 'dns_serial', 'dns_web', 'dns_mx', 'dns_db', 'dns_prim', 'dns_sec', 'web_conf', 'web_path', 'db_server', 'db_name', 'db_user', 'db_pwd', 'AA_SITE_PATH', 'AA_BASE_DIR', 'AA_HTTP_DOMAIN', 'AA_ID', 'ORG_NAME', 'ERROR_REPORTING_EMAIL', 'ALERTS_EMAIL', 'IMG_UPLOAD_MAX_SIZE', 'IMG_UPLOAD_URL', 'IMG_UPLOAD_PATH', 'SCROLLER_LENGTH', 'FILEMAN_BASE_DIR', 'FILEMAN_BASE_URL', 'FILEMAN_UPLOAD_TIME_LIMIT', 'AA_ADMIN_USER', 'AA_ADMIN_PWD', 'status_code'));
-    $aliases["_#ORG_NAME"] = GetAliasDef( "f_h", "ORG_NAME",       'ORG_NAME');
-    $aliases["_#AA_ID___"] = GetAliasDef( "f_h", "AA_ID",          'AA_ID');
-    $aliases["_#ID______"] = GetAliasDef( "f_h", "id",             'id');
-    $aliases["_#DB_SERVE"] = GetAliasDef( "f_h", "db_server",      'db_server');
-    $aliases["_#DB_NAME_"] = GetAliasDef( "f_h", "db_name",        'db_name');
-    $aliases["_#HTTP_DOM"] = GetAliasDef( "f_h", "AA_HTTP_DOMAIN", 'AA_HTTP_DOMAIN');
-    $aliases["_#AA_BASE_"] = GetAliasDef( "f_h", "AA_BASE_DIR",    'AA_BASE_DIR');
-    return $aliases;
-}
-
-$manager_settings = array(
-     'module_id' => $module_id,
-     'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
-     'searchbar' => array(
-         'fields'               => $metabase->getSearchArray('central_conf'),
-         'search_row_count_min' => 1,
-         'order_row_count_min'  => 1,
-         'add_empty_search_row' => true,
-         'function'             => false  // name of function for aditional action hooked on standard filter action
-                         ),
-     'scroller'  => array(
-         'listlen'              => ($listlen ? $listlen : EDIT_ITEM_COUNT)
-                         ),
-     'itemview'  => array(
-         'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
-         'format'               => array(    // optionaly to manager_vid you can set format array
-             'compact_top'      => "<table border=0 cellspacing=0 cellpadding=5>",
-             'category_sort'    => false,
-             'category_format'  => "",
-             'category_top'     => "",
-             'category_bottom'  => "",
-             'even_odd_differ'  => false,
-             'even_row_format'  => "",
-             'odd_row_format'   => '
+$manager_settings = $metabase->getManagerConf('central_conf', $actions, $switches);
+$manager_settings['itemview']['format']['compact_top'] = '
+                                          <table border=0 cellspacing=0 cellpadding=5>';
+$manager_settings['itemview']['format']['odd_row_format'] = '
                                     <tr class=tabtxt>
                                       <td width="30"><input type="checkbox" name="chb[_#ID______]" value=""></td>
                                       <td class=tabtxt><a href="'.$sess->url('tabledit.php3?cmd[centraledit][edit][_#ID______]=1').'"> _#ORG_NAME </a></td>
                                       <td class=tabtxt>_#AA_ID___</td>
                                       <td class=tabtxt>_#DB_SERVE - _#DB_NAME_</td>
-                                      <td class=tabtxt>_#HTTP_DOM_#AA_BASE_</td>
+                                      <td class=tabtxt>_#AA_HTTP__#AA_BASE_</td>
                                     </tr>
                                     <tr class="tabtxt">
                                       <td>&nbsp;</td>
                                       <td class="tabtxt" colspan="4"><a href="{sessurl:?akce=Sqlupdate_Test&chb[_#ID______]=1}">'._m('sql_upadte TEST') .'</a> &nbsp; &nbsp; <a href="{sessurl:?akce=Sqlupdate_Update&chb[_#ID______]=1}">'._m('sql_upadte NOW!') .'</a></td>
                                     </tr>
-                                   ',
-             'compact_remove'   => "",
-             'compact_bottom'   => "</table>",
-             'id'               => $module_id ),
-         'fields'               => $metabase->getSearchArray('central_conf'),
-         'aliases'              => GetCentralAliases(),
-         'get_content_funct'    => 'Central_GetAaContent'
-                         ),
-     'actions'   => $actions,
-     'switches'  => $switches,
-     'bin'       => 'app',
-     'messages'  => array(
-         'title'       => _m('ActionApps Central')
-                         )
-         );
+                                   ';
+$manager_settings['messages']['title'] = _m('ActionApps Central');
 
-$manager = new AA_Manager($manager_settings);
-$profile = AA_Profile::getProfile($auth->auth["uid"], $module_id); // current user settings
+//         'get_content_funct'    => 'Central_GetAaContent'
 
-// r_state array holds all configuration of Links Manager
-// the configuration then could be Bookmarked
-if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
-    // we are here for the first time or we are switching to another slice
-    unset($r_state);
-    // set default admin interface settings from user's profile
-    $r_state["module_id"]       = $module_id;
-    $sess->register('r_state');
-
-    $manager->setFromProfile($profile);
-}
-
-if ($r_state['manager']) {        // do not set state for the first time calling
-    $manager->setFromState($r_state['manager']);
-}
-
+$manager = new AA_Manager('central', $manager_settings);
 $manager->performActions();
 
 // need for menu
 $r_state['bin_cnt'] = CountItemsInBins();
-
-$manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
-
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "central", $manager->getBin(), $navbar != "0", $leftbar != "0");
-
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
-
 $BIN_CONDS   = array( 'app'    => AA_BIN_APPROVED,
                       'hold'   => AA_BIN_HOLDING,
                       'trash'  => AA_BIN_TRASH
                     );
 $zids = Central_QueryZids($conds, $sort, $BIN_CONDS[$manager->getBin()]);
 
-$manager->printSearchbarBegin();
-$manager->printSearchbarEnd();   // close the searchbar form
+require_once AA_INC_PATH."menu.php3";
+$manager->displayPage($zids, 'central', $manager->getBin());
 
-$manager->printAndClearMessages();
-PrintArray($r_err);
-PrintArray($r_msg);
-unset($r_err);
-unset($r_msg);
-
-$manager->printItems($zids);   // print links and actions
-$r_state['manager'] = $manager->getState();
-
-HtmlPageEnd();
 page_close();
 ?>

@@ -28,8 +28,6 @@
 */
 require_once AA_INC_PATH."feeding.php3";
 
-
-
 /**
  * AA_Value - Holds information about one value - could be multiple,
  *            could contain flags...
@@ -50,6 +48,23 @@ class AA_Value {
         $this->clear();
         $this->addValue($value);
         $this->setFlag(!is_null($flag) ? $flag : ( (is_array($value) AND is_array($value[0])) ? $value[0]['flag'] : 0));
+    }
+
+    /** Static for creating value from any value
+     *  Called as
+     *     AA_Value::factory($val);
+     */
+    function factory($val) {
+        if (is_object($val)) {
+            if (strtolower(get_class($val)) == 'aa_value') {
+                return $val;
+            }
+            // we use serialized values for objects. 
+            // The idea is, that it is in fact the same as with timestamp for date - it is just inner value, 
+            // which is hardly ever shown to user as is. The same with objects here. 
+            return new AA_Value(serialize($val));   // maybe we can set some flag for serialized values
+        }
+        return new AA_Value($val);
     }
 
     /** getValue function
@@ -80,7 +95,8 @@ class AA_Value {
             //                         ['flag']  = ..
             //                     [1]['value'] = ..
             foreach($value as $val) {
-                $this->val[] = is_array($val) ? $val['value'] : $val;
+                $this->val[] = is_array($val) ? $val['value'] : (!is_object($val) ? $val : serialize($val));
+                // @todo check, if $val->getSomething is callable
             }
         } elseif ( !is_null($value) ) {
             $this->val[] = $value;
@@ -134,7 +150,114 @@ class AA_Value {
 }
 
 
+/** Class holds any data (AA_Values)
+ *  Universal data structure interface - it could hold item data as well as
+ *  data from the form
+ */
+class AA_Content {
+    protected $content;
+    protected $id_field     = 'aa_id';
+    protected $owner_field  = 'aa_owner';
 
+    function unalias($text) {
+        return AA_Stringexpand::unalias($text);
+    }
+
+    /** isField function
+     *  Returns true, if the passed field_id is field id
+     *  @param $field_id
+     */
+    function isField($field_id) {
+        return isset($this->content[$field_id]);
+    }
+
+    /** setAaValue function
+     *  Special function - fills field from AA_Value object
+     * @param $field_id
+     * @param $value       AA_Value
+     */
+    function setAaValue($field_id, $value) {
+        if (is_object($value)) {
+            // we expect AA_Value object here
+            $this->content[$field_id] = $value->getArray();
+        }
+    }
+
+    /** set object id based on id_field setting for this content */
+    function setId($id) {
+        $this->setAaValue($this->id_field, new AA_Value( $id ));
+    }
+
+    /** set object id based on id_field setting for this content */
+    function setOwnerId($id) {
+        $this->setAaValue($this->owner_field, new AA_Value( $id ));
+    }
+
+    /** get object id based on id_field setting for this content */
+    function getId() {
+        return $this->getValue($this->id_field);
+    }
+
+    /** get owner id based on id_field setting for this content */
+    function getOwnerId() {
+        return $this->getValue($this->owner_field);
+    }
+
+    /** get owner id based on id_field setting for this content */
+    function getName() {
+        return $this->getValue('aa_name');
+    }
+
+    /** getAaValue function
+     *  Returns the AA_Value object for a field
+     * @param $field_id
+     */
+    function getAaValue($field_id) {
+        return new AA_Value( $this->content[$field_id] );
+    }
+
+    /** getValue function
+     *  Returns the value for a field. If it is a multi-value
+     *   field, this is the first value.
+     * @param $field_id
+     * @param $what
+     */
+    function getValue($field_id, $idx=0) {
+        return ( is_array($this->content[$field_id]) ? $this->content[$field_id][$idx]['value'] : false );
+    }
+
+    function getFlag($field_id) {
+        return ( is_array($this->content[$field_id]) ? $this->content[$field_id][0]['flag'] : false );
+    }
+
+    /** getValues function
+     * @param $field_id
+     */
+    function getValues($field_id) {
+        return ( is_array($this->content[$field_id]) ? $this->content[$field_id] : false );
+    }
+
+    /** getValuesArray function
+     * @param $field_id
+     */
+    function getValuesArray($field_id) {
+        $ret = array();
+        if ( !empty($this->content[$field_id]) ) {
+            foreach ($this->content[$field_id] as $val) {
+                $ret[] = $val['value'];
+            }
+        }
+        return $ret;
+    }
+
+    /** @return Abstract Data Structure of current object
+     *  @deprecated - for backward compatibility (used in AA_Object getContent)
+     */
+    function getContent() {
+        return $this->content;
+    }
+
+}
 
 define('ITEMCONTENT_ERROR_BAD_PARAM',   200);
 define('ITEMCONTENT_ERROR_DUPLICATE',   201);
@@ -153,13 +276,39 @@ define('ITEMCONTENT_ERROR_NO_SLICE_ID', 203);
  *   Gives convenient access to the things previously stored in the
  *   array $content4id.
  */
-class ItemContent {
+class ItemContent extends AA_Content {
     var $classname = "ItemContent";
 
-    // PUBLIC:
+    /** ItemContent function
+     *  Constructor which takes content for ID or item_id (unpacked).
+     * @param $content4id
+     */
+    function ItemContent($content4id = "") {
+        if ( is_array($content4id) ) {
+            $this->setFromArray($content4id);
+        } elseif ( $content4id ) {
+            $this->setByItemID($content4id );
+        }
+    }
 
-    // PRIVATE:
-    var $content;
+    /** isField function
+     *  Returns true, if the passed field id looks like field id
+     *  @param $field_id
+     *  @todo - look directly into module, if the field is really field
+     *          in specific slice/module
+     */
+    function isField($field_id) {
+        if ( !isset($GLOBALS['LINKS_FIELDS']) ) {
+             $GLOBALS['LINKS_FIELDS'] = GetLinkFields();
+             $GLOBALS['CATEGORY_FIELDS'] = GetCategoryFields();
+             $GLOBALS['CONSTANT_FIELDS'] = GetConstantFields();
+        }
+        // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
+        return( ((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id))
+               OR $GLOBALS['LINKS_FIELDS'][$field_id]
+               OR $GLOBALS['CATEGORY_FIELDS'][$field_id]
+               OR $GLOBALS['CONSTANT_FIELDS'][$field_id] );
+    }
 
     /** lastErr function
      *  Method returns or sets last itemContent error
@@ -186,17 +335,6 @@ class ItemContent {
         return ItemContent::lastErr(null, null, true);
     }
 
-    /** ItemContent function
-     *  Constructor which takes content for ID or item_id (unpacked).
-     * @param $content4id
-     */
-    function ItemContent($content4id = "") {
-        if ( is_array($content4id) ) {
-            $this->setFromArray($content4id);
-        } elseif ( $content4id ) {
-            $this->setByItemID($content4id );
-        }
-    }
     /** setFromArray function
      * @param $content4id
      */
@@ -330,80 +468,6 @@ class ItemContent {
     function matches(&$conditions) {
         return $conditions->matches($this);
     }
-    /** getContent function
-     *
-     */
-    function getContent() {
-        return $this->content;
-    }
-
-    /** getContentQuoted function
-     *  Function quotes all content to use in database query
-     *  This is just transformation function - we do not say, that content is
-     *  not already quoted - we will add $quoted flag to this class in order
-     *  it will be transparent for ussage in near future
-     */
-    function getContentQuoted() {
-        return $this->_content_walk('quote');
-    }
-
-    /** _content_walk function
-     *  Goes through all values of content and and returns transformed content.
-     *  Transformation is given by callback function.
-     * @param $callback
-     */
-    function _content_walk($callback) {     // private function
-        if ( !isset( $this->content ) OR !is_array(  $this->content ) ) {
-            return false;
-        }
-        foreach ( $this->content as $field => $val_array ) {
-            foreach ( $val_array as $key => $val ) {
-                $ret[$field][$key] = array( 'value' => $callback($val['value']),
-                                            'flag'  => $val['flag']);
-            }
-        }
-        return $ret;
-    }
-
-    /** getValue function
-     *  Returns the value for a field. If it is a multi-value
-     *   field, this is the first value.
-     * @param $field_id
-     * @param $what
-     */
-    function getValue($field_id, $what='value') {
-        return ( is_array($this->content[$field_id]) ? $this->content[$field_id][0][$what] : false );
-    }
-
-
-    /** getAaValue function
-     *  Returns the value for a field. If it is a multi-value
-     *   field, this is the first value.
-     * @param $field_id
-     */
-    function getAaValue($field_id) {
-        return new AA_Value( $this->content[$field_id] );
-    }
-
-    /** getValues function
-     * @param $field_id
-     */
-    function getValues($field_id) {
-        return ( is_array($this->content[$field_id]) ? $this->content[$field_id] : false );
-    }
-
-    /** getValuesArray function
-     * @param $field_id
-     */
-    function getValuesArray($field_id) {
-        $ret = array();
-        if ( !empty($this->content[$field_id]) ) {
-            foreach ($this->content[$field_id] as $val) {
-                $ret[] = $val['value'];
-            }
-        }
-        return $ret;
-    }
 
     /** getFields function
      *
@@ -427,48 +491,48 @@ class ItemContent {
     function getItemValue($field_name) {
         return $this->getValue(substr($field_name."................",0,16));
     }
-    /** getQuotedValue function
-     * @param $field_id
-     */
-    function getQuotedValue($field_id) {
-        return addslashes($this->getValue($field_id));
-    }
+
     /** getItemID function
-     *
      */
     function getItemID() {
         return unpack_id($this->getItemValue("id"));
     }
+
+    /** redefined AA_Content's function */
+    function getId() {
+        return $this->getItemID();
+    }
+
+    /** redefined AA_Content's function */
+    function getOwnerId() {
+        return $this->getSliceID();
+    }
+
     /** getSliceID function
-     *
      */
     function getSliceID() {
         return unpack_id($this->getItemValue("slice_id"));
     }
-    /** getPSliceID function
-     *
-     */
-    function getPSliceID() {
-        return addslashes($this->getItemValue("slice_id"));
-    }
+
     /** getStatusCode function
-     *
      */
     function getStatusCode() {
         return $this->getItemValue("status_code");
     }
+
     /** getPublishDate function
-     *
      */
     function getPublishDate() {
         return $this->getItemValue("publish_date");
     }
+
+
     /** getExpiryDate function
-     *
      */
     function getExpiryDate() {
         return $this->getItemValue("expiry_date");
     }
+
     /** setValue function
      * @param $field_id
      * @param $val
@@ -477,19 +541,6 @@ class ItemContent {
         $this->content[$field_id][0]['value'] = $val;
     }
 
-    /** setFieldValue function
-     *  Special function - fills field by prepared array $v[]['value']
-     * @param $field_id
-     * @param $v
-     */
-    function setFieldValue($field_id,$v) {
-        if (is_object($v)) {
-            // we expect AA_Value object here
-            $this->content[$field_id] = $v->getArray();
-        } else {
-            $this->content[$field_id] = $v;
-        }
-    }
     /** setItemValue function
      * @param $field_name
      * @param $value
@@ -498,30 +549,35 @@ class ItemContent {
         $this->content[substr($field_name."...................",0,16)] =
             array (0 => array ("value" => $value));
     }
+
     /** setItemID function
      * @param $value
      */
     function setItemID($value) {
         $this->setItemValue("id", pack_id($value));
     }
+
     /** setSliceID function
      * @param $value
      */
     function setSliceID($value) {
         $this->setItemValue("slice_id", pack_id($value));
     }
+
     /** setStatusCode function
      * @param $value
      */
     function setStatusCode($value) {
         $this->setItemValue("status_code", $value);
     }
+
     /** setPublishDate function
      * @param $value
      */
     function setPublishDate($value) {
         $this->setItemValue("publish_date", $value);
     }
+
     /** setExpiryDate function
      * @param $value
      */
