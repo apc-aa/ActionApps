@@ -95,7 +95,7 @@ class AA_Stringexpand_User extends AA_Stringexpand {
         // cache's keyString.
         // $auth_user_info caches values about auth user
         $cache_nostore = true;             // GLOBAL!!!
-        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uname"]);
+        $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],$auth->auth["uname"],$_SERVER['REMOTE_USER']);
         switch ($field = trim($field)) {
             case '':         return $auth_user;
             case 'password': return $_SERVER['PHP_AUTH_PW'];
@@ -1515,6 +1515,24 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
     }
 }
 
+class AA_Stringexpand_Itree extends AA_Stringexpand_Nevercache {
+    // cached in AA_Stringexpand_Item
+
+    /** expand function
+     * @param $ids_string  ids (long or short (or mixed) separated by dash '-')
+     *                     - now you can also use tree representation like:
+     *                     3234(3443-3678(3872-3664)-3223)-4045  (see above)
+     * @param $top
+     * @param $content
+     * @param $delimeter
+     * @param $bottom
+     */
+    function expand($ids_string, $top=null, $content=null, $delim=null, $bottom=null) {
+        return AA_Stringexpand_Item::expand($ids_string, $content, $delim, $top, $bottom);
+    }
+}
+
+
 
 /** helper class for AA_Stringexpand_Item */
 class AA_Treecache {
@@ -1658,7 +1676,7 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
  *  {tree:<item_id>[:<relation_field>]}
  *  {tree:2a4352366262227383484784635362ab:relation.......1}
  *  @return dash separated long ids of items which belongs to the tree under
- *          specifield iten based on the relation field
+ *          specifield item based on the relation field
  */
 class AA_Stringexpand_Tree extends AA_Stringexpand {
     /** expand function
@@ -1671,13 +1689,34 @@ class AA_Stringexpand_Tree extends AA_Stringexpand {
         if (empty($item_id)) {
             return '';
         }
-        if (empty($relation_field)) {
-            $relation_field = 'relation........';
-        }
-        $tree = AA_Trees::getTree($long_id, $relation_field);
+        $tree = AA_Trees::getTree($long_id, get_if($relation_field, 'relation........'));
         return join($tree->getIds(), '-');
     }
 }
+
+
+/** @return string representation of the tree (with long ids) under specifield
+ *          item based on the relation field
+ *  @see {itree: } for more info about the stringtree syntax
+ *  {treestring:<item_id>[:<relation_field>]}
+ *  {treestring:2a4352366262227383484784635362ab:relation.......1}
+ */
+class AA_Stringexpand_Treestring extends AA_Stringexpand {
+    /** expand function
+     * @param $item_id          - item id of the tree root (short or long)
+     * @param $relation_field   - tree relation field (default relation........)
+     */
+    function expand($item_id, $relation_field=null) {
+        $zid     = new zids($item_id);
+        $long_id = $zid->longids(0);
+        if (empty($item_id)) {
+            return '';
+        }
+        $tree = AA_Trees::getTree($long_id, get_if($relation_field, 'relation........'));
+        return $tree->getTreeString();
+    }
+}
+
 
 /** returns ids of items based on conds d-...
  *  {seo2ids:<slices>:<seo-string>}
@@ -1818,6 +1857,27 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
         return ((strlen($condition)<1) OR IsAlias($condition)) ? $else_text : str_replace('_#1', $condition, $text);
     }
 }
+
+/** If $var1 is equal to $var2, then print $text, else print $else_text. 
+ *  $(else_)text could contain _#1 and _#2 aliases for $var1 and $var2, but you 
+ *  can use any {} AA expression.
+ *  Example: {ifeq:{xseo1}:about: class="active"}
+ */
+class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $var1
+     * @param $var2
+     * @param $text
+     * @param $else_text
+     */
+    function expand($var1, $var2, $text='', $else_text='') {
+        $ret = ($var1 == $var2) ? $text : $else_text; 
+        return str_replace(array('_#1','_#2'), array($var1, $var2), $ret);
+    }
+}
+
 
 /** Takes unlimited number of parameters and jioins the unempty ones into one
  *  string ussing first parameter as delimiter
@@ -2556,6 +2616,7 @@ class AA_Unalias_Callback {
         $this->itemview = $itemview;
         $this->aliases  = $aliases;
     }
+    
     /** expand_bracketed_callback function
      * @param $match
      */
@@ -2563,6 +2624,17 @@ class AA_Unalias_Callback {
         return expand_bracketed($match[1], $this->level,$this->item,$this->itemview,$this->aliases);
     }
 }
+
+
+function make_reference_callback($match) {
+    global $contentcache;
+    
+    $ref = md5(uniqid('hi'));
+    $txt = $match[1];          // for dereference
+    $contentcache->set("define:$ref", $txt);
+    return "{var:$ref}";
+}
+
 
 /**  new_unalias_recurent function
  *  This is based on the old unalias_recurent, it is intended to replace
@@ -2586,6 +2658,14 @@ function new_unalias_recurent(&$text, $remove, $level, $maxlevel, $item=null, $i
     // Note ereg was 15 seconds on one multi-line example cf .002 secs
     //    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
 
+    // to speeedup the process we check, if we have to look for {( ... )} pairs 
+    if (strpos($text, '{(') !== false) {
+        // replace all {(.....)} with {var:...}, which will be expanded into {...}
+        // this alows to write expressions like 
+        //   {item:6625:{(some text {headline........}...etc.)}}
+        $text = preg_replace_callback('/\{\((.*)\)\}/sU', 'make_reference_callback', $text);  //s for newlines, U for nongreedy
+    }
+    
     $callback = new AA_Unalias_Callback($level+1,$item,$itemview,$aliases);
     while (preg_match('/[{]([^{}]+)[}]/s',$text)) {
         // well it is not exactly maxlevel - it just means, we need to unquote colons
@@ -3004,6 +3084,7 @@ class AA_Stringexpand_Filelink extends AA_Stringexpand {
         return "$text_before<a href=\"$url\" title=\"$filename$fileinfo\">$filename</a>&nbsp;". str_replace(' ','&nbsp;', $fileinfo);
     }
 }
+
 /** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
  *  {version[:aa|svn]}
  **/
@@ -3059,7 +3140,6 @@ class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
     }
 }
 
-
 /** Adds supplied slice password to the list of known passwords for the page,
  *  so you can display the content of the protected slice
  *  It is usefull for site module, when ypu need to display protected content
@@ -3080,6 +3160,25 @@ class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
         return '';
     }
 }
+
+
+/** @return url GET parameter - {qs:<varname>}
+ *  Ussage: {qs:surname}
+ *          - returns Havel for http://example.org/cz/page?surname=Havel
+ */
+class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // The caching is made by AA_Stringexpand_Aggregate, which is enough
+    /** expand function
+     * @param $ids_string
+     * @param $expression
+     * @param $delimeter
+     */
+    function expand($variable_name='') {
+        return $_GET[$variable_name];
+    }
+}
+
 
 
 ?>
