@@ -223,9 +223,9 @@ function Links_CountLinkInBins($cat_path) {
 }
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
-$module_id = $slice_id;
+$module_id   = $slice_id;
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
-$links_info = GetModuleInfo($module_id,'Links');
+$links_info  = GetModuleInfo($module_id,'Links');
 
 $manager_settings = array(
      'searchbar' => array(
@@ -325,9 +325,7 @@ $manager_settings = array(
          'title'            => _m('ActionApps - Links Manager'))
                          );
 
-// r_state array holds all configuration of Links Manager
-// the configuration then could be Bookmarked
-if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
+if ( $change_id OR ($r_state["module_id"] != $module_id)) {
     // we are here for the first time or we are switching to another slice
     unset($r_state);
     // set default admin interface settings from user's profile
@@ -342,12 +340,9 @@ if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
     $sess->register('r_state');
 }
 
-$manager = new AA_Manager($manager_settings);
+$manager_id = 'links'. $module_id;  // no special meaning - just manager id
 
-if ( $r_state['manager'] ) {       // do not set state for the first time calling
-    $manager->setFromState($r_state['manager']);
-}
-
+$manager = new AA_Manager($manager_id, $manager_settings);
 $manager->performActions();
 $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 
@@ -440,9 +435,8 @@ unset($r_err);
 unset($r_msg);
 
 $manager->printItems($link_zids);   // print links and actions
-$r_state['manager'] = $manager->getState();
-
-//print_r($manager);
+$r_state['manager']    = $manager->getState();
+$r_state['manager_id'] = $manager_id;  // no special meaning - just manager id
 
 HtmlPageEnd();
 page_close();

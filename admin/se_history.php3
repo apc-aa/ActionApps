@@ -214,49 +214,17 @@ $manager_settings = array(
                          )
          );
 
-$manager = new AA_Manager($manager_settings);
-$profile = AA_Profile::getProfile($auth->auth["uid"], $module_id); // current user settings
-
-// r_state array holds all configuration of Links Manager
-// the configuration then could be Bookmarked
-if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
-    // we are here for the first time or we are switching to another slice
-    unset($r_state);
-    // set default admin interface settings from user's profile
-    $r_state["module_id"]       = $module_id;
-    $sess->register('r_state');
-
-    $manager->setFromProfile($profile);
-}
-
-if ($r_state['manager']) {        // do not set state for the first time calling
-    $manager->setFromState($r_state['manager']);
-}
-
+$manager = new AA_Manager('history'.$slice_id, $manager_settings);
 $manager->performActions();
-
-$manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
-
-require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", 'history', $navbar != "0", $leftbar != "0");
 
 $conds = $manager->getConds();
 $sort  = $manager->getSort();
-
 $zids=QueryHistoryZIDs($slice_id, $conds, $sort);
 
-$manager->printSearchbarBegin();
-$manager->printSearchbarEnd();   // close the searchbar form
+require_once AA_INC_PATH."menu.php3";
 
-$manager->printAndClearMessages();
-PrintArray($r_err);
-PrintArray($r_msg);
-unset($r_err);
-unset($r_msg);
+$manager->displayPage($zids, 'sliceadmin', 'history');
 
-$manager->printItems($zids);   // print links and actions
-$r_state['manager'] = $manager->getState();
+page_close();
 
-HtmlPageEnd();
-page_close()
 ?>

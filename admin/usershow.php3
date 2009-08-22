@@ -104,7 +104,7 @@ $manager_settings = array(
                          )
          );
 
-$manager = new AA_Manager($manager_settings);
+$manager = new AA_Manager('users'.$slice_id, $manager_settings);
 
 // r_userstate array holds all configuration of Manager
 // the configuration then could be Bookmarked

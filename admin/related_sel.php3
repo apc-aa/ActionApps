@@ -136,7 +136,7 @@ $manager_settings = array(
          );
 
 
-$manager = new AA_Manager($manager_settings);
+$manager = new AA_Manager('related'. $module_id, $manager_settings);
 if ((isset($conds_ro)) && (isset($showcondsro))) {
     $manager->searchbar->addSearch($conds_ro, true);
 }
@@ -162,9 +162,6 @@ if ( !isset($r_state['related']) OR $sid OR ($r_state['related']['sid'] != $modu
 //    $r_state['related']['conds_ro'] = $conds_ro;
 //    $r_state['related']['conds_rw'] = $conds_rw;
 
-    $sess->register('r_state');
-    $profile = AA_Profile::getProfile($auth->auth["uid"], $module_id); // current user settings
-    $manager->setFromProfile($profile);
 }
 
 if ($r_state['related']['manager'] ) {        // do not set state for the first time calling

@@ -68,31 +68,13 @@ $actions   = new AA_Manageractions;
 $actions->addAction(new AA_Manageraction_Taskmanager_Execute('ExecuteTaskAction'));
 $actions->addAction(new AA_Manageraction_Taskmanager_Delete('DeleteTaskAction'));
 
-
 //$switches  = new AA_Manageractions;  // we do not need switches here
-$module_id = 'toexecute';
 
-$metabase  = new AA_Metabase;
-$metabase->loadFromDb();
-//huhl($metabase->getCreateSql());
-//echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\');';
-//exit;
-
-//$metabase  = new AA_Metabase;
-//$metabase->loadFromDb();
-//echo '$instance = unserialize(\''. str_replace("'", '\\\'', serialize($metabase)) .'\';';
-//exit;
-
-//echo $metabase->getDefinition();
-
-//$metabase         = AA_Metabase::singleton();
-//huhl($metabase);
+$metabase  = AA_Metabase::singleton();
 
 $manager_settings = $metabase->getManagerConf('toexecute', $actions);
-//$manager_settings['itemview']['aliases'] = GetPollsAliases();
-
-$manager_settings['itemview']['format'] = array(
-             'compact_top'      => '<table border="0" cellpadding="5" cellspacing="0">
+$manager_settings['itemview']['format']['compact_top'] = '
+                                          <table border="0" cellpadding="5" cellspacing="0">
                                             <tbody><tr>
                                               <th width="30">&nbsp;</th>
                                               <th>id</th>
@@ -101,63 +83,27 @@ $manager_settings['itemview']['format'] = array(
                                               <th>priority</th>
                                               <th>selector</th>
                                               <th>params</th>
-                                            </tr>',
-             'category_sort'    => false,
-             'category_format'  => "",
-             'category_top'     => "",
-             'category_bottom'  => "",
-             'even_odd_differ'  => false,
-             'even_row_format'  => "",
-             'odd_row_format'   => '<tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
+                                            </tr>';
+$manager_settings['itemview']['format']['odd_row_format'] = '
+                                      <tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
                                         <td>_#ID______</td>
                                         <td>_#CREATED_</td>
                                         <td>_#AA_USER_</td>
                                         <td>_#PRIORITY</td>
                                         <td>_#SELECTOR</td>
                                         <td>_#PARAMS__</td>
-                                    </tr>
-             ',                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
-             'compact_remove'   => "",
-             'compact_bottom'   => "</tbody></table>",
-             'id'               => $module_id
-          );
+                                    </tr>';                      // <td>_#OBJECT__</td><td>_#EXECUTE_</td>
 
-$manager = new AA_Manager($manager_settings);
-$profile = AA_Profile::getProfile($auth->auth["uid"], $module_id); // current user settings
-
-// r_state array holds all configuration of Links Manager
-// the configuration then could be Bookmarked
-if ( !isset($r_state) OR $change_id OR ($r_state["module_id"] != $module_id)) {
-    // we are here for the first time or we are switching to another slice
-    unset($r_state);
-    // set default admin interface settings from user's profile
-    $r_state["module_id"]       = $module_id;
-    $sess->register('r_state');
-
-    $manager->setFromProfile($profile);
-}
-
-if ($r_state['manager']) {        // do not set state for the first time calling
-    $manager->setFromState($r_state['manager']);
-}
-
+$manager = new AA_Manager('task'.$auth->auth['uid'],  $manager_settings);
 $manager->performActions();
 
-$set = $manager->getSet();
+$set  = $manager->getSet();
 $set->addCondition(new AA_Condition('execute_after', '=', TOEXECUTE_USER_TASK_TIME));
 $set->addCondition(new AA_Condition('aa_user',       '=', $auth->auth['uid']));
-
-$zids  = AA_Metabase::queryZids(array('table'=>'toexecute'), $set);
-
-$manager->printHtmlPageBegin(true);  // html, head, css, title, javascripts
+$zids = AA_Metabase::queryZids(array('table'=>'toexecute'), $set);
 
 require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", "taskmanager");
 
-$manager->display($zids);
-
-$r_state['manager'] = $manager->getState();
-
-HtmlPageEnd();
+$manager->displayPage($zids, 'sliceadmin', 'taskmanager');
 page_close();
 ?>
