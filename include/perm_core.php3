@@ -656,7 +656,11 @@ function GetAuthData( $user_id = false ) {
     if ( !$user_id ) {
         if ( $_SERVER['PHP_AUTH_USER'] ) {
            $user_id = ReaderName2Id($_SERVER['PHP_AUTH_USER']);
-        } else {
+        } 
+        elseif ( $_SERVER['REMOTE_USER'] ) {
+           $user_id = ReaderName2Id($_SERVER['REMOTE_USER']);
+        } 
+        else {
            $user_id = (guesstype($auth->auth["uid"]) == 'l') ? $auth->auth["uid"] : false;
         }
     }
