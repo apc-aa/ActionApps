@@ -29,7 +29,8 @@ require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."convert_charset.class.php3";
 
-error_reporting(E_ERROR | E_PARSE);
+//error_reporting(E_ERROR | E_PARSE);
+//ini_set('display_errors',true);
 
 
 function StripslashesDeep($value) {
@@ -85,7 +86,7 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
     $content4id    = new ItemContent();
     $content4id->setByItemID($item_id, true);     // ignore password
     // if we do not ignore it, then whole item is destroyed for slices with slice_pwd
-    
+
     $sli_id        = $content4id->getSliceID();
     unset($content4id);
 
@@ -100,7 +101,7 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
     }
 }
 
-function GetRepreValue($item_id, $field_id, $alias_name) {
+function GetRepreValue($item_id, $field_id, $alias_name='') {
     // get the item directly from the database
     $item        = AA_Item::getItem(new zids($item_id));
     $repre_value = $alias_name ? $item->subst_alias('_#'.$alias_name) : $item->getval($field_id);
@@ -155,6 +156,7 @@ elseif ($_POST['aaaction']=='DOCHANGE') {
     echo $encoder->Convert($repre_value, $charset, 'utf-8');
 }
 elseif ($_POST['aaaction']=='DISPLAYINPUT') {
+
     $item        = AA_Item::getItem(new zids(AA_V::P('item_id')));
     $iid         = $item->getItemID();
     $slice       = AA_Slices::getSlice($item->getSliceId());
