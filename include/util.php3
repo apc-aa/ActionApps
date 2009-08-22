@@ -37,30 +37,42 @@ require_once AA_INC_PATH."statestore.php3";
 require_once AA_INC_PATH."widget.class.php3";
 require_once AA_INC_PATH."field.class.php3";
 
-/** get_aa_url function
- * @param $href
- * @param $session
- */
-function get_aa_url($href, $session=true) {
-    global $sess;
-    return ($session AND is_object($sess)) ? $sess->url(AA_INSTAL_PATH.$href) : AA_INSTAL_PATH.$href;
-}
 
-/** get_admin_url function
- * @param $href
- * @param $session
- */
-function get_admin_url($href, $session=true) {
-    return get_aa_url("admin/$href", $session);
-}
+function __autoload ($class_name) {
+    $PAIRS = array(
+        'ConvertCharset' => 'convert_charset.class.php3',
+        'AA_Slices'      => 'slice.class.php3',
+        'AA_Items'       => 'item.php3',
+        );
 
-/** get_help_url function
- *  returns url for $morehlp parameter in Frm* functions
- * @param $href
- * @param $anchor
- */
-function get_help_url($href, $anchor) {
-    return $href."#".$anchor;
+    if ($PAIRS[$class_name]) {
+        require AA_INC_PATH. $PAIRS[$class_name];
+        return;
+    }
+
+    $matches = array();
+    preg_match('/^aa_([a-z0-9]+)/', strtolower($class_name), $matches);
+
+    // the core name of the class (like "widget" for "AA_Widget_Fld", ...)
+    $core = $matches[1];
+
+    switch ($core) {
+    case 'form':
+    //  case 'widget':
+    //  case 'field':
+        require AA_INC_PATH. $core. '.class.php3';
+        break;
+    case 'objectgrabber':
+        require AA_INC_PATH. 'grabber.class.php3';
+        break;
+    case 'validate':
+        require AA_INC_PATH. 'validate.php3';
+        break;
+    }
+
+    if ( strpos($class_name, 'AA_Stringexpand_Nszm') === 0 ) {
+        require AA_INC_PATH. "custom/nszm/stringexpand.php";
+    }
 }
 
 /** a_href function
@@ -257,7 +269,7 @@ function add_vars($query_string="", $where='GLOBALS') {
     $varstring = ( $query_string ? $query_string : shtml_query_string() );
 
     if ( !$varstring ) {
-        return;
+        return array();
     }
     if ( ($pos = strpos('#', $varstring)) === true ) {  // remove 'fragment' part
         $varstring = substr($varstring,0,$pos);
@@ -275,13 +287,17 @@ function add_vars($query_string="", $where='GLOBALS') {
     $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
     if (is_array($aa_query_arr) ) {
         // use of $$where do not work for some reason
-        if ($where == '_REQUEST' ) {
-            array_merge_append($_REQUEST, $aa_query_arr);
-        } else {
-            array_merge_append($GLOBALS, $aa_query_arr);
+        switch ($where) {
+            case '_REQUEST': array_merge_append($_REQUEST, $aa_query_arr);
+                             break;
+            case 'return':   break;
+            default:         array_merge_append($GLOBALS, $aa_query_arr);
         }
+        return $aa_query_arr;
     }
+    return array();
 }
+
 
 /** NormalizeArrayIndex function
  *  Removes starting and closing quotes from array index
