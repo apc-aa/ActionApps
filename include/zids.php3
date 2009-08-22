@@ -65,7 +65,7 @@
 
 require_once AA_INC_PATH."util.php3";  // quote
 
-class zids {
+class zids implements Iterator {
     var $a;     // Array of ids of type specified in $t
                 // Note encapsulation broken in itemview which sets this directly
     var $type;  // Type of $a
@@ -144,10 +144,10 @@ class zids {
         $this->a    = array();
         $this->type = $inittype;
     }
-    
-    
-    /** adds ids from $ids array and checks if the valueas are short or long 
-     *  wrong valuas are not added 
+
+
+    /** adds ids from $ids array and checks if the valueas are short or long
+     *  wrong valuas are not added
      */
     function addDirty($ids) {
         foreach ((array)$ids as $id) {
@@ -427,9 +427,6 @@ class zids {
      * @param $zids
      */
     function retag($zids) {
-        if ($debug) {
-            huhl("Retagging zids=",$zids);
-        }
         if ($zids->type != "t") {
             return $this;  // Array is fine
         }
@@ -438,7 +435,7 @@ class zids {
             switch ($this->type) {
                 case 'p': $k = pack_id(id_t2l($v)); break;
                 default:
-                          print("<br>Error: zids: can't retag array of type '$type', tell mitra");
+                          print("<br>Error: zids: can't retag array of type '".$this->type."', tell mitra");
                           return;
             }
             $tags[$k]=$v;
@@ -569,6 +566,14 @@ class zids {
         }
         return array();
     }
+    
+    /** Iterator interface */
+    public function rewind()  { reset($this->a);                        }
+    public function current() { return current($this->a);               }
+    public function key()     { return key($this->a);                   }
+    public function next()    { next($this->a);                         }
+    public function valid()   { return (current($this->a) !== false); }
+   
 } // class zids
 
 /** guesstype function
@@ -624,12 +629,29 @@ function qq_pack_id($str) {
 function qquote($str) {
     return "'".quote($str)."'";
 }
+
 /** qqquote function
  * @param $str
  */
 function qqquote($str) {
     return '"'.quote($str).'"';
 }
+
+
+/** sqlin function
+ *  Return appropriate SQL for including in WHERE clause
+ * Note that some code still does this by hand,
+ * @param $column
+ * @param $values - array of values
+ */
+function sqlin( $column, $values ) {
+    switch (count($values)) {
+    case 0: return '0';
+    case 1: return "$column = ".qquote(reset($values));
+    }
+    return "$column IN (". implode(",",array_map("qquote", $values)). ')';
+}
+
 /** id_t2l function
  * @param $str
  */
