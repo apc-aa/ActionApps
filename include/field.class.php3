@@ -183,11 +183,9 @@ class AA_Field {
     * @param $aa_value
     * @todo create validator on input_validate
     */
-    function _getAaVariable($item, $multiple) {
-        $item_id = $item->getItemID();
-
+    function getAaProperty($multiple) {
         // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN) {
-        return new AA_Variable( AA_Field::getId4Form($this->getId(), $item_id),
+        return new AA_Property( $this->getId(),
                                 $this->getName(),
                                 $this->getProperty('text_stored') ? 'text' : 'int',
                                 $multiple,
@@ -198,9 +196,7 @@ class AA_Field {
                                 $this->getProperty('input_morehlp'),
                                 null,               // $example;
                                 $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
-                                AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
-                                $item->getAaValue($this->getId()),
-                                $item_id
+                                AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN')
                                );
     }
 
@@ -211,9 +207,9 @@ class AA_Field {
     function getWidgetAjaxHtml($item_id, $visual='') {
         $widget      = $this->getWidget();
         $item        = AA_Items::getItem($item_id);
-        $aa_variable = $this->_getAaVariable($item, $widget->multiple());
+        $aa_property = $this->getAaProperty($widget->multiple());
         $repre_value = $item->subst_alias($visual ? $visual : $this->getId());
-        return $widget->getAjaxHtml($aa_variable, get_if($repre_value, '--'));
+        return $widget->getAjaxHtml($aa_property, $item, get_if($repre_value, '--'));
     }
 
     /** getWidgetLiveHtml function
@@ -222,8 +218,8 @@ class AA_Field {
     function getWidgetLiveHtml($item_id) {
         $widget      = $this->getWidget();
         $item        = AA_Items::getItem($item_id);
-        $aa_variable = $this->_getAaVariable($item, $widget->multiple());
-        return $widget->getLiveHtml($aa_variable);
+        $aa_property = $this->getAaProperty($widget->multiple());
+        return $widget->getLiveHtml($aa_property, $item);
     }
 
     /** _areSliceConstants function
@@ -232,72 +228,6 @@ class AA_Field {
     function _areSliceConstants($name) {
         // prefix indicates select from items
         return ( substr($name,0,7) == "#sLiCe-" );
-    }
-
-
-    /// Static methods ///
-
-    /** ID of the field input - used for name atribute of input tag (or so)
-    *   Format is:
-    *       aa[i<long_item_id>][modified_field_id][]
-    *   Note:
-    *      first brackets contain
-    *          'i'+long_item_id when item is edited or
-    *          'n<number>_long_slice_id' if you want to add the item to slice_id
-    *                                    <number> is used to add more than one
-    *                                    item at the time
-    *      modified_field_id is field_id, where all dots are replaced by '_'
-    *      we always add [] at the end, so it becames array at the end
-    *   Example:
-    *       aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
-    *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
-    *   Format is:
-    *       aa[i<long_item_id>][modified_field_id][]
-    *   Note:
-    *      first brackets contain
-    *          'u'+long_item_id when item is edited (the field is rewriten, rest
-    *                           of item is untouched)
-    *          'i'+long_item_id when item is edited (the value is added to current
-    *                           value of the field, rest of item is untouched)
-    *          'n<number>_long_slice_id' if you want to add the item to slice_id
-    *                                    <number> is used to add more than one
-    *                                    item at the time
-    *      modified_field_id is field_id, where all dots are replaced by '_'
-    *      we always add [] at the end, so it becames array at the end
-    *   Example:
-    *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
-    *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
-    *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
-    */
-    function getId4Form($field_id, $item_id=null) {
-        $form_field_id = AA_Field::getVarFromFieldId($field_id);
-        if ( $item_id ) {
-            return "aa[i$item_id][$form_field_id]";
-        }
-        return "aa[n1_".$this->getSliceId()."][$form_field_id]";
-    }
-
-    /** Converts real field id into field id as used in the AA form, like:
-     *  post_date......1  ==>  post_date______1
-     */
-    function getVarFromFieldId($field_id) {
-        return str_replace('.','_', $field_id);
-    }
-
-    /** Converts field id as used in the AA form to real field id, like:
-     *  post_date______1  ==>  post_date......1
-     */
-    function getFieldIdFromVar($dirty_field_id) {
-        return str_replace('._', '..', str_replace('__', '..', $dirty_field_id));
-    }
-
-    /** returns array(item_id,field_id) from name of variable used on AA form */
-    function parseId4Form($input_id) {
-        // aa[i<item_id>][<field_id>][]
-        $parsed   = explode(']', $input_id);
-        $item_id  = substr($parsed[0],4);
-        $field_id = AA_Field::getFieldIdFromVar(substr($parsed[1],1));
-        return array($item_id,$field_id);
     }
 }
 
@@ -379,6 +309,16 @@ class AA_Fields {
         $this->load();
         return isset($this->fields[$field_id]) ? $this->fields[$field_id] : null;
     }
+
+    /** isField function
+     *  @return bool - if the field exists
+     *  @param $field_id
+     */
+    function isField($field_id) {
+        $this->load();
+        return isset($this->fields[$field_id]);
+    }
+
     /** getProperty function
      * @param $field_id
      * @param $property
@@ -469,7 +409,6 @@ class AA_Fields {
         return AA_Fields::createFieldId("category", $no);
     }
 
-
     /** getRecordArray function
      *  deprecated - for backward compatibility only
      */
@@ -481,6 +420,17 @@ class AA_Fields {
         }
         return $ret;
     }
+
+    /** getNameArray function */
+    function getNameArray() {
+        $this->load();
+        $ret = array();
+        foreach ( $this->fields as $fid => $fld ) { // in priority order
+            $ret[$fid] = $fld->getProperty('name');
+        }
+        return $ret;
+    }
+
     /** getPriorityArray function
      *
      */
@@ -514,27 +464,6 @@ class AA_Fields {
     function isSliceField($field_id) {
         return $field_id AND ($field_id{0} == '_');
     }
-
-    /** isField function
-     *  Returns true, if the passed field id looks like field id
-     *  - static class function
-     * @param $field_id
-     *  @todo - pass also $module_id and look directly into module, if the field
-     *          is really field in slecific slice/module
-     */
-    function isField($field_id) {
-        if ( !isset($GLOBALS['LINKS_FIELDS']) ) {
-             $GLOBALS['LINKS_FIELDS'] = GetLinkFields();
-             $GLOBALS['CATEGORY_FIELDS'] = GetCategoryFields();
-             $GLOBALS['CONSTANT_FIELDS'] = GetConstantFields();
-        }
-        // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
-        return( ((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id))
-               OR $GLOBALS['LINKS_FIELDS'][$field_id]
-               OR $GLOBALS['CATEGORY_FIELDS'][$field_id]
-               OR $GLOBALS['CONSTANT_FIELDS'][$field_id] );
-    }
-
 
     /** createFieldId function
      *  Create field id from type and number

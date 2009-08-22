@@ -272,96 +272,6 @@ class inputform {
         }
     }
 
-
-    /** getForm function
-     *   Shows the Add / Edit item form fields
-     * @param $content4id
-     * @param $slice
-     * @param $edit
-     * @param $show is used by the Anonymous Form Wizard, it is an array
-     *                (packed field id => 1) of fields to show
-     * @param $slice_fields
-     */
-    function getForm2(&$content4id, &$slice, $edit, $show="", $slice_fields=false) {
-        global $auth;
-
-        $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
-
-        $fields    = $slice->getFields($slice_fields);
-        $prifields = $fields->getPriorityarray();
-
-        if ( !isset($prifields) OR !is_array($prifields) ) {
-            return MsgErr(_m("No fields defined for this slice"));
-        }
-
-        $form4anonymous_wizard = is_array($show);
-
-        // holds array of fields, which we will use on the form, so we have
-        // to count with them for javascript and show_sunc_used
-        $shown_fields = array();
-
-        $item = $edit ? GetItemFromContent($content4id) : null;
-
-        foreach ($prifields as $field_id) {
-            $field       = $fields->getField($field_id);
-
-            $varname     = AA_Field::getId4Form($field_id, $item ? $item->getItemID() : null);
-            $htmlvarname = $varname."html";
-
-            if ( ($form4anonymous_wizard  AND !$show[$f['id']]) OR
-                 (!$form4anonymous_wizard AND (!$f["input_show"] OR
-                                         $profile->getProperty('hide',$f['id']) OR
-                                         $profile->getProperty('hide&fill',$f['id'])))) {
-                // do not show this field
-                continue;
-            }
-
-            $shown_fields[$field_id] = true;  // used => generate js for it
-
-            // ----- collect all field_* parameters in order we can call display function
-
-            // field_mode - how to display the field
-            $field_mode = !IsEditable($content4id->getValues($field_id), $f, $profile) ?
-                          'freeze' : ($form4anonymous_wizard ? 'anonym' : 'normal');
-
-            if ( $edit ) {
-                $field_value     = $content4id->getValues($field_id);
-                $field_html_flag = $content4id->getValue($field_id, 'flag') & FLAG_HTML;
-            } else {     // insert or new reload of form after error in inserting
-                // first get values from profile, if there are some predefined value
-                $foo = $profile->getProperty('predefine',$f['id']);
-                if ( $foo AND !$GLOBALS[$varname]) {
-                    $x                     = $profile->parseContentProperty($foo);
-                    $GLOBALS[$varname]     = $x[0];  // it is not quoted, so OK
-                    $GLOBALS[$htmlvarname] = $x[1];
-                }
-                // get values from form (values are filled when error on form ocures
-                if ( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {
-                      // get the multivalues
-                    foreach ( $GLOBALS[$varname] as $value ) {
-                        $field_value[] = array('value' => stripslashes($value)); // it is quoted!!!
-                    }
-                } else {
-                    $field_value[0]['value'] = stripslashes($GLOBALS[$varname]);  // it is quoted!!!
-                }
-                $field_html_flag = (((string)$GLOBALS[$htmlvarname]=='h') || ($GLOBALS[$htmlvarname]==1));
-            }            // Display the field
-            $aainput = new AA_Inputfield($field_value, $field_html_flag, $field_mode);
-            //fix -- otherwise $field_value keeps array
-            unset($field_value);
-            $aainput->setFromField($f);
-
-            // do not return template for anonymous form wizard
-            $ret .= $aainput->get($form4anonymous_wizard ? 'expand' : 'template', $item);
-            unset($aainput);
-        }
-        $this->js_proove_fields = $slice->get_js_validation( $edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
-        $this->show_func_used   = $slice->get_show_func_used($edit ? 'edit' : '', $content4id->getItemID(), $shown_fields, $slice_fields);
-        return $ret;
-    }
-
-
-
     /** getForm function
      *   Shows the Add / Edit item form fields
      * @param $content4id
@@ -413,7 +323,7 @@ class inputform {
 
             if ( $edit ) {
                 $field_value     = $content4id->getValues($pri_field_id);
-                $field_html_flag = $content4id->getValue($pri_field_id, 'flag') & FLAG_HTML;
+                $field_html_flag = $content4id->getFlag($pri_field_id) & FLAG_HTML;
             } else {     // insert or new reload of form after error in inserting
                 // first get values from profile, if there are some predefined value
                 $foo = $profile->getProperty('predefine',$f['id']);
@@ -485,11 +395,11 @@ class inputform {
                     //  eg: _editor_url = "/path/to/xinha/";
                     // You may try a relative URL if you wish]
                     //  eg: _editor_url = "../";
-                    _editor_url        = "'.get_aa_url("misc/htmlarea/", false).'";
+                    _editor_url        = "'.get_aa_url("misc/htmlarea/", '', false).'";
                     _editor_lang       = "'.substr(get_mgettext_lang(),0,2).'";
                     aa_slice_id        = "'.$slice_id.'";
                     aa_session         = "'.$sess->id.'";
-                    aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", false).'";'
+                    aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", '', false).'";'
                     );
 
         // HtmlArea scripts should be loaded allways - we use Dialog() function
@@ -754,7 +664,7 @@ class AA_Inputfield {
                     return;
                 }
             }
-            $format          = AA_Fields::isField($slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+            $format          = AA_Slices::isSliceProperty($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
             $set             = new AA_Set(String2Conds( $conds ), String2Sort( $sort ), array($sid), $whichitems);
             $this->const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tagprefix);
             // $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix); // older version of the function :honzam03/09
@@ -1025,12 +935,12 @@ class AA_Inputfield {
                                $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
                                break;
             case 'anonym_wi2':
-            case 'normal_wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
+            case 'normal_wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform) = $this->param;
                                if ( !is_null($item) ) {
                                    $conds_str = $item->unalias($conds_str);
                                }
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str);
+                               $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform);
                                break;
             case 'anonym_pwd':  // handled in passwordModify
             case 'normal_pwd': list($fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help) = $this->param;
@@ -1628,7 +1538,7 @@ class AA_Inputfield {
         if (strpos($actions,'D') !== false) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
         }
-        $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
+        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = Array() };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("</td></tr></table>\n");
         $this->helps('plus');
     }
@@ -1718,7 +1628,7 @@ class AA_Inputfield {
               <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>
               &nbsp;&nbsp;");
             $this->echoo("<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
-            $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
+            $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = Array() };  listboxes[listboxes.length] = '$name';"));
             $this->echoo("</td></tr></table>\n");
         }
         $this->helps('plus');
@@ -1781,6 +1691,7 @@ class AA_Inputfield {
         $this->echoo(getFrmJavascript("
             hcInit($hcid);
             hcDeleteLast('$name');
+            if (typeof listboxes == 'undefined') { var listboxes = Array() };
             listboxes[listboxes.length] = '$name';"));
         $this->helps('plus');
     }
@@ -1891,19 +1802,25 @@ class AA_Inputfield {
      * @param $whichitems
      * @param $conds_str
      * @param $sort_str
+     * @param $addform
      */
-    function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
+    function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $addform='') {
         list($name,$val,$add) = $this->prepareVars('multi');
         if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
+        $sid = $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
         $wi2_offer    = get_if( $wi2_offer,    _m("Offer") );
         $wi2_selected = get_if( $wi2_selected, _m("Selected") );
 
         $this->field_name('plus');
-        $this->echoo("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr align=\"left\">
-          <td align=\"center\" valign=\"top\">". $wi2_offer ."</td><td></td>
-            <td align=\"center\" valign=\"top\">". $wi2_selected ."</td></tr>
-          <tr align=left><td align=\"center\" valign='TOP'>");
+        $this->echoo("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">
+          <tr align=\"left\">
+            <td align=\"center\" valign=\"top\">". $wi2_offer ."</td>
+            <td></td>
+            <td align=\"center\" valign=\"top\">". $wi2_selected ."</td>
+            <td></td>
+          </tr>
+          <tr align=left>
+            <td align=\"center\" valign='TOP' rowspan=\"2\">");
 
         $offername = str_replace("[]", "", $name). '_1';
         $out  = "<select multiple name=\"".$offername."\" size=\"$rows\" ".getTriggers("select",$name).">\n";
@@ -1912,11 +1829,12 @@ class AA_Inputfield {
         $this->echovar( $out, 'unselected' );
 
         $this->echoo("</td>
-          <td>&nbsp;&nbsp;<input type=\"button\" value=\"  >>  \" onClick = \"MoveSelected(document.inputform.".$offername.",document.inputform['".$name."'])\" align=\"center\">
+            <td rowspan=\"2\">&nbsp;&nbsp;<input type=\"button\" value=\"  >>  \" onClick = \"MoveSelected(document.inputform.".$offername.",document.inputform['".$name."'])\" align=\"center\">
               <br><br>&nbsp;&nbsp;<input type=\"button\" value=\"  <<  \" onClick = \"MoveSelected(document.inputform['".$name."'],document.inputform.".$offername.")\" align=\"center\">&nbsp;&nbsp;</td>
-          <td align=\"center\" valign=\"top\">");
+            <td align=\"center\" valign=\"top\" rowspan=\"2\">");
 
-        $out = "<select multiple name=\"".$name."\" size=\"$rows\"  ".getTriggers("select",$name).">";
+        // varname - name without []
+        $out = "<select multiple id=\"".$this->varname."\" name=\"".$name."\" size=\"$rows\"  ".getTriggers("select",$name).">";
 
         // we need values in second box sorted just like in values
         $selected_values = array();
@@ -1931,9 +1849,24 @@ class AA_Inputfield {
         $out  .= '</select>';
         $this->echovar( $out, 'selected' );
 
-        $this->echoo(getFrmJavascript("listboxes[listboxes.length] = '$name';"));
-        $this->echoo("
-        </td></tr></table>");
+        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = Array() };  listboxes[listboxes.length] = '$name';"));
+        $this->echoo("\n      </td>");
+        $this->echoo("\n      <td valign=\"top\"><input type=\"button\" value=\" /\ \" onClick=\"moveItem(document.inputform['".$name."'],'up');\"></td>");
+        $this->echoo("\n      </tr>");
+        $this->echoo("<tr><td valign=\"bottom\"><input type=\"button\" value=\" \/ \" onClick=\"moveItem(document.inputform['".$name."'], 'down');\"></td></tr>");
+
+        if (!empty($addform) AND !empty($sid)) {
+            $this->echoo("\n<tr><td colspan=\"4\">");
+            if (!$slice_field) {
+                $slice_field = '{'.GetHeadlineFieldID($sid, "headline.").'}';
+            }
+            $form_url = get_aa_url('form.php', array('form_id' => $addform, 'type' => 'ajax', 'ret_code' => $slice_field));
+            $img      = GetAAImage('icon_new.gif', _m('new'), 17, 17);
+            // varname used for as pointer to right selectbox for returning ajax call
+            $this->echoo("\n<a id=\"a".$this->varname ."\"href=\"javascript:void(0)\" onclick=\"AA_AjaxInsert(this, '$form_url'); return false;\">$img</a>");
+            $this->echoo("\n      </td></tr>");
+        }
+        $this->echoo("\n        </table>");
         $this->helps('plus');
     }
 
@@ -1996,7 +1929,7 @@ class AA_Inputfield {
         $this->echovar( $ret );
         $this->echoo("</td>\n");
         $this->echoo("</tr>\n <tr><td valign=\"bottom\" align=\"left\">\n");
-        $this->echoo("<input type=\"button\" value=\"". _m("Add") ."\" onclick=\"OpenLocalURLPick(\"$name\",\"$url\",\"".self_server().get_aa_url("admin", false)."\",\"$val\")\">\n");
+        $this->echoo("<input type=\"button\" value=\"". _m("Add") ."\" onclick=\"OpenLocalURLPick(\"$name\",\"$url\",\"".self_server().get_aa_url("admin", '', false)."\",\"$val\")\">\n");
         $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Clear") ."' onclick=\"sb_ClearField(document.inputform['".$name."']);\">\n");
         $this->echoo("</td></tr></table>\n");
         $this->helps('plus');
@@ -2407,8 +2340,14 @@ function FrmRelated($name, $txt, $arr, $rows, $sid, $mode, $design, $needed=fals
  * @param $morehlp
  */
 function FrmTwoBox($name, $txt, $arr, $selected, $rows, $needed=false, $wi2_offer='', $wi2_selected='', $hlp="", $morehlp="") {
+    $sel = array();
+    if (is_array($selected)) {
+        foreach($selected as $val) {
+            $sel[] = array('value'=>$val);
+        }
+    }
     // $val is not used - there is only from historical reasons and should be removed accross files
-    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input = new AA_Inputfield($sel, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->twoBox($rows,$wi2_offer,$wi2_selected);
     $input->print_result();
 }
@@ -2847,7 +2786,7 @@ function GetHtmlTable( $content ) {
  * @param $src
  */
 function getFrmJavascriptFile( $src ) {
-    return "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". get_aa_url($src,false) . "\"></script>";
+    return "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". get_aa_url($src, '', false) . "\"></script>";
 }
 /** getFrmJavascript function
  * @param $code

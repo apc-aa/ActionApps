@@ -45,8 +45,9 @@ require_once AA_INC_PATH."perm_core.php3";
 require_once AA_INC_PATH."mgettext.php3";
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
-$aamenus = "aamenus";
-$menu_function = 'get_aamenus';
+$GLOBALS['aamenus']       = "aamenus";
+$GLOBALS['menu_function'] = 'get_aamenus';
+
 /** get_aamenus function
  *
  */
@@ -148,6 +149,7 @@ function get_aamenus() {
         "compact"       => array("cond"=>IfSlPerm(PS_COMPACT),  "href"=>"admin/se_compact.php3",               "label"=>_m("Index")),
         "fulltext"      => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_fulltext.php3",              "label"=>_m("Fulltext")),
         "views"         => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_views.php3",                 "label"=>_m("Views")),
+        "form"          => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_forms.php3",                 "label"=>_m("Forms")),
         "config"        => array("cond"=>IfSlPerm(PS_CONFIG),   "href"=>"admin/se_admin.php3",                 "label"=>_m("Item Manager")),
         "sets"          => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_sets.php3",                  "label"=>_m("Sets of Items")),
 

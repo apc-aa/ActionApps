@@ -16,6 +16,7 @@
  *   inline       - the ok url will be send to output directly (by readfile)
  *                  (for AJAX editing)
  *                  ok_url = "http://example.org/aa/view.php3?vid=1374&cmd[1374]=x-1374-_#N1_ID___"
+ *   ret_code     - AA expression used as return code for inline (AJAX edit)
  *   force_status_code - you may add this to force to change the status code
  *                       but the new status code must always be higher than bin2fill
  *                       setting (you can't add to the Active bin, for example)
@@ -75,16 +76,10 @@ function StripslashesDeep($value) {
 
 /** APC-AA configuration file */
 require_once "include/config.php3";
-require_once AA_INC_PATH."convert_charset.class.php3";
-
-function ConvertEncodingDeep($value, $from=null, $to=null) {
-    $encoder = ConvertCharset::singleton($from, $to);
-    return is_array($value) ? array_map('ConvertEncodingDeep', $value) : $encoder->Convert($value);
-}
-
-if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
-    $_POST   = ConvertEncodingDeep($_POST, $_REQUEST['convertfrom'], $_REQUEST['convertto']);
-}
+/** Main include file for using session management function on a page */
+require_once AA_INC_PATH."locsess.php3";
+/** Set of useful functions used on most pages */
+require_once AA_INC_PATH."util.php3";
 
 // global variables should be quoted (since old AA code rely on that fact),
 // however the new code should use $_POST, which are NOT quoted
@@ -107,10 +102,24 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE = StripslashesDeep($_COOKIE);
 }
 
-/** Main include file for using session management function on a page */
-require_once AA_INC_PATH."locsess.php3";
-/** Set of useful functions used on most pages */
-require_once AA_INC_PATH."util.php3";
+function ConvertEncodingDeep($value, $from=null, $to=null) {
+    $encoder = ConvertCharset::singleton($from, $to);
+    return is_array($value) ? array_map('ConvertEncodingDeep', $value) : $encoder->Convert($value);
+}
+
+if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
+    $_POST   = ConvertEncodingDeep($_POST, $_REQUEST['convertfrom'], $_REQUEST['convertto']);
+} elseif ($_REQUEST['inline']) {
+    // we do not need to define convertto for ajax forms (we grab it from the slice)
+    $slice   = AA_Slices::getSlice($_REQUEST['slice_id']);
+    if (!empty($slice)) {
+        $charset = $slice->getCharset();
+        if ($charset != 'utf-8') {
+            $_POST   = ConvertEncodingDeep($_POST, 'utf-8', $charset);
+        }
+    }
+}
+
 require_once AA_INC_PATH."formutil.php3";
 /** Defines class for inserting and updating database fields */
 require_once AA_INC_PATH."varset.php3";
@@ -214,7 +223,17 @@ function SendOkPage($txt, $new_ids = array()) {
         $GLOBALS["ok_url"] = str_replace('_#N1_ID___', $new_ids[0], $GLOBALS["ok_url"]);
     }
     if ($GLOBALS["inline"]) {
-        readfile($GLOBALS["ok_url"]);
+        if ($GLOBALS["ok_url"]) {
+            readfile($GLOBALS["ok_url"]);
+        } else {
+            $items = AA_Items::getItems(new zids($new_ids, 'l'));
+            $ret   = array();
+            foreach($items as $long_id=>$item) {
+                $ret[$long_id] = AA_Stringexpand::unalias($GLOBALS["ret_code"], '', $item);
+            }
+            header("Content-type: application/json");  // standard header based on IANA
+            echo json_encode($ret);
+        }
         exit;
     }
     if (!$GLOBALS["ok_url"]) {
