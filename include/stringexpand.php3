@@ -1411,7 +1411,7 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
 
 
 /**
-* Display field/alias of given item(s)
+ * Display field/alias of given item(s)
  * {item:<ids>:<aa_expression>[:<delimiter>[:<nested_top>[:<nested_bottom>]]]}
  *
  * Main ussage is to display some field or alias of given item:
@@ -1420,13 +1420,60 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
  * You can also display it for more than one item and use the delimeter
  *   {item:53443-54322-53553:_HEADLINE:, }
  *
- * But, you can also use it to display item in tree. In tat case you will use
- * tree representation string, just like: 3234(3443-3678(3872-3664)-3223)-4045
- * In such case you can use also the last two parameters nested_top and
- * nested_bottom. The exmples of trees follows.
+ * You can also use it to display item in tree. In fact, the {item} with 
+ * trees works exactly the same way, as {itree}, but {itree} has more logical 
+ * parameter order (due to backward compatibility), so you are encouraged to use
+ * {itree} - @see {itree} for more info on tree string representation.
+ **/
+class AA_Stringexpand_Item extends AA_Stringexpand {
+
+    /** expand function
+     * @param $ids_string  ids (long or short (or mixed) separated by dash '-')
+     *                     - now you can also use tree representation like:
+     *                     3234(3443-3678(3872-3664)-3223)-4045  (see above)
+     * @param $content
+     * @param $delimeter
+     * @param $top
+     * @param $bottom
+     */
+    function expand($ids_string, $content=null, $delim=null, $top=null, $bottom=null) {
+
+        // sanity input
+        $ids_string = preg_replace('/[^0-9a-g()-]/', '', strtolower($ids_string));  // mention the g (used for generated subrtree cache)
+        $ids_string = str_replace('()', '', $ids_string);
+
+        $tree_cache = new AA_Treecache($content, $delim, $top, $bottom);
+
+        // we are looking for subtrees 93938(73737-64635)
+        while (preg_match('/[0-9a-f]+[(]([^()]+)[)]/s',$ids_string)) {
+            $ids_string = preg_replace_callback('/([0-9a-f]+)[(]([^()]+)[)]/s', array($tree_cache,'cache_list'), $ids_string);
+        }
+
+        return $tree_cache->get_concat($ids_string);
+    }
+}
+
+
+/**
+ * Display field/alias of given item(s) in tree
+ *   {itree:<tree-string>:<nested_top>[:<content>[:<delimiter>[:<nested_bottom>]]]}
+ *
+ * <ree-string> is generalized version of <ids> for {item} syntax, which is able
+ * to hold also tree structure (and is returned by {treestring...} syntax)
+ *   
+ * 
+ * Tree representation string could be as simple as "4232" or "6523-6464-6641",
+ * but it could be also more complicated tree - just like: 
+ *   3234(3443-3678(3872-3664)-3223)-4045
+ * 
+ * The exmples of trees follows.
  *
  * Practical examle of ussage is for example breadcrumb navigation:
- *   {item:{xseo1}({xseo2}({xseo3}({xseo4}))): _#HEADLINE:: <a href="_#ITEM_URL">_#HEADLINE</a> &gt;:}
+ *   {itree:{xseo1}({xseo2}({xseo3}({xseo4}))): <a href="_#ITEM_URL">_#HEADLINE</a> &gt;: _#HEADLINE}
+ *   
+ * or better
+ *   {itree:{xid:path}: <a href="_#ITEM_URL">_#HEADLINE</a> &gt;: _#HEADLINE}
+ *   {itree:{xid:path}: _#HEADLINK &gt;: _#HEADLINE}
  *
  * However, you will be able to use it for discussions tree as well.
  *
@@ -1487,34 +1534,6 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
  *               delimeter
  *               3 content
  */
-class AA_Stringexpand_Item extends AA_Stringexpand {
-
-    /** expand function
-     * @param $ids_string  ids (long or short (or mixed) separated by dash '-')
-     *                     - now you can also use tree representation like:
-     *                     3234(3443-3678(3872-3664)-3223)-4045  (see above)
-     * @param $content
-     * @param $delimeter
-     * @param $top
-     * @param $bottom
-     */
-    function expand($ids_string, $content=null, $delim=null, $top=null, $bottom=null) {
-
-        // sanity input
-        $ids_string = preg_replace('/[^0-9a-g()-]/', '', strtolower($ids_string));  // mention the g (used for generated subrtree cache)
-        $ids_string = str_replace('()', '', $ids_string);
-
-        $tree_cache = new AA_Treecache($content, $delim, $top, $bottom);
-
-        // we are looking for subtrees 93938(73737-64635)
-        while (preg_match('/[0-9a-f]+[(]([^()]+)[)]/s',$ids_string)) {
-            $ids_string = preg_replace_callback('/([0-9a-f]+)[(]([^()]+)[)]/s', array($tree_cache,'cache_list'), $ids_string);
-        }
-
-        return $tree_cache->get_concat($ids_string);
-    }
-}
-
 class AA_Stringexpand_Itree extends AA_Stringexpand_Nevercache {
     // cached in AA_Stringexpand_Item
 
@@ -1531,8 +1550,6 @@ class AA_Stringexpand_Itree extends AA_Stringexpand_Nevercache {
         return AA_Stringexpand_Item::expand($ids_string, $content, $delim, $top, $bottom);
     }
 }
-
-
 
 /** helper class for AA_Stringexpand_Item */
 class AA_Treecache {
