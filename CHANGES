@@ -1,6 +1,89 @@
-08/01/09    - Added Shorcut to edit ITEM in AA finder. Search and show link to edit
+08/23/09 - new possibility to define forms through admin interface 
+(honzam)   (see "Slice Admin" - "Design" - "Forms") 
+         - new possibility to entering related items into slice using above 
+           mentioned forms, called through AJAX 
+           (Two Boxes widget has this feature, now) 
+         - removed maxcount restriction for number of related items
+         - easier usage of AA_Manager class 
+         - generalized usage of AA_Object (and its storage into database) 
+           and AA_Content. Any AA_Object is now very easiy editable 
+           by AA_Manager; refactoring a bit
+         - zids now uses Iterator (PHP 5 needed)
+         - started usage of class autoloading
+         - new AA_Grabber_Form which uses the new standard way of input 
+           the items to the database
+         - log viewer and searchlog viewer rewriten to AA_Manager class 
+           instead of old tabeedit 
+         - merged changes from v2.50.x branch ------------------------
+08/22/09 - new possibility to copy the field definition from ANY slice 
+(honzam)   (see "Slice Admin -> Fields") 
+         - new {itree:<tree-string>:<nested_top>[:<content>[:<delimiter>[:<nested_bottom>]]]}
+           Displays field/alias of given item(s) in tree. It wors exactly as 
+           {item} but the parameter order is more logical, so the {itree} is 
+           the preffered way of displaying trees and breadscrumbs...    
+         - new {treestring:<item_id>[:<relation_field>]}
+             {treestring:2a4352366262227383484784635362ab:relation.......1}
+           generates tree-string (as used in {itree}) based on item and its
+           relations
+         - new {(....)} syntax for deffered evaluation:
+             {item:6625:{(some text {headline........}...etc.)}}
+           This way you are able to pass {..} any aa_expressions to any function
+           instead of using just aliases there.
+         - new {qs:<varname>} which return url GET parameter:
+             returns Havel for http://example.org/cz/page?surname=Havel
+         - new {ifeq:<var1>:<var2>:<text>:<else_text>}
+             {ifeq:{xseo1}:about: class="active"}
+           If <var1> is equal to <var2>, then print <text>, else prints
+           <else_text>. <(else_)text> could contain _#1 and _#2 aliases 
+           for <var1> and <var2>, but you can use any {} AA expression there.
+         - fixed display of informations about current user {user:...} 
+           for fastcgi PHP version
+08/17/09 - Site Module now you can use without any control-file, so you do not
+(honzam)   need any PHP scripting at all. All you need is to select
+           AA_Router_Seo in "Router" field in Site Setting and specify
+           the slices, which are used within the Site Module. This means, that
+           AA_Router_Seo is now stbilized and standardized. See also new
+           possibilities useful here - {xid}, {xid:path}, {xid:1}, {go} and tree
+           posibilities of {item}
+         - new {go:<query-string>} - returns url based on current state (apc)
+           and query-string paramater (for AA_Router_Seo)
+             ussage:
+               {go:xseo1=faq&xseo2=questions}
+           (we used {go2url} custom function in previous versions of AA. {go}
+           function is however core function, now
+         - new {xid[:<level>]} - complement to {xseo1},.. variables
+           of AA_Router_Seo - returns id of the current item on specifield level
+             - {xid}      - returns id of current item (the id of {xseo} item)
+             - {xid:1}    - returns id of item on first level (the id of {xseo1}
+               item) for /cz/project/about-us returns id of "project" item
+             - {xid:path} - returns ids path of current item - like:
+                 2587(2877(3004)) as used in {item...} syntax - good for
+                 breadcrumbs: {item:{xid:path}: _#HEADLINE:: _#HEADLINK &gt;}
+         - new possibility for {item} to display items in trees. In that case
+           you will use tree representation string, just like:
+             3234(3443-3678(3872-3664)-3223)-4045
+           The formating is then done through current <aa_expression> and
+           <delimiter>, but also through new <nested_top> and <nested_bottom>:
+             {item:<ids>:<aa_expression>[:<delimiter>[:<nested_top>[:<nested_bottom>]]]}
+           Used just like: {item:{xid:path}: _#HEADLINE:: _#HEADLINK &gt;}
+           See wiki (http://actionapps.org/documentation/?title=Syntax#.7Bitem.7D_Display_field.2Falias_of_given_item)
+           Update 08/22/09: use rather {itree} syntax, which has more logical
+           parameter order (due to backward compatibility of {item})
+08/11/09 - new {filelink:<url>:<text>} syntax - get link to file for download
+(honzam)   (prints also file size and type) -
+             ussage: {filelink:{file............}:{text............}}
+             returns:
+               <a href="http://..." title="Document [PDF - 157 kB]">Document</a>
+               [PDF - 157 kB]
+         - better handling of text in {shorten} syntax
+         - new parameter lock=1 for polls.php used if we want something like
+           view for polls and we want the polls do not react to URL parameters.
+           Used maily if we want list more than one poll on one page
+         - better cleanup of tasks (from toexecute queue) - the taksk with
+           priority = 0. Such tasks are considered as undoabe. Note the priority
+           is decreased on each try of task execution.
+08/01/09 - Added Shorcut to edit ITEM in AA finder. Search and show link to edit
 (asanchez75)  directly link of item
-
 --------------------
 05/21/09 - v2.50.0 - stable release
 --------------------

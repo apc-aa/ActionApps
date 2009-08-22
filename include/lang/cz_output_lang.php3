@@ -17,6 +17,9 @@ $_m["Cancel"]
 $_m["SAVE CHANGE"]
  = "ULOŽIT ZMÌNU";
 
+$_m["EXIT WITHOUT CHANGE"]
+ = "Zpìt beze zmìny";
+
 $_m["Constant unique id"]
  = "Identifikaèní èíslo hodnoty";
 

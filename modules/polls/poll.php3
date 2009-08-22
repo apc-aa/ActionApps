@@ -69,7 +69,12 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
-add_vars('', '_REQUEST');
+// special case - if we want something like view for polls, so we want to be
+// constant and not to react to URL parameters, then we add &lock=1 as parameter
+// to SSI include
+if (empty($_REQUEST['lock'])) {
+    add_vars('', '_REQUEST');
+}
 
 $encap = ( ($encap=="false") ? false : true );
 require_once AA_INC_PATH."locsess.php3";

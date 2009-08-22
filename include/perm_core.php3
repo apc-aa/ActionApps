@@ -56,8 +56,9 @@ define("PS_COMPACT",              "F");   // slice | change slice compact view
 define("PS_FULLTEXT",             "G");   // slice | change item fulltext view
 define("PS_FEEDING",              "H");   // slice | change properties
 define("PS_ADD_USER",             "I");   // slice | add existing user to slice
-define("PS_CONFIG",               "J");   // slice | configure slice (show/hide
-                                          //         columns in admin interface)
+define("PS_CONFIG",               "J");   // slice | configure slice (show/hide columns in admin interface)
+define("PS_FORMS",                "K");   // slice | edit forms
+
 // super         - possibly letters 'QRSTUVW'
 define("PS_ADD",                  "Q");   // aa    | add slice
 define("PS_NEW_USER",             "R");   // aa    | create new user
@@ -656,7 +657,11 @@ function GetAuthData( $user_id = false ) {
     if ( !$user_id ) {
         if ( $_SERVER['PHP_AUTH_USER'] ) {
            $user_id = ReaderName2Id($_SERVER['PHP_AUTH_USER']);
-        } else {
+        } 
+        elseif ( $_SERVER['REMOTE_USER'] ) {
+           $user_id = ReaderName2Id($_SERVER['REMOTE_USER']);
+        } 
+        else {
            $user_id = (guesstype($auth->auth["uid"]) == 'l') ? $auth->auth["uid"] : false;
         }
     }

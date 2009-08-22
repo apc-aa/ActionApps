@@ -116,6 +116,27 @@ class AA_Tree {
         }
         return $sub;
     }
+
+    /** returns ids in array - ids are in tree order (walked into deep) */
+    function getTreeString() {
+        $this->load();
+        $ids = $this->subTreeString($this->id, 1);
+        return $ids;
+    }
+
+    function subTreeString($id, $level) {
+        if ($level > 100) {
+            // @todo throw error
+            return '';
+        }
+        $treestring = '';
+        $delim      = '';
+        foreach($this->_i[$id] as $down_id) {
+            $treestring .= $delim. $this->subTreeString($down_id, $level+1);
+            $delim       = '-';
+        }
+        return $id. (empty($treestring) ? '' : "($treestring)");
+    }
 }
 
 class AA_Trees {

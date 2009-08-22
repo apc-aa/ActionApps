@@ -139,6 +139,37 @@ class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
     }
 }
 
+
+/** @return html selectbox of fields in given slice */
+class AA_Responder_Get_Fields extends AA_Responder {
+    /** array of module types to get */
+    var $slice_id;
+    var $slice_fields;  // bool
+
+    function AA_Responder_Get_Fields($param=null) {
+        $this->slice_id     = $param['slice_id'];
+        $this->slice_fields = $param['slice_fields'] ? true : false;
+    }
+
+    function run() {
+        require_once AA_INC_PATH."convert_charset.class.php3";
+        $encoder = new ConvertCharset;
+
+        // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
+        // and we do not want to list it as option for normal fields
+        $SQL            = "SELECT * FROM field  WHERE slice_id='".q_pack_id($this->slice_id)."' AND (in_item_tbl = '')". ($this->slice_fields ? " AND (id NOT LIKE '\_%')" : ''). ' ORDER BY name';
+        $current_types  = GetTable2Array($SQL);
+        $ret            = "\n <select name=\"ftype\">";
+        foreach ( $current_types as $k => $v) {
+            $ret .=  "\n  <option value=\"". $this->slice_id .'-'. htmlspecialchars($k).'"> '. htmlspecialchars($v['name']) ." </option>";
+        }
+        $ret           .= "\n </select>";
+        $slice          = AA_Slices::getSlice($this->slice_id);
+        $ret            = $encoder->Convert($ret, $slice->getCharset(), 'utf-8');
+        return new AA_Response($ret);
+    }
+}
+
 page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
 
 // anonymous login
@@ -157,12 +188,12 @@ $request = null;
 // we use primarily POST, but manager class actions needs to send GET request
 if ( $_POST['request'] ) {
     $request = AA_Request::decode($_POST['request']);
-//    if (!strpos($_POST['request'], 'Get_Sessionid')) {
-//        huhl('yy', $request, $request->params['sync'][0], unserialize($request->params['sync'][0]));
-//        exit;
-//    }
-//
+} elseif ($_GET['command']) {  // ajax call (html output expected)
 
+    // switch responses to plain output
+    AA_Response::$Response_type = 'html';
+
+    $request = new AA_Request($_GET['command'], $_POST);  // params are in $_POST for ajax
 }
 
 if ( !is_object($request)) {

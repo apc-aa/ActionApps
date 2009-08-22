@@ -69,10 +69,12 @@ if ($add || $update) {
 
         // validate all fields needed for module table (name, slice_url, lang_file, owner)
         ValidateModuleFields( $name, $slice_url, $lang_file, $owner, $err );
-        $deleted  = ( $deleted  ? 1 : 0 );
+        $deleted          = ( $deleted  ? 1 : 0 );
 
         // now validate all module specific fields
-        ValidateInput("state_file", _m("State file"), $state_file, $err, false, "text");
+        ValidateInput("state_file",   _m("State file"),  $state_file,   $err, false, "text");
+        ValidateInput("router",       _m("Router"),      $router,       $err, false, "number");
+        ValidateInput("uses_modules", _m("Uses Slices"), $uses_modules, $err, false, "id");
 
         if (count($err) > 1) {
             break;
@@ -85,14 +87,27 @@ if ($add || $update) {
         if (!$module_id) {   // error?
             break;
         }
-        $slice_id = $module_id;
+        $slice_id    = $module_id;
+        $p_module_id = q_pack_id($module_id);
+
+        // store used modules into relation table
+        $varset->doDeleteWhere('relation', "source_id='$p_module_id' AND flag='".REL_FLAG_MODULE_DEPEND."'");
+        if (is_array($uses_modules)) {
+            foreach ($uses_modules as $rel_slice_id) {
+                $varset->clear();
+                $varset->add("source_id",      "quoted", $p_module_id);
+                $varset->add("destination_id", "quoted", q_pack_id($rel_slice_id));
+                $varset->add("flag",           "number", REL_FLAG_MODULE_DEPEND);
+                $varset->doInsert('relation');
+            }
+        }
 
         // now set all module specific settings
         if ( $update ) {
-            $p_module_id = q_pack_id($module_id);
-
             $varset->clear();
-            $varset->add("state_file", "text", $state_file);
+            $varset->add("state_file",   "text",   $state_file);
+            $varset->add("flag",         "number", $router);
+
             $SQL = "UPDATE site SET ". $varset->makeUPDATE() . " WHERE id='$p_module_id'";
             if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change site");
@@ -103,8 +118,7 @@ if ($add || $update) {
             // prepare varset variables for setFromArray() function
             $varset->addArray(array('id','structure','state_file'), array('flag'));
 
-            $p_template_id = ( $template['W'] ?
-            q_pack_id(substr($template['W'],1)) : 'SiteTemplate....' );
+            $p_template_id = ( $template['W'] ? q_pack_id(substr($template['W'],1)) : 'SiteTemplate....' );
 
             $SQL = "SELECT * FROM site WHERE id='$p_template_id'";
             $db->query($SQL);
@@ -113,8 +127,9 @@ if ($add || $update) {
                 break;
             }
             $varset->setFromArray($db->Record);
-            $varset->set("id", $module_id, "unpacked");
-            $varset->set("state_file", $state_file, "quoted");
+            $varset->set("id",           $module_id,        "unpacked");
+            $varset->set("state_file",   $state_file,       "quoted");
+            $varset->set("flag",         $router,           "number");
 
             // create new site
             $varset->doInsert('site');
@@ -147,7 +162,7 @@ if ($add || $update) {
 
 // And the form -----------------------------------------------------
 
-$source_id = ($template['W'] ? substr($template['W'],1) : $module_id );
+$source_id   = ($template['W'] ? substr($template['W'],1) : $module_id );
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
@@ -163,7 +178,8 @@ if ($db->next_record()) {
         }
     }
 }
-$id = unpack_id($db->f("id"));  // correct ids
+$id     = unpack_id($db->f("id"));  // correct ids
+$router = $db->f("flag");           // router is stored as flag
 
 if ($template['W']) {           // set new name for new module
     $name = "";
@@ -180,7 +196,20 @@ if ( $template['W'] ) {
                            );
 }
 
-HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+FrmJavascript('
+    function ModeditSubmit() {
+        var lb;
+        for(var i = 0; i < listboxes.length; i++) {
+           lb = listboxes[i];
+           for (var i = 0; i < document.inputform[lb].length; i++) {
+               document.inputform[lb].options[i].selected = ( document.inputform[lb].options[i].value != "wIdThTor" );
+           }
+        }
+        return true;
+    }');
+
 ?>
  <TITLE><?php echo _m("Site Admin");?></TITLE>
 </HEAD>
@@ -192,7 +221,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     PrintArray($err);
     echo $Msg;
 ?>
-<form method=post action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
+<form name="inputform" method=post action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>" onSubmit="return ModeditSubmit()">
 <?php
     FrmTabCaption(_m("Site"),'','',$form_buttons, $sess, $module_id);
 
@@ -211,7 +240,17 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
         FrmInputChBox("deleted", _m("Deleted"), $deleted);
     }
     FrmInputSelect("lang_file", _m("Used Language File"), $MODULES['W']['language_files'], $lang_file, false);
-    FrmInputText("state_file", _m("State file"), $state_file, 99, 25, false, _m("Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."));
+    FrmInputText("state_file", _m("State file"), $state_file, 99, 25, false, _m("Site control file - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php.<br>It is not necessary to use control file, if you choose to use some standard Router (see below). However, you can use the control file even if you use the Router."));
+    FrmInputSelect("router",   _m("Router"), array(1 => 'AA_Router_Seo'), $router, false);
+
+    foreach ($g_modules as  $k => $v) {
+        if ($v['type'] == 'S') {
+            $slice_selection[$k] = $v['name'];
+        }
+    }
+    $uses_modules = GetTable2Array("SELECT source_id, destination_id FROM relation WHERE source_id='".q_pack_id($module_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
+
+    FrmTwoBox('uses_modules[]', _m('Uses slices') , $slice_selection, $uses_modules, 8, false, '', '', "Select all slices which you are using for the site. It is used for caching as well as for seo string search.");
 
     FrmTabEnd($form_buttons, $sess, $module_id);
 

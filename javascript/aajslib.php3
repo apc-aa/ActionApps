@@ -47,6 +47,7 @@ header('Content-Type: application/x-javascript');
 $dir = dirname(__FILE__). '/prototype/';
 
 // next lines are copied from prototype/HEADER and prototype/prototype.js files
+
 ?>
 /*  Prototype JavaScript framework
  *  (c) 2005, 2006 Sam Stephenson <sam@conio.net>
@@ -56,7 +57,7 @@ $dir = dirname(__FILE__). '/prototype/';
  *
 /*--------------------------------------------------------------------------*/
 
-// ussage: $(div_id_2).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
+// usage: $(div_id_2).update(AA_Config.loader);
 var AA_Config = {
   AA_INSTAL_PATH: '<?php echo AA_INSTAL_PATH; ?>',
   SESS_NAME:      '<?php echo isset($_GET['sess_name']) ? $_GET['sess_name'] : ''; ?>',
@@ -71,6 +72,7 @@ readfile($dir. 'prototype.js'    ); echo "\n";      // make sure there is new li
 readfile($dir. 'prototip.js'     ); echo "\n";      // make sure there is new line after each file, in order we do not mix lats and first line of the files
 readfile($dir. 'control.tabs.js' );
 ?>
+
 
 // now AA specific functions
 function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
@@ -101,6 +103,18 @@ function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2
         $(link_id).update(link_text_1);
     }
 }
+
+/** calls AA responder with permissions of current user and displays returned
+ *  html code into div_id
+ *  Usage:
+ *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.options[this.selectedIndex].value})"');
+ *     echo '<div id="fieldselection"></div>';
+ **/
+function DisplayAaResponse(div_id, method, params) {
+    $(div_id).update(AA_Config.loader);
+    new Ajax.Updater(div_id, AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID + '&command='+ method, {parameters: params});
+}
+
 
 function AA_Ajax(div, url, param) {
     $(div).update(AA_Config.loader);
@@ -136,6 +150,35 @@ function SendAjaxForm(id) {
                        // close form and display add icon
                        AA_AjaxInsert($(id).up('div').previous(), '');
                    }});
+}
+
+/** Send the form by AJAX and on success displays the ok_html text
+ *  @param id        - form id
+ *  @param loader_id - id of the html element, where you want to display the loader gif
+ *                   - the button itself could be used here (not the form!)
+ *  @param ok_html   - what text (html) should be displayed after the success
+ *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
+ */
+function AA_AjaxSendObject(id) {
+    var code = Form.serialize(id);
+    var sb   = $(id).up('div').previous('a').identify().substring(1);
+    $(id).insert(AA_Config.loader);
+
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + '/filler.php3', {
+        parameters: code,
+        requestHeaders: {Accept: 'application/json'},
+        onSuccess: function(transport) {
+            var items = $H(transport.responseText.evalJSON(true));  // maybe we can remove "true"
+
+            items.each(function(pair) {
+                sb_SetValue( $(sb), 'new', pair.value, pair.key);
+            });
+
+            //new Insertion.After($(id).up('div'), new Element('div').update(transport.responseText));
+            // close form and display add icon
+            AA_AjaxInsert($(id).up('div').previous(), '');
+        }
+    });
 }
 
 /** Deprecated
@@ -309,7 +352,7 @@ function displayInput(valdivid, item_id, fid) {
     }
     var alias_name = $(valdivid).readAttribute('aaalias');
 
-    $(valdivid).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
+    $(valdivid).update(AA_Config.loader);
     new Ajax.Request( AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
         parameters: { field_id:   fid,
                       item_id:    item_id,
@@ -364,7 +407,7 @@ function DoChange(input_id) {
     var alias_name = $(valdivid).readAttribute('aaalias');
     var content    = _getInputContent(input_id);
 
-    $(valdivid).update('<img src="' + AA_Config.AA_INSTAL_PATH + 'images/loader.gif">');
+    $(valdivid).update(AA_Config.loader);
     new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
         parameters: { input_id:   input_id,
                       alias_name: alias_name,

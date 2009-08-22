@@ -47,19 +47,6 @@ if (!IfSlPerm(PS_FIELDS)) {
 $err["Init"] = "";          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
-// lookup - APC wide possible field types are defined as special slice AA_Core_Fields..
-$SQL_add = '';
-if (!$slice_fields) {
-    // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
-    // and we do not want to list it as option for normal fields
-    $SQL_add = " AND id NOT LIKE '\_%'";
-}
-$SQL = "SELECT * FROM field  WHERE slice_id='AA_Core_Fields..'". $SQL_add .' ORDER BY name';
-$field_types    = GetTable2Array($SQL);
-$SQL = "SELECT * FROM field  WHERE slice_id='$p_slice_id'". $SQL_add . ' ORDER BY input_pri';
-//$SQL = "SELECT * FROM field  WHERE slice_id='".q_pack_id('41102583a79baa022246ded93734769d')."'". $SQL_add . ' ORDER BY input_pri';
-$current_types  = GetTable2Array($SQL);
-
 /** ShowField function
  * @param $id
  * @param $name
@@ -71,7 +58,7 @@ $current_types  = GetTable2Array($SQL);
  * @param $separate=false
  */
 function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $separate=false) {
-    global $sess, $field_types, $current_types, $slice_id;
+    global $sess, $slice_id;
     $name = safe($name); $pri=safe($pri);
 
     $rowclass = ((substr ($id,0,6) == "alerts") ? 'tabtxt_field_alerts' : 'tabtxt');
@@ -80,38 +67,59 @@ function ShowField($id, $name, $pri, $required, $show, $type="", $alias="", $sep
     }
     echo "<tr class=\"$rowclass\">
       <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>";
-    if ( $type=="new" ) {
-        echo '<td>
-              <select name="ftype">';
-        $fileds_slice = unpack_id('AA_Core_Fields..');
-        foreach ( $field_types as $k => $v) {
-            echo '<option value="'. $fileds_slice .'-'. htmlspecialchars($k).'"> '. htmlspecialchars($v['name']) ." </option>";
-        }
-        $fileds_slice = $slice_id;
-        echo '<optgroup label="'._m('copy current:').'">';
-        foreach ( $current_types as $k => $v) {
-            echo '<option value="'. $fileds_slice .'-'. htmlspecialchars($k).'"> '. htmlspecialchars($v['name']) ." </option>";
-        }
-        echo "</optgroup></select>\n </td>";
-    } else {
-        echo "<td>$id</td>";
-    }
+    echo "<td>$id</td>";
     echo "
         <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
         <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
         <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
-    if ( $type=="new") {
-        echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
+    echo "<td><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
+    if ( $type=="in_item_tbl" ) {
+        echo "<td>". _m("Delete") ."</td>";
     } else {
-        echo "<td><a href=\"". $sess->url(con_url("./se_inputform.php3", "fid=".urlencode($id))) ."\">". _m("Edit") ."</a></td>";
-        if ( $type=="in_item_tbl" ) {
-            echo "<td>". _m("Delete") ."</td>";
-        } else {
-            echo "<td><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
-        }
-        $alias_list = (is_array($alias) ? join($alias," ") : '');
-        echo "<td class=\"tabhlp\">$alias_list</td>";
+        echo "<td><a href=\"javascript:DeleteField('$id')\">". _m("Delete") ."</a></td>";
     }
+    $alias_list = (is_array($alias) ? join($alias," ") : '');
+    echo "<td class=\"tabhlp\">$alias_list</td>";
+    echo "</tr>\n";
+}
+
+/** ShowNewField function
+ * @param $id
+ * @param $name
+ * @param $pri
+ * @param $required
+ * @param $show
+ * @param $type=""
+ * @param $alias=""
+ * @param $separate=false
+ */
+function ShowNewField($from_slice) {
+    $name = safe($name); $pri=safe($pri);
+
+    $id       = 'New_Field';
+    $name     = '';
+    $show     = true;
+    $required = false;
+    $pri      = 1000;
+
+    // --------------- from template --------------------------
+    echo '<tr class="tabtit"><td colspan="8">'. _m('Add new field from template') .'</td></tr>';
+    echo "\n<tr class=\"tabtxt\">
+          <td colspan=\"8\">". _m('Slice') .' ';
+          $template_id = unpack_id('AA_Core_Fields..');
+          $from_slice  = get_if($from_slice, $template_id);
+          $slice_array = array_merge( array($template_id => 'Action Aplication Core'), AA_Modules::getUserModules('S'));
+          FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.options[this.selectedIndex].value})"');
+    echo "\n</td>
+          </tr>
+          <tr class=\"tabtxt\">
+          <td><input type=\"Text\" name=\"name[$id]\" size=25 maxlength=254 value=\"$name\"></td>
+          <td id=\"fieldselection\"></td>
+        <td><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
+        <td><input type=\"checkbox\" name=\"req[$id]\"". ($required ? " checked" : "") ."></td>
+        <td><input type=\"checkbox\" name=\"shw[$id]\"". ($show ? " checked" : "") ."></td>";
+
+    echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
     echo "</tr>\n";
 }
 
@@ -141,7 +149,8 @@ if ($update) {
                 }
 
                 list($field_slice, $field_type) = explode('-',$ftype,2);
-                $field_setting = ($field_slice == unpack_id('AA_Core_Fields..')) ? $field_types[$field_type] : $current_types[$field_type];
+                $p_field_slice = q_pack_id($field_slice);
+                $field_setting = GetTable2Array("SELECT * FROM field WHERE slice_id='$p_field_slice' AND id='$field_type'",'aa_first');
 
                 // copy fields
                 // use the same setting for new field as template in AA_Core_Fields..
@@ -218,15 +227,21 @@ $SQL = "SELECT id, name, input_pri, required, input_show, in_item_tbl, alias1, a
 $s_fields = GetTable2Array($SQL);
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess_id='.$sess->id );
 ?>
  <title><?php echo _m("Admin - configure Fields");?></title>
  <script type="text/javascript"><!--
    function DeleteField(id) {
-     if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>"))
-       return
-     var url="<?php echo $sess->url(con_url("./se_inputform.php3", "del=1")); ?>"
-     document.location=url + "&fid=" + escape(id);
+       if ( !confirm("<?php echo _m("Do you really want to delete this field from this slice?"); ?>")) {
+           return;
+       }
+       var url="<?php echo $sess->url(con_url("./se_inputform.php3", "del=1")); ?>"
+       document.location=url + "&fid=" + escape(id);
    }
+
+   document.observe("dom:loaded", function() {
+       DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'<?php echo get_if($from_slice, unpack_id('AA_Core_Fields..')); ?>'})
+   });
 // -->
 </script>
 
@@ -273,7 +288,7 @@ if ( isset($s_fields) and is_array($s_fields)) {
 $form_buttons['slice_fields'] = array('value' => ($slice_fields ? 1 : 0));
 
 // one row for possible new field
-ShowField("New_Field", "", "1000", false, true, "new", "", true);
+ShowNewField($from_slice);
 FrmTabEnd( $form_buttons, $sess, $slice_id);
 
 echo '</form>';

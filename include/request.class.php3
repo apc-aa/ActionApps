@@ -261,6 +261,8 @@ class AA_Response {
     var $response;
     var $error;
 
+    static $Response_type = 'serialize';
+
     function AA_Response($response = null, $error = 0) {
         $this->response = $response;
         $this->error    = $error;
@@ -279,7 +281,16 @@ class AA_Response {
     }
 
     function respond() {
-        echo serialize($this);
+        switch(AA_Response::$Response_type) {
+          case 'serialize': echo serialize($this);
+                            break;
+          case 'html':      if ($this->isError()) {
+                                echo "Error $this->error: ". $this->response;
+                            } else {
+                                echo is_scalar($this->response) ? $this->response : _m('Array returned');
+                            }
+        }
+        return;
     }
 
     /// Static functions

@@ -27,6 +27,7 @@ require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."stringexpand.php3";
 require_once AA_INC_PATH."item.php3"; // So site_ can create an item
+require_once AA_BASE_PATH."modules/site/router.class.php";
 
 $timestart = get_microtime();
 
@@ -75,10 +76,18 @@ if ( !is_array($site_info) ) {
 //                                    ));
 //    readfile($url);
 
+if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
+    $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id($site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
+    $router       = AA_Router::singleton('AA_Router_Seo', $slices4cache);
+    $apc_state    = $router->parse($_SERVER['REQUEST_URI']);
+}
+
 if ( $site_info['state_file'] ) {
     // in the following file we should define apc_state variable
     require_once AA_BASE_PATH."modules/site/sites/site_".$site_info['state_file'];
-} elseif ( !isset($_GET['apc_state']) )  {
+} 
+
+if ( !isset($apc_state) )  {
     echo "<br>Error: no 'state_file' nor 'apc_state' variable defined";
     exit;
 }

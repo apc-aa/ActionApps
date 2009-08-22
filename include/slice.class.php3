@@ -93,7 +93,10 @@ class AA_Slice {
 
         // get fields from module table
         $SQL = "SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM module WHERE id = '".$this->sql_id(). "'";
-        $this->setting = array_merge($this->setting, GetTable2Array($SQL, 'aa_first', 'aa_fields'));
+        $rec = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+        if ( is_array($rec)) {   // not true for AA_Core_Fields.. (but it probably should be filled)
+            $this->setting = array_merge($this->setting, $rec);
+        }
         return true;
     }
 
@@ -129,6 +132,13 @@ class AA_Slice {
             $this->loadsettings();
             return $this->setting[$fname];
         }
+    }
+
+    /** isField function
+     * @param $fname
+     */
+    function isField($fname) {
+        return $this->fields->isField($fname);
     }
 
     /** name function
@@ -493,6 +503,17 @@ class AA_Slices {
         return $slice ? $slice->getProperty($field) : null;
     }
 
+    /** isSliceProperty function
+     *  static function
+     * @param $slice_id
+     * @param $field
+     */
+    function isSliceProperty($slice_id, $field) {
+        $slices = AA_Slices::singleton();
+        $slice  = $slices->_getSlice($slice_id);
+        return $slice ? $slice->isField($field) : false;
+    }
+
     /** getName function
      *  static function
      * @param $slice_id
@@ -509,6 +530,48 @@ class AA_Slices {
             $this->a[$slice_id] = new AA_Slice($slice_id);
         }
         return $this->a[$slice_id];
+    }
+}
+
+
+
+class AA_Modules {
+
+    // Store the single instance of Database
+    private static $_instance;
+
+    private function __construct() {}
+
+    public static function singleton() {
+        if(!isset(self::$_instance)) {
+            self::$_instance = new AA_Modules();
+        }
+        return self::$_instance;
+    }
+
+    /** @return array id => name of current user's modules
+     *  @param $module_type
+     *  @param $perm
+     *  @param $user_id
+     */
+    public static function getUserModules( $module_type = '', $perm = PS_EDIT_SELF_ITEMS, $user_id = '') {
+        global $auth;
+
+        $where_add = empty($module_type) ? '' : "AND type='$module_type'";
+        $all_modules = GetTable2Array("SELECT id, name FROM module WHERE deleted<>1 $where_add ORDER BY priority, name", 'unpack:id', 'name');
+
+        if (empty($user_id)) {
+            $user_id =  $auth->auth["uid"];
+        }
+
+        $ret = array();
+        foreach($all_modules as $mid => $mname) {
+            if (CheckPerms( $user_id, 'slice', $mid, $perm)) {
+                $ret[$mid] = $mname;
+            }
+        }
+
+        return $ret;
     }
 }
 

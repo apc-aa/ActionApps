@@ -203,10 +203,14 @@ class AA_Actionapps {
         $request  = new AA_Request('Get_Sessionid');
         $response = $request->ask($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword()));
         if ( !$response->isError() ) {
-            $this->_remote_session_id = $response->getResponse();
-            $this->_remote_session_id_time = now();
+            $this->setSession($response->getResponse());
         }
         return $response;
+    }
+
+    function setSession($session_id) {
+        $this->_remote_session_id      = $session_id;
+        $this->_remote_session_id_time = now();
     }
 
     /// Static methods
@@ -224,6 +228,30 @@ class AA_Actionapps {
         }
         return $ret;
     }
+
+    /** create array of all Approved AAs from central database */
+    // not used, yet
+    // function getCurrent($sess) {
+    // 
+    //     $aaic = new ItemContent();
+    //     $aaic->setValue('ORG_NAME',       ORG_NAME);
+    //     $aaic->setValue('AA_HTTP_DOMAIN', AA_HTTP_DOMAIN);
+    //     $aaic->setValue('AA_BASE_DIR',    AA_BASE_DIR);
+    // 
+    //     $aa = new AA_Actionapps($aaic);
+    //     $aa->setSession($sess->id());
+    // 
+    //     $ret    = array();
+    //     $conds  = array();
+    //     $sort[] = array('ORG_NAME' => 'a');
+    //     $zids   = Central_QueryZids($conds, $sort, AA_BIN_APPROVED);
+    //     $aa_ic  = Central_GetAaContent($zids);
+    // 
+    //     foreach ($aa_ic as $k => $content4id) {
+    //         $ret[$k] = new AA_Actionapps(new ItemContent($content4id));
+    //     }
+    //     return $ret;
+    // }
 }
 
 
