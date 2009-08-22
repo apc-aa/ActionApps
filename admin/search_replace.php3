@@ -221,9 +221,9 @@ class AA_Transformation_Value extends AA_Transformation {
         $text = $item->subst_alias($this->getParam('new_content'));
 
         switch ($this->getParam('new_flag')) {
-            case 'u': $flag = $item->getval($field_id, 'flag'); break;
-            case 'h': $flag = $item->getval($field_id, 'flag') | FLAG_HTML; break;
-            case 't': $flag = $item->getval($field_id, 'flag') & ~FLAG_HTML; break;
+            case 'u': $flag = $item->getFlag($field_id); break;
+            case 'h': $flag = $item->getFlag($field_id) | FLAG_HTML; break;
+            case 't': $flag = $item->getFlag($field_id) & ~FLAG_HTML; break;
         }
 
         return new AA_Value($text,$flag);
@@ -265,7 +265,7 @@ class AA_Transformation_Value extends AA_Transformation {
     function transform($field_id, &$content4id) {
         $item = GetItemFromContent($content4id);
         $text = $item->subst_alias($this->getParam('new_content'));
-        $flag = $this->getFlagFromForm($item->getval($field_id, 'flag'));
+        $flag = $this->getFlagFromForm($item->getFlag($field_id));
         return new AA_Value($text,$flag);
     }
 
@@ -334,7 +334,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
      */
     function transform($field_id, &$content4id) {
         $item = GetItemFromContent($content4id);
-        $flag = $this->getFlagFromForm($item->getval($field_id, 'flag'));
+        $flag = $this->getFlagFromForm($item->getFlag($field_id));
 
         $ret  = $content4id->getAaValue($field_id);
         $ret->setFlag($flag);
@@ -406,7 +406,7 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
      */
     function transform($field_id, &$content4id) {
         $item = GetItemFromContent($content4id);
-        $flag = $this->getFlagFromForm($item->getval($field_id, 'flag'));
+        $flag = $this->getFlagFromForm($item->getFlag($field_id));
         return new AA_Value(explode($this->delimiter, $item->subst_alias($this->source)), $flag);
     }
 
@@ -525,7 +525,7 @@ class AA_Transformation_Translate extends AA_Transformation {
         }
 
         $item = GetItemFromContent($content4id);
-        $flag = $this->getFlagFromForm($item->getval($field_id, 'flag'));
+        $flag = $this->getFlagFromForm($item->getFlag($field_id));
 
         $translations = $this->_parseTranslation();
         $ret = new AA_Value;
@@ -756,7 +756,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
                 $field_content->removeDuplicates();
 
                 $newcontent4id = new ItemContent();
-                $newcontent4id->setFieldValue($field_id, $field_content);
+                $newcontent4id->setAaValue($field_id, $field_content);
                 $newcontent4id->setItemID($item_id);
                 $newcontent4id->setSliceID($sli_id);
 

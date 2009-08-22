@@ -95,6 +95,7 @@ class AA_Validate {
                 case 'e_unique': $standard_validators[$sv_key] = new AA_Validate_E_Unique();       break;
                 case 'url':      $standard_validators[$sv_key] = new AA_Validate_Regexp('|^http(s?)\://\S+\.\S+|', VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters in URL - you should start with http:// or https:// and do not use space characters"),'~(^http(s?)\://$)|(^\s*$)~'); break;
                 case 'text':
+                case 'string':
                 case 'field':
                 case 'all':      $standard_validators[$sv_key] = new AA_Validate_All();            break;
                 case 'enum':     $standard_validators[$sv_key] = new AA_Validate_Enum($parameter); break;
@@ -371,9 +372,6 @@ class AA_Validate_Unique extends AA_Validate {
      * @param $default
      */
     function validate(&$var, $default='AA_noDefault') {
-        if ( !AA_Fields::isField($this->field_id) ) {
-            return AA_Validate::bad($var, VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $default);
-        }
         global $slice_id;
 
         if ( $this->scope == 'username') {
@@ -383,6 +381,9 @@ class AA_Validate_Unique extends AA_Validate {
             return true;
         }
         if ( $this->scope == 'slice') {
+            if ( !AA_Slices::isSliceProperty($slice_id, $this->field_id) ) {
+                return AA_Validate::bad($var, VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $default);
+            }
             $SQL = "SELECT * FROM content INNER JOIN item ON content.item_id = item.id
                     WHERE item.slice_id='".q_pack_id($slice_id)."'
                         AND field_id='".addslashes($this->field_id)."'

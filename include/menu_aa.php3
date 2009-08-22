@@ -66,8 +66,8 @@ $aamenus["aaadmin_submenu"] = array (
 
     "header9"     =>_m("Misc"),
     "te_cron"     => array("label"=>_m("Cron"),            "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php3?set_tview=cron"),
-    "te_log"      => array("label"=>_m("View Log"),        "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php3?set_tview=log"),
-    "te_searchlog"=> array("label"=>_m("View SearchLog"),  "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php3?set_tview=searchlog"),
+    "log"         => array("label"=>_m("View Log"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_log.php3"),
+    "searchlog"   => array("label"=>_m("View SearchLog"),  "cond"=>IsSuperadmin(),        "href"=>"admin/aa_searchlog.php3"),
     "aafinder"    => array("label"=>_m("AA finder"),       "cond"=>IsSuperadmin(),        "href"=>"admin/aafinder.php3"),
     "xmgettext"   => array("label"=>_m("Mgettext"),        "cond"=>IsSuperadmin(),        "exact_href"=>"../misc/mgettext/index.php3"),
     'optimize'    => array("label"=>_m("Optimize"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_optimize.php3"),

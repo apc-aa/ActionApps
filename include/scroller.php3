@@ -234,6 +234,7 @@ class AA_Scroller extends AA_Storable {
      * @param $url
      */
     function updateScr($url = "") {
+
         $this->updateFilters();
         if ($url) {
             $this->urldefault = $url;

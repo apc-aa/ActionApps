@@ -603,10 +603,10 @@ class AA_Set extends AA_Object {
         return $ret;
     }
 
-    /** getSlices function
-     *  retruns $slices[] array - mainly for backward compatibility
+    /** getModules function
+     *  retruns $modules array - mainly for backward compatibility
      */
-    function getSlices() {
+    function getModules() {
         return $this->slices;
     }
 
@@ -1264,7 +1264,7 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
  *  @param $restrict_zids - zids
  */
 function QuerySet($set, $restrict_zids=false) {
-    return QueryZIDs($set->getSlices(), $set->getConds(), $set->getSort(), $set->getBins(), 0, $restrict_zids);
+    return QueryZIDs($set->getModules(), $set->getConds(), $set->getSort(), $set->getBins(), 0, $restrict_zids);
 }
 
 

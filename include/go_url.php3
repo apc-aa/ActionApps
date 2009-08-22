@@ -80,6 +80,35 @@ function get_url($url, $params='') {
     return $path . (strstr($path, '?') ? "&" : "?"). $param_string. ($fragment ? '#'.$fragment : '') ;
 }
 
+
+/** get_aa_url function
+ * @param $href
+ * @param $session
+ */
+function get_aa_url($href, $params='', $session=true) {
+    global $sess;
+    $url = get_url(AA_INSTAL_PATH.$href, $params);
+    return ($session AND is_object($sess)) ? $sess->url($url) : $url;
+}
+
+/** get_admin_url function
+ * @param $href
+ * @param $session
+ */
+function get_admin_url($href, $params='', $session=true) {
+    return get_aa_url("admin/$href", $params, $session);
+}
+
+/** get_help_url function
+ *  returns url for $morehlp parameter in Frm* functions
+ * @param $href
+ * @param $anchor
+ */
+function get_help_url($href, $anchor) {
+    return $href."#".$anchor;
+}
+
+
 /** go_url function
  * Move to another page (must be before any output from script)
  * @param $url

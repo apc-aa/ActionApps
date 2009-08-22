@@ -29,7 +29,8 @@ require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."convert_charset.class.php3";
 
-error_reporting(E_ERROR | E_PARSE);
+//error_reporting(E_ERROR | E_PARSE);
+//ini_set('display_errors',true);
 
 
 function StripslashesDeep($value) {
@@ -75,9 +76,7 @@ class AA_V {
 
 }
 
-
-
-/** field_content is in normal multivalue array ([][value]=...) */
+/** field_content is AA_Value object */
 function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = true) {
     $changes       = new AA_ChangesMonitor();
     $changes->addHistory(new AA_ChangeProposal($item_id, $field_id, array(GetRepreValue($item_id, $field_id))));
@@ -85,12 +84,12 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
     $content4id    = new ItemContent();
     $content4id->setByItemID($item_id, true);     // ignore password
     // if we do not ignore it, then whole item is destroyed for slices with slice_pwd
-    
+
     $sli_id        = $content4id->getSliceID();
     unset($content4id);
 
     $newcontent4id = new ItemContent();
-    $newcontent4id->setFieldValue($field_id, $field_content);
+    $newcontent4id->setAaValue($field_id, $field_content);
 
     $newcontent4id->setItemID($item_id);
     $newcontent4id->setSliceID($sli_id);
@@ -100,7 +99,7 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
     }
 }
 
-function GetRepreValue($item_id, $field_id, $alias_name) {
+function GetRepreValue($item_id, $field_id, $alias_name='') {
     // get the item directly from the database
     $item        = AA_Item::getItem(new zids($item_id));
     $repre_value = $alias_name ? $item->subst_alias('_#'.$alias_name) : $item->getval($field_id);
@@ -113,10 +112,10 @@ if ( AA_V::P('bsc') == 1 ) {
     foreach (AA_V::P() as $varname => $varvalue) {
         if (strlen($varname)>20 AND substr($varname,0,3)=='bsc') {
             $item_id = substr($varname,3);
-            $field_content = array();
+            $field_content = new AA_Value;
             foreach ( explode(',', $varvalue) as $related_id ) {
                 if ( $related_id ) {
-                    $field_content[] = array('value'=>$related_id, 'flag'=>0);
+                    $field_content->addValue($related_id);
                 }
             }
             //UpdateFieldContent($item_id, 'relation.......3', $field_content, false);
@@ -131,7 +130,7 @@ if ( AA_V::P('bsc') == 1 ) {
 // new approach using standard AA widgets and form variables
 elseif ($_POST['aaaction']=='DOCHANGE') {
 
-    list($item_id, $field_id) = AA_Field::parseId4Form($_POST['input_id']);
+    list($item_id, $field_id) = AA_Widget::parseId4Form($_POST['input_id']);
     $item   = AA_Item::getItem(new zids($item_id));
     $slice  = AA_Slices::getSlice($item->getSliceId());
 
@@ -141,10 +140,10 @@ elseif ($_POST['aaaction']=='DOCHANGE') {
     bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_output_lang.php3");
 
     $encoder       = new ConvertCharset;
-    $field_content = array();
+    $field_content = AA_Value;
     // fill content array
     foreach ($_POST['content'] as $val) {
-        $field_content[] = array('value'=>$encoder->Convert($val, 'utf-8', $charset), 'flag'=>0);
+        $field_content->addValue($encoder->Convert($val, 'utf-8', $charset));
     }
 
     UpdateFieldContent($item_id, $field_id, $field_content);
@@ -155,6 +154,7 @@ elseif ($_POST['aaaction']=='DOCHANGE') {
     echo $encoder->Convert($repre_value, $charset, 'utf-8');
 }
 elseif ($_POST['aaaction']=='DISPLAYINPUT') {
+
     $item        = AA_Item::getItem(new zids(AA_V::P('item_id')));
     $iid         = $item->getItemID();
     $slice       = AA_Slices::getSlice($item->getSliceId());
@@ -187,8 +187,7 @@ elseif (AA_V::P('cancel_changes') AND AA_V::P('item_id') AND AA_V::P('field_id')
 elseif (AA_V::P('do_change') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
     $encoder       = new ConvertCharset;
     $val           = $encoder->Convert(AA_V::P('content'), 'utf-8', 'windows-1250');
-    $field_content = array(array('value'=>$val, 'flag'=>0));
-    UpdateFieldContent(AA_V::P('item_id'), AA_V::P('field_id'), $field_content);
+    UpdateFieldContent(AA_V::P('item_id'), AA_V::P('field_id'), new AA_Value($val));
     $changes = new AA_ChangesMonitor();
     $changes->deleteProposalForSelector(AA_V::P('item_id'), AA_V::P('field_id'));
     $encoder = new ConvertCharset;
@@ -212,11 +211,8 @@ elseif (AA_V::P('change_id')) {
         if ( $item_id ) {
             foreach ( $fids as $fid => $values ) {
                 if ( $fid ) {
-                    $field_content = array();
-                    foreach ( $values as $val ) {
-                        $field_content[] = array('value'=>$val, 'flag'=>0);
-                    }
-                    UpdateFieldContent($item_id, $fid, $field_content);
+                    // $values are normal array, but it is OK for the AA_Value constructor
+                    UpdateFieldContent($item_id, $fid, new AA_Value($values));
                 }
             }
         }
