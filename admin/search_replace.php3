@@ -629,9 +629,10 @@ class AA_Transformation_Replace extends AA_Transformation {
             return false;
         }
 
-        $ret = array();
+        $ret = new AA_Value;
         foreach ( $content4id->getValues($field_id) as $source ) {
-            $ret[] = array('value' => str_replace($this->searchpattern, $this->replacestring, $source['value']), 'flag' => $source['flag']);
+            $ret->addValue(str_replace($this->searchpattern, $this->replacestring, $source['value']));
+            $ret->setFlag($source['flag']);
         }
         return $ret;
     }
