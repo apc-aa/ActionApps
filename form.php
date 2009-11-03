@@ -22,7 +22,7 @@ http://www.apc.org/
 /**
  *  @param form_id   - long id of form
  *  @param type      - "ajax"
- *  @param ret_code  -AA expression (with aliases to be returned after ajax insert)
+ *  @param ret_code  - AA expression (with aliases to be returned after ajax insert)
  *  @param object_id - optional item_id (for edit)
  */
 

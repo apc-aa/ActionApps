@@ -43,37 +43,12 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
+/** not quoted, G() will also return paramaters from SSI, it should do also input checks in future */ 
 class AA_V {
-    function p($var=null) {
-        AA_V::_unquote();
-        return isset($var) ? $_POST[$var] : $_POST;
-    }
-
-    function g($var=null) {
-        AA_V::_unquote();
-        return isset($var) ? $_GET[$var] : $_GET;
-    }
-
-    function c($var=null) {
-        AA_V::_unquote();
-        return isset($var) ? $_COOKIE[$var] : $_COOKIE;
-    }
-
-    function _unquote() {
-        if (!$GLOBALS['magic_unquoted']) {
-           if ( get_magic_quotes_gpc() ) {
-               $_POST   = AA_V::stripslashesDeep($_POST);
-               $_GET    = AA_V::stripslashesDeep($_GET);
-               $_COOKIE = AA_V::stripslashesDeep($_COOKIE);
-            }
-            $GLOBALS['magic_unquoted'] = true;
-        }
-    }
-
-    function stripslashesDeep($value) {
-        return is_array($value) ? array_map(array('AA_V','stripslashesDeep'), $value) : stripslashes($value);
-    }
-
+    function P($var) { return $_POST[$var];   }
+    function G($var) { return $_GET[$var];    }
+    function C($var) { return $_COOKIE[$var]; }
+    function Parr()  { return $_POST;         }
 }
 
 /** field_content is AA_Value object */
@@ -109,7 +84,7 @@ function GetRepreValue($item_id, $field_id, $alias_name='') {
 // BSC assignment
 if ( AA_V::P('bsc') == 1 ) {
     $updated = 0;
-    foreach (AA_V::P() as $varname => $varvalue) {
+    foreach (AA_V::Parr() as $varname => $varvalue) {
         if (strlen($varname)>20 AND substr($varname,0,3)=='bsc') {
             $item_id = substr($varname,3);
             $field_content = new AA_Value;

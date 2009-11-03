@@ -166,6 +166,7 @@ $manager_settings = array(
                          )
          );
 
+$manager = new AA_Manager('item'.$module_id, $manager_settings);
 
 if ( $change_id OR ($r_state["module_id"] != $module_id)) {
     // we are here for the first time or we are switching to another slice
@@ -173,13 +174,11 @@ if ( $change_id OR ($r_state["module_id"] != $module_id)) {
     // set default admin interface settings from user's profile
     $r_state["module_id"]       = $module_id;
     $sess->register('r_state');
+
+    $manager->setFromProfile($profile);
 }
 
-$manager = new AA_Manager('item'.$module_id, $manager_settings);
 $manager->performActions();
-
-$set  = $manager->getSet();
-$zids = AA_Metabase::queryZids(array('table'=>'log'), $set);
 
 $r_state['bin_cnt'] = CountItemsInBins();
 

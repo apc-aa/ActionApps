@@ -33,19 +33,18 @@ require_once AA_INC_PATH . "formutil.php3";
 require_once AA_INC_PATH . "pagecache.php3";
 require_once AA_INC_PATH . "item.php3";
 require_once AA_INC_PATH . "manager.class.php3";
-require_once AA_INC_PATH. "actions.php3";
-require_once AA_BASE_PATH. "central/include/actionapps.class.php";
+require_once AA_INC_PATH . "actions.php3";
 
 if ( !IsSuperadmin() ) {
     MsgPage($sess->url(self_base())."index.php3", _m("You do not have permission to manage ActioApps logs"));
     exit;
 }
 
-$metabase  = AA_Metabase::singleton();
+$metabase         = AA_Metabase::singleton();
 $manager_settings = $metabase->getManagerConf('log');
 
 $manager_settings['itemview']['format']['compact_top'] = '
-                                          <table border="0" cellpadding="5" cellspacing="0">
+                                          <table>
                                             <tbody><tr>
                                               <th width="30">&nbsp;</th>
                                               <th>time</th>
@@ -66,8 +65,8 @@ $manager_settings['itemview']['format']['odd_row_format'] = '
 $manager = new AA_Manager('log', $manager_settings);
 $manager->performActions();
 
-$set  = $manager->getSet();
-$zids = AA_Metabase::queryZids(array('table'=>'log'), $set);
+$aa_set  = $manager->getSet();
+$zids    = AA_Metabase::queryZids(array('table'=>'log'), $aa_set);
 
 require_once AA_INC_PATH."menu.php3";
 
