@@ -1,3 +1,5 @@
+11/02/09 - removed confusing "Category" menu entry in "Slice Settings" 
+(honzam)   (categories are edited in field setting)
 08/23/09 - new possibility to define forms through admin interface 
 (honzam)   (see "Slice Admin" - "Design" - "Forms") 
          - new possibility to entering related items into slice using above 
