@@ -47,7 +47,7 @@ define("PS_EDIT_ALL_ITEMS",       "k");   // slice | change all items
 define("PS_DELETE_ITEMS",         "l");   // slice | delete items
 // administrator - possibly letters 'ABCDEFGHIJKLMNOP'
 define("PS_EDIT",                 "A");   // slice | set slice properties
-define("PS_CATEGORY",             "B");   // slice | change slice categories
+define("PS_CATEGORYxxx",          "B");   // slice | change slice categories - now free (not used - you can rename it - honza 2009-11-3)
 define("PS_FIELDS",               "C");   // slice | edit fields defauts
 define("PS_BOOKMARK",             "D");   // slice | change search form settings
 define("PS_USERS",                "E");   // slice | manage users (change perms

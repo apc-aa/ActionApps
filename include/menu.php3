@@ -135,7 +135,6 @@ function get_aamenus() {
 
         "header1"       => _m("Main settings"),
         "main"          => array("cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/slicedit.php3",                 "label"=>_m("Slice"), "show_always"=>1), //"href"=>"admin/tabledit.php3?set_tview=sl_edit&cmd[sl_edit][edit][".$slice_id."]=1&slice_id=".$slice_id
-        "category"      => array("cond"=>IfSlPerm(PS_CATEGORY), "href"=>"admin/se_constant.php3?category=1",   "label"=>_m("Category")),
         "fields"        => array("cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fields.php3",                "label"=>_m("Fields")),
         "slice_fields"  => array("cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/se_fields.php3?slice_fields=1", "label"=>_m("Slice Fields")),
         "notify"        => array("cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/se_notify.php3",                "label"=>_m("Email Notification")),

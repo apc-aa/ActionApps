@@ -25,9 +25,6 @@
  *
 */
 // Parameters: group_id - identifier of constant group
-//             categ - if true, constants are taken as category, so
-//                     APC parent categories are displayed for selecting parent
-//             category - edit categories for this slice (no group_id nor categ required)
 //             as_new - if we want to create new category group based on an existing (id of "template" group)
 
 require_once "../include/init_page.php3";
@@ -46,20 +43,13 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-if ($categ OR $category) {
-    if (!IfSlPerm(PS_CATEGORY)) {
-        MsgPageMenu($sess->url(self_base())."index.php3", _m("You have not permissions to change category settings"), "admin");
-        exit;
-    }
-}
-
 // as_new and $group_id is varname4form()-ed (for easier parameter passing)
 $as_new    = (strlen($as_new) > 1)   ? pack_id(substr($as_new,1)) : null;
 $group_id  = (strlen($group_id) > 1) ? pack_id(substr($group_id,1)) : null;
 $back_url  = ($return_url ? ($fid    ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php3");
 $from_form = false;  // display the values from form (after unsucessful update)
 
-if ($deleteGroup && $group_id && !$category) {
+if ($deleteGroup AND $group_id) {
     delete_constant_group($group_id);
     go_url($sess->url($back_url));
 }
@@ -68,7 +58,7 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset      = new Cvarset();
 
 // Check permissions
-if (! $category && $group_id ) {
+if ( $group_id ) {
     $SQL = "SELECT * FROM constant_slice INNER JOIN slice ON constant_slice.slice_id = slice.id WHERE group_id='$group_id'";
     $db->tquery($SQL);
 
@@ -85,12 +75,11 @@ if (! $category && $group_id ) {
  * @param $cid
  * @param $pri
  * @param $class
- * @param $categ
  * @param $classes
  * @return
  *
  */
-function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) {
+function ShowConstant($id, $name, $value, $cid, $pri, $class, $classes) {
     global $sess;
     $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid);
 
@@ -100,21 +89,6 @@ function ShowConstant($id, $name, $value, $cid, $pri, $class, $categ, $classes) 
       <td><input type=\"text\" name=\"value[$id]\" size=\"30\" maxlength=\"255\" value=\"$value\">
           <input type=\"hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
       <td class=\"tabtxt\"><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>";
-    if ($categ) {   // it is categories - show APC wide categories for parent category select
-        echo "<td class=\"tabtxt\">";
-        echo "<select name=\"class[$id]\">";
-        foreach ($classes as $k => $v) {
-            echo "<option value=\"". htmlspecialchars($k)."\"";
-            if ((string)$class == (string)$k) {
-                echo " selected";
-            }
-            echo "> ". htmlspecialchars($v['name']) ." </option>";
-        }
-        echo "</select>\n";
-        echo "</td>";
-    } else {
-        echo "<td class=\"tabtxt\">&nbsp;</td>";
-    }
     echo "</tr>\n";
 }
 
@@ -280,28 +254,15 @@ if ($update) {
     } while( 0 );           // in order we can use "break;" statement
 }
 
-// edit categories for this slice
-if ($category) {
-    $group_id = GetCategoryGroup($slice_id);
-    if ($group_id) {
-        $categ = true;
-    } else {
-        MsgPage($sess->url(self_base()."slicedit.php3"), _m("No category field defined in this slice.<br>Add category field to this slice first (see Field page)."), "admin");
-        exit;
-    }
-}
-
 // lookup constants
 if ($group_id OR $as_new) {
     $gid = ( $as_new ? $as_new : $group_id );
-    $SQL = "SELECT id, name, value, class, pri FROM constant
-            WHERE group_id='$gid' ORDER BY pri, name";
+    $SQL = "SELECT id, name, value, class, pri FROM constant  WHERE group_id='$gid' ORDER BY pri, name";
     $s_constants = GetTable2Array($SQL, "NoCoLuMn");
 }
 
 // lookup apc categories classes
-$SQL = "SELECT name, value, pri, id FROM constant
-         WHERE group_id='lt_apcCategories' ORDER BY name";
+$SQL = "SELECT name, value, pri, id FROM constant WHERE group_id='lt_apcCategories' ORDER BY name";
 $classes = GetTable2Array($SQL, "id");
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -311,7 +272,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 <?php
 
 require_once AA_INC_PATH."menu.php3";
-showMenu($aamenus, "sliceadmin", $categ ? "category" : "");
+showMenu($aamenus, "sliceadmin", "");
 
 echo "<h1><b>" . _m("Admin - Constants Setting") . "</b></h1>";
 PrintArray($err);
@@ -326,7 +287,6 @@ $form_buttons = array("update",
 ?>
 <form method="post" name="f" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
  <input type="hidden" name="group_id" value="<?php echo varname4form($group_id); /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
- <input type="hidden" name="categ" value="<?php echo $categ;       /* the same as above for group_id */ ?>">
 <?php
 
 // load the HIERARCHICAL EDITOR
@@ -403,12 +363,6 @@ else {
 
 $propagate_ch = ( $group_id ? $db->f("propagate") : 1);   // default is checked for new constant group;
 
-if ($categ) {
-    $categ_head    = "<td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('class')\">". _m("Parent") ."</a></b><br>". _m("categories&nbsp;only") ."</td>";
-} else {
-    $categ_head    = "<td class=\"tabtxt\">&nbsp;</td>";
-}
-
 echo "</td></tr>
 <tr><td colspan=\"4\"><input type=\"checkbox\" name=\"propagate_changes\"".($propagate_ch ? " checked" : "").">"._m("Propagate changes into current items");
 echo "'</td></tr>
@@ -417,7 +371,6 @@ echo "'</td></tr>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</td>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</td>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</td>
- $categ_head
 </tr>
 <tr><td colspan=\"4\"><hr></td></tr>";
 
@@ -426,9 +379,9 @@ if ($s_constants) {
     $i=0;
     foreach ($s_constants as $v) {
         if ($from_form) {  // get values from form
-            ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $categ, $classes);
+            ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $classes);
         } else {        // get values from database
-            ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id128($v["id"]), $v["pri"], $v["class"], $categ, $classes);
+            ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id128($v["id"]), $v["pri"], $v["class"], $classes);
         }
         $i++;
     }
@@ -436,7 +389,7 @@ if ($s_constants) {
 
 // ten rows for possible new constants
 for ($j=0; $j<10; $j++) {
-    ShowConstant($i, "", "", "", 1000, "", $categ, $classes);
+    ShowConstant($i, "", "", "", 1000, "", $classes);
     $i++;
 }
 
