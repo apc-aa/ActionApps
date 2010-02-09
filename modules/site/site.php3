@@ -19,7 +19,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
 // APC AA site Module main administration page
 require_once "../../include/config.php3";
 require_once AA_INC_PATH."locsess.php3";
@@ -78,14 +77,67 @@ if ( !is_array($site_info) ) {
 
 if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id($site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
-    $router       = AA_Router::singleton('AA_Router_Seo', $slices4cache);
-    $apc_state    = $router->parse($_SERVER['REQUEST_URI']);
+    $home         = '/' .substr(AA_Modules::getModuleProperty($site_id, 'lang_file'),0,2). '/';
+    $router       = AA_Router::singleton('AA_Router_Seo', $slices4cache, $home);
+
+    // use REDIRECT_URL for homepage redirects:
+    //    RewriteRule ^/?$ /en/home [QSA]
+    //    RewriteRule ^/?en /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
+
+    // or (I think better)
+    //    RewriteEngine on
+    //    RewriteRule ^/?$  /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
+    //    RewriteRule ^/?en /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
+
+
+    $uri          = (strlen($_SERVER['REQUEST_URI']) > 1) ? $_SERVER['REQUEST_URI'] : $_SERVER['REDIRECT_URL'];
+    $apc_state    = $router->parse($uri);
+
+    // do we use login?
+
+    /** Login From Ussage:
+     *   <form action="{go:xqs=}" method="post">
+     *     <fieldset>
+     *       <legend>Login, please</legend>
+     *       <div  style="margin-right:150px; text-align:right;">
+     *         <label for="username">Username</label> <input type="text" size="20" maxlength="20" name="username" id="username"><br>
+     *         <label for="password">Password</label> <input type="password" size="20" maxlength="20" name="password" id="password">
+     *       </div>
+     *     </fieldset>
+     *
+     *     <input type="submit" value="Login" style="margin-left:200px;">
+     *   </form>
+     */
+    $apc_state['xuser'] = '';
+    if ( $_COOKIE['AA_Sess'] OR $_POST['username'] ) {
+        require_once AA_INC_PATH."request.class.php3";
+        $options = array(
+            'aa_url'          => AA_INSTAL_URL,
+            'cookie_lifetime' => 60*60*24*365  // one year
+        );
+        $a = new AA_Client_Auth($options);
+        if (isset($_GET['logout'])) {
+            $a->logout();
+            $apc_state['xuser'] = '';
+        }
+        elseif ($a->checkAuth()) {
+            $apc_state['xuser'] = $a->getUid();
+
+            // Redirect to page. If not specified, then it continues to display
+            // normal page as defined in "action" attribute of <form>
+            if ($_POST["ok_url"]) {
+                go_url($_POST["ok_url"]);
+            }
+        } elseif ($_POST["err_url"]) {
+            go_url($_POST["err_url"]);
+        }
+    }
 }
 
 if ( $site_info['state_file'] ) {
     // in the following file we should define apc_state variable
     require_once AA_BASE_PATH."modules/site/sites/site_".$site_info['state_file'];
-} 
+}
 
 if ( !isset($apc_state) )  {
     echo "<br>Error: no 'state_file' nor 'apc_state' variable defined";
@@ -103,7 +155,7 @@ if ( !isset($apc_state) )  {
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php3
-$key_str = serialize($apc_state).":$site_id:$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id:". serialize($ids). serialize($sel_ids). serialize($disc_ids);
+$key_str = AA_Stringexpand_Keystring::expand(). ":$site_id:$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id:". serialize($ids). serialize($sel_ids). serialize($disc_ids);
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
@@ -115,6 +167,9 @@ if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($key_str,$noca
         $timeend = get_microtime();
         $time    = $timeend - $timestart;
         echo "<br><br>Site cache hit!!! Page generation time: $time";
+    }
+    if ($_GET['pqp']) {
+       $profiler->display();
     }
     exit;
 }
@@ -251,6 +306,11 @@ function ModW_arr2str($varnames, $arr) {
     }
     return $strout;
 }
+
+if ($_GET['pqp']) {
+   $profiler->display();
+}
+
 
 // do not remove this exit - we do not want to allow users
 // to include this script (honzam)
