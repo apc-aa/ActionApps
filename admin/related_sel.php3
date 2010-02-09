@@ -93,10 +93,11 @@ if ($design) {
         if ($design==1) {
             $format  = $slice->get_format_strings();
             // replace the checkbox with "action selection links"
-            // (we changed aliases _#ITEM_ID# to _#ITEM_ID_ so for backward
-            //  compatibility we need to replace both)
-            $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID_]" value="1">', $mode_string, $format['odd_row_format']);
-            $format["odd_row_format"] = str_replace('<input type=checkbox name="chb[x_#ITEM_ID#]" value="1">', $mode_string, $format['odd_row_format']);
+
+            // remove links
+            $format["odd_row_format"] = preg_replace('~</?a[^>]*>~is', '', $format['odd_row_format']);
+            // add action buttons (links)
+            $format["odd_row_format"] = preg_replace('~<input[^>]*checkbox[^>]*chb\[x_#ITEM_ID[^>]*>~i', $mode_string, $format['odd_row_format']);
         } else {
             $manager_vid = $design;
         }
