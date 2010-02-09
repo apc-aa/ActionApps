@@ -73,7 +73,7 @@ if ( ($insert AND $superadmin) OR $update ) {
         }
 
         // validate all fields needed for module table (name, slice_url, lang_file, owner)
-        ValidateModuleFields( $name, $slice_url, $lang_file, $owner, $err );
+        ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner, $err );
         $deleted  = ( $deleted  ? 1 : 0 );
 
         // now validate all module specific fields
@@ -86,10 +86,7 @@ if ( ($insert AND $superadmin) OR $update ) {
         }
 
         // write all fields needed for module table
-        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : false,
-                                       $db, $varset, $superadmin, $auth, 'Links',
-                                       $name, $slice_url, $lang_file, $owner,
-                                       $deleted, Links_Category2SliceID($start_id));
+        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : false, $superadmin, 'Links', $name, $slice_url, $priority, $lang_file, $owner, $deleted, Links_Category2SliceID($start_id));
         if ( !$module_id ) {       // error?
             break;
         }
@@ -164,7 +161,7 @@ $source_id   = ($template['Links'] ? substr($template['Links'],1) : $module_id )
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
-list( $name, $slice_url, $lang_file, $owner, $deleted, $slice_owners ) =
+list( $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ) =
                                            GetModuleFields( $source_id, $db );
 // load module specific data
 $SQL= " SELECT * FROM links WHERE id='$p_source_id'";
@@ -204,6 +201,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
   FrmInputText("name", _m('Title'), $name, 99, 25, true);
   FrmInputText("slice_url", _m('URL of .shtml page'), $slice_url, 254, 25, false,
                _m("Use following SSI command to include links to the page: "). $include_cmd);
+  FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5, false);
   FrmInputSelect("owner", _m('Owner'), $slice_owners, $owner, false);
   if ( !$owner ) {
     FrmInputText("new_owner", _m('New Owner'), $new_owner, 99, 25, false);

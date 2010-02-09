@@ -67,7 +67,7 @@ if ( $insert || $update ) {
         }
 
         // validate all fields needed for module table (name, slice_url, lang_file, owner)
-        ValidateModuleFields( $name, $slice_url, $lang_file, $owner, $err );
+        ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner, $err );
         $deleted  = ( $deleted  ? 1 : 0 );
 
         // now validate all module specific fields
@@ -83,7 +83,7 @@ if ( $insert || $update ) {
         }
 
         // write all fields needed for module table
-        $module_id = WriteModuleFields( ($update && $module_id) ? $module_id : false, $db, $varset, $superadmin, $auth, 'P', $name, $slice_url, $lang_file, $owner, $deleted );
+        $module_id = WriteModuleFields( ($update && $module_id) ? $module_id : false, $superadmin, 'P', $name, $slice_url, $priority, $lang_file, $owner, $deleted );
 
         if ( !$module_id ) {      // error?
             break;
@@ -161,7 +161,7 @@ $source_id   = ($template['P'] ? substr($template['P'],1) : $module_id );
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
-list( $name, $slice_url, $lang_file, $owner, $deleted, $slice_owners ) = GetModuleFields( $source_id, $db );
+list( $name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners ) = GetModuleFields( $source_id, $db );
 // load module specific data
 list( $status_code, $headline, $publish_date, $expiry_date, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params) = GetTable2Array("SELECT status_code, headline, publish_date, expiry_date, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls WHERE module_id='$p_source_id' AND status_code=0", 'aa_first');
 
@@ -197,6 +197,7 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
     FrmInputText("name", _m("Name"), $name, 99, 25, true);
     $include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/polls/poll.php3?pid=$module_id\"--&gt;";
     FrmInputText("slice_url", _m("URL"), $slice_url, 254, 25, false, _m("Use following SSI command to include the poll to the page: ". $include_cmd));
+    FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5, false);
     FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
     if ( !$owner ) {
         FrmInputText("new_owner", _m("New Owner"), $new_owner, 99, 25, false);

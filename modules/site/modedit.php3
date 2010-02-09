@@ -68,7 +68,7 @@ if ($add || $update) {
         }
 
         // validate all fields needed for module table (name, slice_url, lang_file, owner)
-        ValidateModuleFields( $name, $slice_url, $lang_file, $owner, $err );
+        ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner, $err );
         $deleted          = ( $deleted  ? 1 : 0 );
 
         // now validate all module specific fields
@@ -81,9 +81,7 @@ if ($add || $update) {
         }
 
         // write all fields needed for module table
-        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : false,
-                                       $db, $varset, $superadmin, $auth,
-                                       'W', $name, $slice_url, $lang_file, $owner, $deleted );
+        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : false, $superadmin, 'W', $name, $slice_url, $priority, $lang_file, $owner, $deleted );
         if (!$module_id) {   // error?
             break;
         }
@@ -166,7 +164,7 @@ $source_id   = ($template['W'] ? substr($template['W'],1) : $module_id );
 $p_source_id = q_pack_id( $source_id );
 
 // load module common data
-list($name, $slice_url, $lang_file, $owner, $deleted, $slice_owners) = GetModuleFields( $source_id, $db );
+list($name, $slice_url, $priority, $lang_file, $owner, $deleted, $slice_owners) = GetModuleFields( $source_id, $db );
 
 // load module specific data
 $SQL= " SELECT * FROM site WHERE id='$p_source_id'";
@@ -231,6 +229,7 @@ FrmJavascript('
     $include_cmd = "<br>&lt;!--#include&nbsp;virtual=\"". AA_INSTAL_PATH ."modules/site/site.php3?site_id=$module_id\"--&gt;";
     FrmInputText("slice_url", _m("URL"), $slice_url, 254, 25, false,
     _m("The file will probably contain just the following include:"). "$include_cmd" );
+    FrmInputText("priority", _m("Priority (order in slice-menu)"), $priority, 5, 5, false);
     FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
     if ( !$owner ) {
         FrmInputText("new_owner", _m("New Owner"), $new_owner, 99, 25, false);

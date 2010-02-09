@@ -38,26 +38,26 @@
  *  @return unpacked owner_id or false (on error)
  */
 function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
-  $varset->clear();
-  ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
-  ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
+    $varset->clear();
+    ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
+    ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
 
-  if ( count($err) > 1) {
-      return false;
-  }
+    if ( count($err) > 1) {
+        return false;
+    }
 
-  $owner = new_id();
-  $varset->set("id", $owner, "unpacked");
-  $varset->set("name", $new_owner, "text");
-  $varset->set("email", $new_owner_email, "text");
+    $owner = new_id();
+    $varset->set("id", $owner, "unpacked");
+    $varset->set("name", $new_owner, "text");
+    $varset->set("email", $new_owner_email, "text");
 
     // create new owner
-  if ( !$db->query("INSERT INTO slice_owner " . $varset->makeINSERT() )) {
-    $err["DB"] .= MsgErr("Can't add owner");
-    return false;
-  }
-  $varset->clear();
-  return $owner;
+    if ( !$db->query("INSERT INTO slice_owner " . $varset->makeINSERT() )) {
+        $err["DB"] .= MsgErr("Can't add owner");
+        return false;
+    }
+    $varset->clear();
+    return $owner;
 }
 
 /** ValidateModuleFields function
@@ -68,11 +68,12 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset, $db) {
  * @param $owner
  * @param $err
  */
-function ValidateModuleFields( $name, $slice_url, $lang_file, $owner, &$err ) {
-  ValidateInput("name", _m("Title"), $name, $err, true, "text");
-  ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
-  ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
-  ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
+function ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner, &$err ) {
+    ValidateInput("name", _m("Title"), $name, $err, true, "text");
+    ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
+    ValidateInput("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, $err, false, "url");
+    ValidateInput("priority", _m("Priority (order in slice-menu)"), $priority, $err, false, "number");
+    ValidateInput("lang_file", _m("Used Language File"), $lang_file, $err, true, "text");
 }
 
 /** WriteModuleFields function
@@ -89,79 +90,81 @@ function ValidateModuleFields( $name, $slice_url, $lang_file, $owner, &$err ) {
  * @param $owner
  * @param $deleted
  * @param $new_id
- */
-function WriteModuleFields( $module_id, $db, $varset, $superadmin, $auth,
-                            $type, $name, $slice_url, $lang_file, $owner,
-                            $deleted, $new_id="" ) {
-  $varset->clear();
-  if ( $module_id )  {
-      $p_module_id = q_pack_id($module_id);
-      $varset->add("name", "quoted", $name);
-      $varset->add("slice_url", "quoted", $slice_url);
-      $varset->add("lang_file", "quoted", $lang_file);
-      $varset->add("owner", "unpacked", $owner);
-      if ( $superadmin ) {
-          $varset->add("deleted", "number", $deleted);
-      }
+*/
+function WriteModuleFields( $module_id, $superadmin, $type, $name, $slice_url, $priority, $lang_file, $owner, $deleted, $new_id="" ) {
+    $varset     = new CVarset();
 
-      $SQL = "UPDATE module SET ". $varset->makeUPDATE() . " WHERE id='$p_module_id'";
-      if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-          $err["DB"] = MsgErr("Can't change module");
-          return false;
-      }
+    if ( $module_id )  {
+        $p_module_id = q_pack_id($module_id);
+        $varset->add("name", "quoted", $name);
+        $varset->add("slice_url", "quoted", $slice_url);
+        $varset->add("priority", "number", $priority);
+        $varset->add("lang_file", "quoted", $lang_file);
+        $varset->add("owner", "unpacked", $owner);
+        $varset->addkey("id", "unpacked", $module_id);
+        if ( $superadmin ) {
+            $varset->add("deleted", "number", $deleted);
+        }
 
-      $GLOBALS['r_lang_file']      = stripslashes($lang_file);
-      $GLOBALS['r_slice_view_url'] = stripslashes($slice_url);
-  } else {  // insert (add)
-    $module_id = ($new_id ? $new_id : new_id());   // sometimes we need specific
-                                                   // module_id (links module)
-    $varset->set("id", $module_id, "unpacked");
-    $varset->set("created_by", $auth->auth["uid"], "text");
-    $varset->set("created_at", now(), "text");
-    $varset->set("name", $name, "quoted");
-    $varset->set("owner", $owner, "unpacked");
-    $varset->set("slice_url", $slice_url, "quoted");
-    $varset->set("deleted", $deleted, "number");
-    $varset->set("lang_file", $lang_file, "quoted");
-    $varset->set("type", $type, "quoted");
+        if (!$varset->doUpdate('module')) {  // not necessary - we have set the halt_on_error
+            $err["DB"] = MsgErr("Can't change module");
+            return false;
+        }
 
-    if ( !$db->query("INSERT INTO module" . $varset->makeINSERT() )) {
-        $err["DB"] .= MsgErr("Can't add module");
-        return false;
+        $GLOBALS['r_lang_file']      = stripslashes($lang_file);
+        $GLOBALS['r_slice_view_url'] = stripslashes($slice_url);
+    } else {  // insert (add)
+        $module_id = ($new_id ? $new_id : new_id());   // sometimes we need specific
+        // module_id (links module)
+        $varset->set("id", $module_id, "unpacked");
+        $varset->set("created_by", $auth->auth["uid"], "text");
+        $varset->set("created_at", now(), "text");
+        $varset->set("name", $name, "quoted");
+        $varset->set("owner", $owner, "unpacked");
+        $varset->set("slice_url", $slice_url, "quoted");
+        $varset->set("priority", $priority, "number");
+        $varset->set("deleted", $deleted, "number");
+        $varset->set("lang_file", $lang_file, "quoted");
+        $varset->set("type", $type, "quoted");
+
+        if ( !$varset->doInsert('module') ) {
+            $err["DB"] .= MsgErr("Can't add module");
+            return false;
+        }
+
+        $GLOBALS['r_lang_file'] = stripslashes($lang_file);
+        AddPermObject($module_id, "slice");    // no special permission added - only superuser can access
     }
-
-    $GLOBALS['r_lang_file'] = stripslashes($lang_file);
-    AddPermObject($module_id, "slice");    // no special permission added - only superuser can access
-  }
-  return $module_id;
+    return $module_id;
 }
 
 /** GetModuleFields function
  *   fills variables from module and owners table
  * @param $source_id
  * @param $db
- */
+*/
 function GetModuleFields( $source_id, $db ) {
-  // lookup owners
-  $slice_owners[0] = _m("Select owner");
-  $SQL= " SELECT id, name FROM slice_owner ORDER BY name";
-  $db->query($SQL);
-  while ($db->next_record()) {
-      $slice_owners[unpack_id128($db->f(id))] = $db->f(name);
-  }
+    // lookup owners
+    $slice_owners[0] = _m("Select owner");
+    $SQL = "SELECT id, name FROM slice_owner ORDER BY name";
+    $db->query($SQL);
+    while ($db->next_record()) {
+        $slice_owners[unpack_id128($db->f('id'))] = $db->f('name');
+    }
 
-  $p_source_id = q_pack_id( $source_id );
-  $SQL= "SELECT * FROM module WHERE id='$p_source_id'";
-  $db->query($SQL);
-  if ($db->next_record()) {
-      return array( $db->f('name'),
-                  $db->f('slice_url'),
-                  $db->f('lang_file'),
-                  unpack_id($db->f('owner')),
-                  $db->f('deleted'),
-                  $slice_owners );
-  }
-  return false;
+    $p_source_id = q_pack_id( $source_id );
+    $SQL= "SELECT * FROM module WHERE id='$p_source_id'";
+    $db->query($SQL);
+    if ($db->next_record()) {
+        return array( $db->f('name'),
+            $db->f('slice_url'),
+            $db->f('priority'),
+            $db->f('lang_file'),
+            unpack_id($db->f('owner')),
+            $db->f('deleted'),
+            $slice_owners );
+    }
+    return false;
 }
 
 
