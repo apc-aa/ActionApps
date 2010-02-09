@@ -520,6 +520,83 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
     }
 }
 
+
+/** Expands {htmltogglecss:<toggle1>:<toggle2>:<css_rule>} like:
+ *          {htmltogglecss:+:-:#id_#SITEM_ID}
+ *  It creates the link text1 (or text2) +/- toggle which displays/hides all
+ *  elements matching the css_rule (#id82422) in our example
+ *  The /javscript/aajslib.php3 shoud be included to the page
+ *  (by <script src="">)
+ *  @param $switch_state_1 - default link text
+ *  @param $switch_state_2 - link text 2
+ *  @param $css_rule       - css rule matching the element(s) to show/hide
+ *                         - '#id82422', '.details', '#my-page div.details'
+ */
+class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
+    // Never cache this code, since we need unique divs with uniqid()
+
+    function expand($switch_state_1, $switch_state_2, $css_rule) {
+
+        // it is nonsense to show expandable trigger if both contents are empty
+        if (trim($css_rule) == '') {
+            return '';
+        }
+
+        // we can't use apostrophes and quotes in href="javacript:..." attribute
+        $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
+        $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
+
+        $uniqid = uniqid();
+
+        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggleCss('toggle_link_$uniqid', '$switch_state_1_js', '$switch_state_2_js', '$css_rule');return false;\">$switch_state_1</a>\n";
+        return $ret;
+    }
+}
+
+/** Expands {htmlajaxtogglecss:<toggle1>:<toggle2>:<css_rule_hide>:<url_of_text>[:<css_rule_update>]} like:
+ *          {htmlajaxtogglecss:+:-:#id_#SITEM_ID:/apc-aa/view.php3?vid=33&cmd[33]=x-33-{_#SITEM_ID}}
+ *  It creates the link text1 (or text2) +/- toggle which loads+displays/hides all
+ *  elements matching the css_rule (#id82422) in our example
+ *  The /javscript/aajslib.php3 shoud be included to the page
+ *  (by <script src="">)
+ *  @param $switch_state_1  - default link text
+ *  @param $switch_state_2  - link text 2
+ *  @param $css_rule_hide   - css rule matching the element(s) to show/hide (and possibly update)
+ *                          - '#id82422', '.details', '#my-page div.details'
+ *  @param $url_of_text     - url, which will be called by AJAX and displayed
+ *                            on demand (click on the link)
+ *  @param $css_rule_update - optional css rule matching the element(s) to update
+ *                            if it is not the same as $css_rule_hide (good for updating table rows, where we want to show/hide tr, but update td)
+ */
+class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
+    // Never cache this code, since we need unique divs with uniqid()
+
+    function expand($switch_state_1, $switch_state_2, $css_rule_hide, $url_of_text, $css_rule_update='') {
+
+        // it is nonsense to show expandable trigger if both contents are empty
+        if (trim($css_rule_hide) == '') {
+            return '';
+        }
+
+        if (trim($css_rule_update) == '') {
+            $css_rule_update = $css_rule_hide;
+        }
+
+        // we can't use apostrophes and quotes in href="javacript:..." attribute
+        $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
+        $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
+
+        // automaticaly add conversion to utf-8 for AA view.php3 calls
+        if ((strpos($url_of_text,'/view.php3?') !== false) AND (strpos($url_of_text,'convert')===false)) {
+            $url_of_text = get_url($url_of_text,array('convertto' => 'utf-8'));
+        }
+
+        $uniqid = uniqid();
+        $ret   = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggleCss('toggle_link_$uniqid', '$switch_state_1_js', '$switch_state_2_js', '$css_rule_hide', '$url_of_text', '$css_rule_update');return false;\">$switch_state_1</a>\n";
+        return $ret;
+    }
+}
+
 /** Expands {shorten:<text>:<length>[:<mode>]} like:
  *          {shorten:{abstract.......1}:150}
  *  @return up to <length> characters from the <text>. If the <mode> is 1
@@ -636,8 +713,6 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
         return ($position=='bottom') ?  $ret. $link : $link. $ret;
     }
 }
-
-
 
 
 // text = [ decimals [ # dec_point [ thousands_sep ]]] )
@@ -942,16 +1017,43 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
 
     /** expand function  */
     function expand($expression='', $decimals='', $dec_point='', $thousands_sep = '') {
-        $ret = calculate($expression); // defined in math.php3
+        $ret      = calculate($expression); // defined in math.php3
+//        huhl($expression, $decimals, $ret);
         if ( !empty($dec_point) OR !empty($thousands_sep) ) {
-            $dec_point     = get_if($dec_point, ',');
-            $thousands_sep = get_if($thousands_sep, ' ');
             $decimals      = get_if($decimals,0);
+            $dec_point     = get_if($dec_point, ',');
             $ret = number_format($ret, $decimals, $dec_point, $thousands_sep);
         } elseif ($decimals !== '') {
-            $ret = number_format($ret, $decimals);
+            $decimals = get_if($decimals,0);
+            $ret      = number_format($ret, $decimals);
         }
         return $ret;
+    }
+}
+
+/** Maximum number from list - number of values is unlimited */
+class AA_Stringexpand_Max extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $values - unlimited number of compared values
+     */
+    function expand() {
+        $arg_list  = func_get_args();   // must be asssigned to the variable
+        return max($arg_list);
+    }
+}
+
+/** Maximum number from list - number of values is unlimited */
+class AA_Stringexpand_Min extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $values - unlimited number of compared values
+     */
+    function expand() {
+        $arg_list  = func_get_args();   // must be asssigned to the variable
+        return max($arg_list);
     }
 }
 
@@ -1235,7 +1337,7 @@ class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
      * @param $text
      */
     function expand($text='') {
-        return $text;
+        return (is_null($this->item) OR !$text) ? $text : $this->item->getval($text);
     }
 }
 
@@ -1274,6 +1376,17 @@ class AA_Stringexpand_Quote extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Encodes string for JSON - apostrophs ' => \', ... */
+class AA_Stringexpand_Jsonstring extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $text
+     */
+    function expand($text='') {
+        return json_encode($text);
+    }
+}
 
 class AA_Stringexpand_Striptags extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1309,6 +1422,8 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
         return $encoder->Convert($text, $from, $to);
     }
 }
+
+
 
 
 
@@ -1420,8 +1535,8 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
  * You can also display it for more than one item and use the delimeter
  *   {item:53443-54322-53553:_HEADLINE:, }
  *
- * You can also use it to display item in tree. In fact, the {item} with 
- * trees works exactly the same way, as {itree}, but {itree} has more logical 
+ * You can also use it to display item in tree. In fact, the {item} with
+ * trees works exactly the same way, as {itree}, but {itree} has more logical
  * parameter order (due to backward compatibility), so you are encouraged to use
  * {itree} - @see {itree} for more info on tree string representation.
  **/
@@ -1458,19 +1573,20 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
  * Display field/alias of given item(s) in tree
  *   {itree:<tree-string>:<nested_top>[:<content>[:<delimiter>[:<nested_bottom>]]]}
  *
- * <ree-string> is generalized version of <ids> for {item} syntax, which is able
+ * <tree-string> is generalized version of <ids> for {item} syntax, which is able
  * to hold also tree structure (and is returned by {treestring...} syntax)
- *   
- * 
+ *
+ *   {itree:{treestring:{_#ITEM_ID_}}:_#2:_#HEADLINE::}
+ *
  * Tree representation string could be as simple as "4232" or "6523-6464-6641",
- * but it could be also more complicated tree - just like: 
+ * but it could be also more complicated tree - just like:
  *   3234(3443-3678(3872-3664)-3223)-4045
- * 
+ *
  * The exmples of trees follows.
  *
  * Practical examle of ussage is for example breadcrumb navigation:
  *   {itree:{xseo1}({xseo2}({xseo3}({xseo4}))): <a href="_#ITEM_URL">_#HEADLINE</a> &gt;: _#HEADLINE}
- *   
+ *
  * or better
  *   {itree:{xid:path}: <a href="_#ITEM_URL">_#HEADLINE</a> &gt;: _#HEADLINE}
  *   {itree:{xid:path}: _#HEADLINK &gt;: _#HEADLINE}
@@ -1547,6 +1663,11 @@ class AA_Stringexpand_Itree extends AA_Stringexpand_Nevercache {
      * @param $bottom
      */
     function expand($ids_string, $top=null, $content=null, $delim=null, $bottom=null) {
+        $trans   = array('_#1'=>$top, '_#2'=>$content, '_#3'=>$delim, '_#4'=>$bottom);
+        $top     = strtr($top,     $trans);
+        $content = strtr($content, $trans);
+        $delim   = strtr($delim,   $trans);
+        $bottom  = strtr($bottom,  $trans);
         return AA_Stringexpand_Item::expand($ids_string, $content, $delim, $top, $bottom);
     }
 }
@@ -1588,7 +1709,8 @@ class AA_Treecache {
         $results = array();
         if ( is_array($ids) ) {
             foreach ( $ids as $item_id ) {
-                if ($c = $this->_get_item($item_id, $this->content)) {  // assignment
+                $c = $this->_get_item($item_id, $this->content);
+                if (strlen($c) > 0) {  // assignment
                     $results[] = $c;
                 }
             }
@@ -1706,8 +1828,7 @@ class AA_Stringexpand_Tree extends AA_Stringexpand {
         if (empty($item_id)) {
             return '';
         }
-        $tree = AA_Trees::getTree($long_id, get_if($relation_field, 'relation........'));
-        return join($tree->getIds(), '-');
+        return join(AA_Trees::getIds($long_id, get_if($relation_field, 'relation........')), '-');
     }
 }
 
@@ -1729,8 +1850,7 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
         if (empty($item_id)) {
             return '';
         }
-        $tree = AA_Trees::getTree($long_id, get_if($relation_field, 'relation........'));
-        return $tree->getTreeString();
+        return AA_Trees::getTreeString($long_id, get_if($relation_field, 'relation........'));
     }
 }
 
@@ -1838,17 +1958,20 @@ class AA_Stringexpand_Constant extends AA_Stringexpand {
     }
 }
 
-/** @return html <option>s for given constant group */
+/** {options:<group_id>:<selected>}
+ *  @return html <option>s for given constant group with selected option
+ */
 class AA_Stringexpand_Options extends AA_Stringexpand {
     /** expand function
      * @param $group_id
      */
-    function expand($group_id) {
+    function expand($group_id, $selected='') {
         $ret = '';
         $constants = GetConstants($group_id);
         if (is_array($constants)) {
             foreach ($constants as $k => $v) {
-                $ret .= "\n  <option value=\"".safe($k)."\">".safe($v)."</option>";
+                $sel  = ($k == $selected) ? ' selected' : '';
+                $ret .= "\n  <option value=\"".safe($k)."\"$sel>".safe($v)."</option>";
             }
         }
         return $ret;
@@ -1875,8 +1998,8 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** If $var1 is equal to $var2, then print $text, else print $else_text. 
- *  $(else_)text could contain _#1 and _#2 aliases for $var1 and $var2, but you 
+/** If $var1 is equal to $var2, then print $text, else print $else_text.
+ *  $(else_)text could contain _#1 and _#2 aliases for $var1 and $var2, but you
  *  can use any {} AA expression.
  *  Example: {ifeq:{xseo1}:about: class="active"}
  */
@@ -1890,7 +2013,7 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
      * @param $else_text
      */
     function expand($var1, $var2, $text='', $else_text='') {
-        $ret = ($var1 == $var2) ? $text : $else_text; 
+        $ret = ($var1 == $var2) ? $text : $else_text;
         return str_replace(array('_#1','_#2'), array($var1, $var2), $ret);
     }
 }
@@ -1976,11 +2099,17 @@ class AA_Stringexpand_Field extends AA_Stringexpand_Nevercache {
             }
             $slice_id = $this->item->getSliceID();
         }
+        $slice = AA_Slices::getSlice($slice_id);
+        if (!$slice OR !$slice->isField($field_id)) {
+            return '';
+        }
+
+        $fields = $slice->getFields();
         // we do not want to allow users to get all field setting
         // that's why we restict it to the properties, which makes sense
         // @todo - make it less restrictive
         $property = 'name';
-        return (string) AA_Slices::getSliceProperty($slice_id, $property);
+        return (string) $fields->getProperty($field_id, $property);
     }
 }
 
@@ -2117,15 +2246,14 @@ class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercache {
      * @param $property
      */
     function expand( $text='' ) {
-        // Note don't rely on the behavior of {debug} its changed by programmers for testing!
-        if (isset($GLOBALS["apc_state"])) {
-            huhl("apc_state=",$GLOBALS["apc_state"]);
+        if ($text=='0') {
+            $GLOBALS['debug']=0;
         }
-        if (isset($this)) {
-            huhl("this=",$this);
+        if ($text=='1') {
+            $GLOBALS['debug']=1;
         }
-        huhl('text=', $text);
-        return "$text";
+
+        return "";
     }
 }
 
@@ -2307,7 +2435,6 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
  * @param $aliases
  */
 function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
-
     global $contentcache, $als, $debug, $errcheck;
 
     // See http://apc-aa.sourceforge.net/faq#aliases for details
@@ -2434,13 +2561,23 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
         return "";
     }
     elseif ( substr($out, 0,10) == "view.php3?" ) {
+        // Xinha editor replaces & with &amp; so we need to change it back
+        $param = str_replace('&amp;', '&', substr($out,10));
         // view do not use colons as separators => dequote before callig
-        return QuoteColons($level, 1, GetView(ParseViewParameters(DeQuoteColons(substr($out,10) ))));
+        return QuoteColons($level, 1, GetView(ParseViewParameters(DeQuoteColons($param))));
     }
     // This is a little hack to enable a field to contain expandable { ... } functions
     // if you don't use this then the field will be quoted to protect syntactical characters
     elseif ( substr($out, 0, 8) == "dequote:" ) {
         return DeQuoteColons(substr($out,8));
+    }
+    // Look for {_#.........} and expand now, rather than wait till top
+    elseif (isset($item) && (substr($out,0,2) == "_#")) {
+        if (isset($als[substr($out,2)])) {
+            return QuoteColons($level, 1, new_unalias_recurent($als[substr($out,2)],"",$level+1,1,$item,$itemview,$aliases));
+        } else {
+            return QuoteColons($level, 1,$item->substitute_alias_and_remove($out));
+        }
     }
     // OK - its not a known fixed string, look in various places for the whole string
     if ( preg_match('/^([a-zA-Z_0-9]+):?([^}]*)$/', $out, $parts) ) {
@@ -2468,12 +2605,13 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
         elseif ( !is_null($stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $parts[1], array('item'=>$item, 'itemview'=> $itemview)))) {
             $param = empty($parts[2]) ? array() : array_map('DeQuoteColons',ParamExplode($parts[2]));
             $additional_params = $stringexpand->additionalCacheParam();
+
             if ( '_AA_NeVeR_CaChE' == $additional_params ) {
                 $res = call_user_func_array( array($stringexpand,'expand'), $param);
             } else {
                 $res = $contentcache->get_result(array($stringexpand, 'expand'), $param, $additional_params);
             }
-            return QuoteColons($level, 1, $res);
+            return $stringexpand->doQuoteColons() ? QuoteColons($level, 1, $res) : $res;
         }
         // else - continue
     }
@@ -2517,14 +2655,6 @@ function expand_bracketed(&$out, $level, $item, $itemview, $aliases) {
     }
     elseif (isset($aliases[$out])) {   // look for an alias (this is used by mail)
         return QuoteColons($level, 1, $aliases[$out]);
-    }
-    // Look for {_#.........} and expand now, rather than wait till top
-    elseif (isset($item) && (substr($out,0,2) == "_#")) {
-        if (isset($als[substr($out,2)])) {
-            return QuoteColons($level, 1, new_unalias_recurent($als[substr($out,2)],"",$level+1,1,$item,$itemview,$aliases));
-        } else {
-            return QuoteColons($level, 1,$item->substitute_alias_and_remove($out));
-        }
     }
     // first char of alias is @ - make loop to view all values from field
     elseif ( (substr($out,0,1) == "@") OR (substr($out,0,5) == "list:")) {
@@ -2579,6 +2709,16 @@ function expandFilenameWithHttp($parturl) {
       // return $file->contents();
 }
 
+/** Get $_SERVER[<variable>] value **/
+class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
+    /** expand function
+     * @param $variable
+     */
+    function expand($variable='') {
+        return $slice = $_SERVER[$variable];
+    }
+}
+
 // Return some strings to use in keystr for cache if could do a stringexpand
 class AA_Stringexpand_Keystring extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2596,7 +2736,7 @@ class AA_Stringexpand_Keystring extends AA_Stringexpand_Nevercache {
             // do not count with cookie names starting with underscore
             // (Google urchin uses cookies like __utmz which varies very often)
             foreach( $_COOKIE as $key => $val ) {
-                if (!substr((string)$key,0,1)=='_') {
+                if (!(substr((string)$key,0,1)=='_')) {
                     $work[$key] = $val;
                 }
             }
@@ -2629,7 +2769,7 @@ class AA_Unalias_Callback {
         $this->itemview = $itemview;
         $this->aliases  = $aliases;
     }
-    
+
     /** expand_bracketed_callback function
      * @param $match
      */
@@ -2641,7 +2781,7 @@ class AA_Unalias_Callback {
 
 function make_reference_callback($match) {
     global $contentcache;
-    
+
     $ref = md5(uniqid('hi'));
     $txt = $match[1];          // for dereference
     $contentcache->set("define:$ref", $txt);
@@ -2671,14 +2811,14 @@ function new_unalias_recurent(&$text, $remove, $level, $maxlevel, $item=null, $i
     // Note ereg was 15 seconds on one multi-line example cf .002 secs
     //    while (ereg("^(.*)[{]([^{}]+)[}](.*)$",$text,$vars)) {
 
-    // to speeedup the process we check, if we have to look for {( ... )} pairs 
+    // to speeedup the process we check, if we have to look for {( ... )} pairs
     if (strpos($text, '{(') !== false) {
         // replace all {(.....)} with {var:...}, which will be expanded into {...}
-        // this alows to write expressions like 
+        // this alows to write expressions like
         //   {item:6625:{(some text {headline........}...etc.)}}
         $text = preg_replace_callback('/\{\((.*)\)\}/sU', 'make_reference_callback', $text);  //s for newlines, U for nongreedy
     }
-    
+
     $callback = new AA_Unalias_Callback($level+1,$item,$itemview,$aliases);
     while (preg_match('/[{]([^{}]+)[}]/s',$text)) {
         // well it is not exactly maxlevel - it just means, we need to unquote colons
@@ -2829,6 +2969,13 @@ class AA_Stringexpand {
         return '';
     }
 
+    /** Marks rare cases, when we do not want to qoute results - like for
+     *  {_:...} shortcuts
+     */
+    function doQuoteColons() {
+        return true;
+    }
+
     /** quoteColons function
      *  static function
      *  Substitutes all colons with special AA string and back depending on unalias
@@ -2882,6 +3029,19 @@ class AA_Stringexpand {
                 $arr[$k] = AA_Stringexpand::unalias($text, $remove, $item);
             }
         }
+    }
+
+    /** replace parameters _#P1, _#P2, ... by the supplied ones */
+    function replaceParams($text, $arg_list) {
+        if (count($arg_list)>0) {
+            $trans = array();
+            foreach($arg_list as $key => $param) {
+                // param is dequoted, but we need escape colons, here - the result is passed back to AA_Stringexpand
+                $trans['_#P'.($key+1)] = AA_Stringexpand::quoteColons($param);
+            }
+            $text = strtr($text, $trans);
+        }
+        return $text;
     }
 }
 
@@ -2984,10 +3144,11 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
 }
 
 /** Creates link to modified image using phpThub
- *  {img:<url>:[<phpthumb_params>]:[<info>]}
+ *  {img:<url>:[<phpthumb_params>]:[<info>]:[<param>]}
  *
  *  Ussage:
  *     <img src="{img:{img_url.........}:w=150&h=150}">
+ *     <div>{img:{img_url.........}::imgb:alt="Logo {_#HEADLINE}"}</div>
  *
  *  for phpThumb params see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
  *  (phpThumb library is the part of AA)
@@ -3001,7 +3162,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      * @param $phpthumb_params - parameters as you would put to url for phpThumb
      *                           see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
      */
-    function expand($image='', $phpthumb_params='', $info='') {
+    function expand($image='', $phpthumb_params='', $info='', $param='') {
 
         $img_url = AA_Stringexpand_Img::_getUrl($image, $phpthumb_params);
         if (empty($info) OR ($info == 'url') OR empty($img_url)) {
@@ -3021,8 +3182,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'mime':    return image_type_to_mime_type($a[2]);
             case 'html':
             case 'hw':      return $a[3]; //height="xxx" width="yyy"
-            case 'img':     return "<img src=\"$img_url\" ". $a[3] ." />";
-            case 'imgb':    return "<img src=\"$img_url\" ". $a[3] ." border=\"0\" />";
+            case 'img':     return "<img src=\"$img_url\" ". $a[3] ." $param/>";
+            case 'imgb':    return "<img src=\"$img_url\" ". $a[3] ." border=\"0\" $param/>";
         }
         return '';
     }
@@ -3190,6 +3351,49 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
     }
 }
 
+
+if (defined('STRINGEXPAND_INC')) {
+    require_once AA_INC_PATH.'custom/'.STRINGEXPAND_INC. '/stringexpand.php';
+}
+
+
+/** This is start of new {_:Shortcut:param} syntax, which you will be able to
+ *  define through admin interface, just like other aliases
+ *  It allows you to pass parameters to such "aliases".
+ *  It will also allow you to hide view ids in templates
+ *  @todo:  - add field for permissions to check before evaluation
+ *          - add the possibility to cache result (specify slices or grab it from execution)
+ *          - add field "do not execute if..."
+ */
+
+class AA_Stringexpand__ extends AA_Stringexpand {
+
+    /** additionalCacheParam function
+     *
+     */
+    function additionalCacheParam() {
+        return serialize(array($GLOBALS['STRINGEXPAND_SHORTCUTS']));
+    }
+
+
+    /** Do not qoute results - it is just shortcut, so we need to expand
+     *  the returned text
+     */
+    function doQuoteColons() {
+        return false;
+    }
+
+    function expand($param) {
+
+        $arg_list = func_get_args();   // must be asssigned to the variable
+        $name     = array_shift($arg_list);
+
+        // @todo - use db lookup for shortcuts
+        $text     = $GLOBALS['STRINGEXPAND_SHORTCUTS'][$name];
+
+        return AA_Stringexpand::replaceParams($text, $arg_list);
+    }
+}
 
 
 ?>
