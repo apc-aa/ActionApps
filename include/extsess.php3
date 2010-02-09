@@ -25,110 +25,6 @@
  *
 */
 
-class DB_AA extends DB_Sql {
-    var $Host      = DB_HOST;
-    var $Database  = DB_NAME;
-    var $User      = DB_USER;
-    var $Password  = DB_PASSWORD;
-    var $Auto_Free = 'yes';
-    /** tquery function
-     * @param $SQL
-     */
-    function tquery($SQL) {
-        return ($GLOBALS['debug'] ? $this->dquery($SQL) : $this->query($SQL));
-    }
-    /** dquery function
-     * @param $SQL
-     */
-    function dquery($SQL) {
-        global $debugtimes,$debugtimestart;
-        if ($debugtimes) {
-            if (! $debugtimestart) {
-                $debugtimestart = get_microtime();
-            }
-            echo "\n<br>Time: ".(get_microtime() - $debugtimestart)."\n";
-        }
-        echo "<br>".htmlentities($SQL);
-
-        $SelectQuery = (strpos( " ".$SQL, "SELECT") == 1);
-        // only SELECT queries can be explained
-        if ($SelectQuery)  {
-            $this->query("explain ".$SQL);
-
-            echo "<table><tr><td><b>table</b></td> <td><b>type</b></td><td><b>possible_keys</b></td><td><b>key</b></td><td><b>key_len</b></td><td><b>ref</b></td><td><b>rows</b></td><td><b>Extra</b></td></tr>";
-            while ($this->next_record()) {
-                printf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>",
-                         $this->f('table'), $this->f('type'), $this->f('possible_keys'), $this->f('key'), $this->f('key_len'), $this->f('ref'), $this->f('rows'), $this->f('Extra'));
-            }
-            echo "</table>";
-        }
-
-        list($usec, $sec) = explode(" ",microtime());
-        $starttime = ((float)$usec + (float)$sec);
-
-        $retval = $this->query($SQL);
-
-        list($usec, $sec) = explode(" ",microtime());
-        $endtime = ((float)$usec + (float)$sec);
-        echo "<br>Query duration: ". ($endtime - $starttime);
-        echo $SelectQuery ? "<br>Rows returned: ".$this->num_rows() :
-                            "<br>Affected rows: ".$this->affected_rows();
-        return $retval;
-    }
-
-    /** query_nohalt function
-     * @param $SQL
-     */
-    function query_nohalt($SQL) {
-        $store_halt          = $this->Halt_On_Error;
-        $this->Halt_On_Error = 'no';
-        $retval              = $this->tquery($SQL);
-        $this->Halt_On_Error = $store_halt;
-        return $retval;
-    }
-
-    /** halt function
-     * @param $msg
-     */
-    function halt($msg) {
-        if ($this->Halt_On_Error == "no") {
-            return;
-        }
-
-        // if you want to display special error page, then define DB_ERROR_PAGE
-        // in config.php3 file. You can use following variables on that page
-        // (in case you will use php page):
-        // $_POST['Err'], $_POST['ErrMsg'] and $_POST['Msg'] variables
-        // --- Disabled -- AA_Http::go() for POST works in the way, that the
-        // page content is grabbed into variable and printed on current page.
-        // It works pretty well, but if you link the external css on tahat page,
-        // then it is not found, which is unexpected behavior. So, you can't use
-        // the variables on that page. Honza, 2007-12-05
-        if (defined('DB_ERROR_PAGE') AND ($this->Halt_On_Error == "yes")) {
-            ob_end_clean();
-            // AA_Http::go(DB_ERROR_PAGE, array('Err'=>$this->Errno, 'ErrMsg'=>$this->Error, 'Msg'=>$msg), 'POST', false);
-            // sending variables disabled - see the comment above
-            AA_Http::go(DB_ERROR_PAGE, null, 'GET', false);
-            exit;
-        }
-
-        // If you do not want (for security reasons) display messages like:
-        // "Database error: mysql_pconnect(mysqldbserver, aadbuser, $Password) failed."
-        // then just define DB_ERROR_PAGE constant in your config.php3 file
-        echo "\n<br><b>Database error:</b> $msg";
-        echo "\n<br><b>Error Number:</b>: ". $this->Errno;
-        echo "\n<br><b>Error Description:</b>: ". $this->Error;
-        echo "\n<br>Please contact ". ERROR_REPORTING_EMAIL ." and report the exact error message.<br>\n";
-        if ($this->Halt_On_Error == "yes") {
-            die("Session halted.");
-        }
-    }
-}
-
-class AA_CT_Sql extends CT_Sql {	         // Container Type for Session is SQL DB
-    var $database_class = "DB_AA";           // Which database to connect...
-    var $database_table = "active_sessions"; // and find our session data in this table.
-}
 
 class AA_SL_Session extends Session {
     var $classname = "AA_SL_Session";
@@ -176,9 +72,6 @@ class AA_SL_Session extends Session {
         return $foo;
     }
 }
-
-
-
 
 class AA_CP_Session extends Session {
     var $classname = "AA_CP_Session";
@@ -274,26 +167,5 @@ class AA_CP_Session extends Session {
         }
     }
 }
-
-/*
-class Example_CT_Shm extends CT_Shm {
-    var $max_sessions   = 500;               // number of maximum sessions
-    var $shm_key        = 0x123754;          // unique shm identifier
-    var $shm_size       = 64000;             // size of segment
-}
-
-class Example_CT_Ldap extends CT_Ldap {
-    var $ldap_host = "localhost";
-    var $ldap_port = 389;
-    var $basedn    = "dc=your-domain, dc=com";
-    var $rootdn    = "cn=root, dc=your-domain, dc=com";
-    var $rootpw    = "secret";
-    var $objclass  = "phplibdata";
-}
-
-class Example_CT_Dbm extends CT_Dbm {
-    var $dbm_file  = "must_exist.dbm";
-}
-*/
 
 ?>

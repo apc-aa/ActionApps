@@ -37,44 +37,6 @@ require_once AA_INC_PATH."statestore.php3";
 require_once AA_INC_PATH."widget.class.php3";
 require_once AA_INC_PATH."field.class.php3";
 
-
-function __autoload ($class_name) {
-    $PAIRS = array(
-        'ConvertCharset' => 'convert_charset.class.php3',
-        'AA_Slices'      => 'slice.class.php3',
-        'AA_Items'       => 'item.php3',
-        );
-
-    if ($PAIRS[$class_name]) {
-        require AA_INC_PATH. $PAIRS[$class_name];
-        return;
-    }
-
-    $matches = array();
-    preg_match('/^aa_([a-z0-9]+)/', strtolower($class_name), $matches);
-
-    // the core name of the class (like "widget" for "AA_Widget_Fld", ...)
-    $core = $matches[1];
-
-    switch ($core) {
-    case 'form':
-    //  case 'widget':
-    //  case 'field':
-        require AA_INC_PATH. $core. '.class.php3';
-        break;
-    case 'objectgrabber':
-        require AA_INC_PATH. 'grabber.class.php3';
-        break;
-    case 'validate':
-        require AA_INC_PATH. 'validate.php3';
-        break;
-    }
-
-    if ( strpos($class_name, 'AA_Stringexpand_Nszm') === 0 ) {
-        require AA_INC_PATH. "custom/nszm/stringexpand.php";
-    }
-}
-
 /** a_href function
  *  Get <a href> tag
  * @param $url
