@@ -369,13 +369,13 @@ class AA_Request {
 //            exit;
 //        }
         if ( $result === false ) {
-            echo "<br>Error - response: ". AA_Http::lastErrMsg();
+            //echo "<br>Error - response: ". AA_Http::lastErrMsg();
             return new AA_Response('No response recieved ('. AA_Http::lastErr() .' - '. AA_Http::lastErrMsg(). ')', 3);
         }
         $response  = unserialize($result);
         if ( $response == false ) {
-            echo "<br>Error - Bad response on request: $url:";
-            print_r($result);
+            //echo "<br>Error - Bad response on request: $url:";
+            //print_r($result);
             return new AA_Response("Bad response", 3);
         }
         return $response;

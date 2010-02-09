@@ -1153,6 +1153,10 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition=false, $keystr='', $cache_
     $arr = array();                  // result ids array
     if (!$empty_result_condition) {
         $db->tquery($SQL);
+        if ( $debug ) {
+            huhl("GetZidsFromSQL: SQL", $SQL);
+        }
+
         if (!$group_limit) {
             while ($db->next_record()) {
                 $arr[] = $db->f($col);
@@ -1475,6 +1479,10 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         }
     }
 
+    if ( $debug ) {
+        huhl("QueryZIDs: Cafretconds");
+    }
+
 
     if ( !is_array($sort) OR count($sort)<1 ) {
         $select_order =  is_object($restrict_zids) ? '' : 'item.publish_date DESC';   // default item order
@@ -1627,14 +1635,23 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         $SQL .= ", view_name: ".  $GLOBALS['view_info']['name'];
     }
 
+    if ( $debug ) {
+        huhl("QueryZIDs: SQL: $SQL");
+    }
+
     // if neverAllItems is set, return empty set if no conds[] are used
     $str2find = new CacheStr2find($slices, 'slice_id');
-    return GetZidsFromSQL( $SQL, 'itemid', $cache_condition, $keystr, $str2find, 'p',
+    $ret = GetZidsFromSQL( $SQL, 'itemid', $cache_condition, $keystr, $str2find, 'p',
                            !is_array($select_conds) && $neverAllItems,
                            // last parameter is used for sorting zids to right order
                            // - if no order specified and restrict_zids are specified,
                            // return zids in unchanged order
                            (is_object($restrict_zids) AND !$select_order) ? $restrict_zids : null, $select_limit_field);
+
+    if ( $debug ) {
+        huhl("QueryZIDs: result:", $ret);
+    }
+    return $ret;
 }
 
 /** QueryConstantZIDs function

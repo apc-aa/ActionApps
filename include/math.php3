@@ -45,6 +45,19 @@ while (list (,$exp) = each ($exps))
  */
 function bminus() { return "~"; }
 
+function calculate_not_used($exp) {
+
+    if ($GLOBALS['debug']) {
+        huhl("calculate:$exp");
+    }
+    $exp = str_replace(array(' ',"\t", ',') ,array('', '', '.'), $exp);
+    if (strspn($exp, '0123456789.+-*/^()') != strlen($exp)) {
+        return 'wrong characters';
+    }
+    return eval($exp);
+}
+
+
 /** calculate function
  *  Returns result for an expression consisting of numbers, brackets (),
  *  operators +, -, *, /, ^ and spaces
@@ -55,8 +68,7 @@ function calculate($exp)
     if ($GLOBALS['debug']) {
         huhl("calculate:$exp");
     }
-    $exp = str_replace(" ","",$exp);
-    $exp = str_replace("\t","",$exp);
+    $exp = str_replace(array(' ',"\t", ',') ,array('', '', '.'), $exp);
 
     // find binary minuses, i.e. preceded by number or not succeeded by number
     for ($i = 1; $i < strlen ($exp); $i ++) {

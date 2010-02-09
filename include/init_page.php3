@@ -178,10 +178,6 @@ $db           = new DB_AA;
 $event        = new aaevent;
 $contentcache = new contentcache;
 
-// if we want to use random number generator, we have to use srand just once per
-// script. That's why we called it here. Do not use it on other places in scripts
-srand((double)microtime()*1000000);
-
 // Create g_modules: a global array which holds user editable modules
 $db->query("SELECT id, name, type, deleted FROM module ORDER BY priority, name");
 while ($db->next_record()) {

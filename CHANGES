@@ -1,29 +1,104 @@
-11/02/09 - removed confusing "Category" menu entry in "Slice Settings" 
+02/11/10 - new possibilities for sites which uses new site module AA_SEO_Router:
+(honzam)     - new home - sitemodule now handles root of the web and fills
+               the variables as it was typed /{xlang}/ (/en/). {xlang} is filled
+               form site module's language setting
+             - new {xuser:xxxx} alias - auth user informations (of current user)
+               xxxx is - field to show ("headline........", "_#SURNAME_" ...)
+                       - "id" for long id
+                       - empty for username (of curent logged user)
+               (We do not use {user} in this case, since views with {user}
+               are not cached, but the views with {xuser} could be
+               (xuser is part of apc variable))
+            -  easy way how to authenticate the user - send "username" and
+               "password" by POST to any page which uses sitemodule. The users
+               are authenticated from reader management slices. If OK, then
+               the {xuser} is filled and the url is switched to ok_url parameter
+               (if provided). Else the URL is switched to err_url (if provided)
+               and err=1 is set (acessible by {qs:err}).
+               xuser is stored in the cookies
+               Login From Ussage:
+                <form action="{go:xqs=}" method="post">
+                  <fieldset>
+                    <legend>Login, please</legend>
+                    <div  style="margin-right:150px; text-align:right;">
+                      <label for="username">Username</label> <input type="text" size="20" maxlength="20" name="username" id="username"><br>
+                      <label for="password">Password</label> <input type="password" size="20" maxlength="20" name="password" id="password">
+                    </div>
+                  </fieldset>
+                  <input type="submit" value="Login" style="margin-left:200px;">
+                </form>
+             - cookies added to pagecache key for sitemodule.
+         - added possibility to specify top-right selectbox priority for all
+           modules - not only the slices
+         - new {htmltogglecss:<toggle1>:<toggle2>:<css_rule>} - creates the link
+           text1 (or text2) +/- toggle which displays/hides all elements
+           matching the css_rule (#id82422) in example:
+             {htmltogglecss:+:-:#id_#SITEM_ID}
+         - new {htmlajaxtogglecss:<toggle1>:<toggle2>:<css_rule_hide>:<url_of_text>[:<css_rule_update>]}
+           like:
+             {htmlajaxtogglecss:+:-:#id_#SITEM_ID:/apc-aa/view.php3?vid=33&cmd[33]=x-33-{_#SITEM_ID}}
+           creates the link text1 (or text2) +/- toggle which
+           loads+displays/hides all elements matching the css_rule (#id82422) in
+           our example. Optional <css_rule_update> rule matching the element(s)
+           to update if it is not the same as <css_rule_hide> (good for updating
+           table rows, where we want to show/hide tr, but update td)
+         - fixed {math} and decimals setting
+         - new {max:arg1[:arg2][:arg...]} and {min:...} returns maximum/minimum
+         - new {jsonstring:<any text>} encodes the string to use it within JSON
+         - new selected parameter for {options:<group_id>:<selected>} - html
+           <option>s for given constant group with selected option
+         - new possibility to "&amp;" delimiters for {view.php3} instead of
+           standard "&" (Xinha visual editor changes the & to &amp; so we do not
+           need to care, now)
+         - new {server:<param>} which prints $_SERVER variable
+           @see http://php.net/manual/en/reserved.variables.server.php
+         - new <param> parameter used as additional code to <img...>
+             {img:<url>:[<phpthumb_params>]:[<info>]:[<param>]}
+             {img:{img_url.........}::imgb:alt="Logo {_#HEADLINE}"}
+         - default JPEG thumbnail quality changed from 70 to 90 - means better
+           images with {img...}
+         - new _#GRP_INDX (index of a group on page (it begins from 0 on each
+                           page))
+           and _#IGRPINDX (index of item within a group on page (it begins from
+                           0 on each group))
+           aliases in views
+         - added view links under alias definition textarea, if contains
+           view.php3 reference
+         - automatical removing of confusing links from Related Item Selection
+           Window, when admin design is used
+         - new Form.Element.setValue() and unpackToForm() javascript functions
+         - simplified structure of extsess*.php3 and locsess.php3 include files
+         - fixed {ajax} and {live} widgets - fixed parameter order after move to
+           widget.class.php
+         - better caching for tree aliases - {itree}, ...
+         - experimental implementation of new {_:Shortcut:params} construct
+           - not supported, yet
+11/02/09 - removed confusing "Category" menu entry in "Slice Settings"
 (honzam)   (categories are edited in field setting)
          - fixed "Modify Content" Item manager action
-08/23/09 - new possibility to define forms through admin interface 
-(honzam)   (see "Slice Admin" - "Design" - "Forms") 
-         - new possibility to entering related items into slice using above 
-           mentioned forms, called through AJAX 
-           (Two Boxes widget has this feature, now) 
+08/23/09 - new possibility to define forms through admin interface
+(honzam)   (see "Slice Admin" - "Design" - "Forms")
+         - new possibility to entering related items into slice using above
+           mentioned forms, called through AJAX
+           (Two Boxes widget has this feature, now)
          - removed maxcount restriction for number of related items
-         - easier usage of AA_Manager class 
-         - generalized usage of AA_Object (and its storage into database) 
-           and AA_Content. Any AA_Object is now very easiy editable 
+         - easier usage of AA_Manager class
+         - generalized usage of AA_Object (and its storage into database)
+           and AA_Content. Any AA_Object is now very easiy editable
            by AA_Manager; refactoring a bit
          - zids now uses Iterator (PHP 5 needed)
          - started usage of class autoloading
-         - new AA_Grabber_Form which uses the new standard way of input 
+         - new AA_Grabber_Form which uses the new standard way of input
            the items to the database
-         - log viewer and searchlog viewer rewriten to AA_Manager class 
-           instead of old tabeedit 
+         - log viewer and searchlog viewer rewriten to AA_Manager class
+           instead of old tabeedit
          - merged changes from v2.50.x branch ------------------------
-08/22/09 - new possibility to copy the field definition from ANY slice 
-(honzam)   (see "Slice Admin -> Fields") 
+08/22/09 - new possibility to copy the field definition from ANY slice
+(honzam)   (see "Slice Admin -> Fields")
          - new {itree:<tree-string>:<nested_top>[:<content>[:<delimiter>[:<nested_bottom>]]]}
-           Displays field/alias of given item(s) in tree. It wors exactly as 
-           {item} but the parameter order is more logical, so the {itree} is 
-           the preffered way of displaying trees and breadscrumbs...    
+           Displays field/alias of given item(s) in tree. It wors exactly as
+           {item} but the parameter order is more logical, so the {itree} is
+           the preffered way of displaying trees and breadscrumbs...
          - new {treestring:<item_id>[:<relation_field>]}
              {treestring:2a4352366262227383484784635362ab:relation.......1}
            generates tree-string (as used in {itree}) based on item and its
@@ -37,9 +112,9 @@
          - new {ifeq:<var1>:<var2>:<text>:<else_text>}
              {ifeq:{xseo1}:about: class="active"}
            If <var1> is equal to <var2>, then print <text>, else prints
-           <else_text>. <(else_)text> could contain _#1 and _#2 aliases 
+           <else_text>. <(else_)text> could contain _#1 and _#2 aliases
            for <var1> and <var2>, but you can use any {} AA expression there.
-         - fixed display of informations about current user {user:...} 
+         - fixed display of informations about current user {user:...}
            for fastcgi PHP version
 08/17/09 - Site Module now you can use without any control-file, so you do not
 (honzam)   need any PHP scripting at all. All you need is to select

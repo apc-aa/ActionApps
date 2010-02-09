@@ -207,11 +207,8 @@ if ($update) {
 
         if (count($err) <= 1) {
             $Msg = MsgOK(_m("Fields update successful"));
-            if ($name["New_Field"]) {
-                $url2go = $slice_fields ? get_url($_SERVER['PHP_SELF'],'slice_fields=1') : $_SERVER['PHP_SELF'];
-                go_url($sess->url($url2go));  // reload to incorporate new field
+            $update = false;   // displyas fields from database instead of posted values (next in the code) 
             }
-        }
     } while (false);           //in order we can use "break;" statement
 }
 
@@ -278,7 +275,7 @@ if ( isset($s_fields) and is_array($s_fields)) {
     foreach ( $s_fields as $v) {
         $type = ( $v['in_item_tbl'] ? "in_item_tbl" : "" );
 
-        if ( $update ) {# get values from form
+        if ( $update ) { // get values from form
             ShowField($v['id'], $name[$v['id']], $pri[$v['id']], $req[$v['id']], $shw[$v['id']], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false);
         } else {
             ShowField($v['id'], $v['name'], $v['input_pri'], $v['required'], $v['input_show'], $type, array($v['alias1'], $v['alias2'], $v['alias3']), strpos($v['input_before'],'{formbreak')!==false);

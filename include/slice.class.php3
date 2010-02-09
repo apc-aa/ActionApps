@@ -487,7 +487,7 @@ class AA_Slices {
      *  main factory static method
      * @param $slice_id
      */
-    function & getSlice($slice_id) {
+    function getSlice($slice_id) {
         $slices = AA_Slices::singleton();
         return $slices->_getSlice($slice_id);
     }
@@ -498,8 +498,7 @@ class AA_Slices {
      * @param $field
      */
     function getSliceProperty($slice_id, $field) {
-        $slices = AA_Slices::singleton();
-        $slice  = $slices->_getSlice($slice_id);
+        $slice = AA_Slices::getSlice($slice_id);
         return $slice ? $slice->getProperty($field) : null;
     }
 
@@ -540,7 +539,11 @@ class AA_Modules {
     // Store the single instance of Database
     private static $_instance;
 
-    private function __construct() {}
+    var $a = array();     // Array unpacked module id -> AA_Module object
+
+    private function __construct() {
+        $this->a = array();
+    }
 
     public static function singleton() {
         if(!isset(self::$_instance)) {
@@ -572,6 +575,62 @@ class AA_Modules {
         }
 
         return $ret;
+    }
+
+    /** main factory static method: $module = AA_Modules::getModule($module_id);
+     *  @param $module_id
+     */
+    function getModule($module_id) {
+        $modules = AA_Modules::singleton();
+        return $modules->_getModule($module_id);
+    }
+
+    /** getModuleProperty function
+     *  static function
+     * @param $slice_id
+     * @param $field
+     */
+    function getModuleProperty($module_id, $field) {
+        $module = AA_Modules::getModule($module_id);
+        return $module ? $module->getProperty($field) : null;
+    }
+
+    /** _getSlice function
+     * @param $slice_id
+     */
+    function _getModule($module_id) {
+        if (!isset($this->a[$module_id])) {
+            $this->a[$module_id] = new AA_Module($module_id);
+        }
+        return $this->a[$module_id];
+    }
+}
+
+class AA_Module {
+    var $id;
+    var $fields; // Array of fields
+
+    function __construct($id) {
+        $this->id = $id;
+        $this->fields = array();
+    }
+
+    /** load function
+     * @param $force
+     */
+    function load() {
+        if (empty($this->fields)) {
+            $SQL = "SELECT name, deleted, slice_url, lang_file, created_at, created_by, owner, app_id, priority, flag FROM module WHERE id = '".q_pack_id($this->id). "'";
+            $this->fields = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+            if (!$this->fields) {
+                $this->fields = array();
+            }
+        }
+        return !empty($this->fields);
+    }
+
+    function getProperty($field) {
+        return $this->load() ? $this->fields[$field] : false;
     }
 }
 
