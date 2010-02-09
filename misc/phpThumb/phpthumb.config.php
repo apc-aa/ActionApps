@@ -231,7 +231,7 @@ $PHPTHUMB_DEFAULTS_DISABLEGETPARAMS  = false; // if true, GETstring parameters w
 
 //$PHPTHUMB_DEFAULTS['w']    = 200;
 //$PHPTHUMB_DEFAULTS['fltr'] = array('blur|10');
-//$PHPTHUMB_DEFAULTS['q']    =  90;
+$PHPTHUMB_DEFAULTS['q']    =  90;
 
 
 // END DEFAULT PARAMETERS SECTION
