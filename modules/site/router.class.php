@@ -65,17 +65,19 @@ class AA_Router {
 
     protected $apc;
     protected $slices;
+    protected $home;
 
     // Store the single instance of Database
     private static $_instance;
 
-    function __construct($slices=null) {
+    function __construct($slices=null, $home='') {
         $this->slices = is_array($slices) ? $slices : array();
+        $this->home   = $home;
     }
 
-    public static function singleton($type, $slices=null) {
-        if(!isset(self::$_instance)) {
-            self::$_instance = new $type($slices);
+    public static function singleton($type, $slices=null, $home='') {
+        if (!isset(self::$_instance)) {
+            self::$_instance = new $type($slices, $home);
         }
         return self::$_instance;
     }
@@ -162,6 +164,13 @@ class AA_Router {
         global $apc_state;
         return $this->getState($this->newState($apc_state, $query_string));
     }
+
+    // should be refined in subclass
+    function xid($param='') { return ''; }
+
+    // should be refined in subclass
+    function xuser($param='') { return ''; }
+
 }
 
 
@@ -213,17 +222,17 @@ class AA_Router_Seo extends AA_Router {
     protected $_seocache;
 
     function parse($url) {
-        $this->apc          = self::parseApc($url);
+        $this->apc          = self::parseApc($url, $this->home);
         $this->apc['state'] = self::getState($this->apc);
         return $this->apc;
     }
 
     /** static function - caling from outside is not necessary, now */
-    function parseApc($apc) {
+    function parseApc($apc, $home='') {
 
         $parsed_url = parse_url($apc);
         $arr = explode('/', ltrim($parsed_url['path'],'/'));
-        $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag','xcat'), '/(cz|en|de)([0-9]*)([^-0-9]*)[-]?(.*)/',$arr[0]);
+        $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag','xcat'), '/([a-z]{2})([0-9]*)([^-0-9]*)[-]?(.*)/',$arr[0],$home);
 
         for ($i=1; $i < count($arr); $i++) {
             $ret['xseo'.$i] = $arr[$i];
@@ -311,6 +320,9 @@ class AA_Router_Seo extends AA_Router {
         }
         if (!empty($new_arr['xcat'])) { //change flag
             $apc_state['xcat'] = $new_arr['xcat'];
+        }
+        if (isset($new_arr['xqs'])) { //change xqs  (we can use also {go:xqs=} for current url without query string
+            $apc_state['xqs'] = $new_arr['xqs'];
         }
         $x_max = self::_maxKey($apc_state, 'xseo');
         // we clear all unused {xseoX} in order {xseoX} is allaways SEO string or empty string and not something like {xseo4}
@@ -438,4 +450,30 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Expands {xuser:xxxxxx} alias - auth user informations (of current user)
+*   @param $field - field to show ('headline........', '_#SURNAME_' ...).
+*                   empty for username (of curent logged user)
+*                   id - for long id
+*
+*   We do not use {user} in this case, since views with {user} are not cached,
+*   but the views with {xuser} could be (xuser is part of apc variable)
+*/
+class AA_Stringexpand_Xuser extends AA_Stringexpand {
+
+    /** expand function
+     * @param $field
+     */
+    function expand($field='') {
+        $xuser = $GLOBALS['apc_state']['xuser'];
+        if (!$xuser) {
+            return '';
+        }
+        switch ($field) {
+            case '':     return $xuser;
+            case 'id':   return ReaderName2Id($xuser);
+        }
+        $item = AA_Items::getItem(new zids(ReaderName2Id($xuser),'l'));
+        return empty($item) ? '' : $item->subst_alias($field);
+    }
+}
 ?>
