@@ -629,6 +629,8 @@ class itemview {
 
         // negative num_record used for displaying n-th group of items only
         $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : $this->num_records );
+        $ingroup_index = 0;
+        $group_index   = 0;
         for ( $i=0; $i<$number_of_ids; $i++ ) {
             // display banner, if you have to
             if ( $this->slice_info['banner_parameters'] && ($this->slice_info['banner_position']==$i) ) {
@@ -640,14 +642,14 @@ class itemview {
                 continue;
             }
             /* mimo hack -- put this on a stack **/
-            if (!$GLOBALS['QueryIDsIndex']) {
-                $GLOBALS['QueryIDsIndex'] = array();
-            }
-            if (!$GLOBALS['QueryIDsPageIndex']) {
-                $GLOBALS['QueryIDsPageIndex'] = array();
-            }
-            array_push($GLOBALS['QueryIDsIndex'],$zidx);    // So that _#ITEMINDX = f_e:itemindex can find it
-            array_push($GLOBALS['QueryIDsPageIndex'],$i);   // So that _#PAGEINDX = f_e:pageindex can find it
+            if (!$GLOBALS['QueryIDsIndex'])          { $GLOBALS['QueryIDsIndex']          = array(); }
+            if (!$GLOBALS['QueryIDsPageIndex'])      { $GLOBALS['QueryIDsPageIndex']      = array(); }
+            if (!$GLOBALS['QueryIDsGroupIndex'])     { $GLOBALS['QueryIDsGroupIndex']     = array(); }
+            if (!$GLOBALS['QueryIDsItemGroupIndex']) { $GLOBALS['QueryIDsItemGroupIndex'] = array(); }
+            array_push($GLOBALS['QueryIDsIndex'],         $zidx);          // So that _#ITEMINDX = f_e:itemindex can find it
+            array_push($GLOBALS['QueryIDsPageIndex'],     $i);             // So that _#PAGEINDX = f_e:pageindex can find it
+            array_push($GLOBALS['QueryIDsGroupIndex'],    $group_index);   // So that _#GRP_INDX = f_e:groupindex can find it
+            array_push($GLOBALS['QueryIDsItemGroupIndex'],$ingroup_index); // So that _#IGRPINDX = f_e:itemgroupindex can find it
 
             $iid = $this->zids->short_or_longids($zidx);
             if ( !$iid ) {
@@ -657,7 +659,7 @@ class itemview {
             // Note if iid is invalid, then expect empty answers
 
 
-            $OldItem = $CurItem;  // this could be used in CATEGORY BOTTOM -
+            $OldItem = clone($CurItem);  // this could be used in CATEGORY BOTTOM -
                                   // we need old item aliases & content there
             $this->setColumns($CurItem, $content[$iid]);   // set right content for aliases
 
@@ -682,8 +684,23 @@ class itemview {
                 if ( $this->num_records >= 0 ) {
                     if ($oldcat != "_No CaTeg") {
                         // print bottom category code for previous category
+
+                        // we need to use old values for category bottom
+                        $GLOBALS['QueryIDsIndex'][count($GLOBALS['QueryIDsIndex'])-1]                   = end($GLOBALS['QueryIDsIndex'])-1;
+                        $GLOBALS['QueryIDsPageIndex'][count($GLOBALS['QueryIDsPageIndex'])-1]           = end($GLOBALS['QueryIDsPageIndex'])-1;
+                        $GLOBALS['QueryIDsItemGroupIndex'][count($GLOBALS['QueryIDsItemGroupIndex'])-1] = end($GLOBALS['QueryIDsItemGroupIndex'])-1;
+
                         $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $OldItem);
+
+                        // we need to use old values
+                        $GLOBALS['QueryIDsIndex'][count($GLOBALS['QueryIDsIndex'])-1]                   = end($GLOBALS['QueryIDsIndex'])+1;
+                        $GLOBALS['QueryIDsPageIndex'][count($GLOBALS['QueryIDsPageIndex'])-1]           = end($GLOBALS['QueryIDsPageIndex'])+1;
+                        $GLOBALS['QueryIDsItemGroupIndex'][count($GLOBALS['QueryIDsItemGroupIndex'])-1] = end($GLOBALS['QueryIDsItemGroupIndex'])+1;
+
+                        $GLOBALS['QueryIDsGroupIndex'][count($GLOBALS['QueryIDsGroupIndex'])-1] = ++$group_index; // change current
                     }
+                    $ingroup_index = 0;
+                    $GLOBALS['QueryIDsItemGroupIndex'][count($GLOBALS['QueryIDsItemGroupIndex'])-1] = $ingroup_index; // change current
                     $out .= $this->unaliasWithScroller($this->slice_info['category_top'], $CurItem);
                     $out .= $this->unaliasWithScroller($this->slice_info['category_format'], $CurItem);
                     $category_top_html_printed = true;
@@ -712,18 +729,29 @@ class itemview {
             }
 
             $out .= $CurItem->get_item();
+            $ingroup_index++;
 
             // return to QueryIDs* right values (could be changed by get_item(), if we use inner view
             // TODO - do QueryIDs* better - not as global variables with such hacks
             /*$GLOBALS['QueryIDsIndex']     = $zidx;  // So that _#ITEMINDX = f_e:itemindex can find it
             $GLOBALS['QueryIDsPageIndex'] = $i;     // So that _#PAGEINDX = f_e:pageindex can find it
-        */
-        /*mimo hack, clear the end of the stack **/
-        array_pop($GLOBALS['QueryIDsIndex']);
-        array_pop($GLOBALS['QueryIDsPageIndex']);
+            */
+            /*mimo hack, clear the end of the stack **/
+            $last_ii  = array_pop($GLOBALS['QueryIDsIndex']);
+            $last_pi  = array_pop($GLOBALS['QueryIDsPageIndex']);
+            $last_gi  = array_pop($GLOBALS['QueryIDsGroupIndex']);
+            $last_igi = array_pop($GLOBALS['QueryIDsItemGroupIndex']);
         }
         if ($category_top_html_printed) {
+            array_push($GLOBALS['QueryIDsIndex'],         $last_ii );  // So that _#ITEMINDX = f_e:itemindex can find it
+            array_push($GLOBALS['QueryIDsPageIndex'],     $last_pi );  // So that _#PAGEINDX = f_e:pageindex can find it
+            array_push($GLOBALS['QueryIDsGroupIndex'],    $last_gi );  // So that _#GRP_INDX = f_e:groupindex can find it
+            array_push($GLOBALS['QueryIDsItemGroupIndex'],$last_igi);  // So that _#IGRPINDX = f_e:itemgroupindex can find it
             $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $CurItem);
+            array_pop($GLOBALS['QueryIDsIndex']);
+            array_pop($GLOBALS['QueryIDsPageIndex']);
+            array_pop($GLOBALS['QueryIDsGroupIndex']);
+            array_pop($GLOBALS['QueryIDsItemGroupIndex']);
         }
         if ( !$top_html_already_printed ) {  // print top HTML even no item found
             $out  = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);

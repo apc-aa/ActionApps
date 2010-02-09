@@ -95,6 +95,8 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
   $aliases["_#ID_COUNT"] = GetAliasDef( "f_e:itemcount",        "id..............", _m("number of found items"));
   $aliases["_#ITEMINDX"] = GetAliasDef( "f_e:itemindex",        "id..............", _m("index of item within whole listing (begins with 0)"));
   $aliases["_#PAGEINDX"] = GetAliasDef( "f_e:pageindex",        "id..............", _m("index of item within a page (it begins from 0 on each page listed by pagescroller)"));
+  $aliases["_#GRP_INDX"] = GetAliasDef( "f_e:groupindex",       "id..............", _m("index of a group on page (it begins from 0 on each page)"));
+  $aliases["_#IGRPINDX"] = GetAliasDef( "f_e:itemgroupindex",   "id..............", _m("index of item within a group on page (it begins from 0 on each group)"));
   $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............", _m("alias for Item ID"));
   $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........", _m("alias for Short Item ID"));
 
@@ -468,6 +470,14 @@ class AA_Item {
      */
     function getValues($field_id) {
         return $this->content4id->getValues($field_id);
+    }
+
+    /** getValues function
+     * shortcut for ItemContent->getValues()
+     * @param $field_id
+     */
+    function getValuesArray($field_id) {
+        return $this->content4id->getValuesArray($field_id);
     }
 
     /** getAaValue function
@@ -1012,7 +1022,11 @@ class AA_Item {
      * @param $param
      */
     function f_r($col, $param="") {
-        static $title, $link, $description;
+        static $title, $link, $description, $q_owner;
+
+        if ($col == 'SLICEdate') {
+            return $this->RSS_restrict( GMDate("D, d M Y H:i:s "). "GMT", 100);
+        }
 
         $slice_id   = $this->getSliceID();
         $p_slice_id = q_pack_id($slice_id);
@@ -1021,7 +1035,7 @@ class AA_Item {
             if ($slice_id==""){ echo "Error: slice_id not defined"; exit; }
 
             // RSS chanel (= slice) info
-            $SQL = "SELECT name, slice_url, owner FROM slice WHERE id='$p_slice_id'";
+            $SQL = "SELECT name, slice_url, owner FROM module WHERE id='$p_slice_id'";
 
             $db  = getDB(); $db->query($SQL);
             if (!$db->next_record()) {
@@ -1033,21 +1047,9 @@ class AA_Item {
             $name        = $db->f('name');
             $q_owner     = addslashes($db->f('owner'));
             //$language  = RSS_restrict( strtolower($db->f(lang_file)), 2);
-
-            $SQL = "SELECT name, email FROM slice_owner WHERE id='$q_owner'";
-            $db->query($SQL);
-            if (!$db->next_record()) {
-                echo "Can't get slice owner info"; exit;
-            }
-            $description = $this->RSS_restrict( $db->f('name').": $name", 500);
-            freeDB($db);
-
         }
 
         //   return "tt: $col : $param<BR>";
-        if ($col == 'SLICEdate') {
-            return $this->RSS_restrict( GMDate("D, d M Y H:i:s "). "GMT", 100);
-        }
         if ($col == 'SLICEtitle') {
             return $title;
         }
@@ -1055,6 +1057,10 @@ class AA_Item {
             return $link;
         }
         if ($col == 'SLICEdesc') {
+            if (!$description) {
+                $owner_name  = GetTable2Array("SELECT name FROM slice_owner WHERE id='$q_owner'",'aa_first','name');
+                $description = $this->RSS_restrict( $owner_name, 400 ).": $title";
+            }
             return $description;
         }
 
@@ -1148,6 +1154,10 @@ class AA_Item {
                 return "".end($GLOBALS['QueryIDsIndex']);   // Need to append to "" so doesn't return "false" on 0th item
             case "pageindex": /*mimo hack, this is now a stack*/
                 return "".end($GLOBALS['QueryIDsPageIndex']);   // Need to append to "" so doesn't return "false" on 0th item
+            case "groupindex": /*mimo hack, this is now a stack*/
+                return "".end($GLOBALS['QueryIDsGroupIndex']);   // Need to append to "" so doesn't return "false" on 0th item
+            case "itemgroupindex": /*mimo hack, this is now a stack*/
+                return "".end($GLOBALS['QueryIDsItemGroupIndex']);   // Need to append to "" so doesn't return "false" on 0th item
             case "safe":         // safe, javascript, urlencode, csv - for backward
             case "javascript":   // compatibility
             case "urlencode":
@@ -1204,7 +1214,7 @@ class AA_Item {
                     $data2compare = $this->getval('const_value');
                 }
                 return (( (string)$p[1] == (string)$data2compare ) ? '1' : '0');
-            case 'username':    // prints user name form its id
+            case 'username':    // prints user name from its id
                 return perm_username( $this->getval($col) );
             case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)
                 if (!$GLOBALS['mlxView']) {
