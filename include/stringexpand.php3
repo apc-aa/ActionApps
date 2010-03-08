@@ -3351,6 +3351,19 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Returns actual server load
+ *  Ussage: {serverload}
+ */
+class AA_Stringexpand_ServerLoad extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // The caching is made by AA_Stringexpand_Aggregate, which is enough
+    /** expand function
+     */
+    function expand() {
+        $load = sys_getloadavg();
+        return $load[0];
+    }
+}
 
 if (defined('STRINGEXPAND_INC')) {
     require_once AA_INC_PATH.'custom/'.STRINGEXPAND_INC. '/stringexpand.php';
