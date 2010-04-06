@@ -224,6 +224,44 @@ class AA_Router_Seo extends AA_Router {
     function parse($url) {
         $this->apc          = self::parseApc($url, $this->home);
         $this->apc['state'] = self::getState($this->apc);
+
+        /** Login From Ussage:
+         *   <form action="{go:xqs=}" method="post">
+         *     <fieldset>
+         *       <legend>Login, please</legend>
+         *       <div  style="margin-right:150px; text-align:right;">
+         *         <label for="username">Username</label> <input type="text" size="20" name="username" id="username"><br>
+         *         <label for="password">Password</label> <input type="password" size="20" name="password" id="password">
+         *       </div>
+         *     </fieldset>
+         *
+         *     <input type="submit" value="Login" style="margin-left:200px;">
+         *   </form>
+         */
+        $this->apc['xuser'] = '';
+        if ( $_COOKIE['AA_Sess'] OR $_REQUEST['username'] ) {
+            require_once AA_INC_PATH."request.class.php3";
+            $options = array(
+                'aa_url'          => AA_INSTAL_URL,
+                'cookie_lifetime' => 60*60*24*365  // one year
+            );
+            $a = new AA_Client_Auth($options);
+            if (isset($_GET['logout'])) {
+                $a->logout();
+                $this->apc['xuser'] = '';
+            }
+            elseif ($a->checkAuth()) {
+                $this->apc['xuser'] = $a->getUid();
+
+                // Redirect to page. If not specified, then it continues to display
+                // normal page as defined in "action" attribute of <form>
+                if ($_REQUEST["ok_url"]) {
+                    go_url($_REQUEST["ok_url"]);
+                }
+            } elseif ($_REQUEST["err_url"]) {
+                go_url($_REQUEST["err_url"]);
+            }
+        }
         return $this->apc;
     }
 
@@ -231,8 +269,8 @@ class AA_Router_Seo extends AA_Router {
     function parseApc($apc, $home='') {
 
         $parsed_url = parse_url($apc);
-        $arr = explode('/', ltrim($parsed_url['path'],'/'));
-        $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag','xcat'), '/([a-z]{2})([0-9]*)([^-0-9]*)[-]?(.*)/',$arr[0],$home);
+        $arr = explode('/', trim($parsed_url['path'],'/'));
+        $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag','xcat'), '/([a-z]{2})([0-9]*)([^-0-9]*)[-]?(.*)/',$arr[0],trim($home,'/'));
 
         for ($i=1; $i < count($arr); $i++) {
             $ret['xseo'.$i] = $arr[$i];
@@ -257,6 +295,7 @@ class AA_Router_Seo extends AA_Router {
             $i++;
         }
         $ret = rtrim($ret,"/");
+
         // add querystring
         if ($apc_state['xqs']) {
             $ret .= '?'. $apc_state['xqs'];

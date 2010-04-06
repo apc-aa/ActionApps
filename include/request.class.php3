@@ -402,8 +402,8 @@ class AA_Client_Auth {
     function checkAuth() {
         // we are trying to login
         $request  = new AA_Request('Get_Sessionid');
-        if ($_POST['username']) {
-            $params = array('free' => $_POST['username'], 'freepwd' =>$_POST['password']);
+        if ($_REQUEST['username']) {
+            $params = array('free' => $_REQUEST['username'], 'freepwd' =>$_REQUEST['password']);
         }
         elseif ($_COOKIE['AA_Sess']) {
             $params = array('AA_CP_Session'=>$_COOKIE['AA_Sess']);
@@ -418,9 +418,9 @@ class AA_Client_Auth {
             $session_id = $response->getResponse();
             $x = setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
             $_COOKIE['AA_Sess'] = $session_id;
-            if ($_POST['username']) {
-                $y = setcookie('AA_Uid', $_POST['username'], $this->_cookie_lifetime, '/');
-                $_COOKIE['AA_Uid']  = $_POST['username'];  // we need it for current page as well
+            if ($_REQUEST['username']) {
+                $y = setcookie('AA_Uid', $_REQUEST['username'], $this->_cookie_lifetime, '/');
+                $_COOKIE['AA_Uid']  = $_REQUEST['username'];  // we need it for current page as well
             }
             return true;
         }
