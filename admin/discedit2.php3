@@ -132,7 +132,7 @@ echo $Msg;
 <tr><td align="center">
 <?php
     echo "<input type=\"hidden\" name=\"d_id\" value=".$d_id.">";
-    echo "<input type=\"hidden\" name=\"item_id\" value=".unpack_id128($item_id).">";
+    echo "<input type=\"hidden\" name=\"item_id\" value=".unpack_id($item_id).">";
     echo "<input type=\"submit\" name=\"update\" value=". _m("Update") .">&nbsp;&nbsp;";
     echo "<input type=\"reset\" value=". _m("Reset form") .">&nbsp;&nbsp;";
     echo "<input type=\"submit\" name=\"cancel\" value=". _m("Cancel") .">";

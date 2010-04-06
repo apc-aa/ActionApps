@@ -115,7 +115,7 @@ if (!is_callable('GetTable2Array')) {
             } elseif ($values == 'aa_mark') {
                 $val = true;
             } elseif (substr($values,0,7) == 'unpack:') {
-                $val = unpack_id128($db->f(substr($values,7)));
+                $val = unpack_id($db->f(substr($values,7)));
             } elseif (is_string($values) AND isset( $db->Record[$values] )) {
                 $val = $db->Record[$values];
             } else {  // true or 'aa_fields'
@@ -128,7 +128,7 @@ if (!is_callable('GetTable2Array')) {
             } elseif ( ($key == "NoCoLuMn") OR !$key ) {
                 $arr[] = $val;
             } elseif ( substr($key,0,7) == 'unpack:' ) {
-                $arr[unpack_id128($db->f(substr($key,7)))] = $val;
+                $arr[unpack_id($db->f(substr($key,7)))] = $val;
             } else {
                 $arr[$db->f($key)] = $val;
             }

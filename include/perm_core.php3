@@ -616,7 +616,7 @@ function FindReaderGroups($pattern) {
     $prefix = _m('Reader Slice');
     $groups = array();
     while ($db->next_record()) {
-        $groups[unpack_id128($db->f('id'))] = array('name' => "$prefix: ". $db->f('name'));
+        $groups[unpack_id($db->f('id'))] = array('name' => "$prefix: ". $db->f('name'));
     }
 
     // get all ReaderSets
@@ -643,7 +643,7 @@ function FindReaderUsers($pattern) {
                     AND content.field_id = '".FIELDID_USERNAME."'
                     AND content.text LIKE '%". quote($pattern) ."%'");
     while ($db->next_record()) {
-        $users[unpack_id128($db->f('id'))] = array('name' => $db->f('name'));
+        $users[unpack_id($db->f('id'))] = array('name' => $db->f('name'));
     }
     return $users;
 }

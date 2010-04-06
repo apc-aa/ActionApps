@@ -74,7 +74,7 @@ function showRSSFeedActions($feed_id) {
  * @return result of jumpLink() function of the slice class
  */
 function displaySliceName($slice_id) {
-    $slice = AA_Slices::getSlice(unpack_id128($slice_id));
+    $slice = AA_Slices::getSlice(unpack_id($slice_id));
     return $slice->jumpLink();
 }
 

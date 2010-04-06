@@ -85,7 +85,7 @@ if ( !$apc ) {
     if ( $db->next_record() ) {
       $apc = $db->f('text');
       // pomocna promena, ktera nam rekne, ze jde o staticky text a ne zpravu  
-      $texty = ( unpack_id128($db->f('slice_id')) == '21c8416923d4b6c58abc7ed664651802' );  // Ecn - texty
+      $texty = ( unpack_id($db->f('slice_id')) == '21c8416923d4b6c58abc7ed664651802' );  // Ecn - texty
     }   
     $apc .= substr('zzvx--',-( 6-strlen($apc) ));
   } 

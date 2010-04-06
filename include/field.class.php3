@@ -294,7 +294,7 @@ class AA_Fields {
         $db->query($SQL);
         while ($db->next_record()) {
             $fid                = $db->f("id");
-            $this->fields[$fid] = new AA_Field(DBFields($db));
+            $this->fields[$fid] = new AA_Field($db->Record);
             $this->prifields[]  = $fid;
         }
         freeDB($db);

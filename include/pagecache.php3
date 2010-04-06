@@ -68,16 +68,16 @@ class PageCache  {
 
     /** get function
      *  Returns cached informations or false
-     * @param $keyString
+     * @param $keyId
      * @param $action
      */
-    function get($keyString, $action='get') {
+    function get($key, $action='get') {
         if ( $GLOBALS['debug'] ) {
-            huhl("<br>Pagecache->get(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache action:'.$action, 'Pagecach end' );
+            huhl("<br>Pagecache->get(key):$key", '<br>Pagecache action:'.$action, 'Pagecach end' );
         }
         if ( ENABLE_PAGE_CACHE ) {
             if ( $action == 'invalidate' ) {
-                $this->invalidateById( $this->getKeyId($keyString) );
+                $this->invalidateById( $key );
                 if ( $GLOBALS['debug'] ) {
                     huhl("<br>Pagecache: invlaidating");
                 }
@@ -88,7 +88,7 @@ class PageCache  {
                 }
                 return false;
             }
-            return $this->getById( $this->getKeyId($keyString) );
+            return $this->getById( $key );
         }
         return false;
     }
@@ -107,13 +107,13 @@ class PageCache  {
      * @param $action
      */
     function cacheDb($function, $params, $str2find, $action='get') {
-        $keyString = (serialize($function).serialize($params));
-        if ( $res = $this->get($keyString, $action) ) {
+        $key = get_hash($function, $params);
+        if ( $res = $this->get($key, $action) ) {
             return unserialize($res);  // it is setrialized for storing in the database
         }
         $res = call_user_func_array($function, $params);
         if (!is_numeric($action)) {  // nocache is not
-            $this->store($keyString, serialize($res), $str2find);
+            $this->store($key, serialize($res), $str2find);
         }
         return $res;
     }
@@ -128,12 +128,12 @@ class PageCache  {
      */
     function cacheMemDb($function, $params, $str2find, $action='get') {
         global $contentcache;
-        $keyString = serialize($function).serialize($params);
-        if ($res = $contentcache->get($keyString)) {
+        $key = get_hash($function, $params);
+        if ($res = $contentcache->get($key)) {
             return $res;
         }
         $res = $this->cacheDb($function, $params, $str2find, $action);
-        $contentcache->set($keyString,$res);
+        $contentcache->set($key,$res);
         return $res;
     }
 
@@ -165,15 +165,7 @@ class PageCache  {
         return $ret;
     }
 
-    /** getKeyId function
-     *  Returns database identifier of the cache value (MD5 of keystring)
-     * @param $keyString
-     */
-    function getKeyId($keyString) {
-        return md5($keyString);
-    }
-
-    /** store function
+    /** set function
      *  Cache informations based on $keyString
      *  Returns database identifier of the cache value (MD5 of keystring)
      * @param $keyString
@@ -184,21 +176,20 @@ class PageCache  {
      *                 javascript in admin interface (modules selectbox
      *                 for example), so we need to use cache here)
      */
-    function store($keyString, $content, $str2find, $force=false) {
+    function store($key, $content, $str2find, $force=false) {
         global $cache_nostore;
         if ( $GLOBALS['debug'] ) {
-            huhl("<br>Pagecache->store(keyString):$keyString", '<br>Pagecache key:'.$this->getKeyId($keyString), '<br>Pagecache str2find:'.$str2find->getStr2find(), '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
+            huhl("<br>Pagecache->store(key):$key", '<br>Pagecache str2find:'.$str2find->getStr2find(), '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
         }
         if ((ENABLE_PAGE_CACHE OR $force) AND !$cache_nostore) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
-            $keyid  = $this->getKeyId($keyString);
             if ( $GLOBALS['debug'] ) {
                 huhl("<br>Pagecache->store(): - storing");
             }
             $varset = new Cvarset( array( 'content' => $content,
                                           'stored'  => time()));
-            $varset->addkey('id', 'text', $keyid);
-            $str2find->store($keyid);
+            $varset->addkey('id', 'text', $key);
+            $str2find->store($key);
 
             // true replace mean it calls REPLACE command and no
             // SELECT+INSERT/UPDATE (which is better for tables with
@@ -210,8 +201,6 @@ class PageCache  {
 
             $varset->doTrueReplace('pagecache');  // true replace mean it calls REPLACE command and no SELECT+INSERT/UPDATE (which is better for tables with autoincremented columns, which is no
 
-            // writeLog('PAGECACHE', $keyid.':'.serialize($str2find)); // for debug
-
             // it is not necessary to check, if the  AA_Pagecache_Purge is planed
             // store. We check it only once for 1000 (PAGECACHEPURGE_PROBABILITY)
             if (rand(0,PAGECACHEPURGE_PROBABILITY) == 1) {
@@ -221,7 +210,7 @@ class PageCache  {
                 $toexecute->laterOnce($cache_purger, array($this->cacheTime), 'AA_Pagecache_Purge', 101, now() + 300);  // run it once in 5 minutes
             }
         }
-        return $keyid;
+        return $key;
     }
 
     /** invalidateById function

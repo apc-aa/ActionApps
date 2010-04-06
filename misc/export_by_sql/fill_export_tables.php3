@@ -93,7 +93,7 @@ editor to replace<br>
 $db = new DB_AA;
 $db->query ("SELECT * FROM slice ORDER BY name");
 while ($db->next_record())
-    echo "  <OPTION value='".unpack_id128 ($db->f("id"))."'>".$db->f("name")."\n";
+    echo "  <OPTION value='".unpack_id ($db->f("id"))."'>".$db->f("name")."\n";
 
 echo "
 </SELECT>

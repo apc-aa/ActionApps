@@ -1097,38 +1097,9 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
                            ' ORDER BY '. join(' , ', $ret ) : '';
 }
 
-/** CachedSearch function
- *  Get searchresult from cache, if cached
- * @param bool   $cache_condition - have we look into cache?
- * @param string $keystr          - id_string which identifies cache content
- * @return resulting zids from cache or false;
- */
-function CachedSearch($cache_condition, $keystr) {
-    global $pagecache, $QueryIDsCount, $debug;
-
-    if ( $cache_condition ) {
-        if ( $res = $pagecache->get($keystr)) {
-            $zids = unserialize($res);
-            //huhl($res, $zids);
-            if (is_object($zids)) {
-                $QueryIDsCount = $zids->count();  // global variable
-            }
-            if ( $debug ) {
-                echo "<br>Cache HIT - return $QueryIDsCount IDs<br>";
-            }
-            return $zids;
-        }
-    }
-    return false;
-}
-
-/** GetZidsFromSQL function
- * Get zids from database and possibly store it into cache
+/** GetZidsFromSQL function - get zids from database
  * @param string $SQL              - SQL query
  * @param string $col              - column in database containing id
- * @param bool   $cache_condition  - have we store result into cache?
- * @param string $keystr           - id_string which identifies cache content
- * @param string $cache_str2find   - CacheStr2find object for cache invalidation
  * @param $zid_type
  * @param bool   $empty_result_condition - have we return empty set?
  * @param zids   $sort_zids        - used for sorting zids to right order
@@ -1144,10 +1115,8 @@ function CachedSearch($cache_condition, $keystr) {
  *                                   selected items (then set the number to 1)
  * @return zids from SQL query;
  */
-function GetZidsFromSQL( $SQL, $col, $cache_condition=false, $keystr='', $cache_str2find='',
-                         $zid_type='s', $empty_result_condition=false,
-                         $sort_zids=null, $group_limit=null ) {
-    global $pagecache, $QueryIDsCount, $debug;
+function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=false, $sort_zids=null, $group_limit=null ) {
+    global $QueryIDsCount, $debug;
     $db = getDB();
 
     $arr = array();                  // result ids array
@@ -1180,82 +1149,8 @@ function GetZidsFromSQL( $SQL, $col, $cache_condition=false, $keystr='', $cache_
         $zids->sort_and_restrict_as_in($sort_zids);
     }
 
-    if ( $cache_condition ) {
-        $pagecache->store($keystr, serialize($zids), $cache_str2find);
-    }
     freeDB($db);
     return $zids;
-}
-
-
-/** CreateBinCondition function
- *  Returns part of SQL command used in where related to bins
- * @param $bin
- * @param $ignore_expiry_date
- */
-function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
-    // now is rounded in order the time is in steps - it is better for search
-    // caching - SQL is THE SAME during one time step
-    $now = now('step');            // round up
-
-    /* new version of bin selecting, now we use type of bin from constants.php3 */
-    if (is_numeric($bin)) {
-        /* $bin is numeric constant */
-        $numeric_bin = max(1,$bin);
-    } elseif (is_string($bin)) { /* for backward compatibility */
-        switch ($bin) {
-            /* assign to string type it's numeric constant */
-            case 'ACTIVE'  : $numeric_bin = AA_BIN_ACTIVE;  break;  // 1
-            case 'PENDING' : $numeric_bin = AA_BIN_PENDING; break;  // 2
-            case 'EXPIRED' : $numeric_bin = AA_BIN_EXPIRED; break;  // 4
-            case 'HOLDING' : $numeric_bin = AA_BIN_HOLDING; break;  // 8
-            case 'TRASH'   : $numeric_bin = AA_BIN_TRASH;   break;  // 16
-            case 'ALL'     : $numeric_bin = (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH); break;
-            default        : $numeric_bin = AA_BIN_ACTIVE;  break;  // 1
-        }
-    } else {
-        /* strange case, I think never possible :) */
-        $numeric_bin = AA_BIN_ACTIVE;
-    }
-
-    /* create SQL query for different types of numeric constants */
-    if ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH)) {
-        return ' 1=1 ';
-    } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
-        return " $table.status_code=1 ";
-    } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_PENDING)) {
-        return " $table.status_code=1 AND ($table.expiry_date > '$now') ";
-    } else {
-        $or_conds = array();
-        if ($numeric_bin & AA_BIN_ACTIVE) {
-            $SQL = " $table.status_code=1 AND $table.publish_date <= '$now' ";
-            /* condition can specify expiry date (good for archives) */
-            if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
-                //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
-                $SQL .= " AND $table.expiry_date > '$now' ";
-            }
-            $or_conds[] = $SQL;
-        }
-        if ($numeric_bin & AA_BIN_EXPIRED) {
-            $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
-        }
-        if ($numeric_bin & AA_BIN_PENDING) {
-            $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' AND expiry_date > '$now'";
-        }
-        if ($numeric_bin & AA_BIN_HOLDING) {
-            $or_conds[] = " $table.status_code=2 ";
-        }
-        if ($numeric_bin & AA_BIN_TRASH) {
-            $or_conds[] = " $table.status_code=3 ";
-        }
-        switch (count($or_conds)) {
-            case 0:  return ' 1=1 ';
-            case 1:  return ' '. $or_conds[0] .' ';
-            default: return ' (('. join(') OR (', $or_conds) .')) ';
-        }
-    }
-
-    return ' 1=1 ';
 }
 
 
@@ -1298,7 +1193,7 @@ function QuerySet($set, $restrict_zids=false) {
 *   @param string $defaultCondsOperator
 *       replaces the default "LIKE" for conditions with no operator set
 *
-*   @param bool   $use_cache should be the cache searched for the result?
+*   @param bool   $use_cache should be the cache searched for the result? -- no longer used used
 *
 *   @return A zids object with a list of the ids that match the query.
 *
@@ -1306,7 +1201,6 @@ function QuerySet($set, $restrict_zids=false) {
 *   @global  bool $debugfields (in) useful mainly for multiple slices mode -- views info about field_ids
 *               used in conds[] but not existing in some of the slices
 *   @global  int $QueryIDsCount (out) is set to the count of IDs returned
-*   @global  bool $nocache (in) do not use cache, even if use_cache is set
 *
 *   Parameter format example:
 *   <pre>
@@ -1332,7 +1226,6 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
     global $debug;                 // displays debug messages
-    global $nocache;               // do not use cache, if set
     global $CONDS_NOT_FIELD_NAMES; // list of special conds[] indexes (defined in constants.php3)
     global $QueryIDsCount;
 
@@ -1346,17 +1239,6 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
     if (is_object($restrict_zids) AND ($restrict_zids->count() == 0)) {
         return new zids(); // restrict_zids defined but empty - no result
-    }
-
-    //create keystring from values, which exactly identifies resulting content
-    $keystr          = serialize($conds). serialize($sort). $type.
-                       serialize($slices). $neverAllItems.
-                       ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
-                       $defaultCondsOperator;
-    $cache_condition = ($use_cache AND !$nocache);
-
-    if ( $res = CachedSearch( $cache_condition, $keystr )) {
-        return $res;
     }
 
     if ($GLOBALS['debugfields'] OR $debug) {
@@ -1640,9 +1522,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     }
 
     // if neverAllItems is set, return empty set if no conds[] are used
-    $str2find = new CacheStr2find($slices, 'slice_id');
-    $ret = GetZidsFromSQL( $SQL, 'itemid', $cache_condition, $keystr, $str2find, 'p',
-                           !is_array($select_conds) && $neverAllItems,
+    $ret = GetZidsFromSQL( $SQL, 'itemid', 'p', !is_array($select_conds) && $neverAllItems,
                            // last parameter is used for sorting zids to right order
                            // - if no order specified and restrict_zids are specified,
                            // return zids in unchanged order
@@ -1664,7 +1544,6 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 *       Use it if you want to choose only from a set of constants
 *   @param string $defaultCondsOperator
 *       replaces the default "RLIKE" for conditions with no operator set
-*   @param bool   $use_cache should be the cache searched for the result?
 *
 *   @return A zids object with a list of the ids that match the query.
 *
@@ -1673,10 +1552,8 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 *   Parameter format example - {see QueryZIDs, FAQ}
 *   Fields definition - {see include/constants.php3}
 */
-function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $defaultCondsOperator = "RLIKE", $use_cache=false ) {
-
+function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $defaultCondsOperator = "RLIKE") {
     global $debug;                 // displays debug messages
-    global $nocache;               // do not use cache, if set
 
     // set default sortorder for constants if sortorder is not set
     if ( !isset($sort) OR !is_array($sort) OR count($sort)<1) {
@@ -1699,23 +1576,12 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $d
         huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
     }
 
-    //create keystring from values, which exactly identifies resulting content
-    $keystr = $group_id. serialize($conds). serialize($sort).
-                  ((isset($restrict_zids) && is_object($restrict_zids)) ? serialize($restrict_zids) : "").
-                  $defaultCondsOperator;
-
-    $cache_condition = ($use_cache AND !$nocache);
-    if ( $res = CachedSearch( $cache_condition, $keystr )) {
-        return $res;
-    }
-
     // parse conditions and sort order ----------------------------------
     $where_sql    = MakeSQLConditions( GetConstantFields(), $conds, $defaultCondsOperator, $foo);
     $order_by_sql = MakeSQLOrderBy(    GetConstantFields(), $sort,  $foo);
 
     // construct query --------------------------
-    $SQL  = "SELECT DISTINCT constant.short_id FROM constant
-             WHERE group_id='$group_id' ";
+    $SQL  = "SELECT DISTINCT constant.short_id FROM constant WHERE group_id='$group_id' ";
     $SQL .=  $where_sql . $order_by_sql;
 
     if (is_object($restrict_zids)) {
@@ -1725,10 +1591,8 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $d
         $SQL .= ' AND '.$restrict_zids->sqlin();
     }
 
-
     // get result --------------------------
-    $str2find = new CacheStr2find($group_id, 'group_id');
-    return GetZidsFromSQL($SQL, 'short_id', $cache_condition, $keystr, $str2find);
+    return GetZidsFromSQL($SQL, 'short_id');
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1864,7 +1728,7 @@ if ( $debug ) {
     $db->tquery($SQL);
 
     while ( $db->next_record() ) {
-        $arr[] = unpack_id128($db->f('id'));
+        $arr[] = unpack_id($db->f('id'));
     }
 
     return $arr;
@@ -2114,7 +1978,7 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
 
     while ( $db->next_record() ) {
       if ( $oldid != $db->f(id)) {
-        $tmp[$count][] = unpack_id128($db->f(id));
+        $tmp[$count][] = unpack_id($db->f(id));
         $oldid = $db->f(id);
         $count=0;
       }
@@ -2122,7 +1986,7 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
         $count++;
       }
     }
-    $tmp[$count][] = unpack_id128($oldid);  // last value isn't stored
+    $tmp[$count][] = unpack_id($oldid);  // last value isn't stored
 
 //print_r($tmp);
 
@@ -2131,7 +1995,7 @@ function GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $from, $to,
       $ret = array_merge( $tmp[$i], $tmp[$i-1] );
   } else {
     while ( $db->next_record() )
-      $ret[] = unpack_id128($db->f(id));
+      $ret[] = unpack_id($db->f(id));
   }
 
   return $ret;

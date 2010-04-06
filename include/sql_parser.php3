@@ -146,7 +146,7 @@ function eatWhiteSpaces($input, $i, $length) {
  * @param $c
  */
 function isSpecial($c) {
-    return strchr (SPECIAL, $c);
+    return (false !== strpos(SPECIAL, $c));
 }
 
 /** isOperator function
@@ -154,7 +154,7 @@ function isSpecial($c) {
  * @param $c
  */
 function isOperator($c) {
-    return strchr (OPERATOR, $c);
+    return (false !== strpos(OPERATOR, $c));
 }
 /** resolveOperator function
  * @param $op
@@ -172,21 +172,21 @@ function resolveOperator($op) {
  * @param $c
  */
 function isWhite($c) {
-    return strchr(WHITE, $c);
+    return (false !== strpos(WHITE, $c));
 }
 
 /** isLeftParenthesis function
  * @param $c
  */
 function isLeftParenthesis($c) {
-    return strchr (LEFT_PARENTHESES, $c);
+    return (false !== strpos(LEFT_PARENTHESES, $c));
 }
 
 /** isRightParenthesis function
  * @param $c
  */
 function isRightParenthesis($c) {
-    return strchr (RIGHT_PARENTHESES, $c);
+    return (false !== strpos(RIGHT_PARENTHESES, $c));
 }
 
 /** isLetter function
@@ -209,9 +209,11 @@ function isLetter($c) {
 function tillTheEndingQuotApos($input, $i, $length, $ending) {
     $tok="";
     while ($input[$i] != $ending) {
-        $tok = $tok . $input[$i];
+        $tok .= $input[$i];
         $i++;
-        if ($i >= $length) return Array("status"=>E_NO_ENDING_QUOTAPOS, "value"=>"", "i"=>$i);
+        if ($i >= $length) {
+            return Array("status"=>E_NO_ENDING_QUOTAPOS, "value"=>"", "i"=>$i);
+        }
     }
     return Array("status"=>S_OK, "value"=>$tok, "i"=>$i+1);    // i+1  =>  skips string terminator
 }
@@ -226,13 +228,13 @@ function tillTheFirstSpecial($input, $i, $length) {
         && (!isSpecial($input[$i])
             // changed by Jakub, November 2002
             // don't break on apostrophe and minus sign in the middle of words
-            || (strchr ("'-", $input[$i])
-                && $i != 0
-                && isLetter ($input[$i-1])
-                && $i != $length - 1
-                && isLetter ($input[$i+1]))))
+            || ( (false !== strpos("'-", $input[$i]))
+                  && $i != 0
+                  && isLetter ($input[$i-1])
+                  && $i != $length - 1
+                  && isLetter ($input[$i+1]))))
     {
-        $tok = $tok . $input[$i];
+        $tok .= $input[$i];
         $i++;
     }
     return Array("status"=>S_OK, "value"=>$tok, "i"=>$i);
@@ -282,53 +284,54 @@ function getToken($input, $i, $length) {
     return $tok;
 }
 /** preProcess function
- * @param $toks
- */
+* @param $toks
+*/
 function preProcess($toks) {
-  if ( isset($toks) AND is_array($toks) ) {
-    Reset($toks);
-    while ( List($ind,$val) = Each($toks) ) {
-
-      // UNKNOWN will be set for strings not delimeted by apostrofs,
-      // we can't say: "it is string" (see "and", ...)
-      if ( $val["type"] == TOKEN_TYPE_UNKNOWN ) {
-        $lower = StrToLower($val['value']);
-        // Strings AND, OR, NOT in meaning as strings must be quoted ( "and" )
-        if ( $lower=="and" ) {
-          $val['value'] = "and";
-          $val["type"]  = TOKEN_TYPE_OPERATOR_AND;
+    if ( isset($toks) AND is_array($toks) ) {
+        foreach ( $toks as $ind => $val) {
+            
+            // UNKNOWN will be set for strings not delimeted by apostrofs,
+            // we can't say: "it is string" (see "and", ...)
+            if ( $val["type"] == TOKEN_TYPE_UNKNOWN ) {
+                switch (strtolower($val['value'])) {
+                case 'and':
+                    $val['value'] = "and";
+                    $val["type"]  = TOKEN_TYPE_OPERATOR_AND;
+                    break;
+                case 'or':
+                    $val['value'] = "or";
+                    $val["type"]  = TOKEN_TYPE_OPERATOR_OR;
+                    break;
+                case 'not':
+                    $val['value'] = "not";
+                    $val["type"]  = TOKEN_TYPE_OPERATOR_NOT;
+                    break;
+                default:
+                    $val["type"] = TOKEN_TYPE_STRING;
+                }
+            }
+            //        else if ( $val["type"] == TOKEN_TYPE_OPERATOR ) {
+            //            if ( $val['value'] == "+" ) $val['value'] = "and";
+            //            else if ( $val['value'] == "-" ) $val['value'] = "not";
+            //        }
+            $newtoks[] = $val;
         }
-        else if ( $lower=="or" ) {
-          $val['value'] = "or";
-          $val["type"]  = TOKEN_TYPE_OPERATOR_OR;
-        }
-        else if ( $lower=="not" ) {
-          $val['value'] = "not";
-          $val["type"]  = TOKEN_TYPE_OPERATOR_NOT;
-        }
-        else $val["type"] = TOKEN_TYPE_STRING;
-      }
-  //        else if ( $val["type"] == TOKEN_TYPE_OPERATOR ) {
-  //            if ( $val['value'] == "+" ) $val['value'] = "and";
-  //            else if ( $val['value'] == "-" ) $val['value'] = "not";
-  //        }
-      $newtoks[] = $val;
     }
-  }
-  if ( isset($newtoks) AND is_array($newtoks) ) {
-    Reset($newtoks);
-    while ( $t1 = Current($newtoks) ) {
-      $newtoks2[] = $t1;
-      $t2 = Next($newtoks);
-      if ($t1["type"]==TOKEN_TYPE_STRING) {
-        if ( ($t2) && (($t2["type"]==TOKEN_TYPE_STRING) || ($t2["type"]==TOKEN_TYPE_LEFT_PARENTHESIS) || ($t2["type"]==TOKEN_TYPE_OPERATOR_NOT)))
-          $newtoks2[] = Array("status"=>S_IMPLICIT, "value"=>"and", "i"=>$t1["i"], "type"=>TOKEN_TYPE_OPERATOR_AND);
-      }
+    if ( isset($newtoks) AND is_array($newtoks) ) {
+        Reset($newtoks);
+        while ( $t1 = Current($newtoks) ) {
+            $newtoks2[] = $t1;
+            $t2 = Next($newtoks);
+            if ($t1["type"]==TOKEN_TYPE_STRING) {
+                if ( ($t2) && (($t2["type"]==TOKEN_TYPE_STRING) || ($t2["type"]==TOKEN_TYPE_LEFT_PARENTHESIS) || ($t2["type"]==TOKEN_TYPE_OPERATOR_NOT)))
+                    $newtoks2[] = Array("status"=>S_IMPLICIT, "value"=>"and", "i"=>$t1["i"], "type"=>TOKEN_TYPE_OPERATOR_AND);
+            }
+        }
     }
-  }
     $newtoks2[] = Array("status"=>S_IMPLICIT, "value"=>"end of input", "i"=>65536, "type"=>TOKEN_TYPE_EOF);
     return $newtoks2;
 }
+ 
 /** lex function
  * @param $input
  */

@@ -57,7 +57,7 @@ $feedto["Init"] = false;  // create array
 $SQL= "SELECT to_id FROM feedperms WHERE from_id='$p_slice_id'";
 $db->query($SQL);
 while ($db->next_record()) {
-    $feedto[unpack_id128($db->f(to_id))] = true;
+    $feedto[unpack_id($db->f(to_id))] = true;
 }
 
 do {

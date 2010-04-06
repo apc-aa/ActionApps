@@ -74,10 +74,10 @@ function GetAlertsTableView ($viewID, $processForm = false) {
         $myslices = GetUserSlices();
         while ($db->next_record()) {
             $txt = HTMLSpecialChars ($db->f("fdesc"));
-            if (IsSuperadmin() || strchr ($myslices [unpack_id128($db->f("slice_id"))], PS_FULLTEXT)) {
+            if (IsSuperadmin() || strchr ($myslices [unpack_id($db->f("slice_id"))], PS_FULLTEXT)) {
                 $new_filters[$db->f("filterid")] = $txt;
                 $txt = "<a href='".$sess->url(AA_INSTAL_PATH
-                    ."admin/se_view.php3?slice_id=".unpack_id128($db->f("slice_id"))
+                    ."admin/se_view.php3?slice_id=".unpack_id($db->f("slice_id"))
                     ."&view_id=".$db->f("view_id")
                     ."&view_type=".$db->f("view_type"))
                     ."'>".$txt." ("."f".$db->f("filterid").")"."</a>";
@@ -308,7 +308,7 @@ function te_au_confirm($val) {
 
 function AlertsModeditAfterInsert($varset) {
     global $change_id;
-    $change_id = unpack_id128($varset->get ("id"));
+    $change_id = unpack_id($varset->get ("id"));
     AddPermObject($change_id, "slice");
 }
 ?>

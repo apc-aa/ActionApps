@@ -205,7 +205,7 @@ function TestBaseCat($ctg, $base_cat, $ctg_path) {
  * @returns packed slice id
  */
 function Links_Category2SliceID($cid) {
-    return unpack_id128(substr( $cid.'Links'.q_pack_id(AA_ID), 0, 16 ));
+    return unpack_id(substr( $cid.'Links'.q_pack_id(AA_ID), 0, 16 ));
 }
 
 /** Get base category from slice id (reverse to Links_Category2SliceID())  */

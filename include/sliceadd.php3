@@ -40,12 +40,12 @@ $SQL = "SELECT name, id, template, lang_file FROM slice WHERE deleted<>1";
 $db->query($SQL);
 while ( $db->next_record() ) {
     if ( $db->f('template') ) {
-        $templates[unpack_id128( $db->f('id') )]['value'] = unpack_id128( $db->f('id') ) ."{". $db->f('lang_file');
-        $templates[unpack_id128( $db->f('id') )]['name']  = $db->f('name');
+        $templates[unpack_id( $db->f('id') )]['value'] = unpack_id( $db->f('id') ) ."{". $db->f('lang_file');
+        $templates[unpack_id( $db->f('id') )]['name']  = $db->f('name');
     }
     else {
-        $temp_slices[unpack_id128( $db->f('id') )]['value'] = unpack_id128( $db->f('id') ) ."{". $db->f('lang_file');
-        $temp_slices[unpack_id128( $db->f('id') )]['name']  = $db->f('name');
+        $temp_slices[unpack_id( $db->f('id') )]['value'] = unpack_id( $db->f('id') ) ."{". $db->f('lang_file');
+        $temp_slices[unpack_id( $db->f('id') )]['name']  = $db->f('name');
     }
 }
 

@@ -261,8 +261,8 @@ class zids implements Iterator {
         }
         switch ($this->type) {
             case "l":  return (isset($i) ? $this->a[$i] : $this->a);
-            case "p":  return (isset($i) ? unpack_id128($this->a[$i])
-                                         : array_map("unpack_id128", $this->a));
+            case "p":  return (isset($i) ? unpack_id($this->a[$i])
+                                         : array_map("unpack_id", $this->a));
             case "t":  return (isset($i) ? id_t2l($this->a[$i]) : array_map("id_t2l", $this->a));
             case 's':  $trans = $this->translate('l');
                        return (isset($i) ? $trans[$i] : $trans );
@@ -497,7 +497,7 @@ class zids implements Iterator {
             $SQL        = "SELECT slice_id FROM item WHERE ". $this->itemWhere($i);
             $p_slice_id = GetTable2Array($SQL, 'aa_first', 'slice_id');
             if ( !empty($p_slice_id) ) {
-                return unpack_id128($p_slice_id);
+                return unpack_id($p_slice_id);
             }
         }
         return false;
@@ -528,7 +528,7 @@ class zids implements Iterator {
         $SQL = "SELECT id, short_id FROM item WHERE ". $this->sqlin();
         $db->tquery($SQL);
         while ( $db->next_record() ) {
-            $unpacked_id = unpack_id128($db->f('id'));
+            $unpacked_id = unpack_id($db->f('id'));
             $this->l2s[$unpacked_id] = $db->f('short_id');
             $this->s2l[$db->f('short_id')] = $unpacked_id;
         }
@@ -598,15 +598,6 @@ function guesstype($str) {
     }
     debug("Error, unable to guess type of id '$str' - ask mitra");
     return ('z');
-}
-
-/** unpack_id128 function
- *  returns unpacked md5 id
- * Note this will NOT unpack correctly a quoted packed id
- * @param $packed_id
- */
-function unpack_id128($packed_id) {
-    return unpack_id($packed_id);
 }
 
 /** q_pack_id function

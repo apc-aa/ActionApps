@@ -338,7 +338,7 @@ $db->tquery("
     ON constant_slice.slice_id = slice.id
     WHERE group_id='$group_id'");
     if ($db->next_record()) {
-        $owner_id = unpack_id128($db->f("slice_id"));
+        $owner_id = unpack_id($db->f("slice_id"));
     }
 
 echo "
@@ -381,7 +381,7 @@ if ($s_constants) {
         if ($from_form) {  // get values from form
             ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $classes);
         } else {        // get values from database
-            ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id128($v["id"]), $v["pri"], $v["class"], $classes);
+            ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id($v["id"]), $v["pri"], $v["class"], $classes);
         }
         $i++;
     }

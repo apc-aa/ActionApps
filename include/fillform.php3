@@ -76,13 +76,13 @@ function fillForm() {
         $zid = new zids( $my_item_id, 'l' );
         $content = GetItemContentMinimal($zid, array('id','slice_id'));
         if ($p_slice_id = $content[$my_item_id]["slice_id........"][0]['value']) {
-            $slice_id = unpack_id128($p_slice_id);
+            $slice_id = unpack_id($p_slice_id);
         }
     }
     // get slice_id if not specified - try get it from $oldcontent4id
     if (!$slice_id AND $oldcontent4id AND is_array($oldcontent4id)) {
         if ( $p_slice_id = $oldcontent4id["slice_id........"][0]['value'] ) {
-            $slice_id = unpack_id128($p_slice_id);
+            $slice_id = unpack_id($p_slice_id);
         }
     }
     if ( !$slice_id ) {
@@ -201,7 +201,7 @@ function fillFormWithContent($oldcontent4id) {
                 foreach ($field_array as $field) {
                     $myvalue = safeChars($field['value']);
                     //$control_id = $field_id;
-                    $control_id = 'v'.unpack_id128($field_id);
+                    $control_id = 'v'.unpack_id($field_id);
                     // field password.......x is used to authenticate item edit
                     if ((substr($field_id, 0, 14) != "password......") AND
                                      ($field_id != "id..............") AND

@@ -172,7 +172,7 @@ function GetOldCategories() {
   huhu( $SQL );
   $odb->query($SQL);
   while ($odb->next_record()){
-    $unpacked=unpack_id128($odb->f("id"));  
+    $unpacked=unpack_id($odb->f("id"));  
     $arr[$unpacked]=$odb->f("name");  
   }
   return $arr;  

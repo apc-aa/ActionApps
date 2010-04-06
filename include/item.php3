@@ -28,7 +28,6 @@ if ( file_exists( AA_INC_PATH."usr_aliasfnc.php3" ) ) {
   require_once AA_INC_PATH."usr_aliasfnc.php3";
 }
 
-require_once AA_INC_PATH. "math.php3";
 require_once AA_INC_PATH. "stringexpand.php3";
 require_once AA_INC_PATH. "item_content.php3";
 require_once AA_BASE_PATH."modules/links/constants.php3";
@@ -37,13 +36,13 @@ if ( !is_object($contentcache) ) {
     $contentcache = new contentcache;
 }
 
-/** txt2html function
+/** converts plain text to html
  * @param $txt
  */
-function txt2html($txt) {          // converts plain text to html
-    return nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",htmlspecialchars($txt)));
-                                   // preg allows text to be pasted from Word
-                                   // displays qoutes instead of &8221;
+function txt2html($txt) {
+    // preg allows text to be pasted from Word
+    // displays qoutes instead of &8221;
+    return (strpos($txt, '&')===false) ? nl2br(htmlspecialchars($txt)) : nl2br(preg_replace('/&amp;#(\d+);/',"&#\\1;",htmlspecialchars($txt)));
 }
 
 /** DeHtml function
@@ -60,10 +59,10 @@ function DeHtml($txt, $flag) {
  */
 function DefineBaseAliases(&$aliases, $module_id) {
     if ( !isset($aliases["_#ITEM_ID_"]) ) {
-        $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............");
+        $aliases["_#ITEM_ID_"] = GetAliasDef( "f_1", "unpacked_id.....");
     }
     if ( !isset($aliases["_#SITEM_ID"]) ) {
-        $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........");
+        $aliases["_#SITEM_ID"] = GetAliasDef( "f_1", "short_id........");
     }
     if ( !isset($aliases["_#HEADLINE"]) ) {
         $aliases["_#HEADLINE"] = GetAliasDef( "f_e:safe",             GetHeadlineFieldID($module_id));
@@ -97,8 +96,8 @@ function GetAliasesFromFields($fields, $additional="", $type='') {
   $aliases["_#PAGEINDX"] = GetAliasDef( "f_e:pageindex",        "id..............", _m("index of item within a page (it begins from 0 on each page listed by pagescroller)"));
   $aliases["_#GRP_INDX"] = GetAliasDef( "f_e:groupindex",       "id..............", _m("index of a group on page (it begins from 0 on each page)"));
   $aliases["_#IGRPINDX"] = GetAliasDef( "f_e:itemgroupindex",   "id..............", _m("index of item within a group on page (it begins from 0 on each group)"));
-  $aliases["_#ITEM_ID_"] = GetAliasDef( "f_n:id..............", "id..............", _m("alias for Item ID"));
-  $aliases["_#SITEM_ID"] = GetAliasDef( "f_h",                  "short_id........", _m("alias for Short Item ID"));
+  $aliases["_#ITEM_ID_"] = GetAliasDef( "f_1",                  "unpacked_id.....", _m("alias for Item ID"));
+  $aliases["_#SITEM_ID"] = GetAliasDef( "f_1",                  "short_id........", _m("alias for Short Item ID"));
 
   if ( $type == 'justids') {  // it is enough for view of urls
       return $aliases;
@@ -141,16 +140,16 @@ function GetAliases4Type( $type, $additional="" ) {
     switch ( $type ) {
         case 'const':
             //  Standard aliases
-            $aliases["_#NAME###_"] = GetAliasDef( "f_h", "const_name",        _m("Constant name"));
-            $aliases["_#VALUE##_"] = GetAliasDef( "f_h", "const_value",       _m("Constant value"));
-            $aliases["_#PRIORITY"] = GetAliasDef( "f_h", "const_pri",         _m("Constant priority"));
-            $aliases["_#GROUP##_"] = GetAliasDef( "f_n", "const_group",       _m("Constant group id"));
-            $aliases["_#CLASS##_"] = GetAliasDef( "f_h", "const_class",       _m("Category class (for categories only)"));
-            $aliases["_#COUNTER_"] = GetAliasDef( "f_h", "const_counter",     _m("Constant number"));
-            $aliases["_#CONST_ID"] = GetAliasDef( "f_n", "const_id",          _m("Constant unique id (32-haxadecimal characters)"));
-            $aliases["_#SHORT_ID"] = GetAliasDef( "f_t", "const_short_id",    _m("Constant unique short id (autoincremented from '1' for each constant in the system)"));
+            $aliases["_#NAME###_"] = GetAliasDef( "f_1", "const_name",        _m("Constant name"));
+            $aliases["_#VALUE##_"] = GetAliasDef( "f_1", "const_value",       _m("Constant value"));
+            $aliases["_#PRIORITY"] = GetAliasDef( "f_1", "const_pri",         _m("Constant priority"));
+            $aliases["_#GROUP##_"] = GetAliasDef( "f_1", "const_group",       _m("Constant group id"));
+            $aliases["_#CLASS##_"] = GetAliasDef( "f_1", "const_class",       _m("Category class (for categories only)"));
+            $aliases["_#COUNTER_"] = GetAliasDef( "f_1", "const_counter",     _m("Constant number"));
+            $aliases["_#CONST_ID"] = GetAliasDef( "f_1", "const_id",          _m("Constant unique id (32-haxadecimal characters)"));
+            $aliases["_#SHORT_ID"] = GetAliasDef( "f_1", "const_short_id",    _m("Constant unique short id (autoincremented from '1' for each constant in the system)"));
             $aliases["_#DESCRIPT"] = GetAliasDef( "f_t", "const_description", _m("Constant description"));
-            $aliases["_#LEVEL##_"] = GetAliasDef( "f_t", "const_level",       _m("Constant level (used for hierachical constants)"));
+            $aliases["_#LEVEL##_"] = GetAliasDef( "f_1", "const_level",       _m("Constant level (used for hierachical constants)"));
             break;
         case 'links':
             $aliases = GetLinkAliases();       // defined in modules/links/constant.php3
@@ -382,7 +381,6 @@ function GetItemFromContent($content) {
 
 class AA_Item {
     var $content4id;        // ItemContent array for this Item (like from GetItemContent)
-    var $clean_url;      //
     var $format;         // format string with aliases
     var $remove;         // remove string
     var $aliases;        // array of usable aliases
@@ -534,17 +532,6 @@ class AA_Item {
      */
     function getbaseurl($redirect, $no_sess) {
         global $sess;
-        /*  old version - it prints whole url (http://...). Current uses url as
-        short as possible - like "?x=445445"
-
-        $url_base = ($redirect ? $redirect : $this->clean_url );
-        if ( $no_sess ) {                     //remove session id
-            $pos = strpos($url_base, '?');
-            if ($pos) {
-                $url_base = substr($url_base,0,$pos);
-            }
-        }
-        */
 
         // redirecting to another page?
         $url_base = ( $redirect ? $redirect :
@@ -616,7 +603,6 @@ class AA_Item {
      */
     function get_alias_subst( $alias, $use_field="" ) {
 
-
         // use_field is for expanding aliases with loop - prefix {@
         $ali_arr = $this->aliases[$alias];
         // is this realy alias?
@@ -632,8 +618,6 @@ class AA_Item {
         // get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
         $function = ParseFnc($ali_arr['fce']);
         $fce      = $function['fnc'];
-
-
 
         if (!is_callable(array($this,$fce))) {
             return _m('Error: wrong alias function %1 for %2', array($fce,$alias));
@@ -698,6 +682,7 @@ class AA_Item {
     function subst_alias( $text ) {
         return ($this->isField($text) ? $this->getval($text) : $this->unalias($text));
     }
+
     /** subst_aliases function
      * @param $var
      */
@@ -723,6 +708,16 @@ class AA_Item {
         return "";
     }
 
+    /** f_1 function
+     *  Prints just first value and without any txt2html... 
+     *  used for _#ITEM_ID_, ...
+     * @param $col
+     * @param $param
+     */
+    function f_1($col, $param="") {
+        $this->getval($col);
+    }
+
     /** f_h function
      * print due to html flag set (escape html special characters or just print)
      * @param $col
@@ -735,7 +730,9 @@ class AA_Item {
                 return '';
             }
             // create list of values for multivalue fields
-            $param = $this->subst_alias( $param );
+            if (strlen($param)>2) {  // for speedup of standard {relation........} alias
+                $param = $this->unalias( $param );
+            }
             foreach ( $values as $v ) {
                 $res .= ($res ? $param : ''). DeHtml($v['value'], $v['flag']); // add value separator just if field is filled
             }
@@ -806,7 +803,7 @@ class AA_Item {
     function f_n($col, $param="") {
         return unpack_id( $this->getval($col) );
     }
-
+    
     /** f_g function
      * prints image height atribut (<img height=...) or clears it
      * param: 0

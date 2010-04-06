@@ -61,19 +61,12 @@ function IsFieldSupported($field_info, $v, $param) {
  *                            'all'       - all links in any folder
  *  @global int  $QueryIDsCount - set to the count of IDs returned
  *  @global bool $debug=1       - many debug messages
- *  @global bool $nocache       - do not use cache, even if use_cache is set
  */
 function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app") {
     global $debug;                 // displays debug messages
-    global $nocache;               // do not use cache, if set
 
     if ( $debug ) huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
-    $keystr = $cat_path . $subcat. serialize($conds). serialize($sort). $type;
-    $cache_condition = $use_cache AND !$nocache;
-    if ( $res = CachedSearch( $cache_condition, $keystr )) {
-        return $res;
-    }
     $LINKS_FIELDS = GetLinkFields();
 
     $where_sql    = MakeSQLConditions($LINKS_FIELDS, $conds, $LINKS_FIELDS, $join_tables, 'IsFieldSupported', $type);
@@ -137,8 +130,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
     $SQL .=  $where_sql . $order_by_sql;
 
     // get result --------------------------
-    $str2find = new CacheStr2find($cat_path, 'cat_path');
-    return GetZidsFromSQL($SQL, 'id', $cache_condition, $keystr, $str2find);
+    return GetZidsFromSQL($SQL, 'id');
 }
 
 
@@ -154,19 +146,12 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
  *                            'all'       - all categories in any folder
  *  @global int  $QueryIDsCount - set to the count of IDs returned
  *  @global bool $debug=1       - many debug messages
- *  @global bool $nocache       - do not use cache, even if use_cache is set
  */
 function Links_QueryCatZIDs($cid, $conds, $sort="", $subcat=false, $type="app") {
     global $debug;                 // displays debug messages
-    global $nocache;               // do not use cache, if set
 
     if ( $debug ) huhl( "<br>CatPath:", $cat_path, '<br>Subcat:', $subcat,"<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
 
-    $keystr = 'cats'.$cid. $subcat. serialize($conds). serialize($sort). $type;
-    $cache_condition = $use_cache AND !$nocache;
-    if ( $res = CachedSearch( $cache_condition, $keystr )) {
-        return $res;
-    }
     $CATEGORY_FIELDS = GetCategoryFields();
 
     $where_sql    = MakeSQLConditions($CATEGORY_FIELDS, $conds, $CATEGORY_FIELDS, $foo);
@@ -184,8 +169,7 @@ function Links_QueryCatZIDs($cid, $conds, $sort="", $subcat=false, $type="app") 
     $SQL .=  $where_sql . $order_by_sql;
 
     // get result --------------------------
-    $str2find = new CacheStr2find(Links_GetCategoryColumn($cid, 'path'), 'cat_path');
-    return GetZidsFromSQL($SQL, 'id', $cache_condition, $keystr, $str2find);
+    return GetZidsFromSQL($SQL, 'id');
 }
 
 ?>

@@ -36,7 +36,7 @@ require_once AA_INC_PATH."varset.php3";
 $db = new DB_AA;
 $db->query("SELECT * FROM module WHERE type='J'");
 while ($db->next_record())
-    $jumps[unpack_id128($db->f("id"))] = $db->f("name");
+    $jumps[unpack_id($db->f("id"))] = $db->f("name");
 
 // choose the first module when none is chosen
 if ($edit && !$jump_id && count ($jumps)) {

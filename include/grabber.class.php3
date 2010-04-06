@@ -308,8 +308,8 @@ class AA_Grabber_Aarss extends AA_Grabber {
 
         /** Process one feed and returns parsed RSS (both AA and other)
          *  in $this->aa_rss */
-        $this->slice_id   = unpack_id128($feed['slice_id']);        // local slice id
-        $this->r_slice_id = unpack_id128($feed['remote_slice_id']); // remote slice id
+        $this->slice_id   = unpack_id($feed['slice_id']);        // local slice id
+        $this->r_slice_id = unpack_id($feed['remote_slice_id']); // remote slice id
         $this->feed_id    = $feed_id;
         $this->feed       = $feed;
         $this->fire       = $fire;

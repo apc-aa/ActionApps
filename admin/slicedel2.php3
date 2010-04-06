@@ -112,7 +112,7 @@ function DeleteSlice($del) {
     $SQL = "SELECT id FROM item WHERE slice_id='$p_del'";
     $db->query($SQL);
     while ( $db->next_record() ) {
-      DeleteItem($db2, unpack_id128($db->f('id'))); // deletes from content, offline and
+      DeleteItem($db2, unpack_id($db->f('id'))); // deletes from content, offline and
     }                                           // relation tables
 
     // delete items

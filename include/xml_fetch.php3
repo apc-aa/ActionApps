@@ -296,7 +296,7 @@ function updateFieldsMapping($feed_id, $l_slice_id, $r_slice_id, &$field_refs, &
  *
  */
 function onefeed($feed_id, $feed, $debugfeed, $fire = 'write') {
-    $slice_id = unpack_id128($feed['slice_id']);
+    $slice_id = unpack_id($feed['slice_id']);
     if ( $fire=='write' ) {
         $grabber      = new AA_Grabber_Aarss($feed_id, $feed, $fire);
         $translations = null;

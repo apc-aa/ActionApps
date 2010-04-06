@@ -528,9 +528,9 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
 function GetView($view_param) {
     global $nocache, $debug;
     //create keystring from values, which exactly identifies resulting content
-    $keystr = serialize($view_param). AA_Stringexpand_Keystring::expand();
+    $key = get_hash($view_param, AA_Stringexpand_Keystring::expand());
 
-    if ( $res = $GLOBALS['pagecache']->get($keystr, $nocache) ) {
+    if ( $res = $GLOBALS['pagecache']->get($key, $nocache) ) {
         return $res;
     }
 
@@ -539,7 +539,7 @@ function GetView($view_param) {
     $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
     $res             = GetViewFromDB($view_param, $cache_sid);
     $str2find_passon->add($cache_sid, 'slice_id');
-    $pagecache->store($keystr, $res, $str2find_passon);
+    $pagecache->store($key, $res, $str2find_passon);
     $str2find_passon->add_str2find($str2find_save); // and append saved for above
     return $res;
 }
@@ -590,7 +590,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
         $view_info["slice_id"] = pack_id($view_param["slice_id"]);  // packed,not quoted
         $slice_id = $view_param["slice_id"]; // unpacked
     } else {
-        $slice_id = unpack_id128($view_info["slice_id"]);
+        $slice_id = unpack_id($view_info["slice_id"]);
     }
 
     // At this point, view_info["slice_id"] = $slice_id
@@ -629,6 +629,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
             //      where id of slice is stored in 'id' column (honzam)
 
             $format['id'] = pack_id($slice_id);                  // set slice_id because of caching
+                                                                 // not needed probably - we no longer call get_output_cached here
 
             // special url parameter disc_url - tell us, where we have to show
             // discussion fulltext (good for discussion search)
@@ -639,7 +640,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
             }
 
             $itemview = new itemview($format,"",$aliases,null,"","",$durl, $disc);
-            $ret      = $itemview->get_output_cached("discussion");
+            $ret      = $itemview->get_output("discussion");
             break;
 
         case 'links':              // links       (module Links)
@@ -680,7 +681,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
                 break;
             }
 
-            $ret = $itemview->get_output_cached();
+            $ret = $itemview->get_output();
             break;
 
         case 'full':  // parameters: zids, als
@@ -694,17 +695,17 @@ function GetViewFromDB($view_param, &$cache_sid) {
                 if (isMLXSlice($slice)) {  //mlx stuff, display the item's translation
                     $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
                     //make sure the lang info doesnt get reused with different view
-                    $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)));
-                    $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$conds,$slices);
+                    $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)));
+                    $GLOBALS['mlxView']->preQueryZIDs(unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)),$conds,$slices);
                     $zids3 = new zids($zids->longids());
-                    $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id,
+                    $GLOBALS['mlxView']->postQueryZIDs($zids3,unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id,
                                     $conds, '', $slice->getProperty('group_by'),"ACTIVE", $slices, '', 0,
                                     '',$GLOBALS['nocache'], "vid=$vid t=full i="); //.serialize($zids3));
                     $zids->a    = $zids3->a;
                     $zids->type = $zids3->type;
                 }
                 $itemview = new itemview($format, $fields, $aliases, $zids, 0, 1, shtml_url(), "");
-                $ret      = $itemview->get_output_cached("view");
+                $ret      = $itemview->get_output("view");
             } else {
                 $ret      = AA_Stringexpand::unalias($noitem_msg);
             }
@@ -773,13 +774,13 @@ function GetViewFromDB($view_param, &$cache_sid) {
             if (isMLXSlice($slice)) {
                 $mlx = ($view_param["mlx"]?$view_param["mlx"]:$view_param["MLX"]);
                 //make sure the lang info doesnt get reused with different view
-                $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)));
-                $GLOBALS['mlxView']->preQueryZIDs(unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$conds,$slices);
+                $GLOBALS['mlxView'] = new MLXView($mlx,unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)));
+                $GLOBALS['mlxView']->preQueryZIDs(unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)),$conds,$slices);
             }
             $zids2 = QueryZIDs($zids ? false : (is_array($slices) ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", 0, $zids);
 
             if (isMLXSlice($slice)) {
-                $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id128($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id,
+                $GLOBALS['mlxView']->postQueryZIDs($zids2,unpack_id($slice->getProperty(MLX_SLICEDB_COLUMN)),$slice_id,
                                                    $conds, $sort, $slice->getProperty('group_by'),"ACTIVE", $slices, '', 0,
                                                    '',$GLOBALS['nocache'],"vid=$vid t=list");
             }

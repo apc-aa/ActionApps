@@ -90,9 +90,9 @@ function initSummarize() {
 function ignored_slice($si) {
     global $ignored_sliceids;
     if (!$ignored_sliceids) {
-        $ignored_sliceids = array( unpack_id128("AA_Core_Fields.."),
-            unpack_id128("News_EN_tmpl...."),
-            unpack_id128("ReaderManagement"));
+        $ignored_sliceids = array( unpack_id("AA_Core_Fields.."),
+            unpack_id("News_EN_tmpl...."),
+            unpack_id("ReaderManagement"));
     }
     return !  (array_search($si,$ignored_sliceids) === false);
 }
@@ -283,7 +283,7 @@ function nearestSlice($st,$possmodels) {
  */
 function compareSlices($st,$sm,$pr) {
     global $scoreAddOrMiss,$sao;
-    $CoreFields = $sao[unpack_id128("AA_Core_Fields..")]->fields();
+    $CoreFields = $sao[unpack_id("AA_Core_Fields..")]->fields();
     $score = 0;
     $ft = $st->fields();
     $fm = $sm->fields();
@@ -464,7 +464,7 @@ function compareSliceTableFields($st,$sm,$pr) {
 function qenc($val,$htmlformat,$unp,$color) {
     return ("<font color=\"$color\">"
         . ( $htmlformat ? htmlentities($val)
-            : ($unp ? unpack_id128($val) : $val))
+            : ($unp ? unpack_id($val) : $val))
         . "</font>"
     );
 }

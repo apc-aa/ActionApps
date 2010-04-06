@@ -241,7 +241,7 @@ function getReaderManagementSlices () {
     }
     $db->query ($SQL);
     while ($db->next_record())
-        $retval [unpack_id128 ($db->f("id"))] = $db->f("name");
+        $retval [unpack_id ($db->f("id"))] = $db->f("name");
     if ($collectionprop["slice_id"])
         $retval[""] = _m("not set");
     return $retval;

@@ -422,10 +422,7 @@ class AA_Object extends AA_Storable {
      */
     function parseClassProperties($class_mask, $string) {
         // we do not use ParamExplode() - I  do not like the http:// replacement there
-        $a       = str_replace("#:", "__-__.", $string);    // dummy string
-        $b       = str_replace(":", "##Sx", $a);            // Separation string is //#Sx
-        $c       = str_replace("__-__.", ":", $b);          // change "#:" to ":"
-        $splited = explode("##Sx", $c);
+        $splited = explode('##Sx', str_replace(array('#:', ':', '~@|_'), array('~@|_', '##Sx', ':'), $string));
 
         // first parameter is the class identifier - the parameters starts then
         $i      = 1;
@@ -720,7 +717,7 @@ class AA_Object extends AA_Storable {
         }
 
         // not cached result
-        return GetZidsFromSQL( $SQL, 'objectid', false, '', '', 'l', false,
+        return GetZidsFromSQL( $SQL, 'objectid', 'l', false,
                                // last parameter is used for sorting zids to right order
                                // - if no order specified and restrict_zids are specified,
                                // return zids in unchanged order

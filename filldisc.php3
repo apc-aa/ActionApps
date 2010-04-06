@@ -91,7 +91,7 @@ if ( $answer )    {
 }
 
 
-$slice_id = unpack_id128(GetTable2Array("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'", 'aa_first', 'slice_id'));
+$slice_id = unpack_id(GetTable2Array("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'", 'aa_first', 'slice_id'));
 $slice    = AA_Slices::getSlice($slice_id);
 if (empty($slice)) {
      echo _m("Comment to wrong item - item's slice not found.");
@@ -186,7 +186,7 @@ if ($_REQUEST['send_reactions'] AND AA_Validate::validate($d_e_mail, 'email')) {
 }
 
 // invalidate cache
-$slice_id = unpack_id128(GetTable2Array("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'", 'aa_first', 'slice_id'));
+$slice_id = unpack_id(GetTable2Array("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'", 'aa_first', 'slice_id'));
 $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 AA_Log::write('PAGECACHE', "slice_id=$slice_id", "filldisc" );
 

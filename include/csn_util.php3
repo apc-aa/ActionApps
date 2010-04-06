@@ -40,8 +40,8 @@ define("FEEDTYPE_EXACT",3);
 define("ERR_NO_SLICE","Error 1");
 define("ERR_PASSWORD","Error 2");
 
-define( 'UNPACKED_AA_THE_SAME_CATE', unpack_id128('AA_The_Same_Cate') );
-define( 'UNPACKED_AA_OTHER_CATEGOR', unpack_id128('AA_Other_Categor') );
+define( 'UNPACKED_AA_THE_SAME_CATE', unpack_id('AA_The_Same_Cate') );
+define( 'UNPACKED_AA_OTHER_CATEGOR', unpack_id('AA_Other_Categor') );
 
 $CONTENT_FORMATS = array("http://www.isi.edu/in-notes/iana/assignments/media-types/text/html" => HTML,
                          "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain"=> PLAIN);
@@ -87,7 +87,7 @@ function GetExternalCategories($feed_id, $add_other=false) {
             "value"              => $db->f('category'),
             "name"               => $db->f('category_name'),
             "approved"           => $db->f('approved'),
-            "target_category_id" => unpack_id128($db->f('target_category_id')));
+            "target_category_id" => unpack_id($db->f('target_category_id')));
     }
     if ( $add_other AND (count($ext_categs)>0) AND !isset($ext_categs[unpack_id('AA_Other_Categor')])) {
         $ext_categs[UNPACKED_AA_OTHER_CATEGOR] = array(
@@ -181,7 +181,7 @@ function GetGroupConstants($slice_id) {
     $SQL = "SELECT id, name, value, class FROM constant WHERE group_id = '$cat_group' ORDER BY pri";
     $db->query($SQL);         // get all categories
     while ($db->next_record()) {
-        $cat_ids[unpack_id128($db->f('id'))] = array("name"     => $db->f('name'),
+        $cat_ids[unpack_id($db->f('id'))] = array("name"     => $db->f('name'),
                                                      "value"    => $db->f('value'),
                                                      "parent_id"=> $db->f('class'));
     }
@@ -336,7 +336,7 @@ class LastEditList {
                                            '',      // not necessary
                                            '',      // no discussion settings
                                            'GetXml_GetContent');
-        $this->lastlist = $itemview->get_output_cached("view");
+        $this->lastlist = $itemview->get_output("view");
     }
     /** setList function
      * @param $list

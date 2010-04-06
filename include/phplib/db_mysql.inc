@@ -148,7 +148,7 @@ class DB_MySQL {
       return 0;
     }
 
-    $this->Record = @mysql_fetch_array($this->Query_ID);
+    $this->Record = @mysql_fetch_array($this->Query_ID, MYSQL_ASSOC);
     $this->Row   += 1;
     $this->Errno  = mysql_errno();
     $this->Error  = mysql_error();

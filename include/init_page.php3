@@ -83,7 +83,6 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
-
 if ($encap == "false") {   // used in itemedit for anonymous form
     $encap = false;        // it must be here, because the variable is rewriten
                            // if the get_magic_quotes_gpc()==false (see above)
@@ -181,7 +180,7 @@ $contentcache = new contentcache;
 // Create g_modules: a global array which holds user editable modules
 $db->query("SELECT id, name, type, deleted FROM module ORDER BY priority, name");
 while ($db->next_record()) {
-    $my_slice_id = unpack_id128($db->f('id'));
+    $my_slice_id = unpack_id($db->f('id'));
     if (IsSuperadmin() OR ( !$db->f('deleted') AND $perm_slices[$my_slice_id] )) {
         $g_modules[$my_slice_id] = array(
             'name' => $db->f('name'),

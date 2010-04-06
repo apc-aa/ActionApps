@@ -52,7 +52,7 @@ function GetCategories($db,$p_slice_id){
      $SQL = "SELECT name, value FROM constant WHERE group_id='".$p_slice_id."'";
      $db->query($SQL);
      while ($db->next_record()) {
-         $unpacked       = unpack_id128($db->f("value"));
+         $unpacked       = unpack_id($db->f("value"));
          $arr[$unpacked] = $db->f("name");
      }
      return $arr;

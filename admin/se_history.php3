@@ -134,17 +134,10 @@ function GetHistoryContent($zids) {
  *                            'all'       - all categories in any folder
  *  @global int  $QueryIDsCount - set to the count of IDs returned
  *  @global bool $debug=1       - many debug messages
- *  @global bool $nocache       - do not use cache, even if use_cache is set
  */
 function QueryHistoryZIDs($slice_id, $conds, $sort="") {
     global $debug;                 // displays debug messages
-    global $nocache;               // do not use cache, if set
 
-    $keystr = 'history'.$slice_id. serialize($conds). serialize($sort);
-    $cache_condition = $use_cache AND !$nocache;
-    if ( $res = CachedSearch( $cache_condition, $keystr )) {
-        return $res;
-    }
     $HISTORY_FIELDS = GetHistoryFields();
 
     $where_sql    = MakeSQLConditions($HISTORY_FIELDS, $conds, $HISTORY_FIELDS, $foo);
@@ -159,8 +152,7 @@ function QueryHistoryZIDs($slice_id, $conds, $sort="") {
     $SQL .=  $where_sql . $order_by_sql;
 
     // get result --------------------------
-    $str2find = new CacheStr2find(array($slice_id), 'slice_id');
-    return GetZidsFromSQL($SQL, 'id', $cache_condition, $keystr, $str2find);
+    return GetZidsFromSQL($SQL, 'id');
 }
 
 

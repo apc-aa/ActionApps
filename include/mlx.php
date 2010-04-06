@@ -236,7 +236,7 @@ class MLX
 //public:
     function MLX(&$slice) {
         $this->slice = $slice;
-        $this->langSlice = unpack_id128($this->slice->getProperty(MLX_SLICEDB_COLUMN));
+        $this->langSlice = unpack_id($this->slice->getProperty(MLX_SLICEDB_COLUMN));
         list($this->ctrlFields,) = GetSliceFields($this->langSlice);
     }
     /** getCtrlFields function
@@ -285,7 +285,7 @@ class MLX
             }
         }
 
-        //huhl("update(", $content4mlxid, "$id, $lang, $qp_cntitemid, $cntitemid, ".unpack_id128($qp_cntitemid)." ".strlen($qp_cntitemid)." ".pack_id($content4id->getItemID()));
+        //huhl("update(", $content4mlxid, "$id, $lang, $qp_cntitemid, $cntitemid, ".unpack_id($qp_cntitemid)." ".strlen($qp_cntitemid)." ".pack_id($content4id->getItemID()));
         //die;
         if (empty($content4mlxid)) {
             $this->fatal("Creating the Control Language Data failed. "
@@ -337,7 +337,7 @@ class MLX
             case "update":
             case "edit":
                 $lang  = $content4id['lang_code.......'][0][value];
-                $mlxid = unpack_id128($content4id[MLX_CTRLIDFIELD][0][value]);
+                $mlxid = unpack_id($content4id[MLX_CTRLIDFIELD][0][value]);
                 break;
             case "insert":
             case "add":
@@ -346,7 +346,7 @@ class MLX
                 // get first non empty set of translations of current item ($mlxid)
                 $defCntId = $mlxCtrl->getFirstNonEmpty();
                 if ($defCntId) {
-                    $tritemid    = unpack_id128(array_shift($defCntId));
+                    $tritemid    = unpack_id(array_shift($defCntId));
                     $itemcontent = GetItemContent($tritemid);
                     $content4form = $itemcontent[$tritemid];
                     foreach ($this->slice->fields('record') as $slfield) {
@@ -445,7 +445,7 @@ class MLX
     {
         global $err;
         if (is_array($content4id)) {
-            $mlxid = unpack_id128($content4id[MLX_CTRLIDFIELD][0]['value']);
+            $mlxid = unpack_id($content4id[MLX_CTRLIDFIELD][0]['value']);
         } else {
             $mlxid = $content4id;
         }
@@ -467,7 +467,7 @@ class MLX
         }
         foreach ($this->ctrlFields as $v) {
             if ($v['name'] == $lang) {
-                return unpack_id128($content4mlxid[$v['id']][0]['value']);
+                return unpack_id($content4mlxid[$v['id']][0]['value']);
             }
         }
         return false;
@@ -591,8 +591,8 @@ class MLXView
         $group_by,$type, $slices, $neverAllItems, $restrict_zids,
         $defaultCondsOperator,$nocache,$cachekeyextra="")
     {
-        global $pagecache, $QueryIDsCount, $debug;
-//         static $qCache = array();
+        global $QueryIDsCount, $debug;
+
         if($this->mode != "MLX") {
             return;
         }
@@ -601,47 +601,8 @@ class MLXView
         }
         if(MLX_TRACE) {
             $timestart = get_microtime();
-//             __mlx_dbg(var_dump($this,true),__FUNCTION__);
-//             __mlx_dbg(var_dump(func_get_args(),true),__FUNCTION__);
         }
 
-        $nocache = $nocache || MLX_NOVIEWCACHE || $GLOBALS['nocache'] || $GLOBALS['mlxnoviewcache'];
-    // try cache
-        if(!$nocache) {
-            #create keystring from values, which exactly identifies resulting content
-            $keystr = md5($this->mode.serialize($this->language)
-                . ':'.serialize($zidsObj) .':'.$ctrlSliceID.':'.$slice_id
-                . ':'.serialize($conds). ':' . serialize($sort)
-                . ':'.$group_by.':'.$type.':'.serialize($slices).':'.$neverAllItems
-//                 . ((isset($restrict_zids) && is_object($restrict_zids)) ?
-//                     serialize($restrict_zids) : "")
-                . ':'.serialize($restrict_zids)
-                . ':'.$defaultCondsOperator .':'. $cachekeyextra);
-
-//             __mlx_dbg(func_get_args(),__FUNCTION__);
-
-//             if($qCache[$keystr]) {
-//                 if(MLX_TRACE) {
-//                     __mlx_trace("using mem cache for ".$keystr);
-//                 }
-// 		$zidsObj = $qCache[$keystr];
-//                 return;
-// 	    }
-
-
-            $str2find = new CacheStr2find($ctrlSliceID, 'slice_id');
-            if ( $res = CachedSearch( !$nocache, $keystr )) {
-                if(MLX_TRACE) {
-//                     __mlx_trace("using sql cache for ".$keystr);
-                    $timeend = get_microtime();
-                    $time    = $timeend - $timestart;
-                    __mlx_trace(__FUNCTION__." sql cache $keystr generation time: $time");
-                }
-                $QueryIDsCount = count($res->a);
-                $zidsObj->refill( $res->a );
-                return;
-            }
-        }
         $translations = $this->getPrioTranslationFields($ctrlSliceID,$slice_id);
         $arr = array();
         foreach($zidsObj->a as $packedid) {
@@ -653,7 +614,7 @@ class MLXView
             if($count > 1) // already primary
                 continue;
             if(MLX_TRACE) {
-                __mlx_dbg(unpack_id128($upContId),"ContentID");
+                __mlx_dbg(unpack_id($upContId),"ContentID");
             }
             //speedup
 //             if(MLX_OPTIMIZE > 5) {
@@ -683,13 +644,13 @@ class MLXView
             unset($aMlxCtrl);
             while( $db->next_record() ) { //get all translations
                 if(MLX_TRACE) {
-                    __mlx_dbg(array($db->f('field_id'),unpack_id128($db->f('text'))),"JOIN");
+                    __mlx_dbg(array($db->f('field_id'),unpack_id($db->f('text'))),"JOIN");
                 }
                 $aMlxCtrl[(string)$db->Record[0]] = $db->Record[1];
                 /*
-                $GLOBALS['MLX_ALT'][(string)unpack_id128($db->Record[1])] = array(
+                $GLOBALS['MLX_ALT'][(string)unpack_id($db->Record[1])] = array(
                 'lang' => array_search((string)$db->Record[0],$translations),
-                'id' => (string)unpack_id128($upContId));
+                'id' => (string)unpack_id($upContId));
                 */
             }
             //__mlx_dbg($aMlxCtrl,"aMlxCtrl");
@@ -699,12 +660,12 @@ class MLXView
                 if(!$fieldSearch) {
                     continue;
                 }
-                /*$GLOBALS['MLX_ALT'][(string)unpack_id128($fieldSearch)][] = array($l=>
-                    unpack_id128($upContId));
+                /*$GLOBALS['MLX_ALT'][(string)unpack_id($fieldSearch)][] = array($l=>
+                    unpack_id($upContId));
                 */
                 if($bFound) {
                     if(MLX_TRACE) {
-                        __mlx_dbg(unpack_id128($fieldSearch),"unset");
+                        __mlx_dbg(unpack_id($fieldSearch),"unset");
                     }
                     unset($arr[(string)$fieldSearch]);
                     //__mlx_dbg($arr,"arr");
@@ -718,14 +679,9 @@ class MLXView
         freeDB($db);
         $QueryIDsCount = count($arr);
         $zidsObj->a    = array_keys($arr);
-        if ( !$nocache ) {
-//             $qCache[$keystr] = $zidsObj;
-            $pagecache->store($keystr, serialize($zidsObj), $str2find);
-        }
         if(MLX_TRACE) {
             $timeend = get_microtime();
             $time    = $timeend - $timestart;
-            __mlx_trace(__FUNCTION__." $keystr generation time: $time");
             if(!$GLOBALS['TIMINGS']['MLX']) {
                 $GLOBALS['TIMINGS']['MLX'] = array('MLX:'.__FUNCTION__,$time);
             } else {
@@ -750,7 +706,7 @@ class MLXView
             }
             return "";
         }
-        $ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id128($slice_id)];
+        $ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id($slice_id)];
         if(!$ctrlSliceID) {
             return "";
         }
@@ -774,9 +730,9 @@ class MLXView
                 $o .= "-";
             }
             $o .= array_search((string)$db->Record[1],$translations)."=";
-            $o .= unpack_id128($db->Record[0]);
+            $o .= unpack_id($db->Record[0]);
             //__mlx_dbg($db->Record);
-            //__mlx_dbg(unpack_id128($db->Record[1]));
+            //__mlx_dbg(unpack_id($db->Record[1]));
         }
         return $o;
     }
@@ -787,23 +743,23 @@ class MLXView
      * @param $params
      */
     function getTranslations($p_itemid,$slice_id,$params) {
-        //__mlx_dbg(unpack_id128($p_itemid),"itemid");
-        //__mlx_dbg(unpack_id128($slice_id),"slice_id");
+        //__mlx_dbg(unpack_id($p_itemid),"itemid");
+        //__mlx_dbg(unpack_id($slice_id),"slice_id");
         //__mlx_dbg($params,"params");
         if(!$p_itemid) {
             if($GLOBALS['errcheck']) huhl("MLXView::getAlternatives zero id passed");
             return "";
         }
-        $ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id128($slice_id)];
+        $ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id($slice_id)];
         if(!$ctrlSliceID) {
 //             $GLOBALS['errcheck'] = true;
 //              __mlx_dbg(func_get_args(),__FUNCTION__);
-            $sliceobj = AA_Slices::getSlice(unpack_id128($slice_id));
+            $sliceobj = AA_Slices::getSlice(unpack_id($slice_id));
             $ctrlSliceID = $sliceobj->getProperty(MLX_SLICEDB_COLUMN);
             if(!$ctrlSliceID) {
                 return "MLXView::getTranslations no ctrlSliceID";
             }
-            $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id128($slice_id)] = unpack_id128($ctrlSliceID);
+            $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id($slice_id)] = unpack_id($ctrlSliceID);
         }
         $translations = $this->getPrioTranslationFields($ctrlSliceID);
         $db  = getDB();
@@ -825,9 +781,9 @@ class MLXView
                 continue;
             }
             //$o .= array_search((string)$db->Record[1],$translations)."=";
-            //$o .= unpack_id128($db->Record[0]);
+            //$o .= unpack_id($db->Record[0]);
             $lang    = array_search((string)$db->Record[1],$translations);
-            $itemid  = unpack_id128($db->Record[0]);
+            $itemid  = unpack_id($db->Record[0]);
             $o      .= str_replace(array("%lang","%itemid"),array($lang,"$itemid"),
                 $tmpl);
             //__mlx_dbg($db->Record);
@@ -1052,7 +1008,7 @@ class MLXGetText
             $db->tquery($sql);
         while( $db->next_record() ) {
             list($item_id,$field_id,$text) = $db->Record;
-            $item_id  = unpack_id128($item_id);
+            $item_id  = unpack_id($item_id);
             $refSlice = &$this->currentDomainRef[$lang];
             if($field_id == 'headline........') {
                 if($refSlice[$item_id]) {

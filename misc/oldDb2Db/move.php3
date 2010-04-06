@@ -347,7 +347,7 @@ do {
     $content4id = PrepareContent4id($odb->Record);
 
     if ( $fire ) {
-      $navrat = StoreItem( unpack_id128($odb->f('id')), $slice_id, $content4id, $fields, true, false, false );
+      $navrat = StoreItem( unpack_id($odb->f('id')), $slice_id, $content4id, $fields, true, false, false );
     }                                        // insert, do not invalidatecache, do not feed
 
     echo "<br>Item '". $odb->f('headline') ."' stored";

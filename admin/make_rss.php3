@@ -93,7 +93,7 @@ $item_count = 1;
 $db->query($SQL);
 while ($db->next_record()){
   $title       = RSS_restrict( $db->f('headline'), 100);
-  $link_item   = RSS_restrict( con_url($link, "sh_itm=".unpack_id128($db->f(id))), 500);
+  $link_item   = RSS_restrict( con_url($link, "sh_itm=".unpack_id($db->f(id))), 500);
   $description = RSS_restrict( ($db->f('abstract')=="" ? $db->f('full_text') : strip_tags($db->f('abstract'))), 256);   // should be 500 but whole RSS file must be less than 8 kB
   echo "
     <item>

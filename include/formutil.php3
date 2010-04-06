@@ -2812,14 +2812,13 @@ function getFrmJavascript( $jscode ) {
  */
 function getFrmJavascriptCached( $jscode, $name ) {
     global $pagecache;
-    $keystr = serialize($jscode);
-    $keyid  = $pagecache->getKeyId($keystr);
+    $key  = get_hash('jscache', $jscode);
 
-    if (!$pagecache->getById($keyid)) {     // not in cache, yet
+    if (!$pagecache->getById($key)) {     // not in cache, yet
         $str2find = new CacheStr2find($name, 'js');
-        $pagecache->store($keystr, $jscode, $str2find, true);
+        $pagecache->store($key, $jscode, $str2find, true);
     }
-    return getFrmJavascriptFile( 'cached.php3?keystr='.$keyid );
+    return getFrmJavascriptFile( 'cached.php3?keystr='.$key );
 }
 
 /** getFrmCSS function

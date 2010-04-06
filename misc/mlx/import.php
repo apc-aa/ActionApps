@@ -128,7 +128,7 @@ class MLXImport
             $this->mlxObj->update($content,$cntitemid,$action,$mlxl,$mlxid);
             if(!$mlxid) {
                 // save the item id of the the mlx control item
-                $mlxid = unpack_id128($content[MLX_CTRLIDFIELD][0][value]);
+                $mlxid = unpack_id($content[MLX_CTRLIDFIELD][0][value]);
                 // preserve info for rollback (not implemented)
                 $this->added[$mlxid]['mlxid'] = $mlxid;
                 if($mlxl == 'EN') //q&d

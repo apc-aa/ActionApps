@@ -132,8 +132,7 @@ function default_fnc_($param) {
  * @param $param
  */
 function default_fnc_variable($param) {
-  $maxlevel = 0;
-  return new_unalias_recurent($param, '', 0, $maxlevel);
+    return AA_Stringexpand::unalias($param);
 }
 
 // ----------------------- insert functions ------------------------------------
@@ -485,8 +484,8 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
  * @param $param
  * @param $additional
  */
-function insert_fnc_pwd($item_id, $field, $value, $param, $additional='')
-{
+function insert_fnc_pwd($item_id, $field, $value, $param, $additional='') {
+
     $change_varname = "v".unpack_id($field["id"])."a";
     $retype_varname = "v".unpack_id($field["id"])."b";
     // "c" created in ValidateContent4Id:

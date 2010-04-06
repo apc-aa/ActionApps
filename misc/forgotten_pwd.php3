@@ -135,7 +135,7 @@ function GetUserData($identification,$findby="headline........") {
     $db = getDB();
     $db->tquery("SELECT id FROM slice WHERE type='ReaderManagement'");
     while ($db->next_record()) {
-        $slices[] = unpack_id128($db->f('id'));
+        $slices[] = unpack_id($db->f('id'));
     }
     freeDB($db);
     // get item id of current user

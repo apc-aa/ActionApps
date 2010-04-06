@@ -123,7 +123,7 @@ class AA_Manageraction_Central_Sqlupdate extends AA_Manageraction {
             $file     = $db->f('AA_HTTP_DOMAIN'). $db->f('AA_BASE_DIR'). "service/sql_update.php?$params";
             $response = file_get_contents($file);
             $status   = substr($response,0,3);
-            $toggle   = '{htmltoggle:&gt;&gt;:'.AA_Stringexpand::quoteColons($file).':&lt;&lt;:'. AA_Stringexpand::quoteColons($response).'}';
+            $toggle   = '{htmltoggle:&gt;&gt;:'. QuoteColons($file).':&lt;&lt;:'. QuoteColons($response).'}';
             $ret     .= AA_Stringexpand::unalias($status.' '.$toggle);
         }
         freeDB($db);

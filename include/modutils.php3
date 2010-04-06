@@ -149,7 +149,7 @@ function GetModuleFields( $source_id, $db ) {
     $SQL = "SELECT id, name FROM slice_owner ORDER BY name";
     $db->query($SQL);
     while ($db->next_record()) {
-        $slice_owners[unpack_id128($db->f('id'))] = $db->f('name');
+        $slice_owners[unpack_id($db->f('id'))] = $db->f('name');
     }
 
     $p_source_id = q_pack_id( $source_id );

@@ -94,44 +94,6 @@ if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $apc_state    = $router->parse($uri);
 
     // do we use login?
-
-    /** Login From Ussage:
-     *   <form action="{go:xqs=}" method="post">
-     *     <fieldset>
-     *       <legend>Login, please</legend>
-     *       <div  style="margin-right:150px; text-align:right;">
-     *         <label for="username">Username</label> <input type="text" size="20" maxlength="20" name="username" id="username"><br>
-     *         <label for="password">Password</label> <input type="password" size="20" maxlength="20" name="password" id="password">
-     *       </div>
-     *     </fieldset>
-     *
-     *     <input type="submit" value="Login" style="margin-left:200px;">
-     *   </form>
-     */
-    $apc_state['xuser'] = '';
-    if ( $_COOKIE['AA_Sess'] OR $_POST['username'] ) {
-        require_once AA_INC_PATH."request.class.php3";
-        $options = array(
-            'aa_url'          => AA_INSTAL_URL,
-            'cookie_lifetime' => 60*60*24*365  // one year
-        );
-        $a = new AA_Client_Auth($options);
-        if (isset($_GET['logout'])) {
-            $a->logout();
-            $apc_state['xuser'] = '';
-        }
-        elseif ($a->checkAuth()) {
-            $apc_state['xuser'] = $a->getUid();
-
-            // Redirect to page. If not specified, then it continues to display
-            // normal page as defined in "action" attribute of <form>
-            if ($_POST["ok_url"]) {
-                go_url($_POST["ok_url"]);
-            }
-        } elseif ($_POST["err_url"]) {
-            go_url($_POST["err_url"]);
-        }
-    }
 }
 
 if ( $site_info['state_file'] ) {
@@ -155,13 +117,13 @@ if ( !isset($apc_state) )  {
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php3
-$key_str = AA_Stringexpand_Keystring::expand(). ":$site_id:$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id:". serialize($ids). serialize($sel_ids). serialize($disc_ids);
+$cache_key = get_hash('site',AA_Stringexpand_Keystring::expand(), "$site_id:$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
 $site_nocache = $nocache;
-if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($key_str,$nocache))) {
+if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($cache_key,$nocache))) {
     echo $res;
     if ( $debug ) {
         $timeend = get_microtime();
@@ -201,7 +163,7 @@ if (!in_array($site_id, (array)$slices4cache)) {
 
 if (is_array($slices4cache) && !$site_nocache) {
     $str2find = new CacheStr2find($slices4cache, 'slice_id');
-    $GLOBALS['pagecache']->store($key_str, $res, $str2find);
+    $GLOBALS['pagecache']->store($cache_key, $res, $str2find);
 }
 
 
@@ -262,10 +224,7 @@ function ModW_StoreIDs($spot_id, $depth) {
 
 function ModW_unalias( &$text, &$state ) {
     // just create variables and set initial values
-    $maxlevel = 0;
-    $level    = 0;
-    $ret      = new_unalias_recurent($text, "", $level, $maxlevel,$state['item']);
-    return $ret;
+    return AA_Stringexpand::unalias($text, '', $state['item']);
 }
 
 // id = an item id, unpacked or short

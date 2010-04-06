@@ -124,7 +124,7 @@ if ($go_findslice && $findslice) {
     echo $db->num_rows()." matching slices found:<br>";
     while ($db->next_record()) {
         echo $db->f("name")." "
-                ."<a href=\"".$sess->url("se_fulltext.php3?change_id=".unpack_id128($db->f("id")))
+                ."<a href=\"".$sess->url("se_fulltext.php3?change_id=".unpack_id($db->f("id")))
                 ."\">"._m("Jump")."</a><br>";
     }
 }
@@ -168,8 +168,8 @@ if ($go_findfield && $findfield) {
     echo $db->num_rows()." matching fields found:<br>";
     while ($db->next_record()) {
         echo $db->f("name")." "
-                ."<a href=\"".$sess->url("se_inputform.php3?change_id=".unpack_id128($db->f("slice_id")). "&fid=".$db->f("id") )
-                ."\">".$db->f("id"). ' ('. AA_Slices::getName(unpack_id128($db->f("slice_id"))). ")</a><br>";
+                ."<a href=\"".$sess->url("se_inputform.php3?change_id=".unpack_id($db->f("slice_id")). "&fid=".$db->f("id") )
+                ."\">".$db->f("id"). ' ('. AA_Slices::getName(unpack_id($db->f("slice_id"))). ")</a><br>";
     }
 }
 
@@ -189,7 +189,7 @@ if ($go_finditem && $finditem) {
     $item = AA_Items::getItem($finditem);
     if ($item) {
         echo "<br>Item ID: ". $item->getItemID();
-        echo "<br>Item slice: ". $item->getSliceID(). ' ('. AA_Slices::getName(unpack_id128($item->getSliceID())). ')';
+        echo "<br>Item slice: ". $item->getSliceID(). ' ('. AA_Slices::getName(unpack_id($item->getSliceID())). ')';
     }
     echo "<pre>";
     echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';

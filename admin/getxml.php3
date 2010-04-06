@@ -153,7 +153,7 @@ function GetFeedingSlices( $node_name, $user) {
     $db->query("SELECT slice_id FROM ef_permissions WHERE (node='$node_name' OR node='')
                                                     AND (user='$user' OR user='')");
     while ($db->next_record()) {
-        $slices[] = unpack_id128($db->f(slice_id));
+        $slices[] = unpack_id($db->f(slice_id));
     }
     return $slices;
 }
@@ -210,7 +210,7 @@ function GetXMLCategories($slice_id, &$xml_categories_refs, &$xml_categories) {
 
     $xml_categories_refs.="\t<aa:categories><rdf:Bag>\n";
     while ($db->next_record()) {
-        $id = unpack_id128($db->f('id'));
+        $id = unpack_id($db->f('id'));
         $xml_categories .= "<aa:category rdf:about=\"".AA_INSTAL_URL."cat/$id\">\n".
                               "\t<aa:name>".code($db->f('name'))."</aa:name>\n".
                               "\t<aa:value>".code($db->f('value'))."</aa:value>\n".
@@ -269,7 +269,7 @@ function GetXMLFieldData($slice_id, $field_id, &$content4id) {
 
     // the id should be unpacked for transmition
     if ( ($field_id == 'id..............') AND (guesstype($cont_vals[0]['value']) == 'p')) {
-        $cont_vals[0]['value'] = unpack_id128($cont_vals[0]['value']);
+        $cont_vals[0]['value'] = unpack_id($cont_vals[0]['value']);
     }
 
     if (!$cont_vals || !is_array($cont_vals)) {
@@ -351,7 +351,7 @@ function GetXMLItem($slice_id, $item_id, &$content4id, &$slice_fields) {
         foreach ($item_categs as $k => $v) {
             $p_cat_id = $value2const_id[$slice_id][$v['value']];
             if ( $p_cat_id ) {
-                $xml_items .="\t\t<rdf:li rdf:resource=\"".AA_INSTAL_URL."cat/".unpack_id128($p_cat_id)."\"/>\n";
+                $xml_items .="\t\t<rdf:li rdf:resource=\"".AA_INSTAL_URL."cat/".unpack_id($p_cat_id)."\"/>\n";
             }
         }
         $xml_items.="\t</rdf:Bag></aa:categories>\n";
@@ -562,7 +562,7 @@ if ($ids) {
     $ids  = "";
     $time = 0;
     while ($db->next_record()) {
-        $ids[] = unpack_id128($db->f(id));
+        $ids[] = unpack_id($db->f(id));
         $time  = max( $time, $db->f('publish_date'), $db->f('last_edit'));   // save time of the newest item
     }
     $time = unixstamp_to_iso8601($time);

@@ -111,7 +111,7 @@ if ($slices2show == 'all') {
 
 $db->query($SQL);
 while ( $db->next_record() ) {
-  PrintSlice(unpack_id128($db->f('id')), $db->f('name'), $db->f('type') );
+  PrintSlice(unpack_id($db->f('id')), $db->f('name'), $db->f('type') );
   $slice_to_delete = true;
 }
 if ( !$slice_to_delete ) {

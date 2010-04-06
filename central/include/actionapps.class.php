@@ -232,21 +232,21 @@ class AA_Actionapps {
     /** create array of all Approved AAs from central database */
     // not used, yet
     // function getCurrent($sess) {
-    // 
+    //
     //     $aaic = new ItemContent();
     //     $aaic->setValue('ORG_NAME',       ORG_NAME);
     //     $aaic->setValue('AA_HTTP_DOMAIN', AA_HTTP_DOMAIN);
     //     $aaic->setValue('AA_BASE_DIR',    AA_BASE_DIR);
-    // 
+    //
     //     $aa = new AA_Actionapps($aaic);
     //     $aa->setSession($sess->id());
-    // 
+    //
     //     $ret    = array();
     //     $conds  = array();
     //     $sort[] = array('ORG_NAME' => 'a');
     //     $zids   = Central_QueryZids($conds, $sort, AA_BIN_APPROVED);
     //     $aa_ic  = Central_GetAaContent($zids);
-    // 
+    //
     //     foreach ($aa_ic as $k => $content4id) {
     //         $ret[$k] = new AA_Actionapps(new ItemContent($content4id));
     //     }
@@ -517,7 +517,7 @@ class AA_Difference {
                // if we comparing row values, we can also update whole row at once - so we mark it
                $is_different = true;
 
-               $code = '{htmltoggle:&gt;&gt;::&lt;&lt;:'. AA_Stringexpand::quoteColons('
+               $code = '{htmltoggle:&gt;&gt;::&lt;&lt;:'. QuoteColons('
                        <div style="background-color:#FFE0E0;border: solid 1px #F88;">'._m('Destination').':<br>'.safe($destination_arr[$key]).'</div>
                        <br>
                        <div style="background-color:#E0E0FF;border: solid 1px #88F;">'._m('Template').':<br>'.safe($value).'</div>'). '}';

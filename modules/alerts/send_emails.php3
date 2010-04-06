@@ -131,7 +131,7 @@ function showSelectionTable() {
         in views of type Alerts Selection Set")."</B></TD></TR>";
     } else {
         foreach ($a as $slice_id => $slice) {
-            if (! IsSuperadmin() && ! strchr ($myslices [unpack_id128($slice_id)], PS_FULLTEXT)) {
+            if (! IsSuperadmin() && ! strchr ($myslices [unpack_id($slice_id)], PS_FULLTEXT)) {
                 continue;
             }
             echo "<TR><TD class=tabtxt rowspan=".count($slice["views"]).">
@@ -146,7 +146,7 @@ function showSelectionTable() {
                 $first_view = false;
                 echo "<TD class=tabtxt>
                     <a href=\"".$sess->url(AA_INSTAL_PATH
-                    ."admin/se_view.php3?slice_id=".unpack_id128($slice_id)
+                    ."admin/se_view.php3?slice_id=".unpack_id($slice_id)
                     ."&view_id=".$vid."&view_type=".$view["type"])
                     ."\">".$view["name"]."</A></TD><TD class=tabtxt>";
                 foreach ($view["filters"] as $fid => $filter) {

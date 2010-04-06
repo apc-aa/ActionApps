@@ -55,8 +55,8 @@ list($field_id, $action) = each ($ar);
 $db = new DB_AA;
 $db->query("SELECT id, slice_id FROM item WHERE short_id = $short_id");
 if ($db->next_record()) {
-    $item_id = unpack_id128($db->f("id"));
-    $slice_id = unpack_id128($db->f("slice_id"));
+    $item_id = unpack_id($db->f("id"));
+    $slice_id = unpack_id($db->f("slice_id"));
 }
 else failed();
 

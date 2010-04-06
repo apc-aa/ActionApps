@@ -68,8 +68,8 @@ while (list($short_ids, $ar) = each($edit)) {
       if ($short_id) { // skip potential empty last id
         $db->query("SELECT id, slice_id FROM item WHERE short_id = $short_id");
         if ($db->next_record()) {
-            $item_id  = unpack_id128($db->f("id"));
-            $slice_id = unpack_id128($db->f("slice_id"));
+            $item_id  = unpack_id($db->f("id"));
+            $slice_id = unpack_id($db->f("slice_id"));
         } else {
             failed("Can't find short_id=".$short_id);
         }

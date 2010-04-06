@@ -1,7 +1,49 @@
+04/06/10 - bigger speedup and cleanup. AA profiled with xdebug and optimized
+(honzam)   for speed on many places. Most pages are displayed 2-2.5 times
+           faster, than before. Optimized serialization for cache, removed some
+           internal - unnecessary caching, math rewritten to use PHP evaluation,
+           unaliasing much optimized, used quicker php functions, ...
+         - better support for login form in AA_Router_Seo site module
+           Ussage:
+           <form action="{go:xqs=}" method="post">
+             <fieldset><legend>Login, please</legend>
+               <div  style="margin-right:150px; text-align:right;">
+                 <label for="username">Username</label> <input type="text" size="20" name="username" id="username"><br>
+                 <label for="password">Password</label> <input type="password" size="20" name="password" id="password">
+               </div>
+             </fieldset>
+             <input type="submit" value="Login" style="margin-left:200px;">
+           </form>
+         - login username and password also could be sumbmitted by GET method
+         - new {ifeqfield:<item_id>:<field>:<var>:<text>:<else-text>}
+           If any value of the (multivalue) $field is equal to $var, then print
+           $text, else print $else_text. $(else_)text could contain _#1 alias
+           for $var, but you can use any {} AA expression.
+           You can ommit $item_id if you want to use current item
+             Example: {ifeqfield:{xid}:category.......1:Nature: class="green"}
+             Example: {ifeqfield::category.......1:Nature: class="green"}
+         - new {ifin:<haystack>:<needle>:<text>:<else_text>}
+           If $haystack contain $needle, then print $text, else print $else_text
+           (else_)text could contain _#1 and _#2 aliases for $haystack and $needle
+             Example:  {ifin:ActionApps CMS:CMS:yes:no}
+         - new {site:<site_id>:<property>} - get site module property (currently
+           only "modules" is suprted - dash separated list of slices in the site
+           Use it for example for computing of seo name:
+           {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:{site:{modulefield:{_#SLICE_ID}:site_id}:modules}}}
+         - new {randomstring:<length>} - returns random string of given length
+         - new {encrypt:<text>:<key>} and {decrypt:<text>:<key>}
+           Encrypts/decrypts the $text using $key as password
+           (mcrypt PHP extension must be installed)
+         - {treestring:...} now returns only active items
+           (ignore expired, trashed, ...)
+         - fix - {ajax:...} change now works also with jQuery AA library
+           /javascript/aajslib-jquery.php
+         - no more adding unnecessary rXn=1 url parameter for old Netscape 4.7
+           browser
 02/11/10 - new possibilities for sites which uses new site module AA_SEO_Router:
 (honzam)     - new home - sitemodule now handles root of the web and fills
                the variables as it was typed /{xlang}/ (/en/). {xlang} is filled
-               form site module's language setting
+               from site module's language setting
              - new {xuser:xxxx} alias - auth user informations (of current user)
                xxxx is - field to show ("headline........", "_#SURNAME_" ...)
                        - "id" for long id

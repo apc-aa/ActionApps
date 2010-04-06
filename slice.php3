@@ -312,7 +312,7 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
 
     if (!isset ($hideFulltext)) {
         $itemview = new itemview($slice_info, $fields, $aliases, $zid, 0, 1, $sess->MyUrl($slice_id, $encap));
-        $itemview->print_item();
+        echo $itemview->get_output_cached("fulltext");
     }
 
     // show discussion if assigned
@@ -338,7 +338,8 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
             $format['id'] = $p_slice_id;                  // set slice_id because of caching
 
             $itemview = new itemview($format, "", $aliases, null,"", "", $sess->MyUrl($slice_id, $encap), $disc);
-            $itemview->print_discussion('nocache');  // discussions should not be
+            echo $itemview->get_output("discussion");  
+            // discussions should not be            
             // cached or even better (TODO) discussions should have its separate slice
             // which is cached independently form the item itself through standard
             // AA caching
@@ -356,7 +357,7 @@ if ( $items AND is_array($items) ) {   // shows all $items[] as fulltext one aft
     }
     $zids     = new zids($ids,"l");
     $itemview = new itemview($slice_info, $fields, $aliases, $zids, 0,$zids->count(), $sess->MyUrl($slice_id, $encap));
-    $itemview->print_itemlist();
+    echo $itemview->get_output_cached("itemlist");
     ExitPage();
 }
 
@@ -539,13 +540,13 @@ if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($
         if (!$mlxView) {
             $mlxView = new MLXView($mlx);
         }
-        $mlxView->preQueryZIDs(unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
+        $mlxView->preQueryZIDs(unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
     }
 
     $zids = QueryZIDs( ($slices ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator, true );
 
     if (isMLXSlice($slice_info)) {
-        $mlxView->postQueryZIDs($zids,unpack_id128($slice_info[MLX_SLICEDB_COLUMN]),$slice_id, $conds, $sort, $slice_info['group_by'],"ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator,$nocache);
+        $mlxView->postQueryZIDs($zids,unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$slice_id, $conds, $sort, $slice_info['group_by'],"ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator,$nocache);
     }
 
     if ( !$scrl ) {
@@ -565,7 +566,8 @@ if ($zids->count() > 0) {
     $itemview = new itemview($slice_info, $fields, $aliases, $zids, $scr->metapage * ($scr->current - 1),
                              ($group_n ? -$group_n : $scr->metapage),  // negative number used for displaying n-th group
                              $sess->MyUrl($slice_id, $encap) );
-    $itemview->print_view();
+
+    echo $itemview->get_output_cached("view");
 
     if (($scr->pageCount() > 1) AND !$no_scr AND !$group_n) {
         $scr->pnavbar();

@@ -134,7 +134,7 @@ class AA_Feed {
         $feeddata['remote_slice_id'] = q_pack_id(attr2id($feeddata['server_url']));
 
         $this->grabber               = new AA_Grabber_Aarss($id, $feeddata, $this->fire);
-        $this->destination_slice_id  = unpack_id128($feeddata['slice_id']);
+        $this->destination_slice_id  = unpack_id($feeddata['slice_id']);
 
         if ($url) {
             $this->grabber->setUrl($url);
@@ -152,7 +152,7 @@ class AA_Feed {
         $feeddata['feed_type']       = ($feeddata['feed_mode'] == 'exact') ? FEEDTYPE_EXACT : FEEDTYPE_APC;
 
         $this->grabber               = new AA_Grabber_Aarss($id, $feeddata, $this->fire);
-        $this->destination_slice_id  = unpack_id128($feeddata['slice_id']);
+        $this->destination_slice_id  = unpack_id($feeddata['slice_id']);
 
         if ($time) {
             $this->grabber->setTime($time);

@@ -155,52 +155,44 @@ class itemview {
   function is_random() {
       return (substr($this->from_record, 0, 6) == 'random');
   }
-  /** get_output_cached function
-   * @param $view_type
-   */
-  function get_output_cached($view_type="") {
-    //create keystring from values, which exactly identifies resulting content
 
-    if ( $this->is_random() ) {                         // don't cache random item
-        $res = $this->get_output($view_type);
-        return $res;
-    }
-    if (isset($this->zids)) {
-      $keystr = serialize($this->slice_info).
-              $view_type.
-              $this->from_record.
-              $this->num_records.
-              // clean_url removed from keystring - it contains AA_SL_Session,
-              // which differs for each page, so it is never cached!!!
-              // (Honza 2004-11-4)
-              //              $this->clean_url.
-              ((isset($this->zids)) ? $this->zids->id(0) : "");
-    }
-    $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  // negative used for displaying n-th group of items only
-                                        $this->from_record+$this->num_records );
-    for ( $i=$this->from_record; $i<$number_of_ids; $i++) {
-        if (isset($this->zids)) {
-            $keystr .= $this->zids->id($i);
+   /** get_output_cached function
+    * @param $view_type
+    */
+    function get_output_cached($view_type="") {
+        //create keystring from values, which exactly identifies resulting content
+
+        if ( $this->is_random() ) {                         // don't cache random item
+            $res = $this->get_output($view_type);
+            return $res;
         }
-    }
-    $keystr .= serialize($this->disc);
-    $keystr .= serialize($this->aliases);
-    $keystr .= AA_Stringexpand_Keystring::expand();
+        if (isset($this->zids)) {
+            $keystr = get_hash($this->slice_info, $view_type, $this->from_record, $this->num_records, ((isset($this->zids)) ? $this->zids->id(0) : ""));
+        }
+        $number_of_ids = ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  // negative used for displaying n-th group of items only
+            $this->from_record+$this->num_records );
+        for ( $i=$this->from_record; $i<$number_of_ids; $i++) {
+            if (isset($this->zids)) {
+                $keystr .= $this->zids->id($i);
+            }
+        }
+        $key = get_hash('outp', $keystr, $this->disc, $this->aliases, AA_Stringexpand_Keystring::expand());
 
-    global $str2find_passon, $pagecache;
-    if ( !$GLOBALS['nocache'] && ($res = $pagecache->get($keystr)) ) {
+        global $str2find_passon, $pagecache;
+        if ( !$GLOBALS['nocache'] && ($res = $pagecache->get($key)) ) {
+            return $res;
+        }
+
+        $str2find_save   = $str2find_passon;    // Save str2find from same level
+        $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
+        $res             = $this->get_output($view_type);
+        $str2find_passon->add(unpack_id($this->slice_info["id"]), 'slice_id');
+        $pagecache->store($key, $res, $str2find_passon);
+        $str2find_passon->add_str2find($str2find_save); // and append saved for above
+
         return $res;
     }
 
-    $str2find_save   = $str2find_passon;    // Save str2find from same level
-    $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
-    $res             = $this->get_output($view_type);
-    $str2find_passon->add(unpack_id128($this->slice_info["id"]), 'slice_id');
-    $pagecache->store($keystr, $res, $str2find_passon);
-    $str2find_passon->add_str2find($str2find_save); // and append saved for above
-
-    return $res;
-  }
   /** get_disc_buttons function
    * @param $empty
    */
@@ -462,9 +454,9 @@ class itemview {
       if (!$item) {
           $item = new AA_Item(null,$this->aliases,null,null,$this->parameters);
       }
-      // new_unalias_recurent modifies also $txt - that's why we do not use
+      // Unalias modifies also $txt - that's why we do not use
       // &$txt in function definition
-      return new_unalias_recurent($txt,"",$level,$maxlevel,$item,$this,null);
+      return AA_Stringexpand::unalias($txt, '', $item, true, $this);
   }
 
   // set the aliases from the slice of the item ... used to view items from
@@ -989,53 +981,6 @@ class itemview {
 //                            end of calendar view
 // ----------------------------------------------------------------------------
 
-  /** print_view function
-   *  compact view
-   * @param $flag
-   */
-  function print_view($flag="CACHE") {
-      if ( $flag == "CACHE" ) {
-          echo $this->get_output_cached("view");
-      } else {
-          echo $this->get_output("view");
-      }
-  }
-
-  /** print_item function
-   *  fulltext of one item
-   * @param $flag
-   */
-  function print_item($flag="CACHE") {
-      if ( $flag == "CACHE" ) {
-          echo $this->get_output_cached("fulltext");
-      } else {
-          echo $this->get_output("fulltext");
-      }
-  }
-
-  /** print_itemlist function
-   *  multiple items as fulltext one after one
-   * @param $flag
-   */
-  function print_itemlist($flag="CACHE") {
-      if ( $flag == "CACHE" ) {
-          echo $this->get_output_cached("itemlist");
-      } else {
-          echo $this->get_output("itemlist");
-      }
-  }
-
-  /** print_discussion function
-   *  discusion thread or fulltext or one comment
-   * @param $flag
-   */
-  function print_discussion($flag="CACHE") {
-      if ( $flag == "CACHE" ) {
-          echo $this->get_output_cached("discussion");
-      } else {
-          echo $this->get_output("discussion");
-      }
-  }
   /** idcount function
    *
    */

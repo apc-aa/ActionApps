@@ -83,7 +83,7 @@ if ($db->next_record()) {
         }
     }
 }
-$id    = unpack_id128($db->f("id"));  // correct ids
+$id    = unpack_id($db->f("id"));  // correct ids
 $owner = unpack_id($db->f("owner"));  // correct ids
 //mlx admin
 $mlxctrl = $db->f(MLX_SLICEDB_COLUMN);  // should we use unpack_id here...
@@ -94,10 +94,10 @@ while ($db->next_record()) {
     //__mlx_dbg($db->Record);
     // could be a ctrl slice
     if (!$db->f(MLX_SLICEDB_COLUMN)) {
-        $mlx_slices[unpack_id128($db->f('id'))] = $db->f('name');
+        $mlx_slices[unpack_id($db->f('id'))] = $db->f('name');
     } else {
         // is already ctrl slice
-        $mlx_ctrl_slices[unpack_id128($db->f(MLX_SLICEDB_COLUMN))] = $db->f('name');
+        $mlx_ctrl_slices[unpack_id($db->f(MLX_SLICEDB_COLUMN))] = $db->f('name');
     }
 }
 //mlx end
@@ -116,7 +116,7 @@ $slice_owners[0] = _m("Select owner");
 $SQL             = " SELECT id, name FROM slice_owner ORDER BY name";
 $db->query($SQL);
 while ($db->next_record()) {
-    $slice_owners[unpack_id128($db->f('id'))] = $db->f('name');
+    $slice_owners[unpack_id($db->f('id'))] = $db->f('name');
 }
 
 foreach ($LANGUAGE_NAMES as $l => $langname) {
@@ -177,7 +177,7 @@ FrmInputSelect("lang_file", _m("Language"), $biglangs, $lang_file, false);
 if ($slice_id && isset($mlx_ctrl_slices[$slice_id])) {
     FrmStaticText(_m("MLX Control Slice for").": ",$mlx_ctrl_slices[$slice_id],0,0,"http://mimo.gn.apc.org/mlx/");
 } else {
-    FrmInputSelect(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlx_slices, unpack_id128($mlxctrl), false, "", "http://mimo.gn.apc.org/mlx/");
+    FrmInputSelect(MLX_SLICEDB_COLUMN, _m("MLX: Language Control Slice"), $mlx_slices, unpack_id($mlxctrl), false, "", "http://mimo.gn.apc.org/mlx/");
 }
 //
 

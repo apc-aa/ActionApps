@@ -88,7 +88,7 @@ function create_filter_text($ho, $collectionid, $update, $item_id)
     $db->tquery($SQL);
     while ($db->next_record()) {
         $last                                  = $db->f("last");
-        $sid                                   = unpack_id128($db->f("slice_id"));
+        $sid                                   = unpack_id($db->f("slice_id"));
         $slices[$sid]["name"]                  = $db->f("slicename");
         $slices[$sid]["lang"]                  = substr($db->f("lang_file"),0,2);
         $myview                                = &$slices[$sid]["views"][$db->f("vid")];
@@ -209,8 +209,8 @@ class AA_Collection {
     function _get( $property ) {
         if ( is_null($this->reader_slice_id) ) {
             $data = GetTable2Array('SELECT * FROM alerts_collection WHERE id = \''. $this->id .'\'', 'aa_first', 'aa_fields');
-            $this->reader_slice_id  = unpack_id128($data['slice_id']);
-            $this->alerts_module_id = unpack_id128($data['module_id']);
+            $this->reader_slice_id  = unpack_id($data['slice_id']);
+            $this->alerts_module_id = unpack_id($data['module_id']);
             $this->email_id_welcome = $data['emailid_welcome'];
             $this->email_id_alert   = $data['emailid_alert'];
         }

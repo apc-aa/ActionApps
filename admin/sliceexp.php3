@@ -157,7 +157,7 @@ if ($SHOWTEXT == "") {
         $SQL= "SELECT id, name FROM slice ORDER BY name";
         $db->query($SQL);
         while ($db->next_record()) {
-            $all_slices[unpack_id128($db->f(id))] = $db->f(name);
+            $all_slices[unpack_id($db->f(id))] = $db->f(name);
         }
     ?>
 

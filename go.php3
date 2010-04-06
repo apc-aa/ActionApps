@@ -82,7 +82,7 @@ switch( $type ) {
 
     $db->query($SQL);
     if ( $db->next_record() ) {
-      $item = unpack_id128($db->f(source_id));
+      $item = unpack_id($db->f(source_id));
       $slice_url = ($db->f(slice_url));
     }
     else { // if this item is not fed - give its own id

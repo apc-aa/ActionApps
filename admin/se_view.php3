@@ -210,7 +210,7 @@ if ($cancel) {
 // If you try to edit a view in different slice, you should jump there
 if ($view_id) {
     $view = AA_Views::getView($view_id);
-    if (unpack_id128($view->f('slice_id')) != $slice_id) {
+    if (unpack_id($view->f('slice_id')) != $slice_id) {
         go_url($view->jumpUrl());
     }
 }

@@ -72,7 +72,7 @@ class AA_Validate {
 
         list ($type, $parameter) = is_array($v_type) ? $v_type : array($v_type, '');
 
-        $sv_key = md5($type.serialize($parameter));
+        $sv_key = get_hash($type, $parameter);
         if ( !isset($standard_validators[$sv_key]) ) {
             switch ($type) {
                 case 'bool':     $standard_validators[$sv_key] = new AA_Validate_Int(0,1);         break;

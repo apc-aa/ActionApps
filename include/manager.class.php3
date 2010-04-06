@@ -558,7 +558,7 @@ class AA_Manager extends AA_Storable {
         // (links to itemedit.php3 would stay with session ids in cache
         // - you bacame another user !!!)
 
-        $this->itemview->print_view("NOCACHE");
+        echo $this->itemview->get_output('view');
 
         $this->scroller->countPages( $ids_count );
 

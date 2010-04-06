@@ -89,7 +89,7 @@ function QueryDiscussionZIDs($item_id, $ids="", $order='timeorder') {
     // filter for ids
     $ret = array();
     foreach ( $d_ids as $p_d_id ) {
-        if ( $ids["x".unpack_id128($p_d_id)] ) {
+        if ( $ids["x".unpack_id($p_d_id)] ) {
             $ret[] = $p_d_id;
         }
     }
@@ -115,10 +115,10 @@ function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='
     $d_content        = array();
     $unsorted_content = array();
     while ($db->next_record()) {
-        $d_id = unpack_id128($db->f('id'));
+        $d_id = unpack_id($db->f('id'));
         $col["d_id............"][0]['value'] = $d_id;
         $col["d_parent........"][0]['value'] = $db->f('parent') ? unpack_id($db->f('parent')) : "0";
-        $col["d_item_id......."][0]['value'] = unpack_id128($db->f('item_id'));
+        $col["d_item_id......."][0]['value'] = unpack_id($db->f('item_id'));
         $col["d_subject......."][0]['value'] = $db->f('subject');
         $col["d_body.........."][0]['value'] = $db->f('body');
         $col["d_author........"][0]['value'] = $db->f('author');
@@ -128,7 +128,7 @@ function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='
         $col["d_date.........."][0]['value'] = $db->f('date');
         $col["d_remote_addr..."][0]['value'] = $db->f('remote_addr');
         $col["d_state........."][0]['value'] = $db->f('state');
-        setDiscUrls($col, $clean_url,unpack_id128($db->f('item_id')),$d_id);
+        setDiscUrls($col, $clean_url,unpack_id($db->f('item_id')),$d_id);
 
         // set html flag
         if ($html_flag) {

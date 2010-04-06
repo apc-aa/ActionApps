@@ -126,7 +126,7 @@ function IsItemFed($item_id, $destination) {
     // if item comes from $destination slice (i.e. $destination slice contains base record)
     $db->query("SELECT slice_id FROM item WHERE id='$p_base_id'");
     if ($db->next_record()) {
-        if (unpack_id128($db->f('slice_id')) == $destination) {
+        if (unpack_id($db->f('slice_id')) == $destination) {
             return true;
         }
     }
@@ -140,7 +140,7 @@ function IsItemFed($item_id, $destination) {
 
     // Build an array of source id's
     while ($db->next_record()) {
-        $sources[] = unpack_id128($db->f('source_id'));
+        $sources[] = unpack_id($db->f('source_id'));
     }
 
     if (!isset($sources) || !is_array($sources)) {
@@ -367,7 +367,7 @@ function CreateFeedTree($sl_id, $from_category_id) {
             $db->query($SQL);
 
             while ($db->next_record()) {
-                $to_id = unpack_id128($db->f('to_id'));
+                $to_id = unpack_id($db->f('to_id'));
                 // condition is necessary for multi feeding to this slice
                 if (isset($slice_queue[$to_id])) {
                     continue;
@@ -449,7 +449,7 @@ function UpdateItems($item_id, $slice_id) {     // function UpdateItems($item_id
         while ( $db2->next_record() ) {
             $update     = true;
             $d_id       = unpack_id($db2->f('destination_id'));
-            $dest_sl_id = unpack_id128($db2->f('slice_id'));
+            $dest_sl_id = unpack_id($db2->f('slice_id'));
             //    if (!isset($tree[$slice_id][$dest_sl_id]))        // option : take a $tree into account or not
             //      continue;
 
@@ -492,7 +492,7 @@ function FeedItem($item_id) {
                    AND value = '". addslashes($content4id[$cat_field][0]['value']) ."'";
         $db->query($SQL);
         if ( $db->next_record() ) {
-            $cat_id = unpack_id128($db->f('id'));
+            $cat_id = unpack_id($db->f('id'));
         }
     }
 

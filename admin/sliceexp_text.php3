@@ -96,7 +96,7 @@ class AA_Slice_Exporter {
             MsgPage($sess->url(self_base())."index.php3", "ERROR - slice ".$slobj->unpacked_id() ." not found", "standalone");
             exit;
         }
-        $uid = unpack_id128($slice['id']);
+        $uid = unpack_id($slice['id']);
 
         //unpack the IDs
         //TODO: add fields which contain IDs that should be unpacked
@@ -108,7 +108,7 @@ class AA_Slice_Exporter {
                 MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length: ").strlen($new_slice_id), "standalone");
                 exit;
             } else {
-                $uid = unpack_id128($new_slice_id);
+                $uid = unpack_id($new_slice_id);
             }
         }
 
@@ -231,7 +231,7 @@ class AA_Slice_Exporter {
                     MsgPage($sess->url(self_base())."index.php3", _m("Wrong slice ID length:").strlen($new_slice_id), "standalone");
                     exit;
                 } else {
-                    $new_slice_idunpack = unpack_id128($new_slice_id);
+                    $new_slice_idunpack = unpack_id($new_slice_id);
                 }
             }
 
