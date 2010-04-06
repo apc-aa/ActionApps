@@ -116,15 +116,13 @@ function get_help_url($href, $anchor) {
  * @param $usejs
  */
 function go_url($url, $add_param="", $usejs=false) {
-    global $sess, $rXn;
+    global $sess;
     if (is_object($sess)) {
         page_close();
     }
     if ($add_param != "") {
         $url = get_url( $url, rawurlencode($add_param));
     }
-    // special parameter for Netscape to reload page
-    $url = get_url($url,($rXn=="") ? "rXn=1" : "rXn=".++$rXn);
     if ( $usejs OR headers_sent() ) {
        echo '
         <script language="JavaScript" type="text/javascript"> <!--
