@@ -87,6 +87,18 @@ function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
     }
 }
 
+function AA_HtmlToggleCss(link_id, link_text_1, link_text_2, selector) {
+    if ( $(link_id).hasClassName('is-on')) {
+        $$(selector).invoke('hide');
+        $(link_id).update(link_text_1);
+        $(link_id).toggleClassName('is-on');
+    } else {
+        $$(selector).invoke('show');
+        $(link_id).update(link_text_2);
+        $(link_id).toggleClassName('is-on');
+    }
+}
+
 function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2, url) {
     if ( $(div_id_1).visible() ) {
         $(div_id_1).hide();
@@ -101,6 +113,24 @@ function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2
         $(div_id_2).hide();
         $(div_id_1).show();
         $(link_id).update(link_text_1);
+    }
+}
+
+/** selector_update is optional and is good for updating table rows, where we want to show/hide tr, but update td */
+function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, url, selector_update) {
+    if ( $(link_id).hasClassName('is-on')) {
+        $$(selector_hide).invoke('hide');
+        $(link_id).update(link_text_1);
+        $(link_id).toggleClassName('is-on');
+    } else {
+        $$(selector_hide).invoke('show');
+        $(link_id).toggleClassName('is-on');
+        // not loaded from remote url, yet?
+        if ( !$(link_id).hasClassName('aa-loaded')) {
+            $(link_id).addClassName('aa-loaded');
+            AA_AjaxCss(selector_update ? selector_update : selector_hide, url);
+        }
+        $(link_id).update(link_text_2);
     }
 }
 
@@ -121,6 +151,14 @@ function AA_Ajax(div, url, param) {
     new Ajax.Updater(div, url, param);
 }
 
+function AA_AjaxCss(selector, url, param) {
+    $$(selector).invoke('update', AA_Config.loader);
+    new Ajax.Request(url, {
+        onSuccess: function(transport) {
+            $$(selector).invoke('update', transport.responseText);  // new value
+        }
+    });
+}
 
 function AA_AjaxInsert(a_obj, form_url) {
     var new_div_id = $(a_obj).identify() + '_ins';
@@ -441,6 +479,11 @@ function DoChangeLive(input_id) {
     });
 }
 
+/** return back old value - CANCEL pressed on AJAX widget */
+function DisplayInputBack(input_id) {
+    $('ajaxv_'+input_id).update($F('ajaxh_'+input_id));
+    $('ajaxv_'+input_id).setAttribute('aaedit', '2');
+}
 
 /* Cookies */
 
