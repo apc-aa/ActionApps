@@ -28,14 +28,14 @@
 
 class AA_Supertree {
     private $_i;      // Array of items
-    private $_relation_field;  // 
+    private $_relation_field;  //
     private $_modules;  // Array of modules
 
     function __construct($relation_field) {
         $this->_relation_field = $relation_field;
         $this->_i              = array();
     }
-    
+
     /** load function
      * @param $force
      */
@@ -44,9 +44,14 @@ class AA_Supertree {
             return;
         }
 
+        /** items, which are already in trash, or expired, ... */
+        $invalid       = array();
+
         $new_subitems  = array($id);
         while (1) {
-            $content4ids   = GetItemContent($new_subitems, false, false, array('id..............','slice_id........', $this->_relation_field));
+            $content4ids   = GetItemContent($new_subitems, false, false, array('id..............','slice_id........', $this->_relation_field), null, AA_BIN_ACTIVE);
+
+            $invalid = array_merge($invalid, array_diff($new_subitems, array_keys($content4ids)));
 
             $new = array();
             if (is_array($content4ids) ) {
@@ -62,6 +67,13 @@ class AA_Supertree {
             $new_subitems = array_diff($new, array_keys($this->_i));
             if ( count($new_subitems) < 1 ) {
                 break;
+            }
+        }
+
+        // remove all links to invalid items
+        if (count($invalid) > 0) {
+            foreach ($this->_i as $item_id => $next) {
+                $this->_i[$item_id] = array_diff($next, $invalid);
             }
         }
         return;
@@ -106,7 +118,7 @@ class AA_Supertree {
         }
         return $id. (empty($treestring) ? '' : "($treestring)");
     }
-    
+
     function _compactValue($value_arr) {
         $ret = array();
         if (is_array($value_arr)) {
@@ -160,7 +172,7 @@ class AA_Trees {
         return $supertree->getIds($id);
     }
 
-   
+
     function getSupertree($relation_field) {
         $trees = AA_Trees::singleton();
         if (!isset($trees->a[$relation_field])) {
