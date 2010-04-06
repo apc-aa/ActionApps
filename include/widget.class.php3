@@ -108,7 +108,7 @@ class AA_Widget extends AA_Components {
         // $zids = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
         $zids    = false;
         $ids_arr = false;
-        
+
    //        if ($GLOBALS['AA_CP_Session']=='3f466be8fdf38d67ae8b4973f7c95763') { huhl($this); }
 
         $constgroup   = $this->getProperty('const');
@@ -503,8 +503,8 @@ class AA_Widget extends AA_Components {
 
     /* Creates all common ajax editing buttons to be used by different inputs */
     function _finalizeAjaxHtml($widget_html, $input_id, $repre_value) {
-        $widget_html  .= "\n<input type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"DoChange('$input_id')\">"; //ULOŽIT ZMÌNU
-        $widget_html  .= "\n<input type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"$('ajaxv_$input_id').update(". '$F(\'ajaxh_'.$input_id.'\'))'."; $('ajaxv_$input_id').setAttribute('aaedit', '2');\">";
+        $widget_html  .= "\n<input class=\"save-button\" type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"DoChange('$input_id')\">"; //ULOŽIT ZMÌNU
+        $widget_html  .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$input_id');\">";
         $widget_html  .= "\n<input type=\"hidden\" id=\"ajaxh_$input_id\" value=\"".htmlspecialchars($repre_value)."\">";
         return $widget_html;
     }
@@ -1277,17 +1277,17 @@ class AA_Widget_Fil extends AA_Widget {
      *   This is compound widgets, which consists from more than one input - filled
      *   URL of the file or name of input[type=file] for upload,
      *   so the inputs looks like:
-     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][fil][var][]  // varname of uploaded file
-     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][fil][url][]  // url
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][img_upload______][fil][var][]  // varname of uploaded file
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][img_upload______][fil][url][]  // url
      *   Unfortunatey we can't use something like:
-     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][fil][up][]  // upoaded file
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][img_upload______][fil][up][]  // upoaded file
      *   since the array variabes in $_FILES array are mess in PHP (at least 5.2.5)
      *
      *   This method AA_Widget_Fil::getValue() is called to grab the value
      *   (or multivalues) from the submitted form. The function actually do not
      *   upload the file. The upload itself is done by insert_fnc_fil() later
-     *   Here we just mar the uploaded file by prefix AA_UPLOAD:, so
-     *   insert_fnc_fil() knows aboutr the new file for upload
+     *   Here we just mark the uploaded file by prefix AA_UPLOAD:, so
+     *   insert_fnc_fil() knows about the new file for upload
      *
      *  @param $data4field - array('var'=>array(), 'url'=>array())
      *  static class method
@@ -1297,7 +1297,7 @@ class AA_Widget_Fil extends AA_Widget {
         $uploads  = (array)$data4field['var'];
         $urls     = (array)$data4field['url'];
 
-        // date could be also multivalue
+        // upload could be also multivalue
         $max = max(count($uploads), count($urls));
 
         $values = array();
