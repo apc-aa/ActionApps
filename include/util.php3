@@ -206,12 +206,11 @@ function DeBackslash($txt) {
  * @return array
  */
 function ParamExplode($param) {
-    $a = str_replace("#:", "__-__.", $param);    // dummy string
-    $b = str_replace("://", "__-__2", $a);       // replace all <http>:// too
-    $c = str_replace(":", "##Sx",$b);            // Separation string is //#Sx
-    $d = str_replace("__-__.", ":", $c);         // change "#:" to ":"
-    $e = str_replace("__-__2", "://", $d);       // change back "://"
-    return explode("##Sx", $e);
+    // replace all "#:" and <http>"://" with dumy string,
+    // convert separators to ##Sx
+    // change "#:" to ":" and change back "://" - then split by separation string
+    // replaces in order
+    return explode('##Sx', str_replace(array('#:', '://', ':', '~@|_'), array('~@|_', '~@|_//', '##Sx', ':'), $param));
 }
 
 /** ParamImplode function
@@ -346,7 +345,7 @@ function QuoteVars($method="get", $skip='') {
  */
 function new_id($mark=0){
     do {
-        $id = md5(uniqid('hugo'));
+        $id = md5(uniqid('',true));
     } while ((strpos($id, '00')!==false) OR (strpos($id, '27')!==false) OR (substr($id,30,2)=='20'));
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
@@ -800,11 +799,12 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
         } elseif ($values == 'aa_mark') {
             $val = true;
         } elseif (substr($values,0,7) == 'unpack:') {
-            $val = unpack_id128($db->f(substr($values,7)));
+            $val = unpack_id($db->f(substr($values,7)));
         } elseif (is_string($values) AND isset( $db->Record[$values] )) {
             $val = $db->Record[$values];
         } else {  // true or 'aa_fields'
-            $val = DBFields($db);
+            $val = $db->Record;
+            // $val = DBFields($db);  // I changed the mysql_fetch_array($this->Query_ID, MYSQL_ASSOC) in db_mysql by adding MYSQL_ASSOC, so DBFields is no longer needed
         }
 
         if ( $key == 'aa_first' ) {
@@ -813,7 +813,7 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
         } elseif ( ($key == "NoCoLuMn") OR !$key ) {
             $arr[] = $val;
         } elseif ( substr($key,0,7) == 'unpack:' ) {
-            $arr[unpack_id128($db->f(substr($key,7)))] = $val;
+            $arr[unpack_id($db->f(substr($key,7)))] = $val;
         } else {
             $arr[$db->f($key)] = $val;
         }
@@ -823,6 +823,77 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
 }
 
 // -------------------------------------------------------------------------------
+
+/** CreateBinCondition function
+ *  Returns part of SQL command used in where related to bins
+ * @param $bin
+ * @param $ignore_expiry_date
+ */
+function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
+    // now is rounded in order the time is in steps - it is better for search
+    // caching - SQL is THE SAME during one time step
+    $now = now('step');            // round up
+
+    /* new version of bin selecting, now we use type of bin from constants.php3 */
+    if (is_numeric($bin)) {
+        /* $bin is numeric constant */
+        $numeric_bin = max(1,$bin);
+    } elseif (is_string($bin)) { /* for backward compatibility */
+        switch ($bin) {
+            /* assign to string type it's numeric constant */
+            case 'ACTIVE'  : $numeric_bin = AA_BIN_ACTIVE;  break;  // 1
+            case 'PENDING' : $numeric_bin = AA_BIN_PENDING; break;  // 2
+            case 'EXPIRED' : $numeric_bin = AA_BIN_EXPIRED; break;  // 4
+            case 'HOLDING' : $numeric_bin = AA_BIN_HOLDING; break;  // 8
+            case 'TRASH'   : $numeric_bin = AA_BIN_TRASH;   break;  // 16
+            case 'ALL'     : $numeric_bin = (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH); break;
+            default        : $numeric_bin = AA_BIN_ACTIVE;  break;  // 1
+        }
+    } else {
+        /* strange case, I think never possible :) */
+        $numeric_bin = AA_BIN_ACTIVE;
+    }
+
+    /* create SQL query for different types of numeric constants */
+    if ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH)) {
+        return ' 1=1 ';
+    } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
+        return " $table.status_code=1 ";
+    } elseif ($numeric_bin == (AA_BIN_ACTIVE | AA_BIN_PENDING)) {
+        return " $table.status_code=1 AND ($table.expiry_date > '$now') ";
+    } else {
+        $or_conds = array();
+        if ($numeric_bin & AA_BIN_ACTIVE) {
+            $SQL = " $table.status_code=1 AND $table.publish_date <= '$now' ";
+            /* condition can specify expiry date (good for archives) */
+            if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
+                //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
+                $SQL .= " AND $table.expiry_date > '$now' ";
+            }
+            $or_conds[] = $SQL;
+        }
+        if ($numeric_bin & AA_BIN_EXPIRED) {
+            $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
+        }
+        if ($numeric_bin & AA_BIN_PENDING) {
+            $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' AND expiry_date > '$now'";
+        }
+        if ($numeric_bin & AA_BIN_HOLDING) {
+            $or_conds[] = " $table.status_code=2 ";
+        }
+        if ($numeric_bin & AA_BIN_TRASH) {
+            $or_conds[] = " $table.status_code=3 ";
+        }
+        switch (count($or_conds)) {
+            case 0:  return ' 1=1 ';
+            case 1:  return ' '. $or_conds[0] .' ';
+            default: return ' (('. join(') OR (', $or_conds) .')) ';
+        }
+    }
+
+    return ' 1=1 ';
+}
+
 
 /** itemContent_getWhere function
  *  helper function for GetItemContent and such functions
@@ -853,7 +924,7 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
  *       is not so big)
  *       like: array('headline........', 'category.......1')
  */
-function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null) {
+function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin=null) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
     $db = getDB();
 
@@ -912,39 +983,48 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
 
     $id_column = ($use_short_ids ? "short_id" : "id");
     $SQL       = "SELECT $item_fields_sql FROM item WHERE $id_column $sel_in";
+
+    // when we contruct tree, we want to use only current item, for example
+    if (!is_null($bin)) {
+        $SQL .= ' AND '. CreateBinCondition($bin, 'item');
+    }
     $db->tquery($SQL);
 
     $n_items = 0;
 
     $credentials = AA_Credentials::singleton();
+    // returned ids (possibly removed items in trash, ...)
+    $ids         = array();
     while ( $db->next_record() ) {
 
         // proove permissions for password-read-protected slices
-        $reading_permitted = $ignore_reading_password ? true : $credentials->checkSlice(unpack_id128($db->f("slice_id")), $crypted_additional_slice_pwd);
+        $reading_permitted = $ignore_reading_password ? true : $credentials->checkSlice(unpack_id($db->f("slice_id")), $crypted_additional_slice_pwd);
         $item_permitted[$db->f("id")] = $reading_permitted;
 
+        $unpack_id = unpack_id($db->f("id"));
+        $ids[]     = $db->f("id");
         $n_items = $n_items+1;
-        reset( $db->Record );
+
+        // reset( $db->Record );
         if ( $use_short_ids ) {
             $foo_id = $db->f("short_id");
-            $translate[unpack_id128($db->f("id"))] = $db->f("short_id"); // id -> short_id
-            // WHERE for query to content table
-            $new_sel_in .= "$delim '". quote($db->f("id")) ."'";
-            $delim = ",";
+            $translate[$unpack_id] = $foo_id; // id -> short_id
         } else {
-            $foo_id = unpack_id128($db->f("id"));
+            $foo_id = $unpack_id;
         }
 
         // Note that it stores into the $content[] array based on the id being used which
         // could be either shortid or longid, but is NOT tagged id.
         if ($reading_permitted) {
             foreach ($real_item_fields2get as $item_fid) {
-                $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $db->f($item_fid));
+                // FLAG_HTML do not means in fact, that the content is in HTML, but it rather means, that we should not call txt2html function on the content
+                // we do not need to call txt2html() to any of the item table fields
+                $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $db->f($item_fid), "flag"  => FLAG_HTML);
             }
         } else {
             $error_msg = _m("Error: Missing Reading Password");
             foreach ($real_item_fields2get as $item_fid) {
-                $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $error_msg);
+                $content[$foo_id][AA_Fields::createFieldId($item_fid)][] = array("value" => $error_msg, "flag"  => FLAG_HTML);
             }
             // fill at least following fields with correct values - we need id.............. for AA_Items::getItems()
             $content[$foo_id]['id..............'][0]['value'] =  $db->f('id');
@@ -966,10 +1046,8 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
         }
     }
 
-    // construct WHERE query to content table if used short_ids
-    if ( $use_short_ids) {
-        $sel_in = (count($translate) > 1) ? " IN ( $new_sel_in ) " : " = $new_sel_in ";
-    }
+    // construct WHERE query to content table
+    $new_sel_in = sqlin('item_id', $ids);
 
     if ( isset( $fields2get ) AND is_array( $fields2get ) ) {
         switch ( count($content_fields) ) {
@@ -992,27 +1070,28 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     // do we want any content field?
     if ( $restrict_cond != '1=0' ) {
 
-        $SQL = "SELECT * FROM content
-                 WHERE item_id $sel_in $restrict_cond
-                 ORDER BY content.number"; // usable just for constants
+        $SQL = "SELECT * FROM content WHERE $new_sel_in $restrict_cond ORDER BY content.number"; // usable just for constants
 
         $db->tquery($SQL);
 
         while ( $db->next_record() ) {
+            $item_id = $db->f("item_id");
+            $fooid   = ($use_short_ids ? $translate[unpack_id($item_id)] : unpack_id($item_id) );
 
-            $fooid = ($use_short_ids ? $translate[unpack_id128($db->f("item_id"))] :
-                                       unpack_id128($db->f("item_id")) );
-
-            if ( !$item_permitted[$db->f("item_id")] ) {
+            if ( !$item_permitted[$item_id] ) {
                 $content[$fooid][$db->f("field_id")][0] = array( "value" => _m("Error: Missing Reading Password"));
                 continue;
             }
 
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-            $db_field = ( (strlen($db->f("text"))>0) OR ($db->f("flag") & FLAG_TEXT_STORED) ) ? 'text' : 'number';
-            $content[$fooid][$db->f("field_id")][] = array( "value" => $db->f($db_field),
-                                                            "flag"  => $db->f("flag")
-                                                            );
+            $flag     = $db->f("flag");
+            if ( (strlen($db->f("text"))>0) OR ($flag & FLAG_TEXT_STORED) ) {
+                $content[$fooid][$db->f("field_id")][] = array( "value" => $db->f('text'), "flag"  => $flag);
+            } else {
+                // we can set FLAG_HTML, because the text2html gives the same result as the number itself
+                // if speeds the item->f_h() function a bit
+                $content[$fooid][$db->f("field_id")][] = array( "value" => $db->f('number'), "flag"  => ($flag|FLAG_HTML));
+            }
         }
     }
 
@@ -1020,9 +1099,9 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     foreach ($content as $iid => $foo ) {
         // slice_id... and id... is packed  - add unpacked variant now
         $content[$iid]['u_slice_id......'][] =
-            array('value' => unpack_id128($content[$iid]['slice_id........'][0]['value']));
+            array('value' => unpack_id($content[$iid]['slice_id........'][0]['value']));
         $content[$iid]['unpacked_id.....'][] =
-            array('value' => unpack_id128($content[$iid]['id..............'][0]['value']));
+            array('value' => unpack_id($content[$iid]['id..............'][0]['value']));
     }
 
     freeDB($db);
@@ -1062,7 +1141,7 @@ function GetItemContentMinimal($zids, $fields2get=false) {
       $n_items = 0;
       while ( $db->next_record() ) {
           $n_items++;
-          $foo_id = unpack_id128($db->f("id"));
+          $foo_id = unpack_id($db->f("id"));
           foreach ( $fields2get as $fld ) {
               $content[$foo_id][AA_Fields::createFieldId($fld)][] = array("value" => $db->f($fld));
           }
@@ -1085,7 +1164,7 @@ function GrabConstantColumn(&$db, $column) {
         case "group":       return array( "value"=> $db->f("group_id") );
         case "class":       return array( "value"=> $db->f("class") );
         // case "counter":     return array( "value"=> $i++ );
-        case "id":          return array( "value"=> unpack_id128($db->f("id") ));
+        case "id":          return array( "value"=> unpack_id($db->f("id") ));
         case "description": return array( "value"=> $db->f("description"), "flag" => FLAG_HTML);
         case "short_id":    return array( "value"=> $db->f("short_id") );
         case "level":       return array( "value"=> strlen($db->f("ancestors"))/16);
@@ -1208,7 +1287,7 @@ function GetId4Sid($sid) {
     }
     $SQL = "SELECT id FROM item WHERE short_id='$sid'";
     $db->query( $SQL );
-    return ($db->next_record() ? unpack_id128($db->f("id")) : false);
+    return ($db->next_record() ? unpack_id($db->f("id")) : false);
 }
 
 // -------------------------------------------------------------------------------
@@ -2106,7 +2185,12 @@ class contentcache {
      *                     only on its parameters, but also on some (global?) variable
      */
     function get_result( $function, $params=array(), $additional_params='' ) {
-        $key = md5(serialize($function).serialize($params).$additional_params);
+        $key = get_hash(func_get_args());
+        return $this->get_result_by_id($key, $function, $params);
+    }
+
+    /** sometimes it is quicker to not count the key automaticaly (in case of object call) */
+    function get_result_by_id($key, $function, $params) {
         if ( isset( $this->content[$key]) ) {
             return $this->content[$key];
         }
@@ -2151,6 +2235,30 @@ class contentcache {
 
 // end of contentcache class
 }
+
+
+function get_hash() {
+    $arg_list = func_get_args();   // must be asssigned to the variable
+    // return md5(json_encode($arg_list));
+    // return md5(var_export($arg_list, true));
+    return md5(serialize($arg_list));
+}
+
+/*
+function get_hash() {
+    global $md5serial;
+    $arg_list = func_get_args();   // must be asssigned to the variable
+    // return md5(json_encode($arg_list));
+    //$md5serial = '';
+    array_walk_recursive($arg_list, 'test_print');
+    return md5($md5serial);
+}
+
+function test_print($item, $key) {
+    global $md5serial;
+    $md5serial .= md5("$item:$key");
+}
+*/
 
 /** get_if function
  *  If $value is set, returns $value - else $else
