@@ -104,7 +104,7 @@ function PrintModulePermModificator($selected_user, $form_buttons='', $sess='', 
     $db->query($SQL);
     $i=0;
     while ( $db->next_record() ) {
-        $mid = unpack_id128($db->f('id'));
+        $mid = unpack_id($db->f('id'));
         if ( $perm_slices[$mid] ) {
             $odd = ((gettype($i/2) == "integer") ? true : false);
             PrintModulePermRow($mid, $db->f('type'), $db->f('name'), $perm_slices[$mid], $odd);
