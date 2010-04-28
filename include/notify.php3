@@ -43,6 +43,7 @@ require_once AA_INC_PATH."mail.php3";
  */
 function email_notify($slice_id, $event, $item_id) {
     $p_slice_id = q_pack_id($slice_id);
+    $slice      = AA_Slices::getSlice($slice_id);
 
     // select the text templates
     switch ($event){
@@ -60,15 +61,15 @@ function email_notify($slice_id, $event, $item_id) {
 
     if ( $notify AND $emails) {
         $item    = AA_Items::getItem($item_id);
-        
+
         if ($item) {
             $subject = $item->unalias($notify['s']);
             $body    = $item->unalias($notify['b']);
-        
+
             $mail = new AA_Mail();
             $mail->setSubject($subject);
             $mail->setHtml($body, html2text($body));
-            $mail->setCharset($LANGUAGE_CHARSETS[get_mgettext_lang()]);
+            $mail->setCharset($slice->getCharset());
             $mail->send($emails);
         }
     }
