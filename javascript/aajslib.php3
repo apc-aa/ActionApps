@@ -197,12 +197,12 @@ function SendAjaxForm(id) {
  *  @param ok_html   - what text (html) should be displayed after the success
  *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
  */
-function AA_AjaxSendObject(id) {
+function AA_AjaxSendAddForm(id) {
     var code = Form.serialize(id);
     var sb   = $(id).up('div').previous('a').identify().substring(1);
     $(id).insert(AA_Config.loader);
 
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + '/filler.php3', {
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
@@ -215,6 +215,54 @@ function AA_AjaxSendObject(id) {
             //new Insertion.After($(id).up('div'), new Element('div').update(transport.responseText));
             // close form and display add icon
             AA_AjaxInsert($(id).up('div').previous(), '');
+        }
+    });
+}
+
+/** This function replaces the older one - proposeChange
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function AA_SendWidgetAjax(id) {
+    var valdivid   = 'ajaxv_' + id;
+    var code = Form.serialize(valdivid);
+    $(valdivid).insert(AA_Config.loader);
+
+    var alias_name = $(valdivid).readAttribute('aaalias');
+
+    code += '&inline=1&ret_code_enc='+alias_name;
+
+//    $(valdivid).update(AA_Config.loader);
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+        parameters: code,
+        requestHeaders: {Accept: 'application/json'},
+        onSuccess: function(transport) {
+            var items = $H(transport.responseText.evalJSON(true));  // maybe we can remove "true"
+            items.each(function(pair) {
+                $(valdivid).update(pair.value);
+            });
+            $('ajaxch_'+id).update('');
+            $(valdivid).setAttribute("aaedit", "0");
+        }
+    });
+}
+
+/** This function replaces the older one - proposeChange
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function AA_SendWidgetLive(id) {
+    $$('*[id ^="'+id+'"]').invoke('addClassName', 'updating');
+    var valdivid   = 'widget-' + id;
+    var code = Form.serialize(valdivid);
+
+    code += '&inline=1';  // do not send us whole page as result
+
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+        parameters: code,
+        requestHeaders: {Accept: 'application/json'},
+        onSuccess: function(transport) {
+            $$('*[id ^="'+id+'"]').invoke('removeClassName', 'updating');
         }
     });
 }
@@ -434,49 +482,6 @@ function _getInputContent(input_id) {
         content.push('');  // it is different from push('0') above, because single chbox is 1|0, but multi is value..value|''
     }
     return content;
-}
-
-/** This function replaces the older one - proposeChange
- *  The main chane is, that now we use standard AA input names:
- *   aa[i<item_id>][<field_id>][]
- */
-function DoChange(input_id) {
-    var valdivid   = 'ajaxv_'+input_id;
-    var alias_name = $(valdivid).readAttribute('aaalias');
-    var content    = _getInputContent(input_id);
-
-    $(valdivid).update(AA_Config.loader);
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
-        parameters: { input_id:   input_id,
-                      alias_name: alias_name,
-                      aaaction:   'DOCHANGE',
-                      'content[]':    content    // encodeURIComponent(document.getElementById('ajaxi_'+combi_id).value)
-                     },
-        onSuccess: function(transport) {
-            $('ajaxv_'+input_id).update(transport.responseText);  // new value
-            $('ajaxch_'+input_id).update('');
-            $(valdivid).setAttribute("aaedit", "0");
-        }
-    });
-}
-
-/** updates database for given iten and field by Ajax
- */
-function DoChangeLive(input_id) {
-
-    $$('*[id ^="'+input_id+'"]').invoke('addClassName', 'updating');
-    var content    = _getInputContent(input_id);
-
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
-        parameters: { input_id:   input_id,
-                      alias_name: '',
-                      aaaction:   'DOCHANGE',
-                      'content[]':    content    // encodeURIComponent(document.getElementById('ajaxi_'+combi_id).value)
-                     },
-        onSuccess: function(transport) {
-            $$('*[id ^="'+input_id+'"]').invoke('removeClassName', 'updating');
-        }
-    });
 }
 
 /** return back old value - CANCEL pressed on AJAX widget */
