@@ -25,6 +25,8 @@
  *
 */
 
+/** for default_fnc_*()   */
+require_once AA_INC_PATH."itemfunc.php3";
 
 class AA_Field {
 
@@ -121,6 +123,20 @@ class AA_Field {
         }
         return $this->widget;
     }
+    
+    
+    /** getDefault function
+     * @param $f
+     */
+    function getDefault() {
+        // all default should have fnc:param format
+        $fnc = ParseFnc($this->data['input_default']);
+        if ($fnc) {                     // call function
+            $fncname = 'default_fnc_' . $fnc["fnc"];
+            return new AA_Value($fncname($fnc["param"]), (($this->data['html_default']>0) ? FLAG_HTML : 0));
+        }
+        return null;
+    }
 
     /** getAliases function
      *
@@ -158,7 +174,7 @@ class AA_Field {
     function getRecord() {
         return $this->data;
     }
-
+    
     /** getSearchType function
      * @return text | numeric | date | constants
      */
@@ -196,7 +212,9 @@ class AA_Field {
                                 $this->getProperty('input_morehlp'),
                                 null,               // $example;
                                 $this->getProperty('html_show') ?  AA_Formatter::getStandardFormattersBitfield() : AA_Formatter::getNoneFormattersBitfield(),
-                                AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN')
+                                AA_Formatter::getFlag($this->getProperty('html_default') ? 'HTML' : 'PLAIN'),
+                                null,               // perms
+                                $this->getDefault()
                                );
     }
 
@@ -231,7 +249,7 @@ class AA_Field {
     }
 }
 
-class AA_Fields {
+class AA_Fields implements Iterator {
 
     /** array of object of AA_Field type */
     var $fields;
@@ -546,6 +564,13 @@ class AA_Fields {
                     break;
                 }
     }
+
+    /** Iterator interface */
+    public function rewind()  { if (is_null($this->fields)) {$this->load();} reset($this->prifields);                         }
+    public function current() { if (is_null($this->fields)) {$this->load();} return $this->fields[current($this->prifields)]; }
+    public function key()     { if (is_null($this->fields)) {$this->load();} return current($this->prifields);                }
+    public function next()    { if (is_null($this->fields)) {$this->load();} next($this->prifields);                          }
+    public function valid()   { if (is_null($this->fields)) {$this->load();} return (current($this->prifields) !== false);    }
 }
 
 
