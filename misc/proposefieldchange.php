@@ -57,22 +57,7 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
     $changes       = new AA_ChangesMonitor();
     $changes->addHistory(new AA_ChangeProposal($item_id, $field_id, array(GetRepreValue($item_id, $field_id))));
 
-    $content4id    = new ItemContent();
-    $content4id->setByItemID($item_id, true);     // ignore password
-    // if we do not ignore it, then whole item is destroyed for slices with slice_pwd
-
-    $sli_id        = $content4id->getSliceID();
-    unset($content4id);
-
-    $newcontent4id = new ItemContent();
-    $newcontent4id->setAaValue($field_id, $field_content);
-
-    $newcontent4id->setItemID($item_id);
-    $newcontent4id->setSliceID($sli_id);
-    $updated_items = 0;
-    if ($newcontent4id->storeItem( 'update_silent', array($invalidate, false))) {    // invalidatecache, not feed
-        $updated_items++;
-    }
+    UpdateField($item_id, $field_id, $field_content, $invalidate);
 }
 
 function GetRepreValue($item_id, $field_id, $alias_name='') {
@@ -173,10 +158,10 @@ elseif ( AA_V::P('assignment') == 1 ) {
     $updated = 0;
     if (AA_V::P('assourceplan') AND AA_V::P('asdestplan')) {
 
-        $set = new AA_Set(null, null, array('de6a767322ed6040d4b745f5c16a7683'));
+        $set = new AA_Set('de6a767322ed6040d4b745f5c16a7683');
         $set->addCondition(new AA_Condition('relation.......2', '=', AA_V::P('assourceplan')));
         $set->addCondition(new AA_Condition('relation.......3', '=', AA_V::P('asdestplan')));
-        $zids = QuerySet($set);
+        $zids = $set->query();
 
         if ($zids->count() > 0) {
             $now  = now();
@@ -199,7 +184,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
     }
 }
 // new approach using standard AA widgets and form variables
-elseif ($_POST['aaaction']=='DOCHANGE') {
+/*elseif ($_POST['aaaction']=='DOCHANGE') {
 
     list($item_id, $field_id) = AA_Widget::parseId4Form($_POST['input_id']);
     $item   = AA_Item::getItem(new zids($item_id));
@@ -226,6 +211,7 @@ elseif ($_POST['aaaction']=='DOCHANGE') {
     $repre_value = GetRepreValue($item_id, $field_id, $_POST['alias_name']);
     echo $encoder->Convert($repre_value, $charset, 'utf-8');
 }
+*/
 elseif ($_POST['aaaction']=='DISPLAYINPUT') {
 
     $item        = AA_Item::getItem(new zids(AA_V::P('item_id')));

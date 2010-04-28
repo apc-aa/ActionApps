@@ -81,21 +81,6 @@ require_once AA_INC_PATH."locsess.php3";
 /** Set of useful functions used on most pages */
 require_once AA_INC_PATH."util.php3";
 
-// global variables should be quoted (since old AA code rely on that fact),
-// however the new code should use $_POST, which are NOT quoted
-if (!get_magic_quotes_gpc()) {
-    // Overrides GPC variables
-    foreach ($_GET as $k => $v) {
-        $kk = AddslashesDeep($v);
-    }
-    foreach ($_POST as $k => $v) {
-        $kk = AddslashesDeep($v);
-    }
-    foreach ($_COOKIE as $k => $v) {
-        $kk = AddslashesDeep($v);
-    }
-}
-
 if ( get_magic_quotes_gpc() ) {
     $_POST   = StripslashesDeep($_POST);
     $_GET    = StripslashesDeep($_GET);
@@ -226,10 +211,11 @@ function SendOkPage($txt, $new_ids = array()) {
         if ($GLOBALS["ok_url"]) {
             readfile($GLOBALS["ok_url"]);
         } else {
-            $items = AA_Items::getItems(new zids($new_ids, 'l'));
+            $retcode = $GLOBALS["ret_code"] ? $GLOBALS["ret_code"] : base64_decode($GLOBALS["ret_code_enc"]);
             $ret   = array();
-            foreach($items as $long_id=>$item) {
-                $ret[$long_id] = AA_Stringexpand::unalias($GLOBALS["ret_code"], '', $item);
+            foreach($new_ids as $long_id) {
+                $item = AA_Item::getItem(new zids($long_id, 'l'));
+                $ret[$long_id] = AA_Stringexpand::unalias($retcode, '', $item);
             }
             header("Content-type: application/json");  // standard header based on IANA
             echo json_encode($ret);
@@ -254,12 +240,39 @@ if ( $answer )    {
 //      aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
 //      aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
 if ( isset($_POST['aa']) ) {
+    if ($_COOKIE['AA_Sess']) {
+        require_once AA_INC_PATH."request.class.php3";
+        require_once AA_BASE_PATH."modules/site/router.class.php";
+        $options = array(
+            'aa_url'          => AA_INSTAL_URL,
+            'cookie_lifetime' => 60*60*24*365  // one year
+        );
+        $a = new AA_Client_Auth($options);
+        if ($a->checkAuth()) {
+            $GLOBALS['apc_state']['xuser'] = $a->getUid();
+        }
+    }
     $grabber = new AA_Grabber_Form();
     $translations = null;
     $saver        = new AA_Saver($grabber, $translations, null, 'by_grabber');
     $saver->run();
-    SendOkPage( array("success" => "insert" ), $saver->newIds());
+    SendOkPage( array("success" => "insert" ), $saver->changedIds());
     exit;
+}
+
+// global variables should be quoted (since old AA code rely on that fact),
+// however the new code should use $_POST, which are NOT quoted
+if (!get_magic_quotes_gpc()) {
+    // Overrides GPC variables
+    foreach ($_GET as $k => $v) {
+        $kk = AddslashesDeep($v);
+    }
+    foreach ($_POST as $k => $v) {
+        $kk = AddslashesDeep($v);
+    }
+    foreach ($_COOKIE as $k => $v) {
+        $kk = AddslashesDeep($v);
+    }
 }
 
 //$debugfill=1;
@@ -295,6 +308,7 @@ if ($debugfill) huhl("Debugfill insert=",$insert);
 ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
 list($fields, $prifields) = $slice->fields();
 
+
 if (!(isset($prifields) AND is_array($prifields))) {
     SendErrorPage(array ("fatal"=>_m("No fields defined for this slice")));
 }
@@ -312,7 +326,11 @@ if (count($err_valid) > 1) {
 }
 
 // prepare content4id array before calling StoreItem (content4id is QUOTED!)
-$content4id    = GetContentFromForm( $slice, $oldcontent4id, $insert );
+$c4id = new ItemContent();
+$c4id->setItemID($my_item_id);
+$c4id->setFromForm( $slice, $oldcontent4id, $insert );
+
+$content4id = $c4id->getContent();
 
 // test for spam
 foreach ($content4id as $field) {
