@@ -33,22 +33,20 @@ $GLOBALS["js_triggers"] = array (
     "input"    => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
     "select"   => array ("onBlur", "onFocus", "onChange"),
     "textarea" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
-    "form"     => array ("onClick", "onDblClick", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onReset", "onSubmit"));
+    "form"     => array ("onClick", "onDblClick", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onReset", "onSubmit"),
+    "body"     => array ("onLoad")
+);
 
 $GLOBALS["js_trig"] = getTrig();
 /** getJavascript function
  * @param $slice_id
  */
 function getJavascript($slice_id) {
-    $db = new DB_AA;
-    if ($slice_id) {
-        $p_slice_id = q_pack_id ($slice_id);
-        $db->query("SELECT javascript FROM slice WHERE id='$p_slice_id'");
-        if ($db->next_record()) {
-            $javascript = $db->f("javascript");
-        }
+    if (!$slice_id) {
+        return '';
     }
-    return $javascript;
+    $p_slice_id = q_pack_id($slice_id);
+    return GetTable2Array("SELECT javascript FROM slice WHERE id='$p_slice_id'", 'aa_first', 'javascript');
 }
 
 /* $js_trig is an array with triggers used, e.g.
@@ -84,7 +82,7 @@ function getTrig() {
  * @param $upacked_fieldid
  * @param $add
  */
-function getTriggers($control, $unpacked_fieldid, $add="") {
+function getTriggers($control, $unpacked_fieldid='', $add="") {
     global $js_triggers;
     global $js_trig;
 
