@@ -299,8 +299,8 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
  * @param $tagprefix - array as defined in itemfunc.php3
  */
 function GetFormatedItems( $set, $format, $restrict_zids=false, $crypted_additional_slice_pwd=null, $tagprefix=null) {
-    $ret = array();
-    $zids  = QuerySet($set, $restrict_zids);
+    $ret  = array();
+    $zids = $set->query($restrict_zids);
     if ( $zids->count() <= 0 ) {
         return $ret;
     }
@@ -709,13 +709,13 @@ class AA_Item {
     }
 
     /** f_1 function
-     *  Prints just first value and without any txt2html... 
+     *  Prints just first value and without any txt2html...
      *  used for _#ITEM_ID_, ...
      * @param $col
      * @param $param
      */
     function f_1($col, $param="") {
-        $this->getval($col);
+        return $this->getval($col);
     }
 
     /** f_h function
@@ -803,7 +803,7 @@ class AA_Item {
     function f_n($col, $param="") {
         return unpack_id( $this->getval($col) );
     }
-    
+
     /** f_g function
      * prints image height atribut (<img height=...) or clears it
      * param: 0
@@ -1580,7 +1580,7 @@ class AA_Item {
      *  @param  zid     - an item id - zid object, unpacked or short id
      *  @param  renew   - regenerate the item form database
      */
-    function getItem($zid, $renew=false) {
+    function getItem($zid) {
         if (empty($zid)) {
             return false;
         }

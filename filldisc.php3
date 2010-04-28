@@ -124,8 +124,8 @@ foreach ($discussion_fields as $field => $tolerance) {
 $ip_address         = $_SERVER['REMOTE_ADDR'];
 $ip_banned_slice_id = $slice->getProperty('_ip_banned......');
 if ($ip_banned_slice_id) {
-    $set  = new AA_Set(new AA_Condition('ip..............', '=', '"'.$ip_address.'"'));
-    $zids = QueryZIDs(array($ip_banned_slice_id), $set->getConds());
+    $aa_set = new AA_Set($ip_banned_slice_id, new AA_Condition('ip..............', '=', '"'.$ip_address.'"'));
+    $zids   = $aa_set->query();
     if ($zids AND ($zids->count() > 0)) {
         $ban_msg = $slice->getProperty('_msg_banned.....');
         if ($ban_msg) {

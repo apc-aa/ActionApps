@@ -493,7 +493,8 @@ class AA_Searchbar extends AA_Storable {
             foreach ($as as $key => $val) {
                 $fld = $key;
                 // admin_search profile is stringexpanded
-                $search_str = $profile->parseContentProperty($val[0]) ;
+                $search_val = $profile->parseContentProperty($val[0]);
+                $search_str = $search_val->getValue();
             }
         }
         if ( $fld ) {

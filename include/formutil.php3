@@ -328,9 +328,10 @@ class inputform {
                 // first get values from profile, if there are some predefined value
                 $foo = $profile->getProperty('predefine',$f['id']);
                 if ( $foo AND !$GLOBALS[$varname]) {
-                    $x                     = $profile->parseContentProperty($foo);
-                    $GLOBALS[$varname]     = $x[0];  // it is not quoted, so OK
-                    $GLOBALS[$htmlvarname] = $x[1];
+                    $x = $profile->parseContentProperty($foo);
+                     // it is not quoted, so OK
+                    $GLOBALS[$varname]     = $x->getValue();
+                    $GLOBALS[$htmlvarname] = $x->getFlag();
                 }
                 // get values from form (values are filled when error on form ocures
                 if ( $f["multiple"] AND is_array($GLOBALS[$varname]) ) {
@@ -665,7 +666,7 @@ class AA_Inputfield {
                 }
             }
             $format          = AA_Slices::isSliceProperty($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
-            $set             = new AA_Set(String2Conds( $conds ), String2Sort( $sort ), array($sid), $whichitems);
+            $set             = new AA_Set($sid, String2Conds( $conds ), String2Sort( $sort ), $whichitems);
             $this->const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tagprefix);
             // $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix); // older version of the function :honzam03/09
             return $sid; // in most cases not very impotant information, but used in inputRelatION() input type
@@ -1171,7 +1172,6 @@ class AA_Inputfield {
         $this->echovar( $datectrl->getmonthselect(), 'month');
         $this->echovar( $datectrl->getyearselect(),  'year' );
         $this->echovar( $datectrl->gettimeselect(),  'time' );
-//        $this->echovar(datum($this->varname(), $val, $y_range_minus, $y_range_plus, $from_now, $display_time));
         $this->helps('plus');
     }
 

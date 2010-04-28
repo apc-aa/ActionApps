@@ -102,13 +102,10 @@ class AA_Saver {
                 // for AA_Grabber_Form we have the slice_id already filled
                 $content4id->setSliceID($this->slice_id);
             }
-            if ( $content4id->getPublishDate() <= 0 ) {
-                $content4id->setPublishDate(now());
-            }
-            if ( $content4id->getExpiryDate() <= 0 ) {
-                $content4id->setExpiryDate(now()+(60*60*24*365*10));
-            }
 
+            if (($this->store_mode == 'overwrite') OR (substr($this->store_mode,0,6) == 'insert')) {
+                 $content4id->complete4Insert();
+            }
 
             if ($debugfeed >= 3) {
                 print("\n<br>      ". $content4id->getValue('headline........'));
@@ -146,6 +143,10 @@ class AA_Saver {
     /** Returns array of long new saved ids */
     function newIds() {
         return $this->_new_ids;
+    }
+
+    function changedIds() {
+        return array_merge($this->_new_ids, $this->_updated_ids);
     }
 
     /** toexecutelater function
@@ -602,7 +603,7 @@ class AA_Grabber_Aarss extends AA_Grabber {
         next($this->aa_rss['items']);
 
         $ic = new ItemContent($content4id);
-        $ic->setItemValue('externally_fed', $this->feed['name']);  // TODO - move one layer up - to saver transactions
+        $ic->setValue('externally_fed..', $this->feed['name']);  // TODO - move one layer up - to saver transactions
         $ic->setItemId($item_id);
         return $ic;
     }
@@ -1116,7 +1117,7 @@ class AA_Grabber_Slice extends AA_Grabber {
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
-        $zids                 = QuerySet($this->set);
+        $zids                 = $this->set->query();
         $this->_longids       = $zids->longids();
         $this->_content_cache = array();
         $this->_index         = 0;
