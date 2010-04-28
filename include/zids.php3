@@ -65,7 +65,7 @@
 
 require_once AA_INC_PATH."util.php3";  // quote
 
-class zids implements Iterator {
+class zids implements Iterator, ArrayAccess, Countable {
     var $a;     // Array of ids of type specified in $t
                 // Note encapsulation broken in itemview which sets this directly
     var $type;  // Type of $a
@@ -224,11 +224,6 @@ class zids implements Iterator {
     function onetype() {
         // TODO - handle other types than single character types
         return $this->type;
-    }
-
-    /** Count how many ids */
-    function count() {
-        return count($this->a);
     }
 
     /** Is zids empty? */
@@ -566,14 +561,22 @@ class zids implements Iterator {
         }
         return array();
     }
-    
+
     /** Iterator interface */
     public function rewind()  { reset($this->a);                        }
     public function current() { return current($this->a);               }
     public function key()     { return key($this->a);                   }
     public function next()    { next($this->a);                         }
-    public function valid()   { return (current($this->a) !== false); }
-   
+    public function valid()   { return (current($this->a) !== false);   }
+
+    /** Countable interface */
+    public function count()   { return count($this->a);                 }
+
+    /** ArrayAccess interface */
+    public function offsetSet($offset, $value) { $this->a[$offset] = $value;      }
+    public function offsetExists($offset)      { return isset($this->a[$offset]); }
+    public function offsetUnset($offset)       { unset($this->a[$offset]);        }
+    public function offsetGet($offset)         { return isset($this->a[$offset]) ? $this->a[$offset] : null; }
 } // class zids
 
 /** guesstype function
@@ -590,7 +593,7 @@ function guesstype($str) {
     if (($s >= 12) AND ($s <= 16)) {
         return 'p';
     }
-    if (preg_match("/[0-9a-f]{24,32}/i", $str)) {
+    if (($s >= 24) AND ($s <= 32) AND (strspn($str, "0123456789abcdefABCDEF") == $s)) {
         return 'l';
     }
     if ($s > 32) {
