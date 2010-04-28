@@ -116,39 +116,16 @@ function GetEmailLangs() {
 function confirm_email($slice_id, $aw) {
 
     require_once AA_INC_PATH."itemfunc.php3";
-    $db = getDB();
-    $db->query(
-        "SELECT item.id FROM content INNER JOIN item
-         ON content.item_id = item.id
-         WHERE item.slice_id='".q_pack_id($slice_id)."'
-         AND content.field_id='".FIELDID_ACCESS_CODE."'
-         AND content.text='$aw'");
-    if ($db->num_rows() != 1) {
-        if ($GLOBALS['debug']) { echo "AW not OK: ".$db->num_rows()." items"; }
-        freeDB($db);
+
+    $set  = new AA_Set($slice_id, new AA_Condition(FIELDID_ACCESS_CODE, '=', '"'.$aw.'"'));
+    $zids = $set->query();
+
+    if ($zids->count() != 1) {
+        if ($GLOBALS['debug']) { echo "AW not OK: ".$zids->count()." items"; }
         return false;
     }
-    $db->next_record();
-    $item_id = unpack_id($db->f("id"));
-
-    $db->query(
-        "SELECT text FROM content
-          WHERE field_id = '".FIELDID_MAIL_CONFIRMED."'
-            AND item_id = '".q_pack_id($item_id)."'");
-
-    if ($db->next_record()) {
-        if (($db->f("text") != "") AND !$db->f("text")) {
-            $db->query(
-                "UPDATE content SET text='1'
-                WHERE field_id = '".FIELDID_MAIL_CONFIRMED."'
-                AND item_id = '".q_pack_id($item_id)."'");
-            if ($GLOBALS['debug']) { echo "<!--OK: email confirmed-->"; }
-            freeDB($db);
-            return true;
-        }
-    }
-    freeDB($db);
-    return false;
+    UpdateField($zids->longids(0), FIELDID_MAIL_CONFIRMED, new AA_Value('1'));
+    return true;
 }
 
 /** unsubscribe_reader function
