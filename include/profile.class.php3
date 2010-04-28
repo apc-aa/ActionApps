@@ -191,8 +191,7 @@ class AA_Profile {
         if ( $fnc ) {                       // call function
             $fncname = 'default_fnc_' . $fnc["fnc"];
             if (is_callable($fncname)) {
-                $x = array( $fncname($fnc["param"]), ($value[0] == '1') );
-                return $x;
+                return new AA_Value($fncname($fnc["param"]), ($value[0] == '1'));
             }
         }
         return array();

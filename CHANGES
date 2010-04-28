@@ -1,20 +1,26 @@
+04/28/10 - fixed Ajax and Live widget for date - now displays selectboxes
+(honzam)   instead of timestamp number
+         - new possibility of body onLoad trigger in Javascript "Field Triggers"
+         - fixed problem with Alerts - confirmation didn't work when the Reader
+           record do not contain the Confirmed field
+         - widgets now uses HTML with correct ids (no invalid characteds
+           like "[",...)
+         - fix - E-mail notify now uses correct e-mail charset
+         - fixed searches with id.............. field and operators (AND, OR...)
+         - fixed error on Cancel in Form editor
+         - remove unused directories - misc/oldDb2Db, misc/file2slice/tab2slice_php
+         - {ajax} and {live} now uses standard AA_Saver functions
+         - changed some queries from QuerySet() to better $aa_set->query()
+         - zids have ArrayAccess interface, so you can use it just like
+           $zids[1], ...
+         - new Iterator interface for AA_Fields object
 04/06/10 - bigger speedup and cleanup. AA profiled with xdebug and optimized
 (honzam)   for speed on many places. Most pages are displayed 2-2.5 times
            faster, than before. Optimized serialization for cache, removed some
            internal - unnecessary caching, math rewritten to use PHP evaluation,
            unaliasing much optimized, used quicker php functions, ...
          - better support for login form in AA_Router_Seo site module
-           Ussage:
-           <form action="{go:xqs=}" method="post">
-             <fieldset><legend>Login, please</legend>
-               <div  style="margin-right:150px; text-align:right;">
-                 <label for="username">Username</label> <input type="text" size="20" name="username" id="username"><br>
-                 <label for="password">Password</label> <input type="password" size="20" name="password" id="password">
-               </div>
-             </fieldset>
-             <input type="submit" value="Login" style="margin-left:200px;">
-           </form>
-         - login username and password also could be sumbmitted by GET method
+           login username and password also could be sumbmitted by GET method
          - new {ifeqfield:<item_id>:<field>:<var>:<text>:<else-text>}
            If any value of the (multivalue) $field is equal to $var, then print
            $text, else print $else_text. $(else_)text could contain _#1 alias
@@ -59,16 +65,15 @@
                and err=1 is set (acessible by {qs:err}).
                xuser is stored in the cookies
                Login From Ussage:
-                <form action="{go:xqs=}" method="post">
-                  <fieldset>
-                    <legend>Login, please</legend>
-                    <div  style="margin-right:150px; text-align:right;">
-                      <label for="username">Username</label> <input type="text" size="20" maxlength="20" name="username" id="username"><br>
-                      <label for="password">Password</label> <input type="password" size="20" maxlength="20" name="password" id="password">
-                    </div>
-                  </fieldset>
-                  <input type="submit" value="Login" style="margin-left:200px;">
-                </form>
+               <form action="{go:xqs=}" method="post">
+                 <fieldset><legend>Login, please</legend>
+                   <div  style="margin-right:150px; text-align:right;">
+                     <label for="username">Username</label> <input type="text" size="20" name="username" id="username"><br>
+                     <label for="password">Password</label> <input type="password" size="20" name="password" id="password">
+                   </div>
+                 </fieldset>
+                 <input type="submit" value="Login" style="margin-left:200px;">
+               </form>
              - cookies added to pagecache key for sitemodule.
          - added possibility to specify top-right selectbox priority for all
            modules - not only the slices

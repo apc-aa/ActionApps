@@ -28,6 +28,7 @@
 // Miscellaneous utility functions
 //
 
+require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."constants.php3";
 require_once AA_INC_PATH."mgettext.php3";
 require_once AA_INC_PATH."zids.php3";

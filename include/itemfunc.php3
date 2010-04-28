@@ -485,7 +485,6 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
  * @param $additional
  */
 function insert_fnc_pwd($item_id, $field, $value, $param, $additional='') {
-
     $change_varname = "v".unpack_id($field["id"])."a";
     $retype_varname = "v".unpack_id($field["id"])."b";
     // "c" created in ValidateContent4Id:
@@ -542,76 +541,6 @@ function IsEditable($fieldcontent, $field, &$profile) {
         AND !$profile->getProperty('fill',$field['id']));
 }
 
-/** GetContentFromForm function
- *  Returns content4id - values in content4id are quoted (addslashes)
- * @param $slice
- * @param $oldcontent4id
- * @param $insert
- */
-function GetContentFromForm( $slice, $oldcontent4id="", $insert=true ) {
-    global $auth;
-
-    list($fields, $prifields) = $slice->fields();
-    if (!isset($prifields) OR !is_array($prifields)) {
-        return false;
-    }
-
-    $profile   = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
-
-    foreach ( $prifields as $pri_field_id) {
-        $f = $fields[$pri_field_id];
-
-        // to content4id array add just displayed fields (see ShowForm())
-        if (!IsEditable($oldcontent4id[$pri_field_id], $f, $profile) AND !$insert) {
-            continue;
-        }
-
-        // "v" prefix - database field var
-        $varname     = 'v'. unpack_id($pri_field_id);
-        $htmlvarname = $varname."html";
-
-        // if there are predefined values in user profile, fill it.
-        // Fill it only if $insert (new item). Otherwise left there filled value
-
-        $profile_value = $profile->getProperty('hide&fill',$f['id']);
-        if (!$profile_value) {
-            $profile_value = $profile->getProperty('fill',$f['id']);
-        }
-
-        if ( $profile_value ) {
-            $x = $profile->parseContentProperty($profile_value);
-            $GLOBALS[$varname]     = $x[0];
-            $GLOBALS[$htmlvarname] = $x[1];
-        }
-
-        global $$varname;
-        $var = $$varname;
-        if (!is_array($var)) {
-            $var = array (0=>$var);
-        }
-
-        // fill the multivalues
-        foreach ($var as $v) {
-            $flag = $f["html_show"] ? ($GLOBALS[$htmlvarname]=="h" ? FLAG_HTML : 0)
-                                    : ($f["html_default"] > 0      ? FLAG_HTML : 0);
-            // data in $content4id are not DB escaped (addslashes)
-            $content4id[$pri_field_id][]   = array('value'=>stripslashes($v), 'flag'=>$flag);
-        }
-    }
-
-    // the status_code must be set in order we can use email_notify()
-    // in StoreItem() function.
-    if (!$insert AND !$content4id['status_code.....'][0]['value']) {
-        $content4id['status_code.....'][0]['value'] = max(1,$oldcontent4id['status_code.....'][0]['value']);
-    }
-
-    if (!$insert) {
-        $content4id["flags..........."][0]['value'] = $oldcontent4id["flags..........."][0]['value'];
-    }
-
-    return $content4id;
-}
-
 // -----------------------------------------------------------------------------
 /** StoreItem - deprecated function - $content4id->storeItem() instead
  *
@@ -639,26 +568,6 @@ function StoreItem( $id, $slice_id, $content4id, $fields, $insert, $invalidateca
     $content4id->setSliceID($slice_id);
     return $content4id->storeItem( $insert ? 'insert' : 'update', array($invalidatecache, $feed), $context);     // invalidatecache, feed
 } // end of StoreItem
-
-// -----------------------------------------------------------------------------
-/** GetDefault function
- * @param $f
- */
-function GetDefault($f) {
-    // all default should have fnc:param format
-    $fnc = ParseFnc($f["input_default"]);
-    if ($fnc) {                     // call function
-        $fncname = 'default_fnc_' . $fnc["fnc"];
-        return $fncname($fnc["param"]);
-    }
-    return false;
-}
-/** GetDefaultHTML function
- * @param $f
- */
-function GetDefaultHTML($f) {
-    return (($f["html_default"]>0) ? FLAG_HTML : 0);
-}
 
 // -----------------------------------------------------------------------------
 /** ShowForm function
@@ -721,8 +630,9 @@ function ShowForm($content4id, $fields, $prifields, $edit, $show="") {
             $foo = $profile->getProperty('predefine',$f['id']);
             if ($foo AND !$GLOBALS[$varname]) {
                 $x = $profile->parseContentProperty($foo);
-                $GLOBALS[$varname]     = $x[0];  // not quoted
-                $GLOBALS[$htmlvarname] = $x[1];
+                 // it is not quoted, so OK
+                $GLOBALS[$varname]     = $x->getValue();
+                $GLOBALS[$htmlvarname] = $x->getFlag();
             }
 
             // get values from form (values are filled when error on form ocures
@@ -784,11 +694,7 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
     $slice_fields = ($id == $slice->unpacked_id());
 
     // get slice fields and its priorities in inputform
-    list($fields, $prifields) = $slice->fields(null, $slice_fields);
-
-    if (!is_array($prifields)) {
-        return;
-    }
+    $fields = $slice->getFields($slice_fields);
 
     // it is needed to call IsEditable() function and GetContentFromForm()
     if ( $action == "update" ) {
@@ -803,8 +709,9 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
         }
     }
 
-    foreach ($prifields as $pri_field_id) {
-        $f = $fields[$pri_field_id];
+    foreach ($fields as $pri_field_id => $field) {
+        $f = $field->getRecord();
+
         //  'status_code.....' is not in condition - could be set from defaults
         if (($pri_field_id=='edited_by.......') || ($pri_field_id=='posted_by.......')) {
             continue;   // filed by AA - it could not be filled here
@@ -822,13 +729,15 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
         list($validate) = explode(":", $f["input_validate"], 2);
 
         if ($setdefault) {
+            $default = $field->getDefault();
             // modify the value to be compatible with $_GET[] array - we use
             // slashed variables (this will be changed in future) - TODO
-            $$varname     = addslashes(GetDefault($f));
-            $$htmlvarname = GetDefaultHTML($f);
+            $$varname     = addslashes($default->getValue());
+            $$htmlvarname = $default->getFlag();
         } elseif ($validate=='date') {
+            $default = $field->getDefault();
             // we do not know at this moment, if we have to use default
-            $default_val  = addslashes(GetDefault($f));
+            $default_val  = addslashes($default->getValue());
         }
 
         $editable = IsEditable($oldcontent4id[$pri_field_id], $f, $profile) && !$notshown[$varname];
