@@ -43,6 +43,9 @@ require_once AA_INC_PATH."grabber.class.php3";
 require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
+require_once AA_INC_PATH."PHPExcel/PHPExcel.php";
+require_once AA_INC_PATH."PHPExcel/PHPExcel/Writer/Excel5.php";
+
 class AA_Exporter extends AA_Object {
     var $set;
     var $field_set;
@@ -276,6 +279,59 @@ class AA_Exporter_Excel extends AA_Exporter_Html {
     }
 }
 
+
+class AA_Exporter_Excel5 extends AA_Exporter {
+    function _contentHeaders($file_name)    {
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/vnd.ms-excel;charset:UTF-8');
+        header('Content-Disposition: attachment; filename='.basename($file_name));
+        header('Content-Transfer-Encoding: binary');
+    }
+
+    function _outputEnd($item)   {
+        // Echo done
+        return "";  // EOF
+    }
+
+    function _outputStart($item)  {
+        return "";
+    }
+
+    function _outputItem($item)  {
+        return "";
+    }
+
+
+    function sendFile($file_name) {
+        // Create new PHPExcel object
+        $objPHPExcel = new PHPExcel();
+
+        // Set properties
+        $objPHPExcel->getProperties()->setCreator("ActionApps Excel Export");
+        $objPHPExcel->getProperties()->setTitle("ActionApps Excel Export");
+        $objPHPExcel->getProperties()->setSubject("ActionApps Excel Export");
+        $objPHPExcel->getProperties()->setDescription("ActionApps Excel Export");
+
+
+        // Add some data
+        $objPHPExcel->setActiveSheetIndex(0);
+        $objPHPExcel->getActiveSheet()->SetCellValue('A1', 'Hello');
+        $objPHPExcel->getActiveSheet()->SetCellValue('B2', 'world!');
+        $objPHPExcel->getActiveSheet()->SetCellValue('C1', 'Hello');
+        $objPHPExcel->getActiveSheet()->SetCellValue('D2', 'world!');
+
+        // Rename sheet
+        $objPHPExcel->getActiveSheet()->setTitle('Simple');
+
+        // Save Excel 2007 file
+        $objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
+
+        $this->_contentHeaders('test.xls');
+        $objWriter->save('-');
+    }
+}
+
+
 class AA_Fieldset {
 
     /** array of fields or definitions
@@ -339,7 +395,7 @@ if ($_GET['export']) {
 
     set_time_limit(1200);
 
-    $set      = new AA_Set($_GET['conds'], $_GET['sort'], array($slice_id), $_GET['bins']);
+    $set      = new AA_Set($slice_id, $_GET['conds'], $_GET['sort'], $_GET['bins']);
     $exporter = AA_Object::factory($_GET['format'], array('set'=>$set, 'field_set'=>$fs));
     if (is_null($exporter)) {
         echo _m('Bad file format - specify format');
