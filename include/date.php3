@@ -41,8 +41,8 @@ class datectrl {
     var $year;
     var $y_range_plus;    // how many years + display in year select list
     var $y_range_minus;   // how many years + display in year select list
-  var $from_now;        // year range is in relation to today's date/selected date
-  var $display_time;    // display time too
+    var $from_now;        // year range is in relation to today's date/selected date
+    var $display_time;    // display time too
 
     /** datectrl function
      *  constructor
@@ -53,13 +53,12 @@ class datectrl {
      * @param $from_now = false
      * @param $display_time = false
      */
-    function datectrl($name, $y_range_minus=5, $y_range_plus=5, $from_now=false,
-                    $display_time=false) {
-        $this->name = $name;
+    function datectrl($name, $y_range_minus=5, $y_range_plus=5, $from_now=false, $display_time=false) {
+        $this->name          = $name;
         $this->y_range_plus  = $y_range_plus;
         $this->y_range_minus = $y_range_minus;
-        $this->from_now = $from_now;
-        $this->display_time = $display_time;
+        $this->from_now      = $from_now;
+        $this->display_time  = $display_time;
         $this->update();
     }
     /** update function
@@ -135,7 +134,7 @@ class datectrl {
             return 0;
         }
         $t = explode( ':', $this->time ?  $this->time : "0:0:0");
-        return mktime ($t[0],$t[1],$t[2],(int)$this->month,(int)$this->day,(int)$this->year);
+        return mktime($t[0],$t[1],$t[2],(int)$this->month,(int)$this->day,(int)$this->year);
     }
 
     /** get_datestring function
@@ -165,17 +164,33 @@ class datectrl {
         return (( $this->get_date() > 0  ) OR ($this->get_date()==-3600));
     }
 
+
+    function getDayOptions() {
+        $at  = getdate(time());
+        $sel = ($this->day != 0 ? $this->day : $at["mday"]);
+        for ($i = 1; $i <= 31; $i++) {
+            $ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">$i</option>";
+        }
+        return $ret;
+    }
+        
     /** getdayselect function
      * print select box for day
      * @return string
      */
     function getdayselect() {
-        $at = getdate(time());
-        $sel =  ($this->day != 0 ? $this->day : $at["mday"]);
-        for ($i = 1; $i <= 31; $i++)
-            $ret .= "<option value=\"$i\"".
-              (($i == $sel) ? ' selected class="sel_on"' : "") . ">$i</option>";
-        return "<select name=\"tdctr_" . $this->name . "_day\"".getTriggers("select",$this->name).">$ret</select>";
+        return "<select name=\"tdctr_" . $this->name . "_day\"".getTriggers("select",$this->name).">".$this->getDayOptions()."</select>";
+    }
+
+
+    function getMonthOptions() {
+        $L_MONTH = monthNames();
+        $at      = getdate(time());
+        $sel     = ($this->month != 0 ? $this->month : $at["mon"]);
+        for ($i = 1; $i <= 12; $i++) {
+            $ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">". $L_MONTH[$i] ."</option>";
+        }
+        return $ret;
     }
 
     /** getmonthselect function
@@ -183,26 +198,13 @@ class datectrl {
      * @return string
      */
     function getmonthselect() {
-        $L_MONTH = monthNames();
-        $at = getdate(time());
-        $sel =  ($this->month != 0 ? $this->month : $at["mon"]);
-        for ($i = 1; $i <= 12; $i++) {
-            $ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">".
-             $L_MONTH[$i] ."</option>";
-        }
-        return "<select name=\"tdctr_" . $this->name . "_month\"".getTriggers("select",$this->name).">$ret</select>";
+        return "<select name=\"tdctr_" . $this->name . "_month\"".getTriggers("select",$this->name).">".$this->getMonthOptions()."</select>";
     }
 
-    /** getyearselect function
-     * print select box for year
-     * @return string
-     */
-    function getyearselect() {
-        $at = getdate(time());
-        $from = ( $this->from_now ? $at["year"] - $this->y_range_minus :
-                                $this->y_range_minus );
-        $to   = ( $this->from_now ? $at["year"] + $this->y_range_plus :
-                                $this->y_range_plus );
+    function getYearOptions() {
+        $at           = getdate(time());
+        $from         = ( $this->from_now ? $at["year"] - $this->y_range_minus : $this->y_range_minus );
+        $to           = ( $this->from_now ? $at["year"] + $this->y_range_plus  : $this->y_range_plus );
         $selectedused = false;
         for ($i = $from; $i <= $to; $i++) {
             $ret .= "<option value=\"$i\"";
@@ -217,18 +219,22 @@ class datectrl {
         if ($this->year AND !$selectedused) {
             $ret .= "<option value=\"". htmlspecialchars($this->year) ."\" selected class=\"sel_missing\">".htmlspecialchars($this->year)."</option>";
         }
-
-        return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">$ret</select>";
+        return $ret;
     }
-
-    /** gettimeselect function
-     * print select box for time
+        
+    /** getyearselect function
+     * print select box for year
      * @return string
      */
-    function gettimeselect() {
-        if (!$this->display_time) {
-            return "";
-        }
+    function getyearselect() {
+        return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">".$this->getYearOptions()."</select>";
+    }
+    
+    function isTimeDisplayed() {
+        return $this->display_time;
+    }
+    
+    function getTimeString() {
         $t = explode( ":", $this->time );
         $time_string = '';
 
@@ -243,7 +249,18 @@ class datectrl {
             case 3: $time_string = sprintf("%d:%02d",$t[0], $t[1]);
                     break;
         }
-        return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"  value=\"". safe($time_string). "\" size=\"8\" maxlength=\"8\"".getTriggers("input",$this->name).">";
+        return $time_string;        
+    }
+    
+    /** gettimeselect function
+     * print select box for time
+     * @return string
+     */
+    function gettimeselect() {
+        if (!$this->isTimeDisplayed()) {
+            return "";
+        }
+        return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"  value=\"". safe($this->getTimeString()). "\" size=\"8\" maxlength=\"8\"".getTriggers("input",$this->name).">";
     }
 
     /** getselect function
@@ -262,20 +279,5 @@ class datectrl {
         echo $this->getselect();
     }
 }
-/** datum function
- * @param $name
- * @param $val
- * @param $y_range_minus = 5
- * @param $y_range_plus = 5
- * @param $from_now = false
- * @param $display_time = false
- */
-function datum($name, $val, $y_range_minus=5, $y_range_plus=5, $from_now=false,
-               $display_time=false) {
-    $dc = new datectrl($name, $y_range_minus, $y_range_plus, $from_now, $display_time);
-    $dc->setdate_int($val);
-    return $dc->getselect();
-}
-
 
 ?>
