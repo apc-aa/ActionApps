@@ -59,9 +59,9 @@ class AA_Value {
             if (strtolower(get_class($val)) == 'aa_value') {
                 return $val;
             }
-            // we use serialized values for objects. 
-            // The idea is, that it is in fact the same as with timestamp for date - it is just inner value, 
-            // which is hardly ever shown to user as is. The same with objects here. 
+            // we use serialized values for objects.
+            // The idea is, that it is in fact the same as with timestamp for date - it is just inner value,
+            // which is hardly ever shown to user as is. The same with objects here.
             return new AA_Value(serialize($val));   // maybe we can set some flag for serialized values
         }
         return new AA_Value($val);
@@ -365,7 +365,7 @@ class ItemContent extends AA_Content {
      * @param $insert
      * @param $slice_fields
      */
-    function setFieldsFromForm(&$slice, $oldcontent4id="", $insert=true, $slice_fields=false) {
+    function setFieldsFromForm($slice, $oldcontent4id="", $insert=true, $slice_fields=false) {
         global $auth;
 
         list($fields, $prifields) = $slice->fields(null, $slice_fields);
@@ -398,8 +398,8 @@ class ItemContent extends AA_Content {
             if ( $profile_value ) {
                 $x = $profile->parseContentProperty($profile_value);
                 // modify the value to be compatible with $_GET[] array
-                $GLOBALS[$varname]     = addslashes($x[0]);
-                $GLOBALS[$htmlvarname] = $x[1];
+                $GLOBALS[$varname]     = addslashes($x->getValue());
+                $GLOBALS[$htmlvarname] = $x->getFlag();
             }
 
             $var = $GLOBALS[$varname];
@@ -426,7 +426,7 @@ class ItemContent extends AA_Content {
      * @param $oldcontent4id
      * @param $insert
      */
-    function setFromForm( &$slice, $oldcontent4id="", $insert=true) {
+    function setFromForm( $slice, $oldcontent4id="", $insert=true) {
         global $id;
 
         if (!$this->setFieldsFromForm($slice, $oldcontent4id, $insert)) {
@@ -436,7 +436,7 @@ class ItemContent extends AA_Content {
         // the status_code must be set in order we can use email_notify()
         // in StoreItem() function.
         if (!$insert AND !$this->getStatusCode()) {
-            $this->setStatusCode(max(1,$oldcontent4id['status_code.....'][0]['value']));
+            $this->setValue('status_code.....', max(1,$oldcontent4id['status_code.....'][0]['value']));
         }
 
         if (!$insert) {
@@ -450,6 +450,8 @@ class ItemContent extends AA_Content {
                                       // from historical reasons. We probably change it in next versions - TODO
         $this->setSliceID($slice->unpacked_id());
     }
+
+
     /** is_empty function
      *
      */
@@ -482,20 +484,10 @@ class ItemContent extends AA_Content {
         return $fields;
     }
 
-    /** getItemValue function
-     *  Fills the name with dots to the standard 16 characters,
-     *   returns the value for the field. You can use field names
-     *   from the <i>item</i> table with this function.
-     * @param $field_name
-     */
-    function getItemValue($field_name) {
-        return $this->getValue(substr($field_name."................",0,16));
-    }
-
     /** getItemID function
      */
     function getItemID() {
-        return unpack_id($this->getItemValue("id"));
+        return unpack_id($this->getValue('id..............'));
     }
 
     /** redefined AA_Content's function */
@@ -511,26 +503,26 @@ class ItemContent extends AA_Content {
     /** getSliceID function
      */
     function getSliceID() {
-        return unpack_id($this->getItemValue("slice_id"));
+        return unpack_id($this->getValue('slice_id........'));
     }
 
     /** getStatusCode function
      */
     function getStatusCode() {
-        return $this->getItemValue("status_code");
+        return $this->getValue("status_code.....");
     }
 
     /** getPublishDate function
      */
     function getPublishDate() {
-        return $this->getItemValue("publish_date");
+        return $this->getValue("publish_date....");
     }
 
 
     /** getExpiryDate function
      */
     function getExpiryDate() {
-        return $this->getItemValue("expiry_date");
+        return $this->getValue("expiry_date.....");
     }
 
     /** setValue function
@@ -541,48 +533,18 @@ class ItemContent extends AA_Content {
         $this->content[$field_id][0]['value'] = $val;
     }
 
-    /** setItemValue function
-     * @param $field_name
-     * @param $value
-     */
-    function setItemValue($field_name, $value) {
-        $this->content[substr($field_name."...................",0,16)] =
-            array (0 => array ("value" => $value));
-    }
-
     /** setItemID function
      * @param $value
      */
     function setItemID($value) {
-        $this->setItemValue("id", pack_id($value));
+        $this->setValue("id..............", pack_id($value));
     }
 
     /** setSliceID function
      * @param $value
      */
     function setSliceID($value) {
-        $this->setItemValue("slice_id", pack_id($value));
-    }
-
-    /** setStatusCode function
-     * @param $value
-     */
-    function setStatusCode($value) {
-        $this->setItemValue("status_code", $value);
-    }
-
-    /** setPublishDate function
-     * @param $value
-     */
-    function setPublishDate($value) {
-        $this->setItemValue("publish_date", $value);
-    }
-
-    /** setExpiryDate function
-     * @param $value
-     */
-    function setExpiryDate($value) {
-        $this->setItemValue("expiry_date", $value);
+        $this->setValue("slice_id........", pack_id($value));
     }
 
     /*------------------------ */
@@ -617,7 +579,7 @@ class ItemContent extends AA_Content {
 
         $db         = new DB_AA;
 
-        $id = $this->getItemValue("id");
+        $id = $this->getValue("id..............");
         if ($id == "new id") {	    // if the item has no id => set up an unique new id
             $id = new_id();
             $insert = true;
@@ -649,6 +611,7 @@ class ItemContent extends AA_Content {
         return $added_to_db ? array(0=> ($insert ? INSERT : UPDATE) ,1=>$id) : false;
     }
 
+    /*
     function validate() {
         $slice_id = $this->getSliceID();
         if (!$slice_id) {
@@ -656,110 +619,38 @@ class ItemContent extends AA_Content {
             return false;
         }
         $slice     = AA_Slices::getSlice($this->getSliceID());
+    not yet written
+    */
 
-        $fields    = $slice->getFields();
-        $field_ids = $fields->getPriorityArray();
-        foreach ($field_ids as $field_id) {
-            $field = $fields->getField($field_id);
+    /** validates and fills content with default and hidden fields in order it could be stored into database */
+    function complete4Insert() {
+        global $auth;
 
+        $slice = AA_Slices::getSlice($this->getSliceID());
+        if (!$slice) {
+            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_SLICE_ID, _m("No Slice Id specified"));  // set error code
+            return false;
         }
 
-        //  @todo \
+        // start from scretch with new content
+        $new_content = array();
+        $fields      = $slice->getFields();
+        $profile     = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
 
-
-        foreach ($prifields as $pri_field_id) {
-            $f = $fields[$pri_field_id];
-            //  'status_code.....' is not in condition - could be set from defaults
-            if (($pri_field_id=='edited_by.......') || ($pri_field_id=='posted_by.......')) {
-                continue;   // filed by AA - it could not be filled here
-            }
-            $varname = 'v'. unpack_id($pri_field_id);  // "v" prefix - database field var
-            $htmlvarname = $varname."html";
-
-            global $$varname, $$htmlvarname;
-
-            $setdefault = $action == "add"
-                    || !$f["input_show"]
-                    || $profile->getProperty('hide',$pri_field_id)
-                    || ($action == "insert" && $notshown [$varname]);
-
-            list($validate) = explode(":", $f["input_validate"], 2);
-
-            if ($setdefault) {
-                // modify the value to be compatible with $_GET[] array - we use
-                // slashed variables (this will be changed in future) - TODO
-                $$varname     = addslashes(GetDefault($f));
-                $$htmlvarname = GetDefaultHTML($f);
-            } elseif ($validate=='date') {
-                // we do not know at this moment, if we have to use default
-                $default_val  = addslashes(GetDefault($f));
-            }
-
-            $editable = IsEditable($oldcontent4id[$pri_field_id], $f, $profile) && !$notshown[$varname];
-
-            // Run the "validation" which changes field values
-            if ($editable && ($action == "insert" || $action == "update")) {
-                switch( $validate ) {
-                    case 'date':
-                        $foo_datectrl_name = new datectrl($varname);
-                        $foo_datectrl_name->update();           // updates datectrl
-                        if ($$varname != "") {                  // loaded from defaults
-                            $foo_datectrl_name->setdate_int($$varname);
-                        }
-                        $foo_datectrl_name->ValidateDate($f["name"], $err, $f["required"], $default_val);
-                        $$varname = $foo_datectrl_name->get_date();  // write to var
-                        break;
-                    case 'bool':
-                        $$varname = ($$varname ? 1 : 0);
-                        break;
-                    case 'pwd':
-                        // store the original password to use it in
-                        // insert_fnc_pwd when it is not changed
-                        if ($action == "update"){
-                            $GLOBALS[$varname."c"] = $oldcontent4id[$pri_field_id][0]['value'];
-                        }
-                        break;
-                }
-            }
-
-            // Run the validation which really only validates
-            if ($do_validate && ($action == "insert" || $action == "update")) {
-                // special setting for file upload - there we solve the problem
-                // of required fileupload field, but which is empty at this moment
-                if ( $f["required"] AND (substr($f["input_show_func"], 0,3) === 'fil')) {
-                    ValidateInput($varname, $f["name"], $$varname. $GLOBALS[$varname.'x'] , $err, // status code is never required
-                        $f["required"] ? 1 : 0, $f["input_validate"]);
-                    continue;
-                }
-
-                switch( $validate ) {
-                    case 'text':
-                    case 'url':
-                    case 'email':
-                    case 'number':
-                    case 'id':
-                        ValidateInput($varname, $f["name"], $$varname, $err, // status code is never required
-                            ($f["required"] AND ($pri_field_id!='status_code.....')) ? 1 : 0, $f["input_validate"]);
-                        break;
-                    // necessary for 'unique' validation: do not validate if
-                    // the value did not change (otherwise would the value always
-                    // be found)
-                    case 'e-unique':
-                    case 'unique':
-                        if (addslashes ($oldcontent4id[$pri_field_id][0]['value']) != $$varname)
-                            ValidateInput($varname, $f["name"], $$varname, $err,
-                                      $f["required"] ? 1 : 0, $f["input_validate"]);
-                        break;
-                    case 'user':
-                        // this is under development.... setu, 2002-0301
-                        // value can be modified by $$varname = "new value";
-                        $$varname = usr_validate($varname, $f["name"], $$varname, $err, $f, $fields);
-                        break;
-                }
-            }
+        foreach ($fields as $field_id => $field) {
+            $property = $field->getAaProperty();
+            $new_content->setAaValue($field_id, $property->complete4Insert($this->getAaValue($field_id), $profile));
         }
+
+        if ( $new_content->getPublishDate() <= 0 ) {
+            $new_content->setValue('publish_date....', now());
+        }
+        if ( $new_content->getExpiryDate() <= 0 ) {
+            $new_content->setValue('expiry_date.....', now()+(60*60*24*365*10));
+        }
+
+        $this->content = $new_content;
     }
-
 
     /** storeItem function
      *  Basic function for changing contents of items.
@@ -1217,5 +1108,27 @@ function itemIsDuplicate($item_id) {
     freeDB($db);
     return $ret ? true : false;
 }
+
+/** field_content is AA_Value object */
+function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
+    $content4id = new ItemContent();
+    $content4id->setByItemID($item_id, true);     // ignore password
+    // if we do not ignore it, then whole item is destroyed for slices with slice_pwd
+
+    $sli_id     = $content4id->getSliceID();
+    unset($content4id);
+
+    $newcontent4id = new ItemContent();
+    $newcontent4id->setAaValue($field_id, $field_content);
+    $newcontent4id->setItemID($item_id);
+    $newcontent4id->setSliceID($sli_id);
+    $updated_items = 0;
+
+    if ($newcontent4id->storeItem( 'update_silent', array($invalidate, false))) {    // invalidatecache, not feed
+        $updated_items = 1;
+    }
+    return $updated_items;
+}
+
 
 ?>
