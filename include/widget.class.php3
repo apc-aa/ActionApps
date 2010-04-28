@@ -147,7 +147,7 @@ class AA_Widget extends AA_Components {
                 }
             }
             $format          = AA_Slices::isSliceProperty($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
-            $set              = new AA_Set(String2Conds( $filter_conds ), String2Sort( $sort_by ), array($sid), $bin_filter);
+            $set              = new AA_Set($sid, String2Conds( $filter_conds ), String2Sort( $sort_by ), $bin_filter);
             $this->_const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tag_prefix);
             return;
         }
@@ -315,12 +315,12 @@ class AA_Widget extends AA_Components {
     *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
     */
-    static public function getId4Form($property_id, $content) {
+    static public function getName4Form($property_id, $content) {
         $form_field_id = AA_Widget::getVarFromFieldId($property_id);
 
         $oid = $content->getId();
         if ( $oid ) {
-            return "aa[i$oid][$form_field_id]";
+            return "aa[u$oid][$form_field_id]";
         }
 
         $oowner = $content->getOwnerId();
@@ -328,6 +328,10 @@ class AA_Widget extends AA_Components {
             throw new Exception('No owner specifield for '. $form_field_id);
         }
         return "aa[n1_$oowner][$form_field_id]";
+    }
+
+    static public function formName2Id($name) {
+        return str_replace(array(']','['), array('','-'), $name);
     }
 
     /** Converts real field id into field id as used in the AA form, like:
@@ -345,79 +349,84 @@ class AA_Widget extends AA_Components {
     }
 
     /** returns array(item_id,field_id) from name of variable used on AA form */
-    static public function parseId4Form($input_id) {
+    static public function parseId4Form($input_name) {
         // aa[i<item_id>][<field_id>][]
-        $parsed   = explode(']', $input_id);
+        $parsed   = explode(']', $input_name);
         $item_id  = substr($parsed[0],4);
         $field_id = AA_Widget::getFieldIdFromVar(substr($parsed[1],1));
         return array($item_id,$field_id);
     }
 
 
-    /** @return widget HTML for using as AJAX component
-     *  @param  $aa_property - the variable
-     *  @param  $content     - contain the value of property to display
-     *                       - never empty - it contain at least aa_owner for
-     *                         new objects
-     */
-    function getHtml($aa_property, $content) {
-
-        $input_id    = AA_Widget::getId4Form($aa_property->getId(), $content);
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name   = AA_Widget::getName4Form($aa_property->getId(), $content);
+        $base_id     = AA_Widget::formName2Id($base_name);
         $required    = $aa_property->isRequired();
-        $help        = $aa_property->getHelp();
+        $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
         $widget      = '';
 
         // property uses constants or widget have the array assigned
         if ($this->getProperty('const') OR $this->getProperty('const_arr')) {
             // This widget uses constants - show selectbox!
-            $input_name   = $input_id ."[]";
+            $input_name   = $base_name ."[]";
+            $input_id     = AA_Widget::formName2Id($input_name);
             $use_name     = $this->getProperty('use_name', false);
             $multiple     = $this->multiple() ? ' multiple' : '';
 
-            $widget    = "<select name=\"$input_name\" id=\"$input_name\"$multiple>";
-            $widget_id = $input_name;
+            $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $widget_add>";
             $options   = $this->getOptions($aa_property, $content, $use_name, false, !$required);
             $widget   .= $this->getSelectOptions( $options );
             $widget   .= "</select>";
         } else {
             $delim          = '';
-            $widget_id      = $input_name."[0]";
             $width          = $this->getProperty('width', 60);
             $max_characters = $this->getProperty('max_characters', 254);
             $value          = $content->getAaValue($aa_property->getId());
 
             for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
-                $input_name   = $input_id ."[$i]";
+                $input_name   = $base_name ."[$i]";
+                $input_id     = AA_Widget::formName2Id($input_name);
                 $input_value  = htmlspecialchars($value->getValue($i));
-                $widget      .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_name\" value=\"$input_value\">";
+                $widget      .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>";
                 $delim        = '<br />';
             }
             // no input was printed, we need to print one
             if ( !$widget ) {
-                $input_name   = $input_id ."[0]";
-                $widget       = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_name\" value=\"\">";
+                $input_name   = $base_name ."[0]";
+                $input_id     = AA_Widget::formName2Id($input_name);
+                $widget       = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";
             }
         }
 
-        return $this->_finalizeHtml($widget, $aa_property, $input_name);
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
 
-    function _finalizeHtml($widget, $aa_property, $input_name) {
-        $required    = $aa_property->isRequired();
+    /** @return widget HTML for using in form
+     *  @param  $aa_property - the variable
+     *  @param  $content     - contain the value of property to display
+     *                       - never empty - it contain at least aa_owner for
+     *                         new objects
+     */
+    function getHtml($aa_property, $content) {
+        return $this->_finalizeHtml($this->_getRawHtml($aa_property, $content), $aa_property);
+    }
+
+    function _finalizeHtml($winfo, $aa_property) {
+        $base_name   = $winfo['base_name'];
+        $base_id     = AA_Widget::formName2Id($base_name);
+        $required    = $winfo['required'];
         $help        = $aa_property->getHelp();
 
-        $ret  = "<div class=\"aa-widget\"".($required ? 'aa-required':'').">\n";
-        $ret .= "  <label for=\"$input_name\">".$aa_property->getName()."</label>\n";
+        $ret  = "<div class=\"aa-widget\"".($required ? 'aa-required':'')." id=\"widget-$base_id\">\n";
+        $ret .= "  <label for=\"". $winfo['last_input_name'] ."\">".$aa_property->getName()."</label>\n";
         $ret .= "  <div class=\"aa-input\">\n";
-        $ret .= "    $widget". ($help ? "\n    <div class=\"aa-help\">$help</div>\n" :'');
+        $ret .=      $winfo['html']. ($help ? "\n    <div class=\"aa-help\">$help</div>\n" :'');
         $ret .= "  </div>\n";
         $ret .= "</div>\n";
 
         return $ret;
     }
-
-
 
     /** @return widget HTML for using as AJAX component
      *  @param  $aa_property - the variable
@@ -426,40 +435,18 @@ class AA_Widget extends AA_Components {
      *                         variable
      */
     function getAjaxHtml($aa_property, $content, $repre_value) {
+        return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content), $repre_value);
+    }
 
-        $input_id    = AA_Widget::getId4Form($aa_property->getId(), $content);
-        $ret   = '';
-
-        // This widget uses constants - show selectbox!
-        if ($this->getProperty('const')) {
-            $input_name   = $input_id ."[]";
-            $use_name     = $this->getProperty('use_name', false);
-            $multiple     = $this->multiple() ? ' multiple' : '';
-            $required     = $aa_property->isRequired();
-
-            $ret      = "<select name=\"$input_name\" id=\"$input_name\"$multiple>";
-            $options  = $this->getOptions($aa_property, $content, $use_name, false, !$required);
-            $ret     .= $this->getSelectOptions( $options );
-            $ret     .= "</select>";
-        } else {
-            $delim = '';
-            $width          = $this->getProperty('width', 60);
-            $max_characters = $this->getProperty('max_characters', 254);
-
-            $value          = $content->getAaValue($aa_property->getId());
-            for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
-                $input_name   = $input_id ."[$i]";
-                $input_value  = htmlspecialchars($value->getValue($i));
-                $ret         .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"$input_name\" value=\"$input_value\">";
-                $delim        = '<br />';
-            }
-            // no input was printed, we need to print one
-            if ( !$ret ) {
-                $ret         = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"". $input_id ."[0]\" value=\"\">";
-            }
-        }
-
-        return $this->_finalizeAjaxHtml($ret, $input_id, $repre_value);
+    /* Creates all common ajax editing buttons to be used by different inputs */
+    function _finalizeAjaxHtml($winfo, $repre_value) {
+        $base_name    = $winfo['base_name'];
+        $base_id      = AA_Widget::formName2Id($base_name);
+        $widget_html = $winfo['html'];
+        $widget_html .= "\n<input class=\"save-button\" type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id')\">"; //ULOŽIT ZMÌNU
+        $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
+        $widget_html .= "\n<input type=\"hidden\" id=\"ajaxh_$base_id\" value=\"".htmlspecialchars($repre_value)."\">";
+        return $widget_html;
     }
 
     /** @return widget HTML for using as Live component (in place editing)
@@ -467,48 +454,18 @@ class AA_Widget extends AA_Components {
      *  @param  $content        - contain the value of propertyu to display
      */
     function getLiveHtml($aa_property, $content) {
+        return $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live'));
+    }
 
-        $input_id = AA_Widget::getId4Form($aa_property->getId(), $content);
-        $ret      = '';
+    /* Decorates Live Widget. Prepared for overriding in subclasses */
+    function _finalizeLiveHtml($winfo) {
+        $base_id  = $winfo['base_id'];
 
-        // This widget uses constants - show selectbox!
-        if ($this->getProperty('const')) {
-            $input_name   = $input_id ."[]";
-            $use_name     = $this->getProperty('use_name', false);
-            $multiple     = $this->multiple() ? ' multiple' : '';
-            $required     = $aa_property->isRequired();
+        $ret  = "<div class=\"aa-widget\"".($winfo['required'] ? 'aa-required':'')." id=\"widget-$base_id\" style=\"display:inline\">" . $winfo['html']. "</div>";
 
-            $ret      = "<select name=\"$input_name\" id=\"$input_name\"$multiple class=\"live\" onchange=\"DoChangeLive('$input_id')\">";
-            $options  = $this->getOptions($aa_property, $content, $use_name, false, !$required);
-            $ret     .= $this->getSelectOptions( $options );
-            $ret     .= "</select>";
-        } else {
-            $delim = '';
-            $width          = $this->getProperty('width', 60);
-            $max_characters = $this->getProperty('max_characters', 254);
-            $value          = $content->getAaValue($aa_property->getId());
-            for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
-                $input_name   = $input_id ."[$i]";
-                $input_value  = htmlspecialchars($value->getValue($i));
-                $ret         .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"$input_name\" value=\"$input_value\" class=\"live\" onchange=\"DoChangeLive('$input_id')\">";
-                $delim        = '<br />';
-            }
-            // no input was printed, we need to print one
-            if ( !$ret ) {
-                $ret         = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" id=\"". $input_id ."[0]\" value=\"\" class=\"live\" onchange=\"DoChangeLive('". $input_id ."')\">";
-            }
-        }
         return $ret;
+        return $winfo['html'];
     }
-
-    /* Creates all common ajax editing buttons to be used by different inputs */
-    function _finalizeAjaxHtml($widget_html, $input_id, $repre_value) {
-        $widget_html  .= "\n<input class=\"save-button\" type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"DoChange('$input_id')\">"; //ULOŽIT ZMÌNU
-        $widget_html  .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$input_id');\">";
-        $widget_html  .= "\n<input type=\"hidden\" id=\"ajaxh_$input_id\" value=\"".htmlspecialchars($repre_value)."\">";
-        return $widget_html;
-    }
-
 
     /** @return AA_Value for the data send by the widget
      *   The data submitted by form usually looks like
@@ -585,52 +542,31 @@ class AA_Widget_Txt extends AA_Widget {
 
     }
 
-    function getAjaxHtml($aa_property, $content, $repre_value) {
-        $input_id  = AA_Widget::getId4Form($aa_property->getId(), $content);
-        $row_count = $this->getProperty('row_count', 4);
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name    = AA_Widget::getName4Form($aa_property->getId(), $content);
+        $base_id      = AA_Widget::formName2Id($base_name);
+        $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
-        $ret   = '';
-        $delim = '';
-        $value = $content->getAaValue($aa_property->getId());
-        for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
-            $input_name   = $input_id ."[$i]";
+        $widget      = '';
+
+        $delim       = '';
+        $row_count   = $this->getProperty('row_count', 4);
+        $value       = $content->getAaValue($aa_property->getId());
+
+        $count       = max($value->valuesCount(),1);
+        for ( $i = 0; $i < $count; $i++ ) {
+            $input_name   = $base_name ."[$i]";
+            $input_id     = AA_Widget::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
-            $ret         .= "$delim\n<textarea id=\"$input_name\" name=\"$input_name\" rows=\"$row_count\" style=\"width:100%\">$input_value</textarea>";
+            $widget      .= "$delim\n<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$row_count\"$widget_add style=\"width:100%\">$input_value</textarea>";
             $delim        = '<br />';
         }
 
-        // no input was printed, we need to print one
-        if ( !$ret ) {
-            $input_name  = $input_id ."[0]";
-            $ret         = "\n<textarea id=\"$input_name\" name=\"$input_name\" rows=\"$row_count\" style=\"width:100%\"></textarea>";
-        }
-
-        return $this->_finalizeAjaxHtml($ret, $input_id, $repre_value);
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
-
-    function getLiveHtml($aa_property, $content) {
-        $input_id  = AA_Widget::getId4Form($aa_property->getId(), $content);
-        $row_count = $this->getProperty('row_count', 4);
-
-        $ret   = '';
-        $delim = '';
-        $value = $content->getAaValue($aa_property->getId());
-        for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
-            $input_name   = $input_id ."[$i]";
-            $input_value  = htmlspecialchars($value->getValue($i));
-            $ret         .= "$delim\n<textarea id=\"$input_name\" name=\"$input_name\" rows=\"$row_count\" class=\"live\" onchange=\"DoChangeLive('$input_id')\" style=\"width:100%\">$input_value</textarea>";
-            $delim        = '<br />';
-        }
-
-        // no input was printed, we need to print one
-        if ( !$ret ) {
-            $input_name  = $input_id ."[0]";
-            $ret         = "\n<textarea id=\"$input_name\" name=\"$input_name\" rows=\"$row_count\" class=\"live\" onchange=\"DoChangeLive('$input_id')\" style=\"width:100%\"></textarea>";
-        }
-
-        return $ret;
-    }
-
 }
 
 /** Textarea with Presets widget */
@@ -944,6 +880,50 @@ class AA_Widget_Dte extends AA_Widget {
             );
     }
 
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name     = AA_Widget::getName4Form($aa_property->getId(), $content);
+        $base_id       = AA_Widget::formName2Id($base_name);
+        $base_name_add = $base_name . '[dte]';
+        $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+
+        $widget        = '';
+
+        $delim         = '';
+        $y_range_minus = $this->getProperty('start_year', 1);
+        $y_range_plus  = $this->getProperty('end_year',  10);
+        $from_now      = $this->getProperty('relative',   1);
+        $display_time  = $this->getProperty('show_time',  1);
+
+        $datectrl = new datectrl('', $y_range_minus, $y_range_plus, $from_now, $display_time);
+
+        $row_count   = $this->getProperty('row_count', 4);
+        $value       = $content->getAaValue($aa_property->getId());
+        $count       = max($value->valuesCount(),1);
+        for ( $i = 0; $i < $count; $i++ ) {
+            $datectrl->setdate_int($value->getValue($i));
+            $input_name   = $base_name_add. "[d][$i]";
+            $input_id     = AA_Widget::formName2Id($input_name);
+            $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getDayOptions()."</select>";
+            $input_name   = $base_name_add. "[m][$i]";
+            $input_id     = AA_Widget::formName2Id($input_name);
+            $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getMonthOptions()."</select>";
+            $input_name   = $base_name_add. "[y][$i]";
+            $input_id     = AA_Widget::formName2Id($input_name);
+            $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getYearOptions()."</select>";
+            if ($datectrl->isTimeDisplayed()) {
+                $input_name   = $base_name_add. "[t][$i]";
+                $input_id     = AA_Widget::formName2Id($input_name);
+                $widget      .= "$delim\n<input type=\"text\" size=\"8\" maxlength=\"8\" value=\"". $datectrl->getTimeString(). "\"name=\"$input_name\" id=\"$input_id\"$widget_add>";
+            }
+            $delim        = '<br />';
+        }
+
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
+
     /** @return AA_Value for the data send by the widget
      *   This is compound widgets, which consists from more than one input, so
      *   the inputs looks like:
@@ -996,55 +976,32 @@ class AA_Widget_Chb extends AA_Widget {
         parent::AA_Object($params);
     }
 
-    /** @return widget HTML for using as AJAX component
-     *  @param  $aa_property - the variable
-     *  @param  $content        - contain the value of propertyu to display
-     *  @param  $repre_value - current code used for representation of the
-     *                         variable
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
      */
-    function getAjaxHtml($aa_property, $content, $repre_value) {
-        $input_id = AA_Widget::getId4Form($aa_property->getId(), $content);
-        $ret      = '';
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name   = AA_Widget::getName4Form($aa_property->getId(), $content);
+        $base_id      = AA_Widget::formName2Id($base_name);
+        $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        $widget   = '';
         $delim    = '';
         $value    = $content->getAaValue($aa_property->getId());
         for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
-            $input_name   = $input_id ."[$i]";
+            $input_name   = $base_name ."[$i]";
+            $input_id     = AA_Widget::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
-            $ret         .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_name\" value=\"1\"". ($input_value ? " checked" : '').">";
+            $widget      .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"". ($input_value ? " checked" : '')."$widget_add\">";
             $delim        = '<br />';
         }
         // no input was printed, we need to print one
-        if ( !$ret ) {
-            $input_name   = $input_id ."[0]";
-            $ret         .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_name\" value=\"1\">";
-        }
-
-        return $this->_finalizeAjaxHtml($ret, $input_id, $repre_value);
-    }
-
-    /** @return widget HTML for using as Live component
-     *  @param  $aa_property - the variable
-     *  @param  $content        - contain the value of propertyu to display
-     */
-    function getLiveHtml($aa_property, $content) {
-        $input_id = AA_Widget::getId4Form($aa_property->getId(), $content);
-        $ret      = '';
-        $delim    = '';
-        $value    = $content->getAaValue($aa_property->getId());
-        for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
-            $input_name   = $input_id ."[$i]";
-            $input_value  = htmlspecialchars($value->getValue($i));
-            $ret         .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_name\" value=\"1\"". ($input_value ? " checked" : '')." class=\"live\" onchange=\"DoChangeLive('$input_id')\">";
-            $delim        = '<br />';
-        }
-        // no input was printed, we need to print one
-        if ( !$ret ) {
+        if ( !$widget ) {
             // do not put there [0] - we need to distinguish between single
-            // checkbox and multiple checkboxes in DoChangeLive() function
-            $input_name   = $input_id ."[]";
-            $ret         .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_name\" value=\"1\" class=\"live\" onchange=\"DoChangeLive('$input_id')\">";
+            // checkbox and multiple checkboxes in AA_SendWidgetLive() function
+            $input_name   = $base_name ."[]";
+            $input_id     = AA_Widget::formName2Id($input_name);
+            $widget      .= "\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"$widget_add\">";
         }
-        return $ret;
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
 
     /** - static member functions
@@ -1114,9 +1071,8 @@ class AA_Widget_Mch extends AA_Widget {
     }
 
     /** Returns one checkbox tag - Used in inputMultiChBox */
-    function getOneChBoxTag($option, $name, $add='') {
-        $ret = "\n<nobr><input type=\"checkbox\" name=\"$name\" id=\"$name\" value=\"".
-                   htmlspecialchars($option['k']) ."\" $add";
+    function getOneChBoxTag($option, $input_name, $input_id, $add='') {
+        $ret      = "\n<nobr><input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"". htmlspecialchars($option['k']) ."\" $add";
         if ( $option['selected'] ) {
             $ret .= " checked";
         }
@@ -1124,30 +1080,28 @@ class AA_Widget_Mch extends AA_Widget {
         return $ret;
     }
 
-    /** @return widget HTML for using as AJAX component
-     *  @param  $aa_property - the variable
-     *  @param  $content        - contain the value of propertyu to display
-     *  @param  $repre_value - current code used for representation of the
-     *                         variable
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
      */
-    function getAjaxHtml($aa_property, $content, $repre_value) {
-
-        $input_id     = AA_Widget::getId4Form($aa_property->getId(), $content);
-        $ret          = '';
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name   = AA_Widget::getName4Form($aa_property->getId(), $content);
+        $base_id      = AA_Widget::formName2Id($base_name);
+        $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        $ret      = '';
 
         $use_name     = $this->getProperty('use_name', false);
-        $required     = $aa_property->isRequired();
 
         $options      = $this->getOptions($aa_property, $content, $use_name);
         $htmlopt      = array();
         for ( $i=0 ; $i < count($options); $i++) {
-            $htmlopt[]  = $this->getOneChBoxTag($options[$i], $input_id ."[$i]");
+            $input_name = $base_name ."[$i]";
+            $input_id   = AA_Widget::formName2Id($input_name);
+            $htmlopt[]  = $this->getOneChBoxTag($options[$i], $input_name, $input_id, $widget_add);
         }
 
-        $ret = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false));
-        return $this->_finalizeAjaxHtml($ret, $input_id, $repre_value);
+        $widget = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false));
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
-
 }
 
 /** Multiple Selectbox widget */
@@ -1506,9 +1460,10 @@ class AA_Widget_Hid extends AA_Widget {
 
     function getHtml($aa_property, $content) {
         $property_id  = $aa_property->getId();
-        $input_name   = AA_Widget::getId4Form($property_id, $content)."[0]";
+        $input_name   = AA_Widget::getName4Form($property_id, $content)."[0]";
+        $input_id     = AA_Widget::formName2Id($input_name);
         $input_value  = htmlspecialchars($content->getValue($property_id));
-        return        "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_name\" value=\"$input_value\">";
+        return        "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">";
     }
 }
 
@@ -1589,6 +1544,9 @@ class AA_Property extends AA_Storable {
     /** boolean - is it required? - like: true */
     var $required;
 
+    /** AA_Value - default value for the field. If value for store not matching the validation, the default is used*/
+    var $default;
+
     /** Help text for the property */
     var $input_help;
 
@@ -1637,7 +1595,7 @@ class AA_Property extends AA_Storable {
      * @param $show_content_type_switch
      * @param $content_type_switch_default
      */
-    function AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN, $perms=null) {  // default values are needed for AA_Storable's construction
+    function AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN, $perms=null, $default=null) {  // default values are needed for AA_Storable's construction
         $this->id                          = $id;
         $this->name                        = $name;
         $this->type                        = $type;
@@ -1652,6 +1610,7 @@ class AA_Property extends AA_Storable {
         $this->content_type_switch_default = $content_type_switch_default;
         $this->perm                        = $perms;
         $this->const_arr                   = (is_array($validator) AND ($validator[0]=='enum')) ? $validator[1] : array();
+        $this->default                     = $default;
     }
 
     /** getClassProperties function
@@ -1660,20 +1619,21 @@ class AA_Property extends AA_Storable {
     function getClassProperties()  {
         return array (
             //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'id'                          => new AA_Property( 'id'                         , _m('id'                         ), 'string', false),
-            'name'                        => new AA_Property( 'name'                       , _m('name'                       ), 'string', false),
-            'type'                        => new AA_Property( 'type'                       , _m('type'                       ), 'string', false),
-            'multi'                       => new AA_Property( 'multi'                      , _m('multi'                      ), 'bool',   false),
-            'persistent'                  => new AA_Property( 'persistent'                 , _m('persistent'                 ), 'bool',   false),
-            'validator'                   => new AA_Property( 'validator'                  , _m('validator'                  ), 'string', false),
-            'required'                    => new AA_Property( 'required'                   , _m('required'                   ), 'bool',   false),
-            'input_help'                  => new AA_Property( 'input_help'                 , _m('input_help'                 ), 'string', false),
-            'input_morehlp'               => new AA_Property( 'input_morehlp'              , _m('input_morehlp'              ), 'string', false),
-            'example'                     => new AA_Property( 'example'                    , _m('example'                    ), 'string', false),
-            'show_content_type_switch'    => new AA_Property( 'show_content_type_switch'   , _m('show_content_type_switch'   ), 'bool',   false),
-            'content_type_switch_default' => new AA_Property( 'content_type_switch_default', _m('content_type_switch_default'), 'string', false),
-            'perm'                        => new AA_Property( 'perm'                       , _m('perm'                       ), 'string', false),
-            'const_arr'                   => new AA_Property( 'const_arr'                  , _m('const_arr'                  ), 'string', true)
+            'id'                          => new AA_Property( 'id'                         , _m('id'                         ), 'string',   false),
+            'name'                        => new AA_Property( 'name'                       , _m('name'                       ), 'string',   false),
+            'type'                        => new AA_Property( 'type'                       , _m('type'                       ), 'string',   false),
+            'multi'                       => new AA_Property( 'multi'                      , _m('multi'                      ), 'bool',     false),
+            'persistent'                  => new AA_Property( 'persistent'                 , _m('persistent'                 ), 'bool',     false),
+            'validator'                   => new AA_Property( 'validator'                  , _m('validator'                  ), 'string',   false),
+            'required'                    => new AA_Property( 'required'                   , _m('required'                   ), 'bool',     false),
+            'input_help'                  => new AA_Property( 'input_help'                 , _m('input_help'                 ), 'string',   false),
+            'input_morehlp'               => new AA_Property( 'input_morehlp'              , _m('input_morehlp'              ), 'string',   false),
+            'example'                     => new AA_Property( 'example'                    , _m('example'                    ), 'string',   false),
+            'show_content_type_switch'    => new AA_Property( 'show_content_type_switch'   , _m('show_content_type_switch'   ), 'bool',     false),
+            'content_type_switch_default' => new AA_Property( 'content_type_switch_default', _m('content_type_switch_default'), 'string',   false),
+            'perm'                        => new AA_Property( 'perm'                       , _m('perm'                       ), 'string',   false),
+            'const_arr'                   => new AA_Property( 'const_arr'                  , _m('const_arr'                  ), 'string',   true),
+            'default'                     => new AA_Property( 'default'                   , _m('default'                     ), 'AA_Value', true)
             );
     }
 
@@ -1707,6 +1667,19 @@ class AA_Property extends AA_Storable {
     function setConstants($arr) {
         $this->const_arr = (array) $arr;
         $this->validator = new AA_Validate_Enum($this->const_arr);
+    }
+
+    /** called before StoreItem to fill the field with correct data */
+    function  complete4Insert($new_value, $profile) {
+        $fid           = $this->getId();
+        $profile_value = $profile->getProperty('hide&fill',$fid) || $profile->getProperty('fill',$fid);
+        if ($profile_value) {
+            $new_value = $profile->parseContentProperty($profile_value);
+        }
+        if ($profile->getProperty('hide',$fid) || !$this->validate($new_value)) {
+            return $this->default;
+        }
+        return $new_value;
     }
 
     /** isObject function */

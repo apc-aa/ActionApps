@@ -1349,7 +1349,7 @@ class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
      */
     function expand($text='') {
         $params = func_get_args();
-        $item   = $this->item;
+        $item   = $this ? $this->item : null;
         return ($this AND is_object($item) AND $item->isField($text)) ? $item->getval($text) : join(':', $params);
     }
 }
@@ -1819,14 +1819,9 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
      * @param $ids
      */
     function expand($slices, $conds=null, $sort=null, $delimiter=null, $ids=null) {
-        $set           = new AA_Set($conds, $sort);
-        $slices_arr    = explode('-', $slices);
-        $restrict_zids = false;
-        if ( $ids ) {
-            $restrict_zids = new zids(explode('-',$ids),'l');
-        }
-
-        $zids          = QueryZIDs($slices_arr, $set->getConds(), $set->getSort(), 'ACTIVE', 0, $restrict_zids);
+        $restrict_zids = $ids ? new zids(explode('-',$ids),'l') : false;
+        $set           = new AA_Set(explode('-', $slices), $conds, $sort);
+        $zids          = $set->query($restrict_zids);
         return join($zids->longids(), $delimiter ? $delimiter : '-');
     }
 }
@@ -1891,9 +1886,8 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
         if (trim($seo_string)=='') {
             return '';
         }
-        $slices_arr = explode('-', $slices);
-        $set        = new AA_Set(new AA_Condition('seo.............', '=', '"'.$seo_string.'"'));
-        $zids       = QueryZIDs($slices_arr, $set->getConds(), '', AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING );
+        $set  = new AA_Set(explode('-', $slices), new AA_Condition('seo.............', '=', '"'.$seo_string.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+        $zids = $set->query();
         return join($zids->longids(), '-');
         // added expiry date in order we can get ids also for expired items
         // return AA_Stringexpand_Ids::expand($slices, 'd-expiry_date.....->-0-seo.............-=-"'. str_replace('-', '--', $seo_string) .'"');
@@ -2455,7 +2449,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         // delimiter:
         //   BIOM##Biom##biom_AA_DeLiM_<a href="http://biom.cz">_#KEYWORD_</a>
 
-        $set     = new AA_Set(String2Conds( $conds ), String2Sort( $sort ), array($dictionary));
+        $set     = new AA_Set($dictionary, String2Conds( $conds ), String2Sort( $sort ));
         $kw_item = GetFormatedItems($set, $format);
 
         foreach ( $kw_item as $kw_string ) {
@@ -2924,13 +2918,14 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
      */
     function expand($item_id, $field_id, $show_alias='') {
         $ret = '';
-        $alias_name = ($show_alias == '') ? '' : substr($show_alias, 2);
+        $alias_name = ($show_alias == '') ? '' : base64_encode($show_alias);
         if ( $item_id AND $field_id) {
             $item        = AA_Items::getItem(new zids($item_id));
             $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
             $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
             $iid         = $item->getItemID();
-            $input_id    = AA_Widget::getId4Form($field_id, $item);
+            $input_name  = AA_Widget::getName4Form($field_id, $item);
+            $input_id    = AA_Widget::formName2Id($input_name);
             $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\">\n";
             $ret .= " <div class=\"ajax_value\" id=\"ajaxv_$input_id\" aaalias=\"".htmlspecialchars($alias_name)."\">$repre_value</div>\n";
             $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_$input_id\"></div>\n";

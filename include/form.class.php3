@@ -156,7 +156,7 @@ class AA_Widget_Formrow extends AA_Widget {
 
     function getHtml($aa_property, $content) {
         $property_id  = $aa_property->getId();
-        $input_name   = AA_Widget::getId4Form($property_id, $content)."[formrow][]";
+        $input_name   = AA_Widget::getName4Form($property_id, $content)."[formrow][]";
         $ser_values   = $content->getValuesArray($aa_property->getId());
         $arr          = array();
         foreach ($ser_values as $ser_row) {
@@ -277,7 +277,7 @@ class AA_Form extends AA_Object {
 
         $html .= $this->_getRowsHtml($content);
 
-        $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendObject('form$id')\" type=\"button\">";
+        $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendAddForm('form$id')\" type=\"button\">";
         $html .= "\n  </fieldset>";
 
         $slice = AA_Slices::getSlice($this->object_owner);
