@@ -273,14 +273,14 @@ class AA_Sortorder {
 }
 
 class AA_Set extends AA_Object {
+    /** array of slice_ids (unpacked_ids) */
+    var $slices;
+
     /** array of AA_Condition */
     var $conds;
 
     /** array of AA_Sortorder objects */
     var $sort;
-
-    /** array of slice_ids (unpacked_ids) */
-    var $slices;
 
     /** bitfield representing the bins - like Holding Bin, Approved, Trash, ...
      *  AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH
@@ -289,10 +289,11 @@ class AA_Set extends AA_Object {
 
 
     /** AA_Set function
-     * @param $conds array or conds url string
-     * @param $sort  array or sort  url string
+     * @param $slices array or one slice id, where to search
+     * @param $conds  array or conds url string
+     * @param $sort   array or sort  url string
      */
-    function AA_Set($conds=null, $sort=null, $slices=null, $bins=AA_BIN_ACTIVE) {
+    function AA_Set($slices=null, $conds=null, $sort=null, $bins=AA_BIN_ACTIVE) {
         $this->clear();
         if ( !is_null($conds) ) {
             if (is_object($conds)) {
@@ -313,9 +314,21 @@ class AA_Set extends AA_Object {
             }
         }
         if ( !is_null($slices) ) {
-            $this->slices = $slices;
+            if (is_array($slices)) {
+                $this->slices = $slices;
+            } elseif (is_string($slices)) {
+                $this->slices = array($slices);
+            }
         }
         $this->bins = $bins;
+    }
+
+    /** New main function to get item ids from database based on conditions...
+     *  Should replace QueryZIDs() in future
+     *  @param $restrict_zids - zids
+     */
+    function query($restrict_zids=false) {
+        return QueryZIDs($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids);
     }
 
     /** clear function
@@ -1156,18 +1169,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
 
 // -------------------------------------------------------------------------------------------
 
-
-/** New main function to get item ids from database based on conditions...
- *  Should replace QueryZIDs() in future
- *  @param $set           - AA_Set
- *  @param $restrict_zids - zids
- */
-function QuerySet($set, $restrict_zids=false) {
-    return QueryZIDs($set->getModules(), $set->getConds(), $set->getSort(), $set->getBins(), 0, $restrict_zids);
-}
-
-
-/** QueryZIDs function
+/** QueryZIDs function - @deprecated - use $aa_set->query() instead
 *  Finds item IDs for items to be shown in a slice / view
 *
 *   @param array  $slices array of slices in which to look for items
@@ -1322,16 +1324,18 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
                 if ( $field->storageTable() == 'item' ) {   // field is stored in table 'item'
                     // Long ID in conds should be specified as unpacked, but in db it is packed
-                    if ((($fid == 'id..............') OR ($fid == 'slice_id........')) AND (guesstype($cond['value'])=='l')) {
-                        $cond['value'] = q_pack_id($cond['value']);
-                        if ($cond['operator'] == '=') {
-                            $cond['operator'] = '==';   // the syntax analyzer have problems with packed ids and '=' operator
-                        }
-                    }
-                    $select_conds[] = GetWhereExp( 'item.'. $field->storageColumn(), $cond['operator'], $cond['value'] );
-                    if ( $fid == 'expiry_date.....' ) {
+                    $cur_cond = GetWhereExp( 'item.'. $field->storageColumn(), $cond['operator'], $cond['value'] );
+                    switch ($fid) {
+                    case 'id..............':
+                    case 'slice_id........':
+                        // replace unpaced ids with the packed ones
+                        $cur_cond =  preg_replace("/([0-9a-f]{32})/ie", "q_pack_id('\\1')", $cur_cond);
+                        break;
+                    case 'expiry_date.....';
                         $ignore_expiry_date = true;
+                        break;
                     }
+                    $select_conds[] = $cur_cond;
                 } else {
                     $cond_flds .= ( ($field_count++>0) ? ',' : "" ). "'$fid'";
                     // will not work with one condition for text and number fields
@@ -1570,7 +1574,10 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $d
     if ( key($sort[0]) == 'pri' ) {
         $sort[0] = array('const_priority' => $sort[0]['pri']);
     }
-
+    // for older database structure, where conds is just 16 characters long
+    if ( key($sort[0]) == 'const_descriptio' ) {
+        $sort[0] = array('const_description'    => $sort[0]['const_descriptio']);
+    }
 
     if ( $debug ) {
         huhl( "<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
