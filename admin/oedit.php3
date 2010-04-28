@@ -106,7 +106,7 @@ echo $Msg;
 
 
 $form_buttons = array ("update",
-                       "cancel" =>array("url"=>"oedit.php3"),
+                       "cancel" =>array("url"=>"se_forms.php3"),
                       );
 
 ?>
