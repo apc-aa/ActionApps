@@ -1,3 +1,5 @@
+06/08/10 - fixed form editing
+(honzam)
 04/28/10 - fixed Ajax and Live widget for date - now displays selectboxes
 (honzam)   instead of timestamp number
          - new possibility of body onLoad trigger in Javascript "Field Triggers"
