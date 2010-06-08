@@ -154,9 +154,19 @@ class AA_Widget_Formrow extends AA_Widget {
             );
     }
 
-    function getHtml($aa_property, $content) {
-        $property_id  = $aa_property->getId();
-        $input_name   = AA_Widget::getName4Form($property_id, $content)."[formrow][]";
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        // $property_id  = $aa_property->getId();
+        // $input_name   = AA_Widget::getName4Form($property_id, $content)."[formrow][]";
+
+        $base_name   = AA_Widget::getName4Form($aa_property->getId(), $content);
+        $input_name  = $base_name ."[]";
+        $base_id     = AA_Widget::formName2Id($base_name);
+        $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+
         $ser_values   = $content->getValuesArray($aa_property->getId());
         $arr          = array();
         foreach ($ser_values as $ser_row) {
@@ -172,19 +182,9 @@ class AA_Widget_Formrow extends AA_Widget {
         $widget   .= $this->getSelectOptions( $options );
         $widget   .= "</select>";
 
-        return $this->_finalizeHtml($widget, $aa_property, $input_name);
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
 
-    function getValue($data4field) {
-        $arr = array();
-        foreach ($data4field as $field) {
-            if (! empty($field)) {
-                $arr[] = $field;
-                //$arr[] = serialize(new AA_Formrow_Field($field));
-            }
-        }
-        return new AA_Value($arr);
-    }
 }
 
 
@@ -243,6 +243,7 @@ class AA_Form extends AA_Object {
 
     function getObjectEditHtml() {
         $content = $this->_getContent();
+
         $html    = $this->_getRowsHtml($content);
 
         $prop  = AA_Object::getPropertyObject('aa_owner');
