@@ -524,7 +524,8 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
 
 
 /** Expands {htmltogglecss:<toggle1>:<toggle2>:<css_rule>} like:
- *          {htmltogglecss:+:-:#id_#SITEM_ID}
+ *          {htmltogglecss:+:-:#id_#SITEM_ID}    (#id_#SITEM_ID should have style="display:none;" as default)
+ *          {htmltogglecss:+:-:#id_#SITEM_ID:1}
  *  It creates the link text1 (or text2) +/- toggle which displays/hides all
  *  elements matching the css_rule (#id82422) in our example
  *  The /javscript/aajslib.php3 shoud be included to the page
@@ -533,24 +534,33 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
  *  @param $switch_state_2 - link text 2
  *  @param $css_rule       - css rule matching the element(s) to show/hide
  *                         - '#id82422', '.details', '#my-page div.details'
+ *  @param $is_on          - 1 if the code is on as default (default is 0)
  */
 class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
 
-    function expand($switch_state_1, $switch_state_2, $css_rule) {
+    function expand($switch_state_1, $switch_state_2, $css_rule, $is_on=null) {
 
         // it is nonsense to show expandable trigger if both contents are empty
         if (trim($css_rule) == '') {
             return '';
         }
 
-        // we can't use apostrophes and quotes in href="javacript:..." attribute
+        $class = '';
         $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
         $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
 
+        // swap var
+        if ($is_on == 1) {
+            $class = ' is-on';
+            $switch_state_1    = $switch_state_2;
+        }
+
+        // we can't use apostrophes and quotes in href="javacript:..." attribute
+
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
 
-        $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggleCss('toggle_link_$uniqid', '$switch_state_1_js', '$switch_state_2_js', '$css_rule');return false;\">$switch_state_1</a>\n";
+        $ret    = "<a class=\"togglelink$class\" id=\"toggle_link_$uniqid\" $class href=\"#\" onclick=\"AA_HtmlToggleCss('toggle_link_$uniqid', '$switch_state_1_js', '$switch_state_2_js', '$css_rule');return false;\">$switch_state_1</a>\n";
         return $ret;
     }
 }
@@ -1116,6 +1126,16 @@ class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** return current timestamp based on the textual date provided
+ *   {timestamp:2008-07-01}
+ *   {timestamp:20080701t223807}
+ */
+class AA_Stringexpand_Timestamp extends AA_Stringexpand_Nevercache {
+    function expand($datetime='') {
+        return strtotime($datetime);
+    }
+}
+
 /** Date range mostly for event calendar
  *   {daterange:<start_timestamp>:<end_timestamp>:<year_format>}
  *   {daterange:{start_date......}:{expiry_date.....}} - displays 24.12. - 28.12.2008
@@ -1194,6 +1214,27 @@ class AA_Stringexpand_Limit extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** randomises the order of ids
+ *    {shuffle:<ids>[:<limit>]}
+ */
+class AA_Stringexpand_Shuffle extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** for offset and length parameters see PHP function array_slice()
+     * @param $ids        // parts separated by '-'
+     * @param $limit      // number of returned shuffled ids
+     */
+    function expand($ids, $limit=null) {
+        $arr = explode('-', $ids);
+        shuffle($arr);
+        if ($limit) {
+            $arr = array_slice($arr, 0, $limit);
+        }
+        return join('-', $arr);
+    }
+}
+
 /** Next item for the current item in the list
  *    {next:<ids>:<current_id>}
  *    {next:12324-353443-58921:353443}   // returns 58921
@@ -1214,6 +1255,28 @@ class AA_Stringexpand_Next extends AA_Stringexpand_Nevercache {
         $arr = explode('-', $ids);
         $key = array_search($current_id, $arr);
         return (($key !== false) AND isset($arr[$key+1])) ? $arr[$key+1] : '';
+    }
+}
+
+/** Unique - removes duplicate ids form the string
+ */
+class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** for offset and length parameters see PHP function array_slice()
+     * @param $ids        // item ids separated by '-' (long or short)
+     * @param $delimiter  // separator of the parts - by default it is '-', but
+     *                       you can use any one
+     */
+    function expand($ids='', $delimiter='') {
+        if (!trim($ids)) {
+            return '';
+        }
+        if (empty($delimiter)) {
+            $delimeter = '-';
+        }
+        return join($delimeter, array_unique(explode($delimeter, $ids)));
     }
 }
 
@@ -1437,10 +1500,6 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
 }
 
 
-
-
-
-
 // class AA_Stringexpand_Increase extends AA_Stringexpand {
 //     /** expand function
 //      * @param $text
@@ -1450,17 +1509,25 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
 //     }
 // }
 
-
 class AA_Stringexpand_View extends AA_Stringexpand {
     /** expand function
      * @param $vid, $ids
      */
-    function expand($vid, $ids=null) {
-        $param = "vid=$vid";
+    function expand($vid, $ids=null, $settings=null) {
+        $view_param['vid'] = $vid;
         if (isset($ids)) {
-            $param .= "&cmd[$vid]=x-$vid-$ids";
+            $zids = new zids();
+            $zids->addDirty(explode('-',$ids));
+            if ($zids->count()>0) {
+                $view_param['zids'] = $zids;
+            }
         }
-        return GetView(ParseViewParameters($param));
+        if (isset($settings)) {
+            $view_param = array_merge($view_param, ParseSettings($settings));
+        }
+        // do not pagecache the view
+        $foo = '';
+        return GetViewFromDB($view_param, $foo);
     }
 }
 
@@ -1805,7 +1872,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
 }
 
 /** returns ids of items based on conds d-...
- *  {ids:<slice>:<conds>[:<sort>[:<delimiter>[:<restrict_ids>]]]}
+ *  {ids:<slice>:<conds>[:<sort>[:<delimiter>[:<restrict_ids>[:<limit>]]]]}
  *  {ids:6a435236626262738348478463536272:d-category.......1-RLIKE-Bio-switch.........1-=-1:headine........-}
  *  returns dash separated long ids of items in selected slice where category
  *  begins with Bio and switch is 1 ordered by headline - descending
@@ -1817,11 +1884,15 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
      * @param $sort
      * @param $delimeter
      * @param $ids
+     * @param $limit  - could be negative for last $limit ids
      */
-    function expand($slices, $conds=null, $sort=null, $delimiter=null, $ids=null) {
+    function expand($slices, $conds=null, $sort=null, $delimiter=null, $ids=null, $limit=null) {
         $restrict_zids = $ids ? new zids(explode('-',$ids),'l') : false;
         $set           = new AA_Set(explode('-', $slices), $conds, $sort);
         $zids          = $set->query($restrict_zids);
+        if ( $limit ) {
+            $zids = ($limit<0) ? $zids->slice($limit,-$limit) : $zids->slice(0,$limit);
+        }
         return join($zids->longids(), $delimiter ? $delimiter : '-');
     }
 }
@@ -1853,19 +1924,27 @@ class AA_Stringexpand_Tree extends AA_Stringexpand {
  *  @see {itree: } for more info about the stringtree syntax
  *  {treestring:<item_id>[:<relation_field>]}
  *  {treestring:2a4352366262227383484784635362ab:relation.......1}
+ *  {treestring:2a4352366262227383484784635362ab:relation.......1:1}
+ *  {treestring:2a4352366262227383484784635362ab:relation.......1:1:sort[0][headline........]=a&sort[1][publish_date....]=d}
  */
 class AA_Stringexpand_Treestring extends AA_Stringexpand {
     /** expand function
      * @param $item_id          - item id of the tree root (short or long)
      * @param $relation_field   - tree relation field (default relation........)
+     * @param $reverse          - 1 for reverse trees (= child->parent relations)
+     * @param $sort_string      - order of tree leaves (currently wors only for reverse trees. @todo)
      */
-    function expand($item_id, $relation_field=null) {
+    function expand($item_id, $relation_field=null, $reverse=null, $sort_string=null) {
         $zid     = new zids($item_id);
         $long_id = $zid->longids(0);
         if (empty($item_id)) {
             return '';
         }
-        return AA_Trees::getTreeString($long_id, get_if($relation_field, 'relation........'));
+        if (empty($sort_string) OR !is_array($sort = String2Sort($sort_string))) {
+            $sort = null;
+        }
+        
+        return AA_Trees::getTreeString($long_id, get_if($relation_field, 'relation........'), $reverse=='1', $sort);
     }
 }
 
@@ -1984,7 +2063,7 @@ class AA_Stringexpand_Options extends AA_Stringexpand {
         $constants = GetConstants($group_id);
         if (is_array($constants)) {
             foreach ($constants as $k => $v) {
-                $sel  = ($k == $selected) ? ' selected' : '';
+                $sel  = ((string)$k == (string)$selected) ? ' selected' : '';
                 $ret .= "\n  <option value=\"".safe($k)."\"$sel>".safe($v)."</option>";
             }
         }
@@ -2012,23 +2091,41 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** If $var1 is equal to $var2, then print $text, else print $else_text.
- *  $(else_)text could contain _#1 and _#2 aliases for $var1 and $var2, but you
+/** If $etalon is equal to $option1, then print $text1, else print $else_text.
+ *  $(else_)text could contain _#1 and _#2 aliases for $etalon and $option1, but you
  *  can use any {} AA expression.
  *  Example: {ifeq:{xseo1}:about: class="active"}
+ *  Now you can use as many $options as you want
+ *  Example: {ifeq:{xlang}:en:English:cz:Czech:Unknown language}
  */
 class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
     /** expand function
-     * @param $var1
-     * @param $var2
-     * @param $text
+     * @param $etalon
+     * @param $option1
+     * @param $text1
+     * (...)
      * @param $else_text
      */
-    function expand($var1, $var2, $text='', $else_text='') {
-        $ret = ($var1 == $var2) ? $text : $else_text;
-        return str_replace(array('_#1','_#2'), array($var1, $var2), $ret);
+    function expand() {
+        $arg_list = func_get_args();   // must be asssigned to the variable
+        $etalon   = array_shift($arg_list);
+        $ret      = false;
+        $i        = 0;
+        while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
+            if ($etalon == $arg_list[$i]) {
+                $ret = $arg_list[$i+1];
+                break;
+            }
+            $i += 2;
+        }
+        if ($ret === false) {
+            // else text
+            $ret = isset($arg_list[$i]) ? $arg_list[$i] : '';
+        }
+        // _#2 is not very usefull but we have it from the times the function was just for one option
+        return str_replace(array('_#1','_#2'), array($etalon, $arg_list[0]), $ret);
     }
 }
 
@@ -2713,9 +2810,9 @@ class AA_Unalias_Callback {
                 switch ($out) {
                     case "unpacked_id.....":
                     case "id..............":
-                        return QuoteColons($this->item->getItemID());
+                        return $this->item->getItemID();   // should be called in QuoteColons(), but we don't need it
                     case "slice_id........":
-                        return QuoteColons($this->item->getSliceID());
+                        return $this->item->getSliceID();
                     default:
                         if ( $this->item->isField($out) ) {
                             return QuoteColons($this->item->f_h($out,"-"));
@@ -2757,7 +2854,7 @@ class AA_Unalias_Callback {
         }
         elseif( substr($out, 0, 5) == "math(" ) {
             // replace math
-            return QuoteColons( parseMath(AA_Stringexpand::unalias(substr($out,5), '', $this->item, false, $this->itemview)) ); // Need to unalias in case expression contains _#XXX or ( )
+            return QuoteColons( parseMath(DeQuoteColons(AA_Stringexpand::unalias(substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
         }
         elseif( substr($out, 0, 8) == "include(" ) {
             // include file
@@ -2774,9 +2871,12 @@ class AA_Unalias_Callback {
         }
         elseif ( substr($out, 0,10) == "view.php3?" ) {
             // Xinha editor replaces & with &amp; so we need to change it back
-            $param = str_replace('&amp;', '&', substr($out,10));
-            // view do not use colons as separators => dequote before callig
-            return QuoteColons(GetView(ParseViewParameters(DeQuoteColons($param))));
+            $param      = str_replace('&amp;', '&', substr($out,10));
+            $view_param = ParseViewParameters(DeQuoteColons($param));
+            $foo        = '';
+
+            // do not store in the pagecache, but store into contentcache
+            return QuoteColons($contentcache->get_result_by_id(get_hash($view_param), 'GetViewFromDB', array($view_param, $foo)));
         }
         // This is a little hack to enable a field to contain expandable { ... } functions
         // if you don't use this then the field will be quoted to protect syntactical characters
@@ -2918,10 +3018,10 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
      */
     function expand($item_id, $field_id, $show_alias='') {
         $ret = '';
-        $alias_name = ($show_alias == '') ? '' : base64_encode($show_alias);
+        $alias_name = base64_encode(($show_alias == '') ? '{'.$field_id.'}' : $show_alias);
         if ( $item_id AND $field_id) {
             $item        = AA_Items::getItem(new zids($item_id));
-            $repre_value = ($show_alias == '') ? $item->subst_alias($field_id) : $item->subst_alias($show_alias);
+            $repre_value = ($show_alias == '') ? $item->f_h($field_id) : $item->subst_alias($show_alias);
             $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
             $iid         = $item->getItemID();
             $input_name  = AA_Widget::getName4Form($field_id, $item);
@@ -2966,7 +3066,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
             // Use right language (from slice settings) - languages are used for button texts, ...
             $lang  = $slice->getLang();
             //$charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
-            bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_output_lang.php3");
+            mgettext_bind($lang, 'output');
 
             $ret   = $slice->getWidgetLiveHtml($field_id, $iid);
         }
@@ -3558,6 +3658,17 @@ class AA_Stringexpand_Table extends AA_Stringexpand {
         }
 
         return $ret;
+    }
+}
+
+/** Go directly to another url
+ */
+class AA_Stringexpand_Redirect extends AA_Stringexpand {
+    function expand($url) {
+        if (!empty($url)) {
+            go_url($url);
+        }
+        return '';
     }
 }
 
