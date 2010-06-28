@@ -64,41 +64,74 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
         return "";
     }
 
+
+    /** main executive function
+    * @param $param       - not used
+    * @param $item_arr    - array of id of AA records to check
+    * @param $akce_param  - not used
+    */
+    function doMove($zids, $to_bin) {
+        global $auth, $event, $pagecache;
+        $PERMS = array(1 => PS_ITEMS2ACT, 2 => PS_ITEMS2HOLD, 3 => PS_ITEMS2TRASH);
+        
+        $to_bin = (int)$to_bin;
+        if ($zids->count() > 0) {
+            $now  = now();
+
+            $SQL = "SELECT id, slice_id FROM item WHERE (status_code<>$to_bin) AND ". $zids->sqlin('id');
+            $ids = GetTable2Array($SQL, 'id', 'unpack:slice_id');
+            
+            if (empty($ids)) {
+                return;
+            }
+            
+            $items2move = array();
+            foreach($ids as $p_id => $sid) {
+                if (IfSlPerm($PERMS[$to_bin], $sid)) {
+                    if (!is_array($items2move[$sid])) {
+                        $items2move[$sid] = array();
+                    }
+                    $items2move[$sid][] = $p_id;
+                }
+            }
+            
+            foreach ($items2move as $sid => $p_ids) {
+                
+                $xzids = new zids($p_ids, 'p');
+                
+                $SQL = "UPDATE item SET
+                   status_code = '". $to_bin ."',
+                   last_edit   = '$now',
+                   edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999")."'";
+    
+                // E-mail Alerts
+                $moved2active = ( ($to_bin == 1) ? $now : 0 );
+                $SQL         .= ", moved2active = $moved2active";
+                $SQL         .= " WHERE ". $xzids->sqlin('id');
+    
+                tryQuery($SQL);
+
+                $item_ids = $xzids->longids();
+                if ($to_bin == 1) {
+                    foreach ($item_ids as $iid) {
+                        FeedItem($iid);
+                    }
+                }
+                $event->comes('ITEMS_MOVED', $sid, 'S', $item_ids, $to_bin );
+                $pagecache->invalidateFor("slice_id=$sid");  // invalidate old cached values
+            }
+        }
+    }
+
     /** main executive function
     * @param $param       - not used
     * @param $item_arr    - array of id of AA records to check
     * @param $akce_param  - not used
     */
     function perform(&$manager, &$state, $item_arr, $akce_param) {
-        global $event, $auth, $slice_id, $pagecache;
         $zids = new zids;
         $zids->setFromItemArr($item_arr);
-
-        if ($zids->count() > 0) {
-            $now  = now();
-
-            $SQL = "UPDATE item SET
-               status_code = '". $this->to_bin ."',
-               last_edit   = '$now',
-               edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999")."'";
-
-            // E-mail Alerts
-            $moved2active = ( ($this->to_bin == 1) ? $now : 0 );
-            $SQL         .= ", moved2active = $moved2active";
-            $SQL         .= " WHERE ". $zids->sqlin('id');
-
-            tryQuery($SQL);
-
-            if ($this->to_bin == 1) {
-                $item_ids = $zids->longids();
-                foreach ($item_ids as $iid) {
-                    FeedItem($iid);
-                }
-            }
-            $event->comes('ITEMS_MOVED', $slice_id, 'S', $item_ids, $this->to_bin );
-        }
-        $pagecache->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
-
+        AA_Manageraction_Item_MoveItem::doMove($zids, $this->to_bin);
         return false;                                     // OK - no error
     }
 
