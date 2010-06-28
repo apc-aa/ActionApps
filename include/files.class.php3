@@ -156,7 +156,8 @@ class Files {
     /** uploadFile function
      *  Uploads file to slice's directory
      *  @param $filevarname - name of form variable containing the uploaded data
-     *                        (like "upfile")
+     *                        (like "upfile") or array with uploaded file
+     *                        parameters as provided by $_FILES
      *  @param $dest_dir
      *  @param $type        - allowed file types (like 'image/jpeg', 'image/*')
      *  @param $replacemethod - how to handle conflicts with existing file
@@ -168,7 +169,7 @@ class Files {
      *                        do not want to use original name)
      */
     function uploadFile($filevarname, $dest_dir, $type='', $replacemethod='new', $filename=null) {
-        $up_file = $_FILES[$filevarname];
+        $up_file = is_array($filevarname) ? $filevarname : $_FILES[$filevarname];
 
         $dest_file = Files::makeFile($dest_dir, Files::escape($filename ? $filename : basename($up_file['name'])));
         if ($dest_file === false) {

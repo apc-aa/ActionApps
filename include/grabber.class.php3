@@ -717,6 +717,16 @@ class AA_Grabber_Form {
 
         $aa = $_POST['aa'];
 
+        // uploaded files are not $_POST variable.
+        // Alo it is stored as array...[name][file___________1][...] array...[type][file___________1][...]
+        // so the information about one file is quite far in the structure
+        if (isset($_FILES['aa'])) {
+            // collect together the informations about ane file - array(name, type, tmp_name, error, size)
+            $files = array_merge_recursive($_FILES['aa']['name'], $_FILES['aa']['type'], $_FILES['aa']['tmp_name'], $_FILES['aa']['error'], $_FILES['aa']['size']);
+            // add it to POSTed variables
+            $aa    = array_merge_recursive($aa, $files);
+        }
+
         // just prepare ids, in order we can expand
         // You can use _#n1_623553373823736362372726 as value, which stands for
         // item id of the item

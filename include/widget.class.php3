@@ -11,7 +11,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public License for more details
  *
  * You should have received a copy of the GNU General Public License
  * along with this program (LICENSE); if not, write to the Free Software
@@ -285,20 +285,20 @@ class AA_Widget extends AA_Components {
 
     /** ID of the field input - used for name atribute of input tag (or so)
     *   Format is:
-    *       aa[i<long_item_id>][modified_field_id][]
+    *       aa[u<long_item_id>][modified_field_id][]
     *   Note:
     *      first brackets contain
-    *          'i'+long_item_id when item is edited or
+    *          'u'+long_item_id when item is edited or
     *          'n<number>_long_slice_id' if you want to add the item to slice_id
     *                                    <number> is used to add more than one
     *                                    item at the time
     *      modified_field_id is field_id, where all dots are replaced by '_'
     *      we always add [] at the end, so it becames array at the end
     *   Example:
-    *       aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
+    *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
     *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
     *   Format is:
-    *       aa[i<long_item_id>][modified_field_id][]
+    *       aa[u<long_item_id>][modified_field_id][]
     *   Note:
     *      first brackets contain
     *          'u'+long_item_id when item is edited (the field is rewriten, rest
@@ -350,7 +350,7 @@ class AA_Widget extends AA_Components {
 
     /** returns array(item_id,field_id) from name of variable used on AA form */
     static public function parseId4Form($input_name) {
-        // aa[i<item_id>][<field_id>][]
+        // aa[u<item_id>][<field_id>][]
         $parsed   = explode(']', $input_name);
         $item_id  = substr($parsed[0],4);
         $field_id = AA_Widget::getFieldIdFromVar(substr($parsed[1],1));
@@ -431,21 +431,18 @@ class AA_Widget extends AA_Components {
     /** @return widget HTML for using as AJAX component
      *  @param  $aa_property - the variable
      *  @param  $content        - contain the value of propertyu to display
-     *  @param  $repre_value - current code used for representation of the
-     *                         variable
      */
-    function getAjaxHtml($aa_property, $content, $repre_value) {
-        return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content), $repre_value);
+    function getAjaxHtml($aa_property, $content) {
+        return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content));
     }
 
     /* Creates all common ajax editing buttons to be used by different inputs */
-    function _finalizeAjaxHtml($winfo, $repre_value) {
+    function _finalizeAjaxHtml($winfo) {
         $base_name    = $winfo['base_name'];
         $base_id      = AA_Widget::formName2Id($base_name);
         $widget_html = $winfo['html'];
         $widget_html .= "\n<input class=\"save-button\" type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id')\">"; //ULOŽIT ZMÌNU
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
-        $widget_html .= "\n<input type=\"hidden\" id=\"ajaxh_$base_id\" value=\"".htmlspecialchars($repre_value)."\">";
         return $widget_html;
     }
 
@@ -980,27 +977,36 @@ class AA_Widget_Chb extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name   = AA_Widget::getName4Form($aa_property->getId(), $content);
-        $base_id      = AA_Widget::formName2Id($base_name);
-        $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
-        $widget   = '';
-        $delim    = '';
-        $value    = $content->getAaValue($aa_property->getId());
+        $base_name     = AA_Widget::getName4Form($aa_property->getId(), $content);
+        $base_id       = AA_Widget::formName2Id($base_name);
+        // we use extended version, because of ajax and live widget and the fact
+        // the checbox do not send nothing if unslected (so we add [chb][def] 
+        // hidden field which is send all the time)
+        $base_name_add = $base_name . '[chb]';
+        $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        $widget        = '';
+        $delim         = '';
+        $value         = $content->getAaValue($aa_property->getId());
         for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
-            $input_name   = $base_name ."[$i]";
+            $input_name   = $base_name_add ."[$i]";
             $input_id     = AA_Widget::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
-            $widget      .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"". ($input_value ? " checked" : '')."$widget_add\">";
+            $widget      .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"". ($input_value ? " checked" : '')."$widget_add>";
             $delim        = '<br />';
         }
         // no input was printed, we need to print one
         if ( !$widget ) {
             // do not put there [0] - we need to distinguish between single
             // checkbox and multiple checkboxes in AA_SendWidgetLive() function
-            $input_name   = $base_name ."[]";
+            $input_name   = $base_name_add ."[]";
             $input_id     = AA_Widget::formName2Id($input_name);
-            $widget      .= "\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"$widget_add\">";
+            $widget      .= "\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"$widget_add>";
         }
+        // default value
+        $input_name   = $base_name_add ."[def]";
+        $input_id     = AA_Widget::formName2Id($input_name);
+        $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"0\">";
+        
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
 
@@ -1025,6 +1031,31 @@ class AA_Widget_Chb extends AA_Widget {
      */
     function getClassProperties()  {
         return array ();
+    }
+    
+    /** @return AA_Value for the data send by the widget
+     *   The data submitted by form usually looks like
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][chb][]=1
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][headline________][chb][def]=0
+     *  @param $data4field - array('def'=>val, '0'=>val)
+     *   This method coverts such data to AA_Value.
+     *
+     *
+     *  static class method
+     */
+    function getValue($data4field) {
+        $flag          = $data4field['flag'] & FLAG_HTML;
+        $fld_value_arr = array();
+
+        foreach ( (array)$data4field as $key => $value ) {
+            if (is_numeric($key)) {
+                $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
+            }
+        }
+        if (!count($fld_value_arr)) {
+              $fld_value_arr[] = array('value'=>$data4field['def'], 'flag'=>$flag);
+        }
+        return new AA_Value($fld_value_arr, $flag);
     }
 }
 
@@ -1256,11 +1287,12 @@ class AA_Widget_Fil extends AA_Widget {
 
         $values = array();
 
-        for ($i=0 ; $i<$max; $i++) {
-            if ($uploads[$i]) {
-                $values[] = 'AA_UPLOAD:'.$uploads[$i];
-            }
-            elseif ($urls[$i]) {
+        if (!empty($uploads)) {
+            // the information about file is in array - array(name, type, tmp_name, error, size)
+            $values[] = 'AA_UPLOAD:'. ParamImplode($uploads);
+        }
+        elseif ($urls[$i]) {
+            for ($i=0 ; $i<$max; $i++) {
                 $values[] = $urls[$i];
             }
         }

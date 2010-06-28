@@ -404,11 +404,14 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
     if (strpos('x'.$value['value'], 'AA_UPLOAD:')==1) {
         // newer - widget approach - the uploaded file is encoded into the value
         // and prefixed with "AA_UPLOAD:" constant
-        $filevarname = substr($value['value'],10);
+        $up_file = array_combine(array('aa_const', 'name', 'type', 'tmp_name', 'error', 'size'), ParamExplode($value['value']));
+        if ($up_file['name']=='') {
+           $value['value'] = '';
+        }
     } else {
-        $filevarname = "v".unpack_id($field["id"])."x";
+        // old vedsion of input form
+        $up_file = $_FILES["v".unpack_id($field["id"])."x"];
     }
-    $up_file = $_FILES[$filevarname];
 
     // look if the uploaded picture exists
     if ($up_file['name'] AND ($up_file['name'] != 'none') AND ($context != 'feed')) {
@@ -419,7 +422,8 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
         // list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod, $pdestination, $purl) = ParamExplode($param);
         list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod, $pexact) = ParamExplode($param);
 
-        $dest_file = Files::uploadFile($filevarname, Files::destinationDir($slice), $ptype, $preplacemethod);
+        $dest_file = Files::uploadFile($up_file, Files::destinationDir($slice), $ptype, $preplacemethod);
+
         if ($dest_file === false) {   // error
             $err[$field["id"]] = Files::lastErrMsg();
             return;
@@ -442,8 +446,6 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
             $thumb_arr=explode("##",$potherfield);
 
             foreach ($thumb_arr as $thumb) {
-                $num++; // Note sets it initially to 1
-
                 //copy thumbnail
                 $f              = $fields[$thumb];       // Array from fields
                 $fncpar         = ParseFnc($f["input_insert_func"]);
