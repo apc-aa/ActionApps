@@ -51,7 +51,7 @@ function get_mgettext_lang() {
  */
 function bind_mgettext_domain($filename, $cache = false, $lang = "") {
     global $_m, $mgettext_lang, $mgettext_domain;
-
+    
     if ( $mgettext_domain == $filename ) {
         return;                             // allready loaded
     }
@@ -80,6 +80,10 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
         }
         include $filename;
     }
+}
+
+function mgettext_bind($lang, $section, $cache=false) {
+    bind_mgettext_domain(AA_INC_PATH.'lang/'.$lang.'_'.$section.'_lang.php3', $cache, $lang);
 }
 
 /** _m function

@@ -33,7 +33,7 @@ require_once AA_INC_PATH."mgettext.php3";
 if (!$lang) {
     $lang = "en";
 }
-bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_alerts_lang.php3");
+mgettext_bind($lang, 'alerts');
 
 require_once "util.php3";
 ?>

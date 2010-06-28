@@ -47,10 +47,11 @@ define("SC_HOLDING_BIN", 2);
 *   @param $slice_id
 */
 function AuthDeleteReaders( $item_ids, $slice_id ) {
-    global $db;
+    $db = getDB();
     $db->query ("SELECT type, auth_field_group FROM slice WHERE id='".q_pack_id( $slice_id )."'");
     $db->next_record();
     if ($db->f("type") != "ReaderManagement" || ! $db->f("auth_field_group")) {
+        freeDB($db);
         return;
     }
     $db->query ("
@@ -64,6 +65,7 @@ function AuthDeleteReaders( $item_ids, $slice_id ) {
     $where = "WHERE username IN ('".join_and_quote( "','", $usernames)."')";
     $db->query("DELETE FROM auth_user ".$where);
     $db->query("DELETE FROM auth_group ".$where);
+    freeDB($db);
 }
 
 // --------------------------------------------------------------------------

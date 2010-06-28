@@ -225,14 +225,14 @@ class AA_View_Commands {
  * @return array asociative array of properties
  */
 function ParseSettings($set) {
+    $ret  = array();
     $sets = split_escaped(",", $set, ",,");
-    if (!(isset($sets) AND is_array($sets))) {
-        return false;
-    }
-    foreach ($sets as $v) {
-        $pos = strpos($v,'-');
-        if ($pos) {
-            $ret[substr($v,0,$pos)] = substr($v,$pos+1);
+    if (isset($sets) AND is_array($sets)) {
+        foreach ($sets as $v) {
+            $pos = strpos($v,'-');
+            if ($pos) {
+                $ret[substr($v,0,$pos)] = substr($v,$pos+1);
+            }
         }
     }
     return $ret;
@@ -575,7 +575,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
 
     // Use right language (from slice settings) - languages are used for
     // 'No item found', Next, ... messages
-    bind_mgettext_domain(AA_INC_PATH."lang/".$view->getLang()."_output_lang.php3");
+    mgettext_bind($view->getLang(), 'output');
 
     $noitem_msg = (isset($view_param["noitem"]) ? $view_param["noitem"] :
                    ( ((strlen($view->f('noitem_msg')) > 0) ) ?

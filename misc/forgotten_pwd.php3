@@ -63,7 +63,7 @@ if ($do=="chu") { //CHeck User
     if (!($email.$user)) die ("Wrong way, go back !!!");
     if ($user) {
         $by = "headline........";
-        $id = $user; 
+        $id = $user;
     }
     else {
         $by = "con_email.......";
@@ -81,13 +81,12 @@ if ($do=="chu") { //CHeck User
     $body     = "To reset your password, please visit this URL:<br>
     <a href=".$full_path."?do=chk&user=$username&key=$pwdkey>".$full_path."?do=chk&user=$username&key=$pwdkey</a><br>
     Please note that you have to to this within an hour, otherwise the key that has been send to you in this message will expire.";
-    $mail->setHtml($body, html2text ($body));
-    $mail->setHeader("To", $email);
+    $mail->setHtml($body, html2text($body));
     $mail->setHeader("From", ERROR_REPORTING_EMAIL);
     $mail->setHeader("Reply-To", ERROR_REPORTING_EMAIL);
     $mail->setHeader("Errors-To", ERROR_REPORTING_EMAIL);
     //$mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
-    $mail->send(array ($maillist));
+    $mail->send(array($email));
     echo "The email with the key allowing to reset your password has been sent to you to this email address: $email";
 }
 if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password

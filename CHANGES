@@ -1,3 +1,60 @@
+06/28/10 - new possibility to write custom AA extensions on regular basis
+(honzam)   the scripts will be located in
+             include/custom/<AA_CUSTOM_DIR>/
+           directory, where <AA_CUSTOM_DIR> should be defined in config.php3 file:
+             define("AA_CUSTOM_DIR", "econnect");
+             // for script in include/custom/econnect/
+           The files in that directory are:
+             stringexpand.php  for AA_Stringexpand_* classes
+             responder.php     for AA_Responder_* classes
+         - new possibility to use any AA expression as "spot variable" for
+           conditions in site module branches (choices) - like:
+             {xuser:_#USR_TYPE} = standard
+           The expression in spot variable must begin with "{" and it checks
+           for EQUALity (=) - not regular expressions like with APC variables
+         - {ifeq} extended to use multiple choices:
+              {ifeq:<etalon>:<option1>:<text1>[: ...][:default]} - just like:
+              {ifeq:{xlang}:en:English:cz:Czech:Unknown language}
+         - new <settings> parameter for {view:<vid>[:<ids>[:<settings>]]} - like
+              {view:254::listlen-5}
+         - new <reverse> and <sort> parameters for
+           {treestring:<item_id>[:<relation_field>[:<reverse>[:<sort>]]]}.
+             <reverse> creates the tree for child->parent relations
+             <sort>  the order of leaves (currently wors only for reverse trees)
+           {treestring:2a4352366262227383484784635362ab:relation.......1:1:sort[0][headline........]=a&sort[1][publish_date....]=d}
+         - new possibility to switch the htmltogglecss ON, by deafault:
+             {htmltogglecss:<toggle1>:<toggle2>:<css_rule>:<is_on>}
+             {htmltogglecss:+:-:#id_#SITEM_ID:1}
+         - new {timestamp:<date>} returning unix timestamp for textual date:
+             {timestamp:2008-07-01}
+             {timestamp:20080701t223807}
+         - new {shuffle:<ids>[:<limit>]} - randomises the order of ids
+           and returns up to <limit> ids
+         - new {unique:<ids>[:<delimiter>]} - removes duplicate ids from the string
+         - new <limit> parameter which reduces amount of returned ids for:
+             {ids:<slice>:<conds>[:<sort>[:<delimiter>[:<restrict_ids>[:<limit>]]]]}
+         - {ajax:<item_id>:<field_id>[:<alias>]} could use any AA exprexssions
+           instead of single <alias>
+         - new {xid:list} - returns ids list from start to current item
+           in the tree - like:2587-2877-3004
+         - new (experimental) {redirect:<url>} - redirects user to specified page
+           directly and right in the time it ocures in the code - could be used
+           inside site module, when you need to redirect user to another branch
+           (say from / to /cz/home)
+         - the e-mail images used in "src=" or "background=" attributes of HTML
+           tags in e-mails sended by AA are included in the mail, so the
+           probability of correctly displayed images in a e-mail client is much
+           bigger
+         - fixed text version of e-mail - the <head> and <style> tags
+           are striped out
+         - fixed file uploads for forms with new aa[][] variable syntax
+         - fixed checkbox widget when called as AJAX
+         - filler.php3 returns text in right encoding for ajax widgets
+         - new AA_Refresh(id) javascript function which refreshes the div by
+           ajax calling the url (view) stored in data-aa-url attribute
+         - easier and better ajax widgets - old code stored/recovered on cancel
+         - safer item moving in Item Manager
+         - critical functions optimalized for speed
 06/08/10 - fixed form editing
 (honzam)
 04/28/10 - fixed Ajax and Live widget for date - now displays selectboxes

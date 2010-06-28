@@ -29,7 +29,7 @@ http://www.apc.org/
 require_once "../include/config.php3";
 require_once "../include/util.php3";
 require_once "../include/mgettext.php3";
-bind_mgettext_domain("../include/lang/".get_mgettext_lang()."_param_wizard_lang.php3");
+mgettext_bind(get_mgettext_lang(), 'param_wizard');
 require_once "../include/constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

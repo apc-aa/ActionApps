@@ -41,7 +41,7 @@ $lang_file = substr ($lang_file, 0, 2);
 if (!$LANGUAGE_NAMES [$lang_file]) {
     $lang_file = "en";
 }
-bind_mgettext_domain(AA_INC_PATH."lang/".$lang_file."_news_lang.php3");
+mgettext_bind($lang_file, 'news');
 /** Main include file for using session management function on a page */
 require_once AA_INC_PATH."locsess.php3";
 /** Set of useful functions used on most pages */

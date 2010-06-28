@@ -152,7 +152,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
 
     // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
     if ($activeMain == "aaadmin") {
-        bind_mgettext_domain(AA_INC_PATH."lang/".get_mgettext_lang()."_news_lang.php3");
+        mgettext_bind(get_mgettext_lang(), 'news');
     }
 
     $nb_logo = GetLabel(&$profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>');

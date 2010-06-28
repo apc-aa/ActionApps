@@ -198,8 +198,7 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
 
     $db = getDB();
     // get contents to show
-    $SQL = "SELECT spot_id, content, flag from site_spot
-             WHERE site_id='$p_module_id' AND spot_id IN ($in_ids)";
+    $SQL = "SELECT spot_id, content, flag from site_spot WHERE site_id='$p_module_id' AND spot_id IN ($in_ids)";
     $db->tquery($SQL);
     while ( $db->next_record() ) {
         $contents[$db->f('spot_id')] = $db->f('content');
@@ -209,8 +208,7 @@ function ModW_GetSite( $apc_state, $site_id, $site_info ) {
 
     foreach ( $show_ids as $v ) {
         $spot_content = $contents[$v];
-        $out .= ( ($flags[$v] & MODW_FLAG_JUST_TEXT) ?
-                $spot_content : ModW_unalias($spot_content, $apc_state) );
+        $out .= ( ($flags[$v] & MODW_FLAG_JUST_TEXT) ? $spot_content : AA_Stringexpand::unalias($spot_content, '', $apc_state['item']));
     }
     return $out;
 }
@@ -220,11 +218,6 @@ function ModW_StoreIDs($spot_id, $depth) {
         huhl("Warning adding empty spot_id");
     }
     $GLOBALS['show_ids'][] = $spot_id;
-}
-
-function ModW_unalias( &$text, &$state ) {
-    // just create variables and set initial values
-    return AA_Stringexpand::unalias($text, '', $state['item']);
 }
 
 // id = an item id, unpacked or short

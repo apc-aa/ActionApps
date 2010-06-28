@@ -218,7 +218,7 @@ if (!$slice_info OR $slice_info['deleted']>0) {
 }
 
 // Use right language (from slice settings) - languages are used for scroller (Next, ...)
-bind_mgettext_domain(AA_INC_PATH."lang/".$slice->getLang()."_output_lang.php3");
+mgettext_bind($slice->getLang(), 'output');
 
 if (!$slice_info['even_odd_differ']) {
     $slice_info['even_row_format'] = "";

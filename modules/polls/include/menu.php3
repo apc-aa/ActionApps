@@ -43,7 +43,7 @@
 require_once AA_INC_PATH."menu_util.php3";
 require_once AA_INC_PATH."perm_core.php3";
 require_once AA_INC_PATH."mgettext.php3";
-//bind_mgettext_domain(AA_INC_PATH."lang/".substr(LANG_FILE,0,2)."_news_lang.php3");
+//mgettext_bind(substr(LANG_FILE,0,2), 'news');
 
 // I don't want to call AA menus as early as including menu.php3, because some permissions' functions are called. Hence I call get_aamenus in showMenu().
 $GLOBALS['aamenus']       = "aamenus";

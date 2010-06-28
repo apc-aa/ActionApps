@@ -234,16 +234,12 @@ class AA_Collection {
         $slice          = $this->getReaderSlice();
         $field_howoften = getAlertsField(FIELDID_HOWOFTEN, $this->id);
 
-        $conds   = array();
-        $conds[] = array(    'operator' => '=', 'value' => 1, FIELDID_MAIL_CONFIRMED => 1 );
-
+        $set            = new AA_Set(new AA_Condition(FIELDID_MAIL_CONFIRMED, '=', 1),null,array($slice->unpacked_id()));
         if ( !is_null( $how_often ) ) {
-            $conds[] = array('operator' => '=', 'value' => $how_often, $field_howoften => 1 );
+            $set->addCondition(new AA_Condition($field_howoften, '=', $how_often));
         }
 
-
-        $zids  = QueryZIDs(array($slice->unpacked_id()), $conds);
-        return $zids;
+        return QuerySet($set);
     }
 
     function getReadersSelectArray($ignore_reading_password, $how_often = null) {
@@ -445,7 +441,8 @@ function get_filter_output_cached($vid, $filter_settings, $zids) {
     if ( !isset($cached_filter_settings[$filter_settings])) {
         $set = &get_view_settings_cached($vid);
         // set language
-        bind_mgettext_domain(AA_INC_PATH."lang/". $set["lang"]."_alerts_lang.php3", true);
+        mgettext_bind($set["lang"], 'alerts', true);
+
         // $set["info"]["aditional2"] stores item URL
         $item_url = $set["info"]->f("aditional2");
         if (! $item_url) {
