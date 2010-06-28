@@ -29,6 +29,9 @@ if (!defined('PHPLIB_LIBDIR')) {
     define ('PHPLIB_LIBDIR', '');
 }
 
+// set timezone - just for date() speedup
+// date_default_timezone_set(date_default_timezone_get());
+
 if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
     /* Change this to match your database. */
     $db_type_filename = (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc");
@@ -69,6 +72,7 @@ function __autoload ($class_name) {
 
     switch ($core) {
     case 'form':
+    case 'table':
     //  case 'widget':
     //  case 'field':
         require AA_INC_PATH. $core. '.class.php3';
@@ -81,8 +85,17 @@ function __autoload ($class_name) {
         return;
     }
 
-    if ( strpos($class_name, 'AA_Stringexpand_Nszm') === 0 ) {
-        require_once AA_INC_PATH. "custom/nszm/stringexpand.php";
+    $CUSTOM_INC_FILES = array(
+        'AA_Stringexpand' => 'stringexpand.php',
+        'AA_Responder'    => 'responder.php'
+        );
+    
+    if (defined('AA_CUSTOM_DIR')) {
+        foreach ($CUSTOM_INC_FILES as $inc_def => $inc_file) {
+            if (strpos($class_name, $inc_def) === 0 ) {
+                include_once(AA_INC_PATH. 'custom/'. AA_CUSTOM_DIR. '/'. $inc_file);
+            }
+        }
     }
 }
 
