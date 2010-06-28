@@ -210,7 +210,12 @@ class spot {
         $i=0;
         if ( isset($this->c) AND is_array($this->c) ) {  //c is array of conditions
             foreach ($this->c as $var => $cond) {
-                if (!ereg($cond, $state[$var])) {
+                // we can test state variables (by regular expressions) or aa expression (tested for exact match)
+                if ($var[0]=='{') {
+                    if ($cond != AA_Stringexpand::unalias($var, '', $state['item'])) {
+                        return false;
+                    }
+                } elseif (!ereg($cond, $state[$var])) {
                     return false;
                 }
             }
