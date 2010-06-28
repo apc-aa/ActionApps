@@ -215,7 +215,18 @@ function SendOkPage($txt, $new_ids = array()) {
             $ret   = array();
             foreach($new_ids as $long_id) {
                 $item = AA_Item::getItem(new zids($long_id, 'l'));
-                $ret[$long_id] = AA_Stringexpand::unalias($retcode, '', $item);
+                $text = AA_Stringexpand::unalias($retcode, '', $item);
+                if ($text AND $item) {
+                    $slice = AA_Slices::getSlice($item->getSliceID());
+                    if (!empty($slice)) {
+                        $charset = $slice->getCharset();
+                        if ($charset != 'utf-8') {   
+                            $encoder = ConvertCharset::singleton();
+                            $text    = $encoder->Convert($text, $charset,'utf-8');
+                        }
+                    }
+                }
+                $ret[$long_id] = $text;
             }
             header("Content-type: application/json");  // standard header based on IANA
             echo json_encode($ret);
