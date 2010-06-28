@@ -205,13 +205,12 @@ class AA_Slice {
     /** getWidgetAjaxHtml function
      * @param $field_id
      * @param $item_id
-     * @param $visual
      */
-    function getWidgetAjaxHtml($field_id, $item_id, $visual='') {
-        return $this->fields->getWidgetAjaxHtml($field_id, $item_id, $visual);
+    function getWidgetAjaxHtml($field_id, $item_id) {
+        return $this->fields->getWidgetAjaxHtml($field_id, $item_id);
     }
 
-    /** getWidgetAjaxHtml function
+    /** getWidgetLiveHtml function
      * @param $field_id
      * @param $item_id
      */

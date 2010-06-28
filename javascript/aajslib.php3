@@ -142,7 +142,8 @@ function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, 
  **/
 function DisplayAaResponse(div_id, method, params) {
     $(div_id).update(AA_Config.loader);
-    new Ajax.Updater(div_id, AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID + '&command='+ method, {parameters: params});
+    var sess = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
+    new Ajax.Updater(div_id, AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, {parameters: params});
 }
 
 
@@ -180,14 +181,27 @@ function AA_AjaxInsert(a_obj, form_url) {
  *  @param ok_html   - what text (html) should be displayed after the success
  *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
  */
-function SendAjaxForm(id) {
+function SendAjaxForm(id, refresh) {
     $(id).insert(AA_Config.loader);
     $(id).request({encoding:   'windows-1250',
                    onComplete: function(transport){
-                       new Insertion.After($(id).up('div'), new Element('div').update(transport.responseText));
-                       // close form and display add icon
-                       AA_AjaxInsert($(id).up('div').previous(), '');
+                       if (typeof refresh != "undefined") {
+                           AA_Refresh(refresh);
+                       } else {
+                           new Insertion.After($(id).up('div'), new Element('div').update(transport.responseText));
+                           // close form and display add icon
+                           AA_AjaxInsert($(id).up('div').previous(), '');
+                       }
                    }});
+}
+
+function AA_Refresh(id) {
+    $(id).update(AA_Config.loader);
+    new Ajax.Request($(id).readAttribute('data-aa-url'), {
+        onSuccess: function(transport) {
+            $(id).replace(transport.responseText);
+        }
+    });
 }
 
 /** Send the form by AJAX and on success displays the ok_html text
@@ -226,22 +240,24 @@ function AA_AjaxSendAddForm(id) {
 function AA_SendWidgetAjax(id) {
     var valdivid   = 'ajaxv_' + id;
     var code = Form.serialize(valdivid);
-    $(valdivid).insert(AA_Config.loader);
 
     var alias_name = $(valdivid).readAttribute('aaalias');
+    $(valdivid).insert(AA_Config.loader);
 
     code += '&inline=1&ret_code_enc='+alias_name;
 
-//    $(valdivid).update(AA_Config.loader);
     new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
-            var items = $H(transport.responseText.evalJSON(true));  // maybe we can remove "true"
-            items.each(function(pair) {
-                $(valdivid).update(pair.value);
-            });
-            $('ajaxch_'+id).update('');
+            var items = transport.responseText.evalJSON(true);  // maybe we can remove "true"
+            var res;
+
+            for (var i in items) { 
+                res = items[i];
+                $(valdivid).update(res.length>0 ? res : '--');
+                break;
+            }
             $(valdivid).setAttribute("aaedit", "0");
         }
     });
@@ -436,6 +452,10 @@ function displayInput(valdivid, item_id, fid) {
        case '2': $(valdivid).setAttribute("aaedit", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
                  return;
     }
+   
+    // store current content
+    $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
+
     var alias_name = $(valdivid).readAttribute('aaalias');
 
     $(valdivid).update(AA_Config.loader);
@@ -486,8 +506,9 @@ function _getInputContent(input_id) {
 
 /** return back old value - CANCEL pressed on AJAX widget */
 function DisplayInputBack(input_id) {
-    $('ajaxv_'+input_id).update($F('ajaxh_'+input_id));
-    $('ajaxv_'+input_id).setAttribute('aaedit', '2');
+    var valdivid = 'ajaxv_'+input_id
+    $(valdivid).update($(valdivid).getAttribute('data-aa-oldval'));
+    $(valdivid).setAttribute('aaedit', '2');
 }
 
 /* Cookies */

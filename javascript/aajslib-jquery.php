@@ -109,6 +109,54 @@ function jqid(s) {
     return '#' + jqescape(s);
 }
 
+/** This function replaces the older one - proposeChange
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function AA_SendWidgetAjax(id) {
+    var valdiv = jqid('ajaxv_'+id);
+    var code   = $(valdiv + ' *').serialize();
+    $(valdiv).append(AA_Config.loader);
+
+    var alias_name = $(valdiv).attr('aaalias');
+
+    code += '&inline=1&ret_code_enc='+alias_name;
+    
+    $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', code, function(data) {
+        var res;
+        // just one iteration, but without the loop we are not able to get the item_id
+        for (var item_id in data) {
+            res = data[item_id];
+            $(valdiv).html(res.length>0 ? res : '--');
+            break;
+        }
+        $(valdiv).attr("aaedit", "0");
+    });
+}
+
+/** This function replaces the older one - proposeChange
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function AA_SendWidgetLive(id) {
+    $$('*[id ^="'+id+'"]').invoke('addClassName', 'updating');
+    var valdivid   = 'widget-' + id;
+    var code = Form.serialize(valdivid);
+
+    code += '&inline=1';  // do not send us whole page as result
+
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+        parameters: code,
+        requestHeaders: {Accept: 'application/json'},
+        onSuccess: function(transport) {
+            $$('*[id ^="'+id+'"]').invoke('removeClassName', 'updating');
+        }
+    });
+}
+
+
+
+
 function displayInput(valdivid, item_id, fid) {
     var valdiv = jqid(valdivid);
 
@@ -119,6 +167,7 @@ function displayInput(valdivid, item_id, fid) {
                  return;
     }
     var alias_name = $(valdiv).attr('aaalias');
+    $(valdiv).attr("data-aa-oldval", $(valdiv).html());
 
     AA_AjaxCss(valdiv, AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
         field_id:   fid,
@@ -217,7 +266,7 @@ function DoChangeLive(input_id) {
 /** return back old value - CANCEL pressed on AJAX widget */
 function DisplayInputBack(input_id) {
     var valdiv   = jqid('ajaxv_'+input_id);
-    $(valdiv).html( $(jqid('ajaxh_'+input_id)).val() );
+    $(valdiv).html( $(valdiv).attr('data-aa-oldval') );
     $(valdiv).attr('aaedit', '2');
 }
 

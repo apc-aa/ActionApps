@@ -63,7 +63,7 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $invalidate = t
 function GetRepreValue($item_id, $field_id, $alias_name='') {
     // get the item directly from the database
     $item        = AA_Item::getItem(new zids($item_id));
-    $repre_value = $alias_name ? $item->subst_alias('_#'.$alias_name) : $item->getval($field_id);
+    $repre_value = $alias_name ? $item->subst_alias('_#'.$alias_name) : $item->f_h($field_id);
     return (strlen($repre_value) > 0) ? $repre_value : '--';
 }
 
@@ -193,7 +193,7 @@ elseif ( AA_V::P('assignment') == 1 ) {
     // Use right language (from slice settings) - languages are used for button texts, ...
     $lang    = $slice->getLang();
     $charset = $slice->getCharset();   // like 'windows-1250'
-    bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_output_lang.php3");
+    mgettext_bind($lang, 'output');
 
     $encoder       = new ConvertCharset;
     $field_content = new AA_Value;
@@ -221,11 +221,9 @@ elseif ($_POST['aaaction']=='DISPLAYINPUT') {
     // Use right language (from slice settings) - languages are used for button texts, ...
     $lang        = $slice->getLang();
     $charset     = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
-    bind_mgettext_domain(AA_INC_PATH."lang/".$lang."_output_lang.php3");
+    mgettext_bind($lang, 'output');
 
-    // we are posting only the alias name - otherwise the alias is expanded
-    $alias       = (($_POST['alias_name'] == '') ? '' : '_#'.$_POST['alias_name']);
-    $widget_html = $slice->getWidgetAjaxHtml($_POST['field_id'], $iid, $alias);
+    $widget_html = $slice->getWidgetAjaxHtml($_POST['field_id'], $iid);
 
 //    if ($iid == '9ef70aaad95b8abdd54f2f625c902346') {
 //        setcookie("TestCookie", 'teal test', time()+3600);

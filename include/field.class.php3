@@ -220,14 +220,12 @@ class AA_Field {
 
     /** getWidgetAjaxHtml function
     * @param $item_id
-    * @param $visual
     */
-    function getWidgetAjaxHtml($item_id, $visual='') {
+    function getWidgetAjaxHtml($item_id) {
         $widget      = $this->getWidget();
         $item        = AA_Items::getItem($item_id);
         $aa_property = $this->getAaProperty($widget->multiple());
-        $repre_value = $item->subst_alias($visual ? $visual : $this->getId());
-        return $widget->getAjaxHtml($aa_property, $item, get_if($repre_value, '--'));
+        return $widget->getAjaxHtml($aa_property, $item);
     }
 
     /** getWidgetLiveHtml function
@@ -349,11 +347,10 @@ class AA_Fields implements Iterator {
     /** getWidgetAjaxHtml function
      * @param $field_id
      * @param $item_id
-     * @param $visual
      */
-    function getWidgetAjaxHtml($field_id, $item_id, $visual='') {
+    function getWidgetAjaxHtml($field_id, $item_id) {
         $this->load();
-        return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getWidgetAjaxHtml($item_id, $visual) : '';
+        return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getWidgetAjaxHtml($item_id) : '';
     }
 
     /** getWidgetLiveHtml function
