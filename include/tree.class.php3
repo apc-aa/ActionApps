@@ -27,12 +27,15 @@
 
 
 class AA_Supertree {
-    private $_i;      // Array of items
-    private $_relation_field;  //
-    private $_modules;  // Array of modules
+    protected $_i;        // Array of items
+    protected $_relation_field;  //
+    protected $_sort;     // sort array(). 
+                          // Currently wors only for Reverse trees. @todo 
+    protected $_modules;  // Array of modules
 
-    function __construct($relation_field) {
+    function __construct($relation_field, $sort=null) {
         $this->_relation_field = $relation_field;
+        $this->_sort           = $sort;
         $this->_i              = array();
     }
 
@@ -132,12 +135,68 @@ class AA_Supertree {
     }
 }
 
+/** The same as AA_Supertree, but it holds reversed tree - tree construced not 
+ *  as parent->childrens but children->parent. The diferrence is the direction, 
+ *  the relation field points.
+ *  !! The Reverse Tree is limitted to one relation slice only !! - @todo - fix 
+ *  It is the same - we just change the way, how to construct the tree.
+ */ 
+class AA_Supertree_Reverse extends AA_Supertree {
+
+    /** load function
+     * @param $force
+     */
+    function load( $id ) {
+        if (isset($this->_i[$id])) {
+            return;
+        }
+        
+        $zid = new zids($id,'l');
+        $sid = $zid->getFirstSlice();
+        if (!$sid) {
+            return;
+        }
+        $this->_modules[$sid] = true;
+
+        /** items, which are already in trash, or expired, ... */
+        $invalid  = array();
+        $queue    = array($id);
+        
+        // prepare cond in order we can be as quick as possible
+        $cond[$this->_relation_field] = 1;
+        $cond['operator'] = '=';
+
+        while (count($queue)) {
+            
+            $item_id  = array_pop($queue);
+            if (isset($this->_i[$item_id])) {
+                continue;
+            }
+
+            $cond['value'] = $item_id;
+            $zids          = QueryZIDs($sid, array($cond), $this->_sort);
+
+            $next    = $zids->longids();
+            $this->_i[$item_id] = $next;
+
+            $queue   = array_merge($queue,$next);
+        }
+        return;
+    }
+}
+
+
 class AA_Trees {
-    var $a = array();
+    /** parent->child trees */
+    var $a   = array();
+    
+    /** reverse - child->parent trees */
+    var $rev = array();
 
     /** Constructor  */
     function AA_Trees() {
-        $this->a = array();
+        $this->a   = array();
+        $this->rev = array();
     }
 
     /** singleton function
@@ -158,8 +217,8 @@ class AA_Trees {
      *  main factory static method
      * @param $id
      */
-    function getTreeString($id, $relation_field) {
-        $supertree = AA_Trees::getSupertree($relation_field);
+    function getTreeString($id, $relation_field, $reverse=false, $sort=null) {
+        $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort);
         return $supertree->getTreeString($id);
     }
 
@@ -167,16 +226,21 @@ class AA_Trees {
      *  main factory static method
      * @param $id
      */
-    function getIds($id, $relation_field) {
-        $supertree = AA_Trees::getSupertree($relation_field);
+    function getIds($id, $relation_field, $reverse=false, $sort=null) {
+        $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort);
         return $supertree->getIds($id);
     }
 
-
-    function getSupertree($relation_field) {
+    function getSupertree($relation_field, $reverse, $sort) {
         $trees = AA_Trees::singleton();
+        if ($reverse) {
+            if (!isset($trees->rev[$relation_field])) {
+                $trees->rev[$relation_field] = new AA_Supertree_Reverse($relation_field, $sort);
+            }
+            return $trees->rev[$relation_field];
+        }
         if (!isset($trees->a[$relation_field])) {
-            $trees->a[$relation_field] = new AA_Supertree($relation_field);
+            $trees->a[$relation_field] = new AA_Supertree($relation_field, $sort);
         }
         return $trees->a[$relation_field];
     }
