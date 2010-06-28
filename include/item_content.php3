@@ -223,7 +223,7 @@ class AA_Content {
      * @param $what
      */
     function getValue($field_id, $idx=0) {
-        return ( is_array($this->content[$field_id]) ? $this->content[$field_id][$idx]['value'] : false );
+        return ( is_array($a = $this->content[$field_id]) ? $a[$idx]['value'] : false );
     }
 
     function getFlag($field_id) {
@@ -234,20 +234,14 @@ class AA_Content {
      * @param $field_id
      */
     function getValues($field_id) {
-        return ( is_array($this->content[$field_id]) ? $this->content[$field_id] : false );
+        return ( is_array($a = $this->content[$field_id]) ? $a : false );
     }
 
     /** getValuesArray function
      * @param $field_id
      */
     function getValuesArray($field_id) {
-        $ret = array();
-        if ( !empty($this->content[$field_id]) ) {
-            foreach ($this->content[$field_id] as $val) {
-                $ret[] = $val['value'];
-            }
-        }
-        return $ret;
+        return empty($this->content[$field_id]) ? array() : array_map( create_function('$val', 'return $val["value"];'), $this->content[$field_id] ); 
     }
 
     /** @return Abstract Data Structure of current object
@@ -298,16 +292,12 @@ class ItemContent extends AA_Content {
      *          in specific slice/module
      */
     function isField($field_id) {
-        if ( !isset($GLOBALS['LINKS_FIELDS']) ) {
-             $GLOBALS['LINKS_FIELDS'] = GetLinkFields();
-             $GLOBALS['CATEGORY_FIELDS'] = GetCategoryFields();
-             $GLOBALS['CONSTANT_FIELDS'] = GetConstantFields();
+        static $f_def;
+        if ( !isset($f_def) ) {
+            $f_def = array_flip(array_merge(array_keys(GetLinkFields()), array_keys(GetCategoryFields()), array_keys(GetConstantFields())));
         }
         // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
-        return( ((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id))
-               OR $GLOBALS['LINKS_FIELDS'][$field_id]
-               OR $GLOBALS['CATEGORY_FIELDS'][$field_id]
-               OR $GLOBALS['CONSTANT_FIELDS'][$field_id] );
+        return (((strlen($field_id)==16) AND preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id)) OR $f_def[$field_id]);
     }
 
     /** lastErr function

@@ -1096,7 +1096,9 @@ class AA_Item {
             $text  = get_if( $p[0], $this->getval($col) );
             $modif = $p[1];
             if (in_array($modif, array('csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug'))) {
-                return call_user_func( array( AA_Object::constructClassName('AA_Stringexpand_', $modif), 'expand'), $text);
+                $stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $modif);
+                return call_user_func_array( array($stringexpand,'expand'), $text);
+//                return call_user_func( array( AA_Object::constructClassName('AA_Stringexpand_', $modif), 'expand'), $text);
             }
             if ($p[1]=='') {
                 $param = $p[0];
@@ -1676,6 +1678,18 @@ class AA_Items {
             $ret[$item->getItemId()] = $item;       // long item id
         }
         return $ret;
+    }
+
+    /** Invalidate item cache */
+    function invalidate() {
+        $items = AA_Items::singleton();
+        $items->doInvalidate();
+    }
+
+    /** called just from clear in order internal variables could be private */
+    function doInvalidate() {
+        $this->_i = array();
+        $this->_l2s = array();
     }
 
     /** returns AA_Item or false (if not cached) */

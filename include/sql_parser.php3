@@ -133,60 +133,16 @@ $First = Array(
 // -----------------------------------------------------------------------------
 //  Functions for Lexical analisys
 // -----------------------------------------------------------------------------
-/** eatWhiteSpaces
- * @param $input
- * @param $i
- * @param $length
- */
-function eatWhiteSpaces($input, $i, $length) {
-    while ( ($i<$length) && isWhite($input[$i]) ) $i++;
-    return $i;
-}
-/** iSpecial function
- * @param $c
- */
-function isSpecial($c) {
-    return (false !== strpos(SPECIAL, $c));
-}
 
-/** isOperator function
- * functions isOperator a resolveOperator works together
- * @param $c
- */
-function isOperator($c) {
-    return (false !== strpos(OPERATOR, $c));
-}
 /** resolveOperator function
  * @param $op
  */
 function resolveOperator($op) {
-    if ( $op == "+" ) {
-        return Array("type"=>TOKEN_TYPE_OPERATOR_AND, "value"=>"and");
-    } elseif ( $op == "-" ) {
-        return Array("type"=>TOKEN_TYPE_OPERATOR_NOT, "value"=>"not");
-    } else {
-        return Array("value"=>TOKEN_TYPE_UNKNOWN, "value"=>"divny operator");
+    switch ($op) {
+    case '+': return array("type"=>TOKEN_TYPE_OPERATOR_AND, "value"=>"and");
+    case '-': return array("type"=>TOKEN_TYPE_OPERATOR_NOT, "value"=>"not");
     }
-}
-/** isWhite function
- * @param $c
- */
-function isWhite($c) {
-    return (false !== strpos(WHITE, $c));
-}
-
-/** isLeftParenthesis function
- * @param $c
- */
-function isLeftParenthesis($c) {
-    return (false !== strpos(LEFT_PARENTHESES, $c));
-}
-
-/** isRightParenthesis function
- * @param $c
- */
-function isRightParenthesis($c) {
-    return (false !== strpos(RIGHT_PARENTHESES, $c));
+    return array("value"=>TOKEN_TYPE_UNKNOWN, "value"=>"divny operator");
 }
 
 /** isLetter function
@@ -212,10 +168,10 @@ function tillTheEndingQuotApos($input, $i, $length, $ending) {
         $tok .= $input[$i];
         $i++;
         if ($i >= $length) {
-            return Array("status"=>E_NO_ENDING_QUOTAPOS, "value"=>"", "i"=>$i);
+            return array("status"=>E_NO_ENDING_QUOTAPOS, "value"=>"", "i"=>$i);
         }
     }
-    return Array("status"=>S_OK, "value"=>$tok, "i"=>$i+1);    // i+1  =>  skips string terminator
+    return array("status"=>S_OK, "value"=>$tok, "i"=>$i+1);    // i+1  =>  skips string terminator
 }
 /** tillTheFirstSpecial function
  * @param $input
@@ -225,7 +181,7 @@ function tillTheEndingQuotApos($input, $i, $length, $ending) {
 function tillTheFirstSpecial($input, $i, $length) {
     $tok="";
     while ($i < $length
-        && (!isSpecial($input[$i])
+        && ((strpos(SPECIAL, $input[$i]) === false)
             // changed by Jakub, November 2002
             // don't break on apostrophe and minus sign in the middle of words
             || ( (false !== strpos("'-", $input[$i]))
@@ -245,31 +201,31 @@ function tillTheFirstSpecial($input, $i, $length) {
  * @param $length
  */
 function getToken($input, $i, $length) {
-    $i = eatWhiteSpaces($input, $i, $length);
+    // eat whitespaces
+    $i += strspn($input, WHITE, $i, $length);
     if ($i >= $length) {
         // no more tokens
-        return Array("status"=>S_NO_MORE_TOKENS, "value"=>"", "i"=>$i, "type"=>TOKEN_TYPE_EMPTY_TOKEN);
+        return array("status"=>S_NO_MORE_TOKENS, "value"=>"", "i"=>$i, "type"=>TOKEN_TYPE_EMPTY_TOKEN);
     }
     if (($input[$i]==QUOT) || ($input[$i]==APOS)) {
         $tok = tillTheEndingQuotApos($input, $i+1, $length, $input[$i]);
-        if ($tok["status"]==S_OK) $tok["type"]=TOKEN_TYPE_STRING;
-        else $tok["type"]=TOKEN_TYPE_UNKNOWN;    // error handling
+        $tok["type"] = ($tok["status"]==S_OK) ? TOKEN_TYPE_STRING : TOKEN_TYPE_UNKNOWN; // error handling
     }
-    else if ( isSpecial($input[$i]) ) {
-        if ( isOperator($input[$i]) ) { // includes '+' and '-' (one character operators)
+    elseif ( strpos(SPECIAL, $input[$i]) !== false) {
+        if ( strpos(OPERATOR, $input[$i]) !== false ) { // includes '+' and '-' (one character operators)
             $tok["status"] = S_OK;
             $val = resolveOperator($input[$i]);
             $tok['value']  = $val['value'];    // 'and' (for +) and 'not' (for -)
             $tok["i"]      = $i+1;
             $tok["type"]   = $val["type"];
         }
-        else if ( isLeftParenthesis($input[$i]) ) { // includes '(', '[' a '{'
+        elseif ( strpos(LEFT_PARENTHESES, $input[$i]) !== false ) { // isLeftParenthesis - includes '(', '[' a '{'
             $tok["status"] = S_OK;
             $tok['value']  = "(";    // all parenthesis are equal
             $tok["i"]       = $i+1;
             $tok["type"]   = TOKEN_TYPE_LEFT_PARENTHESIS;
         }
-        else if ( isRightParenthesis($input[$i]) ) { // includes ')', ']' a '}'
+        elseif ( strpos(RIGHT_PARENTHESES, $input[$i]) !== false ) { // isRightParenthesis - includes ')', ']' a '}'
             $tok["status"] = S_OK;
             $tok['value']  = ")";    // all parenthesis are equal
             $tok["i"]       = $i+1;
@@ -283,6 +239,7 @@ function getToken($input, $i, $length) {
     }
     return $tok;
 }
+
 /** preProcess function
 * @param $toks
 */
