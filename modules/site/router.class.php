@@ -412,6 +412,18 @@ class AA_Router_Seo extends AA_Router {
             }
             return $path;
         }
+        if ($param == 'list') {
+            // list of ids - just like 7663-7434-7432
+            $i     = 1;
+            $delim = '';
+            $list  = '';
+            while (!empty($this->apc['xseo'.$i])) {
+                $list  .= $delim. $this->_xseo2id($this->apc['xseo'.$i]);
+                $delim  = '-';
+                $i++;
+            }
+            return $list;
+        }
     }
 
     function _xseo2id($seo_string) {
@@ -474,6 +486,8 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
  *  {xid:path} - returns ids path of current item - like 2587(2877(3004)) as
  *               used in {item...} syntax (good for breadcrumbs:
  *               {item:{xid:path}: _#HEADLINE:: _#HEADLINK &gt;}
+ *  {xid:list} - returns ids list from start to current item in the tree - like:
+ *               2587-2877-3004
  **/
 class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
