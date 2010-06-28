@@ -129,10 +129,12 @@ class htmlMimeMail {
         /**
         * Defaults for smtp sending
         */
-        if (!empty($GLOBALS['HTTP_SERVER_VARS']['HTTP_HOST'])) {
-            $helo = $GLOBALS['HTTP_SERVER_VARS']['HTTP_HOST'];
-        } elseif (!empty($GLOBALS['HTTP_SERVER_VARS']['SERVER_NAME'])) {
-            $helo = $GLOBALS['HTTP_SERVER_VARS']['SERVER_NAME'];
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            $helo = $_SERVER['HTTP_HOST'];
+
+        } elseif (!empty($_SERVER['SERVER_NAME'])) {
+            $helo = $_SERVER['SERVER_NAME'];
+
         } else {
             $helo = 'localhost';
         }
@@ -263,6 +265,36 @@ class htmlMimeMail {
     }
 
 /**
+    * Accessor to set priority. Priority given should be either
+    * high, normal or low. Can also be specified numerically,
+    * being 1, 3 or 5 (respectively).
+    *
+    * @param mixed $priority The priority to use.
+    */
+    function setPriority($priority = 'normal')
+    {
+        switch (strtolower($priority)) {
+            case 'high':
+            case '1':
+                $this->headers['X-Priority'] = '1';
+                $this->headers['X-MSMail-Priority'] = 'High';
+                break;
+
+            case 'normal':
+            case '3':
+                $this->headers['X-Priority'] = '3';
+                $this->headers['X-MSMail-Priority'] = 'Normal';
+                break;
+
+            case 'low':
+            case '5':
+                $this->headers['X-Priority'] = '5';
+                $this->headers['X-MSMail-Priority'] = 'Low';
+                break;
+        }
+    }
+
+    /**
 * Accessor to set the return path
 */
     function setReturnPath($return_path)
@@ -304,10 +336,7 @@ class htmlMimeMail {
     {
         $this->html      = $html;
         $this->html_text = $text;
-
-        if (isset($images_dir)) {
-            $this->_findHtmlImages($images_dir);
-        }
+        $this->_findHtmlImages($images_dir);
     }
 
 /**
@@ -330,25 +359,39 @@ class htmlMimeMail {
 
         preg_match_all('/(?:"|\')([^"\']+\.('.implode('|', $extensions).'))(?:"|\')/Ui', $this->html, $images);
 
-        for ($i=0; $i<count($images[1]); $i++) {
-            if (file_exists($images_dir . $images[1][$i])) {
-                $html_images[] = $images[1][$i];
-                $this->html = str_replace($images[1][$i], basename($images[1][$i]), $this->html);
+        $img_content = array();
+        $img_name    = array();
+        $html_images = array();
+
+        $images      = array_unique($images[1]);
+
+        for ($i=0; $i<count($images); $i++) {
+            if (strtolower(substr($images[$i],0,4))=='http') {
+                $image_path            = $images[$i];
+                $img_name[$image_path] = basename( parse_url($image_path, PHP_URL_PATH) );
+            } else {
+                $image_path            = $images_dir . $images[$i];
+                $img_name[$image_path] = basename( $image_path );
+            }
+            if (!isset($img_content[$image_path])) {
+                $img_content[$image_path] = $this->getFile($image_path);
+            }
+            if ($img_content[$image_path]) {
+                $html_images[] = $image_path;
+                $this->html = str_replace($images[$i], $img_name[$image_path], $this->html);
             }
         }
 
         if (!empty($html_images)) {
-
-            // If duplicate images are embedded, they may show up as attachments, so remove them.
-            $html_images = array_unique($html_images);
+            // // If duplicate images are embedded, they may show up as attachments, so remove them.
+            // $html_images = array_unique($html_images);
             sort($html_images);
 
             for ($i=0; $i<count($html_images); $i++) {
-                if ($image = $this->getFile($images_dir.$html_images[$i])) {
-                    $ext = substr($html_images[$i], strrpos($html_images[$i], '.') + 1);
-                    $content_type = $this->image_types[strtolower($ext)];
-                    $this->addHtmlImage($image, basename($html_images[$i]), $content_type);
-                }
+                $image        = $img_content[$html_images[$i]];
+                $ext          = substr($html_images[$i], strrpos($html_images[$i], '.') + 1);
+                $content_type = $this->image_types[strtolower($ext)];
+                $this->addHtmlImage($image, $img_name[$html_images[$i]], $content_type);
             }
         }
     }
@@ -394,7 +437,7 @@ class htmlMimeMail {
         } else {
             $return = new Mail_mimePart($text, $params);
         }
-        
+
         return $return;
     }
 
@@ -411,7 +454,7 @@ class htmlMimeMail {
         } else {
             $return = new Mail_mimePart($this->html, $params);
         }
-        
+
         return $return;
     }
 
@@ -422,7 +465,7 @@ class htmlMimeMail {
     {
         $params['content_type'] = 'multipart/mixed';
         $return = new Mail_mimePart('', $params);
-        
+
         return $return;
     }
 
@@ -437,7 +480,7 @@ class htmlMimeMail {
         } else {
             $return = new Mail_mimePart('', $params);
         }
-        
+
         return $return;
     }
 
@@ -452,7 +495,7 @@ class htmlMimeMail {
         } else {
             $return = new Mail_mimePart('', $params);
         }
-        
+
         return $return;
     }
 
@@ -513,6 +556,15 @@ class htmlMimeMail {
         if (!empty($this->html_images)) {
             foreach ($this->html_images as $value) {
                 $this->html = str_replace($value['name'], 'cid:'.$value['cid'], $this->html);
+            }
+        }
+        if (!empty($this->html_images)) {
+            foreach ($this->html_images as $value) {
+                $quoted = preg_quote($value['name']);
+                $cid    = preg_quote($value['cid']);
+
+                $this->html = preg_replace("#src=\"$quoted\"|src='$quoted'#", "src=\"cid:$cid\"", $this->html);
+                $this->html = preg_replace("#background=\"$quoted\"|background='$quoted'#", "background=\"cid:$cid\"", $this->html);
             }
         }
 
@@ -608,9 +660,21 @@ class htmlMimeMail {
             $this->output   = $output['body'];
             $this->headers  = array_merge($this->headers, $output['headers']);
 
-            // Add message ID header
-            srand((double)microtime()*10000000);
-            $message_id = sprintf('<%s.%s@%s>', base_convert(time(), 10, 36), base_convert(rand(), 10, 36), !empty($GLOBALS['HTTP_SERVER_VARS']['HTTP_HOST']) ? $GLOBALS['HTTP_SERVER_VARS']['HTTP_HOST'] : $GLOBALS['HTTP_SERVER_VARS']['SERVER_NAME']);
+            // Figure out hostname
+            if (!empty($_SERVER['HTTP_HOST'])) {
+                $hostname = $_SERVER['HTTP_HOST'];
+
+            } else if (!empty($_SERVER['SERVER_NAME'])) {
+                $hostname = $_SERVER['SERVER_NAME'];
+
+            } else if (!empty($_ENV['HOSTNAME'])) {
+                $hostname = $_ENV['HOSTNAME'];
+
+            } else {
+                $hostname = 'localhost';
+            }
+
+            $message_id = sprintf('<%s.%s@%s>', base_convert(time(), 10, 36), base_convert(rand(), 10, 36), $hostname);
             $this->headers['Message-ID'] = $message_id;
 
             $this->is_built = true;

@@ -163,11 +163,14 @@ class AA_Mail extends htmlMimeMail {
      *
      * Static function called as AA_Mail::sendTemplate($mail_id,$to,$item=null)
      */
-     function sendTemplate($mail_id, $to, $item=null) {
+     function sendTemplate($mail_id, $to, $item=null, $later=true) {
         // email has the templates in it
         $mail = new AA_Mail;
         $mail->setFromTemplate($mail_id, $item);
-        return $mail->sendLater($to);
+        if ($later) {
+            return $mail->sendLater($to);
+        }
+        return $mail->send($to);
     }
 
     /** sendToReader function
@@ -240,8 +243,10 @@ function html2text($html) {
         "'<br[^>]{0,2}>'si"       => "\n",   // <br> as well as <br />
         "'</p>'si"       => "\n\n",
         "'</h[1-9]>'si"  => "\n\n",
-        // Strip out javascript
+        // Strip out javascript, style and head
+        "'<head[^>]*?>.*?</head>'si" => "",
         "'<script[^>]*?>.*?</script>'si" => "",
+        "'<style[^>]*?>.*?</style>'si" => "",
         // Strip out html tags
         "'<[\/\!]*?[^<>]*?>'si"          => "",
         // Replace html entities
