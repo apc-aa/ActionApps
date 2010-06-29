@@ -29,6 +29,9 @@
  * @link      http://www.apc.org/ APC
  *
 */
+
+require_once AA_INC_PATH. "locauth.php3";  // for GetMembership()
+
 /** AA_Profile class - used for storing specific custom settings of loged user
  *  in one specific slice
  */

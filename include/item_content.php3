@@ -76,6 +76,14 @@ class AA_Value {
         return $this->val[$i];
     }
 
+    /** getValues function
+     *  Returns the simple array of values
+     * @param $i
+     */
+    function getValues() {
+        return $this->val;
+    }
+
     /** Returns the value for a field. If it is a multi-value
     *   field, this is the first value. */
     function getFlag($i=0) {
@@ -241,7 +249,7 @@ class AA_Content {
      * @param $field_id
      */
     function getValuesArray($field_id) {
-        return empty($this->content[$field_id]) ? array() : array_map( create_function('$val', 'return $val["value"];'), $this->content[$field_id] ); 
+        return empty($this->content[$field_id]) ? array() : array_map( create_function('$val', 'return $val["value"];'), $this->content[$field_id] );
     }
 
     /** @return Abstract Data Structure of current object
@@ -623,7 +631,7 @@ class ItemContent extends AA_Content {
         }
 
         // start from scretch with new content
-        $new_content = array();
+        $new_content = new ItemContent;
         $fields      = $slice->getFields();
         $profile     = AA_Profile::getProfile($auth->auth["uid"], $slice->unpacked_id()); // current user settings
 
@@ -639,7 +647,7 @@ class ItemContent extends AA_Content {
             $new_content->setValue('expiry_date.....', now()+(60*60*24*365*10));
         }
 
-        $this->content = $new_content;
+        $this->content = $new_content->getContent();
     }
 
     /** storeItem function
