@@ -1,3 +1,6 @@
+06/29/10 - fixed problem with grabber - which displayed error
+(honzam) - fixed multiple checkbox - works with AJAX even if no category is
+           selected
 06/28/10 - new possibility to write custom AA extensions on regular basis
 (honzam)   the scripts will be located in
              include/custom/<AA_CUSTOM_DIR>/

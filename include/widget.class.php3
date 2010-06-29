@@ -980,7 +980,7 @@ class AA_Widget_Chb extends AA_Widget {
         $base_name     = AA_Widget::getName4Form($aa_property->getId(), $content);
         $base_id       = AA_Widget::formName2Id($base_name);
         // we use extended version, because of ajax and live widget and the fact
-        // the checbox do not send nothing if unslected (so we add [chb][def] 
+        // the checbox do not send nothing if unslected (so we add [chb][def]
         // hidden field which is send all the time)
         $base_name_add = $base_name . '[chb]';
         $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
@@ -1006,7 +1006,7 @@ class AA_Widget_Chb extends AA_Widget {
         $input_name   = $base_name_add ."[def]";
         $input_id     = AA_Widget::formName2Id($input_name);
         $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"0\">";
-        
+
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
 
@@ -1032,7 +1032,7 @@ class AA_Widget_Chb extends AA_Widget {
     function getClassProperties()  {
         return array ();
     }
-    
+
     /** @return AA_Value for the data send by the widget
      *   The data submitted by form usually looks like
      *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][chb][]=1
@@ -1115,23 +1115,55 @@ class AA_Widget_Mch extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name   = AA_Widget::getName4Form($aa_property->getId(), $content);
-        $base_id      = AA_Widget::formName2Id($base_name);
-        $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
-        $ret      = '';
+        $base_name     = AA_Widget::getName4Form($aa_property->getId(), $content);
+        $base_id       = AA_Widget::formName2Id($base_name);
+        $base_name_add = $base_name . '[mch]';
+        $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        $ret           = '';
 
         $use_name     = $this->getProperty('use_name', false);
 
         $options      = $this->getOptions($aa_property, $content, $use_name);
         $htmlopt      = array();
         for ( $i=0 ; $i < count($options); $i++) {
-            $input_name = $base_name ."[$i]";
+            $input_name = $base_name_add ."[$i]";
             $input_id   = AA_Widget::formName2Id($input_name);
             $htmlopt[]  = $this->getOneChBoxTag($options[$i], $input_name, $input_id, $widget_add);
         }
 
         $widget = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false));
+
+        // default value - in order something is send when no chbox is checked
+        $input_name   = $base_name_add ."[def]";
+        $input_id     = AA_Widget::formName2Id($input_name);
+        $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"\">";
+
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
+
+    /** @return AA_Value for the data send by the widget
+     *   The data submitted by form usually looks like
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][mch][0]=1
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][headline________][mch][def]=0
+     *  @param $data4field - array('def'=>val, '0'=>val)
+     *   This method coverts such data to AA_Value.
+     *
+     *
+     *  static class method
+     */
+    function getValue($data4field) {
+        $flag          = $data4field['flag'] & FLAG_HTML;
+        $fld_value_arr = array();
+
+        foreach ( (array)$data4field as $key => $value ) {
+            if (is_numeric($key)) {
+                $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
+            }
+        }
+        if (!count($fld_value_arr)) {
+              $fld_value_arr[] = array('value'=>$data4field['def'], 'flag'=>$flag);
+        }
+        return new AA_Value($fld_value_arr, $flag);
     }
 }
 
@@ -1712,6 +1744,18 @@ class AA_Property extends AA_Storable {
             return $this->default;
         }
         return $new_value;
+    }
+
+    function validate($value) {
+        $values = $value->getValues();
+        $valid  = true;
+        foreach ( $values as $v) {
+            $valid = $this->validator->validate($v);
+            if ( !$valid ) {
+                break;
+            }
+        }
+        return $valid;
     }
 
     /** isObject function */
