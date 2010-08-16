@@ -1084,6 +1084,18 @@ class AA_Stringexpand_Intersect extends AA_Stringexpand {
     }
 }
 
+/** {removeids:<ids1>:<ids2>}
+ *  @returns ids1 where will be removed all the ids from ids2 (all dash separated)
+ */
+class AA_Stringexpand_Removeids extends AA_Stringexpand {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function  */
+    function expand($set1, $set2) {
+        return join(array_diff(explode('-',$set1),explode('-',$set2)),'-');
+    }
+}
 
 /** (Current) date with specified date format {date:[<format>[:<timestamp>]]}
  *   {date:j.n.Y}                               displays 24.12.2008 on X-mas 2008
@@ -1171,6 +1183,20 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercache {
         return $ret;
     }
 }
+
+
+class AA_Stringexpand_Rand extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $min
+     * @param $max
+     */
+    function expand($min,$max) {
+        return rand($min, $max);
+    }
+}
+
 
 class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1282,7 +1308,7 @@ class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercache {
 
 /** Counts ids or other string parts separated by delimiter
  *  It is much quicker to use this function for counting of ids, than
- *  {aggregate:count..} since this one do not grab tha item data from
+ *  {aggregate:count..} since this one do not grab the item data from
  *  the database
  *    {count:<ids>[:<delimiter>]}
  *    {count:12324-353443-58921}   // returns 3
@@ -1351,6 +1377,19 @@ class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercache {
      */
     function expand($string='') {
         return trim($string);
+    }
+}
+
+/** Repeats the $string n-$times  */
+class AA_Stringexpand_Str_Repeat extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $string
+     * @param $times
+     */
+    function expand($string='', $times='') {
+        return str_repeat($string, $times);
     }
 }
 
@@ -1580,10 +1619,7 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
      * @param $text
      */
     function expand($text='', $no_url_encode=false) {
-        if ( !is_object($this->item) ) {
-            return 'AA_NeVeRtRuE';          // never true condition
-        }
-        if ( !$this->item->isField($text) ) {
+        if ( !is_object($this->item) OR !$this->item->isField($text) ) {
             return AA_Stringexpand_Conds::_textToConds($text, $no_url_encode);
         }
 
@@ -1943,7 +1979,7 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
         if (empty($sort_string) OR !is_array($sort = String2Sort($sort_string))) {
             $sort = null;
         }
-        
+
         return AA_Trees::getTreeString($long_id, get_if($relation_field, 'relation........'), $reverse=='1', $sort);
     }
 }
@@ -2795,16 +2831,29 @@ class AA_Unalias_Callback {
         //
         // all parameters could contain aliases (like "{any _#HEADLINE text}"),
         // which are processed after expanding the function
+
         $outlen = strlen($out);
-        // Look for {_#.........} and expand now, rather than wait till top
-        if (substr($out,0,2) == "_#") {
-            if (isset($als[substr($out,2)])) {
-                return QuoteColons(AA_Stringexpand::unalias($als[substr($out,2)], '', $this->item, false, $this->itemview));
-            } elseif (isset($this->item)) {
-                // just alias or not so common: {_#SOME_ALSand maybe some text}
-                return QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out));
-            }
+        switch ($out[0]) {
+                      // remove comments
+            case '#': return '';
+                      /** Wraps the text, so you can use the content without taing care about quoting
+                       *  of parameter delimiters ":"
+                       *
+                       *  Example: {-<a href="http://ecn.cz">ecn</a>}
+                       *           {ifset:{_#ABSTRACT}:{-<div style="color:red">_#1</div>}}
+                       */
+            case '-': return QuoteColons($level, 1, substr($out,1));
+            case '_':         // Look for {_#.........} and expand now, rather than wait till top
+                      if ($out[1] == "#") {
+                          if (isset($als[substr($out,2)])) {
+                              return QuoteColons(AA_Stringexpand::unalias($als[substr($out,2)], '', $this->item, false, $this->itemview));
+                          } elseif (isset($this->item)) {
+                              // just alias or not so common: {_#SOME_ALSand maybe some text}
+                              return QuoteColons(($outlen == 10) ? $this->item->get_alias_subst($out) : $this->item->substitute_alias_and_remove($out));
+                          }
+                      }
         }
+
         if (isset($this->item)) {
             if ($outlen == 16) {
                 switch ($out) {
@@ -3236,6 +3285,18 @@ class AA_Stringexpand_Log extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** unaliases the text - replaces {views} and other constructs */
+class AA_Stringexpand_Expand extends AA_Stringexpand {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $number
+     */
+    function expand($string='') {
+        return AA_Stringexpand::unalias($string);
+    }
+}
+
 class AA_Stringexpand_Unpack extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -3327,7 +3388,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      * @param $phpthumb_params - parameters as you would put to url for phpThumb
      *                           see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
      */
-    function expand($image='', $phpthumb_params='', $info='', $param='') {
+    function expand($image='', $phpthumb_params='', $info='', $param1='', $param2='') {
 
         $img_url = AA_Stringexpand_Img::_getUrl($image, $phpthumb_params);
         if (empty($info) OR ($info == 'url') OR empty($img_url)) {
@@ -3347,8 +3408,9 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'mime':    return image_type_to_mime_type($a[2]);
             case 'html':
             case 'hw':      return $a[3]; //height="xxx" width="yyy"
-            case 'img':     return "<img src=\"$img_url\" ". $a[3] ." $param/>";
-            case 'imgb':    return "<img src=\"$img_url\" ". $a[3] ." border=\"0\" $param/>";
+            case 'imgb':    $param2 .= ' border="0"';  // no break!!!
+            case 'img':     $alt = $param1 ? ' title="'.safe($param1).'" alt="'.safe($param1).'"' : '';
+                            return "<img src=\"$img_url\" ". $a[3] ." $alt $param2 />";
         }
         return '';
     }
@@ -3388,6 +3450,8 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
             case 'type':
                 $url2array = explode(".",$url);
                 return $url2array[count($url2array)-1];
+            case 'name':
+                return basename(parse_url($url, PHP_URL_PATH));
             case 'size':
                 $filename = str_replace(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, $url);
                 if (is_file($filename)) {
@@ -3443,7 +3507,7 @@ class AA_Stringexpand_Version extends AA_Stringexpand_Nevercache {
 
 /** manages alerts subscriptions
  *  The idea is, that this alias will manage all the alerts subscriptions on the
- *  page - you just put the {alerts:<alert_module_id>:<some opther parameter>}
+ *  page - you just put the {alerts:<alert_module_id>:<some other parameter>}
  *  construct on the page, and it displays the form for subscriptions, managing
  *  user profile, unsubscribe users and confirm e-mails.
  *  At this moment it is just start - it should unsubscribe users and confirm
@@ -3480,7 +3544,7 @@ class AA_Stringexpand_Alerts  extends AA_Stringexpand_Nevercache {
 
 /** Adds supplied slice password to the list of known passwords for the page,
  *  so you can display the content of the protected slice
- *  It is usefull for site module, when ypu need to display protected content
+ *  It is usefull for site module, when you need to display protected content
  *  Experimental
  *  Ussage: {credentials:ThisIsThePassword}
  */
@@ -3488,9 +3552,6 @@ class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
 
     /** expand function
-     * @param $ids_string
-     * @param $expression
-     * @param $delimeter
      */
     function expand($slice_pwd, $slice_id='') {
         $credentials = AA_Credentials::singleton();
@@ -3662,9 +3723,12 @@ class AA_Stringexpand_Table extends AA_Stringexpand {
 }
 
 /** Go directly to another url
+ *  use as:
+ *    {redirect:http#://example.org/en/new-page}                 - mention the escaped colon in http
+ *    {redirect:{ifset:{xid}::http#://example.org/en/new-page}}  - for conditional redirect
  */
 class AA_Stringexpand_Redirect extends AA_Stringexpand {
-    function expand($url) {
+    function expand($url=null) {
         if (!empty($url)) {
             go_url($url);
         }
