@@ -136,7 +136,7 @@ function ModW_PrintVariables( $spot_id, $vars ) {
             echo "$v <span align=right><a href=\"". SiteAdminPage($spot_id, "delvar=". urlencode($k)) ."\">"._m("Delete")."</a></span><br>";
         }
     }
-    echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='20' maxlength='50'><span align=right><a href='javascript:document.fvar.submit()'>"._m("Add")."</a></span>";
+    echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='50'><span align=right><a href='javascript:document.fvar.submit()'>"._m("Add")."</a></span>";
     ModW_HiddenRSpotId();
     $sess->hidden_session();
     echo "</form></td></tr>";
@@ -151,9 +151,10 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
         $i=0;
         foreach ($vars as $k => $v) {
             if ($conds[$v]) {
-                echo "$v = $conds[$v] <span align=right><a href=\"". SiteAdminPage($spot_id, "delcond=$v") ."\">"._m("Delete")."</a></span><br>";
+                $warning = (trim($conds[$v]) == $conds[$v]) ? '' : '<div style="color:red;"><small>'._m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your regular expression.').'</small></div>';
+                echo "$v = $conds[$v] <span align=right><a href=\"". SiteAdminPage($spot_id, "delcond=$v") ."\">"._m("Delete")."</a></span>$warning<br>";
             } else {
-                echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">$k = <input type='text' name='addcond' value='' size='20' maxlength='50'>
+                echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">$k = <input type='text' name='addcond' value='' size='50'>
                      <input type='hidden' name='addcondvar' value='$v'>
                      <span align=right><a href='javascript:document.fcond$i.submit()'>"._m("Add")."</a></span>";
                 $sess->hidden_session();

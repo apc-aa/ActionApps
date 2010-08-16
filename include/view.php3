@@ -417,6 +417,7 @@ function GetViewConds($view_info, $param_conds) {
     if ( $GLOBALS['debug'] ) {
         huhl("<br>(GetViewConds) param_conds=",$param_conds);
     }
+    $conds = array();
 
     ResolveCondsConflict($conds, $view_info['cond1field'], $view_info['cond1op'], $view_info['cond1cond'],  $param_conds[1]);
     ResolveCondsConflict($conds, $view_info['cond2field'], $view_info['cond2op'], $view_info['cond2cond'],  $param_conds[2]);

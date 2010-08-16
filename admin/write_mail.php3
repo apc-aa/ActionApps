@@ -128,7 +128,12 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
 echo '
   <link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css" type="text/css"  title="TableEditCSS">
   <title>'.  _m("Write email to users") .'</title>';
- IncludeManagerJavascript();
+
+IncludeManagerJavascript();
+// FrmJavascriptFile( 'javascript/inputform.js' );
+// echo getHtmlareaJavascript($slice_id);
+// FrmJavascript(' window.onload   = xinha_init; window.onunload = HTMLArea.flushEvents;');
+
 echo '
 </head>
 <body>
@@ -151,16 +156,17 @@ FrmItemGroupSelect( $items, $searchbar, 'users', $messages, $additional);
 FrmTabSeparator( _m('Write the email') );
 
 FrmInputText(  'subject',     _m('Subject'),           $_POST['subject'],     254, 80, true);
-FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         12, 80, true);
+//FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true, '', '', '', true);  // enable rich text area
+FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true);
 FrmInputText(  'header_from', _m('From (email)'),      $_POST['header_from'], 254, 80, true);
 FrmInputText(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80, false);
 FrmInputText(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80, false);
 FrmInputText(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80, false);
 FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),            $_POST['lang'], true);
 FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $_POST['html'], true);
-FrmInputFile('attachment1',       _m('Attachement 1'), false, "*/*");
-FrmInputFile('attachment2',       _m('Attachement 2'), false, "*/*");
-FrmInputFile('attachment3',       _m('Attachement 3'), false, "*/*");
+//FrmInputFile('attachment1',       _m('Attachement 1'), false, "*/*");
+//FrmInputFile('attachment2',       _m('Attachement 2'), false, "*/*");
+//FrmInputFile('attachment3',       _m('Attachement 3'), false, "*/*");
 
 
 FrmTabEnd(array( 'send' =>array('type'=>'submit', 'value'=>_m('Send')),

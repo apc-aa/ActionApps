@@ -92,9 +92,8 @@ class AA_CP_Session extends Session {
     var $allowcache     = "no";              // Control caching of session pages, if set to no (also the default), the page is not cached under HTTP/1.1 or HTTP/1.0; if set to public , the page is publically cached under HTTP/1.1 and HTTP/1.0; if set to private , the page is privately cached under HTTP/1.1 and not cached under HTTP/1.0
     var $allowcache_expire = 1;              // When caching is allowed, the pages can be cached for this many minutes.
     /** start function
-     * @param $sid
      */
-    function start($sid = "") {
+    function start() {
         $name = $this->that_class;
         $this->that = new $name;
         $this->that->ac_start();
@@ -110,7 +109,7 @@ class AA_CP_Session extends Session {
                 $this->mode = $this->fallback_mode;
             } else {
                 header("HTTP/1.1 Status: 302 Moved Temporarily");
-                $this->get_id($sid);
+                $this->get_id();
                 $this->mode = $this->fallback_mode;
                 if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                     // You will need to fix suexec as well, if you use Apache and CGI PHP
@@ -157,15 +156,9 @@ class AA_CP_Session extends Session {
             break;
         }
 
-        $this->get_id($sid);
+        $this->get_id();
         $this->thaw();
-
-        // Garbage collect, if necessary
-        srand(time());
-        if ((rand()%100) < $this->gc_probability) {
-            $this->gc();
-        }
+        $this->gc();   // Garbage collect, if necessary
     }
 }
-
 ?>

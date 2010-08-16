@@ -88,6 +88,41 @@ function GetInputFormTemplate() {
      return $form->getForm(new ItemContent(), $slice, false, $slice_id);
 }
 
+
+
+/** getHtmlareaJavascript() */
+function getHtmlareaJavascript($slice_id) {
+    global $sess;
+    // special includes for HTMLArea
+    // we need to include some scripts
+    // switchHTML(name) - switch radiobuttons from Plain text to HTML
+    // showHTMLAreaLink(name) - displays "edit in htmarea" link
+    // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
+
+    $retval = getFrmJavascript('
+                // global variables used in HTMLArea (xinha)
+                // You must set _editor_url to the URL (including trailing slash) where
+                // where xinha is installed, it\'s highly recommended to use an absolute URL
+                //  eg: _editor_url = "/path/to/xinha/";
+                // You may try a relative URL if you wish]
+                //  eg: _editor_url = "../";
+                _editor_url        = "'.get_aa_url("misc/htmlarea/", '', false).'";
+                _editor_lang       = "'.substr(get_mgettext_lang(),0,2).'";
+                aa_slice_id        = "'.$slice_id.'";
+                aa_session         = "'.$sess->id.'";
+                aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", '', false).'";'
+                );
+
+    // HtmlArea scripts should be loaded allways - we use Dialog() function
+    // from it ...
+    $retval .= getFrmJavascriptFile('misc/htmlarea/htmlarea.js');
+    //    $retval .= getFrmJavascriptFile('misc/htmlarea/popups/popup.js');
+    $retval .= getFrmJavascriptFile('misc/htmlarea/aafunc.js');
+
+    return $retval;
+}
+
+
 /**
  * inputform class - used for displaying input form (item add/edit)
  */
@@ -166,7 +201,7 @@ class inputform {
             echo '
                 <title>'. $page_title .'</title>
               </head>
-              <body>
+              <body '.getTriggers('body').'>
                 <h1><b>' . $page_title .'</b></h1>';
 
             // you can add some html code by user profiles, above the form
@@ -373,41 +408,21 @@ class inputform {
         $jscode .= $this->js_proove_fields;
 
         // field javascript feature - triggers (see /include/javascript.php3)
-        $javascript = getJavascript($GLOBALS["slice_id"]);
+        $javascript = AA_Slices::getSliceProperty($slice_id, 'javascript');
+        
         if ($javascript) {
             $jscode .= $javascript;
         }
         $retval .= getFrmJavascript( $jscode );
 
-        // special includes for HTMLArea
-        // we need to include some scripts
-        // switchHTML(name) - switch radiobuttons from Plain text to HTML
-        // showHTMLAreaLink(name) - displays "edit in htmarea" link
-        // openHTMLAreaFullscreen(name) - open popup window with HTMLArea editor
-
         $retval .= getFrmJavascript('
                     // global variables used by multi-value selectboxes
                     var maxcount = '. MAX_RELATED_COUNT .';
-                    var relmessage = "'._m("There are too many items.") .'";
-
-                    // global variables used in HTMLArea (xinha)
-                    // You must set _editor_url to the URL (including trailing slash) where
-                    // where xinha is installed, it\'s highly recommended to use an absolute URL
-                    //  eg: _editor_url = "/path/to/xinha/";
-                    // You may try a relative URL if you wish]
-                    //  eg: _editor_url = "../";
-                    _editor_url        = "'.get_aa_url("misc/htmlarea/", '', false).'";
-                    _editor_lang       = "'.substr(get_mgettext_lang(),0,2).'";
-                    aa_slice_id        = "'.$slice_id.'";
-                    aa_session         = "'.$sess->id.'";
-                    aa_long_editor_url = "'.self_server().get_aa_url("misc/htmlarea/", '', false).'";'
+                    var relmessage = "'._m("There are too many items.") .'";'
                     );
 
-        // HtmlArea scripts should be loaded allways - we use Dialog() function
-        // from it ...
-        $retval .= getFrmJavascriptFile('misc/htmlarea/htmlarea.js');
-        //    $retval .= getFrmJavascriptFile('misc/htmlarea/popups/popup.js');
-        $retval .= getFrmJavascriptFile('misc/htmlarea/aafunc.js');
+        $retval .= getHtmlareaJavascript($slice_id);
+
         $retval .= getFrmJavascriptFile('javascript/constedit.js');
 
         if ($this->show_func_used['txt'] || $this->show_func_used['edt']) {
@@ -1016,7 +1031,7 @@ class AA_Inputfield {
     function field_name( $plus=false, $colspan=1, $name=null ) {
         $name = is_null($name) ? $this->name : $name;
         if ( $plus=='plus' ) {
-            $this->echoo("\n<tr class=\"formrow{formpart}\">");
+            $this->echoo("\n<tr class=\"formrow{formpart} cont-".$this->varname."\">");
         }
         $this->echoo("\n <td class=\"tabtxt\" ".
                       (($colspan==1) ? '': "colspan=\"$colspan\"").
@@ -1762,12 +1777,12 @@ class AA_Inputfield {
         $this->echovar("<input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"".getTriggers("input",$name).">");
         $out = "<select name=\"foo_$name\"";
         if ($secondfield) {
-            $out .= "onchange=\"$name.value=this.options[this.selectedIndex].text;";
+            $out .= " onchange=\"$name.value=this.options[this.selectedIndex].text;";
             $out .= "$varsecfield.value=this.options[this.selectedIndex].value\">";
         } else {
             $out .= ($adding ?
-                     "onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">" :
-                     "onchange=\"$name.value=this.options[this.selectedIndex].value\">");
+                     " onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">" :
+                     " onchange=\"$name.value=this.options[this.selectedIndex].value\">");
         }
         $out .= $this->get_options( $this->const_arr, $usevalue, $secondfield);
         $out .= '</select>';
@@ -2072,10 +2087,10 @@ function FrmHidden($name, $val, $safing=true ) {
  * @param $morehlp
  * @param $single
  */
-function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single="") {
+function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single="", $showrich_href=false) {
     $html=false;  // it was in parameter, but was never used in the code /honzam 05/15/2004
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
-    $input->textarea($rows, $cols, $single, false);
+    $input->textarea($rows, $cols, $single, $showrich_href);
     $input->print_result();
 }
 

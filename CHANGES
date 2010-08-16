@@ -1,3 +1,33 @@
+08/16/10 - IP Banning for discussion is able to block not only individual IP
+(honzam)   address, but also subnets - like 157.14.189 (subnets of x.x.x are
+           supported only => not x.x) - see IP Banning slice
+         - new {removeids:<ids1>:<ids2>} - returns ids1 where will be removed
+           all the ids from ids2 (all dash separated)
+         - new {rand:min:max} - returns random integer number from min to max
+         - new {str_repeat:string:times} - repeats string n-times
+         - {fileinfo:<url>:<info>} now allows "size", "type" and "name" as
+           the second - <info> - parameter
+         - validation for unique now is able to not count current item - params
+           are scope:field_id:ignored_item_id
+         - UI - for help messages in field settings used textarea
+         - New possibility to delete trashed unassigned links in Links module
+         - hits are counted for items displayed by sitemodule, which uses
+           SEO_Router ({xid})
+         - fix of slice.php3 for input type="image" submit - it sends x and y
+           coordinates, so slice.php3 thinks "x" is the item id. It is no longer
+           true - "x" is ignored, when provided also with numerical "y" parameter
+         - old ereg replaced by preg regular expression parser in site module
+           conditions
+         - fixed bug in alerts sending - alerts are sended again
+         - views called by f_v are no longer cached
+         - fixed object storing - used in Forms
+         - fixed sending notifications in slices with reading password set
+         - clenup of phplib, removed unused code
+         - fixed toexecute class to do not try to execute unexecutable tasks
+           (priority 0)
+         - pagecache records are deleted in chunks in order we do not get
+           max_packet_size error from MySQL
+         - javascript triggers for fields rewritten ussing class approach
 06/29/10 - fixed problem with grabber - which displayed error
 (honzam) - fixed multiple checkbox - works with AJAX even if no category is
            selected
@@ -44,6 +74,11 @@
            directly and right in the time it ocures in the code - could be used
            inside site module, when you need to redirect user to another branch
            (say from / to /cz/home)
+           Ussage:
+             {redirect:http#://example.org/en/new-page}
+                - mention the escaped colon in http
+             {redirect:{ifset:{xid}::http#://example.org/en/new-page}}
+                - for conditional redirect
          - the e-mail images used in "src=" or "background=" attributes of HTML
            tags in e-mails sended by AA are included in the mail, so the
            probability of correctly displayed images in a e-mail client is much

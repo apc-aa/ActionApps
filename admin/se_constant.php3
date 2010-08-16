@@ -309,7 +309,7 @@ echo "<td class=\"tabtxt\"><b>"._m("Constant Group") ."</b></td>
 if ( $group_id ) {
     echo safe($group_id);
 } else {
-    echo '<input type="text" name="new_group_id" size=\"16\" maxlength=\"16\" value="'.safe($new_group_id).'">
+    echo '<input type="text" name="new_group_id" size="16" maxlength="16" value="'.safe($new_group_id).'">
           <a href="'.get_admin_url('se_constant_import.php3?return_url=se_inputform.php3&amp;fid='. urlencode($fid)).
           '">'._m('Import Constants...').'</a>';
 }

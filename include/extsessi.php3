@@ -119,95 +119,85 @@ class AA_SL_Session extends Session {
     /** get_id function
      * @param $id
      */
-    function get_id($id = "") {
-        $newid=true;
+    function get_id() {
 
-        $this->name = $this->cookiename==""?$this->classname:$this->cookiename;
+        $this->name = $this->cookiename=="" ? $this->classname : $this->cookiename;
+        $newid = false;
+        switch ($this->mode) {
+        case "get":
+            $this->expand_getvars(); // ssi patch
+            $id = isset($_GET[$this->name]) ? $_GET[$this->name] : "";
+            break;
+        case "cookie":
+            $id = isset($_COOKIE[$this->name]) ? $_COOKIE[$this->name] : "";
+            break;
+        default:
+            die("This has not been coded yet.");
+            break;
+        }
 
-        if ("" == $id) {
-            $newid=false;
-            switch ($this->mode) {
-                case "get":
-                    $this->expand_getvars(); // ssi patch
-                    $id = isset($_GET[$this->name]) ? $_GET[$this->name] : "";
-                    break;
-                case "cookie":
-                    $id = isset($_COOKIE[$this->name]) ? $_COOKIE[$this->name] : "";
-                    break;
-                default:
-                    die("This has not been coded yet.");
-                break;
-            }
+        ## if not valid id, then reset it
+        if ( (strlen($id) != 32) OR (strspn($id, "0123456789abcdefABCDEF") != strlen($id))) {
+            $id = '';
         }
 
         if ("" == $id) {
-            $newid=true;
-            $id = $this->that->ac_newid(md5(uniqid($this->magic)), $this->name);
+            $newid = true;
+            $id    = $this->that->ac_newid();
         }
 
         switch ($this->mode) {
-            case "cookie":
-                if ( $newid && ( 0 == $this->lifetime ) ) {
-                    SetCookie($this->name, $id, 0, "/");
-                }
-                if ( 0 < $this->lifetime ) {
-                    SetCookie($this->name, $id, time()+$this->lifetime*60, "/");
-                }
-                break;
-            case "get":
-                if ( isset($_SERVER['QUERY_STRING']) ) {
-                    $_SERVER['QUERY_STRING'] = ereg_replace(
+        case "cookie":
+            if ( $newid && ( 0 == $this->lifetime ) ) {
+                SetCookie($this->name, $id, 0, "/");
+            }
+            if ( 0 < $this->lifetime ) {
+                SetCookie($this->name, $id, time()+$this->lifetime*60, "/");
+            }
+            break;
+        case "get":
+            if ( isset($_SERVER['QUERY_STRING']) ) {
+                $_SERVER['QUERY_STRING'] = ereg_replace(
                     "(^|&)".quotemeta(urlencode($this->name))."=".$id.'(&|$)',
                     "\\1", $_SERVER['QUERY_STRING']);
-                }
-                break;
-            default:
-                break;
+            }
+            break;
+        default:
+            break;
         }
 
         $this->id = $id;
     }
+
     /** start function
      * @param $sid
      */
-    function start($sid = "") {
+    function start() {
         $this->expand_getvars(); // ssi patch
         $name = $this->that_class;
         $this->that = new $name;
         $this->that->ac_start();
 
-        $this->name = $this->cookiename==""?$this->classname:$this->cookiename;
+        $this->name = $this->cookiename=="" ? $this->classname : $this->cookiename;
 
-        if (isset($this->fallback_mode)
-            && ("get" == $this->fallback_mode )
-            && ("cookie" == $this->mode )
-            && (!isset($_COOKIE[$this->name]))) {
+        if (isset($this->fallback_mode) && ("get" == $this->fallback_mode ) && ("cookie" == $this->mode ) && (!isset($_COOKIE[$this->name]))) {
 
             if (isset($_GET[$this->name])) {
                 $this->mode = $this->fallback_mode;
             } else {
                 //header("Status: 302 Moved Temporarily");
-                $this->get_id($sid);
+                $this->get_id();
                 $this->mode = $this->fallback_mode;
-                if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                     // You will need to fix suexec as well, if you use Apache and CGI PHP
-                    $PROTOCOL='https';
-                } else {
-                    $PROTOCOL='http';
-                }
+                //$PROTOCOL = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
                 //header("Location: ". $PROTOCOL. "://". $_SERVER['HTTP_HOST'].$this->self_url());
                 exit;
             }
         }
 
-        $this->get_id($sid);
+        $this->get_id();
         $this->thaw();
-
-        // Garbage collect, if necessary
-        srand(time());
-        if ((rand()%100) < $this->gc_probability) {
-            $this->gc();
-        }
+        $this->gc();   // Garbage collect, if necessary
     }
 }
 

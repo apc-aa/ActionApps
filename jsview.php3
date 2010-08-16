@@ -47,6 +47,7 @@ http://www.apc.org/
                     //        completely redefined by the specified ones
 //optionaly set[]    // setings to modify view behavior (can be combined with cmd)
                     // set[23]=listlen-20
+                    // set[23]=mlx-EN-FR-DE
                     //   - sets maximal number of viewed items in view 23 to 20
                     //   - there can be more settings (future) - comma separated
 //optionaly als[]    // user alias - see slice.php3 for more details
@@ -80,17 +81,29 @@ require_once AA_INC_PATH."easy_scroller.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."view.php3";
+require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."searchlib.php3";
-
 $encap = true; // just for calling extsessi.php
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
-$p_slice_id= q_pack_id($slice_id);
-$db = new DB_AA; 	   	 // open BD
-$db2 = new DB_AA; 		 // open BD
+$db  = new DB_AA;
+$db2 = new DB_AA;
 
-$html_code = GetView(ParseViewParameters());          // get view content
+if (is_numeric($time_limit)) {
+    @set_time_limit((int)$time_limit);
+}
+
+$view_param = ParseViewParameters();
+
+if ($convertfrom) {
+    $view_param['convertfrom'] = $convertfrom;
+}
+if ($convertto) {
+    $view_param['convertto']   = $convertto;
+}
+
+$html_code = GetView($view_param);                    // get view content
 $html_code = str_replace( '"', '\"', $html_code );    // backslash quotes
 $html_code = str_replace( "\r\n", '\n', $html_code ); // remove newlines
 $html_code = str_replace( "\n", '\n', $html_code );   // remove newlines

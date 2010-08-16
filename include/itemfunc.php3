@@ -785,9 +785,17 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
                 // be found)
                 case 'e-unique':
                 case 'unique':
-                    if (addslashes ($oldcontent4id[$pri_field_id][0]['value']) != $$varname) {
-                        ValidateInput($varname, $f["name"], $$varname, $err, $f["required"] ? 1 : 0, $f["input_validate"]);
+
+                    // fill field with curent field, if not filled and
+                    // add $id, so we do not find the currently edited item when
+                    // we are looking for uniqueness
+                    list($v_func,$v_field,$v_scope) = ParamExplode($f["input_validate"]);
+                    if (!$v_field) {
+                        $v_field = $pri_field_id;
                     }
+                    $v_type = ParamImplode(array($v_func,$v_field,$v_scope,$id));
+                    ValidateInput($varname, $f["name"], $$varname, $err, $f["required"] ? 1 : 0, $v_type);
+
                     break;
                 case 'user':
                     // this is under development.... setu, 2002-0301

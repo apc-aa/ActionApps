@@ -151,6 +151,8 @@ class AA_Responder_Get_Fields extends AA_Responder {
         $this->slice_fields = $param['slice_fields'] ? true : false;
     }
 
+    function isPerm() { return IfSlPerm(PS_FIELDS); }
+
     function run() {
         require_once AA_INC_PATH."convert_charset.class.php3";
         $encoder = new ConvertCharset;

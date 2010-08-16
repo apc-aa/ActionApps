@@ -794,6 +794,7 @@ function GetSliceInfo($slice_id) {
 function GetTable2Array($SQL, $key="id", $values='aa_all') {
     $db = getDB();
     $db->tquery($SQL);
+    
     while ($db->next_record()) {
         if ($values == 'aa_all') {
             $val = $db->Record;
@@ -801,7 +802,7 @@ function GetTable2Array($SQL, $key="id", $values='aa_all') {
             $val = true;
         } elseif (substr($values,0,7) == 'unpack:') {
             $val = unpack_id($db->f(substr($values,7)));
-        } elseif (is_string($values) AND isset( $db->Record[$values] )) {
+        } elseif (is_string($values) AND array_key_exists( $values, $db->Record )) {
             $val = $db->Record[$values];
         } else {  // true or 'aa_fields'
             $val = $db->Record;
@@ -2278,7 +2279,7 @@ function get_if($value, $else, $else2='aa_NoNe') {
  *  file, for better version informations
  */
 function aa_version($format='full') {
-    $version = '2.49.0';
+    $version = '2.51.0';
     $full    = 'ActionApps '.$version.' ($Date$, $Revision$)';
     switch ($format) {
         case 'svn': return (int) substr($full, strpos($full, 'Revision')+10);

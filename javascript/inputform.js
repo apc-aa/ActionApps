@@ -227,27 +227,16 @@ function ShowThisTagClass(where,type,classtoshow,classmasktohide) {
 
 function TabWidgetToggle(class2togle) {
     // hide all input tab rows except the row of "class2togle"
-    ShowThisTagClass('inputtabrows', 'tr', class2togle, 'formrow');
 
-    var yo;
+    $$('#inputtabrows tr[class^=formrow]').invoke('hide');
+    $$('#inputtabrows tr[class^='+class2togle+']').invoke('show');
+    //ShowThisTagClass('inputtabrows', 'tr', class2togle, 'formrow');
 
-    // toggle top tabs
-    if(document.getElementById("formtabs") != undefined) {
-        yo = document.getElementById("formtabs").getElementsByTagName("a");
-        for (var i=0; i < yo.length; i++) {
-            yo[i].className = 'tabsnonactiv';
-        }
-        document.getElementById("formtabs"+class2togle).className = 'tabsactiv';
-    }
+    $$('#formtabs a').invoke('addClassName','tabsnonactiv').invoke('removeClassName','tabsactiv');
+    $$('#formtabs'+class2togle).invoke('addClassName','tabsactiv').invoke('removeClassName','tabsnonactiv');
 
-    // toggle bottom tabs
-    if(document.getElementById("formtabs2") != undefined) {
-        yo = document.getElementById("formtabs2").getElementsByTagName("a");
-        for (var i=0; i < yo.length; i++) {
-            yo[i].className = 'tabsnonactiv';
-        }
-        document.getElementById("formtabs2"+class2togle).className = 'tabsactiv';
-    }
+    $$('#formtabs2 a').invoke('addClassName','tabsnonactiv').invoke('removeClassName','tabsactiv');
+    $$('#formtabs2'+class2togle).invoke('addClassName','tabsactiv').invoke('removeClassName','tabsnonactiv');
 }
 
 //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005

@@ -927,7 +927,9 @@ $_m["<!--NewPublicLinkText-->"]
    ."mùžete ale nemusíte vyplòovat všechna pole. Pro snadné zaøazení odkazu\n"
    ."do katalogu však prosíme o vyplnìní pøedevším <b>URL</b> odkazu, <b>NÁZVU</b> a\n"
    ."zaøazení odkazu do nìkteré <b>KATEGORIE</b>. Máte-li se stránkami zkušenosti,\n"
-   ."mùžete vyplnit také popis odkazu. Dìkujeme.";
+   ."mùžete vyplnit také popis odkazu.<br>\n"
+   ."<b>Nevkládejte prosím do katalogu \"komerèní\" odkazy.</b> Tyto odkazy nebudou v katalogu vystaveny.<br>\n"
+   ." Dìkujeme.";
 
 // modules/links/linkedit.php3, row 403
 $_m["Link"]

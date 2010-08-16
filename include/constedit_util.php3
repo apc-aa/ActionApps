@@ -655,7 +655,7 @@ function delete_constant_group($group_id, $slice_id = "") {
     $delete = true;
     if ($slice_id) {
         $db->query("
-            SELECT id FROM slice INNER JOIN field ON slice.id = field.slice_id
+            SELECT slice.id FROM slice INNER JOIN field ON slice.id = field.slice_id
             WHERE field.input_show_func LIKE '%$group_id%'
             AND slice.id <> '".q_pack_id($slice_id)."'");
         if ($db->next_record()) {
