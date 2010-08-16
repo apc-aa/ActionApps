@@ -128,7 +128,7 @@ class AA_Toexecute {
      *  are the same
      */
     function laterOnce( &$object, $params, $selector, $priority=100, $time=null ) {
-        if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."'", 'aa_first', 'aa_mark')) {
+        if ( !GetTable2Array("SELECT selector FROM toexecute WHERE selector='".quote($selector)."' AND priority > 0", 'aa_first', 'aa_mark')) {
             $this->later($object, $params, $selector, $priority, $time);
         }
     }
