@@ -840,8 +840,12 @@ class linkobj {
     function isPerm($action) {
         if ($this->numberOfAssignments() > 0) {
             $base = $this->assignments->getBase();
+            return $base ? $base->isPerm($action) : false;
         }
-        return $base ? $base->isPerm($action) : false;
+        // this else option added for changing the unassigned links
+        cattree::global_instance();  // makes sure $cattree instance is created
+        global $cattree, $r_state;
+        return IsCatPerm( $action, $cattree->getPath($r_state['tree_start_path']) );
     }
 
     /** Get name of general category, if it is general category */

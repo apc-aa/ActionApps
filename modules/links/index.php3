@@ -119,7 +119,33 @@ function Links_GoBookmark($value, $param) {
 
 /** Handler for DeleteTrash switch - removes links from trash */
 function Links_DeleteTrash($value, $param) {
-    // $db->query("DELETE FROM polls WHERE status_code=3 AND id = '$p_module_id'");
+    global $db;
+
+    // first delete the trashed links
+    $SQL = 'DELETE links_links FROM links_links WHERE links_links.folder=3';
+    $db->tquery($SQL);
+
+    // now we fix all incionsistences in the database (most of them caused by previous deletion)
+
+    // delete all proposals which do not have its counterpart in list of links
+    $SQL = 'DELETE p FROM links_links AS p INNER JOIN links_changes ON p.id = links_changes.proposal_link_id LEFT JOIN links_links AS s ON s.id = links_changes.changed_link_id WHERE s.id IS NULL';
+    $db->tquery($SQL);
+
+    // delete propasal - link relation
+    $SQL = 'DELETE links_changes FROM links_changes LEFT JOIN links_links ON links_changes.changed_link_id = links_links.id WHERE links_links.id IS NULL';
+    $db->tquery($SQL);
+
+    // delete all unmatched language relations
+    $SQL = 'DELETE links_link_lang FROM links_link_lang LEFT JOIN links_links ON links_link_lang.link_id = links_links.id WHERE links_links.id IS NULL';
+    $db->tquery($SQL);
+
+    // delete all unmatched region relations
+    $SQL = 'DELETE links_link_reg FROM links_link_reg LEFT JOIN links_links ON links_link_reg.link_id = links_links.id WHERE links_links.id IS NULL';
+    $db->tquery($SQL);
+
+    // and now remove all category assignments for deleted links
+    $SQL = 'DELETE links_link_cat FROM links_link_cat LEFT JOIN links_links ON links_link_cat.what_id = links_links.id WHERE links_links.id IS NULL';
+    $db->tquery($SQL);
 }
 
 /** Function corresponding with 'actions' (see below) - returns true if user
@@ -146,7 +172,7 @@ function Links_IsActionPerm($action) {
         case 'Activate':    return  (substr($current_bin,0,6) == 'folder') && IsCatPerm( PS_LINKS_LINK2ACT, $cid );
         case 'Add2Cat':     return  true;
         case 'Move2Cat':    return !$subtree && IsCatPerm( PS_LINKS_DELETE_LINK, $cid );
-        case 'DeleteTrash': return  false;
+        case 'DeleteTrash': return  IsSuperadmin();
         case 'GoCateg':     return  true;
         case 'Tab':         return  true;
         case 'GoBookmark':  return  true;
@@ -159,10 +185,19 @@ function Links_CountLinkInBins($cat_path) {
     // unasigned
     $SQL = 'SELECT count(DISTINCT links_links.id) as count FROM links_links
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id
-             WHERE (links_link_cat.category_id IS NULL)';
+             WHERE (links_link_cat.category_id IS NULL AND (links_links.folder<3))';
     $db->tquery($SQL);
     if ( $db->next_record() ) {
         $ret['unasigned'] = $db->f('count');
+    }
+
+    // unasigned - trashed
+    $SQL = 'SELECT count(DISTINCT links_links.id) as count FROM links_links
+              LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id
+             WHERE (links_link_cat.category_id IS NULL AND (links_links.folder=3))';
+    $db->tquery($SQL);
+    if ( $db->next_record() ) {
+        $ret['unasigned3'] = $db->f('count');
     }
 
     // new

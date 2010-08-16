@@ -220,17 +220,19 @@ function Links_RefuseLink($param, $lid, $akce_param) {
 function Links_Move2Folder($lid, $folder) {
     global $auth, $db;
 
-      // get link's base category
+    // get link's base category
     $base_category_path = GetBaseCategoryPath( $lid );
-    if ( !isset($base_category_path) )
-        return _m('Base category not found');  // error
 
     // have I perm to move?
-    if (!IsCatPerm( $folder==1 ? PS_LINKS_LINK2ACT : PS_LINKS_LINK2FOLDER,  $base_category_path))
+    if ( $base_category_path ) {
+        if (!IsCatPerm( $folder==1 ? PS_LINKS_LINK2ACT : PS_LINKS_LINK2FOLDER,  $base_category_path)) {
+            return _m('No permission to move link');  // error
+        }
+    } elseif (!IsSuperadmin()) {
         return _m('No permission to move link');  // error
+    }
 
-    $SQL = "UPDATE links_links SET folder='$folder'
-             WHERE id = $lid";
+    $SQL = "UPDATE links_links SET folder='$folder' WHERE id = $lid";
     $db->query($SQL);
     return false;                                         // OK - no error
 }
