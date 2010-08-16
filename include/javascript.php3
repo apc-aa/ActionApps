@@ -25,110 +25,118 @@
  * @link      http://www.apc.org/ APC
  *
 */
-// used by the itemedit.php3 page, which calls getTrig ()
+// used by the itemedit.php3 page, which calls getTrig()
 
 require_once AA_INC_PATH."util.php3";
 
-$GLOBALS["js_triggers"] = array (
-    "input"    => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
-    "select"   => array ("onBlur", "onFocus", "onChange"),
-    "textarea" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
-    "form"     => array ("onClick", "onDblClick", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onReset", "onSubmit"),
-    "body"     => array ("onLoad")
-);
+class AA_Jstriggers {
+    private static $js_triggers = array (
+        "input"    => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
+        "select"   => array ("onBlur", "onFocus", "onChange"),
+        "textarea" => array ("onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect"),
+        "form"     => array ("onClick", "onDblClick", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onReset", "onSubmit"),
+        "body"     => array ("onLoad")
+    );
 
-$GLOBALS["js_trig"] = getTrig();
-/** getJavascript function
- * @param $slice_id
- */
-function getJavascript($slice_id) {
-    if (!$slice_id) {
-        return '';
-    }
-    $p_slice_id = q_pack_id($slice_id);
-    return GetTable2Array("SELECT javascript FROM slice WHERE id='$p_slice_id'", 'aa_first', 'javascript');
-}
+    private static $js_trig = null;
 
-/* $js_trig is an array with triggers used, e.g.
+    /* $js_trig is an array with triggers used, e.g.
     $js_trig["onBlur"] = 1
     $js_trig["onClick"] = 1
     means: aa_onBlur, aa_onClick are defined */
-/** getTrig function
- *
- */
-function getTrig() {
-    global $js_triggers;
-    unset($js_trig);
-
-    foreach ($js_triggers as $control => $ctrigs) {
-        foreach ($ctrigs as $ctrig) {
-            $js_trig[$ctrig] = 1;
+    /** getTrig function
+     *
+     */
+    function loadTriggers($slice_id) {
+        if (!is_null(AA_Jstriggers::$js_trig)) {
+            return AA_Jstriggers::$js_trig;
         }
-    }
-
-    $javascript = getJavascript($GLOBALS["slice_id"]);
-
-    $ws = "[ \t\n\r]*";
-    foreach ($js_trig as $trg => $foo) {
-        // match e.g. aa_onSubmit ( fieldid ) {
-        $js_trig[$trg] = preg_match ("/aa_$trg$ws\($ws"."fieldid$ws\)$ws\{/", $javascript) ? 1 : 0;
-    }
-    return $js_trig;
-}
-
-// $unpacked_fieldid -- the function ignores the first character (usually 'v')
-/** getTriggers function
- * @param $control
- * @param $upacked_fieldid
- * @param $add
- */
-function getTriggers($control, $unpacked_fieldid='', $add="") {
-    global $js_triggers;
-    global $js_trig;
-
-    if (!is_array($js_trig)) {
-        return;
-    }
-    if (substr ($unpacked_fieldid, -2) == "[]") {
-        $unpacked_fieldid = substr ($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 2);
-    }
-    if (substr ($unpacked_fieldid, -1) == "x") {
-        $unpacked_fieldid = substr ($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 1);
-    }
-
-    if (preg_match("/^v[0-9a-f]+$/", $unpacked_fieldid)) {
-        $fieldid = pack_id(substr ($unpacked_fieldid,1));
-    } elseif(preg_match("/^[0-9a-f]+$/", $unpacked_fieldid)) {
-        $fieldid = pack_id($unpacked_fieldid);
-    } else {
-        $fieldid = $unpacked_fieldid;
-    }
-
-    foreach ($js_triggers[$control] as $ctrig) {
-        $funcs = "";
-        // Omar Martinez fix - 2005/04/28
-        // onSubmit is special case - for all other events we can concaternate
-        // the commands, but if you do so for onSubmit, you will get:
-        //   return BeforeSubmit(); aa_onSubmit('inputform');
-        // which is nonsence.
-        if (($ctrig == "onSubmit") AND ($add[$ctrig] == "return BeforeSubmit()")) {
-            if ($js_trig[$ctrig]){
-                $retval .= " $ctrig=\"if( BeforeSubmit() ){ return aa_$ctrig('$fieldid'); } else { return false; }\"";
-            } else {
-                $retval .= " $ctrig=\"$add[$ctrig]\"";
+        $js_trig = array();
+        foreach (AA_Jstriggers::$js_triggers as $control => $ctrigs) {
+            foreach ($ctrigs as $ctrig) {
+                $js_trig[$ctrig] = 1;
             }
+        }
+        
+        $javascript = AA_Slices::getSliceProperty($slice_id, 'javascript');
+
+        $ws = "[ \t\n\r]*";
+        foreach ($js_trig as $trg => $foo) {
+            // match e.g. aa_onSubmit( fieldid ) {
+            $js_trig[$trg] = preg_match("/aa_$trg$ws\($ws"."fieldid$ws\)$ws\{/", $javascript) ? 1 : 0;
+        }
+        AA_Jstriggers::$js_trig = $js_trig;
+        return $js_trig;
+    }
+
+    // $unpacked_fieldid -- the function ignores the first character (usually 'v')
+    /** getTriggers function
+     * @param $control
+     * @param $upacked_fieldid
+     * @param $add
+     */
+    function get($control, $unpacked_fieldid='', $add="") {
+
+        $js_trig     = AA_Jstriggers::loadTriggers($GLOBALS['slice_id']);
+        $js_triggers = AA_Jstriggers::$js_triggers;
+
+        if (count($js_triggers)<1) {
+            return '';
+        }
+
+        if (substr($unpacked_fieldid, -2) == "[]") {
+            $unpacked_fieldid = substr($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 2);
+        }
+        if (substr($unpacked_fieldid, -1) == "x") {
+            $unpacked_fieldid = substr($unpacked_fieldid, 0, strlen($unpacked_fieldid) - 1);
+        }
+
+        if (preg_match('/^v[0-9a-f]+$/', $unpacked_fieldid)) {
+            $fieldid = pack_id(substr($unpacked_fieldid,1));
+        } elseif(preg_match('/^[0-9a-f]+$/', $unpacked_fieldid)) {
+            $fieldid = pack_id($unpacked_fieldid);
         } else {
-            if ($add[$ctrig]) {
-                $funcs = $add[$ctrig].";";
-            }
-            if ($js_trig[$ctrig]) {
-                $funcs .= "aa_$ctrig('$fieldid');";
-            }
-            if ($funcs) {
-                $retval .= " $ctrig=\"$funcs\"";
+            $fieldid = $unpacked_fieldid;
+        }
+
+        foreach ($js_triggers[$control] as $ctrig) {
+            $funcs = "";
+            // Omar Martinez fix - 2005/04/28
+            // onSubmit is special case - for all other events we can concaternate
+            // the commands, but if you do so for onSubmit, you will get:
+            //   return BeforeSubmit(); aa_onSubmit('inputform');
+            // which is nonsence.
+            if (($ctrig == "onSubmit") AND ($add[$ctrig] == "return BeforeSubmit()")) {
+                if ($js_trig[$ctrig]){
+                    $retval .= " $ctrig=\"if( BeforeSubmit() ){ return aa_$ctrig('$fieldid'); } else { return false; }\"";
+                } else {
+                    $retval .= " $ctrig=\"$add[$ctrig]\"";
+                }
+            } else {
+                if ($add[$ctrig]) {
+                    $funcs = $add[$ctrig].";";
+                }
+                if ($js_trig[$ctrig]) {
+                    $funcs .= "aa_$ctrig('$fieldid');";
+                }
+                if ($funcs) {
+                    $retval .= " $ctrig=\"$funcs\"";
+                }
             }
         }
+        return $retval;
     }
-    return $retval;
+
+    function printSummary() {
+        foreach (AA_Jstriggers::$js_triggers as $control => $trigs) {
+            echo '<tr><td class="tabtxt">'.$control.'</td><td class="tabtxt">'.join($trigs,", ").'</td></tr>';
+        }
+    }
+
 }
+
+function getTriggers($control, $unpacked_fieldid='', $add="") {
+    return AA_Jstriggers::get($control, $unpacked_fieldid, $add);
+}
+
 ?>

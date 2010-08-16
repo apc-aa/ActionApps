@@ -103,9 +103,7 @@ echo '</table>
 <tr><td class="tabtxt">'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="http://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</td></td></tr>
 <tr><td class="tabtxt"><table border="1" cellspacing="0" cellpadding="1" bgcolor="'.COLOR_TABTXTBG.'">';
 echo '<tr><td class="tabtit"><b>'._m("Field Type").'</b></td><td class=tabtit><b>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</b></td></tr>';
-foreach ($js_triggers as $control => $trigs) {
-    echo '<tr><td class="tabtxt">'.$control.'</td><td class="tabtxt">'.join($trigs,", ").'</td></tr>';
-}
+AA_Jstriggers::printSummary();
 echo '
 </table></td></tr>
 </table></td>
