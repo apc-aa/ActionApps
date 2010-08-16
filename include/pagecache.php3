@@ -218,12 +218,16 @@ class PageCache  {
      * @param $keys
      */
     function invalidateById( $keys ) {
-        $keystring = join("','", (array)$keys);
-        if ( $keystring != '' ) {
-            $varset = new Cvarset();
-            if ( $varset->doDeleteWhere('pagecache', "id IN ('$keystring')", 'nohalt') ) {
-                // delete keys only in case the pagecache deletion was successful
-                $varset->doDeleteWhere('pagecache_str2find', " pagecache_id IN ('$keystring')", 'nohalt');
+        // we will delete it in chuns in order we do not get max_packet_size error from MySQL
+        $chunks = array_chunk((array)$keys, 10000);
+        foreach ($chunks as $chunk) {
+            $keystring = join("','", $chunk);
+            if ( $keystring != '' ) {
+                $varset = new Cvarset();
+                if ( $varset->doDeleteWhere('pagecache', "id IN ('$keystring')", 'nohalt') ) {
+                    // delete keys only in case the pagecache deletion was successful
+                    $varset->doDeleteWhere('pagecache_str2find', " pagecache_id IN ('$keystring')", 'nohalt');
+                }
             }
         }
     }
