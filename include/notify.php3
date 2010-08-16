@@ -60,7 +60,9 @@ function email_notify($slice_id, $event, $item_id) {
     $emails = GetTable2Array($SQL, '', 'uid');
 
     if ( $notify AND $emails) {
-        $item    = AA_Items::getItem($item_id);
+
+        // ignore reading password
+        $item = AA_Items::getItem($item_id, $slice->getProperty('reading_password'));
 
         if ($item) {
             $subject = $item->unalias($notify['s']);
