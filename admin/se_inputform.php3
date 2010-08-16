@@ -432,7 +432,7 @@ echo "
      </tr>
      <tr>
       <td class=\"tabtxt\"><b>". _m("Help for this field") ."</b></td>
-      <td class=\"tabtxt\" colspan=3><input type=\"text\" name=\"input_help\" size=\"50\" maxlength=\"254\" value=\"". safe($input_help). "\">
+      <td class=\"tabtxt\" colspan=3><textarea name=\"input_help\" rows=\"2\" cols=\"50\" wrap=\"virtual\">". safe($input_help) ."</textarea>
       <div class=\"tabhlp\">". _m("Shown help for this field") ."</div>
       </td>
      </tr>
