@@ -352,6 +352,7 @@ class AA_Validate_Password extends AA_Validate {
 /** Test for unique value in slice/database
  *  @param   $field_id
  *  @param   $scope       - username | slice | allslices
+ *  @param   $item_id     - current item ID
  */
 class AA_Validate_Unique extends AA_Validate {
     /** Search in which field */
@@ -359,14 +360,21 @@ class AA_Validate_Unique extends AA_Validate {
 
     /** Scope, where to search - username | slice | allslices */
     var $scope;
+
+    /** Item, which we do not count (current item) */
+    var $item_id;
+
     /** AA_Validate_Unique function
      * @param $scope
      * @param $field_id
+     * @param $item_id     - current item ID
      */
-    function AA_Validate_Unique($scope, $field_id) {
+    function AA_Validate_Unique($scope, $field_id, $item_id) {
         $this->scope    = $scope ? $scope : 'slice';
         $this->field_id = $field_id;
+        $this->item_id  = $item_id;
     }
+
     /** validate function
      * @param $var
      * @param $default
@@ -375,7 +383,7 @@ class AA_Validate_Unique extends AA_Validate {
         global $slice_id;
 
         if ( $this->scope == 'username') {
-            if ( !IsUsernameFree($var) ) {
+            if ( !IsUsernameFree($var) AND ( !$this->item_id OR (ReaderName2Id($var) != $this->item_id))) {
                 return AA_Validate::bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $default);
             }
             return true;
@@ -388,8 +396,14 @@ class AA_Validate_Unique extends AA_Validate {
                     WHERE item.slice_id='".q_pack_id($slice_id)."'
                         AND field_id='".addslashes($this->field_id)."'
                         AND text='$var'";
+            if ($this->item_id) {
+                $SQL .= " AND item.id <> '".q_pack_id($this->item_id)."'";
+            }
         } else {
             $SQL = "SELECT * FROM content WHERE field_id='". addslashes($this->field_id) ."' AND text='$var'";
+            if ($this->item_id) {
+                $SQL .= " AND item_id <> '".q_pack_id($this->item_id)."'";
+            }
         }
         if (GetTable2Array($SQL, 'aa_first', 'aa_mark')) {
             return AA_Validate::bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Not unique - value already used'), $default);
@@ -401,6 +415,7 @@ class AA_Validate_Unique extends AA_Validate {
 /** Test for unique value in slice/database
  *  @param   $field_id
  *  @param   $scope       - username | slice | allslices
+ *  @param   $item_id     - current item ID
  */
 class AA_Validate_E_Unique extends AA_Validate {
     /** Search in which field */
@@ -408,13 +423,19 @@ class AA_Validate_E_Unique extends AA_Validate {
 
     /** Scope, where to search - username | slice | allslices */
     var $scope;
+
+    /** Item, which we do not count (current item) */
+    var $item_id;
+
     /** AA_Validate_E_Unique function
      * @param $scope
      * @param $field_id
+     * @param $item_id
      */
-    function AA_Validate_E_Unique($scope, $field_id) {
+    function AA_Validate_E_Unique($scope, $field_id, $item_id) {
         $this->scope    = $scope ? $scope : 'slice';
         $this->field_id = $field_id;
+        $this->item_id  = $item_id;
     }
     /** validate function
      * @param $var
@@ -424,7 +445,7 @@ class AA_Validate_E_Unique extends AA_Validate {
         if ( !AA_Validate::validate($var, 'email', $default) ) {
             return false;
         }
-        $validator = new AA_Validate_Unique($this->scope, $this->field_id);
+        $validator = new AA_Validate_Unique($this->scope, $this->field_id, $this->item_id);
         return $validator->validate($var, $default);
     }
 }
@@ -470,14 +491,15 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
         case 'unique':
                          $field_id  = $validate_definition[1];
                          $scope     = $validate_definition[2];
+                         $item_id   = $validate_definition[3];
                          $UNIQUE_SCOPES               = array ( 0 => 'username',
                                                                 1 => 'slice',
                                                                 2 => 'allslices'
                                                                );
                          if ( $type == 'unique' ) {
-                             $validator = new AA_Validate_Unique( $UNIQUE_SCOPES[(int)$scope], $field_id);
+                             $validator = new AA_Validate_Unique( $UNIQUE_SCOPES[(int)$scope], $field_id, $item_id);
                          } else {
-                             $validator = new AA_Validate_E_Unique( $UNIQUE_SCOPES[(int)$scope], $field_id);
+                             $validator = new AA_Validate_E_Unique( $UNIQUE_SCOPES[(int)$scope], $field_id, $item_id);
                          }
                          break;
         default:         $validator = AA_Validate::factory($type);
