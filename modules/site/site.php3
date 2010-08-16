@@ -27,6 +27,7 @@ require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."stringexpand.php3";
 require_once AA_INC_PATH."item.php3"; // So site_ can create an item
 require_once AA_BASE_PATH."modules/site/router.class.php";
+require_once AA_INC_PATH."hitcounter.class.php3";
 
 $timestart = get_microtime();
 
@@ -93,7 +94,8 @@ if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $uri          = (strlen($_SERVER['REQUEST_URI']) > 1) ? $_SERVER['REQUEST_URI'] : $_SERVER['REDIRECT_URL'];
     $apc_state    = $router->parse($uri);
 
-    // do we use login?
+    // count hit for current page
+    AA_Hitcounter::hit(new zids($router->xid(), 'l'));
 }
 
 if ( $site_info['state_file'] ) {
