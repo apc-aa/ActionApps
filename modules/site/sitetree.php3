@@ -215,7 +215,7 @@ class spot {
                     if ($cond != AA_Stringexpand::unalias($var, '', $state['item'])) {
                         return false;
                     }
-                } elseif (!ereg($cond, $state[$var])) {
+                } elseif (!preg_match('/'. str_replace('/', '\/', $cond) .'/', $state[$var])) {   // mention the escaping the delimiter
                     return false;
                 }
             }
