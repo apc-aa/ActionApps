@@ -5,7 +5,7 @@
 ##                    Boris Erdmann, Kristian Koehntopp
 ##
 ## Copyright (c) 1998-2000 Sascha Schumann <sascha@schumann.cx>
-## 
+##
 ## $Id$
 ##
 ## PHPLIB Data Storage Container using a SQL database
@@ -16,7 +16,7 @@ class CT_Sql {
   ## Define these parameters by overwriting or by
   ## deriving your own class from it (recommened)
   ##
-    
+
   var $database_table = "active_sessions";
   var $database_class = "DB_Sql";
   var $database_lock_semaphore = "";
@@ -52,7 +52,7 @@ class CT_Sql {
     $timeout = time();
     $sqldate = date("YmdHis", $timeout - ($gc_time * 60));
     $this->db->query(sprintf("DELETE FROM %s WHERE changed < '%s' AND name = '%s'",
-                    $this->database_table, 
+                    $this->database_table,
                     $sqldate,
                     addslashes($name)));
     }
@@ -105,10 +105,10 @@ class CT_Sql {
     # THIRD, verify that there is at least one row present, and if there
     #   is not, then
     # FOURTH, insert the row as we've determined that it does not exist.
- 
+
     if ( $this->db->affected_rows() == 0
         && $this->db->query($squery)
-	&& $this->db->next_record() && $this->db->f("count") == 0
+    && $this->db->next_record() && $this->db->f("count") == 0
         && !$this->db->query($iquery)) {
 
         $ret = false;
@@ -158,12 +158,12 @@ class CT_Sql {
     return "";
   }
 
-  function ac_newid($str, $name) {
-    return $str;
+  function ac_newid() {
+      return md5(uniqid('',true));
   }
 
   function ac_halt($s) {
-    $this->db->halt($s);
+      $this->db->halt($s);
   }
 }
 ?>
