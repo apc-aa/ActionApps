@@ -1329,8 +1329,11 @@ class AA_Item {
         }
 
         // unalias new ------------ ({publish_date....}, _#ITEM_ID_, ...) -----------
-        $param = $this->subst_alias($param);
-        return GetView(ParseViewParameters($param));
+        $view_param = ParseViewParameters($this->subst_alias($param));
+
+        // do not pagecache the view
+        $foo = '';
+        return GetViewFromDB($view_param, $foo);
     }
 
     /** f_m function
