@@ -204,7 +204,7 @@ class AA_Object extends AA_Storable {
         }
     }
 
-    /** setOwner function
+    /** setOwnerId function
      * @param $owner_id
      */
     function setOwnerId($owner_id) {
@@ -252,6 +252,7 @@ class AA_Object extends AA_Storable {
      *  Save the object to the database
      */
     function save() {
+        //huhl($this);
         if ( !$this->aa_owner ) {
             throw new Exception('No owner set for property '. $this->id. ' - '. $this->name);
         }
@@ -262,7 +263,7 @@ class AA_Object extends AA_Storable {
         $class = get_class($this);
         foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $property) {
             $property_id   = $property->getId();
-            $property->save($this->$property_id, $object_id);
+            $property->save($this->$property_id, $object_id, $this->getOwnerId());
         }
 
                         //        id                        name                        type    multi  persist validator, required, help, morehelp, example
@@ -508,23 +509,26 @@ class AA_Object extends AA_Storable {
         }
 
         foreach ($properties as $property_id => $property) {
-            foreach ($prop_arr[$property_id] as $val) {
-                if ($property->isObject()) {
-                    if (preg_match('/^[0-9a-f]{32}$/', $val)) {
-                        // stored as object (subclass of AA_Object in prvious save())
-                        $tmp_val = AA_Object::load($val, $property->getType());
+            $prop_val = '';
+            if (is_array($prop_arr[$property_id])) {
+                foreach ($prop_arr[$property_id] as $val) {
+                    if ($property->isObject()) {
+                        if (preg_match('/^[0-9a-f]{32}$/', $val)) {
+                            // stored as object (subclass of AA_Object in prvious save())
+                            $tmp_val = AA_Object::load($val, $property->getType());
+                        } else {
+                                // stores as serialized state
+                            $tmp_val = AA_Storable::factoryFromState($property->getType(),  unserialize($val));
+                        }
                     } else {
-                            // stores as serialized state
-                        $tmp_val = AA_Storable::factoryFromState($property->getType(),  unserialize($val));
+                        $tmp_val = $val;
                     }
-                } else {
-                    $tmp_val = $val;
+                    if (!$property->isMulti()) {
+                        $prop_val = $tmp_val;
+                        break;  // next property
+                    }
+                    $prop_val[] = $tmp_val;
                 }
-                if (!$property->isMulti()) {
-                    $prop_val = $tmp_val;
-                    break;  // next property
-                }
-                $prop_val[] = $tmp_val;
             }
             // final assignment
             $obj->$property_id = $prop_val;

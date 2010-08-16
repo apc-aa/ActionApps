@@ -109,8 +109,6 @@ class AA_Widget extends AA_Components {
         $zids    = false;
         $ids_arr = false;
 
-   //        if ($GLOBALS['AA_CP_Session']=='3f466be8fdf38d67ae8b4973f7c95763') { huhl($this); }
-
         $constgroup   = $this->getProperty('const');
         $filter_conds = $this->getProperty('filter_conds');
         $sort_by      = $this->getProperty('sort_by');
@@ -281,7 +279,6 @@ class AA_Widget extends AA_Components {
         }
         return $ret;
     }
-
 
     /** ID of the field input - used for name atribute of input tag (or so)
     *   Format is:
@@ -1795,13 +1792,13 @@ class AA_Property extends AA_Storable {
      * @param $value
      * @param $priority
      */
-    function save($value, $object_id) {
+    function save($value, $object_id, $owner_id='') {
         $ret = true;
         if ($this->isMulti()) {
             if ( is_array($value) ) {
                 // all keys are numeric
                 foreach($value as $k => $v) {
-                    $ret = $ret & $this->_saveSingle($v, $object_id, $k);
+                    $ret = $ret & $this->_saveSingle($v, $object_id, $k, $owner_id);
                 }
 //            } elseif (!empty($value)) {
 //                throw new Exception('Property marked as multi but do not contain array value');
@@ -1809,7 +1806,7 @@ class AA_Property extends AA_Storable {
 //            so this king of thig is already spotted
             }
         } else {
-            $ret = $this->_saveSingle($value, $object_id);
+            $ret = $this->_saveSingle($value, $object_id, 0, $owner_id);
         }
         return $ret;
     }
@@ -1820,7 +1817,7 @@ class AA_Property extends AA_Storable {
      * @param $type
      * @param $priority
      */
-    private function _saveSingle($value, $object_id, $priority=0) {
+    private function _saveSingle($value, $object_id, $priority=0, $owner_id) {
 //      not necessary - we must call validate before objest saving,
 //      so this king of thig is already spotted
 //      if ( is_array($value) ) {
@@ -1839,6 +1836,7 @@ class AA_Property extends AA_Storable {
 
         if (is_subclass_of($value, 'AA_Object')) {
             //  this property is object - so save it (the id of the object is returned)
+            $value->setOwnerId($owner_id);
             $sub_object_id = $value->save();
             // if not saved, then it returns null
             if (!$sub_object_id) {
@@ -1847,7 +1845,6 @@ class AA_Property extends AA_Storable {
             AA_Property::_saveRow($this->id, $sub_object_id, 'text', $object_id, $priority);
             return true;
         } elseif (is_subclass_of($value, 'AA_Storable')) {
-            huhl($value, $value->getState());
             AA_Property::_saveRow($this->id, serialize($value->getState()), $this->type, $object_id, $priority);
             return true;
         }
@@ -1862,8 +1859,6 @@ class AA_Property extends AA_Storable {
      * @param $priority
      */
     static private function _saveRow($property_id, $value, $type, $object_id, $priority=0) {
-
-        huhl('_saveRow', $property_id, $value, $type, $object_id, $priority);
         $varset = new CVarset();
         $varset->add('object_id', 'text',   $object_id);
         $varset->add('priority',  'number', $priority);
