@@ -77,7 +77,7 @@ $form_buttons = array ("submit");
 <form name=f method=post enctype="multipart/form-data" action="<?php echo $sess->url(self_base() ."import_csv.php") ?>">
 <?php
 FrmTabCaption('', '','', $form_buttons, $sess, $slice_id);
-FrmInputFile('csv_file', _m('CSV file'), true, "*/*", _m('CSV file for upload. Each AA on its own row, fields seprted by comma, the fields must be in following order (just like in central_conf table):<br>dns_conf, dns_serial, dns_web, dns_mx, dns_db, dns_prim, dns_sec, web_conf, web_path, db_server, db_name, db_user, db_pwd, AA_SITE_PATH, AA_BASE_DIR, AA_HTTP_DOMAIN, AA_ID, ORG_NAME, ERROR_REPORTING_EMAIL, ALERTS_EMAIL, IMG_UPLOAD_MAX_SIZE, IMG_UPLOAD_URL, IMG_UPLOAD_PATH, SCROLLER_LENGTH, FILEMAN_BASE_DIR, FILEMAN_BASE_URL, FILEMAN_UPLOAD_TIME_LIMIT, AA_ADMIN_USER, AA_ADMIN_PWD'));
+FrmInputFile('csv_file', _m('CSV file'), '', true, "*/*", _m('CSV file for upload. Each AA on its own row, fields seprted by comma, the fields must be in following order (just like in central_conf table):<br>dns_conf, dns_serial, dns_web, dns_mx, dns_db, dns_prim, dns_sec, web_conf, web_path, db_server, db_name, db_user, db_pwd, AA_SITE_PATH, AA_BASE_DIR, AA_HTTP_DOMAIN, AA_ID, ORG_NAME, ERROR_REPORTING_EMAIL, ALERTS_EMAIL, IMG_UPLOAD_MAX_SIZE, IMG_UPLOAD_URL, IMG_UPLOAD_PATH, SCROLLER_LENGTH, FILEMAN_BASE_DIR, FILEMAN_BASE_URL, FILEMAN_UPLOAD_TIME_LIMIT, AA_ADMIN_USER, AA_ADMIN_PWD'));
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
 </form>

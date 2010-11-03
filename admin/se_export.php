@@ -43,8 +43,8 @@ require_once AA_INC_PATH."grabber.class.php3";
 require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
-require_once AA_INC_PATH."PHPExcel/PHPExcel.php";
-require_once AA_INC_PATH."PHPExcel/PHPExcel/Writer/Excel5.php";
+//require_once AA_INC_PATH."PHPExcel/PHPExcel.php";
+//require_once AA_INC_PATH."PHPExcel/PHPExcel/Writer/Excel5.php";
 
 class AA_Exporter extends AA_Object {
     var $set;
@@ -270,6 +270,7 @@ class AA_Exporter_Html extends AA_Exporter {
     }
 }
 
+/*
 class AA_Exporter_Excel extends AA_Exporter_Html {
     function _contentHeaders($file_name)    {
         header('Content-Description: File Transfer');
@@ -278,8 +279,9 @@ class AA_Exporter_Excel extends AA_Exporter_Html {
         header('Content-Transfer-Encoding: binary');
     }
 }
+*/
 
-
+/*
 class AA_Exporter_Excel5 extends AA_Exporter {
     function _contentHeaders($file_name)    {
         header('Content-Description: File Transfer');
@@ -330,7 +332,7 @@ class AA_Exporter_Excel5 extends AA_Exporter {
         $objWriter->save('-');
     }
 }
-
+*/
 
 class AA_Fieldset {
 
