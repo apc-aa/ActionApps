@@ -59,6 +59,7 @@ if ($go_findview && $findview) {
         "id",
         "before",
         "even",
+        "row_delimiter",
         "odd",
         "after",
         "group_title",
@@ -175,6 +176,18 @@ if ($go_findfield && $findfield) {
 
 if ($go_finditem && $finditem) {
     $zid = new zids($finditem);
+    $item = AA_Items::getItem($zid);
+    if ($item) {
+        echo "<br>Item ID: ". $item->getItemID(). ' ('. $item->getval('short_id........') .')';
+        echo "<br>Item slice: ". $item->getSliceID(). ' ('. AA_Slices::getName($item->getSliceID()). ')';
+        $format = '_#HEADLINE';
+        echo "<br>_#HEADLINE: ". $item->unalias($format);
+    }
+    echo "<pre>";
+    echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
+    print_r($item->content4id);
+    echo "</pre>";
+
     $long_id = $zid->longids(0);
     if ($long_id) {
         echo '<h3>'. _m('item table record for the item') .'</h3><pre>';
@@ -185,17 +198,6 @@ if ($go_finditem && $finditem) {
         print_r(GetTable2Array('SELECT * FROM content WHERE item_id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
         echo "</pre>";
     }
-
-    $item = AA_Items::getItem($finditem);
-    if ($item) {
-        echo "<br>Item ID: ". $item->getItemID();
-        echo "<br>Item slice: ". $item->getSliceID(). ' ('. AA_Slices::getName(unpack_id($item->getSliceID())). ')';
-    }
-    echo "<pre>";
-    echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
-    print_r($item);
-    echo "</pre>";
-
 }
 
 if ($go_finditem_edit && $finditem_edit && $finditem_edit_op) {
