@@ -515,7 +515,8 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
             $listlen     = floor(($idscount*($page_n+1))/$no_of_pages) - floor(($idscount*$page_n)/$no_of_pages);
         } else {
             // second parameter is not specified - take listlen parameter
-            $list_from   = $listlen * ($page-1);
+            // we can also specify both - page and from, which means from the item xy on the page p
+            $list_from   = $listlen * ($page-1) + $list_from;
         }
     }
     return array( $listlen, $random ? $random : ($list_from ? $list_from : 0) );
