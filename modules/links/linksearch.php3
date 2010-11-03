@@ -72,10 +72,12 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
     $where_sql    = MakeSQLConditions($LINKS_FIELDS, $conds, $LINKS_FIELDS, $join_tables, 'IsFieldSupported', $type);
     $order_by_sql = MakeSQLOrderBy(   $LINKS_FIELDS, $sort,  $join_tables, 'IsFieldSupported', $type);
 
-    $SQL = ( ($type=='unasigned') ?
-           'SELECT  DISTINCT links_links.id  FROM links_links
-              LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id ' :
-           'SELECT  DISTINCT links_links.id  FROM links_categories, links_link_cat, links_links ');
+    switch ($type) {
+    case 'unasigned':
+    case 'unasigned3':  $SQL = 'SELECT DISTINCT links_links.id  FROM links_links LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id ';
+                        break;
+    default:            $SQL = 'SELECT DISTINCT links_links.id  FROM links_categories, links_link_cat, links_links ';
+    }
 
     if ( $type == 'changed' ) {
         $join_tables['changes'] = true;
@@ -91,7 +93,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
         $SQL .= ' LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id ';
 
 
-    if ( $type != 'unasigned' ) {
+    if ( substr($type,0,9) != 'unasigned' ) {
         $SQL .= '  WHERE links_links.id = links_link_cat.what_id
                      AND links_link_cat.category_id = links_categories.id ';
 
@@ -100,32 +102,34 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
     }
 
     switch ($type) {
-        case 'all':       $SQL .= " AND (links_link_cat.proposal = 'n') ";
-                          break;
-        case 'new':       $SQL .= ' AND (links_link_cat.proposal = \'y\')
-                                    AND (links_link_cat.base = \'y\')
-                                    AND (links_links.folder < 2) ';
-                          break;
-        case 'changed':   $SQL .= ' AND (   (     ((links_link_cat.proposal = \'y\')
-                                                OR (links_link_cat.proposal_delete = \'y\'))
-                                              AND (links_link_cat.state <> \'hidden\')
-                                              AND (links_link_cat.base = \'n\'))
-                                          OR
-                                            (     (links_changes.rejected <>\'y\')
-                                              AND (links_link_cat.base = \'y\')
-                                              AND (links_link_cat.proposal = \'n\')))
-                                    AND (links_links.folder < 2) ';
-                          break;
-        case 'unasigned': $SQL .= ' WHERE (links_link_cat.category_id IS NULL)';
-                          break;
-        case 'app':       $SQL .= " AND (links_link_cat.proposal = 'n') ";
-        default:          $folder = Links_GetFolder($type);
-                          // folder string (like folder3) contains folder number
+        case 'all':        $SQL .= " AND (links_link_cat.proposal = 'n') ";
+                           break;
+        case 'new':        $SQL .= ' AND (links_link_cat.proposal = \'y\')
+                                     AND (links_link_cat.base = \'y\')
+                                     AND (links_links.folder < 2) ';
+                           break;
+        case 'changed':    $SQL .= ' AND (   (     ((links_link_cat.proposal = \'y\')
+                                                 OR (links_link_cat.proposal_delete = \'y\'))
+                                               AND (links_link_cat.state <> \'hidden\')
+                                               AND (links_link_cat.base = \'n\'))
+                                           OR
+                                             (     (links_changes.rejected <>\'y\')
+                                               AND (links_link_cat.base = \'y\')
+                                               AND (links_link_cat.proposal = \'n\')))
+                                     AND (links_links.folder < 2) ';
+                           break;
+        case 'unasigned':  $SQL .= ' WHERE (links_link_cat.category_id IS NULL) AND (links_links.folder<3)';
+                           break;
+        case 'unasigned3': $SQL .= ' WHERE (links_link_cat.category_id IS NULL) AND (links_links.folder=3)';
+                           break;
+        case 'app':        $SQL .= " AND (links_link_cat.proposal = 'n') ";
+        default:           $folder = Links_GetFolder($type);
+                           // folder string (like folder3) contains folder number
 
-                          // $SQL .= " AND (links_link_cat.proposal = 'n') ";
-                          $SQL .= ($folder ?
-                                      " AND (links_links.folder = $folder) " :
-                                      " AND (links_links.folder < 2) " );
+                           // $SQL .= " AND (links_link_cat.proposal = 'n') ";
+                           $SQL .= ($folder ?
+                                       " AND (links_links.folder = $folder) " :
+                                       " AND (links_links.folder < 2) " );
     }
     $SQL .=  $where_sql . $order_by_sql;
 
