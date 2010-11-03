@@ -173,7 +173,7 @@ class datectrl {
         }
         return $ret;
     }
-        
+
     /** getdayselect function
      * print select box for day
      * @return string
@@ -221,7 +221,7 @@ class datectrl {
         }
         return $ret;
     }
-        
+
     /** getyearselect function
      * print select box for year
      * @return string
@@ -229,11 +229,11 @@ class datectrl {
     function getyearselect() {
         return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">".$this->getYearOptions()."</select>";
     }
-    
+
     function isTimeDisplayed() {
         return $this->display_time;
     }
-    
+
     function getTimeString() {
         $t = explode( ":", $this->time );
         $time_string = '';
@@ -249,9 +249,9 @@ class datectrl {
             case 3: $time_string = sprintf("%d:%02d",$t[0], $t[1]);
                     break;
         }
-        return $time_string;        
+        return $time_string;
     }
-    
+
     /** gettimeselect function
      * print select box for time
      * @return string

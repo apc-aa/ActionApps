@@ -1,3 +1,51 @@
+11/03/10 - Polls module improved a bit - allows longer questions...
+(honzam)   Polls support AJAX submitting - see
+             http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
+         - new parameter <param> for polls {polls[:<pid>[:<param>]]}
+           which allows you to display the poll on the page with specific
+           parameters - jus like:
+             {polls:5ad0d95a490b383ac7d23650e7aa49ee:design_id=4326b8bf6b64b2a216147d896b3860b2&listlen=50&conds[0][operator]=>&conds[0][value]=1&conds[0][expiry_date]=1}
+         - new parameter <url> to {xid:[<info>:[<url>]]} allows to get {xid}
+           information from specified url (instead of current page) in SEO Site
+         - new possibility to use multiple needles when searching the string
+           using:
+             {ifin:<string>:<needle>:<text>[:<needle2>:<text2>:...][:<else>]}
+             {ifin:de,ru,cz,pl,en:en:English:cz:Czech:Unknown language}
+         - new possibility to use constant aliases and expressions in
+           {constant:...} expression
+             {constant:ekolist-category:{@category.......1:|}:<a href="http#://ekolist.cz/zpravodajstvi/zpravy?kategorie=_#VALUE##_">_#NAME###_</a>:|:, }
+         - new {order:<ids>:<expression>[:<sort-type>]} - sorts ids by the
+           expression:
+             {order:4785-4478-5789:_#YEAR_____#CATEGORY}
+             {order:4785-4478-5789:_#HEADLINE:string}
+           Usualy it is much better to use sorting by database - like you do
+           in {ids}, but sometimes it is necessary to sort concrete ids, so we
+           use this statement. You can sort numericaly (default), as string or
+           using current locale in both directions:
+             numeric | rnumeric | string | rstring | locale | rlocale
+         - new {fulltext:<item_id>} - displays fultext of the item as defined
+           in slice admin
+         - new {array:...} expression - used for storing and displying array
+           data. Used as:
+             {array:<id>:set:<index>:<value>} and {array:<id>:get:<index>}
+           <id> is any string used as array handler,
+           <index> could be numeric as well as textual
+         - new {header:<code>} - sends HTTP header. Now only {header:404}
+           (HTTP/1.0 404 Not Found) is implemented
+         - new possibility to use parameter "page" together with "from"
+           parameter in view.php3?set[]=..., which means from the item xy on the
+           page p
+         - new possibility to add attachments to e-mail sended by AA
+         - new button "Update & Edit" on "Slice Admin -> Fields -> Edit" page
+         - new "Set HTML/Plain-text flag" transformation on "Modify content..." page
+         - views are sorted from newest to oldest on "Views" admin page
+         - better info about found item on "AA" admin page
+         - item display speedup
+         - better handling of character encoding in e-mails
+         - better handling of unassigned links in Link module
+         - fixed serachbar in AA which sometimes shows bad operators
+         - fixed presets text field - displays empty selection on start
+         - fixed slice data export
 08/16/10 - IP Banning for discussion is able to block not only individual IP
 (honzam)   address, but also subnets - like 157.14.189 (subnets of x.x.x are
            supported only => not x.x) - see IP Banning slice
@@ -720,7 +768,7 @@
          - removed unused cookies_prefix option from polls module
          - added utf-8 support for czech language version of AA
          - better Costant Editing - the results after submition of the form are
-           taken frm the database, so it is 100% up to date
+           taken from the database, so it is 100% up to date
          - the Upload Directory is created for slice just during slice creation
            (there is no longer needed to create upload field and upload a file
            in order you can use Xinha (htmlarea) upload functionality)

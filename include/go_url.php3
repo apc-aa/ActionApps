@@ -115,7 +115,7 @@ function get_help_url($href, $anchor) {
  * @param $add_param
  * @param $usejs
  */
-function go_url($url, $add_param="", $usejs=false) {
+function go_url($url, $add_param="", $usejs=false, $code=302) {
     global $sess;
     if (is_object($sess)) {
         page_close();
@@ -131,8 +131,7 @@ function go_url($url, $add_param="", $usejs=false) {
         </script>
        ';
     } else {
-        header("HTTP/1.1 Status: 302 Moved Temporarily");
-        header("Location: $url");
+        header("Location: $url", true, $code);
     }
     exit;
 }

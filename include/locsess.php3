@@ -52,6 +52,7 @@ if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
 
 function __autoload ($class_name) {
     $PAIRS = array(
+        'AA_Array'         => 'include/table.class.php3',
         'ConvertCharset'   => 'include/convert_charset.class.php3',
         'AA_Slices'        => 'include/slice.class.php3',
         'AA_Items'         => 'include/item.php3',
@@ -172,7 +173,7 @@ class DB_AA extends DB_Sql {
         // $_POST['Err'], $_POST['ErrMsg'] and $_POST['Msg'] variables
         // --- Disabled -- AA_Http::go() for POST works in the way, that the
         // page content is grabbed into variable and printed on current page.
-        // It works pretty well, but if you link the external css on tahat page,
+        // It works pretty well, but if you link the external css on that page,
         // then it is not found, which is unexpected behavior. So, you can't use
         // the variables on that page. Honza, 2007-12-05
         if (defined('DB_ERROR_PAGE') AND ($this->Halt_On_Error == "yes")) {

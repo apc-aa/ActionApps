@@ -95,7 +95,9 @@ if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $apc_state    = $router->parse($uri);
 
     // count hit for current page
-    AA_Hitcounter::hit(new zids($router->xid(), 'l'));
+    if ($tmp_xid = $router->xid()) {
+        AA_Hitcounter::hit(new zids($tmp_xid, 'l'));
+    }
 }
 
 if ( $site_info['state_file'] ) {

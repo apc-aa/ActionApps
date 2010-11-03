@@ -769,6 +769,7 @@ function A2sql_update($table, $keyField, $aData) {
     // create the sql
     return " UPDATE $table SET $set WHERE $where";
 }
+
 /** IsUsernameFree function
  * @param $username
  */

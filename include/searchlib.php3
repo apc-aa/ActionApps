@@ -758,6 +758,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
     if ( $pos = strpos($operator,":") ) {  // not ==
         $func = substr($operator,0,$pos);
         $operator = substr($operator,$pos+1);
+        $querystring = trim($querystring, '"');
 
         switch( $func ) {
             case 'd': // english style datum (like '12/31/2001' or '10 September 2000')

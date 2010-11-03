@@ -631,6 +631,22 @@ class AA_Module {
     function getProperty($field) {
         return $this->load() ? $this->fields[$field] : false;
     }
+
+    /** getLang function
+     *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
+     */
+    function getLang()     {
+        $lang_file = $this->getProperty('lang_file');
+        $lang_file = substr($lang_file, 0, strpos($lang_file, '_'));
+        return isset($GLOBALS['LANGUAGE_NAMES'][$lang_file]) ? $lang_file : substr(DEFAULT_LANG_INCLUDE, 0, 2);
+    }
+
+    /** getCharset function
+     *  Returns character encoding for the slice ('windows-1250', ...)
+     */
+    function getCharset()     {
+        return $GLOBALS["LANGUAGE_CHARSETS"][$this->getLang()];   // like 'windows-1250'
+    }
 }
 
 ?>

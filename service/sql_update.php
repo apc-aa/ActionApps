@@ -30,6 +30,8 @@ http://www.apc.org/
 ini_set('display_errors', 'On');
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
+crash!
+
 
 /**
  * Handle with PHP magic quotes - quote the variables if quoting is set off

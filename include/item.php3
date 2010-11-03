@@ -1633,7 +1633,7 @@ class AA_Items {
      *  @param  zid     - an item id - zid object, unpacked or short id
      *  @param  renew   - regenerate the item form database
      */
-    function & getItem($zid, $crypted_additional_slice_pwd=null, $renew=false) {
+    function getItem($zid, $crypted_additional_slice_pwd=null, $renew=false) {
         if (empty($zid)) {
             return false;
         }

@@ -57,30 +57,23 @@ function AddslashesDeep($value) {
     return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
 }
 
-if (!get_magic_quotes_gpc()) {
-    // Overrides GPC variables
-    foreach ($_GET as $k => $v) {
-        $kk = AddslashesDeep($v);
-    }
-    foreach ($_POST as $k => $v) {
-        $kk = AddslashesDeep($v);
-    }
-    foreach ($_COOKIE as $k => $v) {
-        $kk = AddslashesDeep($v);
-    }
-}
-
-// global variables should be quoted (since old AA code rely on that fact),
-// however the new code should use $_POST and $_GET, which are NOT quoted
-
 function StripslashesDeep($value) {
     return is_array($value) ? array_map('StripslashesDeep', $value) : stripslashes($value);
 }
 
+// global variables should be quoted (since old AA code rely on that fact),
+// however the new code should use $_POST and $_GET, which are NOT quoted
 if ( get_magic_quotes_gpc() ) {
     $_POST    = StripslashesDeep($_POST);
     $_GET     = StripslashesDeep($_GET);
     $_COOKIE  = StripslashesDeep($_COOKIE);
+    $_REQUEST = StripslashesDeep($_REQUEST);
+}
+
+if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
+    foreach ($_REQUEST as $k => $v) {
+        $$k = AddslashesDeep($v);
+    }
 }
 
 if ($encap == "false") {   // used in itemedit for anonymous form
