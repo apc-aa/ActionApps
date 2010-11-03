@@ -293,8 +293,62 @@ class AA_Transformation_Value extends AA_Transformation {
     }
 }
 
+class AA_Transformation_Setflag extends AA_Transformation {
 
+    var $new_flag;
 
+    /** AA_Transformation_Value function
+     * @param $param
+     */
+    function AA_Transformation_Setflag($param) {
+        $this->new_flag    = $param['new_flag'];
+    }
+
+    /** name function
+     * @return message
+     */
+    function name() {
+        return _m("Set HTML/Plain-text flag");
+    }
+
+    /** description function
+     * @return message
+     */
+    function description() {
+        return _m("Changes the HTML or Plain-text flag for the field.");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $content4id (by link)
+     * @return array
+     */
+    function transform($field_id, &$content4id) {
+        $item = GetItemFromContent($content4id);
+        $flag = $this->getFlagFromForm($item->getFlag($field_id));
+        $ret  = $content4id->getAaValue($field_id);
+        $ret->setFlag($flag);
+        return $ret;
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
+    function htmlSetting($input_prefix, $params) {
+        $flag_options = array('h' => _m('HTML'),
+                              't' => _m('Plain text'));
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'h'));
+
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
 
 /** The result is single-value (not multivalue), which is created as result of
  *  normal AA expression using source item. You can use
