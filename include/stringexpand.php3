@@ -165,10 +165,13 @@ class AA_Stringexpand_Define extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // cache is used by expand function itself
 
-    function expand($name, $expression) {
+    function expand($name='', $expression='') {
+        if (!$name) {
+            return '';
+        }
         global $contentcache;
         $contentcache->set("define:$name", $expression);
-        return "";
+        return '';
     }
 }
 
@@ -925,10 +928,19 @@ function getConstantValue($group, $what, $field_name) {
         case "id" :
         case "level" :
         // get values from contentcache or use GetConstants function to get it from db
-            $val = $contentcache->get_result("GetConstants", array($group, "pri", $what));
+            $val = $contentcache->get_result("GetConstants", array($group, 'pri', $what));
             return $val[$field_name];
             break;
         default :
+            if (strlen($what)) {
+                $val = $contentcache->get_result("GetConstants", array($group, 'pri', 'short_id'));
+                $cid = $val[$field_name];
+                if ($cid) {
+                    $content = GetConstantContent(new zids($cid, 's'));
+                    $item = new AA_Item($content[$cid], GetAliases4Type('const'));
+                    return $item->subst_alias($what);
+                }
+            }
             return false;
             break;
     }
@@ -1101,6 +1113,7 @@ class AA_Stringexpand_Removeids extends AA_Stringexpand {
  *   {date:j.n.Y}                               displays 24.12.2008 on X-mas 2008
  *   {date:Y}                                   current year
  *   {date:m/d/Y:{math:{_#PUB_DATE}+(24*3600)}} day after publish date
+ *   {date}                                     current timestamp
  *
  *   @param $format      - format - the same as PHP date() function
  *   @param $timestamp   - timestamp of the date (if not specified, current time
@@ -1552,7 +1565,10 @@ class AA_Stringexpand_View extends AA_Stringexpand {
     /** expand function
      * @param $vid, $ids
      */
-    function expand($vid, $ids=null, $settings=null) {
+    function expand($vid=null, $ids=null, $settings=null) {
+        if (!$vid) {
+            return '';
+        }
         $view_param['vid'] = $vid;
         if (isset($ids)) {
             $zids = new zids();
@@ -1575,16 +1591,18 @@ class AA_Stringexpand_Polls extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $pid
      */
-    function expand($pid) {
+    function expand($pid, $params=null) {
         require_once AA_BASE_PATH."modules/polls/include/util.php3";
         require_once AA_BASE_PATH."modules/polls/include/stringexpand.php3";
         require_once AA_BASE_PATH."modules/polls/include/poll.class.php3";
 
-        $set       = AA_Poll::generateSet($pid);
-        $poll_zids = AA_Metabase::queryZids(array('table'=>'polls'), $set);
+        $request = array();
+        if ($params) {
+            parse_str($params, $request);
+        }
+        $request['pid']=$pid;
 
-        $poll      = AA_Polls::getPoll($poll_zids->id(0));
-        return $poll ? $poll->getOutput('beforevote') : '';
+        return AA_Poll::processPoll($request);
     }
 }
 
@@ -1676,8 +1694,19 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
      */
     function expand($ids_string, $content=null, $delim=null, $top=null, $bottom=null) {
 
+        $ids_string = trim(strtolower($ids_string));
+        $id_type    = guesstype($ids_string);
+
+        // for speedup - single items evaluate here
+        if ( $ids_string AND (($id_type == 's') OR ($id_type == 'l'))) {
+            $item = AA_Items::getItem(new zids($ids_string,$id_type));
+            if ($item) {
+                return $item->subst_alias($content);
+            }
+        }
+
         // sanity input
-        $ids_string = preg_replace('/[^0-9a-g()-]/', '', strtolower($ids_string));  // mention the g (used for generated subrtree cache)
+        $ids_string = preg_replace('/[^0-9a-g()-]/', '', $ids_string);  // mention the g (used for generated subrtree cache)
         $ids_string = str_replace('()', '', $ids_string);
 
         $tree_cache = new AA_Treecache($content, $delim, $top, $bottom);
@@ -1690,7 +1719,6 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
         return $tree_cache->get_concat($ids_string);
     }
 }
-
 
 /**
  * Display field/alias of given item(s) in tree
@@ -1902,10 +1930,43 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
             case 'count':
                 $ret = $count;
                 break;
+            case 'order':
+                switch ($parameter) {
+                    case 'rnumeric': arsort($results, SORT_NUMERIC);       break;
+                    case 'rstring':  arsort($results, SORT_STRING);        break;
+                    case 'rlocale':  arsort($results, SORT_LOCALE_STRING); break;
+                    case 'string':   asort($results, SORT_STRING);         break;
+                    case 'locale':   asort($results, SORT_LOCALE_STRING);  break;
+                    default:         asort($results, SORT_NUMERIC);        break;
+                }
+                $ret = join('-', array_keys($results));
+                break;
         }
         return $ret;
     }
 }
+
+
+/** returns fultext of the item as defined in slice admin
+ */
+class AA_Stringexpand_Fulltext extends AA_Stringexpand {
+
+    function expand($item_id) {
+        $id_type    = guesstype($item_id);
+
+        // for speedup - single items evaluate here
+        if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
+            $item = AA_Items::getItem(new zids($item_id,$id_type));
+            if ($item) {
+                $slice = AA_Slices::getSlice($item->getSliceID());
+                $text  = $slice->getProperty('fulltext_format_top'). $slice->getProperty('fulltext_format'). $slice->getProperty('fulltext_format_bottom');
+                return AA_Stringexpand::unalias($text, $slice->getProperty('fulltext_remove'), $item);
+            }
+        }
+        return '';
+    }
+}
+
 
 /** returns ids of items based on conds d-...
  *  {ids:<slice>:<conds>[:<sort>[:<delimiter>[:<restrict_ids>[:<limit>]]]]}
@@ -1932,6 +1993,30 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
         return join($zids->longids(), $delimiter ? $delimiter : '-');
     }
 }
+
+/** Sorts ids by the expression
+ *  {order:<ids>:<expression>[:<sort-type>]}
+ *  {order:4785-4478-5789:_#YEAR_____#CATEGORY}
+ *  {order:4785-4478-5789:_#HEADLINE:string}
+ *  Usualy it is much better to use sorting by database - like you do in {ids},
+ *  but sometimes it is necessary to sort concrete ids, so we use this
+ *  You can sort numericaly (default), as string or using current locale
+ *  in both directions: numeric | rnumeric | string | rstring | locale | rlocale
+ */
+class AA_Stringexpand_Order extends AA_Stringexpand_Nevercache {
+    // cached in AA_Stringexpand_Aggregate
+
+    /** expand function
+     * @param $ids    - dash separated item ids
+     * @param $expression - expression for ordering
+     * @param $type   - numeric | rnumeric | string | rstring | locale | rlocale
+     */
+    function expand($ids=null, $expression=null, $type=null) {
+        return AA_Stringexpand_Aggregate::expand('order', $ids, $expression, $type);
+    }
+}
+
+
 
 /** returns long ids of subitems items based on the relations between items
  *  {tree:<item_id>[:<relation_field>]}
@@ -2065,12 +2150,16 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand {
 /** @returns name (or other field) of the constant in $gropup_id with $value
  *  Example: {constant:AA Core Bins:1:name}
  *           {constant:biom__categories:{@category........:|}:name:|:, }  // for multiple constants
+ *           {constant:ekolist-category:{@category.......1:|}:<a href="http#://ekolist.cz/zpravodajstvi/zpravy?kategorie=_#VALUE##_">_#NAME###_</a>:|:, }  // you can use also constant aliases and expressions
  */
 class AA_Stringexpand_Constant extends AA_Stringexpand {
     /** expand function
      * @param $group_id         - constants ID
      * @param $value            - constant value (or values delimited by $value_delimiter)
      * @param $what             - name|value|short_id|description|pri|group|class|id|level
+     *                            or any AA expression using constant aliases
+     *                            _#NAME###_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_,
+     *                            _#COUNTER_, _#CONST_ID, _#SHORT_ID, _#DESCRIPT, _#LEVEL##_
      * @param $value_delimiter  - value delimiter - used just form translating multiple constants at once
      * @param $output_delimiter - resulting output delimiter - ', ' is default for multiple constants
      */
@@ -2081,7 +2170,10 @@ class AA_Stringexpand_Constant extends AA_Stringexpand {
         $arr = explode($value_delimiter, $value);
         $ret = array();
         foreach ($arr as $constant) {
-            $ret[] = getConstantValue($group_id, $what, $constant);
+            $val = getConstantValue($group_id, $what, $constant);
+            if ($val) {
+                $ret[] = $val;
+            }
         }
         return join($output_delimiter, $ret);
     }
@@ -2185,7 +2277,7 @@ class AA_Stringexpand_Ifeqfield extends AA_Stringexpand {
      */
     function expand($item_id, $field, $var, $text='', $else_text='') {
         $ret = $else_text;
-        $item = ($item_id=='current') ? $this->item : AA_Items::getItem(new zids($item_id));
+        $item = (!$item_id OR ($item_id=='current')) ? $this->item : AA_Items::getItem(new zids($item_id));
         if (!empty($item) AND $item->isField($field)) {
             $ret = in_array($var, $item->getValuesArray($field)) ? $text : $else_text;
         }
@@ -2194,8 +2286,10 @@ class AA_Stringexpand_Ifeqfield extends AA_Stringexpand {
 }
 
 /** If $haystack contain $needle text, then print $text, else print $else_text.
- *  $(else_)text could contain _#1 and _#2 aliases for $haystack and $needle
+ *  $(else_)text could contain _#1 for $haystack and _#2 for matched $needle
  *  Ussage:  {ifin:ActionApps CMS:CMS:yes:no}
+ *  Now you can use as many $needles as you want - only the first matched wins
+ *  Example: {Ifin:de,ru,cz,pl,en:en:English:cz:Czech:Unknown language}
  */
 class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
 
@@ -2205,9 +2299,26 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
      * @param $text
      * @param $else_text
      */
-    function expand($haystack, $needle, $text='', $else_text='') {
-        $ret = (strpos($haystack, $needle) !== false) ? $text : $else_text;
-        return str_replace(array('_#1','_#2'), array($haystack, $needle), $ret);
+    function expand() {
+        $arg_list = func_get_args();   // must be asssigned to the variable
+        $haystack = array_shift($arg_list);
+        $ret      = false;
+        $i        = 0;
+        $matched  = '';
+        while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
+            if (strpos($haystack, $arg_list[$i]) !== false) {
+                $ret     = $arg_list[$i+1];
+                $matched = $arg_list[$i];
+                break;
+            }
+            $i += 2;
+        }
+        if ($ret === false) {
+            // else text
+            $ret = isset($arg_list[$i]) ? $arg_list[$i] : '';
+        }
+        // _#2 is not very usefull but we have it from the times the function was just for one option
+        return str_replace(array('_#1','_#2'), array($haystack, $matched), $ret);
     }
 }
 
@@ -2343,10 +2454,11 @@ class AA_Stringexpand_Site extends AA_Stringexpand {
      * @param $property
      */
     function expand($site_id, $property='') {
+        $arr = '';
         if ($property == 'modules') {
-            return join('-' , GetTable2Array("SELECT destination_id FROM relation WHERE source_id='".q_pack_id($site_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id'));
+            $arr = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='".q_pack_id($site_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
         }
-        return '';
+        return is_array($arr) ? join('-' , $arr) : '';
     }
 }
 
@@ -2362,7 +2474,7 @@ class AA_Stringexpand_Slice extends AA_Stringexpand_Nevercache {
     /** additionalCacheParam function */
     function additionalCacheParam() {
         /** output is different for different slices - place item id into cache search */
-        return is_object($this->item) ? $item->getSliceID() : $GLOBALS['slice_id'];
+        return is_object($this->item) ? $this->item->getSliceID() : $GLOBALS['slice_id'];
     }
 
     /** expand function
@@ -2842,7 +2954,7 @@ class AA_Unalias_Callback {
                        *  Example: {-<a href="http://ecn.cz">ecn</a>}
                        *           {ifset:{_#ABSTRACT}:{-<div style="color:red">_#1</div>}}
                        */
-            case '-': return QuoteColons($level, 1, substr($out,1));
+            case '-': return QuoteColons(substr($out,1));
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
                       if ($out[1] == "#") {
                           if (isset($als[substr($out,2)])) {
@@ -3215,7 +3327,7 @@ class AA_Stringexpand {
         $quotecolons_partly = false;
         $callback = new AA_Unalias_Callback($item, $itemview);
         while (preg_match('/[{]([^{}]+)[}]/s',$text)) {
-            // well it is not exactly maxlevel - it just means, we need to unquote colons
+            // it just means, we need to unquote colons
             $quotecolons_partly = true;
             $text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback,'expand_bracketed'), $text);
         }
@@ -3229,7 +3341,7 @@ class AA_Stringexpand {
         }
 
         // return from unalias - change all back to ':'
-        if ( $dequote AND $quotecolons_partly ) { // maxlevel - just for speed optimalization
+        if ( $dequote AND $quotecolons_partly ) {
             return DeQuoteColons($text); // = DequoteColons
         }
 
@@ -3586,7 +3698,6 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Serverload extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
-    // The caching is made by AA_Stringexpand_Aggregate, which is enough
     /** expand function
      */
     function expand() {
@@ -3722,18 +3833,62 @@ class AA_Stringexpand_Table extends AA_Stringexpand {
     }
 }
 
+/** Array - experimental
+ */
+class AA_Stringexpand_Array extends AA_Stringexpand {
+
+    function expand($id, $cmd, $par1=null, $par2=null, $par3=null, $par4=null) {
+        static $arrays = array();
+        if (!isset($arrays[$id])) {
+            $arrays[$id] = new AA_Array($id);
+        }
+        $arr = $arrays[$id];
+        $ret   = '';
+
+        switch ($cmd) {
+        case 'set':
+            $arr->set($par1, $par2);
+            break;
+        case 'get':
+            $ret = $arr->get($par1);
+            break;
+        case 'getall':
+            // $expr with _#1, $delimiter, $sort (key|)
+            $ret = $arr->getAll(strlen($par1) ? $par1 : '_#1', $par2, $par3);
+            break;
+        case 'sum':
+//            $ret = $arr->sum($i, strlen($val) ? $val : '_#1');
+            break;
+        }
+
+        return $ret;
+    }
+}
+
 /** Go directly to another url
  *  use as:
  *    {redirect:http#://example.org/en/new-page}                 - mention the escaped colon in http
  *    {redirect:{ifset:{xid}::http#://example.org/en/new-page}}  - for conditional redirect
  */
 class AA_Stringexpand_Redirect extends AA_Stringexpand {
-    function expand($url=null) {
+    function expand($url='') {
         if (!empty($url)) {
-            go_url($url);
+            go_url($url, '', false, 301);  // 301 Moved Permanently
         }
         return '';
     }
 }
+
+/**
+ */
+class AA_Stringexpand_Header extends AA_Stringexpand {
+    function expand($code=null) {
+        if ($code==404) {
+            header("HTTP/1.0 404 Not Found");
+        }
+        return '';
+    }
+}
+
 
 ?>
