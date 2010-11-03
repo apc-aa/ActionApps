@@ -386,24 +386,29 @@ class AA_Router_Seo extends AA_Router {
      *           3) IDs path of current item - like 2587(2877(3004)) as used
      *              in {item...} syntax (good for breadcrumbs)
      *              (if param = "path")
+     *  @param $param specifies, which information you want to get (see above)
+     *  @param $url   if filled, returns the information about the specified
+     *                url instead of the current item
      */
-    function xid($param=null) {
+    function xid($param=null, $url=null) {
+
+        $apc = empty($url) ? $this->apc : self::parseApc($url);
 
         if (empty($param)) {
             // current item id
-            return $this->_xseo2id($this->apc['xseo']);
+            return $this->_xseo2id($apc['xseo']);
         }
         if (is_numeric($param)) {
             // item on specified level
-            return $this->_xseo2id($this->apc['xseo'.$param]);
+            return $this->_xseo2id($apc['xseo'.$param]);
         }
         if ($param == 'path') {
             // tree for breadcrumb - just like 7663(7434(7432))
             $i     = 1;
             $delim = '';
             $path  = '';
-            while (!empty($this->apc['xseo'.$i])) {
-                $path  .= $delim. $this->_xseo2id($this->apc['xseo'.$i]);
+            while (!empty($apc['xseo'.$i])) {
+                $path  .= $delim. $this->_xseo2id($apc['xseo'.$i]);
                 $delim  = '(';
                 $i++;
             }
@@ -417,8 +422,8 @@ class AA_Router_Seo extends AA_Router {
             $i     = 1;
             $delim = '';
             $list  = '';
-            while (!empty($this->apc['xseo'.$i])) {
-                $list  .= $delim. $this->_xseo2id($this->apc['xseo'.$i]);
+            while (!empty($apc['xseo'.$i])) {
+                $list  .= $delim. $this->_xseo2id($apc['xseo'.$i]);
                 $delim  = '-';
                 $i++;
             }
@@ -488,18 +493,21 @@ class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
  *               {item:{xid:path}: _#HEADLINE:: _#HEADLINK &gt;}
  *  {xid:list} - returns ids list from start to current item in the tree - like:
  *               2587-2877-3004
+ *  @param $param specifies, which information you want to get (see above)
+ *  @param $url   if filled, returns the information about the specified
+ *                url instead of the current item
  **/
 class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // Cached inside the router itself
     /** expand function */
-    function expand($param='') {
+    function expand($param='', $url='') {
         $router_class = $GLOBALS['apc_state']['router'];
         if (empty($router_class)) {
             return '<div class="aa-error">Err in {xid} - router not found - {xid} is designed for site modules</div>';
         }
         $router = AA_Router::singleton($router_class);
-        return $router->xid($param);
+        return $router->xid($param, $url);
     }
 }
 
