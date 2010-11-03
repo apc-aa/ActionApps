@@ -124,7 +124,7 @@ echo '<form name="fvtype" method="post" action="'. $sess->url("./se_view.php3").
 FrmTabCaption(_m("Defined Views"));
 
 // -- get all views --
-$SQL = "SELECT * FROM view ORDER BY id";
+$SQL = "SELECT * FROM view ORDER BY id DESC";
 $db->query($SQL);
 $i   = 0;
 while ( $db->next_record() ) {
