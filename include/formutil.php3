@@ -409,7 +409,7 @@ class inputform {
 
         // field javascript feature - triggers (see /include/javascript.php3)
         $javascript = AA_Slices::getSliceProperty($slice_id, 'javascript');
-        
+
         if ($javascript) {
             $jscode .= $javascript;
         }
@@ -801,7 +801,7 @@ class AA_Inputfield {
         if ( !isset( $this->selected ) ) {  // not cached yet => create selected array
             if ( isset($this->value) AND is_array($this->value) ) {
                 foreach ( $this->value as $v ) {
-                    if ( $v['value'] ) {
+                    if ( strlen( (string)$v['value'] ) ) {
                         $this->selected[(string)$v['value']] = true;
                     }
                 }
@@ -1774,7 +1774,7 @@ class AA_Inputfield {
         $this->field_name('plus');
         $this->html_radio();
 
-        $this->echovar("<input type=\"Text\" name=\"$name\" size=$size maxlength=$maxsize value=\"$val\"".getTriggers("input",$name).">");
+        $this->echovar("<input type=\"Text\" name=\"$name\" size=\"$size\" maxlength=\"$maxsize\" value=\"$val\"".getTriggers("input",$name).">");
         $out = "<select name=\"foo_$name\"";
         if ($secondfield) {
             $out .= " onchange=\"$name.value=this.options[this.selectedIndex].text;";
@@ -1784,7 +1784,7 @@ class AA_Inputfield {
                      " onchange=\"add_to_line($name, this.options[this.selectedIndex].value)\">" :
                      " onchange=\"$name.value=this.options[this.selectedIndex].value\">");
         }
-        $out .= $this->get_options( $this->const_arr, $usevalue, $secondfield);
+        $out .= $this->get_options( $this->const_arr, $usevalue, $secondfield, 'all', true); // add empty option
         $out .= '</select>';
         $this->echovar( $out, 'presets' );
         $this->helps('plus');
@@ -2280,7 +2280,7 @@ function FrmInputMultiChBox($name, $txt, $arr, $selected="", $needed=false, $hlp
  * @param $hlp
  * @param $morehlp
  */
-function FrmInputFile($name, $txt, $needed=false, $accepts="image/*", $hlp="", $morehlp="" ) {
+function FrmInputFile($name, $txt, $val, $needed=false, $accepts="image/*", $hlp="", $morehlp="" ) {
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     $input->inputFile($accepts);
     $input->print_result();
