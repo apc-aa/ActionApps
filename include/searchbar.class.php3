@@ -489,6 +489,7 @@ class AA_Searchbar extends AA_Storable {
         }
         // we do not know the field id for admin_search profile so we have to use *
         $as = $profile->get('admin_search','*');
+        
         if ( is_array($as) ) {
             foreach ($as as $key => $val) {
                 $fld = $key;
@@ -498,7 +499,7 @@ class AA_Searchbar extends AA_Storable {
             }
         }
         if ( $fld ) {
-            $this->addSearch( array( 0=>array( $fld => 1, 'value'=>$search_str[0], 'operator'=>'RLIKE', 'readonly' => 1)),1);
+            $this->addSearch( array( 0=>array( $fld => 1, 'value'=>$search_str, 'operator'=>'RLIKE', 'readonly' => 1)),1);
         }
     }
 
@@ -558,11 +559,11 @@ class AA_Searchbar extends AA_Storable {
             $searchimage = GetAAImage('px.gif', '-', 15, 15);
             $searchtext = _m('And');
         }
-
+        
         // filter
         echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>$searchtext</b></td>";
         if ($readonly) {
-            echo "<td class=\"tabtxteven\">".$this->search_fields[$fld]."</td>";
+            echo "<td class=\"tabtxteven\">".$this->fields[$fld]['name']."</td>";
             echo "<td class=\"tabtxteven\">";
             switch ($oper) {
                 case "LIKE":  echo _m('contains');    break;
