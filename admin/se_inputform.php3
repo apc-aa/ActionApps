@@ -47,7 +47,11 @@ function EditConstantURL() {
     }
 }
 
-$back_admin_url = $sess->url(self_base(). "./se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1': ''));
+if ($upd_edit) {
+    $back_admin_url = $sess->url(self_base(). "./se_inputform.php3?fid=$fid");
+} else {
+    $back_admin_url = $sess->url(self_base(). "./se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1': ''));
+}
 
 if ($cancel) {
     go_url($back_admin_url);
@@ -325,10 +329,11 @@ PrintArray($err);
 echo $Msg;
 echo _m("<p>WARNING: Do not change this setting if you are not sure what you're doing!</p>");
 
-$form_buttons = array("update" => array("type"=>"hidden","value"=>"1"),
-                      "fid"    => array("type"=>"hidden", "value"=>$fid),
+$form_buttons = array("update"   => array("type"=>"hidden","value"=>"1"),
+                      "fid"      => array("type"=>"hidden", "value"=>$fid),
                       "update",
-                      "cancel" => array("url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':''))
+                      "upd_edit" => array("type"=>"submit", "value"=>_m("Update & Edit")),
+                      "cancel"   => array("url"=>"se_fields.php3" .(AA_Fields::isSliceField($fid) ? '?slice_fields=1':''))
                      );
 
 echo "
