@@ -448,14 +448,10 @@ class itemview {
    * @param $item
    */
   function unaliasWithScroller($txt, &$item) {
-      // get HTML code, unalias it and add scroller, if needed
-      $level = 0; $maxlevel = 0;
       // If no item is specified, then still try and expand aliases using parameters
       if (!$item) {
           $item = new AA_Item(null,$this->aliases,null,null,$this->parameters);
       }
-      // Unalias modifies also $txt - that's why we do not use
-      // &$txt in function definition
       return AA_Stringexpand::unalias($txt, '', $item, true, $this);
   }
 
@@ -585,11 +581,7 @@ class itemview {
         $this->setColumns($CurItem, $content[$iid]);   // set right content for aliases
 
         // print item
-        $CurItem->setformat( $this->slice_info['fulltext_format'],
-                             $this->slice_info['fulltext_remove']);
-        $out  = $this->unaliasWithScroller($this->slice_info['fulltext_format_top'], $CurItem);
-        $out .= $CurItem->get_item();
-        $out .= $this->unaliasWithScroller($this->slice_info['fulltext_format_bottom'], $CurItem);
+        $out = AA_Stringexpand::unalias($this->slice_info['fulltext_format_top'].$this->slice_info['fulltext_format'].$this->slice_info['fulltext_format_bottom'], $this->slice_info['fulltext_remove'], $CurItem);
         break;
 
       case "itemlist":          // multiple items as fulltext one after one
