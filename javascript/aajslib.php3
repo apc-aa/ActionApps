@@ -73,6 +73,16 @@ readfile($dir. 'prototip.js'     ); echo "\n";      // make sure there is new li
 readfile($dir. 'control.tabs.js' );
 ?>
 
+// switch current item in gallery
+function AA_GalleryGoto(photo_div, viewid, sitemid, galeryid, thumb_id) {
+    $(photo_div).show();
+    AA_Ajax(photo_div, AA_Config.AA_INSTAL_PATH + 'view.php3?vid=' + viewid + '&cmd[' + viewid + ']=x-' + viewid + '-' + sitemid + '&convertto=utf-8&als[GALERYID]=' + galeryid);
+    $$('div.switcher img.active').invoke('removeClassName', 'active');
+    if ($(thumb_id)) {
+        $(thumb_id).addClassName('active');
+        $(thumb_id).parentNode.scrollTop = $(thumb_id).offsetTop - $(thumb_id).parentNode.offsetTop - 50;
+    }
+}
 
 // now AA specific functions
 function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
@@ -195,6 +205,22 @@ function SendAjaxForm(id, refresh) {
                    }});
 }
 
+/** Sends the form and replaces the form with the response
+ *  Polls ussage - @see: http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
+ */
+function AA_AjaxSendForm(form_id, url) {
+    var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
+    var code       = Form.serialize(filler_url);
+    $(form_id).insert(AA_Config.loader);
+
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + form_url, {
+        parameters: code,
+        onSuccess: function(transport) {
+            $(form_id).update(transport.responseText);
+        }
+    });
+}
+
 function AA_Refresh(id) {
     $(id).update(AA_Config.loader);
     new Ajax.Request($(id).readAttribute('data-aa-url'), {
@@ -253,7 +279,7 @@ function AA_SendWidgetAjax(id) {
             var items = transport.responseText.evalJSON(true);  // maybe we can remove "true"
             var res;
 
-            for (var i in items) { 
+            for (var i in items) {
                 res = items[i];
                 $(valdivid).update(res.length>0 ? res : '--');
                 break;
@@ -452,7 +478,7 @@ function displayInput(valdivid, item_id, fid) {
        case '2': $(valdivid).setAttribute("aaedit", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
                  return;
     }
-   
+
     // store current content
     $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
 

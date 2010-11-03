@@ -59,26 +59,26 @@ class AA_Stringexpand_Poll extends AA_Stringexpand {
 
 /** Expands {poll_share[:<max>]} number representing current share of the votes
  *  for the answer. By default in scale of 0-100, so it could be used as percent
- *  value. You can specify the max parameter, so the values could be from 0 to "" 
- *  $max which could be used as image width, ... 
- *  @param $max  
+ *  value. You can specify the max parameter, so the values could be from 0 to ""
+ *  $max which could be used as image width, ...
+ *  @param $max
  */
-class AA_Stringexpand_Poll_Share extends AA_Stringexpand {
+class AA_Stringexpand_Poll_Share extends AA_Stringexpand_Nevercache {
 
     /** expand function
-     * @param $max - maximum the votes for the answer could reach, default is 100 
+     * @param $max - maximum the votes for the answer could reach, default is 100
      */
     function expand($max='') {
         $poll     = AA_Polls::getPoll($this->item->getVal('poll_id'));
         $sum      = $poll->getVotesSum();
         $quotient = $max ? $max : 100;
-        
+
         return $sum==0 ? 0 : round(($this->item->getVal('votes')/$sum) * $quotient);
     }
 }
 
 /** Expands {poll_sum} with number of all votes in this poll */
-class AA_Stringexpand_Poll_Sum extends AA_Stringexpand {
+class AA_Stringexpand_Poll_Sum extends AA_Stringexpand_Nevercache {
 
     /** expand function - number of all votes in this poll */
     function expand() {

@@ -229,9 +229,21 @@ class AA_Poll {
         // (and not from the Polls Manager page) - it has status_code=0,
         // so it is filtered out automaticaly
 
+        $ignore_expirydate = false;
+        if (is_array($conds)) {
+            foreach ($conds as $cond) {
+                if (isset($cond['expiry_date'])) {
+                    $ignore_expirydate = true;
+                    break;
+                }
+            }
+        }
+
         $now = now();
         $set->addCondition(new AA_Condition('status_code', '=', '1'));
-        $set->addCondition(new AA_Condition('expiry_date', '>=', $now));
+        if (!$ignore_expirydate) {
+            $set->addCondition(new AA_Condition('expiry_date', '>=', $now));
+        }
         $set->addCondition(new AA_Condition('publish_date', '<=', $now));
 
         if ($conds) {
@@ -246,6 +258,48 @@ class AA_Poll {
         }
         return $set;
     }
+
+    /** static class function - called like: echo AA_Poll::processPoll($_REQUEST)
+     *  It process all the options/vodes and displays the result for the poll
+     */
+    function processPoll($request) {
+
+        if (isset($request['vote_id']) AND isset($request['poll_id']) AND !isset($request['novote'])) {
+            $poll = AA_Polls::getPoll($request['poll_id']);
+            $poll->registerVote($request['vote_id']);
+        }
+
+        if ($request['poll_id']) {
+            // we want to display specified poll, or we just voted
+            $poll_zids = new zids($request['poll_id']);
+        } else {
+            $set       = AA_Poll::generateSet($request['pid'],$request['conds'],$request['sort']);
+            $poll_zids = AA_Metabase::queryZids(array('table'=>'polls'), $set);
+            $from      = $request['from'] ? $request['from']-1 : 0;
+            $listlen   = get_if($request['listlen'], 1);
+            $poll_zids = $poll_zids->slice($from, $listlen);
+        }
+
+
+        // and now display the polls
+        $zid_count = $poll_zids->count();
+
+        $ret = '';
+        for ( $i=0; $i < $zid_count; $i++ ) {
+            $poll   = AA_Polls::getPoll($poll_zids->id($i));
+            $design = $request['design_id'] ? $request['design_id'] : ($request['vote_id'] ? 'aftervote' : 'beforevote');
+            $ret   .= $poll->getOutput($design);
+        }
+
+        if ($request['convertto'] OR $request['convertfrom'] ) {
+            require_once AA_INC_PATH."convert_charset.class.php3";
+            $encoder = ConvertCharset::singleton();
+            $ret     = $encoder->Convert($ret, $request['convertfrom'], $request['convertto']);
+        }
+
+        return $ret;
+    }
+
 }
 
 class AA_Polls {

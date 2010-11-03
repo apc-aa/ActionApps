@@ -79,32 +79,7 @@ if (empty($_REQUEST['lock'])) {
 $encap = ( ($encap=="false") ? false : true );
 require_once AA_INC_PATH."locsess.php3";
 
-$db = new DB_AA;
-
-if (isset($_REQUEST['vote_id']) AND isset($_REQUEST['poll_id']) AND !isset($_REQUEST['novote'])) {
-    $poll = AA_Polls::getPoll($_REQUEST['poll_id']);
-    $poll->registerVote($_REQUEST['vote_id']);
-}
-
-if ($_REQUEST['poll_id']) {
-    // we want to display specified poll, or we just voted
-    $poll_zids = new zids($_REQUEST['poll_id']);
-} else {
-    $set       = AA_Poll::generateSet($_REQUEST['pid'],$_REQUEST['conds'],$_REQUEST['sort']);
-    $poll_zids = AA_Metabase::queryZids(array('table'=>'polls'), $set);
-    $from      = $_REQUEST['from'] ? $_REQUEST['from']-1 : 0;
-    $listlen   = get_if($_REQUEST['listlen'], 1);
-    $poll_zids = $poll_zids->slice($from, $listlen);
-}
-
-// and now display the polls
-$zid_count = $poll_zids->count();
-
-for ( $i=0; $i < $zid_count; $i++ ) {
-    $poll   = AA_Polls::getPoll($poll_zids->id($i));
-    $design = $_REQUEST['design_id'] ? $_REQUEST['design_id'] : ($_REQUEST['vote_id'] ? 'aftervote' : 'beforevote');
-    $poll->display($design);
-}
+echo AA_Poll::processPoll($_REQUEST);
 
 exit;
 ?>

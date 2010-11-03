@@ -170,7 +170,10 @@ FrmTabCaption(_m("Insert question and answers"), '','', $form_buttons, $sess, $m
 
 $where = $poll_id ? "id='$poll_id'" : "module_id = '$p_module_id' AND status_code = 0";
 $SQL  = "SELECT design_id, aftervote_design_id, params, set_cookies, ip_lock_timeout, locked, ip_locking, logging, expiry_date, publish_date, headline FROM polls WHERE $where";
-list($design_id, $aftervote_design_id, $params, $set_cookies, $ip_lock_timeout, $locked, $ip_locking, $logging, $expiry_date, $publish_date, $headline) = GetTable2Array($SQL, 'aa_first');
+$poll_fields = GetTable2Array($SQL, 'aa_first');
+if (is_array($poll_fields)) {
+    extract($poll_fields);
+}
 
 if ($poll_id) {
 
@@ -183,14 +186,14 @@ if ($poll_id) {
         }
     }
 
-    FrmInputText("headline",      _m("Headline"),                                  $headline, 99, 40, true,  _m("Question"));
+    FrmInputText("headline",      _m("Headline"),                                  $headline, 255, 40, true,  _m("Question"));
     FrmInputMultiText('answers[]',_m("Insert new answers and choose their order"), $polltext,  "", 10, true, "", "", 'MDAC');
     FrmDate('publish_date',       _m('Publish Date'),                              $publish_date, true, "", "", true);
     FrmDate('expiry_date',        _m('Expiry Date'),                               $expiry_date,   true, "", "", true);
 
 } else {
 
-    FrmInputText("headline",       _m("Headline"),                                  "", 99, 40, true,  _m("Question"));
+    FrmInputText("headline",       _m("Headline"),                                  "", 255, 40, true,  _m("Question"));
     FrmInputMultiText('answers[]', _m("Insert new answers and choose their order"), array(), "", 10, true, "", "", 'MDAC');
     FrmDate('publish_date',        _m('Publish Date'),                              now(), true, "", "", true);
     FrmDate('expiry_date',         _m('Expiry Date'),                               now()+604800, true, "", "", true);   // 604800 - 60*60*24*7 - week
