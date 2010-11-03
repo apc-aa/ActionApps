@@ -48,8 +48,7 @@ class AA_Mail extends htmlMimeMail {
     function setFromTemplate($mail_id, $item=null) {
         global  $LANGUAGE_CHARSETS;
         // email has the templates in it
-        $record = GetTable2Array("SELECT subject, body, header_from, reply_to, errors_to, sender, lang, html
-                                  FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
+        $record = GetTable2Array("SELECT * FROM email WHERE id = $mail_id", 'aa_first', 'aa_fields');
         if (!$record) {
             return false;
         }
@@ -66,8 +65,15 @@ class AA_Mail extends htmlMimeMail {
         $this->setBasicHeaders($record, "");
         $this->setCharset($LANGUAGE_CHARSETS[$record["lang"]]);
 
-        //$attachment = $this->getFile('http://aa.ecn.cz/img_upload/a0ca2a9887a8b74691a5b41a4453ac85/PP2_novinky_9.pdf');
-        //$this->addAttachment($attachment, 'PP2_novinky_9.pdf', 'application/pdf');
+        if ($record['attachments']) {
+            $attachs = ParamExplode($record['attachments']);
+            foreach ($attachs as $attachment) {
+                if ($attachment) {
+                    $att_data = $this->getFile($attachment);
+                }
+                $this->addAttachment($att_data, basename(parse_url($attachment, PHP_URL_PATH)));
+            }
+        }
     }
 
     /** sendLater function
@@ -207,8 +213,8 @@ function html2text($html) {
     }
 
     // Strip diacritics
-    $html = strtr( $html, "áäèïéìíåòóöø¹»úùüı¾ÁÄÈÏÉÌÍÅÒÓÖØ©«ÚÙÜİ®",
-                          "aacdeeilnoorstuuuyzAACDEEILNOORSTUUUYZ");
+    // $html = strtr( $html, "áäèïéìíåòóöø¹»úùüı¾ÁÄÈÏÉÌÍÅÒÓÖØ©«ÚÙÜİ®",
+    //                       "aacdeeilnoorstuuuyzAACDEEILNOORSTUUUYZ");
 
     // Replace URL references <a href="http://xy">Link</a> => Link {http://xy}
     /* We can't directly use preg_replace, because it would find the first <a href

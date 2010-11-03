@@ -47,6 +47,8 @@ $items     = $chb;
 $credentials = AA_Credentials::singleton();
 $credentials->loadFromSlice($slice_id);
 
+$slice       = AA_Slices::getSlice($slice_id);
+
 if ( !$send ) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
     unset($r_wm_state);       // clear if it was filled
@@ -71,13 +73,31 @@ if ( !$send ) {               // for the first time - directly from item manager
             ValidateInput("lang",        _m("Language (charset)"), $lang,        $err, false, "text");
             ValidateInput("html",        _m("Use HTML"),           $html,        $err, false, "number");
 
+            foreach (array('attachment1', 'attachment2', 'attachment3') as $attach) {
+                $uploadvar = $attach.'x';
+                if ( $_FILES[$uploadvar]['name'] != '' ) {
+                    $dest_file = Files::uploadFile($uploadvar, Files::destinationDir($slice));
+
+                    if ($dest_file === false) {   // error
+                        $err[] = Files::lastErrMsg();
+                    } else {
+                        $$attach = $dest_file;
+                    }
+                }
+                if ($$attach) {
+                    $attachs[] = $$attach;
+                }
+            }
+
+            $attachments = ParamImplode($attachs);
+
             if ( count($err) > 1) {
                 break;
             }
 
             $varset->addglobals( array('description', 'subject', 'body',
                                        'header_from', 'reply_to', 'errors_to', 'sender',
-                                       'lang', 'owner_module_id', 'type'),
+                                       'lang', 'owner_module_id', 'type', 'attachments'),
                                  'quoted');
             $varset->add('html', 'number', $html);
 
@@ -138,12 +158,10 @@ echo '
 </head>
 <body>
   <h1>'. _m("Bulk Email Wizard") .'</h1>
-  <form name="mailform" method="post">';
+  <form name="mailform" method="post" enctype="multipart/form-data">';
 
 PrintArray($err);
 echo $Msg;
-
-$slice = AA_Slices::getSlice($slice_id);
 
 FrmTabCaption( (is_array($items) ? _m("Recipients") : ( _m("Stored searches for ").$slice->name()) ));
 
@@ -164,9 +182,9 @@ FrmInputText(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   25
 FrmInputText(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80, false);
 FrmInputSelect('lang',        _m('Language (charset)'), GetEmailLangs(),            $_POST['lang'], true);
 FrmInputSelect('html',        _m('Use HTML'),           array(_m('no'), _m('yes')), $_POST['html'], true);
-//FrmInputFile('attachment1',       _m('Attachement 1'), false, "*/*");
-//FrmInputFile('attachment2',       _m('Attachement 2'), false, "*/*");
-//FrmInputFile('attachment3',       _m('Attachement 3'), false, "*/*");
+FrmInputFile('attachment1',   _m('Attachement 1'), $attachment1, false, "*/*");
+FrmInputFile('attachment2',   _m('Attachement 2'), $attachment2, false, "*/*");
+FrmInputFile('attachment3',   _m('Attachement 3'), $attachment3, false, "*/*");
 
 
 FrmTabEnd(array( 'send' =>array('type'=>'submit', 'value'=>_m('Send')),
