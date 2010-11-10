@@ -321,13 +321,7 @@ class AA_Set extends AA_Object {
                 $this->addSortFromString($sort);
             }
         }
-        if ( !is_null($slices) ) {
-            if (is_array($slices)) {
-                $this->slices = $slices;
-            } elseif (is_string($slices)) {
-                $this->slices = array($slices);
-            }
-        }
+        $this->setModules($slices);
         $this->bins = $bins;
     }
 
@@ -355,6 +349,19 @@ class AA_Set extends AA_Object {
      */
     function setBins($bins) {
         $this->bins = $bins;
+    }
+
+    /** set the bins - like Holding Bin, Approved, Trash, ...
+     *  @param $bins bitfield
+     */
+    function setModules($slices) {
+        if (is_array($slices)) {
+            $this->slices = $slices;
+        } elseif (is_string($slices)) {
+            $this->slices = array($slices);
+        } else {
+            $this->slices = array();
+        }
     }
 
     /** addCondition function

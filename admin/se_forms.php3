@@ -45,6 +45,8 @@ if (!IfSlPerm(PS_FORMS)) {
     exit;
 }
 
+$module_id = $slice_id;
+
 //$actions   = new AA_Manageractions;
 //$actions->addAction(new AA_Manageraction_Taskmanager_Execute('ExecuteTaskAction'));
 //$actions->addAction(new AA_Manageraction_Taskmanager_Delete('DeleteTaskAction'));
@@ -72,8 +74,9 @@ $manager = new AA_Manager('form'.$module_id, $manager_settings);
 $manager->performActions();
 
 $aa_set = $manager->getSet();
-//$aa_set->addCondition(new AA_Condition('execute_after', '=', TOEXECUTE_USER_TASK_TIME));
+$aa_set->setModules($module_id);
 //$aa_set->addCondition(new AA_Condition('aa_user',       '=', $auth->auth['uid']));
+
 $zids  = AA_Object::querySet('AA_Form', $aa_set);
 
 require_once AA_INC_PATH."menu.php3";

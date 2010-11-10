@@ -148,7 +148,7 @@ function get_aamenus() {
         "compact"       => array("cond"=>IfSlPerm(PS_COMPACT),  "href"=>"admin/se_compact.php3",               "label"=>_m("Index")),
         "fulltext"      => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_fulltext.php3",              "label"=>_m("Fulltext")),
         "views"         => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_views.php3",                 "label"=>_m("Views")),
-        "form"          => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_forms.php3",                 "label"=>_m("Forms")),
+        "forms"         => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_forms.php3",                 "label"=>_m("Forms")),
         "config"        => array("cond"=>IfSlPerm(PS_CONFIG),   "href"=>"admin/se_admin.php3",                 "label"=>_m("Item Manager")),
         "sets"          => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/se_sets.php3",                  "label"=>_m("Sets of Items")),
 

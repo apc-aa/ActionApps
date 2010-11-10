@@ -33,6 +33,7 @@
          - sortorder of ids is preserved when passed as restrict_ids
            (works also with grouping in views)
          - AA displays user names better in AA admin interface
+         - fixed Slice Admin -> Forms setting
          - fixed preselect widget - empty string is default
          - helper atributes we use for temporary data staroing in HTML
            (like aaalias) rewritten to HTML5 standard data-xy attributes
