@@ -26,6 +26,118 @@
 */
 
 
+/** Collection of static functions used for aa[..][..] form variables handling */
+class AA_Form_Array {
+    /** ID of the field input - used for name atribute of input tag (or so)
+    *   Format is:
+    *       aa[u<long_item_id>][modified_field_id][]
+    *   Note:
+    *      first brackets contain
+    *          'u'+long_item_id when item is edited or
+    *          'n<number>_long_slice_id' if you want to add the item to slice_id
+    *                                    <number> is used to add more than one
+    *                                    item at the time
+    *      modified_field_id is field_id, where all dots are replaced by '_'
+    *      we always add [] at the end, so it becames array at the end
+    *   Example:
+    *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
+    *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
+    *   Format is:
+    *       aa[u<long_item_id>][modified_field_id][]
+    *   Note:
+    *      first brackets contain
+    *          'u'+long_item_id when item is edited (the field is rewriten, rest
+    *                           of item is untouched)
+    *          'i'+long_item_id when item is edited (the value is added to current
+    *                           value of the field, rest of item is untouched)
+    *          'n<number>_long_slice_id' if you want to add the item to slice_id
+    *                                    <number> is used to add more than one
+    *                                    item at the time
+    *      modified_field_id is field_id, where all dots are replaced by '_'
+    *      we always add [] at the end, so it becames array at the end
+    *   Example:
+    *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
+    *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
+    *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
+    */
+    static public function getName4Form($property_id, $content) {
+        $form_field_id = self::getVarFromFieldId($property_id);
+
+        $oid = $content->getId();
+        if ( $oid ) {
+            return "aa[u$oid][$form_field_id]";
+        }
+
+        $oowner = $content->getOwnerId();
+        if ( !$oowner ) {
+            throw new Exception('No owner specifield for '. $form_field_id);
+        }
+        return "aa[n1_$oowner][$form_field_id]";
+    }
+
+    static public function formName2Id($name) {
+        return str_replace(array(']','['), array('','-'), $name);
+    }
+
+    /** Converts real field id into field id as used in the AA form, like:
+     *  post_date......1  ==>  post_date______1
+     */
+    static public function getVarFromFieldId($field_id) {
+        return str_replace('.','_', $field_id);
+    }
+
+    /** Converts field id as used in the AA form to real field id, like:
+     *  post_date______1  ==>  post_date......1
+     */
+    static public function getFieldIdFromVar($dirty_field_id) {
+        return str_replace('._', '..', str_replace('__', '..', $dirty_field_id));
+    }
+
+    /** returns array(item_id,field_id) from name of variable used on AA form */
+    static public function parseId4Form($input_name) {
+        // aa[u<item_id>][<field_id>][]
+        $parsed   = explode(']', $input_name);
+        $item_id  = substr($parsed[0],4);
+        $field_id = self::getFieldIdFromVar(substr($parsed[1],1));
+        return array($item_id,$field_id);
+    }
+
+    static public function getCharset($aa) {
+        $module_id = self::getOwner($aa);
+        if (!$module_id) {
+            return '';
+        }
+        $slice = AA_Slices::getSlice($module_id);
+        return $slice->getCharset();
+    }
+
+    static public function getOwner($aa) {
+        if (!is_array($aa)) {
+            return false;
+        }
+        foreach($aa as $key => $foo) {
+            if ($key[0] == 'n') return substr($key, strpos($key, '_')+1);
+        }
+
+        $item_id = false;
+        foreach($aa as $key => $foo) {
+            if (($key[0] == 'u') OR ($key[0] == 'i')) {
+                $item_id = substr($key, 1);
+                break;
+            }
+        }
+        if (!$item_id) {
+            return false;
+        }
+        $item = AA_Items::getItem(new zids($item_id, 'l'));
+        if (!$item) {
+            return false;
+        }
+        return $item->getSliceID();
+    }
+}
+
+
 // AA_Widget class should implement some interface (in php5), so it is possible
 // to use AA_Components factory, ... methods
 // used for easy ussage of factory, adding new user widgets, and selectbox
@@ -145,7 +257,7 @@ class AA_Widget extends AA_Components {
                 }
             }
             $format          = AA_Slices::isSliceProperty($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
-            $set              = new AA_Set($sid, String2Conds( $filter_conds ), String2Sort( $sort_by ), $bin_filter);
+            $set              = new AA_Set($sid, $filter_conds, $sort_by, $bin_filter);
             $this->_const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tag_prefix);
             return;
         }
@@ -280,94 +392,19 @@ class AA_Widget extends AA_Components {
         return $ret;
     }
 
-    /** ID of the field input - used for name atribute of input tag (or so)
-    *   Format is:
-    *       aa[u<long_item_id>][modified_field_id][]
-    *   Note:
-    *      first brackets contain
-    *          'u'+long_item_id when item is edited or
-    *          'n<number>_long_slice_id' if you want to add the item to slice_id
-    *                                    <number> is used to add more than one
-    *                                    item at the time
-    *      modified_field_id is field_id, where all dots are replaced by '_'
-    *      we always add [] at the end, so it becames array at the end
-    *   Example:
-    *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
-    *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
-    *   Format is:
-    *       aa[u<long_item_id>][modified_field_id][]
-    *   Note:
-    *      first brackets contain
-    *          'u'+long_item_id when item is edited (the field is rewriten, rest
-    *                           of item is untouched)
-    *          'i'+long_item_id when item is edited (the value is added to current
-    *                           value of the field, rest of item is untouched)
-    *          'n<number>_long_slice_id' if you want to add the item to slice_id
-    *                                    <number> is used to add more than one
-    *                                    item at the time
-    *      modified_field_id is field_id, where all dots are replaced by '_'
-    *      we always add [] at the end, so it becames array at the end
-    *   Example:
-    *       aa[u63556a45e4e67b654a3a986a548e8bc9][headline________][]
-    *       aa[i63556a45e4e67b654a3a986a548e8bc9][relation_______1][]
-    *       aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
-    */
-    static public function getName4Form($property_id, $content) {
-        $form_field_id = AA_Widget::getVarFromFieldId($property_id);
-
-        $oid = $content->getId();
-        if ( $oid ) {
-            return "aa[u$oid][$form_field_id]";
-        }
-
-        $oowner = $content->getOwnerId();
-        if ( !$oowner ) {
-            throw new Exception('No owner specifield for '. $form_field_id);
-        }
-        return "aa[n1_$oowner][$form_field_id]";
-    }
-
-    static public function formName2Id($name) {
-        return str_replace(array(']','['), array('','-'), $name);
-    }
-
-    /** Converts real field id into field id as used in the AA form, like:
-     *  post_date......1  ==>  post_date______1
-     */
-    static public function getVarFromFieldId($field_id) {
-        return str_replace('.','_', $field_id);
-    }
-
-    /** Converts field id as used in the AA form to real field id, like:
-     *  post_date______1  ==>  post_date......1
-     */
-    static public function getFieldIdFromVar($dirty_field_id) {
-        return str_replace('._', '..', str_replace('__', '..', $dirty_field_id));
-    }
-
-    /** returns array(item_id,field_id) from name of variable used on AA form */
-    static public function parseId4Form($input_name) {
-        // aa[u<item_id>][<field_id>][]
-        $parsed   = explode(']', $input_name);
-        $item_id  = substr($parsed[0],4);
-        $field_id = AA_Widget::getFieldIdFromVar(substr($parsed[1],1));
-        return array($item_id,$field_id);
-    }
-
-
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name   = AA_Widget::getName4Form($aa_property->getId(), $content);
-        $base_id     = AA_Widget::formName2Id($base_name);
+        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_id     = AA_Form_Array::formName2Id($base_name);
         $required    = $aa_property->isRequired();
         $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
         $widget      = '';
 
-        // property uses constants or widget have the array assigned
-        if ($this->getProperty('const') OR $this->getProperty('const_arr')) {
+        // property uses constants or widget have the array assigned (preselect is special - the constants here are not crucial)
+        if (($this->getProperty('const') OR $this->getProperty('const_arr')) AND (get_class($this) != 'AA_Widget_Pre')) {  // todo - make preselect with real preselecting (maybe using AJAX)
             // This widget uses constants - show selectbox!
             $input_name   = $base_name ."[]";
-            $input_id     = AA_Widget::formName2Id($input_name);
+            $input_id     = AA_Form_Array::formName2Id($input_name);
             $use_name     = $this->getProperty('use_name', false);
             $multiple     = $this->multiple() ? ' multiple' : '';
 
@@ -383,7 +420,7 @@ class AA_Widget extends AA_Components {
 
             for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
                 $input_name   = $base_name ."[$i]";
-                $input_id     = AA_Widget::formName2Id($input_name);
+                $input_id     = AA_Form_Array::formName2Id($input_name);
                 $input_value  = htmlspecialchars($value->getValue($i));
                 $widget      .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>";
                 $delim        = '<br />';
@@ -391,7 +428,7 @@ class AA_Widget extends AA_Components {
             // no input was printed, we need to print one
             if ( !$widget ) {
                 $input_name   = $base_name ."[0]";
-                $input_id     = AA_Widget::formName2Id($input_name);
+                $input_id     = AA_Form_Array::formName2Id($input_name);
                 $widget       = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";
             }
         }
@@ -411,7 +448,7 @@ class AA_Widget extends AA_Components {
 
     function _finalizeHtml($winfo, $aa_property) {
         $base_name   = $winfo['base_name'];
-        $base_id     = AA_Widget::formName2Id($base_name);
+        $base_id     = AA_Form_Array::formName2Id($base_name);
         $required    = $winfo['required'];
         $help        = $aa_property->getHelp();
 
@@ -436,7 +473,7 @@ class AA_Widget extends AA_Components {
     /* Creates all common ajax editing buttons to be used by different inputs */
     function _finalizeAjaxHtml($winfo) {
         $base_name    = $winfo['base_name'];
-        $base_id      = AA_Widget::formName2Id($base_name);
+        $base_id      = AA_Form_Array::formName2Id($base_name);
         $widget_html = $winfo['html'];
         $widget_html .= "\n<input class=\"save-button\" type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id')\">"; //ULOŽIT ZMÌNU
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
@@ -540,8 +577,8 @@ class AA_Widget_Txt extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name    = AA_Widget::getName4Form($aa_property->getId(), $content);
-        $base_id      = AA_Widget::formName2Id($base_name);
+        $base_name    = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_id      = AA_Form_Array::formName2Id($base_name);
         $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
         $widget      = '';
@@ -553,7 +590,7 @@ class AA_Widget_Txt extends AA_Widget {
         $count       = max($value->valuesCount(),1);
         for ( $i = 0; $i < $count; $i++ ) {
             $input_name   = $base_name ."[$i]";
-            $input_id     = AA_Widget::formName2Id($input_name);
+            $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
             $widget      .= "$delim\n<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$row_count\"$widget_add style=\"width:100%\">$input_value</textarea>";
             $delim        = '<br />';
@@ -878,8 +915,8 @@ class AA_Widget_Dte extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name     = AA_Widget::getName4Form($aa_property->getId(), $content);
-        $base_id       = AA_Widget::formName2Id($base_name);
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_id       = AA_Form_Array::formName2Id($base_name);
         $base_name_add = $base_name . '[dte]';
         $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
@@ -899,17 +936,17 @@ class AA_Widget_Dte extends AA_Widget {
         for ( $i = 0; $i < $count; $i++ ) {
             $datectrl->setdate_int($value->getValue($i));
             $input_name   = $base_name_add. "[d][$i]";
-            $input_id     = AA_Widget::formName2Id($input_name);
+            $input_id     = AA_Form_Array::formName2Id($input_name);
             $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getDayOptions()."</select>";
             $input_name   = $base_name_add. "[m][$i]";
-            $input_id     = AA_Widget::formName2Id($input_name);
+            $input_id     = AA_Form_Array::formName2Id($input_name);
             $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getMonthOptions()."</select>";
             $input_name   = $base_name_add. "[y][$i]";
-            $input_id     = AA_Widget::formName2Id($input_name);
+            $input_id     = AA_Form_Array::formName2Id($input_name);
             $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getYearOptions()."</select>";
             if ($datectrl->isTimeDisplayed()) {
                 $input_name   = $base_name_add. "[t][$i]";
-                $input_id     = AA_Widget::formName2Id($input_name);
+                $input_id     = AA_Form_Array::formName2Id($input_name);
                 $widget      .= "$delim\n<input type=\"text\" size=\"8\" maxlength=\"8\" value=\"". $datectrl->getTimeString(). "\"name=\"$input_name\" id=\"$input_id\"$widget_add>";
             }
             $delim        = '<br />';
@@ -974,8 +1011,8 @@ class AA_Widget_Chb extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name     = AA_Widget::getName4Form($aa_property->getId(), $content);
-        $base_id       = AA_Widget::formName2Id($base_name);
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_id       = AA_Form_Array::formName2Id($base_name);
         // we use extended version, because of ajax and live widget and the fact
         // the checbox do not send nothing if unslected (so we add [chb][def]
         // hidden field which is send all the time)
@@ -986,7 +1023,7 @@ class AA_Widget_Chb extends AA_Widget {
         $value         = $content->getAaValue($aa_property->getId());
         for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
             $input_name   = $base_name_add ."[$i]";
-            $input_id     = AA_Widget::formName2Id($input_name);
+            $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
             $widget      .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"". ($input_value ? " checked" : '')."$widget_add>";
             $delim        = '<br />';
@@ -996,12 +1033,12 @@ class AA_Widget_Chb extends AA_Widget {
             // do not put there [0] - we need to distinguish between single
             // checkbox and multiple checkboxes in AA_SendWidgetLive() function
             $input_name   = $base_name_add ."[]";
-            $input_id     = AA_Widget::formName2Id($input_name);
+            $input_id     = AA_Form_Array::formName2Id($input_name);
             $widget      .= "\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"$widget_add>";
         }
         // default value
         $input_name   = $base_name_add ."[def]";
-        $input_id     = AA_Widget::formName2Id($input_name);
+        $input_id     = AA_Form_Array::formName2Id($input_name);
         $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"0\">";
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
@@ -1112,8 +1149,8 @@ class AA_Widget_Mch extends AA_Widget {
      *  or normal decorations (added by _finalize*Html)
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
-        $base_name     = AA_Widget::getName4Form($aa_property->getId(), $content);
-        $base_id       = AA_Widget::formName2Id($base_name);
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_id       = AA_Form_Array::formName2Id($base_name);
         $base_name_add = $base_name . '[mch]';
         $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
         $ret           = '';
@@ -1124,7 +1161,7 @@ class AA_Widget_Mch extends AA_Widget {
         $htmlopt      = array();
         for ( $i=0 ; $i < count($options); $i++) {
             $input_name = $base_name_add ."[$i]";
-            $input_id   = AA_Widget::formName2Id($input_name);
+            $input_id   = AA_Form_Array::formName2Id($input_name);
             $htmlopt[]  = $this->getOneChBoxTag($options[$i], $input_name, $input_id, $widget_add);
         }
 
@@ -1132,7 +1169,7 @@ class AA_Widget_Mch extends AA_Widget {
 
         // default value - in order something is send when no chbox is checked
         $input_name   = $base_name_add ."[def]";
-        $input_id     = AA_Widget::formName2Id($input_name);
+        $input_id     = AA_Form_Array::formName2Id($input_name);
         $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"\">";
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
@@ -1320,7 +1357,7 @@ class AA_Widget_Fil extends AA_Widget {
             // the information about file is in array - array(name, type, tmp_name, error, size)
             $values[] = 'AA_UPLOAD:'. ParamImplode($uploads);
         }
-        elseif ($urls[$i]) {
+        elseif ($urls[0]) {
             for ($i=0 ; $i<$max; $i++) {
                 $values[] = $urls[$i];
             }
@@ -1329,6 +1366,52 @@ class AA_Widget_Fil extends AA_Widget {
     }
 
 
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name      = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_id        = AA_Form_Array::formName2Id($base_name);
+        $widget_add     = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+
+        $widget         = '';
+        $delim          = '';
+        $width          = $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
+        $max_characters = $this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
+        $value          = $content->getAaValue($aa_property->getId());
+
+        for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
+            $input_name   = $base_name ."[fil][url][$i]";
+            $input_id     = AA_Form_Array::formName2Id($input_name);
+            $input_value  = htmlspecialchars($value->getValue($i));
+            $widget      .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>";
+            $delim        = '<br />';
+        }
+        // no input was printed, we need to print one
+        if ( !$widget ) {
+            $input_name   = $base_name ."[fil][url][0]";
+            $input_id     = AA_Form_Array::formName2Id($input_name);
+            $widget       = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";
+        }
+        $input_name = $base_name ."[fil][var][0]";
+        $url_params = array('inline'      => 1,
+                            'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\''.$base_id.'\', \'AA_ITEM_JSON\')'
+                           );
+        $widget .= '
+            <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.get_aa_url('filler.php3', $url_params).'" target="iframe'.$base_id.'">
+            <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'">
+            <input type="hidden" name="ret_code_enc" id="ret_code_enc'.$base_id.'" value="">
+            <input type="submit" name="action" value="'._m('Upload').'">
+            </form>
+            <iframe id="iframe'.$base_id.'" name="iframe'.$base_id.'" src="" style="width:0;height:0;border:0px solid #fff;visibility:hidden;"></iframe>
+            <script language="JavaScript" type="text/javascript"> <!--
+              document.getElementById("ret_code_enc'.$base_id.'").value = document.getElementById("ajaxv_'.$base_id.'").getAttribute(\'data-aa-alias\');
+            //-->
+            </script>
+        ';
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
 }
 
 /** Related Item Window widget */
@@ -1521,8 +1604,8 @@ class AA_Widget_Hid extends AA_Widget {
 
     function getHtml($aa_property, $content) {
         $property_id  = $aa_property->getId();
-        $input_name   = AA_Widget::getName4Form($property_id, $content)."[0]";
-        $input_id     = AA_Widget::formName2Id($input_name);
+        $input_name   = AA_Form_Array::getName4Form($property_id, $content)."[0]";
+        $input_id     = AA_Form_Array::formName2Id($input_name);
         $input_value  = htmlspecialchars($content->getValue($property_id));
         return        "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">";
     }
