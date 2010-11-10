@@ -65,14 +65,16 @@ function email_notify($slice_id, $event, $item_id) {
         $item = AA_Items::getItem($item_id, $slice->getProperty('reading_password'));
 
         if ($item) {
-            $subject = $item->unalias($notify['s']);
-            $body    = $item->unalias($notify['b']);
-
-            $mail = new AA_Mail();
-            $mail->setSubject($subject);
-            $mail->setHtml($body, html2text($body));
-            $mail->setCharset($slice->getCharset());
-            $mail->send($emails);
+            $body = $item->unalias($notify['b']);
+            if (trim($body)) {
+                $subject = $item->unalias($notify['s']);
+    
+                $mail = new AA_Mail();
+                $mail->setSubject($subject);
+                $mail->setHtml($body, html2text($body));
+                $mail->setCharset($slice->getCharset());
+                $mail->send($emails);
+            }
         }
     }
 }

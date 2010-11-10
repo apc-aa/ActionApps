@@ -214,25 +214,27 @@ echo '<title> '. _m("Email Notifications of Events"). '</title></head>';
 <table width="440" border="0" cellspacing="0" cellpadding="4" bgcolor="<?php echo COLOR_TABBG ?>">
 */
 
+$help = _m('E-mail is sent only if body is not empty.<br>You can use this for selestive e-mails. For example: {ifset:{category........}:e-mail text}');
+
 echo "<tr><td colspan=\"2\">". _m("<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
   FrmTextArea("notify_holding_item_e", _m("Email addresses, one per line"), $notify_holding_item_e, 3, 40, false);
   FrmInputText("notify_holding_item_s", _m("Subject of the Email message"), $notify_holding_item_s, 99, 40, true);
-  FrmTextArea("notify_holding_item_b", _m("Body of the Email message"), $notify_holding_item_b, 3, 40, true);
+  FrmTextArea("notify_holding_item_b", _m("Body of the Email message"), $notify_holding_item_b, 3, 40, true, $help);
 
 echo "<tr><td colspan=\"2\">". _m("<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
 FrmTextArea("notify_holding_item_edit_e", _m("Email addresses, one per line"), $notify_holding_item_edit_e, 3, 40, false);
   FrmInputText("notify_holding_item_edit_s", _m("Subject of the Email message"), $notify_holding_item_edit_s, 99, 40, true);
-  FrmTextArea("notify_holding_item_edit_b", _m("Body of the Email message"), $notify_holding_item_edit_b, 3, 40, true);
+  FrmTextArea("notify_holding_item_edit_b", _m("Body of the Email message"), $notify_holding_item_edit_b, 3, 40, true, $help);
 
 echo "<tr><td colspan=\"2\">". _m("<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
   FrmTextArea("notify_active_item_e", _m("Email addresses, one per line"), $notify_active_item_e, 3, 40, false);
   FrmInputText("notify_active_item_s", _m("Subject of the Email message"), $notify_active_item_s, 99, 40, true);
-  FrmTextArea("notify_active_item_b", _m("Body of the Email message"), $notify_active_item_b, 3, 40, true);
+  FrmTextArea("notify_active_item_b", _m("Body of the Email message"), $notify_active_item_b, 3, 40, true, $help);
 
 echo "<tr><td colspan=\"2\">". _m("<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
 FrmTextArea("notify_active_item_edit_e", _m("Email addresses, one per line"), $notify_active_item_edit_e, 3, 40, false);
   FrmInputText("notify_active_item_edit_s", _m("Subject of the Email message"), $notify_active_item_edit_s, 99, 40, true);
-  FrmTextArea("notify_active_item_edit_b", _m("Body of the Email message"), $notify_active_item_edit_b, 3, 40, true);
+  FrmTextArea("notify_active_item_edit_b", _m("Body of the Email message"), $notify_active_item_edit_b, 3, 40, true, $help);
 
   FrmTabEnd($form_buttons, $sess, $slice_id);
 
