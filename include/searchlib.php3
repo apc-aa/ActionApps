@@ -291,7 +291,15 @@ class AA_Set extends AA_Object {
     /** AA_Set function
      * @param $slices array or one slice id, where to search
      * @param $conds  array or conds url string
-     * @param $sort   array or sort  url string
+     * @param $sort   array or sort  url string in various formats:
+     *           1)   sort = headline........-
+     *           2)   sort[0] = headline........-
+     *           3)   sort[0][headline........]=d
+     *           4)   sort[0][headline........]=d&sort[1][publish_date....]=a
+     *        or with group limits (limited number of items displayed in each group)
+     *           1)   sort = 5headline........-
+     *           2)   sort[0] = 5headline........-
+     *           3)   sort[0][headline........]=d&sort[0][limit]=5
      */
     function AA_Set($slices=null, $conds=null, $sort=null, $bins=AA_BIN_ACTIVE) {
         $this->clear();
@@ -517,7 +525,30 @@ class AA_Set extends AA_Object {
         }
     }
 
-    /** addSortFromString function
+    /** addSortFromString function accept various type of sort string:
+     *           1)   headline........-
+     *           2)   sort[0]=headline........-
+     *           3)   sort[0][headline........]=d
+     *           4)   sort[0][headline........]=d&sort[1][publish_date....]=a
+     *        or with group limits (limited number of items displayed in each group)
+     *           1)   5headline........-
+     *           2)   sort[0]=5headline........-
+     *           3)   sort[0][headline........]=d&sort[0][limit]=5
+     *
+     *  The "group limit" means that we want maximum 4 items of each category.
+     * @param $srt
+     */
+    function addSortFromString( $sort ) {
+        if (strpos(ltrim($sort),'sort[')===0) {
+            $ret = array();
+            parse_str($sort, $ret);
+            $this->addSortFromArray($ret['sort']);
+        } else {
+            $this->addSortFromBasicString($sort);
+        }
+    }
+
+    /** addSortFromBasicString function
      *  Transforms 'publish_date....-' like sort definition (used in prifiles, ...)
      *  to $arr['publish_date....'] = 'd' as used in sort[] array
      *  It is also possible to specify "group limit" by the number at the begin
@@ -526,7 +557,7 @@ class AA_Set extends AA_Object {
      *  array( 'limit' => 4, 'category........' => d )
      * @param $sort
      */
-    function addSortFromString( $sort ) {
+    function addSortFromBasicString( $sort ) {
         $ret = array();
         if ($sort) {
             // is defined group limit?
@@ -545,10 +576,35 @@ class AA_Set extends AA_Object {
         }
     }
 
-    function addSortFromArray($sort) {
+    /** addSortFromArray function
+     *  $sort - sort definition in various formats:
+     *     1)   sort = headline........-
+     *     2)   sort[0] = headline........-
+     *     3)   sort[0][headline........]=d
+     *  or with group limits (limited number of items displayed in each group)
+     *     1)   sort = 5headline........-
+     *     2)   sort[0] = 5headline........-
+     *     3)   sort[0][headline........]=d&sort[0][limit]=5
+     */
+    function addSortFromArray( $sort ) {
         if ($sort and is_array($sort)) {
-            foreach ($sort as $s) {
-                $this->sort[] = new AA_Sortorder($s);
+            ksort( $sort, SORT_NUMERIC); // it is not sorted and the order is important
+            foreach ( $sort as $k => $srt) {
+                if ($srt) {
+                    if ( is_array($srt) ) {
+                        $tmp = array();
+                        if ( key($srt) == 'limit') {
+                            next($srt);
+                        }
+                        $tmp[key($srt)] = (strtolower(current($srt)) == "d" ? 'd' : 'a');
+                        if ($srt['limit']) {
+                            $tmp['limit'] = $srt['limit'];
+                        }
+                        $this->sort[] = new AA_Sortorder($tmp);
+                    } else {
+                        $this->addSortFromBasicString($srt);
+                    }
+                }
             }
         }
     }
@@ -698,35 +754,8 @@ class AA_Set extends AA_Object {
  *     3)   sort[0][headline........]=d&sort[0][limit]=5
  */
 function getSortFromUrl( $sort ) {
-    $ret_sort = array();
-    $set      = new AA_Set;
-    if ( isset($sort) ) {
-        if ( !is_array($sort) ) {
-            $set->addSortFromString($sort);
-            $ret_sort = $set->getSort();
-        } else {
-            ksort( $sort, SORT_NUMERIC); // it is not sorted and the order is important
-            foreach ( $sort as $k => $srt) {
-                if ($srt) {
-                    if ( is_array($srt) ) {
-                        $tmp = array();
-                        if ( key($srt) == 'limit') {
-                            next($srt);
-                        }
-                        $tmp[key($srt)] = (strtolower(current($srt)) == "d" ? 'd' : 'a');
-                        if ($srt['limit']) {
-                            $tmp['limit'] = $srt['limit'];
-                        }
-                        $ret_sort[] = $tmp;
-                    } else {
-                        $set->addSortFromString($srt);
-                        $ret_sort = array_merge($ret_sort, $set->getSort());
-                    }
-                }
-            }
-        }
-    }
-    return $ret_sort;
+    $set = new AA_Set(null, null, $sort);
+    return $set->getSort();
 }
 
 /** GetWhereExp function
@@ -1366,15 +1395,10 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         }
     }
 
-    if ( $debug ) {
-        huhl("QueryZIDs: Cafretconds");
-    }
-
-
+    $delim='';
     if ( !is_array($sort) OR count($sort)<1 ) {
         $select_order =  is_object($restrict_zids) ? '' : 'item.publish_date DESC';   // default item order
     } else {
-        $delim='';
         foreach ($sort as  $sort_no => $srt) {
             if (key($srt)=='limit') {
                 next($srt);       // skip the 'limit' record in the array
@@ -1468,6 +1492,16 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
             }
         }
     }
+    
+    // sort in order of zids as last sort order 
+    // good for preservation of sortorder (now works also with grouping in views)
+    if (is_object($restrict_zids)) {
+        if ($restrict_zids->use_short_ids()) {
+            $select_order .= "$delim field(item.short_id,". implode(",",array_map("qquote", $restrict_zids->shortids())). ')';
+        } else {
+            $select_order .= "$delim field(item.id,". implode(",", $restrict_zids->qq_packedids()). ')';
+        }
+    }
 
     // parse group by parameter ----------------------------
     // .. removed 2/27/2005 Honza (was never used)
@@ -1531,7 +1565,12 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                            // last parameter is used for sorting zids to right order
                            // - if no order specified and restrict_zids are specified,
                            // return zids in unchanged order
-                           (is_object($restrict_zids) AND !$select_order) ? $restrict_zids : null, $select_limit_field);
+                           
+                           // removed - now we use field() SQL clausule instead, 
+                           // which is more powerfull (used also in secondary orders),
+                           // so it is no longer needed
+                           // (is_object($restrict_zids) AND !$select_order) ? $restrict_zids : null, $select_limit_field);
+                           null, $select_limit_field);
 
     if ( $debug ) {
         huhl("QueryZIDs: result:", $ret);
