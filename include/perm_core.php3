@@ -529,18 +529,11 @@ function GetUserEmails($type = "", $user_id = "current") {
  *  to database)
  */
 function perm_username( $username ) {
-    if ( PERM_LIB != 'ldap' ) {
-        return $username;
-    }
-    $begin = strpos($username, '=');
-    $end   = strpos($username, ',');
     if ( $username == '9999999999' ) {
         return "anonym";
     }
-    if ( !$begin OR !$end ) {
-        return $username;  // possibly some Reader
-    }
-    return substr($username, $begin+1, $end-$begin-1);
+    $userinfo = GetIDsInfo($username);
+    return empty($userinfo) ? $username : $userinfo['name'];
 }
 
 require_once AA_INC_PATH ."util.php3";          // for getDB()
@@ -657,10 +650,10 @@ function GetAuthData( $user_id = false ) {
     if ( !$user_id ) {
         if ( $_SERVER['PHP_AUTH_USER'] ) {
            $user_id = ReaderName2Id($_SERVER['PHP_AUTH_USER']);
-        } 
+        }
         elseif ( $_SERVER['REMOTE_USER'] ) {
            $user_id = ReaderName2Id($_SERVER['REMOTE_USER']);
-        } 
+        }
         else {
            $user_id = (guesstype($auth->auth["uid"]) == 'l') ? $auth->auth["uid"] : false;
         }
@@ -681,7 +674,7 @@ function GetReaderIDsInfo($user_id) {
         return false;
     }
     $res['type'] = 'Reader';
-    $res['name'] = $user_info->getValue(FIELDID_FIRST_NAME)." ".$user_info->getValue(FIELDID_LAST_NAME);
+    $res['name'] = $user_info->getValue(FIELDID_USERNAME);
     $res['mail'] = $user_info->getValue(FIELDID_EMAIL);
     return $res;
 }

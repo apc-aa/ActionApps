@@ -264,8 +264,6 @@ $LANGUAGE_NAMES = array ("cz-utf8" => "Cestina (Unicode)",
 define ("FIELDID_USERNAME",      "headline........");
 define ("FIELDID_PASSWORD",      "password........");
 define ("FIELDID_EMAIL",         "con_email.......");
-define ("FIELDID_FIRST_NAME",    "text...........1");
-define ("FIELDID_LAST_NAME",     "text...........2");
 define ("FIELDID_MAIL_CONFIRMED","switch..........");
 define ("FIELDID_ACCESS_CODE",   "text...........3");
 define ("FIELDID_HOWOFTEN",      "alerts1");
