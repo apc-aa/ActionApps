@@ -1,3 +1,43 @@
+11/10/10 - new possibility to upload files through AJAX -
+(honzam)     {ajax:{_#ITEM_ID_}:file............}
+             (for file............ field defined as file upload)
+         - history of changes in items is written to the database (change and
+           change_record tables)
+         - new {changed:<item_id>} lists all fields changed during last edit
+           dash ('-') separated
+           You can use it for example when you are sending e-mail notifications
+           about the item change and you want to know highlight, what is changed:
+               {ifin:{changed:{_#ITEM_ID_}}:category.......2:<em>Category changed to {category.......2}</em>}
+           You can also use this feature if you want to send e-mail notification
+           only if specific fields are changed:
+               {ifset:{intersect:{changed:{_#ITEM_ID_}}:category.......2-expiry_date.....}: email text...}
+           (we use the feature, that no mail is send, when the body of the mail
+           is empty)
+         - widgets (field input types) which allows sortorder and conditions
+           as parameters (selectbox for example) accepts also short version
+           of conditions as used with views - like:
+             d-switch.........1-=-1   -  for conditions
+             headline........-        -  for sortorder
+         - new {userinfo:<user>} - returns the name of the AA user
+             - <user> is stored in posted_by....... or edited_by....... field
+         - new parameter <add> to {shorten:<text>:<length>[:<mode>[:add]]}
+           text added in case the text shorten
+           (so the resulting text will be at maximum length+add long)
+         - new {md5:<text>} hash function
+         - no mail is send in e-mail notify when body is empty
+           (you can take advantage of this feature for sending e-mails
+           conditionaly - see {changed} for example of ussage)
+         - fixed input field for password in Reader management slices inputform
+             - it is no longer prefilled by your browser (with mostly always
+               wrong value)
+         - sortorder of ids is preserved when passed as restrict_ids
+           (works also with grouping in views)
+         - AA displays user names better in AA admin interface
+         - fixed preselect widget - empty string is default
+         - helper atributes we use for temporary data staroing in HTML
+           (like aaalias) rewritten to HTML5 standard data-xy attributes
+         - prototype.js upgraded to 1.6.1 version
+         - speedup of several functions md5, ...
 11/03/10 - Polls module improved a bit - allows longer questions...
 (honzam)   Polls support AJAX submitting - see
              http://actionapps.org/en/Polls_Module#AJAX_Polls_Design

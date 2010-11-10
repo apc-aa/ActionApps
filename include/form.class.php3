@@ -160,11 +160,11 @@ class AA_Widget_Formrow extends AA_Widget {
      */
     function _getRawHtml($aa_property, $content, $type='normal') {
         // $property_id  = $aa_property->getId();
-        // $input_name   = AA_Widget::getName4Form($property_id, $content)."[formrow][]";
+        // $input_name   = AA_Form_Array::getName4Form($property_id, $content)."[formrow][]";
 
-        $base_name   = AA_Widget::getName4Form($aa_property->getId(), $content);
+        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
         $input_name  = $base_name ."[]";
-        $base_id     = AA_Widget::formName2Id($base_name);
+        $base_id     = AA_Form_Array::formName2Id($base_name);
         $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
         $ser_values   = $content->getValuesArray($aa_property->getId());

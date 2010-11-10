@@ -485,6 +485,11 @@ class AA_Item {
         return $this->content4id->getAaValue($field_id);
     }
 
+    /** true if the item is viseble - not expired/trashed/pending/... */
+    function isActive() {
+        return $this->content4id->isActive();
+    }
+
     /** checks, if the field looks like the field ID */
     function isField($text) {
         return $this->content4id->isField($text);
@@ -1682,6 +1687,16 @@ class AA_Items {
         }
         return $ret;
     }
+    
+    /** getModuleProperty function
+     *  static function
+     * @param $slice_id
+     * @param $field
+     */
+    function getItemProperty($item_zid, $field) {
+        $item = AA_Items::getItem($item_zid);
+        return $item ? $item->getAaValue($field) : null;
+    }
 
     /** Invalidate item cache */
     function invalidate() {
@@ -1695,6 +1710,18 @@ class AA_Items {
         $this->_l2s = array();
     }
 
+    /** Invalidate item cache */
+    function invalidateItem($zid) {
+        $items = AA_Items::singleton();
+        $items->_invalidateLongIdItem($zid->longids(0));
+    }
+    
+    function _invalidateLongIdItem($id) {
+        if (isset($this->_i[$this->_l2s[$id]])) {
+            unset($this->_i[$this->_l2s[$id]]);
+        }
+    }
+    
     /** returns AA_Item or false (if not cached) */
     function _getFromCache($zid) {
         if ( $zid->use_short_ids() ) {

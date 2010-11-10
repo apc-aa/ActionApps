@@ -57,7 +57,8 @@ function __autoload ($class_name) {
         'AA_Slices'        => 'include/slice.class.php3',
         'AA_Items'         => 'include/item.php3',
         'PhpQuickProfiler' => 'misc/pqp/classes/PhpQuickProfiler.php',
-        'Console'          => 'misc/pqp/classes/Console.php'
+        'Console'          => 'misc/pqp/classes/Console.php',
+        'AA_Form_Array'    => 'include/widget.class.php3'
         );
 
     if ($PAIRS[$class_name]) {
@@ -90,7 +91,7 @@ function __autoload ($class_name) {
         'AA_Stringexpand' => 'stringexpand.php',
         'AA_Responder'    => 'responder.php'
         );
-    
+
     if (defined('AA_CUSTOM_DIR')) {
         foreach ($CUSTOM_INC_FILES as $inc_def => $inc_file) {
             if (strpos($class_name, $inc_def) === 0 ) {

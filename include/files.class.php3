@@ -184,11 +184,13 @@ class Files {
         }
 
         // look if type of file is allowed
-        $file_type = (substr($type,-1)=='*') ? substr($type,0,strpos($type,'/')) : $type;
+        if ($type != '') {
+            $file_type = (substr($type,-1)=='*') ? substr($type,0,strpos($type,'/')) : $type;
 
-        if ((@strpos($up_file['type'],$file_type)===false) AND ($type!="")) {
-            Files::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m('type of uploaded file not allowed'));  // set error code
-            return false;
+            if ((@strpos($up_file['type'],$file_type)===false)) {
+                Files::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m('type of uploaded file not allowed'));  // set error code
+                return false;
+            }
         }
 
         switch ($replacemethod) {
@@ -236,7 +238,7 @@ class Files {
             return false;
         }
 
-        if (!$handle = fopen($dest_file, 'w')) {
+        if (!($handle = fopen($dest_file, 'w'))) {
             Files::lastErr(FILE_ERROR_WRITE, _m("Can't open file for writing: %1", $dest_file));  // set error code
             return false;
         }
@@ -1249,16 +1251,12 @@ class AA_Directory_Wrapper {
      * @param $info array
      */
     function AA_Directory_Wrapper($url, &$info) {
-        $this->url = $url;
-        if (!ereg("/$", $this->url)) {
-            $this->url .= "/";
-        }
-        $this->info = $info;
-
-        $this->dp = NULL;
-        $this->is_read = false;
-        $this->subdir_names = array();
-        $this->file_names = array();
+        $this->url             = Files::fixPath($url);
+        $this->info            = $info;
+        $this->dp              = NULL;
+        $this->is_read         = false;
+        $this->subdir_names    = array();
+        $this->file_names      = array();
         $this->reg_file_filter = false;
     }
 

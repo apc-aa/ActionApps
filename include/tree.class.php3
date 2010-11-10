@@ -33,10 +33,14 @@ class AA_Supertree {
                           // Currently wors only for Reverse trees. @todo 
     protected $_modules;  // Array of modules
 
-    function __construct($relation_field, $sort=null) {
-        $this->_relation_field = $relation_field;
-        $this->_sort           = $sort;
-        $this->_i              = array();
+    protected $_restrict_slices;  // Array of allowed slices - just for reverse tree
+
+    function __construct($relation_field, $sort=null, $slices=null) {
+        $this->_relation_field  = $relation_field;
+        $this->_sort            = $sort;
+        $this->_i               = array();
+        $this->_modules         = array();
+        $this->_restrict_slices = $slices;
     }
 
     /** load function
@@ -151,12 +155,16 @@ class AA_Supertree_Reverse extends AA_Supertree {
             return;
         }
         
-        $zid = new zids($id,'l');
-        $sid = $zid->getFirstSlice();
-        if (!$sid) {
-            return;
+        if (!count($this->_restrict_slices)) {
+            $zid = new zids($id,'l');
+            $sid = $zid->getFirstSlice();
+            //huhl($this->_restrict_slices,$zid,$sid,$this);
+            if (!$sid) {
+                return;
+            }
+            $this->_restrict_slices = array($sid);
         }
-        $this->_modules[$sid] = true;
+        $this->_modules = array_fill_keys($this->_restrict_slices, true);
 
         /** items, which are already in trash, or expired, ... */
         $invalid  = array();
@@ -174,7 +182,7 @@ class AA_Supertree_Reverse extends AA_Supertree {
             }
 
             $cond['value'] = $item_id;
-            $zids          = QueryZIDs($sid, array($cond), $this->_sort);
+            $zids          = QueryZIDs($this->_restrict_slices, array($cond), $this->_sort);
 
             $next    = $zids->longids();
             $this->_i[$item_id] = $next;
@@ -196,7 +204,6 @@ class AA_Trees {
     /** Constructor  */
     function AA_Trees() {
         $this->a   = array();
-        $this->rev = array();
     }
 
     /** singleton function
@@ -217,8 +224,8 @@ class AA_Trees {
      *  main factory static method
      * @param $id
      */
-    function getTreeString($id, $relation_field, $reverse=false, $sort=null) {
-        $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort);
+    function getTreeString($id, $relation_field, $reverse=false, $sort=null, $slices=null) {
+        $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort, $slices);
         return $supertree->getTreeString($id);
     }
 
@@ -226,23 +233,18 @@ class AA_Trees {
      *  main factory static method
      * @param $id
      */
-    function getIds($id, $relation_field, $reverse=false, $sort=null) {
-        $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort);
+    function getIds($id, $relation_field, $reverse=false, $sort=null, $slices=null) {
+        $supertree = AA_Trees::getSupertree($relation_field, $reverse, $sort, $slices);
         return $supertree->getIds($id);
     }
 
-    function getSupertree($relation_field, $reverse, $sort) {
+    function getSupertree($relation_field, $reverse, $sort, $slices) {
         $trees = AA_Trees::singleton();
-        if ($reverse) {
-            if (!isset($trees->rev[$relation_field])) {
-                $trees->rev[$relation_field] = new AA_Supertree_Reverse($relation_field, $sort);
-            }
-            return $trees->rev[$relation_field];
+        $key   = get_hash($relation_field, $reverse, $sort, $slices);
+        if (!isset($trees->a[$key])) {
+            $trees->a[$key] = $reverse ? new AA_Supertree_Reverse($relation_field, $sort, $slices) : new AA_Supertree($relation_field, $sort, $slices);
         }
-        if (!isset($trees->a[$relation_field])) {
-            $trees->a[$relation_field] = new AA_Supertree($relation_field, $sort);
-        }
-        return $trees->a[$relation_field];
+        return $trees->a[$key];
     }
 }
 

@@ -149,7 +149,7 @@ function self_server() {
  * returns server name with protocol, port and current directory of php script
  */
 function self_base() {
-    return (self_server(). ereg_replace("/[^/]*$", "", $_SERVER['PHP_SELF']) . "/");
+    return (self_server(). preg_replace('~/[^/]*$~', '', $_SERVER['PHP_SELF']) . '/');
 }
 
 /** document_uri function
@@ -166,7 +166,7 @@ function document_uri() {
  *  returns server name with protocol, port and current directory of shtml file
  */
 function shtml_base() {
-    return (self_server(). ereg_replace("/[^/]*$", "", document_uri()) . "/");
+    return (self_server(). preg_replace('~/[^/]*$~', '', document_uri()) . '/');
 }
 
 /** shtml_url function
@@ -305,7 +305,7 @@ function array_merge_append(&$array, $newValues) {
  * @param $str
  */
 function quote($str) {
-  return addslashes($str);
+    return addslashes($str);
 }
 
 
@@ -346,7 +346,7 @@ function QuoteVars($method="get", $skip='') {
  */
 function new_id($mark=0){
     do {
-        $id = md5(uniqid('',true));
+        $id = hash('md5', uniqid('',true));
     } while ((strpos($id, '00')!==false) OR (strpos($id, '27')!==false) OR (substr($id,30,2)=='20'));
       // '00' is end of string, '27' is ' and packed '20' is space,
       // which is removed by MySQL
@@ -411,11 +411,7 @@ function pack_id($unpacked_id) {
  * @return unpacked md5 id
  */
 function unpack_id($packed_id){
-    if ((string)$packed_id == "0") {
-        return "0";
-    }
-    $foo = bin2hex($packed_id);  // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
-    return (string)$foo;
+    return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';   // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
 }
 
 /** now function
@@ -609,39 +605,21 @@ function get_microtime() {
 // Set a starting timestamp, if checking times, huhl can report
 /** huhl function
  * Debug function to print debug messages recursively - handles arrays
- * @param $a
- * @param $b
- * @param $c
- * @param $d
- * @param $e
- * @param $f
- * @param $g
- * @param $h
- * @param $i
- * @param $j
  */
-function huhl($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
+function huhl() {
     global $debugtimes,$debugtimestart;
-    if (isset($a)) {
-        print("<listing>");
-        if ($debugtimes) {
-           if (! $debugtimestart) {
-                $debugtimestart = get_microtime();
-            }
-            print("Time: ".(get_microtime() - $debugtimestart)."\n");
+    print("<listing>");
+    if ($debugtimes) {
+       if (! $debugtimestart) {
+            $debugtimestart = get_microtime();
         }
-        huhlo($a);
-        huhlo($b);
-        huhlo($c);
-        huhlo($d);
-        huhlo($e);
-        huhlo($f);
-        huhlo($g);
-        huhlo($h);
-        huhlo($i);
-        huhlo($j);
-        print("</listing>\n");
+        print("Time: ".(get_microtime() - $debugtimestart)."\n");
     }
+    $vars = func_get_args();
+    foreach ($vars as $var) {
+        huhlo($var);
+    }
+    print("</listing>\n");
 }
 /** huhsess function
  * @param $msg
@@ -1680,7 +1658,7 @@ function aa_move_uploaded_file($varname, $destdir, $perms = 0, $filename = null)
  * @param $escape_pattern
  */
 function split_escaped($pattern, $string, $escape_pattern) {
-    $dummy = "~#$?_";
+    $dummy = '~#$?_';
     while (strpos($string, $dummy) !== false) {
         $dummy .= '^';   // add another strange character to the
     }
@@ -1897,7 +1875,6 @@ function add_post2shtml_vars($delete = true) {
         if (is_array($vars[$var_type])) {
             foreach ($vars[$var_type] as $var => $value) {
                 global $$var;
-                if ($debugfill) huhl("add_post2shtml_vars:$$var=",$value);
                 $$var = $value;
             }
         }
@@ -2243,7 +2220,8 @@ function get_hash() {
     $arg_list = func_get_args();   // must be asssigned to the variable
     // return md5(json_encode($arg_list));
     // return md5(var_export($arg_list, true));
-    return md5(serialize($arg_list));
+    // return md5(serialize($arg_list));
+    return hash('md5', serialize($arg_list));  // quicker than md5()
 }
 
 /*
@@ -2307,41 +2285,6 @@ class CookieManager {
     }
 }
 
-class AA_ChangeProposal {
-    var $resource_id;
-    var $selector;
-    var $values;    // array of values
-    /** AA_ChangeProposal function
-     * @param $resource_id
-     * @param $selector
-     * @param $values
-     */
-    function AA_ChangeProposal($resource_id, $selector, $values) {
-        $this->resource_id = $resource_id;
-        $this->selector    = $selector;
-        $this->values      = $values;
-    }
-    /** getResourceId function
-     *
-     */
-    function getResourceId() {
-        return($this->resource_id);
-    }
-    /** getSelector function
-     *
-     */
-    function getSelector() {
-        return($this->selector);
-    }
-    /** getValues function
-     *
-     */
-    function getValues() {
-        return($this->values);
-    }
-}
-
-
 class AA_GeneralizedArray {
     var $arr;
     /** AA_GeneralizedArray function
@@ -2390,142 +2333,6 @@ class AA_GeneralizedArray {
     }
 }
 
-class AA_ChangesMonitor {
-    /** addProposal function
-     * @param $change_proposal
-     */
-    function addProposal($change_proposal) {
-        return $this->_add($change_proposal, 'proposal');
-    }
-    /** addHistory function
-     * @param $change_proposal
-     */
-    function addHistory($change_proposal) {
-        return $this->_add($change_proposal, 'history');
-    }
-    /** _add function
-     * @param $change_proposal
-     * @param $type
-     */
-    function _add($change_proposal, $type) {
-        global $auth;
-
-        $change_id = new_id();
-        $varset = new CVarset;
-        $varset->addkey("id",       "text",   $change_id);
-        $varset->add("time",        "number", now());
-        $varset->add("user",        "text",   is_object($auth) ? $auth->auth["uid"] : '');
-        $varset->add("type",        "text",   $type);
-        $varset->add("resource_id", 'text',   $change_proposal->getResourceId());
-        $varset->doInsert('change');
-
-        $priority = 0;
-        foreach ( $change_proposal->getValues() as $value ) {
-            $varset->clear();
-            $varset->add("change_id", "text",   $change_id);
-            $varset->add("selector",  "text",   $change_proposal->getSelector());
-            $varset->add("priority",  "number", $priority++);
-            $varset->add("type",      "text",   gettype($value));
-            $varset->add("value",     "text",   $value);
-            $varset->doInsert('change_record');
-        }
-        return true;
-    }
-    /** deleteProposal
-     * @param $change_id
-     */
-    function deleteProposal($change_id) {
-        $varset = new CVarset;
-        $varset->doDeleteWhere('change_record', "change_id = '".quote($change_id). "'");
-        $varset->clear();
-        $varset->addkey("id", "text", $change_id);
-        $varset->doDelete('change');
-    }
-    /** deleteProposalForSelector function
-     * @param $resource_id
-     * @param $selector
-     */
-    function deleteProposalForSelector($resource_id, $selector) {
-        $changes_ids = GetTable2Array("SELECT DISTINCT change_id  FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
-                                         WHERE `change`.resource_id = '".quote($resource_id)."' AND `change`.type = 'proposal' AND `change_record`.selector = '".quote($selector)."'", '', 'change_id');
-        if ( is_array($changes_ids) ) {
-            foreach( $changes_ids as $change_id ) {
-                $this->deleteProposal($change_id);
-            }
-        }
-    }
-
-    /** getProposals function
-     *  @return all proposals for given resource (like item_id)
-     *  return value is array ordered by time of proposal
-     * @param $resource_ids
-     */
-    function getProposals($resource_ids) {
-        return $this->_get($resource_ids, 'proposal');
-    }
-    /** getHistory function
-     * @param $resource_ids
-     */
-    function getHistory($resource_ids) {
-        return $this->_get($resource_ids, 'history');
-    }
-
-    /** _get function
-     * @return all proposals for given resource (like item_id)
-     *  return value is array ordered by time of proposal
-     * @param $resource_ids
-     * @param $type
-     */
-    function _get($resource_ids, $type) {
-        $garr = new AA_GeneralizedArray();
-        if ( !is_array($resource_ids) OR (count($resource_ids)<1) ) {
-            return $garr;
-        }
-
-        $ids4sql = "'". implode("','", array_map( "quote", $resource_ids)). "'";
-
-        $changes = GetTable2Array("SELECT `change_record`.*, `change`.resource_id
-                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
-                                WHERE `change`.resource_id IN ($ids4sql)
-                                AND   `change`.type='$type'
-                                ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority", '', 'aa_fields');
-
-        if ( is_array($changes) ) {
-            foreach($changes as $change) {
-                if ( $change['type'] ) {
-                    $value = $change['value'];
-                    settype($value, $change['type']);
-                    $garr->add($value, array($change['resource_id'], $change['change_id'], $change['selector']));
-                }
-            }
-        }
-        return $garr;
-    }
-    /** getProposalByID function
-     * @param $change_id
-     */
-    function getProposalByID($change_id) {
-        $garr = new AA_GeneralizedArray();
-        if ( !$change_id ) {
-            return $garr;
-        }
-        $changes = GetTable2Array("SELECT `change_record`.*, `change`.resource_id
-                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
-                                WHERE `change`.id = '". quote($change_id)."'
-                                ORDER BY `change_record`.selector, `change_record`.priority", '', 'aa_fields');
-
-        if ( is_array($changes) ) {
-            foreach($changes as $change) {
-                if ( $change['type'] ) {
-                    $value = $change['value'];
-                    settype($value, $change['type']);
-                    $garr->add($value, array($change['resource_id'], $change['selector']));
-                }
-            }
-        }
-        return $garr->getArray();
-    }
-}
 /** IsSpamText function
  * @param $text
  */

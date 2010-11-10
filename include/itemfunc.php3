@@ -415,8 +415,15 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
 
     // look if the uploaded picture exists
     if ($up_file['name'] AND ($up_file['name'] != 'none') AND ($context != 'feed')) {
-        $slice = AA_Slices::getSlice($GLOBALS["slice_id"]);
-
+        $sid = $GLOBALS["slice_id"];
+        if (!$sid AND $item_id) {
+            $item  = AA_Items::getItem(new zids($item_id));
+            if ($item) {
+                $sid = $item->getSliceID();
+            }
+        }
+        $slice = AA_Slices::getSlice($sid);
+        
         // $pdestination and $purl is not used, yet - it should be used to allow
         // slice administrators to store files to another directory
         // list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod, $pdestination, $purl) = ParamExplode($param);
@@ -471,6 +478,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
 
         $value['value'] = $slice->getUrlFromPath($dest_file);
     } // File uploaded
+    
     // store link to uploaded file or specified file URL if nothing was uploaded
     insert_fnc_qte( $item_id, $field, $value, "", $additional);
 

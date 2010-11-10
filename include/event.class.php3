@@ -162,6 +162,7 @@ class aaevent {
         $this->handlers[] = new aahandler('Event_ItemUpdated_Profem',      array('type' => 'ITEM_NEW',         'slice'        => '834dfc55e512ef4145ca2e73d2b461a3'));  // Profem poradna
         $this->handlers[] = new aahandler('Event_ItemInserted_Efekt',      array('type' => 'ITEM_NEW',         'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b'));  // EFEKT - iEKIS
         $this->handlers[] = new aahandler('Event_ItemUpdated_Efekt',       array('type' => 'ITEM_UPDATED',     'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b'));  // EFEKT - iEKIS
+        $this->handlers[] = new aahandler('Event_ItemUpdated_Sasov_objed', array('type' => 'ITEM_UPDATED',     'slice'        => '2d81635df9bbff2a7deebd89808f3cfb'));  // Biofarma Sasov - objednavka
     }
 
     /** get_handlers_newwwwww function
@@ -818,6 +819,35 @@ function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, &$ret_params, 
     if ($email1) {
         return AA_Mail::sendTemplate(4, array($email1), $item) > 0;
     }
+    return false;
+}
+
+
+/** Event_ItemAfterInsert_NszmPruzkum function
+ * @param $type
+ * @param $slice
+ * @param $slice_type
+ * @param $ret_params
+ * @param $foo
+ * @param $foo2
+ */
+function Event_ItemUpdated_Sasov_objed( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
+    if ($_POST['souhlas'] != 1) {
+        return false;
+    }
+    
+    $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
+    $emaily   = array('hm@ecn.cz', 'pykalova@biofarma.cz');
+    
+    //$email1 = trim($ret_params->getValue('con_email.......'));
+
+    $item     = AA_Items::getItem(new zids($short_id, 's'));
+
+    if ($email1) {
+        $ret = AA_Mail::sendTemplate(7, $emaily, $item, false) > 0;
+        return $ret;
+    }
+    
     return false;
 }
 
