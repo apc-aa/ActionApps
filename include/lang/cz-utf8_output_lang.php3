@@ -14,6 +14,9 @@ $mgettext_lang = "cz-utf8";
 $_m["Cancel"]
  = "Storno";
 
+ $_m["Upload"]
+ = "Nahrát";
+
 $_m["SAVE CHANGE"]
  = "Uložit změnu";
 

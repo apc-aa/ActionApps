@@ -82,9 +82,10 @@ require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 
 if ( get_magic_quotes_gpc() ) {
-    $_POST   = StripslashesDeep($_POST);
-    $_GET    = StripslashesDeep($_GET);
-    $_COOKIE = StripslashesDeep($_COOKIE);
+    $_POST    = StripslashesDeep($_POST);
+    $_GET     = StripslashesDeep($_GET);
+    $_REQUEST = StripslashesDeep($_REQUEST);
+    $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
 function ConvertEncodingDeep($value, $from=null, $to=null) {
@@ -95,13 +96,16 @@ function ConvertEncodingDeep($value, $from=null, $to=null) {
 if ($_REQUEST['convertfrom'] OR $_REQUEST['convertto']) {
     $_POST   = ConvertEncodingDeep($_POST, $_REQUEST['convertfrom'], $_REQUEST['convertto']);
 } elseif ($_REQUEST['inline']) {
-    // we do not need to define convertto for ajax forms (we grab it from the slice)
-    $slice   = AA_Slices::getSlice($_REQUEST['slice_id']);
-    if (!empty($slice)) {
-        $charset = $slice->getCharset();
-        if ($charset != 'utf-8') {
-            $_POST   = ConvertEncodingDeep($_POST, 'utf-8', $charset);
+    if ($_REQUEST['slice_id']) {
+        $slice = AA_Slices::getSlice($_REQUEST['slice_id']);
+        if ($slice->isValid()) {
+            $charset = $slice->getCharset();
         }
+    } elseif (is_array($_REQUEST['aa'])) {
+        $charset = AA_Form_Array::getCharset($_REQUEST['aa']);
+    }
+    if ($charset AND ($charset != 'utf-8')) {
+        $_POST   = ConvertEncodingDeep($_POST, 'utf-8', $charset);
     }
 }
 
@@ -220,7 +224,7 @@ function SendOkPage($txt, $new_ids = array()) {
                     $slice = AA_Slices::getSlice($item->getSliceID());
                     if (!empty($slice)) {
                         $charset = $slice->getCharset();
-                        if ($charset != 'utf-8') {   
+                        if ($charset != 'utf-8') {
                             $encoder = ConvertCharset::singleton();
                             $text    = $encoder->Convert($text, $charset,'utf-8');
                         }
@@ -228,8 +232,13 @@ function SendOkPage($txt, $new_ids = array()) {
                 }
                 $ret[$long_id] = $text;
             }
-            header("Content-type: application/json");  // standard header based on IANA
-            echo json_encode($ret);
+            $ret = json_encode($ret);
+            if ($_REQUEST["ret_code_js"]) {
+                echo getFrmJavascript(str_replace('AA_ITEM_JSON', $ret, $_REQUEST["ret_code_js"]));
+            } else {
+                header("Content-type: application/json");  // standard header based on IANA
+                echo $ret;
+            }
         }
         exit;
     }
@@ -250,7 +259,7 @@ if ( $answer )    {
 // new version of filling - through aa[] array allowing multiple items to store
 //      aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
 //      aa[n1_54343ea876898b6754e3578a8cc544e6][publish_date____][]
-if ( isset($_POST['aa']) ) {
+if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     if ($_COOKIE['AA_Sess']) {
         require_once AA_INC_PATH."request.class.php3";
         require_once AA_BASE_PATH."modules/site/router.class.php";
@@ -275,14 +284,8 @@ if ( isset($_POST['aa']) ) {
 // however the new code should use $_POST, which are NOT quoted
 if (!get_magic_quotes_gpc()) {
     // Overrides GPC variables
-    foreach ($_GET as $k => $v) {
-        $kk = AddslashesDeep($v);
-    }
-    foreach ($_POST as $k => $v) {
-        $kk = AddslashesDeep($v);
-    }
-    foreach ($_COOKIE as $k => $v) {
-        $kk = AddslashesDeep($v);
+    foreach ($_REQUEST as $k => $v) {
+        $$k = AddslashesDeep($v);
     }
 }
 

@@ -71,6 +71,7 @@ class AA_Saver {
         global $debugfeed;
 
         $this->grabber->prepare();    // maybe some initialization in grabber
+        
         while ($content4id = $this->grabber->getItem()) {
 
             if ($debugfeed >= 8) {
@@ -706,7 +707,9 @@ class AA_Grabber_Form {
     function prepare() {
         $this->_items = array();
         if (!isset($_POST['aa']) OR !is_array($_POST['aa'])) {
-            return;
+            if (!isset($_FILES['aa']) OR !is_array($_FILES['aa'])) {
+                return;
+            }
         }
 
         /** the item ids are in the form of i<item_id> for edited items,
@@ -716,6 +719,9 @@ class AA_Grabber_Form {
         $id_trans_table = array();
 
         $aa = $_POST['aa'];
+        if (!is_array($aa)) {
+            $aa = array();
+        }
 
         // uploaded files are not $_POST variable.
         // Alo it is stored as array...[name][file___________1][...] array...[type][file___________1][...]
@@ -726,7 +732,7 @@ class AA_Grabber_Form {
             // add it to POSTed variables
             $aa    = array_merge_recursive($aa, $files);
         }
-
+        
         // just prepare ids, in order we can expand
         // You can use _#n1_623553373823736362372726 as value, which stands for
         // item id of the item
@@ -785,7 +791,7 @@ class AA_Grabber_Form {
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
                 // create full_text......1 from full_text______1
-                $field_id = AA_Widget::getFieldIdFromVar($dirty_field_id);
+                $field_id = AA_Form_Array::getFieldIdFromVar($dirty_field_id);
                 $item->setAaValue($field_id, $aa_value);
             }
             $this->_items[] = array($item, $store_mode);
@@ -1095,7 +1101,6 @@ class AA_Grabber_Iekis_Xml extends AA_Grabber {
 
         return $item;
     }
-
 }
 
 /** AA_Grabber_Slice - grabs data from slice based on AA_Set
@@ -1263,5 +1268,165 @@ class AA_Grabber_Ical extends AA_Grabber {
         }
         return 0;
     }
+}
+
+
+/** AA_Grabber_Pohoda_Stocks - Imports stock from POHODA accounting system
+ */
+class AA_Grabber_Pohoda_Stocks extends AA_Grabber {
+
+    var $file;                /** list if files to grab - internal array */
+    var $_items;
+    var $_last_store_mode;
+
+    function AA_Grabber_Pohoda_Stocks($file) {
+        $this->file = $file;
+    }
+
+    /** Name of the grabber - used for grabber selection box */
+    function name() { return _m('Pohoda (www.stormware.cz) - Stocks'); }
+
+    /** Description of the grabber - used as help text for the users.
+     *  Description is in in HTML
+     */
+    function description() { return _m('Imports stock from POHODA accounting system'); }
+    
+    /** If AA_Saver::store_mode is 'by_grabber' then this method tells Saver,
+     *  how to store the item.
+     *  @see also getIdMode() method
+     */
+    function getStoreMode() {
+        return  $this->_last_store_mode;
+    }
+
+     /** Possibly preparation of grabber - it is called directly before getItem()
+     *  method is called - it means "we are going really to grab the data
+     */
+    function prepare() {
+        $data = file_get_contents($this->file);
+        // remove namespaces (it is pain to work with it in simple XML interface) 
+        $data = str_replace(array('<rsp:', '</rsp:', '<lst:', '</lst:', '<stk:', '</stk:', '<typ:', '</typ:'), array('<rsp_', '</rsp_', '<lst_', '</lst_', '<stk_', '</stk_', '<typ_', '</typ_'), $data);
+        $xml  = simplexml_load_string($data);
+        
+        $items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
+        foreach($items as $v) {
+          $this->_items[] = $v->stk_stockHeader;
+        }
+       
+//        $this->_items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
+//       huhl($this->_items);
+    }
+    
+    /** Method called by the AA_Saver to get next item from the data input */
+    function getItem() {
+        $VAT_RATES = array('none'=>0, 'low'=>10, 'high'=>20);
+        
+        if (!($polozka = current($this->_items))) {
+            return false;
+        }
+        next($this->_items);
+        
+        $set  = new AA_Set('3c121c4f40ded336375a6206c85baf1e', new AA_Condition('number.........1', '=', '"'.$polozka->stk_PLU.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+        $zids = $set->query();
+
+        $item = new ItemContent();
+        $item->setValue('source.........1', (string)$polozka->stk_name);
+        $item->setValue('source.........2', (string)$polozka->stk_count);               // stav zasob
+        $item->setValue('source.........3', (string)$polozka->stk_countReceivedOrders); // objednavky
+        $item->setValue('source.........4', (string)$polozka->stk_reservation);         // rezervace
+        $item->setValue('source.........5', (string)$polozka->stk_sellingPrice);        // cena bez DPH
+        
+        $dan  = $VAT_RATES[(string)$polozka->stk_sellingRateVAT];
+        $cena = round((string)$polozka->stk_sellingPrice * (($dan+100.0)/100.0),1);
+        $cena = ((float)round($cena) == (float)$cena) ? round($cena) : $cena;
+        $jedn = (string)$polozka->stk_unit;
+        
+        $item->setValue('number..........', $dan);         // DPH
+
+        if ($jedn == 'ks') {
+            $item->setValue('price..........1', $cena);
+            $item->setValue('price..........2', '');
+        } else {
+            $item->setValue('price..........1', '');
+            $item->setValue('price..........2', $cena);
+        }
+        
+        // new PLUs INSERT into database - current just update (price, stock)
+        if ($zids->count()) {
+            $this->_last_store_mode = 'update';
+            $item_id = $zids->longids(0);
+        } else {
+            $this->_last_store_mode = 'insert';
+            $item_id = new_id();
+            $item->setValue('number.........1', (string)$polozka->stk_PLU);
+            $item->setValue('headline........', (string)$polozka->stk_name);
+            $item->setValue('status_code.....', '2');  // nove importujeme do zasobniku
+        }
+        $item->setItemId($item_id);
+
+        return $item;
+    }
+}
+
+
+/** AA_Grabber_Pohoda_Stocks - Imports stock from POHODA accounting system
+ */
+class AA_Grabber_Pohoda_Orders_Result extends AA_Grabber {
+
+    var $file;                /** list if files to grab - internal array */
+    var $_items;
+
+    function AA_Grabber_Pohoda_Orders_Result($file) {
+        $this->file = $file;
+    }
+
+    /** Name of the grabber - used for grabber selection box */
+    function name() { return _m('Pohoda (www.stormware.cz) - Orders import result'); }
+
+    /** Description of the grabber - used as help text for the users.
+     *  Description is in in HTML
+     */
+    function description() { return _m('Process Order import results from POHODA accounting system'); }
+    
+     /** Possibly preparation of grabber - it is called directly before getItem()
+     *  method is called - it means "we are going really to grab the data
+     */
+    function prepare() {
+        $data = file_get_contents($this->file);
+        // remove namespaces (it is pain to work with it in simple XML interface) 
+        $data = str_replace(array('<rsp:', '</rsp:'), array('<rsp_', '</rsp_'), $data);
+        $xml  = simplexml_load_string($data);
+
+        $this->_items = array();
+        //$items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
+        foreach($xml as $v) {
+          $this->_items[] = $v;
+        }
+        
+    }
+    
+    /** Method called by the AA_Saver to get next item from the data input */
+    function getItem() {
+        if (!($polozka = current($this->_items))) {
+            return false;
+        }
+        next($this->_items);
+        
+        $response_att = $polozka->attributes();
+        
+        
+        $zids     = new zids($response_att['id'], 's');
+        $item_id  = AA_Stringexpand::unalias('{item:'.$response_att['id'].':_#ITEM_ID_}');
+        $poznamka = AA_Stringexpand::unalias('{item:'.$response_att['id'].':source.........2}');
+
+        $item = new ItemContent();
+        $item->setItemId($item_id);
+        
+        $item->setValue('source.........1', (string)$response_att['state']);    // stav importu
+        // poznamku pripojujeme na zacatek
+        $item->setValue('source.........2', date('ymd-His'). (string)$response_att['note']. "\n". $poznamka);     // import poznamka
+        return $item;
+    }
+
 }
 ?>

@@ -14,7 +14,10 @@ $mgettext_lang = "cz";
 $_m["Cancel"]
  = "Storno";
 
-$_m["SAVE CHANGE"]
+$_m["Upload"]
+ = "Nahrát";
+
+ $_m["SAVE CHANGE"]
  = "ULOŽIT ZMÌNU";
 
 $_m["EXIT WITHOUT CHANGE"]
