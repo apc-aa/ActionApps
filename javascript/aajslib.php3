@@ -156,6 +156,20 @@ function DisplayAaResponse(div_id, method, params) {
     new Ajax.Updater(div_id, AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, {parameters: params});
 }
 
+function AA_Response(method, resp_params, ok_func, err_func) {
+    var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
+    var params = {parameters: resp_params};
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, {
+         parameters: resp_params,
+         onSuccess: function(transport) {
+             if( transport.responseText.substring(0,5) == 'Error' ) {
+                 err_func(transport.responseText);
+             } else {
+                 ok_func(transport.responseText);
+             }
+         }
+    });
+}
 
 function AA_Ajax(div, url, param) {
     $(div).update(AA_Config.loader);
@@ -260,14 +274,14 @@ function AA_AjaxSendAddForm(id) {
 }
 
 /** This function replaces the older one - proposeChange
- *  The main chane is, that now we use standard AA input names:
+ *  The main change is, that now we use standard AA input names:
  *   aa[i<item_id>][<field_id>][]
  */
 function AA_SendWidgetAjax(id) {
     var valdivid   = 'ajaxv_' + id;
     var code = Form.serialize(valdivid);
 
-    var alias_name = $(valdivid).readAttribute('aaalias');
+    var alias_name = $(valdivid).readAttribute('data-aa-alias');
     $(valdivid).insert(AA_Config.loader);
 
     code += '&inline=1&ret_code_enc='+alias_name;
@@ -276,17 +290,25 @@ function AA_SendWidgetAjax(id) {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
-            var items = transport.responseText.evalJSON(true);  // maybe we can remove "true"
-            var res;
-
-            for (var i in items) {
-                res = items[i];
-                $(valdivid).update(res.length>0 ? res : '--');
-                break;
-            }
-            $(valdivid).setAttribute("aaedit", "0");
+            AA_ReloadAjaxResponse(id, transport.responseText)
         }
     });
+}
+
+/** Closes the ajax for after file upload
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function AA_ReloadAjaxResponse(id, responseText) {
+    var valdivid   = 'ajaxv_' + id;
+    var items = responseText.evalJSON(true);  // maybe we can remove "true"
+    var res;
+    for (var i in items) {
+        res = items[i];
+        $(valdivid).update(res.length>0 ? res : '--');
+        break;
+    }
+    $(valdivid).setAttribute("aaedit", "0");
 }
 
 /** This function replaces the older one - proposeChange
@@ -392,7 +414,7 @@ function convertToForm(divtag, item_id, fid) {
 
 function proposeChange(combi_id, item_id, fid, change) {
     var valdivid   = 'ajaxv_'+combi_id;
-    var alias_name = $(valdivid).readAttribute('aaalias');
+    var alias_name = $(valdivid).readAttribute('data-aa-alias');
     if ( typeof do_change == 'undefined') {
         do_change = 1;
     }
@@ -482,7 +504,7 @@ function displayInput(valdivid, item_id, fid) {
     // store current content
     $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
 
-    var alias_name = $(valdivid).readAttribute('aaalias');
+    var alias_name = $(valdivid).readAttribute('data-aa-alias');
 
     $(valdivid).update(AA_Config.loader);
     new Ajax.Request( AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
@@ -533,7 +555,7 @@ function _getInputContent(input_id) {
 /** return back old value - CANCEL pressed on AJAX widget */
 function DisplayInputBack(input_id) {
     var valdivid = 'ajaxv_'+input_id
-    $(valdivid).update($(valdivid).getAttribute('data-aa-oldval'));
+    $(valdivid).update($(valdivid).readAttribute('data-aa-oldval'));
     $(valdivid).setAttribute('aaedit', '2');
 }
 

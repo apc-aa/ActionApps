@@ -118,7 +118,7 @@ function AA_SendWidgetAjax(id) {
     var code   = $(valdiv + ' *').serialize();
     $(valdiv).append(AA_Config.loader);
 
-    var alias_name = $(valdiv).attr('aaalias');
+    var alias_name = $(valdiv).attr('data-aa-alias');
 
     code += '&inline=1&ret_code_enc='+alias_name;
     
@@ -166,7 +166,7 @@ function displayInput(valdivid, item_id, fid) {
        case '2': $(valdiv).attr("aaedit", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
                  return;
     }
-    var alias_name = $(valdiv).attr('aaalias');
+    var alias_name = $(valdiv).attr('data-aa-alias');
     $(valdiv).attr("data-aa-oldval", $(valdiv).html());
 
     AA_AjaxCss(valdiv, AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
@@ -231,7 +231,7 @@ function _getInputContent(input_id) {
  */
 function DoChange(input_id) {
     var valdiv   = jqid('ajaxv_'+input_id);
-    var alias_name = $(valdiv).attr('aaalias');
+    var alias_name = $(valdiv).attr('data-aa-alias');
     var content    = _getInputContent(input_id);
 
     AA_AjaxCss(valdiv, AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
@@ -414,5 +414,7 @@ function ChangeVariant(sitem_id, sb) {
     variant = $(sb).val().split('|');
     $('#cena'+sitem_id).html('<strong>'+variant[1]+',-</strong>/'+variant[2]+'</strong>');
     $('#variant'+sitem_id).val(variant[0]);
+    $('.cls2hide'+sitem_id).css('visibility', (variant[3]==1) ? 'visible' : 'hidden');
     $('#jednotka'+sitem_id).html(variant[2]);
+    $('#dostupnost'+sitem_id).html(variant[4]);
 }
