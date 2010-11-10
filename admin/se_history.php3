@@ -143,10 +143,10 @@ function QueryHistoryZIDs($slice_id, $conds, $sort="") {
     $where_sql    = MakeSQLConditions($HISTORY_FIELDS, $conds, $HISTORY_FIELDS, $foo);
     $order_by_sql = MakeSQLOrderBy(   $HISTORY_FIELDS, $sort,  $foo);
 
-    $SQL  = "SELECT DISTINCT change.id FROM `change`, change_record
-              WHERE change.id = change_record.change_id
-              AND change.type = 'history'";
-
+    $SQL  = "SELECT DISTINCT change.id FROM `change`, change_record, item
+              WHERE change.id = change_record.change_id AND item.id = UNHEX(change.resource_id) AND item.slice_id = '". q_pack_id($slice_id)."'
+              AND change.type = 'h'";
+              
 //    $SQL  = "SELECT DISTINCT change.id FROM `change`, change_record WHERE change.id = change_record.change_id AND change.resource_id = '$slice_id' ";
 
     $SQL .=  $where_sql . $order_by_sql;

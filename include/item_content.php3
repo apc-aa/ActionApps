@@ -216,6 +216,11 @@ class AA_Content {
         return $this->getValue('aa_name');
     }
 
+    /** get list of fields */
+    function getFields() {
+        return array_keys($this->content);
+    }
+
     /** getAaValue function
      *  Returns the AA_Value object for a field
      * @param $field_id
@@ -252,13 +257,30 @@ class AA_Content {
         return empty($this->content[$field_id]) ? array() : array_map( create_function('$val', 'return $val["value"];'), $this->content[$field_id] );
     }
 
+    function diff($object2compare) {
+        $changes = array();
+        foreach ($this->content as $fid => $a) {
+            $b = $object2compare->getValuesArray($fid);
+            if ($this->getValuesArray($fid) != $b) {
+                $changes[] = new AA_ChangeProposal($this->getId(), $fid, $b);
+            }
+        }
+        // search for values not present in current object
+        $b_fields = $object2compare->getFields();
+        foreach ($b_fields as $fid) {
+            if (!$this->isField($fid)) {
+                $changes[] = new AA_ChangeProposal($this->getId(), $fid, $object2compare->getValuesArray($fid));
+            }
+        }
+        return $changes;
+    }
+
     /** @return Abstract Data Structure of current object
      *  @deprecated - for backward compatibility (used in AA_Object getContent)
      */
     function getContent() {
         return $this->content;
     }
-
 }
 
 define('ITEMCONTENT_ERROR_BAD_PARAM',   200);
@@ -449,19 +471,26 @@ class ItemContent extends AA_Content {
         $this->setSliceID($slice->unpacked_id());
     }
 
-
     /** is_empty function
      *
      */
     function is_empty() {
         return !is_array($this->content);
     }
+
     /** is_set function
      * @param $field_id
      */
     function is_set($field_id) {
         return is_array($this->content[$field_id]);
     }
+
+    /** true if the item is viseble - not expired/trashed/pending/... */
+    function isActive() {
+        $now = now('step');
+        return (($this->getStatusCode() == 1) AND ($this->getPublishDate() <= $now) AND ($this->getExpiryDate() > $now));
+    }
+
     /** matches function
      * @param $conditions
      */
@@ -515,7 +544,6 @@ class ItemContent extends AA_Content {
     function getPublishDate() {
         return $this->getValue("publish_date....");
     }
-
 
     /** getExpiryDate function
      */
@@ -606,7 +634,7 @@ class ItemContent extends AA_Content {
         $this->setSliceID($slice_id);
         $added_to_db = $this->storeItem($insert ? 'insert' : 'update', array($invalidatecache, false));     // invalidatecache, feed
 
-        return $added_to_db ? array(0=> ($insert ? INSERT : UPDATE) ,1=>$id) : false;
+        return $added_to_db ? array( 0 => ($insert ? 'INSERT' : 'UPDATE'), 1 => $id ) : false;
     }
 
     /*
@@ -861,6 +889,9 @@ class ItemContent extends AA_Content {
             }
         }
 
+        // invalidate from inner cache
+        AA_Items::invalidateItem(new zids($id, 'l'));
+        
         if ($feed) {
             FeedItem($id);
         }
@@ -869,6 +900,11 @@ class ItemContent extends AA_Content {
             if ($mode == 'insert') {
                 $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
             } else {
+                $diff = $itemContent->diff($oldItemContent); 
+                if (count($diff)) {
+                    $changes = AA_ChangesMonitor::singleton();
+                    $changes->addHistory($diff);
+                }
                 $event->comes('ITEM_UPDATED', $slice_id, 'S', $itemContent, $oldItemContent); // new form event
             }
         }
@@ -1128,5 +1164,211 @@ function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
     return $updated_items;
 }
 
+class AA_ChangeProposal {
+    var $resource_id;
+    var $selector;
+    var $values;    // array of values
+    
+    /** AA_ChangeProposal function
+     * @param $resource_id
+     * @param $selector
+     * @param $values
+     */
+    function AA_ChangeProposal($resource_id, $selector, $values) {
+        $this->resource_id = $resource_id;
+        $this->selector    = $selector;
+        $this->values      = $values;
+    }
 
+    /** getResourceId function */
+    function getResourceId() {
+        return($this->resource_id);
+    }
+    
+    /** getSelector function */
+    function getSelector() {
+        return($this->selector);
+    }
+    
+    /** getValues function */
+    function getValues() {
+        return($this->values);
+    }
+}
+
+class AA_ChangesMonitor {
+
+    /** singleton
+     *  called as" $changes = AA_ChangesMonitor::singleton();
+     *  This function makes sure, there is just ONE static instance if the class
+     *  @todo  convert to static class variable (after migration to PHP5)
+     */
+    function singleton() {
+        static $instance = null;
+        if (is_null($instance)) {
+            // Now create the AA_Slices object
+            $instance = new AA_ChangesMonitor;
+        }
+        return $instance;
+    }
+
+    /** addProposal function
+     * @param $change_proposals
+     */
+    function addProposal($change_proposals) {
+        return $this->_add($change_proposals, 'p');
+    }
+
+    /** addHistory function
+     * @param $change_proposals
+     */
+    function addHistory($change_proposals) {
+        return $this->_add($change_proposals, 'h');
+    }
+
+    /** _add function
+     * @param $change_proposals
+     * @param $type
+     */
+    function _add($change_proposals, $type) {
+        global $auth;
+
+        if (!is_array($change_proposals)) {
+            $change_proposals = array($change_proposals);
+        }
+        $change = reset($change_proposals);
+
+        $change_id = new_id();
+        $varset = new CVarset;
+        $varset->addkey("id",       "text",   $change_id);
+        $varset->add("time",        "number", now());
+        $varset->add("user",        "text",   is_object($auth) ? $auth->auth["uid"] : '');
+        $varset->add("type",        "text",   $type);
+        $varset->add("resource_id", 'text',   $change->getResourceId());
+        $varset->doInsert('change');
+
+        foreach ($change_proposals as $change) {
+            $priority = 0;
+            foreach ( $change->getValues() as $value ) {
+                $varset->clear();
+                $varset->add("change_id", "text",   $change_id);
+                $varset->add("selector",  "text",   $change->getSelector());
+                $varset->add("priority",  "number", $priority++);
+                $varset->add("type",      "text",   gettype($value));
+                $varset->add("value",     "text",   $value);
+                $varset->doInsert('change_record');
+            }
+        }
+        return true;
+    }
+    /** deleteProposal
+     * @param $change_id
+     */
+    function deleteProposal($change_id) {
+        $varset = new CVarset;
+        $varset->doDeleteWhere('change_record', "change_id = '".quote($change_id). "'");
+        $varset->clear();
+        $varset->addkey("id", "text", $change_id);
+        $varset->doDelete('change');
+    }
+    
+    /** list of fields changed during last edit - dash ('-') separated */
+    function lastChanged($resource_id) {
+        $chid    = GetTable2Array("SELECT id FROM `change` WHERE `change`.resource_id = \"".quote($resource_id)."\" AND type = 'h' ORDER BY time DESC LIMIT 1", 'aa_first', 'id');
+        $ret     = '';
+        if ($chid) {
+            $changes_arr = $this->getProposalByID($chid);
+            if (is_array($changes_arr[$resource_id])) {
+                $ret = join('-',array_keys($changes_arr[$resource_id]));
+            }
+        }
+        return $ret;
+    }
+
+    /** deleteProposalForSelector function
+     * @param $resource_id
+     * @param $selector
+     */
+    function deleteProposalForSelector($resource_id, $selector) {
+        $changes_ids = GetTable2Array("SELECT DISTINCT change_id  FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                         WHERE `change`.resource_id = '".quote($resource_id)."' AND `change`.type = 'p' AND `change_record`.selector = '".quote($selector)."'", '', 'change_id');
+        if ( is_array($changes_ids) ) {
+            foreach( $changes_ids as $change_id ) {
+                $this->deleteProposal($change_id);
+            }
+        }
+    }
+
+    /** getProposals function
+     *  @return all proposals for given resource (like item_id)
+     *  return value is array ordered by time of proposal
+     * @param $resource_ids
+     */
+    function getProposals($resource_ids) {
+        return $this->_get($resource_ids, 'p');
+    }
+    /** getHistory function
+     * @param $resource_ids
+     */
+    function getHistory($resource_ids) {
+        return $this->_get($resource_ids, 'h');
+    }
+
+    /** _get function
+     * @return all proposals for given resource (like item_id)
+     *  return value is array ordered by time of proposal
+     * @param $resource_ids
+     * @param $type
+     */
+    function _get($resource_ids, $type) {
+        $garr = new AA_GeneralizedArray();
+        if ( !is_array($resource_ids) OR (count($resource_ids)<1) ) {
+            return array();
+        }
+
+        $ids4sql = "'". implode("','", array_map( "quote", $resource_ids)). "'";
+
+        $changes = GetTable2Array("SELECT `change_record`.*, `change`.resource_id
+                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                WHERE `change`.resource_id IN ($ids4sql)
+                                AND   `change`.type='$type'
+                                ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority", '', 'aa_fields');
+
+        if ( is_array($changes) ) {
+            foreach($changes as $change) {
+                if ( $change['type'] ) {
+                    $value = $change['value'];
+                    settype($value, $change['type']);
+                    $garr->add($value, array($change['resource_id'], $change['change_id'], $change['selector']));
+                }
+            }
+        }
+        return $garr;
+    }
+
+    /** getProposalByID function
+     * @param $change_id
+     */
+    function getProposalByID($change_id) {
+        $garr = new AA_GeneralizedArray();
+        if ( !$change_id ) {
+            return $garr;
+        }
+        $changes = GetTable2Array("SELECT `change_record`.*, `change`.resource_id
+                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
+                                WHERE `change`.id = '". quote($change_id)."'
+                                ORDER BY `change_record`.selector, `change_record`.priority", '', 'aa_fields');
+
+        if ( is_array($changes) ) {
+            foreach($changes as $change) {
+                if ( $change['type'] ) {
+                    $value = $change['value'];
+                    settype($value, $change['type']);
+                    $garr->add($value, array($change['resource_id'], $change['selector']));
+                }
+            }
+        }
+        return $garr->getArray();
+    }
+}
 ?>
