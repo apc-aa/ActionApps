@@ -129,6 +129,20 @@ class AA_Stringexpand_User extends AA_Stringexpand {
     }
 }
 
+/** Returns name or other info about user (usable for posted_by, edited_by, ...)
+ *   {userinfo:<user>[:<property>]}
+ *   @param $user - user as stored in posted_by....... or edited_by....... field
+ *   @param $property - 'name' at this moment only, which is default
+ */
+class AA_Stringexpand_Userinfo extends AA_Stringexpand {
+
+    /** expand function
+     * @param $user
+     */
+    function expand($user='') {
+        return perm_username( $user );
+    }
+}
 
 /** Replace inputform field alias with the real core for the field, which is
  *  stored already in the pagecache
@@ -455,7 +469,6 @@ class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
 
 /** Expands {lastedit:[<date_format>:[<slice_id>]]} and displays the date of
  *  last modificaton of any item in the slice
- *  the user.
  *  @param $date_format - the format in which you want to see the date
  *                        @see date() function of php http://php.net/date
  *                        like {lastedit:m/d/y H#:i}
@@ -612,7 +625,7 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Expands {shorten:<text>:<length>[:<mode>]} like:
+/** Expands {shorten:<text>:<length>[:<mode>[:add]]} like:
  *          {shorten:{abstract.......1}:150}
  *  @return up to <length> characters from the <text>. If the <mode> is 1
  *  then it tries to identify only first paragraph or at least stop at the end
@@ -621,13 +634,16 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
  *  @param $length         - max length
  *  @param $mode           - 1 - try cut whole paragraph
  *                         - 0 - just cut on length
+ *  @param $add            - text added in case the text shorten
+ *                           (so the resulting text will be at maximum length+add long)
  */
 class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
 
-    function expand($text, $length, $mode=1) {
+    function expand($text, $length, $mode=1, $add='') {
         $shorted_text = substr($text, 0, $length);
         $shorted_len  = strlen($shorted_text);
+        $text_add     = ($shorted_len == strlen($text)) ? '' : $add;
 
         // search the text for following ocurrences in the order!
         $PARAGRAPH_ENDS = array( '</p>','<p>');
@@ -650,7 +666,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
                 } // no dot, no space - leave the text length long
             }
         }
-        return strip_tags( $shorted_text );
+        return strip_tags( $shorted_text ) . $text_add;
     }
 }
 
@@ -1001,26 +1017,6 @@ function DeQuoteColons($text) {
     return str_replace($GLOBALS['QUOTED_ARRAY'], $GLOBALS['UNQUOTED_ARRAY'], $text);
 }
 
-/*
-// In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax
-$GLOBALS[eb_functions] = array (
-    fmod => fmod,    // php > 4.2.0
-    substr => substr
-);
-*/
-
-class AA_Stringexpand_Fmod extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $x
-     * @param $y
-     */
-    function expand($x,$y) {
-        return fmod($x,$y);
-    }
-}
-
 class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -1057,32 +1053,6 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Maximum number from list - number of values is unlimited */
-class AA_Stringexpand_Max extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $values - unlimited number of compared values
-     */
-    function expand() {
-        $arg_list  = func_get_args();   // must be asssigned to the variable
-        return max($arg_list);
-    }
-}
-
-/** Maximum number from list - number of values is unlimited */
-class AA_Stringexpand_Min extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $values - unlimited number of compared values
-     */
-    function expand() {
-        $arg_list  = func_get_args();   // must be asssigned to the variable
-        return max($arg_list);
-    }
-}
-
 /** {intersect:<ids>:<ids>}
  *  @returns set of intersect of two set of ids (dash separated)
  */
@@ -1092,7 +1062,7 @@ class AA_Stringexpand_Intersect extends AA_Stringexpand {
 
     /** expand function  */
     function expand($set1, $set2) {
-        return join(array_intersect(explode('-',$set1),explode('-',$set2)),'-');
+        return join('-', array_intersect(explode('-',$set1),explode('-',$set2)));
     }
 }
 
@@ -1371,66 +1341,6 @@ class AA_Stringexpand_Previous extends AA_Stringexpand_Nevercache {
     }
 }
 
-class AA_Stringexpand_Strlen extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $string
-     */
-    function expand($string) {
-        return strlen($string);
-    }
-}
-
-class AA_Stringexpand_Trim extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $string
-     */
-    function expand($string='') {
-        return trim($string);
-    }
-}
-
-/** Repeats the $string n-$times  */
-class AA_Stringexpand_Str_Repeat extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $string
-     * @param $times
-     */
-    function expand($string='', $times='') {
-        return str_repeat($string, $times);
-    }
-}
-
-class AA_Stringexpand_Str_Replace extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $search
-     * @param $replace
-     * @param $subject
-     */
-    function expand($search, $replace, $subject) {
-        return str_replace($search, $replace, $subject);
-    }
-}
-
-// Use this inside URLs e.g. {urlencode:_#EDITITEM}
-class AA_Stringexpand_Urlencode extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $text
-     */
-    function expand($text='') {
-        return urlencode($text);
-    }
-}
-
 class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -1469,17 +1379,6 @@ class AA_Stringexpand_Asis extends AA_Stringexpand_Nevercache {
     }
 }
 
-class AA_Stringexpand_Safe extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $text
-     */
-    function expand($text='') {
-        return htmlspecialchars($text);
-    }
-}
-
 /** Escape apostrophs and convert HTML entities */
 class AA_Stringexpand_Javascript extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1501,29 +1400,6 @@ class AA_Stringexpand_Quote extends AA_Stringexpand_Nevercache {
      */
     function expand($text='') {
         return str_replace("'", "\'", str_replace('\\', '\\\\', $text));
-    }
-}
-
-/** Encodes string for JSON - apostrophs ' => \', ... */
-class AA_Stringexpand_Jsonstring extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $text
-     */
-    function expand($text='') {
-        return json_encode($text);
-    }
-}
-
-class AA_Stringexpand_Striptags extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $text
-     */
-    function expand($text='') {
-        return strip_tags($text);
     }
 }
 
@@ -1839,7 +1715,7 @@ class AA_Treecache {
     }
 
     function cache_list($match) {
-        $key = 'g'. md5($match[0]);
+        $key = 'g'. hash('md5',$match[0]);
 
         if (!isset($this->cache[$key])) {
             $subtree  = $this->top     ? $this->_get_item($match[1], $this->top) : '';
@@ -1878,7 +1754,8 @@ class AA_Treecache {
         $id_type = guesstype($item_id);
         if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
             $item = AA_Items::getItem(new zids($item_id,$id_type));
-            if ($item) {
+            // do not show trashed/expired/... items
+            if ($item AND $item->isActive()) {
                 return $item->subst_alias($expression);
             }
         }
@@ -2029,13 +1906,8 @@ class AA_Stringexpand_Tree extends AA_Stringexpand {
      * @param $item_id          - item id of the tree root (short or long)
      * @param $relation_field   - tree relation field (default relation........)
      */
-    function expand($item_id, $relation_field=null) {
-        $zid     = new zids($item_id);
-        $long_id = $zid->longids(0);
-        if (empty($item_id)) {
-            return '';
-        }
-        return join(AA_Trees::getIds($long_id, get_if($relation_field, 'relation........')), '-');
+    function expand($item_id, $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
+        return join(AA_Stringexpand_Treestring::treefunc('getIds', $item_id, $relation_field, $reverse, $sort_string, $slices), '-');
     }
 }
 
@@ -2055,7 +1927,11 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
      * @param $reverse          - 1 for reverse trees (= child->parent relations)
      * @param $sort_string      - order of tree leaves (currently wors only for reverse trees. @todo)
      */
-    function expand($item_id, $relation_field=null, $reverse=null, $sort_string=null) {
+    function expand($item_id, $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
+        return AA_Stringexpand_Treestring::treefunc('getTreeString', $item_id, $relation_field, $reverse, $sort_string, $slices);
+    }
+
+    function treefunc($func, $item_id, $relation_field, $reverse, $sort_string, $slices) {
         $zid     = new zids($item_id);
         $long_id = $zid->longids(0);
         if (empty($item_id)) {
@@ -2064,8 +1940,9 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
         if (empty($sort_string) OR !is_array($sort = String2Sort($sort_string))) {
             $sort = null;
         }
+        $s_arr = (strlen(trim($slices))==0) ? array() : explode('-', $slices);
 
-        return AA_Trees::getTreeString($long_id, get_if($relation_field, 'relation........'), $reverse=='1', $sort);
+        return call_user_func_array(array('AA_Trees', $func), array($long_id, get_if($relation_field, 'relation........'), $reverse=='1', $sort, $s_arr));
     }
 }
 
@@ -2928,7 +2805,7 @@ class AA_Unalias_Callback {
         // {formpart:}
         // {view.php3?vid=12&cmd[12]=x-12-34}
         // {dequote:already expanded and quoted string}
-        // {fnctn:xxx:yyyy}   - expand $eb_functions[fnctn]
+        // {fnctn:xxx:yyyy}   - expand $AA_Stringexpand::$php_functions[fnctn]
         // {unpacked_id.....}
         // {mlx_view:view format in html} mini view of translatiosn available for this article
         //                                does substitutions %lang, %itemid
@@ -3052,7 +2929,7 @@ class AA_Unalias_Callback {
             // class
             if ( !is_null($stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $parts[1], array('item'=>$this->item, 'itemview'=> $this->itemview)))) {
                 if ( $stringexpand->doCache() ) {
-                    $key = md5($out.$stringexpand->additionalCacheParam());
+                    $key = hash('md5',$out.$stringexpand->additionalCacheParam());
                     $res = $contentcache->get_result_by_id($key, array($stringexpand, 'parsexpand'), $parts[2]);
                 } else {
                     $res = call_user_func_array( array($stringexpand,'parsexpand'), $parts[2]);
@@ -3061,8 +2938,8 @@ class AA_Unalias_Callback {
             }
 
             // eb functions - call allowed php functions directly
-            if ( $GLOBALS['eb_functions'][$parts[1]] ) {
-                $fnctn = $GLOBALS['eb_functions'][$parts[1]];
+            if ( AA_Stringexpand::$php_functions[$parts[1]] ) {
+                $fnctn = AA_Stringexpand::$php_functions[$parts[1]];
             } elseif ( is_callable("stringexpand_".$parts[1])) {  // custom stringexpand functions
                 $fnctn = "stringexpand_".$parts[1];
             }
@@ -3185,11 +3062,11 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
             $repre_value = ($show_alias == '') ? $item->f_h($field_id) : $item->subst_alias($show_alias);
             $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
             $iid         = $item->getItemID();
-            $input_name  = AA_Widget::getName4Form($field_id, $item);
-            $input_id    = AA_Widget::formName2Id($input_name);
-            $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\">\n";
-            $ret .= " <div class=\"ajax_value\" id=\"ajaxv_$input_id\" aaalias=\"".htmlspecialchars($alias_name)."\">$repre_value</div>\n";
-            $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_$input_id\"></div>\n";
+            $input_name  = AA_Form_Array::getName4Form($field_id, $item);
+            $input_id    = AA_Form_Array::formName2Id($input_name);
+            $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\" style=\"display:inline\">\n";
+            $ret .= " <div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".htmlspecialchars($alias_name)."\" style=\"display:inline\">$repre_value</div>\n";
+            $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>\n";
             $ret .= "</div>\n\n";
         }
         return $ret;
@@ -3252,6 +3129,33 @@ class AA_Stringexpand {
      *  Not used in many expand functions
      */
     var $itemview;
+
+    /** In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax */
+    public static $php_functions = array (
+        'strlen'           => 'strlen',
+        'trim'             => 'trim',
+        'str_repeat'       => 'str_repeat',
+        'str_replace'      => 'str_replace',
+        'striptags'        => 'strip_tags',
+        'safe'             => 'htmlspecialchars',
+        'htmlspecialchars' => 'htmlspecialchars',
+        'urlencode'        => 'urlencode',
+        'min'              => 'min',
+        'max'              => 'max',
+        'rand'             => 'rand',
+        'fmod'             => 'fmod',
+        'log'              => 'log',         /** math function log() */
+        'unpack'           => 'unpack_id',
+
+        /** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
+         *  {version[:aa|svn]}
+         **/
+        'version'          => 'aa_version',
+
+        /** Encodes string for JSON - apostrophs ' => \', ... */
+        'jsonstring'       => 'json_encode'
+    );
+
 
     /** AA_Stringexpand function
      * @param $item
@@ -3384,19 +3288,6 @@ class AA_Stringexpand_Nevercache extends AA_Stringexpand {
     }
 }
 
-
-class AA_Stringexpand_Log extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $number
-     * @param $base
-     */
-    function expand($number='', $base='') {
-        return log($number, $base);
-    }
-}
-
 /** unaliases the text - replaces {views} and other constructs */
 class AA_Stringexpand_Expand extends AA_Stringexpand {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -3406,17 +3297,6 @@ class AA_Stringexpand_Expand extends AA_Stringexpand {
      */
     function expand($string='') {
         return AA_Stringexpand::unalias($string);
-    }
-}
-
-class AA_Stringexpand_Unpack extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     * @param $number
-     */
-    function expand($number='') {
-        return unpack_id($number);
     }
 }
 
@@ -3600,23 +3480,6 @@ class AA_Stringexpand_Filelink extends AA_Stringexpand {
     }
 }
 
-/** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
- *  {version[:aa|svn]}
- **/
-class AA_Stringexpand_Version extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-
-    /** expand function
-     * @param $format - 'full' (default) - string with AA version, date, revision, ...
-     *                  'aa'             - AA version like "2.11.0"
-     *                  'svn'            - Subversion revision like "2314"
-     */
-    function expand($format='') {
-        return aa_version($format);
-    }
-}
-
 /** manages alerts subscriptions
  *  The idea is, that this alias will manage all the alerts subscriptions on the
  *  page - you just put the {alerts:<alert_module_id>:<some other parameter>}
@@ -3792,7 +3655,6 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
     }
 }
 
-
 /** Decrypts the text using $key as password (mcrypt PHP extension must be installed)
  */
 class AA_Stringexpand_Decrypt extends AA_Stringexpand {
@@ -3801,6 +3663,12 @@ class AA_Stringexpand_Decrypt extends AA_Stringexpand {
     }
 }
 
+/** computes MD5 hash */
+class AA_Stringexpand_Md5 extends AA_Stringexpand_Nevercache {
+    function expand($text) {
+        return hash('md5', $text);
+    }
+}
 
 /** Table - experimental - do not use - will be probably replaced with Array
  */
@@ -3879,6 +3747,20 @@ class AA_Stringexpand_Redirect extends AA_Stringexpand {
     }
 }
 
+/** List of fields changed during last edit - dash ('-') separated
+ *  You can use it for example when you are sending e-mail notifications about
+ *  the item change, and you want to know, what is changed:
+ *    {ifin:{changed:{_#ITEM_ID_}}:category.......2:<em>Category changed to {category.......2}</em>}
+ *  You can also use this feature if you want to send e-mail notification only if specific fields are changed:
+ *    {ifset:{intersect:{changed:{_#ITEM_ID_}}:category.......2-expiry_date.....}: email text...}
+ *  (we use the feature, that no mail is send, when the body of the mail is empty)
+ */
+class AA_Stringexpand_Changed extends AA_Stringexpand {
+    function expand($item_id=null) {
+        return (guesstype($item_id) != 'l') ? '' : AA_ChangesMonitor::singleton()->lastChanged($item_id);
+    }
+}
+
 /**
  */
 class AA_Stringexpand_Header extends AA_Stringexpand {
@@ -3889,6 +3771,5 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
         return '';
     }
 }
-
 
 ?>
