@@ -681,7 +681,7 @@ class AA_Inputfield {
                 }
             }
             $format          = AA_Slices::isSliceProperty($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
-            $set             = new AA_Set($sid, String2Conds( $conds ), String2Sort( $sort ), $whichitems);
+            $set             = new AA_Set($sid, $conds, $sort, $whichitems);
             $this->const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tagprefix);
             // $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix); // older version of the function :honzam03/09
             return $sid; // in most cases not very impotant information, but used in inputRelatION() input type
@@ -1902,7 +1902,7 @@ class AA_Inputfield {
 
         $this->field_name('plus');
         if ( $this->mode == 'anonym' ) {
-            $this->echovar("<input type=\"password\" name=\"$name\" size=\"$fieldsize\" maxlength=\"255\" value=\"\"".getTriggers("input",$name).">" );
+            $this->echovar("<input type=\"password\" name=\"$name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\"".getTriggers("input",$name).">" );
             $this->helps('plus');
         } else {
             $this->echovar( $val ? "*****" : _m("not set") );
@@ -1919,13 +1919,13 @@ class AA_Inputfield {
         // change pwd
         $this->field_name('plus',1,$change_pwd_label);
         $ch_name = $name."a";
-        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" value=\"\"".getTriggers("input",$ch_name).">", 'change' );
+        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\"".getTriggers("input",$ch_name).">", 'change' );
         $this->helps('plus',$change_pwd_help );
 
         // retype pwd
         $this->field_name('plus',1,$retype_pwd_label);
         $ch_name = $name."b";
-        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" value=\"\"".getTriggers("input",$ch_name).">", 'retype' );
+        $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\"".getTriggers("input",$ch_name).">", 'retype' );
         $this->helps('plus',$retype_pwd_help );
     }
 
