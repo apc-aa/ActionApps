@@ -67,6 +67,20 @@ class AA_Value {
         return new AA_Value($val);
     }
 
+    /** Static for creating value from string of JSON (for Arrays)
+     *  Called as
+     *     AA_Value::factoryFromJson($val);
+     */
+    function factoryFromJson($json) {
+        $aav = new AA_Value();
+        if (($json[0] == '[') AND (!is_null($arr = json_decode($json, true)))) {
+            $aav->setValues(array_values($arr));
+        } else {
+            $aav->setValues($json);
+        }
+        return $aav;
+    }
+
     /** getValue function
      *  Returns the value for a field. If it is a multi-value
      *   field, this is the first value.
@@ -110,6 +124,11 @@ class AA_Value {
             $this->val[] = $value;
         }
         return $this;
+    }
+
+    /** Set $value - value is normal (numeric) array or string value */
+    function setValues($value) {
+        $this->val = is_array($value) ? $value : (is_null($value) ? array() : array($value));
     }
 
     /** Set the flag (for al the values the flag is common at this time) */
@@ -891,7 +910,7 @@ class ItemContent extends AA_Content {
 
         // invalidate from inner cache
         AA_Items::invalidateItem(new zids($id, 'l'));
-        
+
         if ($feed) {
             FeedItem($id);
         }
@@ -900,7 +919,7 @@ class ItemContent extends AA_Content {
             if ($mode == 'insert') {
                 $event->comes('ITEM_NEW', $slice_id, 'S', $itemContent);  // new form event
             } else {
-                $diff = $itemContent->diff($oldItemContent); 
+                $diff = $itemContent->diff($oldItemContent);
                 if (count($diff)) {
                     $changes = AA_ChangesMonitor::singleton();
                     $changes->addHistory($diff);
@@ -1168,7 +1187,7 @@ class AA_ChangeProposal {
     var $resource_id;
     var $selector;
     var $values;    // array of values
-    
+
     /** AA_ChangeProposal function
      * @param $resource_id
      * @param $selector
@@ -1184,12 +1203,12 @@ class AA_ChangeProposal {
     function getResourceId() {
         return($this->resource_id);
     }
-    
+
     /** getSelector function */
     function getSelector() {
         return($this->selector);
     }
-    
+
     /** getValues function */
     function getValues() {
         return($this->values);
@@ -1271,7 +1290,7 @@ class AA_ChangesMonitor {
         $varset->addkey("id", "text", $change_id);
         $varset->doDelete('change');
     }
-    
+
     /** list of fields changed during last edit - dash ('-') separated */
     function lastChanged($resource_id) {
         $chid    = GetTable2Array("SELECT id FROM `change` WHERE `change`.resource_id = \"".quote($resource_id)."\" AND type = 'h' ORDER BY time DESC LIMIT 1", 'aa_first', 'id');
@@ -1283,6 +1302,12 @@ class AA_ChangesMonitor {
             }
         }
         return $ret;
+    }
+
+    /** list of fields changed during last edit - dash ('-') separated */
+    function lastChangeDate($resource_id, $selector) {
+        $chid = GetTable2Array("SELECT time FROM `change_record` INNER JOIN `change` ON `change`.id = `change_record`.change_id WHERE `change`.resource_id = \"".quote($resource_id)."\" AND `change`.type = 'h' AND `change_record`.selector = \"".quote($selector)."\" ORDER BY `change`.time DESC LIMIT 1", 'aa_first', 'time');
+        return $chid ? $chid : 0;
     }
 
     /** deleteProposalForSelector function
