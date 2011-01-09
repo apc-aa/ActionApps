@@ -1,3 +1,25 @@
+01/08/11 - new {changedate:<item_id>:<field_id>:<format>} 
+(honzam)   displays the date of the last change of specified field is provided 
+           date format 
+         - {htmltoggle} could be used without explicit specification 
+           of switchers (plus and minus signs (image) is shown as default) 
+             {htmltoggle::::text to show}
+         - {date} could display specified text for unset date
+             {date:m/d/Y:{start_date......}:not specified}.
+           (unset date is the date with timestamp 0, which could be now set 
+           by the Date widget when the date field is not required)
+         - new {fieldoptions:<slice_id>:<field_id>:<values>}
+           displys html <options> as defined for the field. You can specify 
+           current values - as single value, or as multivalue in JSON format.
+         - {img} now produces valid html where possible - escapes & when returns
+           HTML code
+         - {qs} now deals with arrays - returns JSON for arrays (which is usable
+           for {fieldoptions}, ...)
+         - fixed order function used with {aggregate}
+         - new {pwdcrypt:<text>} which crypts the password
+         - date widget is able to fill empty date (when not required)
+         - phpThumb updated to last version
+         - better password field handling (internal)
 11/10/10 - new possibility to upload files through AJAX -
 (honzam)     {ajax:{_#ITEM_ID_}:file............}
              (for file............ field defined as file upload)
