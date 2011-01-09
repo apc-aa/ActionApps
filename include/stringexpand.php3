@@ -519,6 +519,10 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
         if (trim($code_1.$code_2) == '') {
             return '';
         }
+        if (trim($switch_state_1.$switch_state_2) == '') {
+            $switch_state_1 = GetAAImage('plus.gif',  _m('show'), 16, 16);
+            $switch_state_2 = GetAAImage('minus.gif', _m('hide'), 16, 16);
+        }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
         $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
@@ -1094,12 +1098,14 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
     // No reason to cache this simple function
 
     /** expand function  */
-    function expand($format='', $timestamp='') {
+    function expand($format='', $timestamp='', $no_date_text=null) {
         if ( empty($format) ) {
             $format = "U";
         }
-        if ( empty($timestamp) ) {
+        if ( $timestamp=='' ) {
             $timestamp = time();
+        } elseif (($timestamp == '0') AND !is_null($no_date_text)) {
+            return $no_date_text;
         }
         return date($format, (int)$timestamp);
     }
@@ -1436,7 +1442,10 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
 //         echo "<script language=\"JavaScript\" src=\"/aaa/javascript/increse.php?item_id=$id&field_id=$field_id\" type=\"text/javascript\"></script>";
 //     }
 // }
-
+/** Ussage:
+ *    {view:57::page-{xpage}}
+ *    {view:57:{ids:0497ac46076bf257d15f3e030170da92:d-category........-=-Env}}
+ */
 class AA_Stringexpand_View extends AA_Stringexpand {
     /** expand function
      * @param $vid, $ids
@@ -1772,7 +1781,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
      * @param $parameter
      */
     function expand($function, $ids_string, $expression=null, $parameter=null) {
-        if ( !in_array($function, array('sum', 'avg', 'concat', 'count')) ) {
+        if ( !in_array($function, array('sum', 'avg', 'concat', 'count', 'order')) ) {
             return '';
         }
         $ids     = explode('-', $ids_string);
@@ -2265,7 +2274,6 @@ class AA_Stringexpand_Compare extends AA_Stringexpand_Nevercache {
 
 /** Get field property (currently only 'name' is supported */
 class AA_Stringexpand_Field extends AA_Stringexpand {
-    // Never cached (extends AA_Stringexpand_Nevercache)
 
     function additionalCacheParam() {
         /** output is different for different items - place item id into cache search */
@@ -2278,25 +2286,53 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
      * @param $slice_id
      */
     function expand($field_id, $property='name', $slice_id=null) {
+        $field = $this->_getField($slice_id, $field_id);
+        if (!$field) {
+            return '';
+        }
+
+        // we do not want to allow users to get all field setting
+        // that's why we restict it to the properties, which makes sense
+        // @todo - make it less restrictive
+        $property = 'name';
+        return (string) $field->getProperty($property);
+    }
+
+    function _getField($slice_id, $field_id) {
         if (empty($slice_id)) {
             if ( empty($this->item) ) {
                 return '';
             }
             $slice_id = $this->item->getSliceID();
         }
-        $slice = AA_Slices::getSlice($slice_id);
-        if (!$slice OR !$slice->isField($field_id)) {
+        return AA_Slices::getField($slice_id, $field_id);
+    }
+}
+
+
+/** {fieldoptions:<slice_id>:<field_id>:<values>} 
+ *  displys html <options> as defined for the field. You can specify current 
+ *  values - as single value, or as multivalue in JSON format. 
+ */
+class AA_Stringexpand_Fieldoptions extends AA_Stringexpand_Field {
+
+    /** expand function
+     * @param $slice_id
+     * @param $field_id
+     * @param $values  (single string or array in JSON)
+     */
+    function expand($slice_id, $field_id, $values=null) {
+        $field = $this->_getField($slice_id, $field_id);
+        if (!$field) {
             return '';
         }
 
-        $fields = $slice->getFields();
-        // we do not want to allow users to get all field setting
-        // that's why we restict it to the properties, which makes sense
-        // @todo - make it less restrictive
-        $property = 'name';
-        return (string) $fields->getProperty($field_id, $property);
+        $widget  = $field->getWidget();
+        return $widget ?  $widget->getSelectOptions($widget->getOptions(AA_Value::factoryFromJson($values))) : '';
     }
 }
+
+
 
 /** Get module (slice, ...) property (currently only "module fileds"
  *  (beggining with underscore) and 'name' is supported
@@ -2563,7 +2599,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
          *  used in format string
          */
 
-        $format  = AA_Slices::isSliceProperty($dictionary, $format) ? '{substr:{'.$format.'}:0:50}' : $format;
+        $format  = AA_Slices::getField($dictionary, $format) ? '{substr:{'.$format.'}:0:50}' : $format;
         $format  = "{@keywords........:##}_AA_DeLiM_$format";
 
         // above is little hack - we need keyword pair, but we want to call
@@ -3064,10 +3100,10 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
             $iid         = $item->getItemID();
             $input_name  = AA_Form_Array::getName4Form($field_id, $item);
             $input_id    = AA_Form_Array::formName2Id($input_name);
-            $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\" style=\"display:inline\">\n";
-            $ret .= " <div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".htmlspecialchars($alias_name)."\" style=\"display:inline\">$repre_value</div>\n";
-            $ret .= " <div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>\n";
-            $ret .= "</div>\n\n";
+            $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\" style=\"display:inline\">";
+            $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".htmlspecialchars($alias_name)."\" style=\"display:inline\">$repre_value</div>";
+            $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
+            $ret .= "</div>";
         }
         return $ret;
     }
@@ -3387,7 +3423,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             return $img_url;
         }
 
-        $a = @getimagesize($img_url);
+        $a = @getimagesize(str_replace('&amp;', '&', $img_url));
         if (! $a) {
             return '';
         }
@@ -3411,6 +3447,10 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (empty($phpthumb_params)) {
             return $image;
         }
+        // separate parameters
+        if (strpos($phpthumb_params, '&amp;') === false) {
+            $phpthumb_params = str_replace('&', '&amp;', $phpthumb_params);
+        }
 
         // it is much better for phpThumb to access the files as files reletive
         // to the directory, than using http access
@@ -3421,7 +3461,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             $image = ereg_replace("http://(www\.)?(.+)\.([a-z]{1,6})/(.+)", "\\4", $image);
         }
 
-        return AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params";
+        return AA_INSTAL_URL. "img.php?src=/$image&amp;$phpthumb_params";
     }
 }
 
@@ -3549,10 +3589,12 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
      */
     function expand($variable_name='') {
         if (isset($_GET[$variable_name])) {
-            return $_GET[$variable_name];
+            $ret = $_GET[$variable_name];
+        } else {
+            $shtml_get = add_vars('', 'return');
+            $ret = $shtml_get[$variable_name];
         }
-        $shtml_get = add_vars('', 'return');
-        return $shtml_get[$variable_name];
+        return is_array($ret) ? json_encode($ret) : $ret;
     }
 }
 
@@ -3628,7 +3670,6 @@ class AA_Stringexpand__ extends AA_Stringexpand {
     }
 }
 
-
 /** Encrypt the text using $key as password (mcrypt PHP extension must be installed)
  */
 class AA_Stringexpand_Encrypt extends AA_Stringexpand {
@@ -3670,12 +3711,22 @@ class AA_Stringexpand_Md5 extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Table - experimental - do not use - will be probably replaced with Array
- */
-class AA_Stringexpand_Table extends AA_Stringexpand {
+/** crypt text as AA password */
+class AA_Stringexpand_Pwdcrypt extends AA_Stringexpand_Nevercache {
+    function expand($text) {
+        return crypt($text, 'xx');
+    }
+}
 
-    function expand($id, $cmd, $r, $c, $val) {
+/** Table - experimental - do not use - will be probably replaced with Array
+ *  (nevercached - because it caches also "set" and "addset" commands, so
+ *  ignores the second same "set"/"addset" command )
+ */
+class AA_Stringexpand_Table extends AA_Stringexpand_Nevercache {
+
+    function expand($id, $cmd, $r, $c, $val='', $param='') {
         static $tables = array();
+
         if (!isset($tables[$id])) {
             $tables[$id] = new AA_Table($id);
         }
@@ -3684,10 +3735,16 @@ class AA_Stringexpand_Table extends AA_Stringexpand {
 
         switch ($cmd) {
         case 'set':
-            $table->set($r, $c, $val);
+            $table->set($r, $c, $val, $param);   // param as attribute
             break;
         case 'get':
             $ret = $table->get($r, $c, strlen($val) ? $val : '_#1');
+            break;
+        case 'addset':
+            $table->addset($r, $c, $val);
+            break;
+        case 'joinset':
+            $table->joinset($r, $c, $val, $param); // param as delimiter
             break;
         case 'sum':
             $ret = $table->sum($r, $c, strlen($val) ? $val : '_#1');
@@ -3758,6 +3815,13 @@ class AA_Stringexpand_Redirect extends AA_Stringexpand {
 class AA_Stringexpand_Changed extends AA_Stringexpand {
     function expand($item_id=null) {
         return (guesstype($item_id) != 'l') ? '' : AA_ChangesMonitor::singleton()->lastChanged($item_id);
+    }
+}
+
+class AA_Stringexpand_Changedate extends AA_Stringexpand {
+    function expand($item_id=null, $field_id=null, $format=null) {
+        $time = ((guesstype($item_id) != 'l') OR !$field_id) ? '0' : (string)AA_ChangesMonitor::singleton()->lastChangeDate($item_id,$field_id);
+        return AA_Stringexpand_Date::expand($format, $time, '--');
     }
 }
 
