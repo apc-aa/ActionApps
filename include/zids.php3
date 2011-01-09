@@ -150,6 +150,13 @@ class zids implements Iterator, ArrayAccess, Countable {
      *  wrong valuas are not added
      */
     function addDirty($ids) {
+        if (substr(reset($ids),0,1)=='[') {
+            $json_ids = array();
+            foreach ($ids as $json) {
+                $json_ids = array_merge($json_ids, json_decode($json, true));
+            }
+            $ids = $json_ids;
+        }
         foreach ((array)$ids as $id) {
             $id   = trim($id);
             $type = guesstype($id);

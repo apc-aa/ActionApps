@@ -175,10 +175,11 @@ class AA_Widget_Formrow extends AA_Widget {
             $arr[] = $field->getId();
         }
 
-        $fields = new AA_Content;
-        $fields->setAaValue($aa_property->getId(), new AA_Value($arr));
+        $fields    = new AA_Content;
+        $selected  = new AA_Value($arr);
+        $fields->setAaValue($aa_property->getId(), $selected);
         $widget    = "<select name=\"$input_name\" id=\"$input_name\" multiple>";
-        $options   = $this->getOptions($aa_property, $fields, false, false, !$aa_property->isRequired());
+        $options   = $this->getOptions($selected, $fields, false, false, !$aa_property->isRequired());
         $widget   .= $this->getSelectOptions( $options );
         $widget   .= "</select>";
 

@@ -123,8 +123,8 @@ class AA_Field {
         }
         return $this->widget;
     }
-    
-    
+
+
     /** getDefault function
      * @param $f
      */
@@ -174,7 +174,7 @@ class AA_Field {
     function getRecord() {
         return $this->data;
     }
-    
+
     /** getSearchType function
      * @return text | numeric | date | constants
      */
@@ -342,24 +342,6 @@ class AA_Fields implements Iterator {
     function getProperty($field_id, $property) {
         $this->load();
         return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getProperty($property) : null;
-    }
-
-    /** getWidgetAjaxHtml function
-     * @param $field_id
-     * @param $item_id
-     */
-    function getWidgetAjaxHtml($field_id, $item_id) {
-        $this->load();
-        return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getWidgetAjaxHtml($item_id) : '';
-    }
-
-    /** getWidgetLiveHtml function
-     * @param $field_id
-     * @param $item_id
-     */
-    function getWidgetLiveHtml($field_id, $item_id) {
-        $this->load();
-        return isset($this->fields[$field_id]) ? $this->fields[$field_id]->getWidgetLiveHtml($item_id) : '';
     }
 
     /** getAliases function

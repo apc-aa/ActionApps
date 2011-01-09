@@ -196,10 +196,19 @@ class AA_Slice {
     }
 
     /** getFields function
-     *
      */
     function & getFields($dynamic_fields = false) {
         return $dynamic_fields ? $this->dynamic_fields : $this->fields;
+    }
+
+    /** getField function     */
+    function getField($field_id) {
+        return $this->fields->getField($field_id);;
+    }
+
+    function getWidget($field_id) {
+        $field = $this->getField($field_id);
+        return $field ? $field->getWidget() : null;
     }
 
     /** getWidgetAjaxHtml function
@@ -207,7 +216,8 @@ class AA_Slice {
      * @param $item_id
      */
     function getWidgetAjaxHtml($field_id, $item_id) {
-        return $this->fields->getWidgetAjaxHtml($field_id, $item_id);
+        $field = $this->getField($field_id);
+        return $field ? $field->getWidgetAjaxHtml($item_id) : '';
     }
 
     /** getWidgetLiveHtml function
@@ -215,7 +225,8 @@ class AA_Slice {
      * @param $item_id
      */
     function getWidgetLiveHtml($field_id, $item_id) {
-        return $this->fields->getWidgetLiveHtml($field_id, $item_id);
+        $field = $this->getField($field_id);
+        return $field ? $field->getWidgetLiveHtml($item_id) : '';
     }
 
     /** getLang function
@@ -501,15 +512,15 @@ class AA_Slices {
         return $slice ? $slice->getProperty($field) : null;
     }
 
-    /** isSliceProperty function
+    /** getField function - returns slice's field
      *  static function
      * @param $slice_id
      * @param $field
      */
-    function isSliceProperty($slice_id, $field) {
+    function getField($slice_id, $field_id) {
         $slices = AA_Slices::singleton();
         $slice  = $slices->_getSlice($slice_id);
-        return $slice ? $slice->isField($field) : false;
+        return $slice ? $slice->getField($field_id) : null;
     }
 
     /** getName function

@@ -121,7 +121,7 @@ function AA_SendWidgetAjax(id) {
     var alias_name = $(valdiv).attr('data-aa-alias');
 
     code += '&inline=1&ret_code_enc='+alias_name;
-    
+
     $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', code, function(data) {
         var res;
         // just one iteration, but without the loop we are not able to get the item_id
@@ -381,8 +381,40 @@ function addPolozkaToKosik(kosik, produkt_variant, mnozstvi) {
         });
 
     AA_AjaxCss("#doporucujeme", '/aaa/view.php3?vid=35&cmd[35]=o-35-'+ produkt_variant+'&als[XLANG___]='+getCurrentLanguage());
-
 }
+
+function addPolozkaToKosikAdmin(kosik, produkt_variant, mnozstvi) {
+    $("#page-faktura").load(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+        inline: 1,
+        ok_url: "http://biofarma.cz/aaa/view.php3?vid=54&nocache=1&cmd[54]=o-54-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
+        slice_id: '38b46aeec3b2bbb70ba48b31957ed322',
+        "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation________][]": kosik,
+        "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation_______1][]": produkt_variant,
+        "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][text____________][]": mnozstvi
+    });
+}
+
+function deleteFromKosikAdmin(kosik, polozka_id) {
+    // we want to invalidate the pages for this user to reload pages with new kosik
+
+    if (!confirm('Tímto vymažeš položku i z objednávky a jen těžko ji půjde vrátit zpět. Opravdu chceš Položku vymazat?')) {
+        return;
+    }
+
+    var param = {
+            inline: 1,
+            ok_url: "http://biofarma.cz/aaa/view.php3?vid=54&nocache=1&cmd[54]=o-54-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
+            slice_id: '38b46aeec3b2bbb70ba48b31957ed322'
+         };
+    param["aa[u"+polozka_id+"][status_code_____][]"] = 2;
+
+    $("#page-faktura").load(AA_Config.AA_INSTAL_PATH + 'filler.php3', param);
+}
+
+function ReloadFaktura(kosik) {
+    $("#page-faktura").load("/aaa/view.php3?vid=54&nocache=1&cmd[54]=o-54-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(), '', function() {});
+}
+
 
 function deleteFromKosik(kosik, polozka_id, prehled) {
     // we want to invalidate the pages for this user to reload pages with new kosik

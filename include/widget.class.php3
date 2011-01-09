@@ -256,7 +256,7 @@ class AA_Widget extends AA_Components {
                     return $this->_const_arr; //  = array();
                 }
             }
-            $format          = AA_Slices::isSliceProperty($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+            $format          = AA_Slices::getField($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
             $set              = new AA_Set($sid, $filter_conds, $sort_by, $bin_filter);
             $this->_const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tag_prefix);
             return;
@@ -284,10 +284,12 @@ class AA_Widget extends AA_Components {
     function _fillSelected($aa_value) {
         $this->_selected = array();
         //if ( is_null($this->_selected) ) {  // not cached yet => create selected array
-        for ($i=0 ; $i < $aa_value->valuesCount(); $i++) {
-            $val = $aa_value->getValue($i);
-            if ( $val ) {
-                $this->_selected[(string)$val] = true;
+        if (is_object($aa_value)) {
+            for ($i=0 ; $i < $aa_value->valuesCount(); $i++) {
+                $val = $aa_value->getValue($i);
+                if ( $val ) {
+                    $this->_selected[(string)$val] = true;
+                }
             }
         }
         //}
@@ -296,12 +298,12 @@ class AA_Widget extends AA_Components {
     /** returns options array with marked selected options, missing options,...
      *  This method is rewritten get_options() method form formutil.php3
      */
-    function getOptions( $aa_property, $content, $use_name=false, $testval=false, $add_empty=false) {
+    function getOptions( $selected=null, $content=null, $use_name=false, $testval=false, $add_empty=false) {
         $selectedused  = false;
 
         $already_selected = array();     // array where we mark selected values
         $pair_used        = array();     // array where we mark used pairs
-        $this->_fillSelected($content->getAaValue($aa_property->getId())); // fill selected array by all values in order we can print invalid values later
+        $this->_fillSelected($selected); // fill selected array by all aa_values in order we can print invalid values later
 
         $ret = array();
         $this->_fillConstArr($content);
@@ -409,7 +411,8 @@ class AA_Widget extends AA_Components {
             $multiple     = $this->multiple() ? ' multiple' : '';
 
             $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $widget_add>";
-            $options   = $this->getOptions($aa_property, $content, $use_name, false, !$required);
+            $selected  = $content->getAaValue($aa_property->getId());
+            $options   = $this->getOptions($selected, $content, $use_name, false, !$required);
             $widget   .= $this->getSelectOptions( $options );
             $widget   .= "</select>";
         } else {
@@ -943,7 +946,7 @@ class AA_Widget_Dte extends AA_Widget {
             $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getMonthOptions()."</select>";
             $input_name   = $base_name_add. "[y][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getYearOptions()."</select>";
+            $widget      .= "$delim\n<select name=\"$input_name\" id=\"$input_id\"$widget_add>".$datectrl->getYearOptions($aa_property->isRequired())."</select>";
             if ($datectrl->isTimeDisplayed()) {
                 $input_name   = $base_name_add. "[t][$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
@@ -982,6 +985,11 @@ class AA_Widget_Dte extends AA_Widget {
         $values = array();
 
         for ($i=0 ; $i<$max; $i++) {
+            // no date
+            if ( strlen($years[$i]) AND !(int)$years[$i]) {
+                $values[] = 0;
+                continue;
+            }
             // check if anything is filled
             if ( !(int)$years[$i] AND !(int)$months[$i] AND !(int)$days[$i] AND !$time[$i]) {
                 continue;
@@ -1157,7 +1165,8 @@ class AA_Widget_Mch extends AA_Widget {
 
         $use_name     = $this->getProperty('use_name', false);
 
-        $options      = $this->getOptions($aa_property, $content, $use_name);
+        $selected     = $content->getAaValue($aa_property->getId());
+        $options      = $this->getOptions($selected, $content, $use_name);
         $htmlopt      = array();
         for ( $i=0 ; $i < count($options); $i++) {
             $input_name = $base_name_add ."[$i]";
@@ -1553,6 +1562,18 @@ class AA_Widget_Pwd extends AA_Widget {
      */
     function multiple() {
         return false;   // returns multivalue or single value
+    }
+
+    /** @return AA_Value for the data send by the widget
+     *   The data submitted by form usually looks like
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][password________][pwd][]=MyPassword
+     *  @param $data4field - array('pwd'=>MyPassword)
+     *   This method coverts such data to AA_Value.
+     *
+     *  static class method
+     */
+    function getValue($data4field) {
+        return new AA_Value(crypt(reset($data4field), 'xx'), $data4field['flag'] & FLAG_HTML);
     }
 
     /** getClassProperties function

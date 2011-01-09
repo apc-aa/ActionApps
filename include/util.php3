@@ -772,7 +772,7 @@ function GetSliceInfo($slice_id) {
 function GetTable2Array($SQL, $key="id", $values='aa_all') {
     $db = getDB();
     $db->tquery($SQL);
-    
+
     while ($db->next_record()) {
         if ($values == 'aa_all') {
             $val = $db->Record;
@@ -1675,6 +1675,7 @@ function split_escaped($pattern, $string, $escape_pattern) {
  * @param $escape_pattern
  */
 function join_escaped($pattern, $strings, $escape_pattern) {
+    $retval = '';
     foreach ((array)$strings as $val) {
         if ($retval) {
             $retval .= $pattern;
