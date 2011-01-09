@@ -201,11 +201,17 @@ class datectrl {
         return "<select name=\"tdctr_" . $this->name . "_month\"".getTriggers("select",$this->name).">".$this->getMonthOptions()."</select>";
     }
 
-    function getYearOptions() {
+    function getYearOptions($required=true) {
         $at           = getdate(time());
         $from         = ( $this->from_now ? $at["year"] - $this->y_range_minus : $this->y_range_minus );
         $to           = ( $this->from_now ? $at["year"] + $this->y_range_plus  : $this->y_range_plus );
         $selectedused = false;
+        $ret          = '';
+
+        if (!$required) {
+            $ret .= "<option value=\"0\" ".($this->year ? '' : 'selected class="sel_on" ').">----</option>";
+        }
+
         for ($i = $from; $i <= $to; $i++) {
             $ret .= "<option value=\"$i\"";
             if ($i == $this->year) {
