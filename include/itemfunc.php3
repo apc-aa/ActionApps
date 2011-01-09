@@ -423,7 +423,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
             }
         }
         $slice = AA_Slices::getSlice($sid);
-        
+
         // $pdestination and $purl is not used, yet - it should be used to allow
         // slice administrators to store files to another directory
         // list($ptype, $pwidth, $pheight, $potherfield, $preplacemethod, $pdestination, $purl) = ParamExplode($param);
@@ -478,7 +478,7 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
 
         $value['value'] = $slice->getUrlFromPath($dest_file);
     } // File uploaded
-    
+
     // store link to uploaded file or specified file URL if nothing was uploaded
     insert_fnc_qte( $item_id, $field, $value, "", $additional);
 
@@ -495,21 +495,6 @@ function insert_fnc_fil($item_id, $field, $value, $param, $additional="") {
  * @param $additional
  */
 function insert_fnc_pwd($item_id, $field, $value, $param, $additional='') {
-    $change_varname = "v".unpack_id($field["id"])."a";
-    $retype_varname = "v".unpack_id($field["id"])."b";
-    // "c" created in ValidateContent4Id:
-    $original_varname="v".unpack_id($field["id"])."c";
-    $delete_varname = "v".unpack_id($field["id"])."d";
-    global $$change_varname, $$retype_varname, $$delete_varname, $$original_varname;
-
-    if ($$change_varname && $$change_varname == $$retype_varname) {
-        $value['value'] = crypt($$change_varname, 'xx');
-    } elseif ($$delete_varname) {
-        $value['value'] = "";
-    } else {
-        $value['value'] = $$original_varname;
-    }
-
     insert_fnc_qte($item_id, $field, $value, $param, $additional);
 }
 
@@ -768,10 +753,19 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
                     $$varname = ($$varname ? 1 : 0);
                     break;
                 case 'pwd':
-                    // store the original password to use it in
-                    // insert_fnc_pwd when it is not changed
-                    if ($action == "update"){
-                        $GLOBALS[$varname."c"] = $oldcontent4id[$pri_field_id][0]['value'];
+                    $change_varname   = $varname.'a';
+                    $retype_varname   = $varname.'b';
+                    $delete_varname   = $varname.'d';
+                    global $$change_varname, $$retype_varname, $$delete_varname;
+
+                    if ($$change_varname && ($$change_varname == $$retype_varname)) {
+                        $$varname = crypt($$change_varname, 'xx');
+                    } elseif ($$delete_varname) {
+                        $$varname = '';
+                    } elseif ($action == "update") {
+                        // store the original password to use it in
+                        // insert_fnc_pwd when it is not changed
+                        $$varname = $oldcontent4id[$pri_field_id][0]['value'];
                     }
                     break;
             }
