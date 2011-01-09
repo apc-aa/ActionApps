@@ -38,10 +38,12 @@ $ServerInfo['gd_numeric']       = phpthumb_functions::gd_version(false);
 unset($phpThumb);
 ?>
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 	<title>Demo of phpThumb() - thumbnails created by PHP using GD and/or ImageMagick</title>
-	<link rel="stylesheet" type="text/css" href="/style.css" title="style sheet">
+	<link rel="stylesheet"    type="text/css" href="/style.css" title="style sheet">
+	<link rel="shortcut icon" type="image/x-icon" href="http://phpthumb.sourceforge.net/thumb.ico" />
 </head>
 <body bgcolor="#C5C5C5">
 
@@ -67,7 +69,7 @@ if ($ServerInfo['gd_numeric'] >= 2) {
 	See my page on the <a href="http://www.silisoftware.com/png_alpha_transparency/" target="_blank">PNG transparency problem</a>.
 	Other modern browsers such as <a href="http://www.mozilla.org">Mozilla/Firefox</a> display alpha-transparent PNGs with no problems.</b>
 </td></tr></table><br>
-<script language="Javascript" defer>
+<script type="text/javascript" defer>
 <!--
 var agt = navigator.userAgent.toLowerCase();
 if ((agt.indexOf("opera") == -1) && (agt.indexOf("msie 7") == -1) && (navigator.product != "Gecko")) {
@@ -126,15 +128,17 @@ $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['square'].'
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.urlencode('http://silisoftware.com/images/SiliSoft.gif').'&w=100'), 'description' => 'HTTP source image'.$only_gd);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['square'].'&w=200&fltr[]=wmi|'.$img['watermark'].'|BL'), 'description' => 'width=200px, watermark (bottom-left, 75% opacity)'.$only_gd);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['square'].'&w=200&fltr[]=wmi|'.$img['watermark'].'|*|25'), 'description' => 'width=200px, watermark (tiled, 25% opacity)'.$only_gd);
+$Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['square'].'&w=200&fltr[]=wmi|'.$img['watermark'].'|75x50|80|75|75|45'), 'description' => 'width=200px, watermark (absolute position (75x50), rotation (45), scaling (75x75)))'.$only_gd);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['watermark'].'&bg=00FFFF&f=png', $phpThumbBase.'?src='.$img['watermark'].'&bg=00FFFF&f=gif', $phpThumbBase.'?src='.$img['watermark'].'&bg=00FFFF&f=jpeg'), 'description' => 'source image (GIF) transpancy with transparent output (PNG, GIF) vs. specified background color (JPEG)');
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['anigif'], $phpThumbBase.'?src='.$img['anigif'].'&w=25&f=gif', $phpThumbBase.'?src='.$img['anigif'].'&w=25&f=png', $phpThumbBase.'?src='.$img['anigif'].'&w=25&f=ico', $phpThumbBase.'?src='.$img['anigif'].'&w=25&f=bmp', $phpThumbBase.'?src='.$img['anigif'].'&w=25&f=jpeg'), 'description' => 'resize animated GIF. Notice how output format affects the result: GIF is animated and transparent; PNG and ICO are tranparent but not animated (first frame is rendered as a still image); JPEG and BMP are neither transparent nor animated. Any filters will disable animated resizing (may be fixed in a future version).<br>'.$only_im);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['anigif'], $phpThumbBase.'?src='.$img['anigif'].'&sfn=0&f=png', $phpThumbBase.'?src='.$img['anigif'].'&sfn=2&f=png'), 'description' => 'Specifying still-image source frame in multi-frame source images<br>'.$only_im);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['alpha'].'&f=png', $phpThumbBase.'?src='.$img['alpha'].'&f=ico', $phpThumbBase.'?src='.$img['alpha'].'&f=gif', $phpThumbBase.'?src='.$img['alpha'].'&f=jpeg'), 'description' => 'PNG alpha transparency test, using test image from the <a href="http://trific.ath.cx/web/png/">PNG transparency test page</a>'.$only_php432);
+$Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['square'].'&w=200&fltr[]=stc|FFFFFF|5|10&f=png'), 'description' => 'Create transparency from source image color'.$only_gd2);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=usm|80|0.5|3'), 'description' => 'normal vs. unsharp masking at default settings'.$only_gd2);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=blur|1', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=blur|5'), 'description' => 'normal vs. blur at default (1) and heavy (5)'.$only_gd2);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=gblr', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=sblr'), 'description' => 'normal vs. gaussian blur vs. selective blur'.$only_php500.$only_gd2);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['portrait'].'&w=100&h=100&far=L&bg=0000FF&f=png&fltr[]=bord|1', $phpThumbBase.'?src='.$img['landscape'].'&w=100&h=100&far=T&bg=FF0000&f=png&fltr[]=bord|1', $phpThumbBase.'?src='.$img['portrait'].'&w=100&h=100&far=C&bg=0000FF&f=png&fltr[]=bord|1', $phpThumbBase.'?src='.$img['landscape'].'&w=100&h=100&far=B&bg=FF0000&f=png&fltr[]=bord|1', $phpThumbBase.'?src='.$img['portrait'].'&w=100&h=100&far=R&bg=0000FF&f=png&fltr[]=bord|1'), 'description' => 'Forced Aspect Ratio, colored background, PNG output'.$only_gd);
-$Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['portrait'].'&w=150&ar=L', $phpThumbBase.'?src='.$img['landscape'].'&w=150&ar=L'), 'description' => 'auto-rotate counter-clockwise to landscape from portrait & lanscape'.$only_php42.$only_gd);
+$Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['portrait'].'&w=150&ar=L', $phpThumbBase.'?src='.$img['landscape'].'&w=150&ar=L'), 'description' => 'auto-rotate counter-clockwise to landscape from portrait &amp; lanscape'.$only_php42.$only_gd);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['portrait'].'&hp=100&wl=200', $phpThumbBase.'?src='.$img['landscape'].'&hp=100&wl=200'), 'description' => 'auto-selection of W and H based on source image orientation');
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['unrotated'].'&w=150&h=150', $phpThumbBase.'?src='.$img['unrotated'].'&w=150&h=150&ar=x'), 'description' => 'original image vs. auto-rotated based on EXIF data'.$only_php42.$only_exif.$only_gd);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&ra=30&bg=0000FF', $phpThumbBase.'?src='.$img['landscape'].'&w=200&ra=30&f=png', $phpThumbBase.'?src='.$img['alpha'].'&ra=30&f=png', $phpThumbBase.'?src='.$img['alpha'].'&ra=30&f=gif'), 'description' => 'Rotated 30° (counter-clockwise), width=200px, blue background vs. transparent background vs. rotated image with pre-existing alpha'.$only_php42.$only_gd);
@@ -148,7 +152,7 @@ $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=ds|75', $phpThumbBase.'?src='.$img['landscape'].'&w=200', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=ds|-100'), 'description' => 'desaturated 75% vs. normal vs. -100%'.$only_gd2);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=clr|25|00FF00'), 'description' => 'colorized 25% to green (#00FF00)'.$only_gd2);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=gray', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=sep'), 'description' => 'grayscale vs. sepia'.$only_gd2);
-$Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=mask|'.$img['mask3'].'&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=mask|'.$img['mask1'].'&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=mask|'.$img['mask2'].'&f=jpeg&bg=9900CC&q=100'), 'description' => 'Assorted alpha masks (seen below) applied<br>'.$png_alpha.$only_php432.'<br>JPEG/GIF output is flattened to "bg" background color'.$only_gd2.'<br><img src="../'.$img['mask3'].'"> <img src="../'.$img['mask1'].'"> <img src="../'.$img['mask2'].'">');
+$Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=mask|'.$img['mask3'].'&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=mask|'.$img['mask1'].'&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=mask|'.$img['mask2'].'&f=jpeg&bg=9900CC&q=100'), 'description' => 'Assorted alpha masks (seen below) applied<br>'.$png_alpha.$only_php432.'<br>JPEG/GIF output is flattened to "bg" background color'.$only_gd2.'<br><img src="../'.$img['mask3'].'" alt=""> <img src="../'.$img['mask1'].'" alt=""> <img src="../'.$img['mask2'].'" alt="">');
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=drop|5|10|000000|225&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=mask|'.$img['mask3'].'&fltr[]=drop|5|10|000000|225&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=drop|5|10|000000|225&fltr[]=elip&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=elip&fltr[]=drop|5|10|000000|225&f=png'), 'description' => 'Drop shadow. Note how the order in which filters are applied matters.'.$only_php432.$only_gd);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=elip&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=elip&f=jpeg&bg=00FFFF'), 'description' => 'Elipse<br>'.$png_alpha.$only_php432.'<br>JPEG/GIF output is flattened to "bg" background color'.$only_gd2);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=flip|x', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=flip|y', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=flip|xy'), 'description' => 'flipped on X, Y and X+Y axes'.$only_gd);
@@ -167,7 +171,7 @@ $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=gam|0.6', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=gam|1.6'), 'description' => 'Gamma corrected to 0.6 vs. 1.6'.$only_gd);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=brit|50', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=brit|-50'), 'description' => 'Brightness filter (original vs. +50 vs. -50)'.$only_gd2);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=cont|50', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=cont|-50'), 'description' => 'Contrast filter (original vs. +50 vs. -50)'.$only_gd2);
-$Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['portrait'].'&w=200&fltr[]=over|'.$img['frame1'].'|0', $phpThumbBase.'?src='.$img['portrait'].'&w=200&fltr[]=over|'.$img['frame2'].'|1'), 'description' => 'Overlay vs. Underlay<br><br>Original over/under images:<br><table border="0"><tr><td style="padding: 20px; background-image: url(../'.$img['background'].');"><img src="../'.$img['frame1'].'"> <img src="../'.$img['frame2'].'"></td></tr></table>'.$only_gd);
+$Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['portrait'].'&w=200&fltr[]=over|'.$img['frame1'].'|0', $phpThumbBase.'?src='.$img['portrait'].'&w=200&fltr[]=over|'.$img['frame2'].'|1'), 'description' => 'Overlay vs. Underlay<br><br>Original over/under images:<br><table border="0"><tr><td style="padding: 20px; background-image: url(../'.$img['background'].');"><img src="../'.$img['frame1'].'" alt=""> <img src="../'.$img['frame2'].'" alt=""></td></tr></table>'.$only_gd);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=wmt|phpThumb|18|C|FF0000|loki.ttf|100|5|20&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=wmt|'.rawurlencode('&#9786;&#9835;&#0470;&#1694;').'|40|L|FF0000|arial.ttf|100&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=wmt|copyright+'.date('Y').'|3|BR|00FF00||50&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=wmt|copyright+'.date('Y').'%0AphpThumb()|3|L|00FFFF&f=png'), 'description' => 'Text overlay, TTF and built-in fonts, unicode characters (rawurlencoded HTMLentities), multiple lines, metacharacters (height, width)'.$only_gd);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=wmt|thumbnail+=+^Xx^Y|3|BR|00FFFF||50&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=wmt|click%0Ahere%0A^FkkB|10|L|FF00FF|arial.ttf|100|0||333399|50|y&f=png', $phpThumbBase.'?src='.$img['landscape'].'&w=200&fltr[]=wmt|resized:+^Xx^Y+to+^xx^y|10|B|FFFFFF|arial.ttf|100|0||000000|100|x&f=png'), 'description' => 'metacharacters (height, width), background color, background extend'.$only_gd);
 $Examples[] = array('getstrings' => array($phpThumbBase.'?new=FF0000&w=100&h=50&fltr[]=bvl|10&fltr[]=wmt|hello|14|C|00FFFF|arial.ttf&f=png', $phpThumbBase.'?new=FF0000|25&w=150&h=50&fltr[]=bvl|10&fltr[]=wmt|25%+opaque|14|C|0066FF|arial.ttf&f=png'), 'description' => 'Image created with "new", red background, bevel, TTF text'.$only_gd);
@@ -178,7 +182,7 @@ $Examples[] = array('getstrings' => array($phpThumbBase.'?src='.$img['wmf'].'&w=
 //$Examples[] = array('getstrings' => array(''), 'description' => '');
 
 foreach ($Examples as $key => $ExamplesArray) {
-	echo '<a href="#" name="'.$key.'" title="click to get URL link for example #'.$key.'" onClick="prompt(\'Here is the link to example #'.$key.'\', \'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'#'.$key.'\'); return false;">#'.$key.'</a>';
+	echo '<a href="#" name="x'.$key.'" title="click to get URL link for example #'.$key.'" onClick="prompt(\'Here is the link to example #'.$key.'\', \'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'#x'.$key.'\'); return false;">#'.$key.'</a>';
 	echo '<table border="0"><tr><td style="padding: 20px; background-image: url(../'.$img['background'].');">';
 	$text = '';
 	foreach ($ExamplesArray['getstrings'] as $dummy => $GETstring) {
@@ -186,14 +190,14 @@ foreach ($Examples as $key => $ExamplesArray) {
 			echo '<br>';
 			$text .= "\n";
 		} else {
-			echo '<a href="'.$GETstring.'&down=phpThumb.demo.'.$key.'.'.$dummy.'.jpg" title="'.htmlentities(str_replace($phpThumbBase, '', $GETstring), ENT_QUOTES).'">';
-			echo '<img border="0" src="'.$GETstring.'">';
+			echo '<a href="'.htmlentities($GETstring.'&down=phpThumb.demo.'.$key.'.'.$dummy).'.jpg" title="'.htmlentities(str_replace($phpThumbBase, '', $GETstring)).'">';
+			echo '<img border="0" src="'.htmlentities($GETstring).'" alt="">';
 			echo '</a> ';
-			$text .= '<img src="'.$GETstring.'">'."\n";
+			$text .= '<img src="'.$GETstring.'" alt="">'."\n";
 		}
 	}
 	echo '</td></tr></table>';
-	echo '<xmp>'.$text.'</xmp>';
+	echo '<pre>'.htmlentities($text).'</pre>';
 	echo $ExamplesArray['description'].'<br>';
 	echo '<br><br><hr size="1">';
 }
@@ -206,14 +210,14 @@ $PATH_INFO_examples = array(
 echo '<a href="#" name="pathinfo" title="click to get URL link for PATH_INFO example" onClick="prompt(\'Here is the link to the PATH_INFO example\', \'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'#pathinfo\'); return false;">#pathinfo</a>';
 echo '<table border="0"><tr><td style="padding: 20px; background-image: url(../'.$img['background'].');">';
 foreach ($PATH_INFO_examples as $key => $value) {
-	echo ' <img src="'.$phpThumbBase.'/'.$value.'"> ';
+	echo ' <img src="'.$phpThumbBase.'/'.$value.'" alt=""> ';
 }
 echo '</td></tr></table>';
-echo '<xmp>';
+echo '<pre>';
 foreach ($PATH_INFO_examples as $key => $value) {
-	echo ' <img src="'.$phpThumbBase.'/'.$value.'"> '."\n";
+	echo htmlentities(' <img src="'.$phpThumbBase.'/'.$value.'" alt=""> ')."\n";
 }
-echo '</xmp>';
+echo '</pre>';
 echo 'PATH_INFO example<br>';
 echo '<br><br><hr size="1">';
 
@@ -252,13 +256,13 @@ echo '<br><br><hr size="1">';
 <?php
 echo 'Small picture (400x300), window opened at wrong size (640x480):<br>';
 echo '<i>(mouse-over to see calling parameters)</i><br>';
-echo '<img src="'.$phpThumbBase.'?src='.$img['small'].'&w=100" border="2"><br>';
+echo '<img src="'.$phpThumbBase.'?src='.$img['small'].'&amp;w=100" border="2" alt=""><br>';
 $SmallParams = array(
 	'unmodified'     => '',
 	'text watermark' => '&fltr[]=wmt|Watermark|20|C|FF0000|arial.ttf|100',
 );
 foreach ($SmallParams as $description => $moreparams) {
-	echo '<a title="phpThumb.demo.showpic.php?src='.htmlentities($img['small'].$moreparams, ENT_QUOTES).'" href="javascript:void(0);" onClick="window.open(\'phpThumb.demo.showpic.php?src='.$img['small'].$moreparams.'&title=This+is+a+small+picture\', \'showpic1\', \'width=640,height=480,resizable=no,status=no,menubar=no,toolbar=no,scrollbars=no\');">'.$description.'</a> ';
+	echo '<a title="phpThumb.demo.showpic.php?src='.htmlentities($img['small'].$moreparams).'" href="#" onClick="window.open(\'phpThumb.demo.showpic.php?src='.htmlentities($img['small'].$moreparams.'&title=This+is+a+small+picture').'\', \'showpic1\', \'width=640,height=480,resizable=no,status=no,menubar=no,toolbar=no,scrollbars=no\'); return false;">'.htmlentities($description).'</a> ';
 }
 ?>
 <br>
@@ -266,14 +270,14 @@ foreach ($SmallParams as $description => $moreparams) {
 <?php
 echo 'Big picture (2272x1704), window opened at wrong size (640x480):<br>';
 echo '<i>(mouse-over to see calling parameters)</i><br>';
-echo '<img src="'.$phpThumbBase.'?src='.$img['big'].'&w=100" border="2"><br>';
+echo '<img src="'.$phpThumbBase.'?src='.$img['big'].'&amp;w=100" border="2" alt=""><br>';
 $BigParams = array(
 	'unmodified'           => '',
 	'width=800'            => '&w=800',
 	'width=200, grayscale' => '&w=200&fltr[]=gray',
 );
 foreach ($BigParams as $description => $moreparams) {
-	echo '<a title="phpThumb.demo.showpic.php?src='.htmlentities($img['big'].$moreparams, ENT_QUOTES).'" href="javascript:void(0);" onClick="window.open(\'phpThumb.demo.showpic.php?src='.$img['big'].$moreparams.'&title=This+is+a+big+picture\', \'showpic2\', \'width=640,height=480,resizable=yes,status=no,menubar=no,toolbar=no,scrollbars=no\');">'.$description.'</a> ';
+	echo '<a title="phpThumb.demo.showpic.php?src='.htmlentities($img['big'].$moreparams).'" href="#" onClick="window.open(\'phpThumb.demo.showpic.php?src='.htmlentities($img['big'].$moreparams.'&title=This+is+a+big+picture').'\', \'showpic2\', \'width=640,height=480,resizable=yes,status=no,menubar=no,toolbar=no,scrollbars=no\'); return false;">'.htmlentities($description).'</a> ';
 }
 ?>
 <br>

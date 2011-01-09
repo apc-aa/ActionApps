@@ -1,5 +1,4 @@
 <?php
-require_once "./include/config.php3";
 //////////////////////////////////////////////////////////////
 ///  phpThumb() by James Heinrich <info@silisoftware.com>   //
 //        available at http://phpthumb.sourceforge.net     ///
@@ -41,6 +40,7 @@ $gd_info                  = gd_info();
 
 ?>
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 	<title>phpThumb configuration analyzer</title>
@@ -144,6 +144,37 @@ echo '<div style="background-color: '.(is_writable($phpThumb->config_cache_direc
 echo '</th><td>Original: "'.htmlentities($orig_config_cache_directory).'"<br>Resolved: "'.htmlentities($phpThumb->config_cache_directory).'"<br>Must exist and be both readable and writable by PHP.</td></tr>';
 
 
+echo '<tr><th>cache write test:</th><th colspan="2">';
+$phpThumb->rawImageData = 'phpThumb.demo.check.php_cachetest';
+$phpThumb->SetCacheFilename();
+echo '<div>'.htmlentities($phpThumb->cache_filename ? implode(' / ', split('[/\\]', $phpThumb->cache_filename)) : 'NO CACHE FILENAME RESOLVED').'</div>';
+echo '<div>directory '.(is_dir(dirname($phpThumb->cache_filename)) ? 'exists' : 'does NOT exist').' (before EnsureDirectoryExists())</div>';
+phpthumb_functions::EnsureDirectoryExists(dirname($phpThumb->cache_filename));
+echo '<div style="background-color: '.(is_dir(dirname($phpThumb->cache_filename)) ? 'lime;">directory exists' : 'red;">directory does NOT exist').' (after EnsureDirectoryExists())</div>';
+if ($fp = @fopen($phpThumb->cache_filename, 'wb')) {
+	fwrite($fp, 'this is a test from '.__FILE__);
+	fclose($fp);
+	echo '<div style="background-color: lime;">write test succeeded</div>';
+
+	$old_perms = substr(sprintf('%o', fileperms($phpThumb->cache_filename)), -4);
+	@chmod($phpThumb->cache_filename, 0644);
+	clearstatcache();
+	$new_perms = substr(sprintf('%o', fileperms($phpThumb->cache_filename)), -4);
+	echo '<div style="background-color: '.(($new_perms == '0644') ? 'lime' : (($new_perms > '0644') ? 'orange' : 'red')).';">chmod($phpThumb->cache_filename, 0644) from "'.htmlentities($old_perms).'" resulted in permissions "'.htmlentities($new_perms).'"</div>';
+
+	if (@unlink($phpThumb->cache_filename)) {
+		echo '<div style="background-color: lime;">delete test succeeded</div>';
+	} else {
+		echo '<div style="background-color: red;">delete test FAILED</div>';
+	}
+	$phpThumb->CleanUpCacheDirectory();
+} else {
+	echo '<div style="background-color: red;">write test FAILED</div>';
+}
+//echo '</th><td>Original: "'.htmlentities($orig_config_cache_directory).'"<br>Resolved: "'.htmlentities($phpThumb->config_cache_directory).'"<br>Must exist and be both readable and writable by PHP.</td></tr>';
+echo '</th><td>Created and deletes a sample cache file to see if you actually have create/delete permission</td></tr>';
+
+
 echo '<tr><th>temp directory:</th><th colspan="2">';
 $orig_config_temp_directory = $phpThumb->config_temp_directory;
 $phpThumb->phpThumb_tempnam();
@@ -217,13 +248,13 @@ if ($ServerInfo['im_version']) {
 } else {
 	echo 'red';
 }
-echo '">"'.$phpThumb->ImageMagickCommandlineBase().'"<br>'.($ServerInfo['im_version'] ? $ServerInfo['im_version'] : 'n/a').(@$IMversionAge ? '<br><br>This version of ImageMagick is '.number_format($IMversionAge / 365, 2).' years old<br>(see www.imagemagick.org for new versions)' : '');
+echo '">"'.$phpThumb->ImageMagickCommandlineBase().'"<br>'.($ServerInfo['im_version'] ? $ServerInfo['im_version'] : 'n/a').(@$IMversionAge ? '<br><br>This version of ImageMagick is '.(($IMversionAge < 180) ? number_format($IMversionAge / 30, 2).' months' : number_format($IMversionAge / 365, 2).' years').' old<br>(see www.imagemagick.org for new versions)' : '');
 echo '</th><td>ImageMagick is faster than GD, can process larger images without PHP memory_limit issues, can resize animated GIFs. phpThumb can perform most operations with ImageMagick only, even if GD is not available.</td></tr>';
 
 
 echo '<tr><th>ImageMagick features:</th><th colspan="2">|';
 $GDfeatures['red']    = array('help', 'thumbnail', 'resize', 'crop', 'repage', 'coalesce', 'gravity', 'background', 'interlace', 'flatten', 'border', 'bordercolor', 'dither', 'quality');
-$GDfeatures['orange'] = array('version', 'blur', 'colorize', 'colors', 'colorspace', 'contrast', 'contrast-stretch', 'edge', 'emboss', 'fill', 'flip', 'flop', 'gamma', 'gaussian', 'level', 'modulate', 'monochrome', 'negate', 'normalize', 'sepia-tone', 'threshold', 'unsharp');
+$GDfeatures['orange'] = array('version', 'blur', 'colorize', 'colors', 'colorspace', 'contrast', 'contrast-stretch', 'edge', 'emboss', 'fill', 'flip', 'flop', 'gamma', 'gaussian', 'level', 'modulate', 'monochrome', 'negate', 'normalize', 'rotate', 'sepia-tone', 'threshold', 'unsharp');
 foreach ($GDfeatures as $missingcolor => $features) {
 	foreach ($features as $dummy => $feature) {
 		echo '| <span style="background-color: '.($phpThumb->ImageMagickSwitchAvailable($feature) ? 'lime' : $missingcolor).';">'.htmlentities($feature).'</span> |';
@@ -260,7 +291,7 @@ echo '</th><td>EXIF extension required for auto-rotate images. Also required to 
 
 echo '<tr><th>php_sapi_name()</th><th colspan="2" bgcolor="';
 $php_sapi_name = strtolower(function_exists('php_sapi_name') ? php_sapi_name() : '');
-if (!$php_sapi_name) {
+if (!$php_sapi_name || (eregi('~', dirname($_SERVER['PHP_SELF'])) && ($php_sapi_name != 'apache'))) {
 	echo 'red';
 } elseif ($php_sapi_name == 'cgi-fcgi') {
 	echo 'orange';
@@ -325,7 +356,7 @@ $FunctionsExist = array(
 	'ImageCreateFromWBMP'   => array('yellow',     'required for WBMP source images using GD.'),
 	'ImageCreateFromString' => array('orange',     'required for HTTP and non-file image sources.'),
 	'ImageCreateTrueColor'  => array('orange',     'required for all non-ImageMagick filters.'),
-	'ImageIsTrueColor'      => array('olive',      'available in PHP v4.3.2+ && GD v2.0.1+'),
+	'ImageIsTrueColor'      => array('olive',      'available in PHP v4.3.2+ with GD v2.0.1+'),
 	'ImageFilter'           => array('yellow',     'PHP5 only. Required for some filters (but most can use ImageMagick instead)'),
 );
 foreach ($FunctionsExist as $function => $details) {
@@ -347,7 +378,7 @@ echo '<tr bgcolor="#EEEEEE"><th>Setting</th><th>Master Value</th><th>Local Value
 $SettingFeatures = array(
 	'magic_quotes_runtime' => array('red',    'lime',   'This setting is evil. Turn it off.'),
 	'magic_quotes_gpc'     => array('yellow', 'lime',   'This setting is bad. Turn it off, if possible. phpThumb will attempt to work around it if it is enabled.'),
-	'safe_mode'            => array('orange', 'lime',   'Best if off. Calls to ImageMagick will be disabled if on (limiting max image resolution, no animated GIF resize). Temp files may be disabled. Features will be limited. If disabled in Master but enabled in Local, edit httpd.conf and set (php_admin_value safe_mode "Off") between <VirtualHost> tags'),
+	'safe_mode'            => array('orange', 'lime',   'Best if off. Calls to ImageMagick will be disabled if safe_mode is set to prevent writing temp files (limiting max image resolution, no animated GIF resize). Raw image data sources (e.g. from MySQL database) may not work. Temp files may be disabled. Features will be limited. If disabled in Master but enabled in Local, edit httpd.conf and set (php_admin_value safe_mode "Off") between <VirtualHost> tags'),
 	'allow_url_fopen'      => array('lime',   'yellow', 'Best if on. HTTP source images will be unavailable if disabled and CURL is unavailable.'),
 );
 

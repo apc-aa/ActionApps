@@ -27,20 +27,19 @@
 // See demo linked from http://phpthumb.sourceforge.net    ///
 //////////////////////////////////////////////////////////////
 
-	$phpThumbLocation = '../phpThumb.php?';
+$phpThumbLocation = '../phpThumb.php?';
 
-?>
-<!doctype html public "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<?php
-	if (@$_GET['title']) {
-		echo '<title>'.htmlentities($_GET['title']).'</title>';
-		unset($_GET['title']);
-	}
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
+echo '<html><head>';
+if (isset($_GET['title'])) {
+	echo '<title>'.htmlentities($_GET['title']).'</title>';
+	unset($_GET['title']);
+} else {
+	echo '<title>'.htmlentities('phpThumb :: popup window resizing demo').'</title>';
+}
 ?>
 
-	<script language="Javascript">
+	<script type="text/javascript">
 	<!--
 	// http://www.xs4all.nl/~ppk/js/winprop.html
 	function CrossBrowserResizeInnerWindowTo(newWidth, newHeight) {
@@ -71,7 +70,7 @@
 	// -->
 	</script>
 
-	<script src="javascript_api.js"></script>
+	<script type="text/javascript" src="javascript_api.js"></script>
 
 <?php
 	function SafeStripSlashes($string) {
@@ -90,7 +89,7 @@
 	}
 	$imagesrc = $phpThumbLocation.implode('&', $additionalparameters);
 
-	echo '<script language="Javascript">';
+	echo '<script type="text/javascript">';
 	echo 'var ns4;';
 	echo 'var op5;';
 	echo 'function setBrowserWindowSizeToImage() {';
@@ -104,7 +103,7 @@
 	echo 		'CrossBrowserResizeInnerWindowTo(imageW, imageH);'."\n";
 	echo 	'} else {'."\n";
 				// image is too large for screen: add scrollbars by putting the image inside an IFRAME
-	echo 		'document.getElementById("showpicspan").innerHTML = "<iframe width=\"100%\" height=\"100%\" marginheight=\"0\" marginwidth=\"0\" frameborder=\"0\" scrolling=\"on\" src=\"'.$imagesrc.'\">Your browser does not support the IFRAME tag. Please use one that does (IE, Firefox, etc).<br><img src=\"'.$imagesrc.'\"></iframe>";';
+	echo 		'document.getElementById("showpicspan").innerHTML = "<iframe width=\"100%\" height=\"100%\" marginheight=\"0\" marginwidth=\"0\" frameborder=\"0\" scrolling=\"on\" src=\"'.$imagesrc.'\">Your browser does not support the IFRAME tag. Please use one that does (IE, Firefox, etc).<br><img src=\"'.$imagesrc.'\"><\/iframe>";';
 	echo 	'}'."\n";
 	echo '}';
 	echo '</script>';
@@ -116,7 +115,7 @@
 
 if (@$_GET['src']) {
 
-	echo '<script language="Javascript">';
+	echo '<script type="text/javascript">';
 	echo 'document.writeln(\'<img src="'.$imagesrc.'" border="0" id="imageimg" hspace="0" hspace="0" style="padding: 0px; margin: 0px;">\');';
 	echo '</script>';
 

@@ -14,32 +14,38 @@
 // Note: phpThumb.php is where the caching code is located, if
 //   you instantiate your own phpThumb() object that code is
 //   bypassed and it's up to you to handle the reading and
-//   writing of cached files.
-
+//   writing of cached files, if appropriate.
 
 
 require_once('../phpthumb.class.php');
+
+// create phpThumb object
+$phpThumb = new phpThumb();
 
 // create 3 sizes of thumbnail
 $thumbnail_widths = array(160, 320, 640);
 $capture_raw_data = false; // set to true to insert to database rather than render to screen or file (see below)
 foreach ($thumbnail_widths as $thumbnail_width) {
+	// this is very important when using a single object to process multiple images
+	$phpThumb->resetObject();
 
-	// Note: If you want to loop through and create multiple
-	//   thumbnails from different image sources, you should
-	//   create and dispose an instance of phpThumb() each time
-	//   through the loop and not reuse the object.
-	$phpThumb = new phpThumb();
-
-	// set data
-	$phpThumb->setSourceFilename($_FILES['userfile']['tmp_name']);
+	// set data source -- do this first, any settings must be made AFTER this call
+	$phpThumb->setSourceFilename('images/loco.jpg');  // for static demo only
+	//$phpThumb->setSourceFilename($_FILES['userfile']['tmp_name']);
 	// or $phpThumb->setSourceData($binary_image_data);
 	// or $phpThumb->setSourceImageResource($gd_image_resource);
+
+	// PLEASE NOTE:
+	// You must set any relevant config settings here. The phpThumb
+	// object mode does NOT pull any settings from phpThumb.config.php
+	//$phpThumb->setParameter('config_document_root', '/home/groups/p/ph/phpthumb/htdocs/');
+	//$phpThumb->setParameter('config_cache_directory', '/tmp/persistent/phpthumb/cache/');
 
 	// set parameters (see "URL Parameters" in phpthumb.readme.txt)
 	$phpThumb->setParameter('w', $thumbnail_width);
 	//$phpThumb->setParameter('h', 100);
 	//$phpThumb->setParameter('fltr', 'gam|1.2');
+	//$phpThumb->setParameter('fltr', 'wmi|../watermark.jpg|C|75|20|20');
 
 	// set options (see phpThumb.config.php)
 	// here you must preface each option with "config_"
@@ -73,8 +79,6 @@ foreach ($thumbnail_widths as $thumbnail_width) {
 		echo '<form><textarea rows="10" cols="60" wrap="off">'.htmlentities(implode("\n* ", $phpThumb->debugmessages)).'</textarea></form><hr>';
 	}
 
-	// remember to unset the object each time through the loop
-	unset($phpThumb);
 }
 
 ?>

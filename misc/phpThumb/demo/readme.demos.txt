@@ -19,6 +19,13 @@ should be self-evident what they do when you run them:
     your config file and server configuration and warn of any
     potential problems
 
+* phpThumb.demo.gallery.php - basic demonstration of a photo
+    gallery with ability to browse subdirectories. May use
+    phpThumb.demo.showpic.php for fullsize popup display
+
+* phpThumb.demo.showpic.php - auto-resizes a popup window to
+    match the dimensions of the image it is displaying
+
 * phpThumb.demo.object.php - example of how to call phpThumb
     as an object.
 
@@ -28,17 +35,15 @@ should be self-evident what they do when you run them:
 * phpThumb.demo.random.php - select & display a random thumbnail
     from a directory of images.
 
-* phpThumb.demo.showpic.php - auto-resizes a popup window to
-    match the dimensions of the image it is displaying
-
 
 
 Other people have created useful demos and/or extensions to
 phpThumb(). Some of these I know of are:
+(also see http://phpthumb.sourceforge.net for an updated list)
 
-* iManager          - http://www.j-cons.com/news/
-* iBrowser          - http://www.j-cons.com/news/
-* ThumbnailSelector - http://www.silisoftware.com/scripts/ThumbnailSelector
+* iManager/iBrowser        - http://www.j-cons.com/news/
+* ThumbnailSelector        - http://www.silisoftware.com/scripts/ThumbnailSelector
+* Applejuice Build_Gallery - http://twofivethreetwo.com/?nav=scripts
 
 If you know of any others you think should be mentioned here
 please let me know: info@silisoftware.com
