@@ -95,8 +95,8 @@ class AA_Operators {
             operator_names[1]  = new Array(" = "," < "," > ", " <> ", " '._m('not set').' ", " '._m('is set').' ");
             operator_values[1] = new Array( "=" , "<" , ">" ,  "<>",          "ISNULL",             "NOTNULL");
             // date
-            operator_names[2]  = new Array(" < "," > ", " '._m('not set').' ", " '._m('is set').' ");
-            operator_values[2] = new Array("d:<","d:>",         "ISNULL",             "NOTNULL");
+            operator_names[2]  = new Array(" < (m/d/y)"," > (m/d/y)", " '._m('not set').' ", " '._m('is set').' ", " = (timestamp) "," < (timestamp) "," > (timestamp) ", " <> (timestamp) ");
+            operator_values[2] = new Array("d:<","d:>",         "ISNULL",             "NOTNULL"    ,  "=" ,              "<" ,            ">" ,         "<>" );
             // constants
             operator_names[3]  = new Array(" '._m('contains').' "," '._m('begins with').' ", " '._m('is').' ", " '._m('not set').' ", " '._m('is set').' ", " '._m("select ...").' ");
             operator_values[3] = new Array(       "LIKE"         ,       "RLIKE"           ,        "="      ,         "ISNULL"     ,        "NOTNULL",            "select");
@@ -771,9 +771,7 @@ function getSortFromUrl( $sort ) {
  * @param $querystring
  */
 function GetWhereExp( $field, $operator, $querystring ) {
-    if ( $GLOBALS['debug'] ) {
-        echo "<br>GetWhereExp( $field, $operator, $querystring )";
-    }
+    AA::$debug && AA::$dbg->log('GetWhereExp', $field, $operator, $querystring );
 
     if ($operator == '==') {
         return " ($field = '$querystring') ";            // exact match - no SQL parsing, no stripslashes (we added this because SQL Syntax parser in AA have problems with packed ids)
@@ -1549,6 +1547,9 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
     if ( $select_order ) {                                // order ----------
         $SQL .= " ORDER BY $select_order";
+//        if (defined("DB_COLLATION") AND (strpos($select_order, '.text') !== false)) {
+//            $SQL .= " COLLATE ". DB_COLLATION;
+//        }
     }
 
     // add comment to the SQL command (for debug purposes)
