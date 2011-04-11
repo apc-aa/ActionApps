@@ -105,6 +105,88 @@ if ($_GET['pqp']) {
    $profiler = new PhpQuickProfiler(microtime(true));
 }
 
+class AA_Debug {
+    protected $_starttime;
+
+    function __construct() {
+        $this->_starttime = array('main' => microtime(true));
+    }
+
+    function log()      {$v=func_get_args(); $this->_do('log',     $v);}
+    function info()     {$v=func_get_args(); $this->_do('info',    $v);}
+    function warn()     {$v=func_get_args(); $this->_do('warn',    $v);}
+    function error()    {$v=func_get_args(); $this->_do('error',   $v);}
+    function group()    {$v=func_get_args(); $this->_do('group',   $v);}
+    function groupend() {$v=func_get_args(); $this->_do('groupend',$v);}
+
+    function _do($func, $params) {
+        foreach ($params as $a) {
+            if (is_object($a) && is_callable(array($a,"printobj"))) {
+                $a->printobj();
+            } else {
+                print_r($a);
+            }
+            echo "<br>\n";
+        }
+    }
+    function _logtime($group) {}
+}
+
+class AA_Degug_Firephp extends AA_Debug {
+    private $_console;
+
+    function __construct() {
+        define('INSIGHT_IPS', '*');
+        define('INSIGHT_AUTHKEYS', '*');
+        define('INSIGHT_PATHS', dirname(__FILE__));
+        define('INSIGHT_SERVER_PATH', '/aaa/test.php3');
+        require_once(AA_BASE_PATH. 'misc/firephp/lib/FirePHP/Init.php');
+        $inspector = FirePHP::to('page');
+        $this->_console = $inspector->console();
+        $this->_console->log('ActionApps - console initiated');
+        parent::__construct();
+    }
+
+    function group()    {
+        $v=func_get_args();
+        $group = reset($v);
+        $this->_console->group($group)->open();
+        $this->_console->log($group);
+        $this->_starttime[$group] = microtime(true);
+    }
+
+    function groupend() {
+        $v=func_get_args();
+        $group = reset($v);
+        $this->_console->group($group)->close();
+        $this->_logtime($group);
+    }
+
+    function _do($func, $params) {
+        $this->_console->log(microtime(true) - $this->_starttime['main']);
+        foreach ($params as $var) {
+           call_user_func_array(array($this->_console, $func), array($var));
+        }
+    }
+
+    function _logtime($group) {
+        $time = microtime(true) - $this->_starttime[$group];
+        $msg  = "$group time: $time";
+        if ($time > 1.0) {
+            $this->_console->warn($msg);
+        } else {
+            $this->_console->log($msg);
+        }
+    }
+}
+
+class AA {
+    public static $dbg;
+    public static $debug;
+}
+AA::$dbg   = (strpos($_GET['debug'],'f')!==false) ? new AA_Degug_Firephp() : new AA_Debug();
+AA::$debug = $_GET['debug'];
+
 class DB_AA extends DB_Sql {
     var $Host      = DB_HOST;
     var $Database  = DB_NAME;
@@ -113,6 +195,15 @@ class DB_AA extends DB_Sql {
     var $Auto_Free = 'yes';
 
     public static $queries = array();
+
+    /** allways open reusablr database connection for one time queries */
+    private static $_db    = null;
+
+    function select1($column, $query) {
+        $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
+        $db->query("$query LIMIT 1");
+        return $db->next_record() ? $db->Record[$column] : false;
+    }
 
     /** query function
      * @param $SQL
