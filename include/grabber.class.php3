@@ -1126,7 +1126,7 @@ class AA_Grabber_Slice extends AA_Grabber {
     /** Description of the grabber - used as help text for the users.
      *  Description is in in HTML
      */
-    function description() { return _m('grabs items form some slice'); }
+    function description() { return _m('grabs items from some slice'); }
 
      /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
@@ -1154,8 +1154,74 @@ class AA_Grabber_Slice extends AA_Grabber {
 
     /** speedup */
     function _fillCache() {
-        // read next 100 items (we can laborate with cache sice in future to get even better performance)
+        // read next 100 items (we can laborate with cache size in future to get even better performance)
         $this->_content_cache = GetItemContent(new zids( array_slice($this->_longids, $this->_index, 100), 'l'));
+    }
+
+    function finish() {
+        $this->_longids = array();
+    }
+}
+
+/** AA_Grabber_Discussion - grabs data from slices discussion based on AA_Set
+ *  Right now we use it mainly for apc-aa/admin/se_export.php
+ */
+class AA_Grabber_Discussion extends AA_Grabber {
+
+    var $set;                 /** AA_Set specifies the slice, conds and sort */
+    var $_longids;            /** list if files to grab - internal array */
+    var $_content_cache;      /**  */
+    var $_index;              /**  */
+
+    function AA_Grabber_Discussion($set) {
+        $this->set            = $set;
+        $this->_longids       = array();
+        $this->_content_cache = array();
+        $this->_index         = 0;
+    }
+
+    /** Name of the grabber - used for grabber selection box */
+    function name() { return _m('Discussion from slice'); }
+
+    /** Description of the grabber - used as help text for the users.
+     *  Description is in in HTML
+     */
+    function description() { return _m('grabs discussion comments for items from some slice'); }
+
+     /** Possibly preparation of grabber - it is called directly before getItem()
+     *  method is called - it means "we are going really to grab the data
+     */
+    function prepare() {
+        // get all discussion comments ids
+        $item_zids            = $this->set->query();
+        $item_long_ids        = $item_zids->longids();
+        $this->_longids       = array(); 
+        foreach ($item_long_ids as $item_id) {
+            $zids = QueryDiscussionZIDs($item_id);
+            $this->_longids = array_merge($this->_longids, $zids->longids());
+        }
+        $this->_content_cache = array();
+        $this->_index         = 0;
+        reset($this->_longids);   // go to first long id
+    }
+
+    /** Method called by the AA_Saver to get next item from the data input */
+    function getItem() {
+        if (!($longid = $this->_longids[$this->_index])) {
+            return false;
+        }
+        if (empty($this->_content_cache[$longid])) {
+            $this->_fillCache();
+        }
+
+        $this->_index++;
+        return new ItemContent($this->_content_cache[$longid]);
+    }
+
+    /** speedup */
+    function _fillCache() {
+        // read next 100 items (we can laborate with cache size in future to get even better performance)
+        $this->_content_cache = GetDiscussionContent(new zids( array_slice($this->_longids, $this->_index, 100), 'l'));
     }
 
     function finish() {

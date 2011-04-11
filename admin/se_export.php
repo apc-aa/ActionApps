@@ -40,6 +40,7 @@ require_once "../include/init_page.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."item.php3";
 require_once AA_INC_PATH."grabber.class.php3";
+require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
@@ -47,12 +48,13 @@ require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 //require_once AA_INC_PATH."PHPExcel/PHPExcel/Writer/Excel5.php";
 
 class AA_Exporter extends AA_Object {
-    var $set;
     var $field_set;
+    var $grabber;
 
     function AA_Exporter($params) {
-        $this->set       = $params['set'];
+        // params: set, field_set, grabber 
         $this->field_set = $params['field_set'];
+        $this->grabber   = $params['grabber']; 
     }
 
     function sendFile($file_name) {
@@ -86,11 +88,10 @@ class AA_Exporter extends AA_Object {
     function _createTmpFile() {
         $temp_file = tmpfile();
 
-        $grabber = new AA_Grabber_Slice($this->set);
-        $grabber->prepare();       // maybe some initialization in grabber
+        $this->grabber->prepare();       // maybe some initialization in grabber
 
         $index = 0;
-        while ($content4id = $grabber->getItem()) {
+        while ($content4id = $this->grabber->getItem()) {
 
             $item = GetItemFromContent($content4id);
 
@@ -101,10 +102,6 @@ class AA_Exporter extends AA_Object {
 
             fwrite($temp_file, $this->_outputItem($item));
             $old_item = $item;
-
-//            if ($index==6000) {
-//                break;
-//            }
         }
         fwrite($temp_file, $this->_outputEnd($old_item));
         return $temp_file;
@@ -123,7 +120,36 @@ class AA_Exporter extends AA_Object {
 
 class AA_Exporter_Csv extends AA_Exporter {
 
-    function _outputStart($item)  {
+    /** exporter function
+     *  Generate the output and write to a temporary file
+     *  I'm assuming $export_slices contains UNPACKED slice ids
+     * @param $slice_id
+     * @param $export_slices
+     * @param $new_slice_id
+     */
+    function _createTmpFile() {
+        $temp_file = tmpfile();
+
+        $this->grabber->prepare();       // maybe some initialization in grabber
+
+        $index = 0;
+        while ($content4id = $this->grabber->getItem()) {
+            
+            $item = GetItemFromContent($content4id);
+
+            if ($index == 0) {
+                $this->_outputStartFile($temp_file, $item);
+            }
+            $index++;
+
+            $this->_outputItemFile($temp_file, $item);
+            $old_item = $item;
+        }
+        return $temp_file;
+    }
+
+
+    function _outputStartFile($file, $item)  {
         $fs      = $this->field_set;
         $out_arr = array();
         $count   = $fs->fieldCount();
@@ -131,20 +157,20 @@ class AA_Exporter_Csv extends AA_Exporter {
         for ($i=0; $i < $count; $i++) {
             $out_arr[]  = $fs->getName($i) . ' ('.$fs->getDefinition($i).')';
         }
-        return join(',',$out_arr)."\n";
+        fputcsv($file, $out_arr);
     }
 
-    function _outputItem($item)  {
+    function _outputItemFile($file, $item)  {
         $fs      = $this->field_set;
         $out_arr = array();
         $count   = $fs->fieldCount();
 
         for ($i=0; $i < $count; $i++) {
             $definition = $fs->getDefinition($i);
-            $recipe     = $fs->isField($i) ? "{alias:$definition:f_t:{@$definition:|}:csv}" : "{csv:{$definition}}";
+            $recipe     = $fs->isField($i) ? "{@$definition:|}" : "$definition";
             $out_arr[]  = $item->unalias($recipe);
         }
-        return join(',',$out_arr)."\n";
+        fputcsv($file, $out_arr);
     }
 }
 
@@ -381,30 +407,40 @@ if ($_GET['export']) {
         exit;
     }
 
-    $fields     = $slice->getFields();
-    $fields_arr = $fields->getPriorityArray();
-    $fs         = new AA_Fieldset;
-
-    foreach ($fields_arr as $field_id) {
-        // skip packed fields
-        if ( in_array($field_id, array('id..............', 'slice_id........'))) {
-            continue;
+    $set = new AA_Set($slice_id, $_GET['conds'], $_GET['sort'], $_GET['bins']);
+    $fs  = new AA_Fieldset;
+    
+    if ($grabber_name=='AA_Grabber_Discussion') {
+        $grabber  = new AA_Grabber_Discussion($set);
+        foreach (array('d_id............', 'd_parent........','d_item_id.......', 'd_subject.......', 'd_body..........', 'd_author........', 'd_e_mail........', 'd_url_address...', 'd_url_descript..', 'd_date..........', 'd_remote_addr...', 'd_state.........') as $field_id) {
+            $fs->addField($field_id);
         }
-        $fs->addField($field_id, $fields->getProperty($field_id,'name'));
+    } else {
+        $grabber  = new AA_Grabber_Slice($set); 
+        
+        $fields     = $slice->getFields();
+        $fields_arr = $fields->getPriorityArray();
+    
+        foreach ($fields_arr as $field_id) {
+            // skip packed fields
+            if ( in_array($field_id, array('id..............', 'slice_id........'))) {
+                continue;
+            }
+            $fs->addField($field_id, $fields->getProperty($field_id,'name'));
+        }
+        $fs->addField('u_slice_id......', 'Slice ID');
+        $fs->addField('unpacked_id.....', 'Item ID');
     }
-    $fs->addField('u_slice_id......', 'Slice ID');
-    $fs->addField('unpacked_id.....', 'Item ID');
 
     set_time_limit(1200);
 
-    $set      = new AA_Set($slice_id, $_GET['conds'], $_GET['sort'], $_GET['bins']);
-    $exporter = AA_Object::factory($_GET['format'], array('set'=>$set, 'field_set'=>$fs));
+    $exporter = AA_Object::factory($_GET['format'], array('field_set'=>$fs, 'grabber'=>$grabber));
     if (is_null($exporter)) {
         echo _m('Bad file format - specify format');
         exit;
     }
 
-    $filename = $_GET['filename'] ? $_GET['filename'] : 'export.'.$_GET['format'];
+    $filename = $_GET['filename'] ? $_GET['filename'] : date("ymd").'-'.AA_Stringexpand_Seoname::expand($slice->name(), '',$slice->getCharset()). (($grabber_name=='AA_Grabber_Discussion') ? '-Disc' : ''). '.'.strtolower(substr($_GET['format'],12));
 
     $exporter->sendFile($filename);
 
@@ -426,6 +462,11 @@ echo $Msg;
 
 $form_buttons = array ('export' => array('type'=>'submit', 'value'=> _m('Export')));
 
+$grabber_arr = array(
+    'AA_Grabber_Slice'      => _m('Item Contents'),
+    'AA_Grabber_Discussion' => _m('Discussion')
+    );
+
 $bins_arr = array(
     AA_BIN_ALL      => _m('All'),
     AA_BIN_ACTIVE   => _m('Active'),
@@ -436,14 +477,20 @@ $bins_arr = array(
     AA_BIN_TRASH    => _m('Trash')
     );
 
-$format_arr    = AA_Components::getClassNames('AA_Exporter_');
+$format_arr     = array();
+$format_classes = AA_Components::getClassNames('AA_Exporter_');
+foreach ($format_classes as $fclass) {
+    $format_arr[$fclass] = substr($fclass,12);
+}
+
 
 ?>
 <form name="f" method="get" action="<?php echo $sess->url($_SERVER['PHP_SELF']) ?>">
 <?php
 FrmTabCaption(_m("Export Items"), '','',$form_buttons, $sess, $slice_id);
 
-FrmInputSelect('format', _m("Format"),    $format_arr, $format, true, '', '', true);
+FrmInputSelect('format',  _m("Format"),    $format_arr, $format, true);
+FrmInputSelect('grabber_name', _m("What to export"), $grabber_arr, $grabber_name, true);
 FrmInputSelect('bins', _m("Bins"),      $bins_arr, $bins, true);
 FrmInputText("filename",  _m("Filename"), $filename, 255, 60, false, _m('save as...'));
 FrmInputText("conds",  _m("Conditions"), $conds, 255, 60, false, _m('conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
@@ -455,6 +502,4 @@ FrmTabEnd($form_buttons, $sess, $slice_id);
 <?php
 HtmlPageEnd();
 page_close()
-?>
-
 ?>
