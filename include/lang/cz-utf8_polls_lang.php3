@@ -9,6 +9,7 @@
 // Before each message there are links to program code where it was used.
 
 $mgettext_lang = "cz-utf8";
+define("DB_COLLATION", "utf8_czech_ci");
 
 // modules/polls/index.php3, row 41
 $_m["You do not have permission to manage Polls"]

@@ -9,6 +9,7 @@
 // Before each message there are links to program code where it was used.
 
 $mgettext_lang = "cz-utf8";
+define("DB_COLLATION", "utf8_czech_ci");
 
 # Unused messages
 $_m["Add&nbsp;mutual"]
