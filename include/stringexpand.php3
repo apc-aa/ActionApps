@@ -826,7 +826,7 @@ function parseLoop($out, &$item) {
             $params = explode(",",$param);
             // field name
             $field    = substr($field, 0, strpos($field, "("));
-            $group_id = getConstantsGroupID($item->getval("slice_id........"), $field);
+            $group_id = getConstantsGroupID($item->getSliceID(), $field);
         }
     }
 
@@ -910,22 +910,16 @@ function parseLoop($out, &$item) {
     return $ret_str;
 }
 
-/** getConstantsGroupID function
+/**  get constant group_id from content cache or get it from db
  *  @return group id for specified field
  * @param $slice_id
  * @param $field
  */
 function getConstantsGroupID($slice_id, $field) {
     global $contentcache;
-    // get constant group_id from content cache or get it from db
-    $zids    = new zids($slice_id, "p");
-    $long_id = $zids->longids();
     // GetCategoryGroup looks in database - there is a good chance, we will
     // expand {const_*} very soon (again), so we cache the result for future
-    $group_id = $contentcache->get_result("GetCategoryGroup", array($long_id[0], $field));
-    // get values from contentcache or use GetConstants function to get it from db
-    // $val = $contentcache->get_result("GetConstants", array($group_id, "pri", "value"));
-    return $group_id;
+    return $contentcache->get_result("GetCategoryGroup", array($slice_id, $field));
 }
 
 /** getConstantValue function
@@ -1317,9 +1311,9 @@ class AA_Stringexpand_Count extends AA_Stringexpand_Nevercache {
             return 0;
         }
         if (empty($delimiter)) {
-            $delimeter = '-';
+            $delimiter = '-';
         }
-        return count(explode($delimeter, $ids));
+        return count(array_filter(explode($delimiter, $ids),'strlen'));  // count only not empty members
     }
 }
 
@@ -2101,7 +2095,8 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercache {
      * @param $else_text
      */
     function expand($condition, $text='', $else_text='') {
-        return ((strlen($condition)<1) OR IsAlias($condition)) ? $else_text : str_replace('_#1', $condition, $text);
+        $trim_cond = trim($condition);
+        return ((strlen($trim_cond)<1) OR IsAlias($trim_cond)) ? $else_text : str_replace('_#1', $condition, $text);
     }
 }
 
@@ -2310,9 +2305,9 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
 }
 
 
-/** {fieldoptions:<slice_id>:<field_id>:<values>} 
- *  displys html <options> as defined for the field. You can specify current 
- *  values - as single value, or as multivalue in JSON format. 
+/** {fieldoptions:<slice_id>:<field_id>:<values>}
+ *  displys html <options> as defined for the field. You can specify current
+ *  values - as single value, or as multivalue in JSON format.
  */
 class AA_Stringexpand_Fieldoptions extends AA_Stringexpand_Field {
 
@@ -2820,7 +2815,6 @@ class AA_Unalias_Callback {
      */
     function expand_bracketed($match) {
         global $contentcache, $als, $debug, $errcheck;
-
         $out = $match[1];
 
         // See http://apc-aa.sourceforge.net/faq#aliases for details
@@ -2901,7 +2895,7 @@ class AA_Unalias_Callback {
                 // parameters - first is field
                 $parts = ParamExplode(substr($out,strpos($out,":")+1));
                 // get group id
-                $group_id = getConstantsGroupID($this->item->getval("slice_id........"), $parts[0]);
+                $group_id = getConstantsGroupID($this->item->getSliceID(), $parts[0]);
                 /* get short_id/name/... of constant with specified value from constants category with
                    group $group_id */
                 $value = getConstantValue($group_id, $what, $this->item->getval($parts[0]));
@@ -2982,10 +2976,10 @@ class AA_Unalias_Callback {
             // return result only if matches stringexpand_ or eb functions
             if ( $fnctn ) {
                 if (!$parts[2]) {
-                    $ebres = $fnctn();
+                    $ebres = @$fnctn();
                 } else {
                     $param = array_map('DeQuoteColons',ParamExplode($parts[2]));
-                    $ebres = call_user_func_array($fnctn, (array)$param);
+                    $ebres = @call_user_func_array($fnctn, (array)$param);
                 }
                 return QuoteColons($ebres);
             }
@@ -3169,7 +3163,6 @@ class AA_Stringexpand {
     /** In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax */
     public static $php_functions = array (
         'strlen'           => 'strlen',
-        'trim'             => 'trim',
         'str_repeat'       => 'str_repeat',
         'str_replace'      => 'str_replace',
         'striptags'        => 'strip_tags',
@@ -3178,6 +3171,7 @@ class AA_Stringexpand {
         'urlencode'        => 'urlencode',
         'min'              => 'min',
         'max'              => 'max',
+        'ord'              => 'ord',
         'rand'             => 'rand',
         'fmod'             => 'fmod',
         'log'              => 'log',         /** math function log() */
@@ -3336,6 +3330,20 @@ class AA_Stringexpand_Expand extends AA_Stringexpand {
     }
 }
 
+
+/** unaliases the text - replaces {views} and other constructs */
+class AA_Stringexpand_Trim extends AA_Stringexpand {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    function expand($string='', $chars='') {
+        if (empty($chars)) {
+            $chars = " \t\n\r\0\x0B\xA0";  // standard + chr(160) - hard space
+        }
+        return trim($string, $chars);
+    }
+}
+
+
 class AA_Stringexpand_Packid extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -3418,15 +3426,19 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      */
     function expand($image='', $phpthumb_params='', $info='', $param1='', $param2='') {
 
+        //AA::$debug && AA::$dbg->info('AA_Stringexpand_Img', $image, $phpthumb_params, $info, $param1, $param2);
+
         $img_url = AA_Stringexpand_Img::_getUrl($image, $phpthumb_params);
         if (empty($info) OR ($info == 'url') OR empty($img_url)) {
             return $img_url;
         }
+        //AA::$debug && AA::$dbg->info('AA_Stringexpand_Img2', $img_url);
 
         $a = @getimagesize(str_replace('&amp;', '&', $img_url));
         if (! $a) {
             return '';
         }
+        //AA::$debug && AA::$dbg->info('AA_Stringexpand_Img3', $a);
 
         // No warning required, will be generated by getimagesize
         switch ( $info ) {
@@ -3760,7 +3772,7 @@ class AA_Stringexpand_Table extends AA_Stringexpand_Nevercache {
 
 /** Array - experimental
  */
-class AA_Stringexpand_Array extends AA_Stringexpand {
+class AA_Stringexpand_Array extends AA_Stringexpand_Nevercache {
 
     function expand($id, $cmd, $par1=null, $par2=null, $par3=null, $par4=null) {
         static $arrays = array();
@@ -3835,5 +3847,4 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
         return '';
     }
 }
-
 ?>
