@@ -801,7 +801,7 @@ Xinha.Config = function()
    *  Default: <code>true</code>
    *  @type Boolean
    */
-  this.stripScripts = true;
+  this.stripScripts = false;
 
  /** See if the text just typed looks like a URL, or email address
    * and link it appropriatly
