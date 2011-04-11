@@ -35,12 +35,28 @@ $sortable_columns = array (
     "lastm"=>array("label"=>_m("Last modified"),"sort"=>"d"));
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/** filesuffix function
+ *  returns the suffix part of the filename (beginning with the last dot (.) in the filename)
+ * @param $filename
+ */
+function filesuffix($filename) {
+    if (!strstr ($filename,".")) {
+        return "";
+    }
+    $i = strlen($filename);
+    while ($filename[$i] != ".") {
+        $i --;
+    }
+    return substr ($filename,$i+1);
+}
+
 /** make_secure function
  * @param $filename
  */
 function make_secure(&$filename) {
     $filename = str_replace ("..","",$filename);
 }
+
 /** set_directory function
  * @param $dir
  */

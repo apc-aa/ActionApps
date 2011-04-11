@@ -73,19 +73,10 @@ function get_bin_names() {
 function new_collection_id() {
     global $db;
     do {
-        $new_id = new_alphanumeric_id(5);
+        $new_id = gensalt(5);
         $db->query("SELECT id FROM alerts_collection WHERE id = '$new_id'");
     } while ($db->next_record());
     return $new_id;
-}
-
-function new_alphanumeric_id($saltlen) {
-    srand((double) microtime() * 1000000);
-    $salt_chars = "abcdefghijklmnoprstuvwxBCDFGHJKLMNPQRSTVWXZ0123456589";
-    for ($i = 0; $i < $saltlen; $i ++) {
-        $salt .= $salt_chars[rand(0,strlen($salt_chars)-1)];
-    }
-    return $salt;
 }
 
 // ----------------------------------------------------------------------------------------

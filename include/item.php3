@@ -1101,6 +1101,10 @@ class AA_Item {
             $text  = get_if( $p[0], $this->getval($col) );
             $modif = $p[1];
             if (in_array($modif, array('csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug'))) {
+                if ( AA_Stringexpand::$php_functions[$modif] ) {
+                    // special php functions aliases
+                    return call_user_func_array(AA_Stringexpand::$php_functions[$modif], (array)$text);
+                }
                 $stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $modif);
                 return call_user_func_array( array($stringexpand,'expand'), $text);
 //                return call_user_func( array( AA_Object::constructClassName('AA_Stringexpand_', $modif), 'expand'), $text);

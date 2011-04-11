@@ -572,16 +572,4 @@ function isspace($c) {
     return strchr(" \t\r\n", $c);
 }
 
-/** strips path from file name */
-function filepath($filename) {
-    if (!strstr($filename,"/")) {
-        return "./";
-    }
-    $i = strlen($filename);
-    while ($filename[$i] != "/") {
-        $i--;
-    }
-    return substr($filename,0,$i+1);
-}
-
 ?>

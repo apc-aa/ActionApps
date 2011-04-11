@@ -492,7 +492,7 @@ function FilemanPerms($auth, $slice_id) {
  *  get email permissions
  * (c) Jakub Adamek, Econnect, December 2002
  *
- * @param $type      OPTIONAL emails type, see get_email_types() in util.php3.
+ * @param $type      OPTIONAL emails type, see get_email_types() in tv_email.php3.
  *                   If not specified, all types are included.
  * @param $user_id   OPTIONAL, default is current user
  * @return array (email id => description)

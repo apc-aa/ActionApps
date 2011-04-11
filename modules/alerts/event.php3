@@ -74,25 +74,23 @@ function AlertsSendWelcome( $slice_id, &$itemContent ) {
 function AlertsSendInstantAlert( $item_id, $slice_id ) {
     global $db;
 
-    $db->query ("SELECT moved2active, publish_date, expiry_date FROM item
-        WHERE id = '".q_pack_id($item_id)."'");
+    $db->query ("SELECT moved2active, publish_date, expiry_date FROM item  WHERE id = '".q_pack_id($item_id)."'");
 
-    if ($db->next_record() && $db->f("moved2active")
-        && time() >= $db->f("publish_date") && time() <= $db->f("expiry_date")) {
+    if ($db->next_record() && $db->f("moved2active") && time() >= $db->f("publish_date") && time() <= $db->f("expiry_date")) {
         $db->query ("
             SELECT DISTINCT ACF.collectionid FROM alerts_collection_filter ACF
             INNER JOIN alerts_filter AF ON ACF.filterid = AF.id
             INNER JOIN view ON view.id = AF.vid
             WHERE view.slice_id='".q_pack_id($slice_id)."'");
-        while ($db->next_record())
+        while ($db->next_record()) {
             $collection_ids[] = $db->f("collectionid");
+        }
         if (is_array($collection_ids)) {
             initialize_last();
             set_time_limit(600); // This can take a while
             send_emails("instant", $collection_ids, "", true, $item_id);
             // We must reset moved2active so that the item is not re-sent on update.
-            $db->query ("UPDATE item SET moved2active = 0 WHERE id='"
-                .q_pack_id($item_id)."'");
+            $db->query ("UPDATE item SET moved2active = 0 WHERE id='" .q_pack_id($item_id)."'");
         }
     }
 }

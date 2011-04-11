@@ -44,6 +44,12 @@ function fillFormFromVars($fillConds) {
     return $res;
 }
 
+/** GetTimeZone function *
+ */
+function GetTimeZone() {
+    $d = getdate();
+    return (mktime($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year']) - gmmktime($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year'])) / 3600;
+}
 
 // ----------------------------------------------------------------------------
 /* * * * * * * * * * * FILL FORM * * * * * * * * * */

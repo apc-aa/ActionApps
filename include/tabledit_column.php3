@@ -30,6 +30,113 @@
  * @link      http://www.apc.org/ APC
 */
 
+
+/** gdf_error function
+ * @param $x
+ */
+function gfd_error($x) {
+    echo "Unrecognized date format charcacter $x";
+    exit;
+}
+
+/**  get_formatted_date function
+ * @param $datestring
+ * @param $format
+ *   @return the Unix timestamp counted from the formatted date string.
+ *   Does not check the date format, rather returns nonsence values for
+ *   wrong date strings.
+ *   Uses non-format letters as separators only,
+ *   i.e. "2.3.2002" is parsed the same as "2/3/2002" or even "2;3#2002".
+ */
+function get_formatted_date($datestring, $format) {
+    // don't work with empty string
+    if (!$datestring) {
+        return "";
+    }
+
+    // Split the date into parts consisting only of digits or only of letters
+    for ($i = 0; $i < strlen ($datestring); $i++) {
+        if (ctype_alpha($datestring[$i]) && ($s == "" || ctype_alpha($datestring[$i-1]))) {
+            $s .= $datestring[$i];
+        } elseif (ctype_digit($datestring[$i]) && ($s == "" || ctype_digit($datestring[$i-1]))) {
+            $s .= $datestring[$i];
+        } elseif ($s) {
+            $dateparts[] = $s;
+            $s = "";
+        }
+    }
+    if ($s) {
+        $dateparts[] = $s;
+    }
+
+    // Split the format into parts consisting of one letter
+    for ($i = 0; $i < strlen ($format); $i++) {
+        if (ctype_alpha($format[$i])) {
+            $formatparts[] = $format[$i];
+        }
+    }
+
+    $month_names = array ("January"=>1,"February"=>2,"March"=>3,"April"=>4,"May"=>5,"June"=>6,
+                          "July"=>7,"August"=>8,"September"=>9,"October"=>10,"November"=>11,"December"=>12);
+    $month3_names = array ("Jan"=>1,"Feb"=>2,"Mar"=>3,"Apr"=>4,"May"=>5,"Jun"=>6,"Jul"=>7,"Aug"=>8,"Sep"=>9,"Oct"=>10,"Nov"=>11,"Dec"=>12);
+
+    // assing date parts to format parts
+    for ($i = 0; $i < count ($dateparts); $i ++) {
+        $d = $dateparts[$i];
+        switch ($formatparts[$i]) {
+            case 'a': $pm = $d == "pm"; break;
+            case 'A': $pm = $d == "PM"; break;
+            case 'B': gfd_error('B'); break;
+            case 'd': $day = $d; break;
+            case 'D': break;
+            case 'F': $month = $month_names[$d]; break;
+            case 'g':
+            case 'h': $hour = $d; $use_pm = true; break;
+            case 'H':
+            case 'G': $hour = $d; $use_pm = false; break;
+            case 'i': $minute = $d; break;
+            case 'I': break;
+            case 'j': $day = $d; break;
+            case 'l': break;
+            case 'L': break;
+            case 'n':
+            case 'm': $month = $d; break;
+            case 'M': $month = $month3_names[$d]; break;
+            case 'O': break;
+            case 'r': gfd_error('r'); break;
+            case 's': $second = $d; break;
+            case 'S': break;
+            case 't': break;
+            case 'T': break;
+            case 'U': return $d; break;
+            case 'w': break;
+            case 'W': gfd_error('W'); break;
+            case 'Y': $year = $d; break;
+            case 'y': $year = $d; break; // mktime works with 2-digit year
+            case 'z': $day = $d; break;
+            case 'Z': break;
+        }
+    }
+
+    //echo "hour $hour minute $minute second $second month $month day $day year $year pm $pm";
+
+    if ($use_pm && $pm) {
+        $hour += 12;
+    }
+
+    // mktime replaces missing values by today's values
+    if (!isset ($year)) {
+        if (!isset ($day)) {
+            if (!isset ($month)) {
+                return mktime ( $hour, $minute, $second);
+            }
+            else return mktime ( $hour, $minute, $second, $month);
+        }
+        else return mktime ( $hour, $minute, $second, $month, $day);
+    }
+    else return mktime ( $hour, $minute, $second, $month, $day, $year);
+}
+
 /** ColumnFunctions function
  * Does column type-specific work.
  *
@@ -42,8 +149,7 @@
  * @return nothing
  */
 
-function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, $record="")
-{
+function ColumnFunctions($cview, &$val, $function, $name="", $new_record=false, $record="") {
     global $err;
     // value to be shown if the requested value is not a part of the select box array
     $unknown_select_value = "????????";

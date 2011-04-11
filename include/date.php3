@@ -27,6 +27,15 @@
 // javascript.php3 defines getTriggers, which is used by Add / Edit item page
 require_once AA_INC_PATH."javascript.php3";
 
+
+/** monthnames function
+ *  @return array month names
+ */
+function monthNames() {
+    return array( 1 => _m('January'), _m('February'), _m('March'), _m('April'), _m('May'), _m('June'), _m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December'));
+}
+
+
 //
 //	Date form element
 //

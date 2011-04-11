@@ -206,6 +206,7 @@ function delete_fields_from_slice($collectionid, $slice_id) {
     $varset->addkey ("slice_id", "unpacked", $slice_id);
     foreach ($alerts_specific_fields as $field_id => $foo) {
         $varset->addkey("id", "text", $field_id);
+
         $db->query($varset->makeSELECT ("field"));
         if ($db->next_record()) {
             list ($fnc, $group_id) = explode (":", $db->f("input_show_func"));

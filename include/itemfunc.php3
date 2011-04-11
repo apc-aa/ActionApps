@@ -94,11 +94,7 @@ function default_fnc_rnd($param) {
 
     $db = getDB();
     do {
-        srand((double) microtime() * 1000000);
-        $salt_chars = "abcdefghijklmnoprstuvwxABCDEFGHIJKLMNOPQRSTUVWX0123456789";
-        for ($i=0; $i < $len; $i ++) {
-            $salt .= $salt_chars[rand(0,strlen($salt_chars)-1)];
-        }
+        $salt = gensalt($len);
 
         if (strlen($field_id) != 16) {
             break;
@@ -154,24 +150,21 @@ function insert_fnc_qte($item_id, $field, $value, $param, $additional='') {
     $fnc = ParseFnc($field["input_show_func"]);   // input show function
     if ($fnc AND ($fnc['fnc']=='pre')) {
         // get add2constant and constgroup (other parameters are irrelevant in here)
-        list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding,
-             $secondfield, $add2constant) = explode(':', $fnc['param']);
+        list($constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield, $add2constant) = explode(':', $fnc['param']);
         // add2constant is used in insert_fnc_qte - adds new value to constant table
-        if ($add2constant AND $constgroup AND (substr($constgroup,0,7) != "#sLiCe-")) {
+        if ($add2constant AND $constgroup AND (substr($constgroup,0,7) != "#sLiCe-") AND strlen(trim($value['value']))) {
             $db = getDB();
             // does this constant already exist?
             $constgroup = quote($constgroup);
             $constvalue = quote($value['value']);
-            $SQL = "SELECT * FROM constant
-                     WHERE group_id='$constgroup' AND value='$constvalue'";
+            $SQL = "SELECT * FROM constant WHERE group_id='$constgroup' AND value='$constvalue'";
             $db->query($SQL);
             if (!$db->next_record()) {
                 // constant is not in database yet => add it
 
                 // first we have to get max priority in order we can add new constant
                 // with bigger number
-                $SQL = "SELECT max(pri) as max_pri FROM constant
-                        WHERE group_id='$constgroup'";
+                $SQL = "SELECT max(pri) as max_pri FROM constant WHERE group_id='$constgroup'";
                 $db->query($SQL);
                 $new_pri = ($db->next_record() ? $db->f('max_pri') + 10 : 1000);
 

@@ -410,7 +410,7 @@ function pack_id($unpacked_id) {
  * @param $packed_id
  * @return unpacked md5 id
  */
-function unpack_id($packed_id){
+function unpack_id($packed_id=''){
     return ((string)$packed_id != '0') ? bin2hex($packed_id) : '0';   // unpack("H*", $str) does not work in PHP 4.0.3 so bin2hex used
 }
 
@@ -544,16 +544,6 @@ function huh($msg, $name="") {
     }
 }
 
-/** huhw function
- * debug function for printing debug messages escaping HTML
- * @param $msg
- */
-function huhw($msg) {
-    if (!$GLOBALS['debug'] ) {
-        return;
-    }
-    echo "<br>\n". HTMLspecialChars($msg);
-}
 
 /** huhe function
  * Report only if errcheck is set, this is used to test for errors to speed debugging
@@ -576,19 +566,13 @@ function huhe($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
         if ($GLOBALS["trace"] || $GLOBALS["debug"]) { trace("p"); }
     }
 }
+
 /** huhlo function
  *  Only called from within huhl
  * @param $a
  */
 function huhlo($a) {
-    if (isset($a)) {
-        if (is_object($a) && is_callable(array($a,"printobj"))) {
-            $a->printobj();
-        } else {
-            print_r($a);
-        }
-        echo "<br>\n";
-    }
+    AA::$dbg->log($a);
 }
 
 if ( !$timestart ) {
@@ -608,7 +592,6 @@ function get_microtime() {
  */
 function huhl() {
     global $debugtimes,$debugtimestart;
-    print("<listing>");
     if ($debugtimes) {
        if (! $debugtimestart) {
             $debugtimestart = get_microtime();
@@ -619,17 +602,6 @@ function huhl() {
     foreach ($vars as $var) {
         huhlo($var);
     }
-    print("</listing>\n");
-}
-/** huhsess function
- * @param $msg
- */
-function huhsess($msg="") {
-    global $sess;
-    foreach (array_keys($sess->pt) as $i) {
-        $sessvars[$i]=$GLOBALS[$i];
-    }
-    huhl($msg,$sessvars);
 }
 
 /** PrintArray function
@@ -1208,27 +1180,8 @@ function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
  * @param $slice_field
  */
 function GetHeadlineFieldID($sid, $slice_field="headline.") {
-  $db = getDB();
-
-  // get id of headline field
-  $SQL = "SELECT id FROM field
-           WHERE slice_id = '". q_pack_id( $sid ) ."'
-             AND id LIKE '$slice_field%'
-        ORDER BY id";
-  $db->query( $SQL );
-  $ret = ( $db->next_record() ? $db->f(id) : false );
-  freeDB($db);
-  return $ret;
-}
-
-// -------------------------------------------------------------------------------
-/** GetCategoryGroupId function
- * returns group_id from $show_input_func string
- * @param $input_show_func
- */
-function GetCategoryGroupId($input_show_func) {
-    $arr = explode( ":", $input_show_func);
-    return $arr[1];
+    // first should be headline........, then headline.......1, etc.
+    return DB_AA::select1('id', "SELECT id FROM field WHERE slice_id = '". q_pack_id( $sid ) ."' AND id LIKE '$slice_field%' ORDER BY id");  // false if not found
 }
 
 /** GetCategoryGroup function
@@ -1237,54 +1190,9 @@ function GetCategoryGroupId($input_show_func) {
  * @param $field
  */
 function GetCategoryGroup($slice_id, $field='') {
-    global $db;
-
-    $condition = $field ? "id = '$field'" : "id LIKE 'category%'";
-    $SQL       = "SELECT input_show_func FROM field
-              WHERE slice_id='". q_pack_id($slice_id) ."'
-                AND $condition
-                ORDER BY id";  // first should be category........,
-                               // then category.......1, etc.
-    $db->tquery($SQL);
-    if ( $db->next_record() ){
-        return GetCategoryGroupId($db->f('input_show_func'));
-    } else {
-        return false;
-    }
-}
-
-// -------------------------------------------------------------------------------
-
-/** GetId4Sid function
- * get id from item short id
- * @param $sid
- */
-function GetId4Sid($sid) {
-    global $db;
-
-    if (!$sid) {
-        return false;
-    }
-    $SQL = "SELECT id FROM item WHERE short_id='$sid'";
-    $db->query( $SQL );
-    return ($db->next_record() ? unpack_id($db->f("id")) : false);
-}
-
-// -------------------------------------------------------------------------------
-
-/** GetSid4Id function
- * get short item id item short id
- * @param $iid
- */
-function GetSid4Id($iid) {
-    global $db;
-
-    if (!$iid) {
-        return false;
-    }
-    $SQL = "SELECT short_id FROM item WHERE id='". q_pack_id($iid) ."'";
-    $db->query( $SQL );
-    return ($db->next_record() ? $db->f("short_id") : false);
+    // first should be category........, then category.......1, etc.
+    $condition = $field ? "id = '$field'" : "id LIKE 'category%' ORDER BY id";
+    return DB_AA::select1('input_show_func', "SELECT input_show_func FROM field WHERE slice_id='". q_pack_id($slice_id) ."' AND $condition");  // false if not found
 }
 
 // -------------------------------------------------------------------------------
@@ -1308,19 +1216,6 @@ function ParseFnc($s) {
  */
 function safe( $var ) {
     return htmlspecialchars( magic_strip($var) );  // stripslashes function added because of quote varibles sended to form before
-}
-
-/** richEditShowable function
- * is the browser able to show rich edit box? (using triedit.dll)
- */
-function richEditShowable() {
-    global $BName, $BVersion, $BPlatform;
-    global $showrich;
-    detect_browser();
-    // Note that Macintosh IE 5.2 does not support either richedit or current iframe
-    // Mac Omniweb/4.1.1 detects as Netscape 4.5 and doesn't support either
-    return (($BName == "MSIE" && $BVersion >= "5.0" && $BPlatform != "Macintosh") || $showrich > "");
-    // Note that RawRichEditTextarea could force iframe for certain BPlatform
 }
 
 /** HtmlPageBegin function
@@ -1550,102 +1445,16 @@ function get_last_insert_id($db, $table) {
 
 // -----------------------------------------------------------------------------
 
-/** filesuffix function
- *  returns the suffix part of the filename (beginning with the last dot (.) in the filename)
- * @param $filename
- */
-function filesuffix($filename) {
-    if (!strstr ($filename,".")) {
-        return "";
-    }
-    $i = strlen($filename);
-    while ($filename[$i] != ".") {
-        $i --;
-    }
-    return substr ($filename,$i+1);
-}
-/** filepath function
- *
- */
-function filepath($filename) {
-    if (!strstr ($filename,"/")) {
-        return "./";
-    }
-    $i = strlen($filename);
-    while ($filename[$i] != "/") $i --;
-    return substr ($filename,0,$i+1);
-}
-/** filename function
- * @param $filename
- */
-function filename($filename) {
-    if (!strstr ($filename,"/")) {
-        return "./";
-    }
-    $i = strlen($filename);
-    while ($filename[$i] != "/") {
-        $i --;
-    }
-    return substr ($filename,$i+1);
-}
-/** GetTimeZone function
- *
- */
-function GetTimeZone() {
-    $d = getdate();
-    return (mktime ($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year'])
-        - gmmktime ($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year'])) / 3600;
-}
-
 /** gensalt function
  * generates random string of given length (useful as MD5 salt)
  * @param $saltlen
  */
 function gensalt($saltlen) {
-    srand((double) microtime() * 1000000);
-    $salt_chars = "abcdefghijklmnoprstuvwxBCDFGHJKLMNPQRSTVWXZ0123456589";
+    $salt_chars = "abcdefghijklmnoprstuvwxABCDFGHJKLMNPQRSTVWXZ0123456589";
     for ($i = 0; $i < $saltlen; $i++) {
         $salt .= $salt_chars[rand(0,strlen($salt_chars)-1)];
     }
     return $salt;
-}
-
-/** aa_move_uploaded_file function
- *  Moves uploaded file to given directory and (optionally) changes permissions
- * @param $varname
- * @param $destdir
- * @param $perms
- * @param $filename
- *   @return string  error description or empty string
- */
-function aa_move_uploaded_file($varname, $destdir, $perms = 0, $filename = null) {
-    endslash($destdir);
-    if (!$GLOBALS[$varname]) {
-        return "No $varname?";
-    }
-    if ($filename == "") {
-        // get filename and replace bad characters
-        $filename = eregi_replace("[^a-z0-9_.~]","_",$GLOBALS[$varname."_name"]);
-    }
-
-    if (!is_dir($destdir)) {
-        return _m("Internal error. File upload: Dir does not exist?!");
-    }
-
-    if (file_exists("$destdir$filename")) {
-        return _m("File with this name already exists."). " $destdir$filename";
-    }
-
-    // copy the file from the temp directory to the upload directory, and test for success
-
-    if (is_uploaded_file($GLOBALS[$varname])) {
-        if (!move_uploaded_file($GLOBALS[$varname], "$destdir$filename")) {
-            return sprintf(_m("Can't move image  %s to %s"), $GLOBALS[$varname],"$destdir$filename");
-        } elseif ($perms) {
-            chmod ($destdir.$filename, $perms);
-        }
-    }
-    return "";
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -1711,129 +1520,7 @@ function magic_strip($val) {
 function magic_add($str) {
     return (get_magic_quotes_gpc() ? $str : addslashes($str));
 }
-/** isdigit function
- * @param $c
- */
-function isdigit($c) {
-    return $c >= "0" && $c <= "9";
-}
-/** isalpha function
- * @param $c
- */
-function isalpha($c) {
-    return ($c >= "a" && $c <= "z") || ($c >= "A" && $c <= "Z");
-}
-/** isalnum function
- * @param $c
- */
-function isalnum($c) {
-    return ($c >= "0" && $c <= "9") || ($c >= "a" && $c <= "z") || ($c >= "A" && $c <= "Z");
-}
-/** gdf_error function
- * @param $x
- */
-function gfd_error($x) {
-    echo "Unrecognized date format charcacter $x";
-    exit;
-}
 
-/**  get_formatted_date function
- * @param $datestring
- * @param $format
- *   @return the Unix timestamp counted from the formatted date string.
- *   Does not check the date format, rather returns nonsence values for
- *   wrong date strings.
- *   Uses non-format letters as separators only,
- *   i.e. "2.3.2002" is parsed the same as "2/3/2002" or even "2;3#2002".
- */
-function get_formatted_date($datestring, $format) {
-    // don't work with empty string
-    if (!$datestring) {
-        return "";
-    }
-
-    // Split the date into parts consisting only of digits or only of letters
-    for ($i = 0; $i < strlen ($datestring); $i++) {
-        if (isalpha($datestring[$i]) && ($s == "" || isalpha($datestring[$i-1]))) {
-            $s .= $datestring[$i];
-        } elseif (isdigit($datestring[$i]) && ($s == "" || isdigit($datestring[$i-1]))) {
-            $s .= $datestring[$i];
-        } elseif ($s) {
-            $dateparts[] = $s;
-            $s = "";
-        }
-    }
-    if ($s) {
-        $dateparts[] = $s;
-    }
-
-    // Split the format into parts consisting of one letter
-    for ($i = 0; $i < strlen ($format); $i++) {
-        if (isalpha($format[$i])) {
-            $formatparts[] = $format[$i];
-        }
-    }
-
-    $month_names = array ("January"=>1,"February"=>2,"March"=>3,"April"=>4,"May"=>5,"June"=>6,
-                          "July"=>7,"August"=>8,"September"=>9,"October"=>10,"November"=>11,"December"=>12);
-    $month3_names = array ("Jan"=>1,"Feb"=>2,"Mar"=>3,"Apr"=>4,"May"=>5,"Jun"=>6,"Jul"=>7,"Aug"=>8,"Sep"=>9,"Oct"=>10,"Nov"=>11,"Dec"=>12);
-
-    // assing date parts to format parts
-    for ($i = 0; $i < count ($dateparts); $i ++) {
-        $d = $dateparts[$i];
-        switch ($formatparts[$i]) {
-            case 'a': $pm = $d == "pm"; break;
-            case 'A': $pm = $d == "PM"; break;
-            case 'B': gfd_error ('B'); break;
-            case 'd': $day = $d; break;
-            case 'D': break;
-            case 'F': $month = $month_names[$d]; break;
-            case 'g':
-            case 'h': $hour = $d; $use_pm = true; break;
-            case 'H':
-            case 'G': $hour = $d; $use_pm = false; break;
-            case 'i': $minute = $d; break;
-            case 'I': break;
-            case 'j': $day = $d; break;
-            case 'l': break;
-            case 'L': break;
-            case 'n':
-            case 'm': $month = $d; break;
-            case 'M': $month = $month3_names[$d]; break;
-            case 'O': break;
-            case 'r': gfd_error ('r'); break;
-            case 's': $second = $d; break;
-            case 'S': break;
-            case 't': break;
-            case 'T': break;
-            case 'U': return $d; break;
-            case 'w': break;
-            case 'W': gfd_error ('W'); break;
-            case 'Y': $year = $d; break;
-            case 'y': $year = $d; break; // mktime works with 2-digit year
-            case 'z': $day = $d; break;
-            case 'Z': break;
-        }
-    }
-
-    //echo "hour $hour minute $minute second $second month $month day $day year $year pm $pm";
-
-    if ($use_pm && $pm) {
-        $hour += 12;
-    }
-
-    // mktime replaces missing values by today's values
-    if (!isset ($year)) {
-        if (!isset ($day)) {
-            if (!isset ($month)) {
-                return mktime ( $hour, $minute, $second);
-            }
-            else return mktime ( $hour, $minute, $second, $month);
-        }
-        else return mktime ( $hour, $minute, $second, $month, $day);
-    }
-    else return mktime ( $hour, $minute, $second, $month, $day, $year);
-}
 /** setdefault function
  * @param $var
  * @param $default
@@ -1882,27 +1569,6 @@ function add_post2shtml_vars($delete = true) {
     }
 }
 
-/** get_email_types function
- *  List of email types with translated description.
- *  You should never list email types directly, always call this function.
- */
-function get_email_types() {
-    return array (
-        "alerts alert" => _m("alerts alert"),
-        "alerts welcome" => _m("alerts welcome"),
-        "slice wizard welcome" => _m("slice wizard welcome"),
-        "other" => _m("other"),
-    );
-}
-
-/** monthnames function
- *  @return array month names
- */
-function monthNames() {
-    return array( 1 => _m('January'), _m('February'), _m('March'), _m('April'), _m('May'), _m('June'),
-        _m('July'), _m('August'), _m('September'), _m('October'), _m('November'), _m('December'));
-}
-
 /** getSelectBoxFromParamWizard function
  *  Creates values for a select box showing some param wizard section.
  * @param $var
@@ -1948,53 +1614,6 @@ function tryQuery($SQL) {
     return $res;
 }
 
-/** DBFields function
- * @param $db
- * @return an array of fields, skipping numeric ones
- * @see also GetTable2Array
- */
-function DBFields(&$db) {
-    $a = array();
-    foreach ( $db->Record as $key => $val ) {
-        if ( !is_numeric($key) ) {
-            $a[$key] = $val;
-        }
-    }
-    return $a;
-}
-/** ShowWizardFrames function
- * @param $aa_url
- * @param $wizard_url
- * @param $title
- * @param $noframes_html
- */
-function ShowWizardFrames($aa_url, $wizard_url, $title, $noframes_html="") {
-    require_once AA_BASE_PATH."post2shtml.php3";
-    global $post2shtml_id;
-    echo
-'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
-<html>
-<head>
-    <title>'.$title.'</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-2">
-</head>
-
-<frameset cols="*,300" frameborder="yes" border="1" framespacing="0">
-    <frame src="'.$aa_url.'&called_from_wizard=1" name="aaFrame">
-    <frame src="'.con_url($wizard_url,"post2shtml_id=$post2shtml_id").'" name="wizardFrame">
-</frameset>
-<noframes><body>
-'.$noframes_html.'
-</body></noframes>
-</html>';
-}
-
-/** ShowRefreshWizardJavaScript function
- *  Shows JavaScript which updates the Wizard frame, if it exists.
- */
-function ShowRefreshWizardJavaScript() {
-    FrmJavascript( 'if (top.wizardFrame != null) top.wizardFrame.wizard_form.submit();' );
-}
 /** GetAAImage function
  * @param $filename
  * @param $alt

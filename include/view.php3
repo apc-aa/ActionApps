@@ -529,6 +529,7 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
  */
 function GetView($view_param) {
     global $nocache, $debug;
+    
     //create keystring from values, which exactly identifies resulting content
     $key = get_hash($view_param, AA_Stringexpand_Keystring::expand());
 
@@ -565,6 +566,8 @@ function GetViewFromDB($view_param, &$cache_sid) {
     }
 
     $selected_item = $view_param["selected"];      // used for boolean (1|0) _#SELECTED
+    
+    AA::$debug && AA::$dbg->group("view_$vid".'_'.($dbgtime=microtime(true)));
 
     // alias - =1 for selected item
     // gets view data
@@ -572,6 +575,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
     $view_info = $view->getViewInfo();
 
     if (!$view->isValid()) {
+        AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
         return false;
     }
 
@@ -856,6 +860,7 @@ function GetViewFromDB($view_param, &$cache_sid) {
         $encoder = ConvertCharset::singleton();
         $ret     = $encoder->Convert($ret, $view_param['convertfrom'], $view_param['convertto']);
     }
+    AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
     return $ret;
 }
 ?>

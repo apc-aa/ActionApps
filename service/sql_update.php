@@ -121,7 +121,7 @@ if (!is_callable('GetTable2Array')) {
             } elseif (is_string($values) AND isset( $db->Record[$values] )) {
                 $val = $db->Record[$values];
             } else {  // true or 'aa_fields'
-                $val = DBFields($db);
+                $val = $db->Record;
             }
 
             if ( $key == 'aa_first' ) {

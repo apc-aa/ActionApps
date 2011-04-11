@@ -179,7 +179,10 @@ class zids implements Iterator, ArrayAccess, Countable {
      */
     function add($ids) {
         if ( isset($ids) AND is_object($ids) ) {           // zids
-            if ($ids->onetype() == $this->onetype()) {
+            if ($this->is_empty()) {
+                $this->a    = $ids->a;
+                $this->type = $ids->onetype();
+            } elseif ($ids->onetype() == $this->onetype()) {
                 $this->a = array_merge($this->a, (array)$ids->a);
             } else {
                 return false;

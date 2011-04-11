@@ -219,7 +219,7 @@ if (!$no_slice_id) {
    using the Select Slice box.
 */
     if ( $module_type_changed && !$jumping ) {
-        $page = filename($_SERVER['PHP_SELF']);
+        $page    = pathinfo( $_SERVER['PHP_SELF'], PATHINFO_BASENAME);
         $hdd_dir = AA_INC_PATH."../".$MODULES[$module_type]['directory'];
         $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
         if (!file_exists($hdd_dir.$page) OR ($page=='tabledit.php3') OR ($module_type=='J') ) {

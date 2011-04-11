@@ -29,6 +29,28 @@
 // DOCUMENTATION: doc/tableview.html
 
 require_once AA_BASE_PATH."modules/alerts/util.php3";
+
+
+/** get_email_types function
+ *  List of email types with translated description.
+ *  You should never list email types directly, always call this function.
+ */
+function get_email_types() {
+    return array (
+        "alerts alert"         => _m("alerts alert"),
+        "alerts welcome"       => _m("alerts welcome"),
+        "slice wizard welcome" => _m("slice wizard welcome"),
+        "other"                => _m("other"),
+    );
+}
+
+/** ShowRefreshWizardJavaScript function
+ *  Shows JavaScript which updates the Wizard frame, if it exists.
+ */
+function ShowRefreshWizardJavaScript() {
+    FrmJavascript( 'if (top.wizardFrame != null) top.wizardFrame.wizard_form.submit();' );
+}
+
 /** ShowEmailAliases function
  *
  */

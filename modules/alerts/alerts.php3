@@ -92,9 +92,7 @@ if ($howoften_options[$howoften]) {
     initialize_last();
     if ( $fix == 1) {
          // send only e-mail to not processed collections
-         $SQL = "SELECT collectionid FROM alerts_collection_howoften
-                  WHERE howoften = '$howoften'
-                    AND last < ". (time() - $frequency[$howoften]);
+         $SQL = "SELECT collectionid FROM alerts_collection_howoften WHERE howoften = '$howoften' AND last < ". (time() - $frequency[$howoften]);
          $colections = GetTable2Array($SQL, '', 'collectionid');
     } else {
         $colections = 'all';

@@ -735,7 +735,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
      * @return message
      */
     function description() {
-        return _m('If you select the field here, the "New content" text is not used. Selected field will be copied to the "Field" (including multivalues)');
+        return _m('Selected field will be copied to the "Field" (including multivalues)');
     }
 
     /** transform function
@@ -762,7 +762,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
 
         $varname = AA_Transformation::_getVarname('field2copy', $input_prefix, __CLASS__);
         FrmInputSelect($varname, _m('Copy field'), $params['field_copy_arr'], $_GET[$varname], true,
-                       _m('If you select the field here, the "New content" text is not used. Selected field will be copied to the "Field" (including multivalues)'));
+                       _m('Selected field will be copied to the "Field" (including multivalues)'));
 
         FrmTabEnd();
         return ob_get_clean();

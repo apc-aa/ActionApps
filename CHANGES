@@ -1,15 +1,33 @@
-01/08/11 - new {changedate:<item_id>:<field_id>:<format>} 
-(honzam)   displays the date of the last change of specified field is provided 
-           date format 
-         - {htmltoggle} could be used without explicit specification 
-           of switchers (plus and minus signs (image) is shown as default) 
+04/11/11 - bigger cleanup of the code - removed unused functions, specialized
+(honzam)   functions moved from util.php3 to local include files
+         - new possibility to export slice discussions to file:
+             "Slice Admin" -> "Export to file" -> "What to export"
+         - searchbar in AA admin interface allows to compare also timestamps
+           for the date fields
+         - HTML editor (Xinha) do not strip <script> tags, now
+         - new {ord:<char>} - returns ASCII value of character
+         - {trim} now removes also chr(160) - hard space
+         - fixed DB collation for Czech UTF language files
+         - new experimental debug environment - will support Firephp debuger
+           Used as:
+             AA::$debug && AA::$dbg->group("my variable - ($var)");
+         - new approach to global objects - AA::$dbg, ...
+         - new approach for one row database queries -
+             DB_AA::select1(<column>, <SQL>)
+           get single value - column from the first row matching <SQL>
+         - cleanup - alerst inner code moved to class
+01/08/11 - new {changedate:<item_id>:<field_id>:<format>}
+(honzam)   displays the date of the last change of specified field is provided
+           date format
+         - {htmltoggle} could be used without explicit specification
+           of switchers (plus and minus signs (image) is shown as default)
              {htmltoggle::::text to show}
          - {date} could display specified text for unset date
              {date:m/d/Y:{start_date......}:not specified}.
-           (unset date is the date with timestamp 0, which could be now set 
+           (unset date is the date with timestamp 0, which could be now set
            by the Date widget when the date field is not required)
          - new {fieldoptions:<slice_id>:<field_id>:<values>}
-           displys html <options> as defined for the field. You can specify 
+           displys html <options> as defined for the field. You can specify
            current values - as single value, or as multivalue in JSON format.
          - {img} now produces valid html where possible - escapes & when returns
            HTML code

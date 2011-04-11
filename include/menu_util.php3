@@ -139,7 +139,6 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 
-    //huhsess("Session Variables");
     // load the main AA menu (see menu.php3)
     if ($smmenus == "aamenus") {
         // @todo
