@@ -37,157 +37,6 @@ require_once AA_BASE_PATH."modules/alerts/util.php3";
 
 //$debug = 1;
 
-// -------------------------------------------------------------------------------------
-/**  Creates Filter output. Called from send_emails().
-*    Finds and formats items.
-*    WARNING:  the function does not check when were the items sent last time,
-*              call it only once a day / week / month. In fact, this function
-*              works completely the same for any how often (only that it writes
-*              the values to the appropriate field).
-*
-* The only exception are the "instant" messages: If the paramter $item_id
-* contains an unpacked item ID, nothing or a message containing just that item is sent.
-*
-* @param bool $update    decides whether alerts_filter_howoften.last would be updated,
-*                        i.e. whether this is only a debug trial or the real life
-* @param $ho = how often
-* @return array ($filterid => new items)
-*/
-function create_filter_text($ho, $collectionid, $update, $item_id)
-{
-    global $debug_alerts, $auth;
-
-    if ( $debug_alerts ) { huhl("create_filter_text($ho, $collectionid, $update, $item_id)"); }
-
-    // the view.aditional field stores info about grouping by selections
-    $SQL = "
-    SELECT F.conds, view.slice_id, view.aditional, view.aditional3,
-        F.id AS filterid, F.vid, slice.name AS slicename,
-        slice.lang_file, CH.last
-        FROM alerts_filter F INNER JOIN
-             alerts_collection_filter CF ON CF.filterid = F.id INNER JOIN
-             alerts_collection_howoften CH ON CF.collectionid = CH.collectionid INNER JOIN
-             view ON view.id = F.vid INNER JOIN
-             slice ON slice.id = view.slice_id
-        WHERE CH.howoften='$ho'
-        AND CH.collectionid='$collectionid'";
-    $db = getDB();
-    if ($item_id) {
-        $db->tquery("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
-        if (!$db->next_record()) {
-            freeDB($db);
-            return "";
-        }
-        $SQL .= " AND slice.id='".addslashes($db->f("slice_id"))."'";
-    }
-
-    // fill alerts_collection_howoften.last in cases the row for this period
-    // (= how_often) not exist, yet
-    initialize_last();
-
-    $db->tquery($SQL);
-    while ($db->next_record()) {
-        $last                                  = $db->f("last");
-        $sid                                   = unpack_id($db->f("slice_id"));
-        $slices[$sid]["name"]                  = $db->f("slicename");
-        $slices[$sid]["lang"]                  = substr($db->f("lang_file"),0,2);
-        $myview                                = &$slices[$sid]["views"][$db->f("vid")];
-        $myview["filters"][$db->f("filterid")] = array ("conds"=>$db->f("conds"));
-        // Group by selections?
-        $myview["group"] = $db->f("aditional");
-        if (! $myview["group"]) {
-            // Sort variable for the whole view
-            $myview["sort"] = $db->f("aditional3");
-        }
-    }
-    if (! is_array($slices)) {
-        freeDB($db);
-        return;
-    }
-
-    $howoften_options = get_howoften_options();
-
-    // first I create a hierarchical array $slices and than use it instead of the recordset
-
-    $now = time();
-
-    foreach ( $slices as $slice_id => $slice ) {
-        $p_slice_id   = q_pack_id($slice_id);
-
-        /*
-        this query is carefully made to include only items, which:
-         a) 1. were moved to active between $last and $now
-            2. and were active (not expired nor pending) between $last and $now,
-                i.e. publish_date <= $now AND expiry_date >= $last
-         b) 1. were moved to active before $last
-            2. and were active (not expired nor pending) between $last and $now
-            3. and were not active until $last,
-                i.e. publish_date > $last
-
-       The field moved2active is filled whenever an item is moved from other bin
-           to Active binor when it is a new item inserted into Active bin.
-       The field is cleared whenever the item is moved from Active bin
-           to another one.
-        */
-
-        $SQL = "SELECT id FROM item ";
-
-        if ($item_id) {
-            $SQL .= "WHERE id = '".q_pack_id($item_id)."'";
-        } else {
-            $SQL .=
-            "WHERE slice_id = '$p_slice_id' AND
-                   publish_date <= $now AND expiry_date >= $last "  // a) 2. and b) 2.
-               ."AND ((moved2active BETWEEN $last AND $now) "       // a) 1.
-                     ."OR (moved2active < $last "                   // b) 1.
-                         ."AND publish_date > $last) "              // b) 3.
-                   .")";
-        }
-
-        $db->tquery($SQL);
-
-        $all_ids = "";
-        while ($db->next_record()) {
-            $all_ids[] = $db->f("id");
-        }
-
-        foreach ($slice["views"] as $vid => $view) {
-            foreach ($view["filters"] as $fid => $filter) {
-                parse_str( $filter["conds"], $dbconds_arr);
-                $conds = $dbconds_arr['conds'];
-                $sort  = $dbconds_arr['sort'];
-                $zids  = new zids(null, "p");
-                if (is_array($all_ids)) {
-                    // find items for the given filter
-                    if ($debug_alerts) { print_r ($conds); echo "----<br>"; $GLOBALS['debug']=1; }
-                    $zids = QueryZIDs(array($slice_id), $conds, $sort, "ACTIVE", 0, new zids( $all_ids,'p' ));
-                    if ($debug_alerts) { $GLOBALS['debug']=0; echo "<br>Item IDs count: ".$zids->count()."<br>"; }
-                }
-
-                $retval[$fid] = array (
-                    "group" => $view["group"],
-                    "sort"  => $view["sort"],
-                    "vid"   => $vid,
-                    "zids"  => $zids,
-                );
-            }
-        }
-    }
-
-    if (!$debug_alerts && $update) {
-        $varset = new CVarset();
-        $varset->addkey("howoften", "text", $ho);
-        $varset->addkey("collectionid", "text", $collectionid);
-        $varset->add ("last", "number", $now);
-        $db->tquery($varset->makeINSERTorUPDATE("alerts_collection_howoften"));
-    }
-
-    //print_r ($retval);
-    freeDB($db);
-    return $retval;
-}
-
-
 class AA_Collection {
 
     var $id;                 /** Collection ID   */
@@ -252,6 +101,283 @@ class AA_Collection {
         }
         return $ret;
     }
+
+    function sendEmails($ho, $emails, $update, $item_id, $reader_id) {
+        // get array of all filters of current collection ($collection_id)
+        // !if $update is set (default), then it updates date for lastsent - for
+        // collections
+        $unordered_filters = $this->createFilterText($ho, $update, $item_id);
+        $email_count       = 0;
+
+        // find filters for this collection
+        $filter_ids = GetTable2Array("SELECT filterid FROM alerts_collection_filter WHERE collectionid = '".$this->id."' ORDER BY myindex", 'NoCoLuMn', 'filterid');
+
+        $filters = array();
+        if ( is_array($filter_ids) ) {
+            foreach ($filter_ids as $filter_id) {
+                $filters[$filter_id] = &$unordered_filters[$filter_id];
+            }
+        }
+
+        // Find all users who should receive anything
+        if ( !is_array($emails) ) {
+
+            // get all confirmed users for this collection and frequency
+            $zids = is_null($reader_id) ? $this->getReaders($ho) : new zids($reader_id, 'l');
+            AA_Log::write("ALERTS", "Users for collection ".$this->id.": ". ((int)$zids->count()), $ho);
+
+            $readerContent = new ItemContent();
+
+            // loop through readers might want to send
+            for ( $i=0, $zcount=$zids->count(); $i<$zcount; $i++) {
+                $readerContent->setByItemID( $zids->longids($i), true);
+
+                $user_text = $this->getFilterText4Reader($readerContent, $filters);
+
+                // Don't send if nothing new emerged
+                if ($user_text) {
+
+                    $als = new AA_Aliases();
+                    $als->addTextAlias("_#FILTERS_",$user_text);
+                    $als->addTextAlias("_#HOWOFTEN",$ho);
+                    $als->addTextAlias("_#COLLFORM",alerts_con_url($this->getSliceUrl(), "ac=".$readerContent->getValue(FIELDID_ACCESS_CODE)));
+                    $als->addTextAlias("_#UNSBFORM",alerts_con_url($this->getSliceUrl(), "au=".$readerContent->getValue(FIELDID_ACCESS_CODE). "&c=".$this->id));
+
+                    $reader_slice = $this->getReaderSlice();
+                    $aliases      = array_merge($reader_slice->aliases(), $als->getArray());
+                    $item         = new AA_Item($readerContent, $aliases);
+
+                    if (AA_Mail::sendTemplate($this->getEmailIdAlert(), $readerContent->getValue(FIELDID_EMAIL), $item)) {
+                        AA_Log::write("ALERTS", $this->id.": ". $readerContent->getValue(FIELDID_EMAIL), $ho);
+                        $email_count++;
+                    }
+                }
+            }
+
+        // Use the emails sent as param
+        } else {
+            AA_Log::write("ALERTS", "Emails for collection ".$this->id.": ". ((int)count($emails)), $ho);
+            $als = new AA_Aliases();
+//          $als->addAlias(new AA_Alias("_#FILTERS_", "id..............", 'f_t', array(get_filter_text_4_reader(null, $filters, $this->id))));
+            $als->addTextAlias("_#FILTERS_", $this->getFilterText4Reader(null, $filters));
+            $als->addTextAlias("_#HOWOFTEN", $ho);
+            $als->addTextAlias("_#COLLFORM", alerts_con_url($this->getSliceUrl(), "ac=ABCDE"));
+            $als->addTextAlias("_#UNSBFORM", alerts_con_url($this->getSliceUrl(), "au=ABCDE&c=".$this->id));
+            $aliases = $als->getArray();
+
+            $item = new AA_Item('', $aliases);
+
+            foreach ( (array)$emails as $email ) {
+                if (AA_Mail::sendTemplate($this->getEmailIdAlert(), $email, $item)) {
+                    $email_count++;
+                }
+            }
+        }
+        AA_Log::write("ALERTS", "Sent for collection ".$this->id.": ". ((int)$email_count[$this->id]), $ho);
+        return $email_count;
+    }
+
+    /**  Creates Filter output. Called from sendEmails().
+    *    Finds and formats items.
+    *    WARNING:  the function does not check when were the items sent last time,
+    *              call it only once a day / week / month. In fact, this function
+    *              works completely the same for any how often (only that it writes
+    *              the values to the appropriate field).
+    *
+    * The only exception are the "instant" messages: If the paramter $item_id
+    * contains an unpacked item ID, nothing or a message containing just that item is sent.
+    *
+    * @param bool $update    decides whether alerts_filter_howoften.last would be updated,
+    *                        i.e. whether this is only a debug trial or the real life
+    * @param $ho = how often
+    * @return array ($filterid => new items)
+    */
+    function createFilterText($ho, $update, $item_id) {
+
+        // the view.aditional field stores info about grouping by selections
+        $SQL = "
+        SELECT F.conds, view.slice_id, view.aditional, view.aditional3,
+            F.id AS filterid, F.vid, slice.name AS slicename,
+            slice.lang_file, CH.last
+            FROM alerts_filter F INNER JOIN
+                 alerts_collection_filter CF ON CF.filterid = F.id INNER JOIN
+                 alerts_collection_howoften CH ON CF.collectionid = CH.collectionid INNER JOIN
+                 view ON view.id = F.vid INNER JOIN
+                 slice ON slice.id = view.slice_id
+            WHERE CH.howoften='$ho'
+            AND CH.collectionid='".$this->id."'";
+        $db = getDB();
+        if ($item_id) {
+            $db->tquery("SELECT slice_id FROM item WHERE id='".q_pack_id($item_id)."'");
+            if (!$db->next_record()) {
+                freeDB($db);
+                return "";
+            }
+            $SQL .= " AND slice.id='".addslashes($db->f("slice_id"))."'";
+        }
+
+        // fill alerts_collection_howoften.last in cases the row for this period
+        // (= how_often) not exist, yet
+        initialize_last();
+
+        $db->tquery($SQL);
+        while ($db->next_record()) {
+            $last                                  = $db->f("last");
+            $sid                                   = unpack_id($db->f("slice_id"));
+            $slices[$sid]["name"]                  = $db->f("slicename");
+            $slices[$sid]["lang"]                  = substr($db->f("lang_file"),0,2);
+            $myview                                = &$slices[$sid]["views"][$db->f("vid")];
+            $myview["filters"][$db->f("filterid")] = array ("conds"=>$db->f("conds"));
+            // Group by selections?
+            $myview["group"] = $db->f("aditional");
+            if (! $myview["group"]) {
+                // Sort variable for the whole view
+                $myview["sort"] = $db->f("aditional3");
+            }
+        }
+        if (! is_array($slices)) {
+            freeDB($db);
+            return;
+        }
+
+        $howoften_options = get_howoften_options();
+
+        // first I create a hierarchical array $slices and than use it instead of the recordset
+
+        $now = time();
+
+        foreach ( $slices as $slice_id => $slice ) {
+            $p_slice_id   = q_pack_id($slice_id);
+
+            /*
+            this query is carefully made to include only items, which:
+             a) 1. were moved to active between $last and $now
+                2. and were active (not expired nor pending) between $last and $now,
+                    i.e. publish_date <= $now AND expiry_date >= $last
+             b) 1. were moved to active before $last
+                2. and were active (not expired nor pending) between $last and $now
+                3. and were not active until $last,
+                    i.e. publish_date > $last
+
+           The field moved2active is filled whenever an item is moved from other bin
+               to Active binor when it is a new item inserted into Active bin.
+           The field is cleared whenever the item is moved from Active bin
+               to another one.
+            */
+
+            $SQL = "SELECT id FROM item ";
+
+            if ($item_id) {
+                $SQL .= "WHERE id = '".q_pack_id($item_id)."'";
+            } else {
+                $SQL .=
+                "WHERE slice_id = '$p_slice_id' AND
+                       publish_date <= $now AND expiry_date >= $last "  // a) 2. and b) 2.
+                   ."AND ((moved2active BETWEEN $last AND $now) "       // a) 1.
+                         ."OR (moved2active < $last "                   // b) 1.
+                             ."AND publish_date > $last) "              // b) 3.
+                       .")";
+            }
+
+            $db->tquery($SQL);
+
+            $all_ids = "";
+            while ($db->next_record()) {
+                $all_ids[] = $db->f("id");
+            }
+
+            foreach ($slice["views"] as $vid => $view) {
+                foreach ($view["filters"] as $fid => $filter) {
+                    parse_str( $filter["conds"], $dbconds_arr);
+                    $conds = $dbconds_arr['conds'];
+                    $sort  = $dbconds_arr['sort'];
+                    $zids  = new zids(null, "p");
+                    if (is_array($all_ids)) {
+                        // find items for the given filter
+                        $zids = QueryZIDs(array($slice_id), $conds, $sort, "ACTIVE", 0, new zids( $all_ids,'p' ));
+                    }
+
+                    $retval[$fid] = array (
+                        "group" => $view["group"],
+                        "sort"  => $view["sort"],
+                        "vid"   => $vid,
+                        "zids"  => $zids,
+                    );
+                }
+            }
+        }
+
+        if ($update) {
+            $varset = new CVarset();
+            $varset->addkey("howoften", "text", $ho);
+            $varset->addkey("collectionid", "text", $this->id);
+            $varset->add ("last", "number", $now);
+            $db->tquery($varset->makeINSERTorUPDATE("alerts_collection_howoften"));
+        }
+
+        //print_r ($retval);
+        freeDB($db);
+        return $retval;
+    }
+
+    /** Used in send_emails(). Finds filter text for the given reader.
+    *   There are two modes: group by Selection and don't group. The
+    *   second one is more difficult.
+    *   @param object $readerContent  if null, use all filters
+    */
+    function getFilterText4Reader($readerContent, $filters) {
+        if ($readerContent) {
+            $user_filters_value = $readerContent->getValues(getAlertsField(FIELDID_FILTERS, $this->id));
+
+            if ( empty($user_filters_value)) {
+                return "";
+            }
+
+            foreach ($user_filters_value as $user_filter) {
+                // filter numbers are stored with "f" added to the beginning
+                $user_filters[substr($user_filter['value'], 1)] = 1;
+            }
+        }
+
+        $last_fprop = "";
+        $filter_ids = "";
+        $user_zids  = new zids(null, "p");
+
+        // add dummy filter
+        $filters[99999] = "dummy";
+
+        foreach ( $filters as $filterid => $fprop ) {
+            // Send items from filters with "group" not set when the view changes.
+            if ( $last_fprop["vid"] != $fprop["vid"] AND is_array($filter_ids) AND $user_zids->count()) {
+                // WARNING - HACK: we need to sort the zids according to the common
+                // sort[]: we use the same global trick as in createFilterText
+                if ($last_fprop["sort"]) {
+                    parse_str( $last_fprop["sort"], $dbconds_arr);
+                    $sort      = $dbconds_arr['sort'];
+                    $set       = &get_view_settings_cached($last_fprop["vid"]);
+                    $user_zids = QueryZIDs(array(unpack_id($set["info"]->f("slice_id"))), "", $sort, "ACTIVE", 0, $user_zids);
+                }
+
+                $user_text .= get_filter_output_cached($last_fprop["vid"], join (",",$filter_ids), $user_zids);
+                $filter_ids = "";
+                $user_zids->clear("p");
+            }
+            if ($fprop == "dummy") {
+                break;
+            }
+            if (! $readerContent || $user_filters[$filterid]) {
+                if ($fprop["group"]) {
+                    $user_text .= get_filter_output_cached( $fprop["vid"], $filterid, $fprop["zids"]);
+                } else {
+                    $user_zids->union($fprop["zids"]);
+                    $filter_ids[] = $filterid;
+                }
+                $last_fprop = $fprop;
+            }
+        }
+
+        return $user_text;
+    }
 }
 
 // -------------------------------------------------------------------------------------
@@ -265,7 +391,6 @@ class AA_Collection {
 *   @return count of emails sent
 */
 function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_id = null) {
-    global $debug_alerts;
 
     /* get all (or just some, if $collection_ids specified) collections and put
        the infop into $colls array */
@@ -273,87 +398,11 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
         $collection_ids = GetTable2Array('SELECT id FROM alerts_collection', 'NoCoLuMn', 'id');
     }
 
-    $readerContent = new ItemContent();
-
+    $total_emails = 0;
     foreach ( $collection_ids as $collection_id ) {
         $collection = new AA_Collection($collection_id);
+        $total_emails += $collection->sendEmails($ho, $emails, $update, $item_id, $reader_id);
 
-        // get array of all filters of current collection ($collection_id)
-        // !if $update is set (default), then it updates date for lastsent - for
-        // collections
-        $unordered_filters = create_filter_text($ho, $collection_id, $update, $item_id);
-
-        // find filters for this collection
-        $filter_ids = GetTable2Array("SELECT filterid FROM alerts_collection_filter WHERE collectionid = '$collection_id' ORDER BY myindex", 'NoCoLuMn', 'filterid');
-
-        $filters = array();
-        if ( is_array($filter_ids) ) {
-            foreach ($filter_ids as $filter_id) {
-                $filters[$filter_id] = &$unordered_filters[$filter_id];
-            }
-        }
-
-        if ($GLOBALS['debug_email']) { huhl("\n-------\n send_emails\n",$collection); }
-
-        // Find all users who should receive anything
-        if (! is_array($emails)) {
-
-            // get all confirmed users for this collection and frequency
-            $zids = is_null($reader_id) ? $collection->getReaders($ho) : new zids($reader_id, 'l');
-            AA_Log::write("ALERTS", "Users for collection $collection_id: ". ((int)$zids->count()), $ho);
-
-            // loop through readers might want to send
-            for ( $i=0, $zcount=$zids->count(); $i<$zcount; $i++) {
-                $readerContent->setByItemID( $zids->longids($i), true);
-
-                $user_text = get_filter_text_4_reader($readerContent, $filters, $collection_id);
-
-                // Don't send if nothing new emerged
-                if ($user_text) {
-
-                    $als = new AA_Aliases();
-                    $als->addTextAlias("_#FILTERS_",$user_text);
-                    $als->addTextAlias("_#HOWOFTEN",$ho);
-                    $als->addTextAlias("_#COLLFORM",alerts_con_url($collection->getSliceUrl(), "ac=".$readerContent->getValue(FIELDID_ACCESS_CODE)));
-                    $als->addTextAlias("_#UNSBFORM",alerts_con_url($collection->getSliceUrl(), "au=".$readerContent->getValue(FIELDID_ACCESS_CODE). "&c=".$collection_id));
-
-                    $reader_slice = $collection->getReaderSlice();
-                    $aliases      = array_merge($reader_slice->aliases(), $als->getArray());
-                    $item         = new AA_Item($readerContent, $aliases);
-
-                    if ($GLOBALS['debug_email']) {
-                        huhl("\n<br>AA_Mail::sendTemplate(".$collection->getEmailIdAlert().", ".$readerContent->getValue(FIELDID_EMAIL).", ...)");
-                        $email_count[$collection_id]++;
-                    } elseif (AA_Mail::sendTemplate($collection->getEmailIdAlert(), $readerContent->getValue(FIELDID_EMAIL), $item)) {
-                        AA_Log::write("ALERTS", "$collection_id: ". $readerContent->getValue(FIELDID_EMAIL), $ho);
-                        $email_count[$collection_id]++;
-                    }
-                }
-            }
-
-        // Use the emails sent as param
-        } else {
-            AA_Log::write("ALERTS", "Emails for collection $collection_id: ". ((int)count($emails)), $ho);
-            $als = new AA_Aliases();
-//          $als->addAlias(new AA_Alias("_#FILTERS_", "id..............", 'f_t', array(get_filter_text_4_reader(null, $filters, $collection_id))));
-            $als->addTextAlias("_#FILTERS_", get_filter_text_4_reader(null, $filters, $collection_id));
-            $als->addTextAlias("_#HOWOFTEN", $ho);
-            $als->addTextAlias("_#COLLFORM", alerts_con_url($collection->getSliceUrl(), "ac=ABCDE"));
-            $als->addTextAlias("_#UNSBFORM", alerts_con_url($collection->getSliceUrl(), "au=ABCDE&c=".$collection_id));
-            $aliases = $als->getArray();
-
-            $item = new AA_Item('', $aliases);
-
-            foreach ( (array)$emails as $email ) {
-                if (AA_Mail::sendTemplate($collection->getEmailIdAlert(), $email, $item)) {
-                    $email_count[$collection_id]++;
-                }
-            }
-        }
-        AA_Log::write("ALERTS", "Sent for collection $collection_id: ". ((int)$email_count[$collection_id]), $ho);
-    }
-    foreach ( (array)$email_count as $num ) {
-        $total_emails += $num;
     }
     return $total_emails;
 }
@@ -459,63 +508,5 @@ function get_filter_output_cached($vid, $filter_settings, $zids) {
 }
 
 // -------------------------------------------------------------------------------------
-/** Used in send_emails(). Finds filter text for the given reader.
-*   There are two modes: group by Selection and don't group. The
-*   second one is more difficult.
-*   @param object $readerContent  if null, use all filters
-*/
-function get_filter_text_4_reader($readerContent, $filters, $cid) {
-    if ($readerContent) {
-        $user_filters_value = $readerContent->getValues( getAlertsField(FIELDID_FILTERS, $cid));
-
-        if ( empty($user_filters_value)) {
-            return "";
-        }
-
-        foreach ($user_filters_value as $user_filter) {
-            // filter numbers are stored with "f" added to the beginning
-            $user_filters[substr($user_filter['value'], 1)] = 1;
-        }
-    }
-
-    $last_fprop = "";
-    $filter_ids = "";
-    $user_zids  = new zids(null, "p");
-
-    // add dummy filter
-    $filters[99999] = "dummy";
-
-    foreach ( $filters as $filterid => $fprop ) {
-        // Send items from filters with "group" not set when the view changes.
-        if ( $last_fprop["vid"] != $fprop["vid"] AND is_array($filter_ids) AND $user_zids->count()) {
-            // WARNING - HACK: we need to sort the zids according to the common
-            // sort[]: we use the same global trick as in create_filter_text
-            if ($last_fprop["sort"]) {
-                parse_str( $last_fprop["sort"], $dbconds_arr);
-                $sort      = $dbconds_arr['sort'];
-                $set       = &get_view_settings_cached($last_fprop["vid"]);
-                $user_zids = QueryZIDs(array(unpack_id($set["info"]->f("slice_id"))), "", $sort, "ACTIVE", 0, $user_zids);
-            }
-
-            $user_text .= get_filter_output_cached($last_fprop["vid"], join (",",$filter_ids), $user_zids);
-            $filter_ids = "";
-            $user_zids->clear("p");
-        }
-        if ($fprop == "dummy") {
-            break;
-        }
-        if (! $readerContent || $user_filters[$filterid]) {
-            if ($fprop["group"]) {
-                $user_text .= get_filter_output_cached( $fprop["vid"], $filterid, $fprop["zids"]);
-            } else {
-                $user_zids->union($fprop["zids"]);
-                $filter_ids[] = $filterid;
-            }
-            $last_fprop = $fprop;
-        }
-    }
-
-    return $user_text;
-}
 
 ?>
