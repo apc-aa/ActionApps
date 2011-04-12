@@ -111,7 +111,7 @@ class PageCache  {
         if ( $res = $this->get($key, $action) ) {
             return unserialize($res);  // it is setrialized for storing in the database
         }
-        $res = call_user_func_array($function, $params);
+        $res = call_user_func_array($function, (array)$params);
         if (!is_numeric($action)) {  // nocache is not
             $this->store($key, serialize($res), $str2find);
         }

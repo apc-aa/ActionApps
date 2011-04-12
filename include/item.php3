@@ -607,11 +607,9 @@ class AA_Item {
      * @param $use_field
      */
     function get_alias_subst( $alias, $use_field="" ) {
-
         // use_field is for expanding aliases with loop - prefix {@
         $ali_arr = $this->aliases[$alias];
         // is this realy alias?
-
         if ( !is_array($ali_arr) ) {
             // try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
             // unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
@@ -635,17 +633,6 @@ class AA_Item {
         return call_user_func_array( array($this,$fce), array($field_id, $param));
     }
 
-    /** remove_string function
-     * @param $text
-     * @param $remove_arr
-     */
-    function remove_strings( $text, $remove_arr ) {
-        if ( is_array($remove_arr) ) {
-            $text = str_replace($remove_arr, "", $text);
-        }
-        return $text;
-    }
-
     /** substitute_alias_and_remove function
      * the function substitutes all _#... aliases and then applies "remove strings"
      * it searches for removal just in parts where all aliases are expanded
@@ -655,29 +642,43 @@ class AA_Item {
      */
     function substitute_alias_and_remove( $text, $remove_arr=null ) {
         $piece = explode( "_#", $text );
-        reset( $piece );
-        $out = current($piece);   // initial sequence
-        while ( $vparam = next($piece) ) {
+        $out   = array_shift($piece);   // initial sequence
+        $clear_output = '';
 
-            //search for alias definition (fce,param,hlp)
-            $substitution = $this->get_alias_subst( "_#".(substr($vparam,0,8)));
-            if ( $substitution != "" ) {   // alias produced some output, so we can remove
-                // strings in previous section and we can start new
-                // section
-                $clear_output .= $this->remove_strings($out,$remove_arr).$substitution;
-                $out = substr($vparam,8);         // start with clear string
-            } else {
+        if (is_array($remove_arr)) { // just for speedup - this is critical function
+            foreach ($piece as $vparam) {
+                //search for alias definition (fce,param,hlp)
+                $substitution = $this->get_alias_subst( "_#".(substr($vparam,0,8)));
+
+                if ( strlen($substitution) ) {   // alias produced some output, so we can remove
+                    // strings in previous section and we can start new section
+                    $clear_output .= str_replace($remove_arr, "", $out).$substitution;
+                    $out           = '';  // start with clear string
+                }
                 $out .= substr($vparam,8);
             }
+            return $clear_output . str_replace($remove_arr, "", $out);
         }
-        return $clear_output . $this->remove_strings($out,$remove_arr);
+        foreach ($piece as $vparam) {
+            //search for alias definition (fce,param,hlp)
+            $substitution = $this->get_alias_subst( "_#".(substr($vparam,0,8)));
+
+            if ( strlen($substitution) ) {   // alias produced some output, so we can remove
+                // strings in previous section and we can start new
+                // section
+                $clear_output .= $out.$substitution;
+                $out           = '';  // start with clear string
+            }
+            $out .= substr($vparam,8);
+        }
+        return $clear_output . $out;
     }
 
     /** unalias function
      * @param $text
      * @param $remove
      */
-    function unalias( &$text, $remove="" ) {
+    function unalias( $text, $remove="" ) {
         return AA_Stringexpand::unalias($text, $remove, $this);
     }
 
@@ -1106,7 +1107,7 @@ class AA_Item {
                     return call_user_func_array(AA_Stringexpand::$php_functions[$modif], (array)$text);
                 }
                 $stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $modif);
-                return call_user_func_array( array($stringexpand,'expand'), $text);
+                return call_user_func_array( array($stringexpand,'expand'), (array)$text);
 //                return call_user_func( array( AA_Object::constructClassName('AA_Stringexpand_', $modif), 'expand'), $text);
             }
             if ($p[1]=='') {
@@ -1691,7 +1692,7 @@ class AA_Items {
         }
         return $ret;
     }
-    
+
     /** getModuleProperty function
      *  static function
      * @param $slice_id
@@ -1719,13 +1720,13 @@ class AA_Items {
         $items = AA_Items::singleton();
         $items->_invalidateLongIdItem($zid->longids(0));
     }
-    
+
     function _invalidateLongIdItem($id) {
         if (isset($this->_i[$this->_l2s[$id]])) {
             unset($this->_i[$this->_l2s[$id]]);
         }
     }
-    
+
     /** returns AA_Item or false (if not cached) */
     function _getFromCache($zid) {
         if ( $zid->use_short_ids() ) {

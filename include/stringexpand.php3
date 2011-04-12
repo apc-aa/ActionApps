@@ -1038,7 +1038,6 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
     /** expand function  */
     function expand($expression='', $decimals='', $dec_point='', $thousands_sep = '') {
         $ret      = calculate($expression);
-//        huhl($expression, $decimals, $ret);
         if ( !empty($dec_point) OR !empty($thousands_sep) ) {
             $decimals      = get_if($decimals,0);
             $dec_point     = get_if($dec_point, ',');
@@ -2677,7 +2676,6 @@ class AA_Stringexpand_Include extends AA_Stringexpand_Nevercache {
             case "fileman":
             // Note this won't work if called from a Static view because no slice_id available
             // This should be fixed.
-            //huhl($itemview->slice_info);
                 if ($itemview->slice_info["id"]) {
                     $mysliceid = unpack_id($itemview->slice_info['id']);
                 } elseif ($GLOBALS['slice_id']) {
@@ -2933,10 +2931,6 @@ class AA_Unalias_Callback {
             return QuoteColons($fileout);
             // QuoteColons used to mark colons, which is not parameter separators.
         }
-        // remove comments
-        elseif ( substr($out, 0, 1) == "#" ) {
-            return "";
-        }
         elseif ( substr($out, 0,10) == "view.php3?" ) {
             // Xinha editor replaces & with &amp; so we need to change it back
             $param      = str_replace('&amp;', '&', substr($out,10));
@@ -2962,7 +2956,7 @@ class AA_Unalias_Callback {
                     $key = hash('md5',$out.$stringexpand->additionalCacheParam());
                     $res = $contentcache->get_result_by_id($key, array($stringexpand, 'parsexpand'), $parts[2]);
                 } else {
-                    $res = call_user_func_array( array($stringexpand,'parsexpand'), $parts[2]);
+                    $res = call_user_func_array( array($stringexpand,'parsexpand'), array($parts[2]));
                 }
                 return $stringexpand->doQuoteColons() ? QuoteColons($res) : $res;
             }
@@ -3267,7 +3261,7 @@ class AA_Stringexpand {
         }
 
         if (is_object($item)) {
-            $text = $item->substitute_alias_and_remove($text, explode("##",$remove));
+            $text = $item->substitute_alias_and_remove($text, strlen($remove) ? explode("##",$remove) : null);
         }
 
         if ( !$dequote ) {                 // there is no need to substitute on level 1

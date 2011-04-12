@@ -252,7 +252,6 @@ class AA_Object extends AA_Storable {
      *  Save the object to the database
      */
     function save() {
-        //huhl($this);
         if ( !$this->aa_owner ) {
             throw new Exception('No owner set for property '. $this->id. ' - '. $this->name);
         }

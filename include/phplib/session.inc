@@ -129,9 +129,8 @@ class Session {
 
           // Remove session ID info from QUERY String - it is in cookie
           if ( isset($_SERVER["QUERY_STRING"]) && ("" != $_SERVER["QUERY_STRING"]) ) {
-              $_SERVER["QUERY_STRING"] = ereg_replace(
-                  "(^|&)".quotemeta(urlencode($this->name))."=(.)*(&|$)", ## subst *any* preexistent sess
-                  "\\1", $_SERVER["QUERY_STRING"]);
+              // subst *any* preexistent sess
+              $_SERVER["QUERY_STRING"] = preg_replace("/(^|&)".preg_quote(urlencode($this->name),'/')."=(.)*(&|$)/", "\\1", $_SERVER["QUERY_STRING"]);
           }
           break;
       case "get":
@@ -145,10 +144,8 @@ class Session {
           }
 
           if ( isset($_SERVER["QUERY_STRING"]) && ("" != $_SERVER["QUERY_STRING"]) ) {
-              $_SERVER["QUERY_STRING"] = ereg_replace(
-                  #            "(^|&)".quotemeta(urlencode($this->name))."=".$id."(&|$)",
-                  "(^|&)".quotemeta(urlencode($this->name))."=(.)*(&|$)", ## subst *any* preexistent sess
-                  "\\1", $_SERVER["QUERY_STRING"]);
+              // subst *any* preexistent sess
+              $_SERVER["QUERY_STRING"] = preg_replace("/(^|&)".preg_quote(urlencode($this->name),'/')."=(.)*(&|$)/", "\\1", $_SERVER["QUERY_STRING"]);
           }
           break;
       default:
@@ -192,18 +189,15 @@ class Session {
 
   function url($url) {
     // Remove existing session info from url
-    $url = ereg_replace(
-#      "([&?])".quotemeta(urlencode($this->name))."=".$this->id."(&|$)",
-      "([&?])".quotemeta(urlencode($this->name))."=(.)*(&|$)", # we clean any(also bogus) sess in url
-      "\\1", $url);
+    // We clean any(also bogus) sess in url
+    $url = preg_replace("/([&?])".preg_quote(urlencode($this->name), '/')."=(.)*(&|$)/", "\\1", $url);
 
     // Remove trailing ?/& if needed
-    $url=ereg_replace("[&?]+$", "", $url);
+    $url = preg_replace("/[&?]+$/", "", $url);
 
     switch ($this->mode) {
       case "get":
-          $url .= ( strpos($url, "?") !== false ?  "&" : "?" ).
-                urlencode($this->name)."=".$this->id;
+          $url .= ( strpos($url, "?") !== false ?  "&" : "?" ). urlencode($this->name)."=".$this->id;
       break;
       default:
         ;
@@ -252,7 +246,7 @@ class Session {
           $str .= "\$$var = array(); ";
           while ( "array" == $l ) {
               ## Structural recursion
-              $this->serialize($var."['".ereg_replace("([\\'])", "\\\\1", $k)."']", $str);
+              $this->serialize($var."['".preg_replace("/([\\'])/", "\\\\1", $k)."']", $str);
               eval("\$l = gettype(list(\$k)=each(\$$var));");
           }
 
@@ -271,7 +265,7 @@ class Session {
       default:
           ## $$var is an atom. Extract it to $l, then generate code.
           eval("\$l = \$$var;");
-          $str.="\$$var = '".ereg_replace("([\\'])", "\\\\1", $l)."'; ";
+          $str.="\$$var = '".preg_replace("/([\\'])/", "\\\\1", $l)."'; ";
           break;
       }
   }

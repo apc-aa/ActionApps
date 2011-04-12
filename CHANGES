@@ -1,3 +1,5 @@
+04/12/11 - fixes for PHP 5.3 (AA now works in PHP5.3, but it is not tested on 
+(honzam)   production servers)   
 04/11/11 - bigger cleanup of the code - removed unused functions, specialized
 (honzam)   functions moved from util.php3 to local include files
          - new possibility to export slice discussions to file:

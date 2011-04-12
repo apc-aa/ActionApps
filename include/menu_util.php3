@@ -29,7 +29,7 @@
 */
 
 
-function GetLabel(&$profile, $property, $selector, $default_text) {
+function GetLabel($profile, $property, $selector, $default_text) {
     $val = $profile->getProperty($property, $selector);
     return ($val === false) ? $default_text : $val;
 }
@@ -107,7 +107,7 @@ function PrintModuleSelection() {
         }
 
         $js .= ";\n";
-        $switch_text = GetLabel(&$profile, 'ui_manager', 'top_moduleswitchtext', '');
+        $switch_text = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
 
         if ($switch_text) {
             $js .= "document.write('". str_replace("'","\\'", $switch_text) ."');\n";
@@ -118,7 +118,7 @@ function PrintModuleSelection() {
         document.write('</select>');\n";
         FrmJavascriptCached($js, 'modules');
     } else {
-        echo GetLabel(&$profile, 'ui_manager', 'top_moduleselection', "&nbsp;");
+        echo GetLabel($profile, 'ui_manager', 'top_moduleselection', "&nbsp;");
     }
 }
 
@@ -154,7 +154,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
         mgettext_bind(get_mgettext_lang(), 'news');
     }
 
-    $nb_logo = GetLabel(&$profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>');
+    $nb_logo = GetLabel($profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action.gif', aa_version(), 106, 73). '</a>');
 
     echo '
 <body'. ($useOnLoad ? ' OnLoad="InitPage()"' : ''). ' bgcolor="'. COLOR_BACKGROUND .'">
@@ -177,7 +177,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
             $title_img = GetAAImage('spacer.gif', '', 28, 36);
         }
 
-        $title_title = GetLabel(&$profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
+        $title_title = GetLabel($profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
         $title_name  = ($slice_id ? AA_Slices::getName($slice_id) : _m("New slice"));
 
         $title_out   = $title_img .'&nbsp;'. $title_title . (($title_title AND $title_name) ? ' - ' : '') . $title_name;
@@ -191,7 +191,7 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
             $logout_out = '<input type="submit" name="logout" value="'.$profile->getProperty('ui_manager', 'top_logout').'">';
         }
 
-        $user_out = GetLabel(&$profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3', false, $slice_id));
+        $user_out = GetLabel($profile, 'ui_manager', 'top_userinfo', GetMenuLink('userinfo' == $activeMain, $auth->auth['uname'], IfSlPerm(PS_EDIT_SELF_USER_DATA), 'admin/um_passwd.php3', false, $slice_id));
 
         echo '
         <td colspan="2" id="aa_top">
@@ -357,7 +357,7 @@ function showSubMenuRows( $aamenuitems, $active ) {
  * @param $aamenu
  * @param $active
  */
-function showSubmenu(&$aamenu, $active) {
+function showSubmenu($aamenu, $active) {
     global $debug;
     if ($debug) { echo "<p><font color=\"purple\">showSubmenu:active=$active</font></p>\n"; }
     echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="left" class="leftmenu noprint">'."\n";

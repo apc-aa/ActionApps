@@ -1793,7 +1793,7 @@ class contentcache {
         if ( isset( $this->content[$key]) ) {
             return $this->content[$key];
         }
-        $val = call_user_func_array($function, $params);
+        $val = call_user_func_array($function, (array)$params);
         $this->content[$key] = $val;
         return $val;
     }

@@ -605,20 +605,20 @@ class AA_File_Wrapper {
     function &wrapper($url) {
         $info = parse_url($url);
         if (ini_get('allow_url_fopen')) {
-            $wrapper = &new AA_File_Wrapper($url, $info);
+            $wrapper = new AA_File_Wrapper($url, $info);
         } else {
             switch (@$info['scheme']) {
                 case 'http':
-                    $wrapper = &new AA_HTTP_File_Wrapper($url, $info);
+                    $wrapper = new AA_HTTP_File_Wrapper($url, $info);
                     break;
                 case 'https':
-                    $wrapper = &new AA_HTTPS_File_Wrapper($url, $info);
+                    $wrapper = new AA_HTTPS_File_Wrapper($url, $info);
                     break;
                 case 'ftp':
-                    $wrapper = &new AA_FTP_File_Wrapper($url, $info);
+                    $wrapper = new AA_FTP_File_Wrapper($url, $info);
                     break;
                 default:
-                    $wrapper = &new AA_File_Wrapper($url, $info);
+                    $wrapper = new AA_File_Wrapper($url, $info);
             }
         }
         return $wrapper;
@@ -917,17 +917,17 @@ class AA_File_Info {
     function &wrapper($url) {
         $info = parse_url($url);
         /*if (ini_get('allow_url_fopen')) {
-            $wrapper = &new AA_File_Wrapper($url, $info);
+            $wrapper = new AA_File_Wrapper($url, $info);
         } else {*/
         switch (strtolower(substr($info['path'], strrpos($info['path'], '.')+1 ))) { //parse extension
             case 'jpg':
-                    $wrapper = &new AA_Jpg_Image_File_Info($url);
+                    $wrapper = new AA_Jpg_Image_File_Info($url);
                     break;
             case 'gif':
             case 'png':
-                    $wrapper = &new  AA_Image_File_Info($url);
+                    $wrapper = new  AA_Image_File_Info($url);
                 default:
-                    $wrapper = &new AA_File_Info($url);
+                    $wrapper = new AA_File_Info($url);
             }
         return $wrapper;
     }
@@ -1542,16 +1542,16 @@ class AA_Directory_Wrapper {
     function &wrapper($url) {
         $info = parse_url($url);
         /*if (ini_get('allow_url_fopen')) {
-            $wrapper = &new AA_File_Wrapper($url, $info);
+            $wrapper = new AA_File_Wrapper($url, $info);
         } else {*/
 
             switch (@$info['scheme']) {
                 case 'ftp':
                     echo "ftp directory not yet implemented\n";
-                    //$wrapper = &new AA_FTP_Directory_Wrapper($url, $info);
+                    //$wrapper = new AA_FTP_Directory_Wrapper($url, $info);
                     break;
                 default:
-                    $wrapper = &new AA_Directory_Wrapper($url, $info);
+                    $wrapper = new AA_Directory_Wrapper($url, $info);
             }
         return $wrapper;
     }
