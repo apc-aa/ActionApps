@@ -1,4 +1,0 @@
-Category	Title	Author	Summary
-Transport	Transportation in Plzen	John Mikyska	Commentary on problems with motorway around city Plzen. 
-Parks, Environment	State Parks in a New Era	Phyllis Myers	This study consists of a <b>large<b> number of case studies and recommendations on the importance feasability of parks creation, maintenance, and revitalization. 
-Education	An Outline of American History	Keith W. Olson	Introduction to the American history. 
