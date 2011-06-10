@@ -740,10 +740,22 @@ class AA_Metabase {
         $sel_in = $zids->sqlin( false , true);  // asis
         $SQL = "SELECT * FROM $tablename WHERE $key $sel_in";
         StoreTable2Content($content, $SQL, '', $key);
+
+        // AA::$debug && AA::$dbg->group('meta');
+
         // it is unordered, so we have to sort it:
-        for($i=0; $i<$zids->count(); $i++ ) {
-            $ret[(string)$zids->id($i)] = $content[$zids->id($i)];
+        for ($i=0, $ino=$zids->count(); $i<$ino; ++$i ) {
+            $id = $zids->id($i);
+            $ret[(string)$id] = $content[$id];
         }
+        // tried to replace the for () with foreach (), but it is two times slower (PHP 5.3.6 - eAccelerator 0.9.6.1 )
+        // reset($zids); foreach($zids as $id) { $ret[(string)$id] = $content[$id]; }
+        // iterations  | for time  | foreach time
+        // 20          | 2.8E-5    | 4.2E-5
+        // 2000        | 0.0018    | 0.0031
+
+        //AA::$debug && AA::$dbg->groupend('meta');
+
         return $ret;
     }
 

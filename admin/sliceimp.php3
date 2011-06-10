@@ -44,7 +44,6 @@ if (!CheckPerms( $auth->auth["uid"], "aa", AA_ID, PS_ADD) ) {
 
 $varset     = new Cvarset();
 $itemvarset = new Cvarset();
-//$debugimport=1;
 
 // Prooves whether this ID already exists in the slices table,
 // changes the ID to a new chosen one
@@ -114,10 +113,8 @@ function proove_data_ID($data_id)
            $sess,
            $data_showme,
            $data_resolve_conflicts, //Set from data_conflicts_list
-           $debugimport,
            $data_overwrite;
     $res = $data_resolve_conflicts[$data_id];
-    if ($debugimport) huhl("proove_data_ID($data_id), drc=$res");
     if ($res && strlen($res) != 16)	{
         if ((strlen($res) != 16)||(strlen($res) != 32)) {
 //			echo "Warning: ". _m("Slice_data_ID (".$res.") has wrong length (".strlen($res).", should be 32)<br>\n");
@@ -223,15 +220,10 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
            $data_import_failure,
            $data_overwrite,
            $only_data,
-           $new_slice_ids,
-           $debugimport;
-    if ($debugimport) {
-        huhl("import_slice_data:id=$id;only_data=$only_data");
-    }
+           $new_slice_ids;
     if ($only_data) { // import slice items ?
         list($fields,) = GetSliceFields($slice_id);
         if (!is_array($fields)) {
-            if ($debugimport) huhl("import_slice_data failed to get fields");
             $data_import_failure[] = $id." No fields for slice_id=$slice_id";
             return false;
         }
@@ -253,12 +245,6 @@ function import_slice_data($slice_id, $id, $content4id, $insert, $feed)
           $id           = $new_data_id;
         }
 
-        if ($debugimport) {
-            huhl("Storing item: $id");
-        }
-        if ($debugimport) {
-            $GLOBALS['debugsi'] = 1;
-        }
         if ( StoreItem($id, $slice_id, $cont, $fields, $insert, true, $feed)) {
             if ($data_overwrite) {
                 $data_overwritten_list[] = $id." (id:".$id.")";
@@ -277,9 +263,6 @@ if ($Cancel) {
 }
 
 $IDconflict = false;
-if ($debugimport) {
-    huhl("Slice_def=",htmlentities($slice_def));
-}
 $slice_def_bck  = $slice_def = stripslashes($slice_def);
 $imported_count = 0;
 
@@ -288,9 +271,6 @@ require_once AA_BASE_PATH."admin/sliceimp_xml.php3";
 
 // import via exported file
 if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
-    if ($debugimport) {
-        huhl("Importing a file");
-    }
     $dirname = IMG_UPLOAD_PATH;
     $fileman_used=false;
     $dest_file = $_FILES['slice_def_file']['name'];
@@ -298,18 +278,9 @@ if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
 
   // i must copy this from aa_move_uploaded_file because of some variables,that i can't (don't know how) set
 
-    list($va,$vb,$vc) = explode(".",phpversion());   // this check work with all possibilities (I hope) -
-    if ( ($va*10000 + $vb *100 + $vc) >= 40003 ) {    // '4.0.3', '4.1.2-dev', '4.1.14' or '5.23.1'
-        if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
-            if ( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file")) {
-                echo _m("Can't upload Import file") . "to $dirname$dest_file";
-            } else if ($perms) {
-                chmod ($dirname.$dest_file, $perms);
-            }
-        }
-    } else {   // for php 3.x and php <4.0.3
-        if (!copy($_FILES['slice_def_file']['tmp_name'],"$dirname$dest_file")) {
-            echo _m("Can't upload Import file");
+    if (is_uploaded_file($_FILES['slice_def_file']['tmp_name'])) {
+        if ( !move_uploaded_file($_FILES['slice_def_file']['tmp_name'], "$dirname$dest_file")) {
+            echo _m("Can't upload Import file") . "to $dirname$dest_file";
         } else if ($perms) {
             chmod ($dirname.$dest_file, $perms);
         }
@@ -507,8 +478,8 @@ if ($IDconflict || $data_IDconflict) { ?>
 // <xxx>&lt;BR&gt;some content</xxx>
 // Which the browser will convert to <xxx><BR>some content</xxx>
 // which is invalid XML. So, convert & to &amp; first, so pass through
-// HTMLEntities, which browser will undo.
-echo HTMLEntities($slice_def_bck) ?></textarea>
+// htmlspecialchars, which browser will undo.
+echo htmlspecialchars($slice_def_bck) ?></textarea>
     <p>
     <?php if (!$IDconflict || !$data_IDconflict) { ?>
 <?php if (!$GLOBALS["Submit"]) { ?>

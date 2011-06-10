@@ -309,6 +309,10 @@ function AA_ReloadAjaxResponse(id, responseText) {
         break;
     }
     $(valdivid).setAttribute("aaedit", "0");
+    var succes_function = $(valdivid).getAttribute('data-aa-onsuccess');
+    if (succes_function) {
+        eval(succes_function);
+    }
 }
 
 /** This function replaces the older one - proposeChange

@@ -37,20 +37,6 @@ define("UPDATE",           2);
 define("INSERT", 1);
 define("UPDATE", 2);
 
-/** comparePHPVersion function
- *  compare version  phpversion() to $ver (format major.minor.build)
- *  returns -1,0,1 :  if php version is less,equal,greater than $ver
- * @param $ver
- */
-function comparePHPVersion($ver) {
-    $v1 = explode(".",phpversion());
-    $v2 = explode(".",$ver);
-    for ($i=0;$i<3;$i++) {
-        if ($v1[$i] < $v2[$i]) return -1;
-        if ($v1[$i] > $v2[$i]) return 1;
-    }
-    return 0;
-}
 /** getCSV function
  * @param $handle
  * @param $maxsize
@@ -61,11 +47,7 @@ function getCSV($handle,$maxsize = 65536,$delimiter = ";",$enclosure = '"') {
     if ($delimiter == '\t') {
         $delimiter = chr(9);  // tabulator ascii
     }
-    if (comparePHPVersion("4.3.0") == -1) {
-        return fgetcsv($handle,$maxsize,$delimiter);
-    } else {
-        return fgetcsv($handle,$maxsize,$delimiter, $enclosure);
-    }
+    return fgetcsv($handle,$maxsize,$delimiter, $enclosure);
 }
 
 /** createFieldNames function

@@ -57,7 +57,7 @@ function get_aamenus_links() {
            $r_state,
            $bookmarks,
            $slice_id;
-
+           
     $module_location = "modules/links/";
 
 
@@ -88,14 +88,6 @@ function get_aamenus_links() {
         "cond"  => IfSlPerm(PS_LINKS_SETTINGS),
         "level" => "main",
         "submenu"=>"modadmin_submenu");
-
-    $aamenus["aaadmin"] = array (
-        "label" => _m('AA'),
-        "title" => _m('AA'),
-        "href"  => "admin/aafinder.php3",
-        "cond"  => IsSuperadmin(),
-        "level" => "main",
-        "submenu"=>"aaadmin_submenu");
 
     $aamenus["linkmanager_submenu"] = array(
         "bottom_td"=>200,
@@ -188,10 +180,11 @@ function get_aamenus_links() {
                         of unused menu rows
             func_param  Param to function (see above)
     */
+    
+    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 
     // left menu for aaadmin is common to all modules, so it is shared
-    require_once AA_INC_PATH."menu_aa.php3";
-    return $aamenus;
+    return array_merge($aamenus, GetCommonMenu($profile));
 }
 
 /** Create view menu for current slice */

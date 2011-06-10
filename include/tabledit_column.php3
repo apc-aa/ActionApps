@@ -55,7 +55,7 @@ function get_formatted_date($datestring, $format) {
     }
 
     // Split the date into parts consisting only of digits or only of letters
-    for ($i = 0; $i < strlen ($datestring); $i++) {
+    for ( $i=0, $ino=strlen($datestring); $i<$ino; ++$i) {
         if (ctype_alpha($datestring[$i]) && ($s == "" || ctype_alpha($datestring[$i-1]))) {
             $s .= $datestring[$i];
         } elseif (ctype_digit($datestring[$i]) && ($s == "" || ctype_digit($datestring[$i-1]))) {
@@ -70,7 +70,7 @@ function get_formatted_date($datestring, $format) {
     }
 
     // Split the format into parts consisting of one letter
-    for ($i = 0; $i < strlen ($format); $i++) {
+    for ( $i=0, $ino=strlen($format); $i<$ino; ++$i) {
         if (ctype_alpha($format[$i])) {
             $formatparts[] = $format[$i];
         }
@@ -81,7 +81,7 @@ function get_formatted_date($datestring, $format) {
     $month3_names = array ("Jan"=>1,"Feb"=>2,"Mar"=>3,"Apr"=>4,"May"=>5,"Jun"=>6,"Jul"=>7,"Aug"=>8,"Sep"=>9,"Oct"=>10,"Nov"=>11,"Dec"=>12);
 
     // assing date parts to format parts
-    for ($i = 0; $i < count ($dateparts); $i ++) {
+    for ($i=0, $ino=count($dateparts); $i<$ino; ++$i) {
         $d = $dateparts[$i];
         switch ($formatparts[$i]) {
             case 'a': $pm = $d == "pm"; break;

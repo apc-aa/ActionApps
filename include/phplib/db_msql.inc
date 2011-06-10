@@ -178,16 +178,11 @@ class DB_msql {
     printf("<b>MSQL Error</b>: %s</p>\n", $this->Error);
   }
 }
-$_php_major_version = substr(phpversion(), 0, 1);
-if((4 > $_php_major_version) or !class_exists("DB_Sql"))
-	{
-	class DB_Sql extends DB_msql
-		{
-		function DB_Sql($query = "")
-			{
+if(!class_exists("DB_Sql"))	{
+	class DB_Sql extends DB_msql {
+		function DB_Sql($query = "") {
 			$this->DB_msql($query);
-			}
 		}
 	}
-unset($_php_major_version);
+}
 ?>

@@ -792,7 +792,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
 
             $updated_items  = 0;  // number of updated items
 
-            for ( $i=0; $i<=$zids->count(); $i++ ) {
+            for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
 
                 $content4id    = new ItemContent();
                 $content4id->setByItemID($zids->zid($i), true);     // ignore password

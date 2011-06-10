@@ -206,6 +206,7 @@ class AA_Toexecute {
                 $varset->doUpdate('toexecute');
 
                 $object = unserialize($task['object']);
+                //huhl($object);
                 if ( $GLOBALS['debug'] ) {
                     huhl($object);
                 }
@@ -226,7 +227,7 @@ class AA_Toexecute {
      */
     function execute_one(&$object, $params) {
         if ( !is_object($object) ) {
-            return 'No object'; // Error
+            return 'No object: '. serialize($object); // Error
         }
         set_time_limit(max(30,ini_get('max_execution_time')));   // 30 seconds (at least) for each task
         return call_user_func_array(array($object, 'toexecutelater'), (array)$params);

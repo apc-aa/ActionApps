@@ -37,7 +37,7 @@
  * @param $params
  */
 function con_url($url, $params) {
-    return htmlentities(get_url($url, $params));
+    return htmlspecialchars(get_url($url, $params));
 }
 
 /** makes url parameters to use with GET request from given parameters */

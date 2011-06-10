@@ -50,7 +50,7 @@ $GLOBALS['aamenus']       = "aamenus";
 $GLOBALS['menu_function'] = 'get_aamenus_polls';
 
 function get_aamenus_polls() {
-    global $r_slice_view_url, $r_state, $auth, $AA_CP_Session, $polledit;
+    global $r_slice_view_url, $r_state, $auth, $AA_CP_Session, $polledit, $slice_id;
 
     $module_location = "modules/polls/";
 
@@ -82,15 +82,6 @@ function get_aamenus_polls() {
         "cond"  => IfSlPerm(PS_MODP_SETTINGS),
         "level" => "main",
         "submenu"=>"modadmin_submenu");
-
-    $aamenus["aaadmin"] = array (
-        "label" => _m("AA"),
-        "title" => _m("AA"),
-        "href"  => "admin/um_uedit.php3",
-        "cond"  => IsSuperadmin(),
-        "level" => "main",
-        "submenu"=>"aaadmin_submenu");
-
 
     $aamenus["pollsmanager_submenu"] = array(
         "bottom_td" => 200,
@@ -150,8 +141,9 @@ function get_aamenus_polls() {
             show_always don't include slice_id in cond
     */
 
+    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
+
     // left menu for aaadmin is common to all modules, so it is shared
-    require_once AA_INC_PATH."menu_aa.php3";
-    return $aamenus;
+    return array_merge($aamenus, GetCommonMenu($profile));
 }
 ?>

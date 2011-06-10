@@ -238,7 +238,7 @@ class NewDiscussionCommentEvent {
 
         // get aliases
         $aliases = GetDiscussionAliases();
-        for ($i=2; $i < count($item_params); $i++) {
+        for ( $i=2, $ino=count($item_params); $i<$ino; ++$i) {
             FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
         }
 
@@ -595,7 +595,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
             }
             // created categories are in wrong order - we need the deepest
             // category as first
-            for ( $j = count($reverse_cat)-1; $j>=0 ; $j-- ) {
+            for ( $j = count($reverse_cat)-1; $j>=0 ; --$j ) {
                 $subcategories[$reverse_cat[$j]] = $reverse_path[$j];
             }
         }
@@ -724,7 +724,7 @@ function Event_ItemUpdated_Aperio_porad( $type, $slice, $slice_type, &$ret_param
 function Event_ItemUpdated_Ekoinfocentrum( $type, $slice, $slice_type, &$ret_params, $params, $params2) {
     return SendFilledItem($ret_params, 53);
 }
-/** Event_ItemAfterInsert_NszmAkce function
+/**
  * @param $type
  * @param $slice
  * @param $slice_type
@@ -784,11 +784,11 @@ function Event_ItemAfterInsert_NszmPruzkum( $type, $slice_id, $slice_type, &$ret
  */
 function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     $short_id   = $ret_params->getValue('short_id........');              // item's short_id is in params
-    
+
     if (!$ret_params->getValue('switch.........2')) {
         return false;  // not stored for MPO, yet
     }
-    
+
     $email1   = trim($ret_params->getValue('con_email.......'));
 
     $item     = AA_Items::getItem(new zids($short_id, 's'));
@@ -810,8 +810,8 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, &$ret_params, $
 function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, &$ret_params, $foo, $foo2 ) {
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
     $ekis_id  = $ret_params->getValue('relation.......1');              // item's short_id is in params
-    
-    
+
+
     $email1   = trim(AA_Stringexpand::unalias('{item:'.$ekis_id.':_#EKISMAIL}'));
 
     $item     = AA_Items::getItem(new zids($short_id, 's'));
@@ -835,10 +835,10 @@ function Event_ItemUpdated_Sasov_objed( $type, $slice_id, $slice_type, &$ret_par
     if ($_POST['souhlas'] != 1) {
         return false;
     }
-    
+
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
     $emaily   = array('hm@ecn.cz', 'pykalova@biofarma.cz');
-    
+
     //$email1 = trim($ret_params->getValue('con_email.......'));
 
     $item     = AA_Items::getItem(new zids($short_id, 's'));
@@ -847,7 +847,7 @@ function Event_ItemUpdated_Sasov_objed( $type, $slice_id, $slice_type, &$ret_par
         $ret = AA_Mail::sendTemplate(7, $emaily, $item, false) > 0;
         return $ret;
     }
-    
+
     return false;
 }
 

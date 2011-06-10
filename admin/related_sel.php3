@@ -76,7 +76,7 @@ if (!$mode ) {
     $mode='AMB';
 }
 
-for ( $i=0; $i<strlen($mode); $i++) {
+for ( $i=0, $ino=strlen($mode); $i<$ino; ++$i) {
     $m1 = substr($mode,$i,1);
     $mode_string .= "&nbsp;<a href=\"javascript:SelectRelations('$var_id','".$tps['AMB'][$m1]['tag']."','".$tps['AMB'][$m1]['prefix']."','".$tps['AMB'][$m1]['tag']."_#ITEM_ID_','_#JS_HEAD_')\">". $tps['AMB'][$m1]['str'] ."</a>&nbsp;";
 }

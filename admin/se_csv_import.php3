@@ -164,7 +164,7 @@ function InitPage() {}
           $numRows = IMPORTFILE_PREVIEW_ROWS; // number of showed items(rows)
           $csvRec = getCSV($handle,CSVFILE_LINE_MAXSIZE,$delimiter,$enclosure);
           if (!$caption) {
-              for ($i=0;$i<count($csvRec);$i++) {
+              for ( $i=0, $ino=count($csvRec); $i<$ino; ++$i) {
                   $caption[] = "Field ".($i+1);
               }
               FrmTabRow($caption,true);

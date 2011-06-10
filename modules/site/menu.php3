@@ -41,7 +41,7 @@ $GLOBALS['aamenus']       = "aamenus";
 $GLOBALS['menu_function'] = 'get_aamenus_sites';
 
 function get_aamenus_sites() {
-    global $r_slice_view_url, $auth;
+    global $r_slice_view_url, $auth, $slice_id;
 
     $aamenus["view"] = array (
         "label" => _m("View site"),
@@ -52,23 +52,15 @@ function get_aamenus_sites() {
     $aamenus["codemanager"] = array (
         "label" => _m("Code&nbsp Manager"),
         "title" => _m("Code&nbsp Manager"),
-        "href"  => "modules/site/index.php3" . ($r_slot_id ? "?r_slot_id=$r_slot_id" : ""),
+        "href"  => "modules/site/index.php3",
         "level" => "main");
 
     $aamenus["modadmin"] = array (
         "label" => _m("Module Settings"),
         "title" => _m("Module Settings"),
-        "href"  => "modules/site/modedit.php3" . ($r_slot_id ? "?r_slot_id=$r_slot_id" : ""),
+        "href"  => "modules/site/modedit.php3",
         "cond"  => IfSlPerm(PS_MODW_SETTINGS),
         "level" => "main");
-
-    $aamenus["aaadmin"] = array (
-        "label" => _m("AA"),
-        "title" => _m("AA Administration"),
-        "href"  => "admin/aafinder.php3",
-        "cond"  => IfSlPerm(PS_NEW_USER),
-        "level" => "main",
-        "submenu"=>"aaadmin_submenu");
 
     /*  Second-level (left) menu description:
         bottom_td       empty space under the menu
@@ -84,8 +76,9 @@ function get_aamenus_sites() {
             show_always don't include slice_id in cond
     */
 
+    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
+
     // left menu for aaadmin is common to all modules, so it is shared
-    require_once AA_INC_PATH."menu_aa.php3";
-    return $aamenus;
+    return array_merge($aamenus, GetCommonMenu($profile));
 }
 ?>

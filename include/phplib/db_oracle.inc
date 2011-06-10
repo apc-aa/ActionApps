@@ -6,7 +6,7 @@
  *
  * $Id$
  *
- */ 
+ */
 
 class DB_Oracle {
   var $Debug    =  false;
@@ -67,7 +67,7 @@ class DB_Oracle {
         if($this->Remote) {
           if($this->Debug) {
             printf("<br>connect() $this->User/******@$this->Database.world<br>\n");
-          }   
+          }
           $this->Link_ID=ora_plogon
                  ("$this->User/$this->Password@$this->Database","");
           /************** (comment by SSilk)
@@ -78,7 +78,7 @@ class DB_Oracle {
         } else {
           if($this->Debug) {
             printf("<br>connect() $this->User, $this->Password <br>\n");
-          }   
+          }
           $this->Link_ID=ora_plogon("$this->User","$this->Password");
           /* (comment by SSilk: don't know how this could work, but I leave this untouched!) */
         }
@@ -88,29 +88,29 @@ class DB_Oracle {
         if (!$this->Link_ID) {
           $this->connect_failed();
         } else {
-			//echo "commit on<p>";
+            //echo "commit on<p>";
           ora_commiton($this->Link_ID);
         }
         if($this->Debug) {
           printf("<br>connect() Obtained the Link_ID: $this->Link_ID<br>\n");
-        }   
+        }
       }
   }
-  
+
   function connect_failed() {
     $this->Halt_On_Error = "yes";
     $this->halt("connect ($this->User, \$Password, $this->Database) failed");
   }
-  
+
   ## In order to increase the # of cursors per system/user go edit the
   ## init.ora file and increase the max_open_cursors parameter. Yours is on
   ## the default value, 100 per user.
   ## We tried to change the behaviour of query() in a way, that it tries
   ## to safe cursors, but on the other side be carefull with this, that you
   ## don't use an old result.
-  ## 
+  ##
   ## You can also make extensive use of ->disconnect()!
-  ## The unused QueryIDs will be recycled sometimes. 
+  ## The unused QueryIDs will be recycled sometimes.
 
   function query($Query_String) {
 
@@ -126,13 +126,13 @@ class DB_Oracle {
       $this->lastQuery=$Query_String;
 
       if (!$this->Query_ID) {
-	      $this->Query_ID= ora_open($this->Link_ID);
+          $this->Query_ID= ora_open($this->Link_ID);
       }
       if($this->Debug) {
         printf("Debug: query = %s<br>\n", $Query_String);
         printf("<br>Debug: Query_ID: %d<br>\n", $this->Query_ID);
       }
-      
+
       if(!@ora_parse($this->Query_ID,$Query_String)) {
         $this->Errno=ora_errorcode($this->Query_ID);
         $this->Error=ora_error($this->Query_ID);
@@ -148,19 +148,19 @@ class DB_Oracle {
       if(!$this->Query_ID) {
         $this->halt("Invalid SQL: ".$Query_String);
       }
-      
+
       return $this->Query_ID;
   }
-  
+
   function next_record() {
-      if (!$this->no_next_fetch && 
+      if (!$this->no_next_fetch &&
           0 == ora_fetch($this->Query_ID)) {
           if ($this->Debug) {
             printf("<br>next_record(): ID: %d,Rows: %d<br>\n",
             $this->Query_ID,$this->num_rows());
           }
           $this->Row	+=1;
-          
+
           $errno=ora_errorcode($this->Query_ID);
           if(1403 == $errno) { # 1043 means no more records found
               $this->Errno=0;
@@ -179,7 +179,7 @@ class DB_Oracle {
           }
       } else {
         $this->no_next_fetch=false;
-          for($ix=0;$ix<ora_numcols($this->Query_ID);$ix++) {
+          for ($ix=0, $ino=ora_numcols($this->Query_ID); $ix<$ino; $ix++) {
               $col=strtolower(ora_columnname($this->Query_ID,$ix));
               $value=ora_getcolumn($this->Query_ID,$ix);
               $this->Record[ "$col" ] = $value;
@@ -198,7 +198,7 @@ class DB_Oracle {
       if       ($this->Row - 1 == $pos) {
         $this->no_next_fetch=true;
       } elseif ($this->Row == $pos ) {
-	## do nothing
+    ## do nothing
       } else {
         $this->halt("Invalid seek(): Position is cannot be handled by API.<BR>".
               "Difference too big. Wanted: $pos Current pos: $this->Row");
@@ -215,7 +215,7 @@ class DB_Oracle {
     }
     return $result;
   }
-  
+
   function unlock() {
     return ora_do($this->Link_ID, "commit");
   }
@@ -224,7 +224,7 @@ class DB_Oracle {
       $count = 0;
       $id    = 0;
       $res   = array();
-      
+
     /*
      * Due to compatibility problems with Table we changed the behavior
      * of metadata();
@@ -272,7 +272,7 @@ class DB_Oracle {
            " WHERE T.column_name=I.column_name (+)".
            " AND T.table_name=I.table_name (+)".
            " AND T.table_name=UPPER('$table') ORDER BY T.column_id");
-      
+
       $i=0;
       while ($this->next_record()) {
         $res[$i]["table"] =  $this->Record[table_name];
@@ -287,9 +287,9 @@ class DB_Oracle {
         $res[$i]["index"] =  $this->Record[index_name];
         $res[$i]["chars"] =  $this->Record[char_col_decl_length];
         if ($full) {
-        	$j=$res[$i]["name"];
-        	$res["meta"][$j] = $i;
-        	$res["meta"][strtoupper($j)] = $i;
+            $j=$res[$i]["name"];
+            $res["meta"][$j] = $i;
+            $res["meta"][strtoupper($j)] = $i;
         }
         if ($full) $res["meta"][$res[$i]["name"]] = $i;
         $i++;
@@ -321,7 +321,7 @@ class DB_Oracle {
     if (eregi("^[[:space:]]*SELECT[[:space:]]",$this->lastQuery) ) {
       $from_pos = strpos(strtoupper($this->lastQuery),"FROM");
       $q = "SELECT count(*) ". substr($this->lastQuery, $from_pos);
-      
+
       ORA_parse($curs,$q);
       ORA_exec($curs);
       ORA_fetch($curs);
@@ -364,7 +364,7 @@ class DB_Oracle {
       ora_close($this->Query_ID);
       $this->Query_ID=0;
   }
-  
+
   /* private: error handling */
   function halt($msg) {
     if ("no" == $this->Halt_On_Error)
@@ -394,20 +394,15 @@ class DB_Oracle {
    $info[$i]["table_name"]     =$this->Record["table_name"];
    $info[$i]["tablespace_name"]=$this->Record["tablespace_name"];
    $i++;
-   } 
+   }
   return $info;
   }
 }
-$_php_major_version = substr(phpversion(), 0, 1);
-if((4 > $_php_major_version) or !class_exists("DB_Sql"))
-	{
-	class DB_Sql extends DB_Oracle
-		{
-		function DB_Sql($query = "")
-			{
-			$this->DB_Oracle($query);
-			}
-		}
-	}
-unset($_php_major_version);
+if(!class_exists("DB_Sql"))	{
+    class DB_Sql extends DB_Oracle {
+        function DB_Sql($query = "") {
+            $this->DB_Oracle($query);
+        }
+    }
+}
 ?>

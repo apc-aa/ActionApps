@@ -160,7 +160,7 @@ class linkcheck
         $SQL = "SELECT id, url, valid_codes, valid_rank FROM links_links ORDER BY validated";
         $db->tquery($SQL);
 
-        for ($i = 0; (($i < LINKS_VALIDATION_COUNT) && ($db->next_record())); $i++) {
+        for ($i = 0; (($i < LINKS_VALIDATION_COUNT) && ($db->next_record())); ++$i) {
 
             $l_id  = $db->f('id');
             $l_url = $db->f('url');
@@ -207,7 +207,7 @@ class linkcheck
         rsort($dummy);
         $valid_codes2 = "";
         if (count($dummy) > 9) {
-            for ($i=0; $i < 10; $i++) {
+            for ($i=0; $i < 10; ++$i) {
                 $valid_codes2 .= $dummy[$i]. ($i==9 ? "" : ":");
             }
         } else {
@@ -223,7 +223,7 @@ class linkcheck
     function count_weight($valid_codes) {
         $dummy = explode(":", $valid_codes);
         rsort($dummy); // sort descend (newest is first)
-        for ($i=0; $i<count($dummy); $i++) {
+        for ( $i=0, $ino=count($dummy); $i<$ino; ++$i) {
             list($arr[$i]["time"],$arr[$i]["code"]) = explode(",", $dummy[$i]); // split to array
             /*
             if ($i == 0) { // latest timestamp
@@ -237,7 +237,7 @@ class linkcheck
             $count = 10;
         }
         $num = 0;
-        for ($i=0; $i<$count; $i++) {
+        for ($i=0; $i<$count; ++$i) {
             /* exponential function - too fast near zero :(
             // $num =  exp((-1)*($arr[$i]["reltime"]/60/60/24))*$this->http_error_codes[$arr[$i]["code"]]["weight"];
             */

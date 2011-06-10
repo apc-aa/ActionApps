@@ -216,16 +216,11 @@ class DB_Pgsql {
     return $return;
   }
 }
-$_php_major_version = substr(phpversion(), 0, 1);
-if((4 > $_php_major_version) or !class_exists("DB_Sql"))
-	{
-	class DB_Sql extends DB_Pgsql
-		{
-		function DB_Sql($query = "")
-			{
+if(!class_exists("DB_Sql"))	{
+	class DB_Sql extends DB_Pgsql {
+		function DB_Sql($query = "") {
 			$this->DB_Pgsql($query);
-			}
 		}
 	}
-unset($_php_major_version);
+}
 ?>

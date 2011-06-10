@@ -128,7 +128,7 @@ if (is_array($desc['params'])) {
   }
   function writeParams () {
     params = new String("");
-    for (i=0; i < <?php echo count($desc[params]) ?>; ++i) {
+    for (i=0; i < <?php echo count($desc['params']) ?>; i++) {
         if (i > 0) params += ":";
         val = document.f.elements["param"+i].value;
         params += val.replace(/:/g,"#:");
@@ -138,7 +138,7 @@ if (is_array($desc['params'])) {
   function fillParams (params) {
     params = params.replace(/#:/g,"#~") + ":";
     <?php if ($allow_quote) echo "params = params.replace(/'/g,\":\");" ?>
-    for (i=0; i < <?php echo count($desc[params])?>; ++i) {
+    for (i=0; i < <?php echo count($desc['params'])?>; i++) {
         if (params > "") {
             str = params.substr(0,params.search(":"));
             params = params.substr (params.search(":")+1);
@@ -153,9 +153,9 @@ if (is_array($desc['params'])) {
   function useExample(iExample) {
     switch(iExample) {
     <?php
-        for ($i = 0; $i < count($desc[examples]); ++$i) {
-            $exm = $desc[examples][$i];
-            echo "case $i: pars=\"".$exm[params]."\"; break;";
+        for ( $i=0, $ino=count($desc['examples']); $i<$ino; ++$i) {
+            $exm = $desc['examples'][$i];
+            echo "case $i: pars=\"".$exm['params']."\"; break;";
         }
     ?>
     }
@@ -226,7 +226,7 @@ echo "
 if (is_array($desc['examples'])) {
     echo _m("Have a look at these examples of parameters sets:");
     echo "<table width=\"100%\" border=\"1\" cellspacing=\"1\" cellpadding=\"2\">";
-    for ($i = 0; $i < count($desc['examples']); ++$i) {
+    for ( $i=0, $ino=count($desc['examples']); $i<$ino; ++$i) {
         $exm = $desc['examples'][$i];
         echo "<tr><td class=\"tabtit\">";
         echo $exm['desc'];

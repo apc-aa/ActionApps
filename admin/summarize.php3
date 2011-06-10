@@ -463,7 +463,7 @@ function compareSliceTableFields($st,$sm,$pr) {
  */
 function qenc($val,$htmlformat,$unp,$color) {
     return ("<font color=\"$color\">"
-        . ( $htmlformat ? htmlentities($val)
+        . ( $htmlformat ? htmlspecialchars($val)
             : ($unp ? unpack_id($val) : $val))
         . "</font>"
     );

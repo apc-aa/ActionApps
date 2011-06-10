@@ -354,7 +354,7 @@ function GetIDPerms($id, $objectType, $flags = 0) {
         $groups = GetMembership($id);
     }
 
-    for ($i = 0; $i < count($groups); $i++) {
+    for ( $i=0, $ino=count($groups); $i<$ino; ++$i) {
         $gsql .= sprintf("OR userid = '%s' ", $groups[$i]);
     }
 

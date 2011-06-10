@@ -244,7 +244,7 @@ function ModW_str2arr($varnames, $str, $strdef, $reg) {
             print("Error initial string $strdef doesn't match regexp $reg\n<br>");
         }
     }
-    for ($i=0;$i < min(strlen($varnames),count($vars)-1); ++$i) {
+    for ($i=0, $ino=min(strlen($varnames),count($vars)-1); $i<$ino; ++$i) {
         $varout[substr($varnames,$i,1)] = $vars[$i+1];
     }
     if ($debug) { print("<br>State="); print_r($varout); }
@@ -257,7 +257,7 @@ function ModW_str2arr($varnames, $str, $strdef, $reg) {
  */
 function ModW_arr2str($varnames, $arr) {
     $strout = "";
-    for ($i=0; $i < strlen($varnames); ++$i) {
+    for ($i=0, $ino=strlen($varnames); $i<$ino; ++$i) {
         $strout .= $arr[substr($varnames,$i,1)];
     }
     return $strout;

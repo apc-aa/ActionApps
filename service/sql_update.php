@@ -86,7 +86,7 @@ if (!is_callable('_m')) {
         if (is_array($params)) {
             $foo = "#$&*-";
             $retval = str_replace ('\%', $foo, $retval);
-            for ($i = 0; $i < count ($params); $i ++) {
+            for ($i=0, $ino=count($params); $i<$ino; ++$i) {
                 $retval = str_replace ("%".($i+1), $params[$i], $retval);
             }
             $retval = str_replace ($foo, "%", $retval);

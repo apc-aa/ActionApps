@@ -51,7 +51,7 @@ function get_mgettext_lang() {
  */
 function bind_mgettext_domain($filename, $cache = false, $lang = "") {
     global $_m, $mgettext_lang, $mgettext_domain;
-    
+
     if ( $mgettext_domain == $filename ) {
         return;                             // allready loaded
     }
@@ -107,7 +107,7 @@ function _m($id, $params = 0) {
     if (is_array($params)) {
         $foo = "#$&*-";
         $retval = str_replace ('\%', $foo, $retval);
-        for ($i = 0; $i < count ($params); $i ++) {
+        for ( $i=0, $ino=count($params); $i<$ino; ++$i) {
             $retval = str_replace ("%".($i+1), $params[$i], $retval);
         }
         $retval = str_replace ($foo, "%", $retval);

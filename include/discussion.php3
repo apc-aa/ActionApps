@@ -264,8 +264,7 @@ function GetDiscussionFormat(&$view_info) {
     return $format;
 }
 
-/** GetDiscussionTree function
- *  Create discussion tree from d_content
+/** Create discussion tree from d_content
  * @param $d_content
  */
 function GetDiscussionTree(&$d_content) {
@@ -300,8 +299,9 @@ function GetDiscussionTree(&$d_content) {
  */
 function GetDiscussionThread(&$tree, $d_id, $depth, &$outcome, $images="") {
     if ($d_id != "0") {
-        for ($i=1; $i<$depth-1; $i++)
-        $outcome[$d_id][] = $images[$i];
+        for ($i=1; $i<$depth-1; ++$i) {
+            $outcome[$d_id][] = $images[$i];
+        }
         if ($depth>1) {
             $outcome[$d_id][] = $images[$depth];
             //          $outcome[$d_id][] =  D_SPACE_IMG;
@@ -411,7 +411,7 @@ function updateDiscussionCount($item_id) {
  */
 function GetDiscussion2MailAliases() {
     $aliases["_#ITEMPAR3"] = GetAlias("", "", _m("3rd parameter filled in DiscussionMailList field"));
-    for ($i = 4; $i < 10; $i ++) {
+    for ($i = 4; $i < 10; ++$i) {
         $aliases["_#ITEMPAR$i"] = GetAlias("", "", _m("%1th parameter filled in DiscussionMailList field", array ($i)));
     }
     return $aliases;
@@ -448,7 +448,7 @@ function send2mailList($d_item_id, $new_id) {
 
             // get aliases
             $aliases = GetDiscussionAliases();
-            for ($i=2; $i < count($item_params); $i++) {
+            for ($i=2, $ino=count($item_params); $i<$ino; ++$i) {
                 FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
             }
 
@@ -479,7 +479,7 @@ function send2mailList($d_item_id, $new_id) {
                 $mail = "";
                 foreach ($mail_parts as $part => $field) {
                     $s = $view_info[$field];
-                    for ($i=2; $i < 9; $i ++) {
+                    for ($i=2; $i < 9; ++$i) {
                         $s = str_replace("_#ITEMPAR".($i+1), $item_params [$i], $s);
                     }
                     $CurItem->setformat($s);

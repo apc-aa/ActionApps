@@ -39,52 +39,50 @@ require_once "../../include/mgettext.php3";
 *    @param     $src_dir -- all files from this directory will be processed
 *    @param     $dst_dir -- here will be the translated files saved
 **/
-function translate_files ($old_lang_file, $src_dir, $dst_dir) {
+function translate_files($old_lang_file, $src_dir, $dst_dir) {
     set_time_limit(10000);
 
     include $old_lang_file;
     $consts = get_defined_constants();
     // we want to replace first L_NO_EVENT and only later L_NO
-    krsort ($consts);
+    krsort($consts);
 
     foreach ($consts as $name => $value) {
-        if (substr ($name,0,2) != "L_") {
-            unset ($consts[$name]);
+        if (substr($name,0,2) != "L_") {
+            unset($consts[$name]);
         } else {
-            if (strlen($value) <= 1 || is_numeric ($value)) {
+            if (strlen($value) <= 1 || is_numeric($value)) {
                 $consts[$name] = "\"$value\"";
             } else {
-                $consts [$name] = "_m(\"".str_replace( array ('"',"\n","\r"), array ('\\"',"\\n",""),  $value)."\")";
+                $consts [$name] = "_m(\"".str_replace( array('"',"\n","\r"), array('\\"',"\\n",""),  $value)."\")";
             }
         }
     }
 
-    $dir = opendir ($src_dir);
-    while ($file = readdir ($dir)) {
-        if (is_dir ($src_dir.$file)) {
+    $dir = opendir($src_dir);
+    while ($file = readdir($dir)) {
+        if (is_dir($src_dir.$file)) {
             continue;
         }
-        if (file_exists ($dst_dir.$file) && filesize ($dst_dir.$file) > 1) {
+        if (file_exists($dst_dir.$file) && filesize($dst_dir.$file) > 1) {
             continue;
         }
         echo $file."<br>";
-        $content     = file ($src_dir.$file);
+        $content     = file($src_dir.$file);
         $new_content = "";
 
         foreach ($content as $row) {
-            for (reset ($consts); $name = key ($consts); next ($consts)) {
+            for (reset($consts); $name = key($consts); next($consts)) {
                 // first try the quick search
-                if (strstr ($row, $name)) {
-                    //echo HTMLentities($row)." => ";
+                if (strstr($row, $name)) {
                     // now replace only when it is not a part of a longer name
-                    $row = preg_replace ("'([^A-Z0-9_$])".$name."([^A-Z0-9_])'si", "\\1".$consts[$name]."\\2", $row);
-                    //echo HTMLentities($row)."<br>";
+                    $row = preg_replace("'([^A-Z0-9_$])".$name."([^A-Z0-9_])'si", "\\1".$consts[$name]."\\2", $row);
                 }
             }
             $new_content[] = $row;
         }
 
-        $fd = @fopen ($dst_dir.$file, "wb");
+        $fd = @fopen($dst_dir.$file, "wb");
         if (!$fd) {
             echo " write permission denied<br>";
         }
@@ -92,12 +90,12 @@ function translate_files ($old_lang_file, $src_dir, $dst_dir) {
             continue;
         }
         foreach ($new_content as $row) {
-            fwrite ($fd, $row);
+            fwrite($fd, $row);
         }
-        fclose ($fd);
-        chmod ($dst_dir.$file, 0777);
+        fclose($fd);
+        chmod($dst_dir.$file, 0777);
     }
-    closedir ($dir);
+    closedir($dir);
 }
 
 ?>

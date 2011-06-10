@@ -40,35 +40,6 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
-if (!function_exists('gzdecode')) {
-    function gzdecode($data) {
-        $flags = ord(substr($data, 3, 1));
-        $headerlen = 10;
-        $extralen = 0;
-        $filenamelen = 0;
-        if ($flags & 4) {
-            $extralen = unpack('v' ,substr($data, 10, 2));
-            $extralen = $extralen[1];
-            $headerlen += 2 + $extralen;
-        }
-        if ($flags & 8) { // Filename
-            $headerlen = strpos($data, chr(0), $headerlen) + 1;
-        }
-        if ($flags & 16) { // Comment
-            $headerlen = strpos($data, chr(0), $headerlen) + 1;
-        }
-        if ($flags & 2) {// CRC at end of file
-            $headerlen += 2;
-        }
-        $unpacked = gzinflate(substr($data, $headerlen));
-        if ($unpacked === FALSE) {
-              $unpacked = $data;
-        }
-        return $unpacked;
-     }
-}
-
 class AA_Http {
     /** lastErr function
      *  Method returns or sets last file error
@@ -153,16 +124,9 @@ class AA_Http {
      * @param $url
      * @param $data
      * @return array $result[]
+     * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
      */
     function postRequest($url, $data = array(), $headers=array() ) {
-        if (version_compare(phpversion(), "5.0.0", ">=")) {
-            return AA_Http::postRequest5($url, $data, $headers); // you're on PHP5 or later
-        }
-        return AA_Http::postRequest4($url, $data, $headers); // you're on PHP5 or later
-    }
-
-    /** inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl */
-    function postRequest5($url, $data = array(), $headers=array()) {
         $data = http_build_query($data);
         $params = array('http' => array(
                             'method' => 'POST',
@@ -189,71 +153,6 @@ class AA_Http {
            return false;
         }
         return $response;
-    }
-
-    /** postRequest function
-     *  POST data to the url (using POST request and returns resulted data
-     * @param $url
-     * @param $data
-     * @return array $result[]
-     */
-    function postRequest4($url, $data = array(), $headers=array()) {
-        $request = parse_url($url);
-
-        $host = $request['host'];
-        $uri  = $request['path']. (empty($request['query']) ? '' : '?'.$request['query']);
-
-        $reqbody = "";
-        foreach($data as $key=>$val) {
-            if (!empty($reqbody)) {
-                $reqbody.= "&";
-            }
-            $reqbody.= $key."=".rawurlencode($val);
-        }
-
-        $contentlength = strlen($reqbody);
-        $reqheader =  "POST $uri HTTP/1.1\r\n".
-                      "Host: $host\n". "User-Agent: ActionApps\r\n".
-                      "Content-Type: application/x-www-form-urlencoded\r\n".
-                      "Content-Length: $contentlength\r\n\r\n".
-                      "$reqbody\r\n";
-
-        $socket = fsockopen($host, 80, $errno, $errstr);
-
-        if (!$socket) {
-            AA_Http::lastErr($errno, $errstr);  // set error code
-            return false;
-        }
-
-        fputs($socket, $reqheader);
-
-        $responseHeader = '';
-        $responseContent = '';
-
-        do {
-            $responseHeader.= fread($socket, 1);
-        } while (!preg_match('/\\r\\n\\r\\n$/', $responseHeader));
-
-        if (!strstr($responseHeader, "Transfer-Encoding: chunked")) {
-            while (!feof($socket)) {
-                $responseContent.= fgets($socket, 128);
-            }
-        } else {
-            while ($chunk_length = hexdec(fgets($socket))) {
-                $responseContentChunk = '';
-                $read_length = 0;
-
-                while ($read_length < $chunk_length) {
-                    $responseContentChunk .= fread($socket, $chunk_length - $read_length);
-                    $read_length = strlen($responseContentChunk);
-                }
-
-                $responseContent.= $responseContentChunk;
-
-                fgets($socket);
-            }
-        }
-        return $responseContent;
     }
 }
 
@@ -304,13 +203,6 @@ class AA_Response {
         $response->respond();
     }
 }
-
-// ini_set('unserialize_callback_func', 'myccallback');
-//
-// function myccallback($class) {
-//     echo "--------unserialize problem:$class:";
-//     exit;
-// }
 
 class AA_Request {
     var $command;
@@ -439,6 +331,5 @@ class AA_Client_Auth {
         $_COOKIE['AA_Uid']  = '';
     }
 }
-
 
 ?>

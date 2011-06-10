@@ -291,6 +291,7 @@ function ParseViewParameters($query_string="") {
                        }
                        break;
 
+
             case 'c':  // Check for experimental c-OR-1-aaa-2-bbb-3-ccc syntax
                        // Note param_conds[0] is not otherwise used
                        // It is converted into conds in GetViewConds
@@ -538,17 +539,17 @@ function GetView($view_param) {
     }
 
     global $str2find_passon, $pagecache;
-    $str2find_save   = $str2find_passon;    // Save str2find from same level
-    $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
-    $res             = GetViewFromDB($view_param, $cache_sid);
+    $str2find_save         = $str2find_passon;    // Save str2find from same level
+    $str2find_passon       = new CacheStr2find(); // clear it for caches stored further down
+    list($res, $cache_sid) = GetViewFromDB($view_param, true);
     $str2find_passon->add($cache_sid, 'slice_id');
     $pagecache->store($key, $res, $str2find_passon);
     $str2find_passon->add_str2find($str2find_save); // and append saved for above
     return $res;
 }
 
-// Return view result based on parameters, set cache_sid
-function GetViewFromDB($view_param, &$cache_sid) {
+// Return view result based on parameters,
+function GetViewFromDB($view_param, $return_with_slice_ids=false) {
     global $debug;
     $vid           = $view_param["vid"];
     $als           = $view_param["als"];
@@ -861,6 +862,6 @@ function GetViewFromDB($view_param, &$cache_sid) {
         $ret     = $encoder->Convert($ret, $view_param['convertfrom'], $view_param['convertto']);
     }
     AA::$debug && AA::$dbg->groupend("view_$vid".'_'.$dbgtime);
-    return $ret;
+    return $return_with_slice_ids ? array($ret, $cache_sid) : $ret;
 }
 ?>

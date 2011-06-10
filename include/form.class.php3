@@ -269,7 +269,6 @@ class AA_Form extends AA_Object {
         $this->setObject('AA_Item', '', $this->getOwnerId());  // slice_id is the same as the slice_id of the form (where it is defined)
 
         $id  = get_if($this->object_id, new_id());
-        $formurl = get_aa_url('filler.php3');
         $content = $this->_getContent();
 
         $html  = "\n  <fieldset id=\"form$id\">";

@@ -171,7 +171,7 @@ function createConstsJavaScript($group_id, $admin)
     hcSortArray($data);
 
     $consts = "new Array(";
-    for ($i=0; $i < count($data); ++$i) {
+    for ( $i=0, $ino=count($data); $i<$ino; ++$i) {
         if ($i) $consts .= ",";
         $consts .= printConstsArray($data[$i], $admin);
     }
@@ -249,7 +249,7 @@ function createConstsArray($group_id, $admin, &$consts)
             while (substr($ancestors,0,$level*16) == substr($path,0,$level*16)) {
                 ++$level;
             }
-            for ($i = 0; $i < strlen($path) / 16 - $level && $depth > 0; ++$i) {
+            for ($i = 0, $ino = strlen($path); $i < $ino / 16 - $level && $depth > 0; ++$i) {
                 $consts .= "))";
                 $depth --;
             }
@@ -297,7 +297,7 @@ function hcCompareConstants($a, $b) {
 function hcSortArray(&$arr) {
     global $hcCol;
     usort($arr, "hcCompareConstants");
-    for ($i = 0; $i < count ($arr); ++$i) {
+    for ( $i=0, $ino=count($arr); $i<$ino; ++$i) {
         if (count ($arr[$i]) > $hcCol["Child"]) {
             hcSortArray($arr[$i][$hcCol["Child"]]);
         }
@@ -307,8 +307,9 @@ function hcSortArray(&$arr) {
  * @param $str
  */
 function ff($str) {
-    return str_replace("\r","",str_replace ("\n","",str_replace ("'","\\'",$str)));
+    return str_replace(array("\r","\n","'"), array('','',"\\'"), $str);
 }
+
 /** printConstsArray function
  * @param $arr (by link)
  * @param $admin
@@ -330,7 +331,7 @@ function printConstsArray(&$arr, $admin) {
             : "");
     if (count ($arr) > $hcCol["Child"]) {
         $retval .= ",new Array(";
-        for ($i=0; $i < count($arr[$hcCol["Child"]]); ++$i) {
+        for ( $i=0, $ino=count($arr[$hcCol["Child"]]); $i<$ino; ++$i) {
             if ($i) {
                 $retval .= ",";
             }
@@ -393,7 +394,7 @@ function hcUpdate()
                     continue;
                 }
                 $ar = explode("~",$ch);
-                for ($i=0; $i < count($ar); ++$i) {
+                for ( $i=0, $ino=count($ar); $i<$ino; ++$i) {
                     $ar[$i] = str_replace ("--$$--","~",str_replace("--$--",":",$ar[$i]));
                 }
                 $changes[] = $ar;
@@ -504,10 +505,9 @@ function CopyConstants($slice_id)
 
         // find new id by trying to add "_1", "_2", "_3", ... to the old one
         $new_id = $old_id;
-        for ($i = 1; in_array($new_id, $group_list); $i++) {
+        for ($i = 1; in_array($new_id, $group_list); ++$i) {
             $postfix = "_".$i;
-            $new_id = substr ($old_id,0,
-                min (strlen($old_id)+strlen($postfix), $max_group_id_len) - strlen($postfix)) . $postfix;
+            $new_id = substr ($old_id,0, min (strlen($old_id)+strlen($postfix), $max_group_id_len) - strlen($postfix)) . $postfix;
         }
         $group_list[] = $new_id;
 

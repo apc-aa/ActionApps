@@ -43,16 +43,13 @@ $menu_function = 'get_aamenus_alerts';
 
 set_collectionid();
 
-
 function get_aamenus_alerts() {
-    global $r_slice_view_url,
-           $auth;
+    global $r_slice_view_url, $auth, $slice_id;
 
     $aamenus["admin"] = array (
         "label" => _m("Alerts Settings"),
         "title" => _m("Alerts Settings"),
-        "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit]["
-            .urlencode ($GLOBALS["slice_id"])."]=1",
+        "href" => "modules/alerts/tabledit.php3?set_tview=modedit&cmd[modedit][edit][" .urlencode($GLOBALS["slice_id"])."]=1",
         "cond" => IfSlPerm(PS_USERS),
         "level" => "main",
         "submenu" => "admin_submenu");
@@ -82,16 +79,6 @@ function get_aamenus_alerts() {
         "level" => "main",
         "submenu"=>"admin_submenu");
 */
-    $aamenus["aaadmin"] = array (
-        "label" => _m("AA"),
-        "title" => _m("AA Administration"),
-        "href"  => "admin/aafinder.php3",
-        "cond"  => IfSlPerm(PS_NEW_USER),
-        "level" => "main",
-        "submenu"=>"aaadmin_submenu");
-
-    // left menu for aaadmin is common to all modules, so it is shared
-    require_once AA_INC_PATH."menu_aa.php3";
 
     $aamenus["admin_submenu"] = array (
         "bottom_td"=>200,
@@ -118,6 +105,10 @@ function get_aamenus_alerts() {
         "email"=>array ("cond"=>IfSlPerm(PS_USERS),
             "href" => "modules/alerts/tabledit.php3?set_tview=email", "label"=>_m("Email templates"))
     ));
-    return $aamenus;
+
+    $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
+
+    // left menu for aaadmin is common to all modules, so it is shared
+    return array_merge($aamenus, GetCommonMenu($profile));
 }
 ?>

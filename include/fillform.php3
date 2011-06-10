@@ -58,7 +58,7 @@ function GetTimeZone() {
  * @param $str
  */
 function safeChars($str) {
-    for ($i=0; $i < strlen ($str); ++$i) {
+    for ( $i=0, $ino=strlen($str); $i<$ino; ++$i) {
         if ($str[$i] == "\n") {
             $retVal .= "\\n";
         }
@@ -229,7 +229,7 @@ function fillFormWithContent($oldcontent4id) {
 
     function fillForm".$suffix."() {
         setControl ('$form','my_item_id','$my_item_id');
-        for (i=0; i < fillform_fields".$suffix.".length; ++i) {
+        for (i=0; i < fillform_fields".$suffix.".length; i++) {
             var item = fillform_fields".$suffix."[i];
             setControlOrAADate (item[0],item[1],item[2],item[3],item[4],item[5]);
         }

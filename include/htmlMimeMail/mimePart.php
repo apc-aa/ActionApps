@@ -208,7 +208,7 @@ class Mail_mimePart {
             $this->_headers['Content-Type'] .= ';' . MAIL_MIMEPART_CRLF . "\t" . 'boundary="' . $boundary . '"';
 
             // Add body parts to $subparts
-            for ($i = 0; $i < count($this->_subparts); $i++) {
+            for ( $i=0, $ino=count($this->_subparts); $i<$ino; ++$i) {
                 $headers = array();
                 $tmp = $this->_subparts[$i]->encode();
                 foreach ($tmp['headers'] as $key => $value) {
@@ -306,7 +306,7 @@ class Mail_mimePart {
             $linlen     = strlen($line);
             $newline = '';
 
-            for ($i = 0; $i < $linlen; $i++) {
+            for ($i = 0; $i < $linlen; ++$i) {
                 $char = substr($line, $i, 1);
                 $dec  = ord($char);
 

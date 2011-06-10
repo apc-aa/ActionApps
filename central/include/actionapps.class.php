@@ -746,8 +746,9 @@ function Central_GetAaContent($zids) {
     $SQL = "SELECT * FROM central_conf WHERE id $sel_in";
     StoreTable2Content($content, $SQL, '', 'id');
     // it is unordered, so we have to sort it:
-    for($i=0; $i<$zids->count(); $i++ ) {
-        $ret[(string)$zids->id($i)] = $content[$zids->id($i)];
+    for ($i=0, $ino=$zids->count(); $i<$ino; $i++ ) {
+        $id = $zids->id($i);
+        $ret[(string)$id] = $content[$id];
     }
     return $ret;
 }

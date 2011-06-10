@@ -206,7 +206,7 @@ if ($update && $new_id_text && $p_slice_id) {
     $nchanges = 0;
     if (strlen($new_id_text) + strlen($new_id_number) <= 16) {
         $new_id = $new_id_text;
-        for ($i = 0; $i < 16 - strlen($new_id_text) - strlen($new_id_number); ++$i) {
+        for ( $i=0, $ino = 16-strlen($new_id_text)-strlen($new_id_number); $i<$ino; ++$i) {
             $new_id .= ".";
         }
         $new_id .= $new_id_number;
@@ -223,7 +223,7 @@ if ($update && $new_id_text && $p_slice_id) {
                 freeDB($db);
             }
             if (count($err) <= 1 ) {
-                $nchanges ++;
+                ++$nchanges;
                 ChangeFieldID($old_id, $new_id);
             }
         }

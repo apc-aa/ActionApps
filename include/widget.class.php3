@@ -285,7 +285,7 @@ class AA_Widget extends AA_Components {
         $this->_selected = array();
         //if ( is_null($this->_selected) ) {  // not cached yet => create selected array
         if (is_object($aa_value)) {
-            for ($i=0 ; $i < $aa_value->valuesCount(); $i++) {
+            for ( $i=0, $ino=$aa_value->valuesCount(); $i<$ino; ++$i) {
                 $val = $aa_value->getValue($i);
                 if ( $val ) {
                     $this->_selected[(string)$val] = true;
@@ -381,9 +381,9 @@ class AA_Widget extends AA_Components {
             }
             $nrows = ceil (count ($records) / $ncols);
             $ret = '<table border="0" cellspacing="0">';
-            for ($irow = 0; $irow < $nrows; $irow ++) {
+            for ($irow = 0; $irow < $nrows; ++$irow) {
                 $ret .= '<tr>';
-                for ($icol = 0; $icol < $ncols; $icol ++) {
+                for ($icol = 0; $icol < $ncols; ++$icol) {
                     $pos = ( $move_right ? $ncols*$irow+$icol : $nrows*$icol+$irow );
                     $ret .= '<td>'. get_if($records[$pos], "&nbsp;") .'</td>';
                 }
@@ -421,7 +421,7 @@ class AA_Widget extends AA_Components {
             $max_characters = $this->getProperty('max_characters', 254);
             $value          = $content->getAaValue($aa_property->getId());
 
-            for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
+            for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
                 $input_name   = $base_name ."[$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
                 $input_value  = htmlspecialchars($value->getValue($i));
@@ -591,7 +591,7 @@ class AA_Widget_Txt extends AA_Widget {
         $value       = $content->getAaValue($aa_property->getId());
 
         $count       = max($value->valuesCount(),1);
-        for ( $i = 0; $i < $count; $i++ ) {
+        for ( $i = 0; $i < $count; ++$i ) {
             $input_name   = $base_name ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
@@ -936,7 +936,7 @@ class AA_Widget_Dte extends AA_Widget {
         $row_count   = $this->getProperty('row_count', 4);
         $value       = $content->getAaValue($aa_property->getId());
         $count       = max($value->valuesCount(),1);
-        for ( $i = 0; $i < $count; $i++ ) {
+        for ( $i = 0; $i < $count; ++$i ) {
             $datectrl->setdate_int($value->getValue($i));
             $input_name   = $base_name_add. "[d][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
@@ -984,7 +984,7 @@ class AA_Widget_Dte extends AA_Widget {
 
         $values = array();
 
-        for ($i=0 ; $i<$max; $i++) {
+        for ($i=0 ; $i<$max; ++$i) {
             // no date
             if ( strlen($years[$i]) AND !(int)$years[$i]) {
                 $values[] = 0;
@@ -1029,7 +1029,7 @@ class AA_Widget_Chb extends AA_Widget {
         $widget        = '';
         $delim         = '';
         $value         = $content->getAaValue($aa_property->getId());
-        for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
+        for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
             $input_name   = $base_name_add ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
@@ -1168,7 +1168,7 @@ class AA_Widget_Mch extends AA_Widget {
         $selected     = $content->getAaValue($aa_property->getId());
         $options      = $this->getOptions($selected, $content, $use_name);
         $htmlopt      = array();
-        for ( $i=0 ; $i < count($options); $i++) {
+        for ( $i=0, $ino=count($options); $i<$ino; ++$i) {
             $input_name = $base_name_add ."[$i]";
             $input_id   = AA_Form_Array::formName2Id($input_name);
             $htmlopt[]  = $this->getOneChBoxTag($options[$i], $input_name, $input_id, $widget_add);
@@ -1367,7 +1367,7 @@ class AA_Widget_Fil extends AA_Widget {
             $values[] = 'AA_UPLOAD:'. ParamImplode($uploads);
         }
         elseif ($urls[0]) {
-            for ($i=0 ; $i<$max; $i++) {
+            for ($i=0 ; $i<$max; ++$i) {
                 $values[] = $urls[$i];
             }
         }
@@ -1390,7 +1390,7 @@ class AA_Widget_Fil extends AA_Widget {
         $max_characters = $this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
         $value          = $content->getAaValue($aa_property->getId());
 
-        for ( $i = 0; $i < $value->valuesCount(); $i++ ) {
+        for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
             $input_name   = $base_name ."[fil][url][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
@@ -1408,7 +1408,7 @@ class AA_Widget_Fil extends AA_Widget {
                             'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\''.$base_id.'\', \'AA_ITEM_JSON\')'
                            );
         $widget .= '
-            <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.get_aa_url('filler.php3', $url_params).'" target="iframe'.$base_id.'">
+            <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.htmlspecialchars(get_aa_url('filler.php3', $url_params)).'" target="iframe'.$base_id.'">
             <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'">
             <input type="hidden" name="ret_code_enc" id="ret_code_enc'.$base_id.'" value="">
             <input type="submit" name="action" value="'._m('Upload').'">
@@ -1841,6 +1841,7 @@ class AA_Property extends AA_Storable {
         if ($profile_value) {
             $new_value = $profile->parseContentProperty($profile_value);
         }
+//        if ($profile->getProperty('hide',$fid) || !$this->validate($new_value) || $new_value->isEmpty()) {
         if ($profile->getProperty('hide',$fid) || !$this->validate($new_value)) {
             return $this->default;
         }

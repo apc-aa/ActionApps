@@ -358,7 +358,7 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
     $content = GetConstantContent($zids);
     $item    = new AA_Item();
     $format = $format ? $format : 'const_name';
-    for ( $i=0; $i<$zids->count(); $i++ ) {
+    for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
         $iid = $zids->short_or_longids($i);
         $item->set_data($content[$iid]);
         $ret[$item->subst_alias('const_value')] = $item->subst_alias($format);
@@ -1202,7 +1202,6 @@ class AA_Item {
                         $print_cname = "$print_cname (-)";       // mark proposals for deletion
                     }
                     $ret .= $delim. '<a href="javascript:SwitchToCat('. $cat_ids[$k]['value']. ")\">$print_cname</a>";
-                    //          $ret .= $delim. '<a href="'.  get_aa_url('modules/links/index.php3?GoCateg='. $cat_ids[$k]['value']). '">'.$cat['value'].'</a>';
                     $delim = ', ';
                 }
                 return $ret;
@@ -1342,8 +1341,7 @@ class AA_Item {
         $view_param = ParseViewParameters($this->subst_alias($param));
 
         // do not pagecache the view
-        $foo = '';
-        return GetViewFromDB($view_param, $foo);
+        return GetViewFromDB($view_param);
     }
 
     /** f_m function
@@ -1439,7 +1437,7 @@ class AA_Item {
         $to       = (int) floor(count($p)/2);
         $colvalue = $this->getval($col);
 
-        for ( $i=0; $i < $to; $i++ ) {
+        for ( $i=0; $i < $to; ++$i ) {
             $first  = $i*2;
             $second = $first +1;
             if ( ($p[$first] != '') AND ereg( $p[$first] , $colvalue ) ) {
@@ -1669,7 +1667,7 @@ class AA_Items {
         // check for already cached items
         $zids2get = new zids(null, $zids->onetype());
 
-        for ( $i=0; $i<$zids->count(); $i++ ) {
+        for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
             if (!$items->_getFromCache($zids->zid($i))) {  // just check
                 $zids2get->add($zids->id($i));
             }
@@ -1679,14 +1677,14 @@ class AA_Items {
         if ($zids2get->count() > 0) {
             // yes we store it in the cache first
             $content = GetItemContent($zids2get, false, false, false, $crypted_additional_slice_pwd);
-            for ( $i=0; $i<$zids2get->count(); $i++ ) {
+            for ( $i=0, $ino=$zids2get->count(); $i<$ino; ++$i) {
                 $items->_store(GetItemFromContent(new ItemContent($content[$zids2get->short_or_longids($i)])));
             }
         }
 
         // all is cached, we get all the items in RIGHT ORDER
         $ret = array();
-        for ( $i=0; $i<$zids->count(); $i++ ) {
+        for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
             $item = $items->_getFromCache($zids->zid($i));
             $ret[$item->getItemId()] = $item;       // long item id
         }

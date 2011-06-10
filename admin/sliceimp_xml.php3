@@ -117,7 +117,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
     set_time_limit(600); // This can take a while
     $xu = new xml_unserializer();
     if ($debugimport) {
-        huhl("Importing data=",htmlentities($xml_data));
+        huhl("Importing data=",htmlspecialchars($xml_data));
     }
 
     /** Create array strusture from XML data */
@@ -328,9 +328,9 @@ function create_SQL_insert_statement ($fields, $table, $pack_fields = "", $only_
         }
     }
 
-    if ($add_fields) {
+    if ($add_values) {
         $add = explode(",", $add_fields);
-        for ($i=0; $i<count($add); $i++) {
+        for ( $i=0, $ino=count($add); $i<$ino; ++$i) {
             $dummy=explode("=",$add[$i]);
             if ($sqlfields > "") {
                 $sqlfields .= ",\n". $dummy[0];

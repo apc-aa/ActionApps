@@ -139,10 +139,12 @@ if ( $getOldV ){  // error message - fill old values
     $reg  = $r_state['linkedit']['old']['reg'];
     $lang = $r_state['linkedit']['old']['lang'];
 
-    for ($i=0; $i<Count($reg); $i++)
+    for ( $i=0, $ino=count($reg); $i<$ino; ++$i) {
         $reg_checked[$reg[$i]]=true;
-    for ($i=0; $i<Count($lang); $i++)
+    }
+    for ( $i=0, $ino=count($lang); $i<$ino; ++$i) {
         $lang_checked[$lang[$i]]=true;
+    }
 }
 
 // get edited link data
@@ -314,7 +316,7 @@ if ( $r_state['link_id'] ) {                  // not new link
         }
 
         // mark delete proposals
-        for ( $i=0; $i<=$idx; $i++ ) {
+        for ( $i=0; $i<=$idx; ++$i ) {
             if ( $selcatSelectValue[$i] AND
                ($assignment_changes[$selcatSelectValue[$i]] <> $change_no) )
                 $selcatPropDel[$i] = MarkChanged(_m('Proposal to del'));
@@ -340,7 +342,7 @@ if ( $r_state['link_id'] ) {                  // not new link
 
 $idx++;
 // minimum number of selcats is 6
-for ( $i=0 ; $i < CATEGORIES_COUNT_TO_MANAGE; $i++ ) {
+for ( $i=0 ; $i < CATEGORIES_COUNT_TO_MANAGE; ++$i ) {
     if ( !$selcatValue[$i] ) {
         $selcatValue[$i]       = "";
         $selcatSelectValue[$i] = "";
@@ -492,7 +494,7 @@ echo      '</td>
            <td  align="LEFT" valign="TOP" colspan=2>
            <table border="0" width="100%" cellpadding="0" cellspacing="3">';
 
-                for ( $i=0; $i<CATEGORIES_COUNT_TO_MANAGE; $i++ ) {
+                for ( $i=0; $i<CATEGORIES_COUNT_TO_MANAGE; ++$i ) {
                      echo '<tr><td width="1px"><a
                      href="javascript:MoveSelectedTo(\'document.f.tree\',\'selcat'.$i.'\',\'document.f.selcatSelect'.$i.'\')"><img
                      src="'.AA_INSTAL_PATH.'images/right.gif" border="0" alt="select"></a></td><td width="1px"><a
@@ -536,14 +538,18 @@ if ( !Links_IsPublic() OR ($r_state['link_id'] AND $type) ) {
       <tr><td width="50%" align=center><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
           <td align=center><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>
       <tr><td valign="top">';
-        if ( isset($regId) AND is_array($regId) )
-            for ( $i=0; $i<count($regId); $i++ )
-                echo '<input type="checkbox" name="reg[]" value="'.$regId[$i].'" '.$regChecked[$i].'>'.$regName[$i].' '.$reg_changes[$i].'<br>';
+    if ( isset($regId) AND is_array($regId) ) {
+        for ( $i=0, $ino=count($regId); $i<$ino; ++$i) {
+            echo '<input type="checkbox" name="reg[]" value="'.$regId[$i].'" '.$regChecked[$i].'>'.$regName[$i].' '.$reg_changes[$i].'<br>';
+        }
+    }
     echo '</td>
            <td valign="top">';
-            if ( isset($langId) AND is_array($langId) )
-                for ( $i=0; $i<count($langId); $i++ )
-                    echo '<input type="checkbox" name="lang[]" value="'.$langId[$i].'" '.$langChecked[$i].'>'.$langName[$i].' '.$lang_changes[$i].'<br>';
+    if ( isset($langId) AND is_array($langId) ) {
+        for ( $i=0, $ino=count($langId); $i<$ino; ++$i) {
+            echo '<input type="checkbox" name="lang[]" value="'.$langId[$i].'" '.$langChecked[$i].'>'.$langName[$i].' '.$lang_changes[$i].'<br>';
+        }
+    }
 
     echo '</td></tr>';
     FrmTabEnd( $form_buttons, $sess, $slice_id);

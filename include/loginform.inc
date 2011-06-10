@@ -41,8 +41,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
 <?php echo _m("Welcome! Please identify yourself with a username and a password:") ?>
 </center>
 <?php
- $qs= eregi_replace( "\&relogin=true","",$this->url());
- $qs= eregi_replace( "relogin=true","",$qs);
+   $qs= str_replace( array("&relogin=true", "relogin=true"),"", $this->url());
 ?>
 <form action="<?php echo $qs ?>" method=post>
 <center><table border="0" bgcolor="<?php echo COLOR_TABBG ?>" cellspacing=0 cellpadding=4>
@@ -78,12 +77,9 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
  </table>
 
 <?php } ?>
-
-</table>
 </center>
 </form>
-</body>
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
   if (document.forms[0][0].value != '') {
       document.forms[0][2].focus();
@@ -92,4 +88,5 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
   }
 // -->
 </script>
+</body>
 </html>

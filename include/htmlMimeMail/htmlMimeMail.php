@@ -365,12 +365,13 @@ class htmlMimeMail {
 
         $images      = array_unique($images[1]);
 
-        for ($i=0; $i<count($images); $i++) {
-            if (strtolower(substr($images[$i],0,4))=='http') {
-                $image_path            = $images[$i];
+        foreach ($images as $img) {
+
+            if (strtolower(substr($img,0,4))=='http') {
+                $image_path            = $img;
                 $img_name[$image_path] = basename( parse_url($image_path, PHP_URL_PATH) );
             } else {
-                $image_path            = $images_dir . $images[$i];
+                $image_path            = $images_dir . $img;
                 $img_name[$image_path] = basename( $image_path );
             }
             if (!isset($img_content[$image_path])) {
@@ -378,7 +379,7 @@ class htmlMimeMail {
             }
             if ($img_content[$image_path]) {
                 $html_images[] = $image_path;
-                $this->html = str_replace($images[$i], $img_name[$image_path], $this->html);
+                $this->html = str_replace($img, $img_name[$image_path], $this->html);
             }
         }
 
@@ -387,13 +388,14 @@ class htmlMimeMail {
             // $html_images = array_unique($html_images);
             sort($html_images);
 
-            for ($i=0; $i<count($html_images); $i++) {
+            for ( $i=0, $ino=count($html_images); $i<$ino; ++$i) {
                 $image        = $img_content[$html_images[$i]];
                 $ext          = substr($html_images[$i], strrpos($html_images[$i], '.') + 1);
                 $content_type = $this->image_types[strtolower($ext)];
                 $this->addHtmlImage($image, $img_name[$html_images[$i]], $content_type);
             }
         }
+
     }
 
 /**
@@ -582,7 +584,7 @@ class htmlMimeMail {
             case !$text AND $attachments AND !$html:
                 $message = &$this->_addMixedPart();
 
-                for ($i=0; $i<count($this->attachments); $i++) {
+                for ( $i=0, $ino=count($this->attachments); $i<$ino; ++$i) {
                     $this->_addAttachmentPart($message, $this->attachments[$i]);
                 }
                 break;
@@ -591,7 +593,7 @@ class htmlMimeMail {
                 $message = &$this->_addMixedPart();
                 $this->_addTextPart($message, $this->text);
 
-                for ($i=0; $i<count($this->attachments); $i++) {
+                for ( $i=0, $ino=count($this->attachments); $i<$ino; ++$i) {
                     $this->_addAttachmentPart($message, $this->attachments[$i]);
                 }
                 break;
@@ -616,7 +618,7 @@ class htmlMimeMail {
                     $related = &$message;
                 }
                 $this->_addHtmlPart($related);
-                for ($i=0; $i<count($this->html_images); $i++) {
+                for ( $i=0, $ino=count($this->html_images); $i<$ino; ++$i) {
                     $this->_addHtmlImagePart($related, $this->html_images[$i]);
                 }
                 break;
@@ -630,7 +632,7 @@ class htmlMimeMail {
                 } else {
                     $this->_addHtmlPart($message);
                 }
-                for ($i=0; $i<count($this->attachments); $i++) {
+                for ( $i=0, $ino=count($this->attachments); $i<$ino; ++$i) {
                     $this->_addAttachmentPart($message, $this->attachments[$i]);
                 }
                 break;
@@ -645,10 +647,10 @@ class htmlMimeMail {
                     $rel = &$this->_addRelatedPart($message);
                 }
                 $this->_addHtmlPart($rel);
-                for ($i=0; $i<count($this->html_images); $i++) {
+                for ( $i=0, $ino=count($this->html_images); $i<$ino; ++$i) {
                     $this->_addHtmlImagePart($rel, $this->html_images[$i]);
                 }
-                for ($i=0; $i<count($this->attachments); $i++) {
+                for ( $i=0, $ino=count($this->attachments); $i<$ino; ++$i) {
                     $this->_addAttachmentPart($message, $this->attachments[$i]);
                 }
                 break;

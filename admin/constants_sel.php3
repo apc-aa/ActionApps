@@ -102,7 +102,7 @@ HtmlPageBegin('default', true);
 if ($sel_text) {
     $content_tmp = explode(" OR ", $sel_text);
     if (is_array($content_tmp)) {
-        for ($i = 0; $i < count($content_tmp); $i++) {
+        for ( $i=0, $ino=count($content_tmp); $i<$ino; ++$i) {
             $content[]['value'] = str_replace("\\\"", "", $content_tmp[$i]);
         }
     }

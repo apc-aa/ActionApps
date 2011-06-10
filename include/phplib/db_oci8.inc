@@ -414,16 +414,11 @@ class DB_OCI8 {
     return "SYSDATE";
   }
 }
-$_php_major_version = substr(phpversion(), 0, 1);
-if((4 > $_php_major_version) or !class_exists("DB_Sql"))
-	{
-	class DB_Sql extends DB_OCI8
-		{
-		function DB_Sql($query = "")
-			{
+if(!class_exists("DB_Sql"))	{
+	class DB_Sql extends DB_OCI8 {
+		function DB_Sql($query = "") {
 			$this->DB_OCI8($query);
-			}
 		}
 	}
-unset($_php_major_version);
+}
 ?>

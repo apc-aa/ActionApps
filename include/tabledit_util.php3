@@ -551,35 +551,27 @@ function ProoveVals($val, $columns) {
  * @param $columns
  * @param $varset
  */
-function GetKey($primary, $columns, $varset)
-{
-    reset ($primary);
-    while (list ($alias) = each ($primary)) {
-        $val = $varset->get($columns[$alias]["field"]);
-        if ($columns[$alias]["view"]["unpacked"]) {
-            $key[] = unpack_id($val);
-        }
-        else {
-            $key[] = htmlentities ($val);
-        }
+function GetKey($primary, $columns, $varset) {
+    foreach ( $primary as $alias) {
+        $val   = $varset->get($columns[$alias]["field"]);
+        $key[] = $columns[$alias]["view"]["unpacked"] ? unpack_id($val) : htmlspecialchars($val);
     }
     return join_escaped(":",$key,"#:");
 }
+
 /** GetKeyFromRecord function
  * @param $primary
  * @param $columns
  * @param $record
  */
-function GetKeyFromRecord($primary, $columns, $record)
-{
+function GetKeyFromRecord($primary, $columns, $record) {
     if ( !isset($primary) OR !is_array($primary)) {
         echo _m('Table do not have set primary key on single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit').'<br>';
         return;
     }
     foreach ($primary as $alias => $v) {
         $val   = $record[$alias];
-        $key[] = ($columns[$alias]["view"]["unpacked"] ? unpack_id($val) :
-                                                         htmlentities($val));
+        $key[] = ($columns[$alias]["view"]["unpacked"] ? unpack_id($val) : htmlspecialchars($val));
     }
     return join_escaped(":",$key,"#:");
 }
@@ -603,10 +595,9 @@ function AddKeyValues(&$varset, $val, $primary, $columns, $auto_increment = true
         exit;
     }
 
-    reset ($primary);
-    while (list ($alias) = each ($primary)) {
+    foreach ( $primary as $alias) {
         $colname = $columns[$alias]["field"];
-        $value = $val[$alias];
+        $value   = $val[$alias];
         if ($auto_increment || !$columns[$alias]["auto_increment"]) {
             $varset->addkey($colname, "text", $value);
         }
@@ -619,13 +610,11 @@ function AddKeyValues(&$varset, $val, $primary, $columns, $auto_increment = true
  * @param $primary
  * @param $columns
  */
-function GetKeyValues($key_val, $primary, $columns)
-{
+function GetKeyValues($key_val, $primary, $columns) {
     $keys = split_escaped(":", $key_val, "#:");
     reset ($keys);
 
-    reset ($primary);
-    while (list ($alias) = each ($primary)) {
+    foreach ( $primary as $alias) {
         list (,$value) = each ($keys);
         $colname = $columns[$alias]["field"];
         if ($columns[$alias]["view"]["unpacked"]) {
@@ -643,8 +632,7 @@ function GetKeyValues($key_val, $primary, $columns)
  * @param $columns
  * @param $table
  */
-function CreateWhereCondition($key_val, $primary, $columns, $table)
-{
+function CreateWhereCondition($key_val, $primary, $columns, $table) {
     $varset = new CVarset;
 
     $keys = GetKeyValues($key_val, $primary, $columns);
@@ -660,8 +648,10 @@ function CreateWhereCondition($key_val, $primary, $columns, $table)
  */
 function PrintJavaScript_Validate() {
     global $_javascript_validate_printed;
-    if ($_javascript_validate_printed) return;
-    else $_javascript_validate_printed = 1;
+    if ($_javascript_validate_printed) {
+        return;
+    } 
+    $_javascript_validate_printed = 1;
 
     echo '
     <script language="JavaScript" type="text/javascript">

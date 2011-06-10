@@ -534,16 +534,11 @@ The function halt()s if a lock cannot be obtained.
   }
 
 }
-$_php_major_version = substr(phpversion(), 0, 1);
-if((4 > $_php_major_version) or !class_exists("DB_Sql"))
-	{
-	class DB_Sql extends DB_ODBC
-		{
-		function DB_Sql($query = "")
-			{
+if(!class_exists("DB_Sql"))	{
+	class DB_Sql extends DB_ODBC {
+		function DB_Sql($query = "") {
 			$this->DB_ODBC($query);
-			}
 		}
 	}
-unset($_php_major_version);
+}
 ?>

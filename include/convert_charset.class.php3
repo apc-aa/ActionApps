@@ -219,13 +219,12 @@ class ConvertCharset {
      * @return string This is an input string olso with unicode chars, bus saved as entities
      * @see HexToUtf()
      **/
-    function UnicodeEntity($UnicodeString)
-    {
+    function UnicodeEntity($UnicodeString) {
         $OutString  = "";
-        $StringLenght = strlen ($UnicodeString);
+        $StringLenght = strlen($UnicodeString);
         for ($CharPosition = 0; $CharPosition < $StringLenght; $CharPosition++) {
             $Char = $UnicodeString [$CharPosition];
-            $AsciiChar = ord ($Char);
+            $AsciiChar = ord($Char);
 
             if ($AsciiChar < 128) { //1 7 0bbbbbbb (127)
                 $OutString .= $Char;
@@ -234,44 +233,44 @@ class ConvertCharset {
                 $FirstByte      = ($AsciiChar & 31);
                 $CharPosition++;
                 $Char           = $UnicodeString [$CharPosition];
-                $AsciiChar      = ord ($Char);
+                $AsciiChar      = ord($Char);
                 $SecondByte     = ($AsciiChar & 63);
                 $AsciiChar      = ($FirstByte * 64) + $SecondByte;
-                $Entity         = sprintf ("&#%d;", $AsciiChar);
+                $Entity         = sprintf("&#%d;", $AsciiChar);
                 $OutString     .= $Entity;
             }
             elseif ($AsciiChar >> 4  == 14) { //3 16 1110bbbb 10bbbbbb 10bbbbbb
                 $FirstByte      = ($AsciiChar & 31);
                 $CharPosition++;
                 $Char           = $UnicodeString [$CharPosition];
-                $AsciiChar      = ord ($Char);
+                $AsciiChar      = ord($Char);
                 $SecondByte     = ($AsciiChar & 63);
                 $CharPosition++;
                 $Char           = $UnicodeString [$CharPosition];
-                $AsciiChar      = ord ($Char);
+                $AsciiChar      = ord($Char);
                 $ThidrByte      = ($AsciiChar & 63);
                 $AsciiChar      = ((($FirstByte * 64) + $SecondByte) * 64) + $ThidrByte;
 
-                $Entity         = sprintf ("&#%d;", $AsciiChar);
+                $Entity         = sprintf("&#%d;", $AsciiChar);
                 $OutString     .= $Entity;
             }
-            else if ($AsciiChar >> 3 == 30) { //4 21 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb
+            elseif ($AsciiChar >> 3 == 30) { //4 21 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb
                 $FirstByte      = ($AsciiChar & 31);
                 $CharPosition++;
                 $Char           = $UnicodeString [$CharPosition];
-                $AsciiChar      = ord ($Char);
+                $AsciiChar      = ord($Char);
                 $SecondByte     = ($AsciiChar & 63);
                 $CharPosition++;
                 $Char           = $UnicodeString [$CharPosition];
-                $AsciiChar      = ord ($Char);
+                $AsciiChar      = ord($Char);
                 $ThidrByte      = ($AsciiChar & 63);
                 $CharPosition++;
                 $Char           = $UnicodeString [$CharPosition];
-                $AsciiChar      = ord ($Char);
+                $AsciiChar      = ord($Char);
                 $FourthByte     = ($AsciiChar & 63);
                 $AsciiChar      = ((((($FirstByte * 64) + $SecondByte) * 64) + $ThidrByte) * 64) + $FourthByte;
 
-                $Entity         = sprintf ("&#%d;", $AsciiChar);
+                $Entity         = sprintf("&#%d;", $AsciiChar);
                 $OutString     .= $Entity;
             }
         }
@@ -289,8 +288,7 @@ class ConvertCharset {
      * @return string Encoded hexadecimal value as a regular char.
      * @see UnicodeEntity()
      **/
-    function HexToUtf($UtfCharInHex)
-    {
+    function HexToUtf($UtfCharInHex) {
         $OutputChar = "";
         $UtfCharInDec = hexdec($UtfCharInHex);
         if (    $UtfCharInDec<128)    $OutputChar .= chr($UtfCharInDec);
@@ -337,10 +335,9 @@ class ConvertCharset {
      * @param string $SecondEncoding Name of second encoding and second encoding filename (thay have to be the same). Optional for building a joined table.
      * @return array Table necessary to change one encoding to another.
      **/
-    function MakeConvertTable($FirstEncoding, $SecondEncoding = "")
-    {
+    function MakeConvertTable($FirstEncoding, $SecondEncoding = "") {
         $ConvertTable = array();
-        for ($i = 0; $i < func_num_args(); $i++) {
+        for ($i = 0, $fmax=func_num_args(); $i < $fmax; $i++) {
             /**
             * Because func_*** can't be used inside of another function call
             * we have to save it as a separate value.
@@ -377,10 +374,10 @@ class ConvertCharset {
                             $ArrayValue = strtoupper(str_replace(strtolower("0x"), "", $HexValue[0]));
                             $ConvertTable[func_get_arg($i)][$ArrayKey] = $ArrayValue;
                         }
-                    } //if (substr($OneLine,...
-                } //if($OneLine=trim(f...
-            } //while(!feof($FirstFileWi...
-        } //for($i = 0; $i < func_...
+                    } // if (substr($OneLine,...
+                } // if ($OneLine=trim(f...
+            } // while (!feof($FirstFileWi...
+        } // for ($i = 0; $i < func_...
         /**
         * The last thing is to check if by any reason both encoding tables are not the same.
         * For example, it will happen when you save the encoding table file with a wrong name
@@ -493,24 +490,15 @@ class ConvertCharset {
          *
          * This is the first case. We are convertinf from 1byte chars...
          **/
-        if ($FromCharset != "utf-8")
-        {
-                /**
-                 * Now build table with both charsets for encoding change.
-                 **/
-                if ($ToCharset != "utf-8")
-                {
-                    $CharsetTable = $this->MakeConvertTable ($FromCharset, $ToCharset);
-                }
-                else
-                {
-                    $CharsetTable = $this->MakeConvertTable ($FromCharset);
-                }
+        if ($FromCharset != "utf-8") {
+
+            // Now build table with both charsets for encoding change.
+                $CharsetTable = ($ToCharset != "utf-8") ? $this->MakeConvertTable($FromCharset, $ToCharset) : $this->MakeConvertTable($FromCharset);
                 /**
                  * For each char in a string...
                  **/
-                for ($i = 0; $i < strlen($StringToChange); $i++)
-                {
+                for ($i = 0, $fmax=strlen($StringToChange); $i < $fmax; $i++) {
+
                     $HexChar = "";
                     $UnicodeHexChar = "";
                     $HexChar = strtoupper(dechex(ord($StringToChange[$i])));
@@ -526,40 +514,27 @@ class ConvertCharset {
                         $HexChar .= strtoupper(dechex(ord($StringToChange[$i])));
                     }
                     // end of workarround on 10 chars from gsm0338
-                    if ($ToCharset != "utf-8")
-                    {
-                        if (in_array($HexChar, $CharsetTable[$FromCharset]))
-                        {
+                    if ($ToCharset != "utf-8") {
+
+                        if (in_array($HexChar, $CharsetTable[$FromCharset])) {
+
                             $UnicodeHexChar = array_search($HexChar, $CharsetTable[$FromCharset]);
                             $UnicodeHexChars = explode("+",$UnicodeHexChar);
-                            for($UnicodeHexCharElement = 0; $UnicodeHexCharElement < count($UnicodeHexChars); $UnicodeHexCharElement++)
-                            {
-                              if (array_key_exists($UnicodeHexChars[$UnicodeHexCharElement], $CharsetTable[$ToCharset]))
-                                {
-                                    if ($this->Entities == true)
-                                    {
-                                        $NewString .= $this->UnicodeEntity($this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement]));
-                                    }
-                                    else
-                                    {
-                                        $NewString .= chr(hexdec($CharsetTable[$ToCharset][$UnicodeHexChars[$UnicodeHexCharElement]]));
-                                    }
-                                }
-                                else
-                                {
+                            for ($UnicodeHexCharElement = 0, $forcount = count($UnicodeHexChars); $UnicodeHexCharElement < $forcount; $UnicodeHexCharElement++) {
+
+                                if (array_key_exists($UnicodeHexChars[$UnicodeHexCharElement], $CharsetTable[$ToCharset])) {
+                                    $NewString .= ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement])) :
+                                                                              chr(hexdec($CharsetTable[$ToCharset][$UnicodeHexChars[$UnicodeHexCharElement]]));
+                                }  else {
                                         print $this->DebugOutput(0, 1, $StringToChange[$i]);
                                 }
-                            } //for($UnicodeH...
+                            } //for ($UnicodeH...
                         }
-                        else
-                        {
+                        else {
                             print $this->DebugOutput(0, 2,$StringToChange[$i]);
                         }
-                    }
-                    else
-                    {
-                        if (in_array("$HexChar", $CharsetTable[$FromCharset]))
-                        {
+                    } else {
+                        if (in_array("$HexChar", $CharsetTable[$FromCharset])) {
                             $UnicodeHexChar = array_search($HexChar, $CharsetTable[$FromCharset]);
                             /**
                          * Sometimes there are two or more utf-8 chars per one regular char.
@@ -571,42 +546,28 @@ class ConvertCharset {
                              * 0x007A+0x0142+0x2034 (that string means nothing, it just shows the possibility...)
                          **/
                             $UnicodeHexChars = explode("+",$UnicodeHexChar);
-                            for($UnicodeHexCharElement = 0; $UnicodeHexCharElement < count($UnicodeHexChars); $UnicodeHexCharElement++)
-                            {
-                                if ($this->Entities == true)
-                                {
-                                    $NewString .= $this->UnicodeEntity($this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement]));
-                                }
-                                else
-                                {
-                                    $NewString .= $this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement]);
-                                }
+                            for ($UnicodeHexCharElement = 0, $unimax=count($UnicodeHexChars); $UnicodeHexCharElement < $unimax; $UnicodeHexCharElement++) {
+                                $NewString .= ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement])) : $this->HexToUtf($UnicodeHexChars[$UnicodeHexCharElement]);
                             } // for
                         }
-                        else
-                        {
+                        else {
                             print $this->DebugOutput(0, 2, $StringToChange[$i]);
                         }
                     }
                 }
         }
+
         /**
          * This is second case. We are encoding from multibyte char string.
          **/
-        else if($FromCharset == "utf-8")
-        {
+        elseif($FromCharset == "utf-8") {
+
             $HexChar = "";
             $UnicodeHexChar = "";
-            $CharsetTable = $this->MakeConvertTable ($ToCharset);
-            foreach ($CharsetTable[$ToCharset] as $UnicodeHexChar => $HexChar)
-            {
-                    if ($this->Entities == true) {
-                        $EntitieOrChar = $this->UnicodeEntity($this->HexToUtf($UnicodeHexChar));
-                    }
-                    else
-                    {
-                        $EntitieOrChar = chr(hexdec($HexChar));
-                    }
+            $CharsetTable = $this->MakeConvertTable($ToCharset);
+            foreach ($CharsetTable[$ToCharset] as $UnicodeHexChar => $HexChar) {
+
+                    $EntitieOrChar = ($this->Entities == true) ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexChar)) : chr(hexdec($HexChar));
                     $StringToChange = str_replace($this->HexToUtf($UnicodeHexChar), $EntitieOrChar, $StringToChange);
             }
             $NewString = $StringToChange;
@@ -632,8 +593,7 @@ class ConvertCharset {
      * @param mix $Value This walue is whatever you want, usualy it's some parameter value, for better message understanding.
      * @return string String with a proper message.
      **/
-    function DebugOutput ($Group, $Number, $Value = false)
-    {
+    function DebugOutput($Group, $Number, $Value = false) {
         //$Debug [$Group][$Number] = "Message, can by with $Value";
         //$Group[0] - Errors
         //$Group[1] - Notice

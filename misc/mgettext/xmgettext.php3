@@ -425,7 +425,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
 
     if ($debug) echo "<br><br><hr>File $filename";
 
-    for ($pos = 0; $pos < strlen($filetext); $pos++) {
+    for ( $pos=0, $posno=strlen($filetext); $pos<$posno; ++$pos) {
         if ($row_start[$irow+1] && $row_start[$irow+1] <= $pos) {
             $irow++;
         }
@@ -495,7 +495,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
                     // <input type="submit" value="< ?php echo _m("Login now") ? >">
                     // Honzam 2005-22-06
 
-                    // if ($quotes == "0") {  $find = 1; $pos ++;
+                    // if ($quotes == "0") {  $find = 1; ++$pos;
                     // } else echo "<br>$base_dir.$filename row $irow: _m inside quotes $quotes". substr($filetext,$pos-10,40);
                 }
                 break;

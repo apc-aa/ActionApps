@@ -99,6 +99,19 @@ function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, 
     }
 }
 
+
+/** calls AA responder with permissions of current user and displays returned
+ *  html code into div_id
+ *  Usage:
+ *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.options[this.selectedIndex].value})"');
+ *     echo '<div id="fieldselection"></div>';
+ **/
+function DisplayAaResponse(div_id, method, params) {
+    var sess = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
+    AA_AjaxCss(jqid(div_id), AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, {parameters: params});
+}
+
+
 function jqescape(s) {
     // escape all special characters (like [])
     return s.replace(/([^a-zA-Z0-9_-])/g, '\\$1')
@@ -347,10 +360,11 @@ function addToKosik(produkt_variant, mnozstvi) {
         addPolozkaToKosik(kid, produkt_variant, mnozstvi);
     } else {
 
-        $.get(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+        $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
             inline: 1,
             slice_id: '2d81635df9bbff2a7deebd89808f3cfb',
-            "aa[n1_2d81635df9bbff2a7deebd89808f3cfb][highlight_______][]": 1
+            "aa[n1_2d81635df9bbff2a7deebd89808f3cfb][highlight_______][]": 1,
+            "aa[n1_2d81635df9bbff2a7deebd89808f3cfb][category_______1][]": 'pokladna'
         }, function(data) {
             // just one iteration, but without the loop we are not able to get the item_id
             for (kid in data) {
@@ -359,6 +373,28 @@ function addToKosik(produkt_variant, mnozstvi) {
             addPolozkaToKosik(kid, produkt_variant, mnozstvi);
         });
     }
+}
+
+function AddCisloFaktury(kid) {
+    var param = {
+            inline: 1,
+            ok_url: "http://biofarma.cz/aaa/view.php3?vid=71&nocache=1&cmd[71]=o-71-"+ kid+'&als[XLANG___]='+getCurrentLanguage(),
+            slice_id: '2d81635df9bbff2a7deebd89808f3cfb'
+         };
+    param["aa[u"+kid+"][number__________][]"] = 111;
+
+    $("#page-faktura").load(AA_Config.AA_INSTAL_PATH + 'filler.php3', param);
+}
+
+function HotovoNachstano(kid, skid) {
+    var param = {
+            slice_id: '2d81635df9bbff2a7deebd89808f3cfb'
+         };
+    param["aa[u"+kid+"][category________][]"] = 3;
+    $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', param, function(data) {
+        document.location = "http://admin.biofarma.cz/cz/objednavky#obj"+ skid;
+    });
+
 }
 
 function getCurrentLanguage() {
@@ -386,7 +422,7 @@ function addPolozkaToKosik(kosik, produkt_variant, mnozstvi) {
 function addPolozkaToKosikAdmin(kosik, produkt_variant, mnozstvi) {
     $("#page-faktura").load(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
         inline: 1,
-        ok_url: "http://biofarma.cz/aaa/view.php3?vid=54&nocache=1&cmd[54]=o-54-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
+        ok_url: "http://biofarma.cz/aaa/view.php3?vid=71&nocache=1&cmd[71]=o-71-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
         slice_id: '38b46aeec3b2bbb70ba48b31957ed322',
         "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation________][]": kosik,
         "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation_______1][]": produkt_variant,
@@ -403,7 +439,7 @@ function deleteFromKosikAdmin(kosik, polozka_id) {
 
     var param = {
             inline: 1,
-            ok_url: "http://biofarma.cz/aaa/view.php3?vid=54&nocache=1&cmd[54]=o-54-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
+            ok_url: "http://biofarma.cz/aaa/view.php3?vid=71&nocache=1&cmd[71]=o-71-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
             slice_id: '38b46aeec3b2bbb70ba48b31957ed322'
          };
     param["aa[u"+polozka_id+"][status_code_____][]"] = 2;
@@ -412,7 +448,7 @@ function deleteFromKosikAdmin(kosik, polozka_id) {
 }
 
 function ReloadFaktura(kosik) {
-    $("#page-faktura").load("/aaa/view.php3?vid=54&nocache=1&cmd[54]=o-54-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(), '', function() {});
+    $("#page-faktura").load("/aaa/view.php3?vid=71&nocache=1&cmd[71]=o-71-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(), '', function() {});
 }
 
 

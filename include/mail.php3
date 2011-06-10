@@ -188,7 +188,7 @@ class AA_Mail extends htmlMimeMail {
      */
      function sendToReader($mail_id, $zids) {
         $mail_count = 0;
-        for ( $i=0; $i<$zids->count(); $i++) {
+        for ( $i=0, $ino=$zids->count(); $i<$ino; ++$i) {
             $item = AA_Item::getItem($zids->longids($i));
             $to   = $item->getval(FIELDID_EMAIL);
             $mail_count += AA_Mail::sendTemplate($mail_id, $to, $item);
@@ -205,12 +205,7 @@ class AA_Mail extends htmlMimeMail {
  */
 function html2text($html) {
 
-    // reverse to htmlentities
-    if (function_exists ("get_html_translation_table")) {
-        $trans_tbl = get_html_translation_table(HTML_ENTITIES);
-        $trans_tbl = array_flip($trans_tbl);
-        $html      = strtr($html, $trans_tbl);
-    }
+    $html = html_entity_decode($html);
 
     // Strip diacritics
     // $html = strtr( $html, "áäèïéìíåòóöø¹»úùüı¾ÁÄÈÏÉÌÍÅÒÓÖØ©«ÚÙÜİ®",

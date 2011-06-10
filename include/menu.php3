@@ -92,22 +92,6 @@ function get_aamenus() {
         "level"   => "main",
         "submenu" => "sliceadmin_submenu");
 
-    $aamenus["aaadmin"] = array (
-        "label"   => GetLabel($profile,'ui_manager','top_aaadmin', _m("AA")),
-        "title"   => _m("AA Administration"),
-        "href"    => "admin/aafinder.php3",
-        "cond"    => IfSlPerm(PS_NEW_USER) AND ($profile->getProperty('ui_manager', 'top_aaadmin') !== ''),
-        "level"   => "main",
-        "submenu" => "aaadmin_submenu");
-
-    $aamenus["central"] = array (
-        "label"   => GetLabel($profile,'ui_manager','top_central', _m("Central")),
-        "title"   => _m("AA Central"),
-        "href"    => "central/index.php3",
-        "cond"    => IsSuperadmin() AND ($profile->getProperty('ui_manager', 'top_central') !== ''),
-        "level"   => "main",
-        "submenu" => "central_submenu");
-
     /** Second-level (left) menu description:
      *  bottom_td       empty space under the menu
      *  items           array of menu items in form item_id => properties
@@ -237,30 +221,8 @@ function get_aamenus() {
         AddAlertsModules($items, $db, _m("Alerts Sent"), _m("List of Alerts modules sending items from this slice."));
     }
 
-    $aamenus["central_submenu"] = array(
-        "bottom_td" => 200,
-        "level"     => "submenu",
-        "items"     => array(
-            "header1"     => _m("Folders"),
-            "app"         => array("cond"=>1,                           "href"=>"central/index.php3?Tab1=1",                                   "label"=>"<img src='../images/ok.gif' border=0>"._m("Active")." (". $r_state['bin_cnt']['folder1'] .")"),
-            "hold"        => array("cond"=>1,                           "href"=>"central/index.php3?Tab2=1",                                  "label"=>"<img src='../images/edit.gif' border=0>"._m("Hold bin")." (". $r_state['bin_cnt']['folder2'] .")"),
-            "trash"       => array("cond"=>1,                           "href"=>"central/index.php3?Tab3=1",                                 "label"=>"<img src='../images/delete.gif' border=0>"._m("Trash bin")." (". $r_state['bin_cnt']['folder3'] .")"),
-
-            "header2"     => _m("Misc"),
-            "addaa"       => array("cond"=>IsSuperadmin(),              "href"=>"central/tabledit.php3?cmd[centraledit][show_new]=1",         "label"=>"<img src='../images/add.gif' border=0>"._m("Add AA")),
-            "synchronize" => array("cond"=>IsSuperadmin(),              "href"=>"central/synchronize.php",                                    "label"=>_m("Synchronize...")),
-            "copyslice"   => array("cond"=>IsSuperadmin(),              "href"=>"central/copyslice.php",                                      "label"=>_m("Copy Slice...")),
-            "line"        => "",
-            "item6"       => array("cond"=>IsSuperadmin(),              "href"=>"central/index.php3?DeleteTrash=1",                           "label"=>"<img src='../images/empty_trash.gif' border=0>"._m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are You sure to empty trash?")."')"),
-            "importcsv"   => array("cond"=>IsSuperadmin(),              "href"=>"central/import_csv.php",                                     "label"=>_m("Import conf from CSV...")),
-            "debug"       => array("cond"=>IsSuperadmin(),              "js"  =>"ToggleCookie('aa_debug','1')", "hide"=>!IsSuperadmin(),      "label"=> ($_COOKIE['aa_debug'] ? _m("Set Debug OFF") : _m("Set Debug ON"))),
-            "line"        => ""
-    ));
-
-
     // left menu for aaadmin is common to all modules, so it is shared
-    require_once AA_INC_PATH."menu_aa.php3";
-    return $aamenus;
+    return array_merge($aamenus, GetCommonMenu($profile));
 }
 
 /** AddAlertsModules function

@@ -363,7 +363,7 @@ if (! $insert && is_array($notshown)) {
         $field_ids[] = substr($vfield_id,1);  // remove first 'v'
     }
     $zids = new zids($field_ids,'l');
-    for ($i = 0; $i < $zids->count(); $i ++) {
+    for ($i=0, $ino=$zids->count(); $i<$ino; $i++ ) {
         $field_id = $zids->packedids($i);
         $content4id[$field_id] = $oldcontent4id[$field_id];
     }

@@ -44,7 +44,7 @@ require_once AA_INC_PATH."field.class.php3";
  * @param $txt
  */
 function a_href($url, $txt) {
-    return "<a href=\"$url\">$txt</a>";
+    return '<a href="'.htmlspecialchars($url) ."\">$txt</a>";
 }
 
 /** expand_return_url function
@@ -422,88 +422,6 @@ function now($step=false) {
     return (($step!='step') ?
         time() :
         ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
-}
-
-/** detect_browser function
- * function which detects the browser
- */
-function detect_browser() {
-  global $BName, $BVersion, $BPlatform;
-
-  // Browser
-  if (eregi("(msie) ([0-9]{1,2}.[0-9]{1,3})",$_SERVER['HTTP_USER_AGENT'],$match))
-    { $BName = "MSIE"; $BVersion=$match[2]; }
-  elseif (eregi("(opera) ([0-9]{1,2}.[0-9]{1,3}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match) || eregi("(opera/)([0-9]{1,2}.[0-9]{1,3}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match))
-    { $BName = "Opera"; $BVersion=$match[2]; }
-  elseif (eregi("(konqueror)/([0-9]{1,2}.[0-9]{1,3})",$_SERVER['HTTP_USER_AGENT'],$match))
-    { $BName = "Konqueror"; $BVersion=$match[2]; }
-  elseif (eregi("(lynx)/([0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2})",$_SERVER['HTTP_USER_AGENT'],$match))
-    { $BName = "Lynx"; $BVersion=$match[2]; }
-  elseif (eregi("(links) \(([0-9]{1,2}.[0-9]{1,3})",$_SERVER['HTTP_USER_AGENT'],$match))
-    { $BName = "Links"; $BVersion=$match[2]; }
-  elseif (eregi("(netscape6)/(6.[0-9]{1,3})",$_SERVER['HTTP_USER_AGENT'],$match))
-    { $BName = "Netscape"; $BVersion=$match[2]; }
-  elseif (eregi("Gecko/",$_SERVER['HTTP_USER_AGENT']))
-    { $BName = "Mozilla"; $BVersion="6";}
-  elseif (eregi("mozilla/5",$_SERVER['HTTP_USER_AGENT']))
-    { $BName = "Netscape"; $BVersion="Unknown"; }
-  elseif (eregi("(mozilla)/([0-9]{1,2}.[0-9]{1,3})",$_SERVER['HTTP_USER_AGENT'],$match))
-    { $BName = "Netscape"; $BVersion=$match[2]; }
-  elseif (eregi("w3m",$_SERVER['HTTP_USER_AGENT']))
-    { $BName = "w3m"; $BVersion="Unknown"; }
-  else{$BName = "Unknown"; $BVersion="Unknown";}
-
-  // System
-  if (eregi("win32",$_SERVER['HTTP_USER_AGENT'])) {
-    $BPlatform = "Windows";
-  }
-  elseif ((eregi("(win)([0-9]{2})",$_SERVER['HTTP_USER_AGENT'],$match)) || (eregi("(windows) ([0-9]{2})",$_SERVER['HTTP_USER_AGENT'],$match))) {
-    $BPlatform = "Windows $match[2]";
-  }
-  elseif (eregi("(winnt)([0-9]{1,2}.[0-9]{1,2}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match)) {
-    $BPlatform = "Windows NT $match[2]";
-  }
-  elseif (eregi("(windows nt)( ){0,1}([0-9]{1,2}.[0-9]{1,2}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match)) {
-    $BPlatform = "Windows NT $match[3]";
-  }
-  elseif (eregi("linux",$_SERVER['HTTP_USER_AGENT'])) {
-    $BPlatform = "Linux";
-  }
-  elseif (eregi("mac",$_SERVER['HTTP_USER_AGENT'])) {
-    $BPlatform = "Macintosh";
-  }
-  elseif (eregi("(sunos) ([0-9]{1,2}.[0-9]{1,2}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match)) {
-    $BPlatform = "SunOS $match[2]";
-  }
-  elseif (eregi("(beos) r([0-9]{1,2}.[0-9]{1,2}){0,1}",$_SERVER['HTTP_USER_AGENT'],$match)) {
-    $BPlatform = "BeOS $match[2]";
-  }
-  elseif (eregi("freebsd",$_SERVER['HTTP_USER_AGENT'])) {
-    $BPlatform = "FreeBSD";
-  }
-  elseif (eregi("openbsd",$_SERVER['HTTP_USER_AGENT'])) {
-    $BPlatform = "OpenBSD";
-  }
-  elseif (eregi("irix",$_SERVER['HTTP_USER_AGENT'])) {
-    $BPlatform = "IRIX";
-  }
-  elseif (eregi("os/2",$_SERVER['HTTP_USER_AGENT'])) {
-    $BPlatform = "OS/2";
-  }
-  elseif (eregi("plan9",$_SERVER['HTTP_USER_AGENT'])) {
-    $BPlatform = "Plan9";
-  }
-  elseif (eregi("unix",$_SERVER['HTTP_USER_AGENT']) || eregi("hp-ux",$_SERVER['HTTP_USER_AGENT'])) {
-    $BPlatform = "Unix";
-  }
-  elseif (eregi("osf",$_SERVER['HTTP_USER_AGENT'])) {
-    $BPlatform = "OSF";
-  }
-  else{$BPlatform = "Unknown";}
-
-  if ($GLOBALS['debug']) {
-      huhl($_SERVER['HTTP_USER_AGENT']. " => $BName,$BVersion,$BPlatform");
-  }
 }
 
 /** debug function

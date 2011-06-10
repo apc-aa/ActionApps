@@ -187,16 +187,11 @@ class DB_MSSQL {
       $this->Error);
   }
 }
-$_php_major_version = substr(phpversion(), 0, 1);
-if((4 > $_php_major_version) or !class_exists("DB_Sql"))
-	{
-	class DB_Sql extends DB_MSSQL
-		{
-		function DB_Sql($query = "")
-			{
+if(!class_exists("DB_Sql"))	{
+	class DB_Sql extends DB_MSSQL {
+		function DB_Sql($query = "") {
 			$this->DB_MSSQL($query);
-			}
 		}
 	}
-unset($_php_major_version);
+}
 ?>

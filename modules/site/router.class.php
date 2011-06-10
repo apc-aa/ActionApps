@@ -145,7 +145,7 @@ class AA_Router {
         if ($from > 2) {
             $arr[".. "] = "";
         }
-        for ($i=$from; $i <= $to; $i++) {
+        for ($i=$from; $i <= $to; ++$i) {
             $arr[(string)$i] = ($i==$page ? "" : $this->go2url("$variable=$i"));
         }
         if ($to < $max - 1) {
@@ -272,7 +272,7 @@ class AA_Router_Seo extends AA_Router {
         $arr = explode('/', trim($parsed_url['path'],'/'));
         $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag','xcat'), '/([a-z]{2})([0-9]*)([^-0-9]*)[-]?(.*)/',$arr[0],trim($home,'/'));
 
-        for ($i=1; $i < count($arr); $i++) {
+        for ($i=1, $ino=count($arr); $i<$ino; ++$i) {
             $ret['xseo'.$i] = $arr[$i];
         }
 
@@ -322,7 +322,7 @@ class AA_Router_Seo extends AA_Router {
             $old_x_max = self::_maxKey($apc_state, 'xseo');
             $max       = max($new_x_max, $old_x_max);
             $state     = 'COPY';
-            for ( $i=1; $i <= $max; $i++) {
+            for ( $i=1; $i <= $max; ++$i) {
                 if ($state == 'CLEAR') {
                     unset($apc_state['xseo'. $i]);
                 } elseif ($new_arr['xseo'. $i]) {
@@ -365,7 +365,7 @@ class AA_Router_Seo extends AA_Router {
         }
         $x_max = self::_maxKey($apc_state, 'xseo');
         // we clear all unused {xseoX} in order {xseoX} is allaways SEO string or empty string and not something like {xseo4}
-        for ($i=$x_max+1; $i<10; $i++) {
+        for ($i=$x_max+1; $i<10; ++$i) {
             $apc_state['xseo'.$i] = '';
         }
         $apc_state['xseo']   = ($x_max>0) ? $apc_state['xseo'. $x_max] : '';

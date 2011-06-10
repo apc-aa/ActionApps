@@ -56,7 +56,7 @@ class AA_Log {
     function write($event, $params="", $selector="" ) {
         global $auth;
 
-        if ( AA_Log::isLogable($event) ) {
+        if ( !AA_Log::isLogable($event) ) {
             return false;
         }
 
@@ -119,9 +119,9 @@ class AA_Log {
            // 'FILE IMP:',
            // 'ITEM_FIELD_FILLED',
            // 'PAGECACHE',
-              'TOEXECUTE'
+           // 'TOEXECUTE'
         );
-        return in_array($event_type, $DO_NOT_LOG);
+        return !in_array($event_type, $DO_NOT_LOG);
     }
 }
 

@@ -133,7 +133,7 @@ function DelUser($user_id, $flags = 3) {
         $filter = "(&(objectclass=groupOfNames)(member=$user_id))";
         $r      = ldap_search($ds, $aa_default_ldap['groups'], $filter, array(""));
         $arr    = ldap_get_entries($ds,$r);
-        for ($i=0; $i < $arr["count"]; $i++) {
+        for ($i=0; $i < $arr["count"]; ++$i) {
             DelGroupMember($arr[$i]["dn"], $user_id);
         }
         ldap_free_result($r);
@@ -143,7 +143,7 @@ function DelUser($user_id, $flags = 3) {
         $filter = "(&(objectclass=apcacl)(apcaci=$user_id:*))";
         $r      = ldap_search($ds, $aa_default_ldap['acls'], $filter, array("apcObjectType","apcaci","apcObjectID"));
         $arr    = ldap_get_entries($ds,$r);
-        for ($i=0; $i < $arr["count"]; $i++) {
+        for ($i=0; $i < $arr["count"]; ++$i) {
             // indexes in lowercase !!!
             DelPerm($user_id, $arr[$i]["apcobjectid"][0], $arr[$i]["apcobjecttype"][0]);
         }
@@ -216,12 +216,12 @@ function GetUser($user_id, $flags = 0) {
         $res["cn"] = $arr["cn"][0];
     }
     if ( is_array($arr["mail"]) ) {
-        for ($i=0; $i < $arr["mail"]["count"]; $i++) {
+        for ($i=0; $i < $arr["mail"]["count"]; ++$i) {
             $res["mail"][$i] = $arr["mail"][$i];
         }
     }
     if ( is_array($arr["telephonenumber"]) ) {
-        for ($i=0; $i < $arr["telephonenumber"]["count"]; $i++) {
+        for ($i=0; $i < $arr["telephonenumber"]["count"]; ++$i) {
             $res["phone"][$i] = $arr["telephonenumber"][$i];
         }
     }
@@ -279,7 +279,7 @@ function AddGroup($group, $flags = 0) {
          $filter = "(&(objectclass=groupOfNames)(member=$group_id))";
          $r      = ldap_search($ds, $aa_default_ldap['groups'], $filter, array(""));
          $arr    = ldap_get_entries($ds,$r);
-         for ($i=0; $i < $arr["count"]; $i++) {
+         for ($i=0; $i < $arr["count"]; ++$i) {
              DelGroupMember($arr[$i]["dn"], $group_id);
          }
          ldap_free_result($r);
@@ -289,7 +289,7 @@ function AddGroup($group, $flags = 0) {
          $filter = "(&(objectclass=apcacl)(apcaci=$group_id:*))";
          $r      = ldap_search($ds, $aa_default_ldap['acls'], $filter, array("apcObjectType","apcaci","apcObjectID"));
          $arr    = ldap_get_entries($ds,$r);
-         for ($i=0; $i < $arr["count"]; $i++) {
+         for ($i=0; $i < $arr["count"]; ++$i) {
              // indexes in lowercase !!!
              DelPerm($group_id, $arr[$i]["apcobjectid"][0],  $arr[$i]["apcobjecttype"][0]);
          }
@@ -378,7 +378,7 @@ function FindGroups($pattern, $flags = 0) {
     }
     $arr = LDAP_get_entries($ds,$res);
 
-    for ($i=0; $i<$arr['count']; $i++) {
+    for ($i=0; $i<$arr['count']; ++$i) {
         $result[$arr[$i]['dn']] = array("name"=>$arr[$i]['cn'][0]);
     }
 
@@ -421,7 +421,7 @@ function FindUsers($pattern, $flags = 0) {
     }
     $arr = LDAP_get_entries($ds,$res);
 
-    for ($i=0; $i<$arr['count']; $i++) {
+    for ($i=0; $i<$arr['count']; ++$i) {
         $result[$arr[$i]['dn']] = array("name"=>$arr[$i]['cn'][0], "mail"=>$arr[$i]['mail'][0]);
     }
 
@@ -463,7 +463,7 @@ function DelGroupMember($group_id, $id, $flags = 0) {
     $entry  = ldap_first_entry ($ds, $result);
     $arr    = ldap_get_attributes($ds, $entry);
 
-    for ($i=0; $i < $arr["member"]["count"]; $i++) {
+    for ($i=0; $i < $arr["member"]["count"]; ++$i) {
         if (!stristr($arr["member"][$i], $id)) {
             $new["member"][] = $arr["member"][$i];
         }
@@ -495,7 +495,7 @@ function GetGroupMembers($group_id, $flags = 0) {
     $entry  = ldap_first_entry ($ds, $result);
     $arr    = ldap_get_attributes($ds, $entry);
 
-    for ($i=0; $i < $arr["member"]["count"]; $i++) {
+    for ($i=0; $i < $arr["member"]["count"]; ++$i) {
         if ($info = GetIDsInfo($arr["member"][$i], $ds)) {
             $res[$arr["member"][$i]] = $info;
         }
@@ -537,7 +537,7 @@ function GetMembership($id, $flags = 0) {
         }
         $array = ldap_get_entries($ds,$res);
         unset($last_groups);  //get deeper groups to last_groups and groups
-        for ($i=0; $i<$array["count"]; $i++) {
+        for ($i=0; $i<$array["count"]; ++$i) {
             $last_groups[] = $array[$i]["dn"];
             $groups[$array[$i]["dn"]] = true;
         }
@@ -630,7 +630,7 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
     // some older AAs could have mixed case atributes :-( (apcAci)
     $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
 
-    for ($i=0; $i < $aci['count']; $i++) { // copy old apcAci values
+    for ($i=0; $i < $aci['count']; ++$i) { // copy old apcAci values
         if (!stristr($aci[$i], $id)) {   // except the modified/deleted one
             $new["apcaci"][] = $aci[$i];
         } else {
@@ -698,7 +698,7 @@ function GetObjectsPerms($objectID, $objectType, $flags = 0) {
     // some older AAs could have mixed case atributes :-( (apcAci)
     $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
 
-    for ($i=0; $i < $aci["count"]; $i++) {
+    for ($i=0; $i < $aci["count"]; ++$i) {
         $apcaci = ParseApcAci( $aci[$i] );
         if ($apcaci) {
             $info[$apcaci["dn"]]         = GetIDsInfo($apcaci["dn"]);
@@ -725,7 +725,7 @@ function GetIDPerms($id, $objectType, $flags = 0) {
 
     if (!($flags & 1)) {
         $groups = GetMembership($id);
-        for ($i = 0; $i < sizeof($groups); $i++) {
+        for ( $i=0, $ino=sizeof($groups); $i<$ino; ++$i) {
             $filter .= "(apcaci=$groups[$i]:*)";
         }
     }
@@ -740,11 +740,11 @@ function GetIDPerms($id, $objectType, $flags = 0) {
 
     $arr = ldap_get_entries($ds,$result);
 
-    for ($i=0; $i < $arr["count"]; $i++) {
+    for ($i=0; $i < $arr["count"]; ++$i) {
         // some older AAs could have mixed case atributes :-( (apcAci)
         $aci = (is_array($arr[$i]["apcaci"]) ? $arr[$i]["apcaci"] : $arr[$i]["apcAci"]);
-        for ($j=0; $j < $aci["count"]; $j++) {
-            for ($k = 0; $k < sizeof($groups); $k++) {
+        for ($j=0; $j < $aci["count"]; ++$j) {
+            for ( $k=0, $kno=sizeof($groups); $k<$kno; ++$k) {
                 if (stristr($aci[$j],$groups[$k])) {
                     $perms[$arr[$i]["apcobjectid"][0]] .= GetApcAciPerm($aci[$j]);
                 }
@@ -847,7 +847,7 @@ function GetIDsInfo($id, $ds = "") {
     if ( !is_array($arr["objectclass"]) ) {  // new LDAP is case sensitive (v3)
         $arr["objectclass"] = $arr["objectClass"];
     }
-    for ($i=0; $i < $arr["objectclass"]["count"]; $i++) {
+    for ($i=0; $i < $arr["objectclass"]["count"]; ++$i) {
         if (stristr($arr["objectclass"][$i], "groupofnames")) {
             $res["type"] = "Group";
         }

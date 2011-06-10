@@ -615,7 +615,10 @@ class AA_Metabase {
           'constant'   => array('scr_field' => 'group_id', 'dest_table' => 'constant_slice', 'dest_field' => 'group_id'),
 
           'content'    => array('scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id'),
-          'discussion' => array('scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id')
+          'discussion' => array('scr_field' => 'item_id',  'dest_table' => 'item',           'dest_field' => 'id'),
+
+          'alerts_collection_filter'   => array('scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id'),
+          'alerts_collection_howoften' => array('scr_field' => 'collectionid',  'dest_table' => 'alerts_collection', 'dest_field' => 'id')
         );
 
         $module_table = $tablename;
@@ -713,8 +716,8 @@ class AA_Metabase {
      * and stores it in the 'Abstract Data Structure' for use with 'item' class
      *
      * @see GetItemContent(), itemview class, item class
-     * @param array $zids array if ids to get from database
      * @param array $settings array - just one parameter: table, where to search
+     * @param array $zids array if ids to get from database
      * @return array - Abstract Data Structure containing the links data
      *                 {@link http://apc-aa.sourceforge.net/faq/#1337}
      */
@@ -737,10 +740,18 @@ class AA_Metabase {
         $sel_in = $zids->sqlin( false , true);  // asis
         $SQL = "SELECT * FROM $tablename WHERE $key $sel_in";
         StoreTable2Content($content, $SQL, '', $key);
+
         // it is unordered, so we have to sort it:
-        for($i=0; $i<$zids->count(); $i++ ) {
-            $ret[(string)$zids->id($i)] = $content[$zids->id($i)];
+        for ($i=0, $ino=$zids->count(); $i<$ino; $i++ ) {
+            $id = $zids->id($i);
+            $ret[(string)$id] = $content[$id];
         }
+        // tried to replace the for () with foreach (), but it is two times slower (PHP 5.3.6 - eAccelerator 0.9.6.1 )
+        // reset($zids); foreach($zids as $id) { $ret[(string)$id] = $content[$id]; }
+        // iterations  | for time  | foreach time
+        // 20          | 2.8E-5    | 4.2E-5
+        // 2000        | 0.0018    | 0.0031
+
         return $ret;
     }
 
@@ -838,13 +849,11 @@ class AA_Metabase {
      * @param $classname
      * @param $params
      */
-    function getManagerConf($tablename, $actions=null, $switches=null, $manager_id=null) {
-        $manager_id    = is_null($manager_id) ? $manager_id : $tablename;   // or something more concrete?
+    function getManagerConf($tablename, $actions=null, $switches=null) {
         $aliases       = $this->generateAliases($tablename);
         $search_fields = $this->getSearchArray($tablename);
 
         $manager_settings = array(
-             'module_id' => $manager_id,
              'show'      =>  MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
              'searchbar' => array(
                  'fields'               => $search_fields,
@@ -878,9 +887,9 @@ class AA_Metabase {
                                             </tr>
                                            ',
                      'compact_remove'   => "",
-                     'compact_bottom'   => "</table>",
-                     'id'               => $manager_id ),
-                 'fields'               => $this->getSearchArray($tablename),
+                     'compact_bottom'   => "</table>"
+                                  ),
+                 'fields'               => $search_fields,
                  'aliases'              => $aliases,
                                            //    static class method               , first parameter to the method
                  'get_content_funct'    => array(array('AA_Metabase', 'getContent'), array('table'=>$tablename))

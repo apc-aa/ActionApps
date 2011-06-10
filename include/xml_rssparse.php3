@@ -87,7 +87,7 @@ function decode($v) {
  * @param $str
  */
 function seems_utf8($str) {
-    for ($i=0; $i<strlen($str); $i++) {
+    for ( $i=0, $ino=strlen($str); $i<$ino; ++$i) {
         if (ord($str[$i]) < 0x80) continue; // 0bbbbbbb
         elseif ((ord($str[$i]) & 0xE0) == 0xC0) $n=1; // 110bbbbb
         elseif ((ord($str[$i]) & 0xF0) == 0xE0) $n=2; // 1110bbbb
@@ -95,7 +95,7 @@ function seems_utf8($str) {
         elseif ((ord($str[$i]) & 0xFC) == 0xF8) $n=4; // 111110bb
         elseif ((ord($str[$i]) & 0xFE) == 0xFC) $n=5; // 1111110b
         else return false; // Does not match any model
-        for ($j=0; $j<$n; $j++) { // n bytes matching 10bbbbbb follow ?
+        for ($j=0; $j<$n; ++$j) { // n bytes matching 10bbbbbb follow ?
             if ((++$i == strlen($str)) || ((ord($str[$i]) & 0xC0) != 0x80)) {
                 return false;
             }

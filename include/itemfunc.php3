@@ -735,12 +735,13 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
             switch( $validate ) {
                 case 'date':
                     $foo_datectrl_name = new datectrl($varname);
-                    $foo_datectrl_name->update();           // updates datectrl
+
                     if ($$varname != "") {                  // loaded from defaults
                         $foo_datectrl_name->setdate_int($$varname);
                     }
                     $foo_datectrl_name->ValidateDate($f["name"], $err, $f["required"], $default_val);
                     $$varname = $foo_datectrl_name->get_date();  // write to var
+
                     break;
                 case 'bool':
                     $$varname = ($$varname ? 1 : 0);

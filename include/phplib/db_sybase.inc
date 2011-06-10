@@ -168,16 +168,11 @@ class DB_Sybase {
     printf("<b>Sybase Error</b></p>\n", $this->Error);
   }
 }
-$_php_major_version = substr(phpversion(), 0, 1);
-if((4 > $_php_major_version) or !class_exists("DB_Sql"))
-	{
-	class DB_Sql extends DB_Sybase
-		{
-		function DB_Sql($query = "")
-			{
+if(!class_exists("DB_Sql"))	{
+	class DB_Sql extends DB_Sybase {
+		function DB_Sql($query = "") {
 			$this->DB_Sybase($query);
-			}
 		}
 	}
-unset($_php_major_version);
+}
 ?>
