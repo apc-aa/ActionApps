@@ -116,8 +116,22 @@ class AA_Debug {
     function info()     {$v=func_get_args(); $this->_do('info',    $v);}
     function warn()     {$v=func_get_args(); $this->_do('warn',    $v);}
     function error()    {$v=func_get_args(); $this->_do('error',   $v);}
-    function group()    {$v=func_get_args(); $this->_do('group',   $v);}
-    function groupend() {$v=func_get_args(); $this->_do('groupend',$v);}
+
+    function group()    {
+        $v=func_get_args();
+        $group = reset($v);
+        $this->_starttime[$group] = microtime(true);
+        echo "\n<div style='border: 1px #AAA solid; margin: 6px 1px 6px 12px'>";
+        $this->_do('log', $v);
+    }
+
+    function groupend() {
+        $v=func_get_args();
+        $group = array_shift($v);
+        $this->_do('log', $v);
+        $this->_logtime($group);
+        echo "\n</div>";
+    }
 
     function _do($func, $params) {
         foreach ($params as $a) {
@@ -129,7 +143,10 @@ class AA_Debug {
             echo "<br>\n";
         }
     }
-    function _logtime($group) {}
+    function _logtime($group) {
+        $time = microtime(true) - $this->_starttime[$group];
+        $this->_do(($time > 1.0) ? 'warn' : 'log', array("$group time: $time"));
+    }
 }
 
 class AA_Degug_Firephp extends AA_Debug {
