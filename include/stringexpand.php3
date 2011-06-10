@@ -197,11 +197,10 @@ class AA_Stringexpand_Var extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // cache is used by expand function itself
 
-    function expand() {
+    function expand($name='') {
         global $contentcache;
-        $arg_list = func_get_args();   // must be asssigned to the variable
         // replace inputform field
-        $expression = $contentcache->get('define:'.$arg_list[0]);
+        $expression = $contentcache->get("define:$name");
         // @todo - replace parameters
         return $expression;
     }
@@ -509,11 +508,12 @@ class AA_Stringexpand_Lastedit extends AA_Stringexpand {
  *  @param $switch_state_2 - link text 2
  *  @param $code_2         - HTML code displayed as alternative after clicking
  *                           on the link
+ *  @param $position       - position of the link - top|bottom (top is default)
  */
 class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
 
-    function expand($switch_state_1, $code_1, $switch_state_2, $code_2) {
+    function expand($switch_state_1, $code_1, $switch_state_2, $code_2, $position='') {
 
         // it is nonsense to show expandable trigger if both contents are empty
         if (trim($code_1.$code_2) == '') {
@@ -529,16 +529,17 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
         $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
+        $link   = '';
 
         if ($code_1 == $code_2) {
-            // no need to addf toggle
+            // no need to add toggle
             $ret = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         } else {
-            $ret    = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid');return false;\">$switch_state_1</a>\n";
-            $ret   .= "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
-            $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
+            $link = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid');return false;\">$switch_state_1</a>\n";
+            $ret  = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
+            $ret .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
         }
-        return $ret;
+        return ($position=='bottom') ?  $ret. $link : $link. $ret;
     }
 }
 
@@ -565,6 +566,11 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
         if (trim($css_rule) == '') {
             return '';
         }
+        if (trim($switch_state_1.$switch_state_2) == '') {
+            $switch_state_1 = GetAAImage('plus.gif',  _m('show'), 16, 16);
+            $switch_state_2 = GetAAImage('minus.gif', _m('hide'), 16, 16);
+        }
+
 
         $class = '';
         $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
@@ -612,6 +618,11 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
 
         if (trim($css_rule_update) == '') {
             $css_rule_update = $css_rule_hide;
+        }
+
+        if (trim($switch_state_1.$switch_state_2) == '') {
+            $switch_state_1 = GetAAImage('plus.gif',  _m('show'), 16, 16);
+            $switch_state_2 = GetAAImage('minus.gif', _m('hide'), 16, 16);
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
@@ -732,6 +743,12 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
 
     function expand($switch_state_1, $code_1, $switch_state_2, $url, $position=null) {
+
+        if (trim($switch_state_1.$switch_state_2) == '') {
+            $switch_state_1 = GetAAImage('plus.gif',  _m('show'), 16, 16);
+            $switch_state_2 = GetAAImage('minus.gif', _m('hide'), 16, 16);
+        }
+
         // we can't use apostrophes and quotes in href="javacript:..." attribute
         $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
         $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
@@ -875,7 +892,7 @@ function parseLoop($out, &$item) {
             // case with special parameters in ()
             foreach ($val as $value) { // loop for all values
                 $dummy = $format_str; // make work-copy of format string
-                for ($i=0; $i<count($params); $i++) { // for every special parameter do:
+                for ($i=0, $forcount=count($params); $i<$forcount; $i++) { // for every special parameter do:
                     if (substr($params[$i],0,6) == "const_") {
                         // what we need some constants parameters ( like name, short_id, value, ...)
                         $what = substr($params[$i], strpos($params[$i], "_")+1);
@@ -1094,10 +1111,14 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
     function expand($format='', $timestamp='', $no_date_text=null) {
         if ( empty($format) ) {
             $format = "U";
+        } elseif ( (strpos($format, 'DATE_') === 0) AND defined($format)) {
+            $format = constant($format);
         }
         if ( $timestamp=='' ) {
             $timestamp = time();
-        } elseif (($timestamp == '0') AND !is_null($no_date_text)) {
+            // no date (sometimes empty date is 3600 (based on timezone), so we
+            // will use all the day 1.1.1970 as empty)
+        } elseif (($timestamp < 86400) AND !is_null($no_date_text)) {
             return $no_date_text;
         }
         return date($format, (int)$timestamp);
@@ -1243,6 +1264,36 @@ class AA_Stringexpand_Shuffle extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** randomises the order of ids
+ *    {sort:<values>[:<order-type>[:<unique>[:<delimiter>]]]}
+ */
+class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** for offset and length parameters see PHP function array_slice()
+     * @param $ids        // parts separated by '-'
+     * @param $limit      // number of returned shuffled ids
+     */
+    function expand($values, $type=null, $unique='', $delimiter='') {
+        if (!strlen($delimiter)) {
+           $delimiter = '-';
+        }
+        $arr = explode('-', $values);
+        switch ($type) {
+            case 'rnumeric': rsort($arr, SORT_NUMERIC);       break;
+            case 'rstring':  rsort($arr, SORT_STRING);        break;
+            case 'rlocale':  rsort($arr, SORT_LOCALE_STRING); break;
+            case 'string':   sort($arr,  SORT_STRING);        break;
+            case 'locale':   sort($arr,  SORT_LOCALE_STRING); break;
+            default:         sort($arr,  SORT_NUMERIC);       break;
+        }
+        return join('-', ($unique=='1') ? array_unique($arr) : $arr);
+    }
+}
+
+
+
 /** Next item for the current item in the list
  *    {next:<ids>:<current_id>}
  *    {next:12324-353443-58921:353443}   // returns 58921
@@ -1273,7 +1324,7 @@ class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercache {
     // No reason to cache this simple function
 
     /** for offset and length parameters see PHP function array_slice()
-     * @param $ids        // item ids separated by '-' (long or short)
+     * @param $ids        // item ids (or any other values) separated by '-'
      * @param $delimiter  // separator of the parts - by default it is '-', but
      *                       you can use any one
      */
@@ -1797,10 +1848,10 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
         }
         switch ($function) {
             case 'sum':
-                $ret = array_sum($results);
+                $ret = array_sum(str_replace(',', '.', $results));
                 break;
             case 'avg':
-                array_walk($results, create_function('$a', 'return (float)$a;'));
+                array_walk($results, create_function('$a', 'return (float)str_replace(",", ".", $a);'));
                 $ret = (count($results) > 0) ? array_sum($results)/count($results) : '';
                 break;
             case 'concat':
@@ -1992,9 +2043,10 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand {
     function expand($string, $unique_slices='', $encoding='') {
         require_once AA_INC_PATH."convert_charset.class.php3";
         $encoder = new ConvertCharset;
-        $base = $encoder->Convert($string, empty($encoding) ? 'utf-8' : $encoding, 'us-ascii');
-        $base = str_replace(' ','-',$base);
-        $base = preg_replace('/[^\w-]/', '', $base);
+        $string  = html_entity_decode($string, ENT_QUOTES);
+        $base    = $encoder->Convert($string, empty($encoding) ? 'utf-8' : $encoding, 'us-ascii');
+        $base    = str_replace(' ','-',$base);
+        $base    = preg_replace('/[^\w-]/', '-', $base);
         while ( strpos($base, '--') !== false ) {
             $base = str_replace('--', '-', $base);
         }
@@ -2252,7 +2304,7 @@ class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
  *  returns:  'L' if val1 is less than val2
  *            'G' if val1 is greater than val2
  *            'E' if they are equal
- *  ussage:  {switch({compare:{publish_date....}:{now}})G:greater:L:less:E:equal}
+ *  ussage:  {ifeq:{compare:{publish_date....}:{now}}:G:greater:L:less:E:equal}
  */
 class AA_Stringexpand_Compare extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2341,8 +2393,10 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
         // we do not want to allow users to get all field setting
         // that's why we restict it to the properties, which makes sense
         // @todo - make it less restrictive
-        if ($property == 'site_id') {
-            return GetTable2Array("SELECT source_id FROM relation WHERE destination_id='".q_pack_id($slice_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "aa_first", 'unpack:source_id');
+
+        // site_id is older, but better is to use site_ids, since it could return more than one ids (dash separated)
+        if (($property == 'site_ids') OR ($property == 'site_id')) {
+            return join('-', GetTable2Array("SELECT source_id FROM relation WHERE destination_id='".q_pack_id($slice_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', 'unpack:source_id'));
         }
         if (!AA_Fields::isSliceField($property)) {  // it is "slice field" (begins with underscore _)
             $property = 'name';
@@ -2360,12 +2414,13 @@ class AA_Stringexpand_Site extends AA_Stringexpand {
     /** expand function
      * @param $property
      */
-    function expand($site_id, $property='') {
+    function expand($site_ids, $property='') {
         $arr = '';
         if ($property == 'modules') {
-            $arr = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='".q_pack_id($site_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
+            $where = sqlin( 'source_id', array_map("pack_id", explode('-',$site_ids)) );
+            $arr   = GetTable2Array("SELECT destination_id FROM relation WHERE $where AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
         }
-        return is_array($arr) ? join('-' , $arr) : '';
+        return is_array($arr) ? join('-' , array_values(array_unique($arr))) : '';
     }
 }
 
@@ -2637,7 +2692,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
      */
     function defineDelimiters() {
         $delimiter_chars = "()[] ,.;:?!\"&'\n";
-        for ($i=0; $i<strlen($delimiter_chars); $i++) {
+        for ($i=0, $len=strlen($delimiter_chars); $i<$len; $i++) {
             $index              = $delimiter_chars[$i];
             $delimiters[$index] = 'AA#@'.$index.'AA#@';
         }
@@ -2938,7 +2993,7 @@ class AA_Unalias_Callback {
             $foo        = '';
 
             // do not store in the pagecache, but store into contentcache
-            return QuoteColons($contentcache->get_result_by_id(get_hash($view_param), 'GetViewFromDB', array($view_param, $foo)));
+            return QuoteColons($contentcache->get_result_by_id(get_hash($view_param), 'GetViewFromDB', array($view_param)));
         }
         // This is a little hack to enable a field to contain expandable { ... } functions
         // if you don't use this then the field will be quoted to protect syntactical characters
@@ -3069,7 +3124,12 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Allows on-line editing of field content */
+/** Allows on-line editing of field content 
+ *  {ajax:<item_id>:<field_id>[:<alias_or_any_code>[:<onsuccess>]]}
+ *  {ajax:{_#ITEM_ID_}:category........}
+ *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK}
+ *  {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
+ **/
 class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // It works with database, so it shoud always look in the database
@@ -3077,8 +3137,9 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
      * @param $item_id
      * @param $field_id
      * @param $show_alias
+     * @param $onsuccess
      */
-    function expand($item_id, $field_id, $show_alias='') {
+    function expand($item_id, $field_id, $show_alias='', $onsuccess='') {
         $ret = '';
         $alias_name = base64_encode(($show_alias == '') ? '{'.$field_id.'}' : $show_alias);
         if ( $item_id AND $field_id) {
@@ -3089,7 +3150,8 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
             $input_name  = AA_Form_Array::getName4Form($field_id, $item);
             $input_id    = AA_Form_Array::formName2Id($input_name);
             $ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id')\" style=\"display:inline\">";
-            $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".htmlspecialchars($alias_name)."\" style=\"display:inline\">$repre_value</div>";
+            $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.htmlspecialchars($onsuccess).'"' : '';
+            $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".htmlspecialchars($alias_name)."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
             $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
             $ret .= "</div>";
         }
@@ -3160,6 +3222,8 @@ class AA_Stringexpand {
         'str_repeat'       => 'str_repeat',
         'str_replace'      => 'str_replace',
         'striptags'        => 'strip_tags',
+        'strtoupper'       => 'strtoupper',
+        'strtolower'       => 'strtolower',
         'safe'             => 'htmlspecialchars',
         'htmlspecialchars' => 'htmlspecialchars',
         'urlencode'        => 'urlencode',
@@ -3249,7 +3313,13 @@ class AA_Stringexpand {
             // replace all {(.....)} with {var:...}, which will be expanded into {...}
             // this alows to write expressions like
             //   {item:6625:{(some text {headline........}...etc.)}}
-            $text = preg_replace_callback('/\{\((.*)\)\}/sU', 'make_reference_callback', $text);  //s for newlines, U for nongreedy
+            // /{\(((?:.(?!{\())*)\)}/sU  - the expression is complicated because it
+            //                              solves also nesting - like:
+            //                              see {( some {( text )} which )} could {( be )} nested
+            $last_replacements = 1;
+            do {
+                $text = preg_replace_callback('/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements);  //s for newlines, U for nongreedy
+            } while($last_replacements);
         }
 
         $quotecolons_partly = false;
@@ -3471,6 +3541,60 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Creates image with the specified text:
+ *  {imgtext:<width>:<height>:<text>:<size>:<alignment>:<color>:<font>:<opacity>:<margin>:<angle>:<background>:<bg_opacity>}
+ *  
+ *  Ussage:
+ *    {imgtext:20:210:My picture text:3:TL:000000::::90}
+ *    - returns white 20 x 210px big image with vertical, top-left positioned black text on it  
+ *
+ *  for phpThumb params see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
+ *  (phpThumb library is the part of AA)
+ **/
+class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+
+    /** expand function
+     * @param $phpthumb_params - parameters as you would put to url for phpThumb
+     *                           see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
+     *   <s> is the font size (1-5 for built-in font, or point size for TrueType fonts);
+     *   <a> is the alignment (one of BR, BL, TR, TL, C, R, L,
+     *       T, B, * where B=bottom, T=top, L=left, R=right,
+     *       C=centre, *=tile);
+     *       note: * does not work for built-in font "wmt"
+     *       *or*
+     *       an absolute position in pixels (from top-left
+     *       corner of canvas to top-left corner of overlay)
+     *       in format {xoffset}x{yoffset} (eg: "10x20")
+     *   <c> is the hex color of the text;
+     *   <f> is the filename of the TTF file (optional, if
+     *       omitted a built-in font will be used);
+     *   <o> is opacity from 0 (transparent) to 100 (opaque)
+     *       (requires PHP v4.3.2, otherwise 100% opaque);
+     *   <m> is the edge (and inter-tile) margin in percent;
+     *   <n> is the angle
+     *   <b> is the hex color of the background;
+     *   <O> is background opacity from 0 (transparent) to
+     *       100 (opaque)
+     *       (requires PHP v4.3.2, otherwise 100% opaque);
+     *   <x> is the direction(s) in which the background is
+     *       extended (either 'x' or 'y' (or both, but both
+     *       will obscure entire image))
+     *       Note: works with TTF fonts only, not built-in
+     */
+    function expand($width='', $height="", $text="", $size='', $alignment='', $color='', $font='', $opacity='', $margin='', $angle='', $background='', $bg_opacity='') {
+        if (!$width OR !$height OR !strlen(trim($text))) {
+            return '';
+        }
+        $txt        = urlencode($text);
+        $bg         = (strlen($background) ? $background : 'FFFFFF') .'|'. (strlen($bg_opacity) ? $bg_opacity : '0');
+//        $color      = (strlen($color) ? $color : '000000');
+        $param      = join('|',array($txt, $size, $alignment, $color, $font, $opacity, $margin, $angle, $background, $bg_opacity));
+        $img_url    = AA_INSTAL_URL. "img.php?new=$bg&amp;w=$width&amp;h=$height&amp;fltr[]=wmt|$param&amp;f=png";
+        return "<img src=\"$img_url\" width=\"$width\" height=\"$height\" alt=\"$text\" border=\"0\"/>";
+    }
+}
 
 /** get parameters (size or type) from the file
  *  {fileinfo:<url>:<info>}
@@ -3486,8 +3610,9 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
 
         switch ( $info ) {
             case 'type':
-                $url2array = explode(".",$url);
-                return $url2array[count($url2array)-1];
+                $url2array = explode(".",basename(parse_url($url, PHP_URL_PATH)));
+                $part = count($url2array)-1;
+                return ($part>0) ? $url2array[$part] : 'TXT';
             case 'name':
                 return basename(parse_url($url, PHP_URL_PATH));
             case 'size':
