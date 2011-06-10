@@ -182,8 +182,6 @@ $manager->performActions();
 
 $r_state['bin_cnt'] = CountItemsInBins();
 
-$manager->printHtmlPageBegin(true, $profile->getProperty('ui_manager', 'css_add'));  // html, head, css, title, javascripts
-
 // just for menu
 $bookmarks = $manager->getBookmarkNames();
 
