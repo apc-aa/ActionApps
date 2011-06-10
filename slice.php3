@@ -263,9 +263,10 @@ if (!$encap) {
     Page_HTML_Begin($slice_info['name']);
 }
 
-if ($bigsrch) {  // big search form ------------------------------------------
-    echo '<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br> See
-          <a href="http://apc-aa.sourceforge.net/faq/index.shtml#215">AA FAQ</a>
+if ($bigsrch OR $easy_query) {  // big search form or authomatical search form 
+    echo '<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br>
+          easy_query is  NOT SUPPORTED IN AA v 2.50+ <br>
+          See <a href="http://apc-aa.sourceforge.net/faq/index.shtml#215">AA FAQ</a>
           for more details. -->';
     ExitPage();
 }
@@ -403,161 +404,127 @@ if (!is_array($slices)) {
     }
 }
 
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *         Parse parameters posted by query form and from $slice_info
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+$r_state_vars = StoreVariables(array("no_scr","scr_go","order","cat_id", "cat_name",
+ "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator","mlx")); // store in session, added mlx
 
-/* old version of automatiocaly created search form - not used in AA > 1.2
-   $easy_query .. easy query form
-   $srch .. bigsrch form ??
-*/
+// ***** CONDS *****
 
-if (($easy_query || $srch) AND !(is_array($conds) OR isset($group_by) OR isset($sort))) {
+if ($cat_id) {  // optional parameter cat_id - deprecated - slow ------
+    $tmpobj = $slice->getFields();
+    $cat_field = $tmpobj->getCategoryFieldId();
 
-    if ($easy_query) {     // posted by easy query form ----------------
-        $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","srch_fld","srch_from", "srch_to",
-                                             "easy_query", "qry", "srch_relev", "mlx")); // store in session, added mlx
-        $item_ids     = GetIDs_EasyQuery($fields, $db, $p_slice_id, $srch_fld, $srch_from, $srch_to, $qry, $srch_relev);
-        if ( isset($item_ids) AND !is_array($item_ids) ) {
-            echo "<div>$item_ids</div>";
-        }
-        if ( !$scrl ) {
-            $scr->current = $scr_go;
-        }
+    $cat_group = GetCategoryGroup($slice_id);
+
+    $SQL = "SELECT value FROM constant
+             WHERE group_id = '$cat_group' AND id='". q_pack_id($cat_id) ."'";
+    $db->query($SQL);
+    if ( $db->next_record() ) {
+        $conds[] = array( $cat_field => 1,
+                          'value'    => $db->f('value'),
+                          'operator' => ($exact ? '=' : 'LIKE'));
     }
-    elseif ($srch) {     // posted by bigsrch form -------------------
-        $r_state_vars = StoreVariables(array("listlen","no_scr","scr_go","big","search", "s_col", "mlx")); // store in session
-        if ( !$big ) {
-            $search['slice'] = $slice_id;
-        }
-        $item_ids = SearchWhere($search, $s_col);
-        if ( !$scrl ) {
-            $scr->current = $scr_go;
-        }
-    }
-    elseif ($debug) {
-        echo "ERROR: This branch should never be entered.";
-    }
-} else {
-    /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     *         Parse parameters posted by query form and from $slice_info
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+} elseif ($cat_name)  {  // optional parameter cat_name -------
+    $tmpobj = $slice->getFields();
+    $cat_field = $tmpobj->getCategoryFieldId();
+    $conds[]     = array( $cat_field => 1,
+                          'value'    => $cat_name,
+                          'operator' => ($exact ? '=' : 'LIKE'));
+}
 
-    $r_state_vars = StoreVariables(array("no_scr","scr_go","order","cat_id", "cat_name",
-     "exact","restrict","res_val","highlight","conds","group_by", "sort","als","defaultCondsOperator","mlx")); // store in session, added mlx
+if ($restrict) {
+    $conds[]     = array( $restrict  => 1,
+                          'value'    => ((($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 ) ? $res_val : "\"$res_val\""),
+                          'operator' => ($exact ? '=' : 'LIKE'));
+}
 
-    // ***** CONDS *****
+if ($highlight != "") {
+    $conds[] = array('highlight.......' => 1);
+}
 
-    if ($cat_id) {  // optional parameter cat_id - deprecated - slow ------
-        $tmpobj = $slice->getFields();
-        $cat_field = $tmpobj->getCategoryFieldId();
-
-        $cat_group = GetCategoryGroup($slice_id);
-
-        $SQL = "SELECT value FROM constant
-                 WHERE group_id = '$cat_group' AND id='". q_pack_id($cat_id) ."'";
-        $db->query($SQL);
-        if ( $db->next_record() ) {
-            $conds[] = array( $cat_field => 1,
-                              'value'    => $db->f('value'),
-                              'operator' => ($exact ? '=' : 'LIKE'));
-        }
-    } elseif ($cat_name)  {  // optional parameter cat_name -------
-        $tmpobj = $slice->getFields();
-        $cat_field = $tmpobj->getCategoryFieldId();
-        $conds[]     = array( $cat_field => 1,
-                              'value'    => $cat_name,
-                              'operator' => ($exact ? '=' : 'LIKE'));
-    }
-
-    if ($restrict) {
-        $conds[]     = array( $restrict  => 1,
-                              'value'    => ((($res_val[0] == '"' OR $res_val[0] == "'") AND $exact != 2 ) ? $res_val : "\"$res_val\""),
-                              'operator' => ($exact ? '=' : 'LIKE'));
-    }
-
-    if ($highlight != "") {
-        $conds[] = array('highlight.......' => 1);
-    }
-
-    if (!isset($defaultCondsOperator)) {
-        $defaultCondsOperator = 'LIKE';
-    }
-    if (is_array($conds)) {
-        ParseEasyConds($conds, $defaultCondsOperator);
-        foreach ( $conds as $k => $v ) {
-            SubstituteAliases( $als, $conds[$k]['value'] );
-        }
-    }
-
-    // ***** SORT *****
-
-    /** order by field xy if other than publish date.
-    *  Syntax: [number]field_id[-]
-    *  (add minus sign for descending order (like "headline.......1-")
-    *  (add number before the field if you want to group limit (limit number of items of the same value))
-    */
-    if ($order) {
-        $set = new AA_Set;
-        $set->addSortFromString($order);
-        $order = reset($set->getSort());  // get the first from array
-        list($order, $orderdirection) = each($order);
-    }
-
-    if ($debug) {
-        echo "<BR>Group by: -$group_by- <br>Slice_info[category_sort] -$slice_info[category_sort]-<br>slice_info[group_by] -$slice_info[group_by]-";
-    }
-
-    $sort_tmp = array();
-    if ($group_by) {
-        $set = new AA_Set;
-        $set->addSortFromString($group_by);
-        $sort_tmp = $set->getSort();
-        $slice_info["group_by"] = key($sort_tmp[0]);
-    }
-    elseif ($slice_info['category_sort']) {
-        $tmpobj = $slice->getFields();
-        $group_field = $tmpobj->getCategoryFieldId();
-        $grp_odir    = (($order==$group_field) AND ($orderdirection!='d')) ? 'a' : 'd';
-        $sort_tmp[]  = array( $group_field => $grp_odir );
-    }
-    elseif ($slice_info['group_by']) {
-        switch( (string)$slice_info['gb_direction'] ) {  // gb_direction is number
-            case '1': $gbd = '1'; break;      // 1 (1)- ascending by priority
-            case 'd':                         //    d - descending - goes from view (iview) settings
-            case '8': $gbd = 'd'; break;      // d (8)- descending
-            case '9': $gbd = '9'; break;      // 9 (9)- descending by priority (for fields using constants)
-            default:  $gbd = 'a';             // 2 (2)- ascending;
-        }
-        $sort_tmp[] = array($slice_info['group_by'] => $gbd);
-    }
-
-    $sort_tmp = array_merge($sort_tmp, getSortFromUrl($sort));
-
-    if ($order) {
-        add2sort($sort_tmp, array($order => (strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')));
-    }
-
-    // time order the fields in compact view
-    add2sort($sort_tmp, array('publish_date....' => (($timeorder == "rev") ? 'a' : 'd')));
-    $sort  = $sort_tmp;
-
-    //mlx stuff
-    if (isMLXSlice($slice_info)) {
-        if (!$mlxView) {
-            $mlxView = new MLXView($mlx);
-        }
-        $mlxView->preQueryZIDs(unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
-    }
-
-    $zids = QueryZIDs( ($slices ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator, true );
-
-    if (isMLXSlice($slice_info)) {
-        $mlxView->postQueryZIDs($zids,unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$slice_id, $conds, $sort, $slice_info['group_by'],"ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator,$nocache);
-    }
-
-    if ( !$scrl ) {
-        $scr->current = $scr_go;
+if (!isset($defaultCondsOperator)) {
+    $defaultCondsOperator = 'LIKE';
+}
+if (is_array($conds)) {
+    ParseEasyConds($conds, $defaultCondsOperator);
+    foreach ( $conds as $k => $v ) {
+        SubstituteAliases( $als, $conds[$k]['value'] );
     }
 }
+
+// ***** SORT *****
+
+/** order by field xy if other than publish date.
+*  Syntax: [number]field_id[-]
+*  (add minus sign for descending order (like "headline.......1-")
+*  (add number before the field if you want to group limit (limit number of items of the same value))
+*/
+if ($order) {
+    $set = new AA_Set;
+    $set->addSortFromString($order);
+    $order = reset($set->getSort());  // get the first from array
+    list($order, $orderdirection) = each($order);
+}
+
+if ($debug) {
+    echo "<BR>Group by: -$group_by- <br>Slice_info[category_sort] -$slice_info[category_sort]-<br>slice_info[group_by] -$slice_info[group_by]-";
+}
+
+$sort_tmp = array();
+if ($group_by) {
+    $set = new AA_Set;
+    $set->addSortFromString($group_by);
+    $sort_tmp = $set->getSort();
+    $slice_info["group_by"] = key($sort_tmp[0]);
+}
+elseif ($slice_info['category_sort']) {
+    $tmpobj = $slice->getFields();
+    $group_field = $tmpobj->getCategoryFieldId();
+    $grp_odir    = (($order==$group_field) AND ($orderdirection!='d')) ? 'a' : 'd';
+    $sort_tmp[]  = array( $group_field => $grp_odir );
+}
+elseif ($slice_info['group_by']) {
+    switch( (string)$slice_info['gb_direction'] ) {  // gb_direction is number
+        case '1': $gbd = '1'; break;      // 1 (1)- ascending by priority
+        case 'd':                         //    d - descending - goes from view (iview) settings
+        case '8': $gbd = 'd'; break;      // d (8)- descending
+        case '9': $gbd = '9'; break;      // 9 (9)- descending by priority (for fields using constants)
+        default:  $gbd = 'a';             // 2 (2)- ascending;
+    }
+    $sort_tmp[] = array($slice_info['group_by'] => $gbd);
+}
+
+$sort_tmp = array_merge($sort_tmp, getSortFromUrl($sort));
+
+if ($order) {
+    add2sort($sort_tmp, array($order => (strstr('aAdD19',$orderdirection) ? $orderdirection : 'a')));
+}
+
+// time order the fields in compact view
+add2sort($sort_tmp, array('publish_date....' => (($timeorder == "rev") ? 'a' : 'd')));
+$sort  = $sort_tmp;
+
+//mlx stuff
+if (isMLXSlice($slice_info)) {
+    if (!$mlxView) {
+        $mlxView = new MLXView($mlx);
+    }
+    $mlxView->preQueryZIDs(unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$conds,$slices);
+}
+
+$zids = QueryZIDs( ($slices ? $slices : array($slice_id)), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator, true );
+
+if (isMLXSlice($slice_info)) {
+    $mlxView->postQueryZIDs($zids,unpack_id($slice_info[MLX_SLICEDB_COLUMN]),$slice_id, $conds, $sort, $slice_info['group_by'],"ACTIVE", $slices, $neverAllItems, 0, $defaultCondsOperator,$nocache);
+}
+
+if ( !$scrl ) {
+    $scr->current = $scr_go;
+}
+
 
 if ( !$srch AND !$encap AND !$easy_query ) {
     $cur_cats=GetCategories($db,$p_slice_id);     // get list of categories
