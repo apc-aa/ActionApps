@@ -33,9 +33,6 @@
  *
 */
 
-
-
-
 require_once "../include/init_page.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."import_util.php3";
@@ -45,11 +42,14 @@ require_once AA_INC_PATH."feeding.php3";
 
 /** findNearestText function
  * Returns key of the $array, which value is most similar to given $text
+ * @param $fid
  * @param $text
  * @param $array
  * @return string
  */
-function findNearestText($text, $array) {
+function findNearestText($fid, $text, $array) {
+    if (isset($array[$fid]))       {  return $fid; }
+    if (isset($array[trim($fid)])) {  return trim($fid); }
     $ret = '__empty__';
     $max = 5;
     if ( isset($array) AND is_array($array) ) {
@@ -363,7 +363,7 @@ class AA_Csv_Importer {
                foreach ( $outFields as $f_id => $f_name) {
                    echo "<tr><td class=\"tabtxt\"><b>$f_name</b></td>\n";
                    echo "<td>";
-                   FrmSelectEasy("mapping[$f_id]",$inFields,!$set_default ? $this->mapping[$f_id] : findNearestText($f_name, $inFields));		// todo - multiple
+                   FrmSelectEasy("mapping[$f_id]",$inFields,!$set_default ? $this->mapping[$f_id] : findNearestText($f_id, $f_name, $inFields));		// todo - multiple
                    echo "</td>";
                    echo "<td class=\"tabtxt\">";
                    FrmSelectEasy("actions[$f_id]",$actionList,!$set_default ? $this->actions[$f_id] : "default");
