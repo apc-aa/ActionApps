@@ -199,7 +199,7 @@ HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, enc
 FrmJavascript('
     function ModeditSubmit() {
         var lb;
-        for(var i = 0; i < listboxes.length; i++) {
+        for (var i = 0; i < listboxes.length; i++) {
            lb = listboxes[i];
            for (var i = 0; i < document.inputform[lb].length; i++) {
                document.inputform[lb].options[i].selected = ( document.inputform[lb].options[i].value != "wIdThTor" );
