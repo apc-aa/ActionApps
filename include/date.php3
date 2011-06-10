@@ -78,6 +78,16 @@ class datectrl {
         $dayvar   = chop($GLOBALS["tdctr_" . $this->name . "_day"]);
         $monthvar = chop($GLOBALS["tdctr_" . $this->name . "_month"]);
         $yearvar  = chop($GLOBALS["tdctr_" . $this->name . "_year"]);
+
+        // no date
+        if ( strlen($yearvar) AND !(int)$yearvar) {
+            $this->time  = 0;
+            $this->day   = 0;
+            $this->month = 0;
+            $this->year  = 0;
+            return;
+        }
+
         if ( $timevar ) {
             $this->time = $timevar;
         }
@@ -90,7 +100,6 @@ class datectrl {
         if ( $yearvar ) {
             $this->year = $yearvar;
         }
-        return ( $timevar OR $dayvar OR $monthvar OR $yearvar );
     }
 
     /** setdate function
@@ -161,7 +170,7 @@ class datectrl {
      * @param $required = true
      * @param $default = '0'
      */
-    function ValidateDate($inputName, &$err, $required=true, $deafult='0')  {
+    function ValidateDate($inputName, &$err, $required=true, $default='0')  {
         if (( $this->get_date() > 0  ) OR ($this->get_date()==-3600)) {
             return true;
         }
@@ -169,7 +178,9 @@ class datectrl {
             $err[$this->name] = MsgErr(_m("Error in")." $inputName");
             return false;
         }
-        $this->setdate_int($deafult);
+        if ($default) {
+            $this->setdate_int($default);
+        }
         return (( $this->get_date() > 0  ) OR ($this->get_date()==-3600));
     }
 
@@ -210,6 +221,10 @@ class datectrl {
         return "<select name=\"tdctr_" . $this->name . "_month\"".getTriggers("select",$this->name).">".$this->getMonthOptions()."</select>";
     }
 
+    function isEmpty() {
+        return (!$this->year OR ($this->year==1970 AND $this->month==1 AND $this->day==1));
+    }
+
     function getYearOptions($required=true) {
         $at           = getdate(time());
         $from         = ( $this->from_now ? $at["year"] - $this->y_range_minus : $this->y_range_minus );
@@ -218,7 +233,12 @@ class datectrl {
         $ret          = '';
 
         if (!$required) {
-            $ret .= "<option value=\"0\" ".($this->year ? '' : 'selected class="sel_on" ').">----</option>";
+            if ($this->isEmpty()) {
+                $selectedused = true;
+                $ret .= '<option value="0" selected class="sel_on">----</option>';
+            } else {
+                $ret .= '<option value="0">----</option>';
+            }
         }
 
         for ($i = $from; $i <= $to; $i++) {
@@ -241,8 +261,8 @@ class datectrl {
      * print select box for year
      * @return string
      */
-    function getyearselect() {
-        return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">".$this->getYearOptions()."</select>";
+    function getyearselect($required=false) {
+        return "<select name=\"tdctr_" . $this->name . "_year\"".getTriggers("select",$this->name).">".$this->getYearOptions($required)."</select>";
     }
 
     function isTimeDisplayed() {
