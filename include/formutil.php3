@@ -88,8 +88,6 @@ function GetInputFormTemplate() {
      return $form->getForm(new ItemContent(), $slice, false, $slice_id);
 }
 
-
-
 /** getHtmlareaJavascript() */
 function getHtmlareaJavascript($slice_id) {
     global $sess;
@@ -668,6 +666,7 @@ class AA_Inputfield {
         if ( !($constgroup=$this->param[0]) ) {  // assignment
             $this->const_arr = array();
         } elseif ( substr($constgroup,0,7) == "#sLiCe-" ) { // prefix indicates select from items
+
             $sid = substr($constgroup, 7);
             /** Get format for which represents the id
              *  Could be field_id (then it is grabbed from item and truncated to 50
@@ -677,7 +676,7 @@ class AA_Inputfield {
             if (!$slice_field) {
                 $slice_field = GetHeadlineFieldID($sid, "headline.");
                 if (!$slice_field) {
-                    return;
+                    $slice_field = 'publish_date....';
                 }
             }
             $format          = AA_Slices::getField($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
@@ -1185,7 +1184,7 @@ class AA_Inputfield {
 
         $this->echovar( $datectrl->getdayselect(),   'day'  );
         $this->echovar( $datectrl->getmonthselect(), 'month');
-        $this->echovar( $datectrl->getyearselect(),  'year' );
+        $this->echovar( $datectrl->getyearselect($this->required),  'year' );
         $this->echovar( $datectrl->gettimeselect(),  'time' );
         $this->helps('plus');
     }
@@ -1255,7 +1254,7 @@ class AA_Inputfield {
     */
     function textarea( $rows=4, $cols=60, $single=false, $showrich_href=true, $showhtmlarea=false) {
 
-        global $BName, $BPlatform, $sess;
+        global $sess;
 
         list($name,$val,$add) = $this->prepareVars();
         // make the textarea bigger, if already filled with long text
@@ -1360,11 +1359,11 @@ class AA_Inputfield {
             if (! $ncols) {
                 $this->echovar( implode('', $records) );
             } else {
-                $nrows     = ceil (count ($records) / $ncols);
+                $nrows     = ceil( count($records) / $ncols);
                 $this->echoo('<table border="0" cellspacing="0">');
-                for ($irow = 0; $irow < $nrows; $irow ++) {
+                for ($irow = 0; $irow < $nrows; ++$irow) {
                     $ret  .= '<tr>';
-                    for ($icol = 0; $icol < $ncols; $icol ++) {
+                    for ($icol = 0; $icol < $ncols; ++$icol) {
                         $pos  = ( $move_right ? $ncols*$irow+$icol : $nrows*$icol+$irow );
                         $ret .= '<td>'. get_if($records[$pos], "&nbsp;") .'</td>';
                     }
@@ -1594,7 +1593,7 @@ class AA_Inputfield {
             foreach ( (array)$this->const_arr as $id => $text) {
                 $tr_id     = 'rel'.$varname.'old'.($i++);
                 $var_code .= '<tr id="'.$tr_id.'">
-                <td>'.htmlentities($text).'<input type="hidden" name="'.$name.'" value="'.htmlentities($id).'"></td>
+                <td>'.htmlspecialchars($text).'<input type="hidden" name="'.$name.'" value="'.htmlspecialchars($id).'"></td>
                 <td>'.
                   GetAAImage("edit.gif", _m('Edit'), 16, 16).
                   GetAAImage("delete.gif", _m('Delete'), 16, 16).
@@ -2611,22 +2610,12 @@ function FrmTabEnd( $buttons=false, $sess='', $slice_id='', $valign='middle' ) {
  * @param $prefix    - prefix for button ids
  */
 function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $tr=true, $bgcolor=COLOR_TABBG, $no_hidden=false, $prefix='') {
-    global $BName, $BVersion, $BPlatform;
 
     if ($tr) {
         echo '<tr class="formbuttons">';
     }
     echo '<td align="center" valign="'.$valign.'" bgcolor='.$bgcolor. '>';
     if ( isset($buttons) AND is_array($buttons) ) {
-        // preparison: is the accesskey working?
-        detect_browser();
-        if ($BPlatform == "Macintosh") {
-            if ($BName == "MSIE" || ($BName == "Netscape" && $BVersion >= "6")) {
-                $accesskey_pref = "CTRL";
-            }
-        } elseif ($BName == "MSIE" || ($BName == "Netscape" && $BVersion > "5") || ($BName == "Mozilla")) {
-            $accesskey_pref = "ALT";
-        }
 
         if ($prefix) {
             $prefix = $prefix. '_';
@@ -2642,7 +2631,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                     if ($properties['type'] == 'hidden') {
                         echo '&nbsp;<input type="hidden" name="update" id="'.$prefix .'update" value="'. get_if($properties['value'], "") .'">&nbsp;';
                     } else {
-                        echo '&nbsp;<input type="submit" name="update" id="'.$prefix .'update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." ($accesskey_pref+S) " .' ">&nbsp;';
+                        echo '&nbsp;<input type="submit" name="update" id="'.$prefix .'update" accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">&nbsp;';
                         $noaccess = 1; // use for update of item, bug was, that both "update" and "insert"
                         // has accesskey S
                     }
@@ -2658,7 +2647,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                     }
                     echo 'value=" '. get_if($properties['value'], _m("Insert")) ." ";
                     if (!$noaccess) {
-                        echo " ($accesskey_pref+S)";
+                        echo " [^S]";
                     }
                     echo '  ">&nbsp;';
                     if ($properties['help'] != '') {
@@ -2692,7 +2681,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                     }
                     break;
                 case 'submit':
-                    echo '&nbsp;<input type="submit" name="submit" id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  ($accesskey_pref+S) ". ' ">&nbsp;';
+                    echo '&nbsp;<input type="submit" name="submit" id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' ">&nbsp;';
                     if ($properties['help'] != '') {
                         echo FrmMoreHelp($properties['help']);
                         echo "&nbsp;&nbsp;";
@@ -2709,7 +2698,7 @@ function FrmInputButtons( $buttons, $sess='', $slice_id='', $valign='middle', $t
                     echo $nbsp.'<input type="'.  $type .
                          '" name="'.  $name .
                          '" id="'.  $prefix . $name .
-                         '" value="'. $properties['value'] . ($properties['accesskey'] ? "  (".$accesskey_pref."+".$properties['accesskey'].")  " : "").
+                         '" value="'. $properties['value'] . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
                          '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . '>'.$nbsp;
                     if ($properties['help'] != '') {
                         echo FrmMoreHelp($properties['help']);
@@ -2801,7 +2790,7 @@ function GetHtmlTable( $content ) {
  * @param $src
  */
 function getFrmJavascriptFile( $src ) {
-    return "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". get_aa_url($src, '', false) . "\"></script>";
+    return "\n <script language=\"JavaScript\" type=\"text/javascript\" src=\"". htmlspecialchars(get_aa_url($src, '', false)) . "\"></script>";
 }
 /** getFrmJavascript function
  * @param $code
@@ -2891,7 +2880,7 @@ function IncludeManagerJavascript() {
  * @param $safe - escape html entities in name?
  * @param $bookmark
  */
-function getRadioBookmarkRow( $name, $value, $list_type, $list_text, $safe=true, $bookmark_id=null) {
+function getRadioBookmarkRow( $name, $count, $value, $list_type, $list_text, $safe=true, $bookmark_id=null) {
     global $slice_id, $items;
 
     static $checked = ' checked';  // mark first option when no $group selected
@@ -2907,9 +2896,9 @@ function getRadioBookmarkRow( $name, $value, $list_type, $list_text, $safe=true,
     <tr>
       <td align=\"center\"><input type=\"radio\" name=\"group\" value=\"$value\" $checked></td>";
 
-    $out .= ((string)$value == (string)"testuser") ? "<td colspan=\"6\">" : "<td>";
+    $out .= ((string)$value == (string)"testuser") ? "<td colspan=\"7\">" : "<td>";
 
-    $out .= "$name</td>";
+    $out .= "$name</td><td align=\"right\">$count</td>";
     // get data about bookmark (who created, last used, ...)
     if (!is_null($bookmark_id)) {
         $event    = getLogEvents("BM_%", "",   "", false, false, $bookmark_id);
@@ -2917,7 +2906,7 @@ function getRadioBookmarkRow( $name, $value, $list_type, $list_text, $safe=true,
         if (is_array($event)) {
             foreach ($event as $evkey => $evval) {
                 if ($evval["type"] == "BM_CREATE") {
-                    $created = $evval["time"];
+                    $created   = $evval["time"];
                     $createdby = $evval["user"];
                 }
             }
@@ -2935,6 +2924,8 @@ function getRadioBookmarkRow( $name, $value, $list_type, $list_text, $safe=true,
         } else {
             $out .= "<td colspan=\"4\"></td>";
         }
+    } else {
+        $out .= "<td colspan=\"4\"></td>";
     }
     $out .= "<td>";
     if ((string)$value != (string)"testuser") {
@@ -2959,28 +2950,35 @@ function getRadioBookmarkRow( $name, $value, $list_type, $list_text, $safe=true,
  */
 function FrmItemGroupSelect( &$items, &$searchbar, $list_type, $messages, $additional) {
     if ( isset($items) AND is_array($items) ) {
-        $out .= getRadioBookmarkRow( $messages['selected_items'].' ('.count($items).')', 'sel_item', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( $messages['selected_items'], count($items), 'sel_item', $list_type, $messages['view_items']);
     } elseif ( isset($searchbar) AND is_object($searchbar) ) {
         $book_arr = $searchbar->getBookmarkNames();
         if ( isset($book_arr) AND is_array($book_arr) ) {
-            $out .= "<tr><td></td><td><b>"._m("Group Name")."</b></td><td><b>". _m("Created by"). "</td><td><b>"
-                    ._m("Created on"). "</b></td><td><b>". _m("Last updated") ."</b></td><td><b>"._m("Last used"). "</b></td></tr>";
+            $out .= "<tr>
+                       <th>&nbsp;</th>
+                       <th>". _m("Group Name"). "</th>
+                       <th>". _m("Count").      "</th>
+                       <th>". _m("Created by"). "</th>
+                       <th>". _m("Created on"). "</th>
+                       <th>". _m("Last updated") ."</th>
+                       <th>". _m("Last used"). "</th>
+                     </tr>";
             foreach ( $book_arr as $k => $v ) {
                 $bookparams = $searchbar->getBookmarkParams($k);
-                $out .= getRadioBookmarkRow( $v, $k, $list_type, $messages['view_items'], true, is_array($bookparams) ? $bookparams['id'] : null);
+                $out .= getRadioBookmarkRow( $v, count(getZidsFromGroupSelect($k, $items, $searchbar)), $k, $list_type, $messages['view_items'], true, is_array($bookparams) ? $bookparams['id'] : null);
             }
         }
-        $out .= getRadioBookmarkRow( _m('All active items'),         'AA_BIN_ACTIVE', $list_type, $messages['view_items']);
-        $out .= getRadioBookmarkRow( _m('All items'),                'AA_ALL', $list_type, $messages['view_items']);
-        $out .= getRadioBookmarkRow( _m('All pending items'),        'AA_BIN_PENDING', $list_type, $messages['view_items']);
-        $out .= getRadioBookmarkRow( _m('All expired items'),        'AA_BIN_EXPIRED', $list_type, $messages['view_items']);
-        $out .= getRadioBookmarkRow( _m('All items in holding bin'), 'AA_BIN_HOLDING', $list_type, $messages['view_items']);
-        $out .= getRadioBookmarkRow( _m('All items in trash bin'),   'AA_BIN_TRASH', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All active items'),         count(getZidsFromGroupSelect('AA_BIN_ACTIVE' , $items, $searchbar)), 'AA_BIN_ACTIVE', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All items'),                count(getZidsFromGroupSelect('AA_ALL'        , $items, $searchbar)), 'AA_ALL', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All pending items'),        count(getZidsFromGroupSelect('AA_BIN_PENDING', $items, $searchbar)), 'AA_BIN_PENDING', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All expired items'),        count(getZidsFromGroupSelect('AA_BIN_EXPIRED', $items, $searchbar)), 'AA_BIN_EXPIRED', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All items in holding bin'), count(getZidsFromGroupSelect('AA_BIN_HOLDING', $items, $searchbar)), 'AA_BIN_HOLDING', $list_type, $messages['view_items']);
+        $out .= getRadioBookmarkRow( _m('All items in trash bin'),   count(getZidsFromGroupSelect('AA_BIN_TRASH'  , $items, $searchbar)), 'AA_BIN_TRASH', $list_type, $messages['view_items']);
     }
     // aditional group (test one, for examle)
     if ( isset($additional) AND is_array($additional) ) {
         foreach ( $additional as $row ) {
-            $out .= getRadioBookmarkRow( $row['text'], $row['varname'], $list_type, $messages['view_items'], false);
+            $out .= getRadioBookmarkRow( $row['text'], '', $row['varname'], $list_type, $messages['view_items'], false);
         }
     }
     echo $out;
@@ -2994,13 +2992,13 @@ function FrmItemGroupSelect( &$items, &$searchbar, $list_type, $messages, $addit
  */
 function getZidsFromGroupSelect($group, &$items, &$searchbar) {
     global $slice_id;
-    if ( $group == 'sel_item' ) {  // user specified users
+    if ( (string)$group == 'sel_item' ) {  // user specified users
         $zids = new zids(null, 'l');
         $zids->setFromItemArr($items);
     } else {                   // user defined by bookmark
         $conds = false;
         $sort  = false;
-        switch ($group) {
+        switch ((string)$group) {
             case 'AA_ALL':         $bins = AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH;  break;
             case 'AA_BIN_PENDING': $bins = AA_BIN_PENDING; break;
             case 'AA_BIN_EXPIRED': $bins = AA_BIN_EXPIRED; break;
@@ -3010,6 +3008,7 @@ function getZidsFromGroupSelect($group, &$items, &$searchbar) {
             case 'AA_BIN_ACTIVE':
             case '':               $bins = AA_BIN_ACTIVE;  break;
             default:
+
                 $searchbar->setFromBookmark($group);
                 $set   = $searchbar->getSet();
                 $bins  = AA_BIN_ACTIVE;
