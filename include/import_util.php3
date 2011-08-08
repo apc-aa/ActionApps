@@ -32,7 +32,6 @@ define("IMPORTFILE_TIME_LIMIT",  6000);
 
 define("NOT_STORE",        0);
 define("STORE_WITH_NEW_ID",1);
-define("UPDATE",           2);
 
 define("INSERT", 1);
 define("UPDATE", 2);
