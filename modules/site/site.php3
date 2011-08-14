@@ -19,17 +19,16 @@ http://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+$timestart = microtime(true);
+
 // APC AA site Module main administration page
 require_once "../../include/config.php3";
-require_once AA_INC_PATH."locsess.php3";
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."pagecache.php3";
-require_once AA_INC_PATH."stringexpand.php3";
-require_once AA_INC_PATH."item.php3"; // So site_ can create an item
+//require_once AA_INC_PATH."stringexpand.php3";
+//require_once AA_INC_PATH."item.php3"; // So site_ can create an item
 require_once AA_BASE_PATH."modules/site/router.class.php";
 require_once AA_INC_PATH."hitcounter.class.php3";
-
-$timestart = get_microtime();
 
 function IsInDomain( $domain ) {
     return (($_SERVER['HTTP_HOST'] == $domain)  || ($_SERVER['HTTP_HOST'] == 'www.'.$domain));
@@ -76,6 +75,7 @@ if ( !is_array($site_info) ) {
 //                                    ));
 //    readfile($url);
 
+$hit_zid = null;
 if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id($site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
     $home         = '/' .substr(AA_Modules::getModuleProperty($site_id, 'lang_file'),0,2). '/';
@@ -94,9 +94,9 @@ if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $uri          = (strlen($_SERVER['REQUEST_URI']) > 1) ? $_SERVER['REQUEST_URI'] : $_SERVER['REDIRECT_URL'];
     $apc_state    = $router->parse($uri);
 
-    // count hit for current page
+    // count hit for current page - deffered after the page is sent to user
     if ($tmp_xid = $router->xid()) {
-        AA_Hitcounter::hit(new zids($tmp_xid, 'l'));
+        $hit_zid = new zids($tmp_xid, 'l');
     }
 }
 
@@ -121,7 +121,7 @@ if ( !isset($apc_state) )  {
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php3
-$cache_key = get_hash('site',AA_Stringexpand_Keystring::expand(), "$site_id:$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
+$cache_key = get_hash('site', PageCache::globalKeystring(), "$site_id:$post2shtml_id:$all_ids:$add_disc:$disc_type:$sh_itm:$parent_id", $ids, $sel_ids, $disc_ids);
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
@@ -130,12 +130,10 @@ $site_nocache = $nocache;
 if (is_array($slices4cache) && ($res = $GLOBALS['pagecache']->get($cache_key,$nocache))) {
     echo $res;
     if ( $debug ) {
-        $timeend = get_microtime();
-        $time    = $timeend - $timestart;
-        echo "<br><br>Site cache hit!!! Page generation time: $time";
+        echo '<br><br>Site cache hit!!! Page generation time: '. (microtime(true) - $timestart);
     }
-    if ($_GET['pqp']) {
-       $profiler->display();
+    if ($hit_zid) {
+        AA_Hitcounter::hit($hit_zid);
     }
     exit;
 }
@@ -150,6 +148,10 @@ require_once AA_INC_PATH."item.php3";
 
 $res = ModW_GetSite( $apc_state, $site_id, $site_info );
 echo $res;
+
+if ($hit_zid) {
+    AA_Hitcounter::hit($hit_zid);
+}
 
 // In $slices4cache array MUST be listed all (unpacked) slice ids (and other
 // modules), which is used in the site. If you mention the slice in this array,
@@ -172,7 +174,7 @@ if (is_array($slices4cache) && !$site_nocache) {
 
 
 if ($debugtime) {
-    $timeend = get_microtime();
+    $timeend = microtime(true);
     $time    = $timeend - $timestart;
     echo "<br><br>Page generation time: $time";
     print_r($GLOBALS['d_times']);
