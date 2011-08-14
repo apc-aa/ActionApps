@@ -188,10 +188,7 @@ if ($update) {
             Qvarsetadd("html_default", "number", ($html_default ? 1 : 0));
         }
         Qvarsetadd("html_show", "number", ($onlyupdate ? $html_show : ($html_show ? 1 : 0)));
-        Qvarsetadd("text_stored", "number", ($onlyupdate ? $text_stored :
-                                        ((($input_validate_f=="number")
-                                         OR ($input_validate_f=="bool")
-                                         OR ($input_validate_f=="date")) ? 0:1)));
+        Qvarsetadd("text_stored", "number", $text_stored);
         $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$fid' AND slice_id='$p_slice_id'";
         //huhl($SQL); exit;
         if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
@@ -228,13 +225,8 @@ foreach ($g_modules as $k => $v) {
     }
 }
   // lookup fields
-$SQL = "SELECT * FROM field
-         WHERE slice_id='$p_slice_id' AND id='$fid'
-         ORDER BY input_pri";
-$db->query($SQL);
-if ( $db->next_record()) {
-    $fld = $db->Record;
-} else {
+;
+if ( !($fld = DB_AA::select1("SELECT * FROM field WHERE slice_id='$p_slice_id' AND id='$fid'"))) {
     $Msg = MsgErr(_m("No fields defined for this slice"));
     go_url($return_url ? expand_return_url(1) : $back_admin_url);  // back to field page
 }
@@ -287,6 +279,7 @@ if ( !$update ) {      // load defaults
     $html_default = $fld["html_default"];
     $html_show    = $fld["html_show"];
     $feed         = $fld["feed"];
+    $text_stored  = $fld["text_stored"];
 }
 
 HtmlPageBegin('default', true);   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
@@ -400,14 +393,28 @@ echo "
      <tr>
          <td class=\"tabtxt\"><b>". _m("Validate") ."</b></td>
          <td class=\"tabtxt\" colspan=\"3\">";
-         FrmSelectEasy("input_validate_f", getSelectBoxFromParamWizard($VALIDATE_TYPES),
-            $input_validate_f);
+         FrmSelectEasy("input_validate_f", getSelectBoxFromParamWizard($VALIDATE_TYPES), $input_validate_f);
          echo "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
              <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
              <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"text\" name=\"input_validate_p\" size=\"50\" value=\"". safe($input_validate_p) ."\"><br>
-            ". _m('Stored as').": ". ($fld['text_stored'] == 1 ? _m('Text') : _m('Number') ) ."
+         <input type=\"text\" name=\"input_validate_p\" size=\"50\" value=\"". safe($input_validate_p) ."\">
+         </td>
+      </td>
+     </tr>
+     <tr><td colspan=\"4\"><hr></td></tr>
+     <tr>
+         <td class=\"tabtxt\"><b>". _m("Stored as") ."</b></td>
+         <td class=\"tabtxt\" colspan=\"3\">";
+         if ($fld['in_item_tbl']) {
+             echo _m('Stored in <em>item</em> table - it is not possible to change store method');
+         } else {
+             FrmSelectEasy("text_stored", array('1'=>_m('Text'), '0'=>_m('Number')), $text_stored);
+             $text_rows    = DB_AA::select1("SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id=item.id WHERE item.slice_id = '$p_slice_id' AND content.field_id = '".$fld['id']."' AND (content.flag & 64) = 64", 'cnt');
+             $numeric_rows = DB_AA::select1("SELECT count(*) as cnt FROM content INNER JOIN item ON content.item_id=item.id WHERE item.slice_id = '$p_slice_id' AND content.field_id = '".$fld['id']."' AND (content.flag & 64) = 0", 'cnt');
+             echo "<div class=\"tabhlp\">"._m('Text').": $text_rows, "._m('Number').": $numeric_rows</div>";
+         }
+         echo "
          </td>
       </td>
      </tr>
@@ -415,8 +422,7 @@ echo "
      <tr>
          <td class=\"tabtxt\"><b>". _m("Insert") ."</b></td>
          <td class=\"tabtxt\" colspan=\"3\">";
-         FrmSelectEasy("input_insert_func_f", getSelectBoxFromParamWizard($INSERT_TYPES),
-            $input_insert_func_f);
+         FrmSelectEasy("input_insert_func_f", getSelectBoxFromParamWizard($INSERT_TYPES), $input_insert_func_f);
          echo "<div class=\"tabhlp\">"._m("Defines how value is stored in database.")."</div>
          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
              <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
