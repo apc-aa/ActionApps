@@ -48,7 +48,7 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 $varset      = new Cvarset();
 $p_slice_id  = q_pack_id($slice_id);
 
-$user_data = GetUser($auth->auth["uid"]);
+$user_data = GetIDsInfo($auth->auth["uid"]);
 if ( $update ) {
     // Procces user data -------------------------------------------------------
     ValidateInput("user_password_old", _m("Current password"), $user_password_old, $err, true, "password");
@@ -72,10 +72,10 @@ if ( $update ) {
         $user_surname   = $user_data['sn'];
         $user_password1 = "nOnEwpAsswD";    // unchanged password
         $user_password2 = "nOnEwpAsswD";    // unchanged password
-        if ( is_array($user_data['mail'])) {
-            $user_mail1 = $user_data['mail'][0];
-            $user_mail2 = $user_data['mail'][1];
-            $user_mail3 = $user_data['mail'][2];
+        if ( is_array($user_data['mails'])) {
+            $user_mail1 = $user_data['mails'][0];
+            $user_mail2 = $user_data['mails'][1];
+            $user_mail3 = $user_data['mails'][2];
         }
     }
 }
@@ -102,7 +102,7 @@ $form_buttons = array ("update",
 
 FrmTabCaption(_m("Edit User"));
 FrmStaticText( _m("Login name"), $user_data['login']);
-FrmStaticText( _m("User Id"),    $user_data['uid']);
+FrmStaticText( _m("User Id"),    $user_data['id']);
 FrmInputPwd("user_password_old", _m("Current password"), $user_password_old, 50, 50, true);
 FrmInputPwd("user_password1", _m("Password"),       $user_password1, 50, 50, true);
 FrmInputPwd("user_password2", _m("Retype password"),$user_password2, 50, 50, true);

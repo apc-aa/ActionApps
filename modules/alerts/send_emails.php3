@@ -45,8 +45,8 @@ function showCollectionAddOns() {
         $example["howoftenr"] = "weekly";
     }
     if (!$example["email"]) {
-        $me = GetUser($auth->auth["uid"]);
-        $example["email"] = $me["mail"][0];
+        $me = GetIDsInfo($auth->auth["uid"]);
+        $example["email"] = $me["mail"];
     }
 
     echo "<br><br>\n    <form name=\"example[form]\" method=\"post\">";

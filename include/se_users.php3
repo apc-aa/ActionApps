@@ -41,7 +41,7 @@ $editor_perms = GetSlicePerms($auth->auth["uid"], $slice_id);
  * @param $role_perm
  */
 function CanChangeRole($user_perm, $editor_perm, $role_perm) {
-    return ((ComparePerms($editor_perm, $user_perm)=="G") AND (ComparePerms($editor_perm, $role_perm)=="G"));
+    return ((AA_Perm::compare($editor_perm, $user_perm)=="G") AND (AA_Perm::compare($editor_perm, $role_perm)=="G"));
 }
 
 /** ChangeRole function

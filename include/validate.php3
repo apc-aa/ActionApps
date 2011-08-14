@@ -383,7 +383,7 @@ class AA_Validate_Unique extends AA_Validate {
         global $slice_id;
 
         if ( $this->scope == 'username') {
-            if ( !IsUsernameFree($var) AND ( !$this->item_id OR (ReaderName2Id($var) != $this->item_id))) {
+            if ( !AA::$perm->isUsernameFree($var) AND ( !$this->item_id OR (AA_Reader::name2Id($var) != $this->item_id))) {
                 return AA_Validate::bad($var, VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $default);
             }
             return true;

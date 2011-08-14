@@ -129,9 +129,9 @@ function add_mailman_list() {
     echo _m("The list was successfully created.");
 }
 
-$me = GetUser ($auth->auth["uid"]);
+$me = GetIDsInfo($auth->auth["uid"]);
 if (! $admin_email) {
-    $admin_email = $me["mail"][0];
+    $admin_email = $me["mail"];
 }
 /** caption function
  * @param $s

@@ -46,26 +46,13 @@ users        membership     perms
 
 // ----------------------------- QUERY -----------------------------------
 
-/** AuthenticateUsername function
- * @param $username
- * @param $password
- * @param $flags
- * @return uid if user is authentificied, else false.
- */
-function AuthenticateUsername($username, $password, $flags = 0) {
-
-    // try to authenticate user in LDAP
-    $sqluseruid = AuthenticateSqlUsername($username, $password);
-    return  $sqluseruid ? $sqluseruid : AuthenticateReaderUsername($username, $password);
-}
-
 /** AuthenticateSqlUsername function
  * @param $username
  * @param $password
  * @param $flags
  * @return uid if user is authenticated, else false.
  */
-function AuthenticateSqlUsername($username, $password, $flags = 0) {
+function AuthenticateUsernameCurrent($username, $password) {
     $db = new DB_AA;
     $id = false; $i = 0;
     // build and execute a query for $username
@@ -74,71 +61,16 @@ function AuthenticateSqlUsername($username, $password, $flags = 0) {
     // in the future, if it is like @igc.org, it should query an external
     // authentication source, like an LDAP server for @igc.org
     if ( $num = strstr($username, "@") ){
-        $SQL = sprintf("SELECT id, uid, password FROM users WHERE mail ='%s'", $username);
+        $SQL = sprintf("SELECT id, password FROM users WHERE mail ='%s'", $username);
     } else {
-        $SQL = sprintf("SELECT id, uid, password FROM users WHERE uid ='%s'", $username);
+        $SQL = sprintf("SELECT id, password FROM users WHERE uid ='%s'", $username);
     }
     $db->query( $SQL );
     $db->next_record();
     $db_id  = $db->f('id');
-    $bd_uid = $db->f('uid');
     $db_pwd = $db->f('password');
 
-    // the first option should work
-    if (defined('CRYPT_SALT_LENGTH')) {                      // set by PHP
-        $slength = CRYPT_SALT_LENGTH;
-    } elseif (substr($db_pwd, 0, 3) == '$1$') {    // MD5
-        $slength = 12;
-    } elseif (substr($db_pwd, 0, 3) == '$2$') {    // Blowfish ( Extended DES (16))
-        $slength = 16;
-//    } elseif (substr($db_pwd, 0, 4) == '$2a$') {   // Blowfish ( Extended DES (16))
-//        $slength = 60;   // I do not know, how big is the salt here
-                           // We will try to use crypt itself
-                           // @todo get more info about salts in Blowfish
-    } else {
-        $slength = 2;                                       // Standard DES
-    }
-
-    // if( ALL_PERMS AND DEBUG_FLAG) // just for testing on windows with no crypt
-    //   return $db_id;                 // remove it !!!
-
-    $cryptpw = crypt($password, substr($db_pwd, 0, $slength));
-
-    // if the passwords match, return the authenticated userid, otherwise false
-
-    // echo "$password (given)<br>";
-    // echo "$cryptpw (given crypted, ", strlen($cryptpw), ")<br>";
-    // echo "$db_pwd (stored crypted, ", strlen($db_pwd), ")<br>";
-
-
-    // Uncomment this if and only if you have problems with login after copying
-    // a database from one machine to another.
-    //
-    // This is a hack, if the user's stored password is the wrong length
-    // then its a copy of a database on a different architecture.
-    // so let the user in,
-    // It should (but doesn't) then set the password to that entered.
-    /*
-    if ( (strlen($db_pwd)      != strlen($cryptpw)
-      && (substr($db_pwd,0,3)  == '$1$')
-      && (substr($cryptpw,0,3) != '$1$')))  {
-        if ($GLOBALS['debugpermissions']) {
-            print("<br>Passwords created on different database, Bypassing check");
-        }
-        return $db_id;
-    }
-    */
-
-    // The next substr looks odd, but $cryptpw is under
-    // certain circumstances 4 chars longer than $row[password]
-    // (on zulle.pair.com, FreeBSD 2.2.7, PHP 3.0.16, crypt uses MD5
-    // and salt is 12 chars long).
-
-    if ($db_pwd == substr($cryptpw,0,strlen($db_pwd))) {
-        return $db_id;
-    } else {
-        return false;
-    }
+    return AA_Perm::comparePwds($password, $db_pwd) ? $db_id : false;
 }
 
 /** GetGroup function
@@ -283,13 +215,6 @@ function GetMembership($id, $flags = 0) {
     // I _think_ this is a list of groupids.
     return $all_groups;
 }
-/** IsUserReader function
- * @param $user_id
- */
-function IsUserReader($user_id) {
-    return (guesstype($user_id) == 'l');
-}
-
 
 /** GetObjectsPerms function
  * @param $obejctID
@@ -308,13 +233,7 @@ function IsUserReader($user_id) {
 function GetObjectsPerms($objectID, $objectType, $flags = 0) {
     $db  = new DB_AA;
 
-    $SQL = sprintf(
-          "SELECT userid, perm
-             FROM perms
-            WHERE object_type = '%s' AND
-                  objectid    = '%s'",
-           $objectType, $objectID);
-
+    $SQL = sprintf("SELECT userid, perm FROM perms WHERE object_type = '%s' AND objectid = '%s'", $objectType, $objectID);
     $db->query( $SQL );
 
     while ( $db->next_record() ) {
@@ -394,7 +313,7 @@ function GetIDPerms($id, $objectType, $flags = 0) {
  * creates new person in permission system
  */
 function AddUser($user, $flags = 0) {
-    if (! IsUsernameFree($user["uid"])) {
+    if (! AA::$perm->isUsernameFree($user["uid"])) {
         return false;
     }
 
@@ -468,30 +387,6 @@ function ChangeUser($user, $flags = 0) {
     $SQL = A2sql_update('users','id', $array);
     $db->query($SQL);
     return true;
-}
-
-/** GetUser function
- * @param $user_id
- * @param $flags
- * @return array(uid, login, cn, sn, givenname, array(mail), array(phone))
- */
-function GetUser($user_id, $flags = 0) {
-    $db  = new DB_AA;
-    $SQL = sprintf( "SELECT uid, sn, givenname, mail
-                       FROM users
-                      WHERE id = '%s'", $user_id);
-    $db->query( $SQL );
-
-    // TODO: something about a sizelimit??
-    if ($db->next_record()) {
-        $res['uid']       = $user_id;
-        $res['login']     = $db->f("uid");
-        $res['cn']        = $db->f("givenname")." ".$db->f("sn");
-        $res['sn']        = $db->f("sn");
-        $res['givenname'] = $db->f("givenname");
-        $res['mail'][0]   = $db->f("mail");
-    }
-    return $res;
 }
 
 // ----------------------------- GROUPS -----------------------------------
@@ -668,30 +563,24 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
  * or false if ID does not exist
  * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
  */
-function GetIDsInfo($id, $ds = "") {
-
-    if ( !$id ) {
-        return false;
-    }
-    if ( IsUserReader($id) ){
-        return GetReaderIDsInfo($id);
-    }
-
+function GetIDsInfoCurrent($id, $ds = "") {
     $db  = new DB_AA;
-    $SQL = sprintf( "SELECT name, givenname, sn, mail, type
-                       FROM users
-                      WHERE id = '%s'", $id);
+    $SQL = sprintf( "SELECT name, givenname, uid, sn, mail, type FROM users WHERE id = '%s'", $id);
     $db->query( $SQL );
     // TODO: something about a sizelimit??
     if ($db->next_record()) {
-        $res['id']   = $id;
-        $res['type'] = $db->f("type");
-        $res['name'] = ( ($res['type'] == _m("User") OR ($res['type'] == "User")) ?
-                       $db->f("givenname")." ".$db->f("sn") : $db->f("name"));
-        $res['mail'] = $db->f("mail");
+        $res['id']        = $id;
+        $res['login']     = $db->f("uid");
+        $res['type']      = $db->f("type");
+        $res['name']      = ( ($res['type'] == _m("User") OR ($res['type'] == "User")) ? $db->f("givenname")." ".$db->f("sn") : $db->f("name"));
+        $res['sn']        = $db->f("sn");
+        $res['givenname'] = $db->f("givenname");
+        $res['mail']      = $db->f("mail");
+        $res['mails']     = array($res['mail']);
     }
     return $res;
 }
+
 
 /** L2sql_insert function
  * uses a list of variables to import from global namespace
@@ -770,15 +659,22 @@ function A2sql_update($table, $keyField, $aData) {
     return " UPDATE $table SET $set WHERE $where";
 }
 
-/** IsUsernameFree function
- * @param $username
- */
-function IsUsernameFree($username) {
-    $db = getDB();
-    $db->query("SELECT uid FROM users WHERE uid='".addslashes($username)."'");
-    $free = ! $db->next_record();
-    freeDB($db);
-    return ( $free ? IsReadernameFree($username) : false );
+
+class AA_Permsystem_Sql extends AA_Permsystem {
+    
+    /** isUsernameFree function
+     *  Looks into reader management slices whether the reader name is not yet used.
+     *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
+     * @param $username
+     */
+    function isUsernameFree($username) {
+        $db = getDB();
+        $db->query("SELECT uid FROM users WHERE uid='".addslashes($username)."'");
+        $free = ! $db->next_record();
+        freeDB($db);
+        return $free;
+    }
 }
+
 
 ?>

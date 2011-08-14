@@ -34,7 +34,7 @@
  * @param $password
  * @param $flags
  */
-function AuthenticateUsername($username, $password, $flags = 0) {
+function AuthenticateUsernameCurrent($username, $password, $flags = 0) {
   return "foobar";
 }
 /** AddUser function
@@ -50,13 +50,6 @@ function AddUser($user, $flags = 0) {
  */
 function DelUser($user_id, $flags = 0) {
   return true;
-}
-/** GetUser function
- * @param $user_id
- * @param $flags
- */
-function GetUser($user_id, $flags = 0) {
-  return array("");
 }
 /** ChangeUser
  * @param $user_id

@@ -181,55 +181,139 @@ class AA_Perm_Resource {
 
 }
 
-
-
-/** ResolvePerms function
- *  Replaces roles with apropriate perms
- *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
- *  @param $perms
- */
-function ResolvePerms($perms) {
-    global $perms_roles;
-
-    foreach ($perms_roles as $arr) {
-        $perms = str_replace($arr['id'], $arr['perm'], $perms);
+/** main AA permissions */
+class AA_Perm {
+    
+    var $perm_systems;
+    
+    function __construct($systems) {
+        $this->perm_systems = array();
+        foreach ($systems as $system_name) {
+            $system_name = 'AA_Permsystem_' . ucfirst($system_name);
+            $this->perm_systems[] = new $system_name;
+        }
     }
-    return $perms;
+
+    public static function cryptPwd($password) {
+        $seed = '$2a$09$'.gensalt(21);
+        $ret  = crypt($password, $seed);
+        return (strlen($ret) == 60) ? $ret : crypt($password);  // len should be 60 for blowfish
+    }
+
+    public function isUsernameFree($username) {
+        foreach ($this->perm_systems as $perm_sys) {
+            if (!$perm_sys->isUsernameFree()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static function comparePwds($password, $hash) {
+        // switch (substr($hash, 0, 3)) {
+        //     case '$2a': $saltlen = 28); break;  // Blowfish - default
+        //     case '$2$': $saltlen = 16); break;
+        //     case '$1$': $saltlen = 12); break;  // MD5
+        //     default:    $saltlen = 2);          // Std DES  (uses only 8 chars from password!)
+        // }
+
+        // the above code is not necessary - the crypt uses only first x chars of the $hash as seed
+        return ($hash == crypt($password, $hash));
+
+        // The next substr looks odd, but $cryptpw is under
+        // certain circumstances 4 chars longer than $row[password]
+        // (on zulle.pair.com, FreeBSD 2.2.7, PHP 3.0.16, crypt uses MD5
+        // and salt is 12 chars long).
+        // return ($hash == substr($cryptpw,0,strlen($hash)));
+    }
+
+    /** AA::$perm->cache function
+     *  Save all permissions for specified user to session variable
+     * @param $user_id
+     */
+    function cache($user_id) {
+        global $permission_uid, $permission_to, $sess, $perms_roles, $r_superuser;
+
+        $sess->register('permission_uid');
+        $sess->register('permission_to');
+        $sess->register('r_superuser');
+
+        $permission_uid         = $user_id;
+        $permission_to["slice"] = GetIDPerms($permission_uid, "slice");
+        $permission_to["aa"]    = GetIDPerms($permission_uid, "aa");     // aa is parent of all slices
+
+        if (!is_array($permission_to["slice"])) { // convert to arrays
+            $permission_to["slice"] = array();
+        }
+        if (!is_array($permission_to["aa"])) {
+            $permission_to["aa"] = array();
+        }
+
+        // Resolve all permission (convert roles into perms)
+        foreach ($permission_to["slice"] as $key => $val) {
+            $permission_to["slice"][$key] = AA_Perm::_resolve($val);
+        }
+
+        foreach ($permission_to["aa"] as $key => $val) {
+            if ( IsPerm($val, $perms_roles['SUPER']['id']) ) {
+                $r_superuser[$key] = true;
+            }
+            $permission_to["aa"][$key] = AA_Perm::_resolve($val);
+        }
+    }
+
+    /** AA_Perm::compare() function
+     *  Returns "E" if both permission are equal, "G" if perms1
+     *  are more powerfull than perm2, "L" if perm2 are more powerful than perm1
+     * @param $perms1
+     * @param $perms2
+     */
+    public static function compare($perms1, $perms2) {
+        $perms1 = AA_Perm::_resolve($perms1);
+        $perms2 = AA_Perm::_resolve($perms2);
+
+        if (strlen($perms1) == strspn($perms1, $perms2)) {
+            // perms are equal ?
+            return (strlen($perms2) == strspn($perms2, $perms1)) ? 'E' : 'L';
+        }
+        return 'G';
+    }
+    
+    /** AA_Perm::joinSliceAndAAPerm function
+     * Resolves precedence issues between slice-specific permissions
+     * and global access rigths (rights to object aa).
+     * Slice-specific perms take precedence except the SUPER access level
+     * @param $slice_perm
+     * @param $aa_perm
+     */
+    public static function joinSliceAndAAPerm($slice_perm, $aa_perm) {
+        global $perms_roles;
+        if (AA_Perm::compare($aa_perm, $perms_roles["SUPER"]['perm']) == "E") {
+            return $aa_perm;
+        } else {
+            return ($slice_perm ? $slice_perm : $aa_perm);
+        }
+    }
+    
+    /** AA_Perm::_resolve($perms) function
+     *  Replaces roles with apropriate perms
+     *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
+     *  @param $perms
+     */
+    private static function _resolve($perms) {
+        global $perms_roles;
+
+        foreach ($perms_roles as $arr) {
+            $perms = str_replace($arr['id'], $arr['perm'], $perms);
+        }
+        return $perms;
+    }
 }
 
-/** CachePermissions function
- *  Save all permissions for specified user to session variable
- * @param $user_id
- */
-function CachePermissions($user_id) {
-    global $permission_uid, $permission_to, $sess, $perms_roles, $r_superuser;
+AA::$perm = new AA_Perm(array(PERM_LIB, 'Reader'));
 
-    $sess->register('permission_uid');
-    $sess->register('permission_to');
-    $sess->register('r_superuser');
-
-    $permission_uid         = $user_id;
-    $permission_to["slice"] = GetIDPerms($permission_uid, "slice");
-    $permission_to["aa"]    = GetIDPerms($permission_uid, "aa");     // aa is parent of all slices
-
-    if (!is_array($permission_to["slice"])) { // convert to arrays
-        $permission_to["slice"] = array();
-    }
-    if (!is_array($permission_to["aa"])) {
-        $permission_to["aa"] = array();
-    }
-
-    // Resolve all permission (convert roles into perms)
-    foreach ($permission_to["slice"] as $key => $val) {
-        $permission_to["slice"][$key] = ResolvePerms($val);
-    }
-
-    foreach ($permission_to["aa"] as $key => $val) {
-        if ( IsPerm($val, $perms_roles['SUPER']['id']) ) {
-            $r_superuser[$key] = true;
-        }
-        $permission_to["aa"][$key] = ResolvePerms($val);
-    }
+class AA_Permsystem {
+    function isUsernameFree($username) {}
 }
 
 /** IsPerm function
@@ -251,7 +335,7 @@ function IsPerm($perms, $perm){
 function CheckPerms( $user_id, $objType, $objID, $perm) {
     global $permission_uid, $permission_to;
     if ($permission_uid != $user_id) {
-        CachePermissions($user_id);
+        AA::$perm->cache($user_id);
     }
 
     switch($objType) {
@@ -259,7 +343,7 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
             $ret = IsPerm($permission_to["aa"][$objID], $perm);
             return($ret);
         case "slice":
-            $ret = IsPerm(JoinAA_SlicePerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
+            $ret = IsPerm(AA_Perm::joinSliceAndAAPerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm);
             return($ret);
         default: return false;
     }
@@ -275,41 +359,9 @@ function CheckPerms( $user_id, $objType, $objID, $perm) {
 function GetSlicePerms( $user_id, $objID, $whole=true) {
     $slice_perms = GetIDPerms($user_id, "slice", ($whole ? 0 : 1));
     $aa_perms    = GetIDPerms($user_id, "aa",    ($whole ? 0 : 1));
-    return JoinAA_SlicePerm($slice_perms[$objID], $aa_perms[AA_ID]);
+    return AA_Perm::joinSliceAndAAPerm($slice_perms[$objID], $aa_perms[AA_ID]);
 }
 
-/** ComparePerms function
- *  Returns "E" if both permission are equal, "G" if perms1
- *  are more powerfull than perm2, "L" if perm2 are more powerful than perm1
- * @param $perms1
- * @param $perms2
- */
-function ComparePerms($perms1, $perms2) {
-    $perms1 = ResolvePerms($perms1);
-    $perms2 = ResolvePerms($perms2);
-
-    if (strlen($perms1) == strspn($perms1, $perms2)) {
-        // perms are equal ?
-        return (strlen($perms2) == strspn($perms2, $perms1)) ? 'E' : 'L';
-    }
-    return 'G';
-}
-
-/** JoinAA_SlicePerm function
- * Resolves precedence issues between slice-specific permissions
- * and global access rigths (rights to object aa).
- * Slice-specific perms take precedence except the SUPER access level
- * @param $slice_perm
- * @param $aa_perm
- */
-function JoinAA_SlicePerm($slice_perm, $aa_perm) {
-    global $perms_roles;
-    if (ComparePerms($aa_perm, $perms_roles["SUPER"]['perm']) == "E") {
-        return $aa_perm;
-    } else {
-        return ($slice_perm ? $slice_perm : $aa_perm);
-    }
-}
 /** GetUserSlices function
  * @param $user_id
  */
@@ -323,7 +375,7 @@ function GetUserSlices( $user_id = "current") {
     }
 
     if ($permission_uid != $user_id) {
-        CachePermissions($user_id);
+        AA::$perm->cache($user_id);
     }
     if ($GLOBALS['debugpermissions'] && !$permission_to["aa"][AA_ID]) {
         huhe("Warning: No global permission on this system",AA_ID);
@@ -355,7 +407,7 @@ function IsSuperadmin() {
     global $auth, $r_superuser, $permission_uid;
     // check all superadmin's global permissions
     if ($permission_uid != $auth->auth["uid"]) {
-        CachePermissions($auth->auth["uid"]);
+        AA::$perm->cache($auth->auth["uid"]);
     }
     return $r_superuser[AA_ID] ? $r_superuser[AA_ID] : false;
 }
@@ -380,7 +432,7 @@ function IsCatPerm($perm, $cat_path) {
     }
 
     if ($permission_uid != $auth->auth["uid"]) {
-        CachePermissions($auth->auth["uid"]);
+        AA::$perm->cache($auth->auth["uid"]);
     }
 
     // check for current category permissions
@@ -391,7 +443,7 @@ function IsCatPerm($perm, $cat_path) {
     $perm2aa  = $permission_to["aa"][AA_ID];
 
     if ( $perm2cat ) {              // specific perms are set
-        return IsPerm(JoinAA_SlicePerm($perm2cat,$perm2aa), $perm);
+        return IsPerm(AA_Perm::joinSliceAndAAPerm($perm2cat,$perm2aa), $perm);
     }
 
     // check for inherited permissions
@@ -403,7 +455,7 @@ function IsCatPerm($perm, $cat_path) {
 
         if ( $perm2cat ) {      // specific perms are set
             if ( strrchr($perm2cat, PS_LINKS_INHERIT) ) { // inherited
-                return IsPerm(JoinAA_SlicePerm($perm2cat,$perm2aa),$perm);
+                return IsPerm(AA_Perm::joinSliceAndAAPerm($perm2cat,$perm2aa),$perm);
             }
             break; // first upper category with permissions found - stop travelling
         }
@@ -442,7 +494,6 @@ function ChangeCatPermAsIn($category, $template) {
         }
     }
 }
-
 
 /** FilemanPerms function
  *  Permissions for the on-line file manager
@@ -536,18 +587,79 @@ function perm_username( $username ) {
     return empty($userinfo) ? $username : $userinfo['name'];
 }
 
+/** AuthenticateUsername function
+ * @param $username
+ * @param $password
+ * @return uid if user is authentificied, else false.
+ */
+function AuthenticateUsername($username, $password) {
+    // try to authenticate user in current permission system
+    $sqluseruid = AuthenticateUsernameCurrent($username, $password);
+    return  $sqluseruid ? $sqluseruid : AuthenticateReaderUsername($username, $password);
+}
+
+/** GetIDsInfo function
+ * @param $id
+ * @param $ds
+ * @return an array containing basic information on $id
+ * or false if ID does not exist
+ * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
+ */
+function GetIDsInfo($id) {
+
+    if ( !$id ) {
+        return false;
+    }
+    if ( IsGroupReader($id) ) {
+        return GetReaderGroupIDsInfo($id);
+    }
+    if ( IsGroupReaderSet($id) ) {
+        return GetReaderSetIDsInfo($id);
+    }
+    if ( IsUserReader($id) ) {
+        return GetReaderIDsInfo($id);
+    }
+
+    return GetIDsInfoCurrent($id);
+}
+
+/** IsUserReader function
+ * @param $user_id
+ */
+function IsUserReader($user_id) {
+    return (guesstype($user_id) == 'l');
+}
+/** IsGroupReader function
+ * @param $group_id
+ */
+function IsGroupReader($group_id) {
+    return ((guesstype($group_id) == 'l') AND (AA_Slices::getSliceProperty($group_id, 'type')=='ReaderManagement'));
+}
+/** IsGroupReaderSet function
+ * @param $group_id
+ */
+function IsGroupReaderSet($group_id) {
+    return is_marked_by($group_id, 1);
+}
+
+
+
 require_once AA_INC_PATH ."util.php3";          // for getDB()
 require_once AA_INC_PATH ."searchlib.php3";     // for queryzids()
 require_once AA_INC_PATH ."item_content.php3";  // for ItemContent class
 
-/** IsReadernameFree function
- *  Looks into reader management slices whether the reader name is not yet used.
- *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
- * @param $username
- */
-function IsReadernameFree($username) {
-    // search not only Active bin, but also Holding bin, Pending, ...
-    return ReaderName2Id($username, 'ALL') ? false : true;
+
+class AA_Permsystem_Reader extends AA_Permsystem {
+    
+    /** isUsernameFree function
+     *  Looks into reader management slices whether the reader name is not yet used.
+     *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
+     * @param $username
+     */
+    function isUsernameFree($username) {
+        // search not only Active bin, but also Holding bin, Pending, ...
+        return AA_Reader::name2Id($username, AA_BIN_ALL) ? false : true;
+    }
 }
 
 /** AuthenticateReaderUsername function
@@ -560,29 +672,14 @@ function AuthenticateReaderUsername($username, $password) {
     if ( !$username ) {
         return false;
     }
-    $user_id   = ReaderName2Id($username);
+    $user_id   = AA_Reader::name2Id($username);
     $user_info = GetAuthData( $user_id );
+
     if ( !$user_info->is_empty() AND ($user_info->getValue(FIELDID_PASSWORD) == crypt($password, 'xx'))) {
         // user id is the id of the item in the Reader Management slice
         return $user_id;
     }
     return false;
-}
-
-/** ReaderName2Id function
- *  Tries to find item id for the username in the Reader slices
- *  You can search all users or just the active (default)
- * @param $username
- * @param $restrict
- */
-function ReaderName2Id($username, $restrict = 'ACTIVE') {
-    // Prepare for calling QueryZIDs()
-    $conds[] = array( FIELDID_USERNAME => $username );
-    $slices  = getReaderSlices();
-
-    // get item id of current user
-    $zid = QueryZIDs( $slices, $conds, '', $restrict, 0, false, '=' );
-    return $zid->longids(0);
 }
 
 /** getReaderSlices function
@@ -649,10 +746,10 @@ function GetAuthData( $user_id = false ) {
     global $auth;
     if ( !$user_id ) {
         if ( $_SERVER['PHP_AUTH_USER'] ) {
-           $user_id = ReaderName2Id($_SERVER['PHP_AUTH_USER']);
+           $user_id = AA_Reader::name2Id($_SERVER['PHP_AUTH_USER']);
         }
         elseif ( $_SERVER['REMOTE_USER'] ) {
-           $user_id = ReaderName2Id($_SERVER['REMOTE_USER']);
+           $user_id = AA_Reader::name2Id($_SERVER['REMOTE_USER']);
         }
         else {
            $user_id = (guesstype($auth->auth["uid"]) == 'l') ? $auth->auth["uid"] : false;
@@ -673,9 +770,14 @@ function GetReaderIDsInfo($user_id) {
     if ($user_info->is_empty()) {
         return false;
     }
-    $res['type'] = 'Reader';
-    $res['name'] = $user_info->getValue(FIELDID_USERNAME);
-    $res['mail'] = $user_info->getValue(FIELDID_EMAIL);
+    $res['id']        = $user_id;
+    $res['name']      = $user_info->getValue(FIELDID_USERNAME);
+    $res['mail']      = $user_info->getValue(FIELDID_EMAIL);
+    $res['mails']     = array($res['mail']);
+    $res['login']     = $user_info->getValue(FIELDID_USERNAME);
+    $res['sn']        = '';
+    $res['givenname'] = '';
+    $res['type']      = 'Reader';
     return $res;
 }
 
@@ -740,6 +842,33 @@ function GetReaderMembership($user_id) {
 
     // we use unpacked slice id as id of group for RM slices
     return $ret;
+}
+
+class AA_Reader {
+    function _find($field, $value, $slices, $bin ) {
+        if (!$slices) {
+            $slices  = getReaderSlices();
+        }
+        $aa_set = new AA_Set($slices, new AA_Condition($field, '=', $value), null, $bin);
+
+        // get item id of current user
+        $zid = $aa_set->query();
+        return $zid->longids(0);
+    }
+
+    /** name2Id function
+     *  Tries to find item id for the username in the Reader slices
+     *  You can search all users or just the active (default)
+     * @param $username
+     * @param $bin
+     */
+    function name2Id($username, $slices=null, $bin=null ) {
+        return AA_Reader::_find(FIELDID_USERNAME, $username, $slices, $bin );
+    }
+
+    function email2Id($email, $slices=null, $bin=null) {
+        return AA_Reader::_find(FIELDID_EMAIL, $email, $slices, $bin);
+    }
 }
 
 ?>

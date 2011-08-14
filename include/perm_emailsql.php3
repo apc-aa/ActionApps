@@ -69,7 +69,7 @@ function PopAuthenticate($username, $password, $popserver) {
  * @param $password
  * @param $flags
  */
-function AuthenticateUsername($username, $password, $flags = 0) {
+function AuthenticateUsernameCurrent($username, $password, $flags = 0) {
 
   $db  = new DB_AA;
   $id  = false; $i = 0;
@@ -483,31 +483,6 @@ function ChangeUser($user, $flags = 0) {
   return true;
 }
 
-/** GetUser function
- * @return array(uid, login, cn, sn, givenname, array(mail), array(phone))
- * @param $user_id
- * @param $flags
- */
-function GetUser($user_id, $flags = 0) {
-  $db  = new DB_AA;
-  $sql = sprintf( "SELECT uid, sn, givenname, mail
-                     FROM users
-                    WHERE id = '%s'", $user_id);
-  $sth = $db->query( $sql );
-
-  // TODO: something about a sizelimit??
-
-  if ($db->next_record()) {
-    $res['uid']       = $user_id;
-    $res['login']     = $db->f("uid");
-    $res['cn']        = $db->f("givenname")." ".$db->f("sn");
-    $res['sn']        = $db->f("sn");
-    $res['givenname'] = $db->f("givenname");
-    $res['mail'][0]   = $db->f("mail");
-  }
-  return $res;
-};
-
 // ----------------------------- GROUPS -----------------------------------
 
 /** AddGroup function
@@ -682,7 +657,7 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
  * or false if ID does not exist
  * array("mail => $mail", "name =>$cn", "type => "User" : "Group")
  */
-function GetIDsInfo($id, $ds = "") {
+function GetIDsInfoCurrent($id, $ds = "") {
 
   $db  = new DB_AA;
 

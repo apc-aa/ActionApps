@@ -254,7 +254,7 @@ if ( !($usr_new OR ($usr_edit AND ($selected_user!="n"))) ) {
 
 do {
     if ($usr_edit ) {
-        if ( !is_array($user_data = GetUser($selected_user))) {
+        if ( !is_array($user_data = GetIDsInfo($selected_user))) {
             break;
         }
         $user_login     = $user_data['login'];
@@ -263,10 +263,10 @@ do {
             $user_surname   = $user_data['sn'];
             $user_password1 = "nOnEwpAsswD";    // unchanged password
             $user_password2 = "nOnEwpAsswD";    // unchanged password
-            if ( is_array($user_data['mail'])) {
-                $user_mail1 = $user_data['mail'][0];
-                $user_mail2 = $user_data['mail'][1];
-                $user_mail3 = $user_data['mail'][2];
+            if ( is_array($user_data['mails'])) {
+                $user_mail1 = $user_data['mails'][0];
+                $user_mail2 = $user_data['mails'][1];
+                $user_mail3 = $user_data['mails'][2];
             }
             $aa_users = GetObjectsPerms(AA_ID, "aa");
             if (IsPerm($aa_users[$selected_user]["perm"], $perms_roles["SUPER"]['id'])) {
@@ -287,7 +287,7 @@ do {
 if ( $usr_edit OR ($submit_action == "update_submit") ) {
     FrmTabCaption(_m("Edit User"));
     FrmStaticText( _m("Login name"), $user_data['login']);
-    FrmStaticText( _m("User Id"),    $user_data['uid']);
+    FrmStaticText( _m("User Id"),    $user_data['id']);
 } else {
     FrmTabCaption(_m("New user"));
     FrmInputText("user_login", _m("Login name"), $user_login, 50, 50, true);

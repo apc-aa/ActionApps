@@ -65,18 +65,18 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role) {
         return _m("Slice not found.");
     }
     $slice_name = $db->f("name");
-    $me         = GetUser($auth->auth["uid"]);
+    $me         = GetIDsInfo($auth->auth["uid"]);
 
     $aliases               = array();
     $aliases["_#SLICNAME"] = GetAliasDef( "f_t:$slice_name",      "id..............");
     $aliases["_#LOGIN___"] = GetAliasDef( "f_t:$user_login",      "id..............");
     $aliases["_#NAME____"] = GetAliasDef( "f_t:". $user["name"],  "id..............");
     $aliases["_#ROLE____"] = GetAliasDef( "f_t:$role",            "id..............");
-    $aliases["_#ME_MAIL_"] = GetAliasDef( "f_t:". $me["mail"][0], "id..............");
+    $aliases["_#ME_MAIL_"] = GetAliasDef( "f_t:". $me["mail"],    "id..............");
     $aliases["_#ME_NAME_"] = GetAliasDef( "f_t:". $me["cn"],      "id..............");
 
     $item = new AA_Item('', $aliases);
-    if (AA_Mail::sendTemplate($welcome_id, array ($me["mail"][0], $user["mail"]), $item) != 2) {
+    if (AA_Mail::sendTemplate($welcome_id, array ($me["mail"], $user["mail"]), $item) != 2) {
         return _m("Error mailing");
     }
 }

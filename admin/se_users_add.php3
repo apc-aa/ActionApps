@@ -81,14 +81,14 @@ if ($GrpSrch || $UsrSrch) {
 
     FrmTabSeparator(_m("Assign new permissions"));
     // determine role of this user
-    if (ComparePerms($editor_perms, $perms_roles["SUPER"]['perm'])!="L") {
+    if (AA_Perm::compare($editor_perms, $perms_roles["SUPER"]['perm'])!="L") {
         $curr_role = $perms_roles["SUPER"]['id'];
     }
-    elseif (ComparePerms($editor_perms, $perms_roles["ADMINISTRATOR"]['perm'])!="L") {
+    elseif (AA_Perm::compare($editor_perms, $perms_roles["ADMINISTRATOR"]['perm'])!="L") {
         $curr_role = $perms_roles["ADMINISTRATOR"]['id'];
-    } elseif (ComparePerms($editor_perms, $perms_roles["EDITOR"]['perm'])!="L") {
+    } elseif (AA_Perm::compare($editor_perms, $perms_roles["EDITOR"]['perm'])!="L") {
         $curr_role = $perms_roles["EDITOR"]['id'];
-    } elseif (ComparePerms($editor_perms, $perms_roles["AUTHOR"]['perm'])!="L") {
+    } elseif (AA_Perm::compare($editor_perms, $perms_roles["AUTHOR"]['perm'])!="L") {
         $curr_role = $perms_roles["AUTHOR"]['id'];
     } else {
         $curr_role=0;

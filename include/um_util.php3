@@ -149,7 +149,7 @@ function PrintModulePermRow($mid, $type, $name, $perm, $odd=false) {
     if ( isset($perms_roles_modules[$type]) AND is_array($perms_roles_modules[$type]) ) {
         foreach ($perms_roles_modules[$type] as $role) {
             echo "<input type=\"radio\" name=\"perm_mod[x$mid]\" value=\"$role\"";
-            echo ( ComparePerms($perm,$perms_roles[$role]['id'])=='E' ) ?
+            echo ( AA_Perm::compare($perm,$perms_roles[$role]['id'])=='E' ) ?
             ' checked>' : '>';
             echo _mdelayed($role). ' ';
         }
@@ -202,7 +202,7 @@ function ChangeUserModulePerms( $perm_mod, $selected_user, $perms_roles ) {
             if ( $role == 'REVOKE' ) {
                 DelPerm($selected_user, $mid, 'slice');
             }
-            elseif( ComparePerms($perm_slices[$mid], $perms_roles[$role]['id']) != 'E' ) {
+            elseif( AA_Perm::compare($perm_slices[$mid], $perms_roles[$role]['id']) != 'E' ) {
                 ChangePerm($selected_user, $mid, 'slice', $perms_roles[$role]['id']);
             }
         }

@@ -150,7 +150,7 @@ if ( $continue ) {
         // if conflicts slice perms and aa perms - solve it
         foreach ( $slice_users as $usr_id => $usr ) {
             if ( $aa_users[$usr_id] ) {
-                $slice_users[$usr_id]['perm'] = JoinAA_SlicePerm($slice_users[$usr_id]['perm'], $aa_users[$usr_id]['perm']);
+                $slice_users[$usr_id]['perm'] = AA_Perm::joinSliceAndAAPerm($slice_users[$usr_id]['perm'], $aa_users[$usr_id]['perm']);
             }
         }
     }
