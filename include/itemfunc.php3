@@ -750,6 +750,7 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
                     $change_varname   = $varname.'a';
                     $retype_varname   = $varname.'b';
                     $delete_varname   = $varname.'d';
+
                     global $$change_varname, $$retype_varname, $$delete_varname;
 
                     if ($$change_varname && ($$change_varname == $$retype_varname)) {

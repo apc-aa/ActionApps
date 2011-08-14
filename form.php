@@ -50,7 +50,7 @@ $encap = true; // just for calling extsessi.php
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 
 if (!$_GET['form_id']) {
-    echo '<!-- no form_id definer in /form.php -->';
+    echo '<!-- no form_id defined in /form.php -->';
     exit;
 }
 

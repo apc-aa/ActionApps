@@ -31,10 +31,6 @@ if (!defined("LINKS_CONSTANTS_INCLUDED"))
      define ("LINKS_CONSTANTS_INCLUDED",1);
 else return;
 
-
-/** Default number of links on Link Manager page */
-define("EDIT_ITEM_COUNT", 10);
-
 /** Number of categories to show on linkedit page */
 define('CATEGORIES_COUNT_TO_MANAGE', 15);
 

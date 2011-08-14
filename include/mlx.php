@@ -599,9 +599,6 @@ class MLXView
         if($zidsObj->count() == 0) {
             return;
         }
-        if(MLX_TRACE) {
-            $timestart = get_microtime();
-        }
 
         $translations = $this->getPrioTranslationFields($ctrlSliceID,$slice_id);
         $arr = array();
@@ -613,9 +610,6 @@ class MLXView
         while(list($upContId,$count) = each($arr)) {
             if($count > 1) // already primary
                 continue;
-            if(MLX_TRACE) {
-                __mlx_dbg(unpack_id($upContId),"ContentID");
-            }
             //speedup
 //             if(MLX_OPTIMIZE > 5) {
 //                 reset($translations);
@@ -643,9 +637,6 @@ class MLXView
             $db->tquery($sql);
             unset($aMlxCtrl);
             while( $db->next_record() ) { //get all translations
-                if(MLX_TRACE) {
-                    __mlx_dbg(array($db->f('field_id'),unpack_id($db->f('text'))),"JOIN");
-                }
                 $aMlxCtrl[(string)$db->Record[0]] = $db->Record[1];
                 /*
                 $GLOBALS['MLX_ALT'][(string)unpack_id($db->Record[1])] = array(
@@ -664,9 +655,6 @@ class MLXView
                     unpack_id($upContId));
                 */
                 if($bFound) {
-                    if(MLX_TRACE) {
-                        __mlx_dbg(unpack_id($fieldSearch),"unset");
-                    }
                     unset($arr[(string)$fieldSearch]);
                     //__mlx_dbg($arr,"arr");
                 } else {
@@ -679,16 +667,6 @@ class MLXView
         freeDB($db);
         $QueryIDsCount = count($arr);
         $zidsObj->a    = array_keys($arr);
-        if(MLX_TRACE) {
-            $timeend = get_microtime();
-            $time    = $timeend - $timestart;
-            if(!$GLOBALS['TIMINGS']['MLX']) {
-                $GLOBALS['TIMINGS']['MLX'] = array('MLX:'.__FUNCTION__,$time);
-            } else {
-                $GLOBALS['TIMINGS']['MLX'][1] += $time;
-            }
-        }
-
     }
     /** getAlternatives function
      *   at the moment this is not useful unless you write your own

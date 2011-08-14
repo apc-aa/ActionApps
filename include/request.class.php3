@@ -264,10 +264,8 @@ class AA_Request {
             //echo "<br>Error - response: ". AA_Http::lastErrMsg();
             return new AA_Response('No response recieved ('. AA_Http::lastErr() .' - '. AA_Http::lastErrMsg(). ')', 3);
         }
-        $response  = unserialize($result);
-        if ( $response == false ) {
-            //echo "<br>Error - Bad response on request: $url:";
-            //print_r($result);
+        $response  = unserialize(trim($result));
+        if ( $response === false ) {
             return new AA_Response("Bad response", 3);
         }
         return $response;

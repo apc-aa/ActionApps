@@ -154,9 +154,7 @@ function OrderFrm($name, $txt, $val, $order_fields, $easy_order=false, $group=fa
         array( '0'=>_m("Ascending"), '1' => _m("Descending")) :
         array( '0'=>_m("Ascending"), '1' => _m("Descending"), '2' => _m("Ascending by Priority"), '3' => _m("Descending by Priority"));
     echo "<tr><td class=\"tabtxt\"><b>$txt</b> ";
-    if (!SINGLE_COLUMN_FORM) {
-        echo "</td>\n<td>";
-    }
+    echo "</td>\n<td>";
     FrmSelectEasy($name, $order_fields, $val);
     // direction variable name - construct from $name
     $dirvarname = substr($name,0,1).substr($name,-1)."_direction";
@@ -177,19 +175,13 @@ function ConditionFrm($name, $txt, $val) {
     global $lookup_fields, $lookup_op, $vw_data;
     $name=safe($name); $txt=safe($txt);
     echo "<tr><td class=\"tabtxt\"><b>$txt</b> ";
-    if (!SINGLE_COLUMN_FORM) {
-        echo "</td>\n<td>";
-    }
+    echo "</td>\n<td>";
     FrmSelectEasy($name, $lookup_fields, $val);
     // direction variable name - construct from $name
     $opvarname = substr($name,0,5)."op";
     FrmSelectEasy($opvarname, $lookup_op, $vw_data[$opvarname]);
     // direction variable name - construct from $name
-    if (!SINGLE_COLUMN_FORM) {
-        echo "</td></tr>\n<tr><td>&nbsp;</td><td>";
-    } else {
-        echo "</td></tr>\n<tr><td>&nbsp; &nbsp;";
-    }
+    echo "</td></tr>\n<tr><td>&nbsp;</td><td>";
 
     $condvarname = substr($name,0,5)."cond";
     echo "<input type=\"text\" name=\"$condvarname\" size=\"50\" maxlength=\"254\" value=\"". safe($vw_data[$condvarname]) ."\">";

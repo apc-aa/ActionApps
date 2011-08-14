@@ -102,7 +102,6 @@ if ($free) {
 require_once AA_INC_PATH. "locauth.php3";
 require_once AA_INC_PATH. "scroller.php3";
 require_once AA_INC_PATH. "searchbar.class.php3";  // search_row is stored to session, so we need to have definition already loaded
-require_once AA_INC_PATH. "perm_core.php3";
 
 // save before getting the session stored variables
 $pass_sliceid = $change_id ? $change_id : $slice_id;

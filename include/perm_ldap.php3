@@ -62,18 +62,6 @@ $aa_ldap_servers = array(
 // API functions
 //#############################################################################
 
-/** AuthenticateUsername function
- *  Returns uid if user is authentificied, else false.
- * @param $username
- * @param $password
- * @param $flags
- */
-function AuthenticateUsername($username, $password, $flags = 0) {
-
-    // try to authenticate user in LDAP
-    $ldapuseruid = AuthenticateLDAPUsername($username, $password);
-    return  $ldapuseruid ? $ldapuseruid : AuthenticateReaderUsername($username, $password);
-}
 
 //############### User functions //#############################################
 
@@ -83,7 +71,7 @@ function AuthenticateUsername($username, $password, $flags = 0) {
  * @param $flags
  */
 function AddUser($user, $flags = 0) {
-    if (! IsUsernameFree($user["uid"])) {
+    if (! AA::$perm->isUsernameFree($user["uid"])) {
         return false;
     }
 
@@ -182,51 +170,6 @@ function ChangeUser($user, $flags = 0) {
     $r = @ldap_mod_replace($ds, $user['uid'], $record);
     ldap_close($ds);
     return $r;
-}
-
-/** GetUser function
- *  returns array(cn, sn, givenname, array(mail), array(phone))
- * @param $user_id
- * @param $flags
- */
-function GetUser($user_id, $flags = 0) {
-    global $aa_default_ldap;
-    if ( !($ds=InitLDAP()) ) {
-        return false;
-    }
-
-    $filter = "objectclass=inetOrgPerson";
-    $result = @ldap_read($ds, $user_id, $filter, array("uid","cn","sn","givenname","mail","telephonenumber"));
-    if (!$result) {
-        return false;
-    }
-    $entry  = ldap_first_entry($ds, $result);
-    $arr    = ldap_get_attributes($ds, $entry);
-
-    $res["uid"]   = $user_id;
-    $res["login"] = $arr["uid"][0];
-    $gname = ( is_array($arr["givenname"]) ? $arr["givenname"] : $arr["givenName"] );
-    if ( is_array($gname) ) {
-        $res["givenname"] = $gname[0];
-    }
-    if ( is_array($arr["sn"]) ) {
-        $res["sn"] = $arr["sn"][0];
-    }
-    if ( is_array($arr["cn"]) ) {
-        $res["cn"] = $arr["cn"][0];
-    }
-    if ( is_array($arr["mail"]) ) {
-        for ($i=0; $i < $arr["mail"]["count"]; ++$i) {
-            $res["mail"][$i] = $arr["mail"][$i];
-        }
-    }
-    if ( is_array($arr["telephonenumber"]) ) {
-        for ($i=0; $i < $arr["telephonenumber"]["count"]; ++$i) {
-            $res["phone"][$i] = $arr["telephonenumber"][$i];
-        }
-    }
-    ldap_close($ds);
-    return $res;
 }
 
 //############### Group functions //############################################
@@ -496,7 +439,7 @@ function GetGroupMembers($group_id, $flags = 0) {
     $arr    = ldap_get_attributes($ds, $entry);
 
     for ($i=0; $i < $arr["member"]["count"]; ++$i) {
-        if ($info = GetIDsInfo($arr["member"][$i], $ds)) {
+        if ($info = GetIDsInfo($arr["member"][$i])) {
             $res[$arr["member"][$i]] = $info;
         }
     }
@@ -805,28 +748,15 @@ function GetApcAciPerm($str) {
     return $foo[1];         // permission string
 }
 
-/** GetIDsInfo function
+/** GetIDsInfoCurrent function
  * @param $id
  * @param $ds
  * @return an array containing basic information on $id (user DN or group DN)
  * or false if ID does not exist
  * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
  */
-function GetIDsInfo($id, $ds = "") {
+function GetIDsInfoCurrent($id, $ds = "") {
     global $aa_default_ldap;
-
-    if ( !$id ) {
-        return false;
-    }
-    if ( IsGroupReader($id) ) {
-        return GetReaderGroupIDsInfo($id);
-    }
-    if ( IsGroupReaderSet($id) ) {
-        return GetReaderSetIDsInfo($id);
-    }
-    if ( IsUserReader($id) ) {
-        return GetReaderIDsInfo($id);
-    }
 
     if ( $ds=="" ) {
         if ( !($ds=InitLDAP()) ) {
@@ -837,7 +767,7 @@ function GetIDsInfo($id, $ds = "") {
     }
 
     $filter = "(|(objectclass=groupOfNames)(objectclass=inetOrgPerson))";
-    $result = @ldap_read($ds, $id, $filter, array("objectclass","mail","cn"));
+    $result = @ldap_read($ds, $id, $filter, array("objectclass","mail","cn","sn","givenname"));
     if (!$result) {
         return false;
     }
@@ -847,6 +777,8 @@ function GetIDsInfo($id, $ds = "") {
     if ( !is_array($arr["objectclass"]) ) {  // new LDAP is case sensitive (v3)
         $arr["objectclass"] = $arr["objectClass"];
     }
+
+    $res['id'] = $id;
     for ($i=0; $i < $arr["objectclass"]["count"]; ++$i) {
         if (stristr($arr["objectclass"][$i], "groupofnames")) {
             $res["type"] = "Group";
@@ -856,8 +788,19 @@ function GetIDsInfo($id, $ds = "") {
     if (!$res["type"]) {
         $res["type"] = "User";
     }
-    $res["name"] = $arr["cn"][0];
-    $res["mail"] = $arr["mail"][0];
+
+    $res["login"] = $arr["uid"][0];
+    $res["name"]  = $arr["cn"][0];
+    $gname = ( is_array($arr["givenname"]) ? $arr["givenname"] : $arr["givenName"] );
+    if ( is_array($gname) ) {
+        $res["givenname"] = $gname[0];
+    }
+
+    if ( is_array($arr["sn"]) ) {
+        $res["sn"] = $arr["sn"][0];
+    }
+    $res["mail"]  = $arr["mail"][0];
+    $res["mails"] = $arr["mail"];
 
     if ( !$no_ldap_close ) {
         ldap_close($ds);
@@ -873,29 +816,20 @@ function GetUserType( $user_id ) {
     return 'Reader';
 }
 */
-/** IsUserReader function
- * @param $user_id
- */
-function IsUserReader($user_id) {
-    return ((guesstype($user_id) == 'l') AND (substr($user_id,0,4) != 'uid='));
-}
-/** IsGroupReader function
- * @param $group_id
- */
-function IsGroupReader($group_id) {
-    return ((guesstype($group_id) == 'l') AND (AA_Slices::getSliceProperty($group_id, 'type')=='ReaderManagement'));
-}
-/** IsGroupReaderSet function
- * @param $group_id
- */
-function IsGroupReaderSet($group_id) {
-    return is_marked_by($group_id, 1);
-}
-/** IsUsernameFree function
- * @param $username
- */
-function IsUsernameFree($username) {
-    return ! GetUser("uid=$username,".$LDAPserver['people']) && IsReadernameFree($username);
+
+
+class AA_Permsystem_Ldap extends AA_Permsystem {
+    
+    /** isUsernameFree function
+     *  Looks into reader management slices whether the reader name is not yet used.
+     *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
+     * @param $username
+     */
+    function isUsernameFree($username) {
+        global $aa_default_ldap;
+        // search not only Active bin, but also Holding bin, Pending, ...
+        return ! GetIDsInfoCurrent("uid=$username,".$aa_default_ldap['people']);
+    }
 }
 
 /** AuthenticateLDAPUsername function
@@ -904,7 +838,7 @@ function IsUsernameFree($username) {
  * @param $password
  *  @return uid if user is authentificied, else false.
  */
-function AuthenticateLDAPUsername($username, $password) {
+function AuthenticateUsernameCurrent($username, $password) {
     global $aa_ldap_servers, $aa_default_ldap;
     if (!$username or !$password) {         // no password => anonymous in LDAP
         return false;

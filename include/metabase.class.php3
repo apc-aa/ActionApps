@@ -72,6 +72,110 @@ class AA_Metabase_Column {
         return strpos($this->c[3], 'PRI')!==false;
     }
 
+    function getName() {
+        return $this->c[0];
+    }
+
+    function getAsProperty() {
+        // Used in AA database
+        // bigint(20)
+        // bigint(30)
+        // binary(16)
+        // char(100)
+        // char(150)
+        // char(16)
+        // char(160)
+        // char(20)
+        // char(250)
+        // char(255)
+        // char(30)
+        // char(40)
+        // char(50)
+        // char(6)
+        // char(60)
+        // char(80)
+        // double
+        // enum('hidden','highlight','visible')
+        // enum('n','y')
+        // float(10,2)
+        // int(10)
+        // int(10) unsigned
+        // int(11)
+        // int(14)
+        // int(4)
+        // longtext
+        // mediumint(9)
+        // mediumtext
+        // smallint(1)
+        // smallint(20)
+        // smallint(5)
+        // smallint(6)
+        // text
+        // timestamp
+        // tinyint(1)
+        // tinyint(10)
+        // tinyint(2)
+        // tinyint(3) unsigned
+        // tinyint(4)
+        // varbinary(10)
+        // varbinary(15)
+        // varbinary(16)
+        // varbinary(255)
+        // varbinary(30)
+        // varbinary(32)
+        // varbinary(40)
+        // varbinary(6)
+        // varchar(10)
+        // varchar(100)
+        // varchar(120)
+        // varchar(128)
+        // varchar(14)
+        // varchar(15)
+        // varchar(150)
+        // varchar(16)
+        // varchar(20)
+        // varchar(200)
+        // varchar(255)
+        // varchar(30)
+        // varchar(32)
+        // varchar(40)
+        // varchar(5)
+        // varchar(50)
+        // varchar(60)
+        // varchar(80)
+
+        $dbtype = strtolower($this->c[1]);
+        switch(substr($dbtype, 0, strspn($dbtype, "abcdefghijklmnopqrstuvwxyz"))) {
+            case 'binary':
+            case 'varbinary':
+            case 'char':
+            case 'varchar':
+            case 'enum':
+                $type = 'text'; break;
+
+            case 'float':
+            case 'double':
+                $type = 'float'; break;
+
+            case 'int':
+            case 'bigint':
+            case 'smallint':
+            case 'tinyint':
+            case 'timestamp':
+                $type = 'int'; break;
+
+            case 'longtext':
+            case 'mediumint':
+            case 'mediumtext':
+            case 'text':
+            default:
+                $type = 'text';
+        }
+                                  // $id,       $name,     $type, $multi, $persistent, $validator, $required, $input_help, $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=, $perms=null, $default=null) {
+        return  new AA_Property( $this->c[0], $this->c[0], $type, false,  true,        $type,  !($this->c[2]), $this->c[6]);
+
+    }
+
     function getCreateSql() {
         $SQL  = '`'.  $this->c[0] .'`';                     // column name
         $SQL .= ' '.  $this->c[1];                          // column definition
@@ -148,7 +252,7 @@ class AA_Metabase_Index {
 }
 
 
-class AA_Metabase_Table {
+class AA_Metabase_Table implements Iterator, ArrayAccess, Countable {
     /** Name of the table */
     var $tablename;
     /** array of PRIMARY KEY columns */
@@ -266,6 +370,22 @@ class AA_Metabase_Table {
             echo $row;
         }
     }
+
+    /** Iterator interface */
+    public function rewind()  { reset($this->column);                        }
+    public function current() { return current($this->column);               }
+    public function key()     { return key($this->column);                   }
+    public function next()    { next($this->column);                         }
+    public function valid()   { return (current($this->column) !== false);   }
+
+    /** Countable interface */
+    public function count()   { return count($this->column);                 }
+
+    /** ArrayAccess interface */
+    public function offsetSet($offset, $value) { $this->column[$offset] = $value;      }
+    public function offsetExists($offset)      { return isset($this->column[$offset]); }
+    public function offsetUnset($offset)       { unset($this->column[$offset]);        }
+    public function offsetGet($offset)         { return isset($this->column[$offset]) ? $this->column[$offset] : null; }
 }
 
 /** @todo convert to static class variables after move to PHP5 */
@@ -759,13 +879,12 @@ class AA_Metabase {
         return $ret;
     }
 
-    /** Central_QueryZids - Finds link IDs for links according to given  conditions
+    /** AA_Metabase::queryZids - Finds link IDs for links according to given  conditions
      *  @param array  $settings - array - just one parameter: table, where to search
      *  @param array  $set      - AA_Set object which specifies Sortorder and Conditions
      *                          - there we store also BINs conditions, since each
      *                            table/module can use different Bins AND for other
      *                            the idea of BINs makes no sense at all
-     *  @global int  $QueryIDsCount - set to the count of IDs returned
      *  @global bool $debug=1       - many debug messages
      *  @global bool $nocache       - do not use cache, even if use_cache is set
      */
@@ -845,6 +964,16 @@ class AA_Metabase {
             if ($column_name = 'id') {
                 $ret['fields'][$column_name]['view']['readonly'] = true;
             }
+        }
+        return $ret;
+    }
+
+    /** AA_Propery array - for form generation */
+    function getColumnProperies($tablename) {
+        $table = $this->tables[$tablename];
+        $ret   = array();
+        foreach ($table as $column) { // in priority order
+            $ret[$column->getName()] = $column->getAsProperty();
         }
         return $ret;
     }

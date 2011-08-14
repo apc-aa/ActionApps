@@ -30,23 +30,6 @@
  *	Implements navigation bar for scrolling through long lists
  */
 
-
-/** userdate2sec function
- *  tranformation from english style datum (3/16/1999 or 3/16/99) to mySQL date
- * break year for short year description is 1950
- * @param $dttm
- * @param $time
- */
-function userdate2sec($dttm, $time="") {
-    if ( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{4}) *$", $dttm, $part))
-        if ( !ereg("^ *([[:digit:]]{1,2}) */ *([[:digit:]]{1,2}) */ *([[:digit:]]{2}) *$", $dttm, $part))
-            return "";
-    if ( !ereg("^ *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *: *([[:digit:]]{1,2}) *$", $time, $tpart))
-        return mktime(0,0,0,$part[1],$part[2],$part[3]);
-    else
-        return mktime($tpart[1],$tpart[2],$tpart[3],$part[1],$part[2],$part[3]);
-}
-
 require_once AA_INC_PATH . "statestore.php3";
 
 class AA_Scroller extends AA_Storable {
@@ -67,8 +50,7 @@ class AA_Scroller extends AA_Storable {
     // get data from session. It is not so good, since you need to include all the
     // class definition files which could be potentialy stored in the session
     var $classname        = "AA_Scroller";
-    var $persistent_slots = array("pgcnt", "current", "id", "visible", "sortdir",
-                                  "sortcol", "filters", "itmcnt", "metapage", "urldefault");
+    var $persistent_slots = array("pgcnt", "current", "id", "visible", "sortdir", "sortcol", "filters", "itmcnt", "metapage", "urldefault");
 
     /** getClassProperties function
      *  Used parameter format (in fields.input_show_func table)
@@ -120,60 +102,6 @@ class AA_Scroller extends AA_Storable {
         return urlencode("scr_" . $this->id . "_Go") . "=" . urlencode($page);
     }
 
-    /** pVisButton function
-     *  print Toggle Visibility button
-     * @param $url
-     * @param $show
-     * @param $hide
-     */
-    function pVisButton($url = "",
-                        $show = "<img src=\"../images/expand.gif\" border=\"0\" align=\"left\" alt=\"Expand\">",
-                        $hide = "<img src=\"../images/collapse.gif\" border=\"0\" align=\"left\" alt=\"Collapse\">") {
-        if (!$url) {
-            $url = $this->urldefault;
-        }
-        echo "<a href=\"$url". $this->ToggleVis(). "\">". ($this->visible ? $hide : $show) . "</a>";
-    }
-
-    /** toggleVis function
-     *  return part of a query string for move to toggle visibility
-     */
-    function toggleVis() {
-        return urlencode("scr_" . $this->id . "_Vi") . "=" . ($this->visible ? "0" : "1");
-    }
-
-    /** sort function
-     * @param $sortcol
-     *  @return part of a query string for move to toggle visibility
-     */
-    function sort($sortcol) {
-        return urlencode("scr_" . $this->id . "_Sort") . "=" . urlencode($sortcol);
-    }
-
-    /** pSort function
-     * print sort label
-     * @param $sortcol
-     * @param $show
-     * @param $url
-     */
-    function pSort($sortcol, $show, $url = "") {
-        if (!$url) {
-            $url = $this->urldefault;
-        }
-        echo "<a href=\"$url" . $this->Sort($sortcol) . "\">$show";
-        if ($this->sortcol == $sortcol && $this->sortdir) {
-            echo "<img src=\"../images/sort" . $this->sortdir . ".gif\" border=\"0\">";
-        }
-        echo "</a>";
-    }
-
-    /** sortSql function
-     *  @return "order by" sql clause
-     */
-    function sortSql() {
-        return ($this->sortcol && $this->sortdir) ? " ORDER BY $this->sortcol ". ($this->sortdir == 2 ? "desc" : "") : '';
-    }
-
     /** checkBounds function
      *  keep current page within bounds
      */
@@ -184,16 +112,6 @@ class AA_Scroller extends AA_Storable {
         if ($this->current > $this->pgcnt) {
             $this->current = max($this->pgcnt,1);
         }
-    }
-
-    /** adjustSize function
-     *  adjust number of pages
-     * deprecated - use coutPages instead
-     * @param $pgcnt
-     */
-    function adjustSize($pgcnt) {
-        $this->pgcnt = $pgcnt;
-        $this->checkBounds();
     }
 
     /** countPages function
@@ -219,14 +137,6 @@ class AA_Scroller extends AA_Storable {
     function pageCount() {
         return floor(($this->itmcnt - 1) / max(1,$this->metapage)) + 1;
     }
-    /** setSort function
-     * @param $column
-     * @param $desc
-     */
-    function setSort($column, $desc="") {
-        $this->sortcol = $column;
-        $this->sortdir = ( $desc ? 2 : 1 );
-    }
 
     /** updateScr function
      *  process query string and execute commands for this scroller
@@ -247,11 +157,6 @@ class AA_Scroller extends AA_Storable {
         }
         if ($GLOBALS["scr_" . $this->id . "_Mv"]) {
             $this->current += $GLOBALS["scr_" . $this->id . "_Mv"];
-        }
-        if ($GLOBALS["scr_" . $this->id . "_Sort"]) {
-            $sortcol = $GLOBALS["scr_" . $this->id . "_Sort"];
-            $this->sortdir = ($sortcol == $this->sortcol) ? (($this->sortdir + 1) % 3) : 1;
-            $this->sortcol = $sortcol;
         }
         $this->checkBounds();
     }
@@ -338,44 +243,6 @@ class AA_Scroller extends AA_Storable {
                 $this->filters[$name]['value'] = $GLOBALS["flt_" . $this->id . "_${name}_val"];
             }
         }
-    }
-
-    /** sqlCondFilter function
-     *  return sql "where" clause generated by filters
-     */
-    function sqlCondFilter() {
-        foreach ($this->filters as $name => $flt) {
-            if (!$flt['value']) {
-                continue;
-            }
-            if (ereg("^ *(>|<|=|>=|<=) *(.*)", $flt['value'], $regs)) {
-                $op    = $regs[1];
-                $value = $regs[2];
-            } else {
-                $op    = ($flt['type'] == "char" ? "like" : "=");
-                $value = $flt['value'];
-            }
-            if ( $flt['truename'] != "" ) {
-                $name = $flt['truename'];
-            }
-            switch($flt['type']) {
-                case "char":
-                    if ($op == "like") {
-                        $value = "%$value%";
-                    }
-                    $cond[] = "$name $op '$value'";
-                    break;
-                case "int":
-                    $cond[] = "$name $op " . $value;
-                    break;
-                case "date":
-                    $cond[] = "$name $op '". userdate2sec($value) . "'";
-                    break;
-                case "md5":
-                    $cond[]= "$name $op '". quote(pack("H*",$value))."'";
-            }
-        }
-        return is_array($cond) ? join(" AND ", $cond) : "1 = 1";
     }
 }
 

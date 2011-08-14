@@ -351,13 +351,13 @@ function NewId() {
 }
 
 // --------------------------------------------
-function addToKosik(produkt_variant, mnozstvi) {
+function addToKosik(produkt_variant, mnozstvi, viewid) {
 
     var kid;
-
-    kid = GetCookie('kosik_id');
+    viewid = viewid || 29;
+    kid    = GetCookie('kosik_id');
     if (kid) {
-        addPolozkaToKosik(kid, produkt_variant, mnozstvi);
+        addPolozkaToKosik(kid, produkt_variant, mnozstvi, "#obsah-kosiku", viewid);
     } else {
 
         $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
@@ -370,7 +370,8 @@ function addToKosik(produkt_variant, mnozstvi) {
             for (kid in data) {
                 SetCookie('kosik_id', kid);
             }
-            addPolozkaToKosik(kid, produkt_variant, mnozstvi);
+            addPolozkaToKosik(kid, produkt_variant, mnozstvi, "#obsah-kosiku", viewid);
+            AA_AjaxCss("#doporucujeme", '/aaa/view.php3?vid=35&cmd[35]=o-35-'+ produkt_variant+'&als[XLANG___]='+getCurrentLanguage());            
         });
     }
 }
@@ -402,32 +403,23 @@ function getCurrentLanguage() {
     return (txt.indexOf('biofarma.cz/en') == -1) ? 'cz' : 'en';
 }
 
-function addPolozkaToKosik(kosik, produkt_variant, mnozstvi) {
+function addPolozkaToKosik(kosik, produkt_variant, mnozstvi, kosdiv, viewid) {
 
     // we want to invalidate the pages for this user to reload pages with new kosik
     SetCookie('changed', new Date().getTime());
 
-    AA_AjaxCss("#obsah-kosiku", AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+    AA_AjaxCss(kosdiv, AA_Config.AA_INSTAL_PATH + 'filler.php3', {
             inline: 1,
-            ok_url: "http://biofarma.cz/aaa/view.php3?vid=29&nocache=1&cmd[29]=o-29-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
+            ok_url: "http://biofarma.cz/aaa/view.php3?vid="+ viewid +"&nocache=1&cmd["+ viewid +"]=o-"+ viewid +"-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
             slice_id: '38b46aeec3b2bbb70ba48b31957ed322',
             "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation________][]": kosik,
             "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation_______1][]": produkt_variant,
             "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][text____________][]": mnozstvi
         });
-
-    AA_AjaxCss("#doporucujeme", '/aaa/view.php3?vid=35&cmd[35]=o-35-'+ produkt_variant+'&als[XLANG___]='+getCurrentLanguage());
 }
 
 function addPolozkaToKosikAdmin(kosik, produkt_variant, mnozstvi) {
-    $("#page-faktura").load(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
-        inline: 1,
-        ok_url: "http://biofarma.cz/aaa/view.php3?vid=71&nocache=1&cmd[71]=o-71-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
-        slice_id: '38b46aeec3b2bbb70ba48b31957ed322',
-        "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation________][]": kosik,
-        "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation_______1][]": produkt_variant,
-        "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][text____________][]": mnozstvi
-    });
+    addPolozkaToKosik(kosik, produkt_variant, mnozstvi, "#page-faktura", 71);
 }
 
 function deleteFromKosikAdmin(kosik, polozka_id) {

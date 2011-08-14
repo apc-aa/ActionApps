@@ -1,6 +1,6 @@
 <?php
 /**
- * Author: Jakub Adámek
+ * Author: Jakub Adï¿½mek
  *
  *   Params: $list = name of an array defined in constants_param_wizard.php3
  *                   (or anywhere else, but must be included into this script)
@@ -40,19 +40,19 @@
  * @copyright Copyright (C) 1999-2003 Association for Progressive Communications
  * @link      http://www.apc.org/ APC
  *
-*/
-
+ */
 require_once "../include/init_page.php3";
 mgettext_bind(get_mgettext_lang(), 'param_wizard');
-require_once AA_INC_PATH."constants_param_wizard.php3";
+require_once AA_INC_PATH . "constants_param_wizard.php3";
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 /** firstBig function
  * @param $s
  * @return $s with a capital first letter
  */
+
 function firstBig($s) {
-    return strtoupper($s[0]).substr($s,1);
+    return strtoupper($s[0]) . substr($s, 1);
 }
 
 /** processSlashes function
@@ -61,8 +61,8 @@ function firstBig($s) {
  *          e.g. <A ....> is written \<A ...\>
  */
 function processSlashes($s) {
-    $s = str_replace ("\\<", HTMLSpecialChars("<"), $s);
-    $s = str_replace ("\\>", HTMLSpecialChars(">"), $s);
+    $s = str_replace("\\<", htmlspecialchars("<"), $s);
+    $s = str_replace("\\>", htmlspecialchars(">"), $s);
     return $s;
 }
 
@@ -71,9 +71,9 @@ function processSlashes($s) {
  * @return replace \r and \n with empty space and " with &quot;
  */
 function processValue($s) {
-    $s = str_replace ("\r", "", $s);
-    $s = str_replace ("\n", "", $s);
-    $s = str_replace ('"', '&quot;', $s);
+    $s = str_replace("\r", "", $s);
+    $s = str_replace("\n", "", $s);
+    $s = str_replace('"', '&quot;', $s);
     return $s;
 }
 
@@ -82,16 +82,16 @@ function processValue($s) {
  * @return same as processValue, plus replace ' with \'
  */
 function processJavaScript($s) {
-    $s = str_replace ("\r", "", $s);
-    $s = str_replace ("\n", "", $s);
-    $s = str_replace ('"', '&quot;', $s);
-    $s = str_replace ("'", "\\'", $s);
+    $s = str_replace("\r", "", $s);
+    $s = str_replace("\n", "", $s);
+    $s = str_replace('"', '&quot;', $s);
+    $s = str_replace("'", "\\'", $s);
     return $s;
 }
 
-$desc  = $$list;
-$desc  = $desc['items'][$item];
-$title = firstbig($desc['name'])." "._m("Wizard");
+$desc = $$list;
+$desc = $desc['items'][$item];
+$title = firstbig($desc['name']) . " " . _m("Wizard");
 
 // by some item (I know only about the date input type) the parameters are divided with ' rather than :
 // so I allow to use ' when all params are INT or BOOL
@@ -105,7 +105,6 @@ if (is_array($desc['params'])) {
         }
     }
 }
-
 ?>
 <title><?php echo $title ?></title>
 </head>
@@ -113,143 +112,150 @@ if (is_array($desc['params'])) {
 <body onload="readParams()">
 <center>
 
-<table border="0" cellspacing="0" cellpadding="1" width="95%" bgcolor="<?php echo COLOR_TABTITBG ?>">
-   <tr><td align="center" class="tablename" width="100%"><?php echo $title ?></td></tr>
-</table>
+    <table border="0" cellspacing="0" cellpadding="1" width="95%" bgcolor="<?php echo COLOR_TABTITBG ?>">
+        <tr><td align="center" class="tablename" width="100%"><?php echo $title ?></td></tr>
+    </table>
 
-<form name="f" method="post" onSubmit="self.close()">
+    <form name="f" method="post" onSubmit="self.close()">
 
-<script Language="JavaScript"><!--
-  function changeFunction (combo) {
-    page = "<?php echo $sess->url(self_base()."param_wizard.php3")?>"
-        + "<?php echo "&list=$list"."&combo_list='$combo_list'&text_param='$text_param'"?>"
-        + "&item=" + combo.options [combo.selectedIndex].value;
-    document.location = page;
-  }
-  function writeParams () {
-    params = new String("");
-    for (i=0; i < <?php echo count($desc['params']) ?>; i++) {
-        if (i > 0) params += ":";
-        val = document.f.elements["param"+i].value;
-        params += val.replace(/:/g,"#:");
-    }
-    window.opener.document.f.elements["<?php echo $text_param ?>"].value = params;
-  }
-  function fillParams (params) {
-    params = params.replace(/#:/g,"#~") + ":";
-    <?php if ($allow_quote) echo "params = params.replace(/'/g,\":\");" ?>
-    for (i=0; i < <?php echo count($desc['params'])?>; i++) {
-        if (params > "") {
-            str = params.substr(0,params.search(":"));
-            params = params.substr (params.search(":")+1);
-        }
-        else str = "";
-        document.f.elements["param"+i].value = str.replace(/#~/g,":");
-    }
-  }
-  function readParams () {
-    fillParams ( window.opener.document.f.elements["<?php echo $text_param ?>"].value );
-  }
-  function useExample(iExample) {
-    switch(iExample) {
-    <?php
-        for ( $i=0, $ino=count($desc['examples']); $i<$ino; ++$i) {
-            $exm = $desc['examples'][$i];
-            echo "case $i: pars=\"".$exm['params']."\"; break;";
-        }
-    ?>
-    }
-    fillParams(pars);
-  }
-// -->
-</script>
-
-<table align=left width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
-<tr><td class="tabtit" align="left">
+        <script Language="JavaScript"><!--
+            function changeFunction (combo) {
+                page = "<?php echo $sess->url(self_base() . "param_wizard.php3") ?>"
+                    + "<?php echo "&list=$list" . "&combo_list='$combo_list'&text_param='$text_param'" ?>"
+                    + "&item=" + combo.options [combo.selectedIndex].value;
+                document.location = page;
+            }
+            function writeParams () {
+                params = new String("");
+                for (i=0; i < <?php echo count($desc['params']) ?>; i++) {
+                    if (i > 0) params += ":";
+                    val = document.f.elements["param"+i].value;
+                    params += val.replace(/:/g,"#:");
+                }
+                window.opener.document.f.elements["<?php echo $text_param ?>"].value = params;
+            }
+            function fillParams (params) {
+                params = params.replace(/#:/g,"#~") + ":";
+<?php if ($allow_quote)
+    echo "params = params.replace(/'/g,\":\");" ?>
+                    for (i=0; i < <?php echo count($desc['params']) ?>; i++) {
+                        if (params > "") {
+                            str = params.substr(0,params.search(":"));
+                            params = params.substr (params.search(":")+1);
+                        }
+                        else str = "";
+                        document.f.elements["param"+i].value = str.replace(/#~/g,":");
+                    }
+                }
+                function readParams () {
+                    fillParams ( window.opener.document.f.elements["<?php echo $text_param ?>"].value );
+                }
+                function useExample(iExample) {
+                    switch(iExample) {
 <?php
-if ($desc['name']) {
-    echo $desc['name'].": ".processSlashes($desc['desc']);
-} else {
-    $what = $$list;
-    printf(_m("This is an undocumented %s. We don't recommend to use it."),$what['name']);
-    echo "<p align=\"center\"><input type=\"submit\" value=\""._m("Close the wizard")."\">";
-    echo "</td></tr></table></body></html>";
-    exit;
+for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
+    $exm = $desc['examples'][$i];
+    echo "case $i: pars=\"" . $exm['params'] . "\"; break;";
 }
+?>
+                    }
+                    fillParams(pars);
+                }
+                // -->
+        </script>
 
-echo '
+        <table align=left width="95%" border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
+            <tr><td class="tabtit" align="left">
+                    <?php
+                    if ($desc['name']) {
+                        echo $desc['name'] . ": " . processSlashes($desc['desc']);
+                    } else {
+                        $what = $$list;
+                        printf(_m("This is an undocumented %s. We don't recommend to use it."), $what['name']);
+                        echo "<p align=\"center\"><input type=\"submit\" value=\"" . _m("Close the wizard") . "\">";
+                        echo "</td></tr></table></body></html>";
+                        exit;
+                    }
+
+                    echo '
 </td></tr>
 <tr><td>
-<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="'.COLOR_TABBG.'" align="center">
+<table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="' . COLOR_TABBG . '" align="center">
 <tr><td class="tabtxt">';
 
-    // show the parameter boxes with hints
+                    // show the parameter boxes with hints
 
-    if (is_array($desc['params'])) {
-        echo _m("Available parameters: ")."<br><br>";
-        echo "<table align=\"left\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">";
-        $iparam = 0;
-        $example = "";
-        foreach ($desc['params'] as $param) {
-            echo "<tr><td align=\"left\" size=\"50%\" class=\"tabtxt\" valign=\"top\">"
-            ."<b>".strtolower("$param[name]:")."</b></td>
+                    if (is_array($desc['params'])) {
+                        echo _m("Available parameters: ") . "<br><br>";
+                        echo "<table align=\"left\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">";
+                        $iparam = 0;
+                        $example = "";
+                        foreach ($desc['params'] as $param) {
+                            echo "<tr><td align=\"left\" size=\"50%\" class=\"tabtxt\" valign=\"top\">"
+                            . "<b>" . strtolower("$param[name]:") . "</b></td>
             <td align=\"left\" class=\"tabtxt\">
             <input type=\"text\" name=\"param$iparam\" value=\""
-                .processValue($param['example'])."\">
+                            . processValue($param['example']) . "\">
             <span class=\"tabhlp\">";
-            switch($param['type']) {
-            case "INT":  echo " ("._m("integer&nbsp;number").")"; break;
-            case "STR":  echo " ("._m("any&nbsp;text").")"; break;
-            case "STRID":echo " ("._m("field&nbsp;id").")"; break;
-            case "BOOL": echo " ("._m("boolean:&nbsp;0=false,1=true").")"; break;
-            }
-            echo "<br>".processSlashes($param['desc'])."</span>
+                            switch ($param['type']) {
+                                case "INT": echo " (" . _m("integer&nbsp;number") . ")";
+                                    break;
+                                case "STR": echo " (" . _m("any&nbsp;text") . ")";
+                                    break;
+                                case "STRID":echo " (" . _m("field&nbsp;id") . ")";
+                                    break;
+                                case "BOOL": echo " (" . _m("boolean:&nbsp;0=false,1=true") . ")";
+                                    break;
+                            }
+                            echo "<br>" . processSlashes($param['desc']) . "</span>
             </td></tr>";
-            if ($iparam > 0) $example .= ":";
-            $example .= $param['example'];
-            ++$iparam;
-        }
-        echo "</table>";
+                            if ($iparam > 0)
+                                $example .= ":";
+                            $example .= $param['example'];
+                            ++$iparam;
+                        }
+                        echo "</table>";
+                    } else {
+                        echo "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\"><tr><td class=\"tabtxt\">";
+                        $what = $$list;
+                        printf(_m("This %s has no parameters.") . "<br>", strtolower($what['name']));
+                        echo "</td></tr></table>";
+                    }
 
-    } else {
-        echo "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\"><tr><td class=\"tabtxt\">";
-        $what = $$list;
-        printf (_m("This %s has no parameters.")."<br>", strtolower($what['name']));
-        echo "</td></tr></table>";
-    }
-
-echo "
+                    echo "
 </td></tr></table>
 </td></tr>
 <tr><td class=\"tabtit\" height=\"30\">";
 
-if (is_array($desc['examples'])) {
-    echo _m("Have a look at these examples of parameters sets:");
-    echo "<table width=\"100%\" border=\"1\" cellspacing=\"1\" cellpadding=\"2\">";
-    for ( $i=0, $ino=count($desc['examples']); $i<$ino; ++$i) {
-        $exm = $desc['examples'][$i];
-        echo "<tr><td class=\"tabtit\">";
-        echo $exm['desc'];
-        echo "</td><td class=\"tabtit\">";
-        echo "<a href=\"javascript:useExample($i)\">"._m("Show")."</a></td></tr>";
-    }
-    echo "</table>";
-}
+                    if (is_array($desc['examples'])) {
+                        echo _m("Have a look at these examples of parameters sets:");
+                        echo "<table width=\"100%\" border=\"1\" cellspacing=\"1\" cellpadding=\"2\">";
+                        for ($i = 0, $ino = count($desc['examples']); $i < $ino; ++$i) {
+                            $exm = $desc['examples'][$i];
+                            echo "<tr><td class=\"tabtit\">";
+                            echo $exm['desc'];
+                            echo "</td><td class=\"tabtit\">";
+                            echo "<a href=\"javascript:useExample($i)\">" . _m("Show") . "</a></td></tr>";
+                        }
+                        echo "</table>";
+                    }
 
-$what = $$list;
-echo $what['hint'];
-echo '
+                    $what = $$list;
+                    echo $what['hint'];
+                    echo '
 <p align=\"center\">';
-if (is_array($desc['params'])) echo '
-    <input type="button" value="'._m("OK - Save").'" onclick="writeParams(); self.close()">&nbsp;&nbsp;
-    <input type="button" value="'._m("Cancel").'" onclick="self.close()">&nbsp;&nbsp;
-    <input type="button" value="'._m("Show example params").'" onclick="fillParams(\''.processJavaScript($example).'\')">';
-else echo '
-    <input type="button" value="'._m("OK").'" onclick="self.close()">';
-echo '
+                    if (is_array($desc['params']))
+                        echo '
+    <input type="button" value="' . _m("OK - Save") . '" onclick="writeParams(); self.close()">&nbsp;&nbsp;
+    <input type="button" value="' . _m("Cancel") . '" onclick="self.close()">&nbsp;&nbsp;
+    <input type="button" value="' . _m("Show example params") . '" onclick="fillParams(\'' . processJavaScript($example) . '\')">';
+                    else
+                        echo '
+    <input type="button" value="' . _m("OK") . '" onclick="self.close()">';
+                    echo '
 </p>
 </td></tr></table>
 </form>
 </body>
 </html>';
-?>
+                    ?>

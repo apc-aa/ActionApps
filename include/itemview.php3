@@ -176,7 +176,7 @@ class itemview {
                 $keystr .= $this->zids->id($i);
             }
         }
-        $key = get_hash('outp', $keystr, $this->disc, $this->aliases, AA_Stringexpand_Keystring::expand());
+        $key = get_hash('outp', $keystr, $this->disc, $this->aliases, PageCache::globalKeystring());
 
         global $str2find_passon, $pagecache;
         if ( !$GLOBALS['nocache'] && ($res = $pagecache->get($key)) ) {

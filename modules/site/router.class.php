@@ -531,9 +531,9 @@ class AA_Stringexpand_Xuser extends AA_Stringexpand {
         }
         switch ($field) {
             case '':     return $xuser;
-            case 'id':   return ReaderName2Id($xuser);
+            case 'id':   return AA_Reader::name2Id($xuser);
         }
-        $item = AA_Items::getItem(new zids(ReaderName2Id($xuser),'l'));
+        $item = AA_Items::getItem(new zids(AA_Reader::name2Id($xuser),'l'));
         return empty($item) ? '' : $item->subst_alias($field);
     }
 }

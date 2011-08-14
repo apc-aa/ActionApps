@@ -1,16 +1,16 @@
 <?php
-      
+
 /*
  * Oracle/OCI8 accessor based on Session Management for PHP3
  *
  * (C) Copyright 1999-2000 Stefan Sels phplib@sels.com
  *
- * based on db_oracle.inc by Luis Francisco Gonzalez Hernandez 
+ * based on db_oracle.inc by Luis Francisco Gonzalez Hernandez
  * contains metadata() from db_oracle.inc 1.10
  *
  * $Id$
  *
- */ 
+ */
 
 class DB_OCI8 {
   var $Debug    =  0;
@@ -33,26 +33,26 @@ class DB_OCI8 {
   var $Error      = "";
   var $autoCommit = 1; // Commit on successful query
   var $autoCount  = 1; // Count num_rows on select
-  
+
   var $share_connections = false;
   var $share_connection_name = "";
     // Defaults to the class name - set to another class name to share connections among different class extensions
-  
+
   var $last_query_text = "";
 
   var $num_rows; // Used to store the total of rows returned by a SELECT statement.
-  
+
   /* public: constructor */
   function DB_OCI8($query = "") {
     if($query) {
       $this->query($query);
     }
   }
-  
+
   function link_id() {
     return $this->Link_ID;
   }
-  
+
   function query_id() {
     return $this->Query_ID;
   }
@@ -79,21 +79,21 @@ class DB_OCI8 {
       if (!$this->Link_ID) {
         $this->connect_failed();
         return false;
-      } 
+      }
       if($this->share_connections) {
         ${$this->share_connection_name} = $this->Link_ID;
       }
       if ($this->Debug) {
         printf("<br>Obtained the Link_ID: $this->Link_ID<br>\n");
-      }   
+      }
     }
   }
-  
+
   function connect_failed() {
     $this->Halt_On_Error = "yes";
     $this->halt(sprintf("connect ($this->User, \$Password, $this->Database%s) failed", (($this->Host) ? ", $this->Host" : "")));
   }
-  
+
   function free() {
     if ($this->Parse) {
       if ($this->Debug) {
@@ -106,13 +106,13 @@ class DB_OCI8 {
           printf("<br>Error: %s<br>", $this->Error["message"]);
         }
       }
-    } 
+    }
   }
 
   function query($Query_String) {
     $this->connect();
     $this->free();
-   
+
     $this->Parse = OCIParse($this->Link_ID, $Query_String);
     if (!$this->Parse) {
       $this->Error = OCIError($this->Parse);
@@ -133,34 +133,34 @@ class DB_OCI8 {
       }
       $this->Error = OCIError($this->Parse);
     }
-    
+
     $this->Row = 0;
-    
+
     if ($this->Debug) {
       printf("Debug: query = %s<br>\n", $Query_String);
     }
-    
+
     if ((1403 != $this->Error["code"]) and (0 != $this->Error["code"]) and $this->sqoe) {
       echo "<BR><FONT color=red><B>".$this->Error["message"]."<BR>Query :\"$Query_String\"</B></FONT>";
     }
     $this->last_query_text = $Query_String;
     return $this->Parse;
   }
-  
+
   function commit() {
     if ($this->autoCommit) {
       $this->halt("Nothing to commit because AUTO COMMIT is on.");
     }
     return(OCICommit($this->Link_ID));
-  }     
-  
+  }
+
   function rollback() {
     if ($this->autoCommit) {
       $this->halt("Nothing to rollback because AUTO COMMIT is on.");
     }
     return(OCIRollback($this->Link_ID));
-  }     
-  
+  }
+
   /* This is requeried in some application. It emulates the mysql_insert_id() function. */
   /* Note: this function was copied from phpBB. */
   function insert_id($query_id = 0) {
@@ -188,7 +188,7 @@ class DB_OCI8 {
     return false;
     }
   }
-  
+
   function next_record() {
     /* IF clause added to prevent a error when tried to read an empty "$this->Parse". */
     if ($this->autoCount and ($this->num_rows() == $this->Row)) {
@@ -199,7 +199,7 @@ class DB_OCI8 {
         printf("<br>ID: %d, Rows: %d<br>\n", $this->Link_ID, $this->num_rows());
       }
       $this->Row += 1;
-      
+
       $errno = OCIError($this->Parse);
       if (1403 == $errno) { # 1043 means no more records found
         $this->Error = false;
@@ -214,13 +214,13 @@ class DB_OCI8 {
         }
         $stat = 0;
       }
-    } else { 
+    } else {
       $this->Record = array();
       $totalReg = OCINumcols($this->Parse);
       for ($ix = 1; $ix <= $totalReg; $ix++) {
         $col = strtoupper(OCIColumnname($this->Parse, $ix));
         $colreturn = strtolower($col);
-        $this->Record[$colreturn] = 
+        $this->Record[$colreturn] =
           (is_object($result[$col])) ? $result[$col]->load() : $result[$col];
         if ($this->Debug) {
           echo "<b>[$col]</b>:".$result[$col]."<br>\n";
@@ -240,7 +240,7 @@ class DB_OCI8 {
     $count = 0;
     $id    = 0;
     $res   = array();
-      
+
     /*
      * Due to compatibility problems with Table we changed the behavior
      * of metadata();
@@ -288,7 +288,7 @@ class DB_OCI8 {
            " WHERE T.column_name=I.column_name (+)".
            " AND T.table_name=I.table_name (+)".
            " AND T.table_name=UPPER('$table') ORDER BY T.column_id");
-      
+
       $i = 0;
       while ($this->next_record()) {
         $res[$i]["table"] =  $this->Record["table_name"];
@@ -352,13 +352,41 @@ class DB_OCI8 {
     print $this->f($Name);
   }
 
+  function nextid($seqname) {
+    $this->connect();
+
+    $Query_ID = @OCIParse($this->Link_ID, "SELECT $seqname.NEXTVAL FROM DUAL");
+
+    if (!@OCIExecute($Query_ID)) {
+      $this->Error = @OCIError($Query_ID);
+      if (2289 == $this->Error["code"]) {
+        $Query_ID = OCIParse($this->Link_ID, "CREATE SEQUENCE $seqname");
+        if (!OCIExecute($Query_ID)) {
+          $this->Error = OCIError($Query_ID);
+          $this->halt("<BR> nextid() function - unable to create sequence<br>".$this->Error["message"]);
+        } else {
+          $Query_ID = OCIParse($this->Link_ID, "SELECT $seqname.NEXTVAL FROM DUAL");
+          OCIExecute($Query_ID);
+        }
+      }
+    }
+
+    if (OCIFetch($Query_ID)) {
+      $next_id = OCIResult($Query_ID, "NEXTVAL");
+    } else {
+      $next_id = 0;
+    }
+    OCIFreeStatement($Query_ID);
+    return $next_id;
+  }
+
   function disconnect() {
     if ($this->Debug) {
       printf("Disconnecting...<br>\n");
     }
     OCILogoff($this->Link_ID);
   }
-  
+
   function halt($msg) {
     if ($this->Halt_On_Error == "no")
       return;
@@ -368,7 +396,7 @@ class DB_OCI8 {
     if ($this->Halt_On_Error != "report")
       die("Session halted.</body></html>");
   }
-  
+
   function haltmsg($msg) {
     printf("<p><b>Database error:</b> %s<br>\n", $msg);
     printf("<b>Oracle Error</b>: %s</p>\n", $this->Error["message"]);
@@ -378,13 +406,13 @@ class DB_OCI8 {
     $this->connect();
     if ($mode == "write") {
       $Parse = OCIParse($this->Link_ID, "lock table $table in row exclusive mode");
-      OCIExecute($Parse); 
+      OCIExecute($Parse);
     } else {
       $result = 1;
     }
     return $result;
   }
-  
+
   function unlock() {
     return $this->query("commit");
   }
@@ -397,7 +425,7 @@ class DB_OCI8 {
      $info[$i]["table_name"]      = $this->Record["table_name"];
      $info[$i]["tablespace_name"] = $this->Record["tablespace_name"];
      $i++;
-   } 
+   }
     return $info;
   }
 
@@ -408,17 +436,17 @@ class DB_OCI8 {
   function split_specialcharacters($query) {
     return str_replace("''", "'", $query);
   }
-  
+
   /* This new function is needed to write a valid db dependant date string. */
   function now() {
     return "SYSDATE";
   }
 }
 if(!class_exists("DB_Sql"))	{
-	class DB_Sql extends DB_OCI8 {
-		function DB_Sql($query = "") {
-			$this->DB_OCI8($query);
-		}
-	}
+    class DB_Sql extends DB_OCI8 {
+        function DB_Sql($query = "") {
+            $this->DB_OCI8($query);
+        }
+    }
 }
 ?>

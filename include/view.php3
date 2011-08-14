@@ -530,9 +530,9 @@ function GetListLength($listlen, $to, $from, $page, $idscount, $random) {
  */
 function GetView($view_param) {
     global $nocache, $debug;
-    
+
     //create keystring from values, which exactly identifies resulting content
-    $key = get_hash($view_param, AA_Stringexpand_Keystring::expand());
+    $key = get_hash($view_param, PageCache::globalKeystring());
 
     if ( $res = $GLOBALS['pagecache']->get($key, $nocache) ) {
         return $res;
@@ -567,7 +567,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
     }
 
     $selected_item = $view_param["selected"];      // used for boolean (1|0) _#SELECTED
-    
+
     AA::$debug && AA::$dbg->group("view_$vid".'_'.($dbgtime=microtime(true)));
 
     // alias - =1 for selected item

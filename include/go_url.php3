@@ -123,7 +123,7 @@ function go_url($url, $add_param="", $usejs=false, $code=302) {
     if ($add_param != "") {
         $url = get_url( $url, rawurlencode($add_param));
     }
-    if ( $usejs OR headers_sent() ) {
+    if ( $usejs OR headers_sent() OR ($_SERVER['SERVER_PROTOCOL']=='INCLUDED')) { // SSI included
        echo '
         <script language="JavaScript" type="text/javascript"> <!--
             document.location = "'.$url.'";

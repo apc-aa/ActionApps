@@ -142,7 +142,7 @@ require_once AA_INC_PATH."slice.php3";
 
 require_once AA_INC_PATH."locsess.php3";
 
-$slice_starttime = get_microtime();
+$slice_starttime = microtime(true);
 
 //MLX stuff
 require_once AA_INC_PATH."mlx.php";
@@ -263,7 +263,7 @@ if (!$encap) {
     Page_HTML_Begin($slice_info['name']);
 }
 
-if ($bigsrch OR $easy_query) {  // big search form or authomatical search form 
+if ($bigsrch OR $easy_query) {  // big search form or authomatical search form
     echo '<!-- bigsrch parameter is NOT SUPPORTED IN AA v 1.5+ <br>
           easy_query is  NOT SUPPORTED IN AA v 2.50+ <br>
           See <a href="http://apc-aa.sourceforge.net/faq/index.shtml#215">AA FAQ</a>
@@ -344,8 +344,8 @@ if ( $sh_itm OR $x OR $o OR $seo ) {
             $format['id'] = $p_slice_id;                  // set slice_id because of caching
 
             $itemview = new itemview($format, "", $aliases, null,"", "", $sess->MyUrl($slice_id, $encap), $disc);
-            echo $itemview->get_output("discussion");  
-            // discussions should not be            
+            echo $itemview->get_output("discussion");
+            // discussions should not be
             // cached or even better (TODO) discussions should have its separate slice
             // which is cached independently form the item itself through standard
             // AA caching
@@ -555,7 +555,7 @@ if ($searchlog) {
 }
 
 if ($debug) {
-    $timeend = get_microtime();
+    $timeend = microtime(true);
     $time    = $timeend - $slice_starttime;
     echo "<br><br>Page generation time: $time";
 }

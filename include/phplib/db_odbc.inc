@@ -4,12 +4,12 @@
  *
  * Copyright (c) 1998-2000 Cameron Taggart (cameront@wolfenet.com)
  *        Modified by Guarneri carmelo (carmelo@melting-soft.com)
- *					 
+ *
  * $Id$
- */ 
+ */
 
 class DB_ODBC {
-  
+
   /* public: connection parameters */
   var $Host     = "";
   var $Database = "";
@@ -21,6 +21,9 @@ class DB_ODBC {
   var $PConnect      = 0;     ## Set to 1 to use persistent database connections
   var $Debug         = 0;     ## Set to 1 for debugging messages
   var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
+  var $Seq_Table     = "db_sequence"; ## Name of the sequence table
+  var $Seq_ID_Col    = "p_nextid";    ## Name of the Sequence ID column in $Seq_Table
+  var $Seq_Name_Col  = "p_seq_name";  ## Name of the Sequence Name column in $Seq_Table
   var $Lock_Table    = "db_sequence"; ## Name of the lock table
   var $Lock_Name_Col = "p_seq_name";  ## Name of the lock Name column
   var $Lock_ID_Col   = "p_nextid";    ## Name of the lock Name column
@@ -73,7 +76,7 @@ class DB_ODBC {
       $User     = $this->User;
     if ("" == $Password)
       $Password = $this->Password;
-      
+
     /* establish connection, select database */
     if ( 0 == $this->Link_ID ) {
       if(!$this->PConnect) {
@@ -85,7 +88,7 @@ class DB_ODBC {
         $this->connect_failed();
       }
     }
-    
+
     return $this->Link_ID;
   }
 
@@ -126,7 +129,7 @@ class DB_ODBC {
 #   He is on NT, connecting to a Unix MySQL server with ODBC. -- KK
 #    $this->Query_ID = odbc_prepare($this->Link_ID,$Query_String);
 #    $this->Query_Ok = odbc_execute($this->Query_ID);
-        
+
     $this->Query_ID = odbc_exec($this->Link_ID, $Query_String);
     $this->RowCount = -1; # reset num_rows() return value
     $this->Row   = 0;
@@ -134,7 +137,7 @@ class DB_ODBC {
     $this->Error = "";
     odbc_binmode($this->Query_ID, 1);
     odbc_longreadlen($this->Query_ID, 4096);
-    
+
     if (!$this->Query_ID) {
       $this->halt("Invalid SQL: ".$Query_String);
     }
@@ -159,7 +162,7 @@ class DB_ODBC {
     if (!$stat) {
       if ($this->Auto_Free) {
         $this->free();
-	  }
+      }
     } else {
       $count = odbc_num_fields($this->Query_ID);
       for ($i=1; $i<=$count; $i++) {
@@ -183,33 +186,33 @@ class DB_ODBC {
 
   /* public: table locking */
 /*
-ODBC is not guaranteed do table locking natively. This function emulates 
+ODBC is not guaranteed do table locking natively. This function emulates
 locking with certain constraints. The intention is to provide at least the
 minimum functionality required to implement sequences via nextid().
 
-This function maintains a list of locked tables in a lock table. To lock 
-a table it inserts a row into the lock table with the locked table name 
-suffixed with '_p_lock' as a primary key and with a value of 0. 
-The suffix and value are used so that the sequence table can be used as 
+This function maintains a list of locked tables in a lock table. To lock
+a table it inserts a row into the lock table with the locked table name
+suffixed with '_p_lock' as a primary key and with a value of 0.
+The suffix and value are used so that the sequence table can be used as
 the lock table if desired.
 While this row exists a lock will not be granted to another process.
 To protect against threads failing to release a lock, if a lock is not
-obtained within $this->Lock_Timeout seconds the lock may be deleted. 
-The timeout value needs to be set to a reasonable length based on the 
+obtained within $this->Lock_Timeout seconds the lock may be deleted.
+The timeout value needs to be set to a reasonable length based on the
 expected transaction time on the locked table.
 
-This method will only be effective if the locked table is accessed 
-exclusively via this class. This is not a database-enforced lock and 
-there is nothing preventing other applications from modifying a table 
+This method will only be effective if the locked table is accessed
+exclusively via this class. This is not a database-enforced lock and
+there is nothing preventing other applications from modifying a table
 while it is 'locked'.
 
-The function uses microtime to prevent multiple threads all hitting the 
+The function uses microtime to prevent multiple threads all hitting the
 table simultaneously on the tick of a second.
 
 The function halt()s if a lock cannot be obtained.
 */
   function lock($table, $mode="write") {
-    
+
     if (!$this->connect()) {
       return 0; /* we already complained in connect() about that. */
     };
@@ -278,7 +281,7 @@ The function halt()s if a lock cannot be obtained.
           }
         }
       }
-           
+
       if (!$got_lock) {
         $waittime = $currtime + 0.5;
         while ($waittime > $this->getmicrotime()) {
@@ -294,7 +297,7 @@ The function halt()s if a lock cannot be obtained.
     }
     return $got_lock;
   }
-  
+
   function unlock($table = "") {
     if (!$this->connect()) {
       return 0; /* we already complained in connect() about that. */
@@ -327,7 +330,7 @@ The function halt()s if a lock cannot be obtained.
   }
 
   function num_rows() {
-    # Due to a strange problem with the odbc_fetch_row function it is only 
+    # Due to a strange problem with the odbc_fetch_row function it is only
     # possible to walk through the result set once. By storing the row count
     # this problem is avoided.
     # Once the number of rows has been calculated it is stored in $RowCount.
@@ -341,7 +344,7 @@ The function halt()s if a lock cannot be obtained.
     # This is a workaround. It is intended to be ugly.
     if ($num_rows < 0) {
       $i=10;
-      while (odbc_fetch_row($this->Query_ID, $i)) 
+      while (odbc_fetch_row($this->Query_ID, $i))
         $i*=10;
 
       $j=0;
@@ -349,13 +352,13 @@ The function halt()s if a lock cannot be obtained.
         $k= $j+intval(($i-$j)/2);
         if (odbc_fetch_row($this->Query_ID, $k))
           $j=$k;
-        else 
+        else
           $i=$k;
         if (($i-$j)==1) {
-          if (odbc_fetch_row($this->Query_ID, $i)) 
+          if (odbc_fetch_row($this->Query_ID, $i))
             $j=$i;
-          else 
-            $i=$j; 
+          else
+            $i=$j;
         };
         //printf("$i $j $k <br>");
       };
@@ -391,6 +394,58 @@ The function halt()s if a lock cannot be obtained.
     print $this->f($Name);
   }
 
+  /* public: sequence numbers */
+  function nextid($seq_name) {
+    if (!$this->connect()) {
+      return 0; /* we already complained in connect() about that. */
+    };
+
+    if ($this->lock($this->Seq_Table)) {
+      /* get sequence number (locked) and increment */
+      $q  = sprintf("select %s from %s where %s = '%s'",
+                $this->Seq_ID_Col,
+                $this->Seq_Table,
+                $this->Seq_Name_Col,
+                $seq_name);
+      $id = odbc_exec($this->Link_ID, $q);
+      $res = 0;
+      if (odbc_fetch_row($id, 1)) {
+        $res = array();
+        $count = odbc_num_fields($id);
+        for ($i=1; $i<=$count; $i++) {
+          $res[strtolower(odbc_field_name($id, $i))] = odbc_result($id, $i);
+        }
+      }
+
+      /* No current value, make one */
+      if (!is_array($res)) {
+        $currentid = 0;
+        $q = sprintf("insert into %s ( %s, %s ) values('%s', %s)",
+                $this->Seq_Table,
+                $this->Seq_Name_Col,
+                $this->Seq_ID_Col,
+                $seq_name,
+                $currentid);
+        $id = odbc_exec($this->Link_ID, $q);
+      } else {
+        $currentid = $res[$this->Seq_ID_Col];
+      }
+      $nextid = $currentid + 1;
+      $q = sprintf("update %s set %s = '%s' where %s = '%s'",
+                $this->Seq_Table,
+                $this->Seq_ID_Col,
+                $nextid,
+                $this->Seq_Name_Col,
+                $seq_name);
+      $id = odbc_exec($this->Link_ID, $q);
+      $this->unlock();
+    } else {
+      $this->halt("cannot lock ".$this->Seq_Table." - has it been created?");
+      return 0;
+    }
+    return $nextid;
+  }
+
   /* public: return table metadata */
   function metadata($table = "", $full = false) {
     $count = 0;
@@ -413,7 +468,7 @@ The function halt()s if a lock cannot be obtained.
      * If $full is set this information is also returned:
      * $result[]:
      *   ["num_fields"] number of metadata records
-     *   [0]["php_type"] the corresponding PHP-type 
+     *   [0]["php_type"] the corresponding PHP-type
      *   [0]["php_subtype"] the subtype of PHP-type
      *   ["meta"][field name] index of field named "field name"
      *   This one could be used if you have a field name, but no index.
@@ -450,7 +505,7 @@ The function halt()s if a lock cannot be obtained.
     if ($full) {
       $uniq = array();
       $res["num_fields"] = $count;
-    
+
       # ODBC result set starts at 1
       for ($i=1; $i<=$count; $i++) {
         $res["meta"][$res[$i]["name"]] = $i;
@@ -488,7 +543,7 @@ The function halt()s if a lock cannot be obtained.
       }
       $res["unique"]=join(" ",$uniq);
     }
-    
+
     // free the result only if we were called on a table
     if ($table) {
       odbc_free_result($id);
@@ -535,10 +590,10 @@ The function halt()s if a lock cannot be obtained.
 
 }
 if(!class_exists("DB_Sql"))	{
-	class DB_Sql extends DB_ODBC {
-		function DB_Sql($query = "") {
-			$this->DB_ODBC($query);
-		}
-	}
+    class DB_Sql extends DB_ODBC {
+        function DB_Sql($query = "") {
+            $this->DB_ODBC($query);
+        }
+    }
 }
 ?>

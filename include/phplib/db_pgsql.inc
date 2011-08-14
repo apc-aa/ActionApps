@@ -7,7 +7,7 @@
  *
  * $Id$
  *
- */ 
+ */
 
 class DB_Pgsql {
   var $Host     = "";
@@ -21,19 +21,21 @@ class DB_Pgsql {
   var $Record   = array();
   var $Row      = 0;
 
+  var $Seq_Table     = "db_sequence";
+
   var $Errno    = 0;
   var $Error    = "";
   var $Debug    = 0;
   var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
 
-  var $Auto_Free = 0; # Set this to 1 for automatic pg_freeresult on 
+  var $Auto_Free = 0; # Set this to 1 for automatic pg_freeresult on
                       # last record.
   var $PConnect  = 0; ## Set to 1 to use persistent database connections
 
   function ifadd($add, $me) {
           if("" != $add) return " ".$me.$add;
   }
-  
+
   /* public: constructor */
   function DB_Pgsql($query = "") {
     if($query) {
@@ -74,8 +76,8 @@ class DB_Pgsql {
       return 0;
 
     $this->connect();
-    
-    if ($this->Debug) 
+
+    if ($this->Debug)
       printf("<br>Debug: query = %s<br>\n", $Query_String);
 
     $this->Query_ID = pg_Exec($this->Link_ID, $Query_String);
@@ -89,10 +91,10 @@ class DB_Pgsql {
 
     return $this->Query_ID;
   }
-  
+
   function next_record() {
     $this->Record = @pg_fetch_array($this->Query_ID, $this->Row++);
-    
+
     $this->Error = pg_ErrorMessage($this->Link_ID);
     $this->Errno = ($this->Error == "")?0:1;
 
@@ -116,9 +118,47 @@ class DB_Pgsql {
     }
     return $result;
   }
-  
+
   function unlock() {
     return pg_Exec($this->Link_ID, "commit");
+  }
+
+
+  /* public: sequence numbers */
+  function nextid($seq_name) {
+    $this->connect();
+
+    if ($this->lock($this->Seq_Table)) {
+      /* get sequence number (locked) and increment */
+      $q  = sprintf("select nextid from %s where seq_name = '%s'",
+                $this->Seq_Table,
+                $seq_name);
+      $id  = @pg_Exec($this->Link_ID, $q);
+      $res = @pg_Fetch_Array($id, 0);
+
+      /* No current value, make one */
+      if (!is_array($res)) {
+        $currentid = 0;
+        $q = sprintf("insert into %s values('%s', %s)",
+                 $this->Seq_Table,
+                 $seq_name,
+                 $currentid);
+        $id = @pg_Exec($this->Link_ID, $q);
+      } else {
+        $currentid = $res["nextid"];
+      }
+      $nextid = $currentid + 1;
+      $q = sprintf("update %s set nextid = '%s' where seq_name = '%s'",
+               $this->Seq_Table,
+               $nextid,
+               $seq_name);
+      $id = @pg_Exec($this->Link_ID, $q);
+      $this->unlock();
+    } else {
+      $this->halt("cannot lock ".$this->Seq_Table." - has it been created?");
+      return 0;
+    }
+    return $nextid;
   }
 
   function metadata($table="") {
@@ -185,7 +225,7 @@ class DB_Pgsql {
   function p($Name) {
     print $this->Record[$Name];
   }
-  
+
   function halt($msg) {
     if ("no" == $this->Halt_On_Error)
       return;
@@ -195,7 +235,7 @@ class DB_Pgsql {
     if ("report" != $this->Halt_On_Error)
       die("Session halted.");
   }
-  
+
   function haltmsg($msg) {
     printf("<p><b>Database error:</b> %s<br>\n", $msg);
     printf("<b>PostgreSQL Error</b>: %s (%s)</p>\n",
@@ -217,10 +257,10 @@ class DB_Pgsql {
   }
 }
 if(!class_exists("DB_Sql"))	{
-	class DB_Sql extends DB_Pgsql {
-		function DB_Sql($query = "") {
-			$this->DB_Pgsql($query);
-		}
-	}
+    class DB_Sql extends DB_Pgsql {
+        function DB_Sql($query = "") {
+            $this->DB_Pgsql($query);
+        }
+    }
 }
 ?>

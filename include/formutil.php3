@@ -1856,6 +1856,9 @@ class AA_Inputfield {
             foreach ( $this->value as $v ) {
                 $key = (string)$v['value'];
                 $selected_values[$key] = $this->const_arr[$key];
+                if (strlen($selected_values[$key])==0) {
+                    $selected_values[$key] = $key;
+                }
             }
         }
 

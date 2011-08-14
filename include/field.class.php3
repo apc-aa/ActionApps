@@ -200,7 +200,7 @@ class AA_Field {
     * @todo create validator on input_validate
     */
     function getAaProperty($multiple) {
-        // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN) {
+        // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=) {
         return new AA_Property( $this->getId(),
                                 $this->getName(),
                                 $this->getProperty('text_stored') ? 'text' : 'int',

@@ -211,7 +211,7 @@ function ParamExplode($param) {
     // convert separators to ##Sx
     // change "#:" to ":" and change back "://" - then split by separation string
     // replaces in order
-    return explode('##Sx', str_replace(array('#:', '://', ':', '~@|_'), array('~@|_', '~@|_//', '##Sx', ':'), $param));
+    return explode('##Sx', str_replace(array('#:', 'tp://', ':', '~@|_'), array('~@|_', 'tp~@|_//', '##Sx', ':'), $param));
 }
 
 /** ParamImplode function
@@ -450,9 +450,9 @@ function huh($msg, $name="") {
     global $debugtimes,$debugtimestart;
     if ($debugtimes) {
         if (! $debugtimestart) {
-            $debugtimestart = get_microtime();
+            $debugtimestart = microtime(true);
         }
-        print("Time: ".(get_microtime() - $debugtimestart)."\n");
+        print("Time: ".(microtime(true) - $debugtimestart)."\n");
     }
     if ( @is_array($msg) OR @is_object($msg) ) {
         echo "<br>\n$name";
@@ -494,14 +494,7 @@ function huhlo($a) {
 }
 
 if ( !$timestart ) {
-    $timestart = get_microtime();
-}
-/** get_microtime function
- *
- */
-function get_microtime() {
-    list($usec, $sec) = explode(" ",microtime());
-    return ((float)$usec + (float)$sec);
+    $timestart = microtime(true);
 }
 
 // Set a starting timestamp, if checking times, huhl can report
@@ -512,9 +505,9 @@ function huhl() {
     global $debugtimes,$debugtimestart;
     if ($debugtimes) {
        if (! $debugtimestart) {
-            $debugtimestart = get_microtime();
+            $debugtimestart = microtime(true);
         }
-        print("Time: ".(get_microtime() - $debugtimestart)."\n");
+        print("Time: ".(microtime(true) - $debugtimestart)."\n");
     }
     $vars = func_get_args();
     foreach ($vars as $var) {
@@ -1099,7 +1092,7 @@ function StoreTable2Content(&$content, $SQL, $prefix, $id_field) {
  */
 function GetHeadlineFieldID($sid, $slice_field="headline.") {
     // first should be headline........, then headline.......1, etc.
-    return DB_AA::select1('id', "SELECT id FROM field WHERE slice_id = '". q_pack_id( $sid ) ."' AND id LIKE '$slice_field%' ORDER BY id");  // false if not found
+    return DB_AA::select1("SELECT id FROM field WHERE slice_id = '". q_pack_id( $sid ) ."' AND id LIKE '$slice_field%' ORDER BY id", 'id');  // false if not found
 }
 
 /** GetCategoryGroup function
@@ -1110,7 +1103,7 @@ function GetHeadlineFieldID($sid, $slice_field="headline.") {
 function GetCategoryGroup($slice_id, $field='') {
     // first should be category........, then category.......1, etc.
     $condition = $field ? "id = '$field'" : "id LIKE 'category%' ORDER BY id";
-    return DB_AA::select1('input_show_func', "SELECT input_show_func FROM field WHERE slice_id='". q_pack_id($slice_id) ."' AND $condition");  // false if not found
+    return DB_AA::select1("SELECT input_show_func FROM field WHERE slice_id='". q_pack_id($slice_id) ."' AND $condition", 'input_show_func');  // false if not found
 }
 
 // -------------------------------------------------------------------------------
@@ -1364,13 +1357,19 @@ function get_last_insert_id($db, $table) {
 // -----------------------------------------------------------------------------
 
 /** gensalt function
- * generates random string of given length (useful as MD5 salt)
+ * generates random string of given length
  * @param $saltlen
  */
 function gensalt($saltlen) {
-    $salt_chars = "abcdefghijklmnoprstuvwxABCDFGHJKLMNPQRSTVWXZ0123456589";
+    $salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456589";
+    $more_sec = '';
+
+    do {
+        $more_sec .= hash('md5', microtime().'xy');
+    } while ($saltlen > strlen($more_sec));
+
     for ($i = 0; $i < $saltlen; $i++) {
-        $salt .= $salt_chars[rand(0,strlen($salt_chars)-1)];
+        $salt .= $salt_chars[(mt_rand(0,61)+ord($more_sec[$i])) % 62];
     }
     return $salt;
 }
@@ -1624,7 +1623,7 @@ class AA_Credentials {
     /** wrapper function
      *  static function called as AA_Credentials::encrypt($reading_password) */
     function encrypt($pwd) {
-        return md5($pwd);
+        return hash('md5', $pwd);
     }
 }
 

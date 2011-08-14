@@ -1735,7 +1735,7 @@ class AA_Property extends AA_Storable {
     var $show_content_type_switch;
 
     /** Default value for content type switch
-    *   (FLAG_HTML or FLAG_PLAIN at this moment)
+    *   (FLAG_HTML at this moment)
     */
     var $content_type_switch_default;
 
@@ -1760,7 +1760,7 @@ class AA_Property extends AA_Storable {
      * @param $show_content_type_switch
      * @param $content_type_switch_default
      */
-    function AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_PLAIN, $perms=null, $default=null) {  // default values are needed for AA_Storable's construction
+    function AA_Property($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null) {  // default values are needed for AA_Storable's construction
         $this->id                          = $id;
         $this->name                        = $name;
         $this->type                        = $type;

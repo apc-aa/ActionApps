@@ -44,7 +44,7 @@ function validatePwd() {
 <BODY>
 <?php
 
-$protocol = (strpos($_SERVER['SERVER_PROTOCOL'],'https') === false) ? 'http://' : 'https://';
+$protocol = ( isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ) ? 'https://' : 'http://';
 
 $full_path = $protocol.$_SERVER['HTTP_HOST'].$script_path;
 

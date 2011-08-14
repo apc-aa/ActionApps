@@ -1294,7 +1294,7 @@ class AA_ChangesMonitor {
     /** list of fields changed during last edit - dash ('-') separated */
     function lastChanged($resource_id) {
 
-        $chid = DB_AA::select1('id', "SELECT id FROM `change` WHERE `change`.resource_id = \"".quote($resource_id)."\" AND type = 'h' ORDER BY time DESC");  // false if not found
+        $chid = DB_AA::select1("SELECT id FROM `change` WHERE `change`.resource_id = \"".quote($resource_id)."\" AND type = 'h' ORDER BY time DESC", 'id');  // false if not found
         $ret     = '';
         if ($chid) {
             $changes_arr = $this->getProposalByID($chid);
@@ -1307,8 +1307,8 @@ class AA_ChangesMonitor {
 
     /** list of fields changed during last edit - dash ('-') separated */
     function lastChangeDate($resource_id, $selector) {
-        $chid = DB_AA::select1('time', "SELECT time FROM `change_record` INNER JOIN `change` ON `change`.id = `change_record`.change_id WHERE `change`.resource_id = \"".quote($resource_id)."\" AND `change`.type = 'h' AND `change_record`.selector = \"".quote($selector)."\" ORDER BY `change`.time DESC");
-        return $chid ? $chid : 0;
+        $time = DB_AA::select1("SELECT time FROM `change_record` INNER JOIN `change` ON `change`.id = `change_record`.change_id WHERE `change`.resource_id = \"".quote($resource_id)."\" AND `change`.type = 'h' AND `change_record`.selector = \"".quote($selector)."\" ORDER BY `change`.time DESC", 'time');
+        return $time ? $time : 0;
     }
 
     /** deleteProposalForSelector function

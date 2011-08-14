@@ -353,6 +353,43 @@ class DB_Oracle {
     print $this->Record[$Name];
   }
 
+  /* public: sequence number */
+  function nextid($seq_name)
+  {
+      $this->connect();
+
+      /* Independent Query_ID */
+      $Query_ID = ora_open($this->Link_ID);
+
+      if(!@ora_parse($Query_ID,"SELECT $seq_name.NEXTVAL FROM DUAL"))
+      {
+        // There is no such sequence yet, then create it
+        if(!@ora_parse($Query_ID,"CREATE SEQUENCE $seq_name")
+           ||
+           !@ora_exec($Query_ID)
+           )
+        {
+            $this->halt("<BR> nextid() function - unable to create sequence");
+            return 0;
+        }
+        @ora_parse($Query_ID,"SELECT $seq_name.NEXTVAL FROM DUAL");
+      }
+      if (!@ora_exec($Query_ID)) {
+        $this->halt("<BR>ora_exec() failed:<BR>nextID function");
+      }
+      if (@ora_fetch($Query_ID) ) {
+        $next_id =  ora_getcolumn($Query_ID, 0);
+      }
+      else {
+        $next_id = 0;
+      }
+      if ( Query_ID > 0 ) {
+        ora_close(Query_ID);
+      }
+
+      return $next_id;
+  }
+
   function disconnect() {
       if($this->Debug) {
           echo "Debug: Disconnecting $this->Query_ID...<br>\n";

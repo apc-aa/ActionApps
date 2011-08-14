@@ -552,7 +552,8 @@ function ProoveVals($val, $columns) {
  * @param $varset
  */
 function GetKey($primary, $columns, $varset) {
-    foreach ( $primary as $alias) {
+    reset ($primary);
+    while (list ($alias) = each ($primary)) {
         $val   = $varset->get($columns[$alias]["field"]);
         $key[] = $columns[$alias]["view"]["unpacked"] ? unpack_id($val) : htmlspecialchars($val);
     }
@@ -595,7 +596,8 @@ function AddKeyValues(&$varset, $val, $primary, $columns, $auto_increment = true
         exit;
     }
 
-    foreach ( $primary as $alias) {
+    reset ($primary);
+    while (list ($alias) = each ($primary)) {
         $colname = $columns[$alias]["field"];
         $value   = $val[$alias];
         if ($auto_increment || !$columns[$alias]["auto_increment"]) {
@@ -614,7 +616,8 @@ function GetKeyValues($key_val, $primary, $columns) {
     $keys = split_escaped(":", $key_val, "#:");
     reset ($keys);
 
-    foreach ( $primary as $alias) {
+    reset ($primary);
+    while (list ($alias) = each ($primary)) {
         list (,$value) = each ($keys);
         $colname = $columns[$alias]["field"];
         if ($columns[$alias]["view"]["unpacked"]) {
@@ -634,7 +637,7 @@ function GetKeyValues($key_val, $primary, $columns) {
  */
 function CreateWhereCondition($key_val, $primary, $columns, $table) {
     $varset = new CVarset;
-
+   
     $keys = GetKeyValues($key_val, $primary, $columns);
     foreach ( $keys as $colname => $value) {
         $varset->addkey($colname, "text", $value);

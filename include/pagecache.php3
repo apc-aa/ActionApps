@@ -53,15 +53,34 @@ class PageCache  {
         $this->cacheTime = $ct;
     }
 
-    /** getKeyString function
-     *  Private method - serialized specified global variables
-     *  Returns keystring
-     *  @param $keyVars - array of names of global variables which identifies cached
-     *                    information
+    /** static getKeystring function
+     *  Return string to use in keystr for cache if could do a stringexpand
+     *  Returns part of keystring
      */
-    function getKeystring($keyVars) {
-        foreach ( (array)$keyVars as $var ) {
-            $ks .= $var."=".$GLOBALS[$var];
+    function globalKeystring() {
+        $ks = "";
+        if (isset($GLOBALS["apc_state"])) {
+            $ks .= serialize($GLOBALS["apc_state"]);
+        }
+        if (isset($GLOBALS["als"])) {
+            $ks .= serialize($GLOBALS["als"]);
+        }
+        if (isset($GLOBALS["slice_pwd"])) {
+            $ks .= serialize($GLOBALS["slice_pwd"]);
+        }
+
+        if (isset($_COOKIE)) {
+            $work = array();
+            // do not count with cookie names starting with underscore
+            // (Google urchin uses cookies like __utmz which varies very often)
+            foreach( $_COOKIE as $key => $val ) {
+                if (!(substr((string)$key,0,1)=='_')) {
+                    $work[$key] = $val;
+                }
+            }
+            if (count($work)>0) {
+                $ks .= serialize($work);
+            }
         }
         return $ks;
     }
@@ -318,7 +337,7 @@ class CacheStr2find {
      * @param $str2find
      */
     function add_str2find($str2find) {
-        if (strtolower(get_class($str2find)) == 'cachestr2find') {
+        if ((strtolower(get_class($str2find)) == 'cachestr2find') AND is_array($str2find->ids)) {
             foreach ($str2find->ids as $k => $v) {
                 $this->ids[$k] = true;   // copy all the $str2find ids to this
             }

@@ -185,14 +185,14 @@ class AA_Toexecute {
 
         $this->clear_report();
 
-        $execute_start = get_microtime();
+        $execute_start = microtime(true);
         if (is_array($tasks)) {
             foreach ($tasks as $task_id) {
                 $task = GetTable2Array("SELECT * FROM toexecute WHERE id='$task_id'", 'aa_first', 'aa_fields');
 
                 $task_type     = get_if($task['selector'],'aa_unspecified');
                 $expected_time = get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
-                $task_start    = get_microtime();
+                $task_start    = microtime(true);
 
                 // can we run next task? Does it (most probably) fit in allowed_time?
                 if ( (($task_start + $expected_time) - $execute_start) > $allowed_time) {
@@ -215,7 +215,7 @@ class AA_Toexecute {
 
                 // Task is done - remove it from queue
                 $varset->doDelete('toexecute');
-                $execute_times[$task_type] = get_microtime() - $task_start;
+                $execute_times[$task_type] = microtime(true) - $task_start;
                 AA_Log::write('TOEXECUTE', $execute_times[$task_type]. ":$retcode:".$task['params'], get_class($object));
             }
         }

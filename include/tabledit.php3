@@ -234,6 +234,7 @@ class tabledit {
                 $col .= " ".$cname;
             $collist[] = $col;
         }
+        
 
         $db->query(
              " SELECT ".join(",",$collist)
@@ -521,6 +522,7 @@ class tabledit {
             // value of $this->cmd["insert"] was changed in TableInsert to the SQL WHERE clause
             $this->view["where"] = "(".$this->view["where"].") OR ".$this->cmd["insert"];
         }
+        
         // apply edit command only in Edit view
         if ($this->cmd["edit"] && $this->type == "edit") {
             $where = CreateWhereCondition(key($this->cmd["edit"]),

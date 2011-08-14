@@ -359,16 +359,6 @@ function GetConstantFields() {  // function - we need translate _m() on use (not
         'const_level'       => GetFieldDef( _m('Level'),       'constant.level',      'numeric'));
 }
 
-$LOG_EVENTS = array ( "0"   => LOG_EVENTS_UNDEFINED,
-                      "1"   => LOG_EVENTS_,
-                      "2"   => LOG_EVENTS_,
-                      "3"   => LOG_EVENTS_,
-                      "4"   => LOG_EVENTS_,
-                      "5"   => LOG_EVENTS_,
-                      "6"   => LOG_EVENTS_,
-                      "7"   => LOG_EVENTS_,
-                      "8"   => LOG_EVENTS_);
-
 /** content table flags */
 define( "FLAG_HTML",         1 );   // content is in HTML
 define( "FLAG_FEED",         2 );   // item is fed
@@ -952,6 +942,10 @@ define("AA_BIN_APPROVED", 7);   // AA_BIN_ACTIVE|AA_BIN_PENDING|AA_BIN_EXPIRED
 define("AA_BIN_HOLDING",  8);
 define("AA_BIN_TRASH",   16);
 define("AA_BIN_ALL",     31);   // all bins (AA_BIN_ACTIVE|AA_BIN_PENDING|...)
+
+/** status codes - in itemContent */
+define("SC_ACTIVE", 1);
+define("SC_HOLDING_BIN", 2);
 
 /** HTMLArea constants */
 // not supported with new version of HtmlArea

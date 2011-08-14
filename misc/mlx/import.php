@@ -22,8 +22,7 @@ require_once AA_INC_PATH."date.php3";
 require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."mlx.php";
 
-class MLXImport
-{
+class MLXImport {
 //public:
     ///@param $slice_id (string) unpacked slice id of content slice (not control slice)
     function MLXImport($slice_id) {
@@ -157,12 +156,11 @@ class MLXImport
         unset($this->added);
     }
     function find(&$content) { // in "content" format
-        foreach($content as $field=>$arVal)
+        foreach($content as $field=>$arVal) {
             $conds[$field] = $arVal[0]['value'];
-        $zids = QueryZIDs($this->fields,$this->slice_id, $conds,'','','ACTIVE',0,1,false, '=' );
-        if($GLOBALS['QueryIDsCount'] == 0)
-            return false;
-        return $zids->longids();
+        }
+        $zids = QueryZIDs($this->slice_id, $conds,'','ACTIVE',0,false, '=');
+        return ($GLOBALS['QueryIDsCount'] == 0) ? false : $zids->longids();
     }
 //protected:
     function fatal($msg) {

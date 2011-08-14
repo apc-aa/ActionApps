@@ -68,18 +68,12 @@ function CopyImage2Destination($simage, $dimage) {
  * @return false on success or text string with error message
  */
 function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
-    global $debugupload, $imageTable;
+    global $imageTable;
 
-    if ($debugupload) {
-        huhl("Resample $simage at $new_w,$new_h to $dimage");
-    }
     //determine type, width, height of image.
     $imginfo   = GetImageSize($simage);
     $imagetype = $imageTable[$imginfo[2]]['e'];
 
-    if ($debugupload) {
-        huhl("Type=$imagetype Size now=",$imginfo);
-    }
     // if dimensions of new picture are not set, then do not resize
     if (!$new_w && !$new_h) {
         return CopyImage2Destination($simage, $dimage);
@@ -142,9 +136,6 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
         $offset_h = 0;
     }
 
-    if ($debugupload) {
-        huhl("Will resample to $new_width:$new_height");
-    }
     if (GetSupportedTypes($imginfo[2])) {
         if ($imginfo[2]<4 && $imginfo!=NULL) {
             // in GD2 ImageCreate goes monochrome
@@ -160,9 +151,6 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
             if (!$src_img) {
                 return _m("ResampleImage unable to %1",array($f));
             }
-            if ($debugupload) {
-                huhl("imagecopyresized(...ofset_w=$offset_w,offset_h=$offset_h,width=$new_width,height=$new_height,type=$imginfo[0],$imginfo[1]");
-            }
             if (function_exists('imagecopyresampled')) {
                 // better quality resizing - works with GD 2.0.1
                 imagecopyresampled($dst_img,$src_img,0,0,$offset_w,$offset_h,$new_width,$new_height,$imginfo[0],$imginfo[1]);
@@ -176,16 +164,10 @@ function ResampleImage($simage,$dimage,$new_w,$new_h,$exact) {
             else{
                 $f($dst_img,$dimage);
             }
-            if ($debugupload) {
-                huhl("Resampled it");
-            }
         }
         return false;
     } else {
         $err = _m("Type not supported for resize");
-        if ($debugupload) {
-            huhl($err);
-        }
         return $err;
     }
 }
@@ -222,15 +204,9 @@ function PrintSupportedTypes() {
  * @param $type
  */
 function GetSupportedTypes($type) { //type 1-gif, 2-jpeg, 3-png;
-    global $imageTable, $debugupload;
+    global $imageTable;
     if (!GDInstalled()) {
-        if ($debugupload) {
-            huhl("GD not installed");
-        }
         return false;
-    }
-    if ($debugupload) {
-        huhl("ImageTypes = ",ImageTypes());
     }
     if (ImageTypes() & $imageTable[$type]["b"]) {
         return true;
