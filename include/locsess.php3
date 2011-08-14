@@ -25,40 +25,28 @@
 * @link      http://www.apc.org/ APC
 *
 */
-if (!defined('PHPLIB_LIBDIR')) {
-    define ('PHPLIB_LIBDIR', '');
-}
-
 // set timezone - just for date() speedup
 // date_default_timezone_set(date_default_timezone_get());
 
-if (! PHPLIB_ALREADY_LOADED && ! defined ("PHPLIB_AA_LOADED")) {
-    /* Change this to match your database. */
-    $db_type_filename = (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc");
-    require_once(PHPLIB_LIBDIR. $db_type_filename);
-
-    /* Change this to match your data storage container */
-    require_once(PHPLIB_LIBDIR. "ct_sql.inc");
-
-    /* Required for everything below.      */
-    require_once(PHPLIB_LIBDIR. "session.inc");
-
-    /* Disable this, if you are not using authentication. */
-    require_once(PHPLIB_LIBDIR. "auth.inc");
-
-    /* Required, contains the page management functions. */
-    require_once(PHPLIB_LIBDIR. "page.inc");
-}
+/* Change this to match your database. */
+$db_type_filename = (defined("DB_TYPE") ? DB_TYPE .".inc" : "db_mysql.inc");
+require_once(AA_INC_PATH.'phplib/'. $db_type_filename);
+require_once(AA_INC_PATH.'phplib/phplib.php');
 
 function __autoload ($class_name) {
     $PAIRS = array(
-        'AA_Array'         => 'include/table.class.php3',
-        'ConvertCharset'   => 'include/convert_charset.class.php3',
-        'AA_Slices'        => 'include/slice.class.php3',
-        'AA_Items'         => 'include/item.php3',
-        'PhpQuickProfiler' => 'misc/pqp/classes/PhpQuickProfiler.php',
-        'Console'          => 'misc/pqp/classes/Console.php',
-        'AA_Form_Array'    => 'include/widget.class.php3'
+        'AA_Perm'            => 'include/perm_core.php3',
+        'AA_Permsystem_Sql'  => 'include/perm_sql.php3',
+        'AA_Permsystem_Ldap' => 'include/perm_ldap.php3',
+        'AA_Array'           => 'include/table.class.php3',
+        'ConvertCharset'     => 'include/convert_charset.class.php3',
+        'AA_Slices'          => 'include/slice.class.php3',
+        'AA_Items'           => 'include/item.php3',
+        'PhpQuickProfiler'   => 'misc/pqp/classes/PhpQuickProfiler.php',
+        'Console'            => 'misc/pqp/classes/Console.php',
+        'AA_Form_Array'      => 'include/widget.class.php3',
+        'AA_Mysqlauth'       => 'include/auth.php3',
+        'AA_Mailman'         => 'include/mailman.php3'
         );
 
     if ($PAIRS[$class_name]) {
@@ -73,18 +61,19 @@ function __autoload ($class_name) {
     $core = $matches[1];
 
     switch ($core) {
-    case 'form':
-    case 'table':
-    //  case 'widget':
-    //  case 'field':
-        require AA_INC_PATH. $core. '.class.php3';
-        return;
-    case 'objectgrabber':
-        require AA_INC_PATH. 'grabber.class.php3';
-        return;
-    case 'validate':
-        require AA_INC_PATH. 'validate.php3';
-        return;
+        case 'form':
+        case 'table':
+        case 'debug':
+        //  case 'widget':
+        //  case 'field':
+            require AA_INC_PATH. $core. '.class.php3';
+            return;
+        case 'objectgrabber':
+            require AA_INC_PATH. 'grabber.class.php3';
+            return;
+        case 'validate':
+            require AA_INC_PATH. 'validate.php3';
+            return;
     }
 
     $CUSTOM_INC_FILES = array(
@@ -118,19 +107,19 @@ class AA_Debug {
     function error()    {$v=func_get_args(); $this->_do('error',   $v);}
 
     function group()    {
-        $v=func_get_args();
-        $group = reset($v);
+        $v     = func_get_args();
+        $group = array_shift($v);
         $this->_starttime[$group] = microtime(true);
-        echo "\n<div style='border: 1px #AAA solid; margin: 6px 1px 6px 12px'>";
+        $this->_groupstart($group);
         $this->_do('log', $v);
     }
 
     function groupend() {
-        $v=func_get_args();
+        $v     = func_get_args();
         $group = array_shift($v);
         $this->_do('log', $v);
         $this->_logtime($group);
-        echo "\n</div>";
+        $this->_groupend($group);
     }
 
     function _do($func, $params) {
@@ -143,66 +132,29 @@ class AA_Debug {
             echo "<br>\n";
         }
     }
+
+    function _groupstart($group) {
+        echo "\n<div style='border: 1px #AAA solid; margin: 6px 1px 6px 12px'>";
+        $this->_do('log', $group);
+    }
+
+    function _groupend($group) {
+        echo "\n</div>";
+    }
+
     function _logtime($group) {
         $time = microtime(true) - $this->_starttime[$group];
         $this->_do(($time > 1.0) ? 'warn' : 'log', array("$group time: $time"));
     }
 }
 
-class AA_Degug_Firephp extends AA_Debug {
-    private $_console;
-
-    function __construct() {
-        define('INSIGHT_IPS', '*');
-        define('INSIGHT_AUTHKEYS', '*');
-        define('INSIGHT_PATHS', dirname(__FILE__));
-        define('INSIGHT_SERVER_PATH', '/aaa/test.php3');
-        require_once(AA_BASE_PATH. 'misc/firephp/lib/FirePHP/Init.php');
-        $inspector = FirePHP::to('page');
-        $this->_console = $inspector->console();
-        $this->_console->log('ActionApps - console initiated');
-        parent::__construct();
-    }
-
-    function group()    {
-        $v=func_get_args();
-        $group = reset($v);
-        $this->_console->group($group)->open();
-        $this->_console->log($group);
-        $this->_starttime[$group] = microtime(true);
-    }
-
-    function groupend() {
-        $v=func_get_args();
-        $group = reset($v);
-        $this->_console->group($group)->close();
-        $this->_logtime($group);
-    }
-
-    function _do($func, $params) {
-        $this->_console->log(microtime(true) - $this->_starttime['main']);
-        foreach ($params as $var) {
-           call_user_func_array(array($this->_console, $func), array($var));
-        }
-    }
-
-    function _logtime($group) {
-        $time = microtime(true) - $this->_starttime[$group];
-        $msg  = "$group time: $time";
-        if ($time > 1.0) {
-            $this->_console->warn($msg);
-        } else {
-            $this->_console->log($msg);
-        }
-    }
-}
-
 class AA {
     public static $dbg;
     public static $debug;
+    public static $perm;
 }
-AA::$dbg   = (strpos($_GET['debug'],'f')!==false) ? new AA_Degug_Firephp() : new AA_Debug();
 AA::$debug = $_GET['debug'];
+AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_PhpConsole() : new AA_Debug());
 
 class DB_AA extends DB_Sql {
     var $Host      = DB_HOST;
@@ -213,13 +165,13 @@ class DB_AA extends DB_Sql {
 
     public static $queries = array();
 
-    /** allways open reusablr database connection for one time queries */
+    /** allways open, reusable database connection for one time queries */
     private static $_db    = null;
 
-    function select1($column, $query) {
+    function select1($query, $column=false) {
         $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
         $db->query("$query LIMIT 1");
-        return $db->next_record() ? $db->Record[$column] : false;
+        return $db->next_record() ? ($column ? $db->Record[$column] : $db->Record) : false;
     }
 
     /** query function
@@ -308,11 +260,8 @@ class DB_AA extends DB_Sql {
 
 class AA_CT_Sql extends CT_Sql {	         // Container Type for Session is SQL DB
     var $database_class = "DB_AA";           // Which database to connect...
-    var $database_table = "active_sessions"; // and find our session data in this table.
 }
 
 /* Required, contains your local session management extension */
 require_once(AA_INC_PATH . ($encap ? "extsessi.php3" : "extsess.php3"));
-
-define ("PHPLIB_AA_LOADED", 1);
 ?>
