@@ -39,38 +39,36 @@ require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
 require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
 require_once AA_INC_PATH."tree.class.php3";   // for {tree:...};
 
-/** translateString function
- * @param $string
- * @param $translation
- */
-function translateString( $string, $translation ) {
-    $twos      = ParamExplode( $translation );
-    $i         = 0;
-    $twoscount = count($twos);
+/** include file, first parameter is filename, second is hints on where to find it **/
+class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
 
-    while ( $i < $twoscount ) {
-        if ( $i == ($twoscount-1)) {                // default option
-            return $twos[$i];
+    /** expand function
+     * @param $fn first parameter is filename, second is hints on where to find it
+     */
+    function expand() {
+        $twos = func_get_args();   // must be asssigned to the variable
+        list($condition,$first) = explode(')', $twos[0], 2);
+        $twos[0] = $first;
+
+        $i         = 0;
+        $twoscount = count($twos);
+        $ret       = '';
+
+        while ( $i < $twoscount ) {
+            if ( $i == ($twoscount-1)) {                // default option
+                $ret = $twos[$i];
+                break;
+            }
+            $val = trim($twos[$i]);
+            // Note you can't use !$val, since this will match a pattern of exactly "0"
+            if ( ($val=="") OR ereg($val, $condition) ) {    // Note that $string, might be expanded {headline.......} or {m}
+                $ret = $twos[$i+1];
+                break;
+            }
+            $i+=2;
         }
-        $val = trim($twos[$i]);
-        // Note you can't use !$val, since this will match a pattern of exactly "0"
-        if ( ($val=="") OR ereg($val, $string) ) {    // Note that $string, might be expanded {headline.......} or {m}
-            return $twos[$i+1];
-        }
-        $i+=2;
+        return str_replace('_#1', $condition, $ret);
     }
-    return "";
-}
-/** parseSwitch function
- * @param $text
- */
-function parseSwitch($text) {
-    $condition = substr(strtok('_'.$text,")"),1); // add and remove '_' - this
-    // is hack for empty condition
-    // (when $text begins with ')')
-    $condition = DeQuoteColons($condition);	// If expanded, will be quoted ()
-    $ret       = translateString( $condition, strtok("") );
-    return str_replace('_#1', $condition, $ret);
 }
 
 /** Expands {user:xxxxxx} alias - auth user informations (of current user)
@@ -446,6 +444,17 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
     }
 }
 
+/** {facebook:<url>} "I like" button
+ *  @param $url      - url of liked page
+ */
+class AA_Stringexpand_Facebook extends AA_Stringexpand_Nevercache {
+    /** expand function
+     * @param $url
+     */
+    function expand($url='') {
+        return !$url ? '' : '<iframe src="http://www.facebook.com/plugins/like.php?href='.$url.'&amp;send=false&amp;layout=button_count&amp;width=120&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21" style="border: medium none; overflow: hidden; width: 120px; height: 21px;" allowtransparency="true" frameborder="0" scrolling="no"></iframe>';
+    }
+}
 
 /** Expands {protectmail:<email>[:<text>]} - hides mail into javascript
  *  <a href="mailto:<email>"><text></a>   (but encocded in javascript)
@@ -525,8 +534,8 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
-        $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
+        $switch_state_1_js = str_replace(array("'", '"', "\n"), array("\'", "\'", ' '), $switch_state_1);
+        $switch_state_2_js = str_replace(array("'", '"', "\n"), array("\'", "\'", ' '), $switch_state_2);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $link   = '';
@@ -907,7 +916,7 @@ function parseLoop($out, &$item) {
                          *       {list:relation........(_#GET_HEAD): ,:_#1}
                          *  where _#GET_HEAD is alias defined somewhere in
                          *  current slice using f_t (for example):
-                         *       {item:{loop............}:headline}
+                         *       {item:{loop............}:headline........}
                          *  this displays all the related headlines delimeted
                          *   by comma
                          */
@@ -1031,6 +1040,43 @@ function DeQuoteColons($text) {
     global $UNQUOTED_ARRAY, $QUOTED_ARRAY;
     return str_replace($GLOBALS['QUOTED_ARRAY'], $GLOBALS['UNQUOTED_ARRAY'], $text);
 }
+
+
+//$quot_arr    = array();
+//$quot_ind    = array();
+//$quot_hashes = array();
+//
+///** QuoteColons function
+// *  Substitutes all colons with special AA string and back depending on unalias
+// *  nesting. Used to mark characters :{}() which are content, not syntax
+// *  elements
+// * @param $text
+// */
+//function QuoteColons($text) {
+//    global $quot_arr, $quot_ind, $quot_hashes;
+//
+//    if (!$text) {
+//        return $text;
+//    }
+//    $hash  = hash('md5',$text);
+//    if (!($index = $quot_hashes[$hash])) {
+//        $index              = '~@@q'.count($quot_arr).'q';
+//        $quot_hashes[$hash] = $index;
+//        $quot_ind[]         = $index;
+//        $quot_arr[]         = $text;
+//    }
+//    return $index;
+//}
+//
+///** DeQuoteColons function
+// *  Substitutes special AA 'colon' string back to colon ':' character
+// *  Used for parameters, where is no need colons are not parameter separators
+// * @param $text
+// */
+//function DeQuoteColons($text) {
+//    global $quot_arr, $quot_ind, $quot_hashes;
+//    return str_replace($quot_ind, $quot_arr, $text);
+//}
 
 class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2189,6 +2235,47 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** The same as {ifeq}, but we are looking for value less than ... You can again
+ *  use multiple conditions - the first matching is returned, then
+ *  Example: {if:{_#IMGCOUNT}:>:10:big:6:medium:small}
+ */
+class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $etalon
+     * @param $operator
+     * @param $option1
+     * @param $text1
+     * (...)
+     * @param $else_text
+     */
+    function expand() {
+        $OPERATORS = array('>'=>'>', '>='=>'>=', 'gt'=>'>', 'ge'=>'>=', '='=>'==', '=='=>'==', 'eq'=>'==', '<'=>'<', '<='=>'<=', 'lt'=>'<', 'le'=>'<=', '<>'=>'<>', '!='=>'<>');
+
+        $arg_list = func_get_args();   // must be asssigned to the variable
+        $etalon   = array_shift($arg_list);
+        $operator = $OPERATORS[str_replace(array('&gt;','&lt;'), array('>','<'),array_shift($arg_list))];
+        $cmp      = create_function('$a,$b', $operator ? 'return ($a '.$operator .' $b);' : 'return false;');
+        $ret      = false;
+        $i        = 0;
+        while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
+            if ($cmp($etalon,$arg_list[$i])) {
+                $ret = $arg_list[$i+1];
+                break;
+            }
+            $i += 2;
+        }
+        if ($ret === false) {
+            // else text
+            $ret = isset($arg_list[$i]) ? $arg_list[$i] : '';
+        }
+        // _#2 is not very usefull but we have it from the times the function was just for one option
+        return str_replace(array('_#1','_#2'), array($etalon, $arg_list[0]), $ret);
+    }
+}
+
+
 /** If any value of the (multivalue) $field is equal to $var, then print $text,
  *  else print $else_text.
  *  $(else_)text could contain _#1 aliases for $var, but you can use any {} AA
@@ -2736,7 +2823,7 @@ class AA_Stringexpand_Include extends AA_Stringexpand_Nevercache {
                 } elseif ($GLOBALS['slice_id']) {
                     $mysliceid = $GLOBALS['slice_id'];
                 } else {
-                    if ($errcheck) huhl("No slice_id defined when expanding fileman");
+                    // if ($errcheck) huhl("No slice_id defined when expanding fileman");
                     return "";
                 }
                 $fileman_dir = AA_Slices::getSliceProperty($mysliceid,"fileman_dir");
@@ -2808,41 +2895,6 @@ class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
     }
 }
 
-// Return some strings to use in keystr for cache if could do a stringexpand
-class AA_Stringexpand_Keystring extends AA_Stringexpand_Nevercache {
-    // Never cached (extends AA_Stringexpand_Nevercache)
-    // No reason to cache this simple function
-    /** expand function
-     */
-    function expand() {
-        $ks = "";
-        if (isset($GLOBALS["apc_state"])) {
-            $ks .= serialize($GLOBALS["apc_state"]);
-        }
-        if (isset($GLOBALS["als"])) {
-            $ks .= serialize($GLOBALS["als"]);
-        }
-        if (isset($GLOBALS["slice_pwd"])) {
-            $ks .= serialize($GLOBALS["slice_pwd"]);
-        }
-
-        if (isset($_COOKIE)) {
-            $work = array();
-            // do not count with cookie names starting with underscore
-            // (Google urchin uses cookies like __utmz which varies very often)
-            foreach( $_COOKIE as $key => $val ) {
-                if (!(substr((string)$key,0,1)=='_')) {
-                    $work[$key] = $val;
-                }
-            }
-            if (count($work)>0) {
-                $ks .= serialize($work);
-            }
-        }
-        return $ks;
-    }
-}
-
 /** helper class
  *  Its purpose is just tricky - we can't use preg_replace_callback where callback
  *  function has some more parameters. So we use this class as callback
@@ -2904,7 +2956,8 @@ class AA_Unalias_Callback {
         // all parameters could contain aliases (like "{any _#HEADLINE text}"),
         // which are processed after expanding the function
 
-        $outlen = strlen($out);
+        $outlen     = strlen($out);
+
         switch ($out[0]) {
                       // remove comments
             case '#': return '';
@@ -2926,23 +2979,25 @@ class AA_Unalias_Callback {
                       }
         }
 
-        if (isset($this->item)) {
-            if ($outlen == 16) {
-                switch ($out) {
-                    case "unpacked_id.....":
-                    case "id..............":
-                        return $this->item->getItemID();   // should be called in QuoteColons(), but we don't need it
-                    case "slice_id........":
-                        return $this->item->getSliceID();
-                    default:
-                        if ( $this->item->isField($out) ) {
-                            return QuoteColons($this->item->f_h($out,"-"));
-                            // QuoteColons used to mark colons, which is not parameter separators.
-                        }
-                }
+        if (($outlen == 16) AND isset($this->item)) {
+            switch ($out) {
+                case "unpacked_id.....":
+                case "id..............":
+                    return $this->item->getItemID();   // should be called in QuoteColons(), but we don't need it
+                case "slice_id........":
+                    return $this->item->getSliceID();
+                default:
+                    if ( $this->item->isField($out) ) {
+                        return QuoteColons($this->item->f_h($out,"-"));
+                        // QuoteColons used to mark colons, which is not parameter separators.
+                    }
             }
+        }
+
+        // if in_array - for speedup
+        if (in_array(substr($out, 0, 5), array('const', 'alias', 'math(', 'inclu', 'view.', 'dequo'))) {
             // look for {const_*:} for changing viewing type of constants
-            if (substr($out, 0, 6) == "const_") {
+            if ((substr($out, 0, 6) == "const_") AND isset($this->item)) {
                 // $what - name of column (eg. from const_name we get name)
                 $what = substr($out, strpos($out, "_")+1, strpos($out, ":") - strpos($out, "_")-1);
                 // parameters - first is field
@@ -2957,7 +3012,7 @@ class AA_Unalias_Callback {
             }
             // tried to change to preg_match, but there was problem with multiple lines
             //   used: '/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/'
-            elseif ( (substr($out, 0, 5)=='alias') AND ereg('^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$', $out, $parts) ) {
+            elseif ( (substr($out, 0, 5)=='alias') AND isset($this->item) AND ereg('^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$', $out, $parts) ) {
                 // call function (called by function reference (pointer))
                 // like f_d("start_date......", "m-d")
                 if ($parts[1] && !$this->item->isField($parts[1])) {
@@ -2967,67 +3022,67 @@ class AA_Unalias_Callback {
                 return QuoteColons($this->item->$fce($parts[1], $parts[3]));
                 // QuoteColons used to mark colons, which is not parameter separators.
             }
-        }
-        if( substr($out, 0, 7) == "switch(" ) {
-            // replace switches
-            return QuoteColons(parseSwitch( substr($out,7) ));
-            // QuoteColons used to mark colons, which is not parameter separators.
-        }
-        elseif( substr($out, 0, 5) == "math(" ) {
-            // replace math
-            return QuoteColons( parseMath(DeQuoteColons(AA_Stringexpand::unalias(substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
-        }
-        elseif( substr($out, 0, 8) == "include(" ) {
-            // include file
-            if ( !($pos = strpos($out,')')) ) {
-                return "";
+            elseif( substr($out, 0, 5) == "math(" ) {
+                // replace math
+                return QuoteColons( parseMath(DeQuoteColons(AA_Stringexpand::unalias(substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
             }
-            $fileout = expandFilenameWithHttp(DeQuoteColons(substr($out, 8, $pos-8)));
-            return QuoteColons($fileout);
-            // QuoteColons used to mark colons, which is not parameter separators.
-        }
-        elseif ( substr($out, 0,10) == "view.php3?" ) {
-            // Xinha editor replaces & with &amp; so we need to change it back
-            $param      = str_replace('&amp;', '&', substr($out,10));
-            $view_param = ParseViewParameters(DeQuoteColons($param));
-            $foo        = '';
+            elseif( substr($out, 0, 8) == "include(" ) {
+                // include file
+                if ( !($pos = strpos($out,')')) ) {
+                    return "";
+                }
+                $fileout = expandFilenameWithHttp(DeQuoteColons(substr($out, 8, $pos-8)));
+                return QuoteColons($fileout);
+                // QuoteColons used to mark colons, which is not parameter separators.
+            }
+            elseif ( substr($out, 0,10) == "view.php3?" ) {
+                // Xinha editor replaces & with &amp; so we need to change it back
+                $param      = str_replace(array('&amp;','-&lt;','-&gt;','&lt;-','&gt;-'), array('&','-<','->','<-','>-'), substr($out,10));
+                $view_param = ParseViewParameters(DeQuoteColons($param));
+                $foo        = '';
 
-            // do not store in the pagecache, but store into contentcache
-            return QuoteColons($contentcache->get_result_by_id(get_hash($view_param), 'GetViewFromDB', array($view_param)));
-        }
-        // This is a little hack to enable a field to contain expandable { ... } functions
-        // if you don't use this then the field will be quoted to protect syntactical characters
-        elseif ( substr($out, 0, 8) == "dequote:" ) {
-            return DeQuoteColons(substr($out,8));
+                // do not store in the pagecache, but store into contentcache
+                return QuoteColons($contentcache->get_result_by_id(get_hash($view_param), 'GetViewFromDB', array($view_param)));
+            }
+            // This is a little hack to enable a field to contain expandable { ... } functions
+            // if you don't use this then the field will be quoted to protect syntactical characters
+            elseif ( substr($out, 0, 8) == "dequote:" ) {
+                return DeQuoteColons(substr($out,8));
+            }
         }
         // OK - its not a known fixed string, look in various places for the whole string
-        if ( preg_match('/^([a-zA-Z_0-9]+):?([^}]*)$/', $out, $parts) ) {
+        // if ( preg_match('/^([a-zA-Z_0-9]+):?([^}]*)$/', $out, $parts) ) {
+        $initiallen = strspn(strtolower(substr($out,0,64)), 'abcdefghijklmnopqrstuvwxyz0123456789_');
+        $outcmd     = substr($out,0,$initiallen);
+        if ( $outcmd ) {
+
+            $outparam   = substr($out,$initiallen+1);  // skip one more char - delimiter
 
             // main stringexpand functions.
             // @todo switch most of above constructs to standard AA_Stringexpand...
             // class
-            if ( !is_null($stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $parts[1], array('item'=>$this->item, 'itemview'=> $this->itemview)))) {
+            if ( !is_null($stringexpand = AA_Components::factoryByName('AA_Stringexpand_', $outcmd, array('item'=>$this->item, 'itemview'=> $this->itemview)))) {
                 if ( $stringexpand->doCache() ) {
                     $key = hash('md5',$out.$stringexpand->additionalCacheParam());
-                    $res = $contentcache->get_result_by_id($key, array($stringexpand, 'parsexpand'), $parts[2]);
+                    $res = $contentcache->get_result_by_id($key, array($stringexpand, 'parsexpand'), $outparam);
                 } else {
-                    $res = call_user_func_array( array($stringexpand,'parsexpand'), array($parts[2]));
+                    $res = call_user_func_array( array($stringexpand,'parsexpand'), array($outparam));
                 }
                 return $stringexpand->doQuoteColons() ? QuoteColons($res) : $res;
             }
 
             // eb functions - call allowed php functions directly
-            if ( AA_Stringexpand::$php_functions[$parts[1]] ) {
-                $fnctn = AA_Stringexpand::$php_functions[$parts[1]];
-            } elseif ( is_callable("stringexpand_".$parts[1])) {  // custom stringexpand functions
-                $fnctn = "stringexpand_".$parts[1];
+            if ( AA_Stringexpand::$php_functions[$outcmd] ) {
+                $fnctn = AA_Stringexpand::$php_functions[$outcmd];
+            } elseif ( is_callable("stringexpand_$outcmd")) {  // custom stringexpand functions
+                $fnctn = "stringexpand_$outcmd";
             }
             // return result only if matches stringexpand_ or eb functions
             if ( $fnctn ) {
-                if (!$parts[2]) {
+                if (!$outparam) {
                     $ebres = @$fnctn();
                 } else {
-                    $param = array_map('DeQuoteColons',ParamExplode($parts[2]));
+                    $param = array_map('DeQuoteColons',ParamExplode($outparam));
                     $ebres = @call_user_func_array($fnctn, (array)$param);
                 }
                 return QuoteColons($ebres);
@@ -3124,7 +3179,7 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Allows on-line editing of field content 
+/** Allows on-line editing of field content
  *  {ajax:<item_id>:<field_id>[:<alias_or_any_code>[:<onsuccess>]]}
  *  {ajax:{_#ITEM_ID_}:category........}
  *  {ajax:{_#ITEM_ID_}:switch.........1:_#IS_CHECK}
@@ -3334,9 +3389,8 @@ class AA_Stringexpand {
             $text = $item->substitute_alias_and_remove($text, strlen($remove) ? explode("##",$remove) : null);
         }
 
-        if ( !$dequote ) {                 // there is no need to substitute on level 1
-            return QuoteColons($text);
-        }
+        // if ( !$dequote ) { }
+        // there is no need to substitute on level 1
 
         // return from unalias - change all back to ':'
         if ( $dequote AND $quotecolons_partly ) {
@@ -3470,11 +3524,12 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
 }
 
 /** Creates link to modified image using phpThub
- *  {img:<url>:[<phpthumb_params>]:[<info>]:[<param>]}
+ *  {img:<url>:[<phpthumb_params>]:[<info>]:[<param1>]:[<param2>]}
  *
  *  Ussage:
  *     <img src="{img:{img_url.........}:w=150&h=150}">
- *     <div>{img:{img_url.........}::imgb:alt="Logo {_#HEADLINE}"}</div>
+ *     <div>{img:{img_url.........}::imgb:Logo {_#HEADLINE}}</div>
+ *     <div>{img:{img_url.........}:w=300:imgb:Logo {_#HEADLINE}:class="big"}</div>
  *
  *  for phpThumb params see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
  *  (phpThumb library is the part of AA)
@@ -3543,10 +3598,10 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
 
 /** Creates image with the specified text:
  *  {imgtext:<width>:<height>:<text>:<size>:<alignment>:<color>:<font>:<opacity>:<margin>:<angle>:<background>:<bg_opacity>}
- *  
+ *
  *  Ussage:
  *    {imgtext:20:210:My picture text:3:TL:000000::::90}
- *    - returns white 20 x 210px big image with vertical, top-left positioned black text on it  
+ *    - returns white 20 x 210px big image with vertical, top-left positioned black text on it
  *
  *  for phpThumb params see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
  *  (phpThumb library is the part of AA)
@@ -3719,8 +3774,8 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
      * @param $delimeter
      */
     function expand($variable_name='') {
-        if (isset($_GET[$variable_name])) {
-            $ret = $_GET[$variable_name];
+        if (isset($_REQUEST[$variable_name])) {
+            $ret = $_REQUEST[$variable_name];
         } else {
             $shtml_get = add_vars('', 'return');
             $ret = $shtml_get[$variable_name];
@@ -3789,7 +3844,7 @@ class AA_Stringexpand__ extends AA_Stringexpand {
         return false;
     }
 
-    function expand($param) {
+    function expand() {
 
         $arg_list = func_get_args();   // must be asssigned to the variable
         $name     = array_shift($arg_list);
@@ -3893,7 +3948,7 @@ class AA_Stringexpand_Table extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Array extends AA_Stringexpand_Nevercache {
 
-    function expand($id, $cmd, $par1=null, $par2=null, $par3=null, $par4=null) {
+    function expand($id, $cmd, $par1=null, $par2=null, $par3=null) {
         static $arrays = array();
         if (!isset($arrays[$id])) {
             $arrays[$id] = new AA_Array($id);
@@ -3964,6 +4019,172 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
             header("HTTP/1.0 404 Not Found");
         }
         return '';
+    }
+}
+
+
+class AA_Password_Manager_Reader {
+
+    const KEY_TIMEOUT = 90;
+
+    function getFirstForm() {  // Type in either your username or e-mail
+        return '<form id="pwdmanager-firstform" action="" method="post"><div class="aa-widget">
+        <label for="pwdmanager-user">' ._m('Zapomnìli jste heslo? Vyplòte váš e-mail.'). '</label>
+        <div class="aa-input">
+           <input size="30" maxlength="128" name="aapwd1" id="aapwd1" value="" placeholder="'._m('e-mail').'" required type="text">
+        </div>
+        <input type="hidden" name="nocache" value="1">
+        <input type="submit" id="pwdmanager-send" name="pwdmanager-send" value="'. _m('Odeslat').'">
+        </form>
+        ';
+    }
+
+    function askForMail($user, $slice_id,$from_email) {
+        if ( !trim($user) ) {
+            return self::_bad(_m("Nemohu najít uživatele - zkontrolujte prosím, zda nedošlo k pøeklepu."));
+        }
+        if (!($user_id = AA_Reader::name2Id($user, $slice_id))) {
+            if (!($user_id = AA_Reader::email2Id($user, $slice_id))) {
+                return self::_bad(_m("Nemohu najít uživatele - zkontrolujte prosím, zda nedošlo k pøeklepu."));
+            }
+        }
+        $user_info = GetAuthData($user_id);
+
+        // generate MD5 hash
+        $email    = $user_info->getValue(FIELDID_EMAIL);
+        $pwdkey   = md5($user_id.$email.AA_ID.round(now()/60));
+
+        // send it via email
+        $mail     = new AA_Mail;
+        $mail->setSubject ("Zmena hesla");
+        $url  = shtml_url()."?aapwd2=$pwdkey-$user_id";
+        $body = _m("Pro zmenu hesla prosim navstivte nasledujici adresu:<br><a href=\"$url\">$url</a><br>Zmena bude mozna po dobu jedne hodiny - jinak tento klic vyprsi a budete si muset pozadat o novy.");
+        $mail->setHtml($body, html2text($body));
+        $mail->setHeader("From", $from_email);
+        $mail->setHeader("Reply-To", $from_email);
+        $mail->setHeader("Errors-To", $from_email);
+        //$mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
+        $mail->send(array($email));
+        return self::_ok(_m('E-mail s klíèem pro zmìnu hesla byl právì odeslán na váš e-mail: %1', array($email)));
+    }
+
+    function getChangeForm($key, $user) {
+        if (!self::isValidKey($key, $user)) {
+            return self::_bad(_m("Špatný, èi expirovaný klíè."));  // @todo get messages from somewhere
+        }
+        return _m("Vyplòte nové heslo:"). '<br>
+        <form name="pwdmanagerchangeform" method="post" action="">
+        '._m('Nové heslo').': <input type="password" name="aapwd3"><br>
+        '._m('Heslo znovu').': <input type="password" name="aapwd3b"><br>
+        <input type="hidden" name="aauser"  value="'. $user .'">
+        <input type="hidden" name="aakey"   value="'. $key .'">
+        <input type="hidden" name="nocache" value="1">
+        <input type="submit"  value="'. _m('Odeslat').'">
+        </form>';
+    }
+
+    function changePassword( $pwd1, $pwd2, $key, $user, $from_email) {
+        if (!self::isValidKey($key, $user)) {
+            return self::_bad(_m("Špatný, èi expirovaný klíè."));  // @todo get messages from somewhere
+        }
+        if ($pwd1 != $pwd2) {
+            return self::_bad(_m("Hesla si neodpovídají - zkuste prosím ještì jednou."));  // @todo get messages from somewhere
+        }
+        if (strlen($pwd1) < 6) {
+            return self::_bad(_m("Heslo musí být nejménì 6 znakù dlouhé."));  // @todo get messages from somewhere
+        }
+
+        if (UpdateField($user, 'password........', new AA_Value(crypt($pwd1, 'xx')))) {
+            return self::_ok(_m("Heslo bylo zmìnìno."));
+        }
+        return self::_ok(_m("Došlo k chybì bìhem zmìny hesla - prosím kontaktujte %1.", array($from_email)));
+    }
+
+    function isValidKey($key, $user_id) {
+        if (!$key OR !$user_id) {
+            return false;
+        }
+        if (!($user_info = GetAuthData($user_id))) {
+            return false;
+        }
+        // Check the key
+        $email    = $user_info->getValue(FIELDID_EMAIL);
+        $key_base = $user_id.$email.AA_ID;
+        for ($i=0; $i<AA_Password_Manager_Reader::KEY_TIMEOUT; $i++) {
+            if (hash('md5', $key_base.round(round(now()/60)-$i)) == $key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function _bad($text) {
+        return '<div class="aa-err">'.$text.'</div>'.AA_Password_Manager_Reader::getFirstForm();
+    }
+    function _ok($text) {
+        return '<div class="aa-ok">'.$text.'</div>';
+    }
+}
+
+/** manages forgotten password
+ *  The idea is, that this alias will manage all tasks needed for change of pwd
+ *  you just put the {changepwd:<reader_slice_id>:<some other parameter>}
+ */
+class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
+
+    /** expand function
+     * @param $reader_slice_id - reader module id
+     */
+    function expand($reader_slice_id, $from_email='') {
+        $from_email = $from_email ? $from_email : ERROR_REPORTING_EMAIL;
+
+        if (isset($_POST['aapwd3'])) {    // CHange Password
+            return AA_Password_Manager_Reader::changePassword($_POST['aapwd3'], $_POST['aapwd3b'], $_POST['aakey'], $_POST['aauser'],$from_email);
+        } elseif (isset($_GET['aapwd2'])) {
+            list($key, $user) = explode('-',$_GET['aapwd2']);
+            return AA_Password_Manager_Reader::getChangeForm($key, $user);
+        } elseif (isset($_POST['aapwd1'])) {        // CHeck User
+            return AA_Password_Manager_Reader::askForMail($_POST['aapwd1'], $reader_slice_id, $from_email);
+        } else {
+            return AA_Password_Manager_Reader::getFirstForm();
+        }
+    }
+}
+
+/** returns part of the XML or HTML <string > based on <xpath> query
+ *  Use as:
+ *      {xpath:{include:http#://example.cz/list.html}://[@id="pict-width"]}
+ *      {xpath:{include:http#://example.cz/photos/displayimage.php?pos=-47}:/html/body//div[@id="picinfo"]//td[text()="Datum"]/following-sibling#:#:*}
+ *      {xpath:{include:http#://example.cz/list.html}://img[@id="bigpict"]:width}
+ *      {xpath:{include:http#://example.cz/list.html}://h2[2]}  - second <h2>
+ */
+class AA_Stringexpand_Xpath extends AA_Stringexpand {
+
+    /** expand function
+     * @param $string    - XML or HTML string (possibly loaded with {include:<url>})
+     * @param $query     - XPath query - @see XPath documentation
+     * @param $attr      - if empty, the <text> value of the matching element is returned
+     *                     if specified, then the attribute is returned
+     * @param $delimiter - by default, it returns just first matching value.
+     *                     If specified, then all matching texts are returned delimited by <delimiter>
+     */
+    function expand($string="", $query='', $attr='', $delimiter='AA_PrintJustFirst') {
+        $doc = new DOMDocument();
+        if (!$doc->loadHTML($string) OR !$query) {
+            return '';
+        }
+
+        $xpath = new DOMXPath($doc);
+
+        $entries = $xpath->query($query);
+        foreach ($entries as $entry) {
+            $ret .= $attr ? $entry->attributes->getNamedItem($attr)->nodeValue : $entry->nodeValue;
+            if ($delimiter == 'AA_PrintJustFirst') {
+                break;
+            }
+            $ret .= $delimiter;
+        }
+        return $ret;
     }
 }
 ?>
