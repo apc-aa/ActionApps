@@ -960,19 +960,26 @@ class AA_Optimize_Fix_Content_Column extends AA_Optimize {
     * @return a message
     */
     function test() {
-        $bad_rows = GetTable2Array("SELECT content.item_id, content.field_id FROM content INNER JOIN item ON content.item_id=item.id INNER JOIN slice ON item.slice_id=slice.id INNER JOIN field ON field.slice_id=slice.id WHERE content.field_id = field.id AND field.text_stored=1 AND (content.flag & 64) = 0",'');
+        $bad_rows = GetTable2Array("SELECT content.item_id, content.field_id, slice.id, slice.name FROM content INNER JOIN item ON content.item_id=item.id INNER JOIN slice ON item.slice_id=slice.id INNER JOIN field ON field.slice_id=slice.id WHERE content.field_id = field.id AND field.text_stored=1 AND (content.flag & 64) = 0",'');
         if (empty($bad_rows)) {
              $this->message(_m('No problem found, hurray'));
              return true;
         }
+        $statistic = array();
         foreach ($bad_rows as $index => $row) {
-            $this->message(_m('id: %1, field_id: %2', array(unpack_id($row['item_id']), $row['field_id'])));
-            if ($index > 240) {
+            $statistic[$row['name'].' '.$row['field_id']]++;
+            
+            if ($index < 240) {
+                $this->message(_m('slice %1: field_id: %2 item_id: %3', array(unpack_id($row['name'], $row['item_id']), $row['field_id'])));
+            }
+            if ($index == 240) {
                  $this->message(_m('and more...'));
-                 break;
             }
         }
         $this->message(_m('We found %1 inconsistent rows in content table', array(count($bad_rows))));
+        foreach ($statistic as $field => $count) {
+            $this->message("$field: $count problems");
+        }
         // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
         return false;
     }
@@ -1115,30 +1122,39 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
     function repair() {
         $db  = getDb();
 
+        $ret = true;
+
         // test wrong destination slices
-        $SQL = "SELECT to_id FROM feeds LEFT JOIN slice ON feeds.to_id=slice.id WHERE slice.id IS NULL";
-        $err = GetTable2Array($SQL, '', 'unpack:to_id');
+        $SQL      = "SELECT `item_id`, `field_id`, `text`, count(*) AS `cnt` FROM `content` WHERE (flag && 64) GROUP BY `item_id`, `field_id`, `text` HAVING `cnt` >1";
+        $err_text = GetTable2Array($SQL, '', 'aa_fields');
 
-        if (is_array($err) AND count($err)>0 ) {
-            foreach ($err as $wrong_slice_id) {
-                $SQL = 'DELETE FROM `feeds` WHERE `to_id`=\''.q_pack_id($wrong_slice_id).'\'';
+        if (is_array($err_text) AND count($err_text) > 0) {
+            $this->message( _m('%1 duplicates found in text fields', array(count($err_text))));
+            foreach ($err_text as $wrong) {
+                $SQL = "DELETE FROM `content` WHERE item_id='".quote($wrong['item_id'])."' AND field_id='".quote($wrong['field_id'])."' AND text='".quote($wrong['text'])."' LIMIT ".($wrong['cnt']-1);
                 $db->query($SQL);
+                $this->message($SQL);
             }
+            $ret = false;
         }
 
-        // test wrong source slices
-        $SQL = "SELECT from_id FROM feeds LEFT JOIN slice ON feeds.from_id=slice.id WHERE slice.id IS NULL";
-        $err = GetTable2Array($SQL, '', 'unpack:from_id');
+        $SQL      = "SELECT `item_id`, `field_id`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag && 64) = 0 GROUP BY `item_id`, `field_id`, `number` HAVING `cnt` >1";
+        $err_num  = GetTable2Array($SQL, '', 'aa_fields');
 
-        if (is_array($err) AND count($err)>0 ) {
-            foreach ($err as $wrong_slice_id) {
-                $SQL = 'DELETE FROM `feeds` WHERE `from_id`=\''.q_pack_id($wrong_slice_id).'\'';
+        if (is_array($err_num) AND count($err_num) > 0) {
+            $this->message( _m('%1 duplicates found in numeric fields', array(count($err_num))));
+            foreach ($err_num as $wrong) {
+                $SQL = "DELETE FROM `content` WHERE item_id='".quote($wrong['item_id'])."' AND field_id='".quote($wrong['field_id'])."' AND number='".quote($wrong['number'])."' LIMIT ".($wrong['cnt']-1);
                 $db->query($SQL);
+                $this->message($SQL);
             }
+            $ret = false;
         }
 
-        freeDb($db);
-        return true;
+        if ($ret ) {
+            $this->message(_m('No duplicates found, hurray!'));
+        }
+        return $ret;
     }
 }
 
