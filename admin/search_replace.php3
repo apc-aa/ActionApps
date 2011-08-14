@@ -827,7 +827,7 @@ if ( !$fill ) {               // for the first time - directly from item manager
 
                 // we disabled events, so at the end we should update auth data
                 // for Reader Management slice
-                AuthMaintenance();
+                AA_Mysqlauth::maintenance();
             }
         }
 

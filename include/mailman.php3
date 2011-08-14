@@ -32,109 +32,108 @@
 require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
 
-if (!is_object( $db )) {
-    $db = new DB_AA;
-}
+class AA_Mailman {
 
-// status codes:
-define("SC_ACTIVE", 1);
-define("SC_HOLDING_BIN", 2);
+    /** AA_Mailman::createSynchroFiles function
+     *   Finds all reader-mailing list assignments for the given slice.
+     *   Creates one file for each mailing list, named the same as the list.
+     *   If no users are subscribed to a list, an empty file is created.
+     */
+    function createSynchroFiles($slice_id) {
+        global $MAILMAN_SYNCHRO_DIR;
 
-// --------------------------------------------------------------------------
-
-/** MailmanCreateSynchroFiles function
- *   Finds all reader-mailing list assignments for the given slice.
- *   Creates one file for each mailing list, named the same as the list.
- *   If no users are subscribed to a list, an empty file is created.
- */
-function MailmanCreateSynchroFiles($slice_id) {
-    global $db, $MAILMAN_SYNCHRO_DIR;
-
-    if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
-        return;
-    }
-
-    $slice = AA_Slices::getSlice($slice_id);
-    $field = $slice->getProperty("mailman_field_lists");
-    if ($slice->getProperty("type") != "ReaderManagement" || ! $field) {
-        return;
-    }
-
-    $db->tquery("SELECT email.text AS email, maillist.text AS maillist,
-        mailconf.text AS mailconf
-        FROM item INNER JOIN content email ON item.id = email.item_id
-        INNER JOIN content maillist ON item.id = maillist.item_id
-        INNER JOIN content mailconf ON item.id = mailconf.item_id
-        WHERE email.field_id='".FIELDID_EMAIL."'
-        AND maillist.field_id='".$field."'
-        AND mailconf.field_id='".FIELDID_MAIL_CONFIRMED."'
-        AND item.slice_id='".q_pack_id($slice_id)."'
-        AND item.status_code=1
-        AND item.publish_date <= ".time()."
-        AND item.expiry_date >= ".time());
-
-    while ($db->next_record()) {
-        if ($db->f("mailconf") && $db->f("mailconf") != "off") {
-            $maillist[$db->f("maillist")][] = $db->f("email");
+        if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
+            return;
         }
-    }
 
-    // Add empty mailing lists
-    $db->query("SELECT input_show_func FROM field WHERE slice_id='".q_pack_id($slice_id)."' AND id='$field'");
-    if (!$db->next_record()) {
-        return;
-    }
-    list(,$group_id) = explode(":", $db->f("input_show_func"));
-    $db->query("SELECT value FROM constant WHERE group_id='".addslashes($group_id)."'");
-    while ($db->next_record()) {
-        if (! $maillist[$db->f("value")]) {
-            $maillist[$db->f("value")] = array();
+        $slice = AA_Slices::getSlice($slice_id);
+        $field = $slice->getProperty("mailman_field_lists");
+        if ($slice->getProperty("type") != "ReaderManagement" || ! $field) {
+            return;
         }
-    }
 
-    endslash($MAILMAN_SYNCHRO_DIR);
+        $db = getDB();
 
-    if (!is_array($maillist)) {
-        return;
-    }
+        $db->tquery("SELECT email.text AS email, maillist.text AS maillist,
+            mailconf.text AS mailconf
+            FROM item INNER JOIN content email ON item.id = email.item_id
+            INNER JOIN content maillist ON item.id = maillist.item_id
+            INNER JOIN content mailconf ON item.id = mailconf.item_id
+            WHERE email.field_id='".FIELDID_EMAIL."'
+            AND maillist.field_id='".$field."'
+            AND mailconf.field_id='".FIELDID_MAIL_CONFIRMED."'
+            AND item.slice_id='".q_pack_id($slice_id)."'
+            AND item.status_code=1
+            AND item.publish_date <= ".time()."
+            AND item.expiry_date >= ".time());
 
-    // Write files
-    foreach ($maillist as $listname => $emails) {
-        // I don't want to use @fopen because I believe it is better to know
-        // that an error occured
-        if ($listname && $fd = fopen ($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
-            foreach ($emails as $email) {
-                fwrite ($fd, $email."\n");
+        while ($db->next_record()) {
+            if ($db->f("mailconf") && $db->f("mailconf") != "off") {
+                $maillist[$db->f("maillist")][] = $db->f("email");
             }
-            fclose ($fd);
+        }
+
+        // Add empty mailing lists
+        $db->query("SELECT input_show_func FROM field WHERE slice_id='".q_pack_id($slice_id)."' AND id='$field'");
+        if (!$db->next_record()) {
+            freeDB();
+            return;
+        }
+        list(,$group_id) = explode(":", $db->f("input_show_func"));
+        $db->query("SELECT value FROM constant WHERE group_id='".addslashes($group_id)."'");
+        while ($db->next_record()) {
+            if (! $maillist[$db->f("value")]) {
+                $maillist[$db->f("value")] = array();
+            }
+        }
+
+        freeDB();
+
+        endslash($MAILMAN_SYNCHRO_DIR);
+
+        if (!is_array($maillist)) {
+            return;
+        }
+
+        // Write files
+        foreach ($maillist as $listname => $emails) {
+            // I don't want to use @fopen because I believe it is better to know
+            // that an error occured
+            if ($listname && $fd = fopen ($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
+                foreach ($emails as $email) {
+                    fwrite ($fd, $email."\n");
+                }
+                fclose ($fd);
+            }
         }
     }
-}
 
-// --------------------------------------------------------------------------
-/** MailmanConstantsChanged function
- * @param $constant_id
- * @param $oldvalue
- * @param $newvalue
- */
-function MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue ) {
-    global $db;
-    $db->query("SELECT group_id FROM constant WHERE id='".q_pack_id($constant_id)."'");
-    if (!$db->next_record()) {
-        return;
-    }
-    $group_id = $db->f("group_id");
-    $db->query("SELECT slice.id FROM slice
-        INNER JOIN field ON field.slice_id = slice.id
-        WHERE slice.type = 'ReaderManagement'
-        AND (field.input_show_func LIKE '___:$group_id:%'
-        OR  field.input_show_func LIKE '___:$group_id')");
-    $slices = array();
-    while ($db->next_record()) {
-        $slices[] = unpack_id($db->f("id"));
-    }
-    foreach ($slices as $slice_id) {
-        MailmanCreateSynchroFiles($slice_id);
+    // --------------------------------------------------------------------------
+    /** constantsChanged function
+     * @param $constant_id
+     * @param $oldvalue
+     * @param $newvalue
+     */
+    function constantsChanged( $constant_id, $oldvalue, $newvalue ) {
+        $db = getDB();
+        $db->query("SELECT group_id FROM constant WHERE id='".q_pack_id($constant_id)."'");
+        if (!$db->next_record()) {
+            return;
+        }
+        $group_id = $db->f("group_id");
+        $db->query("SELECT slice.id FROM slice
+            INNER JOIN field ON field.slice_id = slice.id
+            WHERE slice.type = 'ReaderManagement'
+            AND (field.input_show_func LIKE '___:$group_id:%'
+            OR  field.input_show_func LIKE '___:$group_id')");
+        $slices = array();
+        while ($db->next_record()) {
+            $slices[] = unpack_id($db->f("id"));
+        }
+        foreach ($slices as $slice_id) {
+            AA_Mailman::createSynchroFiles($slice_id);
+        }
+        freeDB();
     }
 }
 

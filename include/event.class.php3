@@ -32,8 +32,6 @@
 */
 
 
-require_once AA_INC_PATH."auth.php3";
-require_once AA_INC_PATH."mailman.php3";
 require_once AA_INC_PATH."mail.php3";
 require_once AA_BASE_PATH."modules/alerts/event.php3";
 //mimo add
@@ -375,10 +373,10 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, &$disc_id, $foo, $f
  */
 function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ) {
     $item_id = $itemContent->getItemID();
-    AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
+    AA_Mysqlauth::updateReaders( array( pack_id( $item_id )), $slice_id );
     AlertsSendWelcome( $slice_id, $itemContent );
-//    AlertsSendInstantAlert( $item_id, $slice_id );
-    MailmanCreateSynchroFiles($slice_id);
+    // AlertsSendInstantAlert( $item_id, $slice_id );
+    $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles($slice_id);
 
     // notifications
     switch ($itemContent->getStatusCode()) {
@@ -400,9 +398,9 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $f
  */
 function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
     $item_id = $itemContent->getItemID();
-    AuthUpdateReaders( array( pack_id( $item_id )), $slice_id );
+    AA_Mysqlauth::updateReaders( array( pack_id( $item_id )), $slice_id );
 //    AlertsSendInstantAlert( $item_id, $slice_id );
-    MailmanCreateSynchroFiles($slice_id);
+    $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles($slice_id);
 
     // notifications
     switch ($itemContent->getStatusCode()) {
@@ -439,8 +437,8 @@ function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent,
 function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ) {
     $item_id = $itemContent->getItemID();
     // Delete reader from Auth tables because if the username changes,
-    // AuthUpdateReaders can not recognize it.
-    AuthDeleteReaders( array( pack_id( $item_id)), $slice_id );
+    // AA_Mysqlauth::updateReaders can not recognize it.
+    AA_Mysqlauth::deleteReaders( array( pack_id( $item_id)), $slice_id );
     return true;
 }
 
@@ -470,8 +468,8 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, &$item_ids, $fo
     /* It is not really necessary to delete the readers from Auth tables,
        because they should be deleted on moving to Trash bin. But it is
        perhaps better to make sure. */
-    AuthDeleteReaders( $item_ids, $slice_id );
-    MailmanCreateSynchroFiles ($slice_id);
+    AA_Mysqlauth::deleteReaders( $item_ids, $slice_id );
+    $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles($slice_id);
     //mimo added
     $mlx = new MLXEvents();
     $mlx->itemsBeforeDelete($item_ids,$slice_id);
@@ -488,8 +486,8 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, &$item_ids, $fo
  * @param $foo2
  */
 function Event_ItemsMoved( $type, $slice_id, $slice_type, &$item_ids, $new_status, $foo2 ) {
-    AuthUpdateReaders( $item_ids, $slice_id );
-    MailmanCreateSynchroFiles( $slice_id );
+    AA_Mysqlauth::updateReaders( $item_ids, $slice_id );
+    $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::createSynchroFiles( $slice_id );
 }
 
 /** Event_ConstantBeforeUpdate function
@@ -515,8 +513,8 @@ function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, 
  * @param string $constant_id Unpacked ID of constant from the constant table.
  */
 function Event_ConstantUpdated( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ) {
-    AuthChangeGroups($constant_id, $oldvalue, $newvalue);
-    MailmanConstantsChanged( $constant_id, $oldvalue, $newvalue );
+    AA_Mysqlauth::changeGroups($constant_id, $oldvalue, $newvalue);
+    $GLOBALS['MAILMAN_SYNCHRO_DIR'] && AA_Mailman::constantsChanged( $constant_id, $oldvalue, $newvalue );
 }
 
 
