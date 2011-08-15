@@ -1,77 +1,79 @@
-08/14/11 - new {xpath:<XML/HTML string>:<xpath>[:<attribute>[:<delimiter>]]} 
-(honzam) - returns part of the XML or HTML <string > based on <xpath> query 
-           - Use as: 
+08/15/11 - fixed {switch} - broken in last commit 08/14/11
+(honzam)
+08/14/11 - new {xpath:<XML/HTML string>:<xpath>[:<attribute>[:<delimiter>]]}
+(honzam) - returns part of the XML or HTML <string > based on <xpath> query
+           - Use as:
              {xpath:{include:http#://example.cz/list.html}://[@id="pict-width"]}
-             {xpath:{include:http#://example.cz/list.html}://img[@id="bigpict"]:width}  
+             {xpath:{include:http#://example.cz/list.html}://img[@id="bigpict"]:width}
          - new {facebook:<url>} - prints facebook "I like" button for the url
-         - new {if:<condition>:<operator>:<test-value1>:<output1>:<test-value2>:<output2>:<default>} 
+         - new {if:<condition>:<operator>:<test-value1>:<output1>:<test-value2>:<output2>:<default>}
            - used as:
-             {if:{_#IMGCOUNT}:>:10:big:6:medium:small} 
+             {if:{_#IMGCOUNT}:>:10:big:6:medium:small}
            - condition expressions similar to {ifeq:...
            - operators are: >, >=, gt, ge, =, ==, eq, <, <=, lt, le, <>, !=
-         - new experimental {changepwd:<reader_slice_id>} 
-           - will manage all tasks needed for change of pwd in site module 
-           - just put it in the code 
+         - new experimental {changepwd:<reader_slice_id>}
+           - will manage all tasks needed for change of pwd in site module
+           - just put it in the code
            - not finished - needs the config options for the printed messages
          - more clear setting, how the data fot the field is stored - if in text
            or number column - see Admin -> Fields -> Edit
-         - new "remove duplicates" optimalization for the items - removes 
+         - new "remove duplicates" optimalization for the items - removes
            duplicate values in the field - see AA -> Optimize
-         - mailman Readers synchronization moved to selparate class 
-           and optimized to include it only when needed 
-         - hit for current page in site module - deffered after the page 
+         - mailman Readers synchronization moved to selparate class
+           and optimized to include it only when needed
+         - hit for current page in site module - deffered after the page
            is sent to user
          - better modularization of permission system
-         - new experimental debug possibility - use PHP Console for chrome 
+         - new experimental debug possibility - use PHP Console for chrome
            - example.org/en/home?debug=c
          - clenup, removed unused functions and speed optimalization
 06/10/11 - fixes for PHP 5.3 - now tested on production server for one week
-(honzam) - group operations with items now shows the number of affected items 
+(honzam) - group operations with items now shows the number of affected items
            for each filter before you select it
-         - date input now allows unfilled values, when the date field is not 
+         - date input now allows unfilled values, when the date field is not
            marked as "required" (just select "----" value for year from select)
-         - new parameter <position> for 
+         - new parameter <position> for
              {htmltoggle:<switch1>:<text1>:<switch2>:<text2>:<position>}
            if "bottom", then the switch is displayed under the text
-         - the <switch1> and <switch2> are optional for {htmltoggle}, 
+         - the <switch1> and <switch2> are optional for {htmltoggle},
            {htmltogglecss}, {htmlajaxtoggle} and {htmlajaxtogglecss}
            if not specified, standard [+] and [-] icons are displayed
-         - you can use PHP special data formats in {date:DATE_ATOM}, 
-           {date:DATE_RSS}, {date:DATE_RFC...} - @see 
+         - you can use PHP special data formats in {date:DATE_ATOM},
+           {date:DATE_RSS}, {date:DATE_RFC...} - @see
            http://php.net/manual/en/class.datetime.php#datetime.constants.types
-         - new {sort:<values>[:<order-type>[:<unique>[:<delimiter>]]]} 
-            - sorts the values delimited by delimiter in rnumeric order 
+         - new {sort:<values>[:<order-type>[:<unique>[:<delimiter>]]]}
+            - sorts the values delimited by delimiter in rnumeric order
             (and possibly unique)
-         - {modulefield:<slice_id>:site_ids} now returns dash separated list 
+         - {modulefield:<slice_id>:site_ids} now returns dash separated list
            of sites, where the slice is part of
-         - new parameter <onsuccess> in 
-             {ajax:<item_id>:<field_id>[:<alias_or_any_code>[:<onsuccess>]]} 
-           which is javascript code to run after the content is sucessfully 
-           updated - like: 
+         - new parameter <onsuccess> in
+             {ajax:<item_id>:<field_id>[:<alias_or_any_code>[:<onsuccess>]]}
+           which is javascript code to run after the content is sucessfully
+           updated - like:
              {ajax:{_#ITEM_ID_}:file............:<img src="/img/edit.gif" title="Upload new file"> :AA_Refresh('stickerdiv1')}
          - new {strtolower:<text>}
          - new {strtoupper:<text>}
          - new {imgtext:<width>:<height>:<text>:<size>:<alignment>:<color>:<font>:<opacity>:<margin>:<angle>:<background>:<bg_opacity>}
-           which creates image with the specified text - like: 
+           which creates image with the specified text - like:
              {imgtext:20:210:My picture text:3:TL:000000::::90}
-             - returns white 20 x 210px big image with vertical, top-left 
+             - returns white 20 x 210px big image with vertical, top-left
              positioned black text on it
          - {fileinfo:<url>:type} now returns TXT, when no extension is provided
          - the delayed execution could be nested, now - see
              {( some {( text )} which )} could {( be )} nested
          - fixed doubled HTML head in Item Manager
-         - the columns in CSV import could be named with field ids 
+         - the columns in CSV import could be named with field ids
            (like headline........) - they are matched, then on mapping page
          - code speed optimalization and cleanup
          - removed PHP4 specific solutions
-         - removed old and unused slice.php3 parameters of AA v1.2 - easy_query 
+         - removed old and unused slice.php3 parameters of AA v1.2 - easy_query
            and bigsrch
-         - improved debug output when used 
+         - improved debug output when used
              AA::$debug && AA::$dbg->group("my group",$var);
                and
              AA::$debug && AA::$dbg->groupend("my group");
-04/12/11 - fixes for PHP 5.3 (AA now works in PHP5.3, but it is not tested on 
-(honzam)   production servers)   
+04/12/11 - fixes for PHP 5.3 (AA now works in PHP5.3, but it is not tested on
+(honzam)   production servers)
 04/11/11 - bigger cleanup of the code - removed unused functions, specialized
 (honzam)   functions moved from util.php3 to local include files
          - new possibility to export slice discussions to file:

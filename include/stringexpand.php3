@@ -42,14 +42,25 @@ require_once AA_INC_PATH."tree.class.php3";   // for {tree:...};
 /** include file, first parameter is filename, second is hints on where to find it **/
 class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
 
+    /** redefine parsexpand - we can't use the standard function - there is problem with:
+    *  {switch({text............}).:OK} if the text.. contain ')' - we do not know, where the parameters are separated
+    */
+    function parsexpand($params) {
+        if (empty($params)) {
+            $param = array();
+        } else {
+            list($condition,$rest) = explode(')', $params, 2);
+            $param = array_map('DeQuoteColons', array_merge(array($condition), ParamExplode($rest)));
+        }
+        return call_user_func_array( array($this,'expand'), $param);
+    }
+
     /** expand function
      * @param $fn first parameter is filename, second is hints on where to find it
      */
     function expand() {
-        $twos = func_get_args();   // must be asssigned to the variable
-        list($condition,$first) = explode(')', $twos[0], 2);
-        $twos[0] = $first;
-
+        $twos      = func_get_args();   // must be asssigned to the variable
+        $condition = array_shift($twos);
         $i         = 0;
         $twoscount = count($twos);
         $ret       = '';
