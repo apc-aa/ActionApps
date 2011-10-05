@@ -1,3 +1,5 @@
+10/05/11 - added icon for ajax editable fields in AA admin interface
+(honzam)
 08/15/11 - fixed {switch} - broken in last commit 08/14/11
 (honzam)
 08/14/11 - new {xpath:<XML/HTML string>:<xpath>[:<attribute>[:<delimiter>]]}
