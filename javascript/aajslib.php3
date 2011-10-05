@@ -224,10 +224,10 @@ function SendAjaxForm(id, refresh) {
  */
 function AA_AjaxSendForm(form_id, url) {
     var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
-    var code       = Form.serialize(filler_url);
+    var code       = Form.serialize(form_id);
     $(form_id).insert(AA_Config.loader);
 
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + form_url, {
+    new Ajax.Request(AA_Config.AA_INSTAL_PATH + filler_url, {
         parameters: code,
         onSuccess: function(transport) {
             $(form_id).update(transport.responseText);
@@ -280,11 +280,11 @@ function AA_AjaxSendAddForm(id) {
 function AA_SendWidgetAjax(id) {
     var valdivid   = 'ajaxv_' + id;
     var code = Form.serialize(valdivid);
-
+    var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
     var alias_name = $(valdivid).readAttribute('data-aa-alias');
     $(valdivid).insert(AA_Config.loader);
 
-    code += '&inline=1&ret_code_enc='+alias_name;
+    code += '&' + sess + '&inline=1&ret_code_enc='+alias_name;
 
     new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
         parameters: code,
@@ -308,7 +308,7 @@ function AA_ReloadAjaxResponse(id, responseText) {
         $(valdivid).update(res.length>0 ? res : '--');
         break;
     }
-    $(valdivid).setAttribute("aaedit", "0");
+    $(valdivid).setAttribute("data-aa-edited", "0");
     var succes_function = $(valdivid).getAttribute('data-aa-onsuccess');
     if (succes_function) {
         eval(succes_function);
@@ -322,9 +322,10 @@ function AA_ReloadAjaxResponse(id, responseText) {
 function AA_SendWidgetLive(id) {
     $$('*[id ^="'+id+'"]').invoke('addClassName', 'updating');
     var valdivid   = 'widget-' + id;
-    var code = Form.serialize(valdivid);
+    var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
 
-    code += '&inline=1';  // do not send us whole page as result
+    var code = Form.serialize(valdivid);
+    code += '&' + sess + '&inline=1';  // do not send us whole page as result
 
     new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
         parameters: code,
@@ -367,7 +368,7 @@ function proposeChange(combi_id, item_id, fid, change) {
                 $('ajaxv_'+combi_id).update( $('ajaxh_'+combi_id).value);  // restore old content
                 $('ajaxch_'+combi_id).update($('ajaxch_'+combi_id).innerHTML + '<span class="ajax_change">Navrhovan� zm�na: ' + transport.responseText +'</span><br>');
             }
-            $(valdivid).setAttribute("aaedit", "0");
+            $(valdivid).setAttribute("data-aa-edited", "0");
         }
     });
 }
@@ -428,9 +429,9 @@ function isArray(obj) {
 
 function displayInput(valdivid, item_id, fid) {
     // already editing ?
-    switch ($(valdivid).readAttribute('aaedit')) {
+    switch ($(valdivid).readAttribute('data-aa-edited')) {
        case '1': return;
-       case '2': $(valdivid).setAttribute("aaedit", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
+       case '2': $(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
                  return;
     }
 
@@ -448,7 +449,7 @@ function displayInput(valdivid, item_id, fid) {
                      },
         onSuccess: function(transport) {
             $(valdivid).update(transport.responseText);  // new value
-            $(valdivid).setAttribute('aaedit', '1');
+            $(valdivid).setAttribute('data-aa-edited', '1');
         }
     });
 }
@@ -489,7 +490,7 @@ function _getInputContent(input_id) {
 function DisplayInputBack(input_id) {
     var valdivid = 'ajaxv_'+input_id
     $(valdivid).update($(valdivid).readAttribute('data-aa-oldval'));
-    $(valdivid).setAttribute('aaedit', '2');
+    $(valdivid).setAttribute('data-aa-edited', '2');
 }
 
 /* Cookies */

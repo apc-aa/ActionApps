@@ -97,7 +97,7 @@ function convertToForm(divtag, item_id, fid) {
 
 function displayInput(valdivid, item_id, fid) {
     var valdivtag = document.getElementById(valdivid);
-    if (valdivtag.getAttribute("aaedit")=="1") {
+    if (valdivtag.getAttribute("data-aa-edited")=="1") {
         return;
     }
     var alias_name = valdivtag.getAttribute("aaalias");
@@ -118,7 +118,7 @@ function displayInput(valdivid, item_id, fid) {
         if (self.xmlHttpReq.readyState == 4) {
             SetContent(valdivid, self.xmlHttpReq.responseText);  // new value
             // mark the div as converted
-            valdivtag.setAttribute("aaedit", "1")
+            valdivtag.setAttribute("data-aa-edited", "1")
         }
     }
     var qs = 'field_id='+escape(fid)+'&item_id='+escape(item_id)+'&alias_name='+escape(alias_name)+'&form=1';
@@ -151,7 +151,7 @@ function proposeChange(combi_id, item_id, fid, change) {
                 SetContent('ajaxv_'+combi_id, document.getElementById('ajaxh_'+combi_id).value);  // restore old content
                 SetContent('ajaxch_'+combi_id, document.getElementById('ajaxch_'+combi_id).innerHTML + '<span class="ajax_change">Navrhovaná zmìna: ' + self.xmlHttpReq.responseText +'</span><br>');
             }
-            valdivtag.setAttribute("aaedit", "0");
+            valdivtag.setAttribute("data-aa-edited", "0");
         }
     }
     var qs = 'field_id='+escape(fid)+'&item_id='+escape(item_id)+'&content='+encodeURIComponent(document.getElementById('ajaxi_'+combi_id).value) + '&alias_name='+escape(alias_name);

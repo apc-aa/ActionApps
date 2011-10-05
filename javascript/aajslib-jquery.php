@@ -143,7 +143,7 @@ function AA_SendWidgetAjax(id) {
             $(valdiv).html(res.length>0 ? res : '--');
             break;
         }
-        $(valdiv).attr("aaedit", "0");
+        $(valdiv).attr("data-aa-edited", "0");
     });
 }
 
@@ -174,9 +174,9 @@ function displayInput(valdivid, item_id, fid) {
     var valdiv = jqid(valdivid);
 
     // already editing ?
-    switch ($(valdiv).attr('aaedit')) {
+    switch ($(valdiv).attr('data-aa-edited')) {
        case '1': return;
-       case '2': $(valdiv).attr("aaedit", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
+       case '2': $(valdiv).attr("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
                  return;
     }
     var alias_name = $(valdiv).attr('data-aa-alias');
@@ -188,7 +188,7 @@ function displayInput(valdivid, item_id, fid) {
         alias_name: alias_name,
         aaaction:   'DISPLAYINPUT'
     }, function(data) {
-        $(this).attr('aaedit', '1');
+        $(this).attr('data-aa-edited', '1');
         var aa_input = $(this).children('select,textarea,input').first();
         $(aa_input).focus();  // select the input field (<select> or <input>)
         $(aa_input).keydown( function(event) {
@@ -254,7 +254,7 @@ function DoChange(input_id) {
         'content[]':    content
     }, function(data) {
         $(jqid('ajaxch_'+input_id)).text('');
-        $(valdiv).attr("aaedit", "0");
+        $(valdiv).attr("data-aa-edited", "0");
 
     });
 }
@@ -280,7 +280,7 @@ function DoChangeLive(input_id) {
 function DisplayInputBack(input_id) {
     var valdiv   = jqid('ajaxv_'+input_id);
     $(valdiv).html( $(valdiv).attr('data-aa-oldval') );
-    $(valdiv).attr('aaedit', '2');
+    $(valdiv).attr('data-aa-edited', '2');
 }
 
 /* Cookies */
@@ -371,7 +371,7 @@ function addToKosik(produkt_variant, mnozstvi, viewid) {
                 SetCookie('kosik_id', kid);
             }
             addPolozkaToKosik(kid, produkt_variant, mnozstvi, "#obsah-kosiku", viewid);
-            AA_AjaxCss("#doporucujeme", '/aaa/view.php3?vid=35&cmd[35]=o-35-'+ produkt_variant+'&als[XLANG___]='+getCurrentLanguage());            
+            AA_AjaxCss("#doporucujeme", '/aaa/view.php3?vid=35&cmd[35]=o-35-'+ produkt_variant+'&als[XLANG___]='+getCurrentLanguage());
         });
     }
 }

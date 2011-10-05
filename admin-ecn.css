@@ -12,6 +12,12 @@ body { margin-left: 4px;
        font-size: 10px;
 }
 
+table.mgr_table th {
+    font-size:   10px;
+    text-align:  left;
+    font-weight: bold;
+}
+
 .tabtxt, TD, .tabtxteven, .tabtitlight {
   font-family: Verdana, "Helvetica CE", Arial, Helvetica, sans-serif;
   font-size: 10pt;
@@ -393,6 +399,19 @@ select.live, input.live, textarea.live {
 
 select.updating, input.updating, textarea.updating {
     border: 1px solid #FF0000;
+}
+
+div.ajax_value {
+    background: url("images/edit.png") no-repeat scroll right bottom transparent;
+    padding-right: 20px;
+}
+div.ajax_value:hover {
+    background-image: url("images/edit-a.png");
+}
+
+div.ajax_value[data-aa-edited="1"],
+div.ajax_value[data-aa-edited="1"]:hover {
+    background: none;
 }
 
 
