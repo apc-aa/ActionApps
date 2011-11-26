@@ -211,6 +211,13 @@ class AA_Searchbar extends AA_Storable {
                     $this->search_operators[$fid] = $v['operators'];
                 }
             }
+            // add "all fields" search
+            $this->search_fields['all_fields']            = _m('-- any text field --');
+            $this->search_operators['all_fields']         = 'text';
+            $this->search_fields['all_fields_numeric']    = _m('-- any numeric field --');
+            $this->search_operators['all_fields_numeric'] = 'numeric';
+
+            // sort
             uasort ($fields, "orderfields_cmp");
             $last_pri = 0;
             foreach ( $fields as $fid => $v) {
