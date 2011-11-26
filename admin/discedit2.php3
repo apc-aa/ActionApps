@@ -58,6 +58,7 @@ if ($update) {
     ValidateInput("url_description", _m("Authors's WWW - description"), $url_description, $err, false, "text");
     ValidateInput("remote_addr", _m("Remote address"), $remote_addr, $err, true, "text");
     ValidateInput("free1", _m("Free1"), $free1, $err, false, "text");
+    ValidateInput("free2", _m("Tracking"), $free2, $err, false, "text");
 
     $datectrl = new datectrl('date');
     $datectrl->update();                   // updates datectrl
@@ -74,6 +75,7 @@ if ($update) {
         $varset->add("url_description", "quoted", $url_description);
         $varset->add("remote_addr", "quoted", $remote_addr);
         $varset->add("free1", "quoted", $free1);
+        $varset->add("free2", "quoted", $free2);
 
         $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id='" .q_pack_id($d_id)."'";
         $db->query($SQL);
@@ -111,7 +113,7 @@ echo "<h1><b>" . _m("Items managment - Discussion comments managment - Edit comm
 PrintArray($err);
 echo $Msg;
 ?>
-  <form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF'] . "?d_id=".$d_id) ?>">
+  <form method="post" action="<?php echo $sess->url($_SERVER['PHP_SELF'] . "?d_id=".$d_id); ?>">
 <table border="0" cellspacing="0" cellpadding="1" bgcolor="<?php echo COLOR_TABTITBG ?>" align="center">
 <tr><td class="tabtit"><b>&nbsp;<?php echo _m("Edit comment") ?></b></td></tr>
 <tr><td>
@@ -127,6 +129,7 @@ echo $Msg;
     FrmInputText("url_description", _m("Authors's WWW - description"), $url_description, 60, 25, false);
     FrmInputText("remote_addr",_m("Remote address"), $remote_addr, 60, 25, false);
     FrmTextArea("free1", _m("Free 1"), $free1, 5, 40, false);
+    FrmTextArea("free2", _m("Tracking"), $free2, 5, 40, false);
 ?>
 </table>
 <tr><td align="center">

