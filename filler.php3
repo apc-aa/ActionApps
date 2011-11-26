@@ -271,7 +271,11 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
         if ($a->checkAuth()) {
             $GLOBALS['apc_state']['xuser'] = $a->getUid();
         }
+    } elseif ($_REQUEST['AA_CP_Session']) {
+        page_open(array("sess" => "AA_CP_Session"));
+        // this defines $auth object so, the "Last Changed By" is set to correct user
     }
+
     $grabber = new AA_Grabber_Form();
     $translations = null;
     $saver        = new AA_Saver($grabber, $translations, null, 'by_grabber');
