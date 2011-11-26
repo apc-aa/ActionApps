@@ -205,7 +205,7 @@ class AA_Mail extends htmlMimeMail {
  */
 function html2text($html) {
 
-    $html = html_entity_decode($html);
+    $html = html_entity_decode(str_ireplace('&nbsp;', ' ', $html));
 
     // Strip diacritics
     // $html = strtr( $html, "áäèïéìíåòóöø¹»úùüý¾ÁÄÈÏÉÌÍÅÒÓÖØ©«ÚÙÜÝ®",
@@ -232,36 +232,54 @@ function html2text($html) {
         }
     }
 
-    $search_replace = array (
+    $search = array (
         // Strip out leading white space
-        "'[\r\n][ \t]+'" => "",
-        "'[\r\n]*'"      => "",
-        "'<hr>'si"       => "\n------------------------------------------------------------\n",
-        "'</tr>'si"      => "\n",
-        "'</table>'si"   => "\n",
+        "'[\r\n][ \t]+'",
+        "'[\r\n]*'",
+        "'<hr>'si",
+        "'</tr>'si",
+        "'</table>'si",
         // If the previous commands added too much whitespace, delete it
-        "'\\n\\n\\n+'si" => "\n\n",
-        "'<br[^>]{0,2}>'si"       => "\n",   // <br> as well as <br />
-        "'</p>'si"       => "\n\n",
-        "'</h[1-9]>'si"  => "\n\n",
+        "'\\n\\n\\n+'si",
+        "'<br[^>]{0,2}>'si",   // <br> as well as <br />
+        "'</p>'si",
+        "'</h[1-9]>'si",
         // Strip out javascript, style and head
-        "'<head[^>]*?>.*?</head>'si" => "",
-        "'<script[^>]*?>.*?</script>'si" => "",
-        "'<style[^>]*?>.*?</style>'si" => "",
+        "'<head[^>]*?>.*?</head>'si",
+        "'<script[^>]*?>.*?</script>'si",
+        "'<style[^>]*?>.*?</style>'si",
         // Strip out html tags
-        "'<[\/\!]*?[^<>]*?>'si"          => "",
-        // Replace html entities
-        "'&(quot|#34);'i" => '"',
-        "'&(amp|#38);'i"  => '&',
-        "'&(lt|#60);'i"   => '<',
-        "'&(gt|#62);'i"   => '>',
-        "'&(nbsp|#160);'i"=> ' ',
-        // evaluate as php
-        "'&#(\d+);'e"     => "chr(\\1)");
+        "'<[\/\!]*?[^<>]*?>'si");
 
-    foreach ( $search_replace as $search => $replace) {
-        $html = preg_replace($search, $replace, $html);
-    }
+   $replace = array (
+        // Strip out leading white space
+        "",
+        "",
+        "\n------------------------------------------------------------\n",
+        "\n",
+        "\n",
+        // If the previous commands added too much whitespace, delete it
+        "\n\n",
+        "\n",   // <br> as well as <br />
+        "\n\n",
+        "\n\n",
+        // Strip out javascript, style and head
+        "",
+        "",
+        "",
+        // Strip out html tags
+        "");
+
+        // Replace html entities - removed - now done by html_entity_decode() above
+        // "'&(quot|#34);'i" => '"',
+        // "'&(amp|#38);'i"  => '&',
+        // "'&(lt|#60);'i"   => '<',
+        // "'&(gt|#62);'i"   => '>',
+        // "'&(nbsp|#160);'i"=> ' ',
+        // evaluate as php
+        //"'&#(\d+);'e"     => "chr(\\1)");
+
+    $html = preg_replace($search, $replace, $html);
 
     return $html;
 }
