@@ -79,7 +79,7 @@ class AA_Operators {
                                    '-:='     => '-:=',
                                    '-:!='    => '-:!=',
                                    '-:<>'    => '-:<>',
-                                   ));             
+                                   ));
     }
     /** getJsDefinition function
      *
@@ -534,9 +534,10 @@ class AA_Set extends AA_Object {
 
     /** addSortFromString function accept various type of sort string:
      *           1)   headline........-
-     *           2)   sort[0]=headline........-
-     *           3)   sort[0][headline........]=d
-     *           4)   sort[0][headline........]=d&sort[1][publish_date....]=a
+     *           2)   category.......1,publish_date....-,headline........
+     *           3)   sort[0]=headline........-
+     *           4)   sort[0][headline........]=d
+     *           5)   sort[0][headline........]=d&sort[1][publish_date....]=a
      *        or with group limits (limited number of items displayed in each group)
      *           1)   5headline........-
      *           2)   sort[0]=5headline........-
@@ -562,24 +563,25 @@ class AA_Set extends AA_Object {
      *  of the string (like 4category........-), which means that we want maximum
      *  4 items of each category. In such case we returned something like:
      *  array( 'limit' => 4, 'category........' => d )
-     * @param $sort
+     * @param $sort_string
      */
-    function addSortFromBasicString( $sort ) {
-        $ret = array();
-        if ($sort) {
-            // is defined group limit?
-            if (($limit_len = strspn($sort,'0123456789')) > 0) {
-                $ret['limit'] = (int)substr($sort,0,$limit_len);
-                $sort  = substr($sort,$limit_len);        // rest of the string
+    function addSortFromBasicString( $sort_string ) {
+        if ($sort_string) {
+            $sorts = explode(',',$sort_string);
+            foreach ($sorts as $number => $sort) {
+                $retone = array();
+                // is defined group limit?
+                if (($limit_len = strspn($sort,'0123456789')) > 0) {
+                    $retone['limit'] = (int)substr($sort,0,$limit_len);
+                    $sort             = substr($sort,$limit_len);        // rest of the string
+                }
+                switch ( substr($sort,-1) ) {    // last character
+                    case '-':  $retone[substr($sort,0,-1)] = 'd'; break;
+                    case '+':  $retone[substr($sort,0,-1)] = 'a'; break;
+                    default:   $retone[$sort]              = 'a';
+                }
+                $this->sort[] = new AA_Sortorder($retone);
             }
-            switch ( substr($sort,-1) ) {    // last character
-                case '-':  $ret[substr($sort,0,-1)] = 'd'; break;
-                case '+':  $ret[substr($sort,0,-1)] = 'a'; break;
-                default:   $ret[$sort]              = 'a';
-            }
-        }
-        if ( count($ret) > 0 ) {
-            $this->sort[] = new AA_Sortorder($ret);
         }
     }
 
@@ -861,6 +863,7 @@ function GetWhereExp( $field, $operator, $querystring ) {
             $str = ( ($querystring[0] == '"') OR ($querystring[0] == "'") ) ? substr( $querystring, 1, -1 ) : $querystring ;
             return " ($field $operator '$str') ";
     }
+    return "1=1";
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1366,7 +1369,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                         // replace unpaced ids with the packed ones
                         $cur_cond =  preg_replace("/([0-9a-f]{32})/ie", "q_pack_id('\\1')", $cur_cond);
                         break;
-                    case 'expiry_date.....';
+                    case 'expiry_date.....':
                         $ignore_expiry_date = true;
                         break;
                     }
@@ -1497,8 +1500,8 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
             }
         }
     }
-    
-    // sort in order of zids as last sort order 
+
+    // sort in order of zids as last sort order
     // good for preservation of sortorder (now works also with grouping in views)
     if (is_object($restrict_zids)) {
         if ($restrict_zids->use_short_ids()) {
@@ -1573,8 +1576,8 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                            // last parameter is used for sorting zids to right order
                            // - if no order specified and restrict_zids are specified,
                            // return zids in unchanged order
-                           
-                           // removed - now we use field() SQL clausule instead, 
+
+                           // removed - now we use field() SQL clausule instead,
                            // which is more powerfull (used also in secondary orders),
                            // so it is no longer needed
                            // (is_object($restrict_zids) AND !$select_order) ? $restrict_zids : null, $select_limit_field);
