@@ -375,7 +375,7 @@ class Files {
      * @return string the escaped safe filename
      */
     function escape($filename) {
-        return preg_replace('/[^\w\._]/', '_', $filename);
+        return ConvertCharset::singleton()->escape($filename, $GLOBALS["LANGUAGE_CHARSETS"][get_mgettext_lang()], true);
     }
 
     /** delFile function
