@@ -351,8 +351,9 @@ class itemview {
       $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
       $d_tree    = GetDiscussionTree($d_content);
       if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array($d_content)) {  // show selected cooments
-          foreach ($d_content as $id => $foo) {
-              if ($outcome[$id]) {           // if the comment is already in the outcome => skip
+          foreach ($d_content as $id => $val) {
+              // if hidden => skip  OR if the comment is already in the outcome => skip
+              if (($val["hide"] == true) OR $outcome[$id]) {
                   continue;
               }
               GetDiscussionThread($d_tree, $id, 1, $outcome);
@@ -602,7 +603,7 @@ class itemview {
         break;
 
       case "calendar":
-        $out = $this->get_output_calendar ($content);
+        $out = $this->get_output_calendar($content);
         break;
 
       default:
@@ -775,12 +776,11 @@ class itemview {
      * @param $content
      */
     function get_output_calendar(&$content) {
-        trace("+","get_output_calendar");
         $CurItem = new AA_Item("", $this->aliases);   // just prepare
         $CurItem->set_parameters($this->parameters);
 
         $month = $this->slice_info['calendar_month'];
-        $year = $this->slice_info['calendar_year'];
+        $year  = $this->slice_info['calendar_year'];
 
         $min_cell_date = mktime (0,0,0,$month,1,$year);
         $max_cell_date = mktime (0,0,0,$month+1,1,$year);
@@ -798,70 +798,66 @@ class itemview {
         */
         $calendar = array();
         $max_events = 0;
+        $row_len  = 7;
+        $firstday = getdate(mktime (0,0,0,$month,1,$year));
+        $firstday = $firstday["wday"] - 2;
+        if ($firstday < -1) {
+            $firstday += $row_len;
+        }
+        $rowcount = ($max_cell + $firstday + 1) / $row_len;
 
-        trace("=","","pre-for");
-        for ( $i=0;
-            $i<$this->num_records
-            && ($i+$this->from_record < $this->zids->count());
-            $i++ ) {
+        for ( $i=0; $i<$this->num_records && ($i+$this->from_record < $this->zids->count()); $i++ ) {
             $iid = $this->zids->short_or_longids($this->from_record+$i);
             if ( !$iid ) {
                 continue;
             }// iid = unpacked item id
             $start_date = $content[$iid][$this->slice_info['calendar_start_date']][0]['value'];
-            $end_date = $content[$iid][$this->slice_info['calendar_end_date']][0]['value'];
-            if ($start_date > $max_cell_date || $end_date < $min_cell_date) {
-                if ($debug) {
-                    echo "<h1>Some error in calendar view!
-                    $start_date &gt; $max_cell_date || $end_date &lt; $min_cell_date </h1>";
-                }
-                if ($start_date < $min_cell_date) {
-                    $start_date = $min_cell;
-                }
-            } else {
-                $start_date = getdate ($start_date);
-                $start_date = $start_date["mday"];
+            $end_date   = $content[$iid][$this->slice_info['calendar_end_date']][0]['value'];
+
+            AA::$debug && AA::$dbg->info("------ $start_date - $end_date");
+
+            if ($start_date > $max_cell_date) {
+                AA::$debug && AA::$dbg->warn("Some error in calendar view! $start_date &gt; $max_cell_date");
+                continue;
             }
-            if ($end_date >= $max_cell_date) {
-                $end_date = $max_cell;
+
+            if ($end_date < $min_cell_date) {
+                AA::$debug && AA::$dbg->warn("Some error in calendar view! $end_date &lt; $min_cell_date");
+                continue;
             }
-            else {
-                $end_date = getdate ($end_date);
-                $end_date = $end_date["mday"];
-            }
+
+            $start_cell = ($start_date < $min_cell_date) ? $min_cell : date('j',$start_date);
+            $end_cell   = ($end_date >= $max_cell_date)  ? $max_cell : date('j',$end_date);
 
             $ievent = 0;
             do {
                 $free = true;
-                for ($date = $start_date; $date <= $end_date; ++$date) {
+                for ($date = $start_cell; $date <= $end_cell; ++$date) {
                     if ($calendar[$date][$ievent]["iid"]) {
                         $free = false;
                         break;
                     }
                 }
                 if (!$free) {
-                    $ievent ++;
+                    ++$ievent;
                 }
             } while (!$free);
 
-            $max_events = max ($max_events, $ievent+1);
+            $max_events = max($max_events, $ievent+1);
 
-            $calendar [$start_date][$ievent] = array ("iid"=>$iid,"span"=>$end_date-$start_date+1,"start"=>1);
-            for ($date = $start_date+1; $date <= $end_date; ++$date) {
-                $calendar [$date][$ievent] = array ("iid" => $iid,"span"=>$end_date-$date+1);
+            AA::$debug && AA::$dbg->info("------ $start_date - $end_date: $start_cell - $end_cell : min($row_len-(($firstday+$start_cell) % 7),$end_cell-$start_cell+1)");
+
+            $calendar[$start_cell][$ievent] = array("iid"=>$iid,"span"=>min($row_len-(($firstday+$start_cell) % 7),$end_cell-$start_cell+1),"start"=>1);
+            for ($date = $start_cell+1; $date <= $end_cell; ++$date) {
+                $calendar[$date][$ievent] = array ("iid" => $iid,"span"=>$end_cell-$date+1);
             }
         }
-        trace("=","","post-for");
+
+        AA::$debug && AA::$dbg->info('----------calendar------------', $calendar);
+
+        $out = $this->unaliasWithScroller($this->resolve_calendar_aliases($this->slice_info['compact_top']), $CurItem);
 
         if ($this->slice_info['calendar_type'] == 'mon_table') {
-            $row_len = 7;
-            $firstday = getdate (mktime (0,0,0,$month,1,$year));
-            $firstday = $firstday ["wday"] - 2;
-            if ($firstday < -1) {
-                $firstday += $row_len;
-            }
-            $rowcount = ($max_cell + $firstday + 1) / $row_len;
-
             for ($cell = 7 - $firstday; $cell <= $max_cell; $cell += $row_len) {
                 for ($ievent = 0; $ievent < $max_events; ++$ievent)
                     if ($calendar [$cell][$ievent]["iid"]) {
@@ -869,48 +865,8 @@ class itemview {
                         $calendar [$cell][$ievent]["span"] = min ($calendar[$cell][$ievent]["span"],$row_len);
                     }
             }
-            $rowview = true;
-        }
-        else {
-            $rowview = false;
-        }
 
-        $out = $this->unaliasWithScroller($this->resolve_calendar_aliases($this->slice_info['compact_top']), $CurItem);
-
-        if (!$rowview) {
-            for ($cell = $min_cell; $cell <= $max_cell; ++$cell) {
-                $calendar_aliases["_#CV_NUM_D"] = $cell;
-                $events = $calendar[$cell];
-                if ($this->slice_info['even_odd_differ'] && count($events) == 0) {
-                    $header = $this->slice_info['aditional'];
-                    $footer = $this->slice_info['aditional2'];
-                }
-                else {
-                    $header = $this->slice_info['category_format'];
-                    $footer = $this->slice_info['category_bottom'];
-                }
-                $CurItem->setformat ($this->resolve_calendar_aliases($header,$cell));
-                $out .= $CurItem->get_item();
-
-                for ($ievent = 0; $ievent < $max_events; ++$ievent) {
-                    $event = $events[$ievent];
-                    if ($event["iid"] && $event["start"]) {
-                        $this->setColumns ($CurItem, $content[$event['iid']]);
-                        $CurItem->setformat ($this->slice_info['aditional3']);
-                        $tdattribs = $CurItem->get_item();
-                        $CurItem->setformat ($this->slice_info['odd_row_format']);
-                        $out .= "<td valign=\"top\" rowspan=\"".$event['span']."\" $tdattribs>"
-                            .$CurItem->get_item()."</td>";
-                    } else if (!$event["iid"])
-                        $out .= "<td class=\"empty\"></td>";
-                }
-
-                $CurItem->setformat ($this->resolve_calendar_aliases($footer,$cell));
-                $out .= $CurItem->get_item();
-            }
-        }
-
-        if ($rowview) {
+            // go throgh all weeks
             for ($row=0; $row < $rowcount; ++$row) {
                 $outrow = "";
                 $firstcell = $row * $row_len - $firstday;
@@ -922,16 +878,18 @@ class itemview {
                         $header = $this->slice_info['category_format'];
                     }
                     $label = $cell >= $min_cell && $cell <= $max_cell ? $cell : "";
-                    $CurItem->setformat ($this->resolve_calendar_aliases($header,$label));
+                    $CurItem->setformat($this->resolve_calendar_aliases($header,$label));
                     $outrow .= $CurItem->get_item();
                 }
                 if ($outrow) {
-                    $out .= "<tr>$outrow</tr>";
+                    $out .= "\n<tr>$outrow</tr>";
                 }
 
                 if ($this->slice_info['odd_row_format']) {
+                    $row_for_week_printed = false;
                     for ($ievent = 0; $ievent < $max_events; ++$ievent) {
-                        $out .= "<tr>";
+                        $outrow = "";
+                        $we_have_event_this_week = false;
                         for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
                             $event = $calendar[$cell][$ievent];
                             if ($event["iid"] && $event["start"]) {
@@ -939,13 +897,22 @@ class itemview {
                                 $CurItem->setformat($this->slice_info['aditional3']);
                                 $tdattribs = $CurItem->get_item();
                                 $CurItem->setformat ($this->slice_info['odd_row_format']);
-                                $out .= "<td valign=top colspan=".$event['span']." $tdattribs>"
-                                    .$CurItem->get_item()."</td>";
-                            } else if (!$event["iid"]) {
-                                $out .= "<td class='empty'></td>";
+                                $colspan = ($event['span']>1) ? 'colspan='.$event['span'] : '';
+                                $outrow .= "<td valign=top $colspan $tdattribs>" .$CurItem->get_item()."</td>";
+                                $we_have_event_this_week = true;
+                            } elseif (!$event["iid"]) {
+                                $outrow .= '<td class="empty">&nbsp;</td>';
                             }
                         }
-                        $out .= "</tr>";
+                        // do not print empty calendar rows ...
+                        if ($outrow AND $we_have_event_this_week) {
+                            $out .= "\n<tr>$outrow</tr>";
+                            $row_for_week_printed = true;
+                        }
+                    }
+                    // ... but print it in case we didn't print any (at leas one should be printed)
+                    if (!$row_for_week_printed) {
+                        $out .= "\n<tr>$outrow</tr>";
                     }
                 }
                 $outrow = "";
@@ -957,15 +924,47 @@ class itemview {
                         $footer = $this->slice_info['category_bottom'];
                     }
                     $label = $cell >= $min_cell && $cell <= $max_cell ? $cell : "";
-                    $CurItem->setformat ($this->resolve_calendar_aliases($footer,$label));
+                    $CurItem->setformat($this->resolve_calendar_aliases($footer,$label));
                     $outrow .= $CurItem->get_item();
                 }
-                $out .= "<tr>$outrow</tr>";
+                if ($outrow) {
+                    $out .= "\n<tr>$outrow</tr>";
+                }
+            }
+
+        } else {
+            for ($cell = $min_cell; $cell <= $max_cell; ++$cell) {
+                $calendar_aliases["_#CV_NUM_D"] = $cell;
+                $events = $calendar[$cell];
+                if ($this->slice_info['even_odd_differ'] AND (count($events) == 0)) {
+                    $header = $this->slice_info['aditional'];
+                    $footer = $this->slice_info['aditional2'];
+                } else {
+                    $header = $this->slice_info['category_format'];
+                    $footer = $this->slice_info['category_bottom'];
+                }
+                $CurItem->setformat($this->resolve_calendar_aliases($header,$cell));
+                $out .= $CurItem->get_item();
+
+                for ($ievent = 0; $ievent < $max_events; ++$ievent) {
+                    $event = $events[$ievent];
+                    if ($event["iid"] && $event["start"]) {
+                        $this->setColumns($CurItem, $content[$event['iid']]);
+                        $CurItem->setformat($this->slice_info['aditional3']);
+                        $tdattribs = $CurItem->get_item();
+                        $CurItem->setformat($this->slice_info['odd_row_format']);
+                        $out .= "<td valign=\"top\" rowspan=\"".$event['span']."\" $tdattribs>" .$CurItem->get_item()."</td>";
+                    } elseif (!$event["iid"]) {
+                        $out .= '<td class="empty">&nbsp;</td>';
+                    }
+                }
+
+                $CurItem->setformat ($this->resolve_calendar_aliases($footer,$cell));
+                $out .= $CurItem->get_item();
             }
         }
 
         $out .= $this->unaliasWithScroller($this->resolve_calendar_aliases($this->slice_info['compact_bottom']), $CurItem);
-        trace("-");
         return $out;
     }
 
