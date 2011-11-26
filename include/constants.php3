@@ -919,8 +919,9 @@ $CONDS_NOT_FIELD_NAMES = array(
 
 // used in add slice wizard
 define ("NOT_EMAIL_WELCOME", -1);
-// CountHit probability: how offen write logged hits to item table
-define ("COUNTHIT_PROBABILITY", 1000);
+
+// CountHit probability: how offen check, if the hit counter is planed
+define ("COUNTHIT_PROBABILITY", 100);
 
 // PagecachePurge probability: how offen remove old entries from pagecache table
 define ("PAGECACHEPURGE_PROBABILITY", 1000); // each 1000-th pagecache store event
