@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Show a list of images in a long horizontal table.
  * @author $Author$
@@ -26,16 +26,16 @@ $manager->deleteFiles();
 $refreshDir = false;
 //process any directory functions
 if($manager->deleteDirs() || $manager->processNewDir())
-	$refreshDir = true;
+    $refreshDir = true;
 
 //check for any sub-directory request
 //check that the requested sub-directory exists
 //and valid
 if(isset($_REQUEST['dir']))
 {
-	$path = rawurldecode($_REQUEST['dir']);
-	if($manager->validRelativePath($path))
-		$relative = $path;
+    $path = rawurldecode($_REQUEST['dir']);
+    if($manager->validRelativePath($path))
+        $relative = $path;
 }
 
 
@@ -53,8 +53,8 @@ $list = $manager->getFiles($relative);
  */
 function drawFiles($list, &$manager)
 {
-	global $relative;
-	global $IMConfig;
+    global $relative;
+    global $IMConfig;
 
     switch($IMConfig['ViewMode'])
     {
@@ -65,8 +65,8 @@ function drawFiles($list, &$manager)
           <!--
             function showPreview(f_url)
             {
-              
-              window.parent.document.getElementById('f_preview').src = 
+
+              window.parent.document.getElementById('f_preview').src =
                 window.parent._backend_url + '__function=thumbs&img=' + f_url;
             }
           //-->
@@ -85,25 +85,25 @@ function drawFiles($list, &$manager)
               <td><?php if($file['image']){ echo $file['image'][0].'x'.$file['image'][1]; } ?></td>
               <td class="actions">
                 <a href="<?php print $IMConfig['backend_url']; ?>__function=images&dir=<?php echo $relative; ?>&amp;delf=<?php echo rawurlencode($file['relative']);?>" title="Trash" onclick="return confirmDeleteFile('<?php echo $entry; ?>');"><img src="<?php print $IMConfig['base_url'];?>img/edit_trash.gif" height="15" width="15" alt="Trash" border="0"  /></a>
-        
+
                 <a href="javascript:;" title="Edit" onclick="editImage('<?php echo rawurlencode($file['relative']);?>');"><img src="<?php print $IMConfig['base_url'];?>img/edit_pencil.gif" height="15" width="15" alt="Edit" border="0" /></a>
               </td>
             </tr>
-            <?php        
+            <?php
           }
           ?>
         </tbody>
         </table>
         <?php
-      }      
+      }
       break;
-      
+
       case 'thumbs':
       default      :
       {
-	foreach($list as $entry => $file)
-	{
-		?>
+    foreach($list as $entry => $file)
+    {
+        ?>
     <div class="thumb_holder" id="holder_<?php echo asc2hex($entry) ?>">
       <a href="#" class="thumb" style="cursor: pointer;" onclick="selectImage('<?php echo $file['relative'];?>', '<?php echo $entry; ?>', <?php echo $file['image'][0];?>, <?php echo $file['image'][1]; ?>);return false;" title="<?php echo $entry; ?> - <?php echo Files::formatSize($file['stat']['size']); ?>">
         <img src="<?php print $manager->getThumbnail($file['relative']); ?>" alt="<?php echo $entry; ?> - <?php echo Files::formatSize($file['stat']['size']); ?>"/>
@@ -116,34 +116,34 @@ function drawFiles($list, &$manager)
         <?php if($file['image']){ echo $file['image'][0].'x'.$file['image'][1]; } else echo $entry;?>
       </div>
     </div>
-	  <?php
+      <?php
         }
       }
-    }	
+    }
 }//function drawFiles
 
 
 /**
  * Draw the directory.
  */
-function drawDirs($list, &$manager) 
+function drawDirs($list, &$manager)
 {
-	global $relative;
+    global $relative;
    global $IMConfig;
 
   switch($IMConfig['ViewMode'])
   {
     case 'details':
     {
-        
+
     }
-    break; 
-    
+    break;
+
     case 'thumbs':
     default      :
     {
-	foreach($list as $path => $dir) 
-	{ ?>
+    foreach($list as $path => $dir)
+    { ?>
     <div class="dir_holder">
       <a class="dir" href="<?php print $IMConfig['backend_url'];?>__function=images&dir=<?php echo rawurlencode($path); ?>" onclick="updateDir('<?php echo $path; ?>')" title="<?php echo $dir['entry']; ?>"><img src="<?php print $IMConfig['base_url'];?>img/folder.gif" height="80" width="80" alt="<?php echo $dir['entry']; ?>" /></a>
 
@@ -152,33 +152,33 @@ function drawDirs($list, &$manager)
         <?php echo $dir['entry']; ?>
       </div>
     </div>
-	  <?php 
-	} //foreach
+      <?php
+    } //foreach
     }
   }
-  
-	
+
+
 }//function drawDirs
 
 
 /**
  * No directories and no files.
  */
-function drawNoResults() 
+function drawNoResults()
 {
 ?>
 <div class="noResult">No Images Found</div>
-<?php 
+<?php
 }
 
 /**
  * No directories and no files.
  */
-function drawErrorBase(&$manager) 
+function drawErrorBase(&$manager)
 {
 ?>
 <div class="error"><span>Invalid base directory:</span> <?php echo $manager->config['images_dir']; ?></div>
-<?php 
+<?php
 }
 
 /**
@@ -197,9 +197,9 @@ function asc2hex ($temp)
 
 <html>
 <head>
-	<title>Image List</title>
+    <title>Image List</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link href="<?php print $IMConfig['base_url'];?>assets/imagelist.css" rel="stylesheet" type="text/css" />
+    <link href="<?php print $IMConfig['base_url'];?>assets/imagelist.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
 _backend_url = "<?php print $IMConfig['backend_url']; ?>";
 </script>
@@ -208,68 +208,68 @@ _backend_url = "<?php print $IMConfig['backend_url']; ?>";
 <script type="text/javascript">
 /*<![CDATA[*/
 
-	if(window.top)
+    if(window.top)
     HTMLArea = Xinha    = window.top.Xinha;
 
-	function hideMessage()
-	{
-		var topDoc = window.top.document;
-		var messages = topDoc.getElementById('messages');
-		if(messages)
-			messages.style.display = "none";
-	}
+    function hideMessage()
+    {
+        var topDoc = window.top.document;
+        var messages = topDoc.getElementById('messages');
+        if(messages)
+            messages.style.display = "none";
+    }
 
-	init = function()
-	{
-	  __dlg_translate('ImageManager');
-		hideMessage();
-		var topDoc = window.top.document;
+    init = function()
+    {
+      __dlg_translate('ImageManager');
+        hideMessage();
+        var topDoc = window.top.document;
 
-<?php 
-	//we need to refesh the drop directory list
-	//save the current dir, delete all select options
-	//add the new list, re-select the saved dir.
-	if($refreshDir) 
-	{ 
-		$dirs = $manager->getDirs();
+<?php
+    //we need to refesh the drop directory list
+    //save the current dir, delete all select options
+    //add the new list, re-select the saved dir.
+    if($refreshDir)
+    {
+        $dirs = $manager->getDirs();
 ?>
-		var selection = topDoc.getElementById('dirPath');
-		var currentDir = selection.options[selection.selectedIndex].text;
+        var selection = topDoc.getElementById('dirPath');
+        var currentDir = selection.options[selection.selectedIndex].text;
 
-		while(selection.length > 0)
-		{	selection.remove(0); }
-		
-		selection.options[selection.length] = new Option("/","<?php echo rawurlencode('/'); ?>");	
-		<?php foreach($dirs as $relative=>$fullpath) { ?>
-		selection.options[selection.length] = new Option("<?php echo $relative; ?>","<?php echo rawurlencode($relative); ?>");		
-		<?php } ?>
-		
-		for(var i = 0; i < selection.length; i++)
-		{
-			var thisDir = selection.options[i].text;
-			if(thisDir == currentDir)
-			{
-				selection.selectedIndex = i;
-				break;
-			}
-		}		
+        while(selection.length > 0)
+        {	selection.remove(0); }
+
+        selection.options[selection.length] = new Option("/","<?php echo rawurlencode('/'); ?>");
+        <?php foreach($dirs as $relative=>$fullpath) { ?>
+        selection.options[selection.length] = new Option("<?php echo $relative; ?>","<?php echo rawurlencode($relative); ?>");
+        <?php } ?>
+
+        for(var i = 0; i < selection.length; i++)
+        {
+            var thisDir = selection.options[i].text;
+            if(thisDir == currentDir)
+            {
+                selection.selectedIndex = i;
+                break;
+            }
+        }
 <?php } ?>
     update_selected();
-	}	
+    }
 
-	function editImage(image) 
-	{
-		var url = "<?php print $IMConfig['backend_url']; ?>__function=editor&img="+image;
-		Dialog(url, function(param) 
-		{
-			if (!param) // user must have pressed Cancel
-				return false;
-			else
-			{
-				return true;
-			}
-		}, null);		
-	}
+    function editImage(image)
+    {
+        var url = "<?php print $IMConfig['backend_url']; ?>__function=editor&img="+image;
+        Dialog(url, function(param)
+        {
+            if (!param) // user must have pressed Cancel
+                return false;
+            else
+            {
+                return true;
+            }
+        }, null);
+    }
 
 /*]]>*/
 </script>
@@ -279,11 +279,11 @@ _backend_url = "<?php print $IMConfig['backend_url']; ?>";
 </head>
 
 <body>
-<?php if ($manager->isValidBase() == false) { drawErrorBase($manager); } 
-	elseif(count($list[0]) > 0 || count($list[1]) > 0) { ?>
+<?php if ($manager->isValidBase() == false) { drawErrorBase($manager); }
+    elseif(count($list[0]) > 0 || count($list[1]) > 0) { ?>
 
-	<?php drawDirs($list[0], $manager); ?>
-	<?php drawFiles($list[1], $manager); ?>
+    <?php drawDirs($list[0], $manager); ?>
+    <?php drawFiles($list[1], $manager); ?>
 
 <?php } else { drawNoResults(); } ?>
 </body>
