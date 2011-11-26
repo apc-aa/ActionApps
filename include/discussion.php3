@@ -381,6 +381,29 @@ function DeleteNode(&$tree, &$d_content, $d_id) {
     }
 }
 
+
+
+/** DeleteNode function
+ * Delete one comment
+ * @param $item_id
+ * @param $slice_id
+ */
+function DeleteDiscForItem($item_id, $slice_id, $state=99999) {
+    global $db;
+    $p_item_id = q_pack_id($item_id);
+
+    // 99999 - just unused number (state is 0-shown or 1-hidden)
+    $where = ($state == 99999) ? '' : " AND state = '".($state ? 1 : 0)."'";
+
+    // check perms -  if the item is in the right slice
+    $SQL = "SELECT slice_id FROM item WHERE id='$p_item_id'";
+    $db->tquery($SQL);
+    $db->next_record();
+    if (unpack_id($db->f('slice_id')) == $slice_id) {
+        $db->tquery("DELETE FROM discussion WHERE item_id='".q_pack_id($item_id)."' $where");
+    }
+}
+
 /** updateDiscussionCount function
  * Update a count of discussion comments in the view table
  * (called after adding|deleting|hiding|approving comment)

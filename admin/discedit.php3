@@ -69,7 +69,7 @@ $zids     = QueryDiscussionZIDs($item_id);
 $dcontent = GetDiscussionContent($zids, false);
 $tree     = GetDiscussionTree($dcontent);
 
-if ($mode == "hide" || $mode=="delete") {
+if ($mode == "hide" || $mode=="delete" || $mode=="deleteall" || $mode=="deleteshown") {
     switch ($mode) {
         case "hide" :
             $h = ( $h ? 1 : 0 );
@@ -79,6 +79,12 @@ if ($mode == "hide" || $mode=="delete") {
             break;
         case "delete":
             DeleteNode($tree, $dcontent, $d_id);
+            break;
+        case "deleteall":
+            DeleteDiscForItem($item_id, $slice_id);
+            break;
+        case "deleteshown":
+            DeleteDiscForItem($item_id, $slice_id, 0);
             break;
     }
     updateDiscussionCount($item_id);        // update a count of the comments belong to the item
@@ -105,6 +111,18 @@ HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sh
        return
     var url="<?php echo $sess->url(con_url("./discedit.php3", "mode=delete")); ?>"
     document.location=url + "&d_id=" + escape(id) + "&item_id=" + "<?php echo $item_id; ?>"
+  }
+  function DeleteAllComments() {
+    if ( !confirm("<?php echo _m("Are you sure you want to delete ALL comments? There is no way back!"); ?>"))
+       return;
+    var url="<?php echo $sess->url(con_url("./discedit.php3", "mode=deleteall")); ?>"
+    document.location=url + "&item_id=" + "<?php echo $item_id; ?>"
+  }
+  function DeleteAllHiddenComments() {
+    if ( !confirm("<?php echo _m("Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!"); ?>"))
+       return;
+    var url="<?php echo $sess->url(con_url("./discedit.php3", "mode=deleteshown")); ?>"
+    document.location=url + "&item_id=" + "<?php echo $item_id; ?>"
   }
   // -->
 </script>
@@ -183,7 +201,10 @@ if (!$outcome) {
 ?>
   </table>
   </td></tr>
-  <tr><td class="tabtit"  align="center"><input type="submit" value="<?php echo _m("Back") ?>"></td></tr>
+  <tr><td class="tabtit"  align="center">
+     <input type="submit" value="<?php echo _m("Back") ?>">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+     <input type="button" value="<?php echo _m("Delete All") ?>" onclick="DeleteAllComments();">&nbsp;
+     <input type="button" value="<?php echo _m("Delete All Unhidden") ?>" onclick="DeleteAllHiddenComments();"></td></tr>
   </table>
   </form>
   </center>
