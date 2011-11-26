@@ -1647,7 +1647,9 @@ class AA_Items {
         }
         $items = AA_Items::singleton();
 
-        $zid = (strtolower(get_class($zid))=='zids') ? $zid : new zids($zid);
+        if (!is_object($zid)) {
+            $zid = new zids($zid);
+        }
 
         // Do we want to count with inner cache (probably yes)
         if (!$renew) {

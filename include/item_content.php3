@@ -390,7 +390,7 @@ class ItemContent extends AA_Content {
         if (!$item_id) {
             return false;
         }
-        $zid           = (strtolower(get_class($item_id))=='zids') ? $item_id : new zids($item_id);
+        $zid           = is_object($item_id) ? $item_id : new zids($item_id);
         $content       = GetItemContent($zid, false, $ignore_reading_password);
         $this->content = is_array($content) ? reset($content) : null;
     }

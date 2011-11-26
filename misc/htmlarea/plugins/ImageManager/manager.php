@@ -6,19 +6,19 @@
  * @package ImageManager
  */
 
-	require_once('config.inc.php');
-	require_once('ddt.php');
-	require_once('Classes/ImageManager.php');
-	
-	$manager = new ImageManager($IMConfig);
-	$dirs = $manager->getDirs();
+    require_once('config.inc.php');
+    require_once('ddt.php');
+    require_once('Classes/ImageManager.php');
+
+    $manager = new ImageManager($IMConfig);
+    $dirs = $manager->getDirs();
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html>
 <head>
-	<title>Insert Image</title>
+    <title>Insert Image <?php echo $IMConfig['images_dir']; ?> </title>
   <script type="text/javascript">
     // temporary. An ImageManager rewrite will take care of this kludge.
     _backend_url = "<?php print $IMConfig['backend_url']; ?>";
@@ -33,11 +33,11 @@
 <script type="text/javascript" src="<?php print $IMConfig['base_url'];?>assets/dialog.js"></script>
 <script type="text/javascript">
 /*<![CDATA[*/
-	if(window.opener)
-		Xinha = HTMLArea = window.opener.Xinha;
+    if(window.opener)
+        Xinha = HTMLArea = window.opener.Xinha;
 
-	var thumbdir = "<?php echo $IMConfig['thumbnail_dir']; ?>";
-	var base_url = "<?php echo $manager->getImagesURL(); ?>";
+    var thumbdir = "<?php echo $IMConfig['thumbnail_dir']; ?>";
+    var base_url = "<?php echo $manager->getImagesURL(); ?>";
 /*]]>*/
 </script>
 <script type="text/javascript" src="<?php print $IMConfig['base_url'];?>assets/manager.js"></script>
@@ -154,7 +154,7 @@
     <th style="text-align: left;" class="fullOptions">Color:</th>
     <td  class="fullOptions">
       <input name="f_backgroundColor" type="text" id="f_backgroundColor" size="7" />
-     
+
     </td>
   </tr>
 
@@ -182,7 +182,7 @@
     <th style="text-align: left;">Color:</th>
     <td>
       <input name="f_borderColor" type="text" id="f_borderColor" size="7" />
-      
+
     </td>
   </tr>
 

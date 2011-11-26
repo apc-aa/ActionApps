@@ -26,10 +26,11 @@ require_once AA_INC_PATH."util.php3";                                      // AA
 *
 * URL to use for unified backend.
 *
-* The ?__plugin=ImageManager& is required. 
+* The ?__plugin=ImageManager& is required.
 */
 
-$IMConfig['backend_url'] = "backend.php?AA_CP_Session=". $GLOBALS['AA_CP_Session'] ."&__plugin=ImageManager&";           // AA_CHANGE + by brazda@changenet.sk
+//$IMConfig['backend_url'] = "backend.php?AA_CP_Session=". $GLOBALS['AA_CP_Session'] ."&__plugin=ImageManager&";           // AA_CHANGE + by brazda@changenet.sk
+$IMConfig['backend_url'] = "backend.php?AA_CP_Session=". $_GET['AA_CP_Session'] ."&__plugin=ImageManager&";           // AA_CHANGE + by honzam + brazda@changenet.sk
 
 /**
 * Backend Installation Directory
@@ -51,7 +52,7 @@ $IMConfig['base_url'] = '';
 * File system path to the directory you want to manage the images
 * for multiple user systems, set it dynamically.
 *
-* NOTE: This directory requires write access by PHP. That is, 
+* NOTE: This directory requires write access by PHP. That is,
 * PHP must be able to create files in this directory.
 * Able to create directories is nice, but not necessary.
 *
@@ -112,10 +113,10 @@ $IMConfig['safe_mode'] = ini_get('safe_mode');   // AA_CHANGE + honzam
 * Possible values: 'GD', 'IM', or 'NetPBM'
 *
 * The image manipulation library to use, either GD or ImageMagick or NetPBM.
-* If you have safe mode ON, or don't have the binaries to other packages, 
+* If you have safe mode ON, or don't have the binaries to other packages,
 * your choice is 'GD' only. Other packages require Safe Mode to be off.
 *
-* DEFAULT: GD is probably the most likely to be available. 
+* DEFAULT: GD is probably the most likely to be available.
 */
 
 $IMConfig['IMAGE_CLASS'] = 'GD';
@@ -138,7 +139,7 @@ $IMConfig['IMAGE_CLASS'] = 'GD';
 // C:/"Program Files"/ImageMagick-5.5.7-Q16/
 
 // -------------------------------------------------------------------------
-//                OPTIONAL SETTINGS 
+//                OPTIONAL SETTINGS
 // -------------------------------------------------------------------------
 
 /**
@@ -158,7 +159,7 @@ $IMConfig['thumbnail_prefix'] = '.';
 *
 * Thumbnail can also be stored in a directory, this directory
 * will be created by PHP. If PHP is in safe mode, this parameter
-*  is ignored, you can not create directories. 
+*  is ignored, you can not create directories.
 *
 *  If you do not want to store thumbnails in a directory, set this
 *  to false or empty string '';
@@ -193,12 +194,12 @@ $IMConfig['resized_dir'] = '.resized';
 /**
  * Full options
  *
- * Determines whether the user is given options for padding, 
- * background/padding colour, margin, border and border colour. 
+ * Determines whether the user is given options for padding,
+ * background/padding colour, margin, border and border colour.
  */
 
 $IMConfig['show_full_options'] = true;
- 
+
 // -------------------------------------------------------------------------
 
 /**
@@ -243,8 +244,8 @@ $IMConfig['allow_upload'] = true;
 *
 * Possible values: true, false
 *
-* TRUE - If set to true, uploaded files will be validated based on the 
-*        function getImageSize, if we can get the image dimensions then 
+* TRUE - If set to true, uploaded files will be validated based on the
+*        function getImageSize, if we can get the image dimensions then
 *        I guess this should be a valid image. Otherwise the file will be rejected.
 *
 * FALSE - All uploaded files will be processed.
@@ -311,7 +312,7 @@ elseif(isset($_REQUEST['backend_config']))
   if(get_magic_quotes_gpc()) {
     $_REQUEST['backend_config'] = stripslashes($_REQUEST['backend_config']);
   }
-  
+
   // Config specified from front end, check that it's valid
   session_start();
   $secret = $_SESSION[$_REQUEST['backend_config_secret_key_location']];
