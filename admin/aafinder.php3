@@ -178,8 +178,10 @@ if ($go_finditem && $finditem) {
     $zid = new zids($finditem);
     $item = AA_Items::getItem($zid);
     if ($item) {
-        echo "<br>Item ID: ". $item->getItemID(). ' ('. $item->getval('short_id........') .')';
-        echo "<br>Item slice: ". $item->getSliceID(). ' ('. AA_Slices::getName($item->getSliceID()). ')';
+        $long_id = $item->getItemID();
+        $sid     = $item->getSliceID();
+        echo "<br>Item ID: $long_id (". $item->getval('short_id........') .") | <a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$sid&$sess->name=$sess->id\" target=\"_blank\">"._m('Edit')."</a>";
+        echo "<br>Item slice: $sid (". AA_Slices::getName($sid). ')';
         $format = '_#HEADLINE';
         echo "<br>_#HEADLINE: ". $item->unalias($format);
     }

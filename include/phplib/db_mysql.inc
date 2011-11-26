@@ -21,7 +21,6 @@ class DB_MySQL {
   var $Auto_Free     = 0;     ## Set to 1 for automatic mysql_free_result()
   var $Debug         = 0;     ## Set to 1 for debugging messages.
   var $Halt_On_Error = "yes"; ## "yes" (halt with message), "no" (ignore errors quietly), "report" (ignore error, but spit a warning)
-  var $PConnect      = 0;     ## Set to 1 to use persistent database connections
 
   /* public: result array and current row number */
   var $Record   = array();
@@ -376,10 +375,10 @@ class DB_MySQL {
   }
 }
 if(!class_exists("DB_Sql"))	{
-	class DB_Sql extends DB_MySQL {
-		function DB_Sql($query = "") {
-			$this->DB_MySQL($query);
-		}
-	}
+    class DB_Sql extends DB_MySQL {
+        function DB_Sql($query = "") {
+            $this->DB_MySQL($query);
+        }
+    }
 }
 ?>

@@ -1,3 +1,13 @@
+11/26/11 - prototype.js updated to 1.7
+(honzam) - fixed site module interface bug - delete of condion did not work in some cases
+         - better filename conversion when uploading file
+         - new {backlinks:<item_id>[:<slice_ids>[:<sort>]]} 
+           returns ids of items which links the item (as relation)
+         - new {fieldid:text:1}  - returns text...........1
+         - faster e-mail processing
+         - the sort order could be specifieed as comma delimited list
+           like: category.......1,publish_date....- 
+           (in field setting as well as aliases,...)
 10/05/11 - added icon for ajax editable fields in AA admin interface
 (honzam)
 08/15/11 - fixed {switch} - broken in last commit 08/14/11

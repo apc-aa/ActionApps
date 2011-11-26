@@ -265,10 +265,9 @@ class zids implements Iterator, ArrayAccess, Countable {
             return array();
         }
         switch ($this->type) {
-            case "l":  return (isset($i) ? $this->a[$i] : $this->a);
-            case "p":  return (isset($i) ? unpack_id($this->a[$i])
-                                         : array_map("unpack_id", $this->a));
-            case "t":  return (isset($i) ? id_t2l($this->a[$i]) : array_map("id_t2l", $this->a));
+            case "l":  return (isset($i) ? $this->a[$i]            : $this->a);
+            case "p":  return (isset($i) ? unpack_id($this->a[$i]) : array_map("unpack_id", $this->a));
+            case "t":  return (isset($i) ? id_t2l($this->a[$i])    : array_map("id_t2l", $this->a));
             case 's':  $trans = $this->translate('l');
                        return (isset($i) ? $trans[$i] : $trans );
             default:

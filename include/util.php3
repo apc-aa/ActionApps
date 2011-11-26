@@ -1897,10 +1897,10 @@ function IsSpamText($text, $tolerance=4) {
 }
 
 /** checks, if the identifier looks like alias. Used in {ifset:{_#HEADLINE}:...}
- *  to check the string - for example
+*  to check the string - for example - accepts _#HEADLINE and also _#P3 (for {_:...} functions)
  */
 function IsAlias($identifier) {
-    return  ((strlen($identifier)==10) AND (substr($identifier,0,2)=='_#'));
+    return  ((substr($identifier,0,2)=='_#') AND ((strlen($identifier)==10) OR ((substr($identifier,0,3)=='_#P') AND is_numeric(substr($identifier,3)))));
 }
 
 ?>

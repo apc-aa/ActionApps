@@ -75,6 +75,10 @@ function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
 }
 
 
+function AA_Ajax(div_id, url, param, onload) {
+    AA_AjaxCss(jqid(div_id), url, param, onload);
+}
+
 function AA_AjaxCss(selector, url, param, onload) {
     $(selector).html(AA_Config.loader);
     $(selector).load(url, param, onload);
@@ -420,6 +424,16 @@ function addPolozkaToKosik(kosik, produkt_variant, mnozstvi, kosdiv, viewid) {
 
 function addPolozkaToKosikAdmin(kosik, produkt_variant, mnozstvi) {
     addPolozkaToKosik(kosik, produkt_variant, mnozstvi, "#page-faktura", 71);
+}
+
+function addPolozkaToKosikSilent(kosik, produkt_variant, mnozstvi) {
+        $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
+            inline: 1,
+            slice_id: '38b46aeec3b2bbb70ba48b31957ed322',
+            "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation________][]": kosik,
+            "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation_______1][]": produkt_variant,
+            "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][text____________][]": mnozstvi
+        });
 }
 
 function deleteFromKosikAdmin(kosik, polozka_id) {
