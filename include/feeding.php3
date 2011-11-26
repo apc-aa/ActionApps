@@ -327,13 +327,18 @@ function FeedItemTo($item_id, $from_slice_id, $destination_id, $approved, $tocat
  * @param $source_id
  */
 function AddRelationFeed($dest_id, $source_id) {
-    global $db;
     $p_dest_id   = q_pack_id($dest_id);
     $p_source_id = q_pack_id($source_id);
     // update relation table - stores where is what fed
-    $SQL = "INSERT INTO relation ( destination_id, source_id,   flag )
-            VALUES ( '$p_dest_id', '$p_source_id', '". REL_FLAG_FEED ."' )";
-    $db->query($SQL);
+    DB_AA::sql("INSERT INTO relation ( destination_id, source_id,   flag ) VALUES ( '$p_dest_id', '$p_source_id', '". REL_FLAG_FEED ."' )");
+}
+
+function FromFed($item_id) {
+    return array_map('unpack_id', DB_AA::select('', 'SELECT source_id FROM relation', array(array('destination_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))));
+}
+
+function WhereFed($item_id) {
+    return array_map('unpack_id', DB_AA::select('', 'SELECT destination_id FROM relation', array(array('source_id', $item_id, 'l'), array('flag', REL_FLAG_FEED, 'n'))));
 }
 
 /** CreateFeedTree function

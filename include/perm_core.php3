@@ -393,10 +393,7 @@ function GetUserSlices( $user_id = "current") {
  * @param $slice
  */
 function IfSlPerm($perm, $slice=null) {
-    global $auth, $slice_id, $debugpermissions;
-    if ($debugpermissions) {
-        huhl("Slice_id=",$slice_id," Perm=",$perm);
-    }
+    global $auth, $slice_id;
     return CheckPerms( $auth->auth["uid"], "slice", get_if($slice,$slice_id), $perm);
 }
 

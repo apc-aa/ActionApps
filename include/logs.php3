@@ -42,6 +42,7 @@ BM_DELETE       bookmark id in profile table    name
 EMAIL_SENT      bookmark id/LIST/TEST           users:valid_emails:emails_sent
 TOEXECUTE       object's class                  return code
 ALERTS          howoften                        Start/email sent
+HITCOUNT        type
 */
 
 class AA_Log {
@@ -120,6 +121,7 @@ class AA_Log {
            // 'ITEM_FIELD_FILLED',
            // 'PAGECACHE',
            // 'TOEXECUTE'
+           // 'HITCOUNT'
         );
         return !in_array($event_type, $DO_NOT_LOG);
     }

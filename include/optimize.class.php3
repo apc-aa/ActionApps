@@ -1088,7 +1088,7 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
         $ret = true;
 
         // test wrong destination slices
-        $SQL      = "SELECT `item_id`, `field_id`, `text`, count(*) AS `cnt` FROM `content` WHERE (flag && 64) GROUP BY `item_id`, `field_id`, `text` HAVING `cnt` >1";
+        $SQL      = "SELECT `item_id`, `field_id`, `text`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag && 64) GROUP BY `item_id`, `field_id`, `text`, `number` HAVING `cnt` >1";
         $err_text = GetTable2Array($SQL, '', 'aa_fields');
 
         if (is_array($err_text) AND count($err_text) > 0) {

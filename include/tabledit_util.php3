@@ -615,7 +615,7 @@ function AddKeyValues(&$varset, $val, $primary, $columns, $auto_increment = true
 function GetKeyValues($key_val, $primary, $columns) {
     $keys = split_escaped(":", $key_val, "#:");
     reset ($keys);
-
+    
     reset ($primary);
     while (list ($alias) = each ($primary)) {
         list (,$value) = each ($keys);

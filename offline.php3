@@ -56,7 +56,6 @@ require_once AA_INC_PATH."util.php3";
 require_once AA_INC_PATH."varset.php3";
 require_once AA_INC_PATH."itemfunc.php3";
 require_once AA_INC_PATH."notify.php3";
-require_once AA_INC_PATH."xmlparse.php3";
 require_once AA_INC_PATH."pagecache.php3";
 require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."convert_charset.class.php3";

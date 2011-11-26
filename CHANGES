@@ -1,3 +1,30 @@
+11/26/11 - you can search in "-- any text field --" or 
+(honzam)   in "-- any numeric field --" in Item Manager
+         - new possibility to delete all discussion comments for the item, 
+           or delete only hidden or approved (for discussion spam deletion)
+         - test bulk email now can be send to multiple emails (comma separated)'  
+         - new possibility to search in discussions in AA -> AA Finder
+         - slice Password can be set not only for selectbox input field, but 
+           also for multiselectbox, multicheckboxes, radiobutton, and Two Boxes 
+           input widgets 
+         - {conds:...} now works also with array values - even in field:
+           {conds:category.......1} or in JSON {conds:[val1,val2]}
+           - uses OR operator there
+         - {dictionary:..} now could work with multiple slices as source 
+           of keywords
+         - {qs} now returns whole querystring if used without any parameter
+         - {qs[:<varname>[:delimiter]]} allows to specify delimiter 
+           (if not specified, the behavior is not changed - JSON is used) 
+         - The free2 field in discussion holds all Cookies sent by user - allows
+           better identify users, mainly with Google Analytics. 
+           (experimental - format could be changed in future.)
+         - bigger timelimit for cron.php3
+         - "last changed by" field is set correctly even by ajax modify
+         - rows in inputform are visualy better separated in Ecn styles
+         - hit statistics is counted more often +/-10 min
+         - fixes in calendar view
+         - more fixes for PHP 5.3
+         - small speed optimalization with MySQL
 11/26/11 - prototype.js updated to 1.7
 (honzam) - fixed site module interface bug - delete of condion did not work in some cases
          - better filename conversion when uploading file

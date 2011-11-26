@@ -1103,7 +1103,8 @@ function GetHeadlineFieldID($sid, $slice_field="headline.") {
 function GetCategoryGroup($slice_id, $field='') {
     // first should be category........, then category.......1, etc.
     $condition = $field ? "id = '$field'" : "id LIKE 'category%' ORDER BY id";
-    return DB_AA::select1("SELECT input_show_func FROM field WHERE slice_id='". q_pack_id($slice_id) ."' AND $condition", 'input_show_func');  // false if not found
+    $arr = explode( ":", DB_AA::select1("SELECT input_show_func FROM field WHERE slice_id='". q_pack_id($slice_id) ."' AND $condition", 'input_show_func'));  // false if not found
+    return $arr[1];
 }
 
 // -------------------------------------------------------------------------------

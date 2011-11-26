@@ -50,6 +50,7 @@ function __autoload ($class_name) {
         );
 
     if ($PAIRS[$class_name]) {
+#echo AA_BASE_PATH. $PAIRS[$class_name];
         require AA_BASE_PATH. $PAIRS[$class_name];
         return;
     }
@@ -168,10 +169,81 @@ class DB_AA extends DB_Sql {
     /** allways open, reusable database connection for one time queries */
     private static $_db    = null;
 
-    function select1($query, $column=false) {
+    /** static
+     *  used as: $chid = DB_AA::select1("SELECT id FROM `change` WHERE ...", 'id');
+     **/
+    function select1($query, $column=false, $where=null) {
         $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
-        $db->query("$query LIMIT 1");
-        return $db->next_record() ? ($column ? $db->Record[$column] : $db->Record) : false;
+        $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
+        $db->query("$query $sqlwhere LIMIT 1");
+        if (!$db->next_record()) {
+            return false;
+        }
+        if (!is_array($column)) {
+            return empty($column) ? $db->Record : $db->Record[$column];
+        }
+        $key = key($column);
+        $val = empty($column) ? $db->Record : array_intersect_key($db->Record, array_flip($column));
+        return is_numeric($key) ? $val : array($db->Record[$key] => $val);
+    }
+
+    /** static
+     *  used as: $chid = DB_AA::select1('id', "SELECT id FROM `change` WHERE ...");
+     **/
+    function select($column, $query, $where=null) {
+        $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
+        $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
+
+        huhl("$query $sqlwhere");
+        $db->query("$query $sqlwhere");
+        $ret = array();
+        if (is_array($column)) {
+            $key      = key($column);
+            $col_keys = array_flip($column);
+        }
+        while ($db->next_record()) {
+            if (!is_array($column)) {
+                $ret[] = empty($column) ? reset($db->Record) : $db->Record[$column];
+            }
+            $val = empty($column) ? $db->Record : array_intersect_key($db->Record, $col_keys);
+            if (is_numeric($key)) {
+                $ret[] = $val;
+            } else {
+                $ret[$db->Record[$key]] = $val;
+            }
+        }
+        return $ret;
+    }
+
+    /** static
+     *  used as: DB_AA::sql("INSERT SELECT id FROM `change` WHERE ...");
+     **/
+    function sql($query) {
+        $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
+        return $db->query($query);
+    }
+
+
+    /** makeWHERE function
+     * @param $tablename
+     */
+    function makeWHERE($varlist) {
+        $delim = '';
+        $where = '';
+        foreach ( $varlist as $vardef) {
+            // $vardef is array(varname, type, value)
+            list($name, $value, $type) = $vardef;
+            $part = '';
+            switch ( $type ) {
+                case "i": $part = (int)$value; break;
+                case "l": $part = q_pack_id($value); break;
+                case "q": $part = $value; break;
+                default:  $part = addslashes($value);
+            }
+            $where .= "$delim $name = '$part'";
+            $delim = " AND";
+        }
+        return $where ? "WHERE $where" : '';
     }
 
     /** query function

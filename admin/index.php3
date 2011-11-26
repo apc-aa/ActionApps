@@ -160,9 +160,7 @@ $manager_settings = array(
      'switches'  => $switches,
      'bin'       => 'app',
      'messages'  => array(
-         'title'       => ($slice->type() == 'ReaderManagement') ?
-                          _m('ActionApps - Reader Manager') :
-                          _m('ActionApps - Item Manager')
+         'title'       => $slice->name(). ' - '. (($slice->type() == 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager'))
                          )
          );
 

@@ -122,7 +122,7 @@ class AA_Formrow_Field extends AA_Formrow {
 
 
 
-/** Hidden field widget */
+/** Form Row - special widget for form setting */
 class AA_Widget_Formrow extends AA_Widget {
 
     /** Constructor - use the default for AA_Object */
@@ -347,7 +347,7 @@ class AA_Form extends AA_Object {
         $slice  = AA_Slices::getSlice($owner);
         $fields = $slice->getFields();
         $f_arr  = $fields->getNameArray();
-
+              // AA_Property($id='', $name='',              $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null) {
         $p = new AA_Property('rows', _m("Fields to show"),  'AA_Formrow_Field', true, false);
         $w = new AA_Widget_Formrow(array('const_arr' => $f_arr));
         $form->addRow(new AA_Formrow_Full($p, $w));   // use default widget for the field

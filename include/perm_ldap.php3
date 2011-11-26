@@ -26,37 +26,6 @@
  *
 */
 
-require_once "perm_core.php3";
-
-// default ldap server for all searches
-$aa_default_ldap = array( "host"   => LDAP_HOST,
-                          "binddn" => LDAP_BINDDN,
-                          "bindpw" => LDAP_BINDPW,
-                          "basedn" => LDAP_BASEDN,
-                          "people" => LDAP_PEOPLE,
-                          "groups" => LDAP_GROUPS,
-                          "acls"   => LDAP_ACLS,
-                          "port"   => LDAP_PORT);
-
-// define special ldap servers for another-node authentification
-// if not found - use $aa_default_ldap
-$aa_ldap_servers = array(
-   DEFAULT_ORG_ID => $aa_default_ldap,
-   "other.org"    => array("host"=>"ldap.other.org",
-                           "binddn"=>"cn=root,dc=other,dc=apc,dc=org",
-                           "bindpw"=>"passwordx",
-                           "basedn"=>"dc=other,dc=apc,dc=org",
-                           "people"=>"ou=People,dc=other,dc=apc,dc=org",
-                           "groups"=>"ou=Groups,dc=other,dc=apc,dc=org",
-                           "acls"=>"ou=ACLs,dc=other,dc=apc,dc=org"),
-   "another.org"  => array("host"=>"ldap.another.org",
-                           "binddn"=>"cn=root,dc=another,dc=apc,dc=org",
-                           "bindpw"=>"password2",
-                           "basedn"=>"dc=another,dc=apc,dc=org",
-                           "people"=>"ou=People,dc=another,dc=apc,dc=org",
-                           "groups"=>"ou=Groups,dc=another,dc=apc,dc=org",
-                           "acls"=>"ou=ACLs,dc=another,dc=apc,dc=org")
-                        );
 
 //#############################################################################
 // API functions
@@ -75,7 +44,7 @@ function AddUser($user, $flags = 0) {
         return false;
     }
 
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -109,7 +78,7 @@ function AddUser($user, $flags = 0) {
  * @param $flags
  */
 function DelUser($user_id, $flags = 3) {
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -127,7 +96,7 @@ function DelUser($user_id, $flags = 3) {
         ldap_free_result($r);
     }
 
-    if ($flags & 2) {            // cancel asssigned permissions
+    if ($flags & 2) {            // cancel assigned permissions
         $filter = "(&(objectclass=apcacl)(apcaci=$user_id:*))";
         $r      = ldap_search($ds, $aa_default_ldap['acls'], $filter, array("apcObjectType","apcaci","apcObjectID"));
         $arr    = ldap_get_entries($ds,$r);
@@ -150,7 +119,6 @@ function DelUser($user_id, $flags = 3) {
  * @param $flags
  */
 function ChangeUser($user, $flags = 0) {
-    global $aa_default_ldap;
     if ( !($ds = InitLDAP()) ) {
         return false;
     }
@@ -180,7 +148,7 @@ function ChangeUser($user, $flags = 0) {
  * @param $flags
  */
 function AddGroup($group, $flags = 0) {
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -209,7 +177,7 @@ function AddGroup($group, $flags = 0) {
  * @param $flags
  */
  function DelGroup($group_id, $flags = 3) {
-     global $aa_default_ldap;
+     $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
      if ( !($ds=InitLDAP()) ) {
          return false;
      }
@@ -228,7 +196,7 @@ function AddGroup($group, $flags = 0) {
          ldap_free_result($r);
      }
 
-     if ($flags & 2) {            // cancel asssigned permissions
+     if ($flags & 2) {            // cancel assigned permissions
          $filter = "(&(objectclass=apcacl)(apcaci=$group_id:*))";
          $r      = ldap_search($ds, $aa_default_ldap['acls'], $filter, array("apcObjectType","apcaci","apcObjectID"));
          $arr    = ldap_get_entries($ds,$r);
@@ -251,8 +219,6 @@ function AddGroup($group, $flags = 0) {
  * @param $flags
  */
 function ChangeGroup($group, $flags = 0) {
-    global $aa_default_ldap;
-
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -274,7 +240,6 @@ function ChangeGroup($group, $flags = 0) {
  *  @return array(uid, name, description)
  */
 function GetGroup($user_id, $flags = 0) {
-    global $aa_default_ldap;
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -305,7 +270,7 @@ function GetGroup($user_id, $flags = 0) {
  *  @return list of groups which corresponds to mask $pattern
  */
 function FindGroups($pattern, $flags = 0) {
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
 
     $result = FindReaderGroups($pattern);
 
@@ -351,7 +316,7 @@ function find_user_by_login($login) {
  *  @return list of users which corresponds to mask $pattern
  */
 function FindUsers($pattern, $flags = 0) {
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -377,7 +342,6 @@ function FindUsers($pattern, $flags = 0) {
  * @param $flags
  */
 function AddGroupMember($group_id, $id, $flags = 0) {
-    global $aa_default_ldap;
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -392,7 +356,6 @@ function AddGroupMember($group_id, $id, $flags = 0) {
  * @param $flags
  */
 function DelGroupMember($group_id, $id, $flags = 0) {
-    global $aa_default_ldap;
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -425,7 +388,6 @@ function DelGroupMember($group_id, $id, $flags = 0) {
  * @param $flags
  */
 function GetGroupMembers($group_id, $flags = 0) {
-    global $aa_default_ldap;
     if ( !($ds=InitLDAP()) ) {
         return false;
     }
@@ -454,7 +416,7 @@ function GetGroupMembers($group_id, $flags = 0) {
  * @return list of group_ids, where id (group or user) is a member
  */
 function GetMembership($id, $flags = 0) {
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
 
     $result = IsUserReader($id) ? GetReaderMembership($id) : array();
 
@@ -505,7 +467,7 @@ function GetMembership($id, $flags = 0) {
  * @param $flags
  */
 function AddPermObject($objectID, $objectType, $flags = 0) {
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
 
     if ( !($ds=InitLDAP()) ) {
         return false;
@@ -529,7 +491,7 @@ function AddPermObject($objectID, $objectType, $flags = 0) {
  * @param $flags
  */
 function DelPermObject($objectID, $objectType, $flags = 0) {
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if (!($ds=InitLDAP())) {
         return false;
     }
@@ -549,7 +511,7 @@ function DelPermObject($objectID, $objectType, $flags = 0) {
  * @param $flags
  */
 function AddPerm($id, $objectID, $objectType, $perm, $flags = 0) {
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if (!($ds=InitLDAP())) {
         return false;
     }
@@ -622,7 +584,7 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
  *  granted on specified object $objectID
  */
 function GetObjectsPerms($objectID, $objectType, $flags = 0) {
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if (!($ds=InitLDAP())) {
         return false;
     }
@@ -659,7 +621,7 @@ function GetObjectsPerms($objectID, $objectType, $flags = 0) {
  *  granted on all objects of type $objectType
  */
 function GetIDPerms($id, $objectType, $flags = 0) {
-    global $aa_default_ldap;
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     if (!($ds=InitLDAP())) {
         return false;
     }
@@ -705,22 +667,12 @@ function GetIDPerms($id, $objectType, $flags = 0) {
 // Internal functions
 //#############################################################################
 
-/** WhereToSearch function
- *  Decides which LDAP server ask for authentification
- *  (acording to org - ecn.cz ..)
- * @param $org
- */
-function WhereToSearch($org) {
-    global $aa_ldap_servers, $aa_default_ldap;
-    return ($aa_ldap_servers[$org] ? $aa_ldap_servers[$org] : $aa_default_ldap);
-}
 
 /** InitLDAP function
  * Connect to LDAP server
  */
 function InitLDAP() {
-    global $aa_default_ldap;
-
+    $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
     $ds = LDAP_Connect($aa_default_ldap['host'], $aa_default_ldap['port']);	// connect LDAP server
     if (!$ds) {   				// not connect
         return false;
@@ -756,8 +708,6 @@ function GetApcAciPerm($str) {
  * array("mail => $mail", "name => $cn", "type => "User" : "Group"")
  */
 function GetIDsInfoCurrent($id, $ds = "") {
-    global $aa_default_ldap;
-
     if ( $ds=="" ) {
         if ( !($ds=InitLDAP()) ) {
             return false;
@@ -820,13 +770,31 @@ function GetUserType( $user_id ) {
 
 class AA_Permsystem_Ldap extends AA_Permsystem {
     
+    /** getLdap function
+     *  Decides which LDAP server ask for authentification
+     *  (acording to org - ecn.cz ..)
+     * @param $org
+     */
+    function getLdap($org='') {
+        // default ldap server for all searches
+        return array( "host"   => LDAP_HOST,
+                      "binddn" => LDAP_BINDDN,
+                      "bindpw" => LDAP_BINDPW,
+                      "basedn" => LDAP_BASEDN,
+                      "people" => LDAP_PEOPLE,
+                      "groups" => LDAP_GROUPS,
+                      "acls"   => LDAP_ACLS,
+                      "port"   => LDAP_PORT);
+    }
+    
+    
     /** isUsernameFree function
      *  Looks into reader management slices whether the reader name is not yet used.
      *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
      * @param $username
      */
     function isUsernameFree($username) {
-        global $aa_default_ldap;
+        $aa_default_ldap = AA_Permsystem_Ldap::getLdap();
         // search not only Active bin, but also Holding bin, Pending, ...
         return ! GetIDsInfoCurrent("uid=$username,".$aa_default_ldap['people']);
     }
@@ -839,16 +807,15 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
  *  @return uid if user is authentificied, else false.
  */
 function AuthenticateUsernameCurrent($username, $password) {
-    global $aa_ldap_servers, $aa_default_ldap;
     if (!$username or !$password) {         // no password => anonymous in LDAP
         return false;
     }
 
     $return_val=false;
     if ($org = strstr($username, "@")) {      // user tries to auth. via e-mail
-        $LDAPserver = WhereToSearch( substr($org,"@"));  // get ldap server for this address
+        $LDAPserver = AA_Permsystem_Ldap::getLdap(substr($org,"@")); // get ldap server for this address
     } else {
-        $LDAPserver = $aa_default_ldap;
+        $LDAPserver = AA_Permsystem_Ldap::getLdap();
     }
 
     $ds = LDAP_Connect($LDAPserver['host'], $LDAPserver['port']);	// connect LDAP server

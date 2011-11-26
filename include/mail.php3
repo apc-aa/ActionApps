@@ -36,7 +36,8 @@ require_once AA_INC_PATH."htmlMimeMail/htmlMimeMail.php";
 require_once AA_INC_PATH."validate.php3";
 require_once AA_INC_PATH."toexecute.class.php3";
 
-class AA_Mail extends htmlMimeMail {
+
+class AA_Mail extends htmlMimeMail  {
 
     /** setFromTemplate function
      *  Prepares the mail for sending
@@ -84,7 +85,7 @@ class AA_Mail extends htmlMimeMail {
     function sendLater($to) {
         $toexecute = new AA_Toexecute;
 
-        $tos  = array_unique(is_array($to) ? $to : array($to));
+        $tos  = array_unique(array_map('trim', is_array($to) ? $to : array($to)));
         $sent = 0;
         foreach ($tos as $to) {
             if (!$to OR !AA_Validate::validate($to, 'email')) {
@@ -214,12 +215,14 @@ function html2text($html) {
     // Replace URL references <a href="http://xy">Link</a> => Link {http://xy}
     /* We can't directly use preg_replace, because it would find the first <a href
        and the last </a>. */
-    $ahref = "<[ \t]*a[ \t][^>]*href[ \t]*=[ \t]*[\"\\']([^\"\\']*)[\"\\'][^>]*>";
+    $ahref       = "<[ \t]*a[ \t][^>]*href[ \t]*=[ \t]*[\"\\']([^\"\\']*)[\"\\'][^>]*>";
+    $html_ahrefs = array();
     preg_match_all("'$ahref'si", $html, $html_ahrefs);
     $html_parts = preg_split("'$ahref'si", $html);
 
     reset($html_parts);
     reset($html_ahrefs[0]);
+    $matches = array();
     // Take the first part before any <a href>
     list(, $html) = each ($html_parts);
     while (list(, $html_part) = each($html_parts)) {

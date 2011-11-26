@@ -95,17 +95,12 @@ function PrintUser($usr, $usr_id, $editor_perm) {
     echo "<td class=\"tabtxt\">". (($usr['mail']) ? $usr['mail'] : "&nbsp;") ."</td>\n";
     echo "<td class=\"tabtxt\">". _mdelayed($usr['type']) ."</td>\n";
 
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),
-        get_admin_url("se_users.php3?UsrAdd=$usr_id&role=AUTHOR"), _m("Author"));
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["EDITOR"]['perm']),
-        get_admin_url("se_users.php3?UsrAdd=$usr_id&role=EDITOR"), _m("Editor"));
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["ADMINISTRATOR"]['perm']),
-        get_admin_url("se_users.php3?UsrAdd=$usr_id&role=ADMINISTRATOR"), _m("Administrator"));
-    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),
-        get_admin_url("se_users.php3?UsrDel=$usr_id&role=AUTHOR"), _m("Revoke"));
+    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrAdd=$usr_id&role=AUTHOR"), _m("Author"));
+    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["EDITOR"]['perm']),        get_admin_url("se_users.php3?UsrAdd=$usr_id&role=EDITOR"), _m("Editor"));
+    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["ADMINISTRATOR"]['perm']), get_admin_url("se_users.php3?UsrAdd=$usr_id&role=ADMINISTRATOR"), _m("Administrator"));
+    IfLink( CanChangeRole($perm, $editor_perm, $perms_roles["AUTHOR"]['perm']),        get_admin_url("se_users.php3?UsrDel=$usr_id&role=AUTHOR"), _m("Revoke"));
     // show profile button also for groups
-    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."\"
-             onclick=\"document.location='". $sess->url("se_profile.php3?uid=$usr_id") ."'\"></td>\n";
+    echo "<td class=\"tabtxt\"><input type=\"button\" name=\"uid\" value=\"". _m("Profile") ."\" onclick=\"document.location='". $sess->url("se_profile.php3?uid=$usr_id") ."'\"></td>\n";
     echo "</tr>\n";
 }
 

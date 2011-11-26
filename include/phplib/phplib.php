@@ -618,7 +618,6 @@ class Auth {
 
   var $auth = array();            // Data array
   var $in   = false;
-  var $db;
 
   //
   // Initialization
@@ -631,11 +630,6 @@ class Auth {
     if (! $this->in) {
       $sess->register("auth");
       $this->in = true;
-    }
-
-    // back compatibility: if database_class is set, create db object
-    if(isset($this->database_class)) {
-      $this->db = new $this->database_class;
     }
 
     # Check current auth state. Should be one of
@@ -819,34 +813,20 @@ class Auth {
   }
 
   function is_authenticated() {
-    if (
-      isset($this->auth["uid"])
-        &&
-      $this->auth["uid"]
-        &&
-      (($this->lifetime <= 0) || (time() < $this->auth["exp"]))
-    ) {
-      # If more than $this->refresh minutes are passed since last check,
-      # perform auth data refreshing. Refresh is only done when current
-      # session is valid (registered, not expired).
-      if (
-        ($this->refresh > 0)
-         &&
-        ($this->auth["refresh"])
-         &&
-        ($this->auth["refresh"] < time())
-      ) {
-        if ( $this->auth_refreshlogin() ) {
-          $this->auth["refresh"] = time() + (60 * $this->refresh);
-        } else {
-          return false;
-        }
+      if ( isset($this->auth["uid"]) && $this->auth["uid"] && (($this->lifetime <= 0) || (time() < $this->auth["exp"])) ) {
+          // If more than $this->refresh minutes are passed since last check,
+          // perform auth data refreshing. Refresh is only done when current
+          // session is valid (registered, not expired).
+          if ( ($this->refresh > 0) && ($this->auth["refresh"]) && ($this->auth["refresh"] < time()) ) {
+              if ( $this->auth_refreshlogin() ) {
+                  $this->auth["refresh"] = time() + (60 * $this->refresh);
+              } else {
+                  return false;
+              }
+          }
+          return $this->auth["uid"];
       }
-
-      return $this->auth["uid"];
-    } else {
       return false;
-    }
   }
 
   ////////////////////////////////////////////////////////////////////////
