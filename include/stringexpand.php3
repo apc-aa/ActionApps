@@ -545,8 +545,8 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switch_state_1_js = str_replace(array("'", '"', "\n"), array("\'", "\'", ' '), $switch_state_1);
-        $switch_state_2_js = str_replace(array("'", '"', "\n"), array("\'", "\'", ' '), $switch_state_2);
+        $switch_state_1_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switch_state_1);
+        $switch_state_2_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switch_state_2);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $link   = '';
@@ -1941,7 +1941,6 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
     function expand($item_id) {
         $id_type    = guesstype($item_id);
 
-        // for speedup - single items evaluate here
         if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
             $item = AA_Items::getItem(new zids($item_id,$id_type));
             if ($item) {
@@ -1978,6 +1977,31 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
             $zids = ($limit<0) ? $zids->slice($limit,-$limit) : $zids->slice(0,$limit);
         }
         return join($zids->longids(), $delimiter ? $delimiter : '-');
+    }
+}
+
+/** returns ids of items which links the item
+ *  {backlinks:<item_id>[:<slice_ids>[:<sort>]]}
+ *  {backlinks:{id..............}}
+ *    returns all active backlinks to the item in all slices in surrent site
+ *    module sorted by slice and publish_date
+ *  {backlinks:{id..............}:6a435236626262738348478463536272:category.......1-,headline........}
+ *    returns all active backlinks from specified slice sorted by category and headline
+ */
+class AA_Stringexpand_Backlinks extends AA_Stringexpand {
+    /** expand function
+     * @param $item_id    - item to find back links
+     * @param $slice_ids  - slices to look at (dash separated), default are all slices within site modules of item's slice
+     * @param $sort       - redefine sorting - like: category.......1-,headline........
+     */
+    function expand($item_id=null, $slice_ids=null, $sort=null) {
+        $item = AA_Items::getItem($item_id);
+        if ($item) {
+            $slice_ids = $slice_ids ? $slice_ids : '{site:{modulefield:{slice_id........}:site_ids}:modules}';
+            $sort      = $sort      ? $sort : 'slice_id........,publish_date....-';
+            return AA_Stringexpand::unalias("{ids:$slice_ids:d-all_fields-=-{id..............}:$sort}", '', $item);
+        }
+        return '';
     }
 }
 
@@ -2098,17 +2122,7 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand {
      * @param $encoding
      */
     function expand($string, $unique_slices='', $encoding='') {
-        require_once AA_INC_PATH."convert_charset.class.php3";
-        $encoder = new ConvertCharset;
-        $string  = html_entity_decode($string, ENT_QUOTES);
-        $base    = $encoder->Convert($string, empty($encoding) ? 'utf-8' : $encoding, 'us-ascii');
-        $base    = str_replace(' ','-',$base);
-        $base    = preg_replace('/[^\w-]/', '-', $base);
-        while ( strpos($base, '--') !== false ) {
-            $base = str_replace('--', '-', $base);
-        }
-        // remove starting and ending dash
-        $base = trim(strtolower($base), '-');
+        $base = ConvertCharset::singleton()->escape($string, empty($encoding) ? 'utf-8' : $encoding);
         // we do not want to have looooong urls
         if (strlen($base) > 124) {
             $base = substr($base, 0, 124);
@@ -2416,6 +2430,21 @@ class AA_Stringexpand_Compare extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Fieldid -
+ *  ussage:  {fieldid:text:1}  - returns text...........1
+ */
+class AA_Stringexpand_Fieldid extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $type
+     * @param $num
+     */
+    function expand($type, $num=0) {
+        return AA_Fields::createFieldId($type, $num);
+    }
+}
+
 /** Get field property (currently only 'name' is supported */
 class AA_Stringexpand_Field extends AA_Stringexpand {
 
@@ -2494,7 +2523,7 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
 
         // site_id is older, but better is to use site_ids, since it could return more than one ids (dash separated)
         if (($property == 'site_ids') OR ($property == 'site_id')) {
-            return join('-', GetTable2Array("SELECT source_id FROM relation WHERE destination_id='".q_pack_id($slice_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', 'unpack:source_id'));
+            return join('-', (array)GetTable2Array("SELECT source_id FROM relation WHERE destination_id='".q_pack_id($slice_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', 'unpack:source_id'));
         }
         if (!AA_Fields::isSliceField($property)) {  // it is "slice field" (begins with underscore _)
             $property = 'name';
@@ -2506,7 +2535,7 @@ class AA_Stringexpand_Modulefield extends AA_Stringexpand {
 /** Get site module property
  *  (currently only "modules" - dash separated list of slices in the site)
  *  I use it for example for computing of seo name:
- *  {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:{site:{modulefield:{_#SLICE_ID}:site_id}:modules}}}
+ *  {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:{site:{modulefield:{_#SLICE_ID}:site_ids}:modules}}}
  **/
 class AA_Stringexpand_Site extends AA_Stringexpand {
     /** expand function
@@ -4036,7 +4065,7 @@ class AA_Stringexpand_Header extends AA_Stringexpand {
 
 class AA_Password_Manager_Reader {
 
-    const KEY_TIMEOUT = 90;
+    const KEY_TIMEOUT = 150;
 
     function getFirstForm() {  // Type in either your username or e-mail
         return '<form id="pwdmanager-firstform" action="" method="post"><div class="aa-widget">
@@ -4069,7 +4098,7 @@ class AA_Password_Manager_Reader {
         $mail     = new AA_Mail;
         $mail->setSubject ("Zmena hesla");
         $url  = shtml_url()."?aapwd2=$pwdkey-$user_id";
-        $body = _m("Pro zmenu hesla prosim navstivte nasledujici adresu:<br><a href=\"$url\">$url</a><br>Zmena bude mozna po dobu jedne hodiny - jinak tento klic vyprsi a budete si muset pozadat o novy.");
+        $body = _m("Pro zmenu hesla prosim navstivte nasledujici adresu:<br><a href=\"$url\">$url</a><br>Zmena bude mozna po dobu dvou hodin - jinak tento klic vyprsi a budete si muset pozadat o novy.");
         $mail->setHtml($body, html2text($body));
         $mail->setHeader("From", $from_email);
         $mail->setHeader("Reply-To", $from_email);
