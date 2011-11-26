@@ -242,7 +242,6 @@ class inputform {
             $buttons += inputform::_getButton('cancel', 'button', _m("Cancel"), $profile->getProperty('ui_inputform', 'add_btn_cancel'), $this->cancel_url);
         }
 
-//        debug( $form, $GLOBALS['contentcache']);
     //added for MLX
         // print the inputform
         $CurItem = new AA_Item($content4id, $slice->aliases(), $form, $remove_string);   // just prepare
@@ -884,23 +883,23 @@ class AA_Inputfield {
                                    $conds_str = $item->unalias($conds_str);
                                }
                                if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                               $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, AA_Credentials::encrypt($add_slice_pwd));  // if we fill it there, it is not refilled in inputSel()
+                               $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);  // if we fill it there, it is not refilled in inputSel()
                                $this->inputSelect($usevalue);
                                break;
             case 'anonym_rio':
-            case 'normal_rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
-                               $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str);
+            case 'normal_rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
+                               $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);
                                break;
             case 'anonym_mch':
-            case 'normal_mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
+            case 'normal_mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str);  // move_right
+                               $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);  // move_right
                                break;
             case 'anonym_mse':
-            case 'normal_mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str) = $this->param;
+            case 'normal_mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
                                $rows = ($rows < 1) ? 5 : $rows;
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->inputMultiSelect($rows, $slice_field, $whichitems, $conds_str, $sort_str);
+                               $this->inputMultiSelect($rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);
                                break;
             case 'anonym_fil':
             case 'normal_fil': list($accepts, $text, $hlp) = $this->param;
@@ -950,12 +949,12 @@ class AA_Inputfield {
                                $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
                                break;
             case 'anonym_wi2':
-            case 'normal_wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform) = $this->param;
+            case 'normal_wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd) = $this->param;
                                if ( !is_null($item) ) {
                                    $conds_str = $item->unalias($conds_str);
                                }
                                $this->varname_modify('[]');         // use slightly modified varname
-                               $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform);
+                               $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd);
                                break;
             case 'anonym_pwd':  // handled in passwordModify
             case 'normal_pwd': list($fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help) = $this->param;
@@ -1029,15 +1028,17 @@ class AA_Inputfield {
      */
     function field_name( $plus=false, $colspan=1, $name=null ) {
         $name = is_null($name) ? $this->name : $name;
-        if ( $plus=='plus' ) {
-            $this->echoo("\n<tr class=\"formrow{formpart} cont-".$this->varname."\">");
+        switch( $plus ) {
+        case 'plus':    $this->echoo("\n<tr class=\"fieldstart formrow{formpart} cont-".$this->varname."\">");
+                        break;
+        case 'secrow':  $this->echoo("\n<tr class=\"formrow{formpart} cont-".$this->varname."\">");
         }
         $this->echoo("\n <td class=\"tabtxt\" ".
                       (($colspan==1) ? '': "colspan=\"$colspan\"").
                       '><b>'. $name .'</b>');
         $this->needed();
         $this->echoo("</td>\n");
-        if ( $plus=='plus' ) {
+        if ( $plus=='plus' OR $plus=='secrow' ) {
             $this->echoo(' <td>');
         }
     }
@@ -1072,7 +1073,6 @@ class AA_Inputfield {
             $htmlvar     = $this->varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" )."</input>";
             $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( !$this->html_flag ? " checked>" : ">" )."</input>";
-//        debug($this->varname, $this->html_flag, !$this->html_flag,$radio_html, $radio_plain );
             $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$this->varname."', '".$sess->id."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
             // conversions menu
             if ( $convert AND ($convertor = $this->get_convertors())) {
@@ -1261,7 +1261,7 @@ class AA_Inputfield {
         $rows    = max($rows, min(substr_count($val,"\n")+1, 30));
         $val     = htmlspecialchars($val);
         $colspan = $single ? 2 : 1;
-        $this->echoo("<tr class=\"formrow{formpart}\">");
+        $this->echoo("<tr class=\"fieldstart formrow{formpart}\">");
         $this->field_name(false, $colspan);
         if ($single) {
             $this->echoo("</tr>\n<tr class=\"formrow{formpart}\">");
@@ -1309,12 +1309,12 @@ class AA_Inputfield {
     * @param $conds_str
     * @param $sort_str
     */
-    function inputRadio($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
+    function inputRadio($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $add_slice_pwd=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
         if ( $whichitems < 1 ) {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         }
-        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
+        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getRadioButtonTag($k, $v, $add);
         }
@@ -1332,12 +1332,12 @@ class AA_Inputfield {
     * @param $conds_str
     * @param $sort_str
     */
-    function inputMultiChBox($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
+    function inputMultiChBox($ncols=0, $move_right=true, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $add_slice_pwd=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
         if ( $whichitems < 1 ) {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         }
-        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
+        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
         foreach ( $this->const_arr as $k => $v ) {
             $records[] = $this->getOneChBoxTag($k, $v, $add);
         }
@@ -1449,13 +1449,13 @@ class AA_Inputfield {
      * @param $conds_str
      * @param $sort_str
      */
-    function inputMultiSelect($rows=6, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false) {
+    function inputMultiSelect($rows=6, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $add_slice_pwd=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
         $rows                 = get_if($rows, 6);
         if ( $whichitems < 1 ) {
             $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
         }
-        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
+        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
 
         $this->field_name('plus');
         $ret       ="<select name=\"$name\" size=\"$rows\" multiple".getTriggers("select",$name).">";
@@ -1744,7 +1744,7 @@ class AA_Inputfield {
         $this->inputText(255,$size);
         $this->name       = $text;
         $this->input_help = $hlp;
-        $this->field_name('plus');
+        $this->field_name('secrow');
         $file_field_name = $name.'x';
         $this->echovar( "<input type=\"file\" name=\"$file_field_name\" size=\"$size\" accept=\"$accepts\"".getTriggers("input",$file_field_name).">", 'file');
         $this->helps('plus');
@@ -1818,10 +1818,10 @@ class AA_Inputfield {
      * @param $sort_str
      * @param $addform
      */
-    function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $addform='') {
+    function twoBox($rows, $wi2_offer, $wi2_selected, $slice_field='', $whichitems=AA_BIN_ACT_PEND, $conds_str=false, $sort_str=false, $addform='', $add_slice_pwd=false) {
         list($name,$val,$add) = $this->prepareVars('multi');
         if ( $whichitems < 1 ) $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-        $sid = $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems);  // if we fill it there, it is not refilled in inputSel()
+        $sid = $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, false, $add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null);
         $wi2_offer    = get_if( $wi2_offer,    _m("Offer") );
         $wi2_selected = get_if( $wi2_selected, _m("Selected") );
 
@@ -1912,20 +1912,20 @@ class AA_Inputfield {
         }
 
         if (!$this->required) {
-            $this->field_name('plus',1,$delete_pwd_label);
+            $this->field_name('secrow',1,$delete_pwd_label);
             $ch_name = $name."d";
             $this->echovar("<input type=\"checkbox\" name=\"$ch_name\"". getTriggers("input",$ch_name).">", 'delete');
             $this->helps('plus',$delete_pwd_help );
         }
 
         // change pwd
-        $this->field_name('plus',1,$change_pwd_label);
+        $this->field_name('secrow',1,$change_pwd_label);
         $ch_name = $name."a";
         $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\"".getTriggers("input",$ch_name).">", 'change' );
         $this->helps('plus',$change_pwd_help );
 
         // retype pwd
-        $this->field_name('plus',1,$retype_pwd_label);
+        $this->field_name('secrow',1,$retype_pwd_label);
         $ch_name = $name."b";
         $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"off\" value=\"\"".getTriggers("input",$ch_name).">", 'retype' );
         $this->helps('plus',$retype_pwd_help );

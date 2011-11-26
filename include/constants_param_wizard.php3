@@ -476,7 +476,11 @@ array("name"=>_m("Radio Button"),
         array("name"=>_m("Sort by"),
         "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
         "type"=>"STR",
-        "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d")
+        "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d"),
+        array("name"=>_m("Slice password"),
+        "desc"=>_m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"),
+        "type"=>"STR",
+        "example"=>"")
         ));
 $INPUT_TYPES["items"]["dte"]=
 array("name"=>_m("Date"),
@@ -535,7 +539,11 @@ array("name"=>_m("Multiple Checkboxes"),
     array("name"=>_m("Sort by"),
     "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
     "type"=>"STR",
-    "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d")
+    "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d"),
+    array("name"=>_m("Slice password"),
+    "desc"=>_m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"),
+    "type"=>"STR",
+    "example"=>"")
     ));
 
 $INPUT_TYPES["items"]["mse"]=
@@ -568,7 +576,11 @@ array("name"=>_m("Multiple Selectbox"),
     array("name"=>_m("Sort by"),
     "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
     "type"=>"STR",
-    "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d")
+    "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d"),
+    array("name"=>_m("Slice password"),
+    "desc"=>_m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"),
+    "type"=>"STR",
+    "example"=>"")
     ));
 
 $INPUT_TYPES["items"]["fil"]=
@@ -689,7 +701,11 @@ array("name"=>_m("Two Windows"),
     array("name"=>_m("Add Form"),
     "desc"=>_m("(for slices only) ID of the form for adding items into related slice"),
     "type"=>"STR",
-    "example"=>"8c3da97ab7a505a923f123121ad4945a")
+    "example"=>"8c3da97ab7a505a923f123121ad4945a"),
+    array("name"=>_m("Slice password"),
+    "desc"=>_m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"),
+    "type"=>"STR",
+    "example"=>"")
     ));
 
 $INPUT_TYPES["items"]["hid"]=
