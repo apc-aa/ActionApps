@@ -456,6 +456,7 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
 }
 
 /** {facebook:<url>} "I like" button
+ *  {facebook:{_#SEO_URL_}}
  *  @param $url      - url of liked page
  */
 class AA_Stringexpand_Facebook extends AA_Stringexpand_Nevercache {
@@ -1623,32 +1624,35 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
      * @param $text
      */
     function expand($text='', $no_url_encode=false) {
+        $values = array();
         if ( !is_object($this->item) OR !$this->item->isField($text) ) {
-            return AA_Stringexpand_Conds::_textToConds($text, $no_url_encode);
+            if (($text[0] != '[') OR (( $values = json_decode($text)) == null)) {
+                $values = array($text);
+            }
+            return AA_Stringexpand_Conds::_joinArray($values, $no_url_encode, '');
         }
 
-        $values = $this->item->getValuesArray($text);
+        return AA_Stringexpand_Conds::_joinArray($this->item->getValuesArray($text), $no_url_encode);
+    }
+
+    /** Static */
+    function _joinArray($values, $no_url_encode, $default='AA_NeVeRtRuE') {
         if (empty($values)) {
-            return 'AA_NeVeRtRuE';
+            return $default;
         }
         $ret = $delim = '';
         foreach ( $values as $val ) {
             if ( empty($val) ) {
                 continue;
             }
-            $ret  .= $delim. AA_Stringexpand_Conds::_textToConds($val, $no_url_encode);
+
+            $ret  .= $delim. ($no_url_encode ? ('"'. str_replace(array('-','"'), array('--','\"'), $val) .'"') :
+                                               ('%22'. str_replace(array('-',' '), array('--','%20'), $val) .'%22'));
             $delim = $no_url_encode ? ' OR ' : '%20OR%20';
         }
-        return empty($ret) ? 'AA_NeVeRtRuE' : $ret;
+        return empty($ret) ? $default : $ret;
     }
 
-    /** Static */
-    function _textToConds($text, $no_url_encode) {
-        if ($no_url_encode) {
-            return '"'. str_replace(array('-','"'), array('--','\"'), $text) .'"';
-        }
-        return '%22'. str_replace(array('-',' '), array('--','%20'), $text) .'%22';
-    }
 }
 
 
@@ -1982,11 +1986,11 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
 
 /** returns ids of items which links the item
  *  {backlinks:<item_id>[:<slice_ids>[:<sort>]]}
- *  {backlinks:{id..............}}
- *    returns all active backlinks to the item in all slices in surrent site
- *    module sorted by slice and publish_date
+ *  {backlinks:{id..............}} 
+ *    returns all active backlinks to the item in all slices in surrent site 
+ *    module sorted by slice and publish_date 
  *  {backlinks:{id..............}:6a435236626262738348478463536272:category.......1-,headline........}
- *    returns all active backlinks from specified slice sorted by category and headline
+ *    returns all active backlinks from specified slice sorted by category and headline 
  */
 class AA_Stringexpand_Backlinks extends AA_Stringexpand {
     /** expand function
@@ -2350,7 +2354,7 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
         $i        = 0;
         $matched  = '';
         while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-            if (strpos($haystack, $arg_list[$i]) !== false) {
+            if (!strlen($arg_list[$i]) OR strpos($haystack, $arg_list[$i]) !== false) {
                 $ret     = $arg_list[$i+1];
                 $matched = $arg_list[$i];
                 break;
@@ -2688,8 +2692,8 @@ function makeAsShortcut($text) {
 }
 
 
-/** Uses one slice ($dictionary) and replace any word which matches a word
- *  in dictionary by the text specified in $format.
+/** Uses slice (or slices) ($dictionaries) and replace any word which matches a 
+ *  word in dictionary by the text specified in $format.
  *  It do not search in <script>, <a>, <h*> tags and HTML tags itself.
  *  It also searches only for whole word (not word substrings)
  *  It is writen as quick as possible, so we do not use preg_replace for the
@@ -2711,13 +2715,15 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         if (($max_execution_time = ini_get('max_execution_time')) > 0) {
             set_time_limit($max_execution_time+20);
         }
+        
+        $dictionaries = explode('-',$dictionaries);
 
         $delimiters = AA_Stringexpand_Dictionary::defineDelimiters();
         // get pairs (like APC - <a href="http://apc.org">APC</a>' from dict. slice
         // (we call it through the pagecache in order it is called only once for
         // the same parameters)
         $replace_pairs = $pagecache->cacheMemDb(array('AA_Stringexpand_Dictionary','getDictReplacePairs'), array($dictionaries, $format, $delimiters, $conds), new CacheStr2find($dictionaries));
-
+        
         // we do not want to replace text in the html tags, so we substitute all
         // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the
         // $html_subst_arr. Then it is used with replace_pairs to return back
@@ -2742,6 +2748,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         // add shortcuts also to the replace_pairs, so all is done in one step
         $replace_pairs = array_merge($replace_pairs, $GLOBALS['html_subst_arr']);
         // do both: process dictionary words and put back the shortcuted text
+        
         $text = strtr($text, $replace_pairs);
 
         unset($GLOBALS['html_subst_arr']);         // just clean up
@@ -2757,12 +2764,12 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
      *  Return array of substitution pairs for dictionary, based on given dictionary
      *  slice, format string which defines the format and possible slice codnitions.
      *   [biom] => <a href="http://biom.cz">_#KEYWORD_</a>, ...
-     * @param $dictionary
+     * @param $dictionaries (array)
      * @param $format
      * @param $delimeters
      * @param $conds
      */
-    function getDictReplacePairs($dictionary, $format, &$delimiters, $conds='') {
+    function getDictReplacePairs($dictionaries, $format, $delimiters, $conds='') {
         // return array of pairs: [biom] => <a href="http://biom.cz">_#KEYWORD_</a>
         $replace_pairs = array();
 
@@ -2775,7 +2782,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
          *  used in format string
          */
 
-        $format  = AA_Slices::getField($dictionary, $format) ? '{substr:{'.$format.'}:0:50}' : $format;
+        $format  = AA_Slices::getField($dictionaries[0], $format) ? '{substr:{'.$format.'}:0:50}' : $format;
         $format  = "{@keywords........:##}_AA_DeLiM_$format";
 
         // above is little hack - we need keyword pair, but we want to call
@@ -2783,13 +2790,16 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         // delimiter:
         //   BIOM##Biom##biom_AA_DeLiM_<a href="http://biom.cz">_#KEYWORD_</a>
 
-        $set     = new AA_Set($dictionary, String2Conds( $conds ), String2Sort( $sort ));
+        $set     = new AA_Set($dictionaries, String2Conds( $conds ), String2Sort( $sort ));
         $kw_item = GetFormatedItems($set, $format);
 
         foreach ( $kw_item as $kw_string ) {
             list($keywords, $link) = explode('_AA_DeLiM_', $kw_string,2);
             $kw_array              = explode('##', $keywords);
             foreach ( (array)$kw_array as $kw ) {
+                if (!strlen($kw)) {
+                    continue;
+                }
                 /*
                 $search_kw - Replace inner delimiters from collocations (we suppose
                 that the single words, compound words and also collocations will
@@ -2807,6 +2817,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
                 }
             }
         }
+
         return $replace_pairs;
     }
 
@@ -2818,7 +2829,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
      *  @author haha
      */
     function defineDelimiters() {
-        $delimiter_chars = "()[] ,.;:?!\"&'\n";
+        $delimiter_chars = "()[] ,.;:?!\"&'\n\r";
         for ($i=0, $len=strlen($delimiter_chars); $i<$len; $i++) {
             $index              = $delimiter_chars[$i];
             $delimiters[$index] = 'AA#@'.$index.'AA#@';
@@ -3001,7 +3012,7 @@ class AA_Unalias_Callback {
         switch ($out[0]) {
                       // remove comments
             case '#': return '';
-                      /** Wraps the text, so you can use the content without taing care about quoting
+                      /** Wraps the text, so you can use the content without taking care about quoting
                        *  of parameter delimiters ":"
                        *
                        *  Example: {-<a href="http://ecn.cz">ecn</a>}
@@ -3046,6 +3057,7 @@ class AA_Unalias_Callback {
                 $group_id = getConstantsGroupID($this->item->getSliceID(), $parts[0]);
                 /* get short_id/name/... of constant with specified value from constants category with
                    group $group_id */
+
                 $value = getConstantValue($group_id, $what, $this->item->getval($parts[0]));
 
                 return QuoteColons($value);
@@ -3608,7 +3620,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'html':
             case 'hw':      return $a[3]; //height="xxx" width="yyy"
             case 'imgb':    $param2 .= ' border="0"';  // no break!!!
-            case 'img':     $alt = $param1 ? ' title="'.safe($param1).'" alt="'.safe($param1).'"' : '';
+            case 'img':     $param1 = safe(strip_tags($param1));
+                            $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
                             return "<img src=\"$img_url\" ". $a[3] ." $alt $param2 />";
         }
         return '';
@@ -3801,9 +3814,11 @@ class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** @return url GET parameter - {qs:<varname>}
+/** @return url GET parameter - {qs[:<varname>[:delimiter]]}
  *  Ussage: {qs:surname}
- *          - returns Havel for http://example.org/cz/page?surname=Havel
+ *             - returns Havel for http://example.org/cz/page?surname=Havel
+ *  Ussage: {qs}
+ *             - returns whole querystring (including GET and POST variables)
  */
 class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -3813,14 +3828,17 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercache {
      * @param $expression
      * @param $delimeter
      */
-    function expand($variable_name='') {
+    function expand($variable_name='', $delimiter=null) {
+        if (empty($variable_name)) {
+            return shtml_query_string();
+        }
         if (isset($_REQUEST[$variable_name])) {
             $ret = $_REQUEST[$variable_name];
         } else {
             $shtml_get = add_vars('', 'return');
             $ret = $shtml_get[$variable_name];
         }
-        return is_array($ret) ? json_encode($ret) : $ret;
+        return !is_array($ret) ? $ret : ( is_null($delimiter) ? json_encode($ret) : join($delimiter, $ret));
     }
 }
 
@@ -4210,7 +4228,7 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
      */
     function expand($string="", $query='', $attr='', $delimiter='AA_PrintJustFirst') {
         $doc = new DOMDocument();
-        if (!$doc->loadHTML($string) OR !$query) {
+        if (!@$doc->loadHTML($string) OR !$query) {
             return '';
         }
 
