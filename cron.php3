@@ -48,6 +48,10 @@ require_once AA_INC_PATH."locsess.php3";
 /** Defines class for inserting and updating database fields */
 require_once AA_INC_PATH."varset.php3";
 
+# zvetseni limitu - neprojde rozeslani vsech emailu
+if( !ini_get('safe_mode') ){
+  set_time_limit(3600);          
+}
 
 /**
  * Runs the items from the cron table if their time has come.
