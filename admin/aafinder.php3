@@ -39,6 +39,16 @@ require_once AA_BASE_PATH."modules/alerts/util.php3";
 
 // ----------------------------------------------------------------------------------------
 
+function AafinderFieldLink($field_id, $slice_id) {
+    return a_href( get_admin_url("se_inputform.php?change_id=$slice_id&fid=$field_id",'',true), "$field_id"). ' ('.AA_Slices::getName($slice_id).')';
+}
+
+function AafinderItemLink($item_id, $slice_id) {
+    return a_href( get_admin_url("itemedit.php?slice_id=$slice_id&id=$item_id&edit=1",'',true), "$item_id<br>(". AA_Slices::getName($slice_id) .")");
+}
+
+
+
 if (!IsSuperadmin()) {
     MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone");
     exit;
@@ -54,7 +64,7 @@ echo $Msg;
 
 $db = new DB_AA;
 
-if ($go_findview && $findview) {
+if ($_POST['go_findview'] && $_POST['findview']) {
     $fields = array (
         "id",
         "before",
@@ -84,7 +94,7 @@ if ($go_findview && $findview) {
     $SQL = "SELECT view.id, view.type, view.slice_id, slice.name
         FROM view INNER JOIN slice ON view.slice_id = slice.id WHERE ";
     foreach ($fields as $field) {
-        $SQL .= "view.$field LIKE \"%". magic_add($findview)."%\" OR ";
+        $SQL .= "view.$field LIKE \"%". addcslashes(quote($_POST['findview']),'_%')."%\" OR ";
     }
     $SQL .= "0";
     $db->query($SQL);
@@ -95,7 +105,7 @@ if ($go_findview && $findview) {
     }
 }
 
-if ($go_findslice && $findslice) {
+if ($_POST['go_findslice'] && $_POST['findslice']) {
     $fields = array (
         "name",
         "type",
@@ -118,7 +128,7 @@ if ($go_findslice && $findslice) {
 
     $SQL = "SELECT slice.name, slice.id FROM slice WHERE ";
     foreach ($fields as $field) {
-        $SQL .= "$field LIKE \"%". magic_add($findslice) ."%\" OR ";
+        $SQL .= "$field LIKE \"%". addcslashes(quote($_POST['findslice']),'_%') ."%\" OR ";
     }
     $SQL .= "0";
     $db->query($SQL);
@@ -131,7 +141,7 @@ if ($go_findslice && $findslice) {
 }
 
 
-if ($go_findfield && $findfield) {
+if ($_POST['go_findfield'] && $_POST['findfield']) {
     $fields = array (
         "id",
         "type",
@@ -162,20 +172,54 @@ if ($go_findfield && $findfield) {
 
     $SQL = "SELECT slice_id, id FROM field WHERE ";
     foreach ($fields as $field) {
-        $SQL .= "$field LIKE \"%". magic_add($findfield) ."%\" OR ";
+        $SQL .= "$field LIKE \"%". addcslashes(quote($_POST['findfield']),'_%') ."%\" OR ";
     }
     $SQL .= "0";
     $db->query($SQL);
     echo $db->num_rows()." matching fields found:<br>";
     while ($db->next_record()) {
-        echo $db->f("name")." "
-                ."<a href=\"".$sess->url("se_inputform.php3?change_id=".unpack_id($db->f("slice_id")). "&fid=".$db->f("id") )
-                ."\">".$db->f("id"). ' ('. AA_Slices::getName(unpack_id($db->f("slice_id"))). ")</a><br>";
+        echo $db->f("name")." ".AafinderFieldLink($db->f("id"), unpack_id($db->f("slice_id"))). "<br>";
     }
 }
 
-if ($go_finditem && $finditem) {
-    $zid = new zids($finditem);
+if ($_POST['go_finddiscus'] && $_POST['finddiscus']) {
+    $fields = array (
+        'subject',
+        'author',
+        'e_mail',
+        'body',
+        'url_address',
+        'url_description',
+        'remote_addr',
+        'free1',
+        'free2'
+        );
+
+    $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
+    foreach ($fields as $field) {
+        $SQL .= "discussion.$field LIKE \"%". addcslashes(quote($_POST['finddiscus']),'_%') ."%\" OR ";
+    }
+    $SQL .= "0) ORDER BY date";
+    $db->query($SQL);
+    echo $db->num_rows()." matching comments found:<br>";
+    while ($db->next_record()) {
+        if (!$head) {
+            echo ($head = '<table><tr><td>'. join('</td><td>', array_keys($db->Record)).'</td></tr>');
+        }
+        $print = $db->Record;
+        $print['slice_id'] = unpack_id($print['slice_id']);
+        $print['id'] = unpack_id($print['id']);
+        $print['parent']  = unpack_id($print['parent']);
+        $print['item_id'] = AafinderItemLink(unpack_id($print['item_id']), $print['slice_id']);
+        $print['date'] = date('Y-m-d H:i:s', $print['date']);
+        echo '<tr><td>'. join('</td><td>', $print).'</td></tr>';
+    }
+    echo '</table>';
+}
+
+
+if ($_POST['go_finditem'] && $_POST['finditem']) {
+    $zid = new zids($_POST['finditem']);
     $item = AA_Items::getItem($zid);
     if ($item) {
         $long_id = $item->getItemID();
@@ -184,6 +228,8 @@ if ($go_finditem && $finditem) {
         echo "<br>Item slice: $sid (". AA_Slices::getName($sid). ')';
         $format = '_#HEADLINE';
         echo "<br>_#HEADLINE: ". $item->unalias($format);
+        echo "<br>Fed to: ".     join(', ', WhereFed($item->getItemID()));
+        echo "<br>Fed from: ".   join(', ', FromFed($item->getItemID()));
     }
     echo "<pre>";
     echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
@@ -202,11 +248,11 @@ if ($go_finditem && $finditem) {
     }
 }
 
-if ($go_finditem_edit && $finditem_edit && $finditem_edit_op) {
+if ($_POST['go_finditem_edit'] && $_POST['finditem_edit'] && $_POST['finditem_edit_op']) {
 
     function query_search ($field, $op, $value,$sess) {
         $db = new DB_AA;
-        $sql="SELECT distinct  slice.name as slice_name, slice.id as slice_id, item.short_id as short_id, item.id as long_id from slice JOIN item ON slice.id=item.slice_id JOIN content ON content.item_id=item.id WHERE ".$field." ".$op."'$value'";
+        $sql="SELECT distinct  slice.name as slice_name, slice.id as slice_id, item.short_id as short_id, item.id as long_id from slice JOIN item ON slice.id=item.slice_id JOIN content ON content.item_id=item.id WHERE ".$field." ".$op."'".quote($value)."'";
         $db->query($sql);
 
         $num_rows = $db->num_rows();
@@ -229,13 +275,13 @@ if ($go_finditem_edit && $finditem_edit && $finditem_edit_op) {
 
     }
 
-    switch ($finditem_edit_op) {
+    switch ($_POST['finditem_edit_op']) {
         case 'LIKE': $field = "content.text";
-                     print query_search ($field, 'LIKE','%'.$finditem_edit.'%',$sess);break;
+                     print query_search ($field, 'LIKE','%'. $_POST['finditem_edit'].'%',$sess);break;
         case '=':    $field = "content.text";
-                     print query_search ($field, '=',$finditem_edit,$sess);break;
+                     print query_search ($field, '=',$_POST['finditem_edit'],$sess);break;
         case 'item': $field = "item.short_id";
-                     print query_search ($field, '=',$finditem_edit,$sess);break;
+                     print query_search ($field, '=',$_POST['finditem_edit'],$sess);break;
     }
 
 }
@@ -262,31 +308,37 @@ FrmTabSeparator(_m("Find"));
 echo '<tr><td>';
 echo '<form name="f_findview" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Find all VIEWS containing in any field the string:").'</b><br>
-    <input type="text" name="findview" value="'.$findview.'" size="30">&nbsp;&nbsp;
+    <input type="text" name="findview" value="'.safe($_POST['findview']).'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findview" value="'._m("Go!").'">';
 echo '</form>';
 echo '</td></tr><tr><td>';
 echo '<form name="f_findslice" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Find all SLICES containing in any field the string:").'</b><br>
-    <input type="text" name="findslice" value="'.$findslice.'" size="30">&nbsp;&nbsp;
+    <input type="text" name="findslice" value="'.safe($_POST['findslice']).'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findslice" value="'._m("Go!").'">';
 echo '</form>';
 echo '</td></tr><tr><td>';
 echo '<form name="f_findfield" action="'.$sess->url("aafinder.php3").'" method="post">';
-echo '<b>'._m("Find all FIELDS containing in ites definition the string:").'</b><br>
-    <input type="text" name="findfield" value="'.$findfield.'" size="30">&nbsp;&nbsp;
+echo '<b>'._m("Find all FIELDS containing in its definition the string:").'</b><br>
+    <input type="text" name="findfield" value="'.safe($_POST['findfield']).'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_findfield" value="'._m("Go!").'">';
+echo '</form>';
+echo '</td></tr><tr><td>';
+echo '<form name="f_finddiscus" action="'.$sess->url("aafinder.php3").'" method="post">';
+echo '<b>'._m("Find all DISCUSSION COMMENTS containing in any field the string:").'</b><br>
+    <input type="text" name="finddiscus" value="'.safe($_POST['finddiscus']).'" size="30">&nbsp;&nbsp;
+    <input type="submit" name="go_finddiscus" value="'._m("Go!").'">';
 echo '</form>';
 echo '</td></tr><tr><td>';
 echo '<form name="f_finditem" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Get all informations about the ITEM").'</b><br>
-    <input type="text" name="finditem" value="'.$finditem.'" size="30">&nbsp;&nbsp;
+    <input type="text" name="finditem" value="'.safe($_POST['finditem']).'" size="30">&nbsp;&nbsp;
     <input type="submit" name="go_finditem" value="'._m("Go!").'">';
 echo '</form></td></tr>';
 echo '<tr><td>';
 echo '<form name="f_finditem_edit" action="'.$sess->url("aafinder.php3").'" method="post">';
 echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
-    <input type="text" name="finditem_edit" value="'.$finditem_edit.'" size="30">&nbsp;&nbsp;
+    <input type="text" name="finditem_edit" value="'.safe($_POST['finditem_edit']).'" size="30">&nbsp;&nbsp;
     <select name="finditem_edit_op" value="">
     <option value="LIKE">Contiene</option>
     <option value="=">Frase exacta</option>
