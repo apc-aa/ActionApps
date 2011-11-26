@@ -71,7 +71,7 @@ class DB_MySQL {
     /* establish connection, select database */
     if ( 0 == $this->Link_ID ) {
         $method = ( defined('AA_USE_NON_PERSISTENT_CONNECT') AND AA_USE_NON_PERSISTENT_CONNECT ) ? 'mysql_connect' : 'mysql_pconnect';
-        $this->Link_ID = $method($Host, $User, $Password);
+        $this->Link_ID = @$method($Host, $User, $Password);
 
       if (!$this->Link_ID) {
         $this->connect_failed("connect ($Host, $User, \$Password) failed");
@@ -147,7 +147,7 @@ class DB_MySQL {
       return 0;
     }
 
-    $this->Record = @mysql_fetch_array($this->Query_ID, MYSQL_ASSOC);
+    $this->Record = @mysql_fetch_assoc($this->Query_ID);
     $this->Row   += 1;
     $this->Errno  = mysql_errno();
     $this->Error  = mysql_error();
