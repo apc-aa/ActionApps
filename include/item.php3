@@ -1597,7 +1597,7 @@ class AA_Item {
         if (empty($zid)) {
             return false;
         }
-        $zid   = (strtolower(get_class($zid))=='zids') ? $zid : new zids($zid);
+        $zid   = (is_object($zid) ? $zid : new zids($zid));
         return GetItemFromContent(new ItemContent($zid));
     }
 };

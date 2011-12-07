@@ -1,22 +1,34 @@
-11/26/11 - you can search in "-- any text field --" or 
+12/07/11 - {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>} now accepts [+] and
+(honzam)   [-] strings as shortcut used in <toggle1> or <toggle2> for plus.gif
+           and minus.gif
+         - fixed {unique} when used with delimiter specified
+         - fixed {view:<vid>:-<ids>} when no <ids> specified. If you put there
+           dash before <ids> (like in the example above) the view is displayed
+           with no items instead of displaying view as if ids are not specified
+           at all (which displays all items)
+         - more fixes for PHP 5.3
+         - the comment with view id (like <!-- 154 -->) is not printed in view,
+           when the view do not produces any output
+           (so you can test it in {ifset:{view...}})
+11/26/11 - you can search in "-- any text field --" or
 (honzam)   in "-- any numeric field --" in Item Manager
-         - new possibility to delete all discussion comments for the item, 
+         - new possibility to delete all discussion comments for the item,
            or delete only hidden or approved (for discussion spam deletion)
-         - test bulk email now can be send to multiple emails (comma separated)'  
+         - test bulk email now can be send to multiple emails (comma separated)'
          - new possibility to search in discussions in AA -> AA Finder
-         - slice Password can be set not only for selectbox input field, but 
-           also for multiselectbox, multicheckboxes, radiobutton, and Two Boxes 
-           input widgets 
+         - slice Password can be set not only for selectbox input field, but
+           also for multiselectbox, multicheckboxes, radiobutton, and Two Boxes
+           input widgets
          - {conds:...} now works also with array values - even in field:
            {conds:category.......1} or in JSON {conds:[val1,val2]}
            - uses OR operator there
-         - {dictionary:..} now could work with multiple slices as source 
+         - {dictionary:..} now could work with multiple slices as source
            of keywords
          - {qs} now returns whole querystring if used without any parameter
-         - {qs[:<varname>[:delimiter]]} allows to specify delimiter 
-           (if not specified, the behavior is not changed - JSON is used) 
+         - {qs[:<varname>[:delimiter]]} allows to specify delimiter
+           (if not specified, the behavior is not changed - JSON is used)
          - The free2 field in discussion holds all Cookies sent by user - allows
-           better identify users, mainly with Google Analytics. 
+           better identify users, mainly with Google Analytics.
            (experimental - format could be changed in future.)
          - bigger timelimit for cron.php3
          - "last changed by" field is set correctly even by ajax modify
@@ -28,12 +40,12 @@
 11/26/11 - prototype.js updated to 1.7
 (honzam) - fixed site module interface bug - delete of condion did not work in some cases
          - better filename conversion when uploading file
-         - new {backlinks:<item_id>[:<slice_ids>[:<sort>]]} 
+         - new {backlinks:<item_id>[:<slice_ids>[:<sort>]]}
            returns ids of items which links the item (as relation)
          - new {fieldid:text:1}  - returns text...........1
          - faster e-mail processing
          - the sort order could be specifieed as comma delimited list
-           like: category.......1,publish_date....- 
+           like: category.......1,publish_date....-
            (in field setting as well as aliases,...)
 10/05/11 - added icon for ajax editable fields in AA admin interface
 (honzam)
