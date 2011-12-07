@@ -848,7 +848,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
 
     // user could make the view to display view ID before and after the view output
     // which is usefull mainly for debugging. See view setting in admin interface
-    if ( $debug OR ($view_info['flag'] & VIEW_FLAG_COMMENTS) ) {
+    if ( $debug OR ($ret AND ($view_info['flag'] & VIEW_FLAG_COMMENTS)) ) {
         $ret = "<!-- $vid -->$ret<!-- /$vid -->";
     }
 
