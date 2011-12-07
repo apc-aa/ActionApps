@@ -540,14 +540,15 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
         if (trim($code_1.$code_2) == '') {
             return '';
         }
+
         if (trim($switch_state_1.$switch_state_2) == '') {
-            $switch_state_1 = GetAAImage('plus.gif',  _m('show'), 16, 16);
-            $switch_state_2 = GetAAImage('minus.gif', _m('hide'), 16, 16);
+            $switch_state_1 = '[+]';
+            $switch_state_2 = '[-]';
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switch_state_1_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switch_state_1);
-        $switch_state_2_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switch_state_2);
+        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
+        $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $link   = '';
@@ -556,14 +557,13 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
             // no need to add toggle
             $ret = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         } else {
-            $link = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid');return false;\">$switch_state_1</a>\n";
+            $link = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('toggle_link_$uniqid', '{$switches_js[0]}', 'toggle_1_$uniqid', '{$switches_js[1]}', 'toggle_2_$uniqid');return false;\">{$switches[0]}</a>\n";
             $ret  = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
             $ret .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
         }
         return ($position=='bottom') ?  $ret. $link : $link. $ret;
     }
 }
-
 
 /** Expands {htmltogglecss:<toggle1>:<toggle2>:<css_rule>} like:
  *          {htmltogglecss:+:-:#id_#SITEM_ID}    (#id_#SITEM_ID should have style="display:none;" as default)
@@ -1391,9 +1391,9 @@ class AA_Stringexpand_Unique extends AA_Stringexpand_Nevercache {
             return '';
         }
         if (empty($delimiter)) {
-            $delimeter = '-';
+            $delimiter = '-';
         }
-        return join($delimeter, array_unique(explode($delimeter, $ids)));
+        return join($delimiter, array_unique(explode($delimiter, $ids)));
     }
 }
 
@@ -1557,12 +1557,11 @@ class AA_Stringexpand_View extends AA_Stringexpand {
             return '';
         }
         $view_param['vid'] = $vid;
-        if (isset($ids)) {
+        $ids = trim($ids);
+        if (strlen($ids)) {
             $zids = new zids();
             $zids->addDirty(explode('-',$ids));
-            if ($zids->count()>0) {
-                $view_param['zids'] = $zids;
-            }
+            $view_param['zids'] = $zids;
         }
         if (isset($settings)) {
             $view_param = array_merge($view_param, ParseSettings($settings));
@@ -1986,11 +1985,11 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
 
 /** returns ids of items which links the item
  *  {backlinks:<item_id>[:<slice_ids>[:<sort>]]}
- *  {backlinks:{id..............}} 
- *    returns all active backlinks to the item in all slices in surrent site 
- *    module sorted by slice and publish_date 
+ *  {backlinks:{id..............}}
+ *    returns all active backlinks to the item in all slices in surrent site
+ *    module sorted by slice and publish_date
  *  {backlinks:{id..............}:6a435236626262738348478463536272:category.......1-,headline........}
- *    returns all active backlinks from specified slice sorted by category and headline 
+ *    returns all active backlinks from specified slice sorted by category and headline
  */
 class AA_Stringexpand_Backlinks extends AA_Stringexpand {
     /** expand function
@@ -2692,7 +2691,7 @@ function makeAsShortcut($text) {
 }
 
 
-/** Uses slice (or slices) ($dictionaries) and replace any word which matches a 
+/** Uses slice (or slices) ($dictionaries) and replace any word which matches a
  *  word in dictionary by the text specified in $format.
  *  It do not search in <script>, <a>, <h*> tags and HTML tags itself.
  *  It also searches only for whole word (not word substrings)
@@ -2715,7 +2714,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         if (($max_execution_time = ini_get('max_execution_time')) > 0) {
             set_time_limit($max_execution_time+20);
         }
-        
+
         $dictionaries = explode('-',$dictionaries);
 
         $delimiters = AA_Stringexpand_Dictionary::defineDelimiters();
@@ -2723,7 +2722,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         // (we call it through the pagecache in order it is called only once for
         // the same parameters)
         $replace_pairs = $pagecache->cacheMemDb(array('AA_Stringexpand_Dictionary','getDictReplacePairs'), array($dictionaries, $format, $delimiters, $conds), new CacheStr2find($dictionaries));
-        
+
         // we do not want to replace text in the html tags, so we substitute all
         // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the
         // $html_subst_arr. Then it is used with replace_pairs to return back
@@ -2748,7 +2747,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         // add shortcuts also to the replace_pairs, so all is done in one step
         $replace_pairs = array_merge($replace_pairs, $GLOBALS['html_subst_arr']);
         // do both: process dictionary words and put back the shortcuted text
-        
+
         $text = strtr($text, $replace_pairs);
 
         unset($GLOBALS['html_subst_arr']);         // just clean up
