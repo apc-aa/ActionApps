@@ -530,6 +530,7 @@ class AA_Strreplace {
      */
     function replace($value, &$item) {
         $ret = array();
+
         foreach ( $this->replacements as $replacement) {
             $replacement = str_replace('_#0', $value, $replacement);
             $text = $item->subst_alias($replacement);
@@ -710,6 +711,81 @@ class AA_Transformation_Replace extends AA_Transformation {
     }
 }
 
+class AA_Transformation_Regexpreplace extends AA_Transformation {
+    var $searchpattern;
+    var $replacestring;
+    var $unalias;
+
+    /** AA_Transformation_Translate function
+     * @param $param
+     */
+    function AA_Transformation_Regexpreplace($param) {
+        $this->searchpattern = $param['searchpattern'];
+        $this->replacestring = $param['replacestring'];
+        $this->unalias       = $param['unalias'];
+    }
+
+    /** name function
+     * @return message
+     */
+    function name() {
+        return _m("Regular Expressions Search and Replace");
+    }
+
+    /** description function
+     * @return message
+     */
+    function description() {
+        return _m("Search the content of text and replaces it with the another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)$<br> - Replace: {item:$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(http://biom.cz/item.shtml?x=2344 --&gt; http://biom.cz/cz/about-biom)");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $content4id (by link)
+     * @return array/false
+     */
+    function transform($field_id, &$content4id) {
+        if (!$this->searchpattern) {
+            $this->message(_m('No searchstring specified.'));
+            return false;
+        }
+        $ret     = new AA_Value;
+        $count   = 0;
+        if ($this->unalias) {
+            $item = GetItemFromContent($content4id);
+        }
+        foreach ( $content4id->getValues($field_id) as $source ) {
+            $ret->setFlag($source['flag']);
+            $text = preg_replace('~'.$this->searchpattern.'~', $this->replacestring, $source['value'], -1, $count);
+            if ($count AND $this->unalias) {
+                $text = $item->subst_alias($text);
+            }
+            $ret->addValue($text, $source['value']);
+        }
+        return $ret;
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     */
+    function htmlSetting($input_prefix, $params) {
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description(), false, "", "", false);
+
+        $varname_searchpattern = AA_Transformation::_getVarname('searchpattern', $input_prefix, __CLASS__);
+        $varname_replacestring = AA_Transformation::_getVarname('replacestring', $input_prefix, __CLASS__);
+        $varname_unalias       = AA_Transformation::_getVarname('unalias',       $input_prefix, __CLASS__);
+
+        FrmTextarea(  $varname_searchpattern, _m('Search'),  $_GET[$varname_searchpattern],  4, 80, true);
+        FrmTextarea(  $varname_replacestring, _m('Replace'), $_GET[$varname_replacestring],  4, 80, true);
+        FrmInputChBox($varname_unalias,       _m('Unalias'), $_GET[$varname_unalias], false, "", 1, false, _m('perform unaliasing on result strings'));
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
  */
@@ -808,6 +884,10 @@ if ( !$fill ) {               // for the first time - directly from item manager
 
                 // transform retuns AA_Value
                 $field_content = $transformation->transform($field_id, $content4id);
+                if (!$field_content) {
+                    // no need to change, or something goes wrong - missing parameter for transformation, ....
+                    continue;
+                }
                 $field_content->removeDuplicates();
 
                 $newcontent4id = new ItemContent();
