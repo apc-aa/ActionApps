@@ -101,7 +101,7 @@ if ($_POST['go_findview'] && $_POST['findview']) {
     echo $db->num_rows()." matching views found:<br>";
     while ($db->next_record()) {
         $view = AA_Views::getView($db->f("id"));
-        echo $view->jumpLink($db->f("id")." (".$db->f("name").") "). "<br>\n";
+        echo $view->jumpLink($db->f("id")." -  ".$view->f("name")." (".$db->f("name").") "). "<br>\n";
     }
 }
 
@@ -170,7 +170,7 @@ if ($_POST['go_findfield'] && $_POST['findfield']) {
         "input_show",
         );
 
-    $SQL = "SELECT slice_id, id FROM field WHERE ";
+    $SQL = "SELECT slice_id, id, name FROM field WHERE ";
     foreach ($fields as $field) {
         $SQL .= "$field LIKE \"%". addcslashes(quote($_POST['findfield']),'_%') ."%\" OR ";
     }

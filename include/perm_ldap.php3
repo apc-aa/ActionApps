@@ -767,7 +767,6 @@ function GetUserType( $user_id ) {
 }
 */
 
-
 class AA_Permsystem_Ldap extends AA_Permsystem {
     
     /** getLdap function

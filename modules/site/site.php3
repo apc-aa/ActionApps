@@ -53,7 +53,8 @@ if ( get_magic_quotes_gpc() ) {
 }
 
 $site_info = GetModuleInfo($site_id,'W');   // W is identifier of "site" module
-                                            //    - see /include/constants.php3
+
+//    - see /include/constants.php3
 if ( !is_array($site_info) ) {
     echo "<br>Error: no 'site_id' or 'site_id' is invalid";
     exit;
@@ -89,7 +90,7 @@ if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     //    RewriteEngine on
     //    RewriteRule ^/?$  /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
     //    RewriteRule ^/?en /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
-
+    
 
     $uri          = (strlen($_SERVER['REQUEST_URI']) > 1) ? $_SERVER['REQUEST_URI'] : $_SERVER['REDIRECT_URL'];
     $apc_state    = $router->parse($uri);

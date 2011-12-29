@@ -26,7 +26,9 @@
  * @link      http://www.apc.org/ APC
  *
 */
+require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
 require_once AA_INC_PATH."feeding.php3";
+require_once AA_INC_PATH."itemfunc.php3";
 
 /**
  * AA_Value - Holds information about one value - could be multiple,

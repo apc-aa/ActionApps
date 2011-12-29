@@ -556,7 +556,7 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0) {
 //# Internal functions
 //#############################################################################
 
-/** GetIDsInfo function
+/** GetIDsInfoCurrent function
  * @param $id
  * @param $ds
  * @return an array containing basic information on $id (user DN or group DN)

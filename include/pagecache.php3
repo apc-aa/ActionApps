@@ -200,7 +200,7 @@ class PageCache  {
         if ( $GLOBALS['debug'] ) {
             huhl("<br>Pagecache->store(key):$key", '<br>Pagecache str2find:'.$str2find->getStr2find(), '<br>Pagecache content (length):'.strlen($content), '<br>Pagecache cache_nostore:'.$cache_nostore );
         }
-        if ((ENABLE_PAGE_CACHE OR $force) AND !$cache_nostore) {  // $cache_nostore used when
+        if ($force OR (ENABLE_PAGE_CACHE AND !$cache_nostore)) {  // $cache_nostore used when
                                                       // {user:xxxx} alias is used
             if ( $GLOBALS['debug'] ) {
                 huhl("<br>Pagecache->store(): - storing");

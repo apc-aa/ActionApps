@@ -160,12 +160,9 @@ class AA_Field {
      * function finds group_id in field.input_show_func parameter
      */
     function getConstantGroup() {
-        $showfunc   = AA_Object::parseClassProperties('AA_Widget_', $this->data['input_show_func']);
         // does this field use constants? Isn't it slice?
-        if ( $showfunc['const'] AND (substr($showfunc['const'],0,7) != "#sLiCe-")) {
-            return $showfunc['const'];
-        }
-        return false;
+        list($field_type, $field_add) = $this->getSearchType();
+        return ( $field_type == 'constants' ) ? $field_add : false;
     }
 
     /** getRecord function
@@ -181,16 +178,24 @@ class AA_Field {
     function getSearchType() {
         $showfunc   = AA_Object::parseClassProperties('AA_Widget_', $this->data['input_show_func']);
         $field_type = 'numeric';
+        $field_add  = '';
         if ($this->data['text_stored']) {
             $field_type = 'text';
         }
         if (substr($this->data['input_validate'],0,4)=='date') {
             $field_type = 'date';
         }
-        if ($showfunc['const'] AND !$this->_areSliceConstants($showfunc['const'])) {
-            $field_type = 'constants';
+        if ($showfunc['const']) {
+            $relation   = $this->_getRelation($showfunc['const']);
+            if (empty($relation)) {
+                $field_type = 'constants';
+                $field_add  = $showfunc['const'];
+            } else {
+                $field_type = 'relation';
+                $field_add  = $relation;
+            }
         }
-        return $field_type;
+        return array($field_type, $field_add);
     }
 
 
@@ -238,12 +243,12 @@ class AA_Field {
         return $widget->getLiveHtml($aa_property, $item);
     }
 
-    /** _areSliceConstants function
+    /** _getRelation function
      *  @return true if constants are from slice
      */
-    function _areSliceConstants($name) {
+    function _getRelation($name) {
         // prefix indicates select from items
-        return ( substr($name,0,7) == "#sLiCe-" );
+        return ( substr($name,0,7) == "#sLiCe-" ) ? substr($name,7) : '';
     }
 }
 
@@ -437,6 +442,7 @@ class AA_Fields implements Iterator {
         $this->load();
         return $this->prifields;
     }
+
     /** getSearchArray function
      *
      */
@@ -444,7 +450,10 @@ class AA_Fields implements Iterator {
         $this->load();
         $i = 0;
         foreach ( $this->fields as $field_id => $field ) { // in priority order
-            $field_type = $field->getSearchType();
+            list($field_type,$field_add) = $field->getSearchType();
+            if ($field_type=='relation') {
+                $field_type = 'constants';     // @todo - deal with relations in search
+            }
             // we can hide the field, if we put in fields.search_pri=0
             $search_pri = ($field->getProperty('search_pri') ? ++$i : 0 );
                                //             $name,        $field,   $operators, $table, $search_pri, $order_pri

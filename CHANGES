@@ -1,4 +1,18 @@
-12/29/11 - the [+] and [-] shortcut for images in toggle are now possible also 
+12/29/11 - new widget "Info text" - just Output
+(honzam) - new (default) <mode> (2) for {shorten:<text>:<length>:<mode>:<add>}
+           - do not try to find end of paragraph for short texts by default
+         - <timestamp> in {date:<format>:<timestamp>} could be also text
+           (like: 2011-12-24)
+         - new {rss2html:http#://www.ekobydleni.eu/feed/:5}
+           - returns HTML listing created from RSS feed on specified URL.
+           First 5 items are printed in our example.
+         - new possibility to copy profile from another user
+         - Regular Expressions Search and Replace in "Modify content..." item
+           action
+         - czech translation of Polls module
+         - removed nocache=invalidate from discussions - no longer needed
+         - speed and accuracy optimized _#ALIASSES substitution
+12/28/11 - the [+] and [-] shortcut for images in toggle are now possible also
 (honzam)   for {expandable}, {htmltogglecss}, ...
 12/07/11 - {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>} now accepts [+] and
 (honzam)   [-] strings as shortcut used in <toggle1> or <toggle2> for plus.gif

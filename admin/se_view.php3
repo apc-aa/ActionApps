@@ -298,8 +298,12 @@ if ( !$update ) {  // set variables from database
     if ( $SQL ) {
         $db->query($SQL);
         if ($db->next_record()) {
-            $vw_data = $db->Record;
+            $vw_data   = $db->Record;
             $view_type = $db->f('type');
+            // fix for old view type
+            if ($view_type=='script') {
+                $view_type = 'javascript';
+            }
         } else {
             $vw_data = array( "listlen" => 10 );   // default values
         }

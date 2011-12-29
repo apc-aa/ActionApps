@@ -205,7 +205,7 @@ function PrintModuleSelection() {
             $js .= "document.write('". str_replace("'","\\'", $switch_text) ."');\n";
         }
         $js .= "\n
-        document.write('<select name=\"slice_id\" onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url($_SERVER['PHP_SELF']),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
+        document.write('<select name=\"slice_id\" onChange=\\'if (this.options[this.selectedIndex].value != \"\") document.location=\"" .con_url($sess->url(''),"change_id=")."\"+this.options[this.selectedIndex].value\\'>');
         document.write(modulesOptions);
         document.write('</select>');\n";
         FrmJavascriptCached($js, 'modules');

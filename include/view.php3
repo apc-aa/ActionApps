@@ -642,7 +642,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             // discussion fulltext (good for discussion search)
             $durl = ( $view_param["disc_url"] ? $view_param["disc_url"] : shtml_url());
             // add state variable, if defined (apc - AA Pointer Cache)
-            if ( $GLOBALS['apc_state'] ) {
+            if ( $GLOBALS['apc_state'] AND !$GLOBALS['apc_state']['router'] ) {
                 $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
             }
 
@@ -836,6 +836,9 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             // I create a CurItem object so I can use the unalias function
             $CurItem      = new AA_Item("", $als);
             $formatstring = $view_info["odd"];          // it is better to copy format-
+    if ($debug) {
+        huhl("GetViewFromDB: unalias=",$CurItem, $formatstring);
+    }
             $ret = $CurItem->unalias( $formatstring );  // string to variable - unalias
             break;
     }

@@ -44,7 +44,6 @@ http://www.apc.org/
 //optionaly als[]    // user alias - see slice.php3 for more details
 // for more info see AA FAQ: http://apc-aa.sourceforge.net/faq/index.shtml#219
 
-
 ini_set('display_errors', 1);
 
 /**
@@ -69,6 +68,10 @@ if (!get_magic_quotes_gpc()) {
     }
 }
 
+
+
+
+
 require_once "./include/config.php3";
 require_once AA_INC_PATH."easy_scroller.php3";
 require_once AA_INC_PATH."util.php3";
@@ -91,7 +94,6 @@ $db2 = new DB_AA;
 if (is_numeric($time_limit)) {
     @set_time_limit((int)$time_limit);
 }
-
 
 if ($debug) huhl("Starting view");
 

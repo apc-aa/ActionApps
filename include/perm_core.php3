@@ -568,13 +568,10 @@ function GetUserEmails($type = "", $user_id = "current") {
     return GetTable2Array("SELECT id, description FROM email $where", 'id', 'description');
 }
 
-/** perm_username function
- * Grabs login name from LDAP username (you must use LDAP permission system)
- * @param $username in LDAP form (uid=peterf,ou=People,ou=AA)
- * @return username without additional characters ('peterf' in our example)
- *                  (for SQL permissions it returns username unchanged)
- * (TODO - return the username also for SQL permissions - probably by query
- *  to database)
+/** Grabs User name from LDAP/SQL/AA
+ *  @param $username (uid=peterf,ou=People,ou=AA for LDAP, 24 for SQL, c7626ea.. for AA Reader )
+ *  @return name of the user ('Peter Fiala' in our example)
+ *  @todo   we should propaply provide realy the username (like peterf) here
  */
 function perm_username( $username ) {
     if ( $username == '9999999999' ) {
