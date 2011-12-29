@@ -587,15 +587,17 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
         if (trim($css_rule) == '') {
             return '';
         }
+
         if (trim($switch_state_1.$switch_state_2) == '') {
-            $switch_state_1 = GetAAImage('plus.gif',  _m('show'), 16, 16);
-            $switch_state_2 = GetAAImage('minus.gif', _m('hide'), 16, 16);
+            $switch_state_1 = '[+]';
+            $switch_state_2 = '[-]';
         }
 
+        // we can't use apostrophes and quotes in href="javacript:..." attribute
+        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
+        $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         $class = '';
-        $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
-        $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
 
         // swap var
         if ($is_on == 1) {
@@ -607,7 +609,7 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
 
-        $ret    = "<a class=\"togglelink$class\" id=\"toggle_link_$uniqid\" $class href=\"#\" onclick=\"AA_HtmlToggleCss('toggle_link_$uniqid', '$switch_state_1_js', '$switch_state_2_js', '$css_rule');return false;\">$switch_state_1</a>\n";
+        $ret    = "<a class=\"togglelink$class\" id=\"toggle_link_$uniqid\" $class href=\"#\" onclick=\"AA_HtmlToggleCss('toggle_link_$uniqid', '{$switches_js[0]}', '{$switches_js[1]}', '$css_rule');return false;\">{$switches[0]}</a>\n";
         return $ret;
     }
 }
@@ -642,13 +644,13 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
         }
 
         if (trim($switch_state_1.$switch_state_2) == '') {
-            $switch_state_1 = GetAAImage('plus.gif',  _m('show'), 16, 16);
-            $switch_state_2 = GetAAImage('minus.gif', _m('hide'), 16, 16);
+            $switch_state_1 = '[+]';
+            $switch_state_2 = '[-]';
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
-        $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
+        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
+        $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         // automaticaly add conversion to utf-8 for AA view.php3 calls
         if ((strpos($url_of_text,'/view.php3?') !== false) AND (strpos($url_of_text,'convert')===false)) {
@@ -656,7 +658,7 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
         }
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
-        $ret   = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggleCss('toggle_link_$uniqid', '$switch_state_1_js', '$switch_state_2_js', '$css_rule_hide', '$url_of_text', '$css_rule_update');return false;\">$switch_state_1</a>\n";
+        $ret   = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggleCss('toggle_link_$uniqid', '{$switches_js[0]}', '{$switches_js[1]}', '$css_rule_hide', '$url_of_text', '$css_rule_update');return false;\">{$switches[0]}</a>\n";
         return $ret;
     }
 }
@@ -677,9 +679,12 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
 
     function expand($text, $length, $mode=1, $add='') {
+        if (strlen($text) <= $length) {
+            return $text;
+        }
         $shorted_text = substr($text, 0, $length);
         $shorted_len  = strlen($shorted_text);
-        $text_add     = ($shorted_len == strlen($text)) ? '' : $add;
+        $text_add     = $add;
 
         // search the text for following ocurrences in the order!
         $PARAGRAPH_ENDS = array( '</p>','<p>');
@@ -721,15 +726,19 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
 
-    function expand($text, $length, $add='', $more='', $less='') {
+    function expand($text, $length, $add='', $switch_state_1='', $switch_state_2='') {
         // it is nonsense to show expandable trigger if both contents are empty
         if (trim($text) == '') {
             return '';
         }
 
+        if (trim($switch_state_1) == '') {
+            $switch_state_1 = '[+]';
+        }
+
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $more_js = str_replace(array("'", '"'), array("\'", "\'"), $more);
-        $less_js = str_replace(array("'", '"'), array("\'", "\'"), $less);
+        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
+        $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
         $length = (int)$length;
@@ -738,8 +747,8 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
             $ret = "<div class=\"expandableclass\" id=\"expandable_1_$uniqid\">$text</div>\n";
         } else {
             $text_2 = AA_Stringexpand_Shorten::expand($text, $length);
-            $link_1 = "<a class=\"expandablelink\" id=\"expandable_link1_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('expandable_link1_$uniqid', '', 'expandable_1_$uniqid', '$more_js', 'expandable_2_$uniqid');return false;\">$more_js</a>\n";
-            $link_2 = !$less_js ? '' : "<a class=\"expandablelink\" id=\"expandable_link2_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('expandable_link2_$uniqid', '', 'expandable_2_$uniqid', '$less_js', 'expandable_1_$uniqid');return false;\">$less_js</a>\n";
+            $link_1 = "<a class=\"expandablelink\" id=\"expandable_link1_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('expandable_link1_$uniqid', '', 'expandable_1_$uniqid', '{$switches_js[0]}', 'expandable_2_$uniqid');return false;\">{$switches[0]}</a>\n";
+            $link_2 = !$switches[1] ? '' : "<a class=\"expandablelink\" id=\"expandable_link2_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggle('expandable_link2_$uniqid', '', 'expandable_2_$uniqid', '{$switches_js[1]}', 'expandable_1_$uniqid');return false;\">{$switches[1]}</a>\n";
             $ret    = "<div class=\"expandableclass\" id=\"expandable_1_$uniqid\">$text_2".$add." $link_1</div>\n";
             $ret   .= "<div class=\"expandableclass\" id=\"expandable_2_$uniqid\" style=\"display:none;\">$text". " $link_2</div>\n";
         }
@@ -766,13 +775,13 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
     function expand($switch_state_1, $code_1, $switch_state_2, $url, $position=null) {
 
         if (trim($switch_state_1.$switch_state_2) == '') {
-            $switch_state_1 = GetAAImage('plus.gif',  _m('show'), 16, 16);
-            $switch_state_2 = GetAAImage('minus.gif', _m('hide'), 16, 16);
+            $switch_state_1 = '[+]';
+            $switch_state_2 = '[-]';
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
-        $switch_state_1_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_1);
-        $switch_state_2_js = str_replace(array("'", '"'), array("\'", "\'"), $switch_state_2);
+        $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
+        $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
         // automaticaly add conversion to utf-8 for AA view.php3 calls
         if ((strpos($url,'/view.php3?') !== false) AND (strpos($url,'convert')===false)) {
@@ -780,7 +789,7 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
         }
 
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
-        $link   = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggle('toggle_link_$uniqid', '$switch_state_1_js', 'toggle_1_$uniqid', '$switch_state_2_js', 'toggle_2_$uniqid', '$url');return false;\">$switch_state_1</a>\n";
+        $link   = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggle('toggle_link_$uniqid', '{$switches_js[0]}', 'toggle_1_$uniqid', '{$switches_js[1]}', 'toggle_2_$uniqid', '$url');return false;\">{$switches[0]}</a>\n";
         $ret    = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\"></div>\n";
         return ($position=='bottom') ?  $ret. $link : $link. $ret;

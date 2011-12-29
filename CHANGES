@@ -1,3 +1,5 @@
+12/29/11 - the [+] and [-] shortcut for images in toggle are now possible also 
+(honzam)   for {expandable}, {htmltogglecss}, ...
 12/07/11 - {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>} now accepts [+] and
 (honzam)   [-] strings as shortcut used in <toggle1> or <toggle2> for plus.gif
            and minus.gif
