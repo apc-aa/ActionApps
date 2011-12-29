@@ -158,13 +158,14 @@ function GetDiscussionContent($zids, $state=true, $html_flag=false, $clean_url='
  * @param $d_id = null
  */
 function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
-    $tmp_disc_url = get_url($clean_url,"nocache=invalidate&sh_itm=$item_id");
+    // $tmp_disc_url = get_url($clean_url,"nocache=invalidate&sh_itm=$item_id");
+    $tmp_disc_url = $GLOBALS['apc_state']['router'] ? $clean_url : get_url($clean_url,"sh_itm=$item_id");     // removed nocache=invalidate - testing - Honza 2011-01-19
     $col["d_disc_url......"][0]['value'] = $tmp_disc_url."#disc";
     // in urls we do not need to replace & by &amp;
     $col["d_disc_url......"][0]['flag']  = FLAG_HTML;
     if ($d_id) {
-        $col["d_url_fulltext.."][0]['value'] = $tmp_disc_url."&sel_ids=1&ids[x".$d_id."]=1#disc";
-        $col["d_url_reply....."][0]['value'] = $tmp_disc_url."&add_disc=1&parent_id=".$d_id."#disc";
+        $col["d_url_fulltext.."][0]['value'] = get_url($tmp_disc_url, "sel_ids=1&ids[x".$d_id."]=1#disc");
+        $col["d_url_reply....."][0]['value'] = get_url($tmp_disc_url, "add_disc=1&parent_id=".$d_id."#disc");
     }
 }
 
@@ -175,8 +176,7 @@ function setDiscUrls(&$col, $clean_url, $item_id, $d_id=null) {
  * @param $cnt
  */
 function SetCheckboxContent(&$content, $d_id, $cnt) {
-    $content[$d_id]["d_checkbox......"][0]['value'] =
-        "<input type=\"checkbox\" name=\"c_".$cnt."\" ><input type=\"hidden\" name=\"h_".$cnt."\" value=\"x".$d_id."\"> ";
+    $content[$d_id]["d_checkbox......"][0]['value'] = "<input type=\"checkbox\" name=\"c_".$cnt."\" ><input type=\"hidden\" name=\"h_".$cnt."\" value=\"x".$d_id."\"> ";
 }
 
 /** SetImagesContent function
@@ -203,10 +203,14 @@ function SetImagesContent(&$content, $d_id, &$images, $showimages, &$imgtags) {
  */
 function GetButtons($empty, $script_loc) {
     if (!$empty) {
+        //$out.= "<input type=\"button\" name=\"sel_ids\" value=\"" ._m("Show selected"). "\" onClick=showSelectedComments() class=\"discbuttons\">
+        //        <input type=\"button\" name=\"all_ids\" value=\"" ._m("Show all") ."\" onClick=document.location=\"".con_url($script_loc,"nocache=invalidate&all_ids=1")."\" class=\"discbuttons\">";
+        // removed nocache=invalidate - testing - Honza 2011-01-19
         $out.= "<input type=\"button\" name=\"sel_ids\" value=\"" ._m("Show selected"). "\" onClick=showSelectedComments() class=\"discbuttons\">
-                <input type=\"button\" name=\"all_ids\" value=\"" ._m("Show all") ."\" onClick=document.location=\"".con_url($script_loc,"nocache=invalidate&all_ids=1")."\" class=\"discbuttons\">";
+                <input type=\"button\" name=\"all_ids\" value=\"" ._m("Show all") ."\" onClick=document.location=\"".con_url($script_loc,"all_ids=1")."\" class=\"discbuttons\">";
     }
-    $out.= " <input type=\"button\" name=\"add_disc\" value=\"". _m("Add new"). "\" onClick=document.location=\"".con_url($script_loc,"nocache=invalidate&add_disc=1")."\" class=\"discbuttons\">";
+    // $out.= " <input type=\"button\" name=\"add_disc\" value=\"". _m("Add new"). "\" onClick=document.location=\"".con_url($script_loc,"nocache=invalidate&add_disc=1")."\" class=\"discbuttons\">";
+    $out.= " <input type=\"button\" name=\"add_disc\" value=\"". _m("Add new"). "\" onClick=document.location=\"".con_url($script_loc,"add_disc=1")."\" class=\"discbuttons\">";       // removed nocache=invalidate - testing - Honza 2011-01-19
     return $out;
 }
 

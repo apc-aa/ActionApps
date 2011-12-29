@@ -313,9 +313,9 @@ class itemview {
       list($script_loc,) = explode('#',$col["d_disc_url......"][0]['value']); // remove #disc part
 
     $out .= "
-      <SCRIPT type=\"text/javascript\"><!--
+      <script type=\"text/javascript\"><!--
         function showSelectedComments() {
-          var url = \"". $script_loc . "&sel_ids=1\"
+          var url = \"". con_url($script_loc, "sel_ids=1") ."\"
           var done = 0;
 
           for (var i = 0; i < ".$cnt."; i++) {
@@ -332,12 +332,12 @@ class itemview {
           }
         }
         function showAllComments() {
-          document.location = \"". $script_loc . "&all_ids=1#disc\"
+          document.location = \"". con_url($script_loc, "all_ids=1#disc") ."\"
         }
         function showAddComments() {
-          document.location = \"". $script_loc . "&add_disc=1#disc\"
+          document.location = \"". con_url($script_loc, "add_disc=1#disc") ."\"
         }
-       // --></SCRIPT>";
+       // --></script>";
    return $out;
   }
 
