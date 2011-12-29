@@ -678,13 +678,17 @@ class AA_Stringexpand_Htmlajaxtogglecss extends AA_Stringexpand_Nevercache {
 class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercache {
     // Never cache this code, since we need unique divs with uniqid()
 
-    function expand($text, $length, $mode=1, $add='') {
+    function expand($text, $length, $mode=2, $add='') {
         if (strlen($text) <= $length) {
             return $text;
         }
         $shorted_text = substr($text, 0, $length);
         $shorted_len  = strlen($shorted_text);
         $text_add     = $add;
+        if ($mode==2) {
+            // do not try to find end of paragraph for short texts by default
+            $mode = ($length >= 50) ? 1 : 0;
+        }
 
         // search the text for following ocurrences in the order!
         $PARAGRAPH_ENDS = array( '</p>','<p>');
@@ -1169,6 +1173,8 @@ class AA_Stringexpand_Removeids extends AA_Stringexpand {
  *   @param $format      - format - the same as PHP date() function
  *   @param $timestamp   - timestamp of the date (if not specified, current time
  *                         is used)
+ *                         The parameter could be also in yyyy-mm-dd hh:mm:ss
+ *                         format
  */
 class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -1183,8 +1189,10 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
         }
         if ( $timestamp=='' ) {
             $timestamp = time();
-            // no date (sometimes empty date is 3600 (based on timezone), so we
-            // will use all the day 1.1.1970 as empty)
+        } elseif ( !is_numeric($timestamp) ) {
+            $timestamp = strtotime($timestamp);
+        // no date (sometimes empty date is 3600 (based on timezone), so we
+        // will use all the day 1.1.1970 as empty)
         } elseif (($timestamp < 86400) AND !is_null($no_date_text)) {
             return $no_date_text;
         }
@@ -1458,6 +1466,11 @@ class AA_Stringexpand_Previous extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Escapes the text for CSV export */
+function Csv_escape($text) {
+    return (strcspn($text,",\"\n\r") == strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
+}
+
 class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -1465,7 +1478,7 @@ class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
      * @param $text
      */
     function expand($text='') {
-        return (strcspn($text,",\"\n\r") == strlen($text)) ? $text : '"'.str_replace('"', '""', str_replace("\r\n", "\n", $text)).'"';
+        return Csv_escape($text);
     }
 }
 
@@ -1532,6 +1545,56 @@ class AA_Stringexpand_Rss extends AA_Stringexpand_Nevercache {
         return str_replace($entities_old, $entities_new, strip_tags($text));
     }
 }
+
+
+/** reads RSS chanel from remote url and converts it to HTML and displays
+ *    {rss2html:<rss_url>[:max_number_of_items]}
+ *    {rss2html:http#://www.ekobydleni.eu/feed/:5}
+ *  or more advanced example with header and encoding change
+ *     <h2><a href="http://www.ekobydleni.eu">www.ekobydleni.eu</a></h2>
+ *     {convert:{rss2html:http#://www.ekobydleni.eu/feed/:5}:utf-8:windows-1250}
+ *
+ *  Used XSL extension of PHP5. PHP must be compiled with XSL support
+ */
+class AA_Stringexpand_Rss2html extends AA_Stringexpand {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $text
+     */
+    function expand($rss_url='', $number='') {
+
+        $xsl_cond = ($number>0) ? '[position() &lt; '. ($number+1) .']' : '';
+
+        // načtení dokumentu XML
+        $xml = new DomDocument();
+        $xml->load($rss_url);
+
+        // načtení stylu XSLT
+        $xsl = new DomDocument();
+        $xsl->loadXML('<?xml version="1.0" encoding="utf-8"?>
+            <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+            <xsl:output method="html" encoding="utf-8" doctype-public="-//W3C//DTD HTML 4.01//EN"/>
+            <xsl:template match="channel">
+                  <ul>
+                    <xsl:for-each select="item'.$xsl_cond.'">
+                      <li><a href="{link}"><xsl:value-of select="title"/></a></li>
+                    </xsl:for-each>
+                  </ul>
+            </xsl:template>
+            </xsl:stylesheet>
+        ');
+
+        // vytvoření procesoru XSLT
+        $proc = new xsltprocessor();
+        $proc->importStylesheet($xsl);
+
+        // provedení transformace a vypsání výsledku
+        return $proc->transformToXML($xml);
+    }
+}
+
+
 
 class AA_Stringexpand_Convert extends AA_Stringexpand {
     /** expand function
@@ -2400,9 +2463,9 @@ class AA_Stringexpand_Join extends AA_Stringexpand_Nevercache {
 
 /** Expand URL by adding session
  *  Example: {sessurl:<url>}
- *  Example: {sessurl}           - returns session_id
- *  also handle special cases like {sessurl:hidden}
- *
+ *  Example: {sessurl}         - returns session_id
+ *  Example: {sessurl:hidden}  - special case for <input hidden...
+ *  Example: {sessurl:param}   - special case for AA_CP_Session=6252412...
  */
 class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2419,6 +2482,7 @@ class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
         switch($url) {
             case '':       return $sess->id;
             case 'hidden': return "<input type=\"hidden\" name=\"".$sess->name."\" value=\"".$sess->id."\">";
+            case 'param':  return $sess->name.'='.$sess->id;
         }
         return $sess->url($url);
     }
@@ -3139,7 +3203,7 @@ class AA_Unalias_Callback {
             }
             // return result only if matches stringexpand_ or eb functions
             if ( $fnctn ) {
-                if (!$outparam) {
+                if (!strlen($outparam)) {
                     $ebres = @$fnctn();
                 } else {
                     $param = array_map('DeQuoteColons',ParamExplode($outparam));
@@ -3188,9 +3252,6 @@ class AA_Unalias_Callback {
             return QuoteColons("{" . $out . "}");
         }
     }
-
-
-
 }
 
 
@@ -3333,30 +3394,31 @@ class AA_Stringexpand {
 
     /** In this array are set functions from PHP or elsewhere that can usefully go in {xxx:yyy:zzz} syntax */
     public static $php_functions = array (
-        'strlen'           => 'strlen',
-        'str_repeat'       => 'str_repeat',
-        'str_replace'      => 'str_replace',
-        'striptags'        => 'strip_tags',
-        'strtoupper'       => 'strtoupper',
-        'strtolower'       => 'strtolower',
-        'safe'             => 'htmlspecialchars',
-        'htmlspecialchars' => 'htmlspecialchars',
-        'urlencode'        => 'urlencode',
-        'min'              => 'min',
-        'max'              => 'max',
-        'ord'              => 'ord',
-        'rand'             => 'rand',
-        'fmod'             => 'fmod',
-        'log'              => 'log',         /** math function log() */
-        'unpack'           => 'unpack_id',
+        'strlen'           => 'strlen',             // old AA_Stringexpand_Strlen
+        'str_repeat'       => 'str_repeat',         // old AA_Stringexpand_Str_repeat
+        'str_replace'      => 'str_replace',        // old AA_Stringexpand_Str_replace
+        'strtoupper'       => 'strtoupper',         //     AA_Stringexpand_Strtoupper
+        'strtolower'       => 'strtolower',         //     AA_Stringexpand_Strtolower
+        'striptags'        => 'strip_tags',         // old AA_Stringexpand_Striptags
+        'safe'             => 'htmlspecialchars',   // old AA_Stringexpand_Safe
+        'htmlspecialchars' => 'htmlspecialchars',   // old AA_Stringexpand_Htmlspecialchars
+        'urlencode'        => 'urlencode',          // old AA_Stringexpand_Urlencode
+        'ord'              => 'ord',                // old AA_Stringexpand_Ord
+        'min'              => 'min',                // old AA_Stringexpand_Min
+        'max'              => 'max',                // old AA_Stringexpand_Max
+        'rand'             => 'rand',               // old AA_Stringexpand_Rand
+        'fmod'             => 'fmod',               // old AA_Stringexpand_Fmod
+        /** math function log() */
+        'log'              => 'log',                // old AA_Stringexpand_Log
+        'unpack'           => 'unpack_id',          // old AA_Stringexpand_Unpack
 
         /** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
          *  {version[:aa|svn]}
          **/
-        'version'          => 'aa_version',
+        'version'          => 'aa_version',         // old AA_Stringexpand_Version'
 
         /** Encodes string for JSON - apostrophs ' => \', ... */
-        'jsonstring'       => 'json_encode'
+        'jsonstring'       => 'json_encode'         // old AA_Stringexpand_Jsonstring'
     );
 
 
@@ -3446,7 +3508,7 @@ class AA_Stringexpand {
         }
 
         if (is_object($item)) {
-            $text = $item->substitute_alias_and_remove($text, strlen($remove) ? explode("##",$remove) : null);
+            $text = $item->substitute_alias_and_remove($text, strlen($remove) ? explode("##",$remove): array());
         }
 
         // if ( !$dequote ) { }
