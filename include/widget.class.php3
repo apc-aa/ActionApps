@@ -1632,6 +1632,48 @@ class AA_Widget_Hid extends AA_Widget {
     }
 }
 
+/** Info text - just Output */
+class AA_Widget_Inf extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function __construct($params=array()) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Info text - output');
+    }   // widget name
+    /** multiple function
+     *
+     */
+    function multiple() {
+        return false;   // returns multivalue or single value
+    }
+
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
+     function getClassProperties()  {
+        return array ();
+    }
+
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $property_id  = $aa_property->getId();
+        $widget       = htmlspecialchars($content->getValue($property_id));
+        $base_name    = AA_Form_Array::getName4Form($property_id, $content);
+        $base_id      = AA_Form_Array::formName2Id($base_name);
+        $input_name   = $base_name."[0]";
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
+}
+
 /** Local URL Picker widget */
 class AA_Widget_Lup extends AA_Widget {
 

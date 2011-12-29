@@ -712,6 +712,10 @@ $INPUT_TYPES["items"]["hid"]=
     array("name"=>_m("Hidden field"),
     "desc"=>_m("The field value will be shown as &lt;input type='hidden'. You will probably set this filed by javascript trigger used on any other field."));
 
+$INPUT_TYPES["items"]["inf"]=
+    array("name"=>_m("Info text - output"),
+    "desc"=>_m("Just output field - prints the content. Used for computed fields, for example."));
+
 $INPUT_TYPES["items"]["pwd"]=
     array("name"=>_m("Password and Change Password"),
           "desc"=>_m("Password input boxes allowing to send password (for password-protected items)

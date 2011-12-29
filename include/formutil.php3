@@ -842,6 +842,9 @@ class AA_Inputfield {
             case 'freeze_fil':
             case 'freeze_pre':
             case 'freeze_tpr':
+            case 'freeze_inf':
+            case 'anonym_inf':
+            case 'normal_inf':
             case 'freeze_fil': $this->staticText();       break;
             case 'freeze_nul': break;
 
@@ -1552,7 +1555,7 @@ class AA_Inputfield {
         if (strpos($actions,'D') !== false) {
             $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
         }
-        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = Array() };  listboxes[listboxes.length] = '$name';"));
+        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("</td></tr></table>\n");
         $this->helps('plus');
     }
@@ -1642,7 +1645,7 @@ class AA_Inputfield {
               <input type='button' value='". _m("Add") ."' onclick='OpenRelated(\"$name\", \"$sid\", \"$mode\", \"$design\", \"$whichitems\",\"".rawurlencode($conds)."\",\"".rawurlencode($condsrw)."\",\"".get_admin_url('related_sel.php3')."\" )'>
               &nbsp;&nbsp;");
             $this->echoo("<input type='button' value='". _m("Delete") ."' onclick=\"sb_RemoveItem(document.inputform['".$name."']);\">\n");
-            $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = Array() };  listboxes[listboxes.length] = '$name';"));
+            $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
             $this->echoo("</td></tr></table>\n");
         }
         $this->helps('plus');
@@ -1705,7 +1708,7 @@ class AA_Inputfield {
         $this->echoo(getFrmJavascript("
             hcInit($hcid);
             hcDeleteLast('$name');
-            if (typeof listboxes == 'undefined') { var listboxes = Array() };
+            if (typeof listboxes == 'undefined') { var listboxes = []; };
             listboxes[listboxes.length] = '$name';"));
         $this->helps('plus');
     }
@@ -1866,7 +1869,7 @@ class AA_Inputfield {
         $out  .= '</select>';
         $this->echovar( $out, 'selected' );
 
-        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = Array() };  listboxes[listboxes.length] = '$name';"));
+        $this->echoo(getFrmJavascript("if (typeof listboxes == 'undefined') { var listboxes = []; };  listboxes[listboxes.length] = '$name';"));
         $this->echoo("\n      </td>");
         $this->echoo("\n      <td valign=\"top\"><input type=\"button\" value=\" /\ \" onClick=\"moveItem(document.inputform['".$name."'],'up');\"></td>");
         $this->echoo("\n      </tr>");
