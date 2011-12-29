@@ -641,37 +641,43 @@ class AA_Item {
      * @param $remove_arr
      */
     function substitute_alias_and_remove( $text, $remove_arr=null ) {
-        $piece = explode( "_#", $text );
+        if (empty($remove_arr)) {
+            // no removal, we can use easier and more accurate replacement
+            $rest = $text;
+            $ret  = '';
+            while(($begin = strpos($rest, '_#')) !== false) {
+                $maybe_alias  = substr($rest,$begin,10);
+                $substitution = $this->get_alias_subst( $maybe_alias );
+                if ($maybe_alias == $substitution) {
+                    // it is not alias - we move just ..._# to ret, which helps with cases like "link:_#SEO_URL_#_#LASTEDIT"
+                    $ret .= substr($rest,0,$begin+2);
+                    $rest = substr($rest,$begin+2);
+                } else {
+                    // substituted
+                    $ret .= substr($rest,0,$begin). $substitution;
+                    $rest = substr($rest,$begin+10);
+                }
+            }
+            return $ret.$rest;
+        }
+
+        // we have to remove stings
+        // In this case we use older approach of substitution - it has problems with stringsl like "link:_#SEO_URL_#_#LASTEDIT"
+        $piece      = explode( "_#", $text );
         $out   = array_shift($piece);   // initial sequence
         $clear_output = '';
-
-        if (is_array($remove_arr)) { // just for speedup - this is critical function
-            foreach ($piece as $vparam) {
-                //search for alias definition (fce,param,hlp)
-                $substitution = $this->get_alias_subst( "_#".(substr($vparam,0,8)));
-
-                if ( strlen($substitution) ) {   // alias produced some output, so we can remove
-                    // strings in previous section and we can start new section
-                    $clear_output .= str_replace($remove_arr, "", $out).$substitution;
-                    $out           = '';  // start with clear string
-                }
-                $out .= substr($vparam,8);
-            }
-            return $clear_output . str_replace($remove_arr, "", $out);
-        }
         foreach ($piece as $vparam) {
             //search for alias definition (fce,param,hlp)
             $substitution = $this->get_alias_subst( "_#".(substr($vparam,0,8)));
 
             if ( strlen($substitution) ) {   // alias produced some output, so we can remove
-                // strings in previous section and we can start new
-                // section
-                $clear_output .= $out.$substitution;
+                // strings in previous section and we can start new section
+                $clear_output .= str_replace($remove_arr, "", $out).$substitution;
                 $out           = '';  // start with clear string
             }
             $out .= substr($vparam,8);
         }
-        return $clear_output . $out;
+        return $clear_output . str_replace($remove_arr, "", $out);
     }
 
     /** unalias function
