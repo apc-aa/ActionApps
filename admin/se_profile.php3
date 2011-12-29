@@ -63,14 +63,14 @@ if ( $add ) {
     }
 }
 
+if ( $set_as ) {
+    AA_Profile::copyProfile($slice_id, $set_as_uid, $uid);
+}
+
 // prepare forms ---------------------------------------------------------------
 
 // get current profiles
-$SQL= "SELECT * FROM profile WHERE slice_id='$p_slice_id' AND (uid='$uid') ORDER BY property, selector";
-$db->query($SQL);
-while ($db->next_record()) {
-    $rules[] = $db->Record;
-}
+$rules = GetTable2Array("SELECT * FROM profile WHERE slice_id='$p_slice_id' AND (uid='$uid') ORDER BY property, selector");
 
 // get fields for this slice
 list($fields,) = GetSliceFields($slice_id);
@@ -132,7 +132,7 @@ echo $Msg;
 echo "
  <table width=\"70%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\" bgcolor=\"". COLOR_TABTITBG ."\" align=\"center\">
   <tr>
-   <td class=\"tabtit\"><b>&nbsp;". _m("Rules") ." - $uid</b></td>
+   <td class=\"tabtit\"><b>&nbsp;". _m("Rules") ." - $uid - ". perm_username($uid). "</b></td>
   </tr>
   <tr>
    <td>
@@ -254,10 +254,32 @@ echo "</table>
       <input type=\"hidden\" name=\"fnction\">
       <input type=\"hidden\" name=\"html\">";
       $sess->hidden_session();
-echo "</form>
+echo '</form>
     </td>
-   </tr>
-  </table>";
+   </tr>';
+
+$set_as_from = GetTable2Array("SELECT DISTINCT uid FROM profile WHERE slice_id='$p_slice_id' AND (uid <>'$uid') AND (uid <>'*')", 'uid', 'uid');
+
+if (is_array($set_as_from) AND (count($set_as_from) > 0)) {
+    foreach ($set_as_from as $from_uid) {
+        $set_as_from[$from_uid] = perm_username($from_uid);
+    }
+    echo '<tr><td>
+    <form name="cpf" action="se_profile.php3">
+      <input type="hidden" name="uid" value="'.$uid.'">
+      <input type="hidden" name="set_as" value="1">';
+      $sess->hidden_session();
+
+    echo _m('Copy Profile from');
+    FrmSelectEasy('set_as_uid', $set_as_from);
+    echo '<input type="submit" name="set_as" value=" '. _m('Copy') .' ">';
+    echo '</form>
+        </td>
+       </tr>';
+}
+
+echo  '
+  </table>';
 HTMLPageEnd();
 page_close();
 ?>

@@ -44,8 +44,6 @@ class AA_Profile_Rule {
         $this->selector = $selector;
         $this->values   = $values;
     }
-
-
 }
 
 

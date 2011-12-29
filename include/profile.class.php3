@@ -235,6 +235,22 @@ class AA_Profile {
                               ($selector ? " AND selector = '$selector' " : ''),
                        "Can't delete profile");
     }
+
+    /** Copies the profile form one user to another
+     *  @static
+     **/
+    function copyProfile($slice_id, $from_uid, $to_uid) {
+        $p_slice_id = q_pack_id($slice_id);
+        $rules      = GetTable2Array("SELECT * FROM profile WHERE slice_id='$p_slice_id' AND (uid='$from_uid')");
+        $varset     = new CVarset;
+        foreach ($rules as $row) {
+            $varset->resetFromRecord($row);
+            $varset->remove('id');
+            $varset->set('uid', $to_uid);
+            $varset->doInsert('profile');
+        }
+    }
+
     /** updateProperty function
      * @param $property
      * @param $selctor
@@ -296,7 +312,7 @@ function AddProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $pa
         case 'listlen':
         case 'input_view':
         case 'admin_perm':
-            if ( $param > 0 ) {
+            if ( (($property=='admin_perm') AND (strlen($param)==32) ) OR ($param > 0) ) {
                 $profile->deleteProperty($property);
                 $profile->insertProperty($property, '0', $param);
                 $Msg = MsgOK(_m("Rule added"));
