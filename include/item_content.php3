@@ -957,7 +957,7 @@ class ItemContent extends AA_Content {
                 $expand_string = $fnc["param"];
             }
             elseif ($fnc["fnc"]=='co2') {
-                list($expand_insert,$expand_update) = ParamExplode($fnc["param"]);
+                list($expand_insert,$expand_update,$expand_delimiter) = ParamExplode($fnc["param"]);
                 $expand_string = $update ? $expand_update : $expand_insert;
             } else {
                 continue;
@@ -980,11 +980,17 @@ class ItemContent extends AA_Content {
             // compute new value for this computed field
             $new_computed_value = $item->unalias($expand_string);
 
+            $aa_val = new AA_Value( strlen($expand_delimiter) ? explode($expand_delimiter,$new_computed_value) : $new_computed_value);
+
             // set this value also to $item in order we can count with it
             // in next computed field
-            $item->set_field_value($fid, $new_computed_value);
-            //  store the computed value for this field to database
-            insert_fnc_qte($id, $f, array('value' => $new_computed_value), '');
+            $item->setAaValue($fid, $aa_val);
+
+            $values = $item->getValues($fid);
+            foreach($values as $varr) {
+                //  store the computed value for this field to database
+                insert_fnc_qte($id, $f, $varr, '');
+            }
         }
 
         if (!$itemvarset->isEmpty()) {

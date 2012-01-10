@@ -118,7 +118,7 @@ array ("name" => _m("Password and Change Password"),
            and if so, MD5-encrypts the new password and stores it."));
 $INSERT_TYPES["items"]["com"] =
 array ("name" => _m("Computed field"),
-"desc" => _m("Deprecated (use Computed field for INSERT/UPDATE). The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here"),
+"desc" => _m("The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here"),
        "params"=>array(
                         array("name"=>_m("Code for unaliasing (INSERT+UPDATE)"),
                               "desc"=>_m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"),
@@ -140,6 +140,11 @@ array ("name" => _m("Computed field for INSERT/UPDATE"),
                             "desc"=>_m("The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged"),
                               "type"=>"STR",
                               "example"=>""
+                             ),
+                        array("name"=>_m("Multivalue delimiter"),
+                            "desc"=>_m("Character or string, which will split the computed string into multiple values (the same field)"),
+                              "type"=>"STR",
+                              "example"=>"|"
                              )
                        )
        );
