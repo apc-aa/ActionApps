@@ -585,7 +585,7 @@ class AA_Searchbar extends AA_Storable {
             echo '</td><td>';
             FrmSelectEasy("srchbr_oper[$bar]", array(' ' => ' '), null, 'onchange="OpenWindowIfRequest(\''.$this->form_name.'\',\''. $slice_id.'\',\''.$bar.'\',\''.get_admin_url("constants_sel.php3").'\')" ');
             echo '</td><td>';
-            echo "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" maxlength=\"254\"
+            echo "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" maxlength=\"254\" onkeypress=\"if (event.keyCode == 13) document.".$this->form_name. ".submit();\"
               value=\"$val\"></td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";
         }
         echo '</tr>';
