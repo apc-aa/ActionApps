@@ -315,28 +315,24 @@ class itemview {
     $out .= "
       <script type=\"text/javascript\"><!--
         function showSelectedComments() {
-          var url = \"". con_url($script_loc, "sel_ids=1") ."\"
+          var url = \"". get_url($script_loc, "sel_ids=1") ."\";
           var done = 0;
 
-          for (var i = 0; i < ".$cnt."; i++) {
+          for (var i = 0; i<$cnt; i++) {
             if ( eval('document.forms[\"discusform\"].c_'+i).checked) {
-              done = 1
-              url += \"&ids[\" +  escape(eval('document.forms[\"discusform\"].h_'+i).value) + \"]=1\"
+              done = 1;
+              url += \"&ids[\" +  escape(eval('document.forms[\"discusform\"].h_'+i).value) + \"]=1\";
             }
           }
-          url += \"\#disc\"
+          url += \"\#disc\";
           if (done == 0) {
-            alert (\" ". _m("No comment was selected") ."\" )
+            alert (\" ". _m("No comment was selected") ."\" );
           } else {
-            document.location = url
+            document.location = url;
           }
         }
-        function showAllComments() {
-          document.location = \"". con_url($script_loc, "all_ids=1#disc") ."\"
-        }
-        function showAddComments() {
-          document.location = \"". con_url($script_loc, "add_disc=1#disc") ."\"
-        }
+        function showAllComments() {document.location = \"". get_url($script_loc, "all_ids=1#disc") ."\"; }
+        function showAddComments() {document.location = \"". get_url($script_loc, "add_disc=1#disc") ."\";}
        // --></script>";
    return $out;
   }
@@ -504,8 +500,8 @@ class itemview {
 
     // fill the foo_ids - ids to itemids to get from database
     if ( !$is_random ) {
-      $foo_zids = $this->zids->slice((integer)$this->from_record,
-         ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
+      $foo_zids = $this->zids->slice((integer)$this->from_record, ( ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP :  $this->num_records ));
+      if ($debug) huhl('from-'.$this->from_record, 'num-'.$this->num_records, $foo_zids);
     } else { // Selecting random record
       list( $random, $rweight ) = explode( ":", $this->from_record);
       if ( !$rweight || !is_array($this->fields[$rweight]) ) {

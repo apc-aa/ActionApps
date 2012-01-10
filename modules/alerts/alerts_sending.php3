@@ -395,7 +395,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
     /* get all (or just some, if $collection_ids specified) collections and put
        the infop into $colls array */
     if (!is_array($collection_ids)) {
-        $collection_ids = GetTable2Array('SELECT id FROM alerts_collection', 'NoCoLuMn', 'id');
+        $collection_ids = GetTable2Array('SELECT alerts_collection.id FROM alerts_collection, module WHERE module.id=alerts_collection.module_id AND module.deleted<1', 'NoCoLuMn', 'id');
     }
 
     $total_emails = 0;
@@ -420,6 +420,8 @@ function initialize_last() {
     $init["daily"]   = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday']-1);
     // one week (7 days) ago
     $init["weekly"]  = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday']-7);
+    // two week (14 days) ago
+    $init["twoweeks"]  = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday']-14);
     // one month ago
     $init["monthly"] = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon']-1);
 

@@ -1,3 +1,5 @@
+01/10/12 - small fixes and cleanup - alerts, mailman sync, view
+(honzam)
 12/29/11 - new widget "Info text" - just Output
 (honzam) - new (default) <mode> (2) for {shorten:<text>:<length>:<mode>:<add>}
            - do not try to find end of paragraph for short texts by default

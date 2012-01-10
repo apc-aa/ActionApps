@@ -136,7 +136,7 @@ class AA_Debug {
 
     function _groupstart($group) {
         echo "\n<div style='border: 1px #AAA solid; margin: 6px 1px 6px 12px'>";
-        $this->_do('log', $group);
+        $this->_do('log', array($group));
     }
 
     function _groupend($group) {

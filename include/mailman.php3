@@ -76,7 +76,7 @@ class AA_Mailman {
         // Add empty mailing lists
         $db->query("SELECT input_show_func FROM field WHERE slice_id='".q_pack_id($slice_id)."' AND id='$field'");
         if (!$db->next_record()) {
-            freeDB();
+            freeDB($db);
             return;
         }
         list(,$group_id) = explode(":", $db->f("input_show_func"));
@@ -133,7 +133,7 @@ class AA_Mailman {
         foreach ($slices as $slice_id) {
             AA_Mailman::createSynchroFiles($slice_id);
         }
-        freeDB();
+        freeDB($db);
     }
 }
 

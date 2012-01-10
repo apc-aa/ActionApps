@@ -57,6 +57,8 @@ function AlertsSendWelcome( $slice_id, &$itemContent ) {
             if ($mydb->f("emailid_welcome")) {
                 AA_Mail::sendTemplate($mydb->f("emailid_welcome"), $itemContent->getValue(FIELDID_EMAIL), $item);
             }
+            break; // one is enough
+                   // @todo - send right e-mails (depending on the subscribed alerts, when readers works for more than 1 alerts)
         }
     }
     freeDB($mydb);

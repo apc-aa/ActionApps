@@ -793,7 +793,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             }
             //end mlx stuff
             // Note this zids2 is always packed ids, so lost tag information
-            if ($debug) huhl("GetViewFromDB retrieved ".(isset($zids2) ? $zids2->count : 0)." IDS");
+            if ($debug) huhl("GetViewFromDB retrieved ".(isset($zids2) ? $zids2->count() : 0)." IDS");
             if (isset($zids) && isset($zids2) && ($zids->onetype() == "t")) {
                 $zids2 = $zids2->retag($zids);
                 if ($debug) huhl("Retagged zids=",$zids2);
@@ -809,15 +809,13 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
 
             if ($debug) { huhl("GetViewFromDB: Filtered listlen=",$listlen); }
 
+            $itemview = new itemview( $format, $fields, $aliases, $zids2, $list_from, $listlen, shtml_url(), "", ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
 
-            $itemview = new itemview( $format, $fields, $aliases, $zids2, $list_from, $listlen, shtml_url(), "",
-                                      ($view_info['type'] == 'urls') ? 'GetItemContentMinimal' : '');
-
-            if (isset($zids2) && ($zids2->count() > 0)) {
+            if (isset($zids2) && ($zids2->count() > $list_from)) {
                 $itemview_type = (($view_info['type'] == 'calendar') ? 'calendar' : 'view');
                 if ($debug) { huhl("GetViewFromDB: to show=",$zids2, $itemview_type); }
                 $ret = $itemview->get_output($itemview_type);
-            }   //zids2->count >0
+            }   
             else {
                 /* Not sure if this was a necessary change that got missed, or got changed again
                 // $ret = $noitem_msg;

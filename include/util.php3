@@ -758,23 +758,6 @@ function CreateBinCondition($bin, $table, $ignore_expiry_date=false) {
 }
 
 
-/** itemContent_getWhere function
- *  helper function for GetItemContent and such functions
- * @param $zids
- * @param $use_short_ids
- */
-function itemContent_getWhere($zids, $use_short_ids=false) {
-    // convert array or single value to zids
-    if ( !is_object($zids) ) {
-        $zids = new zids( $zids, $use_short_ids ? 's' : 'l' );
-    }
-    $sel_in = $zids->sqlin( '' );
-    if ($zids->onetype() == "t") {
-        $settags = true;  // Used below
-    }
-    return array( $sel_in, $settags );
-}
-
 /** GetItemContent function
  * Basic function to get item content. Use this function, not direct SQL queries.
  * @param $zids
@@ -789,25 +772,23 @@ function itemContent_getWhere($zids, $use_short_ids=false) {
  */
 function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin=null) {
     // Fills array $content with current content of $sel_in items (comma separated ids).
-    $db = getDB();
 
     // construct WHERE clause
-    list($sel_in, $settags) = itemContent_getWhere($zids, $use_short_ids);
-    if (!$sel_in) {
-        freeDB($db);
-        return false;
+    if ( !is_object($zids) ) {
+        $zids = new zids( $zids, $use_short_ids ? 's' : 'l' );
     }
+
+    if (!($sel_in = $zids->sqlin(''))) {
+        return null;
+    }
+
+    $db = getDB();
 
     // get content from item table
     $delim = "";
 
-    if ( is_object($zids) ) {
-        if ( $zids->onetype() == 's' ) {
-            $use_short_ids = true;
-        }
-    }
-
-    $metabase       = AA_Metabase::singleton();
+    $use_short_ids = (($zids_type = $zids->onetype()) == 's');
+    $metabase      = AA_Metabase::singleton();
 
     // if the output fields are restricted, restrict also item fields
     if ( $fields2get ) {
@@ -902,7 +883,7 @@ function GetItemContent($zids, $use_short_ids=false, $ignore_reading_password=fa
     }
 
     // If its a tagged id, then set the "idtag..........." field
-    if ($settags) {
+    if ($zids_type == 't') {
         $tags = $zids->gettags();
         while ( list($k,$v) = each($tags)) {
             $content[$k]["idtag..........."][] = array("value" => $v);
@@ -988,31 +969,34 @@ function GetItemContent_Short($ids) {
  * @param $fields2get
  */
 function GetItemContentMinimal($zids, $fields2get=false) {
-  if ( !$fields2get ) {
-      $fields2get = array( 'id', 'short_id' );
-  }
-  $db      = getDB();
-  $columns = join(',',$fields2get);
+    if ( !$fields2get ) {
+        $fields2get = array( 'id', 'short_id' );
+    }
+    $columns = join(',',$fields2get);
 
-  // construct WHERE clause
-  list($sel_in, $settags) = itemContent_getWhere($zids);
-  if ($sel_in) {
-      // get content from item table
-      $delim = "";
-      $SQL   = "SELECT $columns FROM item WHERE id $sel_in";
-      $db->tquery($SQL);
-      $n_items = 0;
-      while ( $db->next_record() ) {
-          $n_items++;
-          $foo_id = unpack_id($db->f("id"));
-          foreach ( $fields2get as $fld ) {
-              $content[$foo_id][AA_Fields::createFieldId($fld)][] = array("value" => $db->f($fld));
-          }
-      }
-  }
+    if ( !is_object($zids) ) {
+        $zids = new zids( $zids, 'l');
+    }
+    $sel_in = $zids->sqlin( '' );
 
-  freeDB($db);
-  return ($n_items == 0) ? null : $content;   // null returned if no items found
+    if ($sel_in) {
+        // get content from item table
+        $db    = getDB();
+        $delim = "";
+        $SQL   = "SELECT $columns FROM item WHERE id $sel_in";
+        $db->tquery($SQL);
+        $n_items = 0;
+        while ( $db->next_record() ) {
+            $n_items++;
+            $foo_id = unpack_id($db->f("id"));
+            foreach ( $fields2get as $fld ) {
+                $content[$foo_id][AA_Fields::createFieldId($fld)][] = array("value" => $db->f($fld));
+            }
+        }
+        freeDB($db);
+    }
+
+    return ($n_items == 0) ? null : $content;   // null returned if no items found
 }
 
 /** GrabConstantColumn function
