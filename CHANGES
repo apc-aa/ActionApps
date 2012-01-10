@@ -1,5 +1,14 @@
-01/10/12 - small fixes and cleanup - alerts, mailman sync, view
-(honzam)
+01/10/12 - Computed field for INSERT/UPDATE now allows to store multivalues
+(honzam)   There are third parameter - delimiter - which is character
+           or string, which will split the computed string into multiple values
+           (in the same field)
+         - better {live} widget state diasplay - checkboxes are also highlighted
+           during saving
+         - fixed problem with prototype.js v7.0 and multiple values sent
+           by {ajax} or {live}
+         - fixed problem with searchbar in AA admin - submiting the form when
+           Enter is pressed works now
+         - small fixes and cleanup - alerts, mailman sync, view
 12/29/11 - new widget "Info text" - just Output
 (honzam) - new (default) <mode> (2) for {shorten:<text>:<length>:<mode>:<add>}
            - do not try to find end of paragraph for short texts by default

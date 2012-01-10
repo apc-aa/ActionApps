@@ -947,7 +947,7 @@ function parseLoop($out, &$item) {
                          */
                         // we need set some special field, which will be changed to actual
                         // constant value
-                        $item->set_field_value("loop............", $value['value']);
+                        $item->setAaValue('loop............', new AA_Value($value['value']));
                         // get for this alias his output
                         $par = $item->get_alias_subst($params[$i],"loop............");
                     }
@@ -1742,7 +1742,7 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
  * parameter order (due to backward compatibility), so you are encouraged to use
  * {itree} - @see {itree} for more info on tree string representation.
  **/
-class AA_Stringexpand_Item extends AA_Stringexpand {
+class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
 
     /** expand function
      * @param $ids_string  ids (long or short (or mixed) separated by dash '-')

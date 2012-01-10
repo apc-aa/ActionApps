@@ -380,7 +380,7 @@ function GetItemFromContent($content) {
 }
 
 class AA_Item {
-    var $content4id;        // ItemContent array for this Item (like from GetItemContent)
+    var $content4id;     // ItemContent array for this Item (like from GetItemContent)
     var $format;         // format string with aliases
     var $remove;         // remove string
     var $aliases;        // array of usable aliases
@@ -439,8 +439,8 @@ class AA_Item {
      * @param $field
      * @param $value
      */
-    function set_field_value($field, $value) {
-        $this->content4id->setValue($field, $value);
+    function setAaValue($field, $value) {
+        $this->content4id->setAaValue($field, $value);
     }
 
 

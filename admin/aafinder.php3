@@ -40,11 +40,11 @@ require_once AA_BASE_PATH."modules/alerts/util.php3";
 // ----------------------------------------------------------------------------------------
 
 function AafinderFieldLink($field_id, $slice_id) {
-    return a_href( get_admin_url("se_inputform.php?change_id=$slice_id&fid=$field_id",'',true), "$field_id"). ' ('.AA_Slices::getName($slice_id).')';
+    return a_href( get_admin_url("se_inputform.php3?change_id=$slice_id&fid=$field_id",'',true), "$field_id"). ' ('.AA_Slices::getName($slice_id).')';
 }
 
 function AafinderItemLink($item_id, $slice_id) {
-    return a_href( get_admin_url("itemedit.php?slice_id=$slice_id&id=$item_id&edit=1",'',true), "$item_id<br>(". AA_Slices::getName($slice_id) .")");
+    return a_href( get_admin_url("itemedit.php3?slice_id=$slice_id&id=$item_id&edit=1",'',true), "$item_id<br>(". AA_Slices::getName($slice_id) .")");
 }
 
 
