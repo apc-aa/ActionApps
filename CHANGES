@@ -1,3 +1,7 @@
+02/10/12 - fix - param check for readfile
+(honzam)
+01/11/12 - AA tested with IPv6 - works without problems
+(honzam)
 01/10/12 - Computed field for INSERT/UPDATE now allows to store multivalues
 (honzam)   There are third parameter - delimiter - which is character
            or string, which will split the computed string into multiple values
