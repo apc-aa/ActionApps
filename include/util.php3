@@ -218,6 +218,9 @@ function ParamExplode($param) {
  * @param $param
  */
 function ParamImplode($param) {
+    if (!is_array($param)) {
+        return (string)$param;
+    }
     array_walk($param, create_function('&$v,$k', '$v = str_replace(":", "#:", $v);'));
     return implode(":", $param);
 }
@@ -1430,6 +1433,12 @@ function magic_add($str) {
 function setdefault(&$var, $default) {
     if (!isset ($var)) {
         $var = $default;
+    }
+}
+
+function ReadFileSafe($url) {
+    if ( ((stripos($url, 'http://')===0) OR (stripos($url, 'https://')===0)) AND (stripos($url, '..')===false) ) {
+        readfile($url);
     }
 }
 

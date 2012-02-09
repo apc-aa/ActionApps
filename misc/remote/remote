@@ -3,14 +3,22 @@
 # NOTE: you need to change the variable $host
 # change it to the remote server that has the script you want to include
 
+crash !
+
+The script will be removed in the next AA release (for security reasons with readfile())
+Just checking, if it is not used anymore.
+If you need this script, write me on actionapps@ecn.cz
+Honza Malik, 2012-02-10
+
+
 $host  = ''; # like 'http://127.0.0.1';
 if (! $host ) die "Error -- you need to set \$host";
 
-# Index: 
+# Index:
 # 1. usage
 # 2. build URL
 # 3. add UserAgent object, which has ability to send HTTP requests
-# 4. output HTML, probably included as an SSI 
+# 4. output HTML, probably included as an SSI
 
 # -------------------------------------------------
 # 1. usage
@@ -27,12 +35,12 @@ author    : madebeer\@igc.org
 license   : released GPL - see http://www.gnu.org/license.html
 
 --------------------------------------------------
-Strategic usage: 
+Strategic usage:
 
   The ActionApps is an easy-to-use content-management system.
     http://www.apc.org/actionapps/
 
-  Imagine a nonprofit wants to start using this system for the news section of 
+  Imagine a nonprofit wants to start using this system for the news section of
   their site, but does not want to move their site to a webhost that has
   action applications installed.
 
@@ -41,23 +49,23 @@ Strategic usage:
    2. Include their news items from their slice with 'remote', pulling
       these items into news.html, on their local webhost.
 
-  Note: If this script is not fast enough, consider using 'remotec', 
-  a version of 'remote' with caching.  A version of 'remote' in 
+  Note: If this script is not fast enough, consider using 'remotec',
+  a version of 'remote' with caching.  A version of 'remote' in
   php would be even faster -- patches welcome.
 
 --------------------------------------------------
-Technical usage: 
+Technical usage:
 
-'remote' is used as an SSI inside an html page. 
+'remote' is used as an SSI inside an html page.
 For example, if you wanted to include the page
    http://www.gn.apc.org/slice.php3
-And your page was not on www.gn.apc.org, you would put this 
+And your page was not on www.gn.apc.org, you would put this
 HTML code in your page (setting the \$host variable first):
    <!--#include virtual="/cgi/remote/slice.php3"-->
 
-'remote' only works with GET (not POST) commands. 
+'remote' only works with GET (not POST) commands.
 You can use URL parameters, like:
-<!--#include 
+<!--#include
        virtual="/cgi-bin/remote/apc-aa/view.php3?vid=11&als[MY_ALIAS]=3"-->
 
 ENDOFHELP
@@ -68,7 +76,7 @@ ENDOFHELP
 # -------------------------------------------------
 # 2. build URL
 
-# we need a the next line, or get an HTTP error. 
+# we need a the next line, or get an HTTP error.
 # it goes first, so if there is an error, we see it in the web browser
 print "Content-type:text/html\n\n";
 
@@ -85,12 +93,12 @@ my $ua = new LWP::UserAgent;
 my $res = $ua->request(HTTP::Request->new(GET => $url));
 
 # -------------------------------------------------
-# 4. output HTML, probably included as an SSI 
+# 4. output HTML, probably included as an SSI
 
-if ( $res->is_success() ) { 
-    print $res->content 
+if ( $res->is_success() ) {
+    print $res->content
 } else {
-    print "<HR>error in from script: $0<BR>Trying to get $url. Result was:", 
+    print "<HR>error in from script: $0<BR>Trying to get $url. Result was:",
           $res->content, "<HR>";
 };
 __END__

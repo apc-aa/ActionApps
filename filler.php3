@@ -213,7 +213,7 @@ function SendOkPage($txt, $new_ids = array()) {
     }
     if ($GLOBALS["inline"]) {
         if ($GLOBALS["ok_url"]) {
-            readfile($GLOBALS["ok_url"]);
+            ReadFileSafe($GLOBALS["ok_url"]);
         } else {
             $retcode = $GLOBALS["ret_code"] ? $GLOBALS["ret_code"] : base64_decode($GLOBALS["ret_code_enc"]);
             $ret   = array();

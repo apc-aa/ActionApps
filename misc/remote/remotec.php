@@ -1,5 +1,15 @@
 <?php
 
+
+crash !
+
+The script will be removed in the next AA release (for security reasons with readfile())
+Just checking, if it is not used anymore.
+If you need this script, write me on actionapps@ecn.cz
+Honza Malik, 2012-02-10
+
+
+
 //$Id$
 // NOTE: you need to change these variables
 //$host  = 'http://127.0.0.1';
@@ -12,19 +22,19 @@ if (! $host ){
    exit;
 }
 
-// if you want URLs rewritten, set this to true and 
+// if you want URLs rewritten, set this to true and
 // put the Snoopy.class.inc file in your include path (require php > 3.0.9)
 $useSnoopy = 0; // set to either 0 or 'true'. it is on sourceforge
 
 // TODO: better decision making about caching.
-// for example, if there is an expired cache, but connections to the remote URL fail, 
+// for example, if there is an expired cache, but connections to the remote URL fail,
 // there should be a configurable option to use the local copy, like how caching DNS systems work
 
-// Index: 
+// Index:
 // 1. usage
 // 2. build URL
 // 3. figure out if the cachefile exists for this URL
-// 4. if the cachefile does not exist or is not new enough, 
+// 4. if the cachefile does not exist or is not new enough,
 //    run the query, cache the result, and print the result
 // 5. else, print the cached version
 
@@ -39,18 +49,18 @@ echo '<PRE>' . htmlspecialchars ('
 =================================================
 scriptname: remotec.php
   Include the output of a script on a remote server into a local webpage.
-  Cache the output, and use it again until it expires  
+  Cache the output, and use it again until it expires
 
 author    : madebeer@igc.org
 license   : released GPL - see http://www.gnu.org/license.html
 
 =================================================
-Strategic usage: 
+Strategic usage:
 
   The ActionApps is an easy-to-use content-management system.
     http://www.apc.org/actionapps/
 
-  Imagine a nonprofit wants to start using this system for the news section of 
+  Imagine a nonprofit wants to start using this system for the news section of
   their site, but does not want to move their site to a webhost that has
   action applications installed.
 
@@ -59,7 +69,7 @@ Strategic usage:
    2. Include their news items from their slice with remote, pulling
       these items into news.html, on their local webhost.
 
-  Note: For high performance, frequently updated sites, set 
+  Note: For high performance, frequently updated sites, set
    $cache4secs = "1000"; // about 15 minutes
   and then have a cronjob visit the page every 10 minutes
   to keep the cache relevant.
@@ -70,21 +80,21 @@ Strategic usage:
         caching.
 
 =================================================
-Technical usage: 
+Technical usage:
 
 Look at the top of this script, and set the variables there.
 Make sure cachedir is writable by the webserver
 
-"remotec.php" is used as an SSI inside an html page. 
+"remotec.php" is used as an SSI inside an html page.
 For example, if you wanted to include the page
    http://www.gn.apc.org/slice.php3
-And your page was not on www.gn.apc.org, you would put this 
+And your page was not on www.gn.apc.org, you would put this
 HTML code in your page (setting the $host variable first):
    <!--#include virtual=/remotec.php/slice.php3 -->
 
-remote only works with GET (not POST) commands. 
+remote only works with GET (not POST) commands.
 You can use URL parameters, like:
-<!--#include 
+<!--#include
        virtual="/remotec.php/apc-aa/view.php3?vid=11&als[MY_ALIAS]=3"-->
 
 '). '</PRE>';
@@ -94,7 +104,7 @@ You can use URL parameters, like:
 // -------------------------------------------------
 // 2. build URL
 
-// we need a the next line, or get an HTTP error. 
+// we need a the next line, or get an HTTP error.
 // it goes first, so if there is an error, we see it in the web browser
 //print "Content-type:text/html\n\n";
 
@@ -110,14 +120,14 @@ $url = $host . $PATH_INFO . "?". $QUERY_STRING;
 
 $id = md5($url);
 $target = "$cachedir/$id";
-$age = time() - filemtime( $target ) ; 
+$age = time() - filemtime( $target ) ;
 
 if ( ( file_exists($target) ) and ( $age < $cache4secs ) ) {
-   readfile ($target); 
+   readfile ($target);
 } else {
 
 // -------------------------------------------------
-// 4. if the cachefile does not exist or is not new enough, 
+// 4. if the cachefile does not exist or is not new enough,
 // run the query, cache the result, and print the result
 
   if ($useSnoopy) {
@@ -133,7 +143,7 @@ if ( ( file_exists($target) ) and ( $age < $cache4secs ) ) {
 
   $fp = fopen ($target, "w");
   // use flock so that simultaneous requests to an expired $id will not mangle the cachefile
-  if (flock($fp,2)){ 
+  if (flock($fp,2)){
      fwrite($fp, $data);
      if (! fclose($fp)) echo "error closing $target";
   };
