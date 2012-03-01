@@ -47,7 +47,9 @@ function AafinderItemLink($item_id, $slice_id) {
     return a_href( get_admin_url("itemedit.php3?slice_id=$slice_id&id=$item_id&edit=1",'',true), "$item_id<br>(". AA_Slices::getName($slice_id) .")");
 }
 
-
+function AafinderSliceLink($slice_id) {
+    return a_href( get_admin_url("index.php3?change_id=$slice_id",'',true), "$slice_id<br>(". AA_Slices::getName($slice_id) .")");
+}
 
 if (!IsSuperadmin()) {
     MsgPage ($sess->url(self_base()."index.php3"), _m("You have not permissions to add slice"), "standalone");
@@ -245,6 +247,19 @@ if ($_POST['go_finditem'] && $_POST['finditem']) {
         echo '<h3>'. _m('content table records for the item') .'</h3><pre>';
         print_r(GetTable2Array('SELECT * FROM content WHERE item_id = \''.q_pack_id($long_id).'\'', '', 'aa_fields'));
         echo "</pre>";
+
+        if ($sdata = DB_AA::select1('SELECT * FROM slice', '', array(array('id',$long_id, 'l')))) {
+            echo '<h3>'. _m('Slice') .'</h3><pre>';
+            echo AafinderSliceLink($long_id). "<br>";
+            echo "</pre>";
+        }
+        $changes = AA_ChangesMonitor::singleton();
+        echo '<h3>'. _m('History') .'</h3><pre>';
+        print_r($changes->getHistory(array($long_id)));
+        echo "</pre>";
+        echo '<h3>'. _m('Proposals') .'</h3><pre>';
+        print_r($changes->getProposals(array($long_id)));
+        echo "</pre>";
     }
 }
 
@@ -252,27 +267,25 @@ if ($_POST['go_finditem_edit'] && $_POST['finditem_edit'] && $_POST['finditem_ed
 
     function query_search ($field, $op, $value,$sess) {
         $db = new DB_AA;
-        $sql="SELECT distinct  slice.name as slice_name, slice.id as slice_id, item.short_id as short_id, item.id as long_id from slice JOIN item ON slice.id=item.slice_id JOIN content ON content.item_id=item.id WHERE ".$field." ".$op."'".quote($value)."'";
+        $sql="SELECT distinct slice.name as slice_name, slice.id as slice_id, item.short_id as short_id, item.id as long_id from slice JOIN item ON slice.id=item.slice_id JOIN content ON content.item_id=item.id WHERE ".$field." ".$op."'".quote($value)."' ORDER BY slice_name, short_id";
         $db->query($sql);
 
         $num_rows = $db->num_rows();
 
-        $output.= $num_rows." "._m('Show results with string')."  <b><i>$value</i></b><br>";
-
-        $output.= "<ul id=\"list\">";
+        $output .= $num_rows." "._m('Show results with string')."  <b><i>$value</i></b><br>";
+        $output .= "<ul id=\"list\">";
 
         while ($db->next_record()) {
             $slice_name = $db->f('slice_name');
-            $slice_id = (string)bin2hex($db->f('slice_id'));
-            $short_id = $db->f('short_id');
-            $long_id = (string)bin2hex($db->f('long_id'));
-            $output.= "<li class=\"node\"> <b>"._m('Slice').":</b> ".$slice_name.". <b>Item=</b>".$short_id."  <a href=\"http://".$_SERVER['SERVER_NAME']."/".AA_BASE_DIR.$sess->url('slice.php3')."&slice_id=".$slice_id."&nocache=1\" target=\"_blank\" >"._m('Show')."</a> | <a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id&$sess->name=$sess->id\" target=\"_blank\">"._m('Edit')."</a></li>";
+            $slice_id   = (string)bin2hex($db->f('slice_id'));
+            $short_id   = $db->f('short_id');
+            $long_id    = (string)bin2hex($db->f('long_id'));
+            $output    .= "<li class=\"node\"> <b>"._m('Slice').":</b> ".$slice_name.". <b>Item=</b>".$short_id."  <a href=\"http://".$_SERVER['SERVER_NAME']."/".AA_BASE_DIR.$sess->url('slice.php3')."&slice_id=".$slice_id."&nocache=1\" target=\"_blank\" >"._m('Show')."</a> | <a href=\"itemedit.php3?id=$long_id&edit=1&encap=false&slice_id=$slice_id&$sess->name=$sess->id\" target=\"_blank\">"._m('Edit')."</a></li>";
         }
 
-        $output.= "</ul>";
+        $output .= "</ul>";
 
         return $output;
-
     }
 
     switch ($_POST['finditem_edit_op']) {
@@ -283,7 +296,6 @@ if ($_POST['go_finditem_edit'] && $_POST['finditem_edit'] && $_POST['finditem_ed
         case 'item': $field = "item.short_id";
                      print query_search ($field, '=',$_POST['finditem_edit'],$sess);break;
     }
-
 }
 
 // ------------------------------------------------------------------------------------------
@@ -346,8 +358,6 @@ echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
     </select>
     <input type="submit" name="go_finditem_edit" value="'._m("Go!").'">';
 echo '</form></td></tr>';
-
-
 
 FrmTabEnd();
 
