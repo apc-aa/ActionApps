@@ -656,22 +656,18 @@ class AA_Inputfield {
       * @param $tagprefix
       */
     function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=false, $crypted_additional_slice_pwd=null, $tagprefix=null) {
+        $constgroup = $this->param[0];
+        $sid        = (substr($constgroup,0,7) == "#sLiCe-") ? substr($constgroup, 7) : '';
+
         if ( isset($this->const_arr) AND is_array($this->const_arr) ) {  // already filled
-            return;
+            return $sid;
         }
-        $this->const_arr = array();  // Initialize
 
-        $zids = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
-        if ( !($constgroup=$this->param[0]) ) {  // assignment
-            $this->const_arr = array();
-        } elseif ( substr($constgroup,0,7) == "#sLiCe-" ) { // prefix indicates select from items
-
-            $sid = substr($constgroup, 7);
-            /** Get format for which represents the id
-             *  Could be field_id (then it is grabbed from item and truncated to 50
-             *  characters, or normal AA format string.
-             *  Headline is default (if empty "$slice_field" is passed)
-             */
+        if ($sid) {
+            // Get format for which represents the id
+            // Could be field_id (then it is grabbed from item and truncated to 50
+            // characters, or normal AA format string.
+            // Headline is default (if empty "$slice_field" is passed)
             if (!$slice_field) {
                 $slice_field = GetHeadlineFieldID($sid, "headline.");
                 if (!$slice_field) {
@@ -679,16 +675,18 @@ class AA_Inputfield {
                 }
             }
             $format          = AA_Slices::getField($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
+            $zids            = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
             $set             = new AA_Set($sid, $conds, $sort, $whichitems);
             $this->const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tagprefix);
             // $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix); // older version of the function :honzam03/09
-            return $sid; // in most cases not very impotant information, but used in inputRelatION() input type
-        } else {
+        } elseif ($constgroup) {
             $this->const_arr = GetFormatedConstants($constgroup, $slice_field, $ids_arr, $conds, $sort);
         }
+
         if ( !isset($this->const_arr) OR !is_array($this->const_arr) ) {
             $this->const_arr = array();
         }
+        return $sid; // in most cases not very impotant information, but used in inputRelation() input type
     }
 
     /** varname_modify function
