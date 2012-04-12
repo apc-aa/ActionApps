@@ -183,9 +183,9 @@ class AA_Perm_Resource {
 
 /** main AA permissions */
 class AA_Perm {
-    
+
     var $perm_systems;
-    
+
     function __construct($systems) {
         $this->perm_systems = array();
         foreach ($systems as $system_name) {
@@ -202,13 +202,13 @@ class AA_Perm {
 
     public function isUsernameFree($username) {
         foreach ($this->perm_systems as $perm_sys) {
-            if (!$perm_sys->isUsernameFree()) {
+            if (!$perm_sys->isUsernameFree($username)) {
                 return false;
             }
         }
         return true;
     }
-    
+
     public static function comparePwds($password, $hash) {
         // switch (substr($hash, 0, 3)) {
         //     case '$2a': $saltlen = 28); break;  // Blowfish - default
@@ -278,7 +278,7 @@ class AA_Perm {
         }
         return 'G';
     }
-    
+
     /** AA_Perm::joinSliceAndAAPerm function
      * Resolves precedence issues between slice-specific permissions
      * and global access rigths (rights to object aa).
@@ -294,7 +294,7 @@ class AA_Perm {
             return ($slice_perm ? $slice_perm : $aa_perm);
         }
     }
-    
+
     /** AA_Perm::_resolve($perms) function
      *  Replaces roles with apropriate perms
      *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
@@ -644,7 +644,7 @@ require_once AA_INC_PATH ."item_content.php3";  // for ItemContent class
 
 
 class AA_Permsystem_Reader extends AA_Permsystem {
-    
+
     /** isUsernameFree function
      *  Looks into reader management slices whether the reader name is not yet used.
      *   This function is used in perm_ldap and perm_sql in IsUsernameFree().

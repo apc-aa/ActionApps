@@ -1,4 +1,30 @@
+04/12/12 - new "Set Expiry date to maximum value" optimize function
+(honzam)   sets expiry_date to maximum value for items in slices, where
+           expiry_date..... field is not shown. It also sets the field's default
+           to that value. (fixes suboptimal setting of exiry date in old slices)
+         - allow to add polls into site module modules
+         - new {mailform:<to>:<subject>:<html-inputs>:<ok-text>:<body>:<lang>:<from>}
+           displays form with your own inputs which is after submition send
+           to e-mail (uses AJAX)
+             Ussage:
+             {mailform:honza.malik@ecn.cz:test mail:
+               note <input name="note"><input type="submit">:
+               You posted<br>_#1<br>Regards<br>ActionApps:
+               OK sent:utf-8:actionapps@ecn.cz}
+         - new {mail:<condition>:<to>:<subject>:<body>:<encoding>:<sender email>}
+           which sends the e-mai coditionaly
+           be careful - it can send mail on every page load!
+             Ussage:
+             {mail:1:honza.malik@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz}
+         - {str_replace} now accepts the first two parameters in JSON, so you
+           can use:
+             {str_replace:["č","š","ř"]:["c","s","r"]:text česky with accents}
+         - discussion comments now have its unique id in HTML - so you can
+           #anchor them in url
+03/23/12 - fixed problem with multiple checkboxes, when used with slice items
+(honzam)   more times in one form
 03/01/12 - show item history in menu AA ("Get all informations about the ITEM")
+01/10/12 - small fixes and cleanup - alerts, mailman sync, view
 (honzam)
 02/10/12 - fix - param check for readfile
 (honzam)

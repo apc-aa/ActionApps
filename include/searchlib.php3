@@ -1021,17 +1021,8 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE") {
  * @param $conds_string
  */
 function String2Conds( $conds_string ) {
-    $conds = false;
-    if (isset($conds_string)) {
-        parse_str($conds_string, $aa_query_arr);
-        // we also need PHP to think a['key'] is the same as a[key], that's why we
-        // call NormalizeArrayIndex()
-        $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
-        $conds        = $aa_query_arr['conds'];
-        ParseMultiSelectConds($conds);
-        ParseEasyConds($conds,'RLIKE');
-    }
-    return $conds;
+    $set = new AA_Set(null, $conds_string);
+    return $set->getConds();
 }
 
 /** String2Sort function
@@ -1040,15 +1031,8 @@ function String2Conds( $conds_string ) {
  * @param $sort_string
  */
 function String2Sort( $sort_string ) {
-    $sort = false;
-    if (isset($sort_string)) {
-        parse_str($sort_string, $aa_query_arr);
-        // we also need PHP to think a['key'] is the same as a[key], that's why we
-        // call NormalizeArrayIndex()
-        $aa_query_arr = NormalizeArrayIndex(magic_strip($aa_query_arr));
-        $sort = $aa_query_arr['sort'];
-    }
-    return $sort;
+    $set = new AA_Set(null, null, $sort_string);
+    return $set->getSort();
 }
 
 /** MakeSQLConditions function

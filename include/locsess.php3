@@ -194,7 +194,6 @@ class DB_AA extends DB_Sql {
         $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
         $sqlwhere = is_null($where) ? '' : DB_AA::makeWhere($where);
 
-        huhl("$query $sqlwhere");
         $db->query("$query $sqlwhere");
         $ret = array();
         if (is_array($column)) {

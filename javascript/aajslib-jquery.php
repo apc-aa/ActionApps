@@ -74,7 +74,6 @@ function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
     }
 }
 
-
 function AA_Ajax(div_id, url, param, onload) {
     AA_AjaxCss(jqid(div_id), url, param, onload);
 }
@@ -171,6 +170,25 @@ function AA_SendWidgetLive(id) {
     });
 }
 
+
+/** Sends the form and replaces the form with the response
+ *  Polls ussage - @see: http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
+ */
+function AA_AjaxSendForm(form_id, url) {
+    var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
+    if (filler_url.charAt(0)!='/') {
+        filler_url = AA_Config.AA_INSTAL_PATH + filler_url;   // AA link
+    }
+
+    var valdiv = jqid(form_id);
+    var code   = $(valdiv + ' *').serialize();
+    $(valdiv).append(AA_Config.loader);
+
+    $.post(filler_url, code, function(data) {
+        $(valdiv).attr("data-aa-edited", "0");
+        $(valdiv).html(data);
+    });
+}
 
 
 
