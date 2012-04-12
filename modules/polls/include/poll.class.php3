@@ -63,6 +63,9 @@ class AA_Poll {
         return $this->content->getValue($fname);
     }
 
+    /** Get Unpacked Module ID */
+    function getModuleId() { return unpack_id($this->getProperty('module_id')); }
+
     function getVotesSum() {
         if (is_null($this->_sum)){
             $this->_sum = (int)GetTable2Array("SELECT SUM(votes) as sum FROM polls_answer WHERE poll_id = '".$this->poll_id."'", 'aa_first', 'sum');
@@ -184,7 +187,7 @@ class AA_Poll {
 
         if (!$vote_invalid) {
             tryQuery("UPDATE polls_answer SET votes=votes+1 WHERE id='$vote_id'");
-            $GLOBALS['pagecache']->invalidateFor("slice_id=$poll_id");
+            $GLOBALS['pagecache']->invalidateFor("slice_id=". $this->getModuleId());
 
             if ($this->getProperty('logging') == 1) {
                 $varset->resetFromRecord( array('answer_id'=> $vote_id, 'voters_ip'=>$_SERVER['REMOTE_ADDR'], 'timestamp'=> $current_time) );

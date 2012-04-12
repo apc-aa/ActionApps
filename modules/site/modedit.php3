@@ -243,7 +243,7 @@ FrmJavascript('
     FrmInputSelect("router",   _m("Router"), array(1 => 'AA_Router_Seo'), $router, false);
 
     foreach ($g_modules as  $k => $v) {
-        if ($v['type'] == 'S') {
+        if (strpos('SP', $v['type']) !== false) {
             $slice_selection[$k] = $v['name'];
         }
     }
