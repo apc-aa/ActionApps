@@ -968,7 +968,7 @@ class AA_Optimize_Fix_Content_Column extends AA_Optimize {
         $statistic = array();
         foreach ($bad_rows as $index => $row) {
             $statistic[$row['name'].' '.$row['field_id']]++;
-            
+
             if ($index < 240) {
                 $this->message(_m('slice %1: field_id: %2 item_id: %3', array(unpack_id($row['name'], $row['item_id']), $row['field_id'])));
             }
@@ -1158,4 +1158,59 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
     }
 }
 
+
+
+/** Set Expiry date to maximum value for items in slices, where expiry_date.....
+ *  field is not shown. It also sets the field's default to that value.
+ */
+class AA_Optimize_Set_Expirydate extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Set Expiry date to maximum value");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("Set Expiry date to maximum value for items in slices, where expiry_date..... field is not shown. It also sets the field's default to that value.<br><b>Is it really what you want?</b>");
+    }
+
+    /** Test function
+    * @return bool
+    */
+    function test() {
+
+        $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
+        foreach ($slices as $sid => $default) {
+            $this->message(_m('slice id: %1 (%2), default value for expiry_date.....: %3', array($sid, AA_Slices::getName($sid), $default)));
+        }
+        $this->message(_m('We found %1 hidden exipry_date..... fields', array(count($slices))));
+        // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
+        return true;
+    }
+
+    /** Deletes the pagecache - the renaming and deleting is much, much quicker,
+     *  than easy DELETE FROM ...
+     * @return bool
+     */
+    function repair() {
+        $db  = getDb();
+        $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
+        foreach ($slices as $sid => $default) {
+            $db->query("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
+            //huhl("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
+            $this->message(_m('items changed: %1 in slice: %2 (%3)', array($db->affected_rows(), $sid, AA_Slices::getName($sid))));
+
+            $db->query("UPDATE field SET input_default='txt:2145826800' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
+            //huhl("UPDATE field SET input_default='txt:2145826800' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
+            $this->message(_m('field default changed for expiry_date..... in %1 (%2)', array($sid, AA_Slices::getName($sid))));
+        }
+        freeDb($db);
+        return true;
+    }
+}
 ?>
