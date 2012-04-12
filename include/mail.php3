@@ -57,6 +57,14 @@ class AA_Mail extends htmlMimeMail  {
         foreach ( $record as $key => $value) {
             $record[$key] = AA_Stringexpand::unalias($value, "", $item);
         }
+        $record["lang"] = $LANGUAGE_CHARSETS[$record["lang"]];
+
+        $this->setFromArray($record);
+    }
+
+    /** record array('subject','body','header_from','reply_to','errors_to','sender','lang','html')  */
+    function setFromArray($record) {
+        // email has the templates in it
         if ($record["html"]) {
             $this->setHtml( $record["body"], html2text($record["body"]));
         } else {
@@ -64,7 +72,7 @@ class AA_Mail extends htmlMimeMail  {
         }
         $this->setSubject($record["subject"]);
         $this->setBasicHeaders($record, "");
-        $this->setCharset($LANGUAGE_CHARSETS[$record["lang"]]);
+        $this->setCharset(strlen($record["lang"]) ? $record["lang"] : 'utf-8');
 
         if ($record['attachments']) {
             $attachs = ParamExplode($record['attachments']);
@@ -115,8 +123,7 @@ class AA_Mail extends htmlMimeMail  {
         $headers = array (
             "From"        => "header_from",
             "Reply-To"    => "reply_to",
-            "Errors-To"   => "errors_to",
-            "Sender"      => "sender"
+            "Errors-To"   => "errors_to"
             );
         foreach ( $headers as $header => $field) {
             if ($record[$field]) {
@@ -127,7 +134,7 @@ class AA_Mail extends htmlMimeMail  {
             }
         }
         // bounces are going to errors_to (if defined) or ...
-        $return_path = ( $record['errors_to']    ? $record['errors_to'] :
+        $return_path = ( $record['sender']    ? $record['sender'] :
                         ( $record['header_from'] ? $record['header_from'] :
                           ERROR_REPORTING_EMAIL));
         $this->setReturnPath($return_path);

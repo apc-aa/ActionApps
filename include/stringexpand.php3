@@ -39,6 +39,15 @@ require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
 require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
 require_once AA_INC_PATH."tree.class.php3";   // for {tree:...};
 
+
+/** creates array form JSON array or returns single value array if not valid json */
+function json2arr($string) {
+    if (($string[0] != '[') OR (( $values = json_decode($string)) == null)) {
+        $values = ($string=='[]') ? array() : array($string);
+    }
+    return array_filter($values);
+}
+
 /** include file, first parameter is filename, second is hints on where to find it **/
 class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
 
@@ -479,6 +488,9 @@ class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
 
     /** expand function */
     function expand($email='', $text='') {
+        if (!$email) {
+            return $text;
+        }
         $linkpart    = explode('@', $email);
         $mailprotect = "'".$linkpart[0]."'+'@'+'".$linkpart[1]."'";
         $linktext    = ($text=='') ? $mailprotect : "'".str_replace("'", "\'", $text)."'";
@@ -1600,7 +1612,7 @@ class AA_Stringexpand_Convert extends AA_Stringexpand {
     /** expand function
      * @param $text
      */
-    function expand($text, $from, $to) {
+    function expand($text, $from, $to='') {
         require_once AA_INC_PATH."convert_charset.class.php3";
         $encoder = new ConvertCharset;
         return $encoder->Convert($text, $from, $to);
@@ -2134,7 +2146,7 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
      * @param $item_id          - item id of the tree root (short or long)
      * @param $relation_field   - tree relation field (default relation........)
      * @param $reverse          - 1 for reverse trees (= child->parent relations)
-     * @param $sort_string      - order of tree leaves (currently wors only for reverse trees. @todo)
+     * @param $sort_string      - order of tree leaves (currently works only for reverse trees. @todo)
      */
     function expand($item_id, $relation_field=null, $reverse=null, $sort_string=null, $slices=null) {
         return AA_Stringexpand_Treestring::treefunc('getTreeString', $item_id, $relation_field, $reverse, $sort_string, $slices);
@@ -2862,7 +2874,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         // delimiter:
         //   BIOM##Biom##biom_AA_DeLiM_<a href="http://biom.cz">_#KEYWORD_</a>
 
-        $set     = new AA_Set($dictionaries, String2Conds( $conds ), String2Sort( $sort ));
+        $set     = new AA_Set($dictionaries, $conds, $sort);
         $kw_item = GetFormatedItems($set, $format);
 
         foreach ( $kw_item as $kw_string ) {
@@ -3396,7 +3408,6 @@ class AA_Stringexpand {
     public static $php_functions = array (
         'strlen'           => 'strlen',             // old AA_Stringexpand_Strlen
         'str_repeat'       => 'str_repeat',         // old AA_Stringexpand_Str_repeat
-        'str_replace'      => 'str_replace',        // old AA_Stringexpand_Str_replace
         'strtoupper'       => 'strtoupper',         //     AA_Stringexpand_Strtoupper
         'strtolower'       => 'strtolower',         //     AA_Stringexpand_Strtolower
         'striptags'        => 'strip_tags',         // old AA_Stringexpand_Striptags
@@ -3583,6 +3594,20 @@ class AA_Stringexpand_Trim extends AA_Stringexpand {
     }
 }
 
+/** replaces string or strings - you can use single string replacement
+ *  or array in JSON form:
+ *   {str_replace:uno:one:text with uno inside}
+ *   {str_replace:["è","š","ø"]:["c","s","r"]:text èesky with accents}
+ */
+class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    function expand($search='', $replace='', $text='') {
+        $search  = json2arr($search);
+        $replace = json2arr($replace);
+        return str_replace($search, $replace, $text);
+    }
+}
 
 class AA_Stringexpand_Packid extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -3992,6 +4017,23 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
         return AA_Stringexpand_Encrypt::_encryptdecrypt(true, $text, $key);
     }
 
+    function get_time_token($data) {
+        return base64_encode(AA_Stringexpand_Encrypt::_encryptdecrypt(true, serialize($data), 'aa-sul'.AA_ID.date('j.n.y H')));
+    }
+
+    /** Try to decode sent token - not older than $hours
+     *  $hours must count with cache - the tokens on the form could be in the cache
+     */
+    function decrypt_time_token($token, $hours=24) {
+        $token = base64_decode($token);
+        for ($i=0; $i<$hours; ++$i) {
+            if (strlen($serialized = AA_Stringexpand_Encrypt::_encryptdecrypt(false, $token, 'aa-sul'.AA_ID.date('j.n.y H',strtotime("-$i hour"))))) {
+                return unserialize($serialized);
+            }
+        }
+        return '';
+    }
+
     function _encryptdecrypt( $mode_encrypt, $text, $key) {
         /* Open module, and create IV */
         $td      = mcrypt_module_open('des', '', 'ecb', '');
@@ -4315,4 +4357,71 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
         return $ret;
     }
 }
+
+/** Sends e-mail conditionaly
+ *  Be careful - it can send mail on every page load!
+ *  Use as:
+ *    {mail:1:honza.malik@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz}
+ */
+class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
+
+    function expand($condition='', $to='', $subject='', $body='', $lang='', $from='', $reply_to='', $errors_to='', $sender='') {
+
+        if (!strlen($condition) OR !strlen($body)) {
+            return '';
+        }
+
+        $to = json2arr($to); // can't be inside empty()  - Honza, php 5.2
+        if (empty($to)) {
+            return '';
+        }
+        $mail_arr = array( 'subject'     => $subject,
+                           'body'        => $body,
+                           'header_from' => $from,
+                           'reply_to'    => $reply_to,
+                           'errors_to'   => $errors_to,
+                           'sender'      => $sender,
+                           'lang'        => $lang,
+                           'html'        => 1);
+
+        $mail = new AA_Mail;
+        $mail->setFromArray($mail_arr);
+        return $mail->sendLater($to);
+    }
+}
+
+/** Sends e-mail conditionaly
+ *  Be careful - it can send mail on every page load!
+ *  Use as:
+ *    {mailform:<to>:<subject>:<html-inputs>:<ok-text>:<body>:<lang>:<from>}
+ *    {mailform:honza.malik@ecn.cz:test mail:Your note <input name="note">:You posted<br>_#1<br>Regards<br>ActionApps:utf-8:actionapps@ecn.cz}
+ */
+class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
+
+    function expand($to='', $subject='', $html='', $body='', $ok='', $lang='', $from='') {
+
+        $config_arr = array('to' => $to,
+                            'subject' => $subject,
+                            'body' => $body,
+                            'ok' => $ok,
+                            'lang' => $lang,
+                            'from' => $from );
+        $form_id  = 'form'.new_id();
+        $mailconf = AA_Stringexpand_Encrypt::get_time_token($config_arr);
+
+        $ret = "<form id=\"$form_id\" onsubmit=\"AA_AjaxSendForm('$form_id', '/mail.php'); return false;\">
+        <input type=hidden name=aa_mailconf value=\"$mailconf\">
+        <style type=\"text/css\">
+           div.skryto { display:none };
+        </style>
+        <div class=\"skryto\"><input type=\"text\" name=\"answer\" value=\"\"></div>
+        $html
+        </form>
+        ";
+        return $ret;
+    }
+}
+
+
+
 ?>
