@@ -365,7 +365,7 @@ class itemview {
               $depth = count($images)-1;
               $spacer = "";
               $out.= '
-              <table border="0" cellspacing="0" cellpadding="0" class="discrow">
+              <table border="0" cellspacing="0" cellpadding="0" class="discrow" id="disc'.$d_id.'">
                 <tr>';
               for ( $i=0; $i<$depth; $i++)
               $spacer .= $this->slice_info['d_spacer'];
