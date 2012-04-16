@@ -44,7 +44,6 @@ header('Cache-Control: public');
 header('Cache-Control: max-age=' . $allowcache_expire);
 header('Content-Type: application/x-javascript');
 
-// next lines are copied from prototype/HEADER and prototype/prototype.js files
 
 ?>
 
@@ -74,6 +73,7 @@ function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
     }
 }
 
+
 function AA_Ajax(div_id, url, param, onload) {
     AA_AjaxCss(jqid(div_id), url, param, onload);
 }
@@ -102,7 +102,6 @@ function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, 
     }
 }
 
-
 /** calls AA responder with permissions of current user and displays returned
  *  html code into div_id
  *  Usage:
@@ -113,6 +112,84 @@ function DisplayAaResponse(div_id, method, params) {
     var sess = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
     AA_AjaxCss(jqid(div_id), AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, {parameters: params});
 }
+
+function AA_Response(method, resp_params, ok_func, err_func) {
+    var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
+    $.post(AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, resp_params, function(data) {
+        if ( data.substring(0,5) == 'Error' ) {
+            if (typeof err_func != "undefined") {
+                err_func(data);
+            }
+        } else {
+            if (typeof ok_func != "undefined") {
+                ok_func(data);
+            }
+         }
+    });
+}
+
+/** Sends the form and replaces the form with the response
+ *  Polls ussage - @see: http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
+ */
+function AA_AjaxSendForm(form_id, url) {
+    var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
+    if (filler_url.charAt(0)!='/') {
+        filler_url = AA_Config.AA_INSTAL_PATH + filler_url;   // AA link
+    }
+
+    var valdiv = jqid(form_id);
+    var code   = $(valdiv + ' *').serialize();
+    $(valdiv).append(AA_Config.loader);
+
+    $.post(filler_url, code, function(data) {
+        $(valdiv).attr("data-aa-edited", "0");
+        $(valdiv).html(data);
+    });
+}
+
+
+function displayInput(valdivid, item_id, fid) {
+    var valdiv = jqid(valdivid);
+
+    // already editing ?
+    switch ($(valdiv).attr('data-aa-edited')) {
+       case '1': return;
+       case '2': $(valdiv).attr("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
+                 return;
+    }
+    $(valdiv).attr("data-aa-oldval", $(valdiv).html());
+    $(valdiv).html(AA_Config.loader);
+
+    AA_Response('Get_Widget', { field_id: fid, item_id: item_id }, function(data) {
+            var valdiv = jqid(valdivid);
+            $(valdiv).attr('data-aa-edited', '1');
+            $(valdiv).html(data);
+            var aa_input = $(valdiv).children('select,textarea,input').first();
+            $(aa_input).focus();  // select the input field (<select> or <input>)
+            $(aa_input).keydown( function(event) {
+                switch (event.which) {
+                case 13: $(this).nextAll('input.save-button').click();   break; // Enter
+                case 27: $(this).nextAll('input.cancel-button').click(); break; // Esc
+//                case 9:  $(this).nextAll('input.save-button').click(); $(this).closest('div.ajax_container').nextAll('div.ajax_container').click(); break; // Tab
+                case 9:  // Tab
+                         // we must grab the next input right now - after save-button click we have no current div
+                         var next_input = $('div.ajax_container').eq($('div.ajax_container').index($(this).parents('div.ajax_container'))+1);
+                         $(this).nextAll('input.save-button').click();
+                         $(next_input).click();
+                         break;
+                }
+            });
+        }
+    );
+}
+
+/** return back old value - CANCEL pressed on AJAX widget */
+function DisplayInputBack(input_id) {
+    var valdiv   = jqid('ajaxv_'+input_id);
+    $(valdiv).html( $(valdiv).attr('data-aa-oldval') );
+    $(valdiv).attr('data-aa-edited', '2');
+}
+
 
 
 function jqescape(s) {
@@ -155,154 +232,15 @@ function AA_SendWidgetAjax(id) {
  *   aa[i<item_id>][<field_id>][]
  */
 function AA_SendWidgetLive(id) {
-    $$('*[id ^="'+id+'"]').invoke('addClassName', 'updating');
-    var valdivid   = 'widget-' + id;
-    var code = Form.serialize(valdivid);
+    $('*[id ^="'+id+'"]').addClass('updating');
+    var valdivid   = jqid('widget-' + id);
+    var code = $(valdivid + ' *').serialize();
 
     code += '&inline=1';  // do not send us whole page as result
 
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
-        parameters: code,
-        requestHeaders: {Accept: 'application/json'},
-        onSuccess: function(transport) {
-            $$('*[id ^="'+id+'"]').invoke('removeClassName', 'updating');
-        }
+    $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', code, function(data) {
+        $('*[id ^="'+id+'"]').removeClass('updating');
     });
-}
-
-
-/** Sends the form and replaces the form with the response
- *  Polls ussage - @see: http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
- */
-function AA_AjaxSendForm(form_id, url) {
-    var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
-    if (filler_url.charAt(0)!='/') {
-        filler_url = AA_Config.AA_INSTAL_PATH + filler_url;   // AA link
-    }
-
-    var valdiv = jqid(form_id);
-    var code   = $(valdiv + ' *').serialize();
-    $(valdiv).append(AA_Config.loader);
-
-    $.post(filler_url, code, function(data) {
-        $(valdiv).attr("data-aa-edited", "0");
-        $(valdiv).html(data);
-    });
-}
-
-
-
-function displayInput(valdivid, item_id, fid) {
-    var valdiv = jqid(valdivid);
-
-    // already editing ?
-    switch ($(valdiv).attr('data-aa-edited')) {
-       case '1': return;
-       case '2': $(valdiv).attr("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
-                 return;
-    }
-    var alias_name = $(valdiv).attr('data-aa-alias');
-    $(valdiv).attr("data-aa-oldval", $(valdiv).html());
-
-    AA_AjaxCss(valdiv, AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
-        field_id:   fid,
-        item_id:    item_id,
-        alias_name: alias_name,
-        aaaction:   'DISPLAYINPUT'
-    }, function(data) {
-        $(this).attr('data-aa-edited', '1');
-        var aa_input = $(this).children('select,textarea,input').first();
-        $(aa_input).focus();  // select the input field (<select> or <input>)
-        $(aa_input).keydown( function(event) {
-            switch (event.which) {
-            case 13: $(this).nextAll('input.save-button').click();   break; // Enter
-            case 27: $(this).nextAll('input.cancel-button').click(); break; // Esc
-//            case 9:  $(this).nextAll('input.save-button').click(); $(this).closest('div.ajax_container').nextAll('div.ajax_container').click(); break; // Tab
-            case 9:  // Tab
-                     // we must grab the next input right now - after save-button click we have no current div
-                     var next_input = $('div.ajax_container').eq($('div.ajax_container').index($(this).parents('div.ajax_container'))+1);
-                     $(this).nextAll('input.save-button').click();
-                     $(next_input).click();
-                     break;
-            }
-        });
-    });
-}
-
-function _getInputContent(input_id) {
-    var content    = Array();
-    var i          = 0;
-    var add_empty  = false;
-    var val        = '';
-
-    var jq_input   = jqid(input_id+'[]');
-
-    if ( $(jq_input).length ) {
-        val = $(jq_input).val();
-        if ( $(jq_input).is('input:checkbox:not(:checked)')) { // val contains value also for unchecked checkboxesunchecked checkbox is undefined
-            val = '0';   // should be changed to '' I think
-        }
-        content = content.concat( val );
-    }
-
-    while ( $(jq_input = jqid(input_id+'['+ i +']')).length ) {
-        val = $(jq_input).val();
-        if ( $(jq_input).is('input:checkbox:not(:checked)')) { // val contains value also for unchecked checkboxesunchecked checkbox is undefined
-            add_empty = true;
-        } else {
-            content = content.concat( val );
-        }
-        i++;
-    }
-    if ( add_empty && content.count < 1 ) {
-        content.push('');  // it is different from push('0') above, because single chbox is 1|0, but multi is value..value|''
-    }
-    return content;
-}
-
-/** This function replaces the older one - proposeChange
- *  The main chane is, that now we use standard AA input names:
- *   aa[i<item_id>][<field_id>][]
- */
-function DoChange(input_id) {
-    var valdiv   = jqid('ajaxv_'+input_id);
-    var alias_name = $(valdiv).attr('data-aa-alias');
-    var content    = _getInputContent(input_id);
-
-    AA_AjaxCss(valdiv, AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
-        input_id:   input_id,
-        alias_name: alias_name,
-        aaaction:   'DOCHANGE',
-        'content[]':    content
-    }, function(data) {
-        $(jqid('ajaxch_'+input_id)).text('');
-        $(valdiv).attr("data-aa-edited", "0");
-
-    });
-}
-
-/** updates database for given iten and field by Ajax
- */
-function DoChangeLive(input_id) {
-
-    $('*[id ^="'+jqescape(input_id)+'"]').addClass('updating');
-    var content    = _getInputContent(input_id);
-
-    AA_AjaxCss(valdiv, AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
-        input_id:   input_id,
-        alias_name: '',
-        aaaction:   'DOCHANGE',
-        'content[]':    content
-    }, function(data) {
-        $('*[id ^="'+jqescape(input_id)+'"]').removeClass('updating');
-    });
-}
-
-/** return back old value - CANCEL pressed on AJAX widget */
-function DisplayInputBack(input_id) {
-    var valdiv   = jqid('ajaxv_'+input_id);
-    $(valdiv).html( $(valdiv).attr('data-aa-oldval') );
-    $(valdiv).attr('data-aa-edited', '2');
 }
 
 /* Cookies */
@@ -370,143 +308,4 @@ function NewId() {
         uuid[2*i+1] = chars[0 | (Math.random()*16)];
     }
     return uuid.join('');
-}
-
-// --------------------------------------------
-function addToKosik(produkt_variant, mnozstvi, viewid) {
-
-    var kid;
-    viewid = viewid || 29;
-    kid    = GetCookie('kosik_id');
-    if (kid) {
-        addPolozkaToKosik(kid, produkt_variant, mnozstvi, "#obsah-kosiku", viewid);
-    } else {
-
-        $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
-            inline: 1,
-            slice_id: '2d81635df9bbff2a7deebd89808f3cfb',
-            "aa[n1_2d81635df9bbff2a7deebd89808f3cfb][highlight_______][]": 1,
-            "aa[n1_2d81635df9bbff2a7deebd89808f3cfb][category_______1][]": 'pokladna'
-        }, function(data) {
-            // just one iteration, but without the loop we are not able to get the item_id
-            for (kid in data) {
-                SetCookie('kosik_id', kid);
-            }
-            addPolozkaToKosik(kid, produkt_variant, mnozstvi, "#obsah-kosiku", viewid);
-            AA_AjaxCss("#doporucujeme", '/aaa/view.php3?vid=35&cmd[35]=o-35-'+ produkt_variant+'&als[XLANG___]='+getCurrentLanguage());
-        });
-    }
-}
-
-function AddCisloFaktury(kid) {
-    var param = {
-            inline: 1,
-            ok_url: "http://biofarma.cz/aaa/view.php3?vid=71&nocache=1&cmd[71]=o-71-"+ kid+'&als[XLANG___]='+getCurrentLanguage(),
-            slice_id: '2d81635df9bbff2a7deebd89808f3cfb'
-         };
-    param["aa[u"+kid+"][number__________][]"] = 111;
-
-    $("#page-faktura").load(AA_Config.AA_INSTAL_PATH + 'filler.php3', param);
-}
-
-function HotovoNachstano(kid, skid) {
-    var param = {
-            slice_id: '2d81635df9bbff2a7deebd89808f3cfb'
-         };
-    param["aa[u"+kid+"][category________][]"] = 3;
-    $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', param, function(data) {
-        document.location = "http://admin.biofarma.cz/cz/objednavky#obj"+ skid;
-    });
-
-}
-
-function getCurrentLanguage() {
-    var txt = new String(document.location);
-    return (txt.indexOf('biofarma.cz/en') == -1) ? 'cz' : 'en';
-}
-
-function addPolozkaToKosik(kosik, produkt_variant, mnozstvi, kosdiv, viewid) {
-
-    // we want to invalidate the pages for this user to reload pages with new kosik
-    SetCookie('changed', new Date().getTime());
-
-    AA_AjaxCss(kosdiv, AA_Config.AA_INSTAL_PATH + 'filler.php3', {
-            inline: 1,
-            ok_url: "http://biofarma.cz/aaa/view.php3?vid="+ viewid +"&nocache=1&cmd["+ viewid +"]=o-"+ viewid +"-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
-            slice_id: '38b46aeec3b2bbb70ba48b31957ed322',
-            "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation________][]": kosik,
-            "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation_______1][]": produkt_variant,
-            "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][text____________][]": mnozstvi
-        });
-}
-
-function addPolozkaToKosikAdmin(kosik, produkt_variant, mnozstvi) {
-    addPolozkaToKosik(kosik, produkt_variant, mnozstvi, "#page-faktura", 71);
-}
-
-function addPolozkaToKosikSilent(kosik, produkt_variant, mnozstvi) {
-        $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', {
-            inline: 1,
-            slice_id: '38b46aeec3b2bbb70ba48b31957ed322',
-            "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation________][]": kosik,
-            "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][relation_______1][]": produkt_variant,
-            "aa[n1_38b46aeec3b2bbb70ba48b31957ed322][text____________][]": mnozstvi
-        });
-}
-
-function deleteFromKosikAdmin(kosik, polozka_id) {
-    // we want to invalidate the pages for this user to reload pages with new kosik
-
-    if (!confirm('Tímto vymažeš položku i z objednávky a jen těžko ji půjde vrátit zpět. Opravdu chceš Položku vymazat?')) {
-        return;
-    }
-
-    var param = {
-            inline: 1,
-            ok_url: "http://biofarma.cz/aaa/view.php3?vid=71&nocache=1&cmd[71]=o-71-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
-            slice_id: '38b46aeec3b2bbb70ba48b31957ed322'
-         };
-    param["aa[u"+polozka_id+"][status_code_____][]"] = 2;
-
-    $("#page-faktura").load(AA_Config.AA_INSTAL_PATH + 'filler.php3', param);
-}
-
-function ReloadFaktura(kosik) {
-    $("#page-faktura").load("/aaa/view.php3?vid=71&nocache=1&cmd[71]=o-71-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(), '', function() {});
-}
-
-
-function deleteFromKosik(kosik, polozka_id, prehled) {
-    // we want to invalidate the pages for this user to reload pages with new kosik
-    SetCookie('changed', new Date().getTime());
-
-    if(typeof(prehled) == 'undefined') {
-        prehled = 29;
-    }
-
-    var param = {
-            inline: 1,
-            ok_url: "http://biofarma.cz/aaa/view.php3?vid="+prehled+"&nocache=1&cmd["+prehled+"]=o-"+prehled+"-"+ kosik+'&als[XLANG___]='+getCurrentLanguage(),
-            slice_id: '38b46aeec3b2bbb70ba48b31957ed322'
-         };
-    param["aa[u"+polozka_id+"][status_code_____][]"] = 3;
-
-    $("#obsah-kosiku").load(AA_Config.AA_INSTAL_PATH + 'filler.php3', param, function() {});
-}
-
-function QuantuitySub(fld) {
-    $(jqid(fld)).val(Math.max(1, parseInt($(jqid(fld)).val())-1));
-}
-function QuantuityAdd(fld) {
-    $(jqid(fld)).val(Math.max(1, parseInt($(jqid(fld)).val())+1));
-}
-
-function ChangeVariant(sitem_id, sb) {
-    var variant;
-    variant = $(sb).val().split('|');
-    $('#cena'+sitem_id).html('<strong>'+variant[1]+',-</strong>/'+variant[2]+'</strong>');
-    $('#variant'+sitem_id).val(variant[0]);
-    $('.cls2hide'+sitem_id).css('visibility', (variant[3]==1) ? 'visible' : 'hidden');
-    $('#jednotka'+sitem_id).html(variant[2]);
-    $('#dostupnost'+sitem_id).html(variant[4]);
 }
