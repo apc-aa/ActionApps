@@ -404,10 +404,6 @@ select.live, input.live, textarea.live {
     border: 1px solid #EBDABE;
 }
 
-select.updating, input.updating, textarea.updating {
-    outline: 1px solid #FF0000;
-}
-
 div.ajax_value {
     background: url("images/edit.png") no-repeat scroll right bottom transparent;
     padding-right: 20px;
@@ -421,5 +417,20 @@ div.ajax_value[data-aa-edited="1"]:hover {
     background: none;
 }
 
-
+input.save-button, input.cancel-button {
+     border-top: 1px solid #D6C4A9;
+     border-left: 1px solid #D6C4A9;
+     border-bottom: solid 1px #A0988D;
+     border-right: solid 1px #A0988D;
+     padding-left: 15px;
+     font-size: 9px;
+     text-transform: lowercase;
+}
+input.save-button {
+     background : url("images/save.png") no-repeat #DBDAD9 0 -2px;
+}
+input.cancel-button {
+     background-color: #DBDAD9;
+     padding-left: 2px;
+}
 
