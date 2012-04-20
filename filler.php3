@@ -59,7 +59,7 @@ http://www.apc.org/
  */
 //$GLOBALS[debug]=0; $GLOBALS[errcheck] =1;
 
-$debugfill=$GLOBALS['debugfill'];
+$debugfill=$_REQUEST['debugfill'];
 
 /**
  * Handle with PHP magic quotes - quote the variables if quoting is set off
@@ -123,6 +123,7 @@ require_once AA_INC_PATH."feeding.php3";
 require_once AA_INC_PATH."zids.php3";
 require_once AA_INC_PATH."slice.class.php3";
 require_once AA_INC_PATH."grabber.class.php3";
+require_once AA_INC_PATH.'scroller.php3';  // we need it, because there coud be scroller stored in session (in manager)
 
 
 function UseShowResult($txt,$url) {
@@ -152,15 +153,15 @@ function SendErrorPage($txt) {
         <?xml version="1.0" encoding="iso-8859-1"?>
         <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.3//EN" "http://www.wapforum.org/DTD/wml13.dtd" >
         <wml>
-          <card id="carta1" title="apc.org" ontimer="'.$GLOBALS["err_url"].'">
+          <card id="carta1" title="apc.org" ontimer="'.$_REQUEST["err_url"].'">
             <timer value="1"/>
             </card>
         </wml>
         ';
         exit;
     }
-    if ( !$GLOBALS["err_url"] ) {
-        if ($GLOBALS['debugfill']) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$GLOBALS["err_url"] );
+    if ( !$_REQUEST["err_url"] ) {
+        if ($GLOBALS['debugfill']) huhl("SendErrorPage with no url and txt=",$txt," err_url=",$_REQUEST["err_url"] );
         echo HtmlPageBegin("");
         echo "</head><body>";
         if (is_array($txt)) {
@@ -170,13 +171,13 @@ function SendErrorPage($txt) {
         }
         echo "</body></html>";
     } else {
-        if (!$GLOBALS["use_post2shtml"]) {
-            $posturl = get_url($GLOBALS["err_url"], "result=".substr(serialize($txt),0,1000));
+        if (!$_REQUEST["use_post2shtml"]) {
+            $posturl = get_url($_REQUEST["err_url"], "result=".substr(serialize($txt),0,1000));
             if ($GLOBALS['debugfill']) huhl("Going to post2shtml posturl=",$posturl);
             go_url($posturl);
         } else {
-            if ($GLOBALS['debugfill']) huhl("Show result with url=",$GLOBALS["err_url"], " txt=",$txt);
-            UseShowResult($txt,$GLOBALS["err_url"]);
+            if ($GLOBALS['debugfill']) huhl("Show result with url=",$_REQUEST["err_url"], " txt=",$txt);
+            UseShowResult($txt,$_REQUEST["err_url"]);
         }
     }
     exit;
@@ -197,7 +198,7 @@ function SendOkPage($txt, $new_ids = array()) {
         <?xml version="1.0" encoding="iso-8859-1"?>
         <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.3//EN" "http://www.wapforum.org/DTD/wml13.dtd" >
         <wml>
-          <card id="carta1" title="apc.org" ontimer="'.$GLOBALS["ok_url"].'">
+          <card id="carta1" title="apc.org" ontimer="'.$_REQUEST["ok_url"].'">
             <timer value="1"/>
           </card>
         </wml>
@@ -208,14 +209,14 @@ function SendOkPage($txt, $new_ids = array()) {
 
     // we can use something like:
     //    ok_url = "/aa/view.php3?vid=1374&cmd[1374]=x-1374-_#N1_ID___"
-    if ($GLOBALS["ok_url"]) {
-        $GLOBALS["ok_url"] = str_replace('_#N1_ID___', $new_ids[0], $GLOBALS["ok_url"]);
+    if ($_REQUEST["ok_url"]) {
+        $_REQUEST["ok_url"] = str_replace('_#N1_ID___', $new_ids[0], $_REQUEST["ok_url"]);
     }
-    if ($GLOBALS["inline"]) {
-        if ($GLOBALS["ok_url"]) {
-            ReadFileSafe($GLOBALS["ok_url"]);
+    if ($_REQUEST["inline"]) {
+        if ($_REQUEST["ok_url"]) {
+            ReadFileSafe($_REQUEST["ok_url"]);
         } else {
-            $retcode = $GLOBALS["ret_code"] ? $GLOBALS["ret_code"] : base64_decode($GLOBALS["ret_code_enc"]);
+            $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
             $ret   = array();
             foreach($new_ids as $long_id) {
                 $item = AA_Item::getItem(new zids($long_id, 'l'));
@@ -242,12 +243,12 @@ function SendOkPage($txt, $new_ids = array()) {
         }
         exit;
     }
-    if (!$GLOBALS["ok_url"]) {
+    if (!$_REQUEST["ok_url"]) {
         go_url($_SERVER['HTTP_REFERER']);
-    } elseif (!$GLOBALS["use_post2shtml"]) {
-        go_url($GLOBALS["ok_url"]);
+    } elseif (!$_REQUEST["use_post2shtml"]) {
+        go_url($_REQUEST["ok_url"]);
     } else {
-        UseShowResult($txt,$GLOBALS["ok_url"]);
+        UseShowResult($txt,$_REQUEST["ok_url"]);
     }
 }
 
