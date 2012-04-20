@@ -74,21 +74,29 @@ if ( $group_id ) {
  * @param $value
  * @param $cid
  * @param $pri
- * @param $class
- * @param $classes
  * @return
  *
  */
-function ShowConstant($id, $name, $value, $cid, $pri, $class, $classes) {
+function ShowConstant($id, $name, $value, $cid, $pri, $using_slices_arr=null) {
     global $sess;
     $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid);
+
+    $count = '';
+    if (count($using_slices_arr)) {
+        $count = 0;
+        foreach ($using_slices_arr as $sid => $arr) {
+            $set = new AA_Set(array($sid), new AA_Condition($arr['fid'], '=', '"'.$value.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+            $count += count($set->query());
+        }
+    }
 
     echo "
     <tr>
       <td><input type=\"text\" name=\"name[$id]\" size=\"30\" maxlength=\"149\" value=\"$name\"></td>
       <td><input type=\"text\" name=\"value[$id]\" size=\"30\" maxlength=\"255\" value=\"$value\">
           <input type=\"hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
-      <td class=\"tabtxt\"><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>";
+      <td class=\"tabtxt\"><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
+      <td class=\"tabtxt\">$count</td>";
     echo "</tr>\n";
 }
 
@@ -203,7 +211,6 @@ if ($update) {
             $varset->set("group_id", 'lt_groupNames', "quoted" );
             $varset->set("name", $group_id, "quoted");
             $varset->set("value", $group_id, "quoted");
-            $varset->set("class", '', "quoted");
             $varset->set("pri", 100, "number");
             if (!$varset->doInsert('constant')) {
                 $err["DB"] .= MsgErr("Can't create constant group");
@@ -226,7 +233,6 @@ if ($update) {
             $varset->set("name",  $name[$key], "quoted");
             $varset->set("value", $value[$key], "quoted");
             $varset->set("pri", ( $pri[$key] ? $pri[$key] : 1000), "number");
-            $varset->set("class", $class[$key], "quoted");
             $db->tquery("SELECT * FROM constant WHERE id='$p_cid'");
             if ($db->next_record()) {
                 if ($propagate_changes) {
@@ -257,13 +263,9 @@ if ($update) {
 // lookup constants
 if ($group_id OR $as_new) {
     $gid = ( $as_new ? $as_new : $group_id );
-    $SQL = "SELECT id, name, value, class, pri FROM constant  WHERE group_id='$gid' ORDER BY pri, name";
+    $SQL = "SELECT id, name, value, pri FROM constant  WHERE group_id='$gid' ORDER BY pri, name";
     $s_constants = GetTable2Array($SQL, "NoCoLuMn");
 }
-
-// lookup apc categories classes
-$SQL = "SELECT name, value, pri, id FROM constant WHERE group_id='lt_apcCategories' ORDER BY name";
-$classes = GetTable2Array($SQL, "id");
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 ?>
@@ -317,18 +319,11 @@ echo "\n     </td>\n</tr>";
 
 // Find slices, where the constant group is used
 if ($group_id) {
-    $delim = '';
-    $db->tquery("
-        SELECT slice.name FROM slice, field
-         WHERE slice.id = field.slice_id
-           AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')");
-    while( $db->next_record() ) {
-        $using_slices .= $delim. $db->f('name');
-        $delim = ', ';
-    }
+    $using_slices_arr = GetTable2Array("SELECT slice.id as sid, slice.name as sname, field.id as fid FROM slice, field WHERE slice.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')", 'unpack:sid');
+
     echo "
       <tr><td><b>"._m("Constants used in slice")."</b></td>
-        <td colspan=\"3\">$using_slices</td>
+        <td colspan=\"3\">". join(', ', array_map(create_function('$arr','return $arr["sname"];'), $using_slices_arr)) ."</td>
       </tr>";
 }
 
@@ -371,6 +366,7 @@ echo "'</td></tr>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</td>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</td>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</td>
+ <td class=\"tabtxt\" align=\"center\"><b>". _m("Used") ."</a></b><br>". _m("times") ."</td>
 </tr>
 <tr><td colspan=\"4\"><hr></td></tr>";
 
@@ -379,9 +375,9 @@ if ($s_constants) {
     $i=0;
     foreach ($s_constants as $v) {
         if ($from_form) {  // get values from form
-            ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $class[$i], $classes);
+            ShowConstant($i, $name[$i], $value[$i], $cid[$i], $pri[$i], $using_slices_arr);
         } else {        // get values from database
-            ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id($v["id"]), $v["pri"], $v["class"], $classes);
+            ShowConstant($i, $v["name"], $v["value"], $as_new ? '' : 'x'.unpack_id($v["id"]), $v["pri"], $using_slices_arr);
         }
         $i++;
     }
@@ -389,7 +385,7 @@ if ($s_constants) {
 
 // ten rows for possible new constants
 for ($j=0; $j<10; $j++) {
-    ShowConstant($i, "", "", "", 1000, "", $classes);
+    ShowConstant($i, "", "", "", 1000+ $j*10);
     $i++;
 }
 
