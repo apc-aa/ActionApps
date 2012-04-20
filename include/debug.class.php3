@@ -103,6 +103,43 @@ class AA_Debug_Firephp extends AA_Debug {
 }
 
 
+class AA_Debug_Console extends AA_Debug {
+    function _do($func, $params) {
+        $code = '';
+        foreach ($params as $a) {
+            $code .= "\n console.$func('". str_replace("'", "\'", str_replace('\\', '\\\\', $a)). "');";
+        }
+        $this->_script($code);
+    }
+
+    function _groupstart($group) {
+        echo "\n<div style='border: 1px #AAA solid; margin: 6px 1px 6px 12px'>";
+        $this->_script("\n console.group();");
+        $this->_do('log', array($group));
+    }
+
+    function _groupend($group) {
+        $this->_script("\n console.groupEnd();");
+        $this->_do('log', array($group));
+    }
+
+    function _script($code) {
+        static $used = false;
+        if (!$used) {
+            $used = true;
+            // init
+            $code = '
+       if (!window.console) {
+         var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+         window.console = {};
+         for (var i = 0; i < names.length; ++i)  window.console[names[i]] = function() {}
+       }
+       ' .$code;
+        }
+        echo  "\n<script>$code</script>\n";
+    }
+}
+
 class AA_Debug_Phpconsole extends AA_Debug {
     function __construct() {
         PhpConsole::start(true, true, AA_SITE_PATH);

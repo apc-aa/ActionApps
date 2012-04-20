@@ -156,6 +156,8 @@ class AA {
 }
 AA::$debug = $_GET['debug'];
 AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_PhpConsole() : new AA_Debug());
+//AA::$dbg = new AA_Debug_Console();
+
 
 class DB_AA extends DB_Sql {
     var $Host      = DB_HOST;
