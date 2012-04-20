@@ -1,3 +1,12 @@
+04/19/12 - AA admin interface - constants edit page displays the count, how 
+(honzam)   many times each constant is used (exact matches counted only) 
+         - improved UX of {live} inputs - input now indicates the "unsaved 
+           state" and "updating" strate (by outline and icons). Works also
+           outside of AA - styles are included universaly. 
+         - better style for {ajax} buttons
+         - new javascript console debug mode
+         - fixed problem with {live} editing from admin interface 
+           (AA_Scroller error)
 04/12/12 - new "Set Expiry date to maximum value" optimize function
 (honzam)   sets expiry_date to maximum value for items in slices, where
            expiry_date..... field is not shown. It also sets the field's default

@@ -96,7 +96,7 @@ class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
  *                   empty for username (of curent logged user)
  *                   'password' for plain text password of current user
  *                   'permission'
- *                   'role'
+ *                   'role'  -> returns super|administrator|editor|author|undefined
  */
 class AA_Stringexpand_User extends AA_Stringexpand {
     /** additionalCacheParam function
@@ -929,6 +929,9 @@ function parseLoop($out, &$item) {
             // case if we have only one parameter for substitution
             $val_delim = '';
             foreach ($val as $value) {
+                if (!strlen($value['value'])) {
+                    continue;
+                }
                 $dummy     = str_replace("_#1", $value['value'], $format_str);
                 $ret_str   = $ret_str . $val_delim . $dummy;
                 $val_delim = $separator;
