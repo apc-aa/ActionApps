@@ -398,8 +398,8 @@ class AA_Widget extends AA_Components {
         $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
         $base_id     = AA_Form_Array::formName2Id($base_name);
         $required    = $aa_property->isRequired();
-        $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
-
+        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id')\" style=\"padding-right:15px;\"" : '';
+        $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
         $widget      = '';
 
         // property uses constants or widget have the array assigned (preselect is special - the constants here are not crucial)
@@ -410,7 +410,7 @@ class AA_Widget extends AA_Components {
             $use_name     = $this->getProperty('use_name', false);
             $multiple     = $this->multiple() ? ' multiple' : '';
 
-            $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $widget_add>";
+            $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $widget_add>$widget_add2";
             $selected  = $content->getAaValue($aa_property->getId());
             $options   = $this->getOptions($selected, $content, $use_name, false, !$required);
             $widget   .= $this->getSelectOptions( $options );
@@ -425,14 +425,14 @@ class AA_Widget extends AA_Components {
                 $input_name   = $base_name ."[$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
                 $input_value  = htmlspecialchars($value->getValue($i));
-                $widget      .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>";
+                $widget      .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>$widget_add2";
                 $delim        = '<br />';
             }
             // no input was printed, we need to print one
             if ( !$widget ) {
                 $input_name   = $base_name ."[0]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
-                $widget       = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";
+                $widget       = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>$widget_add2";
             }
         }
 
@@ -495,7 +495,7 @@ class AA_Widget extends AA_Components {
     function _finalizeLiveHtml($winfo) {
         $base_id  = $winfo['base_id'];
 
-        $ret  = "<div class=\"aa-widget\"".($winfo['required'] ? 'aa-required':'')." id=\"widget-$base_id\" style=\"display:inline\">" . $winfo['html']. "</div>";
+        $ret  = "<div class=\"aa-widget\"".($winfo['required'] ? 'aa-required':'')." id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $winfo['html']. "</div>";
 
         return $ret;
         return $winfo['html'];

@@ -224,13 +224,24 @@ function SendAjaxForm(id, refresh) {
  */
 function AA_AjaxSendForm(form_id, url) {
     var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
+    if (filler_url.charAt(0)!='/') {
+        filler_url = AA_Config.AA_INSTAL_PATH + filler_url;   // AA link
+    }
     var code       = Form.serialize(form_id);
     $(form_id).insert(AA_Config.loader);
 
-    new Ajax.Request(AA_Config.AA_INSTAL_PATH + filler_url, {
+    new Ajax.Request(filler_url, {
         parameters: code,
         onSuccess: function(transport) {
-            $(form_id).update(transport.responseText);
+            var res = transport.responseText;
+            if (res.charAt(0) == '{') {
+                var items = res.evalJSON(true);  // maybe we can remove "true"
+                for (var i in items) {
+                    res = items[i];
+                    break;
+                }
+            }
+            $(form_id).update(res);
         }
     });
 }
@@ -320,7 +331,8 @@ function AA_ReloadAjaxResponse(id, responseText) {
  *   aa[i<item_id>][<field_id>][]
  */
 function AA_SendWidgetLive(id) {
-    $$('*[id ^="'+id+'"]').invoke('addClassName', 'updating');
+    AA_StateChange(id, 'updating');
+
     var valdivid   = 'widget-' + id;
     var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
 
@@ -331,9 +343,46 @@ function AA_SendWidgetLive(id) {
         parameters: code,
         requestHeaders: {Accept: 'application/json'},
         onSuccess: function(transport) {
-            $$('*[id ^="'+id+'"]').invoke('removeClassName', 'updating');
+            AA_StateChange(id, 'normal');
         }
     });
+}
+
+/** This function replaces the older one - proposeChange
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function AA_StateChange(id, state) {
+    var outstyle = {};
+    var icoimg   = '';
+    var elems    = $$('*[id ^="'+id+'"]');
+
+    switch (state) {
+    case 'dirty':
+        elems.invoke('removeClassName', 'normal');
+        elems.invoke('removeClassName', 'updating');
+        outstyle = {'outlineColor': '#E4B600', 'outlineWidth': '1px', 'outlineStyle': 'solid'};
+        icoimg   = 'images/save.png';
+        break;
+    case 'updating':
+        elems.invoke('removeClassName', 'dirty');
+        elems.invoke('removeClassName', 'normal');
+        outstyle = {'outlineColor': '#E4B600', 'outlineWidth': '1px', 'outlineStyle': 'dashed'};
+        icoimg   = 'images/loader.gif';
+        break;
+    case 'normal':
+    default:
+        elems.invoke('removeClassName', 'dirty');
+        elems.invoke('removeClassName', 'updating');
+        outstyle = {'outline': 'none'};
+        icoimg   = 'images/px.gix';
+        break;
+    }
+    elems.invoke('addClassName', state);
+    $$('select[id ^="'+id+'"]').invoke('setStyle', outstyle);
+    $$('input[id ^="'+id+'"]').invoke('setStyle', outstyle);
+    $$('textarea[id ^="'+id+'"]').invoke('setStyle', outstyle);
+    $$('img.'+id+'ico').each(function(img) {img.setAttribute('src', AA_Config.AA_INSTAL_PATH+icoimg); });
 }
 
 /** Deprecated

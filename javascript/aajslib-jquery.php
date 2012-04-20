@@ -128,6 +128,19 @@ function AA_Response(method, resp_params, ok_func, err_func) {
     });
 }
 
+/** This function replaces the older one - proposeChange
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function AA_StateChange(id, state) {
+    switch (state) {
+    case 'dirty':
+//        $$('*[id ^="'+id+'"]').invoke('addClassName', 'updating');
+//        $$('img.'+id+'ico').each(function(img) {img.setAttribute('src',AA_Config.AA_INSTAL_PATH+'images/save.png'); });
+    }
+}
+
+
 /** Sends the form and replaces the form with the response
  *  Polls ussage - @see: http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
  */
