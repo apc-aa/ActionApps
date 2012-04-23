@@ -141,6 +141,36 @@ class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
     }
 }
 
+/** @return html widget for the field of item */
+class AA_Responder_Get_Widget extends AA_Responder {
+    var $field_id;
+    var $item_id;
+    
+    function AA_Responder_Get_Widget($param=null) {
+        $this->field_id   = $param['field_id'];
+        $this->item_id    = $param['item_id'];
+    }
+
+    function isPerm() { return true; }
+
+    function run() {
+
+        $item        = AA_Item::getItem(new zids($this->item_id));
+        $iid         = $item->getItemID();
+        $slice       = AA_Slices::getSlice($item->getSliceId());
+    
+        // Use right language (from slice settings) - languages are used for button texts, ...
+        $lang        = $slice->getLang();
+        mgettext_bind($lang, 'output');
+    
+        $widget_html = $slice->getWidgetAjaxHtml($this->field_id, $iid);
+    
+        $encoder = new ConvertCharset;
+        $ret     =  $encoder->Convert($widget_html, $slice->getCharset(), 'utf-8');        
+        return new AA_Response($ret);
+    }
+}
+
 
 /** @return html selectbox of fields in given slice */
 class AA_Responder_Get_Fields extends AA_Responder {
