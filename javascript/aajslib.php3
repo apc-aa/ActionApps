@@ -158,7 +158,6 @@ function DisplayAaResponse(div_id, method, params) {
 
 function AA_Response(method, resp_params, ok_func, err_func) {
     var sess  = (AA_Config.SESS_NAME != '') ? AA_Config.SESS_NAME + '=' + AA_Config.SESS_ID : 'AA_CP_Session=' + GetCookie('AA_Sess');
-    var params = {parameters: resp_params};
     new Ajax.Request(AA_Config.AA_INSTAL_PATH + 'central/responder.php?' + sess + '&command='+ method, {
          parameters: resp_params,
          onSuccess: function(transport) {
@@ -169,6 +168,59 @@ function AA_Response(method, resp_params, ok_func, err_func) {
              }
          }
     });
+}
+
+// function displayInput(valdivid, item_id, fid) {
+//     // already editing ?
+//     switch ($(valdivid).readAttribute('data-aa-edited')) {
+//        case '1': return;
+//        case '2': $(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
+//                  return;
+//     }
+//
+//     // store current content
+//     $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
+//
+//     var alias_name = $(valdivid).readAttribute('data-aa-alias');
+//
+//     $(valdivid).update(AA_Config.loader);
+//     new Ajax.Request( AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
+//         parameters: { field_id:   fid,
+//                       item_id:    item_id,
+//                       alias_name: alias_name,
+//                       aaaction:   'DISPLAYINPUT'
+//                      },
+//         onSuccess: function(transport) {
+//             $(valdivid).update(transport.responseText);  // new value
+//             $(valdivid).setAttribute('data-aa-edited', '1');
+//         }
+//     });
+// }
+
+function displayInput(valdivid, item_id, fid) {
+    // already editing ?
+    switch ($(valdivid).readAttribute('data-aa-edited')) {
+       case '1': return;
+       case '2': $(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
+                 return;
+    }
+
+    // store current content
+    $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
+
+    $(valdivid).update(AA_Config.loader);
+    AA_Response('Get_Widget', { field_id: fid, item_id: item_id }, function(responseText) {
+            $(valdivid).update(responseText);  // new value
+            $(valdivid).setAttribute('data-aa-edited', '1');
+        }
+    );
+}
+
+/** return back old value - CANCEL pressed on AJAX widget */
+function DisplayInputBack(input_id) {
+    var valdivid = 'ajaxv_'+input_id
+    $(valdivid).update($(valdivid).readAttribute('data-aa-oldval'));
+    $(valdivid).setAttribute('data-aa-edited', '2');
 }
 
 function AA_Ajax(div, url, param) {
@@ -205,12 +257,12 @@ function AA_AjaxInsert(a_obj, form_url) {
  *  @param ok_html   - what text (html) should be displayed after the success
  *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
  */
-function SendAjaxForm(id, refresh) {
+function SendAjaxForm(id, refresh, ok_func) {
     $(id).insert(AA_Config.loader);
     $(id).request({encoding:   'windows-1250',
                    onComplete: function(transport){
                        if (typeof refresh != "undefined") {
-                           AA_Refresh(refresh);
+                           AA_Refresh(refresh,false,ok_func);
                        } else {
                            new Insertion.After($(id).up('div'), new Element('div').update(transport.responseText));
                            // close form and display add icon
@@ -246,11 +298,18 @@ function AA_AjaxSendForm(form_id, url) {
     });
 }
 
-function AA_Refresh(id) {
+function AA_Refresh(id,inside,ok_func) {
     $(id).update(AA_Config.loader);
     new Ajax.Request($(id).readAttribute('data-aa-url'), {
         onSuccess: function(transport) {
-            $(id).replace(transport.responseText);
+            if (inside) {
+                $(id).update(transport.responseText);
+            } else {
+                $(id).replace(transport.responseText);
+            }
+            if (typeof ok_func != "undefined") {
+                ok_func();
+            }
         }
     });
 }
@@ -476,72 +535,6 @@ function isArray(obj) {
    return (obj.constructor.toString().indexOf("Array") != -1);
 }
 
-function displayInput(valdivid, item_id, fid) {
-    // already editing ?
-    switch ($(valdivid).readAttribute('data-aa-edited')) {
-       case '1': return;
-       case '2': $(valdivid).setAttribute("data-aa-edited", "0");  // the state 2 is needed for Firefox 3.0 - Storno not works
-                 return;
-    }
-
-    // store current content
-    $(valdivid).setAttribute("data-aa-oldval", $(valdivid).innerHTML);
-
-    var alias_name = $(valdivid).readAttribute('data-aa-alias');
-
-    $(valdivid).update(AA_Config.loader);
-    new Ajax.Request( AA_Config.AA_INSTAL_PATH + 'misc/proposefieldchange.php', {
-        parameters: { field_id:   fid,
-                      item_id:    item_id,
-                      alias_name: alias_name,
-                      aaaction:   'DISPLAYINPUT'
-                     },
-        onSuccess: function(transport) {
-            $(valdivid).update(transport.responseText);  // new value
-            $(valdivid).setAttribute('data-aa-edited', '1');
-        }
-    });
-}
-
-
-function _getInputContent(input_id) {
-    var content    = Array();
-    var i          = 0;
-    var add_empty  = false;
-
-    if ( $(input_id+'[]') != null ) {
-        if ( (typeof($F(input_id+'[]')) == 'undefined') || ($F(input_id+'[]')==null)) { // unchecked checkbox is undefined
-            content.push('0');
-        } else if (isArray($F(input_id+'[]'))) {
-            content = content.concat($F(input_id+'[]'));
-        } else {
-            content.push($F(input_id+'[]'));
-        }
-    }
-
-    while ( $(input_id+'['+ i +']') != null) {
-        if ((typeof($F(input_id+'['+ i +']')) == 'undefined') || ($F(input_id+'['+ i +']')==null) ) { // unchecked checkbox is undefined
-            add_empty = true;
-        } else if (isArray($F(input_id+'['+ i +']'))) {
-            content = content.concat($F(input_id+'['+ i +']'));
-        } else {
-            content.push($F(input_id+'['+ i +']'));
-        }
-        i++;
-    }
-    if ( add_empty && content.count < 1 ) {
-        content.push('');  // it is different from push('0') above, because single chbox is 1|0, but multi is value..value|''
-    }
-    return content;
-}
-
-/** return back old value - CANCEL pressed on AJAX widget */
-function DisplayInputBack(input_id) {
-    var valdivid = 'ajaxv_'+input_id
-    $(valdivid).update($(valdivid).readAttribute('data-aa-oldval'));
-    $(valdivid).setAttribute('data-aa-edited', '2');
-}
-
 /* Cookies */
 
 function SetCookie(name, value) {
@@ -658,4 +651,67 @@ function unpackToForm(data){
    }
 }
 
+/**
+ * Event.simulate(@element, eventName[, options]) -> Element
+ *
+ * - @element: element to fire event on
+ * - eventName: name of event to fire (only MouseEvents and HTMLEvents interfaces are supported)
+ * - options: optional object to fine-tune event properties - pointerX, pointerY, ctrlKey, etc.
+ *
+ *    $('foo').simulate('click'); // => fires "click" event on an element with id=foo
+ *
+ **/
+(function(){
 
+  var eventMatchers = {
+    'HTMLEvents': /^(?:load|unload|abort|error|select|change|submit|reset|focus|blur|resize|scroll)$/,
+    'MouseEvents': /^(?:click|mouse(?:down|up|over|move|out))$/
+  }
+  var defaultOptions = {
+    pointerX: 0,
+    pointerY: 0,
+    button: 0,
+    ctrlKey: false,
+    altKey: false,
+    shiftKey: false,
+    metaKey: false,
+    bubbles: true,
+    cancelable: true
+  }
+
+  Event.simulate = function(element, eventName) {
+    var options = Object.extend(defaultOptions, arguments[2] || { });
+    var oEvent, eventType = null;
+
+    element = $(element);
+
+    for (var name in eventMatchers) {
+      if (eventMatchers[name].test(eventName)) { eventType = name; break; }
+    }
+
+    if (!eventType)
+      throw new SyntaxError('Only HTMLEvents and MouseEvents interfaces are supported');
+
+    if (document.createEvent) {
+      oEvent = document.createEvent(eventType);
+      if (eventType == 'HTMLEvents') {
+        oEvent.initEvent(eventName, options.bubbles, options.cancelable);
+      }
+      else {
+        oEvent.initMouseEvent(eventName, options.bubbles, options.cancelable, document.defaultView,
+          options.button, options.pointerX, options.pointerY, options.pointerX, options.pointerY,
+          options.ctrlKey, options.altKey, options.shiftKey, options.metaKey, options.button, element);
+      }
+      element.dispatchEvent(oEvent);
+    }
+    else {
+      options.clientX = options.pointerX;
+      options.clientY = options.pointerY;
+      oEvent = Object.extend(document.createEventObject(), options);
+      element.fireEvent('on' + eventName, oEvent);
+    }
+    return element;
+  }
+
+  Element.addMethods({ simulate: Event.simulate });
+})()
