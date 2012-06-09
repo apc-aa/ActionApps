@@ -79,7 +79,9 @@ function AA_Ajax(div_id, url, param, onload) {
 }
 
 function AA_AjaxCss(selector, url, param, onload) {
+    $(selector).hide('fast');
     $(selector).html(AA_Config.loader);
+    $(selector).show('fast');
     $(selector).load(url, param, onload);
 }
 
@@ -99,6 +101,23 @@ function AA_HtmlAjaxToggleCss(link_id, link_text_1, link_text_2, selector_hide, 
             AA_AjaxCss(selector_update ? selector_update : selector_hide, url);
         }
         $(link).html(link_text_2);
+    }
+}
+
+function AA_HtmlAjaxToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2, url) {
+    if ( $(jqid(div_id_1)).is(':visible') ) {
+        $(jqid(div_id_1)).hide('fast');
+        $(jqid(div_id_2)).show('fast');
+        // not loaded from remote url, yet?
+        if ( $(jqid(div_id_2)).attr('data-aa-loaded') != '1') {
+            $(jqid(div_id_2)).attr('data-aa-loaded', '1');
+            AA_Ajax(div_id_2, url);
+        }
+        $(jqid(link_id)).html(link_text_2);
+    } else {
+        $(jqid(div_id_2)).hide('fast');
+        $(jqid(div_id_1)).show('fast');
+        $(jqid(link_id)).html(link_text_1);
     }
 }
 
@@ -128,18 +147,39 @@ function AA_Response(method, resp_params, ok_func, err_func) {
     });
 }
 
-/** This function replaces the older one - proposeChange
- *  The main chane is, that now we use standard AA input names:
- *   aa[i<item_id>][<field_id>][]
- */
-function AA_StateChange(id, state) {
-    switch (state) {
-    case 'dirty':
-//        $$('*[id ^="'+id+'"]').invoke('addClassName', 'updating');
-//        $$('img.'+id+'ico').each(function(img) {img.setAttribute('src',AA_Config.AA_INSTAL_PATH+'images/save.png'); });
-    }
+function AA_Refresh(id,inside,ok_func) {
+    AA_Ajax(id, $(jqid(id)).attr('data-aa-url'));
 }
 
+/** Send the form by AJAX and on success displays the ok_html text
+ *  @param id        - form id
+ *  @param loader_id - id of the html element, where you want to display the loader gif
+ *                   - the button itself could be used here (not the form!)
+ *  @param ok_html   - what text (html) should be displayed after the success
+ *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
+ */
+function AA_SendForm(id, refresh, ok_func) {
+    var form_id = jqid(id);
+    // browser supports HTML5 validation
+    if (typeof $(form_id)[0].checkValidity == 'function') {
+        if (!$(form_id)[0].checkValidity()) {
+            // $(form_id)[0].submit();
+            // AA_StateChange(base_id, 'invalid');
+            return;
+        }
+    }
+
+    var url = $(form_id).attr('action');
+    $(form_id).append(AA_Config.loader);
+
+    var code   = $(form_id + ' *').serialize();
+
+    $.post( url, code).always( function() {
+        if (typeof refresh != "undefined") {
+            AA_Refresh(refresh,false,ok_func);
+       }
+    })
+}
 
 /** Sends the form and replaces the form with the response
  *  Polls ussage - @see: http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
@@ -229,32 +269,91 @@ function AA_SendWidgetAjax(id) {
     code += '&inline=1&ret_code_enc='+alias_name;
 
     $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', code, function(data) {
-        var res;
-        // just one iteration, but without the loop we are not able to get the item_id
-        for (var item_id in data) {
-            res = data[item_id];
-            $(valdiv).html(res.length>0 ? res : '--');
-            break;
-        }
-        $(valdiv).attr("data-aa-edited", "0");
+        AA_ReloadAjaxResponse(id, data);
     });
 }
+
+
+/** Closes the ajax for after file upload
+ *  The main chane is, that now we use standard AA input names:
+ *   aa[i<item_id>][<field_id>][]
+ */
+function AA_ReloadAjaxResponse(id, responseText) {
+    var valdiv = jqid('ajaxv_'+id);
+    var items  = jQuery.parseJSON(responseText);
+    var res;
+    for (var i in items) {
+        res = items[i];
+        $(valdiv).html(res.length>0 ? res : '--');
+        break;
+    }
+    $(valdiv).attr("data-aa-edited", "0");
+    var succes_function = $(valdiv).attr('data-aa-onsuccess');
+    if (succes_function) {
+        eval(succes_function);
+    }
+}
+
 
 /** This function replaces the older one - proposeChange
  *  The main chane is, that now we use standard AA input names:
  *   aa[i<item_id>][<field_id>][]
  */
-function AA_SendWidgetLive(id) {
-    $('*[id ^="'+id+'"]').addClass('updating');
-    var valdivid   = jqid('widget-' + id);
+function AA_SendWidgetLive(base_id, liveinput, fnc) {
+    AA_StateChange(base_id, 'updating');
+    var valdivid   = jqid('widget-' + base_id);
+
+    // browser supports HTML5 validation
+    if (typeof liveinput.checkValidity == 'function') {
+        if (!liveinput.checkValidity()) {
+            AA_StateChange(base_id, 'invalid');
+            return;
+        }
+    }
+
     var code = $(valdivid + ' *').serialize();
 
     code += '&inline=1';  // do not send us whole page as result
 
     $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', code, function(data) {
-        $('*[id ^="'+id+'"]').removeClass('updating');
+        AA_StateChange(base_id, 'normal');
+        if (typeof fnc == 'function') {
+            fnc();
+        }
     });
 }
+
+/** indicator of changed / updating data */
+function AA_StateChange(id, state) {
+    var outstyle = {};
+    var icoimg   = '';
+
+    switch (state) {
+    case 'dirty':
+        outstyle = {'outline-color': '#E4B600', 'outline-width': '1px', 'outline-style': 'solid'};
+        icoimg   = 'images/save.png';
+        break;
+    case 'updating':
+        outstyle = {'outline-color': '#E4B600', 'outline-width': '1px', 'outline-style': 'dashed'};
+        icoimg   = 'images/loader.gif';
+        break;
+    case 'invalid':
+        outstyle = {'outline': 'none'};
+        icoimg   = 'images/warn.png';
+        break;
+    case 'normal':
+    default:
+        outstyle = {'outline': 'none'};
+        icoimg   = 'images/px.gif';
+        break;
+    }
+    $('*[id ^="'+id+'"]').removeClass('updating normal dirty invalid').addClass(state);
+    $('select[id ^="'+id+'"]').css(outstyle);
+    $('input[id ^="'+id+'"]').css(outstyle);
+    $('textarea[id ^="'+id+'"]').css(outstyle);
+    $('img.'+id+'ico').attr('src', AA_Config.AA_INSTAL_PATH+icoimg);
+}
+
 
 /* Cookies */
 
