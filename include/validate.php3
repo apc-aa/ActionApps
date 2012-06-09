@@ -75,29 +75,32 @@ class AA_Validate {
         $sv_key = get_hash($type, $parameter);
         if ( !isset($standard_validators[$sv_key]) ) {
             switch ($type) {
-                case 'bool':     $standard_validators[$sv_key] = new AA_Validate_Int(0,1);         break;
+                case 'bool':     $standard_validators[$sv_key] = new AA_Validate_Bool();         break;
                 case 'num':
                 case 'number':
                 case 'int':
-                case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Int();            break;
+                case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Number();            break;
                 case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float();          break;
                 case 'e-mail':
-                case 'email':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,6}$/');          break;
-                case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[a-zA-Z]+$/');          break;
+                case 'email':    $standard_validators[$sv_key] = new AA_Validate_Email();          break;
+                case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^[a-zA-Z]+$/'));          break;
                 case 'id':
-                case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[0-9a-f]{30,32}$/',null,null,'/^0|\s*$/');    break;  // empty = "" or "0"
-                case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Int(0);           break;
-                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp('/^_#[0-9_#a-zA-Z]{8}$/',null,null,'/^0|\s*$/'); break;  // empty = "" or "0"
-                case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp('/^[-.0-9a-zA-Z_]+$/', VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z, 0-9 . _ and - characters")); break;
+                case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Id();    break;  // empty = "" or "0"
+                case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Number(array('min'=>0));           break;
+                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^_#[0-9_#a-zA-Z]{8}$/')); break;
+                case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^[-.0-9a-zA-Z_]+$/')); break;
                 case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login();          break;
-                case 'password': $standard_validators[$sv_key] = new AA_Validate_Password();       break;
+                case 'password': $standard_validators[$sv_key] = new AA_Validate_Pwd();       break;
                 case 'unique':   $standard_validators[$sv_key] = new AA_Validate_Unique();         break;
-                case 'e_unique': $standard_validators[$sv_key] = new AA_Validate_E_Unique();       break;
-                case 'url':      $standard_validators[$sv_key] = new AA_Validate_Regexp('|^http(s?)\://\S+\.\S+|', VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters in URL - you should start with http:// or https:// and do not use space characters"),'~(^http(s?)\://$)|(^\s*$)~'); break;
+                case 'e_unique':
+                case 'e-unique':
+                case 'eunique':  $standard_validators[$sv_key] = new AA_Validate_Eunique();       break;
+                case 'url':      $standard_validators[$sv_key] = new AA_Validate_Url(); break;
+                case 'date':     $standard_validators[$sv_key] = new AA_Validate_Date(); break;
                 case 'text':
                 case 'string':
                 case 'field':
-                case 'all':      $standard_validators[$sv_key] = new AA_Validate_All();            break;
+                case 'all':      $standard_validators[$sv_key] = new AA_Validate_Text();            break;
                 case 'enum':     $standard_validators[$sv_key] = new AA_Validate_Enum($parameter); break;
                 default:         // Bad validator type: $type;
                                  return null;
@@ -164,26 +167,95 @@ class AA_Validate {
         return false;
     }
 
+
+        /** parseClassProperties function
+     *  Parses class parameters from the string, which is stored in the database
+     *  Typical use is for fields.input_show_func, where parameters are stored
+     *  as string in the form: fnc:const:param
+     *  @param $class_mask
+     *  @param $param
+     *  @return asociative array of parameters, the name of parameters is given
+     *  by the class itself ($class_mask . fnc).
+     */
+    function parseClassProperties($class_mask, $string) {
+        // we do not use ParamExplode() - I  do not like the http:// replacement there
+        $splited = explode('##Sx', str_replace(array('#:', ':', '~@|_'), array('~@|_', '##Sx', ':'), $string));
+
+        // first parameter is the class identifier - the parameters starts then
+        $i      = 1;
+        $class  = AA_Object::constructClassName($class_mask, str_replace('-','',$splited[0]));
+        $params = array('class' => $class);
+
+        if ( class_exists($class) ) {
+            // ask class, which parameters uses
+            // call AA_Widget_Txt::getClassProperties()), for example
+            foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $name => $property) {
+                if (isset($splited[$i])) {
+                    $params[$name] = $splited[$i++];
+                }
+            }
+        }
+        return $params;
+    }
+
+
+    /** ask class, which parameters uses and fill it
+     *  copied from AA_Object
+     */
+    function __construct($params=array()) {
+        $class = get_class($this);
+        foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $name =>$property) {
+            if (isset($params[$name])) {
+                $this->$name = $params[$name];
+            }
+        }
+    }
+
+    function getClassProperties()  {
+        return array ();
+    }
+
+    function &factoryByString($class_mask, $string) {
+        $params = self::parseClassProperties($class_mask, $string);
+        $classname = $params['class'];
+        return class_exists($classname) ? new $classname($params) : null;
+    }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some more attributtes (like min, max, step, pattern, ...) */
+    function getHtmlInputAttr() {
+        return '';
+    }
 }
 
 /** Test for integer value
  *  @param   $min
  *  @param   $max
+ *  @param   $step
  */
-class AA_Validate_Int extends AA_Validate {
+class AA_Validate_Number extends AA_Validate {
     /** Minum number */
     var $min;
 
     /** Maximum number */
     var $max;
-    /** AA_Validate_Int function
-     * @param $min
-     * @param $max
+
+    /** Step */
+    var $step;
+
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_validate table)
+     *  copied from $VALIDATE_TYPES
      */
-    function AA_Validate_Int($min=null, $max=null) {
-        $this->min = $min;
-        $this->max = $max;
+    function getClassProperties()  {
+        return array (
+                 // we use array instead of "new AA_Property", because then it makes infinite loop - AA_Property contains validator...
+                 //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'min'  => array( 'min',  _m("Alloved minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
+            'max'  => array( 'max',  _m("Alloved maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
+            'step' => array( 'step', _m("Step"),                  'int', false, true, 'int', false, _m(""), '', 1),
+            );
     }
+
     /** validate function
      * @param $var
      * @param $default
@@ -201,6 +273,83 @@ class AA_Validate_Int extends AA_Validate {
         }
         return true;
     }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        return 'type=number pattern="[0-9]*"'
+               . (is_numeric($this->min) ? ' min='.$this->min : '')
+               . (is_numeric($this->max) ? ' max='.$this->max : '')
+               . (is_numeric($this->step) AND ($this->step > 1) ? ' step='.$this->step : '');
+    }
+}
+
+
+/** Test for bool value
+ */
+class AA_Validate_Bool extends AA_Validate_Number {
+    function __construct($param=array()) {
+        parent::__construct($param);
+        $this->min = 0;
+        $this->max = 1;
+    }
+}
+
+/** Test for bool value
+ */
+class AA_Validate_Date extends AA_Validate_Number {
+}
+
+/** Test for bool value
+ */
+class AA_Validate_Url extends AA_Validate_Regexp {
+    function __construct($param=array()) {
+        parent::__construct($param);
+        $this->pattern          = '|^http(s?)\://\S+\.\S+|';
+        $this->empty_expression = '~(^http(s?)\://$)|(^\s*$)~';
+    }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        return 'type=url';
+    }
+}
+
+/** Test for bool value
+ */
+class AA_Validate_Email extends AA_Validate_Regexp {
+    function __construct($param=array()) {
+        parent::__construct($param);
+        $this->pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,6}$/';
+    }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        return 'type=email';
+    }
+}
+
+
+/** Test for bool value
+ */
+class AA_Validate_Id extends AA_Validate_Regexp {
+    function __construct($param=array()) {
+        parent::__construct($param);
+        $this->pattern          = '/^[0-9a-f]{30,32}$/';
+        $this->empty_expression = '/^0|\s*$/';
+    }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        return 'type=text pattern="[0-9a-f]{32}"';
+    }
 }
 
 /** Test for float value
@@ -209,18 +358,18 @@ class AA_Validate_Int extends AA_Validate {
  */
 class AA_Validate_Float extends AA_Validate {
     /** Minum number */
-    var $min;
+    var $f_min;
 
     /** Maximum number */
-    var $max;
-    /** AA_Validate_Float
-     * @param $min
-     * @param $max
-     */
-    function AA_Validate_Float($min=null, $max=null) {
-        $this->min = $min;
-        $this->max = $max;
+    var $f_max;
+
+    function getClassProperties()  {
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'f_min'  => array( 'f_min',  _m("Alloved minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
+            'f_max'  => array( 'f_max',  _m("Alloved maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
+            );
     }
+
     /** validate function
      * @param $var
      * @param $default
@@ -247,22 +396,14 @@ class AA_Validate_Float extends AA_Validate {
  */
 class AA_Validate_Regexp extends AA_Validate {
     /** Regular Expression */
-    var $regular_expression;
+    var $pattern;
+    var $empty_expression = '/^\s*$/';
 
-    /** Defines possible return error id and messages, if the variable do not matches */
-    var $default_error_id;
-    var $default_error_msg;
-    var $empty_expression;
-    /** AA_Validate_Regexp function
-     * @param $regular_expression
-     * @param $err_id
-     * @param $err_msg
-     */
-    function AA_Validate_Regexp( $regular_expression, $err_id=null, $err_msg=null, $empty_expression='/^\s*$/' ) {
-        $this->regular_expression = $regular_expression;
-        $this->default_error_id  = is_null($err_id)  ? VALIDATE_ERROR_NOT_MATCH : $err_id;
-        $this->default_error_msg = is_null($err_msg) ? _m('Wrong value')        : $err_msg;
-        $this->empty_expression  = $empty_expression;
+    function getClassProperties()  {
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'pattern'          => array( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
+            'empty_expression' => array( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^0|\s*$/')
+            );
     }
 
     /** validate function
@@ -270,32 +411,31 @@ class AA_Validate_Regexp extends AA_Validate {
      * @param $default
      */
     function validate(&$var, $default='AA_noDefault') {
-        return preg_match($this->regular_expression, $var) ? true : AA_Validate::bad($var, $this->default_error_id, $this->default_error_msg, $default);
+        return preg_match($this->pattern, $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'), $default);
     }
 
     function varempty($var) {
         return preg_match($this->empty_expression, $var);
     }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        return (strlen($this->pattern) > 2) ? 'type=text pattern="'.substr($this->pattern, 1, -1).'"' : '';  // we need to convert /^[a-z]*$/ to ^[a-z]*$
+    }
 }
 
-/** Test for Regular Expression
- *  @param   $regular_expression
- *  @param   $default_error_id
- *  @param   $default_error_msg
- */
 class AA_Validate_Enum extends AA_Validate {
     /** Enumeration array (array of possible values). Values are stored as keys. */
     var $possible_values;
 
-    /** Defines possible return error id and messages, if the variable do not matches */
-    var $default_error_id;
-    var $default_error_msg;
-    /** AA_Validate_Regexp function
-     * @param $possible_values
-     */
-    function AA_Validate_Enum( $possible_values ) {
-        $this->possible_values = $possible_values;
+    function getClassProperties()  {
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'possible_values' => array( 'possible_values', _m("Possible values"), 'string', true, true, 'string', false)
+            );
     }
+
     /** validate function
      * @param $var
      * @param $default
@@ -307,10 +447,7 @@ class AA_Validate_Enum extends AA_Validate {
 
 /** Test for login name value */
 class AA_Validate_Login extends AA_Validate {
-    /** AA_Validate_Login function
-     *
-     */
-    function AA_Validate_Login() {}
+
     /** validate function
      * @param $var
      * @param $default
@@ -325,14 +462,18 @@ class AA_Validate_Login extends AA_Validate {
         }
         return preg_match('/^[a-zA-Z0-9]*$/', $var) ? true : AA_Validate::bad($var, VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z and 0-9 characters"), $default);
     }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        return 'type=text pattern="[a-zA-Z0-9]{3,32}"';
+    }
 }
 
 /** Test for password */
-class AA_Validate_Password extends AA_Validate {
-    /** AA_Validate_Password function
-     *
-     */
-    function AA_Validate_Password() {}
+class AA_Validate_Pwd extends AA_Validate {
+
     /** validate function
      * @param $var
      * @param $default
@@ -359,20 +500,21 @@ class AA_Validate_Unique extends AA_Validate {
     var $field_id;
 
     /** Scope, where to search - username | slice | allslices */
-    var $scope;
+    var $scope = 'slice';
 
     /** Item, which we do not count (current item) */
     var $item_id;
 
-    /** AA_Validate_Unique function
-     * @param $scope
-     * @param $field_id
-     * @param $item_id     - current item ID
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_validate table)
+     *  copied from $VALIDATE_TYPES
      */
-    function AA_Validate_Unique($scope, $field_id, $item_id) {
-        $this->scope    = $scope ? $scope : 'slice';
-        $this->field_id = $field_id;
-        $this->item_id  = $item_id;
+    function getClassProperties()  {
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'field_id' => array( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
+            'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),
+            'item_id'  => array( 'item_id' , _m("Item id whichh we do not count"), 'string', false, true, 'string', false),
+            );
     }
 
     /** validate function
@@ -417,26 +559,28 @@ class AA_Validate_Unique extends AA_Validate {
  *  @param   $scope       - username | slice | allslices
  *  @param   $item_id     - current item ID
  */
-class AA_Validate_E_Unique extends AA_Validate {
+class AA_Validate_Eunique extends AA_Validate {
     /** Search in which field */
     var $field_id;
 
     /** Scope, where to search - username | slice | allslices */
-    var $scope;
+    var $scope = 'slice';
 
     /** Item, which we do not count (current item) */
     var $item_id;
 
-    /** AA_Validate_E_Unique function
-     * @param $scope
-     * @param $field_id
-     * @param $item_id
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_validate table)
+     *  copied from $VALIDATE_TYPES
      */
-    function AA_Validate_E_Unique($scope, $field_id, $item_id) {
-        $this->scope    = $scope ? $scope : 'slice';
-        $this->field_id = $field_id;
-        $this->item_id  = $item_id;
+    function getClassProperties()  {
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'field_id' => array( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
+            'scope'    => array( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),
+            'item_id'  => array( 'item_id' , _m("Item id whichh we do not count"), 'string', false, true, 'string', false),
+            );
     }
+
     /** validate function
      * @param $var
      * @param $default
@@ -453,11 +597,8 @@ class AA_Validate_E_Unique extends AA_Validate {
 /** Test for text (any characters allowed)
  *  @todo Realy validate URL
  */
-class AA_Validate_All extends AA_Validate {
-    /** AA_Validate_All function
-     *
-     */
-    function AA_Validate_All() {}
+class AA_Validate_Text extends AA_Validate {
+
     /** validate function
      * @param $var
      * @param $default
@@ -499,7 +640,7 @@ function _ValidateSingleInput($variableName, $inputName, $variable, &$err, $need
                          if ( $type == 'unique' ) {
                              $validator = new AA_Validate_Unique( $UNIQUE_SCOPES[(int)$scope], $field_id, $item_id);
                          } else {
-                             $validator = new AA_Validate_E_Unique( $UNIQUE_SCOPES[(int)$scope], $field_id, $item_id);
+                             $validator = new AA_Validate_Eunique( $UNIQUE_SCOPES[(int)$scope], $field_id, $item_id);
                          }
                          break;
         default:         $validator = AA_Validate::factory($type);
