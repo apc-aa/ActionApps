@@ -2331,11 +2331,11 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
      */
     function expand() {
         $arg_list = func_get_args();   // must be asssigned to the variable
-        $etalon   = array_shift($arg_list);
+        $etalon   = trim(array_shift($arg_list));
         $ret      = false;
         $i        = 0;
         while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-            if ($etalon == $arg_list[$i]) {
+            if ($etalon == trim($arg_list[$i])) {
                 $ret = $arg_list[$i+1];
                 break;
             }
@@ -2536,8 +2536,15 @@ class AA_Stringexpand_Fieldid extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Get field property (currently only 'name' is supported */
+/** Get field property (currently only 'name' and 'help' is supported
+ *  {field:<field_id>:<property>:<slice_id>}
+ *  {field:headline........:name:ebfbc0082a26365ef6cefd7c4a4ec253}
+ *    - displayes the Name of the headline field in specified slice as defined by administrator of the slice ion the Fieds Admin page
+ *  Allowed properties are name, help and alias1
+ */
 class AA_Stringexpand_Field extends AA_Stringexpand {
+
+    private static $ALLOWED_PROPERTIES = Array ('name'=>'name','help'=>'input_help', 'alias1'=>'alias1' );
 
     function additionalCacheParam() {
         /** output is different for different items - place item id into cache search */
@@ -2558,8 +2565,8 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
         // we do not want to allow users to get all field setting
         // that's why we restict it to the properties, which makes sense
         // @todo - make it less restrictive
-        $property = 'name';
-        return (string) $field->getProperty($property);
+        $property = self::$ALLOWED_PROPERTIES[$property];
+        return (string) $field->getProperty($property ? $property : 'name');
     }
 
     function _getField($slice_id, $field_id) {
@@ -3365,7 +3372,7 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
      * @param $item_id
      * @param $field_id
      */
-    function expand($item_id, $field_id) {
+    function expand($item_id, $field_id, $required=null, $function=null) {
         $ret = '';
 
         if (!$field_id) {
@@ -3383,7 +3390,8 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
             //$charset = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
             mgettext_bind($lang, 'output');
 
-            $ret   = $slice->getWidgetLiveHtml($field_id, $iid);
+            $field = $slice->getField($field_id);
+            $ret   = $field ? $field->getWidgetLiveHtml($iid, ($required==1) ? true : null, $function) : '';
         }
         return $ret;
     }
@@ -4374,7 +4382,7 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
             return '';
         }
 
-        $to = json2arr($to); // can't be inside empty()  - Honza, php 5.2
+        $to = json2arr(trim($to)); // can't be inside empty()  - Honza, php 5.2
         if (empty($to)) {
             return '';
         }
