@@ -70,6 +70,9 @@ if ( get_magic_quotes_gpc() ) {
     $_REQUEST = StripslashesDeep($_REQUEST);
 }
 
+/** We expect all the variables in GLOBALS to be qouted (form historical reasons).
+ *  All variables in $_REQUEST, $_GET... are allways unquoted
+ *  @todo - rewrite all the pages to use only $_REQUEST array */
 if (!ini_get('register_globals') OR !get_magic_quotes_gpc()) {
     foreach ($_REQUEST as $k => $v) {
         $$k = AddslashesDeep($v);

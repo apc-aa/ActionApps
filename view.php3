@@ -44,7 +44,7 @@ http://www.apc.org/
 //optionaly als[]    // user alias - see slice.php3 for more details
 // for more info see AA FAQ: http://apc-aa.sourceforge.net/faq/index.shtml#219
 
-ini_set('display_errors', 1);
+//ini_set('display_errors', 1);
 
 /**
  * Handle with PHP magic quotes - quote the variables if quoting is set off

@@ -1,11 +1,44 @@
-04/19/12 - AA admin interface - constants edit page displays the count, how 
-(honzam)   many times each constant is used (exact matches counted only) 
-         - improved UX of {live} inputs - input now indicates the "unsaved 
+06/09/12 - site module manager - you can use different operators for choices
+(honzam)   (not only older Regular expressions, but also substring search and "=")
+         - fixed {live} and {ajax} editing when used with jQuery - aajslib-jquery.php
+           for using jQuery based AA functions use:
+             <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+             <script src="/aa/javascript/aajslib-jquery.php"></script>
+           on your page
+         - improved {live} and {ajax} widget behavior
+            - better indication of state (changed, storing, stored icons),
+            - better validation (possibility to use min and max values
+              for numeric fields, possibility to use pattern for text fields)
+            - better input types - follows HTML5 so it naturaly validates inputs
+              in modern browsers nad also checks the required fields
+            - radio button intupt type is now displayed by {ajax} and {live}
+              expressions (so far it was mimicked by selectbox)
+         - new option for File Upload input type - "Display URL" - allows
+           to hide the url part of the input. The possibilities are:
+             0 - show, 1 - show if not empty, 2 - do not show
+         - new possibility to display not only field name, but also help text
+           and first alias by:
+             {field:<field_id>:<property>:<slice_id>}
+           where property now could be name, help or alias1
+         - new options <required> and <function> for
+             {live:<item_id>:<field_id>:<required>:<function>}
+             you can explicitly mark the live field as required and also you
+             can specify javascript function, which is executed after the widget
+             is sumbitted
+         - added utf-8 version of Spanish language files.
+           It is recomended to use utf-8 encoding in the site.
+         - new javascript function usable for ajax form submit:
+             AA_SendForm(id, refresh, ok_func)
+         - updated permissions check for anonymous post
+         - rewritten validation code to be more flexible and to allows HTML5 validation
+04/19/12 - AA admin interface - constants edit page displays the count, how
+(honzam)   many times each constant is used (exact matches counted only)
+         - improved UX of {live} inputs - input now indicates the "unsaved
            state" and "updating" strate (by outline and icons). Works also
-           outside of AA - styles are included universaly. 
+           outside of AA - styles are included universaly.
          - better style for {ajax} buttons
          - new javascript console debug mode
-         - fixed problem with {live} editing from admin interface 
+         - fixed problem with {live} editing from admin interface
            (AA_Scroller error)
 04/12/12 - new "Set Expiry date to maximum value" optimize function
 (honzam)   sets expiry_date to maximum value for items in slices, where

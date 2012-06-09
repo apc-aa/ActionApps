@@ -212,28 +212,6 @@ elseif ( AA_V::P('assignment') == 1 ) {
     echo $encoder->Convert($repre_value, $charset, 'utf-8');
 }
 */
-elseif ($_POST['aaaction']=='DISPLAYINPUT') {
-
-    $item        = AA_Item::getItem(new zids(AA_V::P('item_id')));
-    $iid         = $item->getItemID();
-    $slice       = AA_Slices::getSlice($item->getSliceId());
-
-    // Use right language (from slice settings) - languages are used for button texts, ...
-    $lang        = $slice->getLang();
-    $charset     = $GLOBALS["LANGUAGE_CHARSETS"][$lang];   // like 'windows-1250'
-    mgettext_bind($lang, 'output');
-
-    $widget_html = $slice->getWidgetAjaxHtml($_POST['field_id'], $iid);
-
-//    if ($iid == '9ef70aaad95b8abdd54f2f625c902346') {
-//        setcookie("TestCookie", 'teal test', time()+3600);
-//        $str = '{user},{user:id},{user:name},{user:password},{user:_#HEADLINE}';
-//        echo AA_Stringexpand::unalias($str);
-//    }
-
-    $encoder = new ConvertCharset;
-    echo $encoder->Convert($widget_html, $charset, 'utf-8');
-}
 elseif (AA_V::P('cancel_changes') AND AA_V::P('item_id') AND AA_V::P('field_id')) {
     $changes = new AA_ChangesMonitor();
     $changes->deleteProposalForSelector(AA_V::P('item_id'), AA_V::P('field_id'));

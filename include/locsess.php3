@@ -73,7 +73,7 @@ function __autoload ($class_name) {
             require AA_INC_PATH. 'grabber.class.php3';
             return;
         case 'validate':
-            require AA_INC_PATH. 'validate.php3';
+            require_once AA_INC_PATH. 'validate.php3';
             return;
     }
 
