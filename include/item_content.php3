@@ -689,12 +689,16 @@ class ItemContent extends AA_Content {
             $new_content->setAaValue($field_id, $property->complete4Insert($this->getAaValue($field_id), $profile));
         }
 
+        $new_content->setValue('status_code.....', max(1, $new_content->getStatusCode(), $slice->allowed_bin_4_user($auth)));
+
         if ( $new_content->getPublishDate() <= 0 ) {
             $new_content->setValue('publish_date....', now());
         }
         if ( $new_content->getExpiryDate() <= 0 ) {
             $new_content->setValue('expiry_date.....', now()+(60*60*24*365*10));
         }
+
+        $new_content->setSliceID($slice->unpacked_id());
 
         $this->content = $new_content->getContent();
     }

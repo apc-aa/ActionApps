@@ -58,6 +58,8 @@ http://www.apc.org/
  * @return mixed the quoted variables (with added slashes)
  */
 //$GLOBALS[debug]=0; $GLOBALS[errcheck] =1;
+//error_reporting(E_ALL ^ E_NOTICE);
+//ini_set('display_errors', 1);
 
 $debugfill=$_REQUEST['debugfill'];
 
@@ -375,9 +377,9 @@ if (! $insert && is_array($notshown)) {
 }
 
 // put the item into the right bin
-$bin2fill = $slice->getProperty("permit_anonymous_post");
-if ($debugfill) huhl("bin2fill=",$bin2fill, " force_status_code=",$force_status_code);
-if ( $bin2fill < 1 ) SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
+if (4 == ($bin2fill = $slice->allowed_bin_4_user())) {
+    SendErrorPage(array("fatal"=>_m("Anonymous posting not admitted.")));
+}
 // you may force to put the item into a higher bin (active < hold < trash)
 $bin2fill = max ($bin2fill, $force_status_code);
 // Allow setting status code in form, but only below force or bin2fill

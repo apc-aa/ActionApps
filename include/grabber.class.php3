@@ -71,7 +71,7 @@ class AA_Saver {
         global $debugfeed;
 
         $this->grabber->prepare();    // maybe some initialization in grabber
-        
+
         while ($content4id = $this->grabber->getItem()) {
 
             if ($debugfeed >= 8) {
@@ -104,9 +104,11 @@ class AA_Saver {
                 $content4id->setSliceID($this->slice_id);
             }
 
-            if (($this->store_mode == 'overwrite') OR (substr($this->store_mode,0,6) == 'insert')) {
+            if (($store_mode == 'overwrite') OR (substr($store_mode,0,6) == 'insert')) {
                  $content4id->complete4Insert();
             }
+            // @todo do validation for updates
+
 
             if ($debugfeed >= 3) {
                 print("\n<br>      ". $content4id->getValue('headline........'));
@@ -732,7 +734,7 @@ class AA_Grabber_Form {
             // add it to POSTed variables
             $aa    = array_merge_recursive($aa, $files);
         }
-        
+
         // just prepare ids, in order we can expand
         // You can use _#n1_623553373823736362372726 as value, which stands for
         // item id of the item
@@ -1195,7 +1197,7 @@ class AA_Grabber_Discussion extends AA_Grabber {
         // get all discussion comments ids
         $item_zids            = $this->set->query();
         $item_long_ids        = $item_zids->longids();
-        $this->_longids       = array(); 
+        $this->_longids       = array();
         foreach ($item_long_ids as $item_id) {
             $zids = QueryDiscussionZIDs($item_id);
             $this->_longids = array_merge($this->_longids, $zids->longids());
@@ -1356,7 +1358,7 @@ class AA_Grabber_Pohoda_Stocks extends AA_Grabber {
      *  Description is in in HTML
      */
     function description() { return _m('Imports stock from POHODA accounting system'); }
-    
+
     /** If AA_Saver::store_mode is 'by_grabber' then this method tells Saver,
      *  how to store the item.
      *  @see also getIdMode() method
@@ -1370,28 +1372,28 @@ class AA_Grabber_Pohoda_Stocks extends AA_Grabber {
      */
     function prepare() {
         $data = file_get_contents($this->file);
-        // remove namespaces (it is pain to work with it in simple XML interface) 
+        // remove namespaces (it is pain to work with it in simple XML interface)
         $data = str_replace(array('<rsp:', '</rsp:', '<lst:', '</lst:', '<stk:', '</stk:', '<typ:', '</typ:'), array('<rsp_', '</rsp_', '<lst_', '</lst_', '<stk_', '</stk_', '<typ_', '</typ_'), $data);
         $xml  = simplexml_load_string($data);
-        
+
         $items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
         foreach($items as $v) {
           $this->_items[] = $v->stk_stockHeader;
         }
-       
+
 //        $this->_items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
 //       huhl($this->_items);
     }
-    
+
     /** Method called by the AA_Saver to get next item from the data input */
     function getItem() {
         $VAT_RATES = array('none'=>0, 'low'=>10, 'high'=>20);
-        
+
         if (!($polozka = current($this->_items))) {
             return false;
         }
         next($this->_items);
-        
+
         $set  = new AA_Set('3c121c4f40ded336375a6206c85baf1e', new AA_Condition('number.........1', '=', '"'.$polozka->stk_PLU.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
         $zids = $set->query();
 
@@ -1401,12 +1403,12 @@ class AA_Grabber_Pohoda_Stocks extends AA_Grabber {
         $item->setValue('source.........3', (string)$polozka->stk_countReceivedOrders); // objednavky
         $item->setValue('source.........4', (string)$polozka->stk_reservation);         // rezervace
         $item->setValue('source.........5', (string)$polozka->stk_sellingPrice);        // cena bez DPH
-        
+
         $dan  = $VAT_RATES[(string)$polozka->stk_sellingRateVAT];
         $cena = round((string)$polozka->stk_sellingPrice * (($dan+100.0)/100.0),1);
         $cena = ((float)round($cena) == (float)$cena) ? round($cena) : $cena;
         $jedn = (string)$polozka->stk_unit;
-        
+
         $item->setValue('number..........', $dan);         // DPH
 
         if ($jedn == 'ks') {
@@ -1416,7 +1418,7 @@ class AA_Grabber_Pohoda_Stocks extends AA_Grabber {
             $item->setValue('price..........1', '');
             $item->setValue('price..........2', $cena);
         }
-        
+
         // new PLUs INSERT into database - current just update (price, stock)
         if ($zids->count()) {
             $this->_last_store_mode = 'update';
@@ -1453,13 +1455,13 @@ class AA_Grabber_Pohoda_Orders_Result extends AA_Grabber {
      *  Description is in in HTML
      */
     function description() { return _m('Process Order import results from POHODA accounting system'); }
-    
+
      /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
         $data = file_get_contents($this->file);
-        // remove namespaces (it is pain to work with it in simple XML interface) 
+        // remove namespaces (it is pain to work with it in simple XML interface)
         $data = str_replace(array('<rsp:', '</rsp:'), array('<rsp_', '</rsp_'), $data);
         $xml  = simplexml_load_string($data);
 
@@ -1468,26 +1470,26 @@ class AA_Grabber_Pohoda_Orders_Result extends AA_Grabber {
         foreach($xml as $v) {
           $this->_items[] = $v;
         }
-        
+
     }
-    
+
     /** Method called by the AA_Saver to get next item from the data input */
     function getItem() {
         if (!($polozka = current($this->_items))) {
             return false;
         }
         next($this->_items);
-        
+
         $response_att = $polozka->attributes();
-        
-        
+
+
         $zids     = new zids($response_att['id'], 's');
         $item_id  = AA_Stringexpand::unalias('{item:'.$response_att['id'].':_#ITEM_ID_}');
         $poznamka = AA_Stringexpand::unalias('{item:'.$response_att['id'].':source.........2}');
 
         $item = new ItemContent();
         $item->setItemId($item_id);
-        
+
         $item->setValue('source.........1', (string)$response_att['state']);    // stav importu
         // poznamku pripojujeme na zacatek
         $item->setValue('source.........2', date('ymd-His'). (string)$response_att['note']. "\n". $poznamka);     // import poznamka

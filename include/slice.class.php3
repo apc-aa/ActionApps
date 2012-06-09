@@ -211,24 +211,6 @@ class AA_Slice {
         return $field ? $field->getWidget() : null;
     }
 
-    /** getWidgetAjaxHtml function
-     * @param $field_id
-     * @param $item_id
-     */
-    function getWidgetAjaxHtml($field_id, $item_id) {
-        $field = $this->getField($field_id);
-        return $field ? $field->getWidgetAjaxHtml($item_id) : '';
-    }
-
-    /** getWidgetLiveHtml function
-     * @param $field_id
-     * @param $item_id
-     */
-    function getWidgetLiveHtml($field_id, $item_id) {
-        $field = $this->getField($field_id);
-        return $field ? $field->getWidgetLiveHtml($item_id) : '';
-    }
-
     /** getLang function
      *  Returns lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
@@ -380,6 +362,12 @@ class AA_Slice {
     function get_show_func_used($action, $id=0, $shown_fields=false, $slice_fields=false) {
         $this->_compute_field_stats($action, $id, $shown_fields, $slice_fields);
         return $this->show_func_used;
+    }
+
+    function allowed_bin_4_user($user='') {
+        // put the item into the right bin
+        $bin2fill = (int) $this->getProperty("permit_anonymous_post");
+        return ($bin2fill < 1) ? 4 : $bin2fill;
     }
 
     /** _compute_field_stats function
