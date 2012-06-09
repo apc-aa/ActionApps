@@ -271,6 +271,22 @@ function SendAjaxForm(id, refresh, ok_func) {
                    }});
 }
 
+/** Send the form by AJAX and on success displays the ok_html text
+ *  @param id        - form id
+ *  @param loader_id - id of the html element, where you want to display the loader gif
+ *                   - the button itself could be used here (not the form!)
+ *  @param ok_html   - what text (html) should be displayed after the success
+ *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
+ */
+function AA_SendForm(id, refresh, ok_func) {
+    $(id).insert(AA_Config.loader);
+    $(id).request({onComplete: function(transport){
+                       if (typeof refresh != "undefined") {
+                           AA_Refresh(refresh,false,ok_func);
+                       }
+                   }});
+}
+
 /** Sends the form and replaces the form with the response
  *  Polls ussage - @see: http://actionapps.org/en/Polls_Module#AJAX_Polls_Design
  */
