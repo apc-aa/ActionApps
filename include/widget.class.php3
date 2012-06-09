@@ -374,13 +374,14 @@ class AA_Widget extends AA_Components {
     * Prints html tag <input type="radio" or ceckboxes .. to 2-column table
     * - for use internal use of FrmInputMultiChBox and FrmInputRadio
     */
-    function getInMatrix($records, $ncols, $move_right) {
+    function getInMatrix($records, $ncols, $move_right, $class='') {
         if (is_array($records)) {
             if (! $ncols) {
                 return implode('', $records);
             }
             $nrows = ceil (count ($records) / $ncols);
-            $ret = '<table border="0" cellspacing="0">';
+            $class = $class ? "class=\"$class\"" : '';
+            $ret = "<table border=0 cellspacing=0 $class>";
             for ($irow = 0; $irow < $nrows; ++$irow) {
                 $ret .= '<tr>';
                 for ($icol = 0; $icol < $ncols; ++$icol) {
@@ -397,10 +398,11 @@ class AA_Widget extends AA_Components {
     function _getRawHtml($aa_property, $content, $type='normal') {
         $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
         $base_id     = AA_Form_Array::formName2Id($base_name);
-        $required    = $aa_property->isRequired();
-        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id')\" style=\"padding-right:15px;\"" : '';
+        $required    = $aa_property->isRequired() ? 'required' : '';
+        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
         $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
         $widget      = '';
+        //huhl("---", $aa_property->validator);
 
         // property uses constants or widget have the array assigned (preselect is special - the constants here are not crucial)
         if (($this->getProperty('const') OR $this->getProperty('const_arr')) AND (get_class($this) != 'AA_Widget_Pre')) {  // todo - make preselect with real preselecting (maybe using AJAX)
@@ -410,7 +412,7 @@ class AA_Widget extends AA_Components {
             $use_name     = $this->getProperty('use_name', false);
             $multiple     = $this->multiple() ? ' multiple' : '';
 
-            $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $widget_add>$widget_add2";
+            $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add>$widget_add2";
             $selected  = $content->getAaValue($aa_property->getId());
             $options   = $this->getOptions($selected, $content, $use_name, false, !$required);
             $widget   .= $this->getSelectOptions( $options );
@@ -421,18 +423,26 @@ class AA_Widget extends AA_Components {
             $max_characters = $this->getProperty('max_characters', 254);
             $value          = $content->getAaValue($aa_property->getId());
 
+            $input_type     = 'type=text';
+            if (is_object($aa_property->validator)) {
+                $input_type = $aa_property->validator->getHtmlInputAttr();
+            }
+            if (!$input_type) {
+                $input_type     = 'type=text';
+            }
+
             for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
                 $input_name   = $base_name ."[$i]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
                 $input_value  = htmlspecialchars($value->getValue($i));
-                $widget      .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>$widget_add2";
+                $widget      .= "$delim\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add>$widget_add2";
                 $delim        = '<br />';
             }
             // no input was printed, we need to print one
             if ( !$widget ) {
                 $input_name   = $base_name ."[0]";
                 $input_id     = AA_Form_Array::formName2Id($input_name);
-                $widget       = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>$widget_add2";
+                $widget       = "\n<input $input_type size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\" $required $widget_add>$widget_add2";
             }
         }
 
@@ -455,7 +465,7 @@ class AA_Widget extends AA_Components {
         $required    = $winfo['required'];
         $help        = $aa_property->getHelp();
 
-        $ret  = "<div class=\"aa-widget\"".($required ? 'aa-required':'')." id=\"widget-$base_id\">\n";
+        $ret  = "<div class=\"aa-widget\"".($required ? ' data-aa-required':'')." id=\"widget-$base_id\">\n";
         $ret .= "  <label for=\"". $winfo['last_input_name'] ."\">".$aa_property->getName()."</label>\n";
         $ret .= "  <div class=\"aa-input\">\n";
         $ret .=      $winfo['html']. ($help ? "\n    <div class=\"aa-help\">$help</div>\n" :'');
@@ -487,18 +497,16 @@ class AA_Widget extends AA_Components {
      *  @param  $aa_property - the variable
      *  @param  $content        - contain the value of propertyu to display
      */
-    function getLiveHtml($aa_property, $content) {
-        return $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live'));
+    function getLiveHtml($aa_property, $content, $function) {
+        // add JS OK Function
+        return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live')));
     }
 
     /* Decorates Live Widget. Prepared for overriding in subclasses */
     function _finalizeLiveHtml($winfo) {
         $base_id  = $winfo['base_id'];
-
-        $ret  = "<div class=\"aa-widget\"".($winfo['required'] ? 'aa-required':'')." id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $winfo['html']. "</div>";
-
+        $ret  = "<div class=\"aa-widget\"".($winfo['required'] ? ' data-aa-required':'')." id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $winfo['html']. "</div>";
         return $ret;
-        return $winfo['html'];
     }
 
     /** @return AA_Value for the data send by the widget
@@ -582,12 +590,14 @@ class AA_Widget_Txt extends AA_Widget {
     function _getRawHtml($aa_property, $content, $type='normal') {
         $base_name    = AA_Form_Array::getName4Form($aa_property->getId(), $content);
         $base_id      = AA_Form_Array::formName2Id($base_name);
-        $widget_add  = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        $widget_add  = ($type == 'live') ? "class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : 'style="width:100%"';
+        $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0;">' : '';
 
         $widget      = '';
 
         $delim       = '';
         $row_count   = $this->getProperty('row_count', 4);
+        $required    = $aa_property->isRequired() ? 'required' : '';
         $value       = $content->getAaValue($aa_property->getId());
 
         $count       = max($value->valuesCount(),1);
@@ -595,7 +605,7 @@ class AA_Widget_Txt extends AA_Widget {
             $input_name   = $base_name ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
-            $widget      .= "$delim\n<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$row_count\"$widget_add style=\"width:100%\">$input_value</textarea>";
+            $widget      .= "$delim\n<textarea id=\"$input_id\" name=\"$input_name\" rows=\"$row_count\" $required $widget_add>$input_value</textarea>$widget_add2";
             $delim        = '<br />';
         }
 
@@ -875,6 +885,43 @@ class AA_Widget_Rio extends AA_Widget {
             'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
             );
     }
+
+    /** Returns one checkbox tag - Used in inputMultiChBox */
+    function getRadioButtonTag($option, $input_name, $input_id, $add='') {
+        $ret  = "\n<input type=radio name=\"$input_name\" id=\"$input_id\" value='". htmlspecialchars($option['k']) ."' $add";
+        if ( $option['selected'] ) {
+            $ret .= " checked";
+        }
+        $ret .= ">".htmlspecialchars($option['v']);
+        return $ret;
+    }
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_id       = AA_Form_Array::formName2Id($base_name);
+
+        $required    = $aa_property->isRequired() ? 'required' : '';
+        $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
+        $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+        $widget      = '';
+
+        $use_name     = $this->getProperty('use_name', false);
+
+        $input_name   = $base_name ."[]";
+        $input_id     = AA_Form_Array::formName2Id($input_name);
+        $selected     = $content->getAaValue($aa_property->getId());
+        $options      = $this->getOptions($selected, $content, $use_name);
+        $htmlopt      = array();
+        for ( $i=0, $ino=count($options); $i<$ino; ++$i) {
+            $htmlopt[]  = $this->getRadioButtonTag($options[$i], $input_name, $input_id, "$widget_add $required");
+        }
+
+        $widget = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-rio').$widget_add2;
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
 }
 
 /** Date widget */
@@ -921,7 +968,7 @@ class AA_Widget_Dte extends AA_Widget {
         $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
         $base_id       = AA_Form_Array::formName2Id($base_name);
         $base_name_add = $base_name . '[dte]';
-        $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
 
         $widget        = '';
 
@@ -1025,7 +1072,7 @@ class AA_Widget_Chb extends AA_Widget {
         // the checbox do not send nothing if unslected (so we add [chb][def]
         // hidden field which is send all the time)
         $base_name_add = $base_name . '[chb]';
-        $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
         $widget        = '';
         $delim         = '';
         $value         = $content->getAaValue($aa_property->getId());
@@ -1145,11 +1192,11 @@ class AA_Widget_Mch extends AA_Widget {
 
     /** Returns one checkbox tag - Used in inputMultiChBox */
     function getOneChBoxTag($option, $input_name, $input_id, $add='') {
-        $ret      = "\n<nobr><input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"". htmlspecialchars($option['k']) ."\" $add";
+        $ret      = "\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"". htmlspecialchars($option['k']) ."\" $add";
         if ( $option['selected'] ) {
             $ret .= " checked";
         }
-        $ret .= ">".htmlspecialchars($option['v'])."</nobr>";
+        $ret .= ">".htmlspecialchars($option['v']);
         return $ret;
     }
 
@@ -1160,7 +1207,7 @@ class AA_Widget_Mch extends AA_Widget {
         $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
         $base_id       = AA_Form_Array::formName2Id($base_name);
         $base_name_add = $base_name . '[mch]';
-        $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        $widget_add    = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
         $ret           = '';
 
         $use_name     = $this->getProperty('use_name', false);
@@ -1174,7 +1221,7 @@ class AA_Widget_Mch extends AA_Widget {
             $htmlopt[]  = $this->getOneChBoxTag($options[$i], $input_name, $input_id, $widget_add);
         }
 
-        $widget = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false));
+        $widget = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-mch');
 
         // default value - in order something is send when no chbox is checked
         $input_name   = $base_name_add ."[def]";
@@ -1329,7 +1376,8 @@ class AA_Widget_Fil extends AA_Widget {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'allowed_ftypes'         => new AA_Property( 'allowed_ftypes',         _m("Allowed file types"),   'string', false, true, 'string', false, '', '', "image/*"),
             'label'                  => new AA_Property( 'label',                  _m("Label"),                'string', false, true, 'string', false, _m("To be printed before the file upload field"), '', _m("File: ")),
-            'hint'                   => new AA_Property( 'hint',                   _m("Hint"),                 'string', false, true, 'string', false, _m("appears beneath the file upload field"), '', _m("You can select a file ..."))
+            'hint'                   => new AA_Property( 'hint',                   _m("Hint"),                 'string', false, true, 'string', false, _m("appears beneath the file upload field"), '', _m("You can select a file ...")),
+            'display_url'            => new AA_Property( 'display_url',            _m("Display URL"),          'int',    false, true, 'int',    false, _m("0 - show, 1 - show if not empty, 2 - do not show"), '', 0)
             );
     }
 
@@ -1382,23 +1430,28 @@ class AA_Widget_Fil extends AA_Widget {
     function _getRawHtml($aa_property, $content, $type='normal') {
         $base_name      = AA_Form_Array::getName4Form($aa_property->getId(), $content);
         $base_id        = AA_Form_Array::formName2Id($base_name);
-        $widget_add     = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
+        $widget_add     = ($type == 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
 
         $widget         = '';
         $delim          = '';
         $width          = $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
         $max_characters = $this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
+        $display_url    = (int)$this->getProperty('display_url', 0);
         $value          = $content->getAaValue($aa_property->getId());
 
         for ( $i=0, $ino=$value->valuesCount(); $i<$ino; ++$i) {
             $input_name   = $base_name ."[fil][url][$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
-            $widget      .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>";
+            if ($display_url < 2) {
+                $widget      .= "$delim\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add>";
+            } else {
+                $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">$input_value";
+            }
             $delim        = '<br />';
         }
         // no input was printed, we need to print one
-        if ( !$widget ) {
+        if ( !$widget AND ($display_url == 0)) {
             $input_name   = $base_name ."[fil][url][0]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $widget       = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";
@@ -1420,6 +1473,26 @@ class AA_Widget_Fil extends AA_Widget {
             </script>
         ';
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
+
+    /** @return widget HTML for using as Live component (in place editing)
+     *  @param  $aa_property - the variable
+     *  @param  $content        - contain the value of propertyu to display
+     */
+    function getLiveHtml($aa_property, $content, $function) {
+        // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload
+        return AA_Stringexpand::unalias('{ajax:'.$content->getId().':'.$aa_property->getId().':<small>{item:'.$content->getId().':'.$aa_property->getId().'}</small><br><input type=button value='. _m('Subir') .'>}');
+        // add JS OK Function
+        //return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content)));
+    }
+
+    function _finalizeAjaxHtml($winfo) {
+        // not standard - we do not show save button (the upload input works the same way here)
+        $base_name    = $winfo['base_name'];
+        $base_id      = AA_Form_Array::formName2Id($base_name);
+        $widget_html = $winfo['html'];
+        $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
+        return $widget_html;
     }
 }
 
@@ -1534,9 +1607,52 @@ class AA_Widget_Hco extends AA_Widget {
             'horizontal'             => new AA_Property( 'horizontal',             _m("Horizontal"),           'bool', false, true, 'bool', false, _m("Show levels horizontally"), '', '1'),
             'first_selectable_level' => new AA_Property( 'first_selectable_level', _m("First selectable"),     'int',  false, true, 'int',  false, _m("First level which will have a Select button"), '', '0'),
             'level_names'            => new AA_Property( 'level_names',            _m("Level names"),          'string', false, true, 'string', false, _m("Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..."), '', _m("Top level~Second level~Keyword")),
+    //      'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
+    //      'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+    //      'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
+    //      'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
+    //      'relation_field'         => new AA_Property( 'relation_field',         _m("Relation field"),       'string', false, true, 'string', false, _m("(for slices only) Field id of the field which defines the relations in the slice. relation........ is default"), '', 'relation........'),
             'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
             );
     }
+
+
+    //function _getRawHtml($aa_property, $content, $type='normal') {
+    //    $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+    //    $base_id     = AA_Form_Array::formName2Id($base_name);
+    //    $required    = $aa_property->isRequired() ? 'required' : '';
+    //    $widget_add  = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_HcoDisplaySub(); AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
+    //    $widget_add2 = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+    //    $widget      = '';
+    //
+    //    $base_name_add = $base_name . '[hco]';
+    //
+    //
+    //
+    //    // property uses constants or widget have the array assigned (preselect is special - the constants here are not crucial)
+    //    if ($this->getProperty('const') OR $this->getProperty('const_arr')) {  // todo - make preselect with real preselecting (maybe using AJAX)
+    //        // This widget uses constants - show selectbox!
+    //        $input_name   = $base_name_add. "[lev0][]";
+    //
+    //        $input_id     = AA_Form_Array::formName2Id($input_name);
+    //        $use_name     = $this->getProperty('use_name', false);
+    //        $multiple     = $this->multiple() ? ' multiple' : '';
+    //
+    //        $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add>$widget_add2";
+    //        $selected  = $content->getAaValue($aa_property->getId());
+    //        $options   = $this->getOptions($selected, $content, $use_name, false, !$required);
+    //        $widget   .= $this->getSelectOptions( $options );
+    //        $widget   .= "</select><div id=\"sub$input_id\"></div>";
+    //    }
+    //
+    //    return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    //}
+    //
+    //function getOptions4Value($slice_id, $value) {
+    //    $set     = new AA_Set(array($slice_id), new AA_Condition($this->getProperty('relation_field','relation........'), '=', $value), $this->getProperty('sort_by'));
+    //    $options = GetFormatedItems( $set, $this->getProperty('slice_field','_#HEADLINE'), null,  $this->getProperty('additional_slice_pwd'));
+    //    return "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add>". $this->getSelectOptions( $options ). "</select>";
+    //}
 }
 
 /** Password and Change password widget */

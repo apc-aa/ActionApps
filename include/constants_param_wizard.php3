@@ -196,7 +196,21 @@ $VALIDATE_TYPES["items"]["url"] = array (
 $VALIDATE_TYPES["items"]["e-mail"] = array (
     "name"=>_m("E-mail"));
 $VALIDATE_TYPES["items"]["number"] = array (
-    "name"=>_m("Number = positive integer number"));
+    "name"=>_m("Number = integer number"),
+    "params"=>array (
+        array("name"=>_m("Min"),
+              "desc"=>_m("Alloved minimum value"),
+              "type"=>"INT",
+              "example"=>1),
+        array("name"=>_m("Max"),
+              "desc"=>_m("Alloved maximum value"),
+              "type"=>"INT",
+              "example"=>12),
+        array("name"=>_m("Step"),
+              "type"=>"INT",
+              "example"=>1)
+     )
+    );
 $VALIDATE_TYPES["items"]["id"] = array (
     "name"=>_m("Id = 1-32 hexadecimal digits [0-9a-f]"));
 $VALIDATE_TYPES["items"]["date"] = array (
@@ -290,7 +304,29 @@ array("name"=>_m("Hierarchical constants"),
         array("name"=>_m("Level names"),
         "desc"=>_m("Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..."),
         "type"=>"TEXT",
-        "example"=>_m("Top level~Second level~Keyword"))));
+        "example"=>_m("Top level~Second level~Keyword"))
+ //       array("name"=>_m("slice field"),
+ //       "desc"=>_m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"),
+ //       "type"=>"STRID",
+ //       "example"=>_m("category........")),
+ //       array("name"=>_m("Filtering conditions"),
+ //       "desc"=>_m("(for slices only) Conditions for filtering items in selection. Use conds[] array."),
+ //       "type"=>"STR",
+ //       "example"=>"conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+ //       array("name"=>_m("Sort by"),
+ //       "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
+ //       "type"=>"STR",
+ //       "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d"),
+ //       array("name"=>_m("Slice password"),
+ //       "desc"=>_m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"),
+ //       "type"=>"STR",
+ //       "example"=>""),
+ //       array("name"=>_m("Relation field"),
+ //       "desc"=>_m("(for slices only) Field id of the field which defines the relations in the slice. relation........ is default"),
+ //       "type"=>"STR",
+ //       "example"=>"relation........")
+        ));
+
 $INPUT_TYPES["items"]["txt"]=
 array("name"=>_m("Text Area"),
     "desc"=>_m("Text area with 60 columns"),
@@ -603,7 +639,12 @@ array("name"=>_m("File"),
         array("name"=>_m("Hint"),
         "desc"=>_m("appears beneath the file upload field"),
         "type"=>"STR",
-        "example"=>_m("You can select a file ..."))));
+        "example"=>_m("You can select a file ...")),
+        array("name"=>_m("Display URL"),
+        "desc"=>_m("Show URL field? 0 - show, 1 - show if not empty, 2 - do not show"),
+        "type"=>"INT",
+        "example"=> '0')
+        ));
 $INPUT_TYPES["items"]["iso"]=
 array("name"=>_m("Related Item Window"),
     "desc"=>_m("List of items connected with the active one - by using the buttons Add and Delete you show a window, where you can search in the items list"),

@@ -118,7 +118,7 @@ class AA_Field {
    //                }
    //            }
    //        }
-
+            //huhl($this->data);
             $this->widget = AA_Widget::factoryByString('AA_Widget_', $this->data['input_show_func']);
         }
         return $this->widget;
@@ -199,20 +199,20 @@ class AA_Field {
     }
 
 
-    /** getWidgetAjaxHtml function
-    * @param $item_id
-    * @param $aa_value
+    /** getAaProperty function
+    * @param $multiple
+    * @param $required   - not usual, but sometimes we want to redefine it required for ajax...
     * @todo create validator on input_validate
     */
-    function getAaProperty($multiple) {
+    function getAaProperty($multiple=false, $required=null) {
         // AA_Property($id, $name='', $type, $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=) {
         return new AA_Property( $this->getId(),
                                 $this->getName(),
                                 $this->getProperty('text_stored') ? 'text' : 'int',
                                 $multiple,
                                 false,                   // persistent @todo
-                                null,              // $validator - @todo create validator
-                                $this->required(),
+                                AA_Validate::factoryByString('AA_Validate_', $this->data['input_validate']), // null,              // $validator - @todo create validator
+                                $required ? true : $this->required(),
                                 $this->getProperty('input_help'),
                                 $this->getProperty('input_morehlp'),
                                 null,               // $example;
@@ -226,21 +226,25 @@ class AA_Field {
     /** getWidgetAjaxHtml function
     * @param $item_id
     */
-    function getWidgetAjaxHtml($item_id) {
+    function getWidgetAjaxHtml($item_id, $required=null) {
         $widget      = $this->getWidget();
         $item        = AA_Items::getItem($item_id);
-        $aa_property = $this->getAaProperty($widget->multiple());
+        $aa_property = $this->getAaProperty($widget->multiple(), $required);
         return $widget->getAjaxHtml($aa_property, $item);
     }
 
     /** getWidgetLiveHtml function
     * @param $item_id
+    * @param $required  // redefine default settings of required
+    * @param $function  // js function to call after the update
     */
-    function getWidgetLiveHtml($item_id) {
+    function getWidgetLiveHtml($item_id, $required, $function) {
         $widget      = $this->getWidget();
         $item        = AA_Items::getItem($item_id);
-        $aa_property = $this->getAaProperty($widget->multiple());
-        return $widget->getLiveHtml($aa_property, $item);
+        $aa_property = $this->getAaProperty($widget->multiple(), $required);
+
+        // huhl($this, $aa_property);
+        return $widget->getLiveHtml($aa_property, $item, $function);
     }
 
     /** _getRelation function
