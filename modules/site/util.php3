@@ -112,7 +112,8 @@ function ModW_PrintChoice_Start($spot_id, $depth, $choices_index, $choices_count
     if ($conds = $tree->get('conditions', $spot_id)) {
         $delim = ' ';
         foreach ($conds as $k => $v) {
-            $conditions .= "$delim$k=$v";
+            $match = AA_Site_Spot_Match::factoryByString($v,$k);
+            $conditions .= "$delim$k: <strong>$match->val</strong> <small>($match->op)</small>";
             $delim = ', ';
         }
     }
@@ -151,10 +152,18 @@ function ModW_PrintConditions($spot_id, $conds, $vars) {
         $i=0;
         foreach ($vars as $k => $v) {
             if ($conds[$v]) {
-                $warning = (trim($conds[$v]) == $conds[$v]) ? '' : '<div style="color:red;"><small>'._m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your regular expression.').'</small></div>';
-                echo "$v = $conds[$v] <span align=right><a href=\"". SiteAdminPage($spot_id, 'delcond='. urlencode($v)) ."\">"._m("Delete")."</a></span>$warning<br>";
+                $match = AA_Site_Spot_Match::factoryByString($conds[$v],$v);
+                $warning = (trim($match->val) == $match->val) ? '' : '<div style="color:red;"><small>'._m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression.').'</small></div>';
+                echo "$v ($match->op) <strong>$match->val</strong> <span align=right><a href=\"". SiteAdminPage($spot_id, 'delcond='. urlencode($v)) ."\">"._m("Delete")."</a></span>$warning<br>";
             } else {
-                echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">$k = <input type='text' name='addcond' value='' size='50'>
+                echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">
+                         $k 
+                         <select name=addcondop>
+                           <option>=</option>
+                           <option value=contains>"._m('contains')."</option>
+                           <option value=REGEXP>"._m('Regular Expression')."</option>
+                         </select>
+                         <input type='text' name='addcond' value='' size='50'>
                      <input type='hidden' name='addcondvar' value='$v'>
                      <span align=right><a href='javascript:document.fcond$i.submit()'>"._m("Add")."</a></span>";
                 $sess->hidden_session();

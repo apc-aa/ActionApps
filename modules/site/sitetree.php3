@@ -44,6 +44,38 @@ $SPOT_VAR_NAMES = array ('id'         => 'id',      // translation from long var
                          'choices'    => 'ch',
                          'flag'       => 'f');
 
+class AA_Site_Spot_Match {
+    public $op;
+    public $val;
+    
+    function __construct($op='', $val='') {
+            $this->op  = $op;
+            $this->val = $val;
+    }
+        
+    public static function factoryByString($string, $var=null) {
+        if ( strpos($string,'=:') === 0 ) { // begins with =: - special identification of new matches
+            $arr = ParamExplode($string);
+            return new AA_Site_Spot_Match($arr[1], $arr[2]);
+        }
+        // special case - for {aa_expresions} we used "=" in history 
+        return new AA_Site_Spot_Match(($var AND $var[0]=='{') ? '=' : 'REGEXP', $string);
+    }
+    
+    function implode() {
+        return ParamImplode(array('=',$this->op, $this->val));
+    }
+    
+    public function match($value) {
+        switch ( $this->op ) {
+            case '=':        return ($value ==  $this->val);
+            case 'REGEXP':   return preg_match('/'. str_replace('/', '\/', $this->val) .'/', $value);
+            case 'contains': return (strpos($this->val, $value) !== false);
+        }
+        return false;
+    }
+}
+
 class spot {
     var $id;          // spot id
     var $n;           // spot name
@@ -89,8 +121,8 @@ class spot {
         unset($this->v[$name]);
     }
 
-    function addCondition($var, $cond) {
-        $this->c[$var] = $cond;
+    function addCondition($var, $match) {
+        $this->c[$var] = $match->implode();
     }
 
     function removeCondition($name) {
@@ -205,17 +237,12 @@ class spot {
     function set_translated($what, $value) { $this->$what = $value; }
     function set($what,$value)             { $this->set_translated($GLOBALS['SPOT_VAR_NAMES'][$what], $value); }
 
-
     function conditionMatches(&$state) {
         $i=0;
         if ( isset($this->c) AND is_array($this->c) ) {  //c is array of conditions
             foreach ($this->c as $var => $cond) {
-                // we can test state variables (by regular expressions) or aa expression (tested for exact match)
-                if ($var[0]=='{') {
-                    if ($cond != AA_Stringexpand::unalias($var, '', $state['item'])) {
-                        return false;
-                    }
-                } elseif (!preg_match('/'. str_replace('/', '\/', $cond) .'/', $state[$var])) {   // mention the escaping the delimiter
+                $value = ($var[0]=='{') ? AA_Stringexpand::unalias($var, '', $state['item']) : $state[$var];
+                if ( !(AA_Site_Spot_Match::factoryByString($cond,$var)->match($value)) ) {
                     return false;
                 }
             }
@@ -450,13 +477,13 @@ class sitetree {
         return true;
     }
 
-    function addCondition( $where, $var, $cond ) {
+    function addCondition( $where, $var, $cond, $op) {
         //get real parent
         if (!$this->isChoice($where)) {
             return false;
         }
         $where_spot =& $this->tree[$where];
-        $where_spot->addCondition($var, $cond);
+        $where_spot->addCondition($var, new AA_Site_Spot_Match($op, $cond));
         return true;
     }
 

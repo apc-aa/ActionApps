@@ -105,7 +105,7 @@ switch( $akce ) {
 }
 
 if ($addcond) {
-    $tree->addCondition($r_spot_id, $addcondvar, $addcond);
+    $tree->addCondition($r_spot_id, $addcondvar, $addcond, $addcondop);
 } elseif($addvar) {
     $tree->addVariable($r_spot_id, $addvar);
 } elseif($delvar) {
