@@ -1,3 +1,5 @@
+07/19/12 - better HTML5 validation patterns for HTML inputs
+(honzam)
 06/09/12 - site module manager - you can use different operators for choices
 (honzam)   (not only older Regular expressions, but also substring search and "=")
          - fixed {live} and {ajax} editing when used with jQuery - aajslib-jquery.php

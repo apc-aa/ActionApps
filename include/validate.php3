@@ -278,7 +278,7 @@ class AA_Validate_Number extends AA_Validate {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return 'type=number pattern="[0-9]*"'
+        return 'type=text pattern="[0-9]*"'
                . (is_numeric($this->min) ? ' min='.$this->min : '')
                . (is_numeric($this->max) ? ' max='.$this->max : '')
                . (is_numeric($this->step) AND ($this->step > 1) ? ' step='.$this->step : '');
@@ -314,7 +314,7 @@ class AA_Validate_Url extends AA_Validate_Regexp {
      *  more attributtes (like min, max, step, pattern, ...)
      */
     function getHtmlInputAttr() {
-        return 'type=url';
+        return 'type=url pattern="http(s?)\://\S+"';
     }
 }
 
