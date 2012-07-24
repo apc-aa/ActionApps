@@ -99,7 +99,7 @@ class AA_Mailman {
         foreach ($maillist as $listname => $emails) {
             // I don't want to use @fopen because I believe it is better to know
             // that an error occured
-            if ($listname && $fd = fopen ($MAILMAN_SYNCHRO_DIR.$listname, "w")) {
+            if ($listname && ($fd = fopen($MAILMAN_SYNCHRO_DIR.$listname, "w"))) {
                 foreach ($emails as $email) {
                     fwrite ($fd, $email."\n");
                 }

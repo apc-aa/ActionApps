@@ -483,11 +483,11 @@ class AA_Fields implements Iterator {
      * @param $ftype
      * @param $no
      */
-    function createFieldId($ftype, $no="0") {
+    function createFieldId($ftype, $no="0", $id_type='.') {
         if ((string)$no == "0") {
             $no = "";    // id for 0 is "xxxxx..........."
         }
-        return $ftype. substr("................$no", -(16-strlen($ftype)));
+        return $ftype. substr( str_pad($no, 16, $id_type, STR_PAD_LEFT), -(16-strlen($ftype)));
     }
 
     /** getFieldType function

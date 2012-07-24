@@ -267,7 +267,9 @@ class AA_Router_Seo extends AA_Router {
 
     /** static function - caling from outside is not necessary, now */
     function parseApc($apc, $home='') {
-
+        if (!trim($apc,' \t/')) {
+            $apc = $home;
+        }
         $parsed_url = parse_url($apc);
         $arr = explode('/', trim($parsed_url['path'],'/'));
         $ret = AA_Router_Seo::_parseRegexp(array('xlang','xpage','xflag','xcat'), '/([a-z]{2})([0-9]*)([^-0-9]*)[-]?(.*)/',$arr[0],trim($home,'/'));

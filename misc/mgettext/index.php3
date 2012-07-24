@@ -104,6 +104,7 @@ $lang_groups ["output"] =
     array ("./slice.php3",
            "./view.php3",
            "./discussion.php3",
+           "include/util.php3",
            "include/slice.php3",
            "include/view.php3",
            "include/discussion.php3",

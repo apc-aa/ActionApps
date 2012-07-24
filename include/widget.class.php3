@@ -164,7 +164,6 @@ class AA_Widget extends AA_Components {
      *  if it is multiple, uses constants, is bool, ...
      */
     static public function factoryFromProperty($aa_property) {
-
         if ($aa_property->isObject()) {
             throw new Exception('Can\'t generate widget for object property');
             return null;
@@ -1080,7 +1079,7 @@ class AA_Widget_Chb extends AA_Widget {
             $input_name   = $base_name_add ."[$i]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
             $input_value  = htmlspecialchars($value->getValue($i));
-            $widget      .= "$delim\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"". ($input_value ? " checked" : '')."$widget_add>";
+            $widget      .= "$delim<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"". ($input_value ? " checked" : '')."$widget_add>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             $delim        = '<br />';
         }
         // no input was printed, we need to print one
@@ -1089,12 +1088,12 @@ class AA_Widget_Chb extends AA_Widget {
             // checkbox and multiple checkboxes in AA_SendWidgetLive() function
             $input_name   = $base_name_add ."[]";
             $input_id     = AA_Form_Array::formName2Id($input_name);
-            $widget      .= "\n<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"$widget_add>";
+            $widget      .= "<input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"1\"$widget_add>";
         }
         // default value
         $input_name   = $base_name_add ."[def]";
         $input_id     = AA_Form_Array::formName2Id($input_name);
-        $widget      .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"0\">";
+        $widget      .= "<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"0\">";
 
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
@@ -2000,16 +1999,29 @@ class AA_Property extends AA_Storable {
             $new_value = $profile->parseContentProperty($profile_value);
         }
 //        if ($profile->getProperty('hide',$fid) || !$this->validate($new_value) || $new_value->isEmpty()) {
-        if ($profile->getProperty('hide',$fid) || !$this->validate($new_value)) {
+        if ($profile->getProperty('hide',$fid) || !$this->validate($new_value->getValues())) {
             return $this->default;
         }
         return $new_value;
     }
 
-    function validate($value) {
-        $values = $value->getValues();
+    /** Converts AA_Value to real property value (scallar, Array, ...) */
+    function toValue($aa_value) {
+        if ($this->isMulti()) {
+            $val = $aa_value->getValues();
+            foreach($val as &$value) {
+                $this->validator->validate($value);
+            }
+        } else {
+            $val = $aa_value->getValue();
+            $this->validator->validate($val);
+        }
+        return $val;
+    }
+
+    function validate($value_arr) {
         $valid  = true;
-        foreach ( $values as $v) {
+        foreach ( $value_arr as $v) {
             $valid = $this->validator->validate($v);
             if ( !$valid ) {
                 break;
@@ -2065,8 +2077,8 @@ class AA_Property extends AA_Storable {
                 }
 //            } elseif (!empty($value)) {
 //                throw new Exception('Property marked as multi but do not contain array value');
-//            not necessary - we must call validate before objest saving,
-//            so this king of thig is already spotted
+//            not necessary - we must call validate before object saving,
+//            so this king of thing is already spotted
             }
         } else {
             $ret = $this->_saveSingle($value, $object_id, 0, $owner_id);

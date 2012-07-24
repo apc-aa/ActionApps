@@ -482,7 +482,7 @@ if ($_GET['export']) {
         $fs->addField('unpacked_id.....', 'Item ID');
     }
 
-    set_time_limit(1200);
+    set_time_limit(5000);
 
     $exporter = AA_Object::factory($_GET['format'], array('field_set'=>$fs, 'grabber'=>$grabber));
     if (is_null($exporter)) {

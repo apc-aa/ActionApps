@@ -79,7 +79,7 @@ if ( !is_array($site_info) ) {
 $hit_zid = null;
 if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id($site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
-    $home         = '/' .substr(AA_Modules::getModuleProperty($site_id, 'lang_file'),0,2). '/';
+    $home         = trim($site_info['state_file']) ? trim($site_info['state_file']) : '/' .substr(AA_Modules::getModuleProperty($site_id, 'lang_file'),0,2). '/';
     $router       = AA_Router::singleton('AA_Router_Seo', $slices4cache, $home);
 
     // use REDIRECT_URL for homepage redirects:
@@ -90,7 +90,7 @@ if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     //    RewriteEngine on
     //    RewriteRule ^/?$  /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
     //    RewriteRule ^/?en /apc-aa/modules/site/site.php3?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
-    
+
 
     $uri          = (strlen($_SERVER['REQUEST_URI']) > 1) ? $_SERVER['REQUEST_URI'] : $_SERVER['REDIRECT_URL'];
     $apc_state    = $router->parse($uri);
@@ -99,9 +99,7 @@ if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     if ($tmp_xid = $router->xid()) {
         $hit_zid = new zids($tmp_xid, 'l');
     }
-}
-
-if ( $site_info['state_file'] ) {
+} elseif ( $site_info['state_file'] ) {
     // in the following file we should define apc_state variable
     require_once AA_BASE_PATH."modules/site/sites/site_".$site_info['state_file'];
 }

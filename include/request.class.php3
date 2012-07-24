@@ -127,22 +127,27 @@ class AA_Http {
      * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
      */
     function postRequest($url, $data = array(), $headers=array() ) {
-        $data = http_build_query($data);
-        $params = array('http' => array(
-                            'method' => 'POST',
-                            'content' => $data
-                                        )
-                        );
-        if (!empty($headers)) {
-            $header = '';
-            foreach ($headers as $k => $v) {
-                $header .= "$k: $v\r\n";
+
+        if (empty($data)) {
+            $fp = @fopen($url, 'rb', false);
+        } else {
+            $data = http_build_query($data);
+            $params = array('http' => array(
+                                'method' => 'POST',
+                                'content' => $data
+                                           )
+                           );
+            if (!empty($headers)) {
+                $header = '';
+                foreach ($headers as $k => $v) {
+                    $header .= "$k: $v\r\n";
+                }
+                $params['http']['header'] = $header;
             }
-            $params['http']['header'] = $header;
+            $ctx = stream_context_create($params);
+            $fp  = @fopen($url, 'rb', false, $ctx);
         }
 
-        $ctx = stream_context_create($params);
-        $fp = @fopen($url, 'rb', false, $ctx);
         if (!$fp) {
            AA_Http::lastErr(1, "Can't open url: $url");  // set error code
            return false;

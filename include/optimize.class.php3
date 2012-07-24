@@ -1105,7 +1105,7 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
         if (is_array($err_num) AND count($err_num) > 0) {
             $this->message( _m('%1 duplicates found in numeric fields', array(count($err_num))));
             foreach ($err_num as $wrong) {
-                $this->message( _m('Duplicates (%4) in item %1 - field %2 - value %3', array(unpack_id($wrong['item_id']),$wrong['field_id'],$wrong['text'],$wrong['cnt'])));
+                $this->message( _m('Duplicates (%4) in item %1 - field %2 - value %3', array(unpack_id($wrong['item_id']),$wrong['field_id'],$wrong['number'],$wrong['cnt'])));
             }
             $ret = false;
         }

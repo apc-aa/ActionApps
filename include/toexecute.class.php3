@@ -107,7 +107,7 @@ class AA_Toexecute {
         global $auth;
         $varset = new Cvarset(
             array( 'created'       => time(),
-                   'execute_after' => (is_null($time) ? time() : $time),  // task for user queue uses $time=0 (which is not the same as null, of course)
+                   'execute_after' => (is_null($time) ? time() : $time),  // task for user queue uses TOEXECUTE_USER_TASK_TIME
                    'aa_user'       => $auth->auth['uid'],
                    'priority'      => $priority,
                    'selector'      => ($selector ? $selector : get_class($object)),

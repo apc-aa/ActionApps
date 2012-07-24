@@ -250,11 +250,11 @@ function AA_AjaxInsert(a_obj, form_url) {
     }
 }
 
-/** Send the form by AJAX and on success displays the ok_html text
+/** Send the form by AJAX and on success refreshes the content of page
  *  @param id        - form id
- *  @param loader_id - id of the html element, where you want to display the loader gif
- *                   - the button itself could be used here (not the form!)
- *  @param ok_html   - what text (html) should be displayed after the success
+ *  @param refresh   - id of the html element, which you want to refresh. 
+ *                   - Such element must have data-aa-url attributes
+ *  @param ok_html   - function to call after the page update
  *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
  */
 function SendAjaxForm(id, refresh, ok_func) {

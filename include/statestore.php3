@@ -197,7 +197,7 @@ class AA_Object extends AA_Storable {
         // call AA_Widget_Txt::getClassProperties()), for example
 
         $class = get_class($this);
-        foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $name =>$property) {
+        foreach (call_user_func(array($class, 'getClassProperties')) as $name =>$property) {
             if (isset($params[$name])) {
                 $this->$name = $params[$name];
             }
@@ -260,7 +260,7 @@ class AA_Object extends AA_Storable {
         $object_id = $this->getId();
 
         $class = get_class($this);
-        foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $property) {
+        foreach (call_user_func(array($class, 'getClassProperties')) as $property) {
             $property_id   = $property->getId();
             $property->save($this->$property_id, $object_id, $this->getOwnerId());
         }
@@ -300,6 +300,9 @@ class AA_Object extends AA_Storable {
             case 'aa_subobjects': return new AA_Property('aa_subobjects' ,'Subobjects', 'string', true,  true, 'string', false);
             case 'aa_id':         return new AA_Property('aa_id' ,        'Id',         'string', false, true, 'id',     true);
         }
+        // does not work - will work with static::getClassProperties() in php 5.3 
+        // $props = self::getClassProperties();
+        // return isset($props[$property_id]) ? $props[$property_id] : null; 
         return null;
     }
 
@@ -329,7 +332,7 @@ class AA_Object extends AA_Storable {
     function _getSubObjects() {
         $ret   = array();
         $class = get_class($this);
-        foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $property) {
+        foreach (call_user_func(array($class, 'getClassProperties')) as $property) {
             if (!$property->isObject()) {
                 continue;
             }
@@ -432,7 +435,7 @@ class AA_Object extends AA_Storable {
         if ( class_exists($class) ) {
             // ask class, which parameters uses
             // call AA_Widget_Txt::getClassProperties()), for example
-            foreach (call_user_func_array(array($class, 'getClassProperties'), array($class)) as $name => $property) {
+            foreach (call_user_func(array($class, 'getClassProperties')) as $name => $property) {
                 if (isset($splited[$i])) {
                     $params[$name] = $splited[$i++];
                 }
@@ -488,7 +491,7 @@ class AA_Object extends AA_Storable {
 
         $obj = new $type;
         $obj->setId($id);
-        $properties = call_user_func_array(array($type, 'getClassProperties'), array($type));
+        $properties = call_user_func(array($type, 'getClassProperties'));
 
         $tab = GetTable2Array("SELECT `property`, `value` FROM object_text WHERE object_id = '$id' ORDER by property, priority", '');
         $props_from_db = is_array($tab) ? $tab : array();

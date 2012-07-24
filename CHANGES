@@ -1,3 +1,39 @@
+07/25/12 - new Conditional Planed Tasks (Admin -> Planed Tasks)
+(honzam) - condition parameter for Input widget Radio, multicheckbox and 
+           multiselect now could contain AA experssions and aliases
+         - {foreach:<values>:<output>:<values-delimiter>:<output-delimiter>} 
+           - loops through all the <values> and display them formatted 
+           by <output> one after other: 
+             {foreach:val1-val2:<p>_#1</p>:-:<br>}
+             {foreach:{qs:myfields:-}:{(<td>{_#1}</td>)}}  
+               fields[] = headline........-year...........1 
+               - returns <td>Prague<td><td>2012</td>
+         - {seqence:num:min:limit:step} - returns sequence of values 
+           in JSON Array (could be used with {options}, for example:
+             {options:{sequence:num:1998:2012}:{date:Y}})
+         - {options:<group_id>:<selected>} which generates HTML <option> tags 
+           now accepts JSON values as well: 
+             {options:[1,2,5,7]:7}
+         - {min} and {max} now accepts the values in JSON form: 
+             {max:[12,45,8]}
+         - {finduniq:<string>:<field_id>:<unique_slices>:<ignore_item_id>} 
+           returns string (for seo) unique for the slice(s) within the field. 
+           Numbers are added if the conflict is found
+         - new possibility to list multivalues as JSON array: 
+             {@category........:json}
+         - month names are correctly translated in AJAX and Live widgets 
+         - new Insert function for field - Unique
+         - fix - view parameters are handled better
+         - fix - view index aliases (_#ITEMINDX, _#PAGEINDX, 
+           _#GRP_INDX, _#IGRPINDX) for some broken cases
+         - fix - validation parameters now better handled
+         - Item Sets now handled better - unlimited count for slice, ...
+         - AA_Sortorder could be stored as object to the database
+         - data transformations moved to its own file
+07/24/12 - better item export (Admin -> Export to file)
+(honzam)     - charset for HTML export is set correctly
+             - the fields could be exported in human readable format
+               (dates, relations)
 07/19/12 - better HTML5 validation patterns for HTML inputs
 (honzam)
 06/09/12 - site module manager - you can use different operators for choices
@@ -42,6 +78,10 @@
          - new javascript console debug mode
          - fixed problem with {live} editing from admin interface
            (AA_Scroller error)
+04/27/12 - moved to standard responder approach for ajax widgets in aajslib.php3
+(honzam)
+04/16/12 - removed custom code from jslib-jquery.php
+(honzam)
 04/12/12 - new "Set Expiry date to maximum value" optimize function
 (honzam)   sets expiry_date to maximum value for items in slices, where
            expiry_date..... field is not shown. It also sets the field's default
@@ -67,6 +107,7 @@
            #anchor them in url
 03/23/12 - fixed problem with multiple checkboxes, when used with slice items
 (honzam)   more times in one form
+>>>>>>> .r3081
 03/01/12 - show item history in menu AA ("Get all informations about the ITEM")
 01/10/12 - small fixes and cleanup - alerts, mailman sync, view
 (honzam)

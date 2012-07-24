@@ -85,8 +85,6 @@ $form       = AA_Form::factoryForm($otype, $oid, $oowner);
 
 $form_state = $form->process($_POST['aa']);
 
-//huhl($form_state);
-
 if ($form_state == AA_Form::SAVED) {
     go_url($ret_url);
 }
@@ -106,7 +104,7 @@ echo $Msg;
 
 
 $form_buttons = array ("update",
-                       "cancel" =>array("url"=>"se_forms.php3"),
+                       "cancel" =>array("url"=>$ret_url),
                       );
 
 ?>

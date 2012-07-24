@@ -984,7 +984,7 @@ class ItemContent extends AA_Content {
             // compute new value for this computed field
             $new_computed_value = $item->unalias($expand_string);
 
-            $aa_val = new AA_Value( strlen($expand_delimiter) ? explode($expand_delimiter,$new_computed_value) : $new_computed_value);
+            $aa_val = new AA_Value( strlen($expand_delimiter) ? array_filter(explode($expand_delimiter,$new_computed_value) ,'strlen') : $new_computed_value);
 
             // set this value also to $item in order we can count with it
             // in next computed field
@@ -1174,11 +1174,17 @@ function itemIsDuplicate($item_id) {
     return $ret ? true : false;
 }
 
-/** field_content is AA_Value object */
+/** field_content is AA_Value object
+ *  $field_content could be AA_Value or scallar or array()
+ *  */
 function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
     $content4id = new ItemContent();
     $content4id->setByItemID($item_id, true);     // ignore password
     // if we do not ignore it, then whole item is destroyed for slices with slice_pwd
+
+    if (!($field_content instanceof AA_Value)) {
+        $field_content = new AA_Value($field_content, $content4id->getFlag($field_id));
+    }
 
     $sli_id     = $content4id->getSliceID();
     unset($content4id);
@@ -1189,12 +1195,18 @@ function UpdateField($item_id, $field_id, $field_content, $invalidate = true) {
     $newcontent4id->setSliceID($sli_id);
     $updated_items = 0;
 
-    if ($newcontent4id->storeItem( 'update_silent', array($invalidate, false))) {    // invalidatecache, not feed
+    if ($newcontent4id->storeItem( 'update', array($invalidate, false))) {    // invalidatecache, not feed
         $updated_items = 1;
     }
     return $updated_items;
 }
 
+
+/** Tracks one field change
+ *  Ussage:
+ *     new AA_ChangeProposal(<item_id>, <field_id>, <normal_array_of_values>);
+ *     $changes = new AA_ChangeProposal($this->getId(), $field_id, $content4id->getValuesArray($field_id));
+ */
 class AA_ChangeProposal {
     var $resource_id;
     var $selector;
