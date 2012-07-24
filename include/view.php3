@@ -246,20 +246,28 @@ function ParseViewParameters($query_string="") {
     global $cmd, $set, $vid, $als, $slice_id, $debug;
     global $x;   // url parameter - used for cmd[]=x-111-url view parameter
 
-    // Parse parameters
-    // if view in cmd[] or set[] is not specified - fill it from vid
-    if ( preg_match("/vid=([0-9]*)/", $query_string, $parts) ) {
-        $query_string = str_replace( 'cmd[]', "cmd[".$parts[1]."]", $query_string );
-        $query_string = str_replace( 'set[]', "set[".$parts[1]."]", $query_string );
-    }
-    //  This code below do not work!! - it is not the same as the code above!!
-    //  (the code above parses only the specific guerystring for this view)
-    //  if (!$cmd[$vid]) {        // (the same for set[])
-    //      $cmd[$vid] = $cmd[0];
-    //  }
-    //  $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
+    if ($query_string) {
+        // Parse parameters
+        // if view in cmd[] or set[] is not specified - fill it from vid
+        if ( preg_match("/vid=([0-9]*)/", $query_string, $parts) ) {
+            $vid = $parts[1];
+            $query_string = str_replace( 'cmd[]', "cmd[$vid]", $query_string );
+            $query_string = str_replace( 'set[]', "set[$vid]", $query_string );
+            // we no not want older calls to ParseViewParameters() will infect this call
+            // @todo - make two versions - one for url parameters, second for
+            // {view.php3...} parameters, where we do not want to read global data
+            unset($cmd[$vid]);
+            unset($set[$vid]);
+        }
+        //  This code below do not work!! - it is not the same as the code above!!
+        //  (the code above parses only the specific guerystring for this view)
+        //  if (!$cmd[$vid]) {        // (the same for set[])
+        //      $cmd[$vid] = $cmd[0];
+        //  }
+        //  $command = ParseCommand($cmd[$vid], $GLOBALS['als']);
 
-    add_vars($query_string);       // adds values from url (it's not automatical in SSIed script)
+        add_vars($query_string);       // adds values from url (it's not automatical in SSIed script)
+    }
 
     if ( $debug ) {
         $query_string = str_replace("slice_pwd=". $GLOBALS['slice_pwd'], 'slice_pwd=*****', $query_string );
@@ -815,7 +823,7 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
                 $itemview_type = (($view_info['type'] == 'calendar') ? 'calendar' : 'view');
                 if ($debug) { huhl("GetViewFromDB: to show=",$zids2, $itemview_type); }
                 $ret = $itemview->get_output($itemview_type);
-            }   
+            }
             else {
                 /* Not sure if this was a necessary change that got missed, or got changed again
                 // $ret = $noitem_msg;
