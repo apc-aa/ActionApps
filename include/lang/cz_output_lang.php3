@@ -369,4 +369,53 @@ $_m["Next"]
 $_m["No comment was selected"]
  = "Nebyl vybrán žádný pøíspìvek";
 
+
+// include/util.php3, row 1878
+$_m["January"]
+ = "Leden";
+
+// include/util.php3, row 1878
+$_m["February"]
+ = "Únor";
+
+// include/util.php3, row 1878
+$_m["March"]
+ = "Bøezen";
+
+// include/util.php3, row 1878
+$_m["April"]
+ = "Duben";
+
+// include/util.php3, row 1878
+$_m["May"]
+ = "Kvìten";
+
+// include/util.php3, row 1878
+$_m["June"]
+ = "Èerven";
+
+// include/util.php3, row 1879
+$_m["July"]
+ = "Èervenec";
+
+// include/util.php3, row 1879
+$_m["August"]
+ = "Srpen";
+
+// include/util.php3, row 1879
+$_m["September"]
+ = "Záøí";
+
+// include/util.php3, row 1879
+$_m["October"]
+ = "Øíjen";
+
+// include/util.php3, row 1879
+$_m["November"]
+ = "Listopad";
+
+// include/util.php3, row 1879
+$_m["December"]
+ = "Prosinec";
+
 ?>

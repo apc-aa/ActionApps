@@ -357,4 +357,53 @@ $_m["Next"]
 $_m["No comment was selected"]
  = "Nu a fost selectat nici un comentariu";
 
+
+// include/util.php3, row 1878
+$_m["January"]
+ = "Ianuarie";
+
+// include/util.php3, row 1878
+$_m["February"]
+ = "Februarie";
+
+// include/util.php3, row 1878
+$_m["March"]
+ = "Martie";
+
+// include/util.php3, row 1878
+$_m["April"]
+ = "Aprilie";
+
+// include/util.php3, row 1878
+$_m["May"]
+ = "Mai";
+
+// include/util.php3, row 1878
+$_m["June"]
+ = "Iunie";
+
+// include/util.php3, row 1879
+$_m["July"]
+ = "Iulie";
+
+// include/util.php3, row 1879
+$_m["August"]
+ = "";
+
+// include/util.php3, row 1879
+$_m["September"]
+ = "Septembrie";
+
+// include/util.php3, row 1879
+$_m["October"]
+ = "Octombrie";
+
+// include/util.php3, row 1879
+$_m["November"]
+ = "Noiembrie";
+
+// include/util.php3, row 1879
+$_m["December"]
+ = "Decembrie";
+
 ?>

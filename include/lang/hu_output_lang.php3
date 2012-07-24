@@ -324,4 +324,53 @@ $_m["Next"]
 $_m["No comment was selected"]
  = "";
 
+
+// include/util.php3, row 1878
+$_m["January"]
+ = "";
+
+// include/util.php3, row 1878
+$_m["February"]
+ = "";
+
+// include/util.php3, row 1878
+$_m["March"]
+ = "";
+
+// include/util.php3, row 1878
+$_m["April"]
+ = "";
+
+// include/util.php3, row 1878
+$_m["May"]
+ = "";
+
+// include/util.php3, row 1878
+$_m["June"]
+ = "";
+
+// include/util.php3, row 1879
+$_m["July"]
+ = "";
+
+// include/util.php3, row 1879
+$_m["August"]
+ = "";
+
+// include/util.php3, row 1879
+$_m["September"]
+ = "";
+
+// include/util.php3, row 1879
+$_m["October"]
+ = "";
+
+// include/util.php3, row 1879
+$_m["November"]
+ = "";
+
+// include/util.php3, row 1879
+$_m["December"]
+ = "";
+
 ?>

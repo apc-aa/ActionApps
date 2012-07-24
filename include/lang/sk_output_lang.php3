@@ -356,5 +356,52 @@ $_m["Next"]
 // include/itemview.php3, row 332
 $_m["No comment was selected"]
  = "Nebol vybraný žiaden príspevok";
+// include/util.php3, row 1878
+$_m["January"]
+ = "Január";
+
+// include/util.php3, row 1878
+$_m["February"]
+ = "Február";
+
+// include/util.php3, row 1878
+$_m["March"]
+ = "Marec";
+
+// include/util.php3, row 1878
+$_m["April"]
+ = "Apríl";
+
+// include/util.php3, row 1878
+$_m["May"]
+ = "Máj";
+
+// include/util.php3, row 1878
+$_m["June"]
+ = "Jún";
+
+// include/util.php3, row 1879
+$_m["July"]
+ = "Júl";
+
+// include/util.php3, row 1879
+$_m["August"]
+ = "";
+
+// include/util.php3, row 1879
+$_m["September"]
+ = "";
+
+// include/util.php3, row 1879
+$_m["October"]
+ = "Október";
+
+// include/util.php3, row 1879
+$_m["November"]
+ = "";
+
+// include/util.php3, row 1879
+$_m["December"]
+ = "";
 
 ?>

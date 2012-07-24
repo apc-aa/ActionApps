@@ -332,4 +332,52 @@ $_m["Next"]
 $_m["No comment was selected"]
  = "Nije odabran nijedan komentar";
 
+ // include/util.php3, row 1878
+$_m["January"]
+ = "Sijeèanj";
+
+// include/util.php3, row 1878
+$_m["February"]
+ = "Veljaèa";
+
+// include/util.php3, row 1878
+$_m["March"]
+ = "Ožujak";
+
+// include/util.php3, row 1878
+$_m["April"]
+ = "Travanj";
+
+// include/util.php3, row 1878
+$_m["May"]
+ = "Svibanj";
+
+// include/util.php3, row 1878
+$_m["June"]
+ = "Lipanj";
+
+// include/util.php3, row 1879
+$_m["July"]
+ = "Srpanj";
+
+// include/util.php3, row 1879
+$_m["August"]
+ = "Kolovoz";
+
+// include/util.php3, row 1879
+$_m["September"]
+ = "Rujan";
+
+// include/util.php3, row 1879
+$_m["October"]
+ = "Listopad";
+
+// include/util.php3, row 1879
+$_m["November"]
+ = "Studeni";
+
+// include/util.php3, row 1879
+$_m["December"]
+ = "Prosinac";
+
 ?>
