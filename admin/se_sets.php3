@@ -49,64 +49,31 @@ $err["Init"] = "";          // error array (Init - just for initializing variabl
 
 if ( $update ) {
     do {
-        ValidateInput("name1",  _m("Name 1"),      $name1,  $err, false, "text");
-        ValidateInput("cond1",  _m("Condition 1"), $cond1,  $err, false, "text");
-        ValidateInput("objid1", _m("Object ID 1"), $objid1, $err, false, "text");
+        for ($k=1; $k<=$_POST['setcount']; $k++) {
+            $name  = $_POST['name'][$k];
+            $sli   = $_POST['sli'][$k];
+            $cond  = $_POST['cond'][$k];
+            $sort  = $_POST['sort'][$k];
+            $objid = $_POST['objid'][$k];
 
-        ValidateInput("name2",  _m("Name 2"),      $name2,  $err, false, "text");
-        ValidateInput("cond2",  _m("Condition 2"), $cond2,  $err, false, "text");
-        ValidateInput("objid2", _m("Object ID 2"), $objid2, $err, false, "text");
+            ValidateInput("name$k",  _m("Name $k"),      $name,  $err, false, "text");
+            ValidateInput("sli$k",   _m("Slice $k"),     $sli,   $err, false, "text");
+            ValidateInput("cond$k",  _m("Condition $k"), $cond,  $err, false, "text");
+            ValidateInput("sort$k",  _m("Sort $k"),      $sort,  $err, false, "text");
+            ValidateInput("objid$k", _m("Object ID $k"), $objid, $err, false, "text");
 
-        ValidateInput("name3",  _m("Name 3"),      $name3,  $err, false, "text");
-        ValidateInput("cond3",  _m("Condition 3"), $cond3,  $err, false, "text");
-        ValidateInput("objid3", _m("Object ID 3"), $objid3, $err, false, "text");
+            if ( count($err) > 1) {
+                break;
+            }
 
-        ValidateInput("name4",  _m("Name 4"),      $name4,  $err, false, "text");
-        ValidateInput("cond4",  _m("Condition 4"), $cond4,  $err, false, "text");
-        ValidateInput("objid4", _m("Object ID 4"), $objid4, $err, false, "text");
-
-        if ( count($err) > 1) {
-            break;
-        }
-
-        if ($cond1 AND $name1) {
-            $set1 = new AA_Set();
-            $set1->addCondsFromString($cond1);
-            $set1->setName($name1);
-            $set1->setOwnerId($slice_id);
-            // those id are marked so we can use it as group in Reader permissions
-            $set1->setId($objid1 ? $objid1 : new_id(1));
-            $set1->save();
-        }
-
-        if ($cond2 AND $name2) {
-            $set2 = new AA_Set();
-            $set2->addCondsFromString($cond2);
-            $set2->setName($name2);
-            $set2->setOwnerId($slice_id);
-            // those id are marked so we can use it as group in Reader permissions
-            $set2->setId($objid2 ? $objid2 : new_id(1));
-            $set2->save();
-        }
-
-        if ($cond3 AND $name3) {
-            $set3 = new AA_Set();
-            $set3->addCondsFromString($cond3);
-            $set3->setName($name3);
-            $set3->setOwnerId($slice_id);
-            // those id are marked so we can use it as group in Reader permissions
-            $set3->setId($objid3 ? $objid3 : new_id(1));
-            $set3->save();
-        }
-
-        if ($cond4 AND $name4) {
-            $set4 = new AA_Set();
-            $set4->addCondsFromString($cond4);
-            $set4->setName($name4);
-            $set4->setOwnerId($slice_id);
-            // those id are marked so we can use it as group in Reader permissions
-            $set4->setId($objid4 ? $objid4 : new_id(1));
-            $set4->save();
+            if ($cond AND $name) {
+                $set = new AA_Set($sli, $cond, $sort);
+                $set->setName($name);
+                $set->setOwnerId($slice_id);
+                // those id are marked so we can use it as group in Reader permissions
+                $set->setId($objid ? $objid : new_id(1));
+                $set->save();
+            }
         }
 
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
@@ -149,16 +116,21 @@ foreach( $set_ids as $i => $set_id ) {
         continue;
     }
     $k = $i+1;
-    FrmHidden("objid$k", $set->getId());
+    FrmHidden("objid[$k]", $set->getId());
     FrmStaticText(_m('ID'), $set->getId());
-    FrmInputText("name$k", _m("Set name %1",  array($k)), $set->getName(), 32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
-    FrmTextArea("cond$k", _m("Conditions %1", array($k)), $set->getCondsAsString(), 4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
+    FrmInputText("name[$k]", _m("Set name %1",   array($k)), $set->getName(),             32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
+    FrmTextArea("sli[$k]", _m("Slices %1",       array($k)), join('-',$set->getModules()), 2, 60, false, _m('possibly dash separated'));
+    FrmTextArea("cond[$k]",  _m("Conditions %1", array($k)), $set->getCondsAsString(),     4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
+    FrmInputText("sort[$k]", _m("Sort %1",       array($k)), $set->getSortAsString(),    500, 60, false, _m('Use "headline.......,publish_date....-" or "sort[]" conditions'));
 }
 
-for ( $i=$k+1; $i<5 ;$i++) {
-    FrmInputText("name$i", _m("Set name %1", array($i)), '', 32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
-    FrmTextArea("cond$i", _m("Conditions %1", array($i)), '', 4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
-}
+++$k;
+FrmInputText("name[$k]", _m("Set name %1", array($k)), '', 32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
+FrmTextArea("sli[$k]", _m("Slices %1",     array($k)), '',  2, 60, false, _m('possibly dash separated'));
+FrmTextArea("cond[$k]",  _m("Conditions %1", array($k)), '',  4, 60, false, _m('Use "d-..." or "conds[]" conditions'));
+FrmInputText("sort[$k]", _m("Sort %1",       array($k)), '', 500, 60,false, _m('Use "headline........,publish_date....-" or "sort[]" conditions'));
+FrmHidden("setcount", $k);
+
 
 FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
