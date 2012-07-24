@@ -492,6 +492,19 @@ function insert_fnc_pwd($item_id, $field, $value, $param, $additional='') {
 }
 
 // -----------------------------------------------------------------------------
+/** insert_fnc_unq function
+ * @param $item_id
+ * @param $field
+ * @param $value
+ * @param $param
+ * @param $additional
+ */
+function insert_fnc_unq($item_id, $field, $value, $param, $additional='') {
+    $value['value'] = AA_Stringexpand_Finduniq::expand($value['value'], $field["id"], empty($unique_slices) ? $GLOBALS["slice_id"] : $unique_slices, $item_id);
+    insert_fnc_qte($item_id, $field, $value, $param, $additional);
+}
+
+// -----------------------------------------------------------------------------
 /** insert_fnc_nul function
  * @param $item_id
  * @param $field
