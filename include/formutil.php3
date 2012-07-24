@@ -889,15 +889,24 @@ class AA_Inputfield {
                                break;
             case 'anonym_rio':
             case 'normal_rio': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
+                               if ( !is_null($item) ) {
+                                   $conds_str = $item->unalias($conds_str);
+                               }
                                $this->inputRadio($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);
                                break;
             case 'anonym_mch':
             case 'normal_mch': list(,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
+                               if ( !is_null($item) ) {
+                                   $conds_str = $item->unalias($conds_str);
+                               }
                                $this->varname_modify('[]');         // use slightly modified varname
                                $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);  // move_right
                                break;
             case 'anonym_mse':
             case 'normal_mse': list(,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd) = $this->param;
+                               if ( !is_null($item) ) {
+                                   $conds_str = $item->unalias($conds_str);
+                               }
                                $rows = ($rows < 1) ? 5 : $rows;
                                $this->varname_modify('[]');         // use slightly modified varname
                                $this->inputMultiSelect($rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd);
