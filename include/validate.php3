@@ -59,6 +59,9 @@ define('VALIDATE_ERROR_WRONG_CHARACTERS', 408);
 define('VALIDATE_ERROR_NOT_IN_LIST',      409);
 
 /** AA user input validation class
+ *  Ussage (for standard validators):
+ *      if ( AA_Validate::validate($variable, 'int') ) {...};
+ *      if ( AA_Validate::validate($variable, 'int', array('min'=>0, 'max'=>10)) ) {...};
  *  Ussage (for standard validators): AA_Validate::validate($variable, 'int');
  */
 class AA_Validate {
@@ -70,38 +73,38 @@ class AA_Validate {
     function &factory($v_type) {
         static $standard_validators = array();
 
-        list ($type, $parameter) = is_array($v_type) ? $v_type : array($v_type, '');
+        list ($type, $parameters) = is_array($v_type) ? $v_type : array($v_type, array());
 
-        $sv_key = get_hash($type, $parameter);
+        $sv_key = get_hash($type, $parameters);
         if ( !isset($standard_validators[$sv_key]) ) {
             switch ($type) {
-                case 'bool':     $standard_validators[$sv_key] = new AA_Validate_Bool();         break;
+                case 'bool':     $standard_validators[$sv_key] = new AA_Validate_Bool($parameters);   break;
                 case 'num':
                 case 'number':
                 case 'int':
-                case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Number();            break;
-                case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float();          break;
+                case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Number($parameters); break;
+                case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float($parameters);  break;
                 case 'e-mail':
-                case 'email':    $standard_validators[$sv_key] = new AA_Validate_Email();          break;
+                case 'email':    $standard_validators[$sv_key] = new AA_Validate_Email($parameters);  break;
                 case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^[a-zA-Z]+$/'));          break;
                 case 'id':
                 case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Id();    break;  // empty = "" or "0"
                 case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Number(array('min'=>0));           break;
                 case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^_#[0-9_#a-zA-Z]{8}$/')); break;
                 case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp(array('pattern'=>'/^[-.0-9a-zA-Z_]+$/')); break;
-                case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login();          break;
-                case 'password': $standard_validators[$sv_key] = new AA_Validate_Pwd();       break;
-                case 'unique':   $standard_validators[$sv_key] = new AA_Validate_Unique();         break;
+                case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login($parameters);  break;
+                case 'password': $standard_validators[$sv_key] = new AA_Validate_Pwd($parameters);    break;
+                case 'unique':   $standard_validators[$sv_key] = new AA_Validate_Unique($parameters); break;
                 case 'e_unique':
                 case 'e-unique':
-                case 'eunique':  $standard_validators[$sv_key] = new AA_Validate_Eunique();       break;
-                case 'url':      $standard_validators[$sv_key] = new AA_Validate_Url(); break;
-                case 'date':     $standard_validators[$sv_key] = new AA_Validate_Date(); break;
+                case 'eunique':  $standard_validators[$sv_key] = new AA_Validate_Eunique($parameters); break;
+                case 'url':      $standard_validators[$sv_key] = new AA_Validate_Url($parameters);  break;
+                case 'date':     $standard_validators[$sv_key] = new AA_Validate_Date($parameters); break;
                 case 'text':
                 case 'string':
                 case 'field':
-                case 'all':      $standard_validators[$sv_key] = new AA_Validate_Text();            break;
-                case 'enum':     $standard_validators[$sv_key] = new AA_Validate_Enum($parameter); break;
+                case 'all':      $standard_validators[$sv_key] = new AA_Validate_Text($parameters); break;
+                case 'enum':     $standard_validators[$sv_key] = new AA_Validate_Enum($parameters); break;
                 default:         // Bad validator type: $type;
                                  return null;
             }
@@ -729,4 +732,71 @@ function get_javascript_field_validation() {
             else return true;
         }";
 }
+
+
+
+
+// ----------------------------------------------------
+// not used yet
+// @author Jirka Reischig 28.2.2012
+//
+function NEW_get_lines($fp) {
+    $data = "";
+    while($str = @fgets($fp,515)) {
+        $data .= $str;
+        // if the 4th character is a space then we are done reading
+        // so just break the loop
+        if(substr($str,3,1) == ' ') { break; }
+    }
+    return $data;
+}
+
+function NEW_checkEmail($email) {
+    // checks proper syntax
+    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        // gets domain name
+        list($username,$domain)=explode('@',$email);
+        // checks for if MX records in the DNS
+        if ( getmxrr($domain,$smtphosts,$mx_weight) or (gethostbyname($domain) != $domain) ) {
+            if ( $smtphosts ) {
+                // Put the records together in a array we can sort
+                for ($i=0; $i<count($smtphosts); $i++) {
+                    $mxs[$smtphosts[$i]] = $mx_weight[$i];
+                }
+                // Sort them
+                asort($mxs);
+                $domain = current(array_keys($mxs));
+            }
+            // attempts a socket connection to mail server
+            $fp = fsockopen($domain,25,$errno,$errstr,30);
+            if ( $fp ) {
+                get_lines($fp);
+                fwrite($fp, 'ehlo ecn.cz'."\r\n");
+                get_lines($fp);
+                fwrite($fp, 'mail from: <>'."\r\n");
+                get_lines($fp);
+                fwrite($fp, 'rcpt to: <'.$email.'>'."\r\n");
+                $odpoved = get_lines($fp);
+                fwrite($fp, 'quit'."\r\n");
+                fclose($fp);
+                if ( intval(substr($odpoved, 0, 3)) == '250' ) {
+                    return true;
+                } else {
+                    echo 'Error: verification failed: '.$odpoved;
+                    return false;
+                }
+            } else {
+                echo 'Error: connection to 25 failed';
+                return false;
+            }
+        } else {
+            echo 'Error: bad domain';
+            return false;
+        }
+    } else {
+        echo 'Error: email not look like email';
+        return false;
+    }
+}
+
 ?>
