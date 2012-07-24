@@ -248,18 +248,49 @@ class AA_Condition extends AA_Object {
  *  of each group. In such case the array looks like:
  *     array( 'limit' => 4, 'category........' => d )
  */
-class AA_Sortorder {
-    var $sort;
+class AA_Sortorder extends AA_Object {
+
+    protected $field;
+    protected $desc;    // 0|1  - direction ASCENDING, DESC
+    protected $limit;   // number
+
+    /// Static ///
+
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     * @return array
+     */
+    function getClassProperties()  {
+        return array (                   //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
+            'field' => new AA_Property( 'field', _m("Field"),      'text',  false,  true, 'field' ),
+            'desc'  => new AA_Property( 'desc',  _m("Descending"), 'text',  false,  true, 'bool' ),
+            'limit' => new AA_Property( 'limit', _m("Limit"),      'text',  false,  true, 'int' ),
+            );
+    }
+
+    // required - class name (just for PHPLib sessions)
+    var $classname        = "AA_Sortorder";
+    var $persistent_slots = array('field', 'desc', 'limit');
+
 
     /** AA_Sortorder function  */
     function AA_Sortorder($sort) {
         $this->clear();
-        $this->sort = $sort;
+        foreach ($sort as $key => $val) {
+            if ($key == 'limit') {
+                $this->limit = $val;
+            } else {
+                $this->field = $key;
+                $this->desc  = ($val == 'd');
+            }
+        }
     }
 
     /** clear function */
     function clear() {
-        $this->sort = array();
+        $this->field = '';
+        $this->desc  = false;
+        $this->limit = '';   // '' is not 0
     }
 
     /** getArray function
@@ -268,8 +299,20 @@ class AA_Sortorder {
      *  Mainly for backward compatibility with old - array approach
      */
     function getArray() {
-        return $this->sort;
+        if ( !$this->field ) {
+            return array();
+        }
+        $ret = array($this->field => ($this->desc ? 'd' : 'a'));
+        if (is_numeric($this->limit)) {
+            $ret['limit'] = (int)$this->limit;
+        }
+        return $ret;
     }
+
+    function getField()     { return $this->field; }
+    function getDirection() { return $this->desc;  }
+    function getLimit()     { return $this->limit; }
+    function getAsString()  { return ($f = $this->getField()) ? $this->getLimit().$f.$this->getDirection() : ''; }
 }
 
 class AA_Set extends AA_Object {
@@ -358,7 +401,7 @@ class AA_Set extends AA_Object {
         if (is_array($slices)) {
             $this->slices = $slices;
         } elseif (is_string($slices)) {
-            $this->slices = array($slices);
+            $this->slices = explode('-', $slices);
         } else {
             $this->slices = array();
         }
@@ -681,6 +724,18 @@ class AA_Set extends AA_Object {
         return $ret;
     }
 
+    /** getSortAsString function
+     *  @return $conds[] array - mainly for backward compatibility
+     */
+    function getSortAsString() {
+        $ret = array();
+        foreach ( $this->sort as $sortorder ) {
+            $ret[] = $sortorder->getAsString();
+        }
+        return join(',',array_filter($ret));
+    }
+
+
     /** getModules function
      *  retruns $modules array - mainly for backward compatibility
      */
@@ -745,7 +800,7 @@ class AA_Set extends AA_Object {
             /** array of AA_Sortorder */
             'sort'   => new AA_Property( 'sort',   _m("Sort"),       'AA_Sortorder',  true, true ),
             /** array of slice_ids */
-            'slices' => new AA_Property( 'slices', _m("Slices"),     'id',            true, true )
+            'slices' => new AA_Property( 'slices', _m("Slices"),     'text',          true, true )
             );
     }
 
