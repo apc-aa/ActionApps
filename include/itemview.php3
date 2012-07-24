@@ -723,21 +723,21 @@ class itemview {
             $last_gi  = array_pop($GLOBALS['QueryIDsGroupIndex']);
             $last_igi = array_pop($GLOBALS['QueryIDsItemGroupIndex']);
         }
+        array_push($GLOBALS['QueryIDsIndex'],         $last_ii );  // So that _#ITEMINDX = f_e:itemindex can find it
+        array_push($GLOBALS['QueryIDsPageIndex'],     $last_pi );  // So that _#PAGEINDX = f_e:pageindex can find it
+        array_push($GLOBALS['QueryIDsGroupIndex'],    $last_gi );  // So that _#GRP_INDX = f_e:groupindex can find it
+        array_push($GLOBALS['QueryIDsItemGroupIndex'],$last_igi);  // So that _#IGRPINDX = f_e:itemgroupindex can find it
         if ($category_top_html_printed) {
-            array_push($GLOBALS['QueryIDsIndex'],         $last_ii );  // So that _#ITEMINDX = f_e:itemindex can find it
-            array_push($GLOBALS['QueryIDsPageIndex'],     $last_pi );  // So that _#PAGEINDX = f_e:pageindex can find it
-            array_push($GLOBALS['QueryIDsGroupIndex'],    $last_gi );  // So that _#GRP_INDX = f_e:groupindex can find it
-            array_push($GLOBALS['QueryIDsItemGroupIndex'],$last_igi);  // So that _#IGRPINDX = f_e:itemgroupindex can find it
             $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $CurItem);
-            array_pop($GLOBALS['QueryIDsIndex']);
-            array_pop($GLOBALS['QueryIDsPageIndex']);
-            array_pop($GLOBALS['QueryIDsGroupIndex']);
-            array_pop($GLOBALS['QueryIDsItemGroupIndex']);
         }
         if ( !$top_html_already_printed ) {  // print top HTML even no item found
             $out  = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);
         }
         $out .= $this->unaliasWithScroller($this->slice_info['compact_bottom'], $CurItem);
+        array_pop($GLOBALS['QueryIDsIndex']);
+        array_pop($GLOBALS['QueryIDsPageIndex']);
+        array_pop($GLOBALS['QueryIDsGroupIndex']);
+        array_pop($GLOBALS['QueryIDsItemGroupIndex']);
     }
     return $out;
   }
