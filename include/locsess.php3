@@ -46,11 +46,11 @@ function __autoload ($class_name) {
         'Console'            => 'misc/pqp/classes/Console.php',
         'AA_Form_Array'      => 'include/widget.class.php3',
         'AA_Mysqlauth'       => 'include/auth.php3',
+        'AA_Scroller'        => 'include/scroller.php3',
         'AA_Mailman'         => 'include/mailman.php3'
         );
 
     if ($PAIRS[$class_name]) {
-#echo AA_BASE_PATH. $PAIRS[$class_name];
         require AA_BASE_PATH. $PAIRS[$class_name];
         return;
     }
@@ -65,9 +65,13 @@ function __autoload ($class_name) {
         case 'form':
         case 'table':
         case 'debug':
+        case 'transformation':
         //  case 'widget':
         //  case 'field':
             require AA_INC_PATH. $core. '.class.php3';
+            return;
+        case 'plannedtask':
+            require AA_INC_PATH. 'task.class.php3';
             return;
         case 'objectgrabber':
             require AA_INC_PATH. 'grabber.class.php3';

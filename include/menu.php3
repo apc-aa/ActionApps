@@ -154,6 +154,7 @@ function get_aamenus() {
         "anonym_wizard" => array("cond"=>IfSlPerm(PS_FIELDS),   "href"=>"admin/anonym_wizard.php3",            "label"=>_m("Anonymous Form Wizard")),
         "email"         => array("cond"=>IfSlPerm(PS_USERS),    "href"=>"admin/tabledit.php3?set_tview=email", "label"=>_m("Email templates")),
         "taskmanager"   => array("cond"=>IfSlPerm(PS_EDIT),     "href"=>"admin/se_taskmanager.php3",           "label"=>_m("Task Manager")),
+        "tasks"         => array("cond"=>isSuperadmin(),        "href"=>"admin/se_tasks.php3",                 "label"=>_m("Planed Tasks")),
     ));
 
     $slice = AA_Slices::getSlice($slice_id);
