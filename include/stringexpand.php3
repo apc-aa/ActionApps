@@ -530,8 +530,8 @@ class AA_Stringexpand_Lastedit extends AA_Stringexpand {
 }
 
 
-/** Expands {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>} like:
- *          {htmltoggle:more >>>:Econnect:less <<<:Econnect is ISP for NGOs...}
+/** Expands {htmltoggle:<toggle1>:<text1>:<toggle2>:<text2>[:<position>]} like:
+ *          {htmltoggle:more >>>:Econnect:less <<<:Econnect is ISP for NGOs...:bottom}
  *  It creates the link text1 (or text2) and two divs, where only one is visible
  *  at the time
  *  The /javscript/aajslib.php3 shoud be included to the page
@@ -605,23 +605,16 @@ class AA_Stringexpand_Htmltogglecss extends AA_Stringexpand_Nevercache {
             $switch_state_2 = '[-]';
         }
 
+        $class    = ($is_on == 1) ? ' is-on' : '';
+        $selected = ($is_on == 1) ? 1 : 0;
+
         // we can't use apostrophes and quotes in href="javacript:..." attribute
         $switches    = str_replace(array('[+]','[-]'), array(GetAAImage('plus.gif',  _m('show'), 16, 16), GetAAImage('minus.gif', _m('hide'), 16, 16)), array($switch_state_1, $switch_state_2));
         $switches_js = str_replace(array("'", '"', "\n", "\r"), array("\'", "\'", ' ', ' '), $switches);
 
-        $class = '';
-
-        // swap var
-        if ($is_on == 1) {
-            $class = ' is-on';
-            $switch_state_1    = $switch_state_2;
-        }
-
-        // we can't use apostrophes and quotes in href="javacript:..." attribute
-
         $uniqid = mt_rand(100000000,999999999);  // mt_rand is quicker than uniqid()
 
-        $ret    = "<a class=\"togglelink$class\" id=\"toggle_link_$uniqid\" $class href=\"#\" onclick=\"AA_HtmlToggleCss('toggle_link_$uniqid', '{$switches_js[0]}', '{$switches_js[1]}', '$css_rule');return false;\">{$switches[0]}</a>\n";
+        $ret    = "<a class=\"togglelink$class\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlToggleCss('toggle_link_$uniqid', '{$switches_js[0]}', '{$switches_js[1]}', '$css_rule');return false;\">{$switches[$selected]}</a>\n";
         return $ret;
     }
 }
@@ -750,6 +743,9 @@ class AA_Stringexpand_Expandable extends AA_Stringexpand_Nevercache {
 
         if (trim($switch_state_1) == '') {
             $switch_state_1 = '[+]';
+            if (trim($switch_state_2) == '') {
+                $switch_state_2 = '[-]';
+            }
         }
 
         // we can't use apostrophes and quotes in href="javacript:..." attribute
@@ -845,7 +841,7 @@ function parseMath($text) {
             $val = calculate($val);
             if ($variable) {
                 $format = explode("#",$variable);
-                $val    = number_format($val, $format[0], $format[1], $format[2]);
+                $val    = number_format($val, (int)$format[0], $format[1], $format[2]);
             }
             $ret .= $val;
             $key  = true;
@@ -912,17 +908,23 @@ function parseLoop($out, &$item) {
             $val[] = array('value' => $fld);
         }
     } else {
-        $val = $itemcontent->getValues($field);
+        $val = $itemcontent->getValuesArray($field);
     }
 
     if ( empty($val) ) {
         return '';
     }
 
-    if (!$format_str) { // we don't have format string, so we return
-        // separated values by $separator (default is ", ")
-        foreach ($val as $value) {
-            $ret_str = $ret_str . ($ret_str ? $separator : "") . $value['value'];
+    if (!$format_str) {
+        if ($separator=='json') {
+            // we want JSON encoded array [value1,value2]
+            $ret_str = json_encode($val);
+        } else {
+            // we don't have format string, so we return
+            // separated values by $separator (default is ", ")
+            foreach ($val as $value) {
+                $ret_str = $ret_str . ($ret_str ? $separator : "") . $value;
+            }
         }
     } else { // we have format string
         if ( !is_array($params) ) {
@@ -932,7 +934,7 @@ function parseLoop($out, &$item) {
                 if (!strlen($value['value'])) {
                     continue;
                 }
-                $dummy     = str_replace("_#1", $value['value'], $format_str);
+                $dummy     = str_replace("_#1", $value, $format_str);
                 $ret_str   = $ret_str . $val_delim . $dummy;
                 $val_delim = $separator;
             }
@@ -946,10 +948,10 @@ function parseLoop($out, &$item) {
                         // what we need some constants parameters ( like name, short_id, value, ...)
                         $what = substr($params[$i], strpos($params[$i], "_")+1);
                         if ($what == 'value') {
-                            $par = $value['value']; // value is in $item, no need to use db
+                            $par = $value; // value is in $item, no need to use db
                         } else {
                             // for something else we need use db
-                            $par = getConstantValue($group_id, $what, $value['value']);
+                            $par = getConstantValue($group_id, $what, $value);
                         }
                     } elseif (substr($params[$i],0,2) == "_#") { // special parameter is alias
                         /** alias could be used as:
@@ -962,7 +964,7 @@ function parseLoop($out, &$item) {
                          */
                         // we need set some special field, which will be changed to actual
                         // constant value
-                        $item->setAaValue('loop............', new AA_Value($value['value']));
+                        $item->setAaValue('loop............', new AA_Value($value));
                         // get for this alias his output
                         $par = $item->get_alias_subst($params[$i],"loop............");
                     }
@@ -1144,10 +1146,10 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercache {
         if ( !empty($dec_point) OR !empty($thousands_sep) ) {
             $decimals      = get_if($decimals,0);
             $dec_point     = get_if($dec_point, ',');
-            $ret = number_format($ret, $decimals, $dec_point, $thousands_sep);
+            $ret = number_format($ret, (int)$decimals, $dec_point, $thousands_sep);
         } elseif ($decimals !== '') {
             $decimals = get_if($decimals,0);
-            $ret      = number_format($ret, $decimals);
+            $ret      = number_format($ret, (int)$decimals);
         }
         return $ret;
     }
@@ -1190,13 +1192,16 @@ class AA_Stringexpand_Removeids extends AA_Stringexpand {
  *                         is used)
  *                         The parameter could be also in yyyy-mm-dd hh:mm:ss
  *                         format
+ *   @param $no_date_text- text, displayed for the unset date
+ *   @param $zone        - 'GMT' - if the time should be recounted to GMT
+ *
  */
 class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
 
     /** expand function  */
-    function expand($format='', $timestamp='', $no_date_text=null) {
+    function expand($format='', $timestamp='', $no_date_text=null, $zone=null) {
         if ( empty($format) ) {
             $format = "U";
         } elseif ( (strpos($format, 'DATE_') === 0) AND defined($format)) {
@@ -1211,7 +1216,7 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
         } elseif (($timestamp < 86400) AND !is_null($no_date_text)) {
             return $no_date_text;
         }
-        return date($format, (int)$timestamp);
+        return ($zone!='GMT') ? date($format, (int)$timestamp) : gmdate($format, (int)$timestamp);
     }
 }
 
@@ -1354,7 +1359,7 @@ class AA_Stringexpand_Shuffle extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** randomises the order of ids
+/** sorts the values
  *    {sort:<values>[:<order-type>[:<unique>[:<delimiter>]]]}
  */
 class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercache {
@@ -1369,7 +1374,7 @@ class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercache {
         if (!strlen($delimiter)) {
            $delimiter = '-';
         }
-        $arr = explode('-', $values);
+        $arr = explode($delimiter, $values);
         switch ($type) {
             case 'rnumeric': rsort($arr, SORT_NUMERIC);       break;
             case 'rstring':  rsort($arr, SORT_STRING);        break;
@@ -1378,7 +1383,7 @@ class AA_Stringexpand_Sort extends AA_Stringexpand_Nevercache {
             case 'locale':   sort($arr,  SORT_LOCALE_STRING); break;
             default:         sort($arr,  SORT_NUMERIC);       break;
         }
-        return join('-', ($unique=='1') ? array_unique($arr) : $arr);
+        return join($delimiter, ($unique=='1') ? array_unique($arr) : $arr);
     }
 }
 
@@ -1494,6 +1499,18 @@ class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
      */
     function expand($text='') {
         return Csv_escape($text);
+    }
+}
+
+/** generates acsii only username or filename from the string */
+class AA_Stringexpand_Asciiname extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    /** expand function
+     * @param $text
+     */
+    function expand($string='',$encoding='') {
+        return ConvertCharset::singleton()->escape($string, empty($encoding) ? 'utf-8' : $encoding);
     }
 }
 
@@ -1712,10 +1729,7 @@ class AA_Stringexpand_Conds extends AA_Stringexpand_Nevercache {
     function expand($text='', $no_url_encode=false) {
         $values = array();
         if ( !is_object($this->item) OR !$this->item->isField($text) ) {
-            if (($text[0] != '[') OR (( $values = json_decode($text)) == null)) {
-                $values = array($text);
-            }
-            return AA_Stringexpand_Conds::_joinArray($values, $no_url_encode, '');
+            return AA_Stringexpand_Conds::_joinArray(json2arr($text), $no_url_encode, '');
         }
 
         return AA_Stringexpand_Conds::_joinArray($this->item->getValuesArray($text), $no_url_encode);
@@ -2070,10 +2084,28 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
     }
 }
 
+/** returns ids of items based on Item Set as defined on Admin page
+ *  {set:<set_id>}
+ */
+class AA_Stringexpand_Set extends AA_Stringexpand {
+    /** expand function
+     * @param $item_set
+     */
+    function expand($set_id='') {
+        $set = AA_Object::load($set_id, 'AA_Set');
+        if (!is_object($set)) {
+            return '';
+        }
+        $zids = $set->query();
+        return join($zids->longids(), '-');
+    }
+}
+
+
 /** returns ids of items which links the item
  *  {backlinks:<item_id>[:<slice_ids>[:<sort>]]}
  *  {backlinks:{id..............}}
- *    returns all active backlinks to the item in all slices in surrent site
+ *    returns all active backlinks to the item in all slices in current site
  *    module sorted by slice and publish_date
  *  {backlinks:{id..............}:6a435236626262738348478463536272:category.......1-,headline........}
  *    returns all active backlinks from specified slice sorted by category and headline
@@ -2239,6 +2271,39 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand {
     }
 }
 
+
+
+/** returns string unique for the slice(s) within the field. Numbers are added
+ *  if the conflict is found
+ */
+class AA_Stringexpand_Finduniq extends AA_Stringexpand {
+    /** expand function
+     * @param $string
+     * @param $field_id
+     * @param $unique_slices
+     * @param $ignore_item_id
+     */
+    function expand($string, $field_id, $unique_slices='', $ignore_item_id='') {
+        if (!trim($string)) {
+            return new_id();   // just random text
+        }
+        $slices = explode('-', $unique_slices);
+        $add = '';
+        if ( !empty($slices) ) {
+            for ($i=2; $i < 100000; $i++) {
+                $set  = new AA_Set($slices, new AA_Condition($field_id, '=', '"'.$string.$add.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+                $zids = $set->query();
+                if (!$zids->count() OR in_array($ignore_item_id, $zids->longids())) {
+                    break;   // we found unique seo-name
+                }
+                $add = $i;
+            }
+
+        }
+        return $string.$add;
+    }
+}
+
 /** @returns name (or other field) of the constant in $gropup_id with $value
  *  Example: {constant:AA Core Bins:1:name}
  *           {constant:biom__categories:{@category........:|}:name:|:, }  // for multiple constants
@@ -2271,20 +2336,59 @@ class AA_Stringexpand_Constant extends AA_Stringexpand {
     }
 }
 
+/** Sequence - returns sequence of values in JSON Array (could be used with {options}, for example)
+ *    {seqence:num:min:limit:step}
+ */
+class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
+    /** expand function
+     * @param $group_id
+     */
+    function expand($type, $min='', $max='', $step='') {
+        $arr = array();
+        switch ($type) {
+        case 'num':
+            if (is_numeric($min) AND is_numeric($max)) {
+                $arr = strlen($step) ? range((int)$min, (int)$max, (int)$step) : range((int)$min, (int)$max);
+            }
+            break;
+        case 'string':
+            if (strlen($min) AND strlen($max)) {
+                $arr = range($min, $max);
+            }
+            break;
+        }
+        return empty($arr) ? '' : json_encode($arr);
+    }
+}
+
+
 /** {options:<group_id>:<selected>}
+ *  {options:[1,2,5,7]:7}
+ *  {options:{sequence:num:1998:2012}:{date:Y}}
  *  @return html <option>s for given constant group with selected option
  */
 class AA_Stringexpand_Options extends AA_Stringexpand {
     /** expand function
-     * @param $group_id
+     * @param $group  - group id or JSON list of values
      */
-    function expand($group_id, $selected='') {
-        $ret = '';
-        $constants = GetConstants($group_id);
-        if (is_array($constants)) {
-            foreach ($constants as $k => $v) {
-                $sel  = ((string)$k == (string)$selected) ? ' selected' : '';
-                $ret .= "\n  <option value=\"".safe($k)."\"$sel>".safe($v)."</option>";
+    function expand($group, $selected='') {
+        $ret      = '';
+        $selected = (string)$selected;
+        if ($group[0] == '[') {
+            $constants = json_decode($group, true);
+            if (is_array($constants)) {
+                foreach ($constants as $v) {
+                    $sel  = ((string)$v == $selected) ? ' selected' : '';
+                    $ret .= "\n  <option $sel>".safe($v)."</option>";
+                }
+            }
+        } else {
+            $constants = GetConstants($group);
+            if (is_array($constants)) {
+                foreach ($constants as $k => $v) {
+                    $sel  = ((string)$k == $selected) ? ' selected' : '';
+                    $ret .= "\n  <option value=\"".safe($k)."\"$sel>".safe($v)."</option>";
+                }
             }
         }
         return $ret;
@@ -2530,9 +2634,10 @@ class AA_Stringexpand_Fieldid extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $type
      * @param $num
+     * @param $id_type
      */
-    function expand($type, $num=0) {
-        return AA_Fields::createFieldId($type, $num);
+    function expand($type, $num=0, $id_type=null) {
+        return AA_Fields::createFieldId($type, $num, strlen($id_type) ? $id_type : '.');
     }
 }
 
@@ -3024,7 +3129,7 @@ function expandFilenameWithHttp($parturl) {
         }
     }
 
-    return AA_Http::PostRequest($filename, array(), $headers);
+    return AA_Http::postRequest($filename, array(), $headers);
     // $file = &AA_File_Wrapper::wrapper($filename);
     // $file->contents(); opens the stream, reads the data and close the stream
     // return $file->contents();
@@ -3397,11 +3502,6 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
     }
 }
 
-
-
-/** @todo - convert whole stringexpand to the new class approach
- *        - this is just begin
- */
 class AA_Stringexpand {
 
     /** item, for which we are stringexpanding
@@ -3426,8 +3526,6 @@ class AA_Stringexpand {
         'htmlspecialchars' => 'htmlspecialchars',   // old AA_Stringexpand_Htmlspecialchars
         'urlencode'        => 'urlencode',          // old AA_Stringexpand_Urlencode
         'ord'              => 'ord',                // old AA_Stringexpand_Ord
-        'min'              => 'min',                // old AA_Stringexpand_Min
-        'max'              => 'max',                // old AA_Stringexpand_Max
         'rand'             => 'rand',               // old AA_Stringexpand_Rand
         'fmod'             => 'fmod',               // old AA_Stringexpand_Fmod
         /** math function log() */
@@ -3593,7 +3691,7 @@ class AA_Stringexpand_Expand extends AA_Stringexpand {
 }
 
 
-/** unaliases the text - replaces {views} and other constructs */
+/** trims whitespaces form begin and end of the string */
 class AA_Stringexpand_Trim extends AA_Stringexpand {
     // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
@@ -3619,6 +3717,42 @@ class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
         return str_replace($search, $replace, $text);
     }
 }
+
+/** max value
+ *  Accepts two forms of parameters:
+ *     {max:12:45:8}
+ *     {max:[12,45,8]} - JSON form
+ */
+class AA_Stringexpand_Max extends AA_Stringexpand {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    function expand() {
+        return self::_get_result('max', func_get_args());
+    }
+
+    function _get_result($func, $arg_list) {
+        switch (count($arg_list)) {
+        case 0: return '';
+        case 1: $values = json2arr($arg_list[0]); // can't be inside empty()  - Honza, php 5.2
+                return (count($values)<2) ? $values[0] : call_user_func_array($func, $values);
+        }
+        return call_user_func_array($func, $arg_list);
+    }
+}
+
+/** min value
+ *  Accepts two forms of parameters:
+ *     {min:12:45:8}
+ *     {min:[12,45,8]} - JSON form
+ */
+class AA_Stringexpand_Min extends AA_Stringexpand_Max {
+    // Never cached (extends AA_Stringexpand_Nevercache)
+    // No reason to cache this simple function
+    function expand() {
+        return self::_get_result('min', func_get_args());
+    }
+}
+
 
 class AA_Stringexpand_Packid extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -4144,6 +4278,9 @@ class AA_Stringexpand_Array extends AA_Stringexpand_Nevercache {
         case 'get':
             $ret = $arr->get($par1);
             break;
+        case 'addset':
+            $arr->addset($par1, $par2);
+            break;
         case 'getall':
             // $expr with _#1, $delimiter, $sort (key|)
             $ret = $arr->getAll(strlen($par1) ? $par1 : '_#1', $par2, $par3);
@@ -4246,7 +4383,7 @@ class AA_Password_Manager_Reader {
         $mail->setHeader("Errors-To", $from_email);
         //$mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
         $mail->send(array($email));
-        return self::_ok(_m('E-mail s klíèem pro zmìnu hesla byl právì odeslán na váš e-mail: %1', array($email)));
+        return self::_ok(_m('E-mail s klíèem pro zmìnu hesla byl právì odeslán na e-mail: %1', array($email)));
     }
 
     function getChangeForm($key, $user) {
@@ -4369,6 +4506,54 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
     }
 }
 
+/**
+ *  Use as:
+ *    {foreach:val1-val2:<p>_#1</p>:-:<br>}
+ *    {foreach:{qs:myfields:-}:{(<td>{_#1}</td>)}}  //fields[] = headline........-year...........1 - returns <td>Prague<td><td>2012</td>
+ */
+class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
+
+    // not needed right now for Nevercached functions, but who knows in the future
+    function additionalCacheParam() {
+        /** output is different for different items - place item id into cache search */
+        return !is_object($this->item) ? '' : $this->item->getId();
+    }
+
+    function expand($values='', $text='', $valdelimiter='', $outputdelimiter='') {
+        $item   = $this ? $this->item : null;
+        if (!strlen($delimiter)) {
+           $delimiter = '-';
+        }
+        $arr = explode($delimiter, $values);
+        $ret= array();
+        foreach($arr as $str) {
+            if (trim($str)) {
+                $ret[] = AA_Stringexpand::unalias(str_replace('_#1',$str,$text),'',$item);
+            }
+        }
+        return join($outputdelimiter, $ret);
+    }
+}
+
+//class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
+//    function expand($ids='', $code='', $interval='') {
+//
+//        $ids_arr = explode('-',trim(strtolower($ids)));
+//        $id_type = guesstype($ids_string);
+//
+//        // for speedup - single items evaluate here
+//        if ( $ids_string AND (($id_type == 's') OR ($id_type == 'l'))) {
+//            $item = AA_Items::getItem(new zids($ids_string,$id_type));
+//            if ($item) {
+//                return $item->subst_alias($content);
+//            }
+//        }
+//
+//
+//
+//    }
+//}
+
 /** Sends e-mail conditionaly
  *  Be careful - it can send mail on every page load!
  *  Use as:
@@ -4432,7 +4617,4 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
         return $ret;
     }
 }
-
-
-
 ?>
