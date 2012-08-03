@@ -218,6 +218,11 @@ class AA_Grabber {
      */
     function prepare() {}
 
+    /** get data encoding - like UTF-8, windows-1250, ... */
+    function getCharset() {
+        return 'UTF-8';
+    }
+
     /** finish function
      *  Function called by AA_Saver after we get the last item from the data
      *  input
@@ -1158,6 +1163,14 @@ class AA_Grabber_Slice extends AA_Grabber {
     function _fillCache() {
         // read next 100 items (we can laborate with cache size in future to get even better performance)
         $this->_content_cache = GetItemContent(new zids( array_slice($this->_longids, $this->_index, 100), 'l'));
+    }
+
+    function getCharset() {
+        $modules = $this->set->getModules();
+        if ($module = AA_Modules::getModule($modules[0])) {
+            return $module->getCharset();
+        }
+        return 'UTF-8';
     }
 
     function finish() {
