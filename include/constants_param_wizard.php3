@@ -124,7 +124,7 @@ array ("name" => _m("Computed field"),
                               "desc"=>_m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"),
                               "type"=>"STR",
                               "example"=>"({publish_date....}) {headline........}"
-                             ),
+                             )
                        )
        );
 $INSERT_TYPES["items"]["co2"] =
@@ -145,6 +145,11 @@ array ("name" => _m("Computed field for INSERT/UPDATE"),
                             "desc"=>_m("Character or string, which will split the computed string into multiple values (the same field)"),
                               "type"=>"STR",
                               "example"=>"|"
+                             ),
+                        array("name"=>_m("Recompute every"),
+                            "desc"=> 'minute|hour|day|week|month '._m("The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item."),
+                              "type"=>"STR",
+                              "example"=>""
                              )
                        )
        );

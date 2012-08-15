@@ -926,7 +926,7 @@ $CONDS_NOT_FIELD_NAMES = array(
 define ("NOT_EMAIL_WELCOME", -1);
 
 // CountHit probability: how offen check, if the hit counter is planed
-define ("COUNTHIT_PROBABILITY", 100);
+define ("COUNTHIT_PROBABILITY", 10);
 
 // PagecachePurge probability: how offen remove old entries from pagecache table
 define ("PAGECACHEPURGE_PROBABILITY", 1000); // each 1000-th pagecache store event

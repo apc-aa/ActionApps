@@ -102,10 +102,21 @@ class AA_Hitcounter {
 
         // it is not necessary to check, if the  AA_Hitcounter_Update is planed
         // on each hit. We check it only once for 1000 (COUNTHIT_PROBABILITY)
-        if ( rand(0,COUNTHIT_PROBABILITY) == 1) {
+        //if ( rand(0,COUNTHIT_PROBABILITY) == 1) {
+         if (1) {
+
             $display_counter  = new AA_Hitcounter_Update();
             $toexecute        = new AA_Toexecute;
             $toexecute->laterOnce($display_counter, array(), 'AA_Hitcounter_Update', 100, now() + 300);  // run it once in 5 minutes
+
+            require_once AA_INC_PATH.  "task.class.php3";
+
+            $planned_task_scheduler = new AA_Plannedtask_Schedule();
+            $toexecute->laterOnce($planned_task_scheduler, array(), 'AA_Plannedtask_Schedule', 100, now() + 120);  // run it once in 2 minutes
+
+            $computedfields_updater = new AA_Computedfields_Updater;
+            $computedfields_updater->plan();
+           
 //            $toexecute->laterOnce($display_counter, array(), 'AA_Hitcounter_Update', 100, now() + 3000);  // run it once in 50 minutes
         }
         return;
@@ -171,7 +182,7 @@ class AA_Hitcounter_Update {
         // times it is not so big problem - we can plan(0) sometime in the future
         $grouper = new AA_Hitcounter_Group;
         $grouper->plan(3);
-
+        
         $this->updateDisplayStatistics();
     }
 
@@ -289,6 +300,59 @@ class AA_Hitcounter_Group {
                 break;
             }
         }
+    }
+}
+
+class AA_Computedfields_Updater {
+
+    /** updateDisplayCount - updates item.display_count and hit_archive based
+     *  on hit log in hit_short_id and hit_long_id tables
+     *                     - it also plans the the hit_x..... field counting
+     *                       into toexecute queue
+     */
+    function plan() {
+
+        $fields2count = GetTable2Array("SELECT id, slice_id, input_insert_func FROM field WHERE slice_id <> 'AA_Core_Fields..' AND input_insert_func LIKE 'co2:%'", '');
+        
+        $intervals = array('minute'=>5,'hour'=>4,'day'=>3,'week'=>2,'month'=>1);
+        $updaters = array();
+
+        if (is_array($fields2count)) {
+            foreach ($fields2count as $to_count) {
+                list($fnc,$expand_insert,$expand_update,$expand_delimiter,$recompute) = ParamExplode($to_count["input_insert_func"]);
+                if (isset($intervals[$recompute])) {
+                    $sid = unpack_id($to_count['slice_id']);
+                    // find the shortest interval for the slice
+                    $updaters[$sid] = $updaters[$sid] ? max($updaters[$sid],$intervals[$recompute]) : $intervals[$recompute];
+                }
+            }
+
+            if (count($updaters)) { 
+                $toexecute = new AA_Toexecute;
+                foreach ($updaters as $sid => $interval) {
+                    switch ($interval) {
+                        case 1: $time = mktime(rand(0,5),   rand(0,59),  rand(0,59), date("m")+1, 1,           date("Y")); break;
+                        case 2: $time = strtotime("next Monday")+rand(0,(5*60*60)); // Monday - 0-5 in the morning 
+                        case 3: $time = mktime(rand(0,4),   rand(0,59),  rand(0,59), date("m"),   date("d")+1, date("Y")); break;
+                        case 4: $time = mktime(date("G")+1, rand(0,4),   rand(0,59), date("m"),   date("d"),   date("Y")); break;
+                        case 5: $time = mktime(date("G"),   date("i")+1, rand(0,10), date("m"),   date("d"),   date("Y")); break;
+                    }
+                    $toexecute->laterOnce($this, array($sid), "AA_Computedfields_Updater_$sid", 100, $time); // once a day
+                }
+            }
+        }
+    }
+
+    function toexecutelater($sid) {
+        $aa_set = new AA_Set();
+        $aa_set->setModules($sid);
+        $zids = $aa_set->query();
+       
+        $long_ids = $zids->longids(); 
+        foreach ($long_ids as $item_id) {
+            $ret = UpdateField($item_id, 'last_edit.......', date(), false);   // fake update - just cont computed fields
+        }
+        $GLOBALS['pagecache']->invalidateFor("slice_id=$sid");
     }
 }
 
