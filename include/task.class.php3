@@ -82,6 +82,10 @@ class AA_Plannedtask extends AA_Object {
         // every 5 min
         return (time() + 5*60);
     }
+
+    function toexecutelater() {
+        AA_Stringexpand::unalias($this->task);
+    }
 }
 
 
@@ -108,7 +112,6 @@ class AA_Plannedtask_Schedule {
 
         foreach ($zids as $id) {
             $task = AA_Object::load($id, 'AA_Plannedtask');
-            huhl($task, $task->nexttime());
             $toexecute->laterOnce($task, array(), "Plannedtask_$id", 100, $task->nexttime());
         }
     }

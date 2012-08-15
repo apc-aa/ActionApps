@@ -257,9 +257,9 @@ if ($_POST['go_finditem'] && $_POST['finditem']) {
         echo '<h3>'. _m('History') .'</h3><pre>';
         print_r($changes->getHistory(array($long_id)));
         echo "</pre>";
-        echo '<h3>'. _m('Proposals') .'</h3><pre>';
-        print_r($changes->getProposals(array($long_id)));
-        echo "</pre>";
+      //  echo '<h3>'. _m('Proposals') .'</h3><pre>';
+      //  print_r($changes->getProposals(array($long_id)));
+      //  echo "</pre>";
     }
 }
 

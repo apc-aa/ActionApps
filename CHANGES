@@ -1,30 +1,48 @@
+08/15/12 - new paramater for Insert function "Compute INSERT/UPDATE" -
+(honzam)   "Recompute every" (minute|hour|day|week|month).
+           The field will be recomputed every minute, hour, ... (using UPDATE code).
+           The times are not exact - the minute means something 1-10 minutes.
+           If not filled, the field will be recomputed only on insert/update
+           of the item
+         - new {filter:<ids>:<expression>:<equals-to>} - filter ids by expression
+           {filter:4785-4478-5789:_#SLICE_ID:879e87a4546abe23879e87a4546abe23}
+           returns only ids, which <expression> equals to <equals-to>
+           Usualy it is much better to use filtering by database - like you do
+           in {ids}, but sometimes it is necessary to filter concrete ids,
+           so we use this
+         - fix {if} - works well with floating-point numbers, it understands both
+           decimal point as well as decimal comma.
+           {if} allways compares numerically.
+         - better permission handling with anonymous insert
+08/14/12 - new experimental {array} and {table} syntax
+(honzam)
 07/25/12 - new Conditional Planed Tasks (Admin -> Planed Tasks)
-(honzam) - condition parameter for Input widget Radio, multicheckbox and 
+(honzam) - condition parameter for Input widget Radio, multicheckbox and
            multiselect now could contain AA experssions and aliases
-         - {foreach:<values>:<output>:<values-delimiter>:<output-delimiter>} 
-           - loops through all the <values> and display them formatted 
-           by <output> one after other: 
+         - {foreach:<values>:<output>:<values-delimiter>:<output-delimiter>}
+           - loops through all the <values> and display them formatted
+           by <output> one after other:
              {foreach:val1-val2:<p>_#1</p>:-:<br>}
-             {foreach:{qs:myfields:-}:{(<td>{_#1}</td>)}}  
-               fields[] = headline........-year...........1 
+             {foreach:{qs:myfields:-}:{(<td>{_#1}</td>)}}
+               fields[] = headline........-year...........1
                - returns <td>Prague<td><td>2012</td>
-         - {seqence:num:min:limit:step} - returns sequence of values 
+         - {seqence:num:min:limit:step} - returns sequence of values
            in JSON Array (could be used with {options}, for example:
              {options:{sequence:num:1998:2012}:{date:Y}})
-         - {options:<group_id>:<selected>} which generates HTML <option> tags 
-           now accepts JSON values as well: 
+         - {options:<group_id>:<selected>} which generates HTML <option> tags
+           now accepts JSON values as well:
              {options:[1,2,5,7]:7}
-         - {min} and {max} now accepts the values in JSON form: 
+         - {min} and {max} now accepts the values in JSON form:
              {max:[12,45,8]}
-         - {finduniq:<string>:<field_id>:<unique_slices>:<ignore_item_id>} 
-           returns string (for seo) unique for the slice(s) within the field. 
+         - {finduniq:<string>:<field_id>:<unique_slices>:<ignore_item_id>}
+           returns string (for seo) unique for the slice(s) within the field.
            Numbers are added if the conflict is found
-         - new possibility to list multivalues as JSON array: 
+         - new possibility to list multivalues as JSON array:
              {@category........:json}
-         - month names are correctly translated in AJAX and Live widgets 
+         - month names are correctly translated in AJAX and Live widgets
          - new Insert function for field - Unique
          - fix - view parameters are handled better
-         - fix - view index aliases (_#ITEMINDX, _#PAGEINDX, 
+         - fix - view index aliases (_#ITEMINDX, _#PAGEINDX,
            _#GRP_INDX, _#IGRPINDX) for some broken cases
          - fix - validation parameters now better handled
          - Item Sets now handled better - unlimited count for slice, ...
