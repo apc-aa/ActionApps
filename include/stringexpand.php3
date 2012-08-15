@@ -573,7 +573,7 @@ class AA_Stringexpand_Htmltoggle extends AA_Stringexpand_Nevercache {
             $ret  = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
             $ret .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\">$code_2</div>\n";
         }
-        return ($position=='bottom') ?  $ret. $link : $link. $ret;
+        return (trim($position)=='bottom') ?  $ret. $link : $link. $ret;
     }
 }
 
@@ -804,7 +804,7 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
         $link   = "<a class=\"togglelink\" id=\"toggle_link_$uniqid\" href=\"#\" onclick=\"AA_HtmlAjaxToggle('toggle_link_$uniqid', '{$switches_js[0]}', 'toggle_1_$uniqid', '{$switches_js[1]}', 'toggle_2_$uniqid', '$url');return false;\">{$switches[0]}</a>\n";
         $ret    = "<div class=\"toggleclass\" id=\"toggle_1_$uniqid\">$code_1</div>\n";
         $ret   .= "<div class=\"toggleclass\" id=\"toggle_2_$uniqid\" style=\"display:none;\"></div>\n";
-        return ($position=='bottom') ?  $ret. $link : $link. $ret;
+        return (trim($position)=='bottom') ?  $ret. $link : $link. $ret;
     }
 }
 
@@ -1239,6 +1239,7 @@ class AA_Stringexpand_Now extends AA_Stringexpand_Nevercache {
 /** return current timestamp based on the textual date provided
  *   {timestamp:2008-07-01}
  *   {timestamp:20080701t223807}
+ *   {timestamp:next Monday}
  */
 class AA_Stringexpand_Timestamp extends AA_Stringexpand_Nevercache {
     function expand($datetime='') {
@@ -1801,12 +1802,27 @@ class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
 
         $tree_cache = new AA_Treecache($content, $delim, $top, $bottom);
 
+        if ( $GLOBALS['debug'] ) {
+            huhl("tree_cache", $tree_cache,$delim, $top, $bottom);
+        }
+
         // we are looking for subtrees 93938(73737-64635)
         while (preg_match('/[0-9a-f]+[(]([^()]+)[)]/s',$ids_string)) {
             $ids_string = preg_replace_callback('/([0-9a-f]+)[(]([^()]+)[)]/s', array($tree_cache,'cache_list'), $ids_string);
         }
 
-        return $tree_cache->get_concat($ids_string);
+        if ( $GLOBALS['debug'] ) {
+            huhl('$ids_string', $ids_string);
+        }
+
+        $ret = $tree_cache->get_concat($ids_string);
+
+        if ( $GLOBALS['debug'] ) {
+            huhl('$ret', $ret);
+        }
+
+
+        return $ret;
     }
 }
 
@@ -1986,7 +2002,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
      * @param $parameter
      */
     function expand($function, $ids_string, $expression=null, $parameter=null) {
-        if ( !in_array($function, array('sum', 'avg', 'concat', 'count', 'order')) ) {
+        if ( !in_array($function, array('sum', 'avg', 'concat', 'count', 'order', 'filter')) ) {
             return '';
         }
         $ids     = explode('-', $ids_string);
@@ -2031,6 +2047,16 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
                     default:         asort($results, SORT_NUMERIC);        break;
                 }
                 $ret = join('-', array_keys($results));
+                break;
+            case 'filter':
+                $arr       = array();
+                $parameter = (string)$parameter;
+                foreach ($results as $k => $v) {
+                    if ((string)$v == $parameter) {
+                        $arr[] = $k;
+                    }
+                }
+                $ret = join('-',$arr);
                 break;
         }
         return $ret;
@@ -2149,7 +2175,25 @@ class AA_Stringexpand_Order extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Filter ids by the expression
+ *  {filter:<ids>:<expression>:<equals-to>}
+ *  {filter:4785-4478-5789:_#SLICE_ID:879e87a4546abe23879e87a4546abe23}
+ *  Usualy it is much better to use filtering by database - like you do in {ids},
+ *  but sometimes it is necessary to filter concrete ids, so we use this
+ *  Returns only ids, which <expression> equals to <equals-to>
+ */
+class AA_Stringexpand_Filter extends AA_Stringexpand_Nevercache {
+    // cached in AA_Stringexpand_Aggregate
 
+    /** expand function
+     * @param $ids    - dash separated item ids
+     * @param $expression - expression for ordering
+     * @param $equals     - numeric | rnumeric | string | rstring | locale | rlocale
+     */
+    function expand($ids=null, $expression=null, $equals=null) {
+        return AA_Stringexpand_Aggregate::expand('filter', $ids, $expression, $equals);
+    }
+}
 
 /** returns long ids of subitems items based on the relations between items
  *  {tree:<item_id>[:<relation_field>]}
@@ -2175,6 +2219,7 @@ class AA_Stringexpand_Tree extends AA_Stringexpand {
  *  {treestring:2a4352366262227383484784635362ab:relation.......1}
  *  {treestring:2a4352366262227383484784635362ab:relation.......1:1}
  *  {treestring:2a4352366262227383484784635362ab:relation.......1:1:sort[0][headline........]=a&sort[1][publish_date....]=d}
+ *  {treestring:2a4352366262227383484784635362ab:relation.......1:1:headline........:35615a6d5fdfeb23d36d1c94be3cd9b4}
  */
 class AA_Stringexpand_Treestring extends AA_Stringexpand {
     /** expand function
@@ -2454,9 +2499,10 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** The same as {ifeq}, but we are looking for value less than ... You can again
- *  use multiple conditions - the first matching is returned, then
+/** Numeric comparison with the operator specified by parameter You can as
+ *  in {ifeq} use multiple conditions - the first matching is returned, then
  *  Example: {if:{_#IMGCOUNT}:>:10:big:6:medium:small}
+ *  Comparison is allways numeric (also for security reasons)
  */
 class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
@@ -2473,13 +2519,18 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercache {
         $OPERATORS = array('>'=>'>', '>='=>'>=', 'gt'=>'>', 'ge'=>'>=', '='=>'==', '=='=>'==', 'eq'=>'==', '<'=>'<', '<='=>'<=', 'lt'=>'<', 'le'=>'<=', '<>'=>'<>', '!='=>'<>');
 
         $arg_list = func_get_args();   // must be asssigned to the variable
-        $etalon   = array_shift($arg_list);
+        $etalon   = (float)str_replace(',', '.', trim(array_shift($arg_list)));
         $operator = $OPERATORS[str_replace(array('&gt;','&lt;'), array('>','<'),array_shift($arg_list))];
-        $cmp      = create_function('$a,$b', $operator ? 'return ($a '.$operator .' $b);' : 'return false;');
+        if ($operator) {
+            $cmp  = create_function('$b', "return ($etalon $operator". ' $b);');
+        } else {
+            $cmp  = create_function('return false;');
+        }
+
         $ret      = false;
         $i        = 0;
         while (isset($arg_list[$i]) AND isset($arg_list[$i+1])) {  // regular option-text pair
-            if ($cmp($etalon,$arg_list[$i])) {
+            if ($cmp((float)str_replace(',', '.', trim($arg_list[$i])))) {
                 $ret = $arg_list[$i+1];
                 break;
             }
@@ -4563,7 +4614,8 @@ class AA_Stringexpand_Mail extends AA_Stringexpand_Nevercache {
 
     function expand($condition='', $to='', $subject='', $body='', $lang='', $from='', $reply_to='', $errors_to='', $sender='') {
 
-        if (!strlen($condition) OR !strlen($body)) {
+        $condition = trim($condition);
+        if (!strlen($condition) OR !strlen(trim($body)) OR ((string)$condition==='0')) {
             return '';
         }
 
