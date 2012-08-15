@@ -308,6 +308,7 @@ define('ITEMCONTENT_ERROR_BAD_PARAM',   200);
 define('ITEMCONTENT_ERROR_DUPLICATE',   201);
 define('ITEMCONTENT_ERROR_NO_ID',       202);
 define('ITEMCONTENT_ERROR_NO_SLICE_ID', 203);
+define('ITEMCONTENT_ERROR_NO_PERM',     204);
 
 /**
  *  ItemContent class is an abstract data structure, used mostly for storing
@@ -689,7 +690,8 @@ class ItemContent extends AA_Content {
             $new_content->setAaValue($field_id, $property->complete4Insert($this->getAaValue($field_id), $profile));
         }
 
-        $new_content->setValue('status_code.....', max(1, $new_content->getStatusCode(), $slice->allowed_bin_4_user($auth)));
+        $status = max(1, $new_content->getStatusCode(), $slice->allowed_bin_4_user($auth));
+        $new_content->setValue('status_code.....', $status);
 
         if ( $new_content->getPublishDate() <= 0 ) {
             $new_content->setValue('publish_date....', now());
@@ -701,6 +703,11 @@ class ItemContent extends AA_Content {
         $new_content->setSliceID($slice->unpacked_id());
 
         $this->content = $new_content->getContent();
+        if ($status == 4) {
+            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", array($auth->auth["uid"])));  // set error code
+            return false;
+        }
+        return true;
     }
 
     /** storeItem function
@@ -810,6 +817,7 @@ class ItemContent extends AA_Content {
 
         // do not store item, if status_code==4
         if ((int)$this->getStatusCode() == 4) {
+            ItemContent::lastErr(ITEMCONTENT_ERROR_NO_ID, _m("Status code 4"));
             return false;
         }
 
@@ -961,7 +969,7 @@ class ItemContent extends AA_Content {
                 $expand_string = $fnc["param"];
             }
             elseif ($fnc["fnc"]=='co2') {
-                list($expand_insert,$expand_update,$expand_delimiter) = ParamExplode($fnc["param"]);
+                list($expand_insert,$expand_update,$expand_delimiter,$recompute) = ParamExplode($fnc["param"]);
                 $expand_string = $update ? $expand_update : $expand_insert;
             } else {
                 continue;
@@ -1376,11 +1384,11 @@ class AA_ChangesMonitor {
             return array();
         }
 
-        $ids4sql = "'". implode("','", array_map( "quote", $resource_ids)). "'";
+        $ids4sql = sqlin("`change`.resource_id", $resource_ids);
 
-        $changes = GetTable2Array("SELECT `change_record`.*, `change`.resource_id
+        $changes = GetTable2Array("SELECT `change`.resource_id, `change_record`.*
                                 FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
-                                WHERE `change`.resource_id IN ($ids4sql)
+                                WHERE $ids4sql
                                 AND   `change`.type='$type'
                                 ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority", '', 'aa_fields');
 

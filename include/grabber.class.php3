@@ -105,7 +105,10 @@ class AA_Saver {
             }
 
             if (($store_mode == 'overwrite') OR (substr($store_mode,0,6) == 'insert')) {
-                 $content4id->complete4Insert();
+                if (!$content4id->complete4Insert()) {
+                    print("\n<br>AA_Saver->run(): complete4Insert failed: ". ItemContent::lastErrMsg());
+                    continue;
+                }
             }
             // @todo do validation for updates
 
@@ -120,7 +123,7 @@ class AA_Saver {
             // id_mode - overwrite or insert_if_new
             // (the $new_item_id should not be changed by storeItem)
             if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
-                print("\n<br>AA_Saver->run(): storeItem failed or skiped duplicate");
+                print("\n<br>AA_Saver->run(): storeItem failed or skiped duplicate: ". ItemContent::lastErrMsg());
             } else {
                 if ($debugfeed >= 1) {
                     print("\n<br>  + stored OK: ". $content4id->getValue('headline........'));
