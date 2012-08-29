@@ -45,38 +45,9 @@ class AA_Plannedtask extends AA_Object {
             );
     }
 
-    /**  AA_Object's method */
-    static function factoryFromForm($oowner) {
-        $grabber = new AA_Objectgrabber_Form();
-        $grabber->prepare();    // maybe some initialization in grabber
-        // we expect just one form - no need to loop through contents
-        $content    = $grabber->getContent();
-        // while ($content = $grabber->getContent())
-        $store_mode = $grabber->getStoreMode();        // add | update | insert
-        $grabber->finish();    // maybe some finalization in grabber
+    // static function factoryFromForm($oowner, $otype=null)        ... could be redefined here, but we use the standard one from AA_Object
+    // static function getForm($oid=null, $owner=null, $otype=null) ... could be redefined here, but we use the standard one from AA_Object
 
-        // specific part for form
-        $object = new AA_Plannedtask();
-        $object->setId($content->getId());
-        $object->setOwnerId($oowner);
-        $object->setName($content->getName());
-
-        foreach (self::getClassProperties() as $name => $property) {
-            $object->$name = $property->toValue($content->getAaValue($name));
-        }
-        return $object;
-    }
-
-    /**  AA_Object's method */
-    static function getForm($oid=null, $owner=null) {
-        $form = new AA_Form();
-
-        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));   // use default widget for the field
-        foreach (self::getClassProperties() as $name => $property) {
-            $form->addRow(new AA_Formrow_Defaultwidget($property));   // use default widget for the field
-        }
-        return $form;
-    }
 
     function nexttime() {
         // every 5 min

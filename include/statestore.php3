@@ -300,9 +300,9 @@ class AA_Object extends AA_Storable {
             case 'aa_subobjects': return new AA_Property('aa_subobjects' ,'Subobjects', 'string', true,  true, 'string', false);
             case 'aa_id':         return new AA_Property('aa_id' ,        'Id',         'string', false, true, 'id',     true);
         }
-        // does not work - will work with static::getClassProperties() in php 5.3 
+        // does not work - will work with static::getClassProperties() in php 5.3
         // $props = self::getClassProperties();
-        // return isset($props[$property_id]) ? $props[$property_id] : null; 
+        // return isset($props[$property_id]) ? $props[$property_id] : null;
         return null;
     }
 
@@ -828,7 +828,7 @@ class AA_Object extends AA_Storable {
                      'compact_top'      => '<table>
                                             <tr>
                                               <th width="30">&nbsp;</th>
-                                              <th>'.join("</th>\n<th>", array_keys($search_fields)+array(_m('Name'), _m('ID'), _m('Owner'), _m('Action'))).'</th>
+                                              <th>'.join("</th>\n<th>", array_merge(array_keys($search_fields),array( _m('Name'), _m('ID'), _m('Owner'), _m('Action')))).'</th>
                                             </tr>
                                             ',
                      'category_sort'    => false,
@@ -862,6 +862,47 @@ class AA_Object extends AA_Storable {
                  );
 
         return $manager_settings;
+    }
+
+    /**  AA_Object's method */
+    static function factoryFromForm($oowner, $otype=null) {
+        $grabber = new AA_Objectgrabber_Form();
+        $grabber->prepare();    // maybe some initialization in grabber
+        // we expect just one form - no need to loop through contents
+        $content    = $grabber->getContent();
+        // while ($content = $grabber->getContent())
+        $store_mode = $grabber->getStoreMode();        // add | update | insert
+        $grabber->finish();    // maybe some finalization in grabber
+
+
+        // specific part for form
+        $object = new $otype;
+
+        $object->setId($content->getId());
+        $object->setOwnerId($oowner);
+        $object->setName($content->getName());
+
+        // self didn't give us the calling class and we do not have late statis bindings in PHP < 5.3
+        $props = is_null($otype) ? self::getClassProperties() : call_user_func(array($otype, 'getClassProperties'));
+
+        foreach ($props as $name => $property) {
+            $object->$name = $property->toValue($content->getAaValue($name));
+        }
+
+        return $object;
+    }
+
+    /**  AA_Object's method */
+    static function getForm($oid=null, $owner=null, $otype=null) {
+        $form = new AA_Form();
+        $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));   // use default widget for the field
+
+        // self didn't give us the calling class and we do not have late statis bindings in PHP < 5.3
+        $props = is_null($otype) ? self::getClassProperties() : call_user_func(array($otype, 'getClassProperties'));
+        foreach ($props as $name => $property) {
+            $form->addRow(new AA_Formrow_Defaultwidget($property));   // use default widget for the field
+        }
+        return $form;
     }
 }
 

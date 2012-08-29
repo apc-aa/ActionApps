@@ -224,7 +224,7 @@ class AA_Form extends AA_Object {
     }
 
     static public function factoryForm($otype, $oid, $oowner) {
-        $form = call_user_func_array(array($otype, 'getForm'), array($oid, $oowner));
+        $form = call_user_func_array(array($otype, 'getForm'), array($oid, $oowner, $otype));
         $form->setObject($otype, $oid, $oowner);
         return $form;
     }
@@ -232,7 +232,7 @@ class AA_Form extends AA_Object {
     function process($aa) {
         if ( !empty($aa) ) {
             // update or insert
-            $object = call_user_func_array(array($this->object_type, 'factoryFromForm'), array($this->object_owner));
+            $object = call_user_func_array(array($this->object_type, 'factoryFromForm'), array($this->object_owner, $this->object_type));
             // @todo check permissions, validation, $store_mode state (see readFromForm)
 
             $object->save();
@@ -316,7 +316,7 @@ class AA_Form extends AA_Object {
     }
 
     /**  AA_Object's method */
-    static function factoryFromForm($oowner) {
+    static function factoryFromForm($oowner, $otype=null) {
         $grabber = new AA_Objectgrabber_Form();
         $grabber->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
@@ -339,7 +339,7 @@ class AA_Form extends AA_Object {
     }
 
     /**  AA_Object's method */
-    static function getForm($oid=null, $owner=null) {
+    static function getForm($oid=null, $owner=null, $otype=null) {
         $form = new AA_Form();
 
         $form->addRow(new AA_Formrow_Defaultwidget(AA_Object::getPropertyObject('aa_name')));   // use default widget for the field
