@@ -132,7 +132,7 @@ class AA_Table {
         foreach ($this->rows as $row => $cols) {
             $ret .= '<tr>';
             foreach ($this->colindex as $col => $i) {
-                $ret .= '<td>'. $cols[$i] .'</td>';
+                $ret .= '<td>'. $this->getOne($row,$col) .'</td>';
             }
             $ret .= '</tr>';
         }
