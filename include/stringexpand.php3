@@ -809,8 +809,8 @@ class AA_Stringexpand_Htmlajaxtoggle extends AA_Stringexpand {
 }
 
 function calculate($exp) {
-    $exp = str_replace(array(' ',"\t", ',', '(+', '(-', '(*', '(/', '+)', '-)', '*)', '/)', '()') ,array('', '', '.', '(0+', '(0-', '(0*', '(0/', '+0)', '-0)', '*0)', '/0)', '0'), "($exp)");
-    if (strspn($exp, '0123456789.+-*/()') != strlen($exp)) {
+    $exp = str_replace(array(' ',"\t", "\r", "\n", ',', '(+', '(-', '(*', '(/', '(%', '+)', '-)', '*)', '/)', '%)', '()') ,array('', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '+0)', '-0)', '*0)', '/0)', '%0)', '0'), "($exp)");
+    if (strspn($exp, '0123456789.+-*/%()') != strlen($exp)) {
         return 'wrong characters';
     }
     $ret = @eval("return $exp;");
@@ -2604,7 +2604,8 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercache {
         }
         if ($ret === false) {
             // else text
-            $ret = isset($arg_list[$i]) ? $arg_list[$i] : '';
+            $ret     = isset($arg_list[$i]) ? $arg_list[$i] : '';
+            $matched = $ret;
         }
         // _#2 is not very usefull but we have it from the times the function was just for one option
         return str_replace(array('_#1','_#2'), array($haystack, $matched), $ret);
