@@ -423,6 +423,11 @@ $_m["No templates"]
 $_m["Not accepted, sorry. Looks like spam."]
  = "";
 
+// ./filldisc.php3
+// ./filler.php3
+$_m["Wrong result, not posible to post comments."]
+ = "El resultado de la suma no es correcto";
+
 // ./filler.php3, row 229
 $_m["Not allowed to post comments"]
  = "";

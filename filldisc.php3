@@ -90,6 +90,13 @@ if ( $answer )    {
      exit;
 }
 
+if (is_numeric($_REQUEST['respuesta'])) {
+    if (($_REQUEST['varA'] + $_REQUEST['varB']) != $_REQUEST['respuesta']) {
+        // $varA + $varB must be equal to $respuesta, if provided
+        echo _m("Wrong result, not posible to post comments.");
+        exit;
+    }
+}
 
 $slice_id = unpack_id(GetTable2Array("SELECT slice_id FROM item WHERE id='".q_pack_id($d_item_id)."'", 'aa_first', 'slice_id'));
 $slice    = AA_Slices::getSlice($slice_id);

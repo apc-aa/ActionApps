@@ -254,9 +254,18 @@ function SendOkPage($txt, $new_ids = array()) {
     }
 }
 
+bind_mgettext_domain(AA_INC_PATH.'lang/'.DEFAULT_LANG_INCLUDE);
+
 // trap field for spammer bots
-if ( $answer )    {
+if ( $_REQUEST['answer'] )    {
     SendErrorPage(array ("fatal"=>_m("Not allowed to post comments")));
+}
+
+if (is_numeric($_REQUEST['respuesta'])) {
+    if (($_REQUEST['varA'] + $_REQUEST['varB']) != $_REQUEST['respuesta']) {
+        // $varA + $varB must be equal to $respuesta, if provided
+        SendErrorPage(array ("fatal"=>_m("Wrong result, not posible to post comments.")));
+    }
 }
 
 // new version of filling - through aa[] array allowing multiple items to store
