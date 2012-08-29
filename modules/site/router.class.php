@@ -475,13 +475,14 @@ class AA_Router_Seo extends AA_Router {
 class AA_Stringexpand_Go extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     /** expand function */
-    function expand($query_string='') {
+    function expand($query_string='',$html_encode='') {
         $router_class = $GLOBALS['apc_state']['router'];
         if (empty($router_class)) {
             return '<div class="aa-error">Err in {go} - router not found - {go} is designed for site modules</div>';
         }
         $router = AA_Router::singleton($router_class);
-        return $router->go2url($query_string);
+        $url = $router->go2url($query_string);
+        return ($html_encode=='1') ? htmlspecialchars($url) : $url;
     }
 }
 
