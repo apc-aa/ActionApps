@@ -32,8 +32,10 @@
  *  @param conds     optional - conditions when just some items shoud be exported
  *  @param filename  optional - name of the file
  *
- *  @example http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=csv&filename=export.csv
- *  @example http://example.org/apc-aa/export.php?slice_id=2a3e435461667d7f7c7c748b2a15a8b1&format=excel&filename=export.xls
+ *  You can also store the export and then allow people to export items by public link /apc-aa/export.php
+ *
+ *  @example http://example.org/apc-aa/export.php?id=353399822763422617723728a7787b77
+ *  @example http://example.org/apc-aa/export.php?id=353399822763422617723728a7787b77&name=Jane
  */
 
 require_once "../include/init_page.php3";
@@ -43,456 +45,30 @@ require_once AA_INC_PATH."grabber.class.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."searchlib.php3";
 require_once AA_INC_PATH."locsess.php3";    // DB_AA object definition
+require_once AA_INC_PATH."exporter.class.php3";
+require_once AA_INC_PATH."manager.class.php3";
 
-//require_once AA_INC_PATH."PHPExcel/PHPExcel.php";
-//require_once AA_INC_PATH."PHPExcel/PHPExcel/Writer/Excel5.php";
-
-class AA_Exporter extends AA_Object {
-    var $field_set;
-    var $grabber;
-
-    function AA_Exporter($params) {
-        // params: field_set, grabber
-        $this->field_set = $params['field_set'];
-        $this->grabber   = $params['grabber'];
-    }
-
-    function sendFile($file_name) {
-
-        $temp_file = $this->_createTmpFile();
-        $this->_contentHeaders($file_name);
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-        $fstats = fstat($temp_file);
-        header('Content-Length: ' . $fstats['size']);
-
-        ob_clean();
-        flush();
-        rewind($temp_file);
-        while (!feof($temp_file)) {
-            $buffer = fread($temp_file, 4096);
-            echo $buffer;
-        }
-        fclose($temp_file);
-    }
-
-    /** exporter function
-     *  Generate the output and write to a temporary file
-     *  I'm assuming $export_slices contains UNPACKED slice ids
-     * @param $slice_id
-     * @param $export_slices
-     * @param $new_slice_id
-     */
-    function _createTmpFile() {
-        $temp_file = tmpfile();
-
-        $this->grabber->prepare();       // maybe some initialization in grabber
-
-        $index = 0;
-        while ($content4id = $this->grabber->getItem()) {
-
-            $item = GetItemFromContent($content4id);
-
-            if ($index == 0) {
-                fwrite($temp_file, $this->_outputStart($item));
-            }
-            $index++;
-
-            fwrite($temp_file, $this->_outputItem($item));
-            $old_item = $item;
-        }
-        fwrite($temp_file, $this->_outputEnd($old_item));
-        return $temp_file;
-    }
-
-    function _outputStart($item)  { return ''; }
-    function _outputItem($item)   { return ''; }
-    function _outputEnd($item)    { return ''; }
-
-    function _contentHeaders($file_name)    {
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename='.basename($file_name));
-        header('Content-Transfer-Encoding: binary');
-    }
+if (!IfSlPerm(PS_FEEDING)) {
+    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to export"));
+    exit;
 }
-
-class AA_Exporter_Csv extends AA_Exporter {
-
-    /** exporter function
-     *  Generate the output and write to a temporary file
-     *  I'm assuming $export_slices contains UNPACKED slice ids
-     * @param $slice_id
-     * @param $export_slices
-     * @param $new_slice_id
-     */
-    function _createTmpFile() {
-        $temp_file = tmpfile();
-
-        $this->grabber->prepare();       // maybe some initialization in grabber
-
-        $index = 0;
-        while ($content4id = $this->grabber->getItem()) {
-
-            $item = GetItemFromContent($content4id);
-
-            if ($index == 0) {
-                $this->_outputStartFile($temp_file, $item);
-            }
-            $index++;
-
-            $this->_outputItemFile($temp_file, $item);
-            $old_item = $item;
-        }
-        return $temp_file;
-    }
-
-
-    function _outputStartFile($file, $item)  {
-        $fs      = $this->field_set;
-        $out_arr = array();
-        $count   = $fs->fieldCount();
-
-        for ($i=0; $i < $count; $i++) {
-            $out_arr[]  = $fs->getName($i) . ' ('.$fs->getDefinition($i).')';
-        }
-        fputcsv($file, $out_arr);
-    }
-
-    function _outputItemFile($file, $item)  {
-        fputcsv($file, $this->field_set->getValueArray($item));
-    }
-}
-
-
-/*
-class AA_Exporter_Excel extends AA_Exporter {
-
-    var $current_row;
-
-    function AA_Exporter_Excel($params) {
-        $this->current_row = -1;
-        parent::AA_Exporter($params);
-    }
-
-    function _outputEnd($item)   {
-        return pack("ss", 0x0A, 0x00);  // EOF
-    }
-
-    function _outputStart($item)  {
-        $ret .= pack("ssssss", 0x809, 0x8, 0x0, 0x10, 0x0, 0x0);  // BOF
-        $ret .= pack('ss', 0x0042, 0x0002). pack('s',  0x04E4);   // or 0x04B0 ? codepage
-
-        $fs      = $this->field_set;
-        $count   = $fs->fieldCount();
-
-        for ($i=0; $i < $count; $i++) {
-            $ret .= $this->__getCell($fs->getName($i), 0, $i);
-            $ret .= $this->__getCell('('.$fs->getDefinition($i).')', 1, $i);
-        }
-        $this->current_row = 1;
-        return $ret;
-    }
-
-    function _outputItem($item)  {
-        $ret     = '';
-
-        $fs      = $this->field_set;
-        $count   = $fs->fieldCount();
-        $this->current_row++;
-
-        for ($i=0; $i < $count; $i++) {
-            $definition = $fs->getDefinition($i);
-            $recipe     = $fs->isField($i) ? "{@$definition:|}" : $definition;
-            $ret       .= $this->__getCell($item->unalias($recipe), $this->current_row, $i);
-        }
-        return $ret;
-    }
-
-    function __getCell($value,$row,$col) {
-        $ret = '';
-        if (is_numeric($value)) {
-            $ret = pack("sssss", 0x203, 14, $row, $col, 0x0) . pack("d", $value);
-        } elseif(is_string($value)) {
-            $value = UTF8toBIFF8UnicodeShortchr(255).chr(254).mb_convert_encoding( $value, 'UTF-16LE', 'UTF-8');
-            $len = mb_strlen($value);
-            $ret = pack("ssssss", 0x204, 8 + $len, $row, $col, 0x0, $len) . $value;
-        }
-        return $ret;
-    }
-
-    function UTF8toBIFF8UnicodeShort($value) {
-        if (function_exists('mb_strlen') and function_exists('mb_convert_encoding')) {
-            // character count
-            $ln = mb_strlen($value, 'UTF-8');
-
-            // option flags
-            $opt = 0x0001;
-
-            // characters
-            $chars = mb_convert_encoding($value, 'UTF-16LE', 'UTF-8');
-        } else {
-            // character count
-            $ln = strlen($value);
-
-            // option flags
-            $opt = 0x0000;
-
-            // characters
-            $chars = $value;
-        }
-
-        $data = pack('CC', $ln, $opt) . $chars;
-        return $data;
-    }
-}
-*/
-
-class AA_Exporter_Html extends AA_Exporter {
-
-    function getCharset() {
-        static $_charset = null;
-        if (is_null($_charset)) {
-            $_charset = $this->grabber->getCharset();
-        }
-        return $_charset;
-    }
-
-    function _contentHeaders($file_name)    {
-        header('Content-Type: text/html; charset='.$this->getCharset());
-    }
-
-    function _outputEnd($item)   {
-        return "\n</table></body></html>";  // EOF
-    }
-
-    function _outputStart($item)  {
-        $this->_charset = $this->grabber->getCharset();
-
-        $ret  = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
-        $ret .= '<html><head><meta http-equiv="Content-Type" content="text/html; charset='.$this->getCharset().'"><title>ActionApps Export</title></head><body><table border="1">';
-
-        $arr = $this->field_set->getNameArray();
-        array_walk($arr, array('AA_Exporter_Html', '_valueSanity'), 'th');
-        return $ret. "\n <tr>" . join("\n  ", $arr)."\n </tr>";
-    }
-
-    function _valueSanity(&$value, $key, $entity) {
-        $value = "<$entity>". @htmlspecialchars($value, ENT_COMPAT, $this->getCharset()) ."</$entity>";
-    }
-
-    function _outputItem($item)  {
-        $arr = $this->field_set->getValueArray($item);
-        array_walk($arr, array('AA_Exporter_Html', '_valueSanity'), 'td');
-        return "\n <tr>" . join("\n  ", $arr)."\n </tr>";
-    }
-}
-
-class AA_Exporter_Html_Download extends AA_Exporter_Html {
-    function _contentHeaders($file_name)    {
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename='.basename($file_name));
-        header('Content-Transfer-Encoding: binary');
-    }
-}
-
-class AA_Exporter_Excel extends AA_Exporter_Html {
-    function _contentHeaders($file_name)    {
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/vnd.ms-excel;charset:UTF-8');
-        header('Content-Disposition: attachment; filename='.basename($file_name));
-        header('Content-Transfer-Encoding: binary');
-    }
-}
-
-/*
-class AA_Exporter_Excel5 extends AA_Exporter {
-    var $sheet;
-    var $_ar;
-
-    function _contentHeaders($file_name)    {
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/vnd.ms-excel;charset:UTF-8');
-        header('Content-Disposition: attachment; filename='.basename($file_name));
-        header('Content-Transfer-Encoding: binary');
-
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-//        $fstats = fstat($temp_file);
-//        header('Content-Length: ' . $fstats['size']);
-
-    }
-
-    function _outputStart($item)  {
-        $this->_ar[] = $this->field_set->getNameArray(true);
-        return "";
-    }
-
-    function _outputEnd($item)   {
-
-        // Create new PHPExcel object
-        $this->sheet = new PHPExcel();
-
-        // Set properties
-        $this->sheet->getProperties()->setCreator("ActionApps Excel Export");
-        $this->sheet->getProperties()->setTitle("ActionApps Excel Export");
-        $this->sheet->getProperties()->setSubject("ActionApps Excel Export");
-        $this->sheet->getProperties()->setDescription("ActionApps Excel Export");
-
-        // Add the data
-        $this->sheet->setActiveSheetIndex(0);
-        if (!empty($this->_ar)) {
-            $this->sheet->getActiveSheet()->fromArray($this->_ar);
-        }
-
-        // Rename sheet
-        $this->sheet->getActiveSheet()->setTitle('Simple');
-
-        // Echo done
-        return "";  // EOF
-    }
-
-    function _outputItem($item)  {
-        $this->_ar[] = $this->field_set->getValueArray($item);
-        return "";
-    }
-
-
-    function sendFile($file_name) {
-
-        $temp_file = $this->_createTmpFile();
-
-        // Save Excel 5 file
-        $objWriter = new PHPExcel_Writer_Excel5($this->sheet);
-
-        $this->_contentHeaders($file_name);
-        $objWriter->save('-');
-    }
-}
-*/
-
-class AA_Fieldset {
-
-    /** array of fields or definitions
-     *  (element could be "headline........" as well as "_#HEADLINE _#ABSTRACT")
-     *  the type is stored in $_type array
-     * /
-    var $_fields;
-
-    /** array of types of fields - corresponds to $_fields array
-     *  values are [f|a]  (= field | aliases )
-     */
-    var $_types;
-
-    /** array of field names - corresponds to $_fields array    */
-    var $_names;
-
-    function AA_Fieldset() {
-        $this->_fields = array();
-        $this->_types  = array();
-        $this->_names  = array();
-    }
-
-    function addField($field_id, $field_name='') {
-        $this->_fields[] = $field_id;
-        $this->_names[]  = $field_name;
-        $this->_types[]  = 'f';
-    }
-
-    function addAlias($field_id, $field_name='') {
-        $this->_fields[] = $field_id;
-        $this->_names[]  = $field_name;
-        $this->_types[]  = 'd';
-    }
-
-    function fieldCount()          { return count($this->_fields); }
-    function getDefinition($index) { return $this->_fields[$index]; }
-    function getName($index)       { return $this->_names[$index]; }
-    function isField($index)       { return $this->_types[$index] == 'f'; }
-
-    function getValueArray($item)  {
-        $arr     = array();
-
-        foreach ($this->_fields as $index => $definition) {
-            $recipe = ($this->_types[$index]=='f') ? "{@$definition:|}" : $definition;
-            $arr[]  = AA_Stringexpand::unalias($recipe, '', $item);
-        }
-        return $arr;
-    }
-
-    function getNameArray($short=false)  {
-        $arr     = array();
-        foreach ($this->_fields as $index => $definition) {
-            $arr[]  = $this->_names[$index] . ($short ? '' : " ($definition)");
-        }
-        return $arr;
-    }
-}
-
-//@todo!!!
-//if (!IfSlPerm(PS_FEEDING)) {
-//    MsgPage($sess->url(self_base()."index.php3"), _m("You have not permissions to export"));
-//    exit;
-//}
 
 if ($_GET['export']) {
-    $slice  = AA_Slices::getSlice($slice_id);
 
-    if (!$slice->isValid()) {
-        echo _m('No slice specified - specify slice_id as url parameter');
-        exit;
-    }
+    $exportset_params = array (
+        'grabber_type' => $grabber_name,
+        'format'       => $format,
+        'type'         => $type,
+        'bins'         => $bins,
+        'filename'     => $filename,
+        'conds'        => $conds,
+        'sort'         => $sort
+    );
 
-    $set = new AA_Set($slice_id, $_GET['conds'], $_GET['sort'], $_GET['bins']);
-    $fs  = new AA_Fieldset;
+    $exportset = new AA_Exportsetings($exportset_params);
+    $exportset->setOwnerId($slice_id);
 
-    if ($grabber_name=='AA_Grabber_Discussion') {
-        $grabber  = new AA_Grabber_Discussion($set);
-        foreach (array('d_id............', 'd_parent........','d_item_id.......', 'd_subject.......', 'd_body..........', 'd_author........', 'd_e_mail........', 'd_url_address...', 'd_url_descript..', 'd_date..........', 'd_remote_addr...', 'd_state.........') as $field_id) {
-            $fs->addField($field_id);
-        }
-    } else {
-        $grabber  = new AA_Grabber_Slice($set);
-
-        $fields     = $slice->getFields();
-        $fields_arr = $fields->getPriorityArray();
-
-        foreach ($fields_arr as $field_id) {
-            // skip packed fields
-            if ( in_array($field_id, array('id..............', 'slice_id........'))) {
-                continue;
-            }
-            $field = $fields->getField($field_id);
-            if ($_GET['type'] == 'human') {
-                // try to convert the data to human readable form
-                list($field_type,) = $field->getSearchType();
-                switch ($field_type) {
-                    case 'date':     $fs->addAlias('{date:Y-m-d H#:i:{'.$field_id.'}}', $field->getProperty('name')); break;
-                    case 'relation': $fs->addAlias('{item:{@'.$field_id.':-}:_#HEADLINE:|}', $field->getProperty('name')); break;
-                    default:         $fs->addField($field_id, $field->getProperty('name'));
-                }
-            } else {
-                $fs->addField($field_id, $field->getProperty('name'));
-            }
-        }
-        $fs->addField('u_slice_id......', 'Slice ID');
-        $fs->addField('unpacked_id.....', 'Item ID');
-    }
-
-    set_time_limit(5000);
-
-    $exporter = AA_Object::factory($_GET['format'], array('field_set'=>$fs, 'grabber'=>$grabber));
-    if (is_null($exporter)) {
-        echo _m('Bad file format - specify format');
-        exit;
-    }
-
-    $filename = $_GET['filename'] ? $_GET['filename'] : date("ymd").'-'.AA_Stringexpand_Seoname::expand($slice->name(), '',$slice->getCharset()). (($grabber_name=='AA_Grabber_Discussion') ? '-Disc' : ''). '.'.strtolower(substr($_GET['format'],12));
-
-    $exporter->sendFile($filename);
+    $exportset->export();
 
     exit;
 }
@@ -555,6 +131,29 @@ FrmTabEnd($form_buttons, $sess, $slice_id);
 ?>
 </form>
 <?php
+
+
+$module_id  = $slice_id;
+$manager_id = 'exportsetings'.$module_id;
+
+$manager_settings = AA_Object::getManagerConf('AA_Exportsetings', get_admin_url('se_export.php'));
+
+$manager = new AA_Manager($manager_id, $manager_settings);
+$manager->performActions();
+
+$aa_set = $manager->getSet();
+$aa_set->setModules($module_id);
+//$aa_set->addCondition(new AA_Condition('aa_user',       '=', $auth->auth['uid']));
+
+$zids  = AA_Object::querySet('AA_Exportsetings', $aa_set);
+
+$manager->display($zids);
+$r_state['manager']    = $manager->getState();
+$r_state['manager_id'] = $manager_id;
+
+//$manager->displayPage($zids, 'sliceadmin', 'exportsetings');
+
+
 HtmlPageEnd();
 page_close()
 ?>

@@ -1,3 +1,29 @@
+08/29/12 - new possibility of stored exports. You can define export
+(honzam)   to CVS, HTML, XLS on the Admin -> Export file page and then call
+           the stored export by id on /export.php?id=... page.
+           You can specify the conditions for the export, the bins, the sorting
+           and the name of outputfile. In all the settings you can use
+           the {AA expressions}, so it is quite easy to make the export with
+           changeable conditions (for example if you put
+             d-year............-=-{qs:year}
+           in the conditions, then you will be able to call it like
+             /apc-aa/export.php?id=5357...3e45&year=2012)
+         - new (alternative) way, how to check for spam in filler.php3 and
+           fillform.php3 - if you send the "respuesta" (by GET or POST), then
+           for other two parameters (GET or POST) - varA and varB must be true:
+             varA + varB = respuesta (thanks to Alejandro Barrera Gutierrez)
+         - new possibility to calculate with modulo "%" operator in {math}
+           (thanks to Alejandro Barrera Gutierrez)
+         - the expressions in {math} could contain newlines, now.
+         - filler.php3 accepts language settings form config.php3
+         - new second parameter of {go:<url>[:<html-encode>]} which if set to 1,
+           then the resulting ulr is htmlecoded
+           (so you can use it directly in <a href=""> tag, for example)
+         - fixed {table} with "get" parameter
+         - fixed default widget for enumerated properities - selectbox
+         - easier way, how to create new manageable objects in AA
+           - see AA_Exportsetings for se_export.php or
+                 AA_Plannedtask in include/task.class.php3, for example
 08/15/12 - new paramater for Insert function "Compute INSERT/UPDATE" -
 (honzam)   "Recompute every" (minute|hour|day|week|month).
            The field will be recomputed every minute, hour, ... (using UPDATE code).

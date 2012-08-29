@@ -79,7 +79,10 @@ function __autoload ($class_name) {
         case 'validate':
             require_once AA_INC_PATH. 'validate.php3';
             return;
-    }
+        case 'exportsetings':
+            require_once AA_INC_PATH. 'exporter.class.php3';
+            return;
+      }
 
     $CUSTOM_INC_FILES = array(
         'AA_Stringexpand' => 'stringexpand.php',
@@ -211,7 +214,7 @@ class DB_AA extends DB_Sql {
                 $ret[] = empty($column) ? reset($db->Record) : $db->Record[$column];
             }
             $val = empty($column) ? $db->Record : array_intersect_key($db->Record, $col_keys);
-            if (is_numeric($key)) {
+            if (is_numeric($key) OR empty($key)) {
                 $ret[] = $val;
             } else {
                 $ret[$db->Record[$key]] = $val;
