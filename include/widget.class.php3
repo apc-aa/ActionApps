@@ -169,8 +169,8 @@ class AA_Widget extends AA_Components {
             return null;
         }
 
+        $values = $aa_property->getConstants();
         if ($aa_property->isMulti()) {
-            $values = $aa_property->getConstants();
             if (empty($values)) {
                 return new AA_Widget_Mfl();
             }
@@ -178,6 +178,10 @@ class AA_Widget extends AA_Components {
                 return new AA_Widget_Mch(array('const_arr' => $values));
             }
             return new AA_Widget_Mse(array('const_arr' => $values));
+        }
+
+        if (!empty($values)) {
+           return new AA_Widget_Sel(array('const_arr' => $values));
         }
 
         if ($aa_property->getType() == 'bool') {
