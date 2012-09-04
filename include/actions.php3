@@ -73,18 +73,18 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
     function doMove($zids, $to_bin) {
         global $auth, $event, $pagecache;
         $PERMS = array(1 => PS_ITEMS2ACT, 2 => PS_ITEMS2HOLD, 3 => PS_ITEMS2TRASH);
-        
+
         $to_bin = (int)$to_bin;
         if ($zids->count() > 0) {
             $now  = now();
 
             $SQL = "SELECT id, slice_id FROM item WHERE (status_code<>$to_bin) AND ". $zids->sqlin('id');
             $ids = GetTable2Array($SQL, 'id', 'unpack:slice_id');
-            
+
             if (empty($ids)) {
                 return;
             }
-            
+
             $items2move = array();
             foreach($ids as $p_id => $sid) {
                 if (IfSlPerm($PERMS[$to_bin], $sid)) {
@@ -94,21 +94,21 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
                     $items2move[$sid][] = $p_id;
                 }
             }
-            
+
             foreach ($items2move as $sid => $p_ids) {
-                
+
                 $xzids = new zids($p_ids, 'p');
-                
+
                 $SQL = "UPDATE item SET
                    status_code = '". $to_bin ."',
                    last_edit   = '$now',
                    edited_by   = '". quote(isset($auth) ? $auth->auth["uid"] : "9999999999")."'";
-    
+
                 // E-mail Alerts
                 $moved2active = ( ($to_bin == 1) ? $now : 0 );
                 $SQL         .= ", moved2active = $moved2active";
                 $SQL         .= " WHERE ". $xzids->sqlin('id');
-    
+
                 tryQuery($SQL);
 
                 $item_ids = $xzids->longids();

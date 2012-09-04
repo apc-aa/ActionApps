@@ -1,3 +1,34 @@
+09/04/12 - new {menu} expression, which prints HTML menu tree for current item.
+(honzam)    - designed for SEO sitemodule with "Pages" slice with the relation
+              field "Subpage of..."
+            - the menu items with empty text is not printed
+              (which you can use for not displaying some items)
+           {menu:<first-level-item-ids>:<menu-link>:[<relation-field>[:<sort-string>]]}
+           submenu for current item:
+             {menu:{id..............}:_#MENULINK}
+           whole real menu for the Pages slice:
+             {menu:{ids:18a352366ea922738348478463536ea5:d-relation........-ISNULL-1:number..........}:_#MENULINK:relation........:number..........}
+           Parameters are:
+            <first-level-item-ids> - item ids of the menu options on the first level
+            <menu-link>            - alias or aa expression which will be printed inside <li></li>
+                                   - should be link to the item - _HEADLINK (for example)
+                                   - if the resulting code is empty, the menu option is not displayed
+                                     (not its submenu), which you can use for not displaying some items
+            <relation-field>       - tree relation field (default relation........)
+            <sort-string>          - order of tree leaves
+           When you are on /en/one/one.2 pge, then the menu then looks like:
+               <ul>
+                <li id="menu-18a352366ea922738348478463536ea5" class="inpath"> one
+                     <ul>
+                       <li id="menu-22738348418a352363536ea566ea9784" > one.1 </li>
+                       <li id="menu-738348418a38463536ea552366ea9227" class="inpath active"> one.2 </li>
+                     </ul>
+                 </li>
+                 <li id="menu-66ea922738348478463536ea518a3523" > two </li>
+               </ul>
+           Each <li> contains id="menu-<item_id>" and also class, which indicates,
+           if the menu option is "active" or "inpath" to current "active" item
+         - improved spanish translation
 08/29/12 - new possibility of stored exports. You can define export
 (honzam)   to CVS, HTML, XLS on the Admin -> Export file page and then call
            the stored export by id on /export.php?id=... page.

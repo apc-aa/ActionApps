@@ -243,9 +243,9 @@ class AA_Manager extends AA_Storable {
      * @param $profile
      */
     function setFromProfile(&$profile) {
-        
+
         // set default admin interface settings from user's profile
-        
+
         // get default number of listed items from user's profile
         $this->setListlen( $profile->getProperty('listlen') );
 
