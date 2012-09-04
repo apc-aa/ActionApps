@@ -2068,7 +2068,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
  */
 class AA_Stringexpand_Fulltext extends AA_Stringexpand {
 
-    function expand($item_id) {
+    function expand($item_id='') {
         $id_type    = guesstype($item_id);
 
         if ( $item_id AND (($id_type == 's') OR ($id_type == 'l'))) {
@@ -2245,6 +2245,58 @@ class AA_Stringexpand_Treestring extends AA_Stringexpand {
 
         return call_user_func_array(array('AA_Trees', $func), array($long_id, get_if($relation_field, 'relation........'), $reverse=='1', $sort, $s_arr));
     }
+}
+
+/** @return prints HTML menu
+ *  - designed for SEO sitemodule with "Pages" slice with the relation field "Subpage of..."
+ *  - the menu items with empty text is not printed (which you can use for not displaying some items)
+ *
+ *      {menu:<first-level-item-ids>:<menu-text>:[<relation-field>[:<sort-string>]]}
+ *  submenu for current item:
+ *      {menu:{id..............}:_#MENULINK}
+ *  whole real menu for the Pages slice:
+ *      {menu:{ids:18a352366ea922738348478463536ea5:d-relation........-ISNULL-1:number..........}:_#MENULINK:relation........:number..........}
+ *
+ *  The menu then looks like:   <ul>
+ *                                <li> one
+ *                                  <ul>
+ *                                    <li> one.1 </li>
+ *                                    <li> one.2 </li>
+ *                                  </ul>
+ *                                </li>
+ *                                <li> two </li>
+ *                              </ul>
+ *
+ *   Each li contains id="menu-<item_id>" and also class, which indicates,
+ *   if the menu option is "active" or "inpath" to current "active" item
+ */
+class AA_Stringexpand_Menu extends AA_Stringexpand {
+    /** expand function
+     * @param $item_ids        - item ids of the menu options on the first level
+     * @param $code            - alias or aa expression which will be printed inside <li></li>
+     *                         - should be link to the item - _HEADLINK (for example)
+     *                         - if the resulting code is empty, the menu option is not displayed
+     *                           (not its submenu), which you can use for not displaying some items
+     * @param $relation_field  - tree relation field (default relation........)
+     * @param $sort_string     - order of tree leaves
+     */
+    function expand($item_ids=null, $code=null, $relation_field=null, $sort_string=null) {
+        if (empty($code)) {
+            return '';
+        }
+        $zids     = new zids(explode('-',$item_ids));
+        $long_ids = $zids->longids();
+        if (empty($long_ids)) {
+            return '';
+        }
+        if (empty($sort_string) OR !is_array($sort = String2Sort($sort_string))) {
+            $sort = null;
+        }
+        $current_ids = explode('-', AA_Stringexpand::unalias('{xid:list}'));
+
+        $supertree = AA_Trees::getSupertree(get_if($relation_field, 'relation........'), 1, $sort);
+        return $supertree->getMenu($long_ids, $current_ids, $code);
+     }
 }
 
 
