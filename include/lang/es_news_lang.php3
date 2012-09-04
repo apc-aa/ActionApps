@@ -4953,6 +4953,9 @@ $_m["Update & View"]
 $_m["Insert as new"]
  = "Publicar como Nuevo";
 
+$_m["Insert & Edit"]
+ = "Publicar y Editar";
+
 // include/formutil.php3, row 203
 $_m["Insert & View"]
  = "Publicar y vista preliminar";
