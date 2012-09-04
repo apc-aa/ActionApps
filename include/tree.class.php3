@@ -29,8 +29,8 @@
 class AA_Supertree {
     protected $_i;        // Array of items
     protected $_relation_field;  //
-    protected $_sort;     // sort array(). 
-                          // Currently wors only for Reverse trees. @todo 
+    protected $_sort;     // sort array().
+                          // Currently wors only for Reverse trees. @todo
     protected $_modules;  // Array of modules
 
     protected $_restrict_slices;  // Array of allowed slices - just for reverse tree
@@ -105,6 +105,28 @@ class AA_Supertree {
         return $sub;
     }
 
+    function getMenu($ids, $current_ids, $code) {
+        $ret = '';
+        $xid = end($current_ids);
+
+        foreach($ids as $mid) {
+            if ($item = AA_Items::getItem(new zids($mid, 'l'))) {
+                if ($menu_txt = trim($item->subst_alias($code))) {
+                    if (in_array($mid, $current_ids)) {
+                        $this->load($mid);
+                        $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code);
+                        $ret .= '  <li id="menu-'.$mid.'" class="inpath'.($mid==$xid  ? ' active':'').'">';
+                        $ret .= $menu_txt. $sub;
+                        $ret .= "</li>\n";
+                    } else {
+                        $ret .= "  <li id=\"menu-$mid\">$menu_txt</li>\n";
+                    }
+                }
+            }
+        }
+        return ($ret ? "\n<ul>\n$ret</ul>\n" : '');
+    }
+
     /** returns ids in array - ids are in tree order (walked into deep) */
     function getTreeString($id) {
         $this->load($id);
@@ -139,12 +161,12 @@ class AA_Supertree {
     }
 }
 
-/** The same as AA_Supertree, but it holds reversed tree - tree construced not 
- *  as parent->childrens but children->parent. The diferrence is the direction, 
+/** The same as AA_Supertree, but it holds reversed tree - tree construced not
+ *  as parent->childrens but children->parent. The diferrence is the direction,
  *  the relation field points.
- *  !! The Reverse Tree is limitted to one relation slice only !! - @todo - fix 
+ *  !! The Reverse Tree is limitted to one relation slice only !! - @todo - fix
  *  It is the same - we just change the way, how to construct the tree.
- */ 
+ */
 class AA_Supertree_Reverse extends AA_Supertree {
 
     /** load function
@@ -154,7 +176,7 @@ class AA_Supertree_Reverse extends AA_Supertree {
         if (isset($this->_i[$id])) {
             return;
         }
-        
+
         if (!count($this->_restrict_slices)) {
             $zid = new zids($id,'l');
             $sid = $zid->getFirstSlice();
@@ -169,13 +191,13 @@ class AA_Supertree_Reverse extends AA_Supertree {
         /** items, which are already in trash, or expired, ... */
         $invalid  = array();
         $queue    = array($id);
-        
+
         // prepare cond in order we can be as quick as possible
         $cond[$this->_relation_field] = 1;
         $cond['operator'] = '=';
 
         while (count($queue)) {
-            
+
             $item_id  = array_pop($queue);
             if (isset($this->_i[$item_id])) {
                 continue;
@@ -197,7 +219,7 @@ class AA_Supertree_Reverse extends AA_Supertree {
 class AA_Trees {
     /** parent->child trees */
     var $a   = array();
-    
+
     /** reverse - child->parent trees */
     var $rev = array();
 
@@ -238,7 +260,7 @@ class AA_Trees {
         return $supertree->getIds($id);
     }
 
-    function getSupertree($relation_field, $reverse, $sort, $slices) {
+    function getSupertree($relation_field, $reverse, $sort, $slices=null) {
         $trees = AA_Trees::singleton();
         $key   = get_hash($relation_field, $reverse, $sort, $slices);
         if (!isset($trees->a[$key])) {
