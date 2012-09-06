@@ -699,9 +699,7 @@ class ItemContent extends AA_Content {
         if ( $new_content->getExpiryDate() <= 0 ) {
             $new_content->setValue('expiry_date.....', now()+(60*60*24*365*10));
         }
-
         $new_content->setSliceID($slice->unpacked_id());
-
         $this->content = $new_content->getContent();
         if ($status == 4) {
             ItemContent::lastErr(ITEMCONTENT_ERROR_NO_PERM, _m("No Permission to insert Item for user %1", array($auth->auth["uid"])));  // set error code

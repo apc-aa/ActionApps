@@ -135,7 +135,7 @@ function UnassignBaseCategory($parent, $child) {
                      WHERE path  LIKE '$oldPath%'";
             $db->query( $SQL );
         } else {
-            huh ("Something very strange in UnassignBaseCategory() in catedit2.php3");
+            huhl("Something very strange in UnassignBaseCategory() in catedit2.php3");
             exit;
         }
 

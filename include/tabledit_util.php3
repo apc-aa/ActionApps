@@ -440,12 +440,7 @@ function TableInsert(&$newkey, &$where, $key_table, $val, $columns, $primary_ali
         callTrigger($triggers, "AfterInsert", $varset);
 
         if ($table == $key_table) {
-            if ($auto_inc) {
-                $newkey = get_last_insert_id($db, $table);
-            }
-            else {
-                $newkey = GetKey($primary_aliases[$table], $columns, $varset);
-            }
+            $newkey = $auto_inc ? $db->last_insert_id() : GetKey($primary_aliases[$table], $columns, $varset);
             $where = $varset->makeWHERE($table);
         }
     }
@@ -615,7 +610,7 @@ function AddKeyValues(&$varset, $val, $primary, $columns, $auto_increment = true
 function GetKeyValues($key_val, $primary, $columns) {
     $keys = split_escaped(":", $key_val, "#:");
     reset ($keys);
-    
+
     reset ($primary);
     while (list ($alias) = each ($primary)) {
         list (,$value) = each ($keys);
@@ -637,7 +632,7 @@ function GetKeyValues($key_val, $primary, $columns) {
  */
 function CreateWhereCondition($key_val, $primary, $columns, $table) {
     $varset = new CVarset;
-   
+
     $keys = GetKeyValues($key_val, $primary, $columns);
     foreach ( $keys as $colname => $value) {
         $varset->addkey($colname, "text", $value);
@@ -653,7 +648,7 @@ function PrintJavaScript_Validate() {
     global $_javascript_validate_printed;
     if ($_javascript_validate_printed) {
         return;
-    } 
+    }
     $_javascript_validate_printed = 1;
 
     echo '

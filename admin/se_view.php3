@@ -100,9 +100,8 @@ function store_digest_filters() {
     global $view_id, $filters, $err;
     $db = getDB ();
     if (!$view_id) {
-        $db->query("SELECT LAST_INSERT_ID() AS last_vid FROM view");
-        $db->next_record();
-        $view_id = $db->f("last_vid");
+        // "SELECT LAST_INSERT_ID() AS last_vid FROM view";
+        $view_id = $db->last_insert_id();
     }
     $varset = new CVarset();
 
@@ -256,7 +255,7 @@ if ( $update ) {
                 $err["DB"] = MsgErr( _m("Can't insert into view.") );
                 break;   // not necessary - we have set the halt_on_error
             }
-            $view_id = $varset->lastInsertId('view');
+            $view_id = $varset->last_insert_id();
         }
         $GLOBALS['pagecache']->invalidateFor("slice_id=$slice_id");  // invalidate old cached values
 

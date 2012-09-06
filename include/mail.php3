@@ -137,7 +137,18 @@ class AA_Mail extends htmlMimeMail  {
         $return_path = ( $record['sender']    ? $record['sender'] :
                         ( $record['header_from'] ? $record['header_from'] :
                           ERROR_REPORTING_EMAIL));
-        $this->setReturnPath($return_path);
+        $extracted_return_path = $this->extractEmails($return_path);
+        if (isset($extracted_return_path[0])) {
+            $this->setReturnPath($extracted_return_path[0]);
+        }
+    }
+
+    /** Extracts e-mail from the string:
+     *  Econnect <info@ecn.cz>  -> info@ecn.cz
+     */
+    function extractEmails($string){
+        preg_match_all("/[\._a-zA-Z0-9-]+@[\._a-zA-Z0-9-]+/i", $string, $matches);
+        return $matches[0];
     }
 
     /** _encodeHeader function
@@ -181,9 +192,11 @@ class AA_Mail extends htmlMimeMail  {
         // email has the templates in it
         $mail = new AA_Mail;
         $mail->setFromTemplate($mail_id, $item);
+
         if ($later) {
             return $mail->sendLater($to);
         }
+
         return $mail->send($to);
     }
 

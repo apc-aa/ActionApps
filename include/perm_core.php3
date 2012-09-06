@@ -502,7 +502,6 @@ function FilemanPerms($auth, $slice_id) {
     global $sess, $errcheck;
     // Sets the fileman_dir var:
     global $fileman_dir;
-    trace("+","FilemanPerms slice_id=".$slice_id);
     $db = getDB();
     if (! $slice_id) {
         if ($errcheck)  huhl("Warning: Calling perm_core without a slice-id defined");
@@ -532,7 +531,6 @@ function FilemanPerms($auth, $slice_id) {
         }
     }
     freeDB($db);
-    trace("-");
     return $perms_ok;
 }
 

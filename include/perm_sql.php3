@@ -333,9 +333,7 @@ function AddUser($user, $flags = 0) {
 
     $SQL = A2sql_insert('users',$array);
     $db->query($SQL);
-    $id = get_last_insert_id($db, 'users');
-
-    return $id;
+    return $db->last_insert_id();
 }
 
 /** DelUser function
@@ -407,9 +405,7 @@ function AddGroup($group, $flags = 0) {
 
     $SQL = A2sql_insert('users',$array);
     $db->query($SQL);
-    $id = get_last_insert_id($db, 'users');
-
-    return $id;
+    return $db->last_insert_id();
 }
 
 /** DelGroup function
@@ -661,7 +657,7 @@ function A2sql_update($table, $keyField, $aData) {
 
 
 class AA_Permsystem_Sql extends AA_Permsystem {
-    
+
     /** isUsernameFree function
      *  Looks into reader management slices whether the reader name is not yet used.
      *   This function is used in perm_ldap and perm_sql in IsUsernameFree().

@@ -66,14 +66,7 @@ function Links_AddCategory($name, $parent, $parentpath) {
     global $db;
     $SQL = "INSERT INTO links_categories  ( name ) VALUES ('$name')";
     $db->query( $SQL );
-    $db->query( "select LAST_INSERT_ID() as id" );
-
-    if (!$db->next_record()) {
-        huh("Error - Last inserted ID is lost");
-        exit;
-    }
-
-    $res = $db->f('id');
+    $res =  $db->last_insert_id();
 
     // correct path
     $SQL = "UPDATE links_categories set path='$parentpath,$res' WHERE id=$res";

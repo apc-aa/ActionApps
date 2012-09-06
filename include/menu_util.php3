@@ -226,7 +226,6 @@ function PrintModuleSelection() {
 function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, $showSub = true) {
     global $slice_id, $useOnLoad, $sess, $db, $auth;
     global $menu_function;
-    global $debug;
 
     $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
 
@@ -357,7 +356,6 @@ function showMenu($smmenus, $activeMain, $activeSubmenu = "", $showMain = true, 
             <tr>
               <td align="left">
               ';
-    trace("-");
 }
 /** GetMenuLink
  * @param $active
@@ -391,7 +389,7 @@ function GetMenuLink($active, $label, $cond, $aa_href, $exact_href, $slice_id) {
  * @param $active
  */
 function showSubMenuRows( $aamenuitems, $active ) {
-    global $slice_id,$debug;
+    global $slice_id;
 
     if ( !isset($aamenuitems) OR !is_array($aamenuitems) ) {
        return;
@@ -449,8 +447,6 @@ function showSubMenuRows( $aamenuitems, $active ) {
  * @param $active
  */
 function showSubmenu($aamenu, $active) {
-    global $debug;
-    if ($debug) { echo "<p><font color=\"purple\">showSubmenu:active=$active</font></p>\n"; }
     echo '<table width="122" border="0" cellspacing="0" bgcolor="'.COLOR_TABBG.'" cellpadding="1" align="left" class="leftmenu noprint">'."\n";
 
     $aamenuitems = $aamenu["items"];

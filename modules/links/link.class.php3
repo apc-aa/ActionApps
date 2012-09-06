@@ -940,12 +940,10 @@ debug("SAVE (loaded): ", $this);
 
             $db->tquery("INSERT INTO links_links ". $varset->makeINSERT());
             // get inserted link id
-            $db->tquery( "SELECT LAST_INSERT_ID() as id" );
-            if (!$db->next_record()) {
+            if (!($this->lid = $db->last_insert_id())) {
                 huh("Error - Last inserted ID is lost");
                 exit;
             }
-            $this->lid = $db->f('id');
         } else {            // insert
             $varset->addkey("id",       "number", $this->lid);
             $db->tquery($varset->makeINSERTorUPDATE('links_links'));

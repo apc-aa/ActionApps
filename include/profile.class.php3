@@ -292,7 +292,8 @@ class AA_Profile {
         if (!$db->tquery($SQL) AND $err) {
             $this->err["DB"] = $err;
         }
-        $last_id = get_last_insert_id($db, "profile");
+        $last_id = $db->last_insert_id();
+
         freeDB($db);
         return $last_id;
     }

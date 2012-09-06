@@ -70,10 +70,7 @@ foreach ($f_slices as $f_slice) {
         $err["DB"] .= MsgErr("Can't add external import");
     }
 
-    $db->query("SELECT LAST_INSERT_ID() as feed_id FROM external_feeds");     // get feed_id
-    if ($db->next_record()) {
-        $feed_id = $db->f('feed_id');
-    }
+    $feed_id = $db->last_insert_id();
 
     // insert categories
     foreach ( $channel['categories'] as $cat_id => $v ) {

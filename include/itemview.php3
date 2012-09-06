@@ -389,7 +389,6 @@ class itemview {
    * @param $CurItem
    */
   function get_disc_add(&$CurItem) {
-      trace("+","get_disc_add","Parent=".$this->disc['parent_id']);
       // if parent_id is set => show discussion comment
       $out.= '<a name="disc"></a>';
       if ($this->disc['parent_id']) {
@@ -426,7 +425,6 @@ class itemview {
           </script>
           ';
       }
-      trace("-");
       return $out;
   }
 
