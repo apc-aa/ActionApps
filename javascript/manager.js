@@ -190,7 +190,7 @@ function ChangeImgSrc(imageName, newsrc) {
     document.itemsform[imageName].src = newsrc;
 }
 
-function OpenWindowIfRequest(form_name, slice_id, bar, admin_url) {
+function OpenWindowIfRequest(form_name, bar, admin_url) {
     var doc = eval("document."+form_name);
     var idx=doc.elements['srchbr_field['+bar+']'].selectedIndex;
     var idx2=doc.elements['srchbr_oper['+bar+']'].selectedIndex;
@@ -199,8 +199,8 @@ function OpenWindowIfRequest(form_name, slice_id, bar, admin_url) {
         sel_val = doc.elements['srchbr_field['+bar+']'].options[idx].value;
         sel_name = "srchbr_value["+bar+"]";
         sel_text = doc.elements['srchbr_value['+bar+']'].value;
-        OpenConstantsWindow(sel_name,slice_id,sel_val,1, sel_text, admin_url);
-        doc.elements['srchbr_oper['+bar+']'].selectedIndex = idx2 - 1;
+        OpenConstantsWindow(sel_name,sel_val,1, sel_text, admin_url);
+        doc.elements['srchbr_oper['+bar+']'].selectedIndex = 2; // equals
     }
 }
 function ChangeOperators(form_name, bar, selectedVal ) {
@@ -252,13 +252,13 @@ function getToday(){
 
 var constantswindow;  // window for related stories
 
-function OpenConstantsWindow(varname, sid, field_name, design, sel_text, admin_url) {
+function OpenConstantsWindow(varname, field_name, design, sel_text, admin_url) {
     if ((constantswindow != null) && (!constantswindow.closed)) {
         constantswindow.close()    // in order to preview go on top after open
     }
-    constantswindow = open(admin_url+"&sid=" + sid +
+    constantswindow = open(admin_url +
         "&field_name=" + field_name + "&var_id=" + varname + "&design=" + design +
-        "&sel_text=" + sel_text.replace(/&/gi,"%26") , "popup", "scrollbars=1,resizable=1,width=640,height=200");
+        "&sel_text=" + encodeURIComponent(sel_text) , "popup", "scrollbars=1,resizable=1,width=640,height=200");
 }
 
 

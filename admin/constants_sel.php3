@@ -24,7 +24,6 @@
 */
 /** constants select - for searchbar.class.php3, pavelji@ecn.cz
  *
- * sid        - expected - slice_id where to search
  * field_name - expected - field id from which we want take the constants
  * var_id     - expected - id of variable in calling form, which should be filled
  * design     - ???      - boolean - use standard or admin design (currently always 1)
@@ -39,7 +38,7 @@ require_once AA_INC_PATH . "itemfunc.php3";
 require_once AA_INC_PATH . "formutil.php3";
 require_once AA_INC_PATH . "slice.class.php3";
 
-$module_id   = $slice_id;
+$module_id   = $slice_id; // get from session
 $p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
 $slice       = AA_Slices::getSlice($module_id);
 $fields      = $slice->fields('record');
@@ -133,7 +132,7 @@ echo $aainput->get();
 $form_buttons = array("var_id" => array("type"=>"hidden", "value"=>$var_id),
                       "btn_ok" => array("type"=>"button",
                                         "value"=> _m("OK"),
-                                        "add"=> 'onclick=\'javascript:updateChanges(this.form,"'.$aainput->varname().'","'.$aainput->get_inputtype().'")\''),
+                                        "add"=> 'onclick=\'updateChanges(this.form,"'.$aainput->varname().'","'.$aainput->get_inputtype().'")\''),
                       "cancel");
 
 FrmTabEnd($form_buttons,$sess, $slice_id);

@@ -471,6 +471,9 @@ class AA_Searchbar extends AA_Storable {
     /** setDefaultOrder function
     */
     function setDefaultOrder() {
+        // global $auth, $slice_id;  // @todo - tried to set right order after searchbox is cleaned, but it shows some errors. I have to look on it later. Honza 6.9.2012
+        // $profile = AA_Profile::getProfile($auth->auth["uid"], $slice_id); // current user settings
+        // $this->setFromProfile($profile);
         if (($this->order_row_count_min > 0) AND isset( $this->order_fields['publish_date....'])) {
             $this->addOrder( array( 0=>array('publish_date....' => 'd')) );
         }
@@ -496,7 +499,7 @@ class AA_Searchbar extends AA_Storable {
         }
         // we do not know the field id for admin_search profile so we have to use *
         $as = $profile->get('admin_search','*');
-        
+
         if ( is_array($as) ) {
             foreach ($as as $key => $val) {
                 $fld = $key;
@@ -566,7 +569,7 @@ class AA_Searchbar extends AA_Storable {
             $searchimage = GetAAImage('px.gif', '-', 15, 15);
             $searchtext = _m('And');
         }
-        
+
         // filter
         echo "<tr class=\"leftmenuy\"><td class=\"search\">$searchimage</td><td><b>$searchtext</b></td>";
         if ($readonly) {
@@ -583,7 +586,7 @@ class AA_Searchbar extends AA_Storable {
             echo "<td>";
             FrmSelectEasy("srchbr_field[$bar]", $this->search_fields, $fld, 'onchange="ChangeOperators(\''.$this->form_name.'\','.$bar.', \'\')"' );
             echo '</td><td>';
-            FrmSelectEasy("srchbr_oper[$bar]", array(' ' => ' '), null, 'onchange="OpenWindowIfRequest(\''.$this->form_name.'\',\''. $slice_id.'\',\''.$bar.'\',\''.get_admin_url("constants_sel.php3").'\')" ');
+            FrmSelectEasy("srchbr_oper[$bar]", array(' ' => ' '), null, 'onchange="OpenWindowIfRequest(\''.$this->form_name.'\',\''.$bar.'\',\''.get_admin_url("constants_sel.php3").'\')" ');
             echo '</td><td>';
             echo "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" maxlength=\"254\" onkeypress=\"if (event.keyCode == 13) document.".$this->form_name. ".submit();\"
               value=\"$val\"></td><td>$searchimage</td><td width=\"99%\"> &nbsp; </td>";
