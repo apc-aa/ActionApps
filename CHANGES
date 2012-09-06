@@ -1,3 +1,56 @@
+09/06/12 - new {rotator:<item-ids>:<html-code>:<interval>} which rotates on one
+(honzam)   place in the page different contents (divs) with specified interval
+            {rotator:<item-ids>:<html-code>:<interval>}
+            {rotator:{ids:a24657bf895242c762607714dd91ed1e}:_#FOTO_S__<div>_#HEADLINE</div>}
+         - new javascript function AA_Rotator() which is used internaly for {rotator}
+           but could be used separately as well:
+           - rotates the element - hide/show .rot-hide, add/remove class
+             "active" for .rot-active. Called as:
+                 <div id="mydiv">
+                   <span class="rot-hide">A</span>
+                   <span class="rot-hide">B</span>
+                   <span class="rot-hide">C</span>
+                 </div>
+                 <script>
+                   AA_Rotator('mydiv', 2000, 3);
+                 </script>
+         - new {lastdisc:<item-id>[:<count_item_itself>]} expression, which
+           returns the time of last discussion comment on specified item
+           - we use it for displaying the box with five most recently commented
+             items:
+             {item:{limit:{order:{ids:9887a8a0ca2ab74691a5b41a485453ac}:_#LASTDISC:rnumeric}:0:5}:
+                {(
+                    <tr>
+                      <td><a href="_#SEO_URL_?all_ids=1">_#HEADLINE</a> </td>
+                      <td><a href="_#SEO_URL_?all_ids=1#disc">_#D_APPCNT</a></td>
+                      <td>{date:j.n.y:{_#LASTDISC}}</td>
+                    </tr>
+                )}
+             }
+           - the _#LASTDISC alias is in this case {lastdisc:{id..............}}
+         - {fulltext:<item-ids>} now accepts more than one item id
+         - new "link" option for {fileinfo:{file............}:link}
+           - dispalys the link to the file in html, witch the file type and size
+           - the same as {filelink:{file............}}
+         - most parameters in AA expressions are now trimmed (removed spaces and
+           newlines at the start and end of each parameter), so you can split it
+           to more rows
+         - removed deprecated (and sometimes not usefull) <nobr> tag from
+           checkboxes in AA forms
+         - better default widgets for the field (mainly for multivalues field)
+         - new possibility to sort constants by number of their ussage in items
+           (on constants administration page)
+         - new possibility to use conds=d-switch..........-=-1 form of condition
+           with slice.php3
+         - new possibility to send Alerts also in "twoweeks" interval - every
+           second week
+         - Alerts now work well also on slices protected by slice_password
+         - debug messages now could go to Console of the browser, if you start
+           the debug parameter with letter "c" (like ...view.php3?debug=c)
+         - fixed search for constants in Item Manager
+         - quote() function now uses better escaping of characters
+           in the queries (different for each db engine)
+         - small speedup of language translations in mgettext
 09/04/12 - new {menu} expression, which prints HTML menu tree for current item.
 (honzam)    - designed for SEO sitemodule with "Pages" slice with the relation
               field "Subpage of..."

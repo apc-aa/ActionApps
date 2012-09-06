@@ -435,36 +435,11 @@ function debug() {
     if ( $_COOKIE['aa_debug'] != 1 ) {
         return;
     }
-    echo "<pre>\n";
     $messages = func_get_args();
     foreach ( $messages as $msg ) {
-        huhlo( $msg );
-        echo "<br>\n";
-    }
-    echo "</pre>\n";
-}
-
-/** huh function
- * debug function for printing debug messages
- * @param $msg
- * @param $name
- */
-function huh($msg, $name="") {
-    global $debugtimes,$debugtimestart;
-    if ($debugtimes) {
-        if (! $debugtimestart) {
-            $debugtimestart = microtime(true);
-        }
-        print("Time: ".(microtime(true) - $debugtimestart)."\n");
-    }
-    if ( @is_array($msg) OR @is_object($msg) ) {
-        echo "<br>\n$name";
-        print_r($msg);
-    } else {
-        echo "<br>\n$name$msg";
+        AA::$dbg->log($a);
     }
 }
-
 
 /** huhe function
  * Report only if errcheck is set, this is used to test for errors to speed debugging
@@ -484,16 +459,7 @@ function huhe($a, $b="", $c="",$d="",$e="",$f="",$g="",$h="",$i="",$j="") {
     global $errcheck;
     if ($errcheck) {
         huhl($a, $b, $c,$d,$e,$f,$g,$h,$i,$j);
-        if ($GLOBALS["trace"] || $GLOBALS["debug"]) { trace("p"); }
     }
-}
-
-/** huhlo function
- *  Only called from within huhl
- * @param $a
- */
-function huhlo($a) {
-    AA::$dbg->log($a);
 }
 
 if ( !$timestart ) {
@@ -510,11 +476,11 @@ function huhl() {
        if (! $debugtimestart) {
             $debugtimestart = microtime(true);
         }
-        print("Time: ".(microtime(true) - $debugtimestart)."\n");
+        AA::$dbg->log("Time: ".(microtime(true) - $debugtimestart)."\n");
     }
     $vars = func_get_args();
     foreach ($vars as $var) {
-        huhlo($var);
+        AA::$dbg->log($a);
     }
 }
 
@@ -1154,6 +1120,8 @@ function HtmlPageBegin($stylesheet='default', $js_lib=false, $lang=null) {
 
 // use instead of </body></html> on pages which show menu
 function HtmlPageEnd() {
+    AA::$debug && AA::$dbg->info('time: '. (microtime(true) - $GLOBALS['timestart']));
+
   echo "
             </td>
           </tr>
@@ -1240,107 +1208,6 @@ function StoreToContent($item_id, $field, $value, $additional='') {
     $varset->doInsert('content');
 }
 
-/** is_field_type_numerical function
- * @param $field_type
- */
-function is_field_type_numerical($field_type) {
-    return in_array($field_type, array("float","double","decimal","int","timestamp"));
-}
-
-// -----------------------------------------------------------------------------
-/** CopyTableRows function
- *  Copies rows within a table changing only given columns and omitting given columns.
- *   @author Jakub Adámek
- *   @return bool  true if all additions succeed, false otherwise
- *
- *   @param string $table    table name
- *   @param string $where    where condition (filter)
- *   @param array  $set_columns  array ($column_name => $value, ...) - fields the value of which will be changed
- *   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
- *   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
- */
-function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
-    if (!$omit_columns) {
-        $omit_columns = array();
-    }
-    if (!$id_columns) {
-        $id_columns = array();
-    }
-
-    if ($GLOBALS['debug']) {
-        echo "CopyTableRows: SELECT * FROM $table WHERE $where<br>
-        set_columns = ";
-        print_r ($set_columns);
-        echo "<br>omit_columns = ";
-        print_r ($omit_columns);
-        echo "<br>";
-    }
-
-    $db     = getDB();
-    $varset = new CVarset();
-
-    $columns = $db->metadata($table);
-    freeDB($db);
-
-    if ($GLOBALS['debug']) {
-        $rows = 0;
-    }
-
-    $data = GetTable2Array("SELECT * FROM $table WHERE $where", "NoCoLuMn");
-
-    if ($GLOBALS['debug']) {
-        echo "data: "; print_r ($data); echo "<br>";
-    }
-
-    if (!is_array($data)) {
-        return true;
-    }
-
-    reset ($data);
-    while (list (,$datarow) = each ($data)) {
-        $varset->Clear();
-        reset ($columns);
-
-        // create the varset
-        while (list (,$col) = each ($columns)) {
-            if (in_array($col["name"], $omit_columns))
-                continue;
-
-            if (is_field_type_numerical($col["type"]))
-                 $type = "number";
-            else $type = "text";
-
-            // look into $set_columns
-            if (isset ($set_columns[$col["name"]]))
-                 $val = $set_columns[$col["name"]];
-            else if (in_array($col["name"], $id_columns))
-                 $val = q_pack_id(new_id());
-            else $val = $datarow[$col["name"]];
-
-            $varset->set($col["name"],$val,$type);
-        }
-
-        if ($GLOBALS['debug']) {
-            echo "Row $rows<br>"; $rows ++;
-        }
-
-        if (!tryQuery("INSERT INTO $table ".$varset->makeINSERT())) {
-            return false;
-        }
-    }
-    return true;
-}
-
-// -----------------------------------------------------------------------------
-/** get_last_insert_id function
- * @param $db
- * @param $table
- */
-function get_last_insert_id($db, $table) {
-    $db->tquery("SELECT LAST_INSERT_ID() AS lid FROM $table");
-    $db->next_record();
-    return $db->f("lid");
-}
 
 // -----------------------------------------------------------------------------
 
@@ -1372,16 +1239,15 @@ function gensalt($saltlen) {
  * @param $escape_pattern
  */
 function split_escaped($pattern, $string, $escape_pattern) {
-    $dummy = '~#$?_';
+    $dummy = chr(0x1E);  // record separator ASCII character - we can use any othre, however
     while (strpos($string, $dummy) !== false) {
         $dummy .= '^';   // add another strange character to the
     }
-    $string  = str_replace($escape_pattern, $dummy, $string);
-    $strings = explode($pattern, $string);
-    foreach ($strings as $key => $val) {
-        $strings[$key] = (string)str_replace($dummy, $pattern, $val);
-    }
-    return $strings;
+    return str_replace($dummy, $pattern, explode($pattern, str_replace($escape_pattern, $dummy, $string)));
+   // foreach ($strings as $key => $val) {
+   //     $strings[$key] = (string)str_replace($dummy, $pattern, $val);
+   // }
+   // return $strings;
 }
 /** join_escaped function
  * @param $pattern
@@ -1618,33 +1484,6 @@ class AA_Credentials {
      *  static function called as AA_Credentials::encrypt($reading_password) */
     function encrypt($pwd) {
         return hash('md5', $pwd);
-    }
-}
-
-
-$tracearr = array();
-/** trace function
- * Support function for debugging, because of the lack of a stacktrace in PHP
- * @param $d = + for entering a function - for leaving = for a checkpoint.
- * @param $v
- * @param $c
- */
-function trace($d,$v="NONE",$c="") {
-    global $tracearr,$traceall;
-    if ($traceall) {
-        huhl("TRACE: $d:",$v," ",$c);
-    }
-// Below here you can put variables you want traced
-    if ($traceall) {
-        huhl("TRACE:slice_id=",$slice_id);
-    }
-// end variables
-    switch ($d) {
-    case "+": array_push($tracearr,$v,$c); break;
-    case "-": array_pop($tracearr); array_pop($tracearr); break;
-    case "=": array_pop($tracearr); array_push($tracearr,$c); break ;
-    case "p": huhl("TRACE: ",$tracearr); break;
-    default: echo "Illegal argument to trace:$d"; break;
     }
 }
 

@@ -81,12 +81,6 @@ class Cvariable {
                 return "'" . quote($this->value) ."'";
         }
     }
-    /** huh function
-     *
-     */
-    function huh() {
-        echo "$this->name($this->type) -> $this->value <br>\n";
-    }
 }
 
 class Cvarset {
@@ -442,22 +436,12 @@ class Cvarset {
             return "Error using makeINSERTorUPDATE: " . $this->db->num_rows(). " rows match the query";
         }
     }
-    /** lastInsertId function
+
+    /** last_insert_id function
      * @param $tablename
      */
-    function lastInsertId($tablename) {
-        $this->_doQuery("SELECT LAST_INSERT_ID() AS lid FROM $tablename");
-        $this->db->next_record();
-        return $this->db->f("lid");
-    }
-    /** huh function
-     * @param $text
-     */
-    function huh($txt="") {
-        echo "Varset: $txt";
-        foreach ( $this->vars as  $varname => $variable ) {
-            $variable->huh();
-        }
+    function last_insert_id() {
+        return $this->db->last_insert_id();
     }
 
     // Static //
@@ -484,6 +468,77 @@ class Cvarset {
         }
         return "$column IN (". join(',', $arr) .")";
     }
+}
+
+
+/** is_field_type_numerical function
+ * @param $field_type
+ */
+function is_field_type_numerical($field_type) {
+    return in_array($field_type, array("float","double","decimal","int","timestamp"));
+}
+
+// -----------------------------------------------------------------------------
+/** CopyTableRows function
+ *  Copies rows within a table changing only given columns and omitting given columns.
+ *   @author Jakub Adámek
+ *   @return bool  true if all additions succeed, false otherwise
+ *
+ *   @param string $table    table name
+ *   @param string $where    where condition (filter)
+ *   @param array  $set_columns  array ($column_name => $value, ...) - fields the value of which will be changed
+ *   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
+ *   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
+ */
+function CopyTableRows($table, $where, $set_columns, $omit_columns = "", $id_columns = "") {
+    if (!$omit_columns) {
+        $omit_columns = array();
+    }
+    if (!$id_columns) {
+        $id_columns = array();
+    }
+
+    $db     = getDB();
+    $varset = new CVarset();
+    $columns = $db->metadata($table);
+    freeDB($db);
+
+    $data = GetTable2Array("SELECT * FROM $table WHERE $where", "NoCoLuMn");
+
+    if (!is_array($data)) {
+        return true;
+    }
+
+    foreach ($data as $datarow) {
+        $varset->Clear();
+
+        // create the varset
+        foreach ($columns as $col) {
+            if (in_array($col["name"], $omit_columns)) {
+                continue;
+            }
+
+            $type = is_field_type_numerical($col["type"]) ? "number" : "text";
+
+            // look into $set_columns
+            if (isset($set_columns[$col["name"]])) {
+                $val = $set_columns[$col["name"]];
+            }
+            elseif (in_array($col["name"], $id_columns)) {
+                $val = q_pack_id(new_id());
+            }
+            else {
+                $val = $datarow[$col["name"]];
+            }
+
+            $varset->set($col["name"],$val,$type);
+        }
+
+        if (!tryQuery("INSERT INTO $table ".$varset->makeINSERT())) {
+            return false;
+        }
+    }
+    return true;
 }
 
 // it should be in oposite direction - require metabase in all scripts, which
