@@ -551,6 +551,39 @@ function isArray(obj) {
    return (obj.constructor.toString().indexOf("Array") != -1);
 }
 
+
+/** rotates the element - hide/show .rot-hide, add/remove class "active" for .rot-active
+ *  called as:
+ * <div id="mydiv">
+ *   <span class="rot-hide">A</span>
+ *   <span class="rot-hide">B</span>
+ *   <span class="rot-hide">C</span>
+ * </div>
+ * <script>
+ *   AA_Rotator('mydiv', 2000, 3);
+ * </script>
+ */
+function AA_Rotator(id, interval, max) {
+    // Check to see if the rotators-set  has been initialized
+    if ( typeof AA_Rotator.rotators == 'undefined' ) {
+        AA_Rotator.rotators = {};
+    }
+
+    if ( typeof AA_Rotator.rotators[id] == 'undefined' ) {
+        AA_Rotator.rotators[id]       = {"index": 0, "max": max };
+        AA_Rotator.rotators[id].timer = setInterval(function () {AA_Rotator(id)},interval);
+    }
+
+    $$('#' + id + ' .rot-hide').invoke('hide');
+    $$('#' + id + ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').invoke('show');
+
+    $$('#' + id + ' .rot-active').invoke('removeClassName', 'active');
+    $$('#' + id + ' .rot-active:nth-child('+(AA_Rotator.rotators[id].index+1)+')').invoke('addClassName', 'active');
+
+    AA_Rotator.rotators[id].index = (AA_Rotator.rotators[id].index+1)% AA_Rotator.rotators[id].max;
+}
+
+
 /* Cookies */
 
 function SetCookie(name, value) {

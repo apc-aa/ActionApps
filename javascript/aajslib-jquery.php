@@ -280,7 +280,7 @@ function AA_SendWidgetAjax(id) {
  */
 function AA_ReloadAjaxResponse(id, responseText) {
     var valdiv = jqid('ajaxv_'+id);
-    
+
     var items  = (typeof str === 'string') ? jQuery.parseJSON(responseText) : responseText;
     var res;
     for (var i in items) {
@@ -324,6 +324,37 @@ function AA_SendWidgetLive(base_id, liveinput, fnc) {
     });
 }
 
+/** rotates the element - hide/show .rot-hide, add/remove class "active" for .rot-active
+ *  called as:
+ * <div id="mydiv">
+ *   <span class="rot-hide">A</span>
+ *   <span class="rot-hide">B</span>
+ *   <span class="rot-hide">C</span>
+ * </div>
+ * <script>
+ *   AA_Rotator('mydiv', 2000, 3);
+ * </script>
+ */
+function AA_Rotator(id, interval, max) {
+    // Check to see if the rotators-set  has been initialized
+    if ( typeof AA_Rotator.rotators == 'undefined' ) {
+        AA_Rotator.rotators = {};
+    }
+
+    if ( typeof AA_Rotator.rotators[id] == 'undefined' ) {
+        AA_Rotator.rotators[id]       = {"index": 0, "max": max };
+        AA_Rotator.rotators[id].timer = setInterval(function () {AA_Rotator(id)},interval);
+    }
+
+    $(jqid(id)+ ' .rot-hide').hide();
+    $(jqid(id)+ ' .rot-hide:nth-child('+(AA_Rotator.rotators[id].index+1)+')').show();
+
+    $(jqid(id)+ ' .rot-active').removeClass('active');
+    $(jqid(id)+ ' .rot-active:nth-child('+(AA_Rotator.rotators[id].index+1)+')').addClass('active');
+
+    AA_Rotator.rotators[id].index = (AA_Rotator.rotators[id].index+1)% AA_Rotator.rotators[id].max;
+}
+
 /** indicator of changed / updating data */
 function AA_StateChange(id, state) {
     var outstyle = {};
@@ -355,9 +386,7 @@ function AA_StateChange(id, state) {
     $('img.'+id+'ico').attr('src', AA_Config.AA_INSTAL_PATH+icoimg);
 }
 
-
 /* Cookies */
-
 function SetCookie(name, value) {
    var expires = new Date();
    expires.setTime (expires.getTime() + (1000 * 60 * 60 * 24 * 1)); // a day
