@@ -52,6 +52,10 @@ class DB_MySQL {
     return $this->Link_ID;
   }
 
+  function quote($string) {
+      return mysql_real_escape_string($string, $this->Link_ID);
+  }
+
   function query_id() {
     return $this->Query_ID;
   }
@@ -229,6 +233,10 @@ class DB_MySQL {
 
   function num_fields() {
     return @mysql_num_fields($this->Query_ID);
+  }
+
+  function last_insert_id() {
+    return @mysql_insert_id();
   }
 
   /* public: shorthand notation */
