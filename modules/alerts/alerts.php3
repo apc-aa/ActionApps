@@ -78,9 +78,10 @@ if (isset($_SERVER["argv"] )) {
     }
 }
 
-$frequency['daily']   = 24 * 60 * 60;
-$frequency['weekly']  =  7 * $frequency['daily'];
-$frequency['monthly'] = 31 * $frequency['daily'];
+$frequency['daily']     = 24 * 60 * 60;
+$frequency['weekly']    =  7 * $frequency['daily'];
+$frequency['twoweeks']  = 14 * $frequency['daily'];
+$frequency['monthly']   = 31 * $frequency['daily'];
 
 //$debug = 1;
 

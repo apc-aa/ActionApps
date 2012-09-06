@@ -57,9 +57,10 @@ function get_howoften_options($include_instant = true) {
     if ($include_instant) {
         $retval["instant"] = _m("instant");
     }
-    $retval["daily"]   = _m("daily");
-    $retval["weekly"]  = _m("weekly");
-    $retval["monthly"] = _m("monthly");
+    $retval["daily"]     = _m("daily");
+    $retval["weekly"]    = _m("weekly");
+    $retval["twoweeks"]  = _m("twoweeks");
+    $retval["monthly"]   = _m("monthly");
     return $retval;
 }
 

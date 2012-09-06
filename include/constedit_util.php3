@@ -473,8 +473,7 @@ function hcUpdate()
 /** CopyConstants function
  * @param $slice_id
  */
-function CopyConstants($slice_id)
-{
+function CopyConstants($slice_id){
     global $err, $debug;
     $db = getDB();
 

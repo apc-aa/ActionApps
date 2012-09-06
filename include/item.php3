@@ -24,11 +24,11 @@
  * @link      http://www.apc.org/ APC
  *
 */
+require_once AA_INC_PATH. "stringexpand.php3";
 if ( file_exists( AA_INC_PATH."usr_aliasfnc.php3" ) ) {
   require_once AA_INC_PATH."usr_aliasfnc.php3";
 }
 
-require_once AA_INC_PATH. "stringexpand.php3";
 require_once AA_INC_PATH. "item_content.php3";
 require_once AA_BASE_PATH."modules/links/constants.php3";
 
