@@ -103,6 +103,15 @@ class AA_Collection {
     }
 
     function sendEmails($ho, $emails, $update, $item_id, $reader_id) {
+        
+        // allow to access Reader data (and the data of all the slices with the same password)
+        $credentials = AA_Credentials::singleton();
+        $credentials->loadFromSlice($this->_get('reader_slice_id'));
+        
+        // huhl($this->reader_slice_id);
+        // huhl($credentials);
+        // exit;
+        
         // get array of all filters of current collection ($collection_id)
         // !if $update is set (default), then it updates date for lastsent - for
         // collections
@@ -130,7 +139,7 @@ class AA_Collection {
 
             // loop through readers might want to send
             for ( $i=0, $zcount=$zids->count(); $i<$zcount; $i++) {
-                $readerContent->setByItemID( $zids->longids($i), true);
+                $readerContent->setByItemID( $zids->longids($i));
 
                 $user_text = $this->getFilterText4Reader($readerContent, $filters);
 
