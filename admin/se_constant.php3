@@ -82,10 +82,10 @@ function ShowConstant($id, $name, $value, $cid, $pri, $using_slices_arr=null) {
     $name = safe($name); $value=safe($value); $pri=safe($pri); $cid=safe($cid);
 
     $count = '';
-    if (count($using_slices_arr)) {
+    if (is_array($using_slices_arr) AND count($using_slices_arr)) {
         $count = 0;
-        foreach ($using_slices_arr as $sid => $arr) {
-            $set = new AA_Set(array($sid), new AA_Condition($arr['fid'], '=', '"'.$value.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
+        foreach ($using_slices_arr as $arr) {
+            $set = new AA_Set(array(unpack_id($arr['psid'])), new AA_Condition($arr['fid'], '=', '"'.$value.'"'), null, AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING);
             $count += count($set->query());
         }
     }
@@ -96,7 +96,7 @@ function ShowConstant($id, $name, $value, $cid, $pri, $using_slices_arr=null) {
       <td><input type=\"text\" name=\"value[$id]\" size=\"30\" maxlength=\"255\" value=\"$value\">
           <input type=\"hidden\" name=\"cid[$id]\" value=\"$cid\"></td>
       <td class=\"tabtxt\"><input type=\"text\" name=\"pri[$id]\" size=\"4\" maxlength=\"4\" value=\"$pri\"></td>
-      <td class=\"tabtxt\">$count</td>";
+      <td class=\"tabtxt\">$count<input type=\"hidden\" name=\"used[$id]\" value=\"".str_pad($count, 7, "0", STR_PAD_LEFT)."\"></td>";
     echo "</tr>\n";
 }
 
@@ -319,11 +319,15 @@ echo "\n     </td>\n</tr>";
 
 // Find slices, where the constant group is used
 if ($group_id) {
-    $using_slices_arr = GetTable2Array("SELECT slice.id as sid, slice.name as sname, field.id as fid FROM slice, field WHERE slice.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')", 'unpack:sid');
+    $using_slices_arr = GetTable2Array("SELECT slice.id as psid, slice.name as sname, field.id as fid, field.name as fname FROM slice, field WHERE slice.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')",'');
+
+    if ( !is_array($using_slices_arr) ) {
+         $using_slices_arr = array();
+    }
 
     echo "
       <tr><td><b>"._m("Constants used in slice")."</b></td>
-        <td colspan=\"3\">". join(', ', array_map(create_function('$arr','return $arr["sname"];'), $using_slices_arr)) ."</td>
+        <td colspan=\"3\">". join('<br>', array_map(create_function('$arr','return $arr["sname"]." (".$arr["fname"].")";'), $using_slices_arr)) ."</td>
       </tr>";
 }
 
@@ -366,7 +370,7 @@ echo "'</td></tr>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('name')\">". _m("Name") ."</a></b><br>". _m("shown&nbsp;on&nbsp;inputpage") ."</td>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('value')\">". _m("Value") ."</a></b><br>". _m("stored&nbsp;in&nbsp;database") ."</td>
  <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortPri()\">". _m("Priority") ."</a></b><br>". _m("constant&nbsp;order") ."</td>
- <td class=\"tabtxt\" align=\"center\"><b>". _m("Used") ."</a></b><br>". _m("times") ."</td>
+ <td class=\"tabtxt\" align=\"center\"><b><a href=\"javascript:SortConstants('used')\">". _m("Used") ."</a></b><br>". _m("times") ."</td>
 </tr>
 <tr><td colspan=\"4\"><hr></td></tr>";
 
