@@ -220,11 +220,11 @@ class zids implements Iterator, ArrayAccess, Countable {
         }
     }
 
-    /** printobj function
-     *  Debugging function to print zids, don't rely on the output format, its only for debuging
+    /** Debugging function to print zids
+     *  Don't rely on the output format, its only for debuging
      */
-    function printobj() {
-        print("zids object: type=".$this->type." (". ($this->count()<=0 ? 'Empty' : implode(",",$this->a) ).")");
+    function __toString() {
+        return "zids object: type=".$this->type." (". ($this->count()<=0 ? 'Empty' : implode(",",$this->a) ).")";
     }
 
     /** onetype function
@@ -271,9 +271,8 @@ class zids implements Iterator, ArrayAccess, Countable {
             case 's':  $trans = $this->translate('l');
                        return (isset($i) ? $trans[$i] : $trans );
             default:
-                       print("ERROR - zids:longids(): can't handle type $this->type conversion to longids - ask mitra");
-                       $this->printobj();
-            return false;  //TODO - handle other types
+                       print("ERROR - zids:longids(): can't handle type $this->type conversion to longids - $this");
+                       return false;  //TODO - handle other types
         }
     }
     /** packedids function

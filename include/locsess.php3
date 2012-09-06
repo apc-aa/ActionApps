@@ -132,8 +132,8 @@ class AA_Debug {
 
     function _do($func, $params) {
         foreach ($params as $a) {
-            if (is_object($a) && is_callable(array($a,"printobj"))) {
-                $a->printobj();
+            if (is_object($a) && is_callable(array($a,"__toString"))) {
+                print $a;
             } else {
                 print_r($a);
             }
@@ -162,9 +162,7 @@ class AA {
     public static $perm;
 }
 AA::$debug = $_GET['debug'];
-AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_PhpConsole() : new AA_Debug());
-//AA::$dbg = new AA_Debug_Console();
-
+AA::$dbg   = (AA::$debug[0] == 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] == 'c') ? new AA_Debug_Console() : new AA_Debug());
 
 class DB_AA extends DB_Sql {
     var $Host      = DB_HOST;
@@ -221,6 +219,11 @@ class DB_AA extends DB_Sql {
             }
         }
         return $ret;
+    }
+
+    function quote($string) {
+        $db = is_null(DB_AA::$_db) ? (DB_AA::$_db = new DB_AA) : DB_AA::$_db;
+        return $db->quote($string);
     }
 
     /** static

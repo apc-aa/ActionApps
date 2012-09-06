@@ -107,6 +107,9 @@ class AA_Debug_Console extends AA_Debug {
     function _do($func, $params) {
         $code = '';
         foreach ($params as $a) {
+            if (is_object($a) && !is_callable(array($a,"__toString"))) {
+                $a = print_r($a, true);
+            }
             $code .= "\n console.$func('". str_replace("'", "\'", str_replace('\\', '\\\\', $a)). "');";
         }
         $this->_script($code);
