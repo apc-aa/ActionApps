@@ -453,6 +453,10 @@ if (is_array($conds)) {
     foreach ( $conds as $k => $v ) {
         SubstituteAliases( $als, $conds[$k]['value'] );
     }
+} elseif ( is_string($conds) AND strlen($conds) ) {
+    // we can use also conds=d-switch..........-=-1
+    $tmp_set = new AA_Set(null, $conds);
+    $conds   = $tmp_set->getConds();
 }
 
 // ***** SORT *****
