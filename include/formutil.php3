@@ -1146,9 +1146,9 @@ class AA_Inputfield {
     function getOneChBoxTag(&$k, &$v, $add='', $id = '') {
         $id_attr = empty($id) ? '' : " id='$id'";
         $name    = $this->varname();
-        $ret = "\n<nobr><input type='checkbox' name='$name'$id_attr value='". htmlspecialchars($k) ."' $add".getTriggers("input",$name);
+        $ret = "\n<input type='checkbox' name='$name'$id_attr value='". htmlspecialchars($k) ."' $add".getTriggers("input",$name);
         $ret .= $this->if_selected($k, " checked");
-        $ret .= ">".htmlspecialchars($v)."</nobr>";
+        $ret .= ">".htmlspecialchars($v);
         return $ret;
     }
 
