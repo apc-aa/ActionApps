@@ -89,7 +89,7 @@ function mgettext_bind($lang, $section, $cache=false) {
 /** _m function
  *  Translates given message.
  *
- *   @param string $id       Text to be translated. Escape % by backslash (\%).
+ *   @param string $id       Text to be translated.
  *   @param array $params    You may use %1,%2,... in $id and supply an array of params,
  *                           which are substituted for %i, e.g.
  *                           _m("Hello %1, how are you?",array($username))
@@ -105,12 +105,11 @@ function _m($id, $params = 0) {
     }
 
     if (is_array($params)) {
-        $foo = "#$&*-";
-        $retval = str_replace ('\%', $foo, $retval);
+        $srch = array();
         for ( $i=0, $ino=count($params); $i<$ino; ++$i) {
-            $retval = str_replace ("%".($i+1), $params[$i], $retval);
+            $srch[] = '%'.($i+1);
         }
-        $retval = str_replace ($foo, "%", $retval);
+        $retval = str_replace($srch, $params, $retval);
     }
 
     return $retval;
