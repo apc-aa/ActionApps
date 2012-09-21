@@ -41,7 +41,8 @@ class AA_Plannedtask extends AA_Object {
      */
     function getClassProperties() {
         return array (          //           id       name       type        multi  persist validator, required, help, morehelp, example
-            'task'    => new AA_Property( 'task', _m("Task"),  'text', false, true)
+            'task'    => new AA_Property( 'task', _m("Task"),         'text', false, true, '', true),
+            'time'    => new AA_Property( 'time', _m("Time to run"),  'string', false, true, '', true, _m('Specify the time, when the task shoud be executed. It will be then procesed periodicaly at this time. The specification of the time should be in "<a href="http://www.php.net/manual/en/datetime.formats.relative.php">Relative Format</a>", so the time like:<br>"midnight" - runs every midnight <br>"+1 hour" - runs every hour, <br>"+30 min" - runs every 30 minutes, <br>"16:00" - runs every day at 16:00<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so.'))
             );
     }
 
@@ -51,7 +52,7 @@ class AA_Plannedtask extends AA_Object {
 
     function nexttime() {
         // every 5 min
-        return (time() + 5*60);
+        return strtotime($this->getProperty('time'));
     }
 
     function toexecutelater() {
@@ -83,7 +84,10 @@ class AA_Plannedtask_Schedule {
 
         foreach ($zids as $id) {
             $task = AA_Object::load($id, 'AA_Plannedtask');
-            $toexecute->laterOnce($task, array(), "Plannedtask_$id", 100, $task->nexttime());
+            $time = $task->nexttime();
+            if ($time >= time()) {
+                $toexecute->laterOnce($task, array(), "Plannedtask_$id", 100, $task->nexttime());
+            }
         }
     }
 }
