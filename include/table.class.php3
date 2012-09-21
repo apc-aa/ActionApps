@@ -161,7 +161,11 @@ class AA_Array {
     }
 
     function set($i, $value) {
-        $this->arr[(string)$i] = $value;
+        if ((string)$i == '') {
+            $this->arr[] = $value;
+        } else {
+            $this->arr[(string)$i] = $value;
+        }
     }
 
     function addset($i, $value) {

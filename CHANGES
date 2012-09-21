@@ -1,3 +1,5 @@
+09/21/12 - {array:<name>:set:...} now could be used with empty index
+(honzam)   it adds new member to the array - the same as in phparr_var[] = "..."
 09/06/12 - new {rotator:<item-ids>:<html-code>:<interval>} which rotates on one
 (honzam)   place in the page different contents (divs) with specified interval
             {rotator:<item-ids>:<html-code>:<interval>}
