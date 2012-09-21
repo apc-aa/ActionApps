@@ -216,7 +216,7 @@ class AA_Slice {
      */
     function getLang()     {
         $lang_file = substr($this->getProperty('lang_file'), 0, strpos($this->getProperty('lang_file'), '_news_lang'));
-        return isset($GLOBALS['LANGUAGE_NAMES'][$lang_file]) ? $lang_file : substr(DEFAULT_LANG_INCLUDE, 0, 2);
+        return isset($GLOBALS['LANGUAGE_NAMES'][$lang_file]) ? $lang_file : substr(DEFAULT_LANG_INCLUDE, 0, strpos(DEFAULT_LANG_INCLUDE,'_'));
     }
 
     /** getCharset function
