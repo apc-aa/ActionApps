@@ -1,5 +1,8 @@
 09/21/12 - {array:<name>:set:...} now could be used with empty index
 (honzam)   it adds new member to the array - the same as in phparr_var[] = "..."
+         - new view.php3 parameter group_by which allows you to change
+           the group by field of view:
+              view.php3?vid=24&cmd[24]=d-...&set[24]=group_by-category........
 09/06/12 - new {rotator:<item-ids>:<html-code>:<interval>} which rotates on one
 (honzam)   place in the page different contents (divs) with specified interval
             {rotator:<item-ids>:<html-code>:<interval>}

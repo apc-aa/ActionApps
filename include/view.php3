@@ -458,12 +458,18 @@ function GetViewSort(&$view_info, $param_sort=null) {
         $sort = $set->getSort();
     }
     // grouping
-    if ($view_info['group_by1']) {
-        $sort[] = array($view_info['group_by1'] => $VIEW_SORT_DIRECTIONS[$view_info['g1_direction']]);
+
+    if ($param_sort['group_by']) {
+        $sort = String2Sort($param_sort['group_by']);
+    } else {
+        if ($view_info['group_by1']) {
+            $sort[] = array($view_info['group_by1'] => $VIEW_SORT_DIRECTIONS[$view_info['g1_direction']]);
+        }
+        if ($view_info['group_by2']) {
+            $sort[] = array($view_info['group_by2'] => $VIEW_SORT_DIRECTIONS[$view_info['g2_direction']]);
+        }
     }
-    if ($view_info['group_by2']) {
-        $sort[] = array($view_info['group_by2'] => $VIEW_SORT_DIRECTIONS[$view_info['g2_direction']]);
-    }
+
     //sorting
     if ($view_info['order1']) {
         $sort[] = array($view_info['order1'] => $VIEW_SORT_DIRECTIONS[$view_info['o1_direction']]);
@@ -564,7 +570,9 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
     $conds         = $view_param["conds"];
     $slices        = $view_param["slices"];
     $param_conds   = $view_param["param_conds"];
-    $param_sort    = array('sort' => $view_param["sort"], 'group_limit' => $view_param["group_limit"]);
+    $param_sort    = array('sort'        => $view_param["sort"],
+                           'group_by'    => $view_param["group_by"],
+                           'group_limit' => $view_param["group_limit"]);
     $category_id   = $view_param['cat'];
     // $item_ids   = $view_param["item_ids"];
     $zids          = $view_param["zids"];
@@ -812,6 +820,9 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             $format = $view->getViewFormat($selected_item);
             $format['calendar_month'] = $month;
             $format['calendar_year']  = $year;
+            if (isset($view_param['group_by'])) {
+                $format['group_by'] = $view_param['group_by'];
+            }
 
             list($listlen, $list_from) = GetListLength($listlen, $view_param["to"], $view_param["from"], $list_page, $zids2->count(), $random);
 
