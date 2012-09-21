@@ -86,7 +86,7 @@ class AA_Router {
      * @param $page   - current page
      * @param $max    - number of pages
      */
-    function scroller($page, $max) {
+    function scroller($page, $max, $target=null) {
         if ($max<=1) {
             return $this->getParam('scroller_nopage');
         }
@@ -98,7 +98,11 @@ class AA_Router {
 
         foreach ( $nav_arr as $k => $v) {
             if ( $v ) {
-                $arr[] = "<a href=\"$v\" $add>$k</a>";
+                if ($target) {
+                   $arr[] = "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
+                } else {
+                   $arr[] = "<a href=\"$v\" $add>$k</a>";
+                }
             } else {
                 $arr[] = $k;
             }

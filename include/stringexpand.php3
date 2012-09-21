@@ -2170,7 +2170,6 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
 /** returns fultext of the item as defined in slice admin
  */
 class AA_Stringexpand_Fulltext extends AA_Stringexpand {
-
     function expand($item_ids='') {
         $ret = '';
         $iids = explode('-',$item_ids);
@@ -2191,7 +2190,7 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
 
 
 /** returns ids of items based on conds d-...
- *  {ids:<slice>:<conds>[:<sort>[:<delimiter>[:<restrict_ids>[:<limit>]]]]}
+ *  {ids:<slices>:[<conds>[:<sort>[:<delimiter>[:<restrict_ids>[:<limit>]]]]]}
  *  {ids:6a435236626262738348478463536272:d-category.......1-RLIKE-Bio-switch.........1-=-1:headine........-}
  *  returns dash separated long ids of items in selected slice where category
  *  begins with Bio and switch is 1 ordered by headline - descending
@@ -3044,12 +3043,8 @@ class AA_Stringexpand_Scroller extends AA_Stringexpand {
         if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th grou display
             return "Scroller not valid without a view, or for group display";
         }
-        $viewScr = new view_scroller($itemview->slice_info['vid'],
-                $itemview->clean_url,
-                $itemview->num_records,
-                $itemview->idcount(),
-                $itemview->from_record);
-        return $viewScr->get( $begin, $end, $add, $nopage );
+        $viewScr = new AA_Sitemodule_Scroller($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
+        return $viewScr->get( $begin, $end, $add, $nopage);
     }
 }
 
@@ -3072,15 +3067,18 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $property
      */
-    function expand() {
+    function expand($target=null) {
         global $apc_state;
-        if (!isset($apc_state['router'])) {
-            return '<div class="aa-error">Err in {pager} - router not found - {pager} is designed for site modules</div>';
-        }
 
         $itemview = $this->itemview;
         if (!isset($itemview) OR ($itemview->num_records < 0) ) {   //negative is for n-th grou display
             return "Err in {pager} - pager not valid without a view, or for group display";
+        }
+
+        if (!isset($apc_state['router'])) {
+            // used for AJAX scroller in the SEO sitemodule, for example
+            $viewScr = new AA_View_Scroller($itemview->slice_info['vid'], $itemview->num_records, $itemview->idcount(), $itemview->from_record);
+            return $viewScr->get( $begin, $end, $add, $nopage, $target);
         }
 
         $class_name = $apc_state['router'];
@@ -3089,7 +3087,7 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
         $page       = floor( $itemview->from_record/$itemview->num_records ) + 1;
         $max        = floor(($itemview->idcount() - 1) / max(1,$itemview->num_records)) + 1;
 
-        return $router->scroller($page,$max);
+        return $router->scroller($page,$max,$target);
     }
 }
 
@@ -4502,7 +4500,7 @@ class AA_Stringexpand_Md5 extends AA_Stringexpand_Nevercache {
     /** Do not trim all parameters (maybe we can?) */
     function doTrimParams() { return false; }
 
-    function expand($text) {
+    function expand($text='') {
         return hash('md5', $text);
     }
 }

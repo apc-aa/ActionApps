@@ -198,27 +198,22 @@ class easy_scroller {
 }
 
 
-class view_scroller {
-    var $classname        = 'view_scroller';
-    var $persistent_slots = array('current', 'id', 'itmcnt', 'metapage', 'urldefault');
-    var $current = 1;	  /** current page     */
-    var $id;			  /** scroller id - identifies scroller on a web page */
-    var $itmcnt;          /** total item count */
-    var $metapage = 10;	  /** "metapage" size  */
-    var $urldefault;	  /** cache self url   */
+class AA_Sitemodule_Scroller {
+    protected $current = 1;	  /** current page     */
+    protected $id;			  /** scroller id - identifies scroller on a web page */
+    protected $itmcnt;          /** total item count */
+    protected $metapage = 10;	  /** "metapage" size  */
 
     /** view_scroller function
      * Constructor
      * @param $id
-     * @param $url
      * @param $metapage
      * @param $itmcnt
      * @param $curr
      */
-    function view_scroller($id="", $url="", $metapage=10, $itmcnt=0, $curr=0) {
+    function __construct($id="", $metapage=10, $itmcnt=0, $curr=0) {
         $this->id         = $id;
         $this->metapage   = $metapage;
-        $this->urldefault = $url;      // no longer needed
         $this->itmcnt     = $itmcnt;
         $this->current    = floor( $curr/$this->metapage ) + 1;
     }
@@ -300,7 +295,7 @@ class view_scroller {
      * @param $add
      * @param $nopage
      */
-    function get($begin='', $end='', $add='class="scroller"', $nopage='') {
+    function get($begin='', $end='', $add='class="scroller"', $nopage='', $target=null) {
         // $url = con_url($this->urldefault,"scrl=".$this->id);
         $url = "?scrl=". $this->id;
 
@@ -318,11 +313,77 @@ class view_scroller {
             if ($i++) {
                 $out .= " | ";
             }
-            $out .= ( $v ? "<a href=\"$url&amp;$v\" $add>$k</a>" : $k);
+
+            if (!$v) {
+                $out .= $k;
+            } else {
+                if ($target) {
+                   $out .= "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
+                } else {
+                   $out .= "<a href=\"$url&amp;$v\" $add>$k</a>";
+                }
+            }
         }
 
         return $begin.$out.$end;
     }
 }
+
+class AA_View_Scroller extends AA_Sitemodule_Scroller {
+
+    /** Absolute function
+     *  Return part of a query string for move to absolute position $page
+     * @param $page
+     */
+    function Absolute($page) {
+                // used for AJAX scroller in the SEO sitemodule, for example
+        $url      = $_SERVER['REQUEST_URI'];
+        $replaces = 0;
+
+        $new_url  = preg_replace('/page-(\d+)/', "page-$page", $url, -1, $replaces);
+        if ($replaces == 1) {
+            return $new_url;
+        }
+        return get_url($url,'set['.$this->id."]=page-$page");
+    }
+
+    /** get function
+     *  Convert array provided by navarray into HTML code
+     *  Commands are added to $url
+     * @param $begin
+     * @param $end
+     * @param $add
+     * @param $nopage
+     */
+    function get($begin='', $end='', $add='class="scroller"', $nopage='', $target=null) {
+        $i   = 0;
+        $arr = $this->navarray();
+
+        if ( count($arr) <= 1 ) {
+            return $nopage;
+        }
+
+        while (list($k, $v) = each($arr)) {
+            if ($i++) {
+                $out .= " | ";
+            }
+
+            if (!$v) {
+                $out .= $k;
+            } else {
+                $v = safe($v);
+                if ($target) {
+                   $out .= "<a href=\"javascript:void(0)\" onclick=\"AA_Ajax('$target','$v');return false;\" $add>$k</a>";
+                } else {
+                   $out .= "<a href=\"$v\" $add>$k</a>";
+                }
+            }
+        }
+
+        return $begin.$out.$end;
+    }
+}
+
+
 
 ?>
