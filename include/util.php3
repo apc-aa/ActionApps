@@ -115,12 +115,6 @@ function array_add($source, &$target) {
         }
     }
 }
-/** self_complete_url function
- *
- */
-function self_complete_url() {
-    return self_server().$GLOBALS['REQUEST_URI'];
-}
 
 /** self_server function
  *  returns server name with protocol and port

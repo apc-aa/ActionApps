@@ -3,6 +3,15 @@
          - new view.php3 parameter group_by which allows you to change
            the group by field of view:
               view.php3?vid=24&cmd[24]=d-...&set[24]=group_by-category........
+         - new possibility to use {pager} to work on views called by AJAX
+           (for live searches, ...). Just put the parameter "div-id" to pager:
+             {pager:resuts}
+           where result is the div id, in which the view dispays the values
+             <div id="results">..viev output there</div>
+         - now you can specify the time of next execution for Planned Tasks
+           (so now finaly are usefull). It uses strtotime(), so you can use
+           strings like "Monday 6:00" - see strtotime in php manual.
+         - better encoding detection for slice (solves utf-8 problem)
 09/06/12 - new {rotator:<item-ids>:<html-code>:<interval>} which rotates on one
 (honzam)   place in the page different contents (divs) with specified interval
             {rotator:<item-ids>:<html-code>:<interval>}
@@ -229,7 +238,7 @@
                You posted<br>_#1<br>Regards<br>ActionApps:
                OK sent:utf-8:actionapps@ecn.cz}
          - new {mail:<condition>:<to>:<subject>:<body>:<encoding>:<sender email>}
-           which sends the e-mai coditionaly
+           which sends the e-mail conditionaly
            be careful - it can send mail on every page load!
              Ussage:
              {mail:1:honza.malik@ecn.cz:test mail:{view:24}:utf-8:actionapps@ecn.cz}
