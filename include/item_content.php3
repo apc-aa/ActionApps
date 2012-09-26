@@ -759,12 +759,12 @@ class ItemContent extends AA_Content {
     function storeItem( $mode, $flags = array(), $context='direct' ) {
         global $event, $itemvarset;
 
-        $itemvarset = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
+        $itemvarset   = new CVarset();   // Global! - we need it shared in insert_fnc_* functions, TODO - pass it as parameter or whatever and do not use globals
 
-        $slice_id   = $this->getSliceID();
-        $slice      = AA_Slices::getSlice($slice_id);
-        $fields     = $slice->fields('record');
-        $silent     = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
+        $slice_id     = $this->getSliceID();
+        $slice        = AA_Slices::getSlice($slice_id);
+        $fields       = $slice->fields('record');
+        $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
         if ( !in_array($mode, array('insert', 'insert_new', 'insert_if_new', 'insert_as_new', 'overwrite', 'add', 'update_silent'))) {
             $mode = 'update';
@@ -946,14 +946,22 @@ class ItemContent extends AA_Content {
      * @param $id
      * @param $fields
      */
-    function updateComputedFields($id, &$fields, $mode) {
+    function updateComputedFields($id, $fields=null, $mode='update') {
         global $itemvarset; // set by insert_fnc_qte function
 
-        $varset     = new CVarset();
-        $itemvarset = new CVarset();
+        $varset       = new CVarset();
+        $itemvarset   = new CVarset();
+        $field_writer = new AA_Field_Writer;
 
         $update     = (($mode == 'update') OR ($mode == 'overwrite') OR ($mode == 'add'));
         $computed_field_exist = false;
+
+        // could be called also from outside to recompute fields
+        if (!$fields) {
+            $slice  = AA_Slices::getSlice($this->getSliceID());
+            $fields = $slice->fields('record');
+        }
+
         foreach ($fields as $fid => $f) {
             // input insert function parameters of field
             $fnc = ParseFnc($f["input_insert_func"]);
@@ -965,6 +973,7 @@ class ItemContent extends AA_Content {
             // computed field?
             if ($fnc["fnc"]=='com') {
                 $expand_string = $fnc["param"];
+                unset($expand_insert,$expand_update,$expand_delimiter, $recompute);
             }
             elseif ($fnc["fnc"]=='co2') {
                 list($expand_insert,$expand_update,$expand_delimiter,$recompute) = ParamExplode($fnc["param"]);
@@ -999,7 +1008,7 @@ class ItemContent extends AA_Content {
             $values = $item->getValues($fid);
             foreach($values as $varr) {
                 //  store the computed value for this field to database
-                insert_fnc_qte($id, $f, $varr, '');
+                $field_writer->insert_fnc_qte($id, $f, $varr, '');
             }
         }
 
@@ -1063,6 +1072,8 @@ class ItemContent extends AA_Content {
      * @param $context
      */
     function _store_fields($id, &$fields, $context='direct') {
+        $field_writer = new AA_Field_Writer;
+
         foreach ($this->content as $fid => $cont) {
             $f = $fields[$fid];
 
@@ -1099,14 +1110,14 @@ class ItemContent extends AA_Content {
                             }
                             $parameters["fields"]    = $fields;
                             $parameters["context"]   = $context;
-                            $thumbnails = $fncname($id, $f, $v, $fnc["param"], $parameters);
+                            $thumbnails = $field_writer->$fncname($id, $f, $v, $fnc["param"], $parameters);
                         }
                     } else {
                         if ($numbered) {
                             $parameters["order"] = $order;
-                            $fncname($id, $f, $v, $fnc["param"], $parameters);
+                            $field_writer->$fncname($id, $f, $v, $fnc["param"], $parameters);
                         } else {
-                            $fncname($id, $f, $v, $fnc["param"]);
+                            $field_writer->$fncname($id, $f, $v, $fnc["param"]);
                         }
                     }
                     // do not store multiple values if field is not marked as multiple
