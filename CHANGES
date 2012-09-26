@@ -22,6 +22,9 @@
          - help texts for the field are now displayed on the widget displayed by
            {ajax} and {live}. You can hide it by css - div.aa-help if you do not
            want to be shown
+         - new filename parameter to view.php3 to allow download the view as file
+             http://example.org/apc-aa/view.php3?vid=30&filename=test.xls
+           You can combine with paramater contenttype, if necessary.
          - The Input function and Validate function is set automaticaly
            (and correctly) if you use slice relation in Admin - Fields - Edit
            (on save)

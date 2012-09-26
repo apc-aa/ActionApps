@@ -84,7 +84,7 @@ function PrintViewRow($id, $name, $type) {
 // returns javascript row for view selection
 function GetViewJSArray( $sid, $id, $name, $i ) {
     $id=safe($id);
-    return "\n vs[$i]=\"x$sid\"; vv[$i]=\"$id\"; vn[$i]=\"".safe(substr($name,0,20))."\";";
+    return "\n vs[$i]=\"x$sid\"; vv[$i]=\"$id\"; vn[$i]=\"".safe($name)."\";";
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
