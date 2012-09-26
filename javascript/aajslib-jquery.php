@@ -73,6 +73,18 @@ function AA_HtmlToggle(link_id, link_text_1, div_id_1, link_text_2, div_id_2) {
     }
 }
 
+function AA_HtmlToggleCss(link_id, link_text_1, link_text_2, selector) {
+    var link = jqid(link_id);
+    if ( $(link).hasClass('is-on')) {
+        $(selector).hide('fast');
+        $(link).html(link_text_1);
+        $(link).toggleClass('is-on');
+    } else {
+        $(selector).show('fast');
+        $(link).toggleClass('is-on');
+        $(link).html(link_text_2);
+    }
+}
 
 function AA_Ajax(div_id, url, param, onload) {
     AA_AjaxCss(jqid(div_id), url, param, onload);
@@ -153,9 +165,9 @@ function AA_Refresh(id,inside,ok_func) {
 
 /** Send the form by AJAX and on success displays the ok_html text
  *  @param id        - form id
- *  @param loader_id - id of the html element, where you want to display the loader gif
- *                   - the button itself could be used here (not the form!)
- *  @param ok_html   - what text (html) should be displayed after the success
+ *  @param refresh   - id of the html element, which you want to refresh.
+ *                   - Such element must have data-aa-url attributes
+ *  @param ok_html   - function to call after the page update
  *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
  */
 function AA_SendForm(id, refresh, ok_func) {
@@ -259,17 +271,30 @@ function jqid(s) {
  *  The main chane is, that now we use standard AA input names:
  *   aa[i<item_id>][<field_id>][]
  */
-function AA_SendWidgetAjax(id) {
-    var valdiv = jqid('ajaxv_'+id);
+function AA_SendWidgetAjax(base_id) {
+    var valdiv = jqid('ajaxv_'+base_id);
+    var inputs = $(valdiv + ' :input');
+
+    if (typeof inputs[0].checkValidity == 'function') {
+        for(var i = 0; i < inputs.length; i++) {
+            if (!inputs[i].checkValidity()) {
+                AA_StateChange(base_id, 'invalid');
+                return;
+            }
+        }
+
+    }
+
     var code   = $(valdiv + ' *').serialize();
-    $(valdiv).append(AA_Config.loader);
+    AA_StateChange(base_id, 'updating');
+    //$(valdiv).append(AA_Config.loader);
 
     var alias_name = $(valdiv).attr('data-aa-alias');
 
     code += '&inline=1&ret_code_enc='+alias_name;
 
     $.post(AA_Config.AA_INSTAL_PATH + 'filler.php3', code, function(data) {
-        AA_ReloadAjaxResponse(id, data);
+        AA_ReloadAjaxResponse(base_id, data);
     });
 }
 
