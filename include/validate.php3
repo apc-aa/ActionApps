@@ -344,7 +344,7 @@ class AA_Validate_Id extends AA_Validate_Regexp {
     function __construct($param=array()) {
         parent::__construct($param);
         $this->pattern          = '/^[0-9a-f]{30,32}$/';
-        $this->empty_expression = '/^0|\s*$/';
+        $this->empty_expression = '/^(0|\s*)$/';
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
@@ -405,7 +405,7 @@ class AA_Validate_Regexp extends AA_Validate {
     function getClassProperties()  {
         return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
             'pattern'          => array( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
-            'empty_expression' => array( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^0|\s*$/')
+            'empty_expression' => array( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/')
             );
     }
 
@@ -418,6 +418,7 @@ class AA_Validate_Regexp extends AA_Validate {
     }
 
     function varempty($var) {
+        //huhl($this->empty_expression, $var, preg_match($this->empty_expression, $var));
         return preg_match($this->empty_expression, $var);
     }
 
