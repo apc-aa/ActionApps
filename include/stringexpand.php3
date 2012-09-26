@@ -39,6 +39,9 @@ require_once AA_INC_PATH."perm_core.php3";    // needed for GetAuthData();
 require_once AA_INC_PATH."files.class.php3";  // file wrapper for {include};
 require_once AA_INC_PATH."tree.class.php3";   // for {tree:...};
 
+if (defined('AA_CUSTOM_DIR')) {
+    include_once(AA_INC_PATH. 'custom/'. AA_CUSTOM_DIR. '/stringexpand.php');
+}
 
 /** creates array form JSON array or returns single value array if not valid json */
 function json2arr($string) {
@@ -144,6 +147,35 @@ class AA_Stringexpand_User extends AA_Stringexpand {
                 }
                 return $item_user->subst_alias($field);
         }
+    }
+}
+
+
+
+/** Expands {xuser:xxxxxx} alias - auth user informations (of current user)
+*   @param $field - field to show ('headline........', '_#SURNAME_' ...).
+*                   empty for username (of curent logged user)
+*                   id - for long id
+*
+*   We do not use {user} in this case, since views with {user} are not cached,
+*   but the views with {xuser} could be (xuser is part of apc variable)
+*/
+class AA_Stringexpand_Xuser extends AA_Stringexpand {
+
+    /** expand function
+     * @param $field
+     */
+    function expand($field='') {
+        $xuser = $GLOBALS['apc_state']['xuser'];
+        if (!$xuser) {
+            return '';
+        }
+        switch ($field) {
+            case '':     return $xuser;
+            case 'id':   return AA_Reader::name2Id($xuser);
+        }
+        $item = AA_Items::getItem(new zids(AA_Reader::name2Id($xuser),'l'));
+        return empty($item) ? '' : $item->subst_alias($field);
     }
 }
 
@@ -2092,7 +2124,15 @@ class AA_Treecache {
     }
 }
 
-/** ids_string - ids (long or short (or mixed) separated by dash '-') */
+/** Aggregate information from specified set of items. The function, which could
+ *  be used for aggregated values are:
+ * @param $function   sum | max | min | avg | concat | count | order | filter
+ * @param $ids_string list of item ids, khich we take into account
+ * @param $expression the value, we are counting with (like _#NUMBER_E)
+ * @param $parameter  posible additional parameter for the function (like delimiter for the "concat" function)
+ *
+ * {aggregate:max:{ids:3a0c44958b1c6ad697804cfdbccd8b09}:_#D_APPCNT}
+ */
 class AA_Stringexpand_Aggregate extends AA_Stringexpand {
 
     /** Do not trim all parameters (the $parameter could contain space - for concat...) */
@@ -2105,7 +2145,7 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
      * @param $parameter
      */
     function expand($function, $ids_string, $expression=null, $parameter=null) {
-        if ( !in_array($function, array('sum', 'avg', 'concat', 'count', 'order', 'filter')) ) {
+        if ( !in_array($function, array('sum', 'max', 'min', 'avg', 'concat', 'count', 'order', 'filter')) ) {
             return '';
         }
         $ids     = explode('-', $ids_string);
@@ -2129,6 +2169,12 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
         switch ($function) {
             case 'sum':
                 $ret = array_sum(str_replace(',', '.', $results));
+                break;
+            case 'max':
+                $ret = max(str_replace(',', '.', $results));
+                break;
+            case 'min':
+                $ret = min(str_replace(',', '.', $results));
                 break;
             case 'avg':
                 array_walk($results, create_function('$a', 'return (float)str_replace(",", ".", $a);'));
@@ -2180,7 +2226,7 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
                 if ($item) {
                     $slice = AA_Slices::getSlice($item->getSliceID());
                     $text  = $slice->getProperty('fulltext_format_top'). $slice->getProperty('fulltext_format'). $slice->getProperty('fulltext_format_bottom');
-                    $ret  .= AA_Stringexpand::unalias($text, $slice->getProperty('fulltext_remove'), $item);
+                        $ret  .= AA_Stringexpand::unalias($text, $slice->getProperty('fulltext_remove'), $item);
                 }
             }
         }
@@ -2436,6 +2482,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
 /** returns seo name created from the string
  *  {seoname:<string>[:<unique_slices>[:<encoding>]]}
  *  {seoname:About Us:3aa35236626262738348478463536224:windows-1250}
+ *  {seoname:{_#HEADLINE}:all}
  *  returns about-us
  *  If you specify the unique_slices parameter, then the id is created as unique
  *  for those slices. Slices are separated by dash
@@ -2443,7 +2490,7 @@ class AA_Stringexpand_Seo2ids extends AA_Stringexpand {
  *  the character encoding from the slice setting. The default is utf-8, but you
  *  can use any (windows-1250, iso-8859-2, iso-8859-1, ...)
  */
-class AA_Stringexpand_Seoname extends AA_Stringexpand {
+class AA_Stringexpand_Seoname extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param $string
      * @param $unique_slices
@@ -2461,6 +2508,10 @@ class AA_Stringexpand_Seoname extends AA_Stringexpand {
         }
 
         $add = '';
+
+        if (($unique_slices == 'all') AND is_object($this->item)) {
+            $unique_slices = AA_Stringexpand::unalias("{site:{modulefield:{slice_id........}:site_ids}:modules}", '', $this->item);
+        }
         if ( !empty($unique_slices) ) {
             $i = 1;
             // we do not want to create infinitive loop for wrong parameters
@@ -2884,7 +2935,7 @@ class AA_Stringexpand_Fieldid extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Field extends AA_Stringexpand {
 
-    private static $ALLOWED_PROPERTIES = Array ('name'=>'name','help'=>'input_help', 'alias1'=>'alias1' );
+    private static $ALLOWED_PROPERTIES = Array ('name'=>'name','help'=>'input_help', 'alias1'=>'alias1', 'alias2'=>'alias2', 'alias3'=>'alias3', 'widget_new'=>'widget_new' );
 
     function additionalCacheParam() {
         /** output is different for different items - place item id into cache search */
@@ -2906,6 +2957,9 @@ class AA_Stringexpand_Field extends AA_Stringexpand {
         // that's why we restict it to the properties, which makes sense
         // @todo - make it less restrictive
         $property = self::$ALLOWED_PROPERTIES[$property];
+        if ($property == 'widget_new') {
+            return $field->getWidgetNewHtml();
+        }
         return (string) $field->getProperty($property ? $property : 'name');
     }
 
@@ -3650,10 +3704,10 @@ class AA_Stringexpand_Slice_Comments extends AA_Stringexpand {
 }
 
 class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercache {
+    // Never cached (extends AA_Stringexpand_Nevercache)
     /** Do not trim all parameters (maybe we can?) */
     function doTrimParams() { return false; }
 
-    // Never cached (extends AA_Stringexpand_Nevercache)
     // No reason to cache this simple function
     /** expand function
      * @param $pattern
@@ -3754,6 +3808,17 @@ class AA_Stringexpand_Live extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Allows on-line editing of field content */
+class AA_Stringexpand_Input extends AA_Stringexpand_Nevercache {
+    /** expand function
+     * @param $item_id
+     * @param $field_id
+     */
+     function expand($slice_id, $field_id) {
+         return AA_Stringexpand_Field::expand($field_id, $slice_id, 'widget_new');
+     }
+}
+
 class AA_Stringexpand {
 
     /** item, for which we are stringexpanding
@@ -3783,6 +3848,7 @@ class AA_Stringexpand {
         /** math function log() */
         'log'              => 'log',                // old AA_Stringexpand_Log
         'unpack'           => 'unpack_id',          // old AA_Stringexpand_Unpack
+        'string2id'        => 'string2id',          // old AA_Stringexpand_String2id
 
         /** Prints version of AA as fullstring, AA version (2.11.0), or svn revision (2368)
          *  {version[:aa|svn]}
@@ -4270,9 +4336,9 @@ class AA_Stringexpand_Filelink extends AA_Stringexpand {
         if (empty($url)) {
             return '';
         }
-        $filename     = $text ? $text : basename(parse_url($url, PHP_URL_PATH));
-        $fileinfo     = join(' - ', array(AA_Stringexpand_Fileinfo::expand($url,'type'), AA_Stringexpand_Fileinfo::expand($url,'size')));
-        $fileinfo     = $fileinfo ? " [$fileinfo]" : '';
+        $filename = $text ? $text : basename(parse_url($url, PHP_URL_PATH));
+        $fileinfo = join(' - ', array(AA_Stringexpand_Fileinfo::expand($url,'type'), AA_Stringexpand_Fileinfo::expand($url,'size')));
+        $fileinfo = $fileinfo ? " [$fileinfo]" : '';
         $fielinfo_htm = $fileinfo ? "&nbsp;<span class=\"fileinfo\">". str_replace(' ','&nbsp;', $fileinfo).'</span>' : '';
 
         return "$text_before<a href=\"$url\" title=\"$filename$fileinfo\">$filename</a>$fielinfo_htm";
@@ -4717,7 +4783,7 @@ class AA_Password_Manager_Reader {
             return self::_bad(_m("Heslo musí být nejménì 6 znakù dlouhé."));  // @todo get messages from somewhere
         }
 
-        if (UpdateField($user, 'password........', new AA_Value(crypt($pwd1, 'xx')))) {
+        if (UpdateField($user, 'password........', new AA_Value(ParamImplode(array('AA_PASSWD',$pwd1))))) {
             return self::_ok(_m("Heslo bylo zmìnìno."));
         }
         return self::_ok(_m("Došlo k chybì bìhem zmìny hesla - prosím kontaktujte %1.", array($from_email)));
@@ -4753,7 +4819,7 @@ class AA_Password_Manager_Reader {
  *  The idea is, that this alias will manage all tasks needed for change of pwd
  *  you just put the {changepwd:<reader_slice_id>:<some other parameter>}
  */
-class AA_Stringexpand_Changepwd extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
 
     /** expand function
      * @param $reader_slice_id - reader module id
@@ -4940,4 +5006,25 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
     }
 
 }
+
+/** Recounts all computed field in the specified item (or dash separated items)
+ *    {recompute:<item_ids>}
+ */
+class AA_Stringexpand_Recompute extends AA_Stringexpand_Nevercache {
+
+    function expand($item_ids='') {
+
+        $item_arr = explode('-',$item_ids);
+
+        foreach ($item_arr as $iid) {
+            if (!($iid = trim($iid))) {
+                continue;
+            }
+            $item = new ItemContent($iid);
+            $item->updateComputedFields($iid);
+        }
+        return $ret;
+    }
+}
+
 ?>

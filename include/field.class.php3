@@ -249,6 +249,19 @@ class AA_Field {
         return $widget->getLiveHtml($aa_property, $item, $function);
     }
 
+    /** getWidgetNewHtml function
+    * @param $item_id
+    * @param $required  // redefine default settings of required
+    */
+    function getWidgetNewHtml($required=null) {
+        $widget  = $this->getWidget();
+        $content = new AA_Content();
+        $content->setOwnerId($this->getSliceId());
+        $aa_property = $this->getAaProperty($widget->multiple(), $required);
+
+        return $widget->getHtml($aa_property, $content);
+    }
+
     /** _getRelation function
      *  @return true if constants are from slice
      */
