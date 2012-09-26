@@ -205,6 +205,8 @@ class AA_Widget extends AA_Components {
       * This function is rewritten fill_const_arr().
       */
     private function _fillConstArr($content) {
+        AA::$debug && AA::$dbg->log($this,$content );
+
         if ( isset($this->_const_arr) AND is_array($this->_const_arr) ) {  // already filled
             return;
         }
@@ -233,12 +235,16 @@ class AA_Widget extends AA_Components {
             return;                           //  = array();
         }
 
+        AA::$debug && AA::$dbg->log($filter_conds);
+
         // if variable is for some item, then we can use _#ALIASES_ in conds
         // and sort
         if ( is_object($content) ) {
             $filter_conds = $content->unalias($filter_conds);
             $sort_by      = $content->unalias($sort_by);
         }
+
+        AA::$debug && AA::$dbg->log($filter_conds);
 
         // "#sLiCe-" prefix indicates select from items
         if ( substr($constgroup,0,7) == "#sLiCe-" ) {
@@ -261,6 +267,9 @@ class AA_Widget extends AA_Components {
             }
             $format          = AA_Slices::getField($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
             $set              = new AA_Set($sid, $filter_conds, $sort_by, $bin_filter);
+
+            AA::$debug && AA::$dbg->log($set);
+
             $this->_const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tag_prefix);
             return;
         }
@@ -417,7 +426,10 @@ class AA_Widget extends AA_Components {
 
             $widget    = "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add>$widget_add2";
             $selected  = $content->getAaValue($aa_property->getId());
-            $options   = $this->getOptions($selected, $content, $use_name, false, !$required);
+            // empty select option for not required fields and also for live selectbox,
+            // because people thinks, that the first value is filled in the database (which is not)
+            $add_empty = !$required OR ($type == 'live' AND $selected->isEmpty());
+            $options   = $this->getOptions($selected, $content, $use_name, false, $add_empty);
             $widget   .= $this->getSelectOptions( $options );
             $widget   .= "</select>";
         } else {
@@ -469,9 +481,9 @@ class AA_Widget extends AA_Components {
         $help        = $aa_property->getHelp();
 
         $ret  = "<div class=\"aa-widget\"".($required ? ' data-aa-required':'')." id=\"widget-$base_id\">\n";
-        $ret .= "  <label for=\"". $winfo['last_input_name'] ."\">".$aa_property->getName()."</label>\n";
+        $ret .= "  <label for=\"". AA_Form_Array::formName2Id($winfo['last_input_name']) ."\">".$aa_property->getName()."</label>\n";
         $ret .= "  <div class=\"aa-input\">\n";
-        $ret .=      $winfo['html']. ($help ? "\n    <div class=\"aa-help\">$help</div>\n" :'');
+        $ret .=      $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $ret .= "  </div>\n";
         $ret .= "</div>\n";
 
@@ -483,14 +495,15 @@ class AA_Widget extends AA_Components {
      *  @param  $content        - contain the value of propertyu to display
      */
     function getAjaxHtml($aa_property, $content) {
-        return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content));
+        return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content), $aa_property);
     }
 
     /* Creates all common ajax editing buttons to be used by different inputs */
-    function _finalizeAjaxHtml($winfo) {
+    function _finalizeAjaxHtml($winfo, $aa_property) {
         $base_name    = $winfo['base_name'];
         $base_id      = AA_Form_Array::formName2Id($base_name);
-        $widget_html = $winfo['html'];
+        $help         = $aa_property->getHelp();
+        $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $widget_html .= "\n<input class=\"save-button\" type=\"button\" value=\"". _m('SAVE CHANGE') ."\" onclick=\"AA_SendWidgetAjax('$base_id')\">"; //ULOŽIT ZMÌNU
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
         return $widget_html;
@@ -502,13 +515,15 @@ class AA_Widget extends AA_Components {
      */
     function getLiveHtml($aa_property, $content, $function) {
         // add JS OK Function
-        return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live')));
+        return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeLiveHtml($this->_getRawHtml($aa_property, $content, 'live'), $aa_property));
     }
 
     /* Decorates Live Widget. Prepared for overriding in subclasses */
-    function _finalizeLiveHtml($winfo) {
-        $base_id  = $winfo['base_id'];
-        $ret  = "<div class=\"aa-widget\"".($winfo['required'] ? ' data-aa-required':'')." id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $winfo['html']. "</div>";
+    function _finalizeLiveHtml($winfo, $aa_property) {
+        $base_id      = $winfo['base_id'];
+        $help         = $aa_property->getHelp();
+        $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
+        $ret          = "<div class=\"aa-widget\"".($winfo['required'] ? ' data-aa-required':'')." id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $widget_html. "</div>";
         return $ret;
     }
 
@@ -1489,11 +1504,12 @@ class AA_Widget_Fil extends AA_Widget {
         //return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content)));
     }
 
-    function _finalizeAjaxHtml($winfo) {
+    function _finalizeAjaxHtml($winfo, $aa_property) {
         // not standard - we do not show save button (the upload input works the same way here)
         $base_name    = $winfo['base_name'];
         $base_id      = AA_Form_Array::formName2Id($base_name);
-        $widget_html = $winfo['html'];
+        $help         = $aa_property->getHelp();
+        $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
         return $widget_html;
     }
@@ -1683,16 +1699,48 @@ class AA_Widget_Pwd extends AA_Widget {
         return false;   // returns multivalue or single value
     }
 
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name   = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_id     = AA_Form_Array::formName2Id($base_name);
+
+        $required    = $aa_property->isRequired() ? 'required' : '';
+        $value       = $content->getAaValue($aa_property->getId());
+
+        $widget = '';
+        if (!$value->isEmpty()) {
+            $input_name  = $base_name ."[pwd][old]";
+            $input_id    = AA_Form_Array::formName2Id($input_name);
+            $widget     .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\""._m('Current password')."\">";
+        }
+        $input_name  = $base_name ."[pwd][new1]";
+        $input_id    = AA_Form_Array::formName2Id($input_name);
+        $widget     .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\""._m('Password')."\" $required>";
+        $input_name  = $base_name ."[pwd][new2]";
+        $input_id    = AA_Form_Array::formName2Id($input_name);
+        $widget     .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\""._m('Retype New Password')."\" $required>";
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
+
+
     /** @return AA_Value for the data send by the widget
      *   The data submitted by form usually looks like
-     *       aa[n1_54343ea876898b6754e3578a8cc544e6][password________][pwd][]=MyPassword
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][password________][pwd][new]=MyPassword
      *  @param $data4field - array('pwd'=>MyPassword)
      *   This method coverts such data to AA_Value.
      *
      *  static class method
      */
     function getValue($data4field) {
-        return new AA_Value(crypt(reset($data4field), 'xx'), $data4field['flag'] & FLAG_HTML);
+        $flag          = $data4field['flag'] & FLAG_HTML;
+        if (is_array($data4field) AND isset($data4field['new'])) {
+            return new AA_Value(ParamImplode(array('AA_PASSWD',$data4field['new1'],$data4field['new2'],$data4field['old'])), $flag);
+        }
+        // older version without the possibility to provide old passwords
+        return new AA_Value(ParamImplode(array('AA_PASSWD',reset($data4field))), $flag);
     }
 
     /** getClassProperties function
