@@ -118,7 +118,7 @@ if ($do=="chk" || $do=="chp") { //CHeck Key or CHange Password
        $itemID  = unpack_id($userdata["id.............."][0]['value']);
        list($fields,) = GetSliceFields($sliceID);
        $fields["password........"]["input_insert_func"] = "qte:";
-       $userdata["password........"][0]['value']        = crypt($password,'xx');
+       $userdata["password........"][0]['value']        = ParamImplode(array('AA_PASSWD',$password));
        $update=StoreItem( $itemID, $sliceID, $userdata, $fields, false, true, false ); // insert, invalidatecache, feed
        if ($update) echo "Your password has been updated."; else
        die ("There was an error updating your password. Please contact ".ERROR_REPORTING_EMAIL);

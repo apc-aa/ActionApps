@@ -38,14 +38,16 @@
  *                            into destination item
  */
 class AA_Saver {
-    var $grabber;            /** the object which deliveres the data */
-    var $transformations;    /** describes, what to do with data before storing */
-    var $slice_id;           /** id of destination slice */
-    var $store_mode;         /** store-policy - how to store - overwrite | insert_if_new | by_grabber */
-    var $id_mode;            /** id-policy    - how to construct id - old | new | combined */
+    var $grabber;                  /** the object which deliveres the data */
+    var $transformations;          /** describes, what to do with data before storing */
+    var $slice_id;                 /** id of destination slice */
+    var $store_mode;               /** store-policy - how to store - overwrite | insert_if_new | by_grabber */
+    var $id_mode;                  /** id-policy    - how to construct id - old | new | combined */
 
-    var $_new_ids;           /** array of newly inserted ids (after run()) - the long ones */
-    var $_updated_ids;       /** array of ids of rewritten items (after run()) - the long ones */
+    var       $_new_ids;           /** array of newly inserted ids (after run()) - the long ones */
+    var       $_updated_ids;       /** array of ids of rewritten items (after run()) - the long ones */
+    protected $_messages = array();
+
 
     /** AA_Saver function
      * @param $grabber
@@ -68,15 +70,10 @@ class AA_Saver {
      * Now import all items to the slice
      */
     function run() {
-        global $debugfeed;
 
         $this->grabber->prepare();    // maybe some initialization in grabber
 
         while ($content4id = $this->grabber->getItem()) {
-
-            if ($debugfeed >= 8) {
-                print("\n<br>AA_Saver->run(): we have item to store, hurray! -- ". $content4id->getItemID());
-            }
 
             $id_mode    = ($this->id_mode    == 'by_grabber') ? $this->grabber->getIdMode()    : $this->id_mode;
             $store_mode = ($this->store_mode == 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
@@ -106,36 +103,24 @@ class AA_Saver {
 
             if (($store_mode == 'overwrite') OR (substr($store_mode,0,6) == 'insert')) {
                 if (!$content4id->complete4Insert()) {
-                    print("\n<br>AA_Saver->run(): complete4Insert failed: ". ItemContent::lastErrMsg());
+                    $this->message("AA_Saver->run(): complete4Insert failed: ". ItemContent::lastErrMsg());
                     continue;
                 }
             }
             // @todo do validation for updates
 
-
-            if ($debugfeed >= 3) {
-                print("\n<br>      ". $content4id->getValue('headline........'));
-            }
-            if ($debugfeed >= 8) {
-                print("\n<br>xmlUpdateItems:content4id="); huhl($content4id);
-            }
-
             // id_mode - overwrite or insert_if_new
             // (the $new_item_id should not be changed by storeItem)
             if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
-                print("\n<br>AA_Saver->run(): storeItem failed or skiped duplicate: ". ItemContent::lastErrMsg());
+                // AA_Saver->run(): storeItem failed or skiped duplicate:
+                $this->message(ItemContent::lastErrMsg());
             } else {
-                if ($debugfeed >= 1) {
-                    print("\n<br>  + stored OK: ". $content4id->getValue('headline........'));
-                }
-
                 // @todo better check of new ids
                 if ($store_mode == 'insert') {
                     $this->_new_ids[] = $new_item_id;
                 } else {
                     $this->_updated_ids[] = $new_item_id;
                 }
-
 
                 // Update relation table to show where came from
                 if ($new_item_id AND $old_item_id AND ($new_item_id != $old_item_id)) {
@@ -144,6 +129,7 @@ class AA_Saver {
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some finalization in grabber
+        print($this->report());
     }
 
     /** Returns array of long new saved ids */
@@ -164,6 +150,28 @@ class AA_Saver {
     function toexecutelater() {
         return $this->run();
     }
+
+    /** message function
+     *  Records Error/Information message
+     * @param $text
+     */
+    function message($text) {
+        $this->_messages[] = $text;
+    }
+
+    /** report function
+     * Print Error/Information messaages
+     */
+    function report()       {
+        return join("<br>\n", $this->_messages);
+    }
+    /** clear_report function
+     *
+     */
+    function clear_report() {
+        unset($this->_messages);
+        $this->_messages = array();
+    }
 }
 
 
@@ -173,7 +181,7 @@ class AA_Saver {
  *  @todo this class should be abstract after we switch to PHP5
  */
 class AA_Grabber {
-    var $messages = array();
+    protected $_messages = array();
 
     /** name function
      *  Name of the grabber - used for grabber selection box
@@ -237,21 +245,21 @@ class AA_Grabber {
      * @param $text
      */
     function message($text) {
-        $this->messages[] = $text;
+        $this->_messages[] = $text;
     }
 
     /** report function
      * Print Error/Information messaages
      */
     function report()       {
-        return join('<br>', $this->messages);
+        return join('<br>', $this->_messages);
     }
     /** clear_report function
      *
      */
     function clear_report() {
-        unset($this->messages);
-        $this->messages = array();
+        unset($this->_messages);
+        $this->_messages = array();
     }
 }
 

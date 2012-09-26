@@ -219,7 +219,10 @@ function SendOkPage($txt, $new_ids = array()) {
             ReadFileSafe($_REQUEST["ok_url"]);
         } else {
             $retcode = $_REQUEST["ret_code"] ? $_REQUEST["ret_code"] : base64_decode($_REQUEST["ret_code_enc"]);
-            $ret   = array();
+            $ret     = array();
+            if ($txt['report']) {
+                $ret['report'] = $txt['report'];
+            }
             foreach($new_ids as $long_id) {
                 $item = AA_Item::getItem(new zids($long_id, 'l'));
                 $text = AA_Stringexpand::unalias($retcode, '', $item);
@@ -292,7 +295,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
     $translations = null;
     $saver        = new AA_Saver($grabber, $translations, null, 'by_grabber');
     $saver->run();
-    SendOkPage( array("success" => "insert" ), $saver->changedIds());
+    SendOkPage( array("report" => $saver->report() ), $saver->changedIds());
     exit;
 }
 
