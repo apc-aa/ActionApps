@@ -85,7 +85,6 @@ function __autoload ($class_name) {
       }
 
     $CUSTOM_INC_FILES = array(
-        'AA_Stringexpand' => 'stringexpand.php',
         'AA_Responder'    => 'responder.php'
         );
 

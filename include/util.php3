@@ -474,7 +474,7 @@ function huhl() {
     }
     $vars = func_get_args();
     foreach ($vars as $var) {
-        AA::$dbg->log($a);
+        AA::$dbg->log($var);
     }
 }
 

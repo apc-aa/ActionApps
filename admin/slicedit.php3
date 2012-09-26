@@ -155,7 +155,7 @@ $ssiuri = ereg_replace("/admin/.*", "/slice.php3", $_SERVER['PHP_SELF']);
 echo "<tr><td colspan=\"2\">" . _m("<br>To include slice in your webpage type next line \n                         to your shtml code: ") . "<BR><pre>" .
      "&lt;!--#include virtual=&quot;" . $ssiuri . "?slice_id=" . $slice_id . "&quot;--&gt;</pre></td></tr>";
 
-// not functional, yet     
+// not functional, yet
 // FrmInputText("upload_url", _m("Upload URL"), $slice_url, 254, 25, false, _m('Url of uploaded files is %1 by default. You can change it by setting this parameter.<br>Note: This do not change the place, wheer the file is stored - you can just use another virtualhost name, for example.', array(IMG_UPLOAD_URL)));
 FrmInputSelect("owner", _m("Owner"), $slice_owners, $owner, false);
 if ( !$owner ) {
@@ -189,8 +189,7 @@ if ($superadmin) {
 // Reader Management specific settings (Jakub, 7.2.2003)
 
 $slice     = AA_Slices::getSlice($slice_id);
-$slicetype = $slice->getProperty("type");
-if ($slicetype == 'ReaderManagement') {
+if ($slice AND ($slice->getProperty("type") == 'ReaderManagement')) {
     $slicefields = GetFields4Select($slice_id, false, 'input_pri');
     FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, $auth_field_group, false, "", "../doc/reader.html#auth_field_group");
     FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields, $mailman_field_lists, false, "", "../doc/reader.html#mailman");

@@ -486,6 +486,9 @@ class AA_Slices {
      * @param $slice_id
      */
     function getSlice($slice_id) {
+        if (guesstype($slice_id) != 'l') {
+            return null;
+        }
         $slices = AA_Slices::singleton();
         return $slices->_getSlice($slice_id);
     }

@@ -1106,9 +1106,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
     ParseMultiSelectConds($conds);
     ParseEasyConds($conds, $defaultCondsOperator);
 
-    if ( $GLOBALS['debug'] ) {
-        huhl( "<br>Conds after ParseEasyConds():", $conds, "<br>--");
-    }
+    AA::$debug && AA::$dbg->log("<br>Conds after ParseEasyConds():", $conds, "<br>--");
 
     if ( isset($conds) AND is_array($conds)) {
         foreach ($conds as $cond) {
@@ -1212,9 +1210,7 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
     $arr = array();                  // result ids array
     if (!$empty_result_condition) {
         $db->tquery($SQL);
-        if ( $debug ) {
-            huhl("GetZidsFromSQL: SQL", $SQL);
-        }
+        AA::$debug && AA::$dbg->log("GetZidsFromSQL: SQL", $SQL);
 
         if (!$group_limit) {
             while ($db->next_record()) {
@@ -1304,7 +1300,6 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
-    global $debug;                 // displays debug messages
     global $CONDS_NOT_FIELD_NAMES; // list of special conds[] indexes (defined in constants.php3)
     global $QueryIDsCount;
 
@@ -1312,18 +1307,14 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         $slices = empty($slices) ? array() : (array)$slices;
     }
 
-    if ( $debug ) {
-        huhl("QueryZIDs - start:<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",join('-',$slices));
-    }
+    AA::$debug && AA::$dbg->log("QueryZIDs - start:<br>Conds=",$conds,"<br>Sort=",$sort, "<br>Slices=",join('-',$slices));
 
     if (is_object($restrict_zids) AND ($restrict_zids->count() == 0)) {
         return new zids(); // restrict_zids defined but empty - no result
     }
 
-    if ($GLOBALS['debugfields'] OR $debug) {
-        if (!empty($slices)) {
-            ProoveFieldNames($slices, $conds);
-        }
+    if (AA::$debug AND !empty($slices)) {
+        ProoveFieldNames($slices, $conds);
     }
 
     ParseMultiSelectConds($conds);
@@ -1352,9 +1343,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         $fields = $slice->getFields();
     }
 
-    if ( $debug ) {
-        huhl("QueryZIDs: Conds=",$conds,"Sort=",$sort, "Slices=",join('-',$slices));
-    }
+    AA::$debug && AA::$dbg->log("QueryZIDs: Conds=",$conds,"Sort=",$sort, "Slices=",join('-',$slices));
 
     // parse conditions ----------------------------------
     if ( is_array($conds)) {
@@ -1394,7 +1383,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                 $field = $fields->getField($fid);
 
                 if ( is_null($field) OR $v=="") {
-                    if ($debug) echo "Skipping $fid in conds[]: not known.<br>"; {
+                    if (AA::$debug) echo "Skipping $fid in conds[]: not known.<br>"; {
                         continue;            // bad field_id or not defined condition - skip
                     }
                 }
@@ -1474,7 +1463,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
 
             $field = $fields->getField($fid);
             if ( is_null($field) ) { // bad field_id - skip
-                if ($debug) {
+                if (AA::$debug) {
                     echo "Skipping sort[x][$fid], don't know $fid.<br>";
                 }
                 continue;
@@ -1554,9 +1543,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     // .. removed 2/27/2005 Honza (was never used)
     // ---
 
-    if ( $debug ) {
-        huhl("QueryZIDs:slice_id=",join('-',$slices),"  select_tabs=",$select_tabs, "  select_conds=",$select_conds,"  select_order=",$select_order );
-    }
+    AA::$debug && AA::$dbg->log("QueryZIDs:slice_id=",join('-',$slices),"  select_tabs=",$select_tabs, "  select_conds=",$select_conds,"  select_order=",$select_order );
 
     // construct query --------------------------
     $SQL = "SELECT DISTINCT item.id as itemid $select_distinct FROM item ";
@@ -1606,9 +1593,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
         $SQL .= ", view_name: ".  $GLOBALS['view_info']['name'];
     }
 
-    if ( $debug ) {
-        huhl("QueryZIDs: SQL: $SQL");
-    }
+    AA::$debug && AA::$dbg->log("QueryZIDs: SQL: $SQL");
 
     // if neverAllItems is set, return empty set if no conds[] are used
     $ret = GetZidsFromSQL( $SQL, 'itemid', 'p', !is_array($select_conds) && $neverAllItems,

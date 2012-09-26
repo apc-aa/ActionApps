@@ -158,7 +158,7 @@ function get_aamenus() {
     ));
 
     $slice = AA_Slices::getSlice($slice_id);
-    if ( $slice->getProperty("mailman_field_lists")) {
+    if ( $slice AND $slice->getProperty("mailman_field_lists")) {
         $aamenus ["sliceadmin_submenu"]["items"]["mailman_create_list"] = array (
             "cond"  => IfSlPerm(PS_FIELDS),
             "href"  => "admin/mailman_create_list.php3",
