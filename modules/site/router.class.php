@@ -219,6 +219,8 @@ class AA_Router {
  *    {go:xseoadd=nika}                         cz/news/about-us/nika
  *    {go:xlang=de}                             de/
  *    {go:xpage=2}                              cz2/news/about-us
+ *    {go:xqs=iid=_#N1_ID___}                   cz/news/about-us?iid=_#N1_ID___  (iid will contain the id of the new item, if this {go} command will be used in ok_url parameter of the form)
+ *    {go:xqs=}                                 cz/news/about-us   (and removes all parameters in query string, if any)
  */
 class AA_Router_Seo extends AA_Router {
 
@@ -515,33 +517,6 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
         }
         $router = AA_Router::singleton($router_class);
         return $router->xid($param, $url);
-    }
-}
-
-/** Expands {xuser:xxxxxx} alias - auth user informations (of current user)
-*   @param $field - field to show ('headline........', '_#SURNAME_' ...).
-*                   empty for username (of curent logged user)
-*                   id - for long id
-*
-*   We do not use {user} in this case, since views with {user} are not cached,
-*   but the views with {xuser} could be (xuser is part of apc variable)
-*/
-class AA_Stringexpand_Xuser extends AA_Stringexpand {
-
-    /** expand function
-     * @param $field
-     */
-    function expand($field='') {
-        $xuser = $GLOBALS['apc_state']['xuser'];
-        if (!$xuser) {
-            return '';
-        }
-        switch ($field) {
-            case '':     return $xuser;
-            case 'id':   return AA_Reader::name2Id($xuser);
-        }
-        $item = AA_Items::getItem(new zids(AA_Reader::name2Id($xuser),'l'));
-        return empty($item) ? '' : $item->subst_alias($field);
     }
 }
 ?>

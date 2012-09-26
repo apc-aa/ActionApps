@@ -251,6 +251,9 @@ if ($nobody) {
     }
 }
 
+// in order {xuser:id} alias wors in widgets, for example
+$GLOBALS['apc_state']['xuser'] = $auth->auth["uname"];
+
 $request = null;
 
 // we use primarily POST, but manager class actions needs to send GET request
