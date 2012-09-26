@@ -103,6 +103,15 @@ if ($contenttype) {
     header("Content-type: $contenttype");
 }
 
+if ($filename) {
+   header('Content-Description: File Transfer');
+   if (!$contenttype) {
+       header('Content-Type: application/octet-stream');
+   }
+   header('Content-Disposition: attachment; filename='.basename($filename));
+   header('Content-Transfer-Encoding: binary');
+}
+
 $view_param = ParseViewParameters();
 
 if ($convertfrom) {
