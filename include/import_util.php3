@@ -410,7 +410,7 @@ class Action {
                 break;
             }
             case "password": {
-                $fvalues[]['value'] = crypt($itemContent->GetValue($from), 'xx');
+                $fvalues[]['value'] = ParamImplode(array('AA_PASSWD',$itemContent->GetValue($from)));
                 break;
             }
             default: {
