@@ -1,3 +1,36 @@
+09/26/12 - new {input:<slice_id>:<field_id>}, which prints the widget for
+(honzam)   the input in the form. The same HTML code you will get with (new)
+           command {field:<field_id>:<slice_id>:widget_new}
+         - new easiest way to find new seoname within all slices in the module:
+             {seoname:{_#HEADLINE}:all}
+         - new {recompute:<item-ids>} is the command to recompute all the
+           computed fields for specified item ids. You can put it in other
+           computed field in related slice, for example, if you want there
+           recompute the number of links or whatever
+         - new possibility to use "min" and "max" functions in {aggregate:...}
+         - new {string2id:<string>} which generates some id for specified
+           string. The ID is allways the same for the same string, which is
+           sometimes good for importing the data into AA - mailny when you need
+           to make some hierarchy of the items
+         - new possibility to change user password just by
+           {ajax:{_#ITEM_ID_}:password........:change password}. The widget with
+           the fields for old password and new one is then displayed and allows
+           you to change the password.
+         - new possibility to store provided password to another field
+           and possibly crypt it by your password (highly recommended) - all by
+           parameters of Input function Password set on Field setting page
+         - help texts for the field are now displayed on the widget displayed by
+           {ajax} and {live}. You can hide it by css - div.aa-help if you do not
+           want to be shown
+         - The Input function and Validate function is set automaticaly
+           (and correctly) if you use slice relation in Admin - Fields - Edit
+           (on save)
+         - fixed live selectbox behavior, when used as required - the empty
+           option is displayed as default for not filled field
+         - fixed {htmltogglecss} when used with jquery (and aajslib-jquery.php)
+         - started to use new debug functions
+         - fixed validation of empty values for relational fields
+         - fixed {xuser} in ajax widgets settings now works well
 09/21/12 - {array:<name>:set:...} now could be used with empty index
 (honzam)   it adds new member to the array - the same as in phparr_var[] = "..."
          - new view.php3 parameter group_by which allows you to change
