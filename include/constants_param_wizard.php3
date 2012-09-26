@@ -113,9 +113,20 @@ array ("name" => _m("Now = always store current time"),
        "desc" => _m("Inserts the current time, no matter what the user sets."));
 $INSERT_TYPES["items"]["pwd"] =
 array ("name" => _m("Password and Change Password"),
-       "desc" => _m("Stores value from a 'Password and Change Password' field type.
-           First prooves the new password matches the retyped new password,
-           and if so, MD5-encrypts the new password and stores it."));
+       "desc" => _m("Stores value from a 'Password and Change Password' field type. First prooves the new password matches the retyped new password, and if so, encrypts the new password and stores it."),
+       "params"=>array(
+                        array("name"=>_m("Copy of password"),
+                              "desc"=>_m("field_id, where you want to store the copy of the password. Some times usefull if you want to allow people to get hir/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter."),
+                              "type"=>"STRID",
+                              "example"=>"password.......1"
+                             ),
+                        array("name"=>_m("Encrypt phrase"),
+                              "desc"=>_m("If you specify the 'Copy of password' field, it is recommended to ecrypt the password in the database. Fill there any string. If you then need the password, you cen decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}"),
+                              "type"=>"STR",
+                              "example"=>"Some Phrase"
+                             )
+                       )
+       );
 $INSERT_TYPES["items"]["com"] =
 array ("name" => _m("Computed field"),
 "desc" => _m("The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here"),
