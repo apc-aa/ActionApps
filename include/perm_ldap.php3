@@ -768,7 +768,7 @@ function GetUserType( $user_id ) {
 */
 
 class AA_Permsystem_Ldap extends AA_Permsystem {
-    
+
     /** getLdap function
      *  Decides which LDAP server ask for authentification
      *  (acording to org - ecn.cz ..)
@@ -785,8 +785,8 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
                       "acls"   => LDAP_ACLS,
                       "port"   => LDAP_PORT);
     }
-    
-    
+
+
     /** isUsernameFree function
      *  Looks into reader management slices whether the reader name is not yet used.
      *   This function is used in perm_ldap and perm_sql in IsUsernameFree().
@@ -812,7 +812,7 @@ function AuthenticateUsernameCurrent($username, $password) {
 
     $return_val=false;
     if ($org = strstr($username, "@")) {      // user tries to auth. via e-mail
-        $LDAPserver = AA_Permsystem_Ldap::getLdap(substr($org,"@")); // get ldap server for this address
+        $LDAPserver = AA_Permsystem_Ldap::getLdap(substr($org,1)); // get ldap server for this address
     } else {
         $LDAPserver = AA_Permsystem_Ldap::getLdap();
     }

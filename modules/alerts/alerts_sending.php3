@@ -103,15 +103,15 @@ class AA_Collection {
     }
 
     function sendEmails($ho, $emails, $update, $item_id, $reader_id) {
-        
+
         // allow to access Reader data (and the data of all the slices with the same password)
         $credentials = AA_Credentials::singleton();
         $credentials->loadFromSlice($this->_get('reader_slice_id'));
-        
+
         // huhl($this->reader_slice_id);
         // huhl($credentials);
         // exit;
-        
+
         // get array of all filters of current collection ($collection_id)
         // !if $update is set (default), then it updates date for lastsent - for
         // collections
@@ -182,7 +182,8 @@ class AA_Collection {
                 }
             }
         }
-        AA_Log::write("ALERTS", "Sent for collection ".$this->id.": ". ((int)$email_count[$this->id]), $ho);
+        AA_Log::write("ALERTS", "Sent for collection ".$this->id.": ". ((int)$email_count), $ho);
+        AA_Log::write("ALERTS", join('; ', array("Debug collection ".$this->id, $this->getEmailIdAlert(), join(',',(array)$emails), join(',',$aliases))), $ho);
         return $email_count;
     }
 
@@ -198,7 +199,8 @@ class AA_Collection {
     *
     * @param bool $update    decides whether alerts_filter_howoften.last would be updated,
     *                        i.e. whether this is only a debug trial or the real life
-    * @param $ho = how often
+    * @param $ho      = how often
+    * @param $item_id = if only one item should be send (instant alerts)
     * @return array ($filterid => new items)
     */
     function createFilterText($ho, $update, $item_id) {
@@ -222,7 +224,7 @@ class AA_Collection {
                 freeDB($db);
                 return "";
             }
-            $SQL .= " AND slice.id='".addslashes($db->f("slice_id"))."'";
+            $SQL .= " AND slice.id='".quote($db->f("slice_id"))."'";
         }
 
         // fill alerts_collection_howoften.last in cases the row for this period
@@ -269,7 +271,7 @@ class AA_Collection {
                     i.e. publish_date > $last
 
            The field moved2active is filled whenever an item is moved from other bin
-               to Active binor when it is a new item inserted into Active bin.
+               to Active bin or when it is a new item inserted into Active bin.
            The field is cleared whenever the item is moved from Active bin
                to another one.
             */
@@ -505,10 +507,11 @@ function get_filter_output_cached($vid, $filter_settings, $zids) {
 
         // $set["info"]["aditional2"] stores item URL
         $item_url = $set["info"]->f("aditional2");
+
         if (! $item_url) {
             $item_url = "You didn't set the item URL in the view $vid settings!";
         }
-        $itemview   = new itemview($set["format"], $set["fields"], $set["aliases"], $zids, 0, 9999, $item_url);
+        $itemview   = new itemview($set["format"], $set["fields"], $set["aliases"], $zids, 0, $set["info"]->f("listlen"), $item_url);
         $items_text = $itemview->get_output ("view");
         //if (! strstr ($filter_settings, ","))
         $cached_filter_settings[$filter_settings] = $items_text;

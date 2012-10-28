@@ -36,6 +36,7 @@ class AA_SL_Session extends Session {
     var $lifetime       = 0;                 // 0 = do session cookies, else minutes
     var $that_class     = "AA_CT_Sql";       // name of data storage container
     var $gc_probability = 5;
+
     /** MyUrl function
      * @param $SliceID
      * @param $Encap

@@ -114,6 +114,7 @@ class AA_Toexecute {
                    'object'        => serialize($object),
                    'params'        => serialize($params)
                   ));
+
          // store the task in the queue (toexecute table)
          if ( !$varset->doInsert('toexecute') ) {
              // if you can't store it in the queue (table not created?)

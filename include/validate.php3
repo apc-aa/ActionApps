@@ -343,7 +343,7 @@ class AA_Validate_Email extends AA_Validate_Regexp {
 class AA_Validate_Id extends AA_Validate_Regexp {
     function __construct($param=array()) {
         parent::__construct($param);
-        $this->pattern          = '/^[0-9a-f]{30,32}$/';
+        $this->pattern          = '/^[0-9a-fxyz]{30,33}$/';
         $this->empty_expression = '/^(0|\s*)$/';
     }
 

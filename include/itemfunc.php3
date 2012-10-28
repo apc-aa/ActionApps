@@ -433,6 +433,10 @@ class AA_Field_Writer {
      * @param $additional
      */
     function insert_fnc_pwd($item_id, $field, $value, $param, $additional='') {
+        
+        //print_r($value);
+        //exit;
+        
         list ($aa_const, $decrypted_password) = ParamExplode($value['value']);
         if ($aa_const == 'AA_PASSWD') {
             list($pfield, $pcrypt) = ParamExplode($param);
@@ -444,6 +448,8 @@ class AA_Field_Writer {
                 $this->_store( $item_id, $f, array('value'=> $backup), "", $additional);
             }
             $value['value'] = crypt($decrypted_password,'xx');
+        } else {
+            $value['value'] = crypt($value['value'],'xx');
         }
         $this->_store($item_id, $field, $value, $param, $additional);
     }

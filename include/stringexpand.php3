@@ -4724,6 +4724,7 @@ class AA_Password_Manager_Reader {
         </div>
         <input type="hidden" name="nocache" value="1">
         <input type="submit" id="pwdmanager-send" name="pwdmanager-send" value="'. _m('Odeslat').'">
+        </div>
         </form>
         ';
     }
@@ -4832,8 +4833,8 @@ class AA_Stringexpand_Changepwd  extends AA_Stringexpand_Nevercache {
         } elseif (isset($_GET['aapwd2'])) {
             list($key, $user) = explode('-',$_GET['aapwd2']);
             return AA_Password_Manager_Reader::getChangeForm($key, $user);
-        } elseif (isset($_POST['aapwd1'])) {        // CHeck User
-            return AA_Password_Manager_Reader::askForMail($_POST['aapwd1'], $reader_slice_id, $from_email);
+        } elseif (isset($_REQUEST['aapwd1'])) {        // CHeck User
+            return AA_Password_Manager_Reader::askForMail($_REQUEST['aapwd1'], $reader_slice_id, $from_email);
         } else {
             return AA_Password_Manager_Reader::getFirstForm();
         }

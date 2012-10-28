@@ -54,8 +54,8 @@ if ( !$fill ) {               // for the first time - directly from item manager
     if ( $fill ) {    // we really want to fill fields
         $zids          = new zids;
         $updated_items = 0;
-        if ($_GET[SEARCH_REPLACE_PREFIX] AND (strpos(strtolower($_GET[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')===0)) {   // strtolower is fix for php4, where case of any class is small
-            $transformation = AA_Components::factory($_GET[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_GET[SEARCH_REPLACE_PREFIX]));
+        if ($_REQUEST[SEARCH_REPLACE_PREFIX] AND (strpos(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')===0)) {   // strtolower is fix for php4, where case of any class is small
+            $transformation = AA_Components::factory($_REQUEST[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
             $zids           = ( ($group == 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
 
             $transformator  = new AA_Transformator;
@@ -85,7 +85,7 @@ echo '
 </head>
 <body>
   <h1>'. _m("Modify items") .'</h1>
-  <form name="modifyitemsform">';
+  <form name="modifyitemsform" method="post">';
 
 PrintArray($err);
 echo $Msg;

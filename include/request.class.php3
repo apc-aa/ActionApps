@@ -261,10 +261,9 @@ class AA_Request {
 //       }
         $result = AA_Http::postRequest($url, $ask_arr);
 
-//        if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
-//            huhl('xx', $result);
-//            exit;
-//        }
+//        print_r($ask_arr);
+//        print_r($result);
+//        exit;
         if ( $result === false ) {
             //echo "<br>Error - response: ". AA_Http::lastErrMsg();
             return new AA_Response('No response recieved ('. AA_Http::lastErr() .' - '. AA_Http::lastErrMsg(). ')', 3);
@@ -286,12 +285,15 @@ class AA_Client_Auth {
      *  is valid just for current browser session, 63072000 for two years */
     var $_cookie_lifetime;
 
-    function AA_Client_Auth($options=array()) {
+    protected $_reader_slices = array();
+
+    function __construct($options=array()) {
         if (!is_array($options)) {
             $options = array();
         }
         $this->_aa_responder_script = $options['aa_url'] . 'central/responder.php';
-        $this->_cookie_lifetime    = isset($options['cookie_lifetime']) ? (time() + $options['cookie_lifetime']) : 0;
+        $this->_cookie_lifetime     = isset($options['cookie_lifetime']) ? (time() + $options['cookie_lifetime']) : 0;
+        $this->_reader_slices       = isset($options['reader_slices'])   ? $options['reader_slices'] : array();
     }
 
     function checkAuth() {

@@ -1,3 +1,15 @@
+10/28/12 - new posibility to search in related slice using 
+(honzam)   publish_date....@relation.......2 syntax constuct: 
+             {ids:a0ca2..3ac85:d-category........@relation.......1-RLIKE-Envi}
+             - search in category field of all related items 
+               (relation.......1 field pointed to related items)
+           This syntax could be used in any conditions in AA
+         - phpThumb upgraded to newest verion 1.7.11 
+         - new Optimize function - testing if relation between slices are OK 
+           (without x or y chars on the begining if related item stored in the
+           database)
+         - logins are now logged
+         - help text is not shown for {live} widgets
 09/26/12 - new {input:<slice_id>:<field_id>}, which prints the widget for
 (honzam)   the input in the form. The same HTML code you will get with (new)
            command {field:<field_id>:<slice_id>:widget_new}

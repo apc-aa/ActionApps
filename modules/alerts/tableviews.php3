@@ -84,7 +84,7 @@ function GetAlertsTableView ($viewID, $processForm = false) {
             }
             $filters[$db->f("filterid")] = $txt;
         }
-
+        
         return  array (
         "table" => "alerts_collection_filter",
         "type" => "browse",
