@@ -1159,6 +1159,61 @@ class AA_Optimize_Multivalue_Duplicates extends AA_Optimize {
 }
 
 
+/** Testing if relation between slices are OK (without x or y chars on the begining)
+ */
+class AA_Optimize_Db_Relation_Startsxy extends AA_Optimize {
+
+    /** Name function
+    * @return a message
+    */
+    function name() {
+        return _m("Slices relation started by x or y records");
+    }
+
+    /** Description function
+    * @return a message
+    */
+    function description() {
+        return _m("Testing if relation between slices are OK (without x or y chars on the begining)");
+    }
+
+    /** Test function
+    * tests for x or y starts
+    * @return bool
+    */
+    function test() {
+        $SQL       = 'SELECT count(*) as err_count FROM `content`,field WHERE (`text` LIKE \'x%\' OR `text` LIKE \'y%\') AND content.field_id = field.id AND LENGTH(`text`)=33 AND field.input_show_func LIKE \'%#sLiCe-%\'';
+        $err_count = GetTable2Array($SQL, "aa_first", 'err_count');
+        if ($err_count > 0) {
+            $this->message( _m('%1 bad relation records found', array($err_count)) );
+            return false;
+        }
+        $this->message(_m('No bad relation records found'));
+        return true;
+    }
+
+    /** Name function
+    * @return bool
+    */
+    function repair() {
+        $db       = getDb();
+        $SQL       = 'SELECT `content`.item_id, `content`.`text` FROM `content`,field WHERE (`text` LIKE \'x%\' OR `text` LIKE \'y%\') AND content.field_id = field.id AND LENGTH(`text`)=33 AND field.input_show_func LIKE \'%#sLiCe-%\'';
+        $err_text = GetTable2Array($SQL, "", 'aa_fields');
+        if (is_array($err_text) AND count($err_text) > 0) {
+            $this->message( _m('%1 bad relation records found', array(count($err_text))));
+            foreach ($err_text as $wrong) {
+                $SQL = "repair value: ".quote(substr($wrong['text'],1))." with item_id:".quote($wrong['item_id'])."<br>";
+                $this->message($SQL);
+                $SQL = "UPDATE `content` SET `text` = '".quote(substr($wrong['text'],1))."' WHERE item_id = '".quote($wrong['item_id'])."' AND `text` = '".quote($wrong['text'],1)."'";
+                $db->query($SQL);
+                #$this->message($SQL);
+            }
+        }
+
+        freeDb($db);
+        return true;
+    }
+}
 
 /** Set Expiry date to maximum value for items in slices, where expiry_date.....
  *  field is not shown. It also sets the field's default to that value.
