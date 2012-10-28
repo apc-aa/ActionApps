@@ -949,7 +949,8 @@ function ProoveFieldNames($slices, $conds) {
                 continue;
             }
             foreach ($cond as $key => $foo) {
-                if (!$CONDS_NOT_FIELD_NAMES[$key] && !isset($slicefields[$key])) {
+                // @todo - we do not check the headline........@relation.......1 kind of fields
+                if (!$CONDS_NOT_FIELD_NAMES[$key] AND !isset($slicefields[$key]) AND !strpos($key, '@')) {
                     echo "Field <b>$key</b> does not exist in slice <b>$slice_id</b> (".q_pack_id($slice_id).").<br>";
                 }
             }
@@ -1369,6 +1370,8 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                 }
 
                 // Remote fields
+
+                // @todo
                 // It is possible to write conditions also using fields from
                 // remote slice (which is related to this one)
                 // Syntax is:
@@ -1376,16 +1379,58 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                 //   headline........@2a652342562728238937365353322372/relation.......1@eba428a3736353783289287499a99c8e
                 //   - search in headline field of all related items
                 //     (relation.......1 field pointed to related items)
-                if ( strpos('@',$fid) !== false ) {
 
+                // Syntax is:
+                //   <remote_field_id>@<local_relation_field_id>
+                //   headline........@relation.......1
+                //   - search in headline field of all related items
+                //     (relation.......1 field pointed to related items)
+                if ( strpos($fid, '@') !== false ) {
+                    list($cond_flds, $rel_fld) = explode('@',$fid);
+
+                    $field = $fields->getField($rel_fld);
+                    if (!is_object($field)) {
+                        if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not field.<br>"; 
+                        continue;            // bad field_id or not defined condition - skip
+                    }
+                    list($rel_f_type, $rel_f_slice) = $field->getRelation();
+                    if ($rel_f_type != 'relation') {
+                        if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not relation field.<br>"; 
+                        continue;            // bad field_id or not defined condition - skip
+                    }
+                    $cond_field  = AA_Slices::getSlice($rel_f_slice)->getField($cond_flds);
+                    if (!is_object($cond_field)) {
+                        if (AA::$debug) echo "Skipping $fid in conds[]: $cond_field is not field.<br>"; 
+                        continue;            // bad field_id or not defined condition - skip
+                    }
+
+                    $cond_flds = "'$cond_flds'";
+                    $rel_fld   = "'$rel_fld'";
+                    $tbl       = 'c'.$tbl_count++;
+                    $tbl2      = 'c'.$tbl_count++;
+                    if ( $cond_field->storageTable() == 'item' ) {   // field is stored in table 'item'
+                        // Long ID in conds should be specified as unpacked, but in db it is packed
+                        $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                          LEFT JOIN item as $tbl2 ON ($tbl2.id=UNHEX($tbl.text))";
+                    } else {
+                        $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                          LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
+                    }
+                    $cur_cond = GetWhereExp( $tbl2.'.'.$cond_field->storageColumn(), $cond['operator'], $cond['value'] );
+                    if (in_array($cond_flds, array('id..............', 'slice_id........'))) {
+                        $cur_cond =  preg_replace("/([0-9a-f]{32})/ie", "q_pack_id('\\1')", $cur_cond);
+                    }
+                    $select_conds[] = $cur_cond;
+                    $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  // @todo - test if it works
+                    $cond_flds = '';
+                    continue;
                 }
 
                 $field = $fields->getField($fid);
 
                 if ( is_null($field) OR $v=="") {
-                    if (AA::$debug) echo "Skipping $fid in conds[]: not known.<br>"; {
-                        continue;            // bad field_id or not defined condition - skip
-                    }
+                    if (AA::$debug) echo "Skipping $fid in conds[]: not known.<br>"; 
+                    continue;            // bad field_id or not defined condition - skip
                 }
 
                 if ( $field->storageTable() == 'item' ) {   // field is stored in table 'item'

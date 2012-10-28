@@ -176,7 +176,6 @@ class AA_Field {
      * @return text | numeric | date | constants
      */
     function getSearchType() {
-        $showfunc   = AA_Object::parseClassProperties('AA_Widget_', $this->data['input_show_func']);
         $field_type = 'numeric';
         $field_add  = '';
         if ($this->data['text_stored']) {
@@ -185,17 +184,8 @@ class AA_Field {
         if (substr($this->data['input_validate'],0,4)=='date') {
             $field_type = 'date';
         }
-        if ($showfunc['const']) {
-            $relation   = $this->_getRelation($showfunc['const']);
-            if (empty($relation)) {
-                $field_type = 'constants';
-                $field_add  = $showfunc['const'];
-            } else {
-                $field_type = 'relation';
-                $field_add  = $relation;
-            }
-        }
-        return array($field_type, $field_add);
+        $r = $this->getRelation();
+        return empty($r) ? array($field_type, $field_add) : $r;
     }
 
 
@@ -262,12 +252,16 @@ class AA_Field {
         return $widget->getHtml($aa_property, $content);
     }
 
-    /** _getRelation function
-     *  @return true if constants are from slice
+    /** getRelation function
+     *  @return slice_id if constants are from slice, empty string otherwise
      */
-    function _getRelation($name) {
+    function getRelation() {
+        $showfunc = AA_Object::parseClassProperties('AA_Widget_', $this->data['input_show_func']);
+        if (!$showfunc['const']) {
+            return array();
+        }
         // prefix indicates select from items
-        return ( substr($name,0,7) == "#sLiCe-" ) ? substr($name,7) : '';
+        return (substr($showfunc['const'],0,7) == "#sLiCe-") ? array('relation', substr($showfunc['const'],7)) : array('constants', $showfunc['const']);
     }
 }
 
