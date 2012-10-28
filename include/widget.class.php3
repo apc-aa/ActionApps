@@ -522,7 +522,7 @@ class AA_Widget extends AA_Components {
     function _finalizeLiveHtml($winfo, $aa_property) {
         $base_id      = $winfo['base_id'];
         $help         = $aa_property->getHelp();
-        $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
+        $widget_html  = $winfo['html']; //. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $ret          = "<div class=\"aa-widget\"".($winfo['required'] ? ' data-aa-required':'')." id=\"widget-$base_id\" style=\"display:inline; position:relative;\">" . $widget_html. "</div>";
         return $ret;
     }
