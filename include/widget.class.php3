@@ -495,7 +495,7 @@ class AA_Widget extends AA_Components {
      *  @param  $content        - contain the value of propertyu to display
      */
     function getAjaxHtml($aa_property, $content) {
-        return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content), $aa_property);
+        return $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content, 'ajax'), $aa_property);
     }
 
     /* Creates all common ajax editing buttons to be used by different inputs */
@@ -1475,21 +1475,26 @@ class AA_Widget_Fil extends AA_Widget {
             $widget       = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";
         }
         $input_name = $base_name ."[fil][var][0]";
-        $url_params = array('inline'      => 1,
-                            'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\''.$base_id.'\', \'AA_ITEM_JSON\')'
-                           );
-        $widget .= '
-            <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.htmlspecialchars(get_aa_url('filler.php3', $url_params)).'" target="iframe'.$base_id.'">
-            <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'">
-            <input type="hidden" name="ret_code_enc" id="ret_code_enc'.$base_id.'" value="">
-            <input type="submit" name="action" value="'._m('Upload').'">
-            </form>
-            <iframe id="iframe'.$base_id.'" name="iframe'.$base_id.'" src="" style="width:0;height:0;border:0px solid #fff;visibility:hidden;"></iframe>
-            <script language="JavaScript" type="text/javascript"> <!--
-              document.getElementById("ret_code_enc'.$base_id.'").value = document.getElementById("ajaxv_'.$base_id.'").getAttribute(\'data-aa-alias\');
-            //-->
-            </script>
-        ';
+
+        if ($type=='normal') {
+            $widget .= '    <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'">'. "<!--$type -->";
+        } else {
+            $url_params = array('inline'      => 1,
+                                'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\''.$base_id.'\', \'AA_ITEM_JSON\')'
+                               );
+            $widget .= '
+                <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.htmlspecialchars(get_aa_url('filler.php3', $url_params)).'" target="iframe'.$base_id.'">
+                <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'">
+                <input type="hidden" name="ret_code_enc" id="ret_code_enc'.$base_id.'" value="">
+                <input type="submit" name="action" value="'._m('Upload').'">
+                </form>
+                <iframe id="iframe'.$base_id.'" name="iframe'.$base_id.'" src="" style="width:0;height:0;border:0px solid #fff;visibility:hidden;"></iframe>
+                <script language="JavaScript" type="text/javascript"> <!--
+                  document.getElementById("ret_code_enc'.$base_id.'").value = document.getElementById("ajaxv_'.$base_id.'").getAttribute(\'data-aa-alias\');
+                //-->
+                </script>
+            ';
+        }
         return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
     }
 
