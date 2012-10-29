@@ -9,6 +9,7 @@
 // Before each message there are links to program code where it was used.
 
 $mgettext_lang = "cz";
+setlocale(LC_ALL, 'cs_CZ');
 
 # Unused messages
 $_m["Add&nbsp;mutual"]

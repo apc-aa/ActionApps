@@ -1,11 +1,18 @@
-10/28/12 - new posibility to search in related slice using 
-(honzam)   publish_date....@relation.......2 syntax constuct: 
+10/29/12 - {foreach} now is able to pass parameter inside AA expression by _##1:
+ (honzam)    {foreach:2011-2012:
+               <li>
+                <a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a>
+               </li>
+             }
+         - sitemodule uses better language file
+10/28/12 - new posibility to search in related slice using
+(honzam)   publish_date....@relation.......2 syntax constuct:
              {ids:a0ca2..3ac85:d-category........@relation.......1-RLIKE-Envi}
-             - search in category field of all related items 
+             - search in category field of all related items
                (relation.......1 field pointed to related items)
            This syntax could be used in any conditions in AA
-         - phpThumb upgraded to newest verion 1.7.11 
-         - new Optimize function - testing if relation between slices are OK 
+         - phpThumb upgraded to newest verion 1.7.11
+         - new Optimize function - testing if relation between slices are OK
            (without x or y chars on the begining if related item stored in the
            database)
          - logins are now logged

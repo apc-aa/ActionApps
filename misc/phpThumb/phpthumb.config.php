@@ -46,7 +46,8 @@ $PHPTHUMB_CONFIG['document_root'] = AA_SITE_PATH;
 //}
 
 /** AA change by Honza 14.1.2009 - default setting did not work for sites, where aa is located outside of site path */
-$PHPTHUMB_CONFIG['cache_directory'] = IMG_UPLOAD_PATH.'phpThumbcache/';
+//$PHPTHUMB_CONFIG['cache_directory'] = IMG_UPLOAD_PATH.'phpThumbcache/';
+$PHPTHUMB_CONFIG['cache_directory'] = IMG_UPLOAD_PATH;
 
 $PHPTHUMB_CONFIG['cache_disable_warning'] = false; // If [cache_directory] is non-existant or not writable, and [cache_disable_warning] is false, an error image will be generated warning to either set the cache directory or disable the warning (to avoid people not knowing about the cache)
 
@@ -70,7 +71,8 @@ $PHPTHUMB_CONFIG['cache_maxfiles'] = null;          // never delete cached thumb
 #$PHPTHUMB_CONFIG['cache_source_enabled']   = false;                               // if true, source images obtained via HTTP are cached to $PHPTHUMB_CONFIG['cache_source_directory']
 $PHPTHUMB_CONFIG['cache_source_enabled']   = true;
 #$PHPTHUMB_CONFIG['cache_source_directory'] = dirname(__FILE__).'/cache/source/';  // set the cache directory for unprocessed source images
-$PHPTHUMB_CONFIG['cache_source_directory'] = IMG_UPLOAD_PATH.'phpThumbcachesource/';
+//$PHPTHUMB_CONFIG['cache_source_directory'] = IMG_UPLOAD_PATH.'phpThumbcachesource/';
+$PHPTHUMB_CONFIG['cache_source_directory'] = IMG_UPLOAD_PATH;
 
 // * cache source modification date configuration
 $PHPTHUMB_CONFIG['cache_source_filemtime_ignore_local']  = false; // if true, local source images will not be checked for modification date and cached image will be used if available, even if source image is changed or removed
@@ -205,7 +207,7 @@ $PHPTHUMB_CONFIG['mysql_database'] = '';
 // * Security configuration
 $PHPTHUMB_CONFIG['high_security_enabled']    = false;  // if enabled, requires 'high_security_password' set to be set and requires the use of phpThumbURL() function (at the bottom of phpThumb.config.php) to generate hashed URLs
 $PHPTHUMB_CONFIG['high_security_password']   = '';     // required if 'high_security_enabled' is true, and must be at complex (uppercase, lowercase, numbers, punctuation, etc -- punctuation is strongest, lowercase is weakest; see PasswordStrength() in phpThumb.php). You can use a password generator like http://silisoftware.com/tools/password-random.php to generate a strong password
-$PHPTHUMB_CONFIG['disable_debug']            = true;   // prevent phpThumb from displaying any information about your system. If true, phpThumbDebug and error messages will be disabled
+$PHPTHUMB_CONFIG['disable_debug']            = false;   // prevent phpThumb from displaying any information about your system. If true, phpThumbDebug and error messages will be disabled
 #$PHPTHUMB_CONFIG['allow_src_above_docroot']  = false;  // if true, allow src to be anywhere in filesystem; if false (default) only allow src within document_root
 $PHPTHUMB_CONFIG['allow_src_above_docroot']  = true;
 $PHPTHUMB_CONFIG['allow_src_above_phpthumb'] = true;   // if true (default), allow src to be anywhere in filesystem; if false only allow src within sub-directory of phpThumb installation

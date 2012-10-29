@@ -61,10 +61,6 @@ function bind_mgettext_domain($filename, $cache = false, $lang = "") {
         $_m_backup[$mgettext_domain] = $_m;
     }
 
-    if ( $mgettext_domain == $filename ) {
-        return;                             // allready loaded
-    }
-
     $mgettext_domain = $filename;
     if ($cache) {
         $_m = $_m_backup[$mgettext_domain];
@@ -96,6 +92,16 @@ function mgettext_bind($lang, $section, $cache=false) {
  *   @return  if translation in the active language (get_mgettext_lang()) does not yet exist,
  *                 returns $id, i.e. the English version
  */
+/** _m function
+ *  Translates given message.
+ *
+ *   @param string $id       Text to be translated. Escape % by backslash (\%).
+ *   @param array $params    You may use %1,%2,... in $id and supply an array of params,
+ *                           which are substituted for %i, e.g.
+ *                           _m("Hello %1, how are you?",array($username))
+ *   @return  if translation in the active language (get_mgettext_lang()) does not yet exist,
+ *                 returns $id, i.e. the English version
+ */
 function _m($id, $params = 0) {
     global $_m;
 
@@ -104,15 +110,19 @@ function _m($id, $params = 0) {
         $retval = $id;
     }
 
-    if (is_array($params)) {
-        $srch = array();
-        for ( $i=0, $ino=count($params); $i<$ino; ++$i) {
-            $srch[] = '%'.($i+1);
-        }
-        $retval = str_replace($srch, $params, $retval);
+    if (!is_array($params)) {
+        return $retval;
     }
 
-    return $retval;
+    $s = array('\%');
+    $r = array('#$&*');
+    for ( $i=0, $ino=count($params); $i<$ino; ++$i) {
+        $s[] = '%'.($i+1);
+        $r[] = $params[$i];
+    }
+    $s[] = '#$&*';
+    $r[] = '%';
+    return str_replace($s, $r, $retval);
 }
 
 /** _mdelayed function

@@ -376,7 +376,7 @@ function GetItemFromContent($content) {
     }
     // reuse slice, if possible
     $slice = AA_Slices::getSlice($content->getSliceID());
-    return new AA_Item($content->getContent(),$slice->aliases());
+    return new AA_Item($content->getContent(), $slice ? $slice->aliases() : '');
 }
 
 class AA_Item {
