@@ -283,7 +283,7 @@ if ($slice_fields) {
 
 echo "</select> <select name='new_id_number'>
 <option value='.'>.";
-for ($i = 1; $i < 100; ++$i) {
+for ($i = 1; $i < 200; ++$i) {
     echo "<option value='$i'>$i</option>";
 }
 echo "</select><br><br>";

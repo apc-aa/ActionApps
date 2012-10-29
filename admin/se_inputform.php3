@@ -203,7 +203,7 @@ if ($update) {
         Qvarsetadd("html_show", "number", ($onlyupdate ? $html_show : ($html_show ? 1 : 0)));
         Qvarsetadd("text_stored", "number", $text_stored);
         $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$fid' AND slice_id='$p_slice_id'";
-        //huhl($SQL); exit;
+
         if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
             $err["DB"] = MsgErr("Can't change field");
             break;
@@ -343,7 +343,7 @@ $form_buttons = array("update"   => array("type"=>"hidden","value"=>"1"),
 
 echo "
 <form enctype=\"multipart/form-data\" method=\"post\" action=\"". $sess->url($_SERVER['PHP_SELF']) ."\" name=\"f\">";
-FrmTabCaption(_m("Field properties"). ': '. safe($fld['name']. ' ('.$fld['id']. ')'),
+FrmTabCaption(_m("Field properties"). ': '. htmlspecialchars($fld['name']. ' ('.$fld['id']. ')'),
               '','',$form_buttons, $sess, $slice_id);
 
 $input_show_classes = AA_Components::getClassNames('AA_Widget_');
@@ -381,7 +381,7 @@ echo "
                 <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
                 <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"INPUT_TYPES\",\"input_show_func_f\",\"input_show_func_p\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-                <textarea name=\"input_show_func_p\" rows=\"4\" cols=\"50\" wrap=\"virtual\">". safe($input_show_func_p) ."</textarea>
+                <textarea name=\"input_show_func_p\" rows=\"4\" cols=\"50\" wrap=\"virtual\">". htmlspecialchars($input_show_func_p) ."</textarea>
       </td>
      </tr>
      <tr><td colspan=\"4\"><hr></td></tr>
@@ -398,7 +398,7 @@ echo "
                 <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
                 <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"DEFAULT_VALUE_TYPES\",\"input_default_f\",\"input_default\")'><b>"
                  ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-            <input type=\"text\" name=\"input_default\" size=50 value=\"". safe($input_default) ."\">
+            <input type=\"text\" name=\"input_default\" size=50 value=\"". htmlspecialchars($input_default) ."\">
       </td>
      </tr>
      <tr><td colspan=\"4\"><hr></td></tr>
@@ -410,7 +410,7 @@ echo "
              <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
              <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"VALIDATE_TYPES\",\"input_validate_f\",\"input_validate_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"text\" name=\"input_validate_p\" size=\"50\" value=\"". safe($input_validate_p) ."\">
+         <input type=\"text\" name=\"input_validate_p\" size=\"50\" value=\"". htmlspecialchars($input_validate_p) ."\">
          </td>
       </td>
      </tr>
@@ -440,7 +440,7 @@ echo "
              <tr><td class=\"tabtxt\"><b>"._m("Parameters")."</b></td>
              <td class=\"tabhlp\"><a href='javascript:CallParamWizard (\"INSERT_TYPES\",\"input_insert_func_f\",\"input_insert_func_p\")'><b>"
              ._m("Help: Parameter Wizard")."</b></a></td></tr></table>
-         <input type=\"text\" name=\"input_insert_func_p\" size=\"50\" value=\"". safe($input_insert_func_p) ."\">
+         <input type=\"text\" name=\"input_insert_func_p\" size=\"50\" value=\"". htmlspecialchars($input_insert_func_p) ."\">
          </td>
      </tr>
      <tr><td colspan=\"4\"><hr></td></tr>
@@ -455,19 +455,19 @@ echo "
      </tr>
      <tr>
       <td class=\"tabtxt\"><b>". _m("Help for this field") ."</b></td>
-      <td class=\"tabtxt\" colspan=3><textarea name=\"input_help\" rows=\"2\" cols=\"50\" wrap=\"virtual\">". safe($input_help) ."</textarea>
+      <td class=\"tabtxt\" colspan=3><textarea name=\"input_help\" rows=\"2\" cols=\"50\" wrap=\"virtual\">". htmlspecialchars($input_help) ."</textarea>
       <div class=\"tabhlp\">". _m("Shown help for this field") ."</div>
       </td>
      </tr>
      <tr>
       <td class=\"tabtxt\"><b>". _m("More help") ."</b></td>
-      <td class=\"tabtxt\" colspan=\"3\"><input type=\"text\" name=\"input_morehlp\" size=\"50\" maxlength=\"254\" value=\"". safe($input_morehlp) ."\">
+      <td class=\"tabtxt\" colspan=\"3\"><input type=\"text\" name=\"input_morehlp\" size=\"50\" maxlength=\"254\" value=\"". htmlspecialchars($input_morehlp) ."\">
       <div class=\"tabhlp\">". _m("Text shown after user click on '?' in input form") ."</div>
       </td>
      </tr>
      <tr>
       <td class=\"tabtxt\"><b>". _m("Before HTML code") ."</b></td>
-      <td class=\"tabtxt\" colspan=\"3\"><textarea name=\"input_before\" rows=\"4\" cols=\"50\" wrap=\"virtual\">". safe($input_before) ."</textarea>
+      <td class=\"tabtxt\" colspan=\"3\"><textarea name=\"input_before\" rows=\"4\" cols=\"50\" wrap=\"virtual\">". htmlspecialchars($input_before) ."</textarea>
       <div class=\"tabhlp\">". _m("Code shown in input form before this field") ."</div>
       </td>
      </tr>
@@ -507,6 +507,7 @@ for ($iAlias=1; $iAlias <= 3; ++$iAlias) {
 FrmTabEnd($form_buttons, $sess, $slice_id);
 
 echo "\n </form>";
+
 HtmlPageEnd();
 page_close();
 ?>

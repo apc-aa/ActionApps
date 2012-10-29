@@ -7246,27 +7246,27 @@ $_m["width of the three fields in characters (size parameter)"]
 
 // include/widget.class.php3, row 1209
 $_m["Label for Change Password"]
- = "";
+ = "Cambiar contraseña";
 
 // include/widget.class.php3, row 1209
 $_m["Replaces the default 'Change Password'"]
- = "";
+ = "Cambiar contraseña";
 
 // include/widget.class.php3, row 1209
 $_m["Change your password"]
- = "";
+ = "Cambie su contraseña";
 
 // include/widget.class.php3, row 1210
 $_m["Label for Retype New Password"]
- = "";
+ = "Escriba de nuevo la nueva contraseña";
 
 // include/widget.class.php3, row 1210
 $_m["Replaces the default \"Retype New Password\""]
- = "";
+ = "Escriba de nuevo la contraseña";
 
 // include/widget.class.php3, row 1210
 $_m["Retype the new password"]
- = "";
+ = "Escriba nuevamente su contraseña";
 
 // include/widget.class.php3, row 1211
 $_m["Label for Delete Password"]
