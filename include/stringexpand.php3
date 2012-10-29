@@ -3141,7 +3141,7 @@ class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
         $page       = floor( $itemview->from_record/$itemview->num_records ) + 1;
         $max        = floor(($itemview->idcount() - 1) / max(1,$itemview->num_records)) + 1;
 
-        return $router->scroller($page,$max,$target);
+        return $router->scroller($page, $max, $target);
     }
 }
 
@@ -4887,6 +4887,9 @@ class AA_Stringexpand_Xpath extends AA_Stringexpand {
  */
 class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
 
+    /** Do not trim all parameters ($outputdelimiter could begin with space) */
+    function doTrimParams() { return false; }
+
     // not needed right now for Nevercached functions, but who knows in the future
     function additionalCacheParam() {
         /** output is different for different items - place item id into cache search */
@@ -4894,11 +4897,15 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
     }
 
     function expand($values='', $text='', $valdelimiter='', $outputdelimiter='') {
+        // _##1 is the way, how to use parameter from the outside of if:
+        // {foreach:2011-2012:<li><a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a></li>}
+        $text = str_replace('_##1', '_#1', $text);
+
         $item   = $this ? $this->item : null;
         if (!strlen($delimiter)) {
            $delimiter = '-';
         }
-        $arr = explode($delimiter, $values);
+        $arr = explode($delimiter, trim($values));
         $ret= array();
         foreach($arr as $str) {
             if (trim($str)) {
