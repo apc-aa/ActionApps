@@ -4,7 +4,10 @@
                 <a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a>
                </li>
              }
+         - <input ...> in AA standard form now also uses some HTML5 attributes
          - sitemodule uses better language file
+         - fix {ajax} when used with jQuery
+         - fixed ajax Upload widget
 10/28/12 - new posibility to search in related slice using
 (honzam)   publish_date....@relation.......2 syntax constuct:
              {ids:a0ca2..3ac85:d-category........@relation.......1-RLIKE-Envi}
