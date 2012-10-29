@@ -306,7 +306,7 @@ function AA_SendWidgetAjax(base_id) {
 function AA_ReloadAjaxResponse(id, responseText) {
     var valdiv = jqid('ajaxv_'+id);
 
-    var items  = (typeof str === 'string') ? jQuery.parseJSON(responseText) : responseText;
+    var items  = (typeof responseText === 'string') ? jQuery.parseJSON(responseText) : responseText;
     var res;
     for (var i in items) {
         res = items[i];
