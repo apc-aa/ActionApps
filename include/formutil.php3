@@ -611,6 +611,7 @@ class AA_Inputfield {
             $this->input_type    = AA_Stringexpand::unalias($funct[0]);
             $this->param         = array_slice( $funct, 1 );
             $this->html_rb_show  = $field["html_show"];
+            $this->valid         = $field["input_validate"];
             if ( isset($field["const_arr"]) ) {
                 $this->const_arr  = $field["const_arr"];
             }
@@ -1213,10 +1214,18 @@ class AA_Inputfield {
         $val     = htmlspecialchars($val);
         $maxsize = get_if( $maxsize, 254 );
         $size    = get_if( $size   , 25 );
+    
+        $input_type     = 'type="text"';
+        if (is_object($validator = AA_Validate::factoryByString('AA_Validate_', $this->valid))) {
+            $input_type = $validator->getHtmlInputAttr();
+        }
+        if (!$input_type) {
+            $input_type     = 'type="text"';
+        }
 
         $this->field_name('plus');
         $this->html_radio();
-        $this->echovar( "<input type=\"$type\" name=\"$name\" size=\"$size\"".
+        $this->echovar( "<input $input_type name=\"$name\" size=\"$size\"". ($this->required ? " required": '').
                         $GLOBALS['mlxFormControlExtra'].
                         " maxlength=\"$maxsize\" value=\"$val\"".getTriggers("input",$name).">" );
         $this->helps('plus');
