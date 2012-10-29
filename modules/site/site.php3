@@ -79,7 +79,8 @@ if ( !is_array($site_info) ) {
 $hit_zid = null;
 if ($site_info['flag'] == 1) {    // 1 - Use AA_Router_Seo
     $slices4cache = GetTable2Array("SELECT destination_id FROM relation WHERE source_id='". q_pack_id($site_id) ."' AND flag='".REL_FLAG_MODULE_DEPEND."'", '', "unpack:destination_id");
-    $home         = trim($site_info['state_file']) ? trim($site_info['state_file']) : '/' .substr(AA_Modules::getModuleProperty($site_id, 'lang_file'),0,2). '/';
+    $lang_file    = AA_Modules::getModuleProperty($site_id, 'lang_file');
+    $home         = trim($site_info['state_file']) ? trim($site_info['state_file']) : '/' .substr($lang_file,0,2). '/';
     $router       = AA_Router::singleton('AA_Router_Seo', $slices4cache, $home);
 
     // use REDIRECT_URL for homepage redirects:
@@ -144,6 +145,10 @@ require_once AA_INC_PATH."easy_scroller.php3";
 require_once AA_INC_PATH."view.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."item.php3";
+
+if ($lang_file) {
+    bind_mgettext_domain(AA_INC_PATH.'lang/'.$lang_file);
+}
 
 $res = ModW_GetSite( $apc_state, $site_id, $site_info );
 echo $res;
