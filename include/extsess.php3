@@ -129,37 +129,18 @@ class AA_CP_Session extends Session {
         // headers and HTTP/1.0 ignores headers it does not recognize (e.g,
         // Cache-Control). Mulitple Cache-Control directives are split into
         // mulitple headers to better support MSIE 4.x.
-        switch ($this->allowcache) {
+        // switch ($this->allowcache) {
 
-            case "public":
-            $exp_gmt = gmdate("D, d M Y H:i:s", time() + $this->allowcache_expire * 60) . " GMT";
-            $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
-            header("Expires: " . $exp_gmt);
-            header("Last-Modified: " . $mod_gmt);
-            header("Cache-Control: public");
-            header("Cache-Control: max-age=" . $this->allowcache_expire * 60);
-            break;
-
-            case "private":
-            $mod_gmt = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
-            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-            header("Last-Modified: " . $mod_gmt);
-            header("Cache-Control: private");
-            header("Cache-Control: max-age=" . $this->allowcache_expire * 60);
-            break;
-
-            default:
-            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-            header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-            header("Cache-Control: no-cache");
-            header("Cache-Control: must-revalidate");
-            header("Pragma: no-cache");
-            break;
-        }
+        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+        header("Cache-Control: no-cache");
+        header("Cache-Control: must-revalidate");
+        header("Pragma: no-cache");
 
         $this->get_id();
         $this->thaw();
         $this->gc();   // Garbage collect, if necessary
     }
 }
+
 ?>

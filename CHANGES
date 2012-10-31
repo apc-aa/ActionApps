@@ -1,5 +1,7 @@
+10/31/12 - edited_by field is set correctly for {ajax} and {live} changes
+(honzam)
 10/29/12 - {foreach} now is able to pass parameter inside AA expression by _##1:
- (honzam)    {foreach:2011-2012:
+(honzam)     {foreach:2011-2012:
                <li>
                 <a href="?year=_#1" {ifeq:_##1:{qs:year}:class="active"}>_#1</a>
                </li>

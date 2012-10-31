@@ -49,8 +49,8 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
     function isPerm() { return true; }
 
     function run() {
-        global $sess;
-        return new AA_Response($sess->id);
+        global $sess, $auth;
+        return new AA_Response(array($sess->id, $auth));
     }
 }
 

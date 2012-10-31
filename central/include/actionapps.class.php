@@ -203,7 +203,8 @@ class AA_Actionapps {
         $request  = new AA_Request('Get_Sessionid');
         $response = $request->ask($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword()));
         if ( !$response->isError() ) {
-            $this->setSession($response->getResponse());
+            $arr = $response->getResponse();
+            $this->setSession($arr[0]);
         }
         return $response;
     }

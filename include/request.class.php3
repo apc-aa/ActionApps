@@ -285,6 +285,9 @@ class AA_Client_Auth {
      *  is valid just for current browser session, 63072000 for two years */
     var $_cookie_lifetime;
 
+    /** caches remote auth object */
+    var $_auth = null;
+
     protected $_reader_slices = array();
 
     function __construct($options=array()) {
@@ -312,7 +315,11 @@ class AA_Client_Auth {
         $response = $request->ask($this->_aa_responder_script, $params);
 
         if ( !$response->isError() ) {
-            $session_id = $response->getResponse();
+
+            $arr = $response->getResponse();
+            $session_id  = $arr[0];
+            $this->_auth = $arr[1];
+
             $x = setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
             $_COOKIE['AA_Sess'] = $session_id;
             if ($_REQUEST['username']) {
@@ -326,6 +333,10 @@ class AA_Client_Auth {
 
     function getUid() {
         return isset($_COOKIE['AA_Uid']) ? $_COOKIE['AA_Uid'] : false;
+    }
+
+    function getRemoteAuth() {
+        return $this->_auth;
     }
 
     function logout() {
