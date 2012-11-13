@@ -1,3 +1,5 @@
+11/12/12 - fix of Modify Content funtion in item manager - the HTML5 validation
+(honzam)   (the required checking) brokes this code a bit
 10/31/12 - edited_by field is set correctly for {ajax} and {live} changes
 (honzam)
 10/29/12 - {foreach} now is able to pass parameter inside AA expression by _##1:
