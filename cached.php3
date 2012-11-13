@@ -41,6 +41,7 @@ require_once AA_INC_PATH."pagecache.php3";
 $allowcache_expire = 24*3600; // 1 day
 $exp_gmt           = gmdate("D, d M Y H:i:s", time() + $allowcache_expire) . " GMT";
 $mod_gmt           = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
+// send headers for cache
 header('Expires: '       . $exp_gmt);
 header('Last-Modified: ' . $mod_gmt);
 header('Cache-Control: public');
