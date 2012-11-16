@@ -388,4 +388,11 @@ $_m["November"]
 $_m["December"]
  = "Diciembre";
 
+$_m["SAVE CHANGE"]
+ = "Guardar Cambio";
+
+$_m["EXIT WITHOUT CHANGE"]
+ = "Salir sin guardar cambio";
+
+
 ?>

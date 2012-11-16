@@ -5668,6 +5668,9 @@ $_m["HTML file"]
 $_m["Save changes"]
  = "Guardar cambios";
 
+$_m["SAVE CHANGES"]
+ = "Guardar cambios";
+
 // include/filedit.php3, row 136
 $_m["Reset content"]
  = "Deshacer cambios";

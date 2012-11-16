@@ -1,3 +1,5 @@
+11/16/12 - more Spanish translations (Thanks to César Arango - Colnodo)
+(honzam)
 11/12/12 - fix of Modify Content funtion in item manager - the HTML5 validation
 (honzam)   (the required checking) brokes this code a bit
 10/31/12 - edited_by field is set correctly for {ajax} and {live} changes
