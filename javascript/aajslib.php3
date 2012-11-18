@@ -237,6 +237,10 @@ function AA_AjaxCss(selector, url, param) {
     });
 }
 
+function AA_InsertHtml(into_id, code) {
+   $(into_id).insert(code);
+}
+
 function AA_AjaxInsert(a_obj, form_url) {
     var new_div_id = $(a_obj).identify() + '_ins';
     if ( $(new_div_id) == null ) {

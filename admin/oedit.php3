@@ -90,6 +90,10 @@ if ($form_state == AA_Form::SAVED) {
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+// for widgets
+FrmJavascriptFile( 'javascript/aajslib.php3?sess_name='.$sess->classname .'&sess_id='.$sess->id );
+
 ?>
 <title><?php echo _m("Admin - Object Edit");?></title>
 </head>
