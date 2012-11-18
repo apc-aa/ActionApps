@@ -771,6 +771,63 @@ class AA_Widget_Mfl extends AA_Widget {
             'row_count'              => new AA_Property( 'row_count',              _m("Row count"),            'int',  false, true, 'int',  false, '', '', 10)
             );
     }
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name     = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $base_name_add = $base_name . '[mfl]';
+
+        $base_id       = AA_Form_Array::formName2Id($base_name);
+        // $widget_add    = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
+        // $widget_add2   = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+
+        $row_count     = (int)$this->getProperty('row_count', 6);
+        //$show_buttons  = $this->getProperty('show_buttons', 'MDAC');
+
+        $value         = $content->getAaValue($aa_property->getId());
+        $widget        = '';
+        // display at least one option
+        for ( $i=0, $ino=max(1,$row_count,$value->valuesCount()); $i<$ino; ++$i) {
+            $input_name   = $base_name_add ."[$i]";
+            $input_id     = AA_Form_Array::formName2Id($input_name);
+            $input_value  = htmlspecialchars($value->getValue($i));
+            $required     = ($aa_property->isRequired() AND ($i==0)) ? 'required' : '';
+            $widget      .= "<div><input type=\"text\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required></div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
+        }
+        $widget           = "<div id=\"allrows$base_id\">$widget</div>";
+
+       $img               = GetAAImage('icon_new.gif', _m('new'), 17, 17);
+       $widget           .= "\n<a href=\"javascript:void(0)\" onclick=\"AA_InsertHtml('allrows$base_id','<div><input type=text name=\'$base_name"."[mfl][]\' value=\'\'></div>'); return false;\">$img</a>";
+
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
+
+    /** @return AA_Value for the data send by the widget
+     *   We use it, because we want to remove all the empty values
+     *
+     *   The data submitted by form usually looks like
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][mfl][]=1
+     *  @param $data4field - array('0'=>val1, '1'=>val)
+     *   This method coverts such data to AA_Value.
+     *
+     *
+     *  static class method
+     */
+    function getValue($data4field) {
+        $flag          = $data4field['flag'] & FLAG_HTML;
+        $fld_value_arr = array();
+
+        foreach ( (array)$data4field as $key => $value ) {
+            if (is_numeric($key) AND strlen($value)) {
+                $fld_value_arr[] = array('value'=>$value, 'flag'=>$flag);
+            }
+        }
+        return new AA_Value($fld_value_arr, $flag);
+    }
+
+
 }
 
 /** Text Field with Presets widget */
@@ -1480,7 +1537,7 @@ class AA_Widget_Fil extends AA_Widget {
             $widget .= '    <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'">'. "<!--$type -->";
         } else {
             $url_params = array('inline'      => 1,
-                                'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\''.$base_id.'\', \'AA_ITEM_JSON\')'
+                                'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\''.$base_id.'\', AA_ITEM_JSON)'
                                );
             $widget .= '
                 <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.htmlspecialchars(get_aa_url('filler.php3', $url_params)).'" target="iframe'.$base_id.'">
@@ -1504,7 +1561,7 @@ class AA_Widget_Fil extends AA_Widget {
      */
     function getLiveHtml($aa_property, $content, $function) {
         // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload
-        return AA_Stringexpand::unalias('{ajax:'.$content->getId().':'.$aa_property->getId().':<small>{item:'.$content->getId().':'.$aa_property->getId().'}</small><br><input type=button value='. _m('Subir') .'>}');
+        return AA_Stringexpand::unalias('{ajax:'.$content->getId().':'.$aa_property->getId().':<small>{item:'.$content->getId().':'.$aa_property->getId().'}</small><br><input type=button value='. _m('Upload') .'>}');
         // add JS OK Function
         //return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content)));
     }
@@ -1741,7 +1798,7 @@ class AA_Widget_Pwd extends AA_Widget {
      */
     function getValue($data4field) {
         $flag          = $data4field['flag'] & FLAG_HTML;
-        if (is_array($data4field) AND isset($data4field['new'])) {
+        if (is_array($data4field) AND isset($data4field['new1'])) {
             return new AA_Value(ParamImplode(array('AA_PASSWD',$data4field['new1'],$data4field['new2'],$data4field['old'])), $flag);
         }
         // older version without the possibility to provide old passwords
