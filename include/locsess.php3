@@ -108,10 +108,12 @@ class AA_Debug {
         $this->_starttime = array('main' => microtime(true));
     }
 
-    function log()      {$v=func_get_args(); $this->_do('log',     $v);}
-    function info()     {$v=func_get_args(); $this->_do('info',    $v);}
-    function warn()     {$v=func_get_args(); $this->_do('warn',    $v);}
-    function error()    {$v=func_get_args(); $this->_do('error',   $v);}
+    // we return true, just to be able to write:
+    //   AA::$debug && AA::$dbg->info("OK") && exit;
+    function log()      {$v=func_get_args(); $this->_do('log',     $v); return true;}
+    function info()     {$v=func_get_args(); $this->_do('info',    $v); return true;}
+    function warn()     {$v=func_get_args(); $this->_do('warn',    $v); return true;}
+    function error()    {$v=func_get_args(); $this->_do('error',   $v); return true;}
 
     function group()    {
         $v     = func_get_args();
@@ -119,6 +121,7 @@ class AA_Debug {
         $this->_starttime[$group] = microtime(true);
         $this->_groupstart($group);
         $this->_do('log', $v);
+        return true;
     }
 
     function groupend() {
@@ -127,6 +130,7 @@ class AA_Debug {
         $this->_do('log', $v);
         $this->_logtime($group);
         $this->_groupend($group);
+        return true;
     }
 
     function _do($func, $params) {
