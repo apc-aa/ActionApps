@@ -352,9 +352,9 @@ if ($debugfill) huhl("Debugfill err_valid=",$err_valid);
 
 if (count($err_valid) > 1) {
     unset($err_valid["Init"]);
-    $zids = new zids();
+    $zids = new zids(null, 'l');
     foreach ( $err_valid as $field_zid => $msg) {
-        $zids->refill(substr($field_zid,1));  // remove first 'v' in the name
+        $zids->add(substr($field_zid,1));  // remove first 'v' in the name
         if ($debugfill) huhl("Debugfill $zids=",$zids, '-', $zids->packedids(0));
         $result["validate"][$zids->packedids(0)] = $msg;
     }
@@ -420,24 +420,17 @@ if ($insert) {
         $permok = true;
         break;
     case ANONYMOUS_EDIT_PASSWORD:
-      if ($debugfill) huhl("Checking Password");
         $permok = false;
         reset ($fields);
         while (list ($fid) = each($fields))
             if (substr ($fid,0,14) == "password......") {
               $password = $content4id[$fid][0]['value'];
-              $crypt_password = crypt($password, 'xx');
               $old_password = $oldcontent4id[$fid][0]['value'];
-              if ($debugfill) huhl("Checking password field=$fid = new=$password old=$old_password text_password=$text_password crypt=$crypt_password");
-                $permok = (
+              $permok = (
                            // Old check, based on text_password flag
-                  ($text_password
-                   ? ($password == $old_password)
-                   : ($crypt_password == $old_password))
+                  ($text_password ? ($password == $old_password) : AA_Perm::comparePwds($password, $old_password))
                   // Heuristic based on if old looks encrypted
-                  || ( (substr($old_password,0,2) != 'xx')
-                       && ($old_password == $password)));
-                if ($debugfill) huhl("permok=$permok");
+                  || ( !in_array(substr($old_password,0,2), array('xx','$2')) && ($old_password == $password)));
                 break;
             }
         break;

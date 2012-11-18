@@ -433,23 +433,25 @@ class AA_Field_Writer {
      * @param $additional
      */
     function insert_fnc_pwd($item_id, $field, $value, $param, $additional='') {
-        
-        //print_r($value);
-        //exit;
-        
-        list ($aa_const, $decrypted_password) = ParamExplode($value['value']);
+
+        list ($aa_const, $password) = ParamExplode($value['value']);
         if ($aa_const == 'AA_PASSWD') {
+
             list($pfield, $pcrypt) = ParamExplode($param);
 
             if ($pfield AND ($f = $field[$pfield])) {
-                $backup = $pcrypt ? AA_Stringexpand_Encrypt::explode($decrypted_password, $pcrypt) : $decrypted_password;
+                // $password is_a decrypted here
+                $backup = $pcrypt ? AA_Stringexpand_Encrypt::explode($password, $pcrypt) : $password;
                 // store backup value to specified field
                 $this->_clear_field($item_id, $f['id']);
                 $this->_store( $item_id, $f, array('value'=> $backup), "", $additional);
             }
-            $value['value'] = crypt($decrypted_password,'xx');
+            $value['value'] = AA_Perm::cryptPwd($password);
+        } elseif ($aa_const == 'AA_PASSWD_CRYPTED') {
+            // this is the only case if you are updating the item and you want to left the password the same
+            $value['value'] = $password;
         } else {
-            $value['value'] = crypt($value['value'],'xx');
+            $value['value'] = AA_Perm::cryptPwd($value['value']);
         }
         $this->_store($item_id, $field, $value, $param, $additional);
     }
@@ -802,7 +804,8 @@ function ValidateContent4Id(&$err, &$slice, $action, $id=0, $do_validate=true, $
                     } elseif ($action == "update") {
                         // store the original password to use it in
                         // insert_fnc_pwd when it is not changed
-                        $$varname = $oldcontent4id[$pri_field_id][0]['value'];
+                        // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
+                        $$varname = ParamImplode(array('AA_PASSWD_CRYPTED',$oldcontent4id[$pri_field_id][0]['value']));
                     }
                     break;
             }
