@@ -195,7 +195,7 @@ class AA_Perm {
     }
 
     public static function cryptPwd($password) {
-        $seed = '$2a$09$'.gensalt(21);
+        $seed = '$2y$14$'.gensalt(22);
         $ret  = crypt($password, $seed);
         return (strlen($ret) == 60) ? $ret : crypt($password);  // len should be 60 for blowfish
     }
@@ -210,21 +210,9 @@ class AA_Perm {
     }
 
     public static function comparePwds($password, $hash) {
-        // switch (substr($hash, 0, 3)) {
-        //     case '$2a': $saltlen = 28); break;  // Blowfish - default
-        //     case '$2$': $saltlen = 16); break;
-        //     case '$1$': $saltlen = 12); break;  // MD5
-        //     default:    $saltlen = 2);          // Std DES  (uses only 8 chars from password!)
-        // }
-
-        // the above code is not necessary - the crypt uses only first x chars of the $hash as seed
+        // looks ugly for the first_child look, but it is really how the crypt
+        // with salt works - see php documentation
         return ($hash == crypt($password, $hash));
-
-        // The next substr looks odd, but $cryptpw is under
-        // certain circumstances 4 chars longer than $row[password]
-        // (on zulle.pair.com, FreeBSD 2.2.7, PHP 3.0.16, crypt uses MD5
-        // and salt is 12 chars long).
-        // return ($hash == substr($cryptpw,0,strlen($hash)));
     }
 
     /** AA::$perm->cache function
@@ -667,7 +655,7 @@ function AuthenticateReaderUsername($username, $password) {
     $user_id   = AA_Reader::name2Id($username);
     $user_info = GetAuthData( $user_id );
 
-    if ( !$user_info->is_empty() AND ($user_info->getValue(FIELDID_PASSWORD) == crypt($password, 'xx'))) {
+    if ( !$user_info->is_empty() AND AA_Perm::comparePwds($password, $user_info->getValue(FIELDID_PASSWORD)) ) {
         // user id is the id of the item in the Reader Management slice
         return $user_id;
     }
