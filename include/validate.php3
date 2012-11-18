@@ -487,10 +487,17 @@ class AA_Validate_Pwd extends AA_Validate {
         if ( $len<5 ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $default);
         }
-        if ( $len>32 ) {
+        if ( $len>255 ) {
             return AA_Validate::bad($var, VALIDATE_ERROR_TOO_LONG, _m('Too long'), $default);
         }
         return true;
+    }
+
+    /** returns the type attribute for the HTML 5 <input> tag with possible some
+     *  more attributtes (like min, max, step, pattern, ...)
+     */
+    function getHtmlInputAttr() {
+        return 'type=password min=5';
     }
 }
 

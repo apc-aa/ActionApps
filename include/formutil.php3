@@ -1214,10 +1214,14 @@ class AA_Inputfield {
         $val     = htmlspecialchars($val);
         $maxsize = get_if( $maxsize, 254 );
         $size    = get_if( $size   , 25 );
-    
-        $input_type     = 'type="text"';
-        if (is_object($validator = AA_Validate::factoryByString('AA_Validate_', $this->valid))) {
-            $input_type = $validator->getHtmlInputAttr();
+
+        if ($type == "password") {
+            $input_type = 'type="password"';
+        } else {
+           $input_type = 'type="text"';
+           if (is_object($validator = AA_Validate::factoryByString('AA_Validate_', $this->valid))) {
+              $input_type = $validator->getHtmlInputAttr();
+           }
         }
         if (!$input_type) {
             $input_type     = 'type="text"';
