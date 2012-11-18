@@ -29,7 +29,7 @@ $_m["EXIT WITHOUT CHANGE"]
 
 $_m["To save changes click here or outside the field."]
  = "Para guardar pulse sobre el icono o alrededor de el";
- 
+
 
 // include/util.php3, row 1870
 $_m["other"]
@@ -404,5 +404,75 @@ $_m["Next"]
 // include/itemview.php3, row 332
 $_m["No comment was selected"]
  = "No hay ningún comentario seleccionado";
+
+$_m["Change Password"]
+ = "Cambiar Clave";
+
+// include/widget.php3 ...
+$_m["Save"]
+ = "Guardar";
+
+$_m["Current password"]
+ = "Clave actual";
+
+$_m["Password"]
+ = "Clave";
+
+$_m["Retype New Password"]
+ = "Reescriba nueva clave";
+
+$_m["To save changes click here or outside the field."]
+ = "";
+
+$_m["SAVE CHANGE"]
+ = "Guardar";
+
+$_m["EXIT WITHOUT CHANGE"]
+ = "Cancelar";
+
+$_m["Upload"]
+ = "Subir";
+
+ $_m["To save changes click here or outside the field."]
+ = "";
+
+ $_m["Forgot your password? Fill in your email."]
+ = "Por favor, digite el email que está registrado en el sistema.";
+
+ $_m["Send"]
+ = "Enviar";
+
+ $_m["Unable to find user - please check if it has been misspelled."]
+ = "No se encuentra el usuario que introdujo, por favor compru&eacute;belo e intente nuevamente.";
+
+ $_m["Password change"]
+ = "Cambio de contrase&ntilde;a";
+
+ $_m["To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one."]
+ = "Para cambiar la contrase&ntilde;a, por favor visite la siguiente direcci&oacute;n:<br><a href=\"$url\">$url</a><br>El cambio debe realizarse dentro de las siguientes dos horas, de lo contrario la clave caducar&aacute; y tendr&aacute; que solicitar una nueva.";
+
+ $_m["E-mail with a key to change the password has just been sent to the e-mail address: %1"]
+ = "Las indicaciones para cambiar la contrase&ntilde;a han sido enviadas a su correo: %1";
+
+ $_m["Bad or expired key."]
+ = "Clave caducada.";
+
+ $_m["Fill in the new password:"]
+ = "Introduzca la nueva contrase&ntilde;a:";
+
+ $_m["New password"]
+ = "Nueva contrase&ntilde;a";
+
+ $_m["Passwords do not match - please try again."]
+ = "Las contrase&ntilde;as no coinciden, por favor intenta nuevamente.";
+
+ $_m["The password must be at least 6 characters long."]
+ = "La contrase&ntilde;a debe tener al menos 6 caracteres de longitud.";
+
+ $_m["Password changed."]
+ = "La contrase&ntilde;a fue cambiada.";
+
+ $_m["An error occurred during password change - please contact: %1."]
+ = "";
 
 ?>

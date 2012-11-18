@@ -372,4 +372,28 @@ $_m["November"]
 $_m["December"]
  = "Décembre";
 
+ // include/widget.php3 ...
+$_m["Upload"]
+ = "";
+
+$_m["SAVE CHANGE"]
+ = "";
+
+$_m["EXIT WITHOUT CHANGE"]
+ = "";
+
+ $_m["Save"]
+ = "";
+
+$_m["Current password"]
+ = "";
+
+$_m["Password"]
+ = "";
+
+$_m["Retype New Password"]
+ = "";
+
+$_m["To save changes click here or outside the field."]
+ = "";
 ?>

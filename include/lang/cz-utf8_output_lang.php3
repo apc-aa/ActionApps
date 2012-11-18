@@ -15,15 +15,6 @@ define("DB_COLLATION", "utf8_czech_ci");
 $_m["Cancel"]
  = "Storno";
 
- $_m["Upload"]
- = "Nahrát";
-
-$_m["SAVE CHANGE"]
- = "Uložit změnu";
-
-$_m["EXIT WITHOUT CHANGE"]
- = "Zpět beze změny";
-
 $_m["Constant unique id"]
  = "Identifikační číslo hodnoty";
 
@@ -369,5 +360,69 @@ $_m["Next"]
 // include/itemview.php3, row 332
 $_m["No comment was selected"]
  = "Nebyl vybrán žádný příspěvek";
+
+// include/widget.php3 ...
+$_m["Upload"]
+ = "Nahrát";
+
+$_m["SAVE CHANGE"]
+ = "Uložit změnu";
+
+$_m["EXIT WITHOUT CHANGE"]
+ = "Zpět beze změny";
+
+ $_m["Save"]
+ = "Uložit";
+
+$_m["Current password"]
+ = "Aktuální Heslo";
+
+$_m["Password"]
+ = "Heslo";
+
+$_m["Retype New Password"]
+ = "Nové heslo (znovu)";
+
+$_m["To save changes click here or outside the field."]
+ = "Pro uložení klikněte sem, nebo kamkoliv vně editačního pole";
+
+ $_m["Forgot your password? Fill in your email."]
+ = "Zapomněli jste heslo? Vyplňte váš e-mail.";
+
+ $_m["Send"]
+ = "Odeslat";
+
+ $_m["Unable to find user - please check if it has been misspelled."]
+ = "Nemohu najít uživatele - zkontrolujte prosím, zda nedošlo k překlepu.";
+
+ $_m["Password change"]
+ = "Změna hesla";
+
+ $_m["To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one."]
+ = "Pro zmenu hesla prosim navstivte nasledujici adresu:<br>%1<br>Zmena bude mozna po dobu dvou hodin - jinak tento klic vyprsi a budete si muset pozadat o novy.";
+
+ $_m["E-mail with a key to change the password has just been sent to the e-mail address: %1"]
+ = "E-mail s klíčem pro změnu hesla byl právě odeslán na e-mail: %1";
+
+ $_m["Bad or expired key."]
+ = "Špatný, či expirovaný klíč.";
+
+ $_m["Fill in the new password:"]
+ = "Vyplňte nové heslo:";
+
+ $_m["New password"]
+ = "Nové heslo";
+
+ $_m["Passwords do not match - please try again."]
+ = "Hesla si neodpovídají - zkuste prosím ještě jednou.";
+
+ $_m["The password must be at least 6 characters long."]
+ = "Heslo musí být nejméně 6 znaků dlouhé.";
+
+ $_m["Password changed."]
+ = "Heslo bylo změněno.";
+
+ $_m["An error occurred during password change - please contact: %1."]
+ = "Došlo k chybě během změny hesla - prosím kontaktujte %1.";
 
 ?>

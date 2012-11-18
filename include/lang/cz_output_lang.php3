@@ -15,15 +15,6 @@ setlocale(LC_ALL, 'cs_CZ');
 $_m["Cancel"]
  = "Storno";
 
-$_m["Upload"]
- = "Nahrát";
-
- $_m["SAVE CHANGE"]
- = "ULOŽIT ZMÌNU";
-
-$_m["EXIT WITHOUT CHANGE"]
- = "Zpìt beze zmìny";
-
 $_m["Constant unique id"]
  = "Identifikaèní èíslo hodnoty";
 
@@ -418,5 +409,69 @@ $_m["November"]
 // include/util.php3, row 1879
 $_m["December"]
  = "Prosinec";
+
+ // include/widget.php3 ...
+$_m["Upload"]
+ = "Nahrát";
+
+$_m["SAVE CHANGE"]
+ = "Uložit zmìnu";
+
+$_m["EXIT WITHOUT CHANGE"]
+ = "Zpìt beze zmìny";
+
+ $_m["Save"]
+ = "Uložit";
+
+$_m["Current password"]
+ = "Aktuální Heslo";
+
+$_m["Password"]
+ = "Heslo";
+
+$_m["Retype New Password"]
+ = "Nové heslo (znovu)";
+
+$_m["To save changes click here or outside the field."]
+ = "Pro uložení kliknìte sem, nebo kamkoliv vnì editaèního pole";
+
+$_m["Forgot your password? Fill in your email."]
+ = "Zapomnìli jste heslo? Vyplòte váš e-mail.";
+
+$_m["Send"]
+ = "Odeslat";
+
+$_m["Unable to find user - please check if it has been misspelled."]
+ = "Nemohu najít uživatele - zkontrolujte prosím, zda nedošlo k pøeklepu.";
+
+$_m["Password change"]
+ = "Zmìna hesla";
+
+$_m["To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one."]
+ = "Pro zmenu hesla prosim navstivte nasledujici adresu:<br>%1<br>Zmena bude mozna po dobu dvou hodin - jinak tento klic vyprsi a budete si muset pozadat o novy.";
+
+$_m["E-mail with a key to change the password has just been sent to the e-mail address: %1"]
+ = "E-mail s klíèem pro zmìnu hesla byl právì odeslán na e-mail: %1";
+
+$_m["Bad or expired key."]
+ = "Špatný, èi expirovaný klíè.";
+
+$_m["Fill in the new password:"]
+ = "Vyplòte nové heslo:";
+
+$_m["New password"]
+ = "Nové heslo";
+
+$_m["Passwords do not match - please try again."]
+ = "Hesla si neodpovídají - zkuste prosím ještì jednou.";
+
+$_m["The password must be at least 6 characters long."]
+ = "Heslo musí být nejménì 6 znakù dlouhé.";
+
+$_m["Password changed."]
+ = "Heslo bylo zmìnìno.";
+
+$_m["An error occurred during password change - please contact: %1."]
+ = "Došlo k chybì bìhem zmìny hesla - prosím kontaktujte %1.";
 
 ?>

@@ -324,4 +324,68 @@ $_m["Next"]
 $_m["No comment was selected"]
  = "";
 
+ // include/widget.php3 ...
+$_m["Upload"]
+ = "";
+
+$_m["SAVE CHANGE"]
+ = "";
+
+$_m["EXIT WITHOUT CHANGE"]
+ = "";
+
+ $_m["Save"]
+ = "";
+
+$_m["Current password"]
+ = "";
+
+$_m["Password"]
+ = "";
+
+$_m["Retype New Password"]
+ = "";
+
+$_m["To save changes click here or outside the field."]
+ = "";
+
+$_m["Forgot your password? Fill in your email."]
+ = "";
+
+$_m["Send"]
+ = "";
+
+$_m["Unable to find user - please check if it has been misspelled."]
+ = "";
+
+$_m["Password change"]
+ = "";
+
+$_m["To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one."]
+ = "";
+
+$_m["E-mail with a key to change the password has just been sent to the e-mail address: %1"]
+ = "";
+
+$_m["Bad or expired key."]
+ = "";
+
+$_m["Fill in the new password:"]
+ = "";
+
+$_m["New password"]
+ = "";
+
+$_m["Passwords do not match - please try again."]
+ = "";
+
+$_m["The password must be at least 6 characters long."]
+ = "";
+
+$_m["Password changed."]
+ = "";
+
+$_m["An error occurred during password change - please contact: %1."]
+ = "";
+
 ?>
