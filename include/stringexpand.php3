@@ -43,6 +43,11 @@ if (defined('AA_CUSTOM_DIR')) {
     include_once(AA_INC_PATH. 'custom/'. AA_CUSTOM_DIR. '/stringexpand.php');
 }
 
+// we need it for preg_replace_callback when unalias sometimes gives empty results (empty spots in site, ...)
+if (ini_get('pcre.backtrack_limit') < 1000000) {
+    ini_set('pcre.backtrack_limit', 1000000);
+}
+
 /** creates array form JSON array or returns single value array if not valid json */
 function json2arr($string) {
     if (($string[0] != '[') OR (( $values = json_decode($string)) == null)) {
@@ -1797,8 +1802,7 @@ class AA_Stringexpand_View extends AA_Stringexpand {
             $view_param = array_merge($view_param, ParseSettings($settings));
         }
         // do not pagecache the view
-        $foo = '';
-        return GetViewFromDB($view_param, $foo);
+        return GetViewFromDB($view_param);
     }
 }
 
@@ -1930,25 +1934,11 @@ class AA_Stringexpand_Item extends AA_Stringexpand_Nevercache {
 
         $tree_cache = new AA_Treecache($content, $delim, $top, $bottom);
 
-        if ( $GLOBALS['debug'] ) {
-            huhl("tree_cache", $tree_cache,$delim, $top, $bottom);
-        }
-
         // we are looking for subtrees 93938(73737-64635)
         while (preg_match('/[0-9a-f]+[(]([^()]+)[)]/s',$ids_string)) {
             $ids_string = preg_replace_callback('/([0-9a-f]+)[(]([^()]+)[)]/s', array($tree_cache,'cache_list'), $ids_string);
         }
-
-        if ( $GLOBALS['debug'] ) {
-            huhl('$ids_string', $ids_string);
-        }
-
         $ret = $tree_cache->get_concat($ids_string);
-
-        if ( $GLOBALS['debug'] ) {
-            huhl('$ret', $ret);
-        }
-
 
         return $ret;
     }
@@ -3108,6 +3098,12 @@ class AA_Stringexpand_Scroller extends AA_Stringexpand {
  *  @see AA_Router::scroller() method
  *
  *  Must be issued inside the view
+ *
+ *  Now it is possibile to use {pager} on views called by AJAX (for live searches, ...).
+ *  Just put the parameter "div-id" to pager:
+ *           {pager:resuts}
+ *  where result is the div id, in which the view dispays the values
+ *           <div id="results">..view output there</div>
  */
 class AA_Stringexpand_Pager extends AA_Stringexpand_Nevercache {
 
@@ -3454,7 +3450,7 @@ class AA_Unalias_Callback {
      * @param $itemview
      */
     function AA_Unalias_Callback( $item, $itemview ) {
-        $this->item     = $item;
+        $this->item     = is_object($item) ? $item : null;
         $this->itemview = $itemview;
     }
 
@@ -3587,8 +3583,6 @@ class AA_Unalias_Callback {
                 // Xinha editor replaces & with &amp; so we need to change it back
                 $param      = str_replace(array('&amp;','-&lt;','-&gt;','&lt;-','&gt;-'), array('&','-<','->','<-','>-'), substr($out,10));
                 $view_param = ParseViewParameters(DeQuoteColons($param));
-                $foo        = '';
-
                 // do not store in the pagecache, but store into contentcache
                 return QuoteColons($contentcache->get_result_by_id(get_hash($view_param), 'GetViewFromDB', array($view_param)));
             }
@@ -3746,7 +3740,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
         $alias_name = base64_encode(($show_alias == '') ? '{'.$field_id.'}' : $show_alias);
         if ( $item_id AND $field_id) {
             $item        = AA_Items::getItem(new zids($item_id));
-            $repre_value = ($show_alias == '') ? $item->f_h($field_id) : $item->subst_alias($show_alias);
+            $repre_value = ($show_alias == '') ? $item->f_h($field_id, ', ') : $item->subst_alias($show_alias);
             $repre_value = (strlen($repre_value) < 1) ? '--' : $repre_value;
             $iid         = $item->getItemID();
             $input_name  = AA_Form_Array::getName4Form($field_id, $item);
@@ -3944,7 +3938,9 @@ class AA_Stringexpand {
             //                              see {( some {( text )} which )} could {( be )} nested
             $last_replacements = 1;
             do {
-                $text = preg_replace_callback('/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements);  //s for newlines, U for nongreedy
+                if (is_null($text = preg_replace_callback('/{\(((?:.(?!{\())*)\)}/sU', 'make_reference_callback', $text, -1, $last_replacements))) {  //s for newlines, U for nongreedy
+                    echo "Error: preg_replace_callback";
+                }
             } while($last_replacements);
         }
 
@@ -3953,7 +3949,9 @@ class AA_Stringexpand {
         while (preg_match('/[{]([^{}]+)[}]/s',$text)) {
             // it just means, we need to unquote colons
             $quotecolons_partly = true;
-            $text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback,'expand_bracketed'), $text);
+            if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', array($callback,'expand_bracketed'), $text))) {  //s for newlines, U for nongreedy
+                echo "Error: preg_replace_callback";
+            }
         }
 
         if (is_object($item)) {
@@ -4041,7 +4039,7 @@ class AA_Stringexpand_Trim extends AA_Stringexpand {
 /** replaces string or strings - you can use single string replacement
  *  or array in JSON form:
  *   {str_replace:uno:one:text with uno inside}
- *   {str_replace:["è","š","ø"]:["c","s","r"]:text èesky with accents}
+ *   {str_replace:["ï¿½","ï¿½","ï¿½"]:["c","s","r"]:text ï¿½esky with accents}
  */
 class AA_Stringexpand_Str_replace extends AA_Stringexpand_Nevercache {
     /** Do not trim all parameters ($search and $replace could be spaces) */
@@ -4577,7 +4575,8 @@ class AA_Stringexpand_Pwdcrypt extends AA_Stringexpand_Nevercache {
     function doTrimParams() { return false; }
 
     function expand($text) {
-        return crypt($text, 'xx');
+        // return crypt($text, 'xx');
+        AA_Perm::cryptPwd($text);
     }
 }
 
@@ -4718,12 +4717,13 @@ class AA_Password_Manager_Reader {
 
     function getFirstForm() {  // Type in either your username or e-mail
         return '<form id="pwdmanager-firstform" action="" method="post"><div class="aa-widget">
-        <label for="pwdmanager-user">' ._m('Zapomnìli jste heslo? Vyplòte váš e-mail.'). '</label>
+        <label for="pwdmanager-user">' ._m('Forgot your password? Fill in your email.'). '</label>
         <div class="aa-input">
            <input size="30" maxlength="128" name="aapwd1" id="aapwd1" value="" placeholder="'._m('e-mail').'" required type="text">
         </div>
         <input type="hidden" name="nocache" value="1">
-        <input type="submit" id="pwdmanager-send" name="pwdmanager-send" value="'. _m('Odeslat').'">
+        <input type="submit" id="pwdmanager-send" name="pwdmanager-send" value="'. _m('Send').'">
+
         </div>
         </form>
         ';
@@ -4731,11 +4731,11 @@ class AA_Password_Manager_Reader {
 
     function askForMail($user, $slice_id,$from_email) {
         if ( !trim($user) ) {
-            return self::_bad(_m("Nemohu najít uživatele - zkontrolujte prosím, zda nedošlo k pøeklepu."));
+            return self::_bad(_m("Unable to find user - please check if it has been misspelled."));
         }
         if (!($user_id = AA_Reader::name2Id($user, $slice_id))) {
             if (!($user_id = AA_Reader::email2Id($user, $slice_id))) {
-                return self::_bad(_m("Nemohu najít uživatele - zkontrolujte prosím, zda nedošlo k pøeklepu."));
+                return self::_bad(_m("Unable to find user - please check if it has been misspelled."));
             }
         }
         $user_info = GetAuthData($user_id);
@@ -4746,48 +4746,48 @@ class AA_Password_Manager_Reader {
 
         // send it via email
         $mail     = new AA_Mail;
-        $mail->setSubject ("Zmena hesla");
+        $mail->setSubject ("Password change");
         $url  = shtml_url()."?aapwd2=$pwdkey-$user_id";
-        $body = _m("Pro zmenu hesla prosim navstivte nasledujici adresu:<br><a href=\"$url\">$url</a><br>Zmena bude mozna po dobu dvou hodin - jinak tento klic vyprsi a budete si muset pozadat o novy.");
+        $body = _m("To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one.",array("<a href=\"$url\">$url</a>"));
         $mail->setHtml($body, html2text($body));
         $mail->setHeader("From", $from_email);
         $mail->setHeader("Reply-To", $from_email);
         $mail->setHeader("Errors-To", $from_email);
         //$mail->setCharset ($GLOBALS ["LANGUAGE_CHARSETS"][substr ($db->f("lang_file"),0,2)]);
         $mail->send(array($email));
-        return self::_ok(_m('E-mail s klíèem pro zmìnu hesla byl právì odeslán na e-mail: %1', array($email)));
+        return self::_ok(_m('E-mail with a key to change the password has just been sent to the e-mail address: %1', array($email)));
     }
 
     function getChangeForm($key, $user) {
         if (!self::isValidKey($key, $user)) {
-            return self::_bad(_m("Špatný, èi expirovaný klíè."));  // @todo get messages from somewhere
+            return self::_bad(_m("La clave ha caducado."));  // @todo get messages from somewhere
         }
-        return _m("Vyplòte nové heslo:"). '<br>
+        return _m("Fill in the new password:"). '<br>
         <form name="pwdmanagerchangeform" method="post" action="">
-        '._m('Nové heslo').': <input type="password" name="aapwd3"><br>
-        '._m('Heslo znovu').': <input type="password" name="aapwd3b"><br>
+        '._m('New password').': <input type="password" name="aapwd3"><br>
+        '._m('Retype New Password').': <input type="password" name="aapwd3b"><br>
         <input type="hidden" name="aauser"  value="'. $user .'">
         <input type="hidden" name="aakey"   value="'. $key .'">
         <input type="hidden" name="nocache" value="1">
-        <input type="submit"  value="'. _m('Odeslat').'">
+        <input type="submit"  value="'. _m('Send').'">
         </form>';
     }
 
     function changePassword( $pwd1, $pwd2, $key, $user, $from_email) {
         if (!self::isValidKey($key, $user)) {
-            return self::_bad(_m("Špatný, èi expirovaný klíè."));  // @todo get messages from somewhere
+            return self::_bad(_m("Bad or expired key."));  // @todo get messages from somewhere
         }
         if ($pwd1 != $pwd2) {
-            return self::_bad(_m("Hesla si neodpovídají - zkuste prosím ještì jednou."));  // @todo get messages from somewhere
+            return self::_bad(_m("Passwords do not match - please try again."));  // @todo get messages from somewhere
         }
         if (strlen($pwd1) < 6) {
-            return self::_bad(_m("Heslo musí být nejménì 6 znakù dlouhé."));  // @todo get messages from somewhere
+            return self::_bad(_m("The password must be at least 6 characters long."));  // @todo get messages from somewhere
         }
 
         if (UpdateField($user, 'password........', new AA_Value(ParamImplode(array('AA_PASSWD',$pwd1))))) {
-            return self::_ok(_m("Heslo bylo zmìnìno."));
+            return self::_ok(_m("Password changed."));
         }
-        return self::_ok(_m("Došlo k chybì bìhem zmìny hesla - prosím kontaktujte %1.", array($from_email)));
+        return self::_ok(_m("An error occurred during password change - please contact: %1.", array($from_email)));
     }
 
     function isValidKey($key, $user_id) {
@@ -4902,10 +4902,10 @@ class AA_Stringexpand_Foreach extends AA_Stringexpand_Nevercache {
         $text = str_replace('_##1', '_#1', $text);
 
         $item   = $this ? $this->item : null;
-        if (!strlen($delimiter)) {
-           $delimiter = '-';
+        if (!strlen($valdelimiter)) {
+           $valdelimiter = '-';
         }
-        $arr = explode($delimiter, trim($values));
+        $arr = explode($valdelimiter, trim($values));
         $ret= array();
         foreach($arr as $str) {
             if (trim($str)) {
