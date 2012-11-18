@@ -309,6 +309,7 @@ class AA_Client_Auth {
             $params = array('AA_CP_Session'=>$_COOKIE['AA_Sess']);
         }
         else {
+            $this->logout();
             return false;
         }
 
@@ -328,6 +329,7 @@ class AA_Client_Auth {
             }
             return true;
         }
+        $this->logout();
         return false;
     }
 
