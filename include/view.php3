@@ -460,7 +460,8 @@ function GetViewSort(&$view_info, $param_sort=null) {
     // grouping
 
     if ($param_sort['group_by']) {
-        $sort = String2Sort($param_sort['group_by']);
+       // $sort = String2Sort($param_sort['group_by']);
+        $sort = String2Sort('100000'.$param_sort['group_by']);
     } else {
         if ($view_info['group_by1']) {
             $sort[] = array($view_info['group_by1'] => $VIEW_SORT_DIRECTIONS[$view_info['g1_direction']]);
@@ -860,11 +861,9 @@ function GetViewFromDB($view_param, $return_with_slice_ids=false) {
             break;
     }
 
-
     if ($debug) {
         huhl("GetViewFromDB: ret=",$ret);
     }
-
 
     // user could make the view to display view ID before and after the view output
     // which is usefull mainly for debugging. See view setting in admin interface

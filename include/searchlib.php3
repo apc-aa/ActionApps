@@ -1191,9 +1191,6 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
  * @param string $col              - column in database containing id
  * @param $zid_type
  * @param bool   $empty_result_condition - have we return empty set?
- * @param zids   $sort_zids        - used for sorting zids to right order
- *                                 - if specified, return zids are sorted
- *                                   in the same order as in $sort_zids
  * @param arrray $group_limit      - array('field' => <grouping_column>,
  *                                         'limit' => <number>)
  *                                   Limits the number of returned ids from each
@@ -1204,11 +1201,12 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
  *                                   selected items (then set the number to 1)
  * @return zids from SQL query;
  */
-function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=false, $sort_zids=null, $group_limit=null ) {
+function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=false, $group_limit=null ) {
     global $QueryIDsCount, $debug;
     $db = getDB();
 
-    $arr = array();                  // result ids array
+    $arr           = array();       // result ids array
+    $extended_attr = array();       // extended attributes stored in zids for grouping on multivalue fields
     if (!$empty_result_condition) {
         $db->tquery($SQL);
         AA::$debug && AA::$dbg->log("GetZidsFromSQL: SQL", $SQL);
@@ -1218,23 +1216,32 @@ function GetZidsFromSQL( $SQL, $col, $zid_type='s', $empty_result_condition=fals
                 $arr[] = $db->f($col);
             }
         } else {                     // we have to remove the ids above the limit for group
-            $groups  = array();                 // array where we count the number of items in each group
-            $glimit  =  $group_limit['limit'];  // shortcut - just for possible speedup
-            $gfield  =  $group_limit['field'];  // shortcut - just for possible speedup
+                                     // and also we have to add extended attributes to zids, because
+                                     // of group_by
+            $group_by = array();
+            $groups   = array();                 // array where we count the number of items in each group
+            $glimit   =  $group_limit['limit'];  // shortcut - just for possible speedup
+            $gfield   =  $group_limit['field'];  // shortcut - just for possible speedup
             while ($db->next_record()) {
+
+                AA::$debug && AA::$dbg->log("result", $db->Record);
+
                 if (++$groups[$db->f($gfield)] <= $glimit) {
-                    $arr[] = $db->f($col);
+                    $arr[]      = $db->f($col);
+                    $group_by[] = $db->f('s0');
                 }
             }
+            $extended_attr = array('group_by' => $group_by);
         }
     }
-    $zids = new zids($arr, $zid_type);
+    $zids = new zids($arr, $zid_type, $extended_attr);
 
     $QueryIDsCount = count($arr);
 
-    if ( is_object($sort_zids) ) {
-        $zids->sort_and_restrict_as_in($sort_zids);
-    }
+    //now sorted by field() SQL command - no more needed, Honza 2012-11-14
+    //if ( is_object($sort_zids) ) {
+    //    $zids->sort_and_restrict_as_in($sort_zids);
+    //}
 
     freeDB($db);
     return $zids;
@@ -1380,56 +1387,108 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                 //   - search in headline field of all related items
                 //     (relation.......1 field pointed to related items)
 
-                // Syntax is:
-                //   <remote_field_id>@<local_relation_field_id>
-                //   headline........@relation.......1
-                //   - search in headline field of all related items
-                //     (relation.......1 field pointed to related items)
                 if ( strpos($fid, '@') !== false ) {
-                    list($cond_flds, $rel_fld) = explode('@',$fid);
+                    if (strpos($fid, '/') === false ) {
+                        // first case - the current slice is pointing to another one
+                        // Syntax is:
+                        //   <remote_field_id>@<local_relation_field_id>
+                        //   headline........@relation.......1
+                        //   - search in headline field of all related items
+                        //     (relation.......1 field pointed to related items)
+                        list($cond_flds, $rel_fld) = explode('@',$fid);
 
-                    $field = $fields->getField($rel_fld);
-                    if (!is_object($field)) {
-                        if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not field.<br>"; 
-                        continue;            // bad field_id or not defined condition - skip
-                    }
-                    list($rel_f_type, $rel_f_slice) = $field->getRelation();
-                    if ($rel_f_type != 'relation') {
-                        if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not relation field.<br>"; 
-                        continue;            // bad field_id or not defined condition - skip
-                    }
-                    $cond_field  = AA_Slices::getSlice($rel_f_slice)->getField($cond_flds);
-                    if (!is_object($cond_field)) {
-                        if (AA::$debug) echo "Skipping $fid in conds[]: $cond_field is not field.<br>"; 
-                        continue;            // bad field_id or not defined condition - skip
-                    }
+                        $field = $fields->getField($rel_fld);
+                        if (!is_object($field)) {
+                            if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not field.<br>";
+                            continue;            // bad field_id or not defined condition - skip
+                        }
+                        list($rel_f_type, $rel_f_slice) = $field->getRelation();
+                        if ($rel_f_type != 'relation') {
+                            if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld is not relation field.<br>";
+                            continue;            // bad field_id or not defined condition - skip
+                        }
+                        $cond_field  = AA_Slices::getSlice($rel_f_slice)->getField($cond_flds);
+                        if (!is_object($cond_field)) {
+                            if (AA::$debug) echo "Skipping $fid in conds[]: $cond_field is not field.<br>";
+                            continue;            // bad field_id or not defined condition - skip
+                        }
 
-                    $cond_flds = "'$cond_flds'";
-                    $rel_fld   = "'$rel_fld'";
-                    $tbl       = 'c'.$tbl_count++;
-                    $tbl2      = 'c'.$tbl_count++;
-                    if ( $cond_field->storageTable() == 'item' ) {   // field is stored in table 'item'
-                        // Long ID in conds should be specified as unpacked, but in db it is packed
-                        $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
-                                          LEFT JOIN item as $tbl2 ON ($tbl2.id=UNHEX($tbl.text))";
+                        $cond_flds = "'$cond_flds'";
+                        $rel_fld   = "'$rel_fld'";
+                        $tbl       = 'c'.$tbl_count++;
+                        $tbl2      = 'c'.$tbl_count++;
+                        if ( $cond_field->storageTable() == 'item' ) {   // field is stored in table 'item'
+                            // Long ID in conds should be specified as unpacked, but in db it is packed
+                            $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=UNHEX($tbl.text))";
+                        } else {
+                            $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
+                        }
+                        $cur_cond = GetWhereExp( $tbl2.'.'.$cond_field->storageColumn(), $cond['operator'], $cond['value'] );
+                        if (in_array($cond_flds, array('id..............', 'slice_id........'))) {
+                            $cur_cond =  preg_replace("/([0-9a-f]{32})/ie", "q_pack_id('\\1')", $cur_cond);
+                        }
+                        $select_conds[] = $cur_cond;
+                        $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  // @todo - test if it works
+                        $cond_flds = '';
+                        continue;
                     } else {
-                        $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
-                                          LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
+                        // second case - the remote slice is pointing to current one
+                        // Syntax is:
+                        //   <remote_field_id>@<remote_slice_id>/<remote_relation_field_id>
+                        //   headline........@7735375488a65e7735375488a65eab2ab2/relation.......1
+                        //   - search in headline field of all related items
+                        //     (relation.......1 field of the remote slice 7735375488a65e7735375488a65eab2ab2 pointed to current item)
+                        list($cond_fld_id, $rel_combi) = explode('@',$fid);
+                        list($rel_slice_id, $rel_fld_id)   = explode('/',$rel_combi);
+
+
+                        $rel_slice   = AA_Slices::getSlice($rel_slice_id);
+                        if (!is_object($rel_slice)) {
+                            if (AA::$debug) echo "Skipping $fid in conds[]: $rel_slice_id is not slice.<br>";
+                            continue;            // bad field_id or not defined condition - skip
+                        }
+
+                        $cond_field  = $rel_slice->getField($cond_fld_id);
+                        if (!is_object($cond_field)) {
+                            if (AA::$debug) echo "Skipping $fid in conds[]: $cond_fld_id is not field of $rel_slice_id.<br>";
+                            continue;            // bad field_id or not defined condition - skip
+                        }
+
+                        $rel_field = $rel_slice->getField($rel_fld_id);
+                        if (!is_object($rel_field)) {
+                            if (AA::$debug) echo "Skipping $fid in conds[]: $rel_fld_id is not field of $rel_slice_id.<br>";
+                            continue;            // bad field_id or not defined condition - skip
+                        }
+
+                        $cond_flds = "'$cond_fld_id'";
+                        $rel_fld   = "'$rel_fld_id'";
+                        $tbl       = 'c'.$tbl_count++;
+                        $tbl2      = 'c'.$tbl_count++;
+                        if ( $cond_field->storageTable() == 'item' ) {   // field is stored in table 'item'
+                            // Long ID in conds should be specified as unpacked, but in db it is packed
+                            $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND item.id=UNHEX($tbl.text))
+                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id)";
+                        } else {
+                            $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND item.id=UNHEX($tbl.text))
+                                              LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
+                        }
+                        $cur_cond = GetWhereExp( $tbl2.'.'.$cond_field->storageColumn(), $cond['operator'], $cond['value'] );
+                        if (in_array($cond_flds, array('id..............', 'slice_id........'))) {
+                            $cur_cond =  preg_replace("/([0-9a-f]{32})/ie", "q_pack_id('\\1')", $cur_cond);
+                        }
+                        $select_conds[] = $cur_cond;
+                        $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  // @todo - test if it works
+                        $cond_flds = '';
+                        continue;
                     }
-                    $cur_cond = GetWhereExp( $tbl2.'.'.$cond_field->storageColumn(), $cond['operator'], $cond['value'] );
-                    if (in_array($cond_flds, array('id..............', 'slice_id........'))) {
-                        $cur_cond =  preg_replace("/([0-9a-f]{32})/ie", "q_pack_id('\\1')", $cur_cond);
-                    }
-                    $select_conds[] = $cur_cond;
-                    $sortable[ str_replace( "'", "", $cond_flds) ] = $tbl;  // @todo - test if it works
-                    $cond_flds = '';
-                    continue;
                 }
 
                 $field = $fields->getField($fid);
 
                 if ( is_null($field) OR $v=="") {
-                    if (AA::$debug) echo "Skipping $fid in conds[]: not known.<br>"; 
+                    if (AA::$debug) echo "Skipping $fid in conds[]: not known.<br>";
                     continue;            // bad field_id or not defined condition - skip
                 }
 
@@ -1641,16 +1700,7 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
     AA::$debug && AA::$dbg->log("QueryZIDs: SQL: $SQL");
 
     // if neverAllItems is set, return empty set if no conds[] are used
-    $ret = GetZidsFromSQL( $SQL, 'itemid', 'p', !is_array($select_conds) && $neverAllItems,
-                           // last parameter is used for sorting zids to right order
-                           // - if no order specified and restrict_zids are specified,
-                           // return zids in unchanged order
-
-                           // removed - now we use field() SQL clausule instead,
-                           // which is more powerfull (used also in secondary orders),
-                           // so it is no longer needed
-                           // (is_object($restrict_zids) AND !$select_order) ? $restrict_zids : null, $select_limit_field);
-                           null, $select_limit_field);
+    $ret = GetZidsFromSQL( $SQL, 'itemid', 'p', !is_array($select_conds) && $neverAllItems, $select_limit_field);
 
     if ( $debug ) {
         huhl("QueryZIDs: result:", $ret);
@@ -1730,7 +1780,7 @@ function QueryConstantZIDs($group_id, $conds, $sort="", $restrict_zids=false, $d
  * @param $conds
  * @param $sort
  * @param $slices
-*/
+ */
 
 function QueryDiscIDs($slice_id, $conds, $sort, $slices ) {
   // parameter format example:

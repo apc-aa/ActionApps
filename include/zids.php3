@@ -67,32 +67,30 @@ require_once AA_INC_PATH."util.php3";  // quote
 
 class zids implements Iterator, ArrayAccess, Countable {
     var $a;     // Array of ids of type specified in $t
-                // Note encapsulation broken in itemview which sets this directly
     var $type;  // Type of $a
     var $l2s;   // array used for translation from 'long' to 'short' type
     var $s2l;   // array used for translation from 'short' to 'long' type
+    protected $_ext; // array of extended parameters (we are using it when we store group_by additional info into zids)
 
     /** zids function
      *  Constructor can be called with an array, or a zid
      * @param $initial
      * @param $inittype
+     * @param $extended_att  additional attribute for each zid. It is in the form
+     *                       array('attr'=>array(<array of attr for zids in the same based array, as $initial>))
      */
-    function zids($initial = null, $inittype = "z"){  // constructor
-        $this->refill($initial, $inittype);
-    }
-
-    /** refill function
-     *  Refills the array, may be called with an array, or a zid
-     * @param $initial
-     * @param $inittype
-     */
-    function refill($initial = null, $inittype = "z"){
-        global $debug;
+    function __construct($initial = null, $inittype = "z", $extended_att = array()){  // constructor
         // $inittype is for where type is known
         // Note it refers to the type of ELEMENTS if its an array
         $this->type = $inittype;
-        if ($initial and is_array($initial)) { // Array
-            $this->a = array();  // Make sure at least empty array
+        $this->a    = array();  // Make sure at least empty array
+        $this->_ext = is_array($extended_att) ? $extended_att : array();
+
+        if (empty($initial)) {
+            return;
+        }
+
+        if (is_array($initial)) { // Array
             if (is_array($initial[0])) { // Array of fields
                 foreach ( $initial as $field ) {
                     if ( $field['value'] ) {           // copy just not empty ids
@@ -106,18 +104,11 @@ class zids implements Iterator, ArrayAccess, Countable {
                     }
                 }
             }
-        } elseif ($initial) {  // Single id
-            $this->a[]  = $initial;
         } else {
-            // prepare for zids
-            $this->a = array();      // Make sure at least empty array
-            return;                     // Empty $zids;
+            $this->a[] = $initial;
         }
-
         if ($this->type == "z") {
             $this->type = guesstype($this->a[0]);
-        } elseif ($this->type != guesstype($this->a[0])) {
-            huhe("Warning: zids created type=$this->type but id $this->a[0] looks like type=" . guesstype($this->a[0]));
         }
     }
 
@@ -143,6 +134,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     function clear($inittype = 'z') {
         $this->a    = array();
         $this->type = $inittype;
+        $this->_ext = array();
     }
 
 
@@ -405,6 +397,11 @@ class zids implements Iterator, ArrayAccess, Countable {
         return $this->a;
     }
 
+    /** get extended attribute for id */
+    function getAttr($index, $attr_name) {
+        return is_array($this->_ext[$attr_name]) ? $this->_ext[$attr_name][$index] : null;
+    }
+
     /** gettags function
      * Return associative array, longid->tag;
      */
@@ -506,20 +503,21 @@ class zids implements Iterator, ArrayAccess, Countable {
         return false;
     }
 
-    /** sort_and_restrict_as_in function
-     *  Sorts zids array in the same order as the zids are in $sort_zids
-     * @param $sort_zids
-     */
-    function sort_and_restrict_as_in($sort_zids) {
-        $translation = $this->get_translation($sort_zids->onetype());
-        $ret         = array();
-        foreach ( $sort_zids->a as $zid ) {
-            if ( $translation[$zid] ) {
-                $ret[] = $translation[$zid];
-            }
-        }
-        $this->a = $ret;
-    }
+    // no longer used
+    ///** sort_and_restrict_as_in function
+    // *  Sorts zids array in the same order as the zids are in $sort_zids
+    // * @param $sort_zids
+    // */
+    //function sort_and_restrict_as_in($sort_zids) {
+    //    $translation = $this->get_translation($sort_zids->onetype());
+    //    $ret         = array();
+    //    foreach ( $sort_zids->a as $zid ) {
+    //        if ( $translation[$zid] ) {
+    //            $ret[] = $translation[$zid];
+    //        }
+    //    }
+    //    $this->a = $ret;
+    //}
 
     /** translate function
      *  fills $s2l and $l2s array used for translation 'long' <-> 'short' and

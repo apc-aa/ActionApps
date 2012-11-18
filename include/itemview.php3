@@ -64,6 +64,8 @@ class itemview {
   var $parameters;         // optional asociative array of additional parameters
                            // - used for category_id (in Links module) ...
                            // - filed by parameter() method
+  private $_content;       // stores item contents to be used for display
+
   /** itemview function
    * @param $slice_info
    * @param $fields
@@ -93,9 +95,9 @@ class itemview {
                                       //   fulltext_format_bottom,
                                       //   banner_position, banner_parameters
 
-    $this->group_fld   = $slice_info['group_by'];
+    $this->group_fld  = $slice_info['group_by'];
 
-    $this->aliases     = $aliases;
+    $this->aliases    = $aliases;
     // add special alias, which is = 1 for selected item (given by
     // set[34]=selected-43535 view.php3 parameter
     if ( !$aliases['_#SELECTED'] AND $slice_info['selected_item'] ) {
@@ -115,6 +117,7 @@ class itemview {
     $this->clean_url   = $clean_url;
     $this->disc        = $disc;
     $this->parameters  = array();
+    $this->_content    = array();
 
     switch( (string)$get_content_funct ) {
         case '1':         // - for backward compatibility when $use_short_ids
@@ -209,13 +212,13 @@ class itemview {
   /** get_disc_list function
    * @param $CurItem
    */
-  function get_disc_list(&$CurItem) {
+  function get_disc_list($CurItem) {
       $top_html_already_printed = false;
       if (is_array($this->disc['disc_ids'])) {
           $zids = new zids($this->disc['disc_ids'], 'l');
-          $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
-          if (is_array($d_content)) {
-              foreach ( $d_content as $id => $disc) {
+          $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
+          if (is_array($this->_content)) {
+              foreach ( $this->_content as $id => $disc) {
                   $CurItem->set_data($disc);
                   // print top HTML with aliases
                   if ( !$top_html_already_printed ) {
@@ -241,12 +244,12 @@ class itemview {
    *  show discussion comments in the thread mode
    * @param $CurItem
    */
-  function get_disc_thread(&$CurItem) {
+  function get_disc_thread($CurItem) {
       $top_html_already_printed = false;
 
-      $zids      = QueryDiscussionZIDs($this->disc['item_id'], "", $this->slice_info['d_order']);
-      $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
-      $d_tree    = GetDiscussionTree($d_content);
+      $zids           = QueryDiscussionZIDs($this->disc['item_id'], "", $this->slice_info['d_order']);
+      $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
+      $d_tree         = GetDiscussionTree($this->_content);
 
       $out .= '<a name="disc"></a><form name="discusform" action="">';
       $cnt = 0;     // count of discussion comments
@@ -259,9 +262,9 @@ class itemview {
               GetDiscussionThread($d_tree, "0", 0, $outcome);
               if ( $outcome ) {
                   while ( list( $d_id, $images ) = each( $outcome )) {
-                      SetCheckboxContent( $d_content, $d_id, $cnt++ );
-                      SetImagesContent( $d_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
-                      $this->setColumns($CurItem, $d_content[$d_id]);
+                      SetCheckboxContent( $this->_content, $d_id, $cnt++ );
+                      SetImagesContent( $this->_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
+                      $this->setColumns($CurItem, $d_id);
                       // print top HTML with aliases
                       if ( !$top_html_already_printed ) {
                           $CurItem->setformat( $this->slice_info['d_top']);
@@ -273,12 +276,12 @@ class itemview {
                   }
               }
           } else {                      // show discussion sorted by date
-              foreach ($d_content as $d_id => $foo ) {
-                  if ( $d_content[$d_id]["hide"] ) {
+              foreach ($this->_content as $d_id => $foo ) {
+                  if ( $this->_content[$d_id]["hide"] ) {
                       continue;
                   }
-                  SetCheckboxContent( $d_content, $d_id, $cnt++ );
-                  $this->setColumns($CurItem, $d_content[$d_id]);
+                  SetCheckboxContent( $this->_content, $d_id, $cnt++ );
+                  $this->setColumns($CurItem, $d_id);
                   // print top HTML with aliases
                   if ( !$top_html_already_printed ) {
                       $CurItem->setformat( $this->slice_info['d_top']);
@@ -341,13 +344,13 @@ class itemview {
    *  show discussion comments in the fulltext mode
    * @param $CurItem
    */
-  function get_disc_fulltext(&$CurItem) {
+  function get_disc_fulltext($CurItem) {
       $CurItem->setformat( $this->slice_info['d_fulltext']);      // set fulltext format
-      $zids      = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
-      $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
-      $d_tree    = GetDiscussionTree($d_content);
-      if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array($d_content)) {  // show selected cooments
-          foreach ($d_content as $id => $val) {
+      $zids           = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
+      $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
+      $d_tree         = GetDiscussionTree($this->_content);
+      if ($this->disc['ids'] && is_array($this->disc['ids']) && is_array($this->_content)) {  // show selected cooments
+          foreach ($this->_content as $id => $val) {
               // if hidden => skip  OR if the comment is already in the outcome => skip
               if (($val["hide"] == true) OR $outcome[$id]) {
                   continue;
@@ -361,7 +364,7 @@ class itemview {
       $out.= '<a name="disc"></a>';
       if ( isset($outcome) AND is_array($outcome) ) {
           while ( list( $d_id, $images ) = each( $outcome )) {
-              $this->setColumns($CurItem, $d_content[$d_id]);
+              $this->setColumns($CurItem, $d_id);
               $depth = count($images)-1;
               $spacer = "";
               $out.= '
@@ -388,16 +391,16 @@ class itemview {
    *  show the form for adding discussion comments
    * @param $CurItem
    */
-  function get_disc_add(&$CurItem) {
+  function get_disc_add($CurItem) {
       // if parent_id is set => show discussion comment
       $out.= '<a name="disc"></a>';
       if ($this->disc['parent_id']) {
 
-          $zids      = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
-          $d_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
+          $zids           = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
+          $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
 
           $CurItem->setformat( $this->slice_info['d_fulltext']);
-          $this->setColumns($CurItem, $d_content[$this->disc['parent_id']]);
+          $this->setColumns($CurItem, $this->disc['parent_id']);
           $out .= $CurItem->get_item();
       } else {
           $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
@@ -454,13 +457,13 @@ class itemview {
   // several slices at once: all slices have to define aliases with the same names
   /** setColumns function
    * @param $CurItem
-   * @param $content4id
+   * @param $iid
    */
-  function setColumns($CurItem, &$content4id) {
+  function setColumns($CurItem, $iid) {
       // hack for searching in multiple slices. This is not so nice part
       // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
       // used (filled) in slice.php3
-      $CurItem->set_data($content4id);
+      $CurItem->set_data($this->_content[$iid]);
       // slice_id... in content is packed!!!
       $p_slice_id = addslashes($CurItem->getval('slice_id........'));
       $CurItem->aliases = (is_array($this->aliases[$p_slice_id]) ? $this->aliases[$p_slice_id] : $this->aliases);
@@ -527,15 +530,15 @@ class itemview {
         // method as well as params are arrays again, so in fact it looks like:
         // array(array('classname', method),array(param1, param2))
         // Example array(array('AA_Metabase','getContent'),array(table=>'toexecute'))
-        // getContent is in theis case static class method
+        // getContent is in this case static class method
         // parameter array (if supplied) is passed as FIRST parameter of the method
-        $content = call_user_func_array($this->get_content_funct[0], array($this->get_content_funct[1], $foo_zids));
+        $this->_content = call_user_func_array($this->get_content_funct[0], array($this->get_content_funct[1], $foo_zids));
     } else {
-        $content = call_user_func_array($this->get_content_funct, array($foo_zids));
+        $this->_content = call_user_func_array($this->get_content_funct, array($foo_zids));
     }
 
     if ($debug>1) {
-        huhl("itemview:get_content: found",$content);
+        huhl("itemview:get_content: found",$this->_content);
     }
 
     $CurItem = new AA_Item("", $this->aliases);   // just prepare
@@ -545,15 +548,15 @@ class itemview {
     if ( $rweight && is_array($this->fields[$rweight]) ) {
       $this->zids->clear('l');   // remove id and prepare for long ids
       //get sum of all weight
-      reset( $content );
-      while ( list(,$v) = each($content) ) {
+      reset( $this->_content );
+      while ( list(,$v) = each($this->_content) ) {
         $weightsum += $v[$rweight][0]['value'];
       }
       for ( $i=0; $i<$this->num_records; $i++) {
         $winner = rand(1,$weightsum);
-        reset( $content );
+        reset( $this->_content );
         $ws=0;
-        while ( list($k,$v) = each($content) ) {
+        while ( list($k,$v) = each($this->_content) ) {
           $ws += $v[$rweight][0]['value'];
           if ( $ws >= $winner ) {
             $this->zids->add($k);
@@ -573,7 +576,7 @@ class itemview {
     switch ( $view_type ) {
       case "fulltext":
         $iid = $this->zids->short_or_longids(0);  // unpacked or short id
-        $this->setColumns($CurItem, $content[$iid]);   // set right content for aliases
+        $this->setColumns($CurItem, $iid);        // set right content for aliases
 
         // print item
         $out = AA_Stringexpand::unalias($this->slice_info['fulltext_format_top'].$this->slice_info['fulltext_format'].$this->slice_info['fulltext_format_bottom'], $this->slice_info['fulltext_remove'], $CurItem);
@@ -586,7 +589,7 @@ class itemview {
           if ( !$iid )
             continue;                                     // iid = quoted or short id
 
-          $this->setColumns($CurItem, $content[$iid]);   // set right content for aliases
+          $this->setColumns($CurItem, $iid);   // set right content for aliases
 
             // print item
           $CurItem->setformat( $this->slice_info['fulltext_format'],
@@ -597,12 +600,13 @@ class itemview {
         break;
 
       case "calendar":
-        $out = $this->get_output_calendar($content);
+        $out = $this->get_output_calendar();
         break;
 
       default:
         // compact view (of items or links)
         $oldcat                   = "_No CaTeg";
+        $catname                  = '';
         $group_n                  = 0;    // group counter (see group_n slice.php3 parameter)
         $top_html_already_printed = false;
 
@@ -640,11 +644,24 @@ class itemview {
 
             $OldItem = clone($CurItem);  // this could be used in CATEGORY BOTTOM -
                                   // we need old item aliases & content there
-            $this->setColumns($CurItem, $content[$iid]);   // set right content for aliases
+            $this->setColumns($CurItem, $iid);   // set right content for aliases
 
-            $catname = $CurItem->getval($this->group_fld);
-            if ($this->slice_info['gb_header']) {
-                $catname = substr($catname, 0, $this->slice_info['gb_header']);
+            if ($this->group_fld) {
+
+                //AA::$debug && AA::$dbg->info("group_fld", $iid, $this->zids->getAttr($zidx, 'group_by')) && exit;
+
+                if (is_null($catname = $this->zids->getAttr($zidx, 'group_by'))) {
+                    $catname = $CurItem->getval($this->group_fld);
+                } else {
+                    // it shoudn't be set, but just in case - we do not want to redefine it
+                    // @todo move it outside else - there it is just for first testing
+                    if (!isset($CurItem->aliases["_#GRP_NAME"])) {
+                        $CurItem->aliases["_#GRP_NAME"] = GetAliasDef( ParamImplode(array("f_t", $catname)),  "id..............", _m("exact group name"));
+                    }
+                }
+                if ($this->slice_info['gb_header']) {
+                    $catname = substr($catname, 0, $this->slice_info['gb_header']);
+                }
             }
 
             // get top HTML code, unalias it and add scroller, if needed
@@ -767,9 +784,8 @@ class itemview {
 
     /** get_output_calendar function
      *  send content via reference to be quicker
-     * @param $content
      */
-    function get_output_calendar(&$content) {
+    function get_output_calendar() {
         $CurItem = new AA_Item("", $this->aliases);   // just prepare
         $CurItem->set_parameters($this->parameters);
 
@@ -805,8 +821,8 @@ class itemview {
             if ( !$iid ) {
                 continue;
             }// iid = unpacked item id
-            $start_date = $content[$iid][$this->slice_info['calendar_start_date']][0]['value'];
-            $end_date   = $content[$iid][$this->slice_info['calendar_end_date']][0]['value'];
+            $start_date = $this->_content[$iid][$this->slice_info['calendar_start_date']][0]['value'];
+            $end_date   = $this->_content[$iid][$this->slice_info['calendar_end_date']][0]['value'];
 
             AA::$debug && AA::$dbg->info("------ $start_date - $end_date");
 
@@ -887,7 +903,7 @@ class itemview {
                         for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
                             $event = $calendar[$cell][$ievent];
                             if ($event["iid"] && $event["start"]) {
-                                $this->setColumns($CurItem, $content[$event['iid']]);
+                                $this->setColumns($CurItem, $event['iid']);
                                 $CurItem->setformat($this->slice_info['aditional3']);
                                 $tdattribs = $CurItem->get_item();
                                 $CurItem->setformat ($this->slice_info['odd_row_format']);
@@ -943,7 +959,7 @@ class itemview {
                 for ($ievent = 0; $ievent < $max_events; ++$ievent) {
                     $event = $events[$ievent];
                     if ($event["iid"] && $event["start"]) {
-                        $this->setColumns($CurItem, $content[$event['iid']]);
+                        $this->setColumns($CurItem, $event['iid']);
                         $CurItem->setformat($this->slice_info['aditional3']);
                         $tdattribs = $CurItem->get_item();
                         $CurItem->setformat($this->slice_info['odd_row_format']);
