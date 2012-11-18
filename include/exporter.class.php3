@@ -442,6 +442,7 @@ class AA_Exportsetings extends AA_Object {
     protected $filename;
     protected $conds;
     protected $sort;
+    protected $fields;
 
     /** allows storing form in database
      *  AA_Object's method
@@ -490,6 +491,7 @@ class AA_Exportsetings extends AA_Object {
             'format'       => $format,
             'type'         => $type,
             'bins'         => $bins,
+            'fields'       => new AA_Property( 'fields',   _m("Fields"),        'string', true,  true, '', false, _m('you can put there field id (like headline........) or any AA expression (like _#HEADLINE)<br>for export all the fields, letf this field blank')),
             'filename'     => new AA_Property( 'filename', _m("Filename"),      'string', false, true, '', false, _m('save as...')),
             'conds'        => new AA_Property( 'conds',    _m("Conditions"),    'text'  , false, true, '', false, _m('conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-RLIKE-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)')),  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
             'sort'         => new AA_Property( 'sort',     _m("Sort"),          'string', false, true, '', false, _m('like: publish_date....-'))  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
@@ -511,36 +513,51 @@ class AA_Exportsetings extends AA_Object {
         $fs  = new AA_Fieldset;
 
         if ($this->grabber_type=='AA_Grabber_Discussion') {
-            $grabber  = new AA_Grabber_Discussion($set);
-            foreach (array('d_id............', 'd_parent........','d_item_id.......', 'd_subject.......', 'd_body..........', 'd_author........', 'd_e_mail........', 'd_url_address...', 'd_url_descript..', 'd_date..........', 'd_remote_addr...', 'd_state.........') as $field_id) {
-                $fs->addField($field_id);
+            $possible_fields = array('d_id............', 'd_parent........','d_item_id.......', 'd_subject.......', 'd_body..........', 'd_author........', 'd_e_mail........', 'd_url_address...', 'd_url_descript..', 'd_date..........', 'd_remote_addr...', 'd_state.........');
+            $grabber         = new AA_Grabber_Discussion($set);
+        } else {
+            $fields          = $slice->getFields();
+            $possible_fields = $fields->getPriorityArray();
+            $grabber         = new AA_Grabber_Slice($set);
+        }
+
+        if (is_array($this->fields) AND count($this->fields) ) {
+            foreach ($this->fields as $f) {
+                if (in_array($f, $possible_fields)) {
+                    // just use unpacked variants
+                    $fs->addField(str_replace(array('id..............', 'slice_id........'),array('unpacked_id.....', 'u_slice_id......'), $f));
+                } else {
+                    $fs->addAlias($f);
+                }
             }
         } else {
-            $grabber  = new AA_Grabber_Slice($set);
-
-            $fields     = $slice->getFields();
-            $fields_arr = $fields->getPriorityArray();
-
-            foreach ($fields_arr as $field_id) {
-                // skip packed fields
-                if ( in_array($field_id, array('id..............', 'slice_id........'))) {
-                    continue;
+            if ($this->grabber_type=='AA_Grabber_Discussion') {
+                foreach ($possible_fields as $field_id) {
+                    $fs->addField($field_id);
                 }
-                $field = $fields->getField($field_id);
-                if ($this->type == 'human') {
-                    // try to convert the data to human readable form
-                    list($field_type,) = $field->getSearchType();
-                    switch ($field_type) {
-                        case 'date':     $fs->addAlias('{date:Y-m-d H#:i:{'.$field_id.'}}', $field->getProperty('name')); break;
-                        case 'relation': $fs->addAlias('{item:{@'.$field_id.':-}:_#HEADLINE:|}', $field->getProperty('name')); break;
-                        default:         $fs->addField($field_id, $field->getProperty('name'));
+            } else {
+                foreach ($possible_fields as $field_id) {
+
+                    // skip packed fields
+                    if ( in_array($field_id, array('id..............', 'slice_id........'))) {
+                        continue;
                     }
-                } else {
-                    $fs->addField($field_id, $field->getProperty('name'));
+                    $field = $fields->getField($field_id);
+                    if ($this->type == 'human') {
+                        // try to convert the data to human readable form
+                        list($field_type,) = $field->getSearchType();
+                        switch ($field_type) {
+                            case 'date':     $fs->addAlias('{date:Y-m-d H#:i:{'.$field_id.'}}', $field->getProperty('name')); break;
+                            case 'relation': $fs->addAlias('{item:{@'.$field_id.':-}:_#HEADLINE:|}', $field->getProperty('name')); break;
+                            default:         $fs->addField($field_id, $field->getProperty('name'));
+                        }
+                    } else {
+                        $fs->addField($field_id, $field->getProperty('name'));
+                    }
                 }
+                $fs->addField('u_slice_id......', 'Slice ID');
+                $fs->addField('unpacked_id.....', 'Item ID');
             }
-            $fs->addField('u_slice_id......', 'Slice ID');
-            $fs->addField('unpacked_id.....', 'Item ID');
         }
 
         set_time_limit(5000);
