@@ -251,13 +251,15 @@ class AA_Router_Seo extends AA_Router {
                 'aa_url'          => AA_INSTAL_URL,
                 'cookie_lifetime' => 60*60*24*365  // one year
             );
-            $a = new AA_Client_Auth($options);
+            $client_auth = new AA_Client_Auth($options);
+
             if (isset($_GET['logout'])) {
-                $a->logout();
+                $client_auth->logout();
                 $this->apc['xuser'] = '';
             }
-            elseif ($a->checkAuth()) {
-                $this->apc['xuser'] = $a->getUid();
+            elseif ($client_auth->checkAuth()) {
+                // $auth = $client_auth->getRemoteAuth();
+                $this->apc['xuser'] = $client_auth->getUid();
 
                 // Redirect to page. If not specified, then it continues to display
                 // normal page as defined in "action" attribute of <form>

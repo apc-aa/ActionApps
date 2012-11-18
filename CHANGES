@@ -1,3 +1,38 @@
+11/18/12 - new possibility to specify only subset of fields, which you want
+(honzam)   to export with Admin -> Export to file.
+           Works for stored exports only, right now.
+           You can export fields or any other AA expression (like alias...)
+         - new behavior of grouping in view - now works well with multivalue
+           fields, which means, that the same item could be displayed in more
+           than one group. For the possibility to display current group
+           in the view, we added also new view alias _#GRP_NAME which contain
+           the value of current group we are displaying
+           at this moment it works only for grouping by group_by parameter of view
+         - the passwords are now stored using more secure blowfish algorithm.
+           All is backward compatible - old passwords will be working without
+           any change
+         - new Multiple Text field widget for ajax, live and internal AA object
+           editing (like File Export setting)
+         - the field with multivalue shows the values separated by comma
+           by default in {ajax...} not only the first value
+         - fix - ajax changing passwords now works well
+         - fix password problem - password disappeared, when you edit
+           the Reader item
+         - fix of ajax upload funtion - the alias displayed from uploaded file
+           is now showed correctly after the upload
+         - fix the password field in AA admin - it was displayed as normal text
+           field
+         - fix unalias - sometimes give empty results (empty spots in site, ...)
+           because of setting of preg_replace_callback
+         - {pwdcrypt} now uses stronger password hashing (blowfish) - the same
+           as for user passwords.
+         - fixed {foreach} - there was typo, delimiter parameter did not work
+         - widgets and reset password function now uses correct language, based
+           on the site setting.
+         - fix - the user id UID is deleted from cookies, when you login with
+           wrong credentials
+         - debug functions returns true, so you can stack like:
+             AA::$debug && AA::$dbg->info("OK") && exit;
 11/16/12 - more Spanish translations (Thanks to César Arango - Colnodo)
 (honzam)
 11/12/12 - fix of Modify Content funtion in item manager - the HTML5 validation
