@@ -408,6 +408,9 @@ $_m["No comment was selected"]
 $_m["Change Password"]
  = "Cambiar Clave";
 
+$_m["change password"]
+ = "Cambiar Clave";
+
 // include/widget.php3 ...
 $_m["Save"]
  = "Guardar";
@@ -446,10 +449,10 @@ $_m["Upload"]
  = "No se encuentra el usuario que introdujo, por favor compru&eacute;belo e intente nuevamente.";
 
  $_m["Password change"]
- = "Cambio de contrase&ntilde;a";
+ = "Cambio de contraseña";
 
  $_m["To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one."]
- = "Para cambiar la contrase&ntilde;a, por favor visite la siguiente direcci&oacute;n:<br><a href=\"$url\">$url</a><br>El cambio debe realizarse dentro de las siguientes dos horas, de lo contrario la clave caducar&aacute; y tendr&aacute; que solicitar una nueva.";
+ = "Para cambiar la contrase&ntilde;a, por favor visite la siguiente direcci&oacute;n:<br>%1<br>El cambio debe realizarse dentro de las siguientes dos horas, de lo contrario la clave caducar&aacute; y tendr&aacute; que solicitar una nueva.";
 
  $_m["E-mail with a key to change the password has just been sent to the e-mail address: %1"]
  = "Las indicaciones para cambiar la contrase&ntilde;a han sido enviadas a su correo: %1";

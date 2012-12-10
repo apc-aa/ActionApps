@@ -68,8 +68,9 @@ function email_notify($slice_id, $event, $item_id) {
             $body = $item->unalias($notify['b']);
             if (trim($body)) {
                 $subject = $item->unalias($notify['s']);
-    
+
                 $mail = new AA_Mail();
+                $mail->setBasicHeaders(array('sender'=>ALERTS_EMAIL));
                 $mail->setSubject($subject);
                 $mail->setHtml($body, html2text($body));
                 $mail->setCharset($slice->getCharset());

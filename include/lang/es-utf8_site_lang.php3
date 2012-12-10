@@ -208,4 +208,7 @@ $_m["Next"]
 $_m["Previous"]
  = "";
 
+$_m["change password"]
+ = "Cambiar Clave";
+
 ?>

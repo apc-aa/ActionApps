@@ -119,7 +119,7 @@ class AA_Mail extends htmlMimeMail  {
      * @param $record
      * @param $default
      */
-    function setBasicHeaders($record, $default) {
+    function setBasicHeaders($record=array(), $default=array()) {
         $headers = array (
             "From"        => "header_from",
             "Reply-To"    => "reply_to",

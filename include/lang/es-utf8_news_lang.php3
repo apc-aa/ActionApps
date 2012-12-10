@@ -7327,4 +7327,7 @@ $_m["http#://www.ecn.cz/articles/solar.shtml"]
 $_m["WARNING: slice: %s doesn't look like an unpacked id"]
  = "ATENCION: canal: %s no se presenta como un id descompactado";
 
+$_m["change password"]
+ = "Cambiar Clave";
+
 ?>

@@ -30,7 +30,7 @@ http://www.apc.org/
 ini_set('display_errors', 'On');
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
-crash!
+ #crash!
 
 
 /**
