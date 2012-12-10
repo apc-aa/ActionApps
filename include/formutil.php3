@@ -678,7 +678,7 @@ class AA_Inputfield {
             $format          = AA_Slices::getField($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
             $zids            = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
             $set             = new AA_Set($sid, $conds, $sort, $whichitems);
-            $this->const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tagprefix);
+            $this->const_arr = GetFormatedItems( $set->query($zids), $format, $crypted_additional_slice_pwd, $tagprefix);
             // $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix); // older version of the function :honzam03/09
         } elseif ($constgroup) {
             $this->const_arr = GetFormatedConstants($constgroup, $slice_field, $ids_arr, $conds, $sort);
@@ -822,6 +822,7 @@ class AA_Inputfield {
             case 'freeze_chb': $this->value_modified = $this->value[0]['value'] ? _m("set") : _m("unset");
                                $this->staticText();       break;
             case 'freeze_wi2':
+            case 'freeze_tag':
             case 'freeze_mse':
             case 'freeze_mfl':
             case 'freeze_mch': $this->value_modified = $this->implodeVal();
@@ -958,6 +959,18 @@ class AA_Inputfield {
             case 'normal_hco': list($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames) = $this->param;
                                $this->varname_modify('[]');         // use slightly modified varname
                                $this->hierarchicalConstant($constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, explode('~',$levelNames));
+                               break;
+            case 'anonym_tag':
+            case 'normal_tag': list($constgroup, $slice_field, $whichitems, $conds, $sort, $addform, $add_slice_pwd) = $this->param;
+                               // we do not use all the settings here (sort, addform, slicepwd) - we use it for ajax input
+                               $this->varname_modify('[]');         // use slightly modified varname
+                               $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value);  // if we fill it there, it is not refilled in inputSel()
+                               if ( $this->mode == 'freeze' ) {
+                                   $this->value_modified = $this->implodeVal('<br>');
+                                   $this->staticText();
+                               } else {
+                                   $this->inputRelation(5, $sid, MAX_RELATED_COUNT, 'A', '', 'DR', $whichitems, $conds, $condsrw);
+                               }
                                break;
             case 'anonym_wi2':
             case 'normal_wi2': list($constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd) = $this->param;

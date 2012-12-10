@@ -200,11 +200,31 @@ class AA_Field_Writer {
     function insert_fnc_ids($item_id, $field, $value, $param, $additional='') {
 
         $add_mode = substr($value['value'],0,1);          // x=add, y=add mutual, z=add backward
-        if (($add_mode == 'x') || ($add_mode == 'y') || ($add_mode == 'z')) {
+        if (strpos('txyz', $add_mode) !== false) {
             $value['value'] = substr($value['value'],1);  // remove x, y or z
         }
         switch( $add_mode ) {
-
+            case 't':  // t for tags - it could be normal item ID or new Tag
+                $v = $value['value'];
+                if ( (strlen($v)!=32) OR (strspn($v, "0123456789abcdefABCDEF")!=32)) {
+                    $fnc = ParseFnc($field["input_show_func"]);   // input show function
+                    if ($fnc AND ($fnc['fnc']=='tag')) {
+                        // get add2constant and constgroup (other parameters are irrelevant in here)
+                        list($constgroup, $others) = explode(':', $fnc['param']);
+                        // add2constant is used in $this->_store - adds new value to constant table
+                        if ((substr($constgroup,0,7) == "#sLiCe-") AND strlen(trim($v))) {
+                            $sid = substr($constgroup,7);
+                            $content4id = new ItemContent();
+                            $content4id->setItemID($new_id=new_id());
+                            $content4id->setSliceID($sid);
+                            $content4id->setAaValue('headline........', new AA_Value($v));
+                            $content4id->storeItem('insert');
+                            $value['value'] = $new_id;
+                        }
+                    }
+                }
+                $this->_store($item_id, $field, $value, $param, $additional);
+                break;
             case 'y':   // y means 2way related item id - we have to store it for both
                 $this->_store($item_id, $field, $value, $param, $additional);
                 // !!!!! there is no break or return - CONTINUE with 'z' case !!!!!
@@ -365,6 +385,10 @@ class AA_Field_Writer {
                 }
             }
             $slice = AA_Slices::getSlice($sid);
+            if (!is_object($slice) OR !$slice->isValid()) {
+                $err[$field["id"]] = _m("Slice with id '%1' is not valid.", array($sid));
+                return;
+            }
 
             // $pdestination and $purl is not used, yet - it should be used to allow
             // slice administrators to store files to another directory
@@ -439,7 +463,7 @@ class AA_Field_Writer {
 
             list($pfield, $pcrypt) = ParamExplode($param);
 
-            if ($pfield AND ($f = $field[$pfield])) {
+            if ($pfield AND ($f = $field[$pfield])) {  // wrong - $field[$pfield] is nonsence - the if is never executed, Honza 9.12.2012
                 // $password is_a decrypted here
                 $backup = $pcrypt ? AA_Stringexpand_Encrypt::explode($password, $pcrypt) : $password;
                 // store backup value to specified field

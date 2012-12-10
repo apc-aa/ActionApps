@@ -199,31 +199,18 @@ class AA_Widget extends AA_Components {
     //    $this->_const_arr = (array)$arr;
     //}
 
-     /** Fills array used for list selection. Fill it from constant group or
-      * slice.
-      * It never refills the array (and we relly on this fact in the code)
-      * This function is rewritten fill_const_arr().
-      */
-    private function _fillConstArr($content) {
-        AA::$debug && AA::$dbg->log($this,$content );
-
-        if ( isset($this->_const_arr) AND is_array($this->_const_arr) ) {  // already filled
-            return;
-        }
-
-        // not filled, yet - so fill it
-        $this->_const_arr = array();  // Initialize
+    /** returns array(ids => formated text) for the current widget based on
+     *  the widget settings
+     */
+    public function getFormattedOptions($content = null, $restrict_zids = false, $searchterm='') {
 
         $values_array = $this->getProperty('const_arr');  // is asociative!
         if ( !empty($values_array) ) {          // values assigned directly
-            $this->_const_arr = $values_array;  //  = array();
-            return;
+            return $values_array;               //  = array();
         }
-
 
         // commented out - used for Related Item Window values
         // $zids = $ids_arr ? new zids($ids_arr) : false;  // transforms content array to zids
-        $zids    = false;
         $ids_arr = false;
 
         $constgroup   = $this->getProperty('const');
@@ -235,7 +222,7 @@ class AA_Widget extends AA_Components {
             return;                           //  = array();
         }
 
-        AA::$debug && AA::$dbg->log($filter_conds);
+        // AA::$debug && AA::$dbg->log($filter_conds);
 
         // if variable is for some item, then we can use _#ALIASES_ in conds
         // and sort
@@ -243,8 +230,6 @@ class AA_Widget extends AA_Components {
             $filter_conds = $content->unalias($filter_conds);
             $sort_by      = $content->unalias($sort_by);
         }
-
-        AA::$debug && AA::$dbg->log($filter_conds);
 
         // "#sLiCe-" prefix indicates select from items
         if ( substr($constgroup,0,7) == "#sLiCe-" ) {
@@ -262,26 +247,37 @@ class AA_Widget extends AA_Components {
             if (!$slice_field) {
                 $slice_field = GetHeadlineFieldID($sid, "headline.");
                 if (!$slice_field) {
-                    return $this->_const_arr; //  = array();
+                    return array(); //  = array();
                 }
             }
             $format          = AA_Slices::getField($sid, $slice_field) ? '{substr:{'.$slice_field.'}:0:50}' : $slice_field;
             $set              = new AA_Set($sid, $filter_conds, $sort_by, $bin_filter);
 
-            AA::$debug && AA::$dbg->log($set);
+            if ($searchterm) {
+                $sf = AA_Slices::getField($sid, $slice_field) ? $slice_field : GetHeadlineFieldID($sid, "headline.");
+                $set->addCondition(new AA_Condition($sf, 'RLIKE', "\"$searchterm\""));
+            }
+            return GetFormatedItems( $set->query($restrict_zids), $format, $crypted_additional_slice_pwd, $tag_prefix);
+        }
+        return GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by);
+    }
 
-            $this->_const_arr = GetFormatedItems( $set, $format, $zids, $crypted_additional_slice_pwd, $tag_prefix);
+     /** Fills array used for list selection. Fill it from constant group or
+      * slice.
+      * It never refills the array (and we relly on this fact in the code)
+      * This function is rewritten fill_const_arr().
+      */
+    private function _fillConstArr($content) {
+        if ( isset($this->_const_arr) AND is_array($this->_const_arr) ) {  // already filled
             return;
         }
-        else {
-            $this->_const_arr = GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by);
-        }
+        // not filled, yet - so fill it
+        $this->_const_arr = $this->getFormattedOptions($content);  // Initialize
         if ( !isset($this->_const_arr) OR !is_array($this->_const_arr) ) {
             $this->_const_arr = array();
         }
         return;
     }
-
 
     /** returns $ret_val if given $option is selected for current field
      *  This method is rewritten if_selected() method form formutil.php3
@@ -991,7 +987,7 @@ class AA_Widget_Rio extends AA_Widget {
         $options      = $this->getOptions($selected, $content, $use_name);
         $htmlopt      = array();
         for ( $i=0, $ino=count($options); $i<$ino; ++$i) {
-            $htmlopt[]  = $this->getRadioButtonTag($options[$i], $input_name, $input_id, "$widget_add $required");
+            $htmlopt[]  = $this->getRadioButtonTag($options[$i], $input_name, $input_id.$i, "$widget_add $required");
         }
 
         $widget = $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-rio').$widget_add2;
@@ -1541,9 +1537,9 @@ class AA_Widget_Fil extends AA_Widget {
                                );
             $widget .= '
                 <form id="fuf'.$base_id.'" method="POST" enctype="multipart/form-data" action="'.htmlspecialchars(get_aa_url('filler.php3', $url_params)).'" target="iframe'.$base_id.'">
-                <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'">
+                <input type="file" size="'.$width.'" maxlength="'.$max_characters.'" name="'.$input_name.'" id="'.$input_id.'" required onchange="document.getElementById(\''.$base_id.'upload\').style.visibility = ((this.value == \'\') ? \'hidden\' : \'visible\');">
                 <input type="hidden" name="ret_code_enc" id="ret_code_enc'.$base_id.'" value="">
-                <input type="submit" name="action" value="'._m('Upload').'">
+                <input type="submit" name="'.$base_id.'upload" id="'.$base_id.'upload" value="'._m('Upload').'" style="visibility:hidden;">
                 </form>
                 <iframe id="iframe'.$base_id.'" name="iframe'.$base_id.'" src="" style="width:0;height:0;border:0px solid #fff;visibility:hidden;"></iframe>
                 <script language="JavaScript" type="text/javascript"> <!--
@@ -1574,6 +1570,108 @@ class AA_Widget_Fil extends AA_Widget {
         $widget_html  = $winfo['html']. ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" :'');
         $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"". _m('EXIT WITHOUT CHANGE') ."\" onclick=\"DisplayInputBack('$base_id');\">";
         return $widget_html;
+    }
+}
+
+
+/** Tag input - in fact the result is wery similar to related item window - it adds related items */
+class AA_Widget_Tag extends AA_Widget {
+
+    /** Constructor - use the default for AA_Object */
+    function __construct($params=array()) {
+        // assign all the properties (using parent constructor)
+        parent::AA_Object($params);
+    }
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    /** name function
+     *
+     */
+    function name() {
+        return _m('Tags');   // widget name
+    }
+    function multiple() {
+        return true;   // returns multivalue or single value
+    }
+
+    /** getClassProperties function
+     *  Used parameter format (in fields.input_show_func table)
+     */
+    function getClassProperties()  {
+        return array (                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
+            'const'                  => new AA_Property( 'const',                  _m("Constants or slice"),   'string', false, true, 'string', false, _m("Constants (or slice) which is used for value selection")),
+            'bin_filter'             => new AA_Property( 'bin_filter',             _m("Show items from bins"), 'int',  false, true, 'int',  false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13"), '', '3'),
+            'filter_conds'           => new AA_Property( 'filter_conds',           _m("Filtering conditions"), 'string', false, true, 'string', false, _m("(for slices only) Conditions for filtering items in selection. Use conds[] array."), '', "conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+            'slice_field'            => new AA_Property( 'slice_field',            _m("slice field"),          'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"), '', 'category........'),
+            'sort_by'                => new AA_Property( 'sort_by',                _m("Sort by"),              'string', false, true, 'string', false, _m("(for slices only) Sort the items in specified order. Use sort[] array"), '', "sort[0][headline........]=a&sort[1][publish_date....]=d"),
+            'additional_slice_pwd'   => new AA_Property( 'additional_slice_pwd',   _m("Slice password"),       'string', false, true, 'string', false, _m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"), '', 'ExtraSecure'),
+            );
+    }
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     */
+    function _getRawHtml($aa_property, $content, $type='normal') {
+        $base_name    = AA_Form_Array::getName4Form($aa_property->getId(), $content);
+        $input_name   = $base_name.'[tag][]';
+        $input_id     = AA_Form_Array::formName2Id($input_name);
+
+        // $widget_add    = ($type == 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\" style=\"padding-right:16px;\"" : '';
+        // $widget_add2   = ($type == 'live') ? '<img width=16 height=16 border=0 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+
+        // $show_buttons  = $this->getProperty('show_buttons', 'MDAC');
+
+        // we send to responder the slice and field id of the field with the DEFINITION
+        // I do not want to transport all the settings over GET parameter
+
+        $def_field_id = $aa_property->getId();
+        $def_slice_id = $content->getOwnerId();
+
+        $opts     = $this->getFormattedOptions(null, new zids($content->getValuesArray($aa_property->getId()), 'l'));
+        $json_val = array();
+        foreach ($opts as $id => $text) {
+            $json_val[] = array('id'=>$id, 'text'=>$text);
+        }
+
+        $prefill = json_encode($json_val);     //'[{id:"CA", text:"Califoria"}, {id:"CERVENA", text:"Red"}]';
+
+        $widget        =    "<input type=hidden id=\"$input_id\" name=\"$input_name\" style=\"width:300px;\">
+        <script type=\"text/javascript\">
+          AA_LoadCss('".AA_INSTAL_PATH."javascript/select2/select2.css');
+          AA_LoadJs( window.Select2 !== undefined, function() {aa_maketags('$input_id', $prefill, '$def_slice_id', '$def_field_id','".AA_INSTAL_PATH."');}, '".AA_INSTAL_PATH."javascript/select2/select2.min.js');
+        </script>
+        ";
+        return array('html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired());
+    }
+
+    /** @return AA_Value for the data send by the widget
+     *   We use it, because we want to remove all the empty values
+     *
+     *   The data submitted by form usually looks like
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][tag][]=bc9032bb4bd0751086ccc773a36ab936|||5893020f01ddaeedecc02588109daf8d|||test
+     *  @param $data4field - array('0'=>values separated by |||)
+     *   This method coverts such data to AA_Value.
+     *
+     *
+     *  static class method
+     */
+    function getValue($data4field) {
+        $flag          = $data4field['flag'] & FLAG_HTML;
+        $fld_value_arr = array();
+
+        foreach ( (array)$data4field as $key => $value ) {
+            if (is_numeric($key) AND strlen($value)) {
+                $vals = explode("|||",$value);
+                foreach ($vals as $v) {
+                    if (strlen(trim($v))) {
+                        $fld_value_arr[] = array('value'=>'t'.$v, 'flag'=>$flag);
+                    }
+                }
+            }
+        }
+        return new AA_Value($fld_value_arr, $flag);
     }
 }
 
@@ -1731,7 +1829,7 @@ class AA_Widget_Hco extends AA_Widget {
     //
     //function getOptions4Value($slice_id, $value) {
     //    $set     = new AA_Set(array($slice_id), new AA_Condition($this->getProperty('relation_field','relation........'), '=', $value), $this->getProperty('sort_by'));
-    //    $options = GetFormatedItems( $set, $this->getProperty('slice_field','_#HEADLINE'), null,  $this->getProperty('additional_slice_pwd'));
+    //    $options = GetFormatedItems( $set->query($zids), $this->getProperty('slice_field','_#HEADLINE'), $this->getProperty('additional_slice_pwd'));
     //    return "<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_add>". $this->getSelectOptions( $options ). "</select>";
     //}
 }

@@ -770,6 +770,43 @@ array("name"=>_m("Two Windows"),
     "example"=>"")
     ));
 
+$INPUT_TYPES["items"]["tag"]=
+array("name"=>_m("Tags"),
+  "desc"=>_m("Two Windows. <br><br>It uses the Constants select box - if you choose a constant group there, the constants of this group will be printed, if you choose a slice name, the headlines of all items will be printed (used for related stories or for setting relation to another slice - it is obviously used with f_v alias function then)"),
+  "params"=>array(
+    array("name"=>_m("Slice field"),
+    "desc"=>_m("field (or format string) that will be displayed in the boxes (from related slice). if not specified, in select box are displayed headlines. you can use also any AA formatstring here (like: _#HEADLINE - _#PUB_DATE). (only for constants input type: slice)"),
+    "type"=>"STRID",
+    "example"=>_m("category........")),
+    array("name"=>_m("Show items from bins"),
+    "desc"=>_m("(for slices only) To show items from selected bins, use following values:<br>".
+               "Active bin - '%1'<br>".
+               "Pending bin - '%2'<br>".
+               "Expired bin - '%3'<br>".
+               "Holding bin - '%4'<br>".
+               "Trash bin - '%5'<br>".
+               "Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value ".
+               "for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", array( AA_BIN_ACTIVE, AA_BIN_PENDING, AA_BIN_EXPIRED, AA_BIN_HOLDING, AA_BIN_TRASH)),
+    "type" => "INT",
+    "example" => "3"),
+    array("name"=>_m("Filtering conditions"),
+    "desc"=>_m("(for slices only) Conditions for filtering items in selection. Use conds[] array."),
+    "type"=>"STR",
+    "example"=>"conds[0][category.......1]=Enviro&conds[1][switch.........2]=1"),
+    array("name"=>_m("Sort by"),
+    "desc"=>_m("(for slices only) Sort the items in specified order. Use sort[] array"),
+    "type"=>"STR",
+    "example"=>"sort[0][headline........]=a&sort[1][publish_date....]=d"),
+    array("name"=>_m("Add Form"),
+    "desc"=>_m("(for slices only) ID of the form for adding items into related slice"),
+    "type"=>"STR",
+    "example"=>"8c3da97ab7a505a923f123121ad4945a"),
+    array("name"=>_m("Slice password"),
+    "desc"=>_m("(for slices only) If the related slice is protected by 'Slice Password', fill it here"),
+    "type"=>"STR",
+    "example"=>"")
+    ));
+
 $INPUT_TYPES["items"]["hid"]=
     array("name"=>_m("Hidden field"),
     "desc"=>_m("The field value will be shown as &lt;input type='hidden'. You will probably set this filed by javascript trigger used on any other field."));

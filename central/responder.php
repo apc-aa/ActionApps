@@ -238,18 +238,65 @@ class AA_Responder_Get_Fields extends AA_Responder {
     }
 }
 
+/** @return html selectbox of fields in given slice */
+class AA_Responder_Tags extends AA_Responder {
+    /** array of module types to get */
+    var $slice_id;
+    var $input;
+    var $field;
+
+    function  __construct($param=null) {
+        // the slice id and the field id defines the field, where the widget is DEFINED
+        $this->slice_id = $param['s'];
+        $this->input    = $param['q'];
+        $this->field_id = $param['f'];
+    }
+
+    function isPerm() { return true; }
+
+    function run() {
+        $ret    = array();
+        $trimed = trim($this->input);
+        $field  = AA_Slices::getField($this->slice_id, $this->field_id);
+        $found  = false;
+        if ($field AND $trimed) {
+            $widget = $field->getWidget();
+            $opts   = $widget->getFormattedOptions(null, false, $this->input);              
+            $i=6;
+            foreach ($opts as $id => $text) {
+                if (trim($text)==trim($this->input)) {
+                    // to the front
+                    array_unshift($ret, array('id'=>$id, 'text'=>$text));
+                    $found = true;
+                } else {
+                    $ret[] = array('id'=>$id, 'text'=>$text);
+                }
+                if (!(--$i)) {
+                    break;
+                }
+            }
+        }
+        if ($trimed AND !$found) {
+            array_unshift($ret, array('id'=>$this->input, 'text'=>$this->input));
+        }
+        header("Content-type: application/json");
+        return new AA_Response(json_encode($ret));
+    }
+}
+
 page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
 
 // anonymous login
-if ($nobody) {
-    $_POST['username'] = $free;
-    $_POST['password'] = $freepwd;
-    $auth->auth["uid"] = $auth->auth_validatelogin();
-    if ( !$auth->auth["uid"] ) {
-        AA_Response::error(_m("Either your username or your password is not valid."), 1);  // 1 - _m("Either your username or your password is not valid.");
-        exit;
-    }
-}
+// removed by Honza - nobody is allowed as well (for AA_Responder_Tags for example) - we have to check the permissions inside the AA_Responder_...s 
+//if ($nobody) {
+//    $_POST['username'] = $free;
+//    $_POST['password'] = $freepwd;
+//    $auth->auth["uid"] = $auth->auth_validatelogin();
+//    if ( !$auth->auth["uid"] ) {
+//        AA_Response::error(_m("Either your username or your password is not valid."), 1);  // 1 - _m("Either your username or your password is not valid.");
+//        exit;
+//    }
+//}
 
 // in order {xuser:id} alias wors in widgets, for example
 $GLOBALS['apc_state']['xuser'] = $auth->auth["uname"];
@@ -264,7 +311,7 @@ if ( $_POST['request'] ) {
     // switch responses to plain output
     AA_Response::$Response_type = 'html';
 
-    $request = new AA_Request($_GET['command'], $_POST);  // params are in $_POST for ajax
+    $request = new AA_Request($_GET['command'], $_REQUEST);  // params are in $_POST for ajax
 }
 
 if ( !is_object($request)) {

@@ -292,15 +292,13 @@ function Inputform_url($add, $iid, $sid='', $ret_url='', $vid = null, $var = nul
 
 /** GetFormatedItems function
  *  Fills array - [unpacked_item_id] => unaliased string (headline) for item_id
- * @param $set       - where to search
+ * @param $zids      - items
  * @param $format    - normal AA alias string like {headline.......1} or more complicated
- * @param $restrict_zids
  * @param $crypted_additional_slice_pwd
  * @param $tagprefix - array as defined in itemfunc.php3
  */
-function GetFormatedItems( $set, $format, $restrict_zids=false, $crypted_additional_slice_pwd=null, $tagprefix=null) {
+function GetFormatedItems( $zids, $format, $crypted_additional_slice_pwd=null, $tagprefix=null) {
     $ret  = array();
-    $zids = $set->query($restrict_zids);
     if ( $zids->count() <= 0 ) {
         return $ret;
     }
@@ -310,7 +308,7 @@ function GetFormatedItems( $set, $format, $restrict_zids=false, $crypted_additio
         $ret[$long_id] = AA_Stringexpand::unalias($format, '', $item);
     }
 
-    if (!(isset($restrict_zids) AND is_object($restrict_zids) AND ($restrict_zids->onetype() == 't') AND isset($tagprefix))) {
+    if (!(isset($tagprefix) AND ($zids->onetype() == 't'))) {
         return $ret;
     }
 
@@ -321,7 +319,7 @@ function GetFormatedItems( $set, $format, $restrict_zids=false, $crypted_additio
     // Honza 8/27/04
 
     // See if need to Put the tags back on the ids
-    $tags = $restrict_zids->gettags() ;
+    $tags = $zids->gettags() ;
     if ( !isset($tags) ) {
         return $ret;
     }
@@ -515,10 +513,13 @@ class AA_Item {
         return $this->content4id->getId();
     }
 
-    /** getSliceID function
-     *
-     */
+    /** getSliceID function  */
     function getSliceID() {
+        return $this->content4id->getSliceID();
+    }
+
+    /** getSliceID function  */
+    function getOwnerID() {
         return $this->content4id->getSliceID();
     }
 
