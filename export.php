@@ -63,6 +63,8 @@ require_once AA_INC_PATH."grabber.class.php3";
 require_once AA_INC_PATH."discussion.php3";
 require_once AA_INC_PATH."exporter.class.php3";
 
+//ini_set('display_errors', 'On');
+//error_reporting(E_ERROR | E_PARSE);
 
 if (!$_GET['id']) {
     echo 'No export id defined';

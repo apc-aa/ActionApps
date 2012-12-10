@@ -1,3 +1,66 @@
+12/10/12 - new Input type Tags - for easy filling relation in the field
+           By this Input Type you can select current keywords from remote slice,
+           and also add new keywords, which is then written to the remote slice.
+           All works as standard item relations in AA.
+           Used "select2" library, which use jQuery. Just include
+           /apc-aa/javascript/aajslib-jquery.php in your pages - all is loaded
+           dynamicaly after the firs ussage
+           Not working insite AA admin interface, yet (there we use normal
+           relation field)
+         - {tagcloud:<item_ids>[:<count>[:<alias>[:<count_field>]]]} - Creates
+           tag cloud from the items.
+            <item_ids>    - dash separated list of ids of all keywords (tags)
+            <count>       - maximum number of displayed keywords (all by default)
+            <alias>       - The AA expression used for each keyword (_#HEADLINK used as default)
+            <count_field> - The id of the field, where you already have the number
+                            of ussage precounted. It is very good idea,to have such
+                            field - in other case the counts must be countedon every
+                            ussage. The count could be counted automaticaly
+                            in the field by using "Comuted field for INSERT/UPDATE"
+                            with the parameter "_#BACKLINK:_#BACKLINK::day", where
+                            alias _#BACKLINK could be definned as
+                              {count:{backlinks:{id..............}::-}}
+                            or say
+                              {count:{ids:1450a615da76cae02493aac79e129da9:d-relation........-=-{id..............}}}
+           Ussage:
+             {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a}}
+             {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a}:20}
+             {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a::headline........}::<i>_#HEADLINK</i>}
+             {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a::headline........}::headline........:computed_num....}
+           The resulting HTML code is like:
+             <ul class="tagcloud">
+               <li class="tagcloud3">Curso</li>
+               <li class="tagcloud1">Palabra</li>
+               <li class="tagcloud6">Poetry</li>
+             </ul>
+           The <li>s are marked in its class by the importance (number of use) so you
+           can set style them. There are 8 classes tagcloud1 - tagcloud8.
+           The styles could by:
+             <style type="text/css">
+               ul.tagcloud li.tagcloud1 { font-size: 1.8em; font-weight: 800; }
+               ul.tagcloud li.tagcloud2 { font-size: 1.6em; font-weight: 700; }
+               ul.tagcloud li.tagcloud3 { font-size: 1.4em; font-weight: 600; }
+               ul.tagcloud li.tagcloud4 { font-size: 1.2em; font-weight: 500; }
+               ul.tagcloud li.tagcloud5 { font-size: 1.0em; font-weight: 400; }
+               ul.tagcloud li.tagcloud6 { font-size: 0.9em; font-weight: 300; }
+               ul.tagcloud li.tagcloud7 { font-size: 0.8em; font-weight: 200; }
+               ul.tagcloud li.tagcloud8 { font-size: 0.7em; font-weight: 100; }
+               ul.tagcloud              { padding: 2px; line-height: 3em; text-align: center; margin: 0; }
+               ul.tagcloud li           { display: inline; padding: 0px; }
+             </style>
+           Thanks to Adam Sanchez (and of course Colnodo for sponsoring - like
+           all the changes today or last time)
+         - {recompute:ids[:fields]} - in the command for recomputing computed
+           fields in specified item now is able to specify only specific field
+           for recomputing.
+         - {backlinks:{id..............}::-} - if you do not need to get related
+           item ids in specific order, use dash in search parameter (it is
+           quicker for database)
+         - E-mail notifications now sends the email with Sender configured
+           in config.php3 as the Sender ALERTS_EMAIL
+         - thumnail are generated with higher quality
+         - new functions for loading JS and CSS dynamicaly
+         -
 11/18/12 - new possibility to specify only subset of fields, which you want
 (honzam)   to export with Admin -> Export to file.
            Works for stored exports only, right now.

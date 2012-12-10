@@ -410,10 +410,12 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
     }
 
     $total_emails = 0;
-    foreach ( $collection_ids as $collection_id ) {
-        $collection = new AA_Collection($collection_id);
-        $total_emails += $collection->sendEmails($ho, $emails, $update, $item_id, $reader_id);
-
+    if (is_array($collection_ids)) {
+        foreach ( $collection_ids as $collection_id ) {
+            $collection = new AA_Collection($collection_id);
+            $total_emails += $collection->sendEmails($ho, $emails, $update, $item_id, $reader_id);
+    
+        }
     }
     return $total_emails;
 }

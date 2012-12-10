@@ -90,6 +90,9 @@ if ( get_magic_quotes_gpc() ) {
     $_COOKIE  = StripslashesDeep($_COOKIE);
 }
 
+// not sure if the line bellow works...
+$_REQUEST['slice_id'] = trim($_REQUEST['slice_id']);
+
 function ConvertEncodingDeep($value, $from=null, $to=null) {
     $encoder = ConvertCharset::singleton($from, $to);
     return is_array($value) ? array_map('ConvertEncodingDeep', $value) : $encoder->Convert($value);
@@ -257,6 +260,8 @@ function SendOkPage($txt, $new_ids = array()) {
     }
 }
 
+
+
 bind_mgettext_domain(AA_INC_PATH.'lang/'.DEFAULT_LANG_INCLUDE);
 
 // trap field for spammer bots
@@ -270,6 +275,9 @@ if (is_numeric($_REQUEST['respuesta'])) {
         SendErrorPage(array ("fatal"=>_m("Wrong result, not posible to post comments.")));
     }
 }
+
+
+
 
 // new version of filling - through aa[] array allowing multiple items to store
 //      aa[i63556a45e4e67b654a3a986a548e8bc9][headline_______1][]
@@ -292,6 +300,7 @@ if ( isset($_POST['aa']) OR isset($_FILES['aa']) ) {
         page_open(array("sess" => "AA_CP_Session"));
         // this defines $auth object so, the "Last Changed By" is set to correct user
     }
+
 
     $grabber = new AA_Grabber_Form();
     $translations = null;
@@ -322,7 +331,7 @@ if ( !$slice_id ) {
 $slice      = AA_Slices::getSlice($slice_id);
 $p_slice_id = q_pack_id($slice_id);
 
-if (!$slice) {
+if (!is_object($slice) OR !$slice->isValid()) {
     SendErrorPage(array ("fatal"=>_m("Bad slice ID")));
 }
 

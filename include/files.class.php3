@@ -73,7 +73,7 @@ class Files {
      *  dir name
      * @param $slice
      */
-    function destinationDir(&$slice) {
+    function destinationDir($slice) {
         $upload = $slice->getUploadBase();
         return Files::_destinationDirCreate($upload['path'], $upload['perms']);
     }
