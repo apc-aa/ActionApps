@@ -946,7 +946,7 @@ class ItemContent extends AA_Content {
      * @param $id
      * @param $fields
      */
-    function updateComputedFields($id, $fields=null, $mode='update') {
+    function updateComputedFields($id, $fields=null, $mode='update', $restict_fields=null) {
         global $itemvarset; // set by insert_fnc_qte function
 
         $varset       = new CVarset();
@@ -963,6 +963,13 @@ class ItemContent extends AA_Content {
         }
 
         foreach ($fields as $fid => $f) {
+
+            if (is_array($restict_fields) AND count($restict_fields) AND !in_array($fid, $restict_fields)) {
+                // we can restict the recomputed fields in {recompute}
+                // so - skip not recomputed fields
+                continue;
+            }
+
             // input insert function parameters of field
             $fnc = ParseFnc($f["input_insert_func"]);
 
