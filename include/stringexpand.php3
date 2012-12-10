@@ -2280,18 +2280,21 @@ class AA_Stringexpand_Set extends AA_Stringexpand {
  *    module sorted by slice and publish_date
  *  {backlinks:{id..............}:6a435236626262738348478463536272:category.......1-,headline........}
  *    returns all active backlinks from specified slice sorted by category and headline
+ *  {backlinks:{id..............}::-}
+ *    All active backlinks without ordering - the quickest way toget ids
  */
 class AA_Stringexpand_Backlinks extends AA_Stringexpand {
     /** expand function
      * @param $item_id    - item to find back links
      * @param $slice_ids  - slices to look at (dash separated), default are all slices within site modules of item's slice
      * @param $sort       - redefine sorting - like: category.......1-,headline........
+     *                    - couldbe also
      */
     function expand($item_id=null, $slice_ids=null, $sort=null) {
         $item = AA_Items::getItem($item_id);
         if ($item) {
             $slice_ids = $slice_ids ? $slice_ids : '{site:{modulefield:{slice_id........}:site_ids}:modules}';
-            $sort      = $sort      ? $sort : 'slice_id........,publish_date....-';
+            $sort      = $sort      ? (($sort == '-') ? '': $sort) : 'slice_id........,publish_date....-';
             return AA_Stringexpand::unalias("{ids:$slice_ids:d-all_fields-=-{id..............}:$sort}", '', $item);
         }
         return '';
@@ -3283,7 +3286,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         //   BIOM##Biom##biom_AA_DeLiM_<a href="http://biom.cz">_#KEYWORD_</a>
 
         $set     = new AA_Set($dictionaries, $conds, $sort);
-        $kw_item = GetFormatedItems($set, $format);
+        $kw_item = GetFormatedItems($set->query(), $format);
 
         foreach ( $kw_item as $kw_string ) {
             list($keywords, $link) = explode('_AA_DeLiM_', $kw_string,2);
@@ -4151,6 +4154,11 @@ class AA_Stringexpand_Hitcounter extends AA_Stringexpand {
     }
 }
 
+
+//error_reporting(E_ALL ^ E_NOTICE);
+//ini_set('display_errors', 1);
+
+
 /** Creates link to modified image using phpThub
  *  {img:<url>:[<phpthumb_params>]:[<info>]:[<param1>]:[<param2>]}
  *
@@ -4176,6 +4184,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         //AA::$debug && AA::$dbg->info('AA_Stringexpand_Img', $image, $phpthumb_params, $info, $param1, $param2);
 
         $img_url = AA_Stringexpand_Img::_getUrl($image, $phpthumb_params);
+
         if (empty($info) OR ($info == 'url') OR empty($img_url)) {
             return $img_url;
         }
@@ -4746,7 +4755,7 @@ class AA_Password_Manager_Reader {
 
         // send it via email
         $mail     = new AA_Mail;
-        $mail->setSubject ("Password change");
+        $mail->setSubject(_m("Password change"));
         $url  = shtml_url()."?aapwd2=$pwdkey-$user_id";
         $body = _m("To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one.",array("<a href=\"$url\">$url</a>"));
         $mail->setHtml($body, html2text($body));
@@ -5020,18 +5029,97 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
  */
 class AA_Stringexpand_Recompute extends AA_Stringexpand_Nevercache {
 
-    function expand($item_ids='') {
+    function expand($item_ids='', $fields_ids='') {
 
-        $item_arr = explode('-',$item_ids);
+        $item_arr  = explode('-',$item_ids);
+        $field_arr = strlen($fields_ids) ? explode('-', $fields_ids) : array();
 
         foreach ($item_arr as $iid) {
             if (!($iid = trim($iid))) {
                 continue;
             }
             $item = new ItemContent($iid);
-            $item->updateComputedFields($iid);
+            $item->updateComputedFields($iid, null, 'update', $field_arr);
         }
         return $ret;
+    }
+}
+
+/** Creates tag cloud from the items
+ *  {tagcloud:<item_ids>[:<count>[:<alias>[:<count_field>]]]}
+ *     <item_ids>    - dash separated list of ids of all keywords (tags)
+ *     <count>       - maximum number of displayed keywords (all by default)
+ *     <alias>       - The AA expression used for each keyword (_#HEADLINK used as default)
+ *     <count_field> - The id of the field, where you already have the number
+ *                     of ussage precounted. It is very good idea,to have such
+ *                     field - in other case the counts must be countedon every
+ *                     ussage. The count could be counted automaticaly
+ *                     in the field by using "Comuted field for INSERT/UPDATE"
+ *                     with the parameter "_#BACKLINK:_#BACKLINK::day", where
+ *                     alias _#BACKLINK could be definned as
+ *                       {count:{backlinks:{id..............}::-}}
+ *                     or say
+ *                       {count:{ids:1450a615da76cae02493aac79e129da9:d-relation........-=-{id..............}}}
+ *
+ *  Ussage:
+ *    {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a}}
+ *    {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a}:20}
+ *    {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a::headline........}::<i>_#HEADLINK</i>}
+ *    {tagcloud:{ids:02e34dc7f9da6473fc84ad662dfe53a::headline........}::headline........:computed_num....}
+ *
+ *
+ *  The resulting HTML code is like:
+ *    <ul class="tagcloud">
+ *      <li class="tagcloud3">Curso</li>
+ *      <li class="tagcloud1">Palabra</li>
+ *      <li class="tagcloud6">Poetry</li>
+ *    </ul>
+ *
+ *  The <li>s are marked in its class by the importance (number of use) so you
+ *  can set style them. There are 8 classes tagcloud1 - tagcloud8.
+ *  The styles could by:
+ *
+ *    <style type="text/css">
+ *      ul.tagcloud li.tagcloud1 { font-size: 1.8em; font-weight: 800; }
+ *      ul.tagcloud li.tagcloud2 { font-size: 1.6em; font-weight: 700; }
+ *      ul.tagcloud li.tagcloud3 { font-size: 1.4em; font-weight: 600; }
+ *      ul.tagcloud li.tagcloud4 { font-size: 1.2em; font-weight: 500; }
+ *      ul.tagcloud li.tagcloud5 { font-size: 1.0em; font-weight: 400; }
+ *      ul.tagcloud li.tagcloud6 { font-size: 0.9em; font-weight: 300; }
+ *      ul.tagcloud li.tagcloud7 { font-size: 0.8em; font-weight: 200; }
+ *      ul.tagcloud li.tagcloud8 { font-size: 0.7em; font-weight: 100; }
+ *      ul.tagcloud              { padding: 2px; line-height: 3em; text-align: center; margin: 0; }
+ *      ul.tagcloud li           { display: inline; padding: 0px; }
+ *    </style>
+ */
+class AA_Stringexpand_Tagcloud extends AA_Stringexpand {
+    function expand($item_ids='', $count='', $alias='', $count_field='') {
+        $alias       = get_if($alias, '_#HEADLINK');
+        $count_field = get_if($count_field, '{count:{backlinks:{id..............}::-}}');
+        $delimiter   = get_if($delimiter, ' ');
+        $results     = array();
+
+        $items = AA_Items::getItems(new zids(explode('-',$item_ids)));
+        foreach($items as $long_id=>$item) {
+            $results[$long_id] = $item->subst_alias($count_field);
+        }
+        arsort($results, SORT_NUMERIC);
+        $ids   = array_keys($results);
+        if (!($count = ($count ? min($count,count($ids)) : count($ids)))) {
+            return '';
+        }
+        $weights = array();
+        for ($i=0; $i<$count; ++$i) {
+            $weights[$ids[$i]] = (int)(((float)$i / $count * 8)+1);
+        }
+
+        $ret   = '';
+        foreach($items as $long_id=>$item) {
+            if ($w = $weights[$long_id]) {
+                $ret .= "\n<li class=\"tagcloud$w\">". $item->subst_alias($alias).'</li>' ;
+            }
+        }
+        return '<ul class="tagcloud">'. $ret .'</ul>';
     }
 }
 
