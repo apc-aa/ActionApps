@@ -411,6 +411,43 @@ function AA_StateChange(id, state) {
     $('img.'+id+'ico').attr('src', AA_Config.AA_INSTAL_PATH+icoimg);
 }
 
+function AA_LoadJs(condition, callback, url) {
+    if (condition) {
+        callback();
+    } else {
+        var script = document.createElement("script")
+        script.type = "text/javascript";
+        
+        if (script.readyState) { //IE
+            script.onreadystatechange = function () {
+                if (script.readyState == "loaded" || script.readyState == "complete") {
+                    script.onreadystatechange = null;
+                    callback();
+                }
+            };
+        } else { //Others
+            script.onload = function () {
+                callback();
+            };
+        }
+        
+        script.src = url;
+        document.getElementsByTagName("head")[0].appendChild(script);
+    }
+}
+
+function AA_LoadCss(url) {
+   var link  = document.createElement('link');
+   link.type = 'text/css';
+   link.rel  = 'stylesheet';
+   link.href = url;
+   document.getElementsByTagName('head')[0].appendChild(link);
+   return link;
+ }    
+
+
+
+
 /* Cookies */
 function SetCookie(name, value) {
    var expires = new Date();
