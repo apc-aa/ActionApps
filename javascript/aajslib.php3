@@ -34,14 +34,18 @@ http://www.apc.org/
 // include config in order we can define AA_Config variables for javascript
 require_once "../include/config.php3";
 
-// headers copied from include/extsess.php3 file
-$allowcache_expire = 24*3600; // 1 day
-$exp_gmt           = gmdate("D, d M Y H:i:s", time() + $allowcache_expire) . " GMT";
-$mod_gmt           = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
-header('Expires: '       . $exp_gmt);
-header('Last-Modified: ' . $mod_gmt);
-header('Cache-Control: public');
-header('Cache-Control: max-age=' . $allowcache_expire);
+
+// cache disabled - there we use $_GET['sess_id'], so the content varies - it is uncecheable, Honza 2012
+/*
+  headers copied from include/extsess.php3 file
+  $allowcache_expire = 24*3600; // 1 day
+  $exp_gmt           = gmdate("D, d M Y H:i:s", time() + $allowcache_expire) . " GMT";
+  $mod_gmt           = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
+  header('Expires: '       . $exp_gmt);
+  header('Last-Modified: ' . $mod_gmt);
+  header('Cache-Control: public');
+  header('Cache-Control: max-age=' . $allowcache_expire);
+*/
 header('Content-Type: application/x-javascript');
 
 $dir = dirname(__FILE__). '/prototype/';
