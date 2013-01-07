@@ -571,7 +571,7 @@ function getViewTypes() {
                                "label" => _m("E-mail template"),
                                "input" => "field",
                                "help" => _m("Number of e-mail template used for posting new comments to users")),
-                           "flag" => _m("Add view ID as HTML comment")
+                           "flag" => _m("Allow HTML tags in the comments")
                          ),
 
         // discussion to mail
@@ -900,7 +900,7 @@ function getViewTypesInfo() {
             '_#CV_NUM_Y' => array ('hlp'=>_m("Calendar: Year number of processed cell"))));
 
     $VIEW_TYPES_INFO['static']     = array('aliases' => 'none');
-    $VIEW_TYPES_INFO['script']     = array('aliases' => 'field');
+    $VIEW_TYPES_INFO['javascript'] = array('aliases' => 'field');
     $VIEW_TYPES_INFO['inputform']  = array('aliases' => '');
     return $VIEW_TYPES_INFO;
 }

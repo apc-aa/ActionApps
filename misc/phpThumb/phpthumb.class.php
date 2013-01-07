@@ -1214,8 +1214,9 @@ class phpthumb {
                 $commandline .= ' --version';
                 $this->DebugMessage('ImageMagick version checked with "'.$commandline.'"', __FILE__, __LINE__);
                 $versionstring[1] = trim(phpthumb_functions::SafeExec($commandline));
-#				if (preg_match('#^Version: [^0-9]*([ 0-9\\.\\:Q/\\-]+) (http|file)\:#i', $versionstring[1], $matches)) {
-                if (preg_match('#^Version: [^0-9]*([ 0-9\\.\\:Q/\\-]+) OpenMP (http|file)\:#i', $versionstring[1], $matches)) {  // zmena pro CentOS verzi Jirka, Honza
+#		 if (preg_match('#^Version: [^0-9]*([ 0-9\\.\\:Q/\\-]+) (http|file)\:#i', $versionstring[1], $matches)) {
+#                if (preg_match('#^Version: [^0-9]*([ 0-9\\.\\:Q/\\-]+) OpenMP (http|file)\:#i', $versionstring[1], $matches)) {  // zmena pro CentOS verzi Jirka, Honza
+                if (preg_match('#^Version: [^0-9]*([ 0-9\\.\\:Q/\\-]+) .*(http|file)\:#i', $versionstring[1], $matches)) {  // zmena pro CentOS verzi Jirka, Honza
                     $versionstring[0] = $matches[1];
                 } else {
                     $versionstring[0] = false;

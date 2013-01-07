@@ -1,5 +1,12 @@
+01/07/13 - new {file2text:{file............}} - reads the content of the DOC,
+(honzam)   DOCX, PDF or ODT file in the string. You can use it for searching
+           in the file content - store the content in the field by Computed
+           field and the search in this field
+         - cache disabled for aajslib.php3 - there we use $_GET['sess_id'], so
+           the content varies - it is uncecheable
+         - fixed password check for older SQL perms
 12/10/12 - new Input type Tags - for easy filling relation in the field
-           By this Input Type you can select current keywords from remote slice,
+(honzam)   By this Input Type you can select current keywords from remote slice,
            and also add new keywords, which is then written to the remote slice.
            All works as standard item relations in AA.
            Used "select2" library, which use jQuery. Just include
