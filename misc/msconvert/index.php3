@@ -40,7 +40,7 @@ if (!$userfile) {
     if ($encoding) echo "<input type=\"hidden\" name=\"encoding\" value=\"$encoding\">";
     echo "</form>";
 } else {
-    $file_name=gensalt(20);
+    $file_name=strtolower(gensalt(20));
     $realname=$_FILES['userfile']['name'];
     $stringoutput='';
     $dest_file = Files::uploadFile('userfile', $uploadpath, '', 'new', $file_name);
@@ -49,13 +49,14 @@ if (!$userfile) {
     }
     if ($error) die($GLOBALS["IMG_UPLOAD_PATH"]);
     if (!$error) {
-        if (preg_match("/.doc/i",$realname)) {
-            $safe_file_name=escapeshellarg ($file_name);
+        if (preg_match("/.doc$/i",$realname)) {
+            $safe_file_name=escapeshellcmd($file_name);
             $safe_encoding=escapeshellarg ($encoding);
-            system ($CONV_HTMLFILTERS[".doc"]." $uploadpath$safe_file_name --charset=$safe_encoding --targetdir=$uploadpath $safe_file_name.html");
-            $out=file("$uploadpath$file_name.html");
+            if ( defined('CONV_HTMLFILTERS_DOC')) {
+                exec(str_replace('%1',$uploadpath$safe_file_name,CONV_HTMLFILTERS_DOC),$out);
+                $out=join("\n",$out);
+            }
             unlink ("$uploadpath$file_name");
-            unlink ("$uploadpath$file_name.html");
             $insidesection=false;
             $buffer=array();
             $output=array();
@@ -73,14 +74,13 @@ if (!$userfile) {
                 }
             }
 
-        } elseif (preg_match("/.pdf/i",$realname)){
-            $safe_file_name=escapeshellarg ($file_name);
-            $command=$CONV_HTMLFILTERS[".pdf"]." -noframes -i $uploadpath$safe_file_name $uploadpath$safe_file_name.html";
-            echo $command;
-            exec($command);
-            $out=file("$uploadpath$file_name.html");
+        } elseif (preg_match("/.pdf$/i",$realname)){
+            $safe_file_name=escapeshellcmd($file_name);
+            if ( defined('CONV_HTMLFILTERS_PDF')) {
+                exec (str_replace('%1',$uploadpath$safe_file_name,CONV_HTMLFILTERS_PDF),$out);
+                $out=join("\n",$out);
+            }
             unlink ("$uploadpath$file_name");
-            unlink ("$uploadpath$file_name.html");
             if (!$out) $out[]=" ";
             $insidesection=false;
             $buffer=array();
@@ -96,18 +96,15 @@ if (!$userfile) {
                     $buffer[]=$line;
                 }
             }
-        } elseif (preg_match("/.xls/i",$realname)){
-            $safe_file_name=escapeshellarg ($file_name);
+        } elseif (preg_match("/.xls$/i",$realname)){
+            $safe_file_name=escapeshellcmd($file_name);
             $safe_encoding=escapeshellarg ($encoding);
             $safe_sysenc=escapeshellarg ($sysenc);
-            $command=$CONV_HTMLFILTERS[".xls"]." -nh -fw $uploadpath$safe_file_name >> $uploadpath$safe_file_name.html";
-            exec($command);
-            $command=$CONV_HTMLFILTERS["iconv"]." -f $safe_sysenc -t $safe_encoding $uploadpath$safe_file_name.html >>$uploadpath$safe_file_name.html.coded";
-            exec($command);
-            $out=file("$uploadpath$file_name.html.coded");
-            unlink ("$uploadpath$file_name.html.coded");
+            if ( defined('CONV_HTMLFILTERS_XLS')) {
+                exec (str_replace('%1',$uploadpath$safe_file_name,CONV_HTMLFILTERS_XLS),$out);
+                $out=join("\n",$out);
+            }
             unlink ("$uploadpath$file_name");
-            unlink ("$uploadpath$file_name.html");
             if (!$out) $out[]=" ";
             $insidesection=true;
             $output=array();

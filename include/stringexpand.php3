@@ -4991,13 +4991,11 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
     }
 }
 
-
 /** Rotates on one place in the page different contents (divs) with specified interval
  *  {rotator:<item-ids>:<html-code>:<interval>}
  *  {rotator:{ids:a24657bf895242c762607714dd91ed1e}:_#FOTO_S__<div>_#HEADLINE</div>}
  */
 class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
-
     function expand($ids='', $code='', $interval='') {
         $frames = array();
         $zids = new zids(explode('-', $ids));
@@ -5123,4 +5121,46 @@ class AA_Stringexpand_Tagcloud extends AA_Stringexpand {
     }
 }
 
+/** Reads the content of the DOC, DOCX, PDF or ODT file in the string.
+ *  You can use it for searching in the file content - store the content
+ *  in the field by Computed field and the search in this field
+ *    ussage:  {file2text:{file............}}
+ *             {convert:{file2text:{file............}}:utf-8:windows-1250}
+ */
+class AA_Stringexpand_File2text extends AA_Stringexpand_Nevercache {
+    function expand($url=null) {
+        $out = array();
+        $file_name  = Files::getTmpFilename(FILE_PREFIX);
+        if (preg_match('/.doc$/i',$url)) {
+            if ( defined('CONV_TEXTFILTERS_DOC')) {
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::destinationDir(AA_Slices::getSlice($slice_id)), $file_name);
+                $safe_file_name=escapeshellcmd($dest_file);
+                exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_DOC),$out);
+                unlink($dest_file);
+            }
+        } elseif (preg_match('/.docx$/i',$url)){
+            if ( defined('CONV_TEXTFILTERS_DOCX')) {
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::destinationDir(AA_Slices::getSlice($slice_id)), $file_name);
+                $safe_file_name=escapeshellcmd($dest_file);
+                exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_DOCX),$out);
+                unlink($dest_file);
+            }
+        } elseif (preg_match('/.odt$/i',$url)){
+            if ( defined('CONV_TEXTFILTERS_ODT')) {
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::destinationDir(AA_Slices::getSlice($slice_id)), $file_name);
+                $safe_file_name=escapeshellcmd($dest_file);
+                exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_ODT),$out);
+                unlink($dest_file);
+            }
+        } elseif (preg_match('/.pdf$/i',$url)){
+            if ( defined('CONV_TEXTFILTERS_PDF')) {
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::destinationDir(AA_Slices::getSlice($slice_id)), $file_name);
+                $safe_file_name=escapeshellcmd($dest_file);
+                exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_PDF),$out);
+                unlink($dest_file);
+            }
+        }
+        return join("\n",$out);
+    }
+}
 ?>
