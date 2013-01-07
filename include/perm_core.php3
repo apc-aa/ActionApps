@@ -212,7 +212,12 @@ class AA_Perm {
     public static function comparePwds($password, $hash) {
         // looks ugly for the first_child look, but it is really how the crypt
         // with salt works - see php documentation
-        return ($hash == crypt($password, $hash));
+
+        $crypted = crypt($password, $hash);
+
+        // passwords in SQL perms in AA 2.x are 30 characers long (in user table),
+        // so we have to compare it with shortened hash
+        return $hash == ((strlen($hash) == 30) ?  substr($crypted,0,30) : $crypted);
     }
 
     /** AA::$perm->cache function
