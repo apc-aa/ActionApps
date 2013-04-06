@@ -1339,16 +1339,15 @@ function QueryZIDs($slices, $conds="", $sort="", $type="ACTIVE", $neverAllItems=
                 }
             }
         }
-        if ( empty($slices) ) {
-            return new zids();
-        }
-
         // get the fields for the first slice (used as template and we expect that
         // all slices in the query has the same structure
-        $slice  = AA_Slices::getSlice(reset($slices));   // @todo convert whole $slices to AA_Slices
-        // access the fields through slice - it is better for caching of values
-
-        $fields = $slice->getFields();
+        if ( !empty($slices) AND ($slice  = AA_Slices::getSlice(reset($slices)))) {
+            // @todo convert whole $slices to AA_Slices
+            // access the fields through slice - it is better for caching of values
+            $fields = $slice->getFields();
+        } else {
+            return new zids();
+        }
     }
 
     AA::$debug && AA::$dbg->log("QueryZIDs: Conds=",$conds,"Sort=",$sort, "Slices=",join('-',$slices));

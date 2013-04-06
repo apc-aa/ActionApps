@@ -261,7 +261,7 @@ class AA_Responder_Tags extends AA_Responder {
         $found  = false;
         if ($field AND $trimed) {
             $widget = $field->getWidget();
-            $opts   = $widget->getFormattedOptions(null, false, $this->input);              
+            $opts   = $widget->getFormattedOptions(null, false, $this->input);
             $i=6;
             foreach ($opts as $id => $text) {
                 if (trim($text)==trim($this->input)) {
@@ -286,17 +286,18 @@ class AA_Responder_Tags extends AA_Responder {
 
 page_open(array("sess" => "AA_CP_Session", "auth" => "AA_CP_Auth"));
 
+if ($nobody) {
+    $_POST['username'] = $free;
+    $_POST['password'] = $freepwd;
+    $auth->auth["uid"] = $auth->auth_validatelogin();
+
 // anonymous login
-// removed by Honza - nobody is allowed as well (for AA_Responder_Tags for example) - we have to check the permissions inside the AA_Responder_...s 
-//if ($nobody) {
-//    $_POST['username'] = $free;
-//    $_POST['password'] = $freepwd;
-//    $auth->auth["uid"] = $auth->auth_validatelogin();
+// removed by Honza - nobody is allowed as well (for AA_Responder_Tags for example) - we have to check the permissions inside the AA_Responder_...s
 //    if ( !$auth->auth["uid"] ) {
 //        AA_Response::error(_m("Either your username or your password is not valid."), 1);  // 1 - _m("Either your username or your password is not valid.");
 //        exit;
 //    }
-//}
+}
 
 // in order {xuser:id} alias wors in widgets, for example
 $GLOBALS['apc_state']['xuser'] = $auth->auth["uname"];

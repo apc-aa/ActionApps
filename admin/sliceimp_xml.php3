@@ -329,12 +329,12 @@ function create_SQL_insert_statement ($fields, $table, $pack_fields = "", $only_
     }
 
     if ($add_values) {
-        $add = explode(",", $add_fields);
+        $add = explode(",", $add_values);
         for ( $i=0, $ino=count($add); $i<$ino; ++$i) {
             $dummy=explode("=",$add[$i]);
             if ($sqlfields > "") {
                 $sqlfields .= ",\n". $dummy[0];
-                $sqlvalues .= ",\n". $dummy[1];
+                $sqlvalues .= ",\n". '"'.addslashes($dummy[1]).'"';
             }
         }
     }

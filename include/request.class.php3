@@ -319,15 +319,16 @@ class AA_Client_Auth {
 
             $arr = $response->getResponse();
             $session_id  = $arr[0];
-            $this->_auth = $arr[1];
-
-            $x = setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
-            $_COOKIE['AA_Sess'] = $session_id;
-            if ($_REQUEST['username']) {
-                $y = setcookie('AA_Uid', $_REQUEST['username'], $this->_cookie_lifetime, '/');
-                $_COOKIE['AA_Uid']  = $_REQUEST['username'];  // we need it for current page as well
+            $myauth      = $arr[1];
+            
+            if ($myauth->auth['uname'] AND $myauth->auth['uid'] AND (trim($myauth->auth['uid']) != 'nobody')) {
+                $x                  = setcookie('AA_Sess', $session_id, $this->_cookie_lifetime, '/');
+                $y                  = setcookie('AA_Uid', $myauth->auth['uname'], $this->_cookie_lifetime, '/');
+                $_COOKIE['AA_Sess'] = $session_id;
+                $_COOKIE['AA_Uid']  = $myauth->auth['uname'];  // we need it for current page as well
+                $this->_auth        = $myauth; 
+                return true;
             }
-            return true;
         }
         $this->logout();
         return false;

@@ -218,6 +218,7 @@ class AA_Field_Writer {
                             $content4id->setItemID($new_id=new_id());
                             $content4id->setSliceID($sid);
                             $content4id->setAaValue('headline........', new AA_Value($v));
+                            $content4id->complete4Insert();
                             $content4id->storeItem('insert');
                             $value['value'] = $new_id;
                         }

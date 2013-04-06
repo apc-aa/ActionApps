@@ -227,9 +227,11 @@ class AA_Perm {
     function cache($user_id) {
         global $permission_uid, $permission_to, $sess, $perms_roles, $r_superuser;
 
-        $sess->register('permission_uid');
-        $sess->register('permission_to');
-        $sess->register('r_superuser');
+        if (is_object($sess)) {
+            $sess->register('permission_uid');
+            $sess->register('permission_to');
+            $sess->register('r_superuser');
+        }
 
         $permission_uid         = $user_id;
         $permission_to["slice"] = GetIDPerms($permission_uid, "slice");

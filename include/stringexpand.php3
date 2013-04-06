@@ -935,7 +935,7 @@ function parseMath($text) {
             $val = calculate($val);
             if ($variable) {
                 $format = explode("#",$variable);
-                $val    = number_format($val, (int)$format[0], $format[1], $format[2]);
+                $val    = number_format((double)$val, (int)$format[0], $format[1], $format[2]);
             }
             $ret .= $val;
             $key  = true;
