@@ -154,6 +154,44 @@ class AA_Manageraction_Item_MoveItem extends AA_Manageraction {
     }
 }
 
+
+/** AA_Manageraction_Item_Duplicate - Duplicate selected item in the slice.
+ */
+class AA_Manageraction_Item_Duplicate extends AA_Manageraction {
+
+    /** Constructor - fills the information about the target bin */
+    function __construct($id) {
+        parent::AA_Manageraction($id);
+    }
+
+    /** Name of this Manager's action */
+    function getName() {
+        return _m('Duplicate Item');
+    }
+
+    /** main executive function
+    * @param $param       - not used
+    * @param $item_arr    - array of id of AA records to check
+    * @param $akce_param  - not used
+    */
+    function perform(&$manager, &$state, $item_arr, $akce_param) {
+
+        $zids = AA_Manageraction::getZidsSanitized($item_arr, $manager->getModuleId());
+        $grabber = new AA_Grabber_Slice(null, $zids);
+        // insert_if_new is the same as insert, (but just make sure the item is not in DB which is not important here)
+        $saver   = new AA_Saver($grabber, null, null, 'insert_if_new', 'new');
+        $saver->run();
+        //SendOkPage( array("report" => $saver->report() ), $saver->changedIds());
+        return false;                                     // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action */
+    function isPerm(&$manager) {
+        return IfSlPerm(PS_EDIT_ALL_ITEMS, $manager->getModuleId());
+    }
+}
+
+
 /** AA_Manageraction_Item_Feed
  *  Export (Copy) items to another slice
  *  @param $slice      slice object - slice, from which we export

@@ -113,6 +113,7 @@ $actions->addAction(new AA_Manageraction_Item_Preview(      'Preview',       con
 $actions->addAction(new AA_Manageraction_Item_Modifycontent('ModifyContent', $sess->url("search_replace.php3"), '&'));
 $actions->addAction(new AA_Manageraction_Item_Email(        'Email',         $sess->url("write_mail.php3"),     '&'));
 $actions->addAction(new AA_Manageraction_Item_DeleteTrash(  'DeleteTrashAction',true));
+$actions->addAction(new AA_Manageraction_Item_Duplicate(    'Duplicate'));
 $actions->addAction(new AA_Manageraction_Item_Move2slice(   'Move2slice',    $module_id));
 
 

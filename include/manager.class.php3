@@ -740,6 +740,20 @@ class AA_Manageraction extends AA_Storable {
     function isSetting() {
         return is_callable(array($this, 'htmlSettings'));
     }
+
+    /** static */
+    function getZidsSanitized(&$item_arr, $slice_id=null) {
+        $zids = new zids;
+        $zids->setFromItemArr($item_arr);
+
+        if (($zids->count() < 1) OR !$slice_id) {
+            return $zids;
+        }
+
+        // check if there are no ids from bad slice (attack???)
+        $SQL = "SELECT id FROM item WHERE slice_id = '". q_pack_id($slice_id) ."' AND ". $zids->sqlin('id');
+        return new zids(GetTable2Array($SQL, '', 'id'), 'p');
+    }
 }
 
 class AA_Manageractions {

@@ -56,7 +56,7 @@ class AA_Saver {
      * @param $store_mode
      * @param $id_mode
      */
-    function AA_Saver(&$grabber, &$transformations, $slice_id=null, $store_mode='overwrite', $id_mode='old') {
+    function AA_Saver($grabber, $transformations, $slice_id=null, $store_mode='overwrite', $id_mode='old') {
         $this->grabber         = $grabber;
         $this->transformations = $transformations;
         $this->slice_id        = $slice_id;
@@ -1124,6 +1124,9 @@ class AA_Grabber_Iekis_Xml extends AA_Grabber {
 /** AA_Grabber_Slice - grabs data from slice based on AA_Set
  *  Right now we use it mainly for apc-aa/admin/se_export.php
  */
+/** AA_Grabber_Slice - grabs data from slice based on AA_Set
+ *  Right now we use it mainly for apc-aa/admin/se_export.php
+ */
 class AA_Grabber_Slice extends AA_Grabber {
 
     var $set;                 /** AA_Set specifies the slice, conds and sort */
@@ -1131,9 +1134,14 @@ class AA_Grabber_Slice extends AA_Grabber {
     var $_content_cache;      /**  */
     var $_index;              /**  */
 
-    function AA_Grabber_Slice($set) {
-        $this->set            = $set;
-        $this->_longids       = array();
+    function __construct($set, $zids=null) {
+        if ($zids) {
+            $this->_longids = $zids->longids();
+            $this->set = null;
+        } else {
+            $this->set        = $set;
+            $this->_longids   = array();
+        }
         $this->_content_cache = array();
         $this->_index         = 0;
     }
@@ -1150,8 +1158,11 @@ class AA_Grabber_Slice extends AA_Grabber {
      *  method is called - it means "we are going really to grab the data
      */
     function prepare() {
-        $zids                 = $this->set->query();
-        $this->_longids       = $zids->longids();
+        // if the items are defined by $set, then compute. Else it is already filled from constructor $zids
+        if ($this->set) {
+            $zids             = $this->set->query();
+            $this->_longids   = $zids->longids();
+        }
         $this->_content_cache = array();
         $this->_index         = 0;
         reset($this->_longids);   // go to first long id
