@@ -1,3 +1,5 @@
+04/10/13 - fix - the seo sitemodule now displays only item active and expired 
+(honzam) - fix - convert filters from pdf, odt, doc, docx works, if configured
 04/06/13 - new manager action - duplicate item in the slice 
 (honzam) - other fixes
 01/07/13 - new {file2text:{file............}} - reads the content of the DOC,
